@@ -1,1554 +1,354 @@
 /**
- * Recipe - Comprehensive recipe management screen with multi-modal interactions
+ * Recipe Screen Module
  *
- * The central recipe screen supporting four distinct modes: read-only viewing, editing,
- * manual creation, and OCR-assisted creation from images. Features dynamic UI adaptation,
- * intelligent ingredient/tag validation, automatic scaling, and comprehensive CRUD operations.
+ * The main recipe screen component that handles viewing, editing, and creating recipes.
+ * Supports four distinct operational modes:
+ * - Read-only mode: View recipe details and add to shopping list
+ * - Edit mode: Modify existing recipe data
+ * - Manual add mode: Create new recipe from scratch
+ * - OCR add mode: Create new recipe from photo using text recognition
  *
- * Key Features:
- * - Four interaction modes: read-only, edit, manual add, OCR add
- * - Dynamic UI adaptation based on current mode and data state
- * - OCR integration for extracting recipe data from images
- * - Intelligent ingredient and tag similarity matching
- * - Automatic quantity scaling based on serving count changes
- * - Comprehensive validation with user-friendly error messages
- * - File management integration for image handling
- * - Shopping list integration for recipe ingredients
- * - Real-time data synchronization with database
+ * This screen manages complex state through custom hooks, handles recipe validation,
+ * similarity detection, and integrates with SQLite database operations. It provides
+ * a comprehensive UI for all recipe-related operations including image management,
+ * ingredient handling, tag assignment, and preparation step organization.
  *
- * Architecture:
- * - State-driven component rendering with mode-specific props
- * - Modular prop generation functions for clean separation
- * - Comprehensive error handling and user feedback
- * - Performance optimization with efficient re-renders
- * - Type-safe discriminated unions for different modes
- *
- * OCR Integration:
- * - Field-specific OCR extraction (title, ingredients, steps, etc.)
- * - Image cropping and preprocessing
- * - Intelligent data parsing and validation
- * - Fallback to manual input when OCR fails
- *
- * Data Management:
- * - Real-time ingredient quantity scaling
- * - Duplicate detection and prevention
- * - Similarity matching for tags and ingredients
- * - Comprehensive validation before database operations
- *
- * @example
- * ```typescript
- * // Navigation to different recipe modes
- *
- * // Read-only mode for viewing existing recipes
- * navigation.navigate('Recipe', {
- *   mode: 'readOnly',
- *   recipe: existingRecipe
- * });
- *
- * // Edit mode for modifying existing recipes
- * navigation.navigate('Recipe', {
- *   mode: 'edit',
- *   recipe: recipeToEdit
- * });
- *
- * // Manual creation mode
- * navigation.navigate('Recipe', {
- *   mode: 'addManually'
- * });
- *
- * // OCR-assisted creation from image
- * navigation.navigate('Recipe', {
- *   mode: 'addFromPic',
- *   imgUri: capturedImageUri
- * });
- * ```
+ * @module screens/Recipe
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import { RecipeScreenProp, recipeStateType } from '@customTypes/ScreenTypes';
 import {
-  processIngredientsForValidation,
-  processTagsForValidation,
-} from '@utils/RecipeValidationHelpers';
-import {
-  extractTagsName,
-  FormIngredientElement,
-  ingredientTableElement,
   isRecipeEqual,
-  nutritionTableElement,
   recipeColumnsNames,
   recipeTableElement,
-  tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
 import { ScrollView } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { padding } from '@styles/spacing';
-import { RecipeImage, RecipeImageProps } from '@components/organisms/RecipeImage';
-import { Icons } from '@assets/Icons';
-import { RecipeText, RecipeTextProps, TextProp } from '@components/organisms/RecipeText';
-import {
-  EditableBaseProps as IngredientsEditableBaseProps,
-  RecipeIngredients,
-  RecipeIngredientsProps,
-} from '@components/organisms/RecipeIngredients';
-import {
-  EditableBaseProps as PreparationEditableBaseProps,
-  RecipePreparation,
-  RecipePreparationProps,
-} from '@components/organisms/RecipePreparation';
-import { textSeparator, unitySeparator } from '@styles/typography';
-import { RecipeTagProps, RecipeTags } from '@components/organisms/RecipeTags';
+import { RecipeImage } from '@components/organisms/RecipeImage';
+import { RecipeText } from '@components/organisms/RecipeText';
+import { RecipeIngredients } from '@components/organisms/RecipeIngredients';
+import { RecipePreparation } from '@components/organisms/RecipePreparation';
+import { RecipeTags } from '@components/organisms/RecipeTags';
 import { clearCache } from '@utils/FileGestion';
 import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
-import { extractFieldFromImage } from '@utils/OCR';
-import { RecipeNumber, RecipeNumberProps } from '@components/organisms/RecipeNumber';
-import { defaultValueNumber } from '@utils/Constants';
+import { RecipeNumber } from '@components/organisms/RecipeNumber';
 import { useTheme } from 'react-native-paper';
 import { AppBar } from '@components/organisms/AppBar';
 import { ModalImageSelect } from '@screens/ModalImageSelect';
 import { cropImage } from '@utils/ImagePicker';
 import { useI18n } from '@utils/i18n';
-import { Alert, AlertProps } from '@components/dialogs/Alert';
+import { Alert } from '@components/dialogs/Alert';
 import { getDefaultPersons } from '@utils/settings';
-import { scaleQuantityForPersons } from '@utils/Quantity';
-import { SimilarityDialog, SimilarityDialogProps } from '@components/dialogs/SimilarityDialog';
-import { RecipeNutrition, RecipeNutritionProps } from '@components/organisms/RecipeNutrition';
-import { ocrLogger, recipeLogger, validationLogger } from '@utils/logger';
+import { SimilarityDialog } from '@components/dialogs/SimilarityDialog';
+import { RecipeNutrition } from '@components/organisms/RecipeNutrition';
+import { recipeLogger, validationLogger } from '@utils/logger';
 import { LoadingOverlay } from '@components/dialogs/LoadingOverlay';
-import {
-  IngredientValidationProps,
-  TagValidationProps,
-  ValidationQueue,
-} from '@components/dialogs/ValidationQueue';
+import { ValidationQueue } from '@components/dialogs/ValidationQueue';
 import BottomActionButton from '@components/atomic/BottomActionButton';
+
+import { useRecipeIngredients } from '@hooks/useRecipeIngredients';
+import { useRecipeTags } from '@hooks/useRecipeTags';
+import { useRecipePreparation } from '@hooks/useRecipePreparation';
+import { useRecipeOCR } from '@hooks/useRecipeOCR';
+import { RecipeDialogsProvider, useRecipeDialogs } from '@context/RecipeDialogsContext';
+import { RecipeFormProvider, useRecipeForm } from '@context/RecipeFormContext';
+
+import { RecipePropType } from '@customTypes/RecipeNavigationTypes';
+import {
+  buildRecipeDescriptionProps,
+  buildRecipeImageProps,
+  buildRecipeIngredientsProps,
+  buildRecipeNutritionProps,
+  buildRecipePersonsProps,
+  buildRecipePreparationProps,
+  buildRecipeTagsProps,
+  buildRecipeTimeProps,
+  buildRecipeTitleProps,
+  getValidationButtonConfig,
+  scaleRecipeForSave,
+  validateRecipeData,
+} from '@utils/RecipeFormHelpers';
 
 const BUTTON_HEIGHT = 48;
 const BUTTON_CONTAINER_HEIGHT = BUTTON_HEIGHT + padding.small * 2;
 
-// Export enum values for external use - keeping for API compatibility
-export const recipeStates = {
-  readOnly: recipeStateType.readOnly,
-  edit: recipeStateType.edit,
-  addManual: recipeStateType.addManual,
-  addOCR: recipeStateType.addOCR,
-};
-
-/** Props for read-only recipe viewing */
-export type readRecipe = { mode: 'readOnly'; recipe: recipeTableElement };
-
-/** Props for editing existing recipes */
-export type editRecipeManually = { mode: 'edit'; recipe: recipeTableElement };
-
-/** Props for manual recipe creation */
-export type addRecipeManually = { mode: 'addManually' };
-
-/** Props for OCR-assisted recipe creation from image */
-export type addRecipeFromPicture = { mode: 'addFromPic'; imgUri: string };
-
-/** Union type for all possible recipe screen configurations */
-export type RecipePropType =
-  | readRecipe
-  | editRecipeManually
-  | addRecipeManually
-  | addRecipeFromPicture;
-
-type SimilarityDialogPropsPicked = Pick<SimilarityDialogProps, 'isVisible' | 'item'>;
-const defaultSimilarityDialogPropsPicked: SimilarityDialogPropsPicked = {
-  isVisible: false,
-  item: {
-    type: 'Tag',
-    newItemName: '',
-    onConfirm: _tag => {
-      throw new Error(
-        `onConfirm callback calls on default prop (${_tag}). This should not be possible`
-      );
-    },
-  },
-};
-
-type ValidationDialogProps = Pick<
-  AlertProps,
-  'title' | 'content' | 'confirmText' | 'cancelText' | 'onConfirm' | 'onCancel'
->;
-const defaultValidationDialogProp: ValidationDialogProps = {
-  title: '',
-  content: '',
-  confirmText: '',
-  onConfirm: undefined,
-  onCancel: undefined,
-};
-
 /**
- * Recipe screen component - Comprehensive recipe management with multi-modal support
+ * Recipe Screen Component
  *
- * @param props - Navigation props containing route parameters and navigation functions
- * @returns JSX element representing the recipe management screen
+ * The primary screen component for viewing, editing, and creating recipes in the application.
+ * Handles four operational modes with distinct behaviors and validation flows:
+ *
+ * - **Read-only mode**: Displays recipe details with option to add ingredients to shopping list
+ * - **Edit mode**: Enables modification of existing recipe data with change detection
+ * - **Manual add mode**: Supports creation of new recipes with manual data entry
+ * - **OCR add mode**: Facilitates recipe creation from photos using text recognition
+ *
+ * Key features:
+ * - Recipe validation with missing field detection
+ * - Similarity detection to prevent duplicate recipes
+ * - Automatic recipe scaling based on default persons setting
+ * - OCR-based field extraction from images
+ * - Tag and ingredient duplicate checking with fuzzy matching
+ * - Shopping list integration
+ * - Image cropping and management
+ * - Nutritional information tracking
+ *
+ * @returns The rendered Recipe screen with appropriate mode-specific UI
  */
-export function Recipe({ route, navigation }: RecipeScreenProp) {
-  const { t } = useI18n();
+export function Recipe(screenProps: RecipeScreenProp) {
+  const props: RecipePropType = screenProps.route.params;
 
+  return (
+    <RecipeFormProvider props={props}>
+      <RecipeDialogsProvider>
+        <RecipeContent {...screenProps} />
+      </RecipeDialogsProvider>
+    </RecipeFormProvider>
+  );
+}
+
+function RecipeContent({ route, navigation }: RecipeScreenProp) {
+  const { t } = useI18n();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
 
-  const {
-    addRecipe,
-    editRecipe,
-    deleteRecipe,
-    addRecipeToShopping,
-    findSimilarRecipes,
-    searchRandomlyTags,
-    findSimilarTags,
-    findSimilarIngredients,
-  } = useRecipeDatabase();
+  const { addRecipe, editRecipe, deleteRecipe, addRecipeToShopping, findSimilarRecipes } =
+    useRecipeDatabase();
 
   const recipeTestId = 'Recipe';
-
   const props: RecipePropType = route.params;
-  const initStateFromProp = props.mode === 'readOnly' || props.mode === 'edit';
 
-  const [stackMode, setStackMode] = useState(convertModeFromProps());
-  const [recipeImage, setRecipeImage] = useState(
-    initStateFromProp ? props.recipe.image_Source : ''
-  );
-  const [recipeTitle, setRecipeTitle] = useState(initStateFromProp ? props.recipe.title : '');
-  const [recipeDescription, setRecipeDescription] = useState(
-    initStateFromProp ? props.recipe.description : ''
-  );
-  const [recipeTags, setRecipeTags] = useState(initStateFromProp ? props.recipe.tags : []);
-  const [recipePersons, setRecipePersons] = useState(
-    initStateFromProp ? props.recipe.persons : defaultValueNumber
-  );
-  const [recipeIngredients, setRecipeIngredients] = useState<
-    (ingredientTableElement | FormIngredientElement)[]
-  >(initStateFromProp ? props.recipe.ingredients : []);
-  const [recipePreparation, setRecipePreparation] = useState(
-    initStateFromProp ? props.recipe.preparation : []
-  );
-  const [recipeTime, setRecipeTime] = useState(
-    initStateFromProp ? props.recipe.time : defaultValueNumber
-  );
-  const [recipeNutrition, setRecipeNutrition] = useState(
-    initStateFromProp ? props.recipe.nutrition : undefined
-  );
-  const [imgForOCR, setImgForOCR] = useState(props.mode === 'addFromPic' ? [props.imgUri] : []);
-  const [randomTags] = useState(searchRandomlyTags(3).map(element => element.name));
+  const { state, setters, actions } = useRecipeForm();
+  const dialogs = useRecipeDialogs();
+  const tags = useRecipeTags();
+  const ingredients = useRecipeIngredients();
+  const preparation = useRecipePreparation();
+  const ocr = useRecipeOCR();
+  const validationButtonConfig = getValidationButtonConfig(state.stackMode, t);
 
-  const [validationButtonText, validationFunction] = recipeValidationButtonProps();
-
-  const [modalField, setModalField] = useState<recipeColumnsNames | undefined>(undefined);
-
-  const [isValidationDialogOpen, setIsValidationDialogOpen] = useState(false);
-  const [validationDialogProp, setValidationDialogProp] = useState(defaultValidationDialogProp);
-
-  const [similarityDialog, setSimilarityDialog] = useState<SimilarityDialogPropsPicked>(
-    defaultSimilarityDialogPropsPicked
-  );
-
-  const [isProcessingOcrExtraction, setIsProcessingOcrExtraction] = useState(false);
-
-  const [validationQueue, setValidationQueue] = useState<
-    TagValidationProps | IngredientValidationProps | null
-  >(null);
-
-  const previousPersonsRef = useRef<number>(recipePersons);
-
-  useEffect(() => {
-    const loadDefaultPersons = async () => {
-      if (!initStateFromProp) {
-        const defaultPersons = await getDefaultPersons();
-        setRecipePersons(defaultPersons);
-      }
-    };
-
-    loadDefaultPersons();
-  }, [initStateFromProp]);
-
-  useEffect(() => {
-    const previousPersons = previousPersonsRef.current;
-    const nextPersons = recipePersons;
-    if (
-      previousPersons !== defaultValueNumber &&
-      nextPersons !== defaultValueNumber &&
-      previousPersons !== nextPersons
-    ) {
-      setRecipeIngredients(prevIngredients =>
-        prevIngredients.map(ing => ({
-          ...ing,
-          quantity: ing.quantity
-            ? scaleQuantityForPersons(ing.quantity, previousPersons, nextPersons)
-            : undefined,
-        }))
-      );
-    }
-    previousPersonsRef.current = nextPersons;
-  }, [recipePersons]);
-
-  function convertModeFromProps() {
-    switch (props.mode) {
-      case 'readOnly':
-        return recipeStateType.readOnly;
-      case 'edit':
-        return recipeStateType.edit;
-      case 'addManually':
-        return recipeStateType.addManual;
-      case 'addFromPic':
-        return recipeStateType.addOCR;
-    }
-  }
-
+  /**
+   * Handles recipe deletion with user confirmation.
+   *
+   * Only available in read-only and edit modes. Displays a confirmation dialog
+   * before permanently deleting the recipe from the database. Upon successful
+   * deletion, shows a success message and navigates back to the previous screen.
+   *
+   * @async
+   * @returns {Promise<void>} Resolves when deletion is complete or cancelled
+   * @throws Will log warning if called from invalid mode (add modes)
+   */
   async function onDelete() {
-    switch (stackMode) {
-      case recipeStateType.readOnly:
-      case recipeStateType.edit:
-        setValidationDialogProp({
+    if (state.stackMode !== recipeStateType.readOnly && state.stackMode !== recipeStateType.edit) {
+      recipeLogger.warn('Delete operation not allowed in current mode', {
+        stackMode: state.stackMode,
+      });
+      return;
+    }
+
+    dialogs.showValidationDialog({
+      title: t('deleteRecipe'),
+      content: t('confirmDelete'),
+      confirmText: t('save'),
+      cancelText: t('cancel'),
+      onConfirm: async () => {
+        // @ts-ignore params.recipe exist because we already checked with switch
+        const success = await deleteRecipe(props.recipe);
+        dialogs.showValidationDialog({
           title: t('deleteRecipe'),
-          content: t('confirmDelete'),
-          confirmText: t('save'),
-          cancelText: t('cancel'),
-          onConfirm: async () => {
-            const dialogProps: ValidationDialogProps = {
-              title: t('deleteRecipe'),
-              confirmText: t('ok'),
-              onConfirm: () => {
-                navigation.goBack();
-              },
-              content: '',
-            };
-            //@ts-ignore params.recipe exist because we already checked with switch
-            if (!(await deleteRecipe(props.recipe))) {
-              dialogProps.content = `${t('errorOccurred')} ${t('deleteRecipe')} ${recipeTitle}`;
-            } else {
-              dialogProps.content = t('deletedFromDatabase', { recipeName: recipeTitle });
-            }
-            setValidationDialogProp(dialogProps);
-            setIsValidationDialogOpen(true);
-          },
+          confirmText: t('ok'),
+          onConfirm: () => navigation.goBack(),
+          content: success
+            ? t('deletedFromDatabase', { recipeName: state.recipeTitle })
+            : `${t('errorOccurred')} ${t('deleteRecipe')} ${state.recipeTitle}`,
         });
-        setIsValidationDialogOpen(true);
-        break;
-      case recipeStateType.addManual:
-      case recipeStateType.addOCR:
-        recipeLogger.warn('Delete operation not allowed in current mode', { stackMode });
-        break;
-    }
-  }
-
-  // TODO let the possibility to add manually the field
-
-  function removeTag(tag: string) {
-    setRecipeTags(recipeTags.filter(tagElement => tagElement.name !== tag));
-  }
-
-  /**
-   * Adds a new tag to the recipe with intelligent similarity matching and validation
-   *
-   * This function implements sophisticated tag management including duplicate prevention,
-   * case-insensitive matching, database similarity searching, and user confirmation
-   * for similar matches. It provides a seamless experience for both existing and new tags.
-   *
-   * @param newTag - The tag name to add to the recipe
-   *
-   * Validation Logic:
-   * 1. Rejects empty or whitespace-only tags
-   * 2. Prevents duplicate tags in the recipe (case-insensitive)
-   * 3. Searches database for similar existing tags
-   * 4. Handles exact matches automatically
-   * 5. Shows similarity dialog for potential matches
-   *
-   * Similarity Matching:
-   * - Performs fuzzy matching against existing database tags
-   * - Exact matches (case-insensitive) are added immediately
-   * - Similar matches trigger SimilarityDialog for user choice
-   * - Completely new tags can be created through the dialog
-   *
-   * Side Effects:
-   * - Updates recipeTags state array when exact match found
-   * - Triggers SimilarityDialog display for similar matches
-   * - May add new tags to database through similarity dialog
-   *
-   * User Experience:
-   * - Silent addition for exact matches (no interruption)
-   * - Interactive dialog for similar matches (prevents typos)
-   * - Option to create completely new tags
-   *
-   * Performance:
-   * - Async operation to prevent UI blocking
-   * - Efficient database similarity search
-   */
-
-  /**
-   * Adds a tag to the recipe, skipping if it's a duplicate
-   *
-   * @param tag - Tag to add
-   */
-  const addTagIfNotDuplicate = (tag: tagTableElement) => {
-    setRecipeTags(prev => {
-      const isDuplicate = prev.some(
-        existing => existing.name.toLowerCase() === tag.name.toLowerCase()
-      );
-      if (!isDuplicate) {
-        return [...prev, tag];
-      }
-      return prev;
+      },
     });
-  };
-
-  /**
-   * Adds or merges an ingredient into the recipe
-   *
-   * If ingredient exists, merges quantities when units match.
-   * If units differ, replaces the existing ingredient.
-   *
-   * @param ingredient - Ingredient to add or merge
-   */
-  const addOrMergeIngredient = (ingredient: ingredientTableElement) => {
-    setRecipeIngredients(prev => {
-      const existingIndex = prev.findIndex(
-        existing => existing.name?.toLowerCase() === ingredient.name.toLowerCase()
-      );
-
-      if (existingIndex === -1) {
-        return [...prev, ingredient];
-      } else {
-        const updated = [...prev];
-        const existing = updated[existingIndex];
-
-        if (!existing || !existing.name) {
-          return prev;
-        }
-
-        if (existing.unit === ingredient.unit) {
-          updated[existingIndex] = {
-            ...existing,
-            quantity: String(Number(existing.quantity || 0) + Number(ingredient.quantity || 0)),
-          };
-        } else {
-          updated[existingIndex] = ingredient;
-        }
-        return updated;
-      }
-    });
-  };
-
-  async function addTag(newTag: string) {
-    if (!newTag || newTag.trim().length === 0) {
-      return;
-    }
-
-    if (recipeTags.some(tag => tag.name.toLowerCase() === newTag.toLowerCase())) {
-      return;
-    }
-
-    const { exactMatches, needsValidation } = processTagsForValidation(
-      [{ name: newTag }],
-      findSimilarTags
-    );
-
-    if (exactMatches.length > 0) {
-      exactMatches.forEach(addTagIfNotDuplicate);
-    }
-
-    if (needsValidation.length > 0) {
-      setValidationQueue({
-        type: 'Tag',
-        items: needsValidation,
-        onValidated: addTagIfNotDuplicate,
-      });
-    }
   }
 
   /**
-   * Edits an existing ingredient with complex parsing and similarity validation
+   * Handles validation action in read-only mode by adding recipe to shopping list.
    *
-   * This function handles the complex process of updating an ingredient in the recipe.
-   * It parses ingredient strings that contain quantity, unit, and name information,
-   * validates the input, checks for similar ingredients in the database, and either
-   * updates the ingredient directly or shows a similarity dialog for user confirmation.
+   * Creates a snapshot of the current recipe state (with any quantity scaling applied)
+   * and adds all ingredients to the shopping list. Displays a success dialog and
+   * navigates back upon completion.
    *
-   * @param oldIngredientId - Index of the ingredient to edit in the recipeIngredients array
-   * @param newIngredient - Formatted string containing: "${quantity}${unitySeparator}${unit}${textSeparator}${name}"
-   *
-   * Input Format:
-   * The newIngredient string follows this structure:
-   * - Quantity and unit separated by unitySeparator ("@@")
-   * - Name separated from quantity/unit by textSeparator ("--")
-   * - Example: "2@@cups--flour" represents "2 cups of flour"
-   *
-   * Business Logic:
-   * 1. Validates ingredient index bounds
-   * 2. Parses ingredient string into components (quantity, unit, name)
-   * 3. Validates that ingredient name is not empty
-   * 4. Searches database for similar ingredients (fuzzy matching)
-   * 5. If exact match found: updates ingredient directly
-   * 6. If similar matches found: shows SimilarityDialog for user choice
-   * 7. If no matches: creates new ingredient entry
-   *
-   * Side Effects:
-   * - Updates recipeIngredients state array
-   * - May trigger SimilarityDialog display
-   * - Logs warnings for invalid operations
-   * - May add new ingredients to database through similarity dialog
-   *
-   * Error Handling:
-   * - Validates array bounds and logs warnings for invalid indices
-   * - Handles empty or malformed ingredient strings gracefully
-   * - Prevents duplicate ingredients in the recipe
+   * @async
+   * @returns {Promise<void>} Resolves when recipe is added to shopping list
    */
-  function editIngredients(oldIngredientId: number, newIngredient: string) {
-    if (oldIngredientId < 0 || oldIngredientId >= recipeIngredients.length) {
-      recipeLogger.warn('Cannot edit ingredient - invalid index', {
-        oldIngredientId,
-        ingredientsCount: recipeIngredients.length,
-      });
-      return;
-    }
-
-    // ${newQuantity}${unitySeparator}${unit}${textSeparator}${ingName}
-    const [unitAndQuantity, newName] = newIngredient.split(textSeparator);
-    const [newQuantity, newUnit] = unitAndQuantity.split(unitySeparator);
-
-    const updateIngredient = (ingredient: FormIngredientElement) => {
-      const ingredientCopy: (ingredientTableElement | FormIngredientElement)[] =
-        recipeIngredients.map(ingredient => ({
-          ...ingredient,
-        }));
-      const foundIngredient = ingredientCopy[oldIngredientId];
-
-      if (!foundIngredient) {
-        return;
-      }
-
-      if (ingredient.id && foundIngredient.id !== ingredient.id) {
-        foundIngredient.id = ingredient.id;
-      }
-      if (ingredient.name && foundIngredient.name !== ingredient.name) {
-        foundIngredient.name = ingredient.name;
-      }
-      if (ingredient.unit && foundIngredient.unit !== ingredient.unit) {
-        foundIngredient.unit = ingredient.unit;
-      }
-      if (ingredient.quantity && foundIngredient.quantity !== ingredient.quantity) {
-        foundIngredient.quantity = ingredient.quantity;
-      }
-      if (
-        ingredient.season &&
-        ingredient.season.length > 0 &&
-        foundIngredient.season !== ingredient.season
-      ) {
-        foundIngredient.season = ingredient.season;
-      }
-      if (ingredient.type && foundIngredient.type !== ingredient.type) {
-        foundIngredient.type = ingredient.type;
-      }
-
-      setRecipeIngredients(ingredientCopy);
-    };
-
-    // Check if ingredient name changed and validate it
-    if (
-      newName &&
-      newName.trim().length > 0 &&
-      recipeIngredients[oldIngredientId] &&
-      recipeIngredients[oldIngredientId].name !== newName
-    ) {
-      setRecipeIngredients(recipeIngredients.filter((_, index) => index !== oldIngredientId));
-
-      const { exactMatches, needsValidation } = processIngredientsForValidation(
-        [
-          {
-            name: newName,
-            unit: newUnit,
-            quantity: newQuantity,
-            season: [],
-          },
-        ],
-        findSimilarIngredients
-      );
-
-      if (exactMatches.length > 0) {
-        exactMatches.forEach(addOrMergeIngredient);
-      }
-
-      if (needsValidation.length > 0) {
-        setValidationQueue({
-          type: 'Ingredient',
-          items: needsValidation,
-          onValidated: addOrMergeIngredient,
-        });
-      }
-    } else {
-      updateIngredient({
-        name: newName,
-        unit: newUnit,
-        quantity: newQuantity,
-        season: [],
-      });
-    }
-  }
-
-  function addNewIngredient() {
-    setRecipeIngredients([...recipeIngredients, { name: '' }]);
-  }
-
-  function editPreparationTitle(stepIndex: number, newTitle: string) {
-    if (stepIndex < 0 || stepIndex >= recipePreparation.length) {
-      recipeLogger.warn('Cannot edit preparation step title - invalid index', {
-        stepIndex,
-        preparationCount: recipePreparation.length,
-      });
-      return;
-    }
-    const updatedPreparation = [...recipePreparation];
-    updatedPreparation[stepIndex] = { ...updatedPreparation[stepIndex], title: newTitle };
-    setRecipePreparation(updatedPreparation);
-  }
-
-  function editPreparationDescription(stepIndex: number, newDescription: string) {
-    if (stepIndex < 0 || stepIndex >= recipePreparation.length) {
-      recipeLogger.warn('Cannot edit preparation step description - invalid index', {
-        stepIndex,
-        preparationCount: recipePreparation.length,
-      });
-      return;
-    }
-    const updatedPreparation = [...recipePreparation];
-    updatedPreparation[stepIndex] = {
-      ...updatedPreparation[stepIndex],
-      description: newDescription,
-    };
-    setRecipePreparation(updatedPreparation);
-  }
-
-  function addNewPreparationStep() {
-    setRecipePreparation([...recipePreparation, { title: '', description: '' }]);
-  }
-
-  /**
-   * Creates a complete recipe object from current component state
-   *
-   * This function transforms the component's state variables into a properly
-   * formatted recipeTableElement that can be saved to the database. It handles
-   * different recipe modes and preserves existing data when appropriate.
-   *
-   * @returns recipeTableElement - Complete recipe object ready for database operations
-   *
-   * State Transformation:
-   * - Combines all state variables into single recipe object
-   * - Preserves existing ID for read-only/edit modes
-   * - Generates undefined ID for new recipes (auto-generated by database)
-   * - Maintains season data for existing recipes or creates empty array for new ones
-   *
-   * Mode-Specific Behavior:
-   * - Read-only mode: Preserves original recipe ID and season data
-   * - Edit mode: Preserves original recipe ID and season data
-   * - Add modes: Creates new recipe with undefined ID and empty season array
-   *
-   * Data Integrity:
-   * - Ensures all required fields are populated from current state
-   * - Maintains type safety with recipeTableElement interface
-   * - Preserves complex objects (tags, ingredients) without mutation
-   *
-   * Usage:
-   * This function is called before any database operation (add, edit, save)
-   * to ensure the recipe data is in the correct format for persistence.
-   */
-  function createRecipeFromStates(): recipeTableElement {
-    return {
-      id: props.mode === 'readOnly' ? props.recipe.id : undefined,
-      image_Source: recipeImage,
-      title: recipeTitle,
-      description: recipeDescription,
-      tags: recipeTags,
-      persons: recipePersons,
-      ingredients: recipeIngredients as ingredientTableElement[],
-      season: initStateFromProp ? props.recipe.season : [],
-      preparation: recipePreparation,
-      time: recipeTime,
-      nutrition: recipeNutrition,
-    };
-  }
-
   async function readOnlyValidation() {
-    await addRecipeToShopping(createRecipeFromStates());
-    setValidationDialogProp({
+    await addRecipeToShopping(actions.createRecipeSnapshot());
+    dialogs.showValidationDialog({
       title: t('success'),
-      content: t('addedToShoppingList', { recipeName: recipeTitle }),
+      content: t('addedToShoppingList', { recipeName: state.recipeTitle }),
       confirmText: t('ok'),
       onConfirm: () => navigation.goBack(),
     });
-    setIsValidationDialogOpen(true);
   }
 
-  function validateRecipeData(): string[] {
-    const missingElem = [];
-    const translatedMissingElemPrefix = 'alerts.missingElements.';
-
-    if (!recipeImage || recipeImage.trim().length === 0) {
-      missingElem.push(t(translatedMissingElemPrefix + 'image'));
-    }
-    if (!recipeTitle || recipeTitle.trim().length === 0) {
-      missingElem.push(t(translatedMissingElemPrefix + 'titleRecipe'));
-    }
-    if (recipeIngredients.length === 0) {
-      missingElem.push(t(translatedMissingElemPrefix + 'titleIngredients'));
-    } else {
-      const allIngredientsHaveNames = recipeIngredients.every(
-        ingredient => ingredient.name && ingredient.name.trim().length > 0
-      );
-      if (!allIngredientsHaveNames) {
-        missingElem.push(t(translatedMissingElemPrefix + 'ingredientNames'));
-      }
-      const allIngredientsHaveQuantities = recipeIngredients.every(
-        ingredient => ingredient.quantity && ingredient.quantity.trim().length > 0
-      );
-      if (!allIngredientsHaveQuantities) {
-        missingElem.push(t(translatedMissingElemPrefix + 'ingredientQuantities'));
-      }
-      const areKnownInDatabase = recipeIngredients.every(
-        ingredient => ingredient.type !== undefined && ingredient.season !== undefined
-      );
-      if (!areKnownInDatabase) {
-        missingElem.push(t(translatedMissingElemPrefix + 'ingredientInDatabase'));
-      }
-    }
-    if (recipePreparation.length === 0) {
-      validationLogger.debug('Recipe preparation is empty', { recipeTitle });
-      missingElem.push(t(translatedMissingElemPrefix + 'titlePreparation'));
-    }
-    if (recipePersons === defaultValueNumber) {
-      missingElem.push(t(translatedMissingElemPrefix + 'titlePersons'));
-    }
-    if (recipeTime === defaultValueNumber) {
-      missingElem.push(t(translatedMissingElemPrefix + 'titleTime'));
-    }
-    if (
-      recipeNutrition &&
-      Object.values(recipeNutrition).some(value => value === defaultValueNumber)
-    ) {
-      missingElem.push(t(translatedMissingElemPrefix + 'nutrition'));
-    }
-
-    return missingElem;
-  }
-
-  function showValidationErrorDialog(missingElem: string[]) {
-    const translatedMissingElemPrefix = 'alerts.missingElements.';
-    let title: string;
-    let content: string;
-
-    if (missingElem.length === 1) {
-      validationLogger.debug('Single validation element missing', {
-        missingElement: missingElem[0],
-      });
-
-      title = t(translatedMissingElemPrefix + 'titleSingular');
-
-      // Special case for nutrition to handle proper grammar
-      const nutritionTranslation = t(translatedMissingElemPrefix + 'nutrition');
-      if (missingElem[0] === nutritionTranslation) {
-        content = t(translatedMissingElemPrefix + 'messageSingularNutrition');
-      } else {
-        content =
-          t(translatedMissingElemPrefix + 'messageSingularBeginning') +
-          missingElem[0] +
-          t(translatedMissingElemPrefix + 'messageSingularEnding');
-      }
-    } else {
-      title = t(translatedMissingElemPrefix + 'titlePlural');
-      content =
-        t(translatedMissingElemPrefix + 'messagePlural') +
-        missingElem.map(elem => `\n\t- ${elem}`).join('');
-    }
-
-    setValidationDialogProp({
-      ...defaultValidationDialogProp,
-      title,
-      content,
-      confirmText: t('understood'),
-    });
-    setIsValidationDialogOpen(true);
-  }
-
-  async function editValidation() {
-    const missingElem = validateRecipeData();
-
-    if (missingElem.length === 0) {
-      recipeLogger.info('Saving edited recipe to database', {
-        recipeTitle,
-      });
-      const recipeToEdit = createRecipeFromStates();
-      const originalRecipe = props.mode === 'edit' ? props.recipe : recipeToEdit;
-
-      // Scale recipe to default persons count before saving to database
-      const defaultPersons = await getDefaultPersons();
-      if (recipeToEdit.persons !== defaultPersons && recipeToEdit.persons > 0) {
-        recipeToEdit.ingredients = recipeToEdit.ingredients.map(ingredient => ({
-          ...ingredient,
-          quantity: ingredient.quantity
-            ? scaleQuantityForPersons(ingredient.quantity, recipeToEdit.persons, defaultPersons)
-            : ingredient.quantity,
-        }));
-        recipeToEdit.persons = defaultPersons;
-      }
-
-      // Only update database if the recipe actually changed
-      if (!isRecipeEqual(originalRecipe, recipeToEdit)) {
-        // @ts-ignore No need to wait for clearCache
-        clearCache();
-
-        await editRecipe(recipeToEdit);
-      }
-
-      setStackMode(recipeStateType.readOnly);
-
-      recipeLogger.info('Recipe edit completed successfully', {
-        recipeTitle,
-      });
-      // @ts-ignore No need to wait for clearCache
-      clearCache();
-    } else {
-      recipeLogger.warn('Validation failed, missing elements', {
-        missingElements: missingElem,
-      });
-      showValidationErrorDialog(missingElem);
-    }
-  }
-
-  // TODO checking if tags aren't in doublons
   /**
-   * Comprehensive recipe validation before saving to database
+   * Handles validation and saving of edited recipe data.
    *
-   * This function implements extensive validation logic for recipe creation and editing.
-   * It checks for required fields, validates data integrity, handles similar recipe
-   * detection, manages file operations, and provides detailed user feedback.
-   *
-   * Validation Steps:
-   * 1. **Required Field Validation**: Checks title, ingredients, preparation, persons
-   * 2. **Data Integrity Checks**: Validates ingredient names and quantities
-   * 3. **Similarity Detection**: Searches for existing similar recipes
-   * 4. **File Operations**: Saves recipe image with proper naming
-   * 5. **Quantity Scaling**: Normalizes ingredients to default person count
-   * 6. **Database Operations**: Saves recipe with proper error handling
-   *
-   * Error Handling:
-   * - Displays detailed validation errors to user
-   * - Handles file operation failures gracefully
-   * - Provides specific error messages for missing fields
-   * - Logs validation attempts and failures
-   *
-   * Side Effects:
-   * - Shows validation dialog with error details or success message
-   * - Saves recipe image to file system
-   * - Adds recipe to database
-   * - Clears file cache (async, non-blocking)
-   * - Scales ingredient quantities to default person count
-   * - Navigates back to previous screen on success
-   *
-   * User Experience:
-   * - Shows similarity dialog for potential duplicate recipes
-   * - Provides clear feedback on validation failures
-   * - Handles success and error states with appropriate messages
-   *
-   * Performance Considerations:
-   * - Async operations prevent UI blocking
-   * - File operations handled efficiently
-   * - Database queries optimized for similarity detection
+   * Validates all required fields are present, then saves the modified recipe to the database.
+   * Only updates the database if actual changes were detected by comparing with original recipe.
+   * Automatically scales recipe quantities to match the default persons setting before saving.
+   * Clears the image cache after successful save and switches screen to read-only mode.
    *
    * @async
-   * @returns Promise<void> - Resolves when validation and save operations complete
+   * @returns {Promise<void>} Resolves when recipe is saved or validation fails
+   * @throws Will display validation error dialog if required fields are missing
+   */
+  async function editValidation() {
+    const missingElem = validateRecipeData(state, t);
+
+    if (missingElem.length > 0) {
+      recipeLogger.warn('Validation failed, missing elements', { missingElements: missingElem });
+      dialogs.showValidationErrorDialog(missingElem, t);
+      return;
+    }
+
+    recipeLogger.info('Saving edited recipe to database', { recipeTitle: state.recipeTitle });
+    const recipeToEdit = actions.createRecipeSnapshot();
+    const originalRecipe = props.mode === 'edit' ? props.recipe : recipeToEdit;
+    const defaultPersons = await getDefaultPersons();
+    const scaledRecipe = scaleRecipeForSave(recipeToEdit, defaultPersons);
+
+    if (!isRecipeEqual(originalRecipe, scaledRecipe)) {
+      clearCache();
+      await editRecipe(scaledRecipe);
+    }
+
+    setters.setStackMode(recipeStateType.readOnly);
+    recipeLogger.info('Recipe edit completed successfully', { recipeTitle: state.recipeTitle });
+    clearCache();
+  }
+
+  /**
+   * Handles validation and creation of new recipe with duplicate detection.
+   *
+   * Validates all required fields are present, then checks for similar existing recipes
+   * using fuzzy matching on title, ingredients, and tags. If similar recipes are found,
+   * displays a warning dialog allowing the user to proceed or cancel. If no duplicates
+   * exist, automatically adds the recipe to the database after scaling to default persons.
+   *
+   * The similarity check helps prevent accidental duplicate recipe entries while still
+   * allowing intentional variations of similar recipes.
+   *
+   * @async
+   * @returns {Promise<void>} Resolves when recipe is added or validation fails
+   * @throws Will display validation error dialog if required fields are missing
+   * @throws Will log error and show dialog if database operation fails
    */
   async function addValidation() {
-    const missingElem = validateRecipeData();
+    const missingElem = validateRecipeData(state, t);
 
-    // No mandatory elements missing
-    if (missingElem.length === 0) {
-      const recipeToAdd = createRecipeFromStates();
-      const similarRecipes = findSimilarRecipes(recipeToAdd);
+    if (missingElem.length > 0) {
+      dialogs.showValidationErrorDialog(missingElem, t);
+      return;
+    }
 
-      const addRecipeToDatabase = async () => {
-        try {
-          // @ts-ignore No need to wait
-          clearCache();
+    const recipeToAdd = actions.createRecipeSnapshot();
+    const similarRecipes = findSimilarRecipes(recipeToAdd);
 
-          // Scale recipe to default persons count before saving to database
-          const defaultPersons = await getDefaultPersons();
-          if (recipeToAdd.persons !== defaultPersons && recipeToAdd.persons > 0) {
-            recipeToAdd.ingredients = recipeToAdd.ingredients.map(ingredient => ({
-              ...ingredient,
-              quantity: ingredient.quantity
-                ? scaleQuantityForPersons(ingredient.quantity, recipeToAdd.persons, defaultPersons)
-                : ingredient.quantity,
-            }));
-            recipeToAdd.persons = defaultPersons;
-          }
+    const addRecipeToDatabase = async () => {
+      try {
+        clearCache();
+        const defaultPersons = await getDefaultPersons();
+        const scaledRecipe = scaleRecipeForSave(recipeToAdd, defaultPersons);
+        recipeLogger.info('Saving new recipe to database', { recipeTitle: state.recipeTitle });
+        await addRecipe(scaledRecipe);
+        recipeLogger.info('Recipe add completed successfully', { recipeTitle: state.recipeTitle });
 
-          recipeLogger.info('Saving new recipe to database', {
-            recipeTitle,
-          });
-
-          await addRecipe(recipeToAdd);
-
-          recipeLogger.info('Recipe add completed successfully', {
-            recipeTitle,
-          });
-
-          setValidationDialogProp({
-            ...defaultValidationDialogProp,
-            title: t('addAnyway'),
-            content: t('addedToDatabase', { recipeName: recipeToAdd.title }),
-            confirmText: t('understood'),
-            onConfirm: () => {
-              navigation.goBack();
-            },
-          });
-          setIsValidationDialogOpen(true);
-        } catch (error) {
-          validationLogger.error('Failed to validate and add recipe to database', {
-            recipeTitle,
-            error,
-          });
-          setValidationDialogProp({
-            ...defaultValidationDialogProp,
-            title: t('error'),
-            content:
-              t('failedToAddRecipe', { recipeName: recipeToAdd.title }) +
-              '\n\n' +
-              (error instanceof Error ? error.message : String(error)),
-            confirmText: t('ok'),
-            onConfirm: () => {
-              setIsValidationDialogOpen(false);
-            },
-          });
-          setIsValidationDialogOpen(true);
-        }
-      };
-
-      if (similarRecipes.length === 0) {
-        await addRecipeToDatabase();
-      } else {
-        const separator = '\n\t- ';
-        setValidationDialogProp({
-          ...defaultValidationDialogProp,
-          title: t('similarRecipeFound'),
+        dialogs.showValidationDialog({
+          title: t('addAnyway'),
+          content: t('addedToDatabase', { recipeName: recipeToAdd.title }),
+          confirmText: t('understood'),
+          onConfirm: () => navigation.goBack(),
+        });
+      } catch (error) {
+        validationLogger.error('Failed to validate and add recipe to database', {
+          recipeTitle: state.recipeTitle,
+          error,
+        });
+        dialogs.showValidationDialog({
+          title: t('error'),
           content:
-            t('similarRecipeFoundContent') +
-            separator +
-            similarRecipes.map((r: recipeTableElement) => r.title).join(separator),
-          confirmText: t('addAnyway'),
-          cancelText: t('cancel'),
-          onConfirm: async () => {
-            await addRecipeToDatabase();
-          },
+            t('failedToAddRecipe', { recipeName: recipeToAdd.title }) +
+            '\n\n' +
+            (error instanceof Error ? error.message : String(error)),
+          confirmText: t('ok'),
+          onConfirm: () => dialogs.hideValidationDialog(),
         });
-        setIsValidationDialogOpen(true);
       }
+    };
+
+    if (similarRecipes.length === 0) {
+      await addRecipeToDatabase();
     } else {
-      showValidationErrorDialog(missingElem);
-    }
-  }
-
-  async function fillOneField(uri: string, field: recipeColumnsNames) {
-    setIsProcessingOcrExtraction(true);
-
-    const newFieldData = await extractFieldFromImage(
-      uri,
-      field,
-      {
-        recipePreparation: recipePreparation,
-        recipePersons: recipePersons,
-        recipeIngredients: recipeIngredients,
-        recipeTags: recipeTags,
-      },
-      msg => {
-        ocrLogger.warn('OCR processing warning', { message: msg });
-      }
-    );
-
-    if (newFieldData.recipeImage) {
-      setRecipeImage(newFieldData.recipeImage);
-    }
-    if (newFieldData.recipeTitle) {
-      setRecipeTitle(newFieldData.recipeTitle);
-    }
-    if (newFieldData.recipeDescription) {
-      setRecipeDescription(newFieldData.recipeDescription);
-    }
-    if (newFieldData.recipeTags && newFieldData.recipeTags.length > 0) {
-      const filteredTags = newFieldData.recipeTags.filter(
-        newTag =>
-          !recipeTags.some(existing => existing.name.toLowerCase() === newTag.name.toLowerCase())
-      );
-      const { exactMatches, needsValidation } = processTagsForValidation(
-        filteredTags,
-        findSimilarTags
-      );
-
-      if (exactMatches.length > 0) {
-        setRecipeTags(prev => {
-          const updated = [...prev];
-          for (const tag of exactMatches) {
-            const isDuplicate = updated.some(
-              existing => existing.name.toLowerCase() === tag.name.toLowerCase()
-            );
-            if (!isDuplicate) {
-              updated.push(tag);
-            }
-          }
-          return updated;
-        });
-      }
-
-      if (needsValidation.length > 0) {
-        setValidationQueue({
-          type: 'Tag',
-          items: needsValidation,
-          onValidated: addTagIfNotDuplicate,
-        });
-      }
-    }
-    if (newFieldData.recipePreparation) {
-      setRecipePreparation(newFieldData.recipePreparation);
-    }
-    if (newFieldData.recipePersons) {
-      setRecipePersons(newFieldData.recipePersons);
-    }
-    if (newFieldData.recipeTime) {
-      setRecipeTime(newFieldData.recipeTime);
-    }
-    if (newFieldData.recipeIngredients && newFieldData.recipeIngredients.length > 0) {
-      const { exactMatches, needsValidation } = processIngredientsForValidation(
-        newFieldData.recipeIngredients,
-        findSimilarIngredients
-      );
-
-      if (exactMatches.length > 0) {
-        setRecipeIngredients(prev => {
-          const updated = [...prev];
-          for (const ingredient of exactMatches) {
-            const existingIndex = updated.findIndex(
-              existing => existing.name?.toLowerCase() === ingredient.name.toLowerCase()
-            );
-
-            if (existingIndex === -1) {
-              updated.push(ingredient);
-            } else {
-              const existing = updated[existingIndex];
-              if (existing && existing.name && existing.unit === ingredient.unit) {
-                updated[existingIndex] = {
-                  ...existing,
-                  quantity: String(
-                    Number(existing.quantity || 0) + Number(ingredient.quantity || 0)
-                  ),
-                };
-              } else {
-                updated[existingIndex] = ingredient;
-              }
-            }
-          }
-          return updated;
-        });
-      }
-
-      if (needsValidation.length > 0) {
-        setValidationQueue({
-          type: 'Ingredient',
-          items: needsValidation,
-          onValidated: addOrMergeIngredient,
-        });
-      }
-    }
-    if (newFieldData.recipeNutrition) {
-      const newNutrition: nutritionTableElement = {
-        energyKcal: defaultValueNumber,
-        energyKj: defaultValueNumber,
-        fat: defaultValueNumber,
-        saturatedFat: defaultValueNumber,
-        carbohydrates: defaultValueNumber,
-        sugars: defaultValueNumber,
-        fiber: defaultValueNumber,
-        protein: defaultValueNumber,
-        salt: defaultValueNumber,
-        portionWeight: defaultValueNumber,
-      };
-
-      for (const [key, value] of Object.entries(newFieldData.recipeNutrition)) {
-        if (value !== undefined) {
-          newNutrition[key as keyof nutritionTableElement] = value;
-        }
-      }
-
-      setRecipeNutrition(newNutrition);
-    }
-    setIsProcessingOcrExtraction(false);
-  }
-
-  function openModalForField(field: recipeColumnsNames) {
-    setModalField(field);
-  }
-
-  function recipeImageProp(): RecipeImageProps {
-    const defaultReturn: RecipeImageProps = { imgUri: recipeImage, openModal: openModalForField };
-    switch (stackMode) {
-      case recipeStateType.readOnly:
-        return defaultReturn;
-      case recipeStateType.edit:
-      case recipeStateType.addManual:
-        return { ...defaultReturn, buttonIcon: Icons.cameraIcon };
-      case recipeStateType.addOCR:
-        return { ...defaultReturn, buttonIcon: Icons.scanImageIcon };
-      default:
-        recipeLogger.warn('Unknown stack mode in recipeImageProp', { stackMode });
-        return {
-          imgUri: '',
-          openModal: () => {
-            recipeLogger.warn('Unknown stack mode in recipeImageProp callback', { stackMode });
-          },
-        };
+      const separator = '\n\t- ';
+      dialogs.showValidationDialog({
+        title: t('similarRecipeFound'),
+        content:
+          t('similarRecipeFoundContent') +
+          separator +
+          similarRecipes.map((r: recipeTableElement) => r.title).join(separator),
+        confirmText: t('addAnyway'),
+        cancelText: t('cancel'),
+        onConfirm: addRecipeToDatabase,
+      });
     }
   }
 
   /**
-   * Generates props for recipe title component based on current mode
+   * Routes validation action to the appropriate handler based on current screen mode.
    *
-   * This function creates mode-specific props for the RecipeText component that handles
-   * the recipe title. It adapts the component behavior, styling, and functionality
-   * based on whether the recipe is being viewed, edited, or created.
+   * Determines which validation function to execute by examining the validation button
+   * configuration type, which reflects the current operational mode of the screen:
+   * - 'readOnly': Adds recipe ingredients to shopping list
+   * - 'edit': Saves changes to existing recipe
+   * - 'add': Creates new recipe with duplicate checking
    *
-   * @returns RecipeTextProps - Props configured for the current recipe mode
-   *
-   * Mode-Specific Behavior:
-   * - **Read-only**: Displays title as headline text, no editing capability
-   * - **Edit/Manual Add**: Shows title input with label, editing enabled
-   * - **OCR Add**: Includes OCR button for automatic title extraction
-   *
-   * Text Styling:
-   * - Read-only: Uses 'headline' style for prominent display
-   * - Edit/Add modes: Uses 'title' style with descriptive label
-   *
-   * Interaction Features:
-   * - Edit modes: Provides text input with change handlers
-   * - OCR mode: Adds scanning button for automatic text extraction
-   * - Read-only: No interaction, just display
+   * @async
+   * @returns {Promise<void>} Resolves when the mode-specific validation completes
    */
-  function recipeTitleProp(): RecipeTextProps {
-    const titleTestID = 'RecipeTitle';
-    const titleRootText: TextProp = {
-      style: stackMode === recipeStateType.readOnly ? 'headline' : 'title',
-      value: stackMode === recipeStateType.readOnly ? recipeTitle : t('title') + ':',
-    };
-    switch (stackMode) {
-      case recipeStateType.readOnly:
-        return {
-          testID: titleTestID,
-          rootText: titleRootText,
-        };
-      case recipeStateType.addOCR:
-        if (!recipeTitle || recipeTitle.trim().length === 0) {
-          return {
-            testID: titleTestID,
-            rootText: titleRootText,
-            addOrEditProps: {
-              editType: 'add',
-              testID: titleTestID,
-              openModal: () => openModalForField(recipeColumnsNames.title),
-            },
-          };
-        }
-      // Else return the same props as edit or addManual
-      // falls through
-      case recipeStateType.edit:
-      case recipeStateType.addManual:
-        return {
-          testID: titleTestID,
-          rootText: titleRootText,
-          addOrEditProps: {
-            editType: 'editable',
-            testID: titleTestID,
-            textEditable: recipeTitle,
-            setTextToEdit: setRecipeTitle,
-          },
-        };
-      default:
-        recipeLogger.warn('Unknown stack mode in recipeTitleProp', { stackMode });
-        return { rootText: { style: 'paragraph', value: '' } };
+  const validationFunction = async () => {
+    switch (validationButtonConfig.type) {
+      case 'readOnly':
+        return readOnlyValidation();
+      case 'edit':
+        return editValidation();
+      case 'add':
+        return addValidation();
     }
-  }
-
-  function recipeDescriptionProp(): RecipeTextProps {
-    const descriptionTestID = 'RecipeDescription';
-    const descriptionRootText: TextProp = {
-      style: stackMode === recipeStateType.readOnly ? 'paragraph' : 'title',
-      value: stackMode === recipeStateType.readOnly ? recipeDescription : t('description') + ':',
-    };
-    switch (stackMode) {
-      case recipeStateType.readOnly:
-        return { rootText: descriptionRootText, testID: descriptionTestID };
-      case recipeStateType.addOCR:
-        if (!recipeDescription || recipeDescription.trim().length === 0) {
-          return {
-            rootText: descriptionRootText,
-            testID: descriptionTestID,
-            addOrEditProps: {
-              editType: 'add',
-              testID: descriptionTestID,
-              openModal: () => openModalForField(recipeColumnsNames.description),
-            },
-          };
-        }
-      // Else return the same props as edit or addManual
-      // fallthrough
-      case recipeStateType.edit:
-      case recipeStateType.addManual:
-        return {
-          rootText: descriptionRootText,
-          testID: descriptionTestID,
-          addOrEditProps: {
-            editType: 'editable',
-            testID: descriptionTestID,
-            textEditable: recipeDescription,
-            setTextToEdit: setRecipeDescription,
-          },
-        };
-
-      default:
-        recipeLogger.warn('Unknown stack mode in recipeDescriptionProp', { stackMode });
-        return { rootText: { style: 'paragraph', value: '' } };
-    }
-  }
+  };
 
   /**
-   * Generates props for recipe tags component with mode-specific functionality
+   * Handles cancellation of edit mode by resetting form to original values.
    *
-   * This function creates complex props for the RecipeTags component, handling
-   * different interaction modes, tag management operations, and OCR integration.
-   * It provides the most sophisticated prop generation with multiple callback functions.
+   * Reverts all recipe form fields (title, ingredients, tags, preparation steps, etc.)
+   * back to their original state when the screen was first loaded or when edit mode
+   * was entered. This provides a safe way to discard unwanted changes without affecting
+   * the stored recipe data.
    *
-   * @returns RecipeTagProps - Props configured for the current recipe mode
-   *
-   * Component Behavior:
-   * - **Read-only**: Simple tag display without interaction
-   * - **Edit/Manual Add**: Full tag management with add/remove capabilities
-   * - **OCR Add**: Enhanced with OCR modal for automatic tag extraction
-   *
-   * Tag Management Features:
-   * - Random tag suggestions for inspiration
-   * - Add/remove tag callbacks with validation
-   * - Similarity matching for tag consistency
-   * - Extract existing tags for display
-   *
-   * OCR Integration:
-   * - Provides modal trigger for OCR-based tag extraction
-   * - Combines manual and automated tag input methods
-   *
-   * State Management:
-   * - Uses extracted tag names from complex tag objects
-   * - Integrates with addTag() function for similarity checking
-   * - Connects to removeTag() for tag removal operations
+   * @returns {void}
    */
-  function recipeTagsProp(): RecipeTagProps {
-    const tagsExtracted = extractTagsName(recipeTags);
-    const editProps: RecipeTagProps = {
-      tagsList: tagsExtracted,
-      type: 'addOrEdit',
-      editType: 'edit',
-      randomTags: randomTags.join(', '),
-      addNewTag: addTag,
-      removeTag: removeTag,
-    };
-    switch (stackMode) {
-      case recipeStateType.readOnly:
-        return { type: 'readOnly', tagsList: tagsExtracted };
-      case recipeStateType.addOCR:
-        return {
-          ...editProps,
-          editType: 'add',
-          openModal: () => openModalForField(recipeColumnsNames.tags),
-        };
-      case recipeStateType.edit:
-      case recipeStateType.addManual:
-        return editProps;
-      default:
-        recipeLogger.warn('Unknown stack mode in recipeTagsProp', { stackMode });
-        return { tagsList: [], type: 'readOnly' };
-    }
-  }
-
-  function recipePersonsProp(): RecipeNumberProps {
-    const personTestID = 'RecipePersons';
-    switch (stackMode) {
-      case recipeStateType.readOnly:
-        return {
-          testID: personTestID,
-          numberProps: {
-            editType: 'read',
-            text:
-              t('ingredientReadOnlyBeforePerson') +
-              recipePersons +
-              t('ingredientReadOnlyAfterPerson'),
-          },
-        };
-      case recipeStateType.addOCR:
-        if (recipePersons === defaultValueNumber) {
-          return {
-            testID: personTestID,
-            numberProps: {
-              editType: 'add',
-              testID: personTestID,
-              prefixText: t('personPrefixOCR'),
-              openModal: () => openModalForField(recipeColumnsNames.persons),
-              manuallyFill: () => {
-                setRecipePersons(0);
-              },
-            },
-          };
-        }
-      // falls through
-      case recipeStateType.edit:
-      case recipeStateType.addManual:
-        return {
-          testID: personTestID,
-          numberProps: {
-            editType: 'editable',
-            testID: personTestID,
-            textEditable: recipePersons,
-            prefixText: t('personPrefixEdit'),
-            suffixText: t('personSuffixEdit'),
-            setTextToEdit: setRecipePersons,
-          },
-        };
-      default:
-        recipeLogger.warn('Unknown stack mode in recipePersonsProp', { stackMode });
-        return {
-          testID: personTestID,
-          numberProps: { editType: 'read', text: '' },
-        };
-    }
-  }
-
-  function recipeTimeProp(state: recipeStateType = stackMode): RecipeNumberProps {
-    const timeTestID = 'RecipeTime';
-    switch (state) {
-      case recipeStateType.readOnly:
-        return {
-          testID: timeTestID,
-          numberProps: {
-            editType: 'read',
-            text: t('timeReadOnlyBeforePerson') + recipeTime + t('timeReadOnlyAfterPerson'),
-          },
-        };
-      case recipeStateType.addOCR:
-        if (recipeTime === defaultValueNumber) {
-          return {
-            testID: timeTestID,
-            numberProps: {
-              editType: 'add',
-              testID: timeTestID,
-              prefixText: t('timePrefixOCR'),
-              openModal: () => openModalForField(recipeColumnsNames.time),
-              manuallyFill: () => {
-                setRecipeTime(0);
-              },
-            },
-          };
-        }
-      // falls through
-      case recipeStateType.edit:
-      case recipeStateType.addManual:
-        return {
-          testID: timeTestID,
-          numberProps: {
-            editType: 'editable',
-            testID: timeTestID,
-            textEditable: recipeTime,
-            prefixText: t('timePrefixEdit'),
-            suffixText: t('timeSuffixEdit'),
-            setTextToEdit: setRecipeTime,
-          },
-        };
-      default:
-        recipeLogger.warn('Unknown stack mode in recipeTimeProp', { stackMode });
-        return {
-          testID: timeTestID,
-          numberProps: { editType: 'read', text: '' },
-        };
-    }
-  }
-
-  function recipeIngredientsProp(): RecipeIngredientsProps {
-    const ingredientPrefixText = t('ingredients') + ': ';
-    const ingredientTestID = 'RecipeIngredients';
-
-    const baseEditProps: IngredientsEditableBaseProps = {
-      testID: ingredientTestID,
-      ingredients: recipeIngredients as ingredientTableElement[],
-      prefixText: ingredientPrefixText,
-      columnTitles: {
-        column1: t('quantity'),
-        column2: t('unit'),
-        column3: t('ingredientName'),
-      },
-      onIngredientChange: editIngredients,
-      onAddIngredient: addNewIngredient,
-    };
-
-    switch (stackMode) {
-      case recipeStateType.readOnly:
-        return {
-          testID: ingredientTestID,
-          ingredients: recipeIngredients as ingredientTableElement[],
-          mode: 'readOnly',
-        };
-      case recipeStateType.addOCR:
-        return {
-          mode: 'add',
-          openModal: () => openModalForField(recipeColumnsNames.ingredients),
-          ...baseEditProps,
-        };
-      case recipeStateType.edit:
-      case recipeStateType.addManual:
-        return {
-          mode: 'editable',
-          ...baseEditProps,
-        };
-      default:
-        recipeLogger.warn('Unknown stack mode in recipeIngredientsProp', { stackMode });
-        return {
-          testID: ingredientTestID,
-          ingredients: [],
-          mode: 'readOnly',
-        };
-    }
-  }
-
-  function recipePreparationProp(): RecipePreparationProps {
-    const editableProps: PreparationEditableBaseProps = {
-      steps: recipePreparation,
-      prefixText: t('preparationReadOnly'),
-      onTitleChange: editPreparationTitle,
-      onDescriptionChange: editPreparationDescription,
-      onAddStep: addNewPreparationStep,
-    };
-
-    switch (stackMode) {
-      case recipeStateType.readOnly:
-        return {
-          steps: recipePreparation,
-          mode: 'readOnly',
-        };
-      case recipeStateType.addOCR:
-        if (recipePreparation.length === 0) {
-          return {
-            ...editableProps,
-            mode: 'add',
-            openModal: () => openModalForField(recipeColumnsNames.preparation),
-          };
-        }
-      // Else return the same props as edit or addManual
-      // fallthrough
-      case recipeStateType.edit:
-      case recipeStateType.addManual:
-        return {
-          ...editableProps,
-          mode: 'editable',
-        };
-      default:
-        recipeLogger.warn('Unknown stack mode in recipePreparationProp', { stackMode });
-        return {
-          mode: 'readOnly',
-          steps: [],
-        };
-    }
-  }
-
-  function recipeNutritionProp(): RecipeNutritionProps {
-    switch (stackMode) {
-      case recipeStateType.readOnly:
-        return {
-          parentTestId: recipeTestId,
-          nutrition: recipeNutrition,
-          mode: recipeStateType.readOnly,
-        };
-      case recipeStateType.edit:
-        return {
-          parentTestId: recipeTestId,
-          nutrition: recipeNutrition,
-          mode: recipeStateType.edit,
-          onNutritionChange: setRecipeNutrition,
-        };
-      case recipeStateType.addManual:
-        return {
-          parentTestId: recipeTestId,
-          nutrition: recipeNutrition,
-          mode: recipeStateType.addManual,
-          onNutritionChange: setRecipeNutrition,
-        };
-      case recipeStateType.addOCR:
-        return {
-          parentTestId: recipeTestId,
-          nutrition: recipeNutrition,
-          mode: recipeStateType.addOCR,
-          onNutritionChange: setRecipeNutrition,
-          openModal: () => openModalForField(recipeColumnsNames.nutrition),
-        };
-      default:
-        recipeLogger.warn('Unknown stack mode in recipeNutritionProp', { stackMode });
-        return {
-          parentTestId: recipeTestId,
-          nutrition: undefined,
-          mode: recipeStateType.readOnly,
-        };
-    }
-  }
-
-  function recipeValidationButtonProps(): [string, () => Promise<void>] {
-    switch (stackMode) {
-      case recipeStateType.readOnly:
-        return [t('validateReadOnly'), readOnlyValidation];
-      case recipeStateType.edit:
-        return [t('validateEdit'), editValidation];
-      case recipeStateType.addManual:
-      case recipeStateType.addOCR:
-        return [t('validateAdd'), addValidation];
-      default:
-        recipeLogger.warn('Unknown stack mode in recipeValidationButtonProps', { stackMode });
-        return [
-          '',
-          async () =>
-            recipeLogger.error('Validation button clicked with unknown stack mode', { stackMode }),
-        ];
-    }
-  }
-
   function handleCancel() {
-    if (
-      stackMode === recipeStateType.edit &&
-      (props.mode === 'readOnly' || props.mode === 'edit')
-    ) {
-      setRecipeImage(props.recipe.image_Source);
-      setRecipeTitle(props.recipe.title);
-      setRecipeDescription(props.recipe.description);
-      setRecipeTags(props.recipe.tags);
-      setRecipePersons(props.recipe.persons);
-      setRecipeIngredients(props.recipe.ingredients);
-      setRecipePreparation(props.recipe.preparation);
-      setRecipeTime(props.recipe.time);
-      setRecipeNutrition(props.recipe.nutrition);
-    }
-    setStackMode(recipeStateType.readOnly);
+    actions.resetToOriginal();
   }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
       <AppBar
         testID={recipeTestId}
-        isEditing={stackMode === recipeStateType.edit}
+        isEditing={state.stackMode === recipeStateType.edit}
         onGoBack={() => navigation.goBack()}
         onCancel={handleCancel}
         onValidate={validationFunction}
-        onDelete={stackMode === recipeStateType.readOnly ? onDelete : undefined}
+        onDelete={state.stackMode === recipeStateType.readOnly ? onDelete : undefined}
         onEdit={
-          stackMode === recipeStateType.readOnly
-            ? () => setStackMode(recipeStateType.edit)
+          state.stackMode === recipeStateType.readOnly
+            ? () => setters.setStackMode(recipeStateType.edit)
             : undefined
         }
       />
@@ -1561,69 +361,136 @@ export function Recipe({ route, navigation }: RecipeScreenProp) {
         keyboardShouldPersistTaps={'handled'}
         nestedScrollEnabled={true}
       >
-        <RecipeImage {...recipeImageProp()} />
-        <RecipeText {...recipeTitleProp()} />
-        <RecipeText {...recipeDescriptionProp()} />
-        <RecipeTags {...recipeTagsProp()} />
-        <RecipeNumber {...recipePersonsProp()} />
-        <RecipeIngredients {...recipeIngredientsProp()} />
-        <RecipeNumber {...recipeTimeProp()} />
-        <RecipePreparation {...recipePreparationProp()} />
-        <RecipeNutrition {...recipeNutritionProp()} />
+        <RecipeImage
+          {...buildRecipeImageProps(state.stackMode, state.recipeImage, ocr.openModalForField)}
+        />
+        <RecipeText
+          {...buildRecipeTitleProps(
+            state.stackMode,
+            state.recipeTitle,
+            setters.setRecipeTitle,
+            ocr.openModalForField,
+            t
+          )}
+        />
+        <RecipeText
+          {...buildRecipeDescriptionProps(
+            state.stackMode,
+            state.recipeDescription,
+            setters.setRecipeDescription,
+            ocr.openModalForField,
+            t
+          )}
+        />
+        <RecipeTags
+          {...buildRecipeTagsProps(
+            state.stackMode,
+            state.recipeTags,
+            state.randomTags,
+            tags.addTag,
+            tags.removeTag,
+            ocr.openModalForField
+          )}
+        />
+        <RecipeNumber
+          {...buildRecipePersonsProps(
+            state.stackMode,
+            state.recipePersons,
+            setters.setRecipePersons,
+            ocr.openModalForField,
+            t
+          )}
+        />
+        <RecipeIngredients
+          {...buildRecipeIngredientsProps(
+            state.stackMode,
+            state.recipeIngredients,
+            ingredients.editIngredients,
+            ingredients.addNewIngredient,
+            ocr.openModalForField,
+            t
+          )}
+        />
+        <RecipeNumber
+          {...buildRecipeTimeProps(
+            state.stackMode,
+            state.recipeTime,
+            setters.setRecipeTime,
+            ocr.openModalForField,
+            t
+          )}
+        />
+        <RecipePreparation
+          {...buildRecipePreparationProps(
+            state.stackMode,
+            state.recipePreparation,
+            preparation.editPreparationTitle,
+            preparation.editPreparationDescription,
+            preparation.addNewPreparationStep,
+            ocr.openModalForField,
+            t
+          )}
+        />
+        <RecipeNutrition
+          {...buildRecipeNutritionProps(
+            state.stackMode,
+            state.recipeNutrition,
+            setters.setRecipeNutrition,
+            ocr.openModalForField,
+            recipeTestId
+          )}
+        />
       </ScrollView>
 
-      {stackMode !== recipeStateType.edit && (
+      {state.stackMode !== recipeStateType.edit && (
         <BottomActionButton
           testID={recipeTestId}
           onPress={async () => await validationFunction()}
-          label={validationButtonText}
+          label={validationButtonConfig.text}
         />
       )}
 
       <Alert
-        {...validationDialogProp}
-        isVisible={isValidationDialogOpen}
-        testId={recipeTestId}
-        onClose={() => {
-          setIsValidationDialogOpen(false);
-          setValidationDialogProp(defaultValidationDialogProp);
-        }}
+        {...dialogs.validationDialogProp}
+        isVisible={dialogs.isValidationDialogOpen}
+        testId={'Recipe'}
+        onClose={dialogs.hideValidationDialog}
       />
 
-      {modalField ? (
+      {ocr.modalField && (
         <ModalImageSelect
-          arrImg={imgForOCR}
+          arrImg={state.imgForOCR}
           onSelectFunction={async (imgSelected: string) => {
             const croppedUri = await cropImage(imgSelected, colors);
             if (croppedUri.length > 0) {
-              await fillOneField(croppedUri, modalField);
-              setModalField(undefined);
+              await ocr.fillOneField(croppedUri, ocr.modalField as recipeColumnsNames);
+              ocr.closeModal();
             }
           }}
-          onDismissFunction={() => setModalField(undefined)}
-          onImagesUpdated={(imageUri: string) => setImgForOCR([...imgForOCR, imageUri])}
-        />
-      ) : null}
-
-      {similarityDialog.item && (
-        <SimilarityDialog
-          testId={`Recipe${similarityDialog.item.type}Similarity`}
-          isVisible={similarityDialog.isVisible}
-          onClose={() => setSimilarityDialog(defaultSimilarityDialogPropsPicked)}
-          item={similarityDialog.item}
+          onDismissFunction={ocr.closeModal}
+          onImagesUpdated={ocr.addImageUri}
         />
       )}
 
-      {validationQueue && (
+      {dialogs.similarityDialog.item && (
+        <SimilarityDialog
+          testId={`Recipe${dialogs.similarityDialog.item.type}Similarity`}
+          isVisible={dialogs.similarityDialog.isVisible}
+          onClose={dialogs.hideSimilarityDialog}
+          item={dialogs.similarityDialog.item}
+        />
+      )}
+
+      {dialogs.validationQueue && (
         <ValidationQueue
-          {...validationQueue}
-          onComplete={() => setValidationQueue(null)}
+          {...dialogs.validationQueue}
+          onComplete={dialogs.clearValidationQueue}
           testId='RecipeValidation'
         />
       )}
-      {/* LoadingOverlay for OCR extraction */}
+
       <LoadingOverlay
-        visible={isProcessingOcrExtraction}
+        visible={ocr.isProcessingOcrExtraction}
         message={t('extractingRecipeData')}
         testID='RecipeOcrLoading'
       />
