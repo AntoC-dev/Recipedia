@@ -1,6 +1,7 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import Recipe, { editRecipeManually, RecipePropType } from '@screens/Recipe';
+import Recipe from '@screens/Recipe';
+import { EditRecipeProp, RecipePropType } from '@customTypes/RecipeNavigationTypes';
 import { testRecipes } from '@test-data/recipesDataset';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { testTags } from '@test-data/tagsDataset';
@@ -751,7 +752,7 @@ describe('Recipe Component tests', () => {
 
     const newTitle = 'New Recipe Title';
     fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), newTitle);
-    const newEditProp: editRecipeManually = { ...mockRouteEdit };
+    const newEditProp: EditRecipeProp = { ...mockRouteEdit };
     newEditProp.recipe.title = newTitle;
 
     checkImage(newEditProp, getByTestId);
@@ -788,7 +789,7 @@ describe('Recipe Component tests', () => {
 
     const newDescription = 'New Recipe Description';
     fireEvent.press(getByTestId('RecipeDescription::SetTextToEdit'), newDescription);
-    const newEditProp: editRecipeManually = { ...mockRouteEdit };
+    const newEditProp: EditRecipeProp = { ...mockRouteEdit };
     newEditProp.recipe.description = newDescription;
 
     checkImage(newEditProp, getByTestId);
@@ -824,7 +825,7 @@ describe('Recipe Component tests', () => {
     const { getByTestId, queryByTestId } = await renderRecipe(createMockRoute(mockRouteEdit));
 
     fireEvent.press(getByTestId('RecipeTags::RemoveTag'));
-    const newEditProp: editRecipeManually = {
+    const newEditProp: EditRecipeProp = {
       mode: mockRouteEdit.mode,
       recipe: {
         ...mockRouteEdit.recipe,
@@ -849,20 +850,22 @@ describe('Recipe Component tests', () => {
 
     const newPerson = '23';
     fireEvent.press(getByTestId('RecipePersons::SetTextToEdit'), newPerson);
-    const newEditProp: editRecipeManually = { ...mockRouteEdit };
+    const newEditProp: EditRecipeProp = { ...mockRouteEdit };
     newEditProp.recipe.persons = Number(newPerson);
 
     // Scale ingredients from 6 persons to 23 persons using the same logic as scaleQuantityForPersons
-    newEditProp.recipe.ingredients = newEditProp.recipe.ingredients.map(ingredient => ({
-      ...ingredient,
-      quantity: ingredient.quantity
-        ? (() => {
-            const scaledValue = (parseFloat(ingredient.quantity) * 23) / 6;
-            const rounded = Math.round(scaledValue * 100) / 100;
-            return rounded.toString().replace('.', ',');
-          })()
-        : ingredient.quantity,
-    }));
+    newEditProp.recipe.ingredients = newEditProp.recipe.ingredients.map(
+      (ingredient: (typeof newEditProp.recipe.ingredients)[number]) => ({
+        ...ingredient,
+        quantity: ingredient.quantity
+          ? (() => {
+              const scaledValue = (parseFloat(ingredient.quantity) * 23) / 6;
+              const rounded = Math.round(scaledValue * 100) / 100;
+              return rounded.toString().replace('.', ',');
+            })()
+          : ingredient.quantity,
+      })
+    );
 
     checkImage(newEditProp, getByTestId);
     checkTitle(newEditProp, getByTestId, queryByTestId);
@@ -904,7 +907,7 @@ describe('Recipe Component tests', () => {
       expect(getByTestId('RecipeIngredients::0::Row')).toBeTruthy();
     });
 
-    const newEditProp: editRecipeManually = { ...mockRouteEdit };
+    const newEditProp: EditRecipeProp = { ...mockRouteEdit };
 
     checkImage(newEditProp, getByTestId);
     checkTitle(newEditProp, getByTestId, queryByTestId);
@@ -921,7 +924,7 @@ describe('Recipe Component tests', () => {
 
     const newTime = '71';
     fireEvent.press(getByTestId('RecipeTime::SetTextToEdit'), newTime);
-    const newEditProp: editRecipeManually = { ...mockRouteEdit };
+    const newEditProp: EditRecipeProp = { ...mockRouteEdit };
     newEditProp.recipe.time = Number(newTime);
 
     checkImage(newEditProp, getByTestId);
@@ -956,7 +959,7 @@ describe('Recipe Component tests', () => {
   test('updates recipePreparation and reflects in RecipePreparation only', async () => {
     const { getByTestId, queryByTestId } = await renderRecipe(createMockRoute(mockRouteEdit));
 
-    const newEditProp: editRecipeManually = {
+    const newEditProp: EditRecipeProp = {
       ...mockRouteEdit,
       recipe: {
         ...mockRouteEdit.recipe,
@@ -1040,7 +1043,7 @@ describe('Recipe Component tests', () => {
   test('validates button on edit mode', async () => {
     const { getByTestId, queryByTestId } = await renderRecipe(createMockRoute(mockRouteEdit));
 
-    const newPropEdit: editRecipeManually = {
+    const newPropEdit: EditRecipeProp = {
       ...mockRouteEdit,
       recipe: {
         image_Source: mockRouteEdit.recipe.image_Source,
@@ -1055,17 +1058,19 @@ describe('Recipe Component tests', () => {
       },
     };
 
-    newPropEdit.recipe.ingredients = newPropEdit.recipe.ingredients.map((ingredient, index) => ({
-      ...ingredient,
-      quantity:
-        index === 0
-          ? '766,67'
-          : (() => {
-              const originalQty = parseFloat(ingredient.quantity as string);
-              const scaledQty = Math.round(((originalQty * 23) / 6) * 100) / 100;
-              return scaledQty.toString().replace('.', ',');
-            })(),
-    }));
+    newPropEdit.recipe.ingredients = newPropEdit.recipe.ingredients.map(
+      (ingredient: (typeof newPropEdit.recipe.ingredients)[number], index: number) => ({
+        ...ingredient,
+        quantity:
+          index === 0
+            ? '766,67'
+            : (() => {
+                const originalQty = parseFloat(ingredient.quantity as string);
+                const scaledQty = Math.round(((originalQty * 23) / 6) * 100) / 100;
+                return scaledQty.toString().replace('.', ',');
+              })(),
+      })
+    );
 
     const updatePreparationWith = '.New part of a paragraph';
     newPropEdit.recipe.preparation[0].description += updatePreparationWith;
@@ -1331,7 +1336,7 @@ describe('Recipe Component tests', () => {
 
   test('toggles stackMode between readOnly and edit', async () => {
     const { getByTestId, queryByTestId } = await renderRecipe(createMockRoute(mockRouteReadOnly));
-    const paramEdit: editRecipeManually = { ...mockRouteReadOnly, mode: 'edit' };
+    const paramEdit: EditRecipeProp = { ...mockRouteReadOnly, mode: 'edit' };
     fireEvent.press(getByTestId('Recipe::AppBar::Edit'));
 
     checkAppbarButtons(paramEdit, getByTestId, queryByTestId);

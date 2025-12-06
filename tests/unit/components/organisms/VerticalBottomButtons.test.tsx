@@ -2,7 +2,7 @@ import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import VerticalBottomButtons from '@components/organisms/VerticalBottomButtons';
 import { mockNavigate } from '@mocks/deps/react-navigation-mock';
-import { RecipePropType } from '@screens/Recipe';
+import { RecipePropType } from '@customTypes/RecipeNavigationTypes';
 import {
   getMockCopilotEvents,
   resetMockCopilot,
