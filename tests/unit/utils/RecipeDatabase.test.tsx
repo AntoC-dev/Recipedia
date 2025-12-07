@@ -14,12 +14,6 @@ import { shoppingAddedMultipleTimes, testShopping } from '@test-data/shoppingLis
 import { listFilter } from '@customTypes/RecipeFiltersTypes';
 import { getRandomRecipes } from '@utils/FilterFunctions';
 
-jest.mock('expo-sqlite', () => require('@mocks/deps/expo-sqlite-mock').expoSqliteMock());
-
-jest.mock('@utils/FileGestion', () =>
-  require('@mocks/utils/FileGestion-mock.tsx').fileGestionMock()
-);
-
 describe('RecipeDatabase', () => {
   describe('RecipeDatabase basic tests', () => {
     const db = RecipeDatabase.getInstance();

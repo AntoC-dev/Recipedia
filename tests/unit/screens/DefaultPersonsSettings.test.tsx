@@ -8,11 +8,6 @@ import { testTags } from '@test-data/tagsDataset';
 import { testRecipes } from '@test-data/recipesDataset';
 import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 
-jest.mock('expo-sqlite', () => require('@mocks/deps/expo-sqlite-mock').expoSqliteMock());
-jest.mock('@utils/FileGestion', () =>
-  require('@mocks/utils/FileGestion-mock.tsx').fileGestionMock()
-);
-jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 jest.mock('@context/DefaultPersonsContext', () =>
   require('@mocks/context/DefaultPersonsContext-mock')
 );

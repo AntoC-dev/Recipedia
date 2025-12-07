@@ -9,17 +9,11 @@ import {
   setMockCopilotState,
 } from '@mocks/deps/react-native-copilot-mock';
 
-jest.mock('expo-sqlite', () => require('@mocks/deps/expo-sqlite-mock').expoSqliteMock());
-jest.mock('@utils/FileGestion', () =>
-  require('@mocks/utils/FileGestion-mock.tsx').fileGestionMock()
-);
 jest.mock('@utils/ImagePicker', () => require('@mocks/utils/ImagePicker-mock').imagePickerMock());
 
 jest.mock('@react-navigation/native', () =>
   require('@mocks/deps/react-navigation-mock').reactNavigationMock()
 );
-
-jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 
 describe('VerticalBottomButtons Component', () => {
   beforeEach(() => {

@@ -11,15 +11,6 @@ import { testTags } from '@data/tagsDataset';
 import { testIngredients } from '@data/ingredientsDataset';
 import * as logger from '@utils/logger';
 
-jest.mock('expo-sqlite', () => require('@mocks/deps/expo-sqlite-mock').expoSqliteMock());
-jest.mock('@utils/FileGestion', () =>
-  require('@mocks/utils/FileGestion-mock.tsx').fileGestionMock()
-);
-jest.mock('@utils/settings', () => require('@mocks/utils/settings-mock').settingsMock());
-jest.mock('@utils/firstLaunch', () => ({
-  isFirstLaunch: jest.fn().mockResolvedValue(false),
-}));
-
 function createPreparationWrapper(props: RecipePropType) {
   return function Wrapper({ children }: { children: React.ReactNode }) {
     return (

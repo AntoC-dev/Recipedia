@@ -1,16 +1,13 @@
 import TableManipulation from '@utils/TableManipulation';
-import { jest } from '@jest/globals';
 import { databaseColumnType, encodedType } from '@customTypes/DatabaseElementTypes';
 
 import * as SQLite from 'expo-sqlite';
-
-jest.mock('expo-sqlite', () => require('@mocks/deps/expo-sqlite-mock').expoSqliteMock());
 
 type TestDbType = { ID?: number; name: string; age: number };
 
 describe('TableManipulation', () => {
   const memoryDb = ':memory';
-  const mockColumns: Array<databaseColumnType> = [
+  const mockColumns: databaseColumnType[] = [
     { colName: 'name', type: encodedType.TEXT },
     { colName: 'age', type: encodedType.INTEGER },
   ];
@@ -83,11 +80,11 @@ describe('TableManipulation', () => {
     await table.createTable(DB);
 
     expect(
-      await table.insertArrayOfElement(new Array<Object>({ name: 'John Doe', age: 30 }), DB)
+      await table.insertArrayOfElement(new Array<object>({ name: 'John Doe', age: 30 }), DB)
     ).toEqual(true);
     expect(
       await table.insertArrayOfElement(
-        new Array<Object>(
+        new Array<object>(
           { name: 'Toto', age: 8 },
           {
             name: 'Titi',
@@ -99,7 +96,7 @@ describe('TableManipulation', () => {
     ).toEqual(true);
     expect(
       await table.insertArrayOfElement(
-        new Array<Object>(
+        new Array<object>(
           { name: '', age: 0 },
           {
             name: 'Negative Number',
@@ -112,7 +109,7 @@ describe('TableManipulation', () => {
 
     expect(
       await table.insertArrayOfElement(
-        new Array<Object>(
+        new Array<object>(
           { name: 'GrandMa', age: 91 },
           {
             name: 'GrandPa',
@@ -125,10 +122,10 @@ describe('TableManipulation', () => {
       )
     ).toEqual(true);
 
-    expect(await table.insertArrayOfElement(new Array<Object>({}), DB)).toEqual(false);
+    expect(await table.insertArrayOfElement(new Array<object>({}), DB)).toEqual(false);
     expect(
       await table.insertArrayOfElement(
-        new Array<Object>({
+        new Array<object>({
           id: 5,
           name: 'Too much args',
           age: 70,
@@ -139,7 +136,7 @@ describe('TableManipulation', () => {
     ).toEqual(false);
     expect(
       await table.insertArrayOfElement(
-        new Array<Object>({
+        new Array<object>({
           name: 'Too much args but less',
           age: 70,
           country: 'Mexico',
@@ -191,7 +188,7 @@ describe('TableManipulation', () => {
     elementsInTable.push({ ID: elemCounter, ...newElem });
     elemCounter++;
     expect(elementsInTable).toEqual(
-      expect.arrayContaining((await table.searchRandomlyElement(2, DB)) as Array<string>)
+      expect.arrayContaining((await table.searchRandomlyElement(2, DB)) as string[])
     );
 
     newElem = { name: 'Titi', age: 3 };
@@ -200,7 +197,7 @@ describe('TableManipulation', () => {
     elemCounter++;
 
     expect(elementsInTable).toEqual(
-      expect.arrayContaining((await table.searchRandomlyElement(3, DB)) as Array<string>)
+      expect.arrayContaining((await table.searchRandomlyElement(3, DB)) as string[])
     );
 
     newElem = { name: 'GrandMa', age: 91 };
@@ -209,7 +206,7 @@ describe('TableManipulation', () => {
     elemCounter++;
 
     expect(elementsInTable).toEqual(
-      expect.arrayContaining((await table.searchRandomlyElement(4, DB)) as Array<string>)
+      expect.arrayContaining((await table.searchRandomlyElement(4, DB)) as string[])
     );
 
     newElem = { name: 'GrandPa', age: 84 };
@@ -218,7 +215,7 @@ describe('TableManipulation', () => {
     elemCounter++;
 
     expect(elementsInTable).toEqual(
-      expect.arrayContaining((await table.searchRandomlyElement(5, DB)) as Array<string>)
+      expect.arrayContaining((await table.searchRandomlyElement(5, DB)) as string[])
     );
 
     newElem = { name: 'Papa', age: 43 };
@@ -227,7 +224,7 @@ describe('TableManipulation', () => {
     elemCounter++;
 
     expect(elementsInTable).toEqual(
-      expect.arrayContaining((await table.searchRandomlyElement(6, DB)) as Array<string>)
+      expect.arrayContaining((await table.searchRandomlyElement(6, DB)) as string[])
     );
 
     newElem = { name: 'Mama', age: 41 };
@@ -236,7 +233,7 @@ describe('TableManipulation', () => {
     elemCounter++;
 
     expect(elementsInTable).toEqual(
-      expect.arrayContaining((await table.searchRandomlyElement(7, DB)) as Array<string>)
+      expect.arrayContaining((await table.searchRandomlyElement(7, DB)) as string[])
     );
 
     newElem = { name: 'Sparky', age: 7 };
@@ -245,7 +242,7 @@ describe('TableManipulation', () => {
     elemCounter++;
 
     expect(elementsInTable).toEqual(
-      expect.arrayContaining((await table.searchRandomlyElement(8, DB)) as Array<string>)
+      expect.arrayContaining((await table.searchRandomlyElement(8, DB)) as string[])
     );
 
     newElem = { name: 'CutyCat', age: 2 };
@@ -254,7 +251,7 @@ describe('TableManipulation', () => {
     elemCounter++;
 
     expect(elementsInTable).toEqual(
-      expect.arrayContaining((await table.searchRandomlyElement(9, DB)) as Array<string>)
+      expect.arrayContaining((await table.searchRandomlyElement(9, DB)) as string[])
     );
 
     newElem = { name: 'Smith', age: 58 };
@@ -263,16 +260,16 @@ describe('TableManipulation', () => {
     elemCounter++;
 
     expect(elementsInTable).toEqual(
-      expect.arrayContaining((await table.searchRandomlyElement(10, DB)) as Array<string>)
+      expect.arrayContaining((await table.searchRandomlyElement(10, DB)) as string[])
     );
 
     expect(await table.searchRandomlyElement(0, DB)).toBeUndefined();
     expect(await table.searchRandomlyElement(-1, DB)).toBeUndefined();
 
-    const random1 = (await table.searchRandomlyElement(2, DB)) as Array<string>;
+    const random1 = (await table.searchRandomlyElement(2, DB)) as string[];
     expect(elementsInTable).toEqual(expect.arrayContaining(random1));
 
-    const random2 = (await table.searchRandomlyElement(2, DB)) as Array<string>;
+    const random2 = (await table.searchRandomlyElement(2, DB)) as string[];
     expect(elementsInTable).toEqual(expect.arrayContaining(random2));
 
     expect(random1).not.toEqual(random2);
@@ -296,14 +293,14 @@ describe('TableManipulation', () => {
     expect(await table.deleteElementById(1, DB)).toEqual(false);
     expect(
       expect.arrayContaining(
-        (await table.searchRandomlyElement(elementsInTable.length, DB)) as Array<string>
+        (await table.searchRandomlyElement(elementsInTable.length, DB)) as string[]
       )
     ).toEqual([]);
 
     expect(await table.insertArrayOfElement(elementsInTable, DB)).toEqual(true);
     expect(
       expect.arrayContaining(
-        (await table.searchRandomlyElement(elementsInTable.length, DB)) as Array<string>
+        (await table.searchRandomlyElement(elementsInTable.length, DB)) as string[]
       )
     ).toEqual(elementsInTable);
 
@@ -315,12 +312,12 @@ describe('TableManipulation', () => {
       if (elementsInTable.length > 0) {
         expect(
           expect.arrayContaining(
-            (await table.searchRandomlyElement(elementsInTable.length, DB)) as Array<string>
+            (await table.searchRandomlyElement(elementsInTable.length, DB)) as string[]
           )
         ).toEqual(elementsInTable);
       } else {
         expect(
-          expect.arrayContaining((await table.searchRandomlyElement(1, DB)) as Array<string>)
+          expect.arrayContaining((await table.searchRandomlyElement(1, DB)) as string[])
         ).toEqual([]);
       }
     }
@@ -509,12 +506,12 @@ describe('TableManipulation', () => {
 
       await table.insertArrayOfElement(elements, DB);
 
-      const searchCriteria = new Map<string, Array<string>>([['name', ['Alice', 'Charlie']]]);
+      const searchCriteria = new Map<string, string[]>([['name', ['Alice', 'Charlie']]]);
       const result = await table.searchElement<TestDbType>(DB, searchCriteria);
 
       expect(result).toBeDefined();
       expect(Array.isArray(result)).toBe(true);
-      expect((result as Array<TestDbType>).length).toBe(2);
+      expect((result as TestDbType[]).length).toBe(2);
     });
 
     test('should find elements with simple equality', async () => {
@@ -532,7 +529,7 @@ describe('TableManipulation', () => {
 
       expect(result).toBeDefined();
       expect(Array.isArray(result)).toBe(true);
-      expect((result as Array<TestDbType>)[0].name).toBe('Alice');
+      expect((result as TestDbType[])[0].name).toBe('Alice');
     });
 
     test('should return empty array when no matches found with WHERE IN', async () => {
@@ -540,11 +537,11 @@ describe('TableManipulation', () => {
 
       await table.insertElement({ name: 'Alice', age: 25 }, DB);
 
-      const searchCriteria = new Map<string, Array<string>>([['name', ['Bob', 'Charlie']]]);
+      const searchCriteria = new Map<string, string[]>([['name', ['Bob', 'Charlie']]]);
       const result = await table.searchElement<TestDbType>(DB, searchCriteria);
 
       expect(Array.isArray(result)).toBe(true);
-      expect(result as Array<TestDbType>).toEqual([]);
+      expect(result as TestDbType[]).toEqual([]);
     });
 
     test('should work with numeric array values', async () => {
@@ -558,12 +555,12 @@ describe('TableManipulation', () => {
 
       await table.insertArrayOfElement(elements, DB);
 
-      const searchCriteria = new Map<string, Array<number>>([['age', [25, 35]]]);
+      const searchCriteria = new Map<string, number[]>([['age', [25, 35]]]);
       const result = await table.searchElement<TestDbType>(DB, searchCriteria);
 
       expect(result).toBeDefined();
       expect(Array.isArray(result)).toBe(true);
-      expect((result as Array<TestDbType>).length).toBe(2);
+      expect((result as TestDbType[]).length).toBe(2);
     });
   });
 

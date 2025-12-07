@@ -7,12 +7,6 @@ import { testIngredients } from '@test-data/ingredientsDataset';
 import { testRecipes } from '@test-data/recipesDataset';
 import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 
-jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
-jest.mock('expo-sqlite', () => require('@mocks/deps/expo-sqlite-mock').expoSqliteMock());
-
-jest.mock('@utils/FileGestion', () =>
-  require('@mocks/utils/FileGestion-mock.tsx').fileGestionMock()
-);
 jest.mock('@components/dialogs/ItemDialog', () => ({
   ItemDialog: require('@mocks/components/dialogs/ItemDialog-mock').itemDialogMock,
 }));

@@ -11,11 +11,6 @@ import { testTags } from '@test-data/tagsDataset';
 import { SeasonFilterProvider } from '@context/SeasonFilterContext';
 import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 
-jest.mock('expo-sqlite', () => require('@mocks/deps/expo-sqlite-mock').expoSqliteMock());
-jest.mock('@utils/FileGestion', () =>
-  require('@mocks/utils/FileGestion-mock.tsx').fileGestionMock()
-);
-
 jest.mock(
   '@components/organisms/VerticalBottomButtons',
   () => require('@mocks/components/organisms/VerticalBottomButtons-mock').verticalBottomButtonsMock

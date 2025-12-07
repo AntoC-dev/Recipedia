@@ -18,12 +18,6 @@ jest.mock('@components/organisms/TutorialController', () =>
   require('@mocks/components/organisms/TutorialController-mock').tutorialControllerMock()
 );
 
-jest.mock('expo-sqlite', () => require('@mocks/deps/expo-sqlite-mock').expoSqliteMock());
-
-jest.mock('@utils/FileGestion', () =>
-  require('@mocks/utils/FileGestion-mock.tsx').fileGestionMock()
-);
-
 jest.mock('@utils/firstLaunch', () => require('@mocks/utils/firstLaunch-mock').firstLaunchMock());
 
 describe('AppWrapper Component', () => {
