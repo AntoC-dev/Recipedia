@@ -73,6 +73,11 @@ module.exports = defineConfig([
             'prefer-const': 'error',
             'no-var': 'error',
 
+            // Dead code detection
+            'no-unreachable': 'error',
+            'no-unused-expressions': 'error',
+            'no-useless-return': 'error',
+
             // Prettier integration
             'prettier/prettier': 'error',
         },

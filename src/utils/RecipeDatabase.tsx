@@ -1074,7 +1074,6 @@ export class RecipeDatabase {
   public setPurchasedOfShopping(ingredientId: number, newPurchasedValue: boolean) {
     if (ingredientId > 0 && ingredientId <= this._shopping.length) {
       this._shopping[ingredientId - 1].purchased = newPurchasedValue;
-      return;
     } else {
       databaseLogger.error('Shopping item ID out of bounds', {
         ingredientId,
