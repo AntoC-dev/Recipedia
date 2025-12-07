@@ -1,3 +1,14 @@
+## [1.5.0](https://github.com/Anto-dev-perso/Recipedia/compare/v1.4.0...v1.5.0) (2025-12-07)
+
+### Features
+
+* add OCR and ingredient management hooks for recipe forms ([5b637cc](https://github.com/Anto-dev-perso/Recipedia/commit/5b637ccb49421f00add6050ad38c716fb2e5a158))
+* **display:** add `formatQuantityForDisplay` for UI ([0e06d8f](https://github.com/Anto-dev-perso/Recipedia/commit/0e06d8f1824a91bcab48459dd36783e37f0b48a3))
+
+### Bug Fixes
+
+* **test:** resolve hanging tests and fix 43 failing unit tests ([9ed650a](https://github.com/Anto-dev-perso/Recipedia/commit/9ed650ac9c2f7ba0e726d074c0e0ee81d845e7ff))
+
 ## [1.4.0](https://github.com/Anto-dev-perso/Recipedia/compare/v1.3.3...v1.4.0) (2025-12-06)
 
 ### Features
