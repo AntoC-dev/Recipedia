@@ -89,7 +89,6 @@ jobs:
         if: github.event_name == 'pull_request'
 
   build-android:
-    if: github.actor != 'dependabot[bot]'
     name: Build Android APK
     runs-on: ubuntu-latest
     needs: install-and-doctor
