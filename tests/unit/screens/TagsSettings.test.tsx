@@ -98,7 +98,7 @@ describe('TagsSettings Screen', () => {
   });
 
   afterEach(async () => {
-    await db.reset();
+    await db.closeAndReset();
   });
 
   test('renders correctly with initial tags', async () => {

@@ -79,7 +79,7 @@ describe('Home Screen', () => {
     await database.addMultipleTags(testTags);
     await database.addMultipleRecipes(testRecipes);
   });
-  afterEach(async () => await database.reset());
+  afterEach(async () => await database.closeAndReset());
 
   // -------- INITIAL RENDERING TESTS --------
   test('renders all navigation buttons correctly', async () => {
@@ -201,7 +201,7 @@ describe('Home Screen', () => {
   });
 
   test('handles empty database gracefully', async () => {
-    await database.reset();
+    await database.closeAndReset();
     await database.init();
 
     const { getByTestId } = render(

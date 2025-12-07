@@ -89,7 +89,7 @@ describe('Shopping Screen', () => {
     await database.addMultipleShopping([testRecipes[8], testRecipes[3]]);
   });
 
-  afterEach(async () => await database.reset());
+  afterEach(async () => await database.closeAndReset());
 
   test('renders Shopping screen with proper components structure', async () => {
     const { getByTestId, queryByTestId } = await renderShoppingAndWaitForButtons();

@@ -22,7 +22,7 @@ describe('RecipeDatabaseContext', () => {
   });
 
   afterEach(async () => {
-    await database.reset();
+    await database.closeAndReset();
   });
 
   describe('scaleAllRecipesForNewDefaultPersons', () => {

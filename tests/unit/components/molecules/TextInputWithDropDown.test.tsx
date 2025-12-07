@@ -44,7 +44,7 @@ describe('TextInputWithDropDown Component', () => {
   });
   afterEach(async () => {
     jest.clearAllMocks();
-    await dbInstance.reset();
+    await dbInstance.closeAndReset();
   });
 
   test('renders correctly with default props', () => {

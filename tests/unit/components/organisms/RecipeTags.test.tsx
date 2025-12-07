@@ -91,7 +91,7 @@ describe('RecipeTags Component', () => {
       await dbInstance.addMultipleRecipes(testRecipes);
     });
     afterEach(async () => {
-      await dbInstance.reset();
+      await dbInstance.closeAndReset();
     });
     describe('edit mode', () => {
       it('renders header and description texts with the add button', async () => {

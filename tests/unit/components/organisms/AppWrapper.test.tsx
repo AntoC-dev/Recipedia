@@ -38,7 +38,7 @@ describe('AppWrapper Component', () => {
   afterEach(async () => {
     cleanup();
     jest.clearAllTimers();
-    await database.reset();
+    await database.closeAndReset();
   });
 
   test('shows loading state initially', () => {

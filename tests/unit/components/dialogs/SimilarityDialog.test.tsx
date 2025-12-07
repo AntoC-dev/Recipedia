@@ -127,9 +127,9 @@ describe('SimilarityDialog', () => {
     await database.addMultipleRecipes(testRecipes);
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     jest.clearAllMocks();
-    database.reset();
+    await database.closeAndReset();
   });
 
   test('renders tag similarity dialog correctly when similar item is found', async () => {

@@ -61,7 +61,7 @@ describe('useRecipeTags', () => {
   });
 
   afterEach(async () => {
-    await dbInstance.reset();
+    await dbInstance.closeAndReset();
   });
 
   describe('addTag', () => {

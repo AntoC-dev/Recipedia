@@ -67,9 +67,9 @@ describe('ValidationQueue', () => {
     await database.addMultipleRecipes(testRecipes);
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     jest.clearAllMocks();
-    database.reset();
+    await database.closeAndReset();
   });
 
   const renderQueueTags = (items: tagTableElement[], testID = 'test-validation') => {

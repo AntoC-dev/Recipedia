@@ -58,7 +58,7 @@ describe('DefaultPersonsSettings Screen', () => {
   });
 
   afterEach(async () => {
-    await database.reset();
+    await database.closeAndReset();
   });
 
   test('renders correctly with default values', async () => {

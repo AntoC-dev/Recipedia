@@ -203,7 +203,7 @@ describe('useRecipeIngredients', () => {
 
     afterEach(async () => {
       loggerWarnSpy.mockRestore();
-      await dbInstance.reset();
+      await dbInstance.closeAndReset();
     });
 
     describe('addNewIngredient', () => {

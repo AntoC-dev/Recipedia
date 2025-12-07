@@ -674,7 +674,7 @@ describe('Recipe Component tests', () => {
     (AsyncStorage.getItem as jest.Mock).mockResolvedValue('4');
   });
   afterEach(async () => {
-    await dbInstance.reset();
+    await dbInstance.closeAndReset();
     mockRouteEdit.recipe = { ...testRecipes[6] };
   });
 

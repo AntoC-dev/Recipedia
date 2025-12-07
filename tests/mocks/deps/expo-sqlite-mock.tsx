@@ -18,7 +18,12 @@ export function expoSqliteMock() {
       }
       // @ts-ignore
       return {
-        closeAsync: jest.fn(async (): Promise<void> => dbInstance.close()),
+        closeAsync: jest.fn(async (): Promise<void> => {
+          if (dbInstance) {
+            dbInstance.close();
+            dbInstance = null;
+          }
+        }),
         runAsync: jest.fn(async (query: string, params: any[] = []): Promise<SQLiteRunResult> => {
           try {
             const statement = dbInstance.prepare(query);
@@ -38,9 +43,9 @@ export function expoSqliteMock() {
             throw new Error(`execAsync error: ${err.message}`);
           }
         }),
-        getAllAsync: jest.fn(async <T,>(query: string, params: any[] = []): Promise<Array<T>> => {
+        getAllAsync: jest.fn(async <T,>(query: string, params: any[] = []): Promise<T[]> => {
           try {
-            return dbInstance.prepare(query).all(params) as Array<T>;
+            return dbInstance.prepare(query).all(params) as T[];
           } catch (err: any) {
             throw new Error(`getAllAsync error: ${err.message}`);
           }

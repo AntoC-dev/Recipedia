@@ -58,11 +58,9 @@ describe('FilterFunctions', () => {
       ...testRecipes[8].tags.map(tag => tag.name),
     ].sort();
     expectedIngredient = [...testRecipes[0].ingredients, ...testRecipes[8].ingredients]
-      .filter(
-        (elem: ingredientTableElement, index: number, self: Array<ingredientTableElement>) => {
-          return index == self.indexOf(elem);
-        }
-      )
+      .filter((elem: ingredientTableElement, index: number, self: ingredientTableElement[]) => {
+        return index == self.indexOf(elem);
+      })
       .sort();
 
     expect(resTitles).toEqual([testRecipes[0].title, testRecipes[8].title]);
@@ -89,11 +87,11 @@ describe('FilterFunctions', () => {
 
     expectedTitles.sort();
     expectedTags = expectedTags
-      .filter((elem: string, index: number, self: Array<string>) => index == self.indexOf(elem))
+      .filter((elem: string, index: number, self: string[]) => index == self.indexOf(elem))
       .sort();
     expectedIngredient = expectedIngredient
       .filter(
-        (elem: ingredientTableElement, index: number, self: Array<ingredientTableElement>) =>
+        (elem: ingredientTableElement, index: number, self: ingredientTableElement[]) =>
           index == self.indexOf(elem)
       )
       .sort();
@@ -109,22 +107,18 @@ describe('FilterFunctions', () => {
   });
 
   test('filterFromRecipe with empty filters return the array given in input', () => {
-    expect(filterFromRecipe(testRecipes, new Map<TListFilter, Array<string>>(), t)).toEqual(
-      testRecipes
-    );
+    expect(filterFromRecipe(testRecipes, new Map<TListFilter, string[]>(), t)).toEqual(testRecipes);
   });
 
   test('filterFromRecipe with empty filters return the array given in input', () => {
-    expect(filterFromRecipe(testRecipes, new Map<TListFilter, Array<string>>(), t)).toEqual(
-      testRecipes
-    );
+    expect(filterFromRecipe(testRecipes, new Map<TListFilter, string[]>(), t)).toEqual(testRecipes);
   });
 
   test('filterFromRecipe with only preparation time filters', () => {
-    const filtersTime = new Map<TListFilter, Array<string>>([
+    const filtersTime = new Map<TListFilter, string[]>([
       [listFilter.prepTime, [prepTimeValues[2]]],
     ]);
-    const timeFilterArray = filtersTime.get(listFilter.prepTime) as Array<string>;
+    const timeFilterArray = filtersTime.get(listFilter.prepTime) as string[];
 
     expect(filterFromRecipe(testRecipes, filtersTime, t)).toEqual(
       Array<recipeTableElement>(testRecipes[1], testRecipes[3], testRecipes[4], testRecipes[7])
@@ -192,9 +186,7 @@ describe('FilterFunctions', () => {
   });
 
   test('filterFromRecipe with only season filters', () => {
-    const filtersSeason = new Map<TListFilter, Array<string>>([
-      [listFilter.inSeason, ['seasonal']],
-    ]);
+    const filtersSeason = new Map<TListFilter, string[]>([[listFilter.inSeason, ['seasonal']]]);
 
     const expected = filterRecipesByCurrentSeason(testRecipes);
     const result = filterFromRecipe(testRecipes, filtersSeason, t);
@@ -202,8 +194,8 @@ describe('FilterFunctions', () => {
   });
 
   test('filterFromRecipe with only tags filters', () => {
-    const filtersTags = new Map<TListFilter, Array<string>>([[listFilter.tags, ['not existing']]]);
-    const tagFilterArray = filtersTags.get(listFilter.tags) as Array<string>;
+    const filtersTags = new Map<TListFilter, string[]>([[listFilter.tags, ['not existing']]]);
+    const tagFilterArray = filtersTags.get(listFilter.tags) as string[];
 
     expect(filterFromRecipe(testRecipes, filtersTags, t)).toEqual([]);
 
@@ -224,10 +216,10 @@ describe('FilterFunctions', () => {
   });
 
   test('filterFromRecipe with only title filters', () => {
-    const filtersTitle = new Map<TListFilter, Array<string>>([
+    const filtersTitle = new Map<TListFilter, string[]>([
       [listFilter.recipeTitleInclude, [testRecipes[7].title]],
     ]);
-    const titleFilterArray = filtersTitle.get(listFilter.recipeTitleInclude) as Array<string>;
+    const titleFilterArray = filtersTitle.get(listFilter.recipeTitleInclude) as string[];
 
     expect(filterFromRecipe(testRecipes, filtersTitle, t)).toEqual(
       Array<recipeTableElement>(testRecipes[7])
@@ -257,7 +249,7 @@ describe('FilterFunctions', () => {
   });
 
   test('filterFromRecipe with only ingredient type filters', () => {
-    const filtersIngredientType = new Map<TListFilter, Array<string>>([
+    const filtersIngredientType = new Map<TListFilter, string[]>([
       [
         listFilter.cheese,
         testIngredients.filter(ing => ing.type === listFilter.cheese).map(ing => ing.name),
@@ -284,7 +276,7 @@ describe('FilterFunctions', () => {
   });
 
   test('filterFromRecipe with mixed filters (in bonus, addValueToMultimap test)', () => {
-    const filtersMixed = new Map<TListFilter, Array<string>>([
+    const filtersMixed = new Map<TListFilter, string[]>([
       [
         listFilter.cheese,
         testIngredients.filter(ing => ing.type === listFilter.cheese).map(ing => ing.name),
@@ -318,14 +310,14 @@ describe('FilterFunctions', () => {
   test('removeValueToMultimap shall effectively remove from the multimap the asked value', () => {
     const consoleWarningSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-    const filtersMixed = new Map<TListFilter, Array<string>>([
+    const filtersMixed = new Map<TListFilter, string[]>([
       [listFilter.prepTime, [prepTimeValues[3]]],
       [listFilter.purchased, ['true', 'false']],
       [listFilter.cereal, ['Pasta']],
       [listFilter.tags, ['Quick Meal']],
     ]);
 
-    const workingFilters = new Map<TListFilter, Array<string>>(filtersMixed);
+    const workingFilters = new Map<TListFilter, string[]>(filtersMixed);
     removeValueToMultimap(workingFilters, listFilter.recipeTitleInclude, 'A title');
     expect(workingFilters).toEqual(filtersMixed);
 
@@ -338,7 +330,7 @@ describe('FilterFunctions', () => {
     expect(workingFilters).toEqual(filtersMixed);
 
     removeValueToMultimap(workingFilters, listFilter.tags, 'Quick Meal');
-    let expectedMultiMap = new Map<TListFilter, Array<string>>([
+    let expectedMultiMap = new Map<TListFilter, string[]>([
       [listFilter.prepTime, [prepTimeValues[3]]],
       [listFilter.purchased, ['true', 'false']],
       [listFilter.cereal, ['Pasta']],
@@ -346,7 +338,7 @@ describe('FilterFunctions', () => {
     expect(workingFilters).toEqual(expectedMultiMap);
 
     removeValueToMultimap(workingFilters, listFilter.purchased, 'false');
-    expectedMultiMap = new Map<TListFilter, Array<string>>([
+    expectedMultiMap = new Map<TListFilter, string[]>([
       [listFilter.prepTime, [prepTimeValues[3]]],
       [listFilter.purchased, ['true']],
       [listFilter.cereal, ['Pasta']],
@@ -354,23 +346,23 @@ describe('FilterFunctions', () => {
     expect(workingFilters).toEqual(expectedMultiMap);
 
     removeValueToMultimap(workingFilters, listFilter.purchased, 'true');
-    expectedMultiMap = new Map<TListFilter, Array<string>>([
+    expectedMultiMap = new Map<TListFilter, string[]>([
       [listFilter.prepTime, [prepTimeValues[3]]],
       [listFilter.cereal, ['Pasta']],
     ]);
     expect(workingFilters).toEqual(expectedMultiMap);
 
     removeValueToMultimap(workingFilters, listFilter.prepTime, prepTimeValues[3]);
-    expectedMultiMap = new Map<TListFilter, Array<string>>([[listFilter.cereal, ['Pasta']]]);
+    expectedMultiMap = new Map<TListFilter, string[]>([[listFilter.cereal, ['Pasta']]]);
     expect(workingFilters).toEqual(expectedMultiMap);
 
     removeValueToMultimap(workingFilters, listFilter.cereal, 'Pasta');
     expect(workingFilters.size).toEqual(0);
-    expect(workingFilters).toEqual(new Map<TListFilter, Array<string>>());
+    expect(workingFilters).toEqual(new Map<TListFilter, string[]>());
   });
 
   test('retrieveAllFilters shall return an array of string filters', () => {
-    const filtersMixed = new Map<TListFilter, Array<string>>([
+    const filtersMixed = new Map<TListFilter, string[]>([
       [listFilter.prepTime, [prepTimeValues[3], prepTimeValues[3]]],
       [listFilter.purchased, ['true', 'false']],
       [listFilter.cereal, ['Pasta']],
@@ -387,28 +379,28 @@ describe('FilterFunctions', () => {
 
     expect(retrieveAllFilters(filtersMixed)).toEqual(expectedResult);
 
-    expect(retrieveAllFilters(new Map<TListFilter, Array<string>>())).toEqual(new Array<string>());
+    expect(retrieveAllFilters(new Map<TListFilter, string[]>())).toEqual(new Array<string>());
   });
 
   test('editTitleInMultimap shall do the edit it is supposed to do', () => {
-    let filtersMixed = new Map<TListFilter, Array<string>>([
+    let filtersMixed = new Map<TListFilter, string[]>([
       [listFilter.recipeTitleInclude, ['First Title', 'Second Title']],
     ]);
 
-    let expectedResult = new Map<TListFilter, Array<string>>([
+    let expectedResult = new Map<TListFilter, string[]>([
       [listFilter.recipeTitleInclude, ['First Title', 'Second Title']],
     ]);
 
     editTitleInMultimap(filtersMixed, 'Edited title');
     expect(filtersMixed).toEqual(expectedResult);
 
-    filtersMixed = new Map<TListFilter, Array<string>>([
+    filtersMixed = new Map<TListFilter, string[]>([
       [listFilter.prepTime, [prepTimeValues[3], prepTimeValues[3]]],
       [listFilter.purchased, ['true', 'false']],
       [listFilter.cereal, ['Pasta']],
       [listFilter.tags, ['Quick Meal']],
     ]);
-    expectedResult = new Map<TListFilter, Array<string>>([
+    expectedResult = new Map<TListFilter, string[]>([
       [listFilter.prepTime, [prepTimeValues[3], prepTimeValues[3]]],
       [listFilter.purchased, ['true', 'false']],
       [listFilter.cereal, ['Pasta']],
@@ -419,7 +411,7 @@ describe('FilterFunctions', () => {
     editTitleInMultimap(filtersMixed, 'New title');
     expect(filtersMixed).toEqual(expectedResult);
 
-    filtersMixed = new Map<TListFilter, Array<string>>([
+    filtersMixed = new Map<TListFilter, string[]>([
       [listFilter.prepTime, [prepTimeValues[3], prepTimeValues[3]]],
       [listFilter.purchased, ['true', 'false']],
       [listFilter.cereal, ['Pasta']],
@@ -432,13 +424,13 @@ describe('FilterFunctions', () => {
   });
 
   test('removeTitleInMultimap shall remove the title given  if it exist', () => {
-    let filtersMixed = new Map<TListFilter, Array<string>>([
+    let filtersMixed = new Map<TListFilter, string[]>([
       [listFilter.prepTime, [prepTimeValues[3], prepTimeValues[3]]],
       [listFilter.purchased, ['true', 'false']],
       [listFilter.cereal, ['Pasta']],
       [listFilter.tags, ['Quick Meal']],
     ]);
-    let expectedResult = new Map<TListFilter, Array<string>>([
+    let expectedResult = new Map<TListFilter, string[]>([
       [listFilter.prepTime, [prepTimeValues[3], prepTimeValues[3]]],
       [listFilter.purchased, ['true', 'false']],
       [listFilter.cereal, ['Pasta']],
@@ -448,7 +440,7 @@ describe('FilterFunctions', () => {
     removeTitleInMultimap(filtersMixed);
     expect(filtersMixed).toEqual(expectedResult);
 
-    filtersMixed = new Map<TListFilter, Array<string>>([
+    filtersMixed = new Map<TListFilter, string[]>([
       [listFilter.prepTime, [prepTimeValues[3], prepTimeValues[3]]],
       [listFilter.purchased, ['true', 'false']],
       [listFilter.cereal, ['Pasta']],
@@ -650,7 +642,7 @@ describe('FilterFunctions', () => {
     });
 
     afterEach(async () => {
-      await database.reset();
+      await database.closeAndReset();
     });
 
     function assertRecommendation(
@@ -710,7 +702,7 @@ describe('FilterFunctions', () => {
     });
 
     test('generateHomeRecommendations handles empty database', async () => {
-      await database.reset();
+      await database.closeAndReset();
       await database.init();
       const recipes = database.get_recipes();
       const ingredients = database.get_ingredients();

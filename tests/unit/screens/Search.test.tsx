@@ -112,7 +112,7 @@ describe('Search Screen', () => {
   });
 
   afterEach(async () => {
-    await database.reset();
+    await database.closeAndReset();
   });
 
   test('initializes with database recipes', async () => {

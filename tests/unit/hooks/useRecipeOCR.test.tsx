@@ -68,7 +68,7 @@ describe('useRecipeOCR', () => {
   });
 
   afterEach(async () => {
-    await dbInstance.reset();
+    await dbInstance.closeAndReset();
   });
 
   describe('modal state management', () => {

@@ -40,7 +40,7 @@ describe('WelcomeScreen Component', () => {
   });
 
   afterEach(async () => {
-    await database.reset();
+    await database.closeAndReset();
   });
 
   test('renders branded header with app icon, title and subtitle', async () => {

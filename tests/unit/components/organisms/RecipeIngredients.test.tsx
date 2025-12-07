@@ -59,7 +59,7 @@ describe('RecipeIngredients Component', () => {
   });
 
   afterEach(async () => {
-    await dbInstance.reset();
+    await dbInstance.closeAndReset();
   });
 
   describe('readOnly mode', () => {

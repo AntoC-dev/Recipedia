@@ -40,7 +40,7 @@ describe('RecipeFormContext', () => {
   });
 
   afterEach(async () => {
-    await dbInstance.reset();
+    await dbInstance.closeAndReset();
   });
 
   describe('initialization from props', () => {

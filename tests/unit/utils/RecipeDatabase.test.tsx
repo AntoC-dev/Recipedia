@@ -29,7 +29,7 @@ describe('RecipeDatabase', () => {
     });
 
     afterEach(async () => {
-      await db.reset();
+      await db.closeAndReset();
     });
 
     // Initialization Tests
@@ -88,7 +88,7 @@ describe('RecipeDatabase', () => {
 
         expect(db.isDatabaseEmpty()).toBe(false);
 
-        await db.reset();
+        await db.closeAndReset();
 
         expect(db.isDatabaseEmpty()).toBe(true);
       });
@@ -101,7 +101,7 @@ describe('RecipeDatabase', () => {
       });
 
       test('should return true for fresh database instance', async () => {
-        await db.reset();
+        await db.closeAndReset();
         await db.init();
 
         expect(db.isDatabaseEmpty()).toBe(true);
@@ -276,7 +276,7 @@ describe('RecipeDatabase', () => {
     });
 
     afterEach(async () => {
-      await db.reset();
+      await db.closeAndReset();
     });
 
     test('Add and retrieve a single recipe', async () => {
@@ -324,7 +324,7 @@ describe('RecipeDatabase', () => {
     });
 
     afterEach(async () => {
-      await db.reset();
+      await db.closeAndReset();
     });
 
     test('Add a recipe to the shoppingList shall update accordingly the database', async () => {
@@ -1308,7 +1308,7 @@ describe('RecipeDatabase', () => {
     });
 
     afterEach(async () => {
-      await db.reset();
+      await db.closeAndReset();
     });
 
     test('isRecipeExist return true if the recipe is in the database', () => {
@@ -1357,7 +1357,7 @@ describe('RecipeDatabase', () => {
     });
 
     test('Reset database clears all data', async () => {
-      await db.reset();
+      await db.closeAndReset();
 
       expect(db.get_recipes()).toEqual([]);
       expect(db.get_tags()).toEqual([]);
@@ -1616,7 +1616,7 @@ describe('RecipeDatabase', () => {
 
       test('should work with database containing single tag', async () => {
         const tag: tagTableElement = { id: 1, name: 'SingleTag' };
-        await db.reset();
+        await db.closeAndReset();
         await db.init();
         await db.addTag(tag);
 
@@ -1630,7 +1630,7 @@ describe('RecipeDatabase', () => {
       });
 
       test('should handle empty database gracefully', async () => {
-        await db.reset();
+        await db.closeAndReset();
         await db.init();
 
         const result = db.findSimilarTags('AnyTag');
@@ -1700,7 +1700,7 @@ describe('RecipeDatabase', () => {
       });
 
       test('should handle empty database gracefully', async () => {
-        await db.reset();
+        await db.closeAndReset();
         await db.init();
 
         const result = db.findSimilarIngredients('AnyIngredient');
@@ -1719,7 +1719,7 @@ describe('RecipeDatabase', () => {
     });
 
     afterEach(async () => {
-      await db.reset();
+      await db.closeAndReset();
     });
 
     describe('Nutrition', () => {
@@ -1817,7 +1817,7 @@ describe('RecipeDatabase', () => {
         await db.addRecipe(recipeWithNutrition);
 
         // Simulate database restart
-        await db.reset();
+        await db.closeAndReset();
         await db.init();
         await db.addMultipleIngredients(testIngredients);
         await db.addMultipleTags(testTags);
@@ -1869,7 +1869,7 @@ describe('RecipeDatabase', () => {
     });
 
     afterEach(async () => {
-      await db.reset();
+      await db.closeAndReset();
     });
 
     describe('addRecipe', () => {
@@ -1960,7 +1960,7 @@ describe('RecipeDatabase', () => {
       });
 
       afterEach(async () => {
-        await db.reset();
+        await db.closeAndReset();
       });
 
       it('deletes recipe correctly when image URI is provided as full path', async () => {
@@ -2038,7 +2038,7 @@ describe('RecipeDatabase', () => {
     });
 
     afterEach(async () => {
-      await db.reset();
+      await db.closeAndReset();
     });
 
     test('throws error when adding recipe with missing ingredients', async () => {
