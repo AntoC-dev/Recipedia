@@ -1,4 +1,8 @@
-import { calculateNutritionPerPortion, scaleQuantityForPersons } from '@utils/Quantity';
+import {
+  calculateNutritionPerPortion,
+  formatQuantityForDisplay,
+  scaleQuantityForPersons,
+} from '@utils/Quantity';
 import { nutritionTableElement } from '@customTypes/DatabaseElementTypes';
 
 describe('scaleQuantityForPersons', () => {
@@ -11,11 +15,11 @@ describe('scaleQuantityForPersons', () => {
     expect(scaleQuantityForPersons('200', 4, 2)).toBe('100');
   });
 
-  test('scales decimals with dot and outputs comma', () => {
+  test('scales decimals with dot and outputs comma (4 decimals)', () => {
     expect(scaleQuantityForPersons('0.5', 2, 3)).toBe('0,75');
   });
 
-  test('scales decimals with comma and outputs comma', () => {
+  test('scales decimals with comma and outputs comma (4 decimals)', () => {
     expect(scaleQuantityForPersons('1,5', 6, 4)).toBe('1');
   });
 
@@ -31,6 +35,130 @@ describe('scaleQuantityForPersons', () => {
   test('preserves surrounding text and unit', () => {
     expect(scaleQuantityForPersons('200 g', 2, 3)).toBe('300 g');
     expect(scaleQuantityForPersons('1,5 cup', 3, 2)).toBe('1 cup');
+  });
+
+  describe('rounding precision for repeating decimals (4 decimals)', () => {
+    test('scales 200 from 6 to 4 persons to 133,3333', () => {
+      expect(scaleQuantityForPersons('200', 6, 4)).toBe('133,3333');
+    });
+
+    test('scales 100 from 3 to 4 persons to 133,3333', () => {
+      expect(scaleQuantityForPersons('100', 3, 4)).toBe('133,3333');
+    });
+
+    test('scales 200 from 3 to 4 persons to 266,6667', () => {
+      expect(scaleQuantityForPersons('200', 3, 4)).toBe('266,6667');
+    });
+
+    test('scales 100 from 6 to 4 persons to 66,6667', () => {
+      expect(scaleQuantityForPersons('100', 6, 4)).toBe('66,6667');
+    });
+
+    test('scales 1 from 3 to 1 persons to 0,3333', () => {
+      expect(scaleQuantityForPersons('1', 3, 1)).toBe('0,3333');
+    });
+
+    test('scales 1 from 6 to 1 persons to 0,1667', () => {
+      expect(scaleQuantityForPersons('1', 6, 1)).toBe('0,1667');
+    });
+
+    test('scales 2 from 3 to 1 persons to 0,6667', () => {
+      expect(scaleQuantityForPersons('2', 3, 1)).toBe('0,6667');
+    });
+  });
+
+  describe('floating point accumulation (4 decimal precision)', () => {
+    test('scales back and forth without errors', () => {
+      const original = '200';
+      const scaled = scaleQuantityForPersons(original, 4, 2);
+      const scaledBack = scaleQuantityForPersons(scaled, 2, 4);
+      expect(scaledBack).toBe('200');
+    });
+
+    test('multiple scaling operations remain consistent', () => {
+      const start = '300';
+      const step1 = scaleQuantityForPersons(start, 6, 4);
+      const step2 = scaleQuantityForPersons(step1, 4, 2);
+      const step3 = scaleQuantityForPersons(step2, 2, 6);
+      expect(step3).toBe('300');
+    });
+
+    test('chain scaling with 4-decimal precision has minimal drift', () => {
+      const original = '200';
+      const to4 = scaleQuantityForPersons(original, 6, 4);
+      expect(to4).toBe('133,3333');
+      const to2 = scaleQuantityForPersons(to4, 4, 2);
+      expect(to2).toBe('66,6667');
+      const backTo4 = scaleQuantityForPersons(to2, 2, 4);
+      expect(backTo4).toBe('133,3334');
+      const backTo6 = scaleQuantityForPersons(backTo4, 4, 6);
+      expect(backTo6).toBe('200,0001');
+    });
+  });
+
+  describe('edge cases for no change', () => {
+    test('returns same when fromPersons is 0', () => {
+      expect(scaleQuantityForPersons('200', 0, 4)).toBe('200');
+    });
+
+    test('returns same when toPersons is 0', () => {
+      expect(scaleQuantityForPersons('200', 4, 0)).toBe('200');
+    });
+
+    test('returns same when fromPersons is negative', () => {
+      expect(scaleQuantityForPersons('200', -2, 4)).toBe('200');
+    });
+
+    test('returns same when toPersons is negative', () => {
+      expect(scaleQuantityForPersons('200', 4, -2)).toBe('200');
+    });
+
+    test('handles empty string', () => {
+      expect(scaleQuantityForPersons('', 4, 2)).toBe('');
+    });
+
+    test('handles zero quantity', () => {
+      expect(scaleQuantityForPersons('0', 4, 2)).toBe('0');
+    });
+  });
+});
+
+describe('formatQuantityForDisplay', () => {
+  test('formats 4 decimals to 2 for display', () => {
+    expect(formatQuantityForDisplay('133,3333')).toBe('133,33');
+    expect(formatQuantityForDisplay('66,6667')).toBe('66,67');
+  });
+
+  test('rounds correctly when formatting', () => {
+    expect(formatQuantityForDisplay('133,3334')).toBe('133,33');
+    expect(formatQuantityForDisplay('133,3366')).toBe('133,34');
+  });
+
+  test('preserves unit suffix', () => {
+    expect(formatQuantityForDisplay('133,3333 g')).toBe('133,33 g');
+    expect(formatQuantityForDisplay('66,6667 cup')).toBe('66,67 cup');
+  });
+
+  test('handles integer values', () => {
+    expect(formatQuantityForDisplay('200')).toBe('200');
+    expect(formatQuantityForDisplay('100')).toBe('100');
+  });
+
+  test('handles dot decimal input', () => {
+    expect(formatQuantityForDisplay('133.3333')).toBe('133,33');
+  });
+
+  test('returns empty string unchanged', () => {
+    expect(formatQuantityForDisplay('')).toBe('');
+  });
+
+  test('returns non-numeric strings unchanged', () => {
+    expect(formatQuantityForDisplay('some salt')).toBe('some salt');
+  });
+
+  test('returns ranges unchanged (multiple numbers)', () => {
+    expect(formatQuantityForDisplay('1-2')).toBe('1-2');
+    expect(formatQuantityForDisplay('1 à 3')).toBe('1 à 3');
   });
 });
 

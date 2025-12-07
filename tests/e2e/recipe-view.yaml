@@ -8,3 +8,4 @@ executionOrder:
     - "3 - Recipe Edit From Search Flow"
     - "4 - Recipe Edit From Home Flow"
     - "5 - Recipe Quantity Scaling Flow"
+    - "6 - Recipe Edit Cancel Flow"

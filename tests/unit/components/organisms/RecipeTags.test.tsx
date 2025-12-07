@@ -7,11 +7,6 @@ import { testRecipes } from '@test-data/recipesDataset';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 
-jest.mock('expo-sqlite', () => require('@mocks/deps/expo-sqlite-mock').expoSqliteMock());
-jest.mock('@utils/FileGestion', () =>
-  require('@mocks/utils/FileGestion-mock.tsx').fileGestionMock()
-);
-
 jest.mock('@components/atomic/RoundButton', () => ({
   RoundButton: require('@mocks/components/atomic/RoundButton-mock').roundButtonMock,
 }));
@@ -91,7 +86,7 @@ describe('RecipeTags Component', () => {
       await dbInstance.addMultipleRecipes(testRecipes);
     });
     afterEach(async () => {
-      await dbInstance.reset();
+      await dbInstance.closeAndReset();
     });
     describe('edit mode', () => {
       it('renders header and description texts with the add button', async () => {

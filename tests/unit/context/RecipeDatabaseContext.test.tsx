@@ -5,10 +5,6 @@ import { testRecipes } from '@test-data/recipesDataset';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
 
-jest.mock('expo-sqlite', () => require('@mocks/deps/expo-sqlite-mock').expoSqliteMock());
-jest.mock('@utils/FileGestion', () => require('@mocks/utils/FileGestion-mock').fileGestionMock());
-jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
-
 describe('RecipeDatabaseContext', () => {
   let database: RecipeDatabase;
 
@@ -22,7 +18,7 @@ describe('RecipeDatabaseContext', () => {
   });
 
   afterEach(async () => {
-    await database.reset();
+    await database.closeAndReset();
   });
 
   describe('scaleAllRecipesForNewDefaultPersons', () => {

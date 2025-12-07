@@ -6,6 +6,7 @@
     "src/components/organisms/*.tsx",
     "src/context/*.tsx",
     "src/hooks/*.tsx",
+    "src/hooks/*.ts",
     "src/navigation/*.tsx",
     "src/screens/*.tsx",
     "src/utils/*.tsx",

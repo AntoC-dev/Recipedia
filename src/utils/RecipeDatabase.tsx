@@ -173,28 +173,24 @@ export class RecipeDatabase {
   }
 
   /**
-   * Resets the database by deleting all tables and clearing local cache
+   * Closes the database connection and resets all internal state
    *
-   * This operation completely removes all data and recreates empty tables.
-   * Use with caution as this action is irreversible.
+   * Use this method in test teardown (afterEach) to properly cleanup
+   * database resources between tests.
    *
-   * @returns Promise that resolves when reset is complete
+   * @returns Promise that resolves when cleanup is complete
    */
-  public async reset() {
-    databaseLogger.info('Resetting database - deleting all tables and data');
+  public async closeAndReset() {
+    databaseLogger.info('Closing database and resetting state');
 
-    await this.openDatabase();
-    await this._recipesTable.deleteTable(this._dbConnection);
-    await this._ingredientsTable.deleteTable(this._dbConnection);
-    await this._tagsTable.deleteTable(this._dbConnection);
-    await this._shoppingListTable.deleteTable(this._dbConnection);
+    if (this._dbConnection) {
+      await this._dbConnection.closeAsync();
+      this._dbConnection = undefined as unknown as SQLite.SQLiteDatabase;
+    }
 
-    this._recipes = [];
-    this._ingredients = [];
-    this._tags = [];
-    this._shopping = [];
+    this.reset();
 
-    databaseLogger.info('Database reset completed');
+    databaseLogger.info('Database closed and state reset');
   }
 
   /**
@@ -1078,7 +1074,6 @@ export class RecipeDatabase {
   public setPurchasedOfShopping(ingredientId: number, newPurchasedValue: boolean) {
     if (ingredientId > 0 && ingredientId <= this._shopping.length) {
       this._shopping[ingredientId - 1].purchased = newPurchasedValue;
-      return;
     } else {
       databaseLogger.error('Shopping item ID out of bounds', {
         ingredientId,
@@ -1289,6 +1284,18 @@ export class RecipeDatabase {
   }
 
   /**
+   * Resets all internal state to empty values
+   *
+   * @private
+   */
+  private reset() {
+    this._recipes = [];
+    this._ingredients = [];
+    this._tags = [];
+    this._shopping = [];
+  }
+
+  /**
    * Constructs a Map structure for updating recipe data in the database
    *
    * Converts an encoded recipe element into a Map structure suitable for
@@ -1386,7 +1393,7 @@ export class RecipeDatabase {
     try {
       await this._dbConnection.closeAsync();
       await SQLite.deleteDatabaseAsync(this._databaseName);
-      await this.reset();
+      this.reset();
     } catch (error: unknown) {
       databaseLogger.error('Failed to delete database', {
         databaseName: this._databaseName,

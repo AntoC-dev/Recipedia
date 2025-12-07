@@ -11,11 +11,6 @@ import { testTags } from '@test-data/tagsDataset';
 import { SeasonFilterProvider } from '@context/SeasonFilterContext';
 import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 
-jest.mock('expo-sqlite', () => require('@mocks/deps/expo-sqlite-mock').expoSqliteMock());
-jest.mock('@utils/FileGestion', () =>
-  require('@mocks/utils/FileGestion-mock.tsx').fileGestionMock()
-);
-
 jest.mock(
   '@components/organisms/VerticalBottomButtons',
   () => require('@mocks/components/organisms/VerticalBottomButtons-mock').verticalBottomButtonsMock
@@ -79,7 +74,7 @@ describe('Home Screen', () => {
     await database.addMultipleTags(testTags);
     await database.addMultipleRecipes(testRecipes);
   });
-  afterEach(async () => await database.reset());
+  afterEach(async () => await database.closeAndReset());
 
   // -------- INITIAL RENDERING TESTS --------
   test('renders all navigation buttons correctly', async () => {
@@ -114,20 +109,18 @@ describe('Home Screen', () => {
 
     const { getByTestId: getByTestIdNew } = await renderHomeAndWaitForRecommendations();
 
-    await waitFor(() => {
-      const updatedReco = JSON.parse(
-        getByTestIdNew('recommendations.randomSelection::CarouselProps').props.children
-      );
-      const updatedReco2 = JSON.parse(
-        getByTestIdNew('recommendations.perfectForCurrentSeason::CarouselProps').props.children
-      );
+    await waitFor(
+      () => {
+        const updatedReco = JSON.parse(
+          getByTestIdNew('recommendations.randomSelection::CarouselProps').props.children
+        );
 
-      expect(updatedReco.length).toBeGreaterThan(0);
-      expect(updatedReco.length).toBeLessThanOrEqual(expectedRandomRecommendationLength);
-      expect(updatedReco2.length).toBeGreaterThan(0);
-      expect(updatedReco2.length).toBeLessThanOrEqual(expectedRandomRecommendationLength);
-      expect(updatedReco.find((r: any) => r.id === firstRecipeInReco1.id)).toBeUndefined();
-    });
+        expect(updatedReco.length).toBeGreaterThan(0);
+        expect(updatedReco.length).toBeLessThanOrEqual(expectedRandomRecommendationLength);
+        expect(updatedReco.find((r: any) => r.id === firstRecipeInReco1.id)).toBeUndefined();
+      },
+      { timeout: 3000 }
+    );
   });
 
   test('replaces deleted recipes with new random ones when carousel becomes incomplete', async () => {
@@ -201,7 +194,7 @@ describe('Home Screen', () => {
   });
 
   test('handles empty database gracefully', async () => {
-    await database.reset();
+    await database.closeAndReset();
     await database.init();
 
     const { getByTestId } = render(

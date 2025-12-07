@@ -1,5 +1,20 @@
 // Global test setup
 
+// Centralized mocks - these are used across many test files
+jest.mock('expo-sqlite', () => require('@mocks/deps/expo-sqlite-mock').expoSqliteMock());
+jest.mock('@react-navigation/stack', () =>
+  require('@mocks/deps/react-navigation-stack-mock').reactNavigationStackMock()
+);
+jest.mock('@utils/FileGestion', () =>
+  require('@mocks/utils/FileGestion-mock.tsx').fileGestionMock()
+);
+jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
+jest.mock('@utils/settings', () => require('@mocks/utils/settings-mock').settingsMock());
+jest.mock('@utils/firstLaunch', () => require('@mocks/utils/firstLaunch-mock').firstLaunchMock());
+jest.mock('react-native/Libraries/Interaction/InteractionManager', () =>
+  require('@mocks/deps/InteractionManager-mock').interactionManagerMock()
+);
+
 // Store original console methods for tests that need to verify console calls
 global.originalConsole = {
   log: console.log,
@@ -19,3 +34,8 @@ if (!global.console._isMocked) {
     _isMocked: true,
   };
 }
+
+// Global teardown to allow async operations to complete before Jest exits
+afterAll(async () => {
+  await new Promise(resolve => setTimeout(resolve, 100));
+});

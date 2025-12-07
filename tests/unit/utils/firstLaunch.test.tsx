@@ -1,6 +1,8 @@
 import { isFirstLaunch, markAsLaunched } from '@utils/firstLaunch';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+jest.unmock('@utils/firstLaunch');
+
 describe('firstLaunch Utility', () => {
   beforeEach(() => {
     jest.clearAllMocks();

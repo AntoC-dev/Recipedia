@@ -17,12 +17,6 @@ import { TUTORIAL_DEMO_INTERVAL, TUTORIAL_STEPS } from '@utils/Constants';
 
 const { mockUseSafeCopilot } = require('@mocks/hooks/useSafeCopilot-mock');
 
-jest.mock('expo-sqlite', () => require('@mocks/deps/expo-sqlite-mock').expoSqliteMock());
-
-jest.mock('@utils/FileGestion', () =>
-  require('@mocks/utils/FileGestion-mock.tsx').fileGestionMock()
-);
-jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 jest.mock('@components/dialogs/Alert', () => ({
   Alert: require('@mocks/components/dialogs/Alert-mock').alertMock,
 }));
@@ -89,7 +83,7 @@ describe('Shopping Screen', () => {
     await database.addMultipleShopping([testRecipes[8], testRecipes[3]]);
   });
 
-  afterEach(async () => await database.reset());
+  afterEach(async () => await database.closeAndReset());
 
   test('renders Shopping screen with proper components structure', async () => {
     const { getByTestId, queryByTestId } = await renderShoppingAndWaitForButtons();

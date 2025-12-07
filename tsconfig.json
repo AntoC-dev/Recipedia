@@ -41,8 +41,14 @@
       "@test-data/*": [
         "../tests/data/*"
       ],
+      "@data/*": [
+        "../tests/data/*"
+      ],
       "@mocks/*": [
         "../tests/mocks/*"
+      ],
+      "@test-helpers/*": [
+        "../tests/helpers/*"
       ],
       "@translations/*": [
         "translations/*"

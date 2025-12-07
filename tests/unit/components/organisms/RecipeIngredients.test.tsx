@@ -8,11 +8,6 @@ import RecipeDatabase from '@utils/RecipeDatabase';
 import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 import { ingredientTableElement, ingredientType } from '@customTypes/DatabaseElementTypes';
 
-jest.mock('expo-sqlite', () => require('@mocks/deps/expo-sqlite-mock').expoSqliteMock());
-jest.mock('@utils/FileGestion', () =>
-  require('@mocks/utils/FileGestion-mock.tsx').fileGestionMock()
-);
-
 jest.mock('@components/atomic/RoundButton', () => ({
   RoundButton: require('@mocks/components/atomic/RoundButton-mock').roundButtonMock,
 }));
@@ -59,7 +54,7 @@ describe('RecipeIngredients Component', () => {
   });
 
   afterEach(async () => {
-    await dbInstance.reset();
+    await dbInstance.closeAndReset();
   });
 
   describe('readOnly mode', () => {

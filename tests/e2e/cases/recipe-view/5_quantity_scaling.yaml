@@ -50,7 +50,7 @@ tags:
 
 - scrollUntilVisible:
     element:
-      id: "RecipeImage"
+      id: "RecipeImage::RoundButton"
     direction: UP
     speed: 95
     label: "Action - Scroll back to top"

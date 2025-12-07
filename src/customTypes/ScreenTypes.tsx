@@ -47,7 +47,7 @@ import { NavigationProp } from '@react-navigation/native';
 import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
 import { BottomTabScreenProps, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import type { RecipePropType } from '@screens/Recipe';
+import type { RecipePropType } from '@customTypes/RecipeNavigationTypes';
 
 /**
  * Recipe screen mode types

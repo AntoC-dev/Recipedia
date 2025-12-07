@@ -11,11 +11,6 @@ import { SeasonFilterProvider } from '@context/SeasonFilterContext';
 import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 import { resetFiltersSelection } from '@mocks/components/organisms/FiltersSelection-mock';
 
-jest.mock('expo-sqlite', () => require('@mocks/deps/expo-sqlite-mock').expoSqliteMock());
-jest.mock('@utils/FileGestion', () =>
-  require('@mocks/utils/FileGestion-mock.tsx').fileGestionMock()
-);
-jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 jest.mock('@components/organisms/FiltersSelection', () => ({
   FiltersSelection: require('@mocks/components/organisms/FiltersSelection-mock')
     .filtersSelectionMock,
@@ -112,7 +107,7 @@ describe('Search Screen', () => {
   });
 
   afterEach(async () => {
-    await database.reset();
+    await database.closeAndReset();
   });
 
   test('initializes with database recipes', async () => {

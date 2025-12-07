@@ -8,14 +8,9 @@ import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
 import { testRecipes } from '@test-data/recipesDataset';
 
-jest.mock('expo-sqlite', () => require('@mocks/deps/expo-sqlite-mock').expoSqliteMock());
-jest.mock('@utils/FileGestion', () =>
-  require('@mocks/utils/FileGestion-mock.tsx').fileGestionMock()
-);
 jest.mock('@components/atomic/CustomTextInput', () => ({
   CustomTextInput: require('@mocks/components/atomic/CustomTextInput-mock').customTextInputMock,
 }));
-jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 
 describe('TextInputWithDropDown Component', () => {
   const mockOnChangeText = jest.fn();
@@ -44,7 +39,7 @@ describe('TextInputWithDropDown Component', () => {
   });
   afterEach(async () => {
     jest.clearAllMocks();
-    await dbInstance.reset();
+    await dbInstance.closeAndReset();
   });
 
   test('renders correctly with default props', () => {

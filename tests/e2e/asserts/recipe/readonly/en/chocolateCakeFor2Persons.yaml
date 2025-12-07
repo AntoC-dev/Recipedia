@@ -61,5 +61,5 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeIngredients::3::QuantityAndUnit"
-    text: "33,34 g"
-    label: "Butter quantity is scaled to 33,34g"
+    text: "33,33 g"
+    label: "Butter quantity is scaled to 33,33g"

@@ -54,6 +54,7 @@ import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
 import { NumericTextInput } from '@components/atomic/NumericTextInput';
 import { TextInputWithDropDown } from '@components/molecules/TextInputWithDropDown';
 import { defaultValueNumber } from '@utils/Constants';
+import { formatQuantityForDisplay } from '@utils/Quantity';
 
 /**
  * Common props shared across all modes
@@ -193,7 +194,7 @@ function ReadOnlyIngredients({ testID, ingredients }: ReadOnlyProps) {
               style={{ flex: recipeTableReadOnlyFlex.quantityAndUnit }}
             >
               <Text variant='titleMedium'>
-                {item.quantity} {item.unit}
+                {formatQuantityForDisplay(item.quantity ?? '')} {item.unit}
               </Text>
             </DataTable.Cell>
             <DataTable.Cell
@@ -286,7 +287,7 @@ function EditableIngredients(props: EditableIngredientsProps) {
               >
                 <NumericTextInput
                   testID={`${testID}::${index}::QuantityInput`}
-                  value={quantity}
+                  value={Math.round(quantity * 100) / 100}
                   onChangeValue={newQuantity =>
                     handleIngredientChange(index, newQuantity, item.unit ?? '', item.name ?? '')
                   }

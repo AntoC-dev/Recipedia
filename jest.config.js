@@ -4,6 +4,10 @@ module.exports = {
         '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
     },
     testMatch: ['**/tests/unit/**/*.test.{js,jsx,ts,tsx}'],
+    maxWorkers: '50%',
+    testTimeout: 10000,
+    workerIdleMemoryLimit: '512MB',
+    clearMocks: true,
     transformIgnorePatterns: [
         "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-svg)"
     ],
@@ -28,7 +32,9 @@ module.exports = {
         '^@customTypes/(.*)$': '<rootDir>/src/customTypes/$1',
         '^@utils/(.*)$': '<rootDir>/src/utils/$1',
         '^@test-data/(.*)$': '<rootDir>/tests/data/$1',
+        '^@data/(.*)$': '<rootDir>/tests/data/$1',
         '^@mocks/(.*)$': '<rootDir>/tests/mocks/$1',
+        '^@test-helpers/(.*)$': '<rootDir>/tests/helpers/$1',
         '^@translations/(.*)$': '<rootDir>/src/translations/$1',
         '^@app/(.*)$': '<rootDir>/$1',
         '^expo-font$': '<rootDir>/tests/mocks/deps/expo-font-mock',

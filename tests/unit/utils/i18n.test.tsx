@@ -3,6 +3,8 @@ import React from 'react';
 import { act, fireEvent, render } from '@testing-library/react-native';
 import { Button, Text, View } from 'react-native';
 
+jest.unmock('@utils/i18n');
+
 // Make sure i18n is initialized before tests run
 beforeAll(async () => {
   // Wait for i18n initialization to complete

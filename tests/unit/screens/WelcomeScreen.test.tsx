@@ -7,8 +7,6 @@ import { testRecipes } from '@test-data/recipesDataset';
 import { testTags } from '@test-data/tagsDataset';
 import { testIngredients } from '@test-data/ingredientsDataset';
 
-jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
-
 jest.mock('@components/atomic/CustomImage', () =>
   require('@mocks/components/atomic/CustomImage-mock').customImageMock()
 );
@@ -16,10 +14,6 @@ jest.mock('@components/atomic/CustomImage', () =>
 jest.mock('expo-asset', () => require('@mocks/deps/expo-asset-mock').expoAssetMock());
 
 jest.mock('expo-constants', () => require('@mocks/deps/expo-constants-mock').expoConstantsMock());
-
-jest.mock('expo-sqlite', () => require('@mocks/deps/expo-sqlite-mock').expoSqliteMock());
-
-jest.mock('@utils/FileGestion', () => require('@mocks/utils/FileGestion-mock').fileGestionMock());
 
 describe('WelcomeScreen Component', () => {
   const mockOnStartTutorial = jest.fn();
@@ -40,7 +34,7 @@ describe('WelcomeScreen Component', () => {
   });
 
   afterEach(async () => {
-    await database.reset();
+    await database.closeAndReset();
   });
 
   test('renders branded header with app icon, title and subtitle', async () => {
