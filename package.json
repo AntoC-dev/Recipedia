@@ -22,7 +22,7 @@
     "test": "npm run test:unit",
     "test:unit": "jest --verbose --config jest.config.js --forceExit",
     "test:unit:watch": "jest --watchAll --silent --config jest.config.js",
-    "test:unit:coverage": "jest --silent --coverage --reporters=jest-junit --config jest.config.js --forceExit",
+    "test:unit:coverage": "jest --reporters=default --coverage --reporters=jest-junit --config jest.config.js --forceExit",
     "test:unit:fail-only": "jest --silent --onlyFailures --config jest.config.js --forceExit",
     "test:e2e:ios": "echo 'TODO: iOS E2E tests not implemented'",
     "lint": "eslint src/ --ext .ts,.tsx,.js,.jsx",
