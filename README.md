@@ -45,7 +45,7 @@ capabilities for extracting recipe information from images.
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/Anto-dev-perso/Recipedia.git
+   git clone https://github.com/AntoC-dev/Recipedia.git
    cd Recipedia
    ```
 
@@ -104,7 +104,7 @@ src/
 
 ### For Developers
 
-- **[API Documentation](https://anto-dev-perso.github.io/Recipedia/)** - Complete TypeScript API reference
+- **[API Documentation](https://AntoC-dev.github.io/Recipedia/)** - Complete TypeScript API reference
 - [Contributing Guidelines](CONTRIBUTING.md)
 - [Testing Guide](docs/testing.md)
 - [CI/CD Setup](docs/ci-setup.md)
@@ -129,7 +129,7 @@ npm run docs:clean    # Clean documentation build
 
 **Viewing Documentation:**
 
-- **Online**: [https://anto-dev-perso.github.io/Recipedia/](https://anto-dev-perso.github.io/Recipedia/)
+- **Online**: [https://AntoC-dev.github.io/Recipedia/](https://AntoC-dev.github.io/Recipedia/)
 - **Local**: Run `npm run docs:build` then open `docs/index.html`
 
 ## 🧪 Testing
@@ -205,7 +205,7 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ## 🐛 Bug Reports & Feature Requests
 
-Please use [GitHub Issues](https://github.com/Anto-dev-perso/Recipedia/issues) to:
+Please use [GitHub Issues](https://github.com/AntoC-dev/Recipedia/issues) to:
 
 - Report bugs
 - Request new features
@@ -255,8 +255,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Support
 
 - **Documentation**: Check our [docs folder](docs/)
-- **Issues**: [GitHub Issues](https://github.com/Anto-dev-perso/Recipedia/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/Anto-dev-perso/Recipedia/discussions)
+- **Issues**: [GitHub Issues](https://github.com/AntoC-dev/Recipedia/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/AntoC-dev/Recipedia/discussions)
 
 ---
 
@@ -264,6 +264,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Made with ❤️ by the Recipedia team**
 
-[⭐ Star this repo](https://github.com/Anto-dev-perso/Recipedia) • [🐛 Report bug](https://github.com/Anto-dev-perso/Recipedia/issues) • [✨ Request feature](https://github.com/Anto-dev-perso/Recipedia/issues)
+[⭐ Star this repo](https://github.com/AntoC-dev/Recipedia) • [🐛 Report bug](https://github.com/AntoC-dev/Recipedia/issues) • [✨ Request feature](https://github.com/AntoC-dev/Recipedia/issues)
 
 </div>

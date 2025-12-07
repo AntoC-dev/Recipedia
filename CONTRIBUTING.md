@@ -458,11 +458,13 @@ We use labels to categorize issues:
 
 ### API Documentation
 
-The project uses **TypeDoc** to generate comprehensive API documentation that is automatically published to GitHub Pages. All contributors must maintain documentation quality.
+The project uses **TypeDoc** to generate comprehensive API documentation that is automatically published to GitHub
+Pages. All contributors must maintain documentation quality.
 
 #### Documentation Requirements
 
 **For New Components/Functions:**
+
 - [ ] Add comprehensive JSDoc comments to all exported functions, classes, and components
 - [ ] Include `@param` descriptions for all parameters
 - [ ] Include `@returns` description for return values
@@ -470,6 +472,7 @@ The project uses **TypeDoc** to generate comprehensive API documentation that is
 - [ ] Document all TypeScript interfaces and types
 
 **For Existing Code Changes:**
+
 - [ ] Update JSDoc comments when modifying function signatures
 - [ ] Update examples when changing component APIs
 - [ ] Ensure TypeScript types are properly exported
@@ -487,6 +490,7 @@ open docs/index.html         # View local documentation
 #### Documentation Standards
 
 1. **Component Documentation Example:**
+
 ```typescript
 /**
  * CustomButton - Reusable button component with theme integration
@@ -504,16 +508,18 @@ open docs/index.html         # View local documentation
  *   testID="save-button"
  * />
  * ```
- */
+
+*/
 export function CustomButton({
-  title,
-  variant = 'primary',
-  icon,
-  onPress,
-  testID
+title,
+variant = 'primary',
+icon,
+onPress,
+testID
 }: CustomButtonProps) {
-  // Implementation
+// Implementation
 }
+
 ```
 
 2. **Function Documentation Example:**
@@ -533,14 +539,16 @@ export function CustomButton({
  * ```typescript
  * const scaled = scaleQuantity("2 cups", 4, 6); // Returns "3 cups"
  * ```
- */
+
+*/
 export function scaleQuantity(
-  originalQuantity: string,
-  originalServings: number,
-  targetServings: number
+originalQuantity: string,
+originalServings: number,
+targetServings: number
 ): string {
-  // Implementation
+// Implementation
 }
+
 ```
 
 #### Quality Assurance
@@ -553,7 +561,7 @@ export function scaleQuantity(
 #### Documentation Publishing
 
 The documentation is automatically published to GitHub Pages at:
-- **Live Documentation**: [https://anto-dev-perso.github.io/Recipedia/](https://anto-dev-perso.github.io/Recipedia/)
+- **Live Documentation**: [https://AntoC-dev.github.io/Recipedia/](https://AntoC-dev.github.io/Recipedia/)
 
 Updates are published automatically when changes are merged to the main branch.
 

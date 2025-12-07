@@ -65,7 +65,7 @@
     "Other"
   ],
   "disableSources": false,
-  "sourceLinkTemplate": "https://github.com/Anto-dev-perso/Recipedia/blob/{gitRevision}/{path}#L{line}",
+  "sourceLinkTemplate": "https://github.com/AntoC-dev/Recipedia/blob/{gitRevision}/{path}#L{line}",
   "gitRevision": "main",
   "name": "Recipedia API Documentation",
   "includeVersion": true,
@@ -74,7 +74,7 @@
   "excludeNotDocumented": false,
   "excludeReferences": true,
   "navigationLinks": {
-    "GitHub": "https://github.com/Anto-dev-perso/Recipedia"
+    "GitHub": "https://github.com/AntoC-dev/Recipedia"
   },
   "validation": {
     "notExported": true,
