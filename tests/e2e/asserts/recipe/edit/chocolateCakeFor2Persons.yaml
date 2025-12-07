@@ -79,8 +79,8 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeIngredients::3::QuantityInput"
-    text: "33.34"
-    label: "Butter quantity is scaled to 33.34g"
+    text: "33.33"
+    label: "Butter quantity is scaled to 33.33g"
 
 - assertVisible:
     id: "RecipeIngredients::3::NameInput::CustomTextInput"
