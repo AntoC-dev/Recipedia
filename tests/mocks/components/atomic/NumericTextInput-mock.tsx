@@ -1,7 +1,7 @@
-import { TextInput } from 'react-native';
+import {TextInput} from 'react-native';
 import React from 'react';
-import { NumericTextInputProps } from '@components/atomic/NumericTextInput';
-import { defaultValueNumber } from '@utils/Constants';
+import {NumericTextInputProps} from '@components/atomic/NumericTextInput';
+import {defaultValueNumber} from '@utils/Constants';
 
 export function numericTextInputMock({
   testID,
@@ -15,7 +15,11 @@ export function numericTextInputMock({
   style,
 }: NumericTextInputProps) {
   const getTextFromValue = (val: number) => {
-    return val === defaultValueNumber ? '' : val.toString();
+      if (val === defaultValueNumber) {
+          return '';
+      }
+      const rounded = Math.round(val * 100) / 100;
+      return rounded.toString();
   };
 
   const [currentText, setCurrentText] = React.useState(getTextFromValue(value));

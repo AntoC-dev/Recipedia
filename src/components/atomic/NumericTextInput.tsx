@@ -44,6 +44,14 @@ export type NumericTextInputProps = {
   editable?: boolean;
 };
 
+function formatNumberForDisplay(num: number): string {
+  if (num === defaultValueNumber) {
+    return '';
+  }
+  const rounded = Math.round(num * 100) / 100;
+  return rounded.toString();
+}
+
 export function NumericTextInput({
   testID,
   value,
@@ -57,8 +65,8 @@ export function NumericTextInput({
   keyboardType = 'numeric',
   editable = true,
 }: NumericTextInputProps) {
-  const getTextFromValue = (value: number) => {
-    return value === defaultValueNumber ? '' : value.toString();
+  const getTextFromValue = (val: number) => {
+    return formatNumberForDisplay(val);
   };
 
   const [rawText, setRawText] = useState(getTextFromValue(value));
@@ -66,7 +74,7 @@ export function NumericTextInput({
   const { colors } = useTheme();
 
   useEffect(() => {
-    setRawText(value === defaultValueNumber ? '' : value.toString());
+    setRawText(formatNumberForDisplay(value));
   }, [value]);
 
   useEffect(() => {

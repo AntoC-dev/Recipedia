@@ -68,6 +68,7 @@ import { RoundButton } from '@components/atomic/RoundButton';
 import { shoppingLogger } from '@utils/logger';
 import { TUTORIAL_DEMO_INTERVAL, TUTORIAL_STEPS } from '@utils/Constants';
 import { padding } from '@styles/spacing';
+import { formatQuantityForDisplay } from '@utils/Quantity';
 
 /** Type for dialog data containing ingredient and recipe information */
 type ingredientDataForDialog = Pick<shoppingListTableElement, 'name' | 'recipesTitle'>;
@@ -309,7 +310,7 @@ export function Shopping() {
     return (
       <List.Item
         testID={itemTestId}
-        title={`${item.name} (${item.quantity}${item.unit})`}
+        title={`${item.name} (${formatQuantityForDisplay(item.quantity)}${item.unit})`}
         titleStyle={textStyle}
         descriptionStyle={textStyle}
         description={recipesText}

@@ -214,4 +214,45 @@ describe('NumericTextInput', () => {
     fireEvent(input, 'onBlur');
     expect(handleChange).not.toHaveBeenCalled();
   });
+
+  describe('display formatting (2 decimal precision)', () => {
+    test('rounds 4-decimal values to 2 decimals for display', () => {
+      const { getByTestId } = render(<NumericTextInput {...baseProps} value={66.6667} />);
+      const input = getByTestId('numeric-input');
+      expect(input.props.value).toEqual('66.67');
+    });
+
+    test('rounds 133.3333 to 133.33 for display', () => {
+      const { getByTestId } = render(<NumericTextInput {...baseProps} value={133.3333} />);
+      const input = getByTestId('numeric-input');
+      expect(input.props.value).toEqual('133.33');
+    });
+
+    test('rounds 133.3366 to 133.34 for display', () => {
+      const { getByTestId } = render(<NumericTextInput {...baseProps} value={133.3366} />);
+      const input = getByTestId('numeric-input');
+      expect(input.props.value).toEqual('133.34');
+    });
+
+    test('preserves exact 2-decimal values', () => {
+      const { getByTestId } = render(<NumericTextInput {...baseProps} value={42.75} />);
+      const input = getByTestId('numeric-input');
+      expect(input.props.value).toEqual('42.75');
+    });
+
+    test('handles integer values without adding decimals', () => {
+      const { getByTestId } = render(<NumericTextInput {...baseProps} value={200} />);
+      const input = getByTestId('numeric-input');
+      expect(input.props.value).toEqual('200');
+    });
+
+    test('updates display when value prop changes to high-precision number', () => {
+      const { getByTestId, rerender } = render(<NumericTextInput {...baseProps} value={100} />);
+      const input = getByTestId('numeric-input');
+      expect(input.props.value).toEqual('100');
+
+      rerender(<NumericTextInput {...baseProps} value={66.6667} />);
+      expect(input.props.value).toEqual('66.67');
+    });
+  });
 });

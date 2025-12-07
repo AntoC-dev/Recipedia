@@ -1,6 +1,15 @@
-import { Button, Text, View } from 'react-native';
+import {Button, Text, View} from 'react-native';
 import React from 'react';
-import { RecipeIngredientsProps } from '@components/organisms/RecipeIngredients';
+import {RecipeIngredientsProps} from '@components/organisms/RecipeIngredients';
+import {formatQuantityForDisplay} from '@utils/Quantity';
+
+function formatNumericQuantity(quantity: string | number | undefined): string {
+    if (quantity === undefined || quantity === '') return '';
+    const num = typeof quantity === 'number' ? quantity : parseFloat(String(quantity).replace(',', '.'));
+    if (isNaN(num)) return String(quantity);
+    const rounded = Math.round(num * 100) / 100;
+    return rounded.toString();
+}
 
 export function recipeIngredientsMock(props: RecipeIngredientsProps) {
   const { testID, ingredients, mode } = props;
@@ -22,13 +31,15 @@ export function recipeIngredientsMock(props: RecipeIngredientsProps) {
           {mode === 'readOnly' ? (
             <>
               <Text testID={`${testID}::${index}::QuantityAndUnit`}>
-                {`${ingredient.quantity} ${ingredient.unit}`}
+                  {`${formatQuantityForDisplay(String(ingredient.quantity ?? ''))} ${ingredient.unit}`}
               </Text>
               <Text testID={`${testID}::${index}::IngredientName`}>{ingredient.name}</Text>
             </>
           ) : (
             <>
-              <Text testID={`${testID}::${index}::QuantityInput`}>{ingredient.quantity}</Text>
+                <Text testID={`${testID}::${index}::QuantityInput`}>
+                    {formatNumericQuantity(ingredient.quantity)}
+                </Text>
               <Text testID={`${testID}::${index}::UnitInput::CustomTextInput`}>
                 {ingredient.unit}
               </Text>

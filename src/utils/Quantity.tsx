@@ -29,10 +29,39 @@ export function scaleQuantityForPersons(
   }
 
   const scaledValue = (numericValue * toPersons) / fromPersons;
-  const rounded = Math.round(scaledValue * 100) / 100;
-  const roundedStr = rounded.toString().replace('.', ',');
+  // Use 4 decimal places internally for precision during chain scaling
+  const highPrecision = Math.round(scaledValue * 10000) / 10000;
+  const roundedStr = highPrecision.toString().replace('.', ',');
 
   return quantity.replace(originalNumericToken, roundedStr);
+}
+
+/**
+ * Formats a quantity string for display, limiting to 2 decimal places.
+ * Used to show user-friendly values while internal storage uses 4 decimals.
+ * Preserves non-numeric parts (unit suffixes, ranges, etc.).
+ */
+export function formatQuantityForDisplay(quantity: string): string {
+  if (!quantity) {
+    return quantity;
+  }
+
+  const numberTokenRegex = /\d+(?:[.,]\d+)?/g;
+  const allNumbers = quantity.match(numberTokenRegex);
+  if (!allNumbers || allNumbers.length !== 1) {
+    return quantity;
+  }
+
+  const originalNumericToken = allNumbers[0];
+  const numericValue = parseFloat(originalNumericToken.replace(',', '.'));
+  if (isNaN(numericValue)) {
+    return quantity;
+  }
+
+  const displayValue = Math.round(numericValue * 100) / 100;
+  const displayStr = displayValue.toString().replace('.', ',');
+
+  return quantity.replace(originalNumericToken, displayStr);
 }
 
 /**
