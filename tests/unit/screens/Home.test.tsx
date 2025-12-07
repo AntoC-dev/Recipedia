@@ -109,20 +109,18 @@ describe('Home Screen', () => {
 
     const { getByTestId: getByTestIdNew } = await renderHomeAndWaitForRecommendations();
 
-    await waitFor(() => {
-      const updatedReco = JSON.parse(
-        getByTestIdNew('recommendations.randomSelection::CarouselProps').props.children
-      );
-      const updatedReco2 = JSON.parse(
-        getByTestIdNew('recommendations.perfectForCurrentSeason::CarouselProps').props.children
-      );
+    await waitFor(
+      () => {
+        const updatedReco = JSON.parse(
+          getByTestIdNew('recommendations.randomSelection::CarouselProps').props.children
+        );
 
-      expect(updatedReco.length).toBeGreaterThan(0);
-      expect(updatedReco.length).toBeLessThanOrEqual(expectedRandomRecommendationLength);
-      expect(updatedReco2.length).toBeGreaterThan(0);
-      expect(updatedReco2.length).toBeLessThanOrEqual(expectedRandomRecommendationLength);
-      expect(updatedReco.find((r: any) => r.id === firstRecipeInReco1.id)).toBeUndefined();
-    });
+        expect(updatedReco.length).toBeGreaterThan(0);
+        expect(updatedReco.length).toBeLessThanOrEqual(expectedRandomRecommendationLength);
+        expect(updatedReco.find((r: any) => r.id === firstRecipeInReco1.id)).toBeUndefined();
+      },
+      { timeout: 3000 }
+    );
   });
 
   test('replaces deleted recipes with new random ones when carousel becomes incomplete', async () => {

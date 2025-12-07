@@ -13,6 +13,8 @@ import { Asset } from 'expo-asset';
 import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { setMockDatasetType } from '@mocks/utils/DatasetLoader-mock';
 
+jest.unmock('@utils/FileGestion');
+
 jest.mock('expo-file-system', () =>
   require('@mocks/deps/expo-file-system-mock').expoFileSystemMock()
 );

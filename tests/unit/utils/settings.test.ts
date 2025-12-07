@@ -13,6 +13,8 @@ import {
   toggleSeasonFilter,
 } from '@utils/settings';
 
+jest.unmock('@utils/settings');
+
 jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 
 jest.mock('expo-localization', () =>

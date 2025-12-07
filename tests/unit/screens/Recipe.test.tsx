@@ -856,7 +856,7 @@ describe('Recipe Component tests', () => {
           ? (() => {
               const scaledValue = (parseFloat(ingredient.quantity) * 23) / 6;
               const rounded = Math.round(scaledValue * 100) / 100;
-              return rounded.toString().replace('.', ',');
+              return rounded.toString();
             })()
           : ingredient.quantity,
       })
@@ -1058,11 +1058,11 @@ describe('Recipe Component tests', () => {
         ...ingredient,
         quantity:
           index === 0
-            ? '766,67'
+            ? '766.67'
             : (() => {
                 const originalQty = parseFloat(ingredient.quantity as string);
                 const scaledQty = Math.round(((originalQty * 23) / 6) * 100) / 100;
-                return scaledQty.toString().replace('.', ',');
+                return scaledQty.toString();
               })(),
       })
     );

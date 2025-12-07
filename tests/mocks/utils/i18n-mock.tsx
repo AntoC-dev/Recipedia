@@ -1,5 +1,12 @@
 export const mockSetLocale = jest.fn();
 
+export const LANGUAGE_NAMES: { [key: string]: string } = {
+  en: 'English',
+  fr: 'Français',
+};
+
+export type SupportedLanguage = keyof typeof LANGUAGE_NAMES;
+
 export function i18nMock() {
   const ocrTerms = {
     energyKj: ['Energie', 'Énergie', 'Énergie (kJ)', 'Energie (kJ)'],
@@ -29,6 +36,9 @@ export function i18nMock() {
     timePrefixOCR: 'timePrefixOCR',
     timePrefixEdit: 'timePrefixEdit',
     preparationReadOnly: 'preparationReadOnly',
+    preparationOCRStep: 'Step',
+    preparationOCRStepTitle: 'Title of step',
+    preparationOCRStepContent: 'Content of step',
     timeSuffixEdit: 'min',
     'recipeCard.prepTime': 'Prep. {{time}} min',
     'recipeCard.persons': '{{count}} p.',
@@ -101,5 +111,6 @@ export function i18nMock() {
         const fullKey = keyPrefix ? `${keyPrefix}.${key}` : key;
         return translations[fullKey] ?? fullKey;
       },
+    LANGUAGE_NAMES,
   };
 }

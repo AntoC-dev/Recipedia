@@ -2,22 +2,36 @@ import React from 'react';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { useRecipePreparation } from '@hooks/useRecipePreparation';
 import { RecipeFormProvider, useRecipeForm } from '@context/RecipeFormContext';
-import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 import { createMockRecipeProp } from '@test-helpers/recipeHookTestWrapper';
 import { ingredientType, recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { RecipePropType } from '@customTypes/RecipeNavigationTypes';
-import RecipeDatabase from '@utils/RecipeDatabase';
 import { testTags } from '@data/tagsDataset';
 import { testIngredients } from '@data/ingredientsDataset';
 import * as logger from '@utils/logger';
 
+jest.mock('@context/RecipeDatabaseContext', () => {
+  const { testTags: mockTags } = require('@data/tagsDataset');
+  const { testIngredients: mockIngredients } = require('@data/ingredientsDataset');
+  return {
+    useRecipeDatabase: () => ({
+      ingredients: mockIngredients,
+      tags: mockTags,
+      recipes: [],
+      findSimilarIngredients: jest.fn(() => []),
+      findSimilarTags: jest.fn(() => []),
+      addIngredient: jest.fn(async (ing: unknown) => ing),
+      addTag: jest.fn(async (tag: unknown) => tag),
+      isDatabaseReady: true,
+      searchRandomlyTags: jest.fn(() => []),
+      getRandomTags: jest.fn(() => []),
+    }),
+    RecipeDatabaseProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  };
+});
+
 function createPreparationWrapper(props: RecipePropType) {
   return function Wrapper({ children }: { children: React.ReactNode }) {
-    return (
-      <RecipeDatabaseProvider>
-        <RecipeFormProvider props={props}>{children}</RecipeFormProvider>
-      </RecipeDatabaseProvider>
-    );
+    return <RecipeFormProvider props={props}>{children}</RecipeFormProvider>;
   };
 }
 
@@ -40,22 +54,16 @@ const recipeWithPreparation: recipeTableElement = {
   time: 30,
 };
 
-const dbInstance = RecipeDatabase.getInstance();
-
 describe('useRecipePreparation', () => {
   let loggerWarnSpy: jest.SpyInstance;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     jest.clearAllMocks();
     loggerWarnSpy = jest.spyOn(logger.recipeLogger, 'warn').mockImplementation(() => {});
-    await dbInstance.init();
-    await dbInstance.addMultipleIngredients(testIngredients);
-    await dbInstance.addMultipleTags(testTags);
   });
 
-  afterEach(async () => {
+  afterEach(() => {
     loggerWarnSpy.mockRestore();
-    await dbInstance.closeAndReset();
   });
 
   describe('editPreparationTitle', () => {

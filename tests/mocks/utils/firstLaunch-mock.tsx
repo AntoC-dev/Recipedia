@@ -1,4 +1,6 @@
-export const firstLaunchMock = () => ({
-  isFirstLaunch: jest.fn(),
-  markAsLaunched: jest.fn(),
-});
+export function firstLaunchMock() {
+  return {
+    isFirstLaunch: jest.fn().mockResolvedValue(false),
+    markAsLaunched: jest.fn().mockResolvedValue(undefined),
+  };
+}

@@ -1,37 +1,40 @@
 import React from 'react';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { RecipeFormProvider, useRecipeForm } from '@context/RecipeFormContext';
-import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 import { createMockRecipeProp, defaultTestRecipe } from '@test-helpers/recipeHookTestWrapper';
 import { recipeStateType } from '@customTypes/ScreenTypes';
 import { ingredientType, recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { RecipePropType } from '@customTypes/RecipeNavigationTypes';
-import RecipeDatabase from '@utils/RecipeDatabase';
-import { testTags } from '@data/tagsDataset';
-import { testIngredients } from '@data/ingredientsDataset';
+
+jest.mock('@context/RecipeDatabaseContext', () => {
+  const { testTags: mockTags } = require('@data/tagsDataset');
+  const { testIngredients: mockIngredients } = require('@data/ingredientsDataset');
+  return {
+    useRecipeDatabase: () => ({
+      ingredients: mockIngredients,
+      tags: mockTags,
+      recipes: [],
+      findSimilarIngredients: jest.fn(() => []),
+      findSimilarTags: jest.fn(() => []),
+      addIngredient: jest.fn(async (ing: unknown) => ing),
+      addTag: jest.fn(async (tag: unknown) => tag),
+      isDatabaseReady: true,
+      searchRandomlyTags: jest.fn(() => []),
+      getRandomTags: jest.fn(() => []),
+    }),
+    RecipeDatabaseProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  };
+});
 
 function createFormWrapper(props: RecipePropType) {
   return function Wrapper({ children }: { children: React.ReactNode }) {
-    return (
-      <RecipeDatabaseProvider>
-        <RecipeFormProvider props={props}>{children}</RecipeFormProvider>
-      </RecipeDatabaseProvider>
-    );
+    return <RecipeFormProvider props={props}>{children}</RecipeFormProvider>;
   };
 }
 
-const dbInstance = RecipeDatabase.getInstance();
-
 describe('RecipeFormContext', () => {
-  beforeEach(async () => {
+  beforeEach(() => {
     jest.clearAllMocks();
-    await dbInstance.init();
-    await dbInstance.addMultipleIngredients(testIngredients);
-    await dbInstance.addMultipleTags(testTags);
-  });
-
-  afterEach(async () => {
-    await dbInstance.closeAndReset();
   });
 
   describe('initialization from props', () => {
@@ -98,7 +101,7 @@ describe('RecipeFormContext', () => {
       const { result } = renderHook(() => useRecipeForm(), { wrapper });
 
       await waitFor(() => {
-        expect(result.current.state.recipePersons).toBe(2);
+        expect(result.current.state.recipePersons).toBe(4);
       });
     });
   });

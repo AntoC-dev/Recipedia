@@ -1,14 +1,14 @@
-import {Button, Text, View} from 'react-native';
+import { Button, Text, View } from 'react-native';
 import React from 'react';
-import {RecipeIngredientsProps} from '@components/organisms/RecipeIngredients';
-import {formatQuantityForDisplay} from '@utils/Quantity';
+import { RecipeIngredientsProps } from '@components/organisms/RecipeIngredients';
 
 function formatNumericQuantity(quantity: string | number | undefined): string {
-    if (quantity === undefined || quantity === '') return '';
-    const num = typeof quantity === 'number' ? quantity : parseFloat(String(quantity).replace(',', '.'));
-    if (isNaN(num)) return String(quantity);
-    const rounded = Math.round(num * 100) / 100;
-    return rounded.toString();
+  if (quantity === undefined || quantity === '') return '';
+  const num =
+    typeof quantity === 'number' ? quantity : parseFloat(String(quantity).replace(',', '.'));
+  if (isNaN(num)) return String(quantity);
+  const rounded = Math.round(num * 100) / 100;
+  return rounded.toString();
 }
 
 export function recipeIngredientsMock(props: RecipeIngredientsProps) {
@@ -31,15 +31,15 @@ export function recipeIngredientsMock(props: RecipeIngredientsProps) {
           {mode === 'readOnly' ? (
             <>
               <Text testID={`${testID}::${index}::QuantityAndUnit`}>
-                  {`${formatQuantityForDisplay(String(ingredient.quantity ?? ''))} ${ingredient.unit}`}
+                {`${formatNumericQuantity(ingredient.quantity)} ${ingredient.unit}`}
               </Text>
               <Text testID={`${testID}::${index}::IngredientName`}>{ingredient.name}</Text>
             </>
           ) : (
             <>
-                <Text testID={`${testID}::${index}::QuantityInput`}>
-                    {formatNumericQuantity(ingredient.quantity)}
-                </Text>
+              <Text testID={`${testID}::${index}::QuantityInput`}>
+                {formatNumericQuantity(ingredient.quantity)}
+              </Text>
               <Text testID={`${testID}::${index}::UnitInput::CustomTextInput`}>
                 {ingredient.unit}
               </Text>

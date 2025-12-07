@@ -7,23 +7,41 @@ import {
 } from '@hooks/useRecipeIngredients';
 import { RecipeFormProvider, useRecipeForm } from '@context/RecipeFormContext';
 import { RecipeDialogsProvider, useRecipeDialogs } from '@context/RecipeDialogsContext';
-import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 import { createMockRecipeProp } from '@test-helpers/recipeHookTestWrapper';
 import { ingredientType, recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { RecipePropType } from '@customTypes/RecipeNavigationTypes';
-import RecipeDatabase from '@utils/RecipeDatabase';
-import { testTags } from '@data/tagsDataset';
 import { testIngredients } from '@data/ingredientsDataset';
 import * as logger from '@utils/logger';
+
+const mockFindSimilarIngredients = jest.fn();
+const mockAddIngredient = jest.fn();
+
+jest.mock('@context/RecipeDatabaseContext', () => {
+  const { testTags: mockTags } = require('@data/tagsDataset');
+  const { testIngredients: mockIngredients } = require('@data/ingredientsDataset');
+  return {
+    useRecipeDatabase: () => ({
+      ingredients: mockIngredients,
+      tags: mockTags,
+      recipes: [],
+      findSimilarIngredients: mockFindSimilarIngredients,
+      findSimilarTags: jest.fn(() => []),
+      addIngredient: mockAddIngredient,
+      addTag: jest.fn(async (tag: unknown) => tag),
+      isDatabaseReady: true,
+      searchRandomlyTags: jest.fn(() => []),
+      getRandomTags: jest.fn(() => []),
+    }),
+    RecipeDatabaseProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  };
+});
 
 function createIngredientsWrapper(props: RecipePropType) {
   return function Wrapper({ children }: { children: React.ReactNode }) {
     return (
-      <RecipeDatabaseProvider>
-        <RecipeFormProvider props={props}>
-          <RecipeDialogsProvider>{children}</RecipeDialogsProvider>
-        </RecipeFormProvider>
-      </RecipeDatabaseProvider>
+      <RecipeFormProvider props={props}>
+        <RecipeDialogsProvider>{children}</RecipeDialogsProvider>
+      </RecipeFormProvider>
     );
   };
 }
@@ -181,20 +199,30 @@ describe('useRecipeIngredients', () => {
   });
 
   describe('hook functions', () => {
-    const dbInstance = RecipeDatabase.getInstance();
     let loggerWarnSpy: jest.SpyInstance;
 
-    beforeEach(async () => {
+    beforeEach(() => {
       jest.clearAllMocks();
       loggerWarnSpy = jest.spyOn(logger.recipeLogger, 'warn').mockImplementation(() => {});
-      await dbInstance.init();
-      await dbInstance.addMultipleIngredients(testIngredients);
-      await dbInstance.addMultipleTags(testTags);
+      mockFindSimilarIngredients.mockImplementation((name: string) => {
+        const exactMatch = testIngredients.find(i => i.name.toLowerCase() === name.toLowerCase());
+        if (exactMatch) return [exactMatch];
+
+        const fuzzyMatches = testIngredients.filter(i => {
+          const lowerName = i.name.toLowerCase();
+          const searchName = name.toLowerCase();
+          return (
+            lowerName.includes(searchName.substring(0, 3)) ||
+            searchName.includes(lowerName.substring(0, 3))
+          );
+        });
+        return fuzzyMatches;
+      });
+      mockAddIngredient.mockImplementation(async ing => ({ ...ing, id: 100 }));
     });
 
-    afterEach(async () => {
+    afterEach(() => {
       loggerWarnSpy.mockRestore();
-      await dbInstance.closeAndReset();
     });
 
     describe('addNewIngredient', () => {
@@ -342,6 +370,13 @@ describe('useRecipeIngredients', () => {
       });
 
       test('name change triggers validation queue for fuzzy matches', async () => {
+        mockFindSimilarIngredients.mockImplementation((name: string) => {
+          if (name.toLowerCase() === 'spaghettis') {
+            return [testIngredients.find(i => i.name === 'Spaghetti')!];
+          }
+          return [];
+        });
+
         const wrapper = createIngredientsWrapper(
           createMockRecipeProp('edit', recipeWithIngredients)
         );
