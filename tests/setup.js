@@ -31,3 +31,8 @@ if (!global.console._isMocked) {
     _isMocked: true,
   };
 }
+
+// Global teardown to allow async operations to complete before Jest exits
+afterAll(async () => {
+  await new Promise(resolve => setTimeout(resolve, 100));
+});

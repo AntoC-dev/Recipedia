@@ -2,25 +2,38 @@ import { SQLiteDatabase, SQLiteRunResult } from 'expo-sqlite';
 
 export function expoSqliteMock() {
   const Database = require('better-sqlite3');
-  let dbInstance: any;
+  let dbInstance: any = null;
 
   return {
     deleteDatabaseAsync: jest.fn(async (): Promise<void> => {
       if (dbInstance) {
+        try {
+          dbInstance.close();
+        } catch {
+          // Ignore close errors
+        }
         dbInstance = null;
-      } else {
-        throw new Error('Database already deleted or not initialized');
       }
     }),
     openDatabaseAsync: jest.fn(async (): Promise<SQLiteDatabase> => {
-      if (!dbInstance) {
-        dbInstance = new Database(':memory:');
+      // Close existing instance before creating new one
+      if (dbInstance) {
+        try {
+          dbInstance.close();
+        } catch {
+          // Ignore close errors
+        }
       }
+      dbInstance = new Database(':memory:');
       // @ts-ignore
       return {
         closeAsync: jest.fn(async (): Promise<void> => {
           if (dbInstance) {
-            dbInstance.close();
+            try {
+              dbInstance.close();
+            } catch {
+              // Ignore close errors
+            }
             dbInstance = null;
           }
         }),
