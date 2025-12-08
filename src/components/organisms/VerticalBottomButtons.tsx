@@ -32,6 +32,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { View } from 'react-native';
 import { CopilotStep, walkthroughable } from 'react-native-copilot';
 import { useSafeCopilot } from '@hooks/useSafeCopilot';
+import { useRecipeScraper } from '@hooks/useRecipeScraper';
 import { CopilotStepData } from '@customTypes/TutorialTypes';
 import { useI18n } from '@utils/i18n';
 import { TUTORIAL_DEMO_INTERVAL, TUTORIAL_STEPS } from '@utils/Constants';
@@ -41,6 +42,7 @@ import { StackScreenNavigation } from '@customTypes/ScreenTypes';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { FAB, Portal, useTheme } from 'react-native-paper';
 import { padding, screenHeight, screenWidth } from '@styles/spacing';
+import { UrlInputDialog } from '@components/dialogs/UrlInputDialog';
 
 const MAIN_FAB_SIZE = 56;
 const ACTION_BUTTON_SIZE = 40;
@@ -71,8 +73,16 @@ function VerticalBottomButtons() {
   const currentStep = copilotData?.currentStep;
 
   const [open, setOpen] = useState(false);
+  const [urlDialogVisible, setUrlDialogVisible] = useState(false);
   const demoIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const isFocused = useIsFocused();
+
+  const {
+    scrapeAndPrepare,
+    isLoading: isScrapingLoading,
+    error: scrapingError,
+    clearError,
+  } = useRecipeScraper();
 
   const stepOrder = TUTORIAL_STEPS.Home.order;
 
@@ -138,6 +148,28 @@ function VerticalBottomButtons() {
     }
   }
 
+  function handleOpenUrlDialog() {
+    setOpen(false);
+    setUrlDialogVisible(true);
+  }
+
+  function handleCloseUrlDialog() {
+    setUrlDialogVisible(false);
+    clearError();
+  }
+
+  async function handleUrlSubmit(url: string) {
+    const result = await scrapeAndPrepare(url);
+    if (result.success) {
+      setUrlDialogVisible(false);
+      navigate('Recipe', {
+        mode: 'addFromScrape',
+        scrapedData: result.data,
+        sourceUrl: result.sourceUrl,
+      });
+    }
+  }
+
   return (
     <View>
       {copilotData && (
@@ -174,6 +206,14 @@ function VerticalBottomButtons() {
               size: 'medium',
             },
             {
+              icon: Icons.webIcon,
+              label: t('fab.addFromUrl'),
+              onPress: handleOpenUrlDialog,
+              testID: 'UrlButton',
+              style: { borderRadius: 999 },
+              size: 'medium',
+            },
+            {
               icon: Icons.galleryIcon,
               label: t('fab.pickFromGallery'),
               onPress: () => pickImageAndOpenNewRecipe(),
@@ -200,6 +240,14 @@ function VerticalBottomButtons() {
           color={colors.onPrimaryContainer}
         />
       </Portal>
+      <UrlInputDialog
+        testId='VerticalBottomButtons'
+        isVisible={urlDialogVisible}
+        onClose={handleCloseUrlDialog}
+        onSubmit={handleUrlSubmit}
+        isLoading={isScrapingLoading}
+        error={scrapingError}
+      />
     </View>
   );
 }

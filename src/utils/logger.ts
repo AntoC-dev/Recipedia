@@ -62,6 +62,8 @@ const log = logger.createLogger({
     'Database',
     'FileSystem',
     'OCR',
+    'Scraper',
+    'ScrapedRecipe',
     'UI',
     'Home',
     'Recipe',
@@ -90,6 +92,12 @@ export const fileSystemLogger = log.extend('FileSystem');
 
 /** Logger for OCR text recognition and image processing */
 export const ocrLogger = log.extend('OCR');
+
+/** Logger for recipe scraper operations */
+export const scraperLogger = log.extend('Scraper');
+
+/** Logger for scraped recipe validation and processing */
+export const scrapedRecipeLogger = log.extend('ScrapedRecipe');
 
 /** Logger for general UI interactions and component behavior */
 export const uiLogger = log.extend('UI');
@@ -157,6 +165,8 @@ export default {
   database: databaseLogger,
   filesystem: fileSystemLogger,
   ocr: ocrLogger,
+  scraper: scraperLogger,
+  scrapedRecipe: scrapedRecipeLogger,
   ui: uiLogger,
   home: homeLogger,
   recipe: recipeLogger,

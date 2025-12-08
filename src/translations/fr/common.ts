@@ -56,7 +56,18 @@ export default {
 
   fab: {
     addManually: 'Ajouter manuellement',
+    addFromUrl: 'Importer depuis un site web',
     pickFromGallery: 'Choisir depuis la galerie',
     takePhoto: 'Prendre une photo',
+  },
+
+  urlDialog: {
+    title: "Importer une recette depuis l'URL",
+    placeholder: "Collez l'URL de la recette",
+    submit: 'Importer',
+    loading: 'Récupération de la recette...',
+    errorInvalidUrl: 'Veuillez entrer une URL valide',
+    errorScraping: "Impossible d'extraire la recette de cette URL",
+    errorNetwork: 'Erreur réseau. Vérifiez votre connexion.',
   },
 };

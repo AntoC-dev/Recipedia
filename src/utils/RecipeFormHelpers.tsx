@@ -43,6 +43,7 @@ export type {
   EditRecipeProp,
   AddManuallyProp,
   AddFromPicProp,
+  AddFromScrapeProp,
   RecipePropType,
 } from '@customTypes/RecipeNavigationTypes';
 
@@ -57,7 +58,7 @@ export type ModeConfig<T> = Record<recipeStateType, T>;
  * Configuration mapping recipe modes to image button icons
  *
  * - readOnly: No button (undefined)
- * - edit/addManual: Camera icon for taking/selecting photos
+ * - edit/addManual/addScrape: Camera icon for taking/selecting photos
  * - addOCR: Scan icon for OCR extraction
  */
 export const IMAGE_BUTTON_CONFIG: ModeConfig<dictionaryIcons | undefined> = {
@@ -65,6 +66,7 @@ export const IMAGE_BUTTON_CONFIG: ModeConfig<dictionaryIcons | undefined> = {
   [recipeStateType.edit]: Icons.cameraIcon,
   [recipeStateType.addManual]: Icons.cameraIcon,
   [recipeStateType.addOCR]: Icons.scanImageIcon,
+  [recipeStateType.addScrape]: Icons.cameraIcon,
 };
 
 /**
@@ -78,13 +80,14 @@ export const TITLE_STYLE_CONFIG: ModeConfig<'headline' | 'title'> = {
   [recipeStateType.edit]: 'title',
   [recipeStateType.addManual]: 'title',
   [recipeStateType.addOCR]: 'title',
+  [recipeStateType.addScrape]: 'title',
 };
 
 /**
  * Configuration mapping recipe modes to ingredient component modes
  *
  * - readOnly: Display-only mode
- * - edit/addManual: Editable mode with inline editing
+ * - edit/addManual/addScrape: Editable mode with inline editing
  * - addOCR: Add mode with OCR button option
  */
 export const INGREDIENT_MODE_CONFIG: ModeConfig<'readOnly' | 'editable' | 'add'> = {
@@ -92,13 +95,14 @@ export const INGREDIENT_MODE_CONFIG: ModeConfig<'readOnly' | 'editable' | 'add'>
   [recipeStateType.edit]: 'editable',
   [recipeStateType.addManual]: 'editable',
   [recipeStateType.addOCR]: 'add',
+  [recipeStateType.addScrape]: 'editable',
 };
 
 /**
  * Configuration mapping recipe modes to preparation component modes
  *
  * - readOnly: Display-only mode
- * - edit/addManual: Editable mode with step editing
+ * - edit/addManual/addScrape: Editable mode with step editing
  * - addOCR: Add mode with OCR button option
  */
 export const PREPARATION_MODE_CONFIG: ModeConfig<'readOnly' | 'editable' | 'add'> = {
@@ -106,6 +110,7 @@ export const PREPARATION_MODE_CONFIG: ModeConfig<'readOnly' | 'editable' | 'add'
   [recipeStateType.edit]: 'editable',
   [recipeStateType.addManual]: 'editable',
   [recipeStateType.addOCR]: 'add',
+  [recipeStateType.addScrape]: 'editable',
 };
 
 /**
@@ -124,6 +129,8 @@ export function convertModeFromProps(mode: RecipePropType['mode']): recipeStateT
       return recipeStateType.addManual;
     case 'addFromPic':
       return recipeStateType.addOCR;
+    case 'addFromScrape':
+      return recipeStateType.addScrape;
   }
 }
 
@@ -139,6 +146,20 @@ export function hasRecipeFromProps(
   props: RecipePropType
 ): props is { mode: 'readOnly' | 'edit'; recipe: recipeTableElement } {
   return props.mode === 'readOnly' || props.mode === 'edit';
+}
+
+/**
+ * Type guard to check if navigation props include scraped recipe data
+ *
+ * Used to safely access scraped data when in addFromScrape mode.
+ *
+ * @param props - The navigation parameters
+ * @returns True if props contain scraped data (addFromScrape mode)
+ */
+export function hasScrapedDataFromProps(
+  props: RecipePropType
+): props is { mode: 'addFromScrape'; scrapedData: Partial<recipeTableElement>; sourceUrl: string } {
+  return props.mode === 'addFromScrape';
 }
 
 /**
@@ -724,6 +745,13 @@ export function buildRecipeNutritionProps(
         onNutritionChange: setRecipeNutrition,
         openModal: () => openModalForField(recipeColumnsNames.nutrition),
       };
+    case recipeStateType.addScrape:
+      return {
+        parentTestId,
+        nutrition: recipeNutrition,
+        mode: recipeStateType.addScrape,
+        onNutritionChange: setRecipeNutrition,
+      };
   }
 }
 
@@ -750,6 +778,7 @@ export function getValidationButtonConfig(
       return { text: t('validateEdit'), type: 'edit' };
     case recipeStateType.addManual:
     case recipeStateType.addOCR:
+    case recipeStateType.addScrape:
       return { text: t('validateAdd'), type: 'add' };
   }
 }
