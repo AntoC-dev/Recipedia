@@ -177,6 +177,58 @@ export function isTemporaryImageUri(uri: string): boolean {
 }
 
 /**
+ * Downloads an image from a remote URL to the app cache directory.
+ *
+ * Used for downloading recipe images from scraped websites. The image is
+ * stored in the cache directory with a unique filename based on timestamp.
+ *
+ * @param remoteUrl - HTTP/HTTPS URL of the image to download
+ * @returns Promise resolving to the local cache URI, or empty string on failure
+ *
+ * @example
+ * ```typescript
+ * const localUri = await downloadImageToCache('https://example.com/recipe.jpg');
+ * if (localUri) {
+ *   // Use localUri for recipe image
+ * }
+ * ```
+ */
+export async function downloadImageToCache(remoteUrl: string): Promise<string> {
+  if (!remoteUrl) {
+    fileSystemLogger.warn('No URL provided for image download');
+    return '';
+  }
+
+  fileSystemLogger.info('Starting image download', { remoteUrl });
+
+  try {
+    const extension = remoteUrl.split('.').pop()?.split('?')[0] || 'jpg';
+    const filename = `scraped_${Date.now()}.${extension}`;
+    const localUri = CACHE_URI + filename;
+
+    const downloadResult = await FileSystem.downloadAsync(remoteUrl, localUri);
+
+    if (downloadResult.status !== 200) {
+      fileSystemLogger.warn('Image download failed with status', {
+        status: downloadResult.status,
+        remoteUrl,
+      });
+      return '';
+    }
+
+    fileSystemLogger.info('Image downloaded successfully', {
+      remoteUrl,
+      localUri,
+    });
+
+    return downloadResult.uri;
+  } catch (error) {
+    fileSystemLogger.error('Failed to download image', { remoteUrl, error });
+    return '';
+  }
+}
+
+/**
  * Saves a recipe image from cache to permanent storage
  *
  * Takes a temporary image file and saves it to the main app directory with
