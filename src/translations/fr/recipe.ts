@@ -100,4 +100,16 @@ export default {
       perPortion: ['Par portion', 'Pour ce plat'],
     },
   },
+
+  scraper: {
+    ignoredIngredientPrefixes: [
+      'selon le goût',
+      'au goût',
+      'à volonté',
+      'optionnel',
+      'pour garnir',
+      'pour servir',
+    ],
+    stepTitle: 'Étape {{number}}',
+  },
 };

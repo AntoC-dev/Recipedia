@@ -31,7 +31,11 @@ import { defaultValueNumber } from '@utils/Constants';
 import { getDefaultPersons } from '@utils/settings';
 import { scaleQuantityForPersons } from '@utils/Quantity';
 import { RecipePropType } from '@customTypes/RecipeNavigationTypes';
-import { convertModeFromProps, hasRecipeFromProps } from '@utils/RecipeFormHelpers';
+import {
+  convertModeFromProps,
+  hasRecipeFromProps,
+  hasScrapedDataFromProps,
+} from '@utils/RecipeFormHelpers';
 import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
 
 /**
@@ -108,30 +112,108 @@ export interface RecipeFormProviderProps {
 export function RecipeFormProvider({ props, children }: RecipeFormProviderProps) {
   const { searchRandomlyTags } = useRecipeDatabase();
   const initStateFromProp = hasRecipeFromProps(props);
+  const initStateFromScrape = hasScrapedDataFromProps(props);
 
-  const [recipeImage, setRecipeImage] = useState(
-    initStateFromProp ? props.recipe.image_Source : ''
-  );
-  const [recipeTitle, setRecipeTitle] = useState(initStateFromProp ? props.recipe.title : '');
-  const [recipeDescription, setRecipeDescription] = useState(
-    initStateFromProp ? props.recipe.description : ''
-  );
-  const [recipeTags, setRecipeTags] = useState(initStateFromProp ? props.recipe.tags : []);
-  const [recipePersons, setRecipePersons] = useState(
-    initStateFromProp ? props.recipe.persons : defaultValueNumber
-  );
-  const [recipeIngredients, setRecipeIngredients] = useState<
-    (ingredientTableElement | FormIngredientElement)[]
-  >(initStateFromProp ? props.recipe.ingredients : []);
-  const [recipePreparation, setRecipePreparation] = useState(
-    initStateFromProp ? props.recipe.preparation : []
-  );
-  const [recipeTime, setRecipeTime] = useState(
-    initStateFromProp ? props.recipe.time : defaultValueNumber
-  );
-  const [recipeNutrition, setRecipeNutrition] = useState(
-    initStateFromProp ? props.recipe.nutrition : undefined
-  );
+  const getInitialImage = () => {
+    if (initStateFromProp) {
+      return props.recipe.image_Source;
+    }
+    if (initStateFromScrape) {
+      return props.scrapedData.image_Source ?? '';
+    }
+    return '';
+  };
+
+  const getInitialTitle = () => {
+    if (initStateFromProp) {
+      return props.recipe.title;
+    }
+    if (initStateFromScrape) {
+      return props.scrapedData.title ?? '';
+    }
+    return '';
+  };
+
+  const getInitialDescription = () => {
+    if (initStateFromProp) {
+      return props.recipe.description;
+    }
+    if (initStateFromScrape) {
+      return props.scrapedData.description ?? '';
+    }
+    return '';
+  };
+
+  const getInitialTags = () => {
+    if (initStateFromProp) {
+      return props.recipe.tags;
+    }
+    if (initStateFromScrape) {
+      return props.scrapedData.tags ?? [];
+    }
+    return [];
+  };
+
+  const getInitialPersons = () => {
+    if (initStateFromProp) {
+      return props.recipe.persons;
+    }
+    if (initStateFromScrape) {
+      return props.scrapedData.persons ?? defaultValueNumber;
+    }
+    return defaultValueNumber;
+  };
+
+  const getInitialIngredients = () => {
+    if (initStateFromProp) {
+      return props.recipe.ingredients;
+    }
+    if (initStateFromScrape) {
+      return props.scrapedData.ingredients ?? [];
+    }
+    return [];
+  };
+
+  const getInitialPreparation = () => {
+    if (initStateFromProp) {
+      return props.recipe.preparation;
+    }
+    if (initStateFromScrape) {
+      return props.scrapedData.preparation ?? [];
+    }
+    return [];
+  };
+
+  const getInitialTime = () => {
+    if (initStateFromProp) {
+      return props.recipe.time;
+    }
+    if (initStateFromScrape) {
+      return props.scrapedData.time ?? defaultValueNumber;
+    }
+    return defaultValueNumber;
+  };
+
+  const getInitialNutrition = () => {
+    if (initStateFromProp) {
+      return props.recipe.nutrition;
+    }
+    if (initStateFromScrape) {
+      return props.scrapedData.nutrition;
+    }
+    return undefined;
+  };
+
+  const [recipeImage, setRecipeImage] = useState(getInitialImage());
+  const [recipeTitle, setRecipeTitle] = useState(getInitialTitle());
+  const [recipeDescription, setRecipeDescription] = useState(getInitialDescription());
+  const [recipeTags, setRecipeTags] = useState(getInitialTags());
+  const [recipePersons, setRecipePersons] = useState(getInitialPersons());
+  const [recipeIngredients, setRecipeIngredients] =
+    useState<(ingredientTableElement | FormIngredientElement)[]>(getInitialIngredients());
+  const [recipePreparation, setRecipePreparation] = useState(getInitialPreparation());
+  const [recipeTime, setRecipeTime] = useState(getInitialTime());
+  const [recipeNutrition, setRecipeNutrition] = useState(getInitialNutrition());
   const [stackMode, setStackMode] = useState(convertModeFromProps(props.mode));
   const [imgForOCR, setImgForOCR] = useState(props.mode === 'addFromPic' ? [props.imgUri] : []);
   const [randomTags] = useState(searchRandomlyTags(3).map(element => element.name));
@@ -140,14 +222,14 @@ export function RecipeFormProvider({ props, children }: RecipeFormProviderProps)
 
   useEffect(() => {
     const loadDefaultPersons = async () => {
-      if (!initStateFromProp) {
+      if (!initStateFromProp && !initStateFromScrape) {
         const defaultPersons = await getDefaultPersons();
         setRecipePersons(defaultPersons);
       }
     };
 
     loadDefaultPersons();
-  }, [initStateFromProp]);
+  }, [initStateFromProp, initStateFromScrape]);
 
   useEffect(() => {
     const previousPersons = previousPersonsRef.current;

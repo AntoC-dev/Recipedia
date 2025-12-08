@@ -12,6 +12,9 @@ import { useState } from 'react';
 import { nutritionTableElement, recipeColumnsNames } from '@customTypes/DatabaseElementTypes';
 import { extractFieldFromImage } from '@utils/OCR';
 import {
+  addNonDuplicateTags,
+  addOrMergeIngredientMatches,
+  filterOutExistingTags,
   processIngredientsForValidation,
   processTagsForValidation,
 } from '@utils/RecipeValidationHelpers';
@@ -173,28 +176,14 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
       setRecipeDescription(newFieldData.recipeDescription);
     }
     if (newFieldData.recipeTags && newFieldData.recipeTags.length > 0) {
-      const filteredTags = newFieldData.recipeTags.filter(
-        newTag =>
-          !recipeTags.some(existing => existing.name.toLowerCase() === newTag.name.toLowerCase())
-      );
+      const filteredTags = filterOutExistingTags(newFieldData.recipeTags, recipeTags);
       const { exactMatches, needsValidation } = processTagsForValidation(
         filteredTags,
         findSimilarTags
       );
 
       if (exactMatches.length > 0) {
-        setRecipeTags(prev => {
-          const updated = [...prev];
-          for (const tag of exactMatches) {
-            const isDuplicate = updated.some(
-              existing => existing.name.toLowerCase() === tag.name.toLowerCase()
-            );
-            if (!isDuplicate) {
-              updated.push(tag);
-            }
-          }
-          return updated;
-        });
+        setRecipeTags(prev => addNonDuplicateTags(prev, exactMatches));
       }
 
       if (needsValidation.length > 0) {
@@ -221,31 +210,7 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
       );
 
       if (exactMatches.length > 0) {
-        setRecipeIngredients(prev => {
-          const updated = [...prev];
-          for (const ingredient of exactMatches) {
-            const existingIndex = updated.findIndex(
-              existing => existing.name?.toLowerCase() === ingredient.name.toLowerCase()
-            );
-
-            if (existingIndex === -1) {
-              updated.push(ingredient);
-            } else {
-              const existing = updated[existingIndex];
-              if (existing && existing.name && existing.unit === ingredient.unit) {
-                updated[existingIndex] = {
-                  ...existing,
-                  quantity: String(
-                    Number(existing.quantity || 0) + Number(ingredient.quantity || 0)
-                  ),
-                };
-              } else {
-                updated[existingIndex] = ingredient;
-              }
-            }
-          }
-          return updated;
-        });
+        setRecipeIngredients(prev => addOrMergeIngredientMatches(prev, exactMatches));
       }
 
       if (needsValidation.length > 0) {
