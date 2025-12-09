@@ -4,11 +4,10 @@ appId: "com.recipedia"
     file: "../../common/buttonsReadOnly.yaml"
     label: "Assert common ReadOnly buttons and image"
 
-- runFlow:
-    file: "../../common/titleReadOnly.yaml"
-    env:
-      TITLE: "Aiguillettes de poulet façon teriyaki avec des légumes poêlés & du riz basmati"
-    label: "Assert recipe title"
+- assertVisible:
+    id: "RecipeTitle::Text"
+    text: "Aiguillettes de poulet façon teriyaki avec des légumes poêlés & du riz basmati"
+    label: "Title text is displayed"
 
 - scrollUntilVisible:
     element:

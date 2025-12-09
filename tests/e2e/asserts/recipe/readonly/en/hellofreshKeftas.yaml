@@ -1,0 +1,332 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    file: "../../common/buttonsReadOnly.yaml"
+    label: "Assert common ReadOnly buttons and image"
+
+- assertVisible:
+    id: "RecipeTitle::Text"
+    text: "Keftas de bœuf & semoule aux épices avec de la menthe & une sauce yaourt"
+    label: "Title text is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeDescription::Text"
+    direction: DOWN
+    centerElement: true
+    speed: 40
+    label: "Scroll to description section"
+
+- assertVisible:
+    id: "RecipeDescription::Text"
+    text: "Le yaourt à la grecque que vous trouvez dans votre box est un produit 100% origine France, bien que son nom laisse penser le contraire. Produit par la Laiterie du Forez, cette entreprise familiale allie tradition et innovation pour vous offrir un yaourt onctueux et de qualité. Parfait pour sublimer cette recette de kefta de bœuf."
+    label: "Description of the recipe is the exact text"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTags::0::Chip"
+    direction: DOWN
+    centerElement: true
+    speed: 40
+    label: "Scroll to tags section"
+
+- assertVisible:
+    id: "RecipeTags::0::Chip"
+    text: "Épicé"
+    label: "First tag 'Épicé' is rendered"
+
+- assertVisible:
+    id: "RecipeTags::1::Chip"
+    text: "Riche en protéines"
+    label: "Second tag 'Riche en protéines' is rendered"
+
+- assertVisible:
+    id: "RecipeTags::2::Chip"
+    text: "Calorie Smart"
+    label: "Third tag 'Calorie Smart' is rendered"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePersons::Text"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to ingredients section"
+
+- assertVisible:
+    text: "Ingredients (4 persons)"
+    label: "Ingredient section and persons is displayed"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "Carotte"
+      INGREDIENT_QUANTITY_AND_UNIT: "2 g"
+    label: "Assert Carotte ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "Oignon"
+      INGREDIENT_QUANTITY_AND_UNIT: "2 g"
+    label: "Assert Oignon ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "Tête d'ail"
+      INGREDIENT_QUANTITY_AND_UNIT: "2 g"
+    label: "Assert Tête d'ail ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "Menthe"
+      INGREDIENT_QUANTITY_AND_UNIT: "1 g"
+    label: "Assert Menthe ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "Citron"
+      INGREDIENT_QUANTITY_AND_UNIT: "1 g"
+    label: "Assert Citron ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "Viande hachée au bœuf"
+      INGREDIENT_QUANTITY_AND_UNIT: "2 g"
+    label: "Assert Viande hachée au bœuf ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "Mélange d'épices du Moyen-Orient"
+      INGREDIENT_QUANTITY_AND_UNIT: "2 g"
+    label: "Assert Mélange d'épices ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "Épinards"
+      INGREDIENT_QUANTITY_AND_UNIT: "2 g"
+    label: "Assert Épinards ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "Semoule"
+      INGREDIENT_QUANTITY_AND_UNIT: "300 g"
+    label: "Assert Semoule ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "Yaourt à la grecque"
+      INGREDIENT_QUANTITY_AND_UNIT: "2 g"
+    label: "Assert Yaourt à la grecque ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "Huile d'olive"
+      INGREDIENT_QUANTITY_AND_UNIT: "4 g"
+    label: "Assert Huile d'olive ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "Lait"
+      INGREDIENT_QUANTITY_AND_UNIT: "2 g"
+    label: "Assert Lait ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "Bouillon de bœuf"
+      INGREDIENT_QUANTITY_AND_UNIT: "400 g"
+    label: "Assert Bouillon de bœuf ingredient"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTime::Text"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to preparation section"
+
+- assertVisible:
+    id: "RecipeTime::Text"
+    text: "Preparation (40 min)"
+    label: "Preparation section and time are displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to first preparation section"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
+    text: "1) Step 1"
+    label: "First preparation title is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::0::SectionParagraph"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to first preparation paragraph"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::0::SectionParagraph"
+    text: "Veillez à bien respecter les quantités indiquées à gauche pour préparer votre recette ! Épluchez et coupez la carotte en fines demi-lunes de 5 mm (plus la découpe sera fine, plus elle cuira vite). Ciselez l'oignon finement. Faites chauffer un petit filet d'huile d'olive dans une grande sauteuse à feu moyen. Faites-y revenir la carotte et les ⅔ de l'oignon (gardez le reste pour les keftas) 10-15 min avec un filet d'eau à couvert, ou jusqu'à ce que les carottes commencent à devenir fondantes."
+    label: "First preparation paragraph is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to second preparation section"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
+    text: "2) Step 2"
+    label: "Second preparation title is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::1::SectionParagraph"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to second preparation paragraph"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::1::SectionParagraph"
+    text: "Pendant ce temps, ciselez l'ail. Effeuillez et ciselez la menthe. Lavez bien le citron et prélevez-en le zeste avec une râpe fine, puis coupez-le en quartiers. Dans un saladier, mélangez le bœuf avec le reste d'oignon, la moitié de l'ail, ⅓ de la menthe, ½ cc d'épices du Moyen-Orient par personne (ça pique ! Dosez-les selon votre goût), une pincée de zestes de citron (selon votre goût), du sel et du poivre. Versez un petit filet de lait. Avec vos mains, formez 3 petites boulettes allongées et légèrement aplaties par personne."
+    label: "Second preparation paragraph is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to third preparation section"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"
+    text: "3) Step 3"
+    label: "Third preparation title is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::2::SectionParagraph"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to third preparation paragraph"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::2::SectionParagraph"
+    text: "Faites chauffer un petit filet d'huile d'olive dans une poêle à feu moyen-vif. Faites-y revenir les keftas 4-5 min de chaque côté, ou jusqu'à ce qu'elles soient cuites (conservez les sucs de cuisson)."
+    label: "Third preparation paragraph is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::3::SectionTitle"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to fourth preparation section"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::3::SectionTitle"
+    text: "4) Step 4"
+    label: "Fourth preparation title is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::3::SectionParagraph"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to fourth preparation paragraph"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::3::SectionParagraph"
+    text: "Préparez le bouillon dans une casserole à couvert (portez-le à ébullition). Au bout de 10-15 min de cuisson de la carotte et de l'oignon, ajoutez aux légumes le reste de l'ail, 1 cc d'épices du Moyen-Orient par personne et ⅓ de la menthe. Après avoir lavé les épinards, déchirez-les grossièrement avec vos mains par-dessus. Versez 1-2 cs d'eau par personne. Baissez le feu sur doux, couvrez et faites cuire 8-10 min, ou jusqu'à ce que les légumes soient fondants. Salez et poivrez."
+    label: "Fourth preparation paragraph is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::4::SectionTitle"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to fifth preparation section"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::4::SectionTitle"
+    text: "5) Step 5"
+    label: "Fifth preparation title is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::4::SectionParagraph"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to fifth preparation paragraph"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::4::SectionParagraph"
+    text: "Retirez le bouillon du feu et ajoutez-y la semoule. Mélangez. Couvrez et laissez reposer jusqu'à ce qu'elle gonfle et que toute l'eau ait été absorbée. Égrainez la semoule avec une fourchette, et assaisonnez-la avec le jus de cuisson des keftas, quelques gouttes de jus de citron (selon votre goût), le reste de la menthe, du sel et du poivre. Dans un petit bol, mélangez le yaourt avec quelques gouttes de jus de citron et une pincée de zestes (selon votre goût), du sel, du poivre, un filet d’huile d’olive (si vous ne comptez pas les calories) et un petit filet d'eau."
+    label: "Fifth preparation paragraph is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::5::SectionTitle"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to sixth preparation section"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::5::SectionTitle"
+    text: "6) Step 6"
+    label: "Sixth preparation title is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::5::SectionParagraph"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to sixth preparation paragraph"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::5::SectionParagraph"
+    text: "Servez la semoule dans des assiettes creuses. Ajoutez les légumes par-dessus, puis les keftas. Arrosez le tout de sauce. LE SAVIEZ-VOUS ? Votre plat contient de la vitamine A, une vitamine qui contribue au métabolisme normal du fer."
+    label: "Sixth preparation paragraph is displayed"
+
+- runFlow:
+    file: "../../common/nutritionReadOnly.yaml"
+    env:
+      ENERGY_KCAL: "116"
+      ENERGY_KJ: "485.3"
+      FAT: "4.9"
+      SATURATED_FAT: "1.8"
+      CARBOHYDRATES: "11"
+      SUGARS: "2.4"
+      FIBER: "1.8"
+      PROTEIN: "6.4"
+      SALT: "0.7"
+    label: "Verify nutrition section is displayed with correct values"

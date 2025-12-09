@@ -4,11 +4,10 @@ appId: "com.recipedia"
     file: "../../common/buttonsReadOnly.yaml"
     label: "Assert common ReadOnly buttons and image"
 
-- runFlow:
-    file: "../../common/titleReadOnly.yaml"
-    env:
-      TITLE: "TAJINE DE MERGUEZ AU CUMIN"
-    label: "Assert recipe title"
+- assertVisible:
+    id: "RecipeTitle::Text"
+    text: "TAJINE DE MERGUEZ AU CUMIN"
+    label: "Title text is displayed"
 
 - assertVisible:
     id: "RecipeDescription::Text"

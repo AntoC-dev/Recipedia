@@ -4,11 +4,10 @@ appId: "com.recipedia"
     file: "../../common/buttonsReadOnly.yaml"
     label: "Assert common ReadOnly buttons and image"
 
-- runFlow:
-    file: "../../common/titleReadOnly.yaml"
-    env:
-      TITLE: "CURRY DE POIS CHICHES ET POIREAU AUX ÉPICES CACHEMIRE"
-    label: "Assert recipe title"
+- assertVisible:
+    id: "RecipeTitle::Text"
+    text: "CURRY DE POIS CHICHES ET POIREAU AUX ÉPICES CACHEMIRE"
+    label: "Title text is displayed"
 
 - assertVisible:
     id: "RecipeDescription::Text"
