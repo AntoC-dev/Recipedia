@@ -1,0 +1,13 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    file: "buttonsFilledCommon.yaml"
+    label: "Assert common filled buttons (French)"
+
+- assertVisible:
+    id: "RecipeImage::RoundButton"
+    label: "Image button is rendered"
+
+- assertVisible:
+    text: "󰄀"
+    label: "Web image button has the link icon"

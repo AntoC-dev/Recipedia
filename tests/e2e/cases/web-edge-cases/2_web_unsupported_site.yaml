@@ -1,0 +1,55 @@
+name: "2 - Web Unsupported Site"
+appId: "com.recipedia"
+tags:
+  - web
+  - edge-case
+---
+- runFlow:
+    file: "../../flows/setupTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- runFlow:
+    file: "../../flows/recipe/adding/web/openUrlDialog.yaml"
+    label: "Action - Open URL dialog"
+
+- tapOn:
+    id: "VerticalBottomButtons::UrlDialog::Input::CustomTextInput"
+    label: "Action - Focus on URL input"
+
+- inputText:
+    text: "https://example.com"
+    label: "Action - Enter valid URL without recipe data"
+
+- hideKeyboard:
+    label: "Hide keyboard"
+
+- tapOn:
+    id: "VerticalBottomButtons::UrlDialog::SubmitButton"
+    label: "Action - Submit URL"
+
+- extendedWaitUntil:
+    visible:
+      id: "VerticalBottomButtons::UrlDialog::HelperText"
+    timeout: 30000
+    label: "Wait for scraping error to appear"
+
+- assertVisible:
+    id: "VerticalBottomButtons::UrlDialog::HelperText"
+    text: "recipe-scrapers \\(\\d+\\.\\d+\\.\\d+\\) exception: No Recipe Schema found at https://example\\.com\\."
+    label: "Assert - Scraping error is displayed"
+
+- assertNotVisible:
+    id: "VerticalBottomButtons::UrlDialog::Loading"
+    label: "Assert - Loading indicator is gone"
+
+- tapOn:
+    id: "VerticalBottomButtons::UrlDialog::CancelButton"
+    label: "Cleanup - Close dialog"
+
+- assertNotVisible:
+    id: "VerticalBottomButtons::UrlDialog::Title"
+    label: "Assert - Dialog is closed"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Cleanup - Return to home screen"

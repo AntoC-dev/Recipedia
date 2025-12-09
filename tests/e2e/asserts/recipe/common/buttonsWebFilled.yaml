@@ -6,8 +6,8 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeImage::RoundButton"
-    label: "OCR image button is rendered"
+    label: "Image button is rendered"
 
 - assertVisible:
-    text: "󰘤"
-    label: "OCR image button has the camera icon"
+    text: "󰄀"
+    label: "Web image button has the link icon"

@@ -1,0 +1,50 @@
+name: "1 - Web Invalid URL"
+appId: "com.recipedia"
+tags:
+  - web
+  - edge-case
+---
+- runFlow:
+    file: "../../flows/setupFirstTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- runFlow:
+    file: "../../flows/recipe/adding/web/openUrlDialog.yaml"
+    label: "Action - Open URL dialog"
+
+- tapOn:
+    id: "VerticalBottomButtons::UrlDialog::Input::CustomTextInput"
+    label: "Action - Focus on URL input"
+
+- inputText:
+    text: "not-a-valid-url"
+    label: "Action - Enter invalid URL"
+
+- hideKeyboard:
+    label: "Hide keyboard"
+- tapOn:
+    id: "VerticalBottomButtons::UrlDialog::SubmitButton"
+    label: "Try to import the recipe with an invalid URL"
+
+- extendedWaitUntil:
+    visible:
+      id: "VerticalBottomButtons::UrlDialog::HelperText"
+    timeout: 30000
+    label: "Wait for scraping error to appear"
+
+- assertVisible:
+    id: "VerticalBottomButtons::UrlDialog::HelperText"
+    label: "Assert - Error helper text is visible"
+
+- assertVisible:
+    id: "VerticalBottomButtons::UrlDialog::HelperText"
+    text: "Failed to retrieve HTML content from https://not-a-valid-url."
+    label: "Assert - Helper text with error message is displayed"
+
+- tapOn:
+    id: "VerticalBottomButtons::UrlDialog::CancelButton"
+    label: "Cleanup - Close dialog"
+
+- assertNotVisible:
+    id: "VerticalBottomButtons::UrlDialog::Title"
+    label: "Assert - Dialog is closed"

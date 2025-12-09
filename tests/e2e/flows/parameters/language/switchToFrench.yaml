@@ -1,6 +1,10 @@
 appId: "com.recipedia"
 ---
 - tapOn:
+    id: "BottomTabs::Parameters"
+    label: "Navigate to Parameters screen"
+
+- tapOn:
     id: "Parameters::Section::Appearance::Language::Item"
     label: "Tap on the language item to open the language settings"
 - runFlow:

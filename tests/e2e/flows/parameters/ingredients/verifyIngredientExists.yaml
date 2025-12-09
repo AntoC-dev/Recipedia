@@ -1,0 +1,81 @@
+appId: "com.recipedia"
+---
+- scrollUntilVisible:
+    element:
+      text: "${INGREDIENT_NAME}"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to find ${INGREDIENT_NAME} ingredient"
+
+- assertVisible:
+    text: "${INGREDIENT_NAME}"
+    id: "IngredientsSettings::${INGREDIENT_INDEX}::IngredientName"
+    label: "Verify ${INGREDIENT_NAME} ingredient name exists in database"
+
+- scrollUntilVisible:
+    element:
+      id: "IngredientsSettings::${INGREDIENT_INDEX}::IntroType"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to find ingredient type"
+
+- assertVisible:
+    id: "IngredientsSettings::${INGREDIENT_INDEX}::IntroType"
+    text: "Type:"
+    label: "Verify type label is displayed"
+
+- assertVisible:
+    id: "IngredientsSettings::${INGREDIENT_INDEX}::Type"
+    text: "${INGREDIENT_TYPE}"
+    label: "Verify ingredient type ${INGREDIENT_TYPE} is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "IngredientsSettings::${INGREDIENT_INDEX}::IntroUnit"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to find ingredient unit"
+
+- assertVisible:
+    id: "IngredientsSettings::${INGREDIENT_INDEX}::IntroUnit"
+    text: "Unit:"
+    label: "Verify unit label is displayed"
+
+- assertVisible:
+    id: "IngredientsSettings::${INGREDIENT_INDEX}::Unit"
+    text: "${INGREDIENT_UNIT}"
+    label: "Verify ingredient unit ${INGREDIENT_UNIT} is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "IngredientsSettings::${INGREDIENT_INDEX}::SeasonalityCalendar::SeasonalityText"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to find ingredient unit"
+
+- assertVisible:
+    id: "IngredientsSettings::${INGREDIENT_INDEX}::SeasonalityCalendar::SeasonalityText"
+    text: "Seasonality:"
+    label: "Verify seasonality label is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "IngredientsSettings::${INGREDIENT_INDEX}::EditButton"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to find edit and delete buttons"
+
+- assertVisible:
+    id: "IngredientsSettings::${INGREDIENT_INDEX}::EditButton-text"
+    text: "Edit"
+    label: "Verify edit button is displayed"
+
+- assertVisible:
+    id: "IngredientsSettings::${INGREDIENT_INDEX}::DeleteButton-text"
+    text: "Delete"
+    label: "Verify delete button is displayed"

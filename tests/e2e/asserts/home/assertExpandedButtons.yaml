@@ -12,6 +12,9 @@ appId: "com.recipedia"
 - assertVisible:
     id: "CameraButton"
     label: "Camera button is visible"
+- assertVisible:
+    id: "UrlButton"
+    label: "URL button is visible"
 
 - assertNotVisible:
     id: "ExpandButton"

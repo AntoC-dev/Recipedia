@@ -1,0 +1,26 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "VerticalBottomButtons::UrlDialog::Input::CustomTextInput"
+    label: "Focus on URL input field"
+
+- inputText: ${RECIPE_URL}
+
+- hideKeyboard:
+    label: "Close keyboard"
+
+- tapOn:
+    id: "VerticalBottomButtons::UrlDialog::SubmitButton"
+    label: "Submit URL for scraping"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipeImage::Image"
+    timeout: 30000
+    label: "Wait for recipe screen to load after scraping"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipeTitle::CustomTextInput"
+    timeout: 5000
+    label: "Wait for recipe title to be populated"

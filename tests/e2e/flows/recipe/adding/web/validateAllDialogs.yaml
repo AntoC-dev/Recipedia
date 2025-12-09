@@ -1,0 +1,15 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    file: "../../validation/validateAllTags.yaml"
+    label: "Validate all tags from web scraper"
+
+- runFlow:
+    file: "../../validation/validateAllIngredients.yaml"
+    label: "Validate all ingredients from web scraper"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "RecipeValidation::ValidationQueue::Ingredient::SimilarityDialog::Title"
+    timeout: 5000
+    label: "Wait for all validation dialogs to close"

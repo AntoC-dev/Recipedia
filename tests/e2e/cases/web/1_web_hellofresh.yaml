@@ -1,0 +1,78 @@
+name: "1 - Web HelloFresh Flow"
+appId: "com.recipedia"
+tags:
+  - web
+---
+- runFlow:
+    file: "../../flows/setupTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- runFlow:
+    file: "../../flows/parameters/language/switchToFrench.yaml"
+    label: "Setup - Switch to French language"
+
+- runFlow:
+    file: "../../flows/recipe/adding/web/addRecipeFromUrl.yaml"
+    env:
+      RECIPE_URL: "https://www.hellofresh.fr/recipes/keftas-de-boeuf-and-semoule-aux-epices-66e83b9e7dfc60d59bf5f913"
+    label: "Action - Add recipe from HelloFresh URL"
+
+- runFlow:
+    file: "../../asserts/recipe/web/fr/hellofreshKeftas.yaml"
+    label: "Assert - Verify scraped recipe data (French)"
+
+- tapOn:
+    id: "Recipe::BottomActionButton"
+    label: "Action - Validate the recipe"
+
+- runFlow:
+    file: "../../asserts/alerts/fr/recipeAddedToDatabase.yaml"
+    env:
+      RECIPE_NAME: "Keftas de bœuf & semoule aux épices avec de la menthe & une sauce yaourt"
+    label: "Assert - Verify recipe added successfully (French)"
+
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Verification - Navigate to Search screen"
+
+- tapOn:
+    id: "SearchScreen::SearchBar"
+    label: "Verification - Focus on search bar"
+
+- inputText:
+    text: "Keftas"
+    label: "Verification - Search for new recipe"
+
+- pressKey: enter
+
+- tapOn:
+    id: "SearchScreen::RecipeCards::0::.*"
+    label: "Verification - Open newly created recipe"
+
+- runFlow:
+    file: "../../asserts/recipe/readonly/fr/hellofreshKeftas.yaml"
+    label: "Assert - Verify recipe content in read-only mode (French)"
+
+- tapOn:
+    id: "Recipe::AppBar::Delete"
+    label: "Cleanup - Remove the recipe"
+
+- tapOn:
+    id: "Recipe::Dialog::Confirm"
+    label: "Cleanup - Confirm recipe deletion"
+
+- tapOn:
+    id: "Recipe::Dialog::Confirm"
+    label: "Cleanup - Close confirmation dialog"
+
+- tapOn:
+    id: "SearchScreen::SearchBar::RightIcon"
+    label: "Cleanup - Clear search filter"
+
+- runFlow:
+    file: "../../flows/parameters/language/switchToEnglish.yaml"
+    label: "Cleanup - Switch back to English language"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Cleanup - Return to home screen"

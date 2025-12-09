@@ -25,39 +25,9 @@ appId: "com.recipedia"
       platform: Android
 # TODO iOS
 
-- repeat:
-    while:
-      visible:
-        id: "RecipeValidation::ValidationQueue::Ingredient::SimilarityDialog::Title"
-    commands:
-      - tapOn:
-          id: "RecipeValidation::ValidationQueue::Ingredient::SimilarityDialog::AddButton"
-          label: "Select to add the ingredient"
-
-      - tapOn:
-          id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::Menu::Button"
-          label: "Select the ingredient type"
-      - tapOn:
-          id: "menu-item"
-          label: "Select any ingredient type"
-
-      - tapOn:
-          id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::Unit::CustomTextInput"
-          label: "Tap on the ingredient unit"
-      - inputText:
-          text: "g"
-          label: "Enter the ingredient unit"
-      - hideKeyboard:
-          label: "Close the keyboard"
-
-      - assertVisible:
-          id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::ConfirmButton"
-          enabled: true
-          label: "Verify Add button is enabled"
-
-      - tapOn:
-          id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::ConfirmButton"
-          label: "Validate the ingredient as is"
+- runFlow:
+    file: "../../../validation/validateAllIngredients.yaml"
+    label: "Validate all ingredients from OCR"
 
 - extendedWaitUntil:
     visible:

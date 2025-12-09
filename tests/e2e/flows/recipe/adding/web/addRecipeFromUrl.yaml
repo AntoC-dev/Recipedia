@@ -1,0 +1,15 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    file: "openUrlDialog.yaml"
+    label: "Open URL input dialog"
+
+- runFlow:
+    file: "submitUrl.yaml"
+    env:
+      RECIPE_URL: ${RECIPE_URL}
+    label: "Submit recipe URL and wait for scraping"
+
+- runFlow:
+    file: "validateAllDialogs.yaml"
+    label: "Add all tags and ingredients from validation dialogs"

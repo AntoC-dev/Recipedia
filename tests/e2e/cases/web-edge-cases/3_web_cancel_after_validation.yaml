@@ -1,0 +1,104 @@
+name: "3 - Web Cancel After Validation"
+appId: "com.recipedia"
+tags:
+  - web
+  - edge-case
+---
+- runFlow:
+    file: "../../flows/setupTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- runFlow:
+    file: "../../flows/recipe/adding/web/openUrlDialog.yaml"
+    label: "Action - Open URL dialog"
+
+- runFlow:
+    file: "../../flows/recipe/adding/web/submitUrl.yaml"
+    env:
+      RECIPE_URL: "https://www.hellofresh.fr/recipes/keftas-de-boeuf-and-semoule-aux-epices-66e83b9e7dfc60d59bf5f913"
+    label: "Action - Submit HelloFresh URL"
+
+- runFlow:
+    file: "../../flows/recipe/validation/validateOneTag.yaml"
+    label: "Action - Add one tag through validation"
+
+- runFlow:
+    file: "../../flows/recipe/validation/cancelAllRemainingTagDialogs.yaml"
+    label: "Action - Cancel all remaining tag validation dialogs"
+
+- runFlow:
+    file: "../../flows/recipe/validation/validateOneIngredient.yaml"
+    label: "Action - Add one ingredient through validation"
+
+- runFlow:
+    file: "../../flows/recipe/validation/cancelAllRemainingDialogs.yaml"
+    label: "Action - Cancel all remaining ingredient validation dialogs"
+
+- tapOn:
+    id: "Recipe::AppBar::BackButton"
+    label: "Action - Cancel recipe creation by pressing back"
+
+- assertNotVisible:
+    id: "RecipeTitle::CustomTextInput"
+    label: "Assert - Recipe screen is closed"
+
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Verification - Navigate to Search screen"
+
+- tapOn:
+    id: "SearchScreen::SearchBar"
+    label: "Verification - Focus on search bar"
+
+- inputText:
+    text: "Keftas"
+    label: "Verification - Search for the recipe"
+
+- pressKey: enter
+
+- assertVisible:
+    id: "SearchScreen::TextWhenEmpty"
+    label: "Assert - Recipe was not added to database (empty search results)"
+
+- tapOn:
+    id: "SearchScreen::SearchBar::RightIcon"
+    label: "Cleanup - Clear search filter"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Verification - Return to home to check tags/ingredients"
+
+- runFlow:
+    file: "../../flows/parameters/tags/navigateToTagsSettings.yaml"
+    label: "Verification - Navigate to Tags settings"
+
+- runFlow:
+    file: "../../flows/parameters/tags/verifyTagExists.yaml"
+    env:
+      TAG_NAME: "Épicé"
+    label: "Assert - First tag from HelloFresh was added to database"
+
+- tapOn:
+    id: "TagsSettings::AppBar::BackButton"
+    label: "Navigation - Return to Parameters"
+
+- runFlow:
+    file: "../../flows/parameters/ingredients/navigateToIngredientsSettings.yaml"
+    label: "Verification - Navigate to Ingredients settings"
+
+- runFlow:
+    file: "../../flows/parameters/ingredients/verifyIngredientExists.yaml"
+    env:
+      INGREDIENT_NAME: "Carotte"
+      INGREDIENT_TYPE: "Cereal"
+      INGREDIENT_UNIT: "g"
+      INGREDIENT_INDEX: "4"
+    label: "Assert - First ingredient from HelloFresh was added to database"
+
+- tapOn:
+    id: "IngredientsSettings::AppBar::BackButton"
+    label: "Cleanup - Return to Parameters"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Cleanup - Return to home screen"

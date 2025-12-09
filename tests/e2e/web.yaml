@@ -1,0 +1,6 @@
+flows:
+  - cases/web/1_web_hellofresh.yaml
+
+executionOrder:
+  flowsOrder:
+    - "1 - Web HelloFresh Flow"

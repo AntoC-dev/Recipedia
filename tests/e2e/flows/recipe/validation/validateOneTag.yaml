@@ -1,0 +1,15 @@
+appId: "com.recipedia"
+---
+- extendedWaitUntil:
+    visible:
+      id: "RecipeValidation::ValidationQueue::Tag::SimilarityDialog::Title"
+    timeout: 5000
+    label: "Wait for tag validation dialog"
+
+- tapOn:
+    id: "RecipeValidation::ValidationQueue::Tag::SimilarityDialog::AddButton"
+    label: "Select to add the tag"
+
+- tapOn:
+    id: "RecipeValidation::ValidationQueue::Tag::ItemDialog::AddModal::ConfirmButton"
+    label: "Confirm adding the tag"
