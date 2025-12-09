@@ -1,0 +1,144 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'com.chaquo.python'
+
+group = 'expo.modules.recipescraper'
+
+def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+if (expoModulesCorePlugin.exists()) {
+  apply from: expoModulesCorePlugin
+  applyKotlinExpoModulesCorePlugin()
+
+  useCoreDependencies()
+  useDefaultAndroidSdkVersions()
+}
+
+// Directory for locally-built wheels (not committed to git)
+def localWheelsDir = file("${projectDir}/build/wheels")
+
+// Task to build wheels for packages that only provide sdist on PyPI
+// Chaquopy 17+ uses --only-binary, so we must pre-build these wheels
+task buildLocalWheels(type: Exec) {
+  description = 'Build wheels for pure-Python packages not available as wheels on PyPI'
+
+  outputs.dir localWheelsDir
+  outputs.upToDateWhen {
+    file("${localWheelsDir}/jstyleson-0.0.2-py3-none-any.whl").exists()
+  }
+
+  doFirst {
+    localWheelsDir.mkdirs()
+  }
+
+  commandLine 'pip3', 'wheel', 'jstyleson==0.0.2', '--no-deps', '-w', localWheelsDir.absolutePath
+}
+
+// Make Python requirements installation depend on wheel building
+tasks.configureEach { task ->
+  if (task.name.contains('PythonRequirements')) {
+    task.dependsOn buildLocalWheels
+  }
+}
+
+// Directory for Python tests (shared across platforms)
+def pythonTestsDir = file("${projectDir}/../python/tests")
+def pythonVenvDir = file("${projectDir}/../python/.venv")
+
+// Task to setup Python virtual environment with pytest
+task setupPythonTestEnv(type: Exec) {
+  description = 'Setup Python virtual environment for testing'
+  group = 'verification'
+
+  // Only run if venv doesn't exist
+  onlyIf { !file("${pythonVenvDir}/bin/pytest").exists() }
+
+  workingDir file("${projectDir}/../python")
+
+  commandLine 'bash', '-c', '''
+    python3 -m venv .venv 2>/dev/null || python3.13 -m venv .venv
+    source .venv/bin/activate
+    pip install --quiet pytest "recipe-scrapers[online]>=15.0.0"
+  '''
+
+  doFirst {
+    println "Setting up Python test environment..."
+  }
+}
+
+// Task to run Python unit tests before build
+// Tests are in the shared python/ directory at module root
+task testPython(type: Exec) {
+  description = 'Run Python pytest tests for recipe-scraper module'
+  group = 'verification'
+
+  dependsOn setupPythonTestEnv
+
+  // Only run if tests directory exists
+  onlyIf { pythonTestsDir.exists() }
+
+  workingDir file("${projectDir}/../python")
+
+  // Use the virtual environment's pytest
+  commandLine 'bash', '-c', '''
+    source .venv/bin/activate
+    python -m pytest tests/ -v --tb=short -x
+  '''
+
+  doFirst {
+    println "Running Python tests from: ${pythonTestsDir}"
+  }
+}
+
+// Make assemble tasks depend on Python tests
+// This ensures tests run before any build
+tasks.configureEach { task ->
+  if (task.name.matches('assemble.*') || task.name.matches('bundle.*')) {
+    task.dependsOn testPython
+  }
+}
+
+android {
+  namespace "expo.modules.recipescraper"
+  defaultConfig {
+    versionCode 1
+    versionName "1.0.0"
+
+    ndk {
+      abiFilters "arm64-v8a", "x86_64"
+    }
+
+    python {
+      pip {
+        // Include locally-built wheels for packages not available as wheels on PyPI
+        // (jstyleson only provides sdist, but Chaquopy 17+ requires wheels from remote indexes)
+        options "--find-links", "${localWheelsDir.absolutePath}"
+        // Pin extruct>=0.17.0 for lxml 5.3.0 compatibility (fixes _ElementStringResult import error)
+        // See: https://github.com/scrapinghub/extruct/issues/230
+        install "extruct>=0.17.0"
+        // recipe-scrapers v15+ requires [online] extra for URL fetching (uses requests)
+        install "recipe-scrapers[online]>=15.0.0"
+      }
+    }
+  }
+
+  lintOptions {
+    abortOnError false
+  }
+
+  sourceSets {
+    main {
+      python.srcDir "src/main/python"
+    }
+  }
+}
+
+chaquopy {
+  defaultConfig {
+    version = "3.13"
+    buildPython "/opt/homebrew/bin/python3.13"
+  }
+}
+
+dependencies {
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7"
+}
