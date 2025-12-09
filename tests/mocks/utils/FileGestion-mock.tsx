@@ -2,6 +2,8 @@ const mockDirectoryUri = '';
 
 export const getDirectoryUri = jest.fn().mockReturnValue(mockDirectoryUri);
 
+export const mockDownloadImageToCache = jest.fn();
+
 export const getCacheUri = jest.fn().mockReturnValue('');
 
 export const isTemporaryImageUri = jest.fn().mockImplementation((uri: string): boolean => {
@@ -40,5 +42,14 @@ export function fileGestionMock() {
     init,
     copyDatasetImages,
     transformDatasetRecipeImages,
+    downloadImageToCache: mockDownloadImageToCache,
   };
+}
+
+export function mockDownloadImageToCacheSuccess(path = '/local/path/image.jpg') {
+  mockDownloadImageToCache.mockResolvedValue(path);
+}
+
+export function mockDownloadImageToCacheFailure() {
+  mockDownloadImageToCache.mockResolvedValue(null);
 }

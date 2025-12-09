@@ -18,35 +18,44 @@ export function SimilarityDialog({ testId, isVisible, onClose, item }: Similarit
       <Button
         testID={`${mockTestId}::item.onConfirm`}
         title='item.onConfirm'
-        onPress={() =>
-          item.type === 'Tag'
-            ? item.onConfirm({ id: 1, name: item.newItemName })
-            : item.onConfirm({
-                id: 1,
-                name: item.newItemName,
-                type: ingredientType.vegetable,
-                unit: '',
-                season: [],
-              })
-        }
+        onPress={() => {
+          if (item.type === 'Tag') {
+            item.onConfirm({ id: 1, name: item.newItemName });
+          } else {
+            item.onConfirm({
+              id: 1,
+              name: item.newItemName,
+              type: ingredientType.vegetable,
+              unit: 'g',
+              quantity: '100',
+              season: [],
+            });
+          }
+          onClose();
+        }}
       />
-      {item.onUseExisting && (
+      {item.onUseExisting && item.similarItem && (
         <Button
           testID={`${mockTestId}::item.onUseExisting`}
           title='item.onUseExisting'
-          onPress={() =>
-            item.similarItem &&
-            (item.type === 'Tag'
-              ? item.onUseExisting?.(item.similarItem)
-              : item.onUseExisting?.(item.similarItem))
-          }
+          onPress={() => {
+            if (item.type === 'Tag' && item.similarItem) {
+              item.onUseExisting?.(item.similarItem);
+            } else if (item.type === 'Ingredient' && item.similarItem) {
+              item.onUseExisting?.(item.similarItem);
+            }
+            onClose();
+          }}
         />
       )}
       {item.onDismiss && (
         <Button
           testID={`${mockTestId}::item.onDismiss`}
           title='item.onDismiss'
-          onPress={item.onDismiss}
+          onPress={() => {
+            item.onDismiss?.();
+            onClose();
+          }}
         />
       )}
     </View>

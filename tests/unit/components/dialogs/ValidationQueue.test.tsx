@@ -7,6 +7,7 @@ import { testTags } from '@test-data/tagsDataset';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testRecipes } from '@test-data/recipesDataset';
 import {
+  FormIngredientElement,
   ingredientTableElement,
   ingredientType,
   tagTableElement,
@@ -197,7 +198,7 @@ describe('ValidationQueue', () => {
       ).toBe('Tomato');
     });
 
-    test('preserves quantity and unit from original ingredient when validated', () => {
+    test('preserves quantity from original and uses DB unit when validated', () => {
       const { getByTestId } = renderQueueIngredients([sampleIngredients[0]]);
 
       fireEvent.press(
@@ -460,6 +461,136 @@ describe('ValidationQueue', () => {
         expect(mockOnComplete).toHaveBeenCalledTimes(1);
         expect(mockOnValidated).not.toHaveBeenCalled();
       });
+    });
+  });
+
+  describe('Ingredient Validation Bug Fixes', () => {
+    const mockOnDismissed = jest.fn();
+
+    const renderQueueIngredientsWithDismissed = (items: FormIngredientElement[]) => {
+      return render(
+        <RecipeDatabaseProvider>
+          <ValidationQueue
+            type={'Ingredient'}
+            items={items as ingredientTableElement[]}
+            onValidated={mockOnValidated}
+            onDismissed={mockOnDismissed}
+            onComplete={mockOnComplete}
+            testId='test-validation'
+          />
+        </RecipeDatabaseProvider>
+      );
+    };
+
+    beforeEach(() => {
+      mockOnDismissed.mockClear();
+    });
+
+    test('calls onDismissed with original ingredient before onValidated', async () => {
+      const formIngredients: FormIngredientElement[] = [
+        { name: 'Oignon', quantity: '100', unit: 'g' },
+      ];
+
+      const { getByTestId } = renderQueueIngredientsWithDismissed(formIngredients);
+
+      fireEvent.press(
+        getByTestId(
+          'test-validation::ValidationQueue::Ingredient::SimilarityDialog::Mock::item.onConfirm'
+        )
+      );
+
+      expect(mockOnDismissed).toHaveBeenCalledTimes(1);
+      expect(mockOnValidated).toHaveBeenCalledTimes(1);
+
+      const dismissedIngredient = mockOnDismissed.mock.calls[0][0];
+      expect(dismissedIngredient.name).toBe('Oignon');
+      expect(dismissedIngredient.quantity).toBe('100');
+    });
+
+    test('uses original quantity when available', () => {
+      const formIngredients: FormIngredientElement[] = [
+        { name: 'Tomato', quantity: '250', unit: 'g' },
+      ];
+
+      const { getByTestId } = renderQueueIngredientsWithDismissed(formIngredients);
+
+      fireEvent.press(
+        getByTestId(
+          'test-validation::ValidationQueue::Ingredient::SimilarityDialog::Mock::item.onConfirm'
+        )
+      );
+
+      const validatedIngredient = mockOnValidated.mock.calls[0][0];
+      expect(validatedIngredient.quantity).toBe('250');
+    });
+
+    test('uses validated quantity when original quantity is undefined', () => {
+      const formIngredients: FormIngredientElement[] = [{ name: 'Tomato', unit: 'g' }];
+
+      const { getByTestId } = renderQueueIngredientsWithDismissed(formIngredients);
+
+      fireEvent.press(
+        getByTestId(
+          'test-validation::ValidationQueue::Ingredient::SimilarityDialog::Mock::item.onConfirm'
+        )
+      );
+
+      const validatedIngredient = mockOnValidated.mock.calls[0][0];
+      expect(validatedIngredient.quantity).toBe('100');
+    });
+
+    test('uses validated quantity when original quantity is empty string', () => {
+      const formIngredients: FormIngredientElement[] = [
+        { name: 'Tomato', quantity: '', unit: 'g' },
+      ];
+
+      const { getByTestId } = renderQueueIngredientsWithDismissed(formIngredients);
+
+      fireEvent.press(
+        getByTestId(
+          'test-validation::ValidationQueue::Ingredient::SimilarityDialog::Mock::item.onConfirm'
+        )
+      );
+
+      const validatedIngredient = mockOnValidated.mock.calls[0][0];
+      expect(validatedIngredient.quantity).toBe('100');
+    });
+
+    test('preserves database ingredient metadata in validated result', () => {
+      const formIngredients: FormIngredientElement[] = [
+        { name: 'Tomato', quantity: '100', unit: 'pieces' },
+      ];
+
+      const { getByTestId } = renderQueueIngredientsWithDismissed(formIngredients);
+
+      fireEvent.press(
+        getByTestId(
+          'test-validation::ValidationQueue::Ingredient::SimilarityDialog::Mock::item.onConfirm'
+        )
+      );
+
+      const validatedIngredient = mockOnValidated.mock.calls[0][0];
+      expect(validatedIngredient.name).toBeDefined();
+    });
+
+    test('handles onUseExisting similarly to onConfirm for ingredients', () => {
+      const formIngredients: FormIngredientElement[] = [
+        { name: 'Onion', quantity: '50', unit: 'g' },
+      ];
+
+      const { getByTestId } = renderQueueIngredientsWithDismissed(formIngredients);
+
+      fireEvent.press(
+        getByTestId(
+          'test-validation::ValidationQueue::Ingredient::SimilarityDialog::Mock::item.onUseExisting'
+        )
+      );
+
+      expect(mockOnDismissed).toHaveBeenCalledTimes(1);
+      expect(mockOnValidated).toHaveBeenCalledTimes(1);
+
+      const validatedIngredient = mockOnValidated.mock.calls[0][0];
+      expect(validatedIngredient.quantity).toBe('50');
     });
   });
 });

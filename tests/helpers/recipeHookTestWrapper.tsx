@@ -4,13 +4,16 @@ import { RecipeFormProvider } from '@context/RecipeFormContext';
 import { RecipeDialogsProvider } from '@context/RecipeDialogsContext';
 import {
   AddFromPicProp,
+  AddFromScrapeProp,
   AddManuallyProp,
   EditRecipeProp,
   ReadRecipeProp,
   RecipeMode,
   RecipePropType,
+  ScrapedRecipeData,
 } from '@customTypes/RecipeNavigationTypes';
 import {
+  FormIngredientElement,
   ingredientTableElement,
   ingredientType,
   recipeTableElement,
@@ -62,6 +65,24 @@ export function createMockRecipeProp(
         mode: 'addFromPic',
         imgUri: imgUri ?? 'test-image-uri.jpg',
       } as AddFromPicProp;
+    case 'addFromScrape': {
+      const baseRecipe = recipe ?? defaultTestRecipe;
+      const scrapedData: ScrapedRecipeData = {
+        ...baseRecipe,
+        ingredients: baseRecipe.ingredients.map(
+          (ing): FormIngredientElement => ({
+            name: ing.name,
+            quantity: ing.quantity,
+            unit: ing.unit,
+          })
+        ),
+      };
+      return {
+        mode: 'addFromScrape',
+        scrapedData,
+        sourceUrl: 'https://example.com/recipe',
+      } as AddFromScrapeProp;
+    }
   }
 }
 

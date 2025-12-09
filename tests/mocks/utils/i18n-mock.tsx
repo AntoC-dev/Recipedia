@@ -77,18 +77,45 @@ export function i18nMock() {
     'recommendations.randomSelection': 'Random Selection',
     'recommendations.perfectForCurrentSeason': 'Seasonal Picks',
   };
-  return {
-    useI18n: () => ({
-      t: (key: string, params?: Record<string, any>) => {
-        let translation = translations[key] ?? key;
-        if (params) {
-          // Replace {{param}} with actual values
-          Object.entries(params).forEach(([paramKey, value]) => {
-            translation = translation.replace(new RegExp(`{{${paramKey}}}`, 'g'), String(value));
-          });
+
+  const arrayTranslations: Record<string, string[]> = {
+    'recipe.scraper.ignoredIngredientPrefixes': [
+      'selon le goût',
+      'to taste',
+      'as needed',
+      'optional',
+      'for garnish',
+      'for serving',
+    ],
+  };
+  const tFunction = (key: string, params?: Record<string, unknown>) => {
+    if (params?.returnObjects && arrayTranslations[key]) {
+      return arrayTranslations[key];
+    }
+    if (key === 'recipe.scraper.stepTitle' && params?.number) {
+      return `Step ${params.number}`;
+    }
+    let translation = translations[key] ?? key;
+    if (params) {
+      Object.entries(params).forEach(([paramKey, value]) => {
+        if (paramKey !== 'returnObjects') {
+          translation = translation.replace(new RegExp(`{{${paramKey}}}`, 'g'), String(value));
         }
-        return translation;
+      });
+    }
+    return translation;
+  };
+
+  return {
+    useTranslation: () => ({
+      t: tFunction,
+      i18n: {
+        language: 'en',
+        changeLanguage: jest.fn(),
       },
+    }),
+    useI18n: () => ({
+      t: tFunction,
       getLocale: () => jest.fn().mockReturnValue('en'),
       setLocale: mockSetLocale,
       getAvailableLocales: jest.fn().mockReturnValue(['en', 'fr']),
@@ -98,6 +125,9 @@ export function i18nMock() {
     getResource: (language: string, namespace: string, key: string) => {
       if (key === 'recipe.nutrition.ocr') {
         return ocrTerms;
+      }
+      if (key === 'recipe.scraper.ignoredIngredientPrefixes') {
+        return ['to taste', 'as needed', 'optional', 'for garnish', 'for serving'];
       }
       return undefined;
     },

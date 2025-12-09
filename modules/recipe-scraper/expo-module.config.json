@@ -1,0 +1,17 @@
+{
+  "platforms": [
+    "android",
+    "ios",
+    "web"
+  ],
+  "android": {
+    "modules": [
+      "expo.modules.recipescraper.RecipeScraperModule"
+    ]
+  },
+  "ios": {
+    "modules": [
+      "RecipeScraperModule"
+    ]
+  }
+}
