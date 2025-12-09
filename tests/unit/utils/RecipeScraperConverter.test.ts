@@ -4,6 +4,7 @@ import {
   convertPreparation,
   convertScrapedRecipe,
   convertTags,
+  IgnoredIngredientPatterns,
   isUnparseableIngredient,
   parseIngredientString,
   parseServings,
@@ -13,7 +14,10 @@ import { hellofreshKeftasRecipe } from '@test-data/scraperMocks/hellofresh';
 import { createEmptyScrapedRecipe } from '@mocks/modules/recipe-scraper-mock';
 
 describe('RecipeScraperConverter', () => {
-  const ignoredPrefixes = ['selon le goût', 'to taste', 'optional'];
+  const ignoredPatterns: IgnoredIngredientPatterns = {
+    prefixes: ['selon le goût', 'to taste', 'optional'],
+    exactMatches: ['sel', 'poivre', 'sel et poivre', 'poivre et sel', 'salt', 'pepper'],
+  };
   const defaultPersons = 4;
   const getStepTitle = (index: number) => `Step ${index + 1}`;
 
@@ -21,7 +25,7 @@ describe('RecipeScraperConverter', () => {
     it('converts complete recipe', () => {
       const result = convertScrapedRecipe(
         hellofreshKeftasRecipe,
-        ignoredPrefixes,
+        ignoredPatterns,
         defaultPersons,
         getStepTitle
       );
@@ -39,7 +43,7 @@ describe('RecipeScraperConverter', () => {
     });
 
     it('parses French ingredients with units', () => {
-      const result = convertIngredients(hellofreshKeftasRecipe.ingredients, ignoredPrefixes);
+      const result = convertIngredients(hellofreshKeftasRecipe.ingredients, ignoredPatterns);
 
       const semoule = result.ingredients.find(i => i.name === 'Semoule');
       expect(semoule?.quantity).toBe('150');
@@ -51,7 +55,7 @@ describe('RecipeScraperConverter', () => {
     });
 
     it('skips "selon le goût" prefixed ingredients', () => {
-      const result = convertIngredients(hellofreshKeftasRecipe.ingredients, ignoredPrefixes);
+      const result = convertIngredients(hellofreshKeftasRecipe.ingredients, ignoredPatterns);
       expect(result.skipped).toContain('selon le goût Poivre et sel');
     });
 
@@ -85,7 +89,7 @@ describe('RecipeScraperConverter', () => {
     it('includes skipped ingredients in result', () => {
       const result = convertScrapedRecipe(
         hellofreshKeftasRecipe,
-        ignoredPrefixes,
+        ignoredPatterns,
         defaultPersons,
         getStepTitle
       );
@@ -97,29 +101,43 @@ describe('RecipeScraperConverter', () => {
 
   describe('isUnparseableIngredient', () => {
     it('returns true for ingredients starting with ignored prefix', () => {
-      expect(isUnparseableIngredient('selon le goût Poivre', ignoredPrefixes)).toBe(true);
-      expect(isUnparseableIngredient('To Taste Salt', ignoredPrefixes)).toBe(true);
-      expect(isUnparseableIngredient('optional: cheese', ignoredPrefixes)).toBe(true);
+      expect(isUnparseableIngredient('selon le goût Poivre', ignoredPatterns)).toBe(true);
+      expect(isUnparseableIngredient('To Taste Salt', ignoredPatterns)).toBe(true);
+      expect(isUnparseableIngredient('optional: cheese', ignoredPatterns)).toBe(true);
     });
 
     it('returns false for normal ingredients', () => {
-      expect(isUnparseableIngredient('2 cups flour', ignoredPrefixes)).toBe(false);
-      expect(isUnparseableIngredient('Salt', ignoredPrefixes)).toBe(false);
+      expect(isUnparseableIngredient('2 cups flour', ignoredPatterns)).toBe(false);
+      expect(isUnparseableIngredient('Tomato', ignoredPatterns)).toBe(false);
     });
 
     it('is case-insensitive', () => {
-      expect(isUnparseableIngredient('SELON LE GOÛT Sel', ignoredPrefixes)).toBe(true);
+      expect(isUnparseableIngredient('SELON LE GOÛT Sel', ignoredPatterns)).toBe(true);
     });
 
-    it('handles empty prefixes array', () => {
-      expect(isUnparseableIngredient('to taste salt', [])).toBe(false);
+    it('handles empty patterns', () => {
+      expect(isUnparseableIngredient('to taste salt', { prefixes: [], exactMatches: [] })).toBe(
+        false
+      );
+    });
+
+    it('returns true for exact match ingredients', () => {
+      expect(isUnparseableIngredient('Poivre et sel', ignoredPatterns)).toBe(true);
+      expect(isUnparseableIngredient('sel', ignoredPatterns)).toBe(true);
+      expect(isUnparseableIngredient('Salt', ignoredPatterns)).toBe(true);
+      expect(isUnparseableIngredient('pepper', ignoredPatterns)).toBe(true);
+    });
+
+    it('is case-insensitive for exact matches', () => {
+      expect(isUnparseableIngredient('SEL ET POIVRE', ignoredPatterns)).toBe(true);
+      expect(isUnparseableIngredient('POIVRE', ignoredPatterns)).toBe(true);
     });
   });
 
   describe('parseIngredientString', () => {
     describe('quantity + unit + name format', () => {
       it('parses "150 g Semoule"', () => {
-        const result = parseIngredientString('150 g Semoule', ignoredPrefixes);
+        const result = parseIngredientString('150 g Semoule', ignoredPatterns);
         expect(result.success).toBe(true);
         if (result.success) {
           expect(result.ingredient.quantity).toBe('150');
@@ -129,7 +147,7 @@ describe('RecipeScraperConverter', () => {
       });
 
       it('parses "200 ml Bouillon de légumes"', () => {
-        const result = parseIngredientString('200 ml Bouillon de légumes', ignoredPrefixes);
+        const result = parseIngredientString('200 ml Bouillon de légumes', ignoredPatterns);
         expect(result.success).toBe(true);
         if (result.success) {
           expect(result.ingredient.quantity).toBe('200');
@@ -139,7 +157,7 @@ describe('RecipeScraperConverter', () => {
       });
 
       it('parses "1 pièce(s) Carotte"', () => {
-        const result = parseIngredientString('1 pièce(s) Carotte', ignoredPrefixes);
+        const result = parseIngredientString('1 pièce(s) Carotte', ignoredPatterns);
         expect(result.success).toBe(true);
         if (result.success) {
           expect(result.ingredient.quantity).toBe('1');
@@ -151,7 +169,7 @@ describe('RecipeScraperConverter', () => {
 
     describe('fraction quantities', () => {
       it('parses "1 1/2 cups Sugar"', () => {
-        const result = parseIngredientString('1 1/2 cups Sugar', ignoredPrefixes);
+        const result = parseIngredientString('1 1/2 cups Sugar', ignoredPatterns);
         expect(result.success).toBe(true);
         if (result.success) {
           expect(result.ingredient.quantity).toBe('1.5');
@@ -161,7 +179,7 @@ describe('RecipeScraperConverter', () => {
       });
 
       it('parses "1/2 tsp Salt"', () => {
-        const result = parseIngredientString('1/2 tsp Salt', ignoredPrefixes);
+        const result = parseIngredientString('1/2 tsp Salt', ignoredPatterns);
         expect(result.success).toBe(true);
         if (result.success) {
           expect(result.ingredient.quantity).toBe('0.5');
@@ -171,7 +189,7 @@ describe('RecipeScraperConverter', () => {
       });
 
       it('parses "3/4 cup Milk"', () => {
-        const result = parseIngredientString('3/4 cup Milk', ignoredPrefixes);
+        const result = parseIngredientString('3/4 cup Milk', ignoredPatterns);
         expect(result.success).toBe(true);
         if (result.success) {
           expect(result.ingredient.quantity).toBe('0.75');
@@ -183,17 +201,17 @@ describe('RecipeScraperConverter', () => {
 
     describe('edge cases', () => {
       it('parses single word as name only', () => {
-        const result = parseIngredientString('Pepper', ignoredPrefixes);
+        const result = parseIngredientString('Tomato', ignoredPatterns);
         expect(result.success).toBe(true);
         if (result.success) {
-          expect(result.ingredient.name).toBe('Pepper');
+          expect(result.ingredient.name).toBe('Tomato');
           expect(result.ingredient.quantity).toBe('');
           expect(result.ingredient.unit).toBe('');
         }
       });
 
       it('parses text starting with non-numeric as name only', () => {
-        const result = parseIngredientString('Fresh basil leaves', ignoredPrefixes);
+        const result = parseIngredientString('Fresh basil leaves', ignoredPatterns);
         expect(result.success).toBe(true);
         if (result.success) {
           expect(result.ingredient.name).toBe('Fresh basil leaves');
@@ -202,7 +220,7 @@ describe('RecipeScraperConverter', () => {
       });
 
       it('parses "2 tomatoes" as quantity + name (no unit)', () => {
-        const result = parseIngredientString('2 tomatoes', ignoredPrefixes);
+        const result = parseIngredientString('2 tomatoes', ignoredPatterns);
         expect(result.success).toBe(true);
         if (result.success) {
           expect(result.ingredient.quantity).toBe('2');
@@ -212,7 +230,7 @@ describe('RecipeScraperConverter', () => {
       });
 
       it('returns failure for ignored prefix ingredients', () => {
-        const result = parseIngredientString('selon le goût Poivre et sel', ignoredPrefixes);
+        const result = parseIngredientString('selon le goût Poivre et sel', ignoredPatterns);
         expect(result.success).toBe(false);
         if (!result.success) {
           expect(result.original).toBe('selon le goût Poivre et sel');
@@ -220,7 +238,7 @@ describe('RecipeScraperConverter', () => {
       });
 
       it('handles whitespace correctly', () => {
-        const result = parseIngredientString('  2   cups   flour  ', ignoredPrefixes);
+        const result = parseIngredientString('  2   cups   flour  ', ignoredPatterns);
         expect(result.success).toBe(true);
         if (result.success) {
           expect(result.ingredient.quantity).toBe('2');
@@ -230,7 +248,7 @@ describe('RecipeScraperConverter', () => {
       });
 
       it('returns just quantity when only number provided', () => {
-        const result = parseIngredientString('5', ignoredPrefixes);
+        const result = parseIngredientString('5', ignoredPatterns);
         expect(result.success).toBe(true);
         if (result.success) {
           expect(result.ingredient.quantity).toBe('');
@@ -243,8 +261,8 @@ describe('RecipeScraperConverter', () => {
   describe('convertIngredients', () => {
     it('converts array of ingredient strings', () => {
       const result = convertIngredients(
-        ['150 g Semoule', '1 pièce(s) Carotte', 'Pepper'],
-        ignoredPrefixes
+        ['150 g Semoule', '1 pièce(s) Carotte', 'Tomato'],
+        ignoredPatterns
       );
 
       expect(result.ingredients).toHaveLength(3);
@@ -252,13 +270,13 @@ describe('RecipeScraperConverter', () => {
 
       expect(result.ingredients[0].name).toBe('Semoule');
       expect(result.ingredients[1].name).toBe('Carotte');
-      expect(result.ingredients[2].name).toBe('Pepper');
+      expect(result.ingredients[2].name).toBe('Tomato');
     });
 
     it('separates skipped ingredients from parsed ones', () => {
       const result = convertIngredients(
         ['150 g Flour', 'selon le goût Sel', '2 cups Sugar', 'to taste Pepper'],
-        ignoredPrefixes
+        ignoredPatterns
       );
 
       expect(result.ingredients).toHaveLength(2);
@@ -543,7 +561,15 @@ describe('RecipeScraperConverter', () => {
         totalTime: 60,
       });
 
-      const result = convertScrapedRecipe(scraped, [], defaultPersons, getStepTitle);
+      const result = convertScrapedRecipe(
+        scraped,
+        {
+          prefixes: [],
+          exactMatches: [],
+        },
+        defaultPersons,
+        getStepTitle
+      );
 
       expect(result.time).toBe(30);
     });
@@ -554,7 +580,15 @@ describe('RecipeScraperConverter', () => {
         totalTime: 60,
       });
 
-      const result = convertScrapedRecipe(scraped, [], defaultPersons, getStepTitle);
+      const result = convertScrapedRecipe(
+        scraped,
+        {
+          prefixes: [],
+          exactMatches: [],
+        },
+        defaultPersons,
+        getStepTitle
+      );
 
       expect(result.time).toBe(60);
     });
@@ -564,7 +598,15 @@ describe('RecipeScraperConverter', () => {
         yields: null,
       });
 
-      const result = convertScrapedRecipe(scraped, [], defaultPersons, getStepTitle);
+      const result = convertScrapedRecipe(
+        scraped,
+        {
+          prefixes: [],
+          exactMatches: [],
+        },
+        defaultPersons,
+        getStepTitle
+      );
 
       expect(result.persons).toBe(4);
     });
@@ -579,7 +621,15 @@ describe('RecipeScraperConverter', () => {
         dietaryRestrictions: null,
       });
 
-      const result = convertScrapedRecipe(scraped, [], defaultPersons, getStepTitle);
+      const result = convertScrapedRecipe(
+        scraped,
+        {
+          prefixes: [],
+          exactMatches: [],
+        },
+        defaultPersons,
+        getStepTitle
+      );
 
       expect(result.title).toBe('Simple Recipe');
       expect(result.description).toBe('');

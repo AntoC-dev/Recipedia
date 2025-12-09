@@ -43,18 +43,33 @@ export type ScrapedRecipeResult = Omit<
   nutrition?: nutritionTableElement;
 };
 
-export function isUnparseableIngredient(ingredient: string, ignoredPrefixes: string[]): boolean {
+export type IgnoredIngredientPatterns = {
+  prefixes: string[];
+  exactMatches: string[];
+};
+
+export function isUnparseableIngredient(
+  ingredient: string,
+  patterns: IgnoredIngredientPatterns
+): boolean {
   const lower = ingredient.toLowerCase().trim();
-  return ignoredPrefixes.some(prefix => lower.startsWith(prefix.toLowerCase()));
+
+  if (patterns.exactMatches.some(exact => lower === exact.toLowerCase())) {
+    return true;
+  }
+
+  return patterns.prefixes.some(prefix => lower.startsWith(prefix.toLowerCase()));
 }
+
+const DEFAULT_PATTERNS: IgnoredIngredientPatterns = { prefixes: [], exactMatches: [] };
 
 export function parseIngredientString(
   ingredientStr: string,
-  ignoredPrefixes: string[] = []
+  patterns: IgnoredIngredientPatterns = DEFAULT_PATTERNS
 ): ParsedIngredient {
   const trimmed = ingredientStr.trim();
 
-  if (isUnparseableIngredient(trimmed, ignoredPrefixes)) {
+  if (isUnparseableIngredient(trimmed, patterns)) {
     return { success: false, original: trimmed };
   }
 
@@ -92,13 +107,13 @@ export function parseIngredientString(
 
 export function convertIngredients(
   rawIngredients: string[],
-  ignoredPrefixes: string[] = []
+  patterns: IgnoredIngredientPatterns = DEFAULT_PATTERNS
 ): ConvertedIngredients {
   const ingredients: FormIngredientElement[] = [];
   const skipped: string[] = [];
 
   for (const raw of rawIngredients) {
-    const result = parseIngredientString(raw, ignoredPrefixes);
+    const result = parseIngredientString(raw, patterns);
     if (result.success) {
       ingredients.push(result.ingredient);
     } else {
@@ -203,11 +218,11 @@ export function convertNutrition(nutrients: ScrapedNutrients): nutritionTableEle
 
 export function convertScrapedRecipe(
   scraped: ScrapedRecipe,
-  ignoredPrefixes: string[],
+  ignoredPatterns: IgnoredIngredientPatterns,
   defaultPersons: number,
   getStepTitle: (index: number) => string
 ): ScrapedRecipeResult {
-  const { ingredients, skipped } = convertIngredients(scraped.ingredients, ignoredPrefixes);
+  const { ingredients, skipped } = convertIngredients(scraped.ingredients, ignoredPatterns);
 
   return {
     title: scraped.title ?? '',

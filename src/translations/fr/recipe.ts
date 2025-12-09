@@ -110,6 +110,7 @@ export default {
       'pour garnir',
       'pour servir',
     ],
+    ignoredIngredientExactMatches: ['sel', 'poivre', 'sel et poivre', 'poivre et sel'],
     stepTitle: 'Étape {{number}}',
   },
 };

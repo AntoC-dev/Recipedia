@@ -31,7 +31,11 @@ import { isScraperSuccess, recipeScraper } from '@utils/RecipeScraper';
 import { downloadImageToCache } from '@utils/FileGestion';
 import { uiLogger } from '@utils/logger';
 import { useDefaultPersons } from '@context/DefaultPersonsContext';
-import { convertScrapedRecipe, ScrapedRecipeResult } from '@utils/RecipeScraperConverter';
+import {
+  convertScrapedRecipe,
+  IgnoredIngredientPatterns,
+  ScrapedRecipeResult,
+} from '@utils/RecipeScraperConverter';
 
 export type { ScrapedRecipeResult } from '@utils/RecipeScraperConverter';
 
@@ -61,12 +65,18 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
   const { defaultPersons } = useDefaultPersons();
   const { t } = useTranslation();
 
-  const getIgnoredPrefixes = (): string[] => {
+  const getIgnoredPatterns = (): IgnoredIngredientPatterns => {
     const prefixes = t('recipe.scraper.ignoredIngredientPrefixes', { returnObjects: true });
-    if (!Array.isArray(prefixes)) {
-      return [];
-    }
-    return prefixes.filter((p): p is string => typeof p === 'string');
+    const exactMatches = t('recipe.scraper.ignoredIngredientExactMatches', { returnObjects: true });
+
+    return {
+      prefixes: Array.isArray(prefixes)
+        ? prefixes.filter((p): p is string => typeof p === 'string')
+        : [],
+      exactMatches: Array.isArray(exactMatches)
+        ? exactMatches.filter((e): e is string => typeof e === 'string')
+        : [],
+    };
   };
 
   const getStepTitle = (index: number) => t('recipe.scraper.stepTitle', { number: index + 1 });
@@ -106,7 +116,7 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
 
       const recipeData = convertScrapedRecipe(
         scraperResult.data,
-        getIgnoredPrefixes(),
+        getIgnoredPatterns(),
         defaultPersons,
         getStepTitle
       );

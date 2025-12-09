@@ -102,6 +102,7 @@ export default {
 
   scraper: {
     ignoredIngredientPrefixes: ['to taste', 'as needed', 'optional', 'for garnish', 'for serving'],
+    ignoredIngredientExactMatches: ['salt', 'pepper', 'salt and pepper', 'pepper and salt'],
     stepTitle: 'Step {{number}}',
   },
 };
