@@ -1,0 +1,7 @@
+# Python framework and packages - downloaded during build
+Frameworks/
+python_packages/
+
+# Keep the setup script and source Python code
+!scripts/
+!python/
