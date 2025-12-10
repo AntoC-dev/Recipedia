@@ -135,7 +135,7 @@ android {
 chaquopy {
   defaultConfig {
     version = "3.13"
-    buildPython "/opt/homebrew/bin/python3.13"
+    buildPython "python3"
   }
 }
 
