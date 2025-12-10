@@ -132,10 +132,14 @@ android {
   }
 }
 
+// Read Python version from .python-version file (pyenv standard)
+def pythonVersionFile = file("${rootProject.projectDir}/../.python-version")
+def requiredPythonVersion = pythonVersionFile.exists() ? pythonVersionFile.text.trim() : "3.13"
+
 chaquopy {
   defaultConfig {
-    version = "3.13"
-    buildPython "python3"
+    version = requiredPythonVersion
+    buildPython "python${requiredPythonVersion}"
   }
 }
 
