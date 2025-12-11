@@ -1,3 +1,11 @@
+## [2.1.0](https://github.com/AntoC-dev/Recipedia/compare/v2.0.0...v2.1.0) (2025-12-11)
+
+### Features
+
+* marmiton url  ([#150](https://github.com/AntoC-dev/Recipedia/issues/150)) ([ac6b053](https://github.com/AntoC-dev/Recipedia/commit/ac6b05395eed35cd6e2e4ee467e7032f935e887a))
+* **recipe-scraper:** improve error handling with localized messages ([bd5749b](https://github.com/AntoC-dev/Recipedia/commit/bd5749b3badaf1dc15df6fe753f4bf50aa609675))
+* **recipe-scraper:** improve tag conversion and validation ([788b66c](https://github.com/AntoC-dev/Recipedia/commit/788b66c2913808208b92dbc17c5d271ff23d7c0e))
+
 ## [2.0.0](https://github.com/AntoC-dev/Recipedia/compare/v1.5.0...v2.0.0) (2025-12-11)
 
 ### ⚠ BREAKING CHANGES
