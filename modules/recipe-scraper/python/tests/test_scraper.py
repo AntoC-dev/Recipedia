@@ -12,6 +12,9 @@ from scraper import (
     _is_user_facing_tag,
     _safe_call,
     _safe_call_numeric,
+    _clean_title,
+    _clean_description,
+    _clean_keywords,
 )
 
 
@@ -304,3 +307,91 @@ class TestSafeCallNumeric:
     def test_returns_none_for_string(self):
         result = _safe_call_numeric(lambda: "not a number")
         assert result is None
+
+
+class TestCleanTitle:
+    def test_capitalizes_lowercase_title(self):
+        assert _clean_title("hamburger maison") == "Hamburger maison"
+
+    def test_preserves_mixed_case_title(self):
+        assert _clean_title("Chocolate Cake") == "Chocolate Cake"
+
+    def test_preserves_uppercase_title(self):
+        assert _clean_title("CHOCOLATE CAKE") == "CHOCOLATE CAKE"
+
+    def test_returns_none_for_none(self):
+        assert _clean_title(None) is None
+
+    def test_returns_none_for_empty_string(self):
+        assert _clean_title("") is None
+
+
+class TestCleanDescription:
+    def test_returns_valid_description(self):
+        ingredients = ["flour", "sugar"]
+        description = "A delicious cake recipe for beginners with chocolate"
+        assert _clean_description(description, ingredients) == description
+
+    def test_returns_none_when_description_is_ingredients(self):
+        ingredients = ["pain pour hamburger", "viande hachée", "oignon", "cheddar"]
+        description = "pain pour hamburger, viande hachée, oignon, cheddar"
+        assert _clean_description(description, ingredients) is None
+
+    def test_returns_none_for_none_description(self):
+        assert _clean_description(None, ["flour"]) is None
+
+    def test_returns_description_when_no_ingredients(self):
+        description = "A delicious cake recipe for beginners"
+        assert _clean_description(description, []) == description
+
+    def test_handles_ingredients_with_parentheses(self):
+        ingredients = ["cheddar (achat sous vide)", "tomate"]
+        description = "cheddar, tomate"
+        assert _clean_description(description, ingredients) is None
+
+    def test_keeps_description_with_enough_extra_content(self):
+        ingredients = ["flour", "sugar"]
+        description = "flour and sugar combined to make a delicious treat"
+        assert _clean_description(description, ingredients) == description
+
+
+class TestCleanKeywords:
+    def test_removes_title_from_keywords(self):
+        keywords = ["hamburger maison", "rapide", "facile"]
+        ingredients = []
+        title = "Hamburger maison"
+        result = _clean_keywords(keywords, ingredients, title)
+        assert "hamburger maison" not in result
+        assert "rapide" in result
+
+    def test_removes_ingredients_from_keywords(self):
+        keywords = ["pain pour hamburger", "rapide", "oignon", "facile"]
+        ingredients = ["pain pour hamburger", "oignon", "tomate"]
+        title = "Test Recipe"
+        result = _clean_keywords(keywords, ingredients, title)
+        assert "pain pour hamburger" not in result
+        assert "oignon" not in result
+        assert "rapide" in result
+        assert "facile" in result
+
+    def test_returns_none_for_none_keywords(self):
+        assert _clean_keywords(None, [], "Title") is None
+
+    def test_returns_none_when_all_keywords_filtered(self):
+        keywords = ["hamburger maison"]
+        ingredients = []
+        title = "Hamburger maison"
+        assert _clean_keywords(keywords, ingredients, title) is None
+
+    def test_handles_none_title(self):
+        keywords = ["rapide", "facile"]
+        result = _clean_keywords(keywords, [], None)
+        assert result == ["rapide", "facile"]
+
+    def test_case_insensitive_filtering(self):
+        keywords = ["Hamburger Maison", "RAPIDE"]
+        ingredients = []
+        title = "hamburger maison"
+        result = _clean_keywords(keywords, ingredients, title)
+        assert "Hamburger Maison" not in result
+        assert "RAPIDE" in result

@@ -30,7 +30,7 @@ def scrape_recipe(url: str, wild_mode: bool = True) -> str:
         JSON string with success/error result containing all recipe data.
     """
     try:
-        scraper = scrape_html(html=None, org_url=url, online=True, wild_mode=wild_mode)
+        scraper = scrape_html(html=None, org_url=url, online=True, supported_only=not wild_mode)
         return json.dumps({
             "success": True,
             "data": _extract_all_data(scraper)
@@ -55,7 +55,7 @@ def scrape_recipe_from_html(html: str, url: str, wild_mode: bool = True) -> str:
         JSON string with success/error result containing all recipe data.
     """
     try:
-        scraper = scrape_html(html=html, org_url=url, wild_mode=wild_mode)
+        scraper = scrape_html(html=html, org_url=url, supported_only=not wild_mode)
         return json.dumps({
             "success": True,
             "data": _extract_all_data(scraper)
@@ -117,16 +117,26 @@ def _extract_all_data(scraper) -> Dict[str, Any]:
     Returns a dictionary with all recipe-scrapers fields.
     Missing or unsupported fields return None.
     """
+    ingredients = _safe_call(scraper.ingredients) or []
+
     # Try standard keywords extraction, fall back to __NEXT_DATA__ if not found
     keywords = _safe_call(scraper.keywords)
     if not keywords:
         keywords = _extract_keywords_from_next_data(scraper)
 
+    title = _safe_call(scraper.title)
+    description = _safe_call(scraper.description)
+
+    # Post-processing for sites with poor Schema.org data (e.g., Marmiton)
+    title = _clean_title(title)
+    description = _clean_description(description, ingredients)
+    keywords = _clean_keywords(keywords, ingredients, title)
+
     return {
         # Core recipe data
-        "title": _safe_call(scraper.title),
-        "description": _safe_call(scraper.description),
-        "ingredients": _safe_call(scraper.ingredients) or [],
+        "title": title,
+        "description": description,
+        "ingredients": ingredients,
         "ingredientGroups": _safe_call_ingredient_groups(scraper),
         "instructions": _safe_call(scraper.instructions),
         "instructionsList": _safe_call(scraper.instructions_list),
@@ -307,3 +317,75 @@ def _safe_call_ingredient_groups(scraper) -> Optional[List[Dict[str, Any]]]:
         ]
     except Exception:
         return None
+
+
+def _clean_title(title: Optional[str]) -> Optional[str]:
+    """
+    Clean up recipe title.
+
+    Capitalizes first letter if entire title is lowercase.
+    """
+    if not title:
+        return None
+    if title == title.lower():
+        return title.capitalize()
+    return title
+
+
+def _clean_description(description: Optional[str], ingredients: List[str]) -> Optional[str]:
+    """
+    Validate description is not actually ingredients list.
+
+    Some sites (e.g., Marmiton) put ingredients in the description field.
+    Returns None if description is mostly ingredients.
+    """
+    if not description:
+        return None
+    if not ingredients:
+        return description
+
+    cleaned = description.lower()
+    for ing in ingredients:
+        name = ing.lower().split('(')[0].strip()
+        if name:
+            cleaned = cleaned.replace(name, '')
+
+    cleaned = ''.join(c for c in cleaned if c.isalnum())
+
+    if len(cleaned) < 20:
+        return None
+
+    return description
+
+
+def _clean_keywords(
+    keywords: Optional[List[str]],
+    ingredients: List[str],
+    title: Optional[str]
+) -> Optional[List[str]]:
+    """
+    Filter keywords to remove ingredients and title.
+
+    Some sites include ingredients and recipe title in keywords.
+    """
+    if not keywords:
+        return None
+
+    ingredient_names = set()
+    for ing in ingredients:
+        name = ing.lower().split('(')[0].strip()
+        if name:
+            ingredient_names.add(name)
+
+    title_lower = title.lower() if title else ""
+
+    cleaned = []
+    for kw in keywords:
+        kw_lower = kw.lower()
+        if kw_lower == title_lower:
+            continue
+        if kw_lower in ingredient_names:
+            continue
+        cleaned.append(kw)
+
+    return cleaned if cleaned else None
