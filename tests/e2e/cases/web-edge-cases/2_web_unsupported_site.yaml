@@ -35,8 +35,8 @@ tags:
 
 - assertVisible:
     id: "VerticalBottomButtons::UrlDialog::HelperText"
-    text: "recipe-scrapers \\(\\d+\\.\\d+\\.\\d+\\) exception: No Recipe Schema found at https://example\\.com\\."
-    label: "Assert - Scraping error is displayed"
+    text: "No recipe found on this page"
+    label: "Assert - No recipe found error is displayed"
 
 - assertNotVisible:
     id: "VerticalBottomButtons::UrlDialog::Loading"

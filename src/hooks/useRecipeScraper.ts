@@ -27,7 +27,13 @@
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { isScraperSuccess, recipeScraper } from '@utils/RecipeScraper';
+import {
+  DEFAULT_SCRAPER_ERROR_I18N_KEY,
+  isScraperSuccess,
+  recipeScraper,
+  SCRAPER_ERROR_I18N_KEYS,
+  ScraperError,
+} from '@utils/RecipeScraper';
 import { downloadImageToCache } from '@utils/FileGestion';
 import { uiLogger } from '@utils/logger';
 import { useDefaultPersons } from '@context/DefaultPersonsContext';
@@ -65,6 +71,11 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
   const { defaultPersons } = useDefaultPersons();
   const { t } = useTranslation();
 
+  const getErrorMessage = (scraperError: ScraperError): string => {
+    const key = SCRAPER_ERROR_I18N_KEYS[scraperError.type] ?? DEFAULT_SCRAPER_ERROR_I18N_KEY;
+    return t(key);
+  };
+
   const getIgnoredPatterns = (): IgnoredIngredientPatterns => {
     const prefixes = t('recipe.scraper.ignoredIngredientPrefixes', { returnObjects: true });
     const exactMatches = t('recipe.scraper.ignoredIngredientExactMatches', { returnObjects: true });
@@ -93,7 +104,7 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
       const scraperResult = await recipeScraper.scrapeRecipe(url);
 
       if (!isScraperSuccess(scraperResult)) {
-        const errorMessage = scraperResult.error.message || 'urlDialog.errorScraping';
+        const errorMessage = getErrorMessage(scraperResult.error);
         uiLogger.warn('Scraping failed', { url, error: scraperResult.error });
         setError(errorMessage);
         setIsLoading(false);
@@ -112,6 +123,10 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
         totalTime: scraperResult.data.totalTime,
         prepTime: scraperResult.data.prepTime,
         cookTime: scraperResult.data.cookTime,
+        yields: scraperResult.data.yields,
+        description: scraperResult.data.description,
+        instructionsList: scraperResult.data.instructionsList,
+        nutrients: scraperResult.data.nutrients,
       });
 
       const recipeData = convertScrapedRecipe(
@@ -138,7 +153,7 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
       setIsLoading(false);
       return { success: true, data: recipeData, sourceUrl: url };
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'urlDialog.errorNetwork';
+      const errorMessage = t(SCRAPER_ERROR_I18N_KEYS.ConnectionError);
       uiLogger.error('Unexpected error during scraping', { url, error: err });
       setError(errorMessage);
       setIsLoading(false);

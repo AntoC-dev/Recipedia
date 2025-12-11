@@ -353,6 +353,26 @@ describe('RecipeValidationHelpers', () => {
       ]);
       expect(result.needsValidation).toEqual([]);
     });
+
+    test('skips ingredients with empty names', () => {
+      mockFindSimilarIngredients.mockReturnValue([dbIngredients[0]]);
+
+      const inputIngredients: ingredientTableElement[] = [
+        {
+          name: '',
+          quantity: '100',
+          unit: 'g',
+          type: ingredientType.vegetable,
+          season: [],
+        },
+      ];
+
+      const result = processIngredientsForValidation(inputIngredients, mockFindSimilarIngredients);
+
+      expect(result.exactMatches).toEqual([]);
+      expect(result.needsValidation).toEqual([]);
+      expect(mockFindSimilarIngredients).not.toHaveBeenCalled();
+    });
   });
 
   describe('filterOutExistingTags', () => {

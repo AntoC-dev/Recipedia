@@ -1,0 +1,89 @@
+appId: "com.recipedia"
+---
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::0::QuantityInput"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to ingredients section"
+
+- tapOn:
+    id: "RecipeIngredients::0::QuantityInput"
+    label: "Tap on Cheddar quantity"
+
+- inputText: "100"
+
+- pressKey: enter
+
+- tapOn:
+    id: "RecipeIngredients::1::QuantityInput"
+    label: "Tap on Pain pour hamburger quantity"
+
+- inputText: "4"
+
+- pressKey: enter
+
+- tapOn:
+    id: "RecipeIngredients::2::QuantityInput"
+    label: "Tap on Viande hachée quantity"
+
+- inputText: "400"
+
+- pressKey: enter
+
+- tapOn:
+    id: "RecipeIngredients::3::QuantityInput"
+    label: "Tap on Oignon quantity"
+
+- inputText: "1"
+
+- pressKey: enter
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::4::QuantityInput"
+    direction: DOWN
+    centerElement: true
+    speed: 40
+    label: "Scroll to more ingredients"
+
+- tapOn:
+    id: "RecipeIngredients::4::QuantityInput"
+    label: "Tap on Tomate quantity"
+
+- inputText: "1"
+
+- pressKey: enter
+
+- tapOn:
+    id: "RecipeIngredients::5::QuantityInput"
+    label: "Tap on Salade quantity"
+
+- inputText: "50"
+
+- pressKey: enter
+
+- tapOn:
+    id: "RecipeIngredients::6::QuantityInput"
+    label: "Tap on Moutarde quantity"
+
+- inputText: "30"
+
+- pressKey: enter
+
+- tapOn:
+    id: "RecipeIngredients::7::QuantityInput"
+    label: "Tap on Ketchup quantity"
+
+- inputText: "30"
+
+- pressKey: enter
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeImage"
+    direction: UP
+    centerElement: true
+    speed: 95
+    label: "Scroll back to top"

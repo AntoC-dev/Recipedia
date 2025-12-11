@@ -38,8 +38,8 @@ tags:
 
 - assertVisible:
     id: "VerticalBottomButtons::UrlDialog::HelperText"
-    text: "Failed to retrieve HTML content from https://not-a-valid-url."
-    label: "Assert - Helper text with error message is displayed"
+    text: "Could not extract recipe from this URL"
+    label: "Assert - Network error message is displayed"
 
 - tapOn:
     id: "VerticalBottomButtons::UrlDialog::CancelButton"

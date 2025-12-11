@@ -16,6 +16,12 @@
  * Note: Only accepts tags OR ingredients, not both at the same time, since
  * the modal dialog blocks user interaction.
  *
+ * Important: Items that would be blocked by ItemDialog's duplicate detection
+ * (e.g., ingredients whose cleaned names match existing database entries)
+ * should be filtered upstream by `processIngredientsForValidation` before
+ * being passed to this component. This prevents showing dialogs that lead
+ * to dead ends where the user cannot proceed.
+ *
  * @example
  * ```typescript
  * // For tags

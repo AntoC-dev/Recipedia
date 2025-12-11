@@ -130,8 +130,8 @@ describe('useRecipeScraper', () => {
   });
 
   describe('error handling', () => {
-    test('returns error result when scraper fails', async () => {
-      mockScrapeRecipeError('Recipe not found', 'NotFoundError');
+    test('returns translated error for unknown error type', async () => {
+      mockScrapeRecipeError('Recipe not found', 'UnknownError');
 
       const { result } = renderHook(() => useRecipeScraper(), {
         wrapper: createWrapper(),
@@ -144,13 +144,13 @@ describe('useRecipeScraper', () => {
 
       expect(scrapeResult?.success).toBe(false);
       if (scrapeResult && !scrapeResult.success) {
-        expect(scrapeResult.error).toBe('Recipe not found');
+        expect(scrapeResult.error).toBe('urlDialog.errorScraping');
       }
-      expect(result.current.error).toBe('Recipe not found');
+      expect(result.current.error).toBe('urlDialog.errorScraping');
     });
 
-    test('returns error result when network fails', async () => {
-      mockScrapeRecipe.mockRejectedValue(new Error('Network error'));
+    test('returns translated error for NoSchemaFoundInWildMode', async () => {
+      mockScrapeRecipeError('No schema found', 'NoSchemaFoundInWildMode');
 
       const { result } = renderHook(() => useRecipeScraper(), {
         wrapper: createWrapper(),
@@ -163,12 +163,30 @@ describe('useRecipeScraper', () => {
 
       expect(scrapeResult?.success).toBe(false);
       if (scrapeResult && !scrapeResult.success) {
-        expect(scrapeResult.error).toBe('Network error');
+        expect(scrapeResult.error).toBe('urlDialog.errorNoRecipeFound');
+      }
+    });
+
+    test('returns translated error for network failures', async () => {
+      mockScrapeRecipe.mockRejectedValue(new Error('Connection refused'));
+
+      const { result } = renderHook(() => useRecipeScraper(), {
+        wrapper: createWrapper(),
+      });
+
+      let scrapeResult: ScrapeResult | undefined;
+      await act(async () => {
+        scrapeResult = await result.current.scrapeAndPrepare('https://example.com');
+      });
+
+      expect(scrapeResult?.success).toBe(false);
+      if (scrapeResult && !scrapeResult.success) {
+        expect(scrapeResult.error).toBe('urlDialog.errorNetwork');
       }
     });
 
     test('clearError resets error state', async () => {
-      mockScrapeRecipeError('Some error');
+      mockScrapeRecipeError('Some error', 'SomeErrorType');
 
       const { result } = renderHook(() => useRecipeScraper(), {
         wrapper: createWrapper(),
@@ -178,7 +196,7 @@ describe('useRecipeScraper', () => {
         await result.current.scrapeAndPrepare('https://example.com');
       });
 
-      expect(result.current.error).toBe('Some error');
+      expect(result.current.error).toBe('urlDialog.errorScraping');
 
       act(() => {
         result.current.clearError();

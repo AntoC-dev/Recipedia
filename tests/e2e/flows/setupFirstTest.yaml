@@ -12,13 +12,6 @@ appId: "com.recipedia"
     optional: true
     label: "Check if onboarding appears"
 
-- extendedWaitUntil:
-    visible:
-      id: "NonExistentElement::ForDelay"
-    timeout: 3000
-    optional: true
-    label: "Wait 3s before ANR check"
-
 - runFlow:
     file: "handleAnr.yaml"
     label: "Handle ANR dialog if it appears during initialization"

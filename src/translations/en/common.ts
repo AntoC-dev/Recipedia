@@ -68,6 +68,9 @@ export default {
     loading: 'Fetching recipe...',
     errorInvalidUrl: 'Please enter a valid URL',
     errorScraping: 'Could not extract recipe from this URL',
+    errorNoRecipeFound: 'No recipe found on this page',
+    errorUnsupportedSite: 'This website is not yet supported',
     errorNetwork: 'Network error. Please check your connection.',
+    errorTimeout: 'Request timed out. Please try again.',
   },
 };

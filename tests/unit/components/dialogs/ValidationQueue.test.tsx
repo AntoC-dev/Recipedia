@@ -464,6 +464,76 @@ describe('ValidationQueue', () => {
     });
   });
 
+  describe('Ingredient Filtering (Cleaned Name Logic)', () => {
+    test('shows similarity dialog when full names match exactly (case-insensitive)', async () => {
+      const ingredientExactMatch: ingredientTableElement[] = [
+        {
+          id: 99,
+          name: 'cheddar',
+          type: ingredientType.dairy,
+          unit: 'g',
+          quantity: '100',
+          season: [],
+        },
+      ];
+
+      const { getByTestId } = renderQueueIngredients(ingredientExactMatch);
+
+      const similarItemText = getByTestId(
+        'test-validation::ValidationQueue::Ingredient::SimilarityDialog::Mock::item.similarItem'
+      ).props.children;
+
+      expect(similarItemText).not.toBe('undefined');
+      expect(JSON.parse(similarItemText).name).toBe('Cheddar');
+
+      expect(
+        getByTestId(
+          'test-validation::ValidationQueue::Ingredient::SimilarityDialog::Mock::item.onUseExisting'
+        )
+      ).toBeTruthy();
+    });
+
+    test('shows similarity dialog for truly similar names (fuzzy match)', async () => {
+      const ingredientFuzzyMatch: ingredientTableElement[] = [
+        {
+          id: 99,
+          name: 'Tomatos',
+          type: ingredientType.vegetable,
+          unit: 'g',
+          quantity: '100',
+          season: [],
+        },
+      ];
+
+      const { getByTestId } = renderQueueIngredients(ingredientFuzzyMatch);
+
+      const similarItemText = getByTestId(
+        'test-validation::ValidationQueue::Ingredient::SimilarityDialog::Mock::item.similarItem'
+      ).props.children;
+
+      expect(similarItemText).not.toBe('undefined');
+      expect(JSON.parse(similarItemText).name).toBe('Tomatoes');
+
+      expect(
+        getByTestId(
+          'test-validation::ValidationQueue::Ingredient::SimilarityDialog::Mock::item.onUseExisting'
+        )
+      ).toBeTruthy();
+    });
+
+    test('does not filter tags (only applies to ingredients)', async () => {
+      const tagWithParentheses: tagTableElement[] = [{ id: 99, name: 'Quick (fast meals)' }];
+
+      const { getByTestId } = renderQueueTags(tagWithParentheses);
+
+      expect(
+        getByTestId(
+          'test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.newItemName'
+        ).props.children
+      ).toBe('Quick (fast meals)');
+    });
+  });
+
   describe('Ingredient Validation Bug Fixes', () => {
     const mockOnDismissed = jest.fn();
 

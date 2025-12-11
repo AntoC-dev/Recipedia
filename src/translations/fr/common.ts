@@ -68,6 +68,9 @@ export default {
     loading: 'Récupération de la recette...',
     errorInvalidUrl: 'Veuillez entrer une URL valide',
     errorScraping: "Impossible d'extraire la recette de cette URL",
+    errorNoRecipeFound: 'Aucune recette trouvée sur cette page',
+    errorUnsupportedSite: "Ce site n'est pas encore supporté",
     errorNetwork: 'Erreur réseau. Vérifiez votre connexion.',
+    errorTimeout: 'La requête a expiré. Veuillez réessayer.',
   },
 };
