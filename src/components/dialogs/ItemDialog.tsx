@@ -161,6 +161,18 @@ export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialo
     }
   }, [item.value.name, item.type, item.value, isVisible]);
 
+  /**
+   * Validates item name against database for duplicates and similar items.
+   *
+   * For ingredients, uses cleaned names (without parenthetical content) for matching.
+   * Any exact match on cleaned name is treated as a duplicate and blocks submission.
+   * This ensures "cheddar (achat sous vide)" is blocked when "Cheddar" exists,
+   * since they represent the same base ingredient.
+   *
+   * Note: ValidationQueue handles the automatic scraping flow differently by
+   * skipping the dialog for cleaned-name-only matches. This stricter validation
+   * applies when users manually create items via ItemDialog.
+   */
   useEffect(() => {
     if (!isVisible || mode === 'delete') {
       setValidationState('none');

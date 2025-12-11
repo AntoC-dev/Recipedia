@@ -129,7 +129,7 @@ export function parseServings(yields: string | undefined, defaultPersons: number
   return extractFirstInteger(yields) ?? defaultPersons;
 }
 
-export function convertTags(scraped: ScrapedRecipe): tagTableElement[] {
+export function convertTags(keywords: string[], dietaryRestrictions: string[]): tagTableElement[] {
   const tags: tagTableElement[] = [];
 
   const addTagIfNotDuplicate = (name: string) => {
@@ -139,13 +139,8 @@ export function convertTags(scraped: ScrapedRecipe): tagTableElement[] {
     }
   };
 
-  const keywords = (scraped.keywords ?? [])
-    .filter(Boolean)
-    .flatMap(k => (k.includes(',') ? k.split(',') : [k]));
-  keywords.forEach(addTagIfNotDuplicate);
-
-  const restrictions = (scraped.dietaryRestrictions ?? []).filter(Boolean);
-  restrictions.forEach(addTagIfNotDuplicate);
+  keywords.filter(Boolean).forEach(addTagIfNotDuplicate);
+  dietaryRestrictions.filter(Boolean).forEach(addTagIfNotDuplicate);
 
   return tags;
 }
@@ -216,6 +211,16 @@ export function convertNutrition(nutrients: ScrapedNutrients): nutritionTableEle
   };
 }
 
+export function cleanImageUrl(url: string): string {
+  if (!url) return url;
+
+  if (url.includes('assets.afcdn.com')) {
+    return url.replace(/_w\d+h\d+[^.]*\./, '.');
+  }
+
+  return url;
+}
+
 export function convertScrapedRecipe(
   scraped: ScrapedRecipe,
   ignoredPatterns: IgnoredIngredientPatterns,
@@ -227,9 +232,9 @@ export function convertScrapedRecipe(
   return {
     title: scraped.title ?? '',
     description: scraped.description ?? '',
-    image_Source: scraped.image ?? '',
+    image_Source: cleanImageUrl(scraped.image ?? ''),
     persons: parseServings(scraped.yields ?? undefined, defaultPersons),
-    time: scraped.prepTime ?? scraped.totalTime ?? 0,
+    time: scraped.totalTime ?? scraped.prepTime ?? 0,
     ingredients,
     skippedIngredients: skipped.length > 0 ? skipped : undefined,
     preparation: convertPreparation(
@@ -238,7 +243,7 @@ export function convertScrapedRecipe(
       getStepTitle
     ),
     nutrition: scraped.nutrients ? convertNutrition(scraped.nutrients) : undefined,
-    tags: convertTags(scraped),
+    tags: convertTags(scraped.keywords ?? [], scraped.dietaryRestrictions ?? []),
     season: [],
   };
 }
