@@ -15,6 +15,15 @@ from scraper import (
     _clean_title,
     _clean_description,
     _clean_keywords,
+    _detect_auth_required,
+    _extract_numeric_value,
+    _infer_serving_size_from_html,
+    _find_per_100g_calories,
+    _extract_kcal_from_section,
+    _extract_structured_ingredients,
+    _split_quantity_unit,
+    _clean_ingredient_name,
+    AuthenticationRequiredError,
 )
 
 
@@ -395,3 +404,421 @@ class TestCleanKeywords:
         result = _clean_keywords(keywords, ingredients, title)
         assert "Hamburger Maison" not in result
         assert "RAPIDE" in result
+
+
+LOGIN_PAGE_HTML = """
+<!DOCTYPE html>
+<html>
+<head><title>Connexion - Quitoque</title></head>
+<body><form action="/login-check"><input type="text" name="_username"/></form></body>
+</html>
+"""
+
+LOGIN_PAGE_ENGLISH_HTML = """
+<!DOCTYPE html>
+<html>
+<head><title>Sign In to Your Account</title></head>
+<body><form action="/login"><input type="text" name="email"/></form></body>
+</html>
+"""
+
+
+class TestAuthenticationRequiredError:
+    def test_error_has_host(self):
+        error = AuthenticationRequiredError("quitoque.fr")
+        assert error.host == "quitoque.fr"
+
+    def test_error_has_default_message(self):
+        error = AuthenticationRequiredError("quitoque.fr")
+        assert error.message == "This recipe requires authentication"
+
+    def test_error_custom_message(self):
+        error = AuthenticationRequiredError("quitoque.fr", "Custom message")
+        assert error.message == "Custom message"
+
+
+class TestDetectAuthRequired:
+    def test_detects_login_in_final_url(self):
+        html = "<html><head><title>Page</title></head></html>"
+        original_url = "https://www.quitoque.fr/products/recipe-123"
+        final_url = "https://www.quitoque.fr/login?redirect=/products/recipe-123"
+
+        result = _detect_auth_required(html, final_url, original_url)
+
+        assert result is not None
+        assert isinstance(result, AuthenticationRequiredError)
+        assert result.host == "quitoque.fr"
+
+    def test_detects_signin_in_final_url(self):
+        html = "<html><head><title>Page</title></head></html>"
+        original_url = "https://example.com/recipe"
+        final_url = "https://example.com/signin"
+
+        result = _detect_auth_required(html, final_url, original_url)
+
+        assert result is not None
+        assert result.host == "example.com"
+
+    def test_detects_connexion_in_final_url(self):
+        html = "<html><head><title>Page</title></head></html>"
+        original_url = "https://www.quitoque.fr/recipe"
+        final_url = "https://www.quitoque.fr/connexion"
+
+        result = _detect_auth_required(html, final_url, original_url)
+
+        assert result is not None
+        assert result.host == "quitoque.fr"
+
+    def test_detects_auth_in_final_url(self):
+        html = "<html><head><title>Page</title></head></html>"
+        original_url = "https://example.com/recipe"
+        final_url = "https://example.com/auth/login"
+
+        result = _detect_auth_required(html, final_url, original_url)
+
+        assert result is not None
+
+    def test_detects_login_keyword_in_title(self):
+        original_url = "https://example.com/recipe"
+        final_url = "https://example.com/recipe"
+
+        result = _detect_auth_required(LOGIN_PAGE_HTML, final_url, original_url)
+
+        assert result is not None
+        assert result.host == "example.com"
+
+    def test_detects_signin_keyword_in_title(self):
+        original_url = "https://example.com/recipe"
+        final_url = "https://example.com/recipe"
+
+        result = _detect_auth_required(LOGIN_PAGE_ENGLISH_HTML, final_url, original_url)
+
+        assert result is not None
+
+    def test_returns_none_for_valid_recipe_page(self):
+        html = "<html><head><title>Chocolate Cake Recipe</title></head></html>"
+        original_url = "https://example.com/recipe/chocolate-cake"
+        final_url = "https://example.com/recipe/chocolate-cake"
+
+        result = _detect_auth_required(html, final_url, original_url)
+
+        assert result is None
+
+    def test_removes_www_from_host(self):
+        html = "<html><head><title>Page</title></head></html>"
+        original_url = "https://www.quitoque.fr/recipe"
+        final_url = "https://www.quitoque.fr/login"
+
+        result = _detect_auth_required(html, final_url, original_url)
+
+        assert result is not None
+        assert result.host == "quitoque.fr"
+        assert "www" not in result.host
+
+
+class TestScrapeRecipeFromHtmlWithAuth:
+    def test_returns_auth_error_on_login_redirect(self):
+        html = "<html><head><title>Connexion</title></head></html>"
+        original_url = "https://www.quitoque.fr/products/recipe-123"
+        final_url = "https://www.quitoque.fr/login"
+
+        result = json.loads(
+            scrape_recipe_from_html(html, original_url, final_url=final_url)
+        )
+
+        assert result["success"] is False
+        assert result["error"]["type"] == "AuthenticationRequired"
+        assert result["error"]["host"] == "quitoque.fr"
+
+    def test_returns_auth_error_on_login_page_title(self):
+        original_url = "https://example.com/recipe"
+        final_url = "https://example.com/some-page"
+
+        result = json.loads(
+            scrape_recipe_from_html(LOGIN_PAGE_HTML, original_url, final_url=final_url)
+        )
+
+        assert result["success"] is False
+        assert result["error"]["type"] == "AuthenticationRequired"
+
+
+from bs4 import BeautifulSoup
+
+
+NUTRITION_100G_TAB_HTML = """
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+<div id="quantity">
+    <div>
+        <span>Énergie (kCal)</span>
+        <span>297</span>
+    </div>
+</div>
+<div id="portion">
+    <div>
+        <span>Énergie (kCal)</span>
+        <span>876</span>
+    </div>
+</div>
+</body>
+</html>
+"""
+
+NUTRITION_100G_TEXT_HTML = """
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+<div class="nutrition">
+    <h3>Valeurs nutritionnelles pour 100g</h3>
+    <div>
+        <span>Calories</span>
+        <span>250 kcal</span>
+    </div>
+</div>
+</body>
+</html>
+"""
+
+NUTRITION_NO_100G_HTML = """
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+<div class="nutrition">
+    <span>Énergie</span>
+    <span>500 kCal</span>
+</div>
+</body>
+</html>
+"""
+
+
+class TestExtractNumericValue:
+    def test_extracts_integer(self):
+        assert _extract_numeric_value("876kCal") == 876.0
+
+    def test_extracts_float(self):
+        assert _extract_numeric_value("32.5g") == 32.5
+
+    def test_handles_comma_decimal(self):
+        assert _extract_numeric_value("32,5g") == 32.5
+
+    def test_handles_spaces(self):
+        assert _extract_numeric_value("876 kCal") == 876.0
+
+    def test_returns_zero_for_empty_string(self):
+        assert _extract_numeric_value("") == 0
+
+    def test_returns_zero_for_none(self):
+        assert _extract_numeric_value(None) == 0
+
+    def test_returns_zero_for_no_number(self):
+        assert _extract_numeric_value("no number") == 0
+
+
+class TestFindPer100gCalories:
+    def test_finds_calories_in_quantity_tab(self):
+        soup = BeautifulSoup(NUTRITION_100G_TAB_HTML, "html.parser")
+        result = _find_per_100g_calories(soup)
+        assert result == 297.0
+
+    def test_finds_calories_near_100g_text(self):
+        soup = BeautifulSoup(NUTRITION_100G_TEXT_HTML, "html.parser")
+        result = _find_per_100g_calories(soup)
+        assert result == 250.0
+
+    def test_returns_zero_when_no_100g_section(self):
+        soup = BeautifulSoup(NUTRITION_NO_100G_HTML, "html.parser")
+        result = _find_per_100g_calories(soup)
+        assert result == 0
+
+
+class TestExtractKcalFromSection:
+    def test_finds_energie_kcal(self):
+        html = """
+        <div>
+            <span>Énergie (kCal)</span>
+            <span>297</span>
+        </div>
+        """
+        section = BeautifulSoup(html, "html.parser")
+        result = _extract_kcal_from_section(section)
+        assert result == 297.0
+
+    def test_finds_calories_label(self):
+        html = """
+        <div>
+            <span>Calories</span>
+            <span>250</span>
+        </div>
+        """
+        section = BeautifulSoup(html, "html.parser")
+        result = _extract_kcal_from_section(section)
+        assert result == 250.0
+
+    def test_returns_zero_for_no_match(self):
+        html = """
+        <div>
+            <span>Protein</span>
+            <span>25g</span>
+        </div>
+        """
+        section = BeautifulSoup(html, "html.parser")
+        result = _extract_kcal_from_section(section)
+        assert result == 0
+
+
+class TestInferServingSizeFromHtml:
+    def test_infers_serving_size_from_100g_tab(self):
+        soup = BeautifulSoup(NUTRITION_100G_TAB_HTML, "html.parser")
+        nutrients = {"calories": "876 kCal", "fatContent": "66g"}
+
+        result = _infer_serving_size_from_html(soup, nutrients)
+
+        assert result["servingSize"] == "295g"
+
+    def test_preserves_existing_serving_size(self):
+        soup = BeautifulSoup(NUTRITION_100G_TAB_HTML, "html.parser")
+        nutrients = {"calories": "876 kCal", "servingSize": "300g"}
+
+        result = _infer_serving_size_from_html(soup, nutrients)
+
+        assert result["servingSize"] == "300g"
+
+    def test_returns_none_for_none_nutrients(self):
+        soup = BeautifulSoup(NUTRITION_100G_TAB_HTML, "html.parser")
+
+        result = _infer_serving_size_from_html(soup, None)
+
+        assert result is None
+
+    def test_returns_unchanged_when_no_calories(self):
+        soup = BeautifulSoup(NUTRITION_100G_TAB_HTML, "html.parser")
+        nutrients = {"fatContent": "66g"}
+
+        result = _infer_serving_size_from_html(soup, nutrients)
+
+        assert "servingSize" not in result
+
+    def test_returns_unchanged_when_no_100g_section(self):
+        soup = BeautifulSoup(NUTRITION_NO_100G_HTML, "html.parser")
+        nutrients = {"calories": "500 kCal"}
+
+        result = _infer_serving_size_from_html(soup, nutrients)
+
+        assert "servingSize" not in result
+
+    def test_calculation_accuracy(self):
+        soup = BeautifulSoup(NUTRITION_100G_TAB_HTML, "html.parser")
+        nutrients = {"calories": "594 kCal"}
+
+        result = _infer_serving_size_from_html(soup, nutrients)
+
+        expected = round((594 / 297) * 100)
+        assert result["servingSize"] == f"{expected}g"
+
+
+STRUCTURED_INGREDIENTS_HTML = """
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+<ul class="ingredient-list">
+    <li>
+        <span class="bold">375 g</span>
+        <span>camembert au lait cru</span>
+    </li>
+    <li>
+        <span class="bold">3x</span>
+        <span>petits pains (240g)</span>
+    </li>
+    <li>
+        <span class="bold">0.25</span>
+        <span>herbes de Provence</span>
+    </li>
+</ul>
+</body>
+</html>
+"""
+
+UNSTRUCTURED_INGREDIENTS_HTML = """
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+<ul class="ingredients">
+    <li>375 g camembert</li>
+    <li>3 petits pains</li>
+</ul>
+</body>
+</html>
+"""
+
+
+class TestSplitQuantityUnit:
+    def test_splits_quantity_and_unit(self):
+        assert _split_quantity_unit("375 g") == ("375", "g")
+
+    def test_splits_without_space(self):
+        assert _split_quantity_unit("3x") == ("3", "x")
+
+    def test_handles_decimal(self):
+        assert _split_quantity_unit("0.25") == ("0.25", "")
+
+    def test_handles_comma_decimal(self):
+        assert _split_quantity_unit("0,25") == ("0.25", "")
+
+    def test_handles_empty_string(self):
+        assert _split_quantity_unit("") == ("", "")
+
+    def test_handles_no_number(self):
+        assert _split_quantity_unit("pièce") == ("", "pièce")
+
+
+class TestCleanIngredientName:
+    def test_removes_nbsp(self):
+        result = _clean_ingredient_name("camembert\xa0au lait")
+        assert result == "camembert au lait"
+
+    def test_normalizes_whitespace(self):
+        result = _clean_ingredient_name("  camembert   au   lait  ")
+        assert result == "camembert au lait"
+
+
+class TestExtractStructuredIngredients:
+    def test_extracts_from_well_structured_html(self):
+        soup = BeautifulSoup(STRUCTURED_INGREDIENTS_HTML, "html.parser")
+
+        result = _extract_structured_ingredients(soup)
+
+        assert result is not None
+        assert len(result) == 3
+
+        assert result[0]["quantity"] == "375"
+        assert result[0]["unit"] == "g"
+        assert result[0]["name"] == "camembert au lait cru"
+
+        assert result[1]["quantity"] == "3"
+        assert result[1]["unit"] == "x"
+        assert result[1]["name"] == "petits pains (240g)"
+
+        assert result[2]["quantity"] == "0.25"
+        assert result[2]["unit"] == ""
+        assert result[2]["name"] == "herbes de Provence"
+
+    def test_returns_none_for_unstructured_html(self):
+        soup = BeautifulSoup(UNSTRUCTURED_INGREDIENTS_HTML, "html.parser")
+
+        result = _extract_structured_ingredients(soup)
+
+        assert result is None
+
+    def test_returns_none_when_no_ingredient_list(self):
+        soup = BeautifulSoup("<html><body></body></html>", "html.parser")
+
+        result = _extract_structured_ingredients(soup)
+
+        assert result is None

@@ -1,21 +1,20 @@
 // Types
 export type {
-    ScrapedNutrients,
+    HostSupportedResult,
     IngredientGroup,
+    ParsedIngredient,
     RecipeLink,
+    ScrapedNutrients,
     ScrapedRecipe,
     ScraperError,
-    ScraperSuccessResult,
     ScraperErrorResult,
     ScraperResult,
+    ScraperSuccessResult,
     SupportedHostsResult,
-    HostSupportedResult,
 } from './src/types';
 
-// Scraper class and instance
-export {RecipeScraper, recipeScraper} from './src/RecipeScraper';
-export type {ScrapeOptions} from './src/RecipeScraper';
+export { ScraperErrorTypes } from './src/types';
 
-// Platform-specific modules (for advanced use cases)
-export {default as RecipeScraperNativeModule} from './src/RecipeScraperModule';
-export {RecipeScraperWeb} from './src/web/RecipeScraperWeb';
+// Scraper class and instance
+export { RecipeScraper, recipeScraper } from './src/RecipeScraper';
+export type { ScrapeOptions } from './src/RecipeScraper';

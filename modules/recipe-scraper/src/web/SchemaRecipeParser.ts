@@ -99,6 +99,7 @@ export class SchemaRecipeParser {
             title: this.asString(recipe['name']),
             description: this.asString(recipe['description']),
             ingredients: this.extractIngredients(recipe),
+            parsedIngredients: null,
             ingredientGroups: null,
             instructions: this.extractInstructionsString(recipe),
             instructionsList: this.extractInstructionsList(recipe),

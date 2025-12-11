@@ -2,6 +2,9 @@ import {SchemaRecipeParser} from './SchemaRecipeParser';
 import {pyodideScraper} from './PyodideScraper';
 import type {ScraperErrorResult} from '../types';
 
+const AUTH_URL_PATTERNS = ['/login', '/signin', '/sign-in', '/auth', '/connexion', '/account/login', '/user/login'];
+const AUTH_TITLE_KEYWORDS = ['login', 'sign in', 'connexion', 'se connecter', 'log in', 'anmelden', 'iniciar sesión'];
+
 export class RecipeScraperWeb {
     private parser = new SchemaRecipeParser();
 
@@ -28,6 +31,13 @@ export class RecipeScraperWeb {
                 return this.errorJson('FetchError', `HTTP ${response.status}: ${response.statusText}`);
             }
             const html = await response.text();
+            const finalUrl = response.url;
+
+            const authError = this.detectAuthRequired(html, finalUrl, url);
+            if (authError) {
+                return authError;
+            }
+
             return this.scrapeRecipeFromHtml(html, url, wildMode);
         } catch (error) {
             return this.errorJson(
@@ -105,5 +115,48 @@ export class RecipeScraperWeb {
             error: {type, message},
         };
         return JSON.stringify(result);
+    }
+
+    private authErrorJson(host: string): string {
+        const result: ScraperErrorResult = {
+            success: false,
+            error: {
+                type: 'AuthenticationRequired',
+                message: 'This recipe requires authentication',
+                host,
+            },
+        };
+        return JSON.stringify(result);
+    }
+
+    private detectAuthRequired(html: string, finalUrl: string, originalUrl: string): string | null {
+        const getHost = (urlStr: string): string => {
+            try {
+                return new URL(urlStr).hostname.replace('www.', '');
+            } catch {
+                return '';
+            }
+        };
+
+        const host = getHost(originalUrl);
+        const finalPath = new URL(finalUrl).pathname.toLowerCase();
+
+        for (const pattern of AUTH_URL_PATTERNS) {
+            if (finalPath.includes(pattern)) {
+                return this.authErrorJson(host);
+            }
+        }
+
+        const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+        if (titleMatch) {
+            const title = titleMatch[1].toLowerCase();
+            for (const keyword of AUTH_TITLE_KEYWORDS) {
+                if (title.includes(keyword)) {
+                    return this.authErrorJson(host);
+                }
+            }
+        }
+
+        return null;
     }
 }
