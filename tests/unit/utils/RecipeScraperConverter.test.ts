@@ -271,6 +271,48 @@ describe('RecipeScraperConverter', () => {
       });
     });
 
+    describe('name cleaning', () => {
+      it('removes parenthetical content from ingredient name', () => {
+        const result = parseIngredientString('100 g cheddar (achat sous vide)', ignoredPatterns);
+        expect(result.success).toBe(true);
+        if (result.success) {
+          expect(result.ingredient.name).toBe('cheddar');
+          expect(result.ingredient.quantity).toBe('100');
+          expect(result.ingredient.unit).toBe('g');
+        }
+      });
+
+      it('removes multiple parenthetical sections', () => {
+        const result = parseIngredientString(
+          '2 cups flour (all-purpose) (sifted)',
+          ignoredPatterns
+        );
+        expect(result.success).toBe(true);
+        if (result.success) {
+          expect(result.ingredient.name).toBe('flour');
+        }
+      });
+
+      it('cleans name when only name is provided', () => {
+        const result = parseIngredientString('Tomato (fresh)', ignoredPatterns);
+        expect(result.success).toBe(true);
+        if (result.success) {
+          expect(result.ingredient.name).toBe('Tomato');
+          expect(result.ingredient.quantity).toBe('');
+          expect(result.ingredient.unit).toBe('');
+        }
+      });
+
+      it('cleans name when text starts with non-numeric', () => {
+        const result = parseIngredientString('Fresh basil (Thai)', ignoredPatterns);
+        expect(result.success).toBe(true);
+        if (result.success) {
+          expect(result.ingredient.name).toBe('Fresh basil');
+          expect(result.ingredient.quantity).toBe('');
+        }
+      });
+    });
+
     describe('edge cases', () => {
       it('parses single word as name only', () => {
         const result = parseIngredientString('Tomato', ignoredPatterns);

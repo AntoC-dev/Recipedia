@@ -13,6 +13,7 @@ import {
   kcalToKj,
   namesMatch,
 } from '@utils/NutritionUtils';
+import { cleanIngredientName } from '@utils/FuzzySearch';
 import {
   FormIngredientElement,
   nutritionTableElement,
@@ -63,6 +64,16 @@ export function isUnparseableIngredient(
 
 const DEFAULT_PATTERNS: IgnoredIngredientPatterns = { prefixes: [], exactMatches: [] };
 
+/**
+ * Parses a raw ingredient string into structured data.
+ *
+ * Extracts quantity, unit, and name from strings like "2 cups flour".
+ * Cleans ingredient names by removing parenthetical content (e.g., "cheddar (sous vide)" → "cheddar").
+ *
+ * @param ingredientStr - Raw ingredient string from scraper
+ * @param patterns - Patterns for ingredients to skip
+ * @returns Parsed ingredient or failure with original string
+ */
 export function parseIngredientString(
   ingredientStr: string,
   patterns: IgnoredIngredientPatterns = DEFAULT_PATTERNS
@@ -75,7 +86,10 @@ export function parseIngredientString(
 
   const words = trimmed.split(/\s+/);
   if (words.length < 2) {
-    return { success: true, ingredient: { name: trimmed, quantity: '', unit: '' } };
+    return {
+      success: true,
+      ingredient: { name: cleanIngredientName(trimmed), quantity: '', unit: '' },
+    };
   }
 
   const firstWord = words[0];
@@ -86,7 +100,10 @@ export function parseIngredientString(
   const parsedQuantity = numericQuantity(candidateQuantity);
 
   if (isNaN(parsedQuantity)) {
-    return { success: true, ingredient: { name: trimmed, quantity: '', unit: '' } };
+    return {
+      success: true,
+      ingredient: { name: cleanIngredientName(trimmed), quantity: '', unit: '' },
+    };
   }
 
   const quantity = parsedQuantity.toString();
@@ -97,11 +114,14 @@ export function parseIngredientString(
   }
 
   if (remainingWords.length === 1) {
-    return { success: true, ingredient: { name: remainingWords[0], quantity, unit: '' } };
+    return {
+      success: true,
+      ingredient: { name: cleanIngredientName(remainingWords[0]), quantity, unit: '' },
+    };
   }
 
   const unit = remainingWords[0];
-  const name = remainingWords.slice(1).join(' ');
+  const name = cleanIngredientName(remainingWords.slice(1).join(' '));
   return { success: true, ingredient: { name, quantity, unit } };
 }
 

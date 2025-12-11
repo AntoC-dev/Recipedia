@@ -16,6 +16,12 @@
  * Note: Only accepts tags OR ingredients, not both at the same time, since
  * the modal dialog blocks user interaction.
  *
+ * Important: Items that would be blocked by ItemDialog's duplicate detection
+ * (e.g., ingredients whose cleaned names match existing database entries)
+ * should be filtered upstream by `processIngredientsForValidation` before
+ * being passed to this component. This prevents showing dialogs that lead
+ * to dead ends where the user cannot proceed.
+ *
  * @example
  * ```typescript
  * // For tags
@@ -47,7 +53,6 @@ import {
 import { SimilarityDialog } from './SimilarityDialog';
 import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
 import { uiLogger } from '@utils/logger';
-import { cleanIngredientName } from '@utils/FuzzySearch';
 
 export type ValidationQueuePropsBase<T extends 'Tag' | 'Ingredient', ItemType, ValidatedType> = {
   type: T;
@@ -143,38 +148,7 @@ export function ValidationQueue({
   const similarItems =
     type === 'Tag' ? findSimilarTags(itemName) : findSimilarIngredients(itemName);
   const exactMatch = similarItems.find(item => item.name.toLowerCase() === itemName.toLowerCase());
-
-  /**
-   * Filters out ingredients that only match because their cleaned names are equal
-   * but their full names are clearly different.
-   *
-   * Example: "cheddar (achat sous vide)" has cleaned name "cheddar" which matches
-   * database ingredient "Cheddar", but since the full names differ, we skip the
-   * similarity dialog and let the ingredient be added directly.
-   *
-   * This provides a smoother UX during scraping - the parenthetical details
-   * (like "achat sous vide") indicate a distinct variant the user wants to add.
-   * If the user later tries to manually add via ItemDialog, stricter validation
-   * will block true duplicates.
-   */
-  const filterRelevantSimilarItems = () => {
-    if (type === 'Tag') {
-      return similarItems;
-    }
-    return similarItems.filter(item => {
-      const cleanedItemName = cleanIngredientName(itemName).toLowerCase();
-      const cleanedDbName = cleanIngredientName(item.name).toLowerCase();
-      const isOnlyCleanedMatch = cleanedItemName === cleanedDbName;
-      const isFullNameDifferent = item.name.toLowerCase() !== itemName.toLowerCase();
-      if (isOnlyCleanedMatch && isFullNameDifferent) {
-        return false;
-      }
-      return true;
-    });
-  };
-
-  const relevantSimilarItems = filterRelevantSimilarItems();
-  const similarItem = exactMatch || relevantSimilarItems[0];
+  const similarItem = exactMatch || similarItems[0];
 
   uiLogger.debug('ValidationQueue showing dialog', {
     type,

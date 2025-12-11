@@ -159,10 +159,13 @@ export function processTagsForValidation(
 }
 
 /**
- * Processes ingredients for validation by filtering exact database matches
- * Returns exact matches (preserving OCR quantity/unit) and items that need validation separately
+ * Processes ingredients for validation by filtering exact database matches.
+ * Returns exact matches (preserving scraped quantity/unit) and items that need validation separately.
  *
- * @param ingredients - Array of ingredients to process (can be partial for OCR data)
+ * Note: Ingredient names should already be cleaned (parenthetical content removed)
+ * by parseIngredientString in RecipeScraperConverter before reaching this function.
+ *
+ * @param ingredients - Array of ingredients to process (can be partial for scraped data)
  * @param findSimilarIngredients - Function to find similar ingredients in database
  * @returns Object with exactMatches and needsValidation arrays
  */

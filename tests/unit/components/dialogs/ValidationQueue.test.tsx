@@ -465,33 +465,6 @@ describe('ValidationQueue', () => {
   });
 
   describe('Ingredient Filtering (Cleaned Name Logic)', () => {
-    test('skips similarity dialog when ingredient only matches by cleaned name', async () => {
-      const ingredientWithParentheses: ingredientTableElement[] = [
-        {
-          id: 99,
-          name: 'cheddar (achat sous vide)',
-          type: ingredientType.dairy,
-          unit: 'g',
-          quantity: '100',
-          season: [],
-        },
-      ];
-
-      const { getByTestId, queryByTestId } = renderQueueIngredients(ingredientWithParentheses);
-
-      expect(
-        getByTestId(
-          'test-validation::ValidationQueue::Ingredient::SimilarityDialog::Mock::item.similarItem'
-        ).props.children
-      ).toBe('undefined');
-
-      expect(
-        queryByTestId(
-          'test-validation::ValidationQueue::Ingredient::SimilarityDialog::Mock::item.onUseExisting'
-        )
-      ).toBeNull();
-    });
-
     test('shows similarity dialog when full names match exactly (case-insensitive)', async () => {
       const ingredientExactMatch: ingredientTableElement[] = [
         {
