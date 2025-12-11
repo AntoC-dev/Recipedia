@@ -12,6 +12,7 @@ import {
 } from '@utils/RecipeScraperConverter';
 import { hellofreshKeftasRecipe } from '@test-data/scraperMocks/hellofresh';
 import { marmitonHamburgerRecipe } from '@test-data/scraperMocks/marmiton';
+import { quitoqueCamembertRecipe } from '@test-data/scraperMocks/quitoque';
 import { createEmptyScrapedRecipe } from '@mocks/modules/recipe-scraper-mock';
 
 describe('RecipeScraperConverter', () => {
@@ -44,7 +45,7 @@ describe('RecipeScraperConverter', () => {
     });
 
     it('parses French ingredients with units', () => {
-      const result = convertIngredients(hellofreshKeftasRecipe.ingredients, ignoredPatterns);
+      const result = convertIngredients(hellofreshKeftasRecipe.ingredients, null, ignoredPatterns);
 
       const semoule = result.ingredients.find(i => i.name === 'Semoule');
       expect(semoule?.quantity).toBe('150');
@@ -56,7 +57,7 @@ describe('RecipeScraperConverter', () => {
     });
 
     it('skips "selon le goût" prefixed ingredients', () => {
-      const result = convertIngredients(hellofreshKeftasRecipe.ingredients, ignoredPatterns);
+      const result = convertIngredients(hellofreshKeftasRecipe.ingredients, null, ignoredPatterns);
       expect(result.skipped).toContain('selon le goût Poivre et sel');
     });
 
@@ -124,7 +125,7 @@ describe('RecipeScraperConverter', () => {
     });
 
     it('parses French ingredients without quantities', () => {
-      const result = convertIngredients(marmitonHamburgerRecipe.ingredients, ignoredPatterns);
+      const result = convertIngredients(marmitonHamburgerRecipe.ingredients, null, ignoredPatterns);
 
       expect(result.ingredients).toHaveLength(8);
       expect(result.skipped).toHaveLength(0);
@@ -168,6 +169,87 @@ describe('RecipeScraperConverter', () => {
       const nutrition = convertNutrition(marmitonHamburgerRecipe.nutrients!);
 
       expect(nutrition).toBeUndefined();
+    });
+  });
+
+  describe('Quitoque', () => {
+    it('converts complete recipe', () => {
+      const result = convertScrapedRecipe(
+        quitoqueCamembertRecipe,
+        ignoredPatterns,
+        defaultPersons,
+        getStepTitle
+      );
+
+      expect(result.title).toBe('Camembert rôti au miel et mouillettes aux épices');
+      expect(result.description).toContain('camembert');
+      expect(result.image_Source).toContain('quitoque.fr');
+      expect(result.persons).toBe(3);
+      expect(result.time).toBe(25);
+      expect(result.ingredients).toHaveLength(10);
+      expect(result.preparation).toHaveLength(4);
+      expect(result.nutrition).toBeDefined();
+      expect(result.tags).toHaveLength(5);
+    });
+
+    it('parses French ingredients with metric units', () => {
+      const result = convertIngredients(quitoqueCamembertRecipe.ingredients, null, ignoredPatterns);
+
+      const camembert = result.ingredients.find(i => i.name?.includes('camembert'));
+      expect(camembert?.quantity).toBe('375');
+      expect(camembert?.unit).toBe('g');
+
+      const miel = result.ingredients.find(i => i.name?.includes('miel'));
+      expect(miel?.quantity).toBe('20');
+      expect(miel?.unit).toBe('ml');
+    });
+
+    it('does not skip ingredients with quantity prefix even when name matches exactMatches', () => {
+      const result = convertIngredients(quitoqueCamembertRecipe.ingredients, null, ignoredPatterns);
+
+      const selPoivre = result.ingredients.find(i => i.name?.includes('sel et poivre'));
+      expect(selPoivre).toBeDefined();
+      expect(selPoivre?.quantity).toBe('10');
+      expect(selPoivre?.unit).toBe('g');
+    });
+
+    it('extracts 5 tags from keywords', () => {
+      const tags = convertTags(
+        quitoqueCamembertRecipe.keywords ?? [],
+        quitoqueCamembertRecipe.dietaryRestrictions ?? []
+      );
+
+      expect(tags).toHaveLength(5);
+      expect(tags.map(t => t.name)).toContain('Gourmand');
+      expect(tags.map(t => t.name)).toContain('Express');
+      expect(tags.map(t => t.name)).toContain('Végétarien');
+      expect(tags.map(t => t.name)).toContain('Noël');
+      expect(tags.map(t => t.name)).toContain('Protéiné');
+    });
+
+    it('converts 4 instruction steps', () => {
+      const steps = convertPreparation(
+        quitoqueCamembertRecipe.instructions ?? '',
+        quitoqueCamembertRecipe.instructionsList,
+        getStepTitle
+      );
+
+      expect(steps).toHaveLength(4);
+      expect(steps[0].title).toBe('Step 1');
+      expect(steps[0].description).toContain('200°C');
+      expect(steps[3].description).toContain('salade');
+    });
+
+    it('converts nutrition per-serving to per-100g', () => {
+      const nutrition = convertNutrition(quitoqueCamembertRecipe.nutrients!);
+
+      expect(nutrition).toBeDefined();
+      expect(nutrition!.portionWeight).toBe(350);
+      expect(nutrition!.energyKcal).toBeCloseTo(250.3, 0);
+      expect(nutrition!.fat).toBeCloseTo(9.3, 0);
+      expect(nutrition!.carbohydrates).toBeCloseTo(31.8, 0);
+      expect(nutrition!.sugars).toBeCloseTo(6.7, 0);
+      expect(nutrition!.protein).toBeCloseTo(7.1, 0);
     });
   });
 
@@ -376,6 +458,7 @@ describe('RecipeScraperConverter', () => {
     it('converts array of ingredient strings', () => {
       const result = convertIngredients(
         ['150 g Semoule', '1 pièce(s) Carotte', 'Tomato'],
+        null,
         ignoredPatterns
       );
 
@@ -390,6 +473,7 @@ describe('RecipeScraperConverter', () => {
     it('separates skipped ingredients from parsed ones', () => {
       const result = convertIngredients(
         ['150 g Flour', 'selon le goût Sel', '2 cups Sugar', 'to taste Pepper'],
+        null,
         ignoredPatterns
       );
 
@@ -564,21 +648,20 @@ describe('RecipeScraperConverter', () => {
       expect(nutrition).toBeUndefined();
     });
 
-    it('uses default portion weight (100g) when servingSize is missing', () => {
+    it('returns undefined when servingSize is missing', () => {
       const nutrition = convertNutrition({
         calories: '200 kcal',
         fatContent: '10 g',
       });
 
-      expect(nutrition!.portionWeight).toBe(100);
-      expect(nutrition!.energyKcal).toBe(200);
-      expect(nutrition!.fat).toBe(10);
+      expect(nutrition).toBeUndefined();
     });
 
     it('converts sodium from mg to g when value is high (> 10)', () => {
       const nutrition = convertNutrition({
         calories: '200 kcal',
         sodiumContent: '500 mg',
+        servingSize: '100 g',
       });
 
       expect(nutrition!.salt).toBe(0.5);
@@ -588,6 +671,7 @@ describe('RecipeScraperConverter', () => {
       const nutrition = convertNutrition({
         calories: '200 kcal',
         sodiumContent: '2 g',
+        servingSize: '100 g',
       });
 
       expect(nutrition!.salt).toBe(2);
@@ -596,6 +680,7 @@ describe('RecipeScraperConverter', () => {
     it('calculates energyKj from energyKcal', () => {
       const nutrition = convertNutrition({
         calories: '100 kcal',
+        servingSize: '100 g',
       });
 
       expect(nutrition!.energyKj).toBeCloseTo(418, 0);
@@ -610,6 +695,7 @@ describe('RecipeScraperConverter', () => {
         sugarContent: '10 g',
         fiberContent: '3 g',
         proteinContent: '8 g',
+        servingSize: '100 g',
       });
 
       expect(nutrition!.fat).toBe(15);

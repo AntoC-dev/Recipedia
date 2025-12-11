@@ -13,6 +13,7 @@ export const marmitonHamburgerRecipe: ScrapedRecipe = {
     'moutarde',
     'ketchup',
   ],
+  parsedIngredients: null,
   ingredientGroups: [
     {
       purpose: null,

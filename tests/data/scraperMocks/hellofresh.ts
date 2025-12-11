@@ -20,6 +20,7 @@ export const hellofreshKeftasRecipe: ScrapedRecipe = {
     '200 ml Bouillon de bœuf',
     'selon le goût Poivre et sel',
   ],
+  parsedIngredients: null,
   ingredientGroups: [
     {
       purpose: null,

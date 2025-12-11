@@ -69,6 +69,7 @@ describe('RecipeScraperWeb', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
+        url: 'https://example.com/recipe',
         text: async () => recipeHtml,
       });
 
@@ -110,6 +111,7 @@ describe('RecipeScraperWeb', () => {
     test('returns error when no recipe found', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
+        url: 'https://example.com/page',
         text: async () => '<html><body>No recipe here</body></html>',
       });
 
@@ -133,6 +135,7 @@ describe('RecipeScraperWeb', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
+        url: 'https://example.com/recipe',
         text: async () => recipeHtml,
       });
 
