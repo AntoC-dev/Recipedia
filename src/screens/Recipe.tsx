@@ -52,6 +52,7 @@ import { useRecipeIngredients } from '@hooks/useRecipeIngredients';
 import { useRecipeTags } from '@hooks/useRecipeTags';
 import { useRecipePreparation } from '@hooks/useRecipePreparation';
 import { useRecipeOCR } from '@hooks/useRecipeOCR';
+import { useRecipeScraperValidation } from '@hooks/useRecipeScraperValidation';
 import { RecipeDialogsProvider, useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { RecipeFormProvider, useRecipeForm } from '@context/RecipeFormContext';
 
@@ -126,6 +127,7 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
   const ingredients = useRecipeIngredients();
   const preparation = useRecipePreparation();
   const ocr = useRecipeOCR();
+  useRecipeScraperValidation();
   const validationButtonConfig = getValidationButtonConfig(state.stackMode, t);
 
   /**

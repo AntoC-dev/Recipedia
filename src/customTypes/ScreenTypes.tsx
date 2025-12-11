@@ -62,6 +62,8 @@ export enum recipeStateType {
   addManual,
   /** OCR-based mode for creating recipes from images */
   addOCR,
+  /** Scrape-based mode for creating recipes from website URLs */
+  addScrape,
 }
 
 /**

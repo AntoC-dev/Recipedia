@@ -99,4 +99,10 @@ export default {
       perPortion: ['Per portion'],
     },
   },
+
+  scraper: {
+    ignoredIngredientPrefixes: ['to taste', 'as needed', 'optional', 'for garnish', 'for serving'],
+    ignoredIngredientExactMatches: ['salt', 'pepper', 'salt and pepper', 'pepper and salt'],
+    stepTitle: 'Step {{number}}',
+  },
 };

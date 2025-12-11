@@ -15,6 +15,18 @@ jest.mock('react-native/Libraries/Interaction/InteractionManager', () =>
   require('@mocks/deps/InteractionManager-mock').interactionManagerMock()
 );
 
+// Mock the RecipeScraper native module
+jest.mock('@app/modules/recipe-scraper/src/RecipeScraperModule', () => ({
+  __esModule: true,
+  default: {
+    scrapeRecipe: jest.fn().mockResolvedValue('{"success":true,"data":{}}'),
+    scrapeRecipeFromHtml: jest.fn().mockResolvedValue('{"success":true,"data":{}}'),
+    getSupportedHosts: jest.fn().mockResolvedValue('{"success":true,"data":[]}'),
+    isHostSupported: jest.fn().mockResolvedValue('{"success":true,"data":false}'),
+    isAvailable: jest.fn().mockResolvedValue(true),
+  },
+}));
+
 // Store original console methods for tests that need to verify console calls
 global.originalConsole = {
   log: console.log,

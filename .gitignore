@@ -46,6 +46,7 @@ docs/
 
 .vscode
 android/*
+**/android/build/*
 ios/*
 .idea
 .windsurf/

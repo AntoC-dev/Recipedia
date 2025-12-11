@@ -1,29 +1,13 @@
 appId: "com.recipedia"
 ---
-- assertVisible:
-    id: "Recipe::AppBar::BackButton"
-    label: "Back button is displayed"
-
-- assertVisible:
-    text: "󰁍"
-    label: "Back button icon is displayed"
-
-- assertVisible:
-    id: "Recipe::BottomActionButton"
-    label: "Add recipe button is displayed"
-
-- assertVisible:
-    text: "Add this new recipe"
-    label: "Add recipe button has the correct text"
+- runFlow:
+    file: "buttonsFilledCommon.yaml"
+    label: "Assert common filled buttons"
 
 - assertVisible:
     id: "RecipeImage::RoundButton"
-    label: "OCR image button is still rendered"
+    label: "OCR image button is rendered"
 
 - assertVisible:
     text: "󰘤"
-    label: "OCR image button has the right icon"
-
-- assertVisible:
-    id: "RecipeImage::Image"
-    label: "Image is displayed"
+    label: "OCR image button has the camera icon"

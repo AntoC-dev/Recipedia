@@ -27,18 +27,9 @@ appId: "com.recipedia"
       platform: Android
 # TODO iOS
 
-- repeat:
-    while:
-      visible:
-        id: "RecipeValidation::ValidationQueue::Tag::SimilarityDialog::Title"
-    commands:
-      - tapOn:
-          id: "RecipeValidation::ValidationQueue::Tag::SimilarityDialog::AddButton"
-          label: "Select to add the tag"
-
-      - tapOn:
-          id: "RecipeValidation::ValidationQueue::Tag::ItemDialog::AddModal::ConfirmButton"
-          label: "Validate the tag as is"
+- runFlow:
+    file: "../../../validation/validateAllTags.yaml"
+    label: "Validate all tags from OCR"
 
 - extendedWaitUntil:
     visible:

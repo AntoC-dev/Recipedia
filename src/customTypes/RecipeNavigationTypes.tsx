@@ -7,7 +7,11 @@
  * @module customTypes/RecipeNavigationTypes
  */
 
-import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
+import {
+  FormIngredientElement,
+  nutritionTableElement,
+  recipeTableElement,
+} from '@customTypes/DatabaseElementTypes';
 
 /**
  * All possible mode values for Recipe screen navigation.
@@ -16,8 +20,9 @@ import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
  * - 'edit': Modify an existing recipe
  * - 'addManually': Create a new recipe by manual input
  * - 'addFromPic': Create a new recipe using OCR from an image
+ * - 'addFromScrape': Create a new recipe from scraped website data
  */
-export type RecipeMode = 'readOnly' | 'edit' | 'addManually' | 'addFromPic';
+export type RecipeMode = 'readOnly' | 'edit' | 'addManually' | 'addFromPic' | 'addFromScrape';
 
 /**
  * Base interface for all Recipe screen navigation parameters.
@@ -77,10 +82,38 @@ export interface AddFromPicProp extends BaseRecipeProp {
 }
 
 /**
+ * Type for scraped recipe data passed to the Recipe screen.
+ * Uses FormIngredientElement[] for ingredients since they need validation.
+ */
+export type ScrapedRecipeData = Omit<Partial<recipeTableElement>, 'ingredients' | 'nutrition'> & {
+  ingredients?: FormIngredientElement[];
+  nutrition?: nutritionTableElement;
+};
+
+/**
+ * Navigation parameters for creating a new recipe from scraped website data.
+ *
+ * Opens a form pre-filled with recipe data extracted from a website URL.
+ * User can review and edit all fields before saving.
+ */
+export interface AddFromScrapeProp extends BaseRecipeProp {
+  mode: 'addFromScrape';
+  /** Partial recipe data extracted from the website */
+  scrapedData: ScrapedRecipeData;
+  /** Original URL that was scraped */
+  sourceUrl: string;
+}
+
+/**
  * Discriminated union type for Recipe screen navigation parameters.
  *
  * Uses the `mode` field as discriminator to determine which additional
  * properties are available. TypeScript can narrow the type based on
  * the mode value.
  */
-export type RecipePropType = ReadRecipeProp | EditRecipeProp | AddManuallyProp | AddFromPicProp;
+export type RecipePropType =
+  | ReadRecipeProp
+  | EditRecipeProp
+  | AddManuallyProp
+  | AddFromPicProp
+  | AddFromScrapeProp;

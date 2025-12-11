@@ -1,0 +1,12 @@
+appId: "com.recipedia"
+---
+- scrollUntilVisible:
+    element:
+      text: "${TAG_NAME}"
+    direction: DOWN
+    speed: 60
+    label: "Scroll to find ${TAG_NAME} tag"
+
+- assertVisible:
+    text: "${TAG_NAME}"
+    label: "Verify ${TAG_NAME} tag exists in database"

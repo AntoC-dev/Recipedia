@@ -4,11 +4,10 @@ appId: "com.recipedia"
     file: "../../common/fr/buttonsReadOnly.yaml"
     label: "Assert common ReadOnly buttons and image (French)"
 
-- runFlow:
-    file: "../../common/titleReadOnly.yaml"
-    env:
-      TITLE: "POULET SAUCE SATAY.*"
-    label: "Assert recipe title"
+- assertVisible:
+    id: "RecipeTitle::Text"
+    text: "POULET SAUCE SATAY.*"
+    label: "Title text is displayed"
 
 - assertVisible:
     id: "RecipeDescription::Text"

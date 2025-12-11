@@ -4,11 +4,10 @@ appId: "com.recipedia"
     file: "../../common/buttonsReadOnly.yaml"
     label: "Assert read-only buttons are displayed"
 
-- runFlow:
-    file: "../../common/titleReadOnly.yaml"
-    env:
-      TITLE: "Aiguillettes de poulet a la sauce satay"
-    label: "Assert title is displayed"
+- assertVisible:
+    id: "RecipeTitle::Text"
+    text: "Aiguillettes de poulet a la sauce satay"
+    label: "Title text is displayed"
 
 - runFlow:
     file: "../../common/descriptionReadOnly.yaml"

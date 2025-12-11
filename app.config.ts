@@ -87,6 +87,7 @@ export default ({config}: ConfigContext): ExpoConfig => {
                     },
                 },
             ],
+            './modules/recipe-scraper/plugin/build/index.js',
         ],
         extra: {
             eas: {

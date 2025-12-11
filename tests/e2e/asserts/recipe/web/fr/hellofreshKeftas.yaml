@@ -1,0 +1,310 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    file: "../../common/fr/buttonsWebFilled.yaml"
+    label: "Assert common buttons and image (filled state, French)"
+
+- assertVisible:
+    id: "RecipeTitle::Text"
+    text: "Titre:"
+    label: "Intro text for the title is rendered (French)"
+
+- assertVisible:
+    id: "RecipeTitle::CustomTextInput"
+    text: "Keftas de bœuf & semoule aux épices avec de la menthe & une sauce yaourt"
+    label: "Title of the recipe is rendered"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeDescription::Text"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll down to description label"
+
+- assertVisible:
+    id: "RecipeDescription::Text"
+    text: "Description:"
+    label: "Intro text for the description is rendered (French)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeDescription::CustomTextInput"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll down to description content"
+
+- assertVisible:
+    id: "RecipeDescription::CustomTextInput"
+    text: "Le yaourt à la grecque que vous trouvez.*"
+    label: "Description of the recipe starts with expected text"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTags::HeaderText"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll down to tags header"
+
+- assertVisible:
+    id: "RecipeTags::HeaderText"
+    text: "Étiquettes:"
+    label: "Intro text for the tags is rendered (French)"
+
+- assertVisible:
+    id: "RecipeTags::ElementText"
+    text: "Les étiquettes représentent une façon d'identifier une recette afin d'en faciliter la recherche.\nVoici certains exemples d'étiquettes que vous pouvez utiliser : .*, .*, .*"
+    label: "Explanation text for the tags is rendered (French)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTags::0::Chip"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll down to tags chips"
+
+- assertVisible:
+    id: "RecipeTags::0::Chip"
+    text: "Épicé"
+    label: "First tag 'Épicé' is rendered"
+
+- assertVisible:
+    id: "RecipeTags::1::Chip"
+    text: "Riche en protéines"
+    label: "Second tag 'Riche en protéines' is rendered"
+
+- assertVisible:
+    id: "RecipeTags::2::Chip"
+    text: "Calorie Smart"
+    label: "Third tag 'Calorie Smart' is rendered"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTags::RoundButton"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll down to tags button"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePersons::NumericTextInput"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll down to persons part"
+
+- assertVisible:
+    id: "RecipePersons::PrefixText"
+    text: "Cette recette est pour : "
+    label: "Intro text for the number of persons is rendered (French)"
+
+- assertVisible:
+    id: "RecipePersons::NumericTextInput"
+    text: "2"
+    label: "Number of persons is rendered"
+
+- assertVisible:
+    id: "RecipePersons::SuffixText"
+    text: " personnes"
+    label: "Outro text for the number of persons is rendered (French)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::PrefixText"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll down to ingredients part"
+
+- assertVisible:
+    id: "RecipeIngredients::PrefixText"
+    text: "Ingrédients : "
+    label: "Section Ingredients is rendered (French)"
+
+- assertVisible:
+    id: "RecipeIngredients::Header::Quantity"
+    text: "Quantité"
+    label: "Column Quantity is rendered (French)"
+
+- assertVisible:
+    id: "RecipeIngredients::Header::Unit"
+    text: "Unité"
+    label: "Column Unit is rendered (French)"
+
+- assertVisible:
+    id: "RecipeIngredients::Header::IngredientName"
+    text: "Nom"
+    label: "Column Ingredient name is rendered (French)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::12::NameInput::CustomTextInput"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to last ingredient (index 12 = 13 ingredients)"
+
+- assertVisible:
+    id: "RecipeIngredients::12::QuantityInput"
+    label: "Expected to have 13 ingredient quantities (last index is 12)"
+
+- assertVisible:
+    id: "RecipeIngredients::12::Unit"
+    label: "Expected to have 13 ingredient units"
+
+- assertVisible:
+    id: "RecipeIngredients::12::NameInput::CustomTextInput"
+    label: "Expected to have 13 ingredient names"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTime::PrefixText"
+    direction: DOWN
+    speed: 60
+    label: "Scroll down to time part"
+
+- assertVisible:
+    id: "RecipeIngredients::AddButton::RoundButton"
+    label: "Add button of the ingredients is rendered"
+
+- assertVisible:
+    id: "RecipeTime::PrefixText"
+    text: "Temps de préparation :"
+    label: "Intro text for the time to prepare is rendered (French)"
+
+- assertVisible:
+    id: "RecipeTime::NumericTextInput"
+    text: "40"
+    label: "Time to prepare is rendered"
+
+- assertVisible:
+    id: "RecipeTime::SuffixText"
+    text: "min"
+    label: "Outro text for the time to prepare is rendered"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::PrefixText"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll down to preparation part"
+
+- assertVisible:
+    id: "RecipePreparation::PrefixText"
+    text: "Préparation : "
+    label: "Preparation prefix text is rendered (French)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::0::Step"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll down to first step"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::0::Step"
+    text: "Étape 1"
+    label: "Preparation section for first step is rendered (French)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll down to title of first step"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::0::Title"
+    text: "Titre de l'étape 1 : "
+    label: "Intro text for the title of first step is rendered (French)"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
+    text: "Étape 1"
+    label: "First preparation step title is rendered (French)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::0::Content"
+    direction: DOWN
+    centerElement: true
+    speed: 40
+    label: "Scroll down to content of first step content"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::0::Content"
+    text: "Contenu de l'étape 1 : "
+    label: "Intro text for first step is rendered (French)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
+    direction: DOWN
+    centerElement: true
+    speed: 40
+    label: "Scroll down to content of first step"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
+    text: "[\\s\\S]+"
+    label: "First step content is rendered and not empty"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::5::Title"
+    direction: DOWN
+    centerElement: true
+    speed: 80
+    label: "Scroll down to sixth and last step"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::5::Title"
+    text: "Titre de l'étape 6 : "
+    label: "Intro text for the title of sixth step is rendered (French)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::5::TextInputContent::CustomTextInput"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll down to content of sixth step"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::5::TextInputContent::CustomTextInput"
+    text: "[\\s\\S]+"
+    label: "Sixth step content is rendered and not empty"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::AddButton::RoundButton"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll down to preparation add button"
+
+- assertVisible:
+    id: "RecipePreparation::AddButton::RoundButton"
+    label: "Add button of the preparation is rendered"
+
+- runFlow:
+    file: "../../common/fr/nutritionEdit.yaml"
+    env:
+      ENERGY_KCAL: "116"
+      ENERGY_KJ: "485.3"
+      FAT: "4.9"
+      SATURATED_FAT: "1.8"
+      CARBOHYDRATES: "11"
+      SUGARS: "2.4"
+      FIBER: "1.8"
+      PROTEIN: "6.4"
+      SALT: "0.7"
+      PORTION_WEIGHT: "493"
+    label: "Assert nutrition values are correctly parsed (French)"

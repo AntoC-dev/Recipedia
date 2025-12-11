@@ -8,6 +8,7 @@ import {
   resetMockCopilot,
   setMockCopilotState,
 } from '@mocks/deps/react-native-copilot-mock';
+import { DefaultPersonsProvider } from '@context/DefaultPersonsContext';
 
 jest.mock('@utils/ImagePicker', () => require('@mocks/utils/ImagePicker-mock').imagePickerMock());
 
@@ -15,13 +16,22 @@ jest.mock('@react-navigation/native', () =>
   require('@mocks/deps/react-navigation-mock').reactNavigationMock()
 );
 
+jest.mock(
+  '@app/modules/recipe-scraper',
+  () => require('@mocks/modules/recipe-scraper-mock').recipeScraperMock
+);
+
+function renderWithProvider(component: React.ReactElement) {
+  return render(<DefaultPersonsProvider>{component}</DefaultPersonsProvider>);
+}
+
 describe('VerticalBottomButtons Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   test('renders expand button in collapsed state', () => {
-    const { getByTestId, queryByTestId } = render(<VerticalBottomButtons />);
+    const { getByTestId, queryByTestId } = renderWithProvider(<VerticalBottomButtons />);
 
     expect(getByTestId('ExpandButton')).toBeTruthy();
 
@@ -31,7 +41,7 @@ describe('VerticalBottomButtons Component', () => {
     expect(queryByTestId('CameraButton')).toBeNull();
   });
   test('renders all action buttons in expanded state', () => {
-    const { queryByTestId, getByTestId } = render(<VerticalBottomButtons />);
+    const { queryByTestId, getByTestId } = renderWithProvider(<VerticalBottomButtons />);
 
     fireEvent.press(getByTestId('ExpandButton'));
 
@@ -44,7 +54,7 @@ describe('VerticalBottomButtons Component', () => {
   });
 
   test('collapses menu when reduce button is pressed', () => {
-    const { queryByTestId, getByTestId } = render(<VerticalBottomButtons />);
+    const { queryByTestId, getByTestId } = renderWithProvider(<VerticalBottomButtons />);
 
     fireEvent.press(getByTestId('ExpandButton'));
 
@@ -61,7 +71,7 @@ describe('VerticalBottomButtons Component', () => {
   });
 
   test('navigates to manual recipe creation when edit button is pressed', async () => {
-    const { getByTestId } = render(<VerticalBottomButtons />);
+    const { getByTestId } = renderWithProvider(<VerticalBottomButtons />);
 
     fireEvent.press(getByTestId('ExpandButton'));
 
@@ -77,7 +87,7 @@ describe('VerticalBottomButtons Component', () => {
   });
 
   test('picks image and navigates to recipe creation when gallery button is pressed', async () => {
-    const { getByTestId } = render(<VerticalBottomButtons />);
+    const { getByTestId } = renderWithProvider(<VerticalBottomButtons />);
 
     fireEvent.press(getByTestId('ExpandButton'));
 
@@ -94,7 +104,7 @@ describe('VerticalBottomButtons Component', () => {
   });
 
   test('takes photo and navigates to recipe creation when camera button is pressed', async () => {
-    const { getByTestId } = render(<VerticalBottomButtons />);
+    const { getByTestId } = renderWithProvider(<VerticalBottomButtons />);
 
     fireEvent.press(getByTestId('ExpandButton'));
 
@@ -111,7 +121,7 @@ describe('VerticalBottomButtons Component', () => {
   });
 
   test('handles state transitions correctly', () => {
-    const { getByTestId, queryByTestId } = render(<VerticalBottomButtons />);
+    const { getByTestId, queryByTestId } = renderWithProvider(<VerticalBottomButtons />);
 
     expect(getByTestId('ExpandButton')).toBeTruthy();
     expect(queryByTestId('ReduceButton')).toBeNull();
@@ -149,7 +159,7 @@ describe('VerticalBottomButtons Component', () => {
         currentStep: { order: 1, name: 'Home', text: 'Test step' },
       });
 
-      const { getByTestId } = render(<VerticalBottomButtons />);
+      const { getByTestId } = renderWithProvider(<VerticalBottomButtons />);
 
       expect(getByTestId('CopilotStep::Home')).toBeTruthy();
       expect(getByTestId('HomeTutorial')).toBeTruthy();
@@ -159,7 +169,7 @@ describe('VerticalBottomButtons Component', () => {
     test('renders without tutorial wrapper when copilot is not available', () => {
       setMockCopilotState({ isActive: false });
 
-      const { queryByTestId, getByTestId } = render(<VerticalBottomButtons />);
+      const { queryByTestId, getByTestId } = renderWithProvider(<VerticalBottomButtons />);
 
       expect(queryByTestId('CopilotStep::Home')).toBeNull();
       expect(queryByTestId('HomeTutorial')).toBeNull();
@@ -173,7 +183,7 @@ describe('VerticalBottomButtons Component', () => {
         currentStep: { order: 1, name: 'Home', text: 'Home step' },
       });
 
-      const { getByTestId, queryByTestId } = render(<VerticalBottomButtons />);
+      const { getByTestId, queryByTestId } = renderWithProvider(<VerticalBottomButtons />);
 
       await waitFor(() => {
         expect(mockEvents.on).toHaveBeenCalledWith('stepChange', expect.any(Function));
@@ -194,7 +204,7 @@ describe('VerticalBottomButtons Component', () => {
         currentStep: { order: 1, name: 'Home', text: 'Home step' },
       });
 
-      const { unmount, getByTestId } = render(<VerticalBottomButtons />);
+      const { unmount, getByTestId } = renderWithProvider(<VerticalBottomButtons />);
 
       await waitFor(() => {
         expect(mockEvents.on).toHaveBeenCalled();

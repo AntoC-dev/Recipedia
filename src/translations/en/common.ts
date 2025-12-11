@@ -56,7 +56,18 @@ export default {
 
   fab: {
     addManually: 'Add manually',
+    addFromUrl: 'Import from website',
     pickFromGallery: 'Pick from gallery',
     takePhoto: 'Take a photo',
+  },
+
+  urlDialog: {
+    title: 'Import Recipe from URL',
+    placeholder: 'Paste recipe URL',
+    submit: 'Import',
+    loading: 'Fetching recipe...',
+    errorInvalidUrl: 'Please enter a valid URL',
+    errorScraping: 'Could not extract recipe from this URL',
+    errorNetwork: 'Network error. Please check your connection.',
   },
 };

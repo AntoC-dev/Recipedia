@@ -46,6 +46,7 @@ import {
 } from '@customTypes/DatabaseElementTypes';
 import { SimilarityDialog } from './SimilarityDialog';
 import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { uiLogger } from '@utils/logger';
 
 export type ValidationQueuePropsBase<T extends 'Tag' | 'Ingredient', ItemType, ValidatedType> = {
   type: T;
@@ -114,13 +115,14 @@ export function ValidationQueue({
       const mergedIngredient: ingredientTableElement = {
         ...validatedIngredient,
         quantity: originalIngredient?.quantity || validatedIngredient.quantity,
-        unit: originalIngredient?.unit || validatedIngredient.unit,
       };
+      // First remove the original ingredient (e.g., "Oignon"), then add the validated one (e.g., "Onions")
+      onDismissed?.(originalIngredient);
       onValidated(mergedIngredient);
     } else {
       onValidated(item);
     }
-    moveToNext();
+    // Note: Don't call moveToNext() here - SimilarityDialog's onClose handles it
   };
 
   const handleDismiss = () => {
@@ -129,7 +131,7 @@ export function ValidationQueue({
     } else {
       onDismissed?.(currentItem as tagTableElement);
     }
-    moveToNext();
+    // Note: Don't call moveToNext() here - SimilarityDialog's onClose already handles it
   };
 
   if (remainingItems.length === 0 || !currentItem || !currentItem.name) {
@@ -141,6 +143,16 @@ export function ValidationQueue({
     type === 'Tag' ? findSimilarTags(itemName) : findSimilarIngredients(itemName);
   const exactMatch = similarItems.find(item => item.name.toLowerCase() === itemName.toLowerCase());
   const similarItem = exactMatch || similarItems[0];
+
+  uiLogger.debug('ValidationQueue showing dialog', {
+    type,
+    itemName,
+    similarItemsCount: similarItems.length,
+    similarItemNames: similarItems.map(i => i.name),
+    hasSimilarItem: !!similarItem,
+    similarItemName: similarItem?.name,
+    buttonLayout: similarItem ? 'Add/Use' : 'Cancel/Add',
+  });
 
   return (
     <SimilarityDialog

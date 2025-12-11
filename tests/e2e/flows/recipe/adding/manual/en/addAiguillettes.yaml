@@ -139,7 +139,8 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::1::QuantityInput"
     direction: DOWN
-    speed: 60
+    speed: 40
+    centerElement: true
     label: "Scroll to second ingredient quantity input"
 
 - tapOn:

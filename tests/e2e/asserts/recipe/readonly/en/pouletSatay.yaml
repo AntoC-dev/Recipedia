@@ -4,11 +4,10 @@ appId: "com.recipedia"
     file: "../../common/buttonsReadOnly.yaml"
     label: "Assert common ReadOnly buttons and image"
 
-- runFlow:
-    file: "../../common/titleReadOnly.yaml"
-    env:
-      TITLE: "POULET SAUCE SATAY (CACAHUETES ET LAIT DE COCO)"
-    label: "Assert recipe title"
+- assertVisible:
+    id: "RecipeTitle::Text"
+    text: "POULET SAUCE SATAY (CACAHUETES ET LAIT DE COCO)"
+    label: "Title text is displayed"
 
 - assertVisible:
     id: "RecipeDescription::Text"

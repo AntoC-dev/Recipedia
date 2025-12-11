@@ -106,6 +106,8 @@ jobs:
             build_required:
               - 'src/**'
               - 'android/**'
+              - 'plugins/**'
+              - 'modules/**'
               - 'app.json'
               - 'app.config.ts'
               - 'eas.json'
@@ -239,6 +241,27 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Setup Python for Chaquopy
+        if: |
+          steps.filter.outputs.build_required == 'true' ||
+          github.ref == 'refs/heads/main' ||
+          startsWith(github.ref, 'refs/tags/') ||
+          env.BUILD_FALLBACK == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: '.python-version'
+
+      - name: Verify Python packages
+        if: |
+          steps.filter.outputs.build_required == 'true' ||
+          github.ref == 'refs/heads/main' ||
+          startsWith(github.ref, 'refs/tags/') ||
+          env.BUILD_FALLBACK == 'true'
+        run: |
+          pip install pytest "recipe-scrapers[online]>=15.0.0"
+          python -c "from recipe_scrapers import scrape_me; print('recipe-scrapers OK')"
+          python -c "import pytest; print('pytest OK')"
+
       - name: Setup Android SDK
         if: |
           steps.filter.outputs.build_required == 'true' ||
@@ -328,7 +351,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        suite: [ 'app-init', 'search', 'recipe-view', 'recipe-create', 'shopping', 'settings', 'tags-db', 'ingredients-db', 'duplicates-tag', 'duplicates-ingredient', 'duplicates-recipe', 'ocr' ]
+        suite: [ 'app-init', 'search', 'recipe-view', 'recipe-create', 'shopping', 'settings', 'tags-db', 'ingredients-db', 'duplicates-tag', 'duplicates-ingredient', 'duplicates-recipe', 'ocr', 'web-edge-cases', 'web' ]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6

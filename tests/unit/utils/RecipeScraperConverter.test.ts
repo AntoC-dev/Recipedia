@@ -1,0 +1,641 @@
+import {
+  convertIngredients,
+  convertNutrition,
+  convertPreparation,
+  convertScrapedRecipe,
+  convertTags,
+  IgnoredIngredientPatterns,
+  isUnparseableIngredient,
+  parseIngredientString,
+  parseServings,
+  removeNumberedPrefix,
+} from '@utils/RecipeScraperConverter';
+import { hellofreshKeftasRecipe } from '@test-data/scraperMocks/hellofresh';
+import { createEmptyScrapedRecipe } from '@mocks/modules/recipe-scraper-mock';
+
+describe('RecipeScraperConverter', () => {
+  const ignoredPatterns: IgnoredIngredientPatterns = {
+    prefixes: ['selon le goût', 'to taste', 'optional'],
+    exactMatches: ['sel', 'poivre', 'sel et poivre', 'poivre et sel', 'salt', 'pepper'],
+  };
+  const defaultPersons = 4;
+  const getStepTitle = (index: number) => `Step ${index + 1}`;
+
+  describe('HelloFresh', () => {
+    it('converts complete recipe', () => {
+      const result = convertScrapedRecipe(
+        hellofreshKeftasRecipe,
+        ignoredPatterns,
+        defaultPersons,
+        getStepTitle
+      );
+
+      expect(result.title).toBe(hellofreshKeftasRecipe.title);
+      expect(result.description).toBe(hellofreshKeftasRecipe.description);
+      expect(result.image_Source).toBe(hellofreshKeftasRecipe.image);
+      expect(result.persons).toBe(2);
+      expect(result.time).toBe(40);
+      expect(result.ingredients.length).toBeGreaterThan(0);
+      expect(result.preparation).toHaveLength(6);
+      expect(result.nutrition).toBeDefined();
+      expect(result.tags!.length).toBeGreaterThan(0);
+      expect(result.season).toEqual([]);
+    });
+
+    it('parses French ingredients with units', () => {
+      const result = convertIngredients(hellofreshKeftasRecipe.ingredients, ignoredPatterns);
+
+      const semoule = result.ingredients.find(i => i.name === 'Semoule');
+      expect(semoule?.quantity).toBe('150');
+      expect(semoule?.unit).toBe('g');
+
+      const bouillon = result.ingredients.find(i => i.name?.includes('Bouillon'));
+      expect(bouillon?.quantity).toBe('200');
+      expect(bouillon?.unit).toBe('ml');
+    });
+
+    it('skips "selon le goût" prefixed ingredients', () => {
+      const result = convertIngredients(hellofreshKeftasRecipe.ingredients, ignoredPatterns);
+      expect(result.skipped).toContain('selon le goût Poivre et sel');
+    });
+
+    it('extracts French tags from keywords', () => {
+      const tags = convertTags(hellofreshKeftasRecipe);
+      expect(tags.map(t => t.name)).toContain('Épicé');
+      expect(tags.map(t => t.name)).toContain('Riche en protéines');
+      expect(tags.map(t => t.name)).toContain('Calorie Smart');
+    });
+
+    it('converts 6 instruction steps', () => {
+      const steps = convertPreparation(
+        hellofreshKeftasRecipe.instructions ?? '',
+        hellofreshKeftasRecipe.instructionsList,
+        getStepTitle
+      );
+
+      expect(steps).toHaveLength(6);
+      expect(steps[0].title).toBe('Step 1');
+      expect(steps[0].description).toContain('carotte');
+    });
+
+    it('converts nutrition per-serving to per-100g', () => {
+      const nutrition = convertNutrition(hellofreshKeftasRecipe.nutrients!);
+
+      expect(nutrition).toBeDefined();
+      expect(nutrition!.portionWeight).toBe(493);
+      expect(nutrition!.energyKcal).toBeCloseTo(116.0, 0);
+    });
+
+    it('includes skipped ingredients in result', () => {
+      const result = convertScrapedRecipe(
+        hellofreshKeftasRecipe,
+        ignoredPatterns,
+        defaultPersons,
+        getStepTitle
+      );
+
+      expect(result.skippedIngredients).toBeDefined();
+      expect(result.skippedIngredients).toContain('selon le goût Poivre et sel');
+    });
+  });
+
+  describe('isUnparseableIngredient', () => {
+    it('returns true for ingredients starting with ignored prefix', () => {
+      expect(isUnparseableIngredient('selon le goût Poivre', ignoredPatterns)).toBe(true);
+      expect(isUnparseableIngredient('To Taste Salt', ignoredPatterns)).toBe(true);
+      expect(isUnparseableIngredient('optional: cheese', ignoredPatterns)).toBe(true);
+    });
+
+    it('returns false for normal ingredients', () => {
+      expect(isUnparseableIngredient('2 cups flour', ignoredPatterns)).toBe(false);
+      expect(isUnparseableIngredient('Tomato', ignoredPatterns)).toBe(false);
+    });
+
+    it('is case-insensitive', () => {
+      expect(isUnparseableIngredient('SELON LE GOÛT Sel', ignoredPatterns)).toBe(true);
+    });
+
+    it('handles empty patterns', () => {
+      expect(isUnparseableIngredient('to taste salt', { prefixes: [], exactMatches: [] })).toBe(
+        false
+      );
+    });
+
+    it('returns true for exact match ingredients', () => {
+      expect(isUnparseableIngredient('Poivre et sel', ignoredPatterns)).toBe(true);
+      expect(isUnparseableIngredient('sel', ignoredPatterns)).toBe(true);
+      expect(isUnparseableIngredient('Salt', ignoredPatterns)).toBe(true);
+      expect(isUnparseableIngredient('pepper', ignoredPatterns)).toBe(true);
+    });
+
+    it('is case-insensitive for exact matches', () => {
+      expect(isUnparseableIngredient('SEL ET POIVRE', ignoredPatterns)).toBe(true);
+      expect(isUnparseableIngredient('POIVRE', ignoredPatterns)).toBe(true);
+    });
+  });
+
+  describe('parseIngredientString', () => {
+    describe('quantity + unit + name format', () => {
+      it('parses "150 g Semoule"', () => {
+        const result = parseIngredientString('150 g Semoule', ignoredPatterns);
+        expect(result.success).toBe(true);
+        if (result.success) {
+          expect(result.ingredient.quantity).toBe('150');
+          expect(result.ingredient.unit).toBe('g');
+          expect(result.ingredient.name).toBe('Semoule');
+        }
+      });
+
+      it('parses "200 ml Bouillon de légumes"', () => {
+        const result = parseIngredientString('200 ml Bouillon de légumes', ignoredPatterns);
+        expect(result.success).toBe(true);
+        if (result.success) {
+          expect(result.ingredient.quantity).toBe('200');
+          expect(result.ingredient.unit).toBe('ml');
+          expect(result.ingredient.name).toBe('Bouillon de légumes');
+        }
+      });
+
+      it('parses "1 pièce(s) Carotte"', () => {
+        const result = parseIngredientString('1 pièce(s) Carotte', ignoredPatterns);
+        expect(result.success).toBe(true);
+        if (result.success) {
+          expect(result.ingredient.quantity).toBe('1');
+          expect(result.ingredient.unit).toBe('pièce(s)');
+          expect(result.ingredient.name).toBe('Carotte');
+        }
+      });
+    });
+
+    describe('fraction quantities', () => {
+      it('parses "1 1/2 cups Sugar"', () => {
+        const result = parseIngredientString('1 1/2 cups Sugar', ignoredPatterns);
+        expect(result.success).toBe(true);
+        if (result.success) {
+          expect(result.ingredient.quantity).toBe('1.5');
+          expect(result.ingredient.unit).toBe('cups');
+          expect(result.ingredient.name).toBe('Sugar');
+        }
+      });
+
+      it('parses "1/2 tsp Salt"', () => {
+        const result = parseIngredientString('1/2 tsp Salt', ignoredPatterns);
+        expect(result.success).toBe(true);
+        if (result.success) {
+          expect(result.ingredient.quantity).toBe('0.5');
+          expect(result.ingredient.unit).toBe('tsp');
+          expect(result.ingredient.name).toBe('Salt');
+        }
+      });
+
+      it('parses "3/4 cup Milk"', () => {
+        const result = parseIngredientString('3/4 cup Milk', ignoredPatterns);
+        expect(result.success).toBe(true);
+        if (result.success) {
+          expect(result.ingredient.quantity).toBe('0.75');
+          expect(result.ingredient.unit).toBe('cup');
+          expect(result.ingredient.name).toBe('Milk');
+        }
+      });
+    });
+
+    describe('edge cases', () => {
+      it('parses single word as name only', () => {
+        const result = parseIngredientString('Tomato', ignoredPatterns);
+        expect(result.success).toBe(true);
+        if (result.success) {
+          expect(result.ingredient.name).toBe('Tomato');
+          expect(result.ingredient.quantity).toBe('');
+          expect(result.ingredient.unit).toBe('');
+        }
+      });
+
+      it('parses text starting with non-numeric as name only', () => {
+        const result = parseIngredientString('Fresh basil leaves', ignoredPatterns);
+        expect(result.success).toBe(true);
+        if (result.success) {
+          expect(result.ingredient.name).toBe('Fresh basil leaves');
+          expect(result.ingredient.quantity).toBe('');
+        }
+      });
+
+      it('parses "2 tomatoes" as quantity + name (no unit)', () => {
+        const result = parseIngredientString('2 tomatoes', ignoredPatterns);
+        expect(result.success).toBe(true);
+        if (result.success) {
+          expect(result.ingredient.quantity).toBe('2');
+          expect(result.ingredient.unit).toBe('');
+          expect(result.ingredient.name).toBe('tomatoes');
+        }
+      });
+
+      it('returns failure for ignored prefix ingredients', () => {
+        const result = parseIngredientString('selon le goût Poivre et sel', ignoredPatterns);
+        expect(result.success).toBe(false);
+        if (!result.success) {
+          expect(result.original).toBe('selon le goût Poivre et sel');
+        }
+      });
+
+      it('handles whitespace correctly', () => {
+        const result = parseIngredientString('  2   cups   flour  ', ignoredPatterns);
+        expect(result.success).toBe(true);
+        if (result.success) {
+          expect(result.ingredient.quantity).toBe('2');
+          expect(result.ingredient.unit).toBe('cups');
+          expect(result.ingredient.name).toBe('flour');
+        }
+      });
+
+      it('returns just quantity when only number provided', () => {
+        const result = parseIngredientString('5', ignoredPatterns);
+        expect(result.success).toBe(true);
+        if (result.success) {
+          expect(result.ingredient.quantity).toBe('');
+          expect(result.ingredient.name).toBe('5');
+        }
+      });
+    });
+  });
+
+  describe('convertIngredients', () => {
+    it('converts array of ingredient strings', () => {
+      const result = convertIngredients(
+        ['150 g Semoule', '1 pièce(s) Carotte', 'Tomato'],
+        ignoredPatterns
+      );
+
+      expect(result.ingredients).toHaveLength(3);
+      expect(result.skipped).toHaveLength(0);
+
+      expect(result.ingredients[0].name).toBe('Semoule');
+      expect(result.ingredients[1].name).toBe('Carotte');
+      expect(result.ingredients[2].name).toBe('Tomato');
+    });
+
+    it('separates skipped ingredients from parsed ones', () => {
+      const result = convertIngredients(
+        ['150 g Flour', 'selon le goût Sel', '2 cups Sugar', 'to taste Pepper'],
+        ignoredPatterns
+      );
+
+      expect(result.ingredients).toHaveLength(2);
+      expect(result.skipped).toHaveLength(2);
+
+      expect(result.ingredients[0].name).toBe('Flour');
+      expect(result.ingredients[1].name).toBe('Sugar');
+      expect(result.skipped).toContain('selon le goût Sel');
+      expect(result.skipped).toContain('to taste Pepper');
+    });
+  });
+
+  describe('parseServings', () => {
+    it('extracts number from "2 servings"', () => {
+      expect(parseServings('2 servings', defaultPersons)).toBe(2);
+    });
+
+    it('extracts number from "Serves 6"', () => {
+      expect(parseServings('Serves 6', defaultPersons)).toBe(6);
+    });
+
+    it('extracts number from "4 portions"', () => {
+      expect(parseServings('4 portions', defaultPersons)).toBe(4);
+    });
+
+    it('returns default when yields is undefined', () => {
+      expect(parseServings(undefined, defaultPersons)).toBe(4);
+    });
+
+    it('returns default when yields has no number', () => {
+      expect(parseServings('several portions', defaultPersons)).toBe(4);
+    });
+
+    it('extracts first integer from complex string', () => {
+      expect(parseServings('Makes 12-14 cookies', defaultPersons)).toBe(12);
+    });
+  });
+
+  describe('convertTags', () => {
+    it('extracts tags from keywords array', () => {
+      const scraped = createEmptyScrapedRecipe({
+        keywords: ['Quick', 'Easy', 'Healthy'],
+      });
+
+      const tags = convertTags(scraped);
+
+      expect(tags).toHaveLength(3);
+      expect(tags.map(t => t.name)).toContain('Quick');
+      expect(tags.map(t => t.name)).toContain('Easy');
+      expect(tags.map(t => t.name)).toContain('Healthy');
+    });
+
+    it('extracts tags from dietaryRestrictions array', () => {
+      const scraped = createEmptyScrapedRecipe({
+        dietaryRestrictions: ['Vegan', 'Gluten-Free'],
+      });
+
+      const tags = convertTags(scraped);
+
+      expect(tags).toHaveLength(2);
+      expect(tags.map(t => t.name)).toContain('Vegan');
+      expect(tags.map(t => t.name)).toContain('Gluten-Free');
+    });
+
+    it('combines keywords and dietaryRestrictions', () => {
+      const scraped = createEmptyScrapedRecipe({
+        keywords: ['Quick'],
+        dietaryRestrictions: ['Vegan'],
+      });
+
+      const tags = convertTags(scraped);
+
+      expect(tags).toHaveLength(2);
+      expect(tags.map(t => t.name)).toContain('Quick');
+      expect(tags.map(t => t.name)).toContain('Vegan');
+    });
+
+    it('splits comma-separated keywords', () => {
+      const scraped = createEmptyScrapedRecipe({
+        keywords: ['Quick, Easy, Healthy'],
+      });
+
+      const tags = convertTags(scraped);
+
+      expect(tags).toHaveLength(3);
+      expect(tags.map(t => t.name)).toContain('Quick');
+      expect(tags.map(t => t.name)).toContain('Easy');
+      expect(tags.map(t => t.name)).toContain('Healthy');
+    });
+
+    it('deduplicates case-insensitively', () => {
+      const scraped = createEmptyScrapedRecipe({
+        keywords: ['Vegan', 'Quick'],
+        dietaryRestrictions: ['VEGAN', 'quick'],
+      });
+
+      const tags = convertTags(scraped);
+
+      const veganCount = tags.filter(t => t.name.toLowerCase() === 'vegan').length;
+      const quickCount = tags.filter(t => t.name.toLowerCase() === 'quick').length;
+      expect(veganCount).toBe(1);
+      expect(quickCount).toBe(1);
+    });
+
+    it('filters out empty strings', () => {
+      const scraped = createEmptyScrapedRecipe({
+        keywords: ['Valid', '', '  '],
+      });
+
+      const tags = convertTags(scraped);
+      expect(tags).toHaveLength(1);
+      expect(tags[0].name).toBe('Valid');
+    });
+  });
+
+  describe('removeNumberedPrefix', () => {
+    it('removes "1. " prefix', () => {
+      expect(removeNumberedPrefix('1. Mix the ingredients')).toBe('Mix the ingredients');
+    });
+
+    it('removes "12. " prefix', () => {
+      expect(removeNumberedPrefix('12. Final step')).toBe('Final step');
+    });
+
+    it('removes "99. " prefix', () => {
+      expect(removeNumberedPrefix('99. Last step')).toBe('Last step');
+    });
+
+    it('does not remove prefix with more than 3 digits', () => {
+      expect(removeNumberedPrefix('1234. Not a step')).toBe('1234. Not a step');
+    });
+
+    it('does not remove non-numeric prefix', () => {
+      expect(removeNumberedPrefix('a. Introduction')).toBe('a. Introduction');
+    });
+
+    it('handles text without prefix', () => {
+      expect(removeNumberedPrefix('Just a step')).toBe('Just a step');
+    });
+
+    it('trims whitespace', () => {
+      expect(removeNumberedPrefix('  3. Trimmed step  ')).toBe('Trimmed step');
+    });
+  });
+
+  describe('convertPreparation', () => {
+    it('uses instructionsList when provided', () => {
+      const steps = convertPreparation(
+        'This should be ignored',
+        ['First step', 'Second step', 'Third step'],
+        getStepTitle
+      );
+
+      expect(steps).toHaveLength(3);
+      expect(steps[0].title).toBe('Step 1');
+      expect(steps[0].description).toBe('First step');
+      expect(steps[1].description).toBe('Second step');
+    });
+
+    it('falls back to instructions string when instructionsList is empty', () => {
+      const steps = convertPreparation('1. First step\n2. Second step', [], getStepTitle);
+
+      expect(steps).toHaveLength(2);
+      expect(steps[0].description).toBe('First step');
+      expect(steps[1].description).toBe('Second step');
+    });
+
+    it('falls back to instructions string when instructionsList is null', () => {
+      const steps = convertPreparation('Step one\nStep two', null, getStepTitle);
+
+      expect(steps).toHaveLength(2);
+    });
+
+    it('removes numbered prefixes from instructions string', () => {
+      const steps = convertPreparation(
+        '1. Mix ingredients\n2. Bake for 30 min\n3. Serve',
+        null,
+        getStepTitle
+      );
+
+      expect(steps[0].description).toBe('Mix ingredients');
+      expect(steps[1].description).toBe('Bake for 30 min');
+      expect(steps[2].description).toBe('Serve');
+    });
+
+    it('filters out empty lines', () => {
+      const steps = convertPreparation('Step one\n\n\nStep two', null, getStepTitle);
+
+      expect(steps).toHaveLength(2);
+    });
+
+    it('trims whitespace from instructionsList items', () => {
+      const steps = convertPreparation('', ['  Step with spaces  '], getStepTitle);
+
+      expect(steps[0].description).toBe('Step with spaces');
+    });
+  });
+
+  describe('convertNutrition', () => {
+    it('returns undefined when no calories', () => {
+      const nutrition = convertNutrition({
+        fatContent: '10 g',
+        proteinContent: '5 g',
+      });
+
+      expect(nutrition).toBeUndefined();
+    });
+
+    it('uses default portion weight (100g) when servingSize is missing', () => {
+      const nutrition = convertNutrition({
+        calories: '200 kcal',
+        fatContent: '10 g',
+      });
+
+      expect(nutrition!.portionWeight).toBe(100);
+      expect(nutrition!.energyKcal).toBe(200);
+      expect(nutrition!.fat).toBe(10);
+    });
+
+    it('converts sodium from mg to g when value is high (> 10)', () => {
+      const nutrition = convertNutrition({
+        calories: '200 kcal',
+        sodiumContent: '500 mg',
+      });
+
+      expect(nutrition!.salt).toBe(0.5);
+    });
+
+    it('keeps sodium as-is when value is low (<= 10)', () => {
+      const nutrition = convertNutrition({
+        calories: '200 kcal',
+        sodiumContent: '2 g',
+      });
+
+      expect(nutrition!.salt).toBe(2);
+    });
+
+    it('calculates energyKj from energyKcal', () => {
+      const nutrition = convertNutrition({
+        calories: '100 kcal',
+      });
+
+      expect(nutrition!.energyKj).toBeCloseTo(418, 0);
+    });
+
+    it('converts all nutrient types', () => {
+      const nutrition = convertNutrition({
+        calories: '250 kcal',
+        fatContent: '15 g',
+        saturatedFatContent: '5 g',
+        carbohydrateContent: '30 g',
+        sugarContent: '10 g',
+        fiberContent: '3 g',
+        proteinContent: '8 g',
+      });
+
+      expect(nutrition!.fat).toBe(15);
+      expect(nutrition!.saturatedFat).toBe(5);
+      expect(nutrition!.carbohydrates).toBe(30);
+      expect(nutrition!.sugars).toBe(10);
+      expect(nutrition!.fiber).toBe(3);
+      expect(nutrition!.protein).toBe(8);
+    });
+
+    it('scales values based on portion size', () => {
+      const nutrition = convertNutrition({
+        calories: '500 kcal',
+        fatContent: '20 g',
+        servingSize: '200 g',
+      });
+
+      expect(nutrition!.portionWeight).toBe(200);
+      expect(nutrition!.energyKcal).toBe(250);
+      expect(nutrition!.fat).toBe(10);
+    });
+  });
+
+  describe('convertScrapedRecipe', () => {
+    it('uses prepTime when available', () => {
+      const scraped = createEmptyScrapedRecipe({
+        prepTime: 30,
+        totalTime: 60,
+      });
+
+      const result = convertScrapedRecipe(
+        scraped,
+        {
+          prefixes: [],
+          exactMatches: [],
+        },
+        defaultPersons,
+        getStepTitle
+      );
+
+      expect(result.time).toBe(30);
+    });
+
+    it('falls back to totalTime when prepTime is missing', () => {
+      const scraped = createEmptyScrapedRecipe({
+        prepTime: null,
+        totalTime: 60,
+      });
+
+      const result = convertScrapedRecipe(
+        scraped,
+        {
+          prefixes: [],
+          exactMatches: [],
+        },
+        defaultPersons,
+        getStepTitle
+      );
+
+      expect(result.time).toBe(60);
+    });
+
+    it('uses default persons when yields is missing', () => {
+      const scraped = createEmptyScrapedRecipe({
+        yields: null,
+      });
+
+      const result = convertScrapedRecipe(
+        scraped,
+        {
+          prefixes: [],
+          exactMatches: [],
+        },
+        defaultPersons,
+        getStepTitle
+      );
+
+      expect(result.persons).toBe(4);
+    });
+
+    it('handles missing optional fields', () => {
+      const scraped = createEmptyScrapedRecipe({
+        title: 'Simple Recipe',
+        description: null,
+        image: null,
+        nutrients: null,
+        keywords: null,
+        dietaryRestrictions: null,
+      });
+
+      const result = convertScrapedRecipe(
+        scraped,
+        {
+          prefixes: [],
+          exactMatches: [],
+        },
+        defaultPersons,
+        getStepTitle
+      );
+
+      expect(result.title).toBe('Simple Recipe');
+      expect(result.description).toBe('');
+      expect(result.image_Source).toBe('');
+      expect(result.nutrition).toBeUndefined();
+      expect(result.tags).toEqual([]);
+    });
+  });
+});

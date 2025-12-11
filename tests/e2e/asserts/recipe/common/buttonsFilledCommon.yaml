@@ -1,0 +1,18 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    id: "Recipe::AppBar::BackButton"
+    label: "Back button is displayed"
+
+- assertVisible:
+    text: "󰁍"
+    label: "Back button icon is displayed"
+
+- assertVisible:
+    id: "Recipe::BottomActionButton-text"
+    text: "Add this new recipe"
+    label: "Add recipe button is displayed"
+
+- assertVisible:
+    id: "RecipeImage::Image"
+    label: "Image is displayed"
