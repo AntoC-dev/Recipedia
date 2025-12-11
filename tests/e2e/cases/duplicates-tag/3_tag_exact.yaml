@@ -20,11 +20,20 @@ tags:
       id: "RecipeTags::RoundButton"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Action - Scroll to tags section"
 
 - tapOn:
     id: "RecipeTags::RoundButton"
     label: "Action - Add tag to recipe"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTags::List::0::CustomTextInput"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to text input for tag"
 
 - tapOn:
     id: "RecipeTags::List::0::CustomTextInput"
@@ -35,7 +44,6 @@ tags:
     label: "Action - Enter existing tag name"
 
 - pressKey: "ENTER"
-
 
 - assertVisible:
     id: "RecipeTags::0::Chip"
