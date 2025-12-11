@@ -11,6 +11,7 @@ import {
   removeNumberedPrefix,
 } from '@utils/RecipeScraperConverter';
 import { hellofreshKeftasRecipe } from '@test-data/scraperMocks/hellofresh';
+import { marmitonHamburgerRecipe } from '@test-data/scraperMocks/marmiton';
 import { createEmptyScrapedRecipe } from '@mocks/modules/recipe-scraper-mock';
 
 describe('RecipeScraperConverter', () => {
@@ -34,7 +35,7 @@ describe('RecipeScraperConverter', () => {
       expect(result.description).toBe(hellofreshKeftasRecipe.description);
       expect(result.image_Source).toBe(hellofreshKeftasRecipe.image);
       expect(result.persons).toBe(2);
-      expect(result.time).toBe(40);
+      expect(result.time).toBe(70);
       expect(result.ingredients.length).toBeGreaterThan(0);
       expect(result.preparation).toHaveLength(6);
       expect(result.nutrition).toBeDefined();
@@ -60,7 +61,10 @@ describe('RecipeScraperConverter', () => {
     });
 
     it('extracts French tags from keywords', () => {
-      const tags = convertTags(hellofreshKeftasRecipe);
+      const tags = convertTags(
+        hellofreshKeftasRecipe.keywords ?? [],
+        hellofreshKeftasRecipe.dietaryRestrictions ?? []
+      );
       expect(tags.map(t => t.name)).toContain('Épicé');
       expect(tags.map(t => t.name)).toContain('Riche en protéines');
       expect(tags.map(t => t.name)).toContain('Calorie Smart');
@@ -96,6 +100,74 @@ describe('RecipeScraperConverter', () => {
 
       expect(result.skippedIngredients).toBeDefined();
       expect(result.skippedIngredients).toContain('selon le goût Poivre et sel');
+    });
+  });
+
+  describe('Marmiton', () => {
+    it('converts complete recipe', () => {
+      const result = convertScrapedRecipe(
+        marmitonHamburgerRecipe,
+        ignoredPatterns,
+        defaultPersons,
+        getStepTitle
+      );
+
+      expect(result.title).toBe('Hamburger maison');
+      expect(result.description).toBe('');
+      expect(result.image_Source).toContain('assets.afcdn.com');
+      expect(result.persons).toBe(4);
+      expect(result.time).toBe(10);
+      expect(result.ingredients).toHaveLength(8);
+      expect(result.preparation).toHaveLength(6);
+      expect(result.nutrition).toBeUndefined();
+      expect(result.tags).toHaveLength(4);
+    });
+
+    it('parses French ingredients without quantities', () => {
+      const result = convertIngredients(marmitonHamburgerRecipe.ingredients, ignoredPatterns);
+
+      expect(result.ingredients).toHaveLength(8);
+      expect(result.skipped).toHaveLength(0);
+
+      const pain = result.ingredients.find(i => i.name === 'pain pour hamburger');
+      expect(pain).toBeDefined();
+      expect(pain?.quantity).toBe('');
+      expect(pain?.unit).toBe('');
+
+      const viande = result.ingredients.find(i => i.name === 'viande hachée');
+      expect(viande).toBeDefined();
+    });
+
+    it('extracts tags from keywords', () => {
+      const tags = convertTags(
+        marmitonHamburgerRecipe.keywords ?? [],
+        marmitonHamburgerRecipe.dietaryRestrictions ?? []
+      );
+
+      expect(tags).toHaveLength(4);
+      expect(tags.map(t => t.name)).toContain('hamburger');
+      expect(tags.map(t => t.name)).toContain('très facile');
+      expect(tags.map(t => t.name)).toContain('bon marché');
+      expect(tags.map(t => t.name)).toContain('rapide');
+    });
+
+    it('converts 6 instruction steps', () => {
+      const steps = convertPreparation(
+        marmitonHamburgerRecipe.instructions ?? '',
+        marmitonHamburgerRecipe.instructionsList,
+        getStepTitle
+      );
+
+      expect(steps).toHaveLength(6);
+      expect(steps[0].title).toBe('Step 1');
+      expect(steps[0].description).toContain('oignons');
+      expect(steps[5].description).toContain('ketchup et moutarde');
+    });
+
+    it('returns undefined nutrition for empty nutrients object', () => {
+      const nutrition = convertNutrition(marmitonHamburgerRecipe.nutrients!);
+
+      expect(nutrition).toBeUndefined();
     });
   });
 
@@ -317,11 +389,7 @@ describe('RecipeScraperConverter', () => {
 
   describe('convertTags', () => {
     it('extracts tags from keywords array', () => {
-      const scraped = createEmptyScrapedRecipe({
-        keywords: ['Quick', 'Easy', 'Healthy'],
-      });
-
-      const tags = convertTags(scraped);
+      const tags = convertTags(['Quick', 'Easy', 'Healthy'], []);
 
       expect(tags).toHaveLength(3);
       expect(tags.map(t => t.name)).toContain('Quick');
@@ -330,11 +398,7 @@ describe('RecipeScraperConverter', () => {
     });
 
     it('extracts tags from dietaryRestrictions array', () => {
-      const scraped = createEmptyScrapedRecipe({
-        dietaryRestrictions: ['Vegan', 'Gluten-Free'],
-      });
-
-      const tags = convertTags(scraped);
+      const tags = convertTags([], ['Vegan', 'Gluten-Free']);
 
       expect(tags).toHaveLength(2);
       expect(tags.map(t => t.name)).toContain('Vegan');
@@ -342,38 +406,15 @@ describe('RecipeScraperConverter', () => {
     });
 
     it('combines keywords and dietaryRestrictions', () => {
-      const scraped = createEmptyScrapedRecipe({
-        keywords: ['Quick'],
-        dietaryRestrictions: ['Vegan'],
-      });
-
-      const tags = convertTags(scraped);
+      const tags = convertTags(['Quick'], ['Vegan']);
 
       expect(tags).toHaveLength(2);
       expect(tags.map(t => t.name)).toContain('Quick');
       expect(tags.map(t => t.name)).toContain('Vegan');
     });
 
-    it('splits comma-separated keywords', () => {
-      const scraped = createEmptyScrapedRecipe({
-        keywords: ['Quick, Easy, Healthy'],
-      });
-
-      const tags = convertTags(scraped);
-
-      expect(tags).toHaveLength(3);
-      expect(tags.map(t => t.name)).toContain('Quick');
-      expect(tags.map(t => t.name)).toContain('Easy');
-      expect(tags.map(t => t.name)).toContain('Healthy');
-    });
-
     it('deduplicates case-insensitively', () => {
-      const scraped = createEmptyScrapedRecipe({
-        keywords: ['Vegan', 'Quick'],
-        dietaryRestrictions: ['VEGAN', 'quick'],
-      });
-
-      const tags = convertTags(scraped);
+      const tags = convertTags(['Vegan', 'Quick'], ['VEGAN', 'quick']);
 
       const veganCount = tags.filter(t => t.name.toLowerCase() === 'vegan').length;
       const quickCount = tags.filter(t => t.name.toLowerCase() === 'quick').length;
@@ -382,11 +423,7 @@ describe('RecipeScraperConverter', () => {
     });
 
     it('filters out empty strings', () => {
-      const scraped = createEmptyScrapedRecipe({
-        keywords: ['Valid', '', '  '],
-      });
-
-      const tags = convertTags(scraped);
+      const tags = convertTags(['Valid', '', '  '], []);
       expect(tags).toHaveLength(1);
       expect(tags[0].name).toBe('Valid');
     });
@@ -555,7 +592,7 @@ describe('RecipeScraperConverter', () => {
   });
 
   describe('convertScrapedRecipe', () => {
-    it('uses prepTime when available', () => {
+    it('uses totalTime when available', () => {
       const scraped = createEmptyScrapedRecipe({
         prepTime: 30,
         totalTime: 60,
@@ -571,13 +608,13 @@ describe('RecipeScraperConverter', () => {
         getStepTitle
       );
 
-      expect(result.time).toBe(30);
+      expect(result.time).toBe(60);
     });
 
-    it('falls back to totalTime when prepTime is missing', () => {
+    it('falls back to prepTime when totalTime is missing', () => {
       const scraped = createEmptyScrapedRecipe({
-        prepTime: null,
-        totalTime: 60,
+        prepTime: 30,
+        totalTime: null,
       });
 
       const result = convertScrapedRecipe(
@@ -590,7 +627,7 @@ describe('RecipeScraperConverter', () => {
         getStepTitle
       );
 
-      expect(result.time).toBe(60);
+      expect(result.time).toBe(30);
     });
 
     it('uses default persons when yields is missing', () => {

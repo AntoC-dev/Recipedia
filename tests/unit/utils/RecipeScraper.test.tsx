@@ -1,4 +1,10 @@
-import { isScraperError, isScraperSuccess, ScraperResult } from '@utils/RecipeScraper';
+import {
+  DEFAULT_SCRAPER_ERROR_I18N_KEY,
+  isScraperError,
+  isScraperSuccess,
+  SCRAPER_ERROR_I18N_KEYS,
+  ScraperResult,
+} from '@utils/RecipeScraper';
 import { createEmptyScrapedRecipe } from '@mocks/modules/recipe-scraper-mock';
 
 jest.mock(
@@ -66,6 +72,40 @@ describe('RecipeScraper', () => {
       if (isScraperError(result)) {
         expect(result.error.message).toBe('Failed');
       }
+    });
+  });
+
+  describe('SCRAPER_ERROR_I18N_KEYS', () => {
+    test('maps NoSchemaFoundInWildMode to errorNoRecipeFound', () => {
+      expect(SCRAPER_ERROR_I18N_KEYS.NoSchemaFoundInWildMode).toBe('urlDialog.errorNoRecipeFound');
+    });
+
+    test('maps WebsiteNotImplementedError to errorUnsupportedSite', () => {
+      expect(SCRAPER_ERROR_I18N_KEYS.WebsiteNotImplementedError).toBe(
+        'urlDialog.errorUnsupportedSite'
+      );
+    });
+
+    test('maps ConnectionError to errorNetwork', () => {
+      expect(SCRAPER_ERROR_I18N_KEYS.ConnectionError).toBe('urlDialog.errorNetwork');
+    });
+
+    test('maps HTTPError to errorNetwork', () => {
+      expect(SCRAPER_ERROR_I18N_KEYS.HTTPError).toBe('urlDialog.errorNetwork');
+    });
+
+    test('maps URLError to errorNetwork', () => {
+      expect(SCRAPER_ERROR_I18N_KEYS.URLError).toBe('urlDialog.errorNetwork');
+    });
+
+    test('maps timeout to errorTimeout', () => {
+      expect(SCRAPER_ERROR_I18N_KEYS.timeout).toBe('urlDialog.errorTimeout');
+    });
+  });
+
+  describe('DEFAULT_SCRAPER_ERROR_I18N_KEY', () => {
+    test('is urlDialog.errorScraping', () => {
+      expect(DEFAULT_SCRAPER_ERROR_I18N_KEY).toBe('urlDialog.errorScraping');
     });
   });
 });
