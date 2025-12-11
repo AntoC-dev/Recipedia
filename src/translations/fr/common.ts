@@ -72,5 +72,18 @@ export default {
     errorUnsupportedSite: "Ce site n'est pas encore supporté",
     errorNetwork: 'Erreur réseau. Vérifiez votre connexion.',
     errorTimeout: 'La requête a expiré. Veuillez réessayer.',
+    errorAuthRequired: 'Cette page nécessite une authentification',
+    errorAuthFailed: "Échec de l'authentification. Vérifiez vos identifiants.",
+    errorUnsupportedAuth: "L'authentification n'est pas prise en charge pour ce site",
+    errorUnsupportedPlatform: 'Cette fonctionnalité est uniquement disponible sur Android',
+  },
+
+  authDialog: {
+    title: 'Se connecter à {{host}}',
+    username: "Email ou nom d'utilisateur",
+    password: 'Mot de passe',
+    submit: 'Se connecter',
+    loading: 'Connexion en cours...',
+    notice: 'Vos identifiants ne seront pas enregistrés',
   },
 };

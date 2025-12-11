@@ -20,7 +20,11 @@ import {
   preparationStepElement,
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
-import { ScrapedNutrients, ScrapedRecipe } from '@utils/RecipeScraper';
+import {
+  ParsedIngredient as ScrapedParsedIngredient,
+  ScrapedNutrients,
+  ScrapedRecipe,
+} from '@utils/RecipeScraper';
 
 const DEFAULT_PORTION_WEIGHT_GRAMS = 100;
 const SODIUM_MG_THRESHOLD = 10;
@@ -127,8 +131,22 @@ export function parseIngredientString(
 
 export function convertIngredients(
   rawIngredients: string[],
+  parsedIngredients: ScrapedParsedIngredient[] | null | undefined,
   patterns: IgnoredIngredientPatterns = DEFAULT_PATTERNS
 ): ConvertedIngredients {
+  // Use pre-parsed ingredients if available (from well-structured HTML)
+  if (parsedIngredients && parsedIngredients.length > 0) {
+    return {
+      ingredients: parsedIngredients.map(p => ({
+        quantity: p.quantity,
+        unit: p.unit,
+        name: cleanIngredientName(p.name),
+      })),
+      skipped: [],
+    };
+  }
+
+  // Fall back to string parsing
   const ingredients: FormIngredientElement[] = [];
   const skipped: string[] = [];
 
@@ -200,35 +218,46 @@ export function convertPreparation(
   }));
 }
 
+/**
+ * Converts scraped nutrition data to app format.
+ *
+ * Only converts when servingSize is explicitly provided by the scraper.
+ * Without servingSize, we cannot reliably determine if values are per-100g or per-serving,
+ * so we skip nutrition entirely to avoid storing incorrect data.
+ */
 export function convertNutrition(nutrients: ScrapedNutrients): nutritionTableElement | undefined {
-  const kcalPerServing = extractNumericValue(nutrients.calories);
-  if (kcalPerServing === 0) return undefined;
+  const kcalValue = extractNumericValue(nutrients.calories);
+  if (kcalValue === 0) return undefined;
 
-  const portionWeight = extractNumericValue(nutrients.servingSize) || DEFAULT_PORTION_WEIGHT_GRAMS;
+  const explicitServingSize = extractNumericValue(nutrients.servingSize);
   const rawSodium = extractNumericValue(nutrients.sodiumContent);
   const sodiumInGrams = rawSodium > SODIUM_MG_THRESHOLD ? rawSodium / MG_PER_GRAM : rawSodium;
 
-  const toPer100g = (perServingValue: number): number => {
-    if (portionWeight !== DEFAULT_PORTION_WEIGHT_GRAMS) {
-      return Math.round((perServingValue / portionWeight) * DEFAULT_PORTION_WEIGHT_GRAMS * 10) / 10;
-    }
-    return perServingValue;
-  };
+  // Site provides explicit serving size - convert to per-100g
+  if (explicitServingSize > 0) {
+    const toPer100g = (perServingValue: number): number => {
+      return (
+        Math.round((perServingValue / explicitServingSize) * DEFAULT_PORTION_WEIGHT_GRAMS * 10) / 10
+      );
+    };
 
-  const energyKcal = toPer100g(kcalPerServing);
+    const energyKcal = toPer100g(kcalValue);
+    return {
+      energyKcal,
+      energyKj: kcalToKj(energyKcal),
+      fat: toPer100g(extractNumericValue(nutrients.fatContent)),
+      saturatedFat: toPer100g(extractNumericValue(nutrients.saturatedFatContent)),
+      carbohydrates: toPer100g(extractNumericValue(nutrients.carbohydrateContent)),
+      sugars: toPer100g(extractNumericValue(nutrients.sugarContent)),
+      fiber: toPer100g(extractNumericValue(nutrients.fiberContent)),
+      protein: toPer100g(extractNumericValue(nutrients.proteinContent)),
+      salt: toPer100g(sodiumInGrams),
+      portionWeight: explicitServingSize,
+    };
+  }
 
-  return {
-    energyKcal,
-    energyKj: kcalToKj(energyKcal),
-    fat: toPer100g(extractNumericValue(nutrients.fatContent)),
-    saturatedFat: toPer100g(extractNumericValue(nutrients.saturatedFatContent)),
-    carbohydrates: toPer100g(extractNumericValue(nutrients.carbohydrateContent)),
-    sugars: toPer100g(extractNumericValue(nutrients.sugarContent)),
-    fiber: toPer100g(extractNumericValue(nutrients.fiberContent)),
-    protein: toPer100g(extractNumericValue(nutrients.proteinContent)),
-    salt: toPer100g(sodiumInGrams),
-    portionWeight,
-  };
+  // No serving size = can't convert reliably, skip nutrition
+  return undefined;
 }
 
 export function cleanImageUrl(url: string): string {
@@ -247,7 +276,11 @@ export function convertScrapedRecipe(
   defaultPersons: number,
   getStepTitle: (index: number) => string
 ): ScrapedRecipeResult {
-  const { ingredients, skipped } = convertIngredients(scraped.ingredients, ignoredPatterns);
+  const { ingredients, skipped } = convertIngredients(
+    scraped.ingredients,
+    scraped.parsedIngredients,
+    ignoredPatterns
+  );
 
   return {
     title: scraped.title ?? '',

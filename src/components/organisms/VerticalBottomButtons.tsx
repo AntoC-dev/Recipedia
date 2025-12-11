@@ -43,6 +43,7 @@ import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { FAB, Portal, useTheme } from 'react-native-paper';
 import { padding, screenHeight, screenWidth } from '@styles/spacing';
 import { UrlInputDialog } from '@components/dialogs/UrlInputDialog';
+import { AuthenticationDialog } from '@components/dialogs/AuthenticationDialog';
 
 const MAIN_FAB_SIZE = 56;
 const ACTION_BUTTON_SIZE = 40;
@@ -55,6 +56,8 @@ const ACTION_BUTTON_COUNT = 4;
  * @returns JSX element representing an expandable FAB menu for recipe creation actions
  */
 const CopilotView = walkthroughable(View);
+
+const testID = 'VerticalBottomButtons';
 
 function VerticalBottomButtons() {
   const { navigate } = useNavigation<StackScreenNavigation>();
@@ -74,14 +77,18 @@ function VerticalBottomButtons() {
 
   const [open, setOpen] = useState(false);
   const [urlDialogVisible, setUrlDialogVisible] = useState(false);
+  const [authDialogVisible, setAuthDialogVisible] = useState(false);
   const demoIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const isFocused = useIsFocused();
 
   const {
     scrapeAndPrepare,
+    scrapeWithAuth,
     isLoading: isScrapingLoading,
     error: scrapingError,
     clearError,
+    authRequired,
+    clearAuthRequired,
   } = useRecipeScraper();
 
   const stepOrder = TUTORIAL_STEPS.Home.order;
@@ -130,6 +137,13 @@ function VerticalBottomButtons() {
     };
   }, [isFocused, copilotData, copilotEvents, currentStep, stepOrder]);
 
+  useEffect(() => {
+    if (authRequired) {
+      setUrlDialogVisible(false);
+      setAuthDialogVisible(true);
+    }
+  }, [authRequired]);
+
   if (!isFocused) {
     return null;
   }
@@ -162,6 +176,28 @@ function VerticalBottomButtons() {
     const result = await scrapeAndPrepare(url);
     if (result.success) {
       setUrlDialogVisible(false);
+      navigate('Recipe', {
+        mode: 'addFromScrape',
+        scrapedData: result.data,
+        sourceUrl: result.sourceUrl,
+      });
+    }
+  }
+
+  function handleCloseAuthDialog() {
+    setAuthDialogVisible(false);
+    clearAuthRequired();
+    clearError();
+  }
+
+  async function handleAuthSubmit(username: string, password: string) {
+    if (!authRequired) {
+      return;
+    }
+
+    const result = await scrapeWithAuth(authRequired.url, username, password);
+    if (result.success) {
+      setAuthDialogVisible(false);
       navigate('Recipe', {
         mode: 'addFromScrape',
         scrapedData: result.data,
@@ -241,10 +277,19 @@ function VerticalBottomButtons() {
         />
       </Portal>
       <UrlInputDialog
-        testId='VerticalBottomButtons'
+        testId={testID}
         isVisible={urlDialogVisible}
         onClose={handleCloseUrlDialog}
         onSubmit={handleUrlSubmit}
+        isLoading={isScrapingLoading}
+        error={scrapingError}
+      />
+      <AuthenticationDialog
+        testId={testID}
+        isVisible={authDialogVisible}
+        host={authRequired?.host ?? ''}
+        onClose={handleCloseAuthDialog}
+        onSubmit={handleAuthSubmit}
         isLoading={isScrapingLoading}
         error={scrapingError}
       />
