@@ -1,3 +1,42 @@
+## [2.0.0](https://github.com/AntoC-dev/Recipedia/compare/v1.5.0...v2.0.0) (2025-12-11)
+
+### ⚠ BREAKING CHANGES
+
+* Add recipe-scraper native module with Python dependencies.
+Builds now require Python 3.13+ for Android (Chaquopy) and download
+BeeWare Python 3.12 framework for iOS.
+
+- Add recipe-scraper plugin to app.config.ts
+- Add Python __pycache__ to .gitignore
+- Update CI to install pytest for Python tests during Android build
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+
+### Features
+
+* add detailed UI logging and update validation flow comments ([422811e](https://github.com/AntoC-dev/Recipedia/commit/422811ecedce9069d5f8bccb28884b89ddf046d4))
+* adding recipe from a website url  ([#149](https://github.com/AntoC-dev/Recipedia/issues/149)) ([7349757](https://github.com/AntoC-dev/Recipedia/commit/73497573b70885fe384105a07adc4e04e8baa0bb))
+* **recipe-scraper:** add Android native module with Chaquopy Python ([e0edd64](https://github.com/AntoC-dev/Recipedia/commit/e0edd6420c688768e84c4ae7758c5f6d9237c4d0))
+* **recipe-scraper:** add Expo config plugin for native build setup ([6ac901c](https://github.com/AntoC-dev/Recipedia/commit/6ac901c251efb075d2b0c3e7d22a65e3f74fa209))
+* **recipe-scraper:** add iOS native module with BeeWare Python runtime ([85b25b8](https://github.com/AntoC-dev/Recipedia/commit/85b25b8aba0d6cc330fef663cea80d328adcf24e))
+* **recipe-scraper:** add shared Python scraper using recipe-scrapers ([7c1c10f](https://github.com/AntoC-dev/Recipedia/commit/7c1c10fc40fa633c886ad2156650bbec4d9ec2dc))
+* **recipe-scraper:** add TypeScript/Web implementation with Pyodide ([27a822f](https://github.com/AntoC-dev/Recipedia/commit/27a822f07b107d8a79dab147aa9b464d2a121bd0))
+* **Recipe:** add hooks for scraper validation, cleanup, and integration ([1e58823](https://github.com/AntoC-dev/Recipedia/commit/1e5882335235c4299bd5bb00303798ac7312e572))
+* **Recipe:** enable recipe creation from website URLs ([f2732ca](https://github.com/AntoC-dev/Recipedia/commit/f2732ca3083f65955b402f4f47352ac2f51e249f))
+* **utils:** add function to download images to app cache ([cc8d15e](https://github.com/AntoC-dev/Recipedia/commit/cc8d15ea0b8ce5d4d2aa365965ef81f2d8d36412))
+* **utils:** extend ingredient filtering with exact match patterns ([0dcba13](https://github.com/AntoC-dev/Recipedia/commit/0dcba13022ce8bf237a0e3f86e7aa2cf09be4b70))
+* **utils:** extract converter for reusable conversion logic ([eff325e](https://github.com/AntoC-dev/Recipedia/commit/eff325e7a458ae06b7669b38edd98a7d728546cf))
+
+### Bug Fixes
+
+* **recipe-scraper:** use system Python path for Chaquopy builds ([c8ec4e2](https://github.com/AntoC-dev/Recipedia/commit/c8ec4e2d1b48a5660dd4fe6b2603d123c177033d))
+
+### Miscellaneous Chores
+
+* configure recipe-scraper module in app and CI ([0e3b3db](https://github.com/AntoC-dev/Recipedia/commit/0e3b3db7d0818fe221701fefd219395fec5718e7))
+
 ## [1.5.0](https://github.com/Anto-dev-perso/Recipedia/compare/v1.4.0...v1.5.0) (2025-12-07)
 
 ### Features
