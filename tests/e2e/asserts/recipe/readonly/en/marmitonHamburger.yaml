@@ -1,0 +1,184 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    file: "../../common/buttonsReadOnly.yaml"
+    label: "Assert common ReadOnly buttons and image"
+
+- assertVisible:
+    id: "RecipeTitle::Text"
+    text: "Hamburger maison"
+    label: "Title text is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeDescription::Text"
+    direction: DOWN
+    centerElement: true
+    speed: 40
+    label: "Scroll to description section"
+
+- assertVisible:
+    id: "RecipeDescription::Text"
+    text: ""
+    label: "Description has empty text"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTags::0::Chip"
+    direction: DOWN
+    centerElement: true
+    speed: 40
+    label: "Scroll to tags section"
+
+- assertVisible:
+    id: "RecipeTags::0::Chip"
+    text: "hamburger"
+    label: "First tag 'hamburger' is rendered"
+
+- assertVisible:
+    id: "RecipeTags::1::Chip"
+    text: "très facile"
+    label: "Second tag 'très facile' is rendered"
+
+- assertVisible:
+    id: "RecipeTags::2::Chip"
+    text: "bon marché"
+    label: "Third tag 'bon marché' is rendered"
+
+- assertVisible:
+    id: "RecipeTags::3::Chip"
+    text: "rapide"
+    label: "Fourth tag 'rapide' is rendered"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePersons::Text"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to ingredients section"
+
+- assertVisible:
+    text: "Ingredients (4 persons)"
+    label: "Ingredient section and persons is displayed"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "pain pour hamburger"
+      INGREDIENT_QUANTITY_AND_UNIT: "4 g"
+    label: "Assert Pain pour hamburger ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "viande hachée"
+      INGREDIENT_QUANTITY_AND_UNIT: "400 g"
+    label: "Assert Viande hachée ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "oignon"
+      INGREDIENT_QUANTITY_AND_UNIT: "1 g"
+    label: "Assert Oignon ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "tomate"
+      INGREDIENT_QUANTITY_AND_UNIT: "100 g"
+    label: "Assert Tomate ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "salade"
+      INGREDIENT_QUANTITY_AND_UNIT: "1 g"
+    label: "Assert Salade ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "moutarde"
+      INGREDIENT_QUANTITY_AND_UNIT: "50 g"
+    label: "Assert Moutarde ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "Ketchup"
+      INGREDIENT_QUANTITY_AND_UNIT: "30 g"
+    label: "Assert Ketchup ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "cheddar"
+      INGREDIENT_QUANTITY_AND_UNIT: "30 g"
+    label: "Assert Cheddar ingredient"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTime::Text"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to preparation section"
+
+- assertVisible:
+    id: "RecipeTime::Text"
+    text: "Preparation (10 min)"
+    label: "Preparation section and time are displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to first preparation section"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
+    text: "1) Step 1"
+    label: "First preparation title is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::0::SectionParagraph"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to first preparation paragraph"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::0::SectionParagraph"
+    text: "Faites revenir les oignons à feux doux."
+    label: "First preparation paragraph is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::5::SectionTitle"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to last preparation section"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::5::SectionTitle"
+    text: "6) Step 6"
+    label: "Last preparation title is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::5::SectionParagraph"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to last preparation paragraph"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::5::SectionParagraph"
+    text: "Vous pouvez maintenant recouvrir la préparation de l'autre tranche (avec ketchup et moutarde)"
+    label: "Last preparation paragraph is displayed"

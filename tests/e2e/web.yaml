@@ -1,6 +1,8 @@
 flows:
   - cases/web/1_web_hellofresh.yaml
+  - cases/web/2_web_marmiton.yaml
 
 executionOrder:
   flowsOrder:
     - "1 - Web HelloFresh Flow"
+    - "2 - Web Marmiton Flow"

@@ -1,0 +1,80 @@
+name: "2 - Web Marmiton Flow"
+appId: "com.recipedia"
+tags:
+  - web
+---
+- runFlow:
+    file: "../../flows/setupTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- runFlow:
+    file: "../../flows/recipe/adding/web/addRecipeFromUrl.yaml"
+    env:
+      RECIPE_URL: "https://www.marmiton.org/recettes/recette_hamburger-maison_32672.aspx"
+    label: "Action - Add recipe from Marmiton URL"
+
+- tapOn:
+    id: "Recipe::BottomActionButton"
+    label: "Action - Try to validate recipe (should fail)"
+
+- runFlow:
+    file: "../../asserts/alerts/en/recipeValidationErrorSingle.yaml"
+    env:
+      MISSING_ELEMENT: "quantities for all ingredients"
+    label: "Assert - Validation fails due to missing quantities"
+
+- runFlow:
+    file: "../../flows/recipe/adding/web/addQuantitiesToMarmitonIngredients.yaml"
+    label: "Action - Add quantities to all ingredients"
+
+- tapOn:
+    id: "Recipe::BottomActionButton"
+    label: "Action - Validate the recipe"
+
+- runFlow:
+    file: "../../asserts/alerts/en/recipeAddedToDatabase.yaml"
+    env:
+      RECIPE_NAME: "Hamburger maison"
+    label: "Assert - Verify recipe added successfully"
+
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Verification - Navigate to Search screen"
+
+- tapOn:
+    id: "SearchScreen::SearchBar"
+    label: "Verification - Focus on search bar"
+
+- inputText:
+    text: "Hamburger"
+    label: "Verification - Search for new recipe"
+
+- pressKey: enter
+
+- tapOn:
+    id: "SearchScreen::RecipeCards::0::.*"
+    label: "Verification - Open newly created recipe"
+
+- runFlow:
+    file: "../../asserts/recipe/readonly/en/marmitonHamburger.yaml"
+    label: "Assert - Verify recipe content in read-only mode"
+
+- tapOn:
+    id: "Recipe::AppBar::Delete"
+    label: "Cleanup - Remove the recipe"
+
+- tapOn:
+    id: "Recipe::Dialog::Confirm"
+    label: "Cleanup - Confirm recipe deletion"
+
+- tapOn:
+    id: "Recipe::Dialog::Confirm"
+    label: "Cleanup - Close confirmation dialog"
+
+- tapOn:
+    id: "SearchScreen::SearchBar::RightIcon"
+    label: "Cleanup - Clear search filter"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Cleanup - Return to home screen"
