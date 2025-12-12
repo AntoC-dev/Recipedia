@@ -173,6 +173,10 @@ def _extract_all_data(scraper) -> Dict[str, Any]:
     # Try to extract structured ingredients from HTML
     parsed_ingredients = _extract_structured_ingredients(scraper.soup)
 
+    # Try to extract structured instructions with titles from HTML
+    instructions_list = _safe_call(scraper.instructions_list)
+    parsed_instructions = _extract_structured_instructions(scraper.soup, instructions_list or [])
+
     return {
         # Core recipe data
         "title": title,
@@ -181,7 +185,8 @@ def _extract_all_data(scraper) -> Dict[str, Any]:
         "parsedIngredients": parsed_ingredients,
         "ingredientGroups": _safe_call_ingredient_groups(scraper),
         "instructions": _safe_call(scraper.instructions),
-        "instructionsList": _safe_call(scraper.instructions_list),
+        "instructionsList": instructions_list,
+        "parsedInstructions": parsed_instructions,
 
         # Timing (use numeric call to preserve 0 as valid)
         "totalTime": _safe_call_numeric(scraper.total_time),
@@ -575,6 +580,90 @@ def _parse_kitchen_item(text: str) -> tuple:
 
     # No quantity - just a name like "sel" or "poivre"
     return ('', '', _clean_ingredient_name(text))
+
+
+def _extract_structured_instructions(soup, instructions_list: List[str]) -> Optional[List[Dict[str, Any]]]:
+    """
+    Extract structured instructions with step titles from HTML.
+
+    Looks for common patterns where recipe steps are grouped with titles.
+    Only returns data when meaningful structure is found (grouped steps with titles).
+    Returns None if no structure found - the converter will use instructionsList directly.
+    """
+    # Common container IDs and classes for recipe instructions
+    container_ids = ['preparation-steps', 'recipe-steps', 'instructions', 'method', 'directions']
+    container_classes = ['recipe-steps', 'instructions', 'method', 'directions', 'preparation']
+
+    # Try to find a container with step groups
+    container = None
+    for container_id in container_ids:
+        container = soup.find('div', id=container_id)
+        if container:
+            break
+
+    if not container:
+        for container_class in container_classes:
+            container = soup.find('div', class_=container_class)
+            if container:
+                break
+
+    if not container:
+        return None
+
+    # Look for step groups: divs containing a title element and instruction list
+    results = []
+    # Exact class names that indicate a step container
+    step_classes = {'step', 'toggle', 'instruction', 'etape', 'step-instructions'}
+
+    def is_step_container(tag):
+        if tag.name != 'div':
+            return False
+        classes = set(cls.lower() for cls in tag.get('class', []))
+        return bool(classes & step_classes)
+
+    for step_div in container.find_all(is_step_container):
+        title = _extract_step_title(step_div)
+        instructions = _extract_step_instructions(step_div)
+
+        if instructions:
+            results.append({"title": title, "instructions": instructions})
+
+    return results if results else None
+
+
+def _extract_step_title(step_div) -> Optional[str]:
+    """
+    Extract step title from a step container.
+
+    Looks for common title patterns: bold paragraphs, headings, etc.
+    Removes leading numbers like "1. " or "Étape 1:".
+    """
+    # Try common title patterns
+    title_elem = (
+        step_div.find('p', class_='bold') or
+        step_div.find('strong') or
+        step_div.find(['h2', 'h3', 'h4', 'h5', 'h6'])
+    )
+
+    if not title_elem:
+        return None
+
+    title = title_elem.get_text(strip=True)
+    # Remove leading patterns like "1. ", "Étape 1:", "Step 2 -"
+    title = re.sub(r'^(\d+[\.\:\-\s]+|[Éé]tape\s*\d*[\.\:\-\s]*|Step\s*\d*[\.\:\-\s]*)', '', title, flags=re.IGNORECASE)
+    title = title.strip()
+
+    return title if title else None
+
+
+def _extract_step_instructions(step_div) -> List[str]:
+    """Extract instruction texts from list items within a step container."""
+    instructions = []
+    for li in step_div.find_all('li'):
+        text = li.get_text(strip=True)
+        if text:
+            instructions.append(text)
+    return instructions
 
 
 def _split_quantity_unit(text: str) -> tuple:

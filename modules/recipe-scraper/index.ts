@@ -3,6 +3,7 @@ export type {
     HostSupportedResult,
     IngredientGroup,
     ParsedIngredient,
+    ParsedInstruction,
     RecipeLink,
     ScrapedNutrients,
     ScrapedRecipe,

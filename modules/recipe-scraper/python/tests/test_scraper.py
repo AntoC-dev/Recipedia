@@ -24,6 +24,9 @@ from scraper import (
     _split_quantity_unit,
     _clean_ingredient_name,
     _parse_kitchen_item,
+    _extract_structured_instructions,
+    _extract_step_title,
+    _extract_step_instructions,
     AuthenticationRequiredError,
 )
 
@@ -901,3 +904,118 @@ class TestParseKitchenItem:
 
     def test_handles_whitespace(self):
         assert _parse_kitchen_item("  sel  ") == ("", "", "sel")
+
+
+STRUCTURED_INSTRUCTIONS_HTML = """
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+<div id="preparation-steps">
+    <div class="toggle w-100 mb-2">
+        <p class="regular body-3 m-0 c-gray-400">Étape 1</p>
+        <p class="bold mb-2">1. Le camembert rôti</p>
+        <ul class="ps-4">
+            <li class="body-2 regular m-0">Préchauffez votre four à 200°C.</li>
+            <li class="body-2 regular m-0">Déposez le camembert sur une plaque.</li>
+        </ul>
+    </div>
+    <div class="step-instructions collapse mb-2">
+        <p class="regular body-3 m-0">Étape 2</p>
+        <p class="bold mb-2">2. Les mouillettes</p>
+        <ul>
+            <li class="body-2 regular m-0">Coupez les petits pains pour réaliser des mouillettes.</li>
+            <li class="body-2 regular m-0">Placez-les à côté du camembert.</li>
+            <li class="body-2 regular m-0">Enfournez le tout 12 à 15 min.</li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>
+"""
+
+
+class TestExtractStepTitle:
+    def test_extracts_title_from_bold_paragraph(self):
+        html = '<div><p class="bold">1. Le camembert rôti</p></div>'
+        soup = BeautifulSoup(html, "html.parser")
+        step_div = soup.find('div')
+
+        assert _extract_step_title(step_div) == "Le camembert rôti"
+
+    def test_extracts_title_from_strong(self):
+        html = '<div><strong>Step 2: Mix ingredients</strong></div>'
+        soup = BeautifulSoup(html, "html.parser")
+        step_div = soup.find('div')
+
+        assert _extract_step_title(step_div) == "Mix ingredients"
+
+    def test_extracts_title_from_heading(self):
+        html = '<div><h3>Étape 3 - La cuisson</h3></div>'
+        soup = BeautifulSoup(html, "html.parser")
+        step_div = soup.find('div')
+
+        assert _extract_step_title(step_div) == "La cuisson"
+
+    def test_returns_none_when_no_title_element(self):
+        html = '<div><p>Just a regular paragraph</p></div>'
+        soup = BeautifulSoup(html, "html.parser")
+        step_div = soup.find('div')
+
+        assert _extract_step_title(step_div) is None
+
+
+class TestExtractStepInstructions:
+    def test_extracts_list_items(self):
+        html = '<div><ul><li>Step 1</li><li>Step 2</li></ul></div>'
+        soup = BeautifulSoup(html, "html.parser")
+        step_div = soup.find('div')
+
+        result = _extract_step_instructions(step_div)
+
+        assert result == ["Step 1", "Step 2"]
+
+    def test_skips_empty_items(self):
+        html = '<div><ul><li>Step 1</li><li>  </li><li>Step 2</li></ul></div>'
+        soup = BeautifulSoup(html, "html.parser")
+        step_div = soup.find('div')
+
+        result = _extract_step_instructions(step_div)
+
+        assert result == ["Step 1", "Step 2"]
+
+    def test_returns_empty_list_when_no_items(self):
+        html = '<div><p>No list here</p></div>'
+        soup = BeautifulSoup(html, "html.parser")
+        step_div = soup.find('div')
+
+        assert _extract_step_instructions(step_div) == []
+
+
+class TestExtractStructuredInstructions:
+    def test_extracts_steps_with_titles(self):
+        soup = BeautifulSoup(STRUCTURED_INSTRUCTIONS_HTML, "html.parser")
+
+        result = _extract_structured_instructions(soup, [])
+
+        assert result is not None
+        assert len(result) == 2
+        assert result[0]["title"] == "Le camembert rôti"
+        assert len(result[0]["instructions"]) == 2
+        assert result[1]["title"] == "Les mouillettes"
+        assert len(result[1]["instructions"]) == 3
+
+    def test_returns_none_when_no_container_found(self):
+        soup = BeautifulSoup("<html><body></body></html>", "html.parser")
+
+        result = _extract_structured_instructions(soup, ["Step 1", "Step 2"])
+
+        assert result is None
+
+    def test_returns_none_when_no_step_containers_found(self):
+        html = '<div id="preparation-steps"><p>Just text, no steps</p></div>'
+        soup = BeautifulSoup(html, "html.parser")
+
+        result = _extract_structured_instructions(soup, ["Step 1"])
+
+        assert result is None

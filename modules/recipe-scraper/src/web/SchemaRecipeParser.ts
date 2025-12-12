@@ -103,6 +103,7 @@ export class SchemaRecipeParser {
             ingredientGroups: null,
             instructions: this.extractInstructionsString(recipe),
             instructionsList: this.extractInstructionsList(recipe),
+            parsedInstructions: null,
             totalTime: this.parseISO8601Duration(recipe['totalTime']),
             prepTime: this.parseISO8601Duration(recipe['prepTime']),
             cookTime: this.parseISO8601Duration(recipe['cookTime']),

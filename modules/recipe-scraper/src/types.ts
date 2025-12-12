@@ -51,6 +51,15 @@ export interface RecipeLink {
 }
 
 /**
+ * Structured instruction step with optional title and grouped instructions.
+ * Extracted from well-formatted HTML when step structure is detected.
+ */
+export interface ParsedInstruction {
+    title: string | null;
+    instructions: string[];
+}
+
+/**
  * Complete recipe data as scraped from a recipe website.
  * Matches the output of the recipe-scrapers Python package.
  */
@@ -63,6 +72,7 @@ export interface ScrapedRecipe {
     ingredientGroups: IngredientGroup[] | null;
     instructions: string | null;
     instructionsList: string[] | null;
+    parsedInstructions: ParsedInstruction[] | null;
 
     // Timing (in minutes)
     totalTime: number | null;
