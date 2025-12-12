@@ -513,6 +513,8 @@ def _extract_structured_ingredients(soup) -> Optional[List[Dict[str, str]]]:
     """
     Try to extract structured ingredients from well-formatted HTML.
 
+    Includes both main ingredients and kitchen staples (Dans votre cuisine).
+
     Returns list of {quantity, unit, name} dicts if structure detected,
     None otherwise (caller should use raw strings).
     """
@@ -521,6 +523,8 @@ def _extract_structured_ingredients(soup) -> Optional[List[Dict[str, str]]]:
         return None
 
     results = []
+
+    # Extract main ingredients (with quantity/unit in first span)
     for li in ing_list.find_all('li', recursive=False):
         spans = li.find_all('span', recursive=False)
         if len(spans) >= 2:
@@ -537,7 +541,40 @@ def _extract_structured_ingredients(soup) -> Optional[List[Dict[str, str]]]:
         else:
             return None
 
+    # Extract kitchen staples (Dans votre cuisine)
+    kitchen_list = soup.find('ul', class_='kitchen-list')
+    if kitchen_list:
+        for li in kitchen_list.find_all('li', recursive=False):
+            text = li.get_text(strip=True)
+            if text:
+                quantity, unit, name = _parse_kitchen_item(text)
+                results.append({
+                    'quantity': quantity,
+                    'unit': unit,
+                    'name': name
+                })
+
     return results if results else None
+
+
+def _parse_kitchen_item(text: str) -> tuple:
+    """
+    Parse kitchen staple items like "2 càs huile d'olive" or "sel".
+
+    Returns (quantity, unit, name) tuple.
+    """
+    text = text.strip()
+
+    # Try to extract quantity and unit from start
+    match = re.match(r'^([\d.,/]+)\s*(\S+)\s+(.+)$', text)
+    if match:
+        quantity = match.group(1).replace(',', '.')
+        unit = match.group(2)
+        name = _clean_ingredient_name(match.group(3))
+        return (quantity, unit, name)
+
+    # No quantity - just a name like "sel" or "poivre"
+    return ('', '', _clean_ingredient_name(text))
 
 
 def _split_quantity_unit(text: str) -> tuple:
