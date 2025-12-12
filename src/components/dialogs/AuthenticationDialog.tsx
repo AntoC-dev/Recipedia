@@ -73,11 +73,13 @@ export function AuthenticationDialog({
   const { t } = useI18n();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (isVisible) {
       setUsername('');
       setPassword('');
+      setShowPassword(false);
     }
   }, [isVisible]);
 
@@ -129,12 +131,20 @@ export function AuthenticationDialog({
                 label={t('authDialog.password')}
                 value={password}
                 onChangeText={setPassword}
-                secureTextEntry
+                secureTextEntry={!showPassword}
                 autoCapitalize='none'
                 autoComplete='password'
                 mode='outlined'
                 style={styles.passwordInput}
                 error={!!error}
+                right={
+                  <TextInput.Icon
+                    testID={modalTestId + '::PasswordToggle'}
+                    icon={showPassword ? 'eye-off' : 'eye'}
+                    onPress={() => setShowPassword(!showPassword)}
+                    forceTextInputFocus={false}
+                  />
+                }
               />
               <HelperText type='error' visible={!!error} testID={modalTestId + '::HelperText'}>
                 {error}

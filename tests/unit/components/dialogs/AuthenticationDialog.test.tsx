@@ -235,4 +235,50 @@ describe('AuthenticationDialog', () => {
       expect(passwordInput.props.value).toBe('');
     });
   });
+
+  describe('Password toggle', () => {
+    test('renders password toggle button', () => {
+      const { getByTestId } = render(<AuthenticationDialog {...defaultProps} />);
+
+      expect(getByTestId(modalTestId + '::PasswordToggle')).toBeTruthy();
+    });
+
+    test('password is hidden by default', () => {
+      const { getByTestId } = render(<AuthenticationDialog {...defaultProps} />);
+
+      const passwordInput = getByTestId(modalTestId + '::PasswordInput');
+      expect(passwordInput.props.secureTextEntry).toBe(true);
+    });
+
+    test('toggles password visibility when pressed', () => {
+      const { getByTestId } = render(<AuthenticationDialog {...defaultProps} />);
+
+      const toggleButton = getByTestId(modalTestId + '::PasswordToggle');
+      const passwordInput = getByTestId(modalTestId + '::PasswordInput');
+
+      expect(passwordInput.props.secureTextEntry).toBe(true);
+
+      fireEvent.press(toggleButton);
+      expect(passwordInput.props.secureTextEntry).toBe(false);
+
+      fireEvent.press(toggleButton);
+      expect(passwordInput.props.secureTextEntry).toBe(true);
+    });
+
+    test('resets password visibility when dialog becomes visible', () => {
+      const { getByTestId, rerender } = render(<AuthenticationDialog {...defaultProps} />);
+
+      const toggleButton = getByTestId(modalTestId + '::PasswordToggle');
+      fireEvent.press(toggleButton);
+
+      const passwordInputBefore = getByTestId(modalTestId + '::PasswordInput');
+      expect(passwordInputBefore.props.secureTextEntry).toBe(false);
+
+      rerender(<AuthenticationDialog {...defaultProps} isVisible={false} />);
+      rerender(<AuthenticationDialog {...defaultProps} isVisible={true} />);
+
+      const passwordInputAfter = getByTestId(modalTestId + '::PasswordInput');
+      expect(passwordInputAfter.props.secureTextEntry).toBe(true);
+    });
+  });
 });
