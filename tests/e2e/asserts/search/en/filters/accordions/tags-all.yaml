@@ -8,6 +8,14 @@ appId: "com.recipedia"
     text: "Tags"
     label: "Tags accordion title is displayed"
 
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Tags accordion"
+
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Expand Tags accordion"
@@ -41,12 +49,6 @@ appId: "com.recipedia"
     file: "tags-items/indian-visible.yaml"
     env:
       ITEM_INDEX: "5"
-
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::14"
-    direction: DOWN
-    label: "Scroll to see remaining tags"
 
 - runFlow:
     file: "tags-items/italian-visible.yaml"
@@ -98,6 +100,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     direction: UP
+    centerElement: true
     label: "Scroll back up to Tags accordion header"
 
 # Collapse the accordion back

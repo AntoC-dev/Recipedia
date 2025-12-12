@@ -38,6 +38,7 @@ appId: "com.recipedia"
       id: "SearchScreen::RecipeCards::3::Content"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Scroll to fourth recipe card"
 
 - assertVisible:
@@ -95,4 +96,5 @@ appId: "com.recipedia"
       id: "SearchScreen::SearchBar"
     direction: UP
     speed: 80
+    centerElement: true
     label: "Scroll back to top of Search screen"

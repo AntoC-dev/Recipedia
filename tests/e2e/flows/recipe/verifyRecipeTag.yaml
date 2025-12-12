@@ -19,9 +19,25 @@ appId: "com.recipedia"
     text: "E2E Test Recipe"
     label: "Select recipe name from the list"
 
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::RecipeCards::0::Cover"
+    direction: DOWN
+    speed: 50
+    centerElement: true
+    label: "Scroll to recipe card"
+
 - tapOn:
     id: "SearchScreen::RecipeCards::0::Cover"
     label: "Open recipe from the card"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTags::0::Chip"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to recipe tag"
 
 - assertVisible:
     id: "RecipeTags::0::Chip"

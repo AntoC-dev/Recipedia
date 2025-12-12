@@ -1,5 +1,13 @@
 appId: "com.recipedia"
 ---
+- scrollUntilVisible:
+    element:
+      id: "RecipeDescription::Text"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to description"
+
 - assertVisible:
     id: "RecipeDescription::Text"
     text: "${DESCRIPTION}"

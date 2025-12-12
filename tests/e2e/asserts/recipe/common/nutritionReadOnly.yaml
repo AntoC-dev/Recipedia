@@ -26,6 +26,7 @@ appId: "com.recipedia"
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKj::Value"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Scroll so that enegy parts are displayed"
 
 - assertVisible:
@@ -44,6 +45,7 @@ appId: "com.recipedia"
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Salt::Text"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Scroll to the end of the nutrition table"
 
 - assertVisible:

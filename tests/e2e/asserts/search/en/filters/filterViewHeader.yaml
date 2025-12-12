@@ -5,6 +5,7 @@ appId: "com.recipedia"
       id: "SearchScreen::SearchBar"
     direction: UP
     speed: 90
+    centerElement: true
     label: "Scroll up to search bar"
 
 - assertVisible:

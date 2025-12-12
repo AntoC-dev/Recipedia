@@ -40,6 +40,7 @@ tags:
       id: "RecipeIngredients::PrefixText"
     direction: UP
     speed: 60
+    centerElement: true
     label: "Action - Scroll up for adding ingredient"
 
 - tapOn:

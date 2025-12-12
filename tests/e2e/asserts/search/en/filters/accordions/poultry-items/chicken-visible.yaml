@@ -1,5 +1,13 @@
 appId: "com.recipedia"
 ---
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::${output.itemIndex}"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Chicken filter item"
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::${output.itemIndex}"
     label: "Chicken filter is visible"

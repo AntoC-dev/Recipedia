@@ -13,6 +13,7 @@ appId: "com.recipedia"
       id: "RecipeTime::NumericTextInput"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Scroll to time input"
 
 - tapOn:

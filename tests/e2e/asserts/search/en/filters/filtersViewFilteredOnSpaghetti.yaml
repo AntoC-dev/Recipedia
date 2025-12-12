@@ -61,6 +61,7 @@ appId: "com.recipedia"
     element:
       text: "Sauce"
     direction: DOWN
+    centerElement: true
     label: "Scroll to Sauce category"
 
 - runFlow:
@@ -94,6 +95,7 @@ appId: "com.recipedia"
     element:
       text: "Cheese"
     direction: DOWN
+    centerElement: true
     label: "Scroll to Cheese category"
 
 - runFlow:

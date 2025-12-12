@@ -5,8 +5,9 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::3::SectionParagraph"
     direction: DOWN
     speed: 95
+    centerElement: true
     label: "Scroll to the bottom of the screen"
 
-- runFlow:
-    file: "../../common/nutritionEmptyReadOnly.yaml"
-    label: "Verify nutrition section is not displayed (removed by user)"
+- assertNotVisible:
+    id: "Recipe::RecipeNutrition::NutritionTable"
+    label: "Nutrition table is not displayed (no nutrition data)"

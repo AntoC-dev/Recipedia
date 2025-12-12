@@ -23,6 +23,7 @@ tags:
       text: "Sushi Rolls"
     direction: DOWN
     speed: 40
+    centerElement: true
     label: "Action - Scroll down in dropdown to bottom recipes"
 
 - assertVisible:
@@ -30,6 +31,14 @@ tags:
     label: "Assert - Verify Sushi Rolls is visible in dropdown"
 
 - pressKey: "BACK"
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::RecipeCards::0::Spaghetti Bolognese"
+    direction: UP
+    speed: 60
+    centerElement: true
+    label: "Scroll to first recipe card"
 
 - assertVisible:
     id: "SearchScreen::RecipeCards::0::Spaghetti Bolognese"

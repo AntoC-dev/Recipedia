@@ -37,6 +37,7 @@ appId: "com.recipedia"
       id: "RecipeTags::OpenModal::RoundButton"
     direction: DOWN
     speed: 60
+    centerElement: true
 
 - assertVisible:
     id: "RecipeTags::HeaderText"
@@ -84,6 +85,7 @@ appId: "com.recipedia"
       id: "RecipeIngredients::OpenModal::RoundButton"
     direction: DOWN
     speed: 60
+    centerElement: true
 
 - assertVisible:
     id: "RecipeIngredients::PrefixText"
@@ -103,6 +105,7 @@ appId: "com.recipedia"
       id: "RecipeTime::OpenModal::RoundButton"
     direction: DOWN
     speed: 60
+    centerElement: true
 
 - assertVisible:
     id: "RecipeTime::PrefixText"
@@ -118,6 +121,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::OpenModal::RoundButton"
     direction: DOWN
     speed: 60
+    centerElement: true
 
 - assertVisible:
     id: "RecipePreparation::PrefixText"

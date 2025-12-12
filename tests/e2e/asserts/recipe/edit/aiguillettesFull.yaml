@@ -20,6 +20,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::EditableStep::2::Content"
     direction: UP
     speed: 40
+    centerElement: true
     label: "Scroll to third preparation content"
 
 - assertVisible:
@@ -32,6 +33,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::EditableStep::2::Title"
     direction: UP
     speed: 40
+    centerElement: true
     label: "Scroll to third preparation title"
 
 - assertVisible:
@@ -49,6 +51,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::EditableStep::2::Step"
     direction: UP
     speed: 40
+    centerElement: true
     label: "Scroll to third preparation step"
 
 - assertVisible:
@@ -61,6 +64,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::EditableStep::1::Content"
     direction: UP
     speed: 40
+    centerElement: true
     label: "Scroll to second preparation content"
 
 - assertVisible:
@@ -81,6 +85,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::EditableStep::1::Title"
     direction: UP
     speed: 60
+    centerElement: true
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::1::Title"
@@ -97,6 +102,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::EditableStep::1::Step"
     direction: UP
     speed: 60
+    centerElement: true
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::1::Step"
@@ -108,6 +114,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::EditableStep::0::Content"
     direction: UP
     speed: 40
+    centerElement: true
     label: "Scroll to first preparation content"
 
 - assertVisible:
@@ -127,6 +134,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::EditableStep::0::Title"
     direction: UP
     speed: 40
+    centerElement: true
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::0::Title"
@@ -143,6 +151,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::EditableStep::0::Step"
     direction: UP
     speed: 60
+    centerElement: true
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::0::Step"
@@ -154,6 +163,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::PrefixText"
     direction: UP
     speed: 40
+    centerElement: true
     label: "Scroll to preparation prefix text"
 
 - assertVisible:
@@ -163,9 +173,11 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeIngredients::AddButton::RoundButton"
+      id: "RecipeTime::NumericTextInput"
     direction: UP
     speed: 60
+    centerElement: true
+    label: "Scroll to time section"
 
 - assertVisible:
     text: "Time to prepare the recipe :"
@@ -180,16 +192,17 @@ appId: "com.recipedia"
     text: "min"
     label: "Minute text is displayed"
 
-- assertVisible:
-    id: "RecipeIngredients::AddButton::RoundButton"
-    label: "Add ingredient button is displayed with the correct text"
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::AddButton::RoundButton"
     direction: UP
-    speed: 40
+    speed: 60
     centerElement: true
+    label: "Scroll to add ingredient button"
+
+- assertVisible:
+    id: "RecipeIngredients::AddButton::RoundButton"
+    label: "Add ingredient button is displayed with the correct text"
 
 - assertVisible:
     text: "󰐕"
@@ -361,6 +374,7 @@ appId: "com.recipedia"
       id: "RecipeTags::HeaderText"
     direction: UP
     speed: 60
+    centerElement: true
     label: "Scroll to header text of tags"
 
 - assertVisible:
@@ -400,6 +414,7 @@ appId: "com.recipedia"
       id: "RecipeDescription::Text"
     direction: UP
     speed: 60
+    centerElement: true
 
 - assertVisible:
     id: "RecipeDescription::CustomTextInput"
@@ -417,6 +432,7 @@ appId: "com.recipedia"
       id: "RecipeImage::RoundButton"
     direction: UP
     speed: 60
+    centerElement: true
     label: "Scroll until the image button is displayed"
 
 - scrollUntilVisible:
@@ -424,6 +440,7 @@ appId: "com.recipedia"
       text: "󰄀"
     direction: UP
     speed: 60
+    centerElement: true
     label: "Scroll until icon of the image button is displayed"
 
 - assertVisible:

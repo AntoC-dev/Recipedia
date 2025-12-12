@@ -4,6 +4,14 @@ appId: "com.recipedia"
     file: "./assertShoppingScreenUI.yaml"
     label: "Assert shopping screen UI elements"
 
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Cereal category"
+
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
     label: "Cereal category header is displayed"
@@ -21,6 +29,14 @@ appId: "com.recipedia"
       UNIT: "g"
       RECIPE_NAMES: "Test Recipe"
     label: "Assert and check Pasta ingredient"
+
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.vegetable::SubHeader"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Vegetable category"
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.vegetable::SubHeader"

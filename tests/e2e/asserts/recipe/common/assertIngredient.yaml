@@ -5,6 +5,7 @@ appId: "com.recipedia"
       text: "${INGREDIENT_NAME}.*"
     direction: DOWN
     speed: 40
+    centerElement: true
     label: "Scroll to searched ingredient"
 
 - assertVisible:
@@ -22,4 +23,5 @@ appId: "com.recipedia"
       id: "RecipePersons::Text"
     direction: UP
     speed: 40
+    centerElement: true
     label: "Scroll to up to ingredients section"

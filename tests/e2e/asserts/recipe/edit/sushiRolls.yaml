@@ -26,6 +26,7 @@ appId: "com.recipedia"
       id: "RecipeDescription::CustomTextInput"
     direction: DOWN
     speed: 60
+    centerElement: true
 
 - assertVisible:
     id: "RecipeDescription::Text"
@@ -38,19 +39,38 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeTags::RoundButton"
+      id: "RecipeTags::HeaderText"
     direction: DOWN
-    speed: 60
+    speed: 40
+    centerElement: true
+    label: "Scroll down to the tags section"
 
 - assertVisible:
     id: "RecipeTags::HeaderText"
     text: "Tags:"
     label: "Intro text for the tags is rendered"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeTags::ElementText"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll down to the element text"
+
 - assertVisible:
     id: "RecipeTags::ElementText"
     text: "Tags are a way to identify a recipe and make easier its search.\nHere are some examples of tags you can have : .*, .*, .*"
     label: "Explanation text for the tags is rendered"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTags::0::Chip"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll down to the first tag"
+
 - assertVisible:
     id: "RecipeTags::0::Chip"
     label: "First tag chip is rendered"
@@ -80,6 +100,7 @@ appId: "com.recipedia"
       id: "RecipePersons::PrefixText"
     direction: DOWN
     speed: 60
+    centerElement: true
 
 - assertVisible:
     id: "RecipePersons::PrefixText"
@@ -99,6 +120,7 @@ appId: "com.recipedia"
       id: "RecipeIngredients::Header::Quantity"
     direction: DOWN
     speed: 60
+    centerElement: true
 
 - assertVisible:
     id: "RecipeIngredients::PrefixText"
@@ -134,6 +156,7 @@ appId: "com.recipedia"
       id: "RecipeIngredients::2::NameInput::CustomTextInput"
     direction: DOWN
     speed: 60
+    centerElement: true
 
 - assertVisible:
     id: "RecipeIngredients::1::QuantityInput"
@@ -165,6 +188,7 @@ appId: "com.recipedia"
       id: "RecipeIngredients::4::QuantityInput"
     direction: DOWN
     speed: 60
+    centerElement: true
 
 - assertVisible:
     id: "RecipeIngredients::3::QuantityInput"
@@ -199,9 +223,21 @@ appId: "com.recipedia"
     id: "RecipeIngredients::4::NameInput::CustomTextInput"
     text: "Soy Sauce"
     label: "Ingredient Soy Sauce is rendered"
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::AddButton::RoundButton"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll down to ingredients add button"
+
 - assertVisible:
     id: "RecipeIngredients::AddButton::RoundButton"
     label: "Add button of the ingredients is rendered"
+
+- assertVisible:
+    text: "󰐕"
+    label: "Add button of the ingredients has the correct icon"
 
 - scrollUntilVisible:
     element:
@@ -210,18 +246,6 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll down to the time to prepare"
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::AddButton::RoundButton"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll down to the end of ingredients section"
-
-- assertVisible:
-    text: "󰐕"
-    label: "Add button of the ingredients has the correct icon"
 
 - assertVisible:
     id: "RecipeTime::PrefixText"
@@ -292,6 +316,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
     direction: DOWN
     speed: 40
+    centerElement: true
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::0::Content"
@@ -303,18 +328,39 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
+      id: "RecipePreparation::EditableStep::1::Step"
     direction: DOWN
     speed: 40
+    centerElement: true
+    label: "Scroll down to the second step input"
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::1::Step"
     text: "Step 2"
     label: "Preparation section for second step is rendered"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::1::Title"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll down to the title of second step"
+
 - assertVisible:
     id: "RecipePreparation::EditableStep::1::Title"
     text: "Title of step 2 : "
     label: "Intro text for the title of second step is rendered"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::1::TextInputTitle::CustomTextInput"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll down to the title of second step"
+
+
 - assertVisible:
     id: "RecipePreparation::EditableStep::1::TextInputTitle::CustomTextInput"
     text: "Spread rice"
@@ -322,32 +368,63 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
+      id: "RecipePreparation::EditableStep::1::Content"
     direction: DOWN
     speed: 40
+    centerElement: true
+    label: "Scroll down to the second step input"
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::1::Content"
     text: "Content of step 2 : "
     label: "Intro text for second step is rendered"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll down to the second step input"
+
 - assertVisible:
     id: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
     label: "Second step input is rendered"
 
 - scrollUntilVisible:
     element:
-      id: "RecipePreparation::EditableStep::2::TextInputTitle::CustomTextInput"
+      id: "RecipePreparation::EditableStep::2::Step"
     direction: DOWN
     speed: 40
+    centerElement: true
+    label: "Scroll down to the third step input"
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::2::Step"
     text: "Step 3"
     label: "Preparation section for third step is rendered"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::2::Title"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll down to the title of third step"
+
 - assertVisible:
     id: "RecipePreparation::EditableStep::2::Title"
     text: "Title of step 3 : "
     label: "Intro text for the title of third step is rendered"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::2::TextInputTitle::CustomTextInput"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll down to the title of third step"
+
 - assertVisible:
     id: "RecipePreparation::EditableStep::2::TextInputTitle::CustomTextInput"
     text: "Add fillings and roll"
@@ -355,32 +432,63 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipePreparation::EditableStep::2::TextInputContent::CustomTextInput"
+      id: "RecipePreparation::EditableStep::2::Content"
     direction: DOWN
     speed: 40
+    centerElement: true
+    label: "Scroll down to the third step input"
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::2::Content"
     text: "Content of step 3 : "
     label: "Intro text for third step is rendered"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::2::TextInputContent::CustomTextInput"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll down to the third step input"
+
 - assertVisible:
     id: "RecipePreparation::EditableStep::2::TextInputContent::CustomTextInput"
     label: "Third step input is rendered"
 
 - scrollUntilVisible:
     element:
-      id: "RecipePreparation::EditableStep::3::TextInputTitle::CustomTextInput"
+      id: "RecipePreparation::EditableStep::3::Step"
     direction: DOWN
     speed: 40
+    centerElement: true
+    label: "Scroll down to the fourth step input"
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::3::Step"
     text: "Step 4"
     label: "Preparation section for Fourth step is rendered"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::3::Title"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll down to the title of Fourth step"
+
 - assertVisible:
     id: "RecipePreparation::EditableStep::3::Title"
     text: "Title of step 4 : "
     label: "Intro text for the title of Fourth step is rendered"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::3::TextInputTitle::CustomTextInput"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll down to the title of Fourth step"
+
 - assertVisible:
     id: "RecipePreparation::EditableStep::3::TextInputTitle::CustomTextInput"
     text: "Serve"
@@ -388,14 +496,25 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipePreparation::EditableStep::3::TextInputContent::CustomTextInput"
+      id: "RecipePreparation::EditableStep::3::Content"
     direction: DOWN
     speed: 40
+    centerElement: true
+    label: "Scroll down to the fourth step input"
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::3::Content"
     text: "Content of step 4 : "
     label: "Intro text for Fourth step is rendered"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::3::TextInputContent::CustomTextInput"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll down to the fourth step input"
+
 - assertVisible:
     id: "RecipePreparation::EditableStep::3::TextInputContent::CustomTextInput"
     label: "Fourth step input is rendered"

@@ -1,5 +1,0 @@
-appId: "com.recipedia"
----
-- assertNotVisible:
-    id: "Recipe::RecipeNutrition::NutritionTable"
-    label: "Nutrition table is not displayed (no nutrition data)"

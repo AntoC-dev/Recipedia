@@ -36,6 +36,14 @@ appId: "com.recipedia"
 
 - pressKey: enter
 
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::RecipeCards::0::.*"
+    direction: DOWN
+    speed: 50
+    centerElement: true
+    label: "Scroll to recipe card"
+
 - tapOn:
     id: "SearchScreen::RecipeCards::0::.*"
     label: "Open newly created recipe (first result)"

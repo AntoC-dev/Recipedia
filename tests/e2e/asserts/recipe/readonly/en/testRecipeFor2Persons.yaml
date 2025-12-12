@@ -10,12 +10,21 @@ appId: "com.recipedia"
       id: "RecipePersons::Text"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Scroll to ingredients section"
 
 - assertVisible:
     id: "RecipePersons::Text"
     text: "Ingredients (2 persons)"
     label: "Recipe is for 2 persons"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::0::IngredientName"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Pasta ingredient"
 
 - assertVisible:
     id: "RecipeIngredients::0::IngredientName"
@@ -26,6 +35,14 @@ appId: "com.recipedia"
     id: "RecipeIngredients::0::QuantityAndUnit"
     text: "200 g"
     label: "Pasta quantity is 200g"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::1::IngredientName"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Tomatoes ingredient"
 
 - assertVisible:
     id: "RecipeIngredients::1::IngredientName"
@@ -42,6 +59,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Scroll to preparation section"
 
 - assertVisible:

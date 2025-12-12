@@ -14,6 +14,14 @@ appId: "com.recipedia"
 
 - pressKey: "enter"
 
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::RecipeCards::0::Cover"
+    direction: DOWN
+    speed: 50
+    centerElement: true
+    label: "Scroll to recipe card"
+
 - tapOn:
     id: "SearchScreen::RecipeCards::0::Cover"
     label: "Open Taco recipe from the card"
@@ -25,6 +33,14 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to ingredients section"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::2::IngredientName"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Lettuce ingredient"
 
 - assertVisible:
     id: "RecipeIngredients::2::IngredientName"

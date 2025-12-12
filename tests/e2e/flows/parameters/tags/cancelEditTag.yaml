@@ -5,6 +5,7 @@ appId: "com.recipedia"
       text: "Italian"
     direction: UP
     speed: 60
+    centerElement: true
     label: "Scroll up to find Italian tag for edit test"
 
 - tapOn:

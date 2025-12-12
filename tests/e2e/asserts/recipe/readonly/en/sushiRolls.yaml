@@ -34,9 +34,11 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeIngredients::4::IngredientName"
+      id: "RecipeIngredients::0::IngredientName"
     direction: DOWN
     speed: 60
+    centerElement: true
+    label: "Scroll to Sushi Rice ingredient"
 
 - assertVisible:
     id: "RecipeIngredients::0::IngredientName"
@@ -46,6 +48,15 @@ appId: "com.recipedia"
     id: "RecipeIngredients::0::QuantityAndUnit"
     text: "250 g"
     label: "Quantity of Sushi Rice is rendered"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::1::IngredientName"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Nori Sheets ingredient"
+
 - assertVisible:
     id: "RecipeIngredients::1::IngredientName"
     text: "Nori Sheets"
@@ -54,6 +65,15 @@ appId: "com.recipedia"
     id: "RecipeIngredients::1::QuantityAndUnit"
     text: "5 pieces"
     label: "Quantity of Nori Sheets is rendered"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::2::IngredientName"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Salmon ingredient"
+
 - assertVisible:
     id: "RecipeIngredients::2::IngredientName"
     text: "Salmon"
@@ -62,6 +82,15 @@ appId: "com.recipedia"
     id: "RecipeIngredients::2::QuantityAndUnit"
     text: "200 g"
     label: "Quantity of Salmon is rendered"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::3::IngredientName"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Avocado ingredient"
+
 - assertVisible:
     id: "RecipeIngredients::3::IngredientName"
     text: "Avocado"
@@ -70,6 +99,15 @@ appId: "com.recipedia"
     id: "RecipeIngredients::3::QuantityAndUnit"
     text: "100 g"
     label: "Quantity of Avocado is rendered"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::4::IngredientName"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Soy Sauce ingredient"
+
 - assertVisible:
     id: "RecipeIngredients::4::IngredientName"
     text: "Soy Sauce"
@@ -84,6 +122,8 @@ appId: "com.recipedia"
       id: "RecipeTime::Text"
     direction: DOWN
     speed: 40
+    centerElement: true
+    label: "Scroll to preparation time"
 
 - assertVisible:
     id: "RecipeTime::Text"
@@ -96,7 +136,7 @@ appId: "com.recipedia"
     direction: DOWN
     centerElement: true
     speed: 60
-    label: "Scroll down to the first preparation steps"
+    label: "Scroll to first preparation step"
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
     text: "1) Prepare rice"
@@ -108,7 +148,7 @@ appId: "com.recipedia"
     direction: DOWN
     centerElement: true
     speed: 60
-    label: "Scroll down to the second preparation steps"
+    label: "Scroll to second preparation step"
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
     text: "2) Spread rice"
@@ -120,7 +160,7 @@ appId: "com.recipedia"
     direction: DOWN
     centerElement: true
     speed: 60
-    label: "Scroll down to the third preparation steps"
+    label: "Scroll to third preparation step"
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"
     text: "3) Add fillings and roll"
@@ -128,11 +168,11 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"
+      id: "RecipePreparation::ReadOnlyStep::3::SectionTitle"
     direction: DOWN
     centerElement: true
     speed: 60
-    label: "Scroll down to the fourth preparation steps"
+    label: "Scroll to fourth preparation step"
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::3::SectionTitle"
     text: "4) Serve"

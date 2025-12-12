@@ -10,6 +10,7 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 70
     timeout: 60000
+    centerElement: true
     label: "Scroll to Lettuce Edited ingredient"
 
 - tapOn:

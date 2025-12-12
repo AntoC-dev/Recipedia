@@ -1,5 +1,13 @@
 appId: "com.recipedia"
 ---
+- scrollUntilVisible:
+    element:
+      text: "Italian"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Italian tag"
+
 - tapOn:
     text: "Delete"
     index: 0
@@ -12,6 +20,14 @@ appId: "com.recipedia"
 - tapOn:
     id: "TagsSettings::ItemDialog::DeleteModal::CancelButton"
     label: "Cancel delete operation"
+
+- scrollUntilVisible:
+    element:
+      text: "Italian"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Italian tag"
 
 - assertVisible:
     text: "Italian"

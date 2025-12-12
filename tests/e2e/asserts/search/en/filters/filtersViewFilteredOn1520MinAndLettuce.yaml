@@ -70,6 +70,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::FilterAccordion::Accordion::6"
     direction: DOWN
+    centerElement: true
     label: "Scroll to Sauce category"
 
 - runFlow:

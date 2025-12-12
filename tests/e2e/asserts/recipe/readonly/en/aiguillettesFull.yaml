@@ -45,11 +45,11 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeTime::Text"
+      id: "RecipeIngredients::0::IngredientName"
     direction: DOWN
     speed: 40
     centerElement: true
-    label: "Scroll to time"
+    label: "Scroll to Chicken Breast ingredient"
 
 - assertVisible:
     id: "RecipeIngredients::0::QuantityAndUnit"
@@ -61,6 +61,14 @@ appId: "com.recipedia"
     text: "Chicken Breast"
     label: "First ingredient name is displayed"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::1::IngredientName"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to Onions ingredient"
+
 - assertVisible:
     id: "RecipeIngredients::1::QuantityAndUnit"
     text: "2 g"
@@ -71,6 +79,14 @@ appId: "com.recipedia"
     text: "Onions"
     label: "Second ingredient name is displayed"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::2::IngredientName"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to Avocado ingredient"
+
 - assertVisible:
     id: "RecipeIngredients::2::QuantityAndUnit"
     text: "5 g"
@@ -80,6 +96,14 @@ appId: "com.recipedia"
     id: "RecipeIngredients::2::IngredientName"
     text: "Avocado"
     label: "Third ingredient name is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTime::Text"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to preparation time"
 
 - assertVisible:
     id: "RecipeTime::Text"
@@ -140,6 +164,6 @@ appId: "com.recipedia"
     text: "Coupez les filets de poulet en lanieres.emincez l'oignon.Pressez ou hachez l'ail.Dans une poele, faites chauffer un filet d'huile de cuisson a feu moyen a vif."
     label: "Third preparation paragraph is displayed"
 
-- runFlow:
-    file: "../../common/nutritionEmptyReadOnly.yaml"
-    label: "Verify nutrition section is not displayed (manually added recipe)"
+- assertNotVisible:
+    id: "Recipe::RecipeNutrition::NutritionTable"
+    label: "Nutrition table is not displayed (no nutrition data)"

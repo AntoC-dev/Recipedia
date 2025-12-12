@@ -9,6 +9,14 @@ appId: "com.recipedia"
     label: "Cereal accordion title is displayed"
 
 # Expand the accordion
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Cereal accordion"
+
 - tapOn:
     text: "Cereal"
     label: "Expand Cereal accordion"
@@ -18,6 +26,7 @@ appId: "com.recipedia"
       id: "SearchScreen::FilterAccordion::Accordion::${1+output.accordionIndex}"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Scroll to the next accordion to ensure all elements are displayed"
 
 
@@ -114,6 +123,14 @@ appId: "com.recipedia"
     when:
       true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Sushi Rice')=== undefined}
     file: "grainOrCereal-items/sushiRice-hidden.yaml"
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    direction: UP
+    speed: 60
+    centerElement: true
+    label: "Scroll back up to accordion header"
 
 # Collapse the accordion back
 - tapOn:

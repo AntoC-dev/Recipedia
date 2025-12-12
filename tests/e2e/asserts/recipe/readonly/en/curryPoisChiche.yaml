@@ -119,6 +119,7 @@ appId: "com.recipedia"
       id: "RecipeTime::Text"
     direction: DOWN
     speed: 60
+    centerElement: true
 
 - assertVisible:
     id: "RecipeTime::Text"
@@ -176,6 +177,6 @@ appId: "com.recipedia"
     text: "[\\s\\S]+"
     label: "Third preparation paragraph is displayed"
 
-- runFlow:
-    file: "../../common/nutritionEmptyReadOnly.yaml"
-    label: "Verify nutrition section is not displayed (OCR recipe)"
+- assertNotVisible:
+    id: "Recipe::RecipeNutrition::NutritionTable"
+    label: "Nutrition table is not displayed (no nutrition data)"

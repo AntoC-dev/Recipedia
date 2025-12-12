@@ -10,6 +10,14 @@ appId: "com.recipedia"
     label: "Only in-season ingredients accordion title is displayed in French"
 
 # Expand the accordion
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Only in-season ingredients accordion"
+
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Expand Only in-season ingredients accordion"
@@ -20,6 +28,14 @@ appId: "com.recipedia"
 # Assert all items are visible - reuse item flows from English
 - runFlow:
     file: "../../../en/filters/accordions/inSeason-items/onlyInSeasonIngredients-visible.yaml"
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    direction: UP
+    speed: 60
+    centerElement: true
+    label: "Scroll back up to accordion header"
 
 # Collapse the accordion back
 - tapOn:

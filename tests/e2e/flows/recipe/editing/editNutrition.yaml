@@ -33,6 +33,7 @@ appId: "com.recipedia"
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::NumericTextInput"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Scroll to protein field"
 
 - tapOn:

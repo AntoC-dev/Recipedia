@@ -10,6 +10,14 @@ appId: "com.recipedia"
 
 - tapOn:
     id: "RecipeIngredients::0::QuantityInput"
+    label: "Tap on Oignon quantity"
+
+- inputText: "1"
+
+- pressKey: enter
+
+- tapOn:
+    id: "RecipeIngredients::1::QuantityInput"
     label: "Tap on Cheddar quantity"
 
 - inputText: "100"
@@ -17,7 +25,7 @@ appId: "com.recipedia"
 - pressKey: enter
 
 - tapOn:
-    id: "RecipeIngredients::1::QuantityInput"
+    id: "RecipeIngredients::2::QuantityInput"
     label: "Tap on Pain pour hamburger quantity"
 
 - inputText: "4"
@@ -25,18 +33,10 @@ appId: "com.recipedia"
 - pressKey: enter
 
 - tapOn:
-    id: "RecipeIngredients::2::QuantityInput"
+    id: "RecipeIngredients::3::QuantityInput"
     label: "Tap on Viande hachée quantity"
 
 - inputText: "400"
-
-- pressKey: enter
-
-- tapOn:
-    id: "RecipeIngredients::3::QuantityInput"
-    label: "Tap on Oignon quantity"
-
-- inputText: "1"
 
 - pressKey: enter
 
@@ -56,6 +56,14 @@ appId: "com.recipedia"
 
 - pressKey: enter
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::5::QuantityInput"
+    direction: DOWN
+    centerElement: true
+    speed: 40
+    label: "Scroll to more ingredients"
+
 - tapOn:
     id: "RecipeIngredients::5::QuantityInput"
     label: "Tap on Salade quantity"
@@ -64,6 +72,14 @@ appId: "com.recipedia"
 
 - pressKey: enter
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::6::QuantityInput"
+    direction: DOWN
+    centerElement: true
+    speed: 40
+    label: "Scroll to more ingredients"
+
 - tapOn:
     id: "RecipeIngredients::6::QuantityInput"
     label: "Tap on Moutarde quantity"
@@ -71,6 +87,14 @@ appId: "com.recipedia"
 - inputText: "30"
 
 - pressKey: enter
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::7::QuantityInput"
+    direction: DOWN
+    centerElement: true
+    speed: 40
+    label: "Scroll to more ingredients"
 
 - tapOn:
     id: "RecipeIngredients::7::QuantityInput"

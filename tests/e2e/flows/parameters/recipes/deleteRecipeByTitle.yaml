@@ -8,6 +8,7 @@ env:
       id: "RecipesSettings::${RECIPE_INDEX}::DeleteButton"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Scroll to find ${RECIPE_TITLE} recipe"
 
 - assertVisible:

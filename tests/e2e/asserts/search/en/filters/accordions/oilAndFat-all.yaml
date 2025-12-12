@@ -6,7 +6,7 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 60
     centerElement: true
-    label: "Scroll until Oil and Fat accordion is visible"
+    label: "Scroll to Oil and Fat accordion"
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -23,15 +23,31 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 60
     centerElement: true
-    label: "Scroll until Oil and Fat  last item is visible"
+    label: "Scroll to Butter filter"
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
     label: "Butter filter is visible"
 
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::1"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Olive Oil filter"
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::1"
     label: "Olive Oil filter is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    direction: UP
+    speed: 60
+    centerElement: true
+    label: "Scroll back up to accordion header"
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"

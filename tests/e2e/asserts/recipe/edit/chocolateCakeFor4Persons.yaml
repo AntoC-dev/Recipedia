@@ -10,6 +10,7 @@ appId: "com.recipedia"
       id: "RecipePersons::NumericTextInput"
     direction: DOWN
     speed: 60
+    centerElement: true
 
 - assertVisible:
     id: "RecipePersons::NumericTextInput"
@@ -21,6 +22,7 @@ appId: "com.recipedia"
       id: "RecipeIngredients::PrefixText"
     direction: DOWN
     speed: 60
+    centerElement: true
 
 - assertVisible:
     id: "RecipeIngredients::PrefixText"
@@ -32,6 +34,7 @@ appId: "com.recipedia"
       id: "RecipeIngredients::3::QuantityInput"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Scroll to end of ingredients section"
 
 - assertVisible:

@@ -162,14 +162,23 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeTime::PrefixText"
+      id: "RecipeIngredients::AddButton::RoundButton"
     direction: DOWN
     speed: 60
-    label: "Scroll down to time part"
+    centerElement: true
+    label: "Scroll down to ingredients add button"
 
 - assertVisible:
     id: "RecipeIngredients::AddButton::RoundButton"
     label: "Add button of the ingredients is rendered"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTime::PrefixText"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll down to time part"
 
 - assertVisible:
     id: "RecipeTime::PrefixText"

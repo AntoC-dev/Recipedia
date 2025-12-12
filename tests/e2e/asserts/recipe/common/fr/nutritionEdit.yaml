@@ -28,6 +28,7 @@ appId: "com.recipedia"
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKj::NumericTextInput"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Scroll to energy kj section"
 
 - scrollUntilVisible:
@@ -35,6 +36,7 @@ appId: "com.recipedia"
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::SaturatedFat::NumericTextInput"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Scroll to middle of nutrition table"
 
 - assertVisible:
@@ -57,6 +59,7 @@ appId: "com.recipedia"
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Salt::NumericTextInput"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Scroll to end of nutrition table"
 
 - assertVisible:
@@ -89,6 +92,7 @@ appId: "com.recipedia"
       id: "Recipe::RecipeNutrition::NutritionTable::EditForm::RemoveButton"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Scroll to remove nutrition button"
 
 - assertVisible:

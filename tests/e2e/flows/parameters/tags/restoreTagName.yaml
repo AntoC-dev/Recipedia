@@ -9,6 +9,7 @@ appId: "com.recipedia"
       id: "Parameters::Section::Data::Tags::Item"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Scroll down to find Tags option"
 
 - tapOn:
@@ -20,6 +21,7 @@ appId: "com.recipedia"
       id: "TagsSettings::6::TagName"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Scroll to Italian Cuisine tag"
 
 - tapOn:
@@ -40,6 +42,14 @@ appId: "com.recipedia"
 - tapOn:
     id: "TagsSettings::ItemDialog::EditModal::ConfirmButton"
     label: "Save the restored tag"
+
+- scrollUntilVisible:
+    element:
+      id: "TagsSettings::6::TagName"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Italian tag"
 
 - assertVisible:
     id: "TagsSettings::6::TagName"

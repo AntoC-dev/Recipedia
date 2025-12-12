@@ -29,101 +29,76 @@ appId: "com.recipedia"
     text: "Ingredients (4 persons)"
     label: "Ingredient section and persons is displayed"
 
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "cacahuètes grillées"
+      INGREDIENT_QUANTITY_AND_UNIT: "200 g"
+    label: "Assert cacahuètes grillées ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "concentré de tomates"
+      INGREDIENT_QUANTITY_AND_UNIT: "70 g"
+    label: "Assert concentré de tomates ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "flet de poulet"
+      INGREDIENT_QUANTITY_AND_UNIT: "4 "
+    label: "Assert flet de poulet ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "gingembre"
+      INGREDIENT_QUANTITY_AND_UNIT: "1à3 cm"
+    label: "Assert gingembre ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "gOussed'ail"
+      INGREDIENT_QUANTITY_AND_UNIT: "2 "
+    label: "Assert gOussed'ail ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "lait de coco"
+      INGREDIENT_QUANTITY_AND_UNIT: "400 mL"
+    label: "Assert lait de coco ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "oignon jaune"
+      INGREDIENT_QUANTITY_AND_UNIT: "2 "
+    label: "Assert oignon jaune ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "oignon nouveau"
+      INGREDIENT_QUANTITY_AND_UNIT: "1 "
+    label: "Assert oignon nouveau ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "riz basmati  Bio"
+      INGREDIENT_QUANTITY_AND_UNIT: "300 g"
+    label: "Assert riz basmati Bio ingredient"
+
 - scrollUntilVisible:
     element:
       id: "RecipeTime::Text"
     direction: DOWN
     speed: 60
-
-- assertVisible:
-    id: "RecipeIngredients::.*::QuantityAndUnit"
-    text: "200 g"
-    label: "First ingredient quantity is displayed"
-
-- assertVisible:
-    id: "RecipeIngredients::.*::IngredientName"
-    text: "cacahuètes grillées"
-    label: "First ingredient name is displayed"
-
-- assertVisible:
-    id: "RecipeIngredients::.*::QuantityAndUnit"
-    text: "70 g"
-    label: "Second ingredient quantity is displayed"
-
-- assertVisible:
-    id: "RecipeIngredients::.*::IngredientName"
-    text: "concentré de tomates"
-    label: "Second ingredient name is displayed"
-
-- assertVisible:
-    id: "RecipeIngredients::.*::QuantityAndUnit"
-    text: "4 "
-    label: "Third ingredient quantity is displayed"
-
-- assertVisible:
-    id: "RecipeIngredients::.*::IngredientName"
-    text: "flet de poulet"
-    label: "Third ingredient name is displayed"
-
-- assertVisible:
-    id: "RecipeIngredients::.*::QuantityAndUnit"
-    text: "1à3 cm"
-    label: "Fourth ingredient quantity is displayed"
-
-- assertVisible:
-    id: "RecipeIngredients::.*::IngredientName"
-    text: "gingembre"
-    label: "Fourth ingredient name is displayed"
-
-- assertVisible:
-    id: "RecipeIngredients::.*::QuantityAndUnit"
-    text: "2 "
-    label: "Fifth ingredient quantity is displayed"
-
-- assertVisible:
-    id: "RecipeIngredients::.*::IngredientName"
-    text: "gOussed'ail"
-    label: "Fifth ingredient name is displayed"
-
-- assertVisible:
-    id: "RecipeIngredients::.*::QuantityAndUnit"
-    text: "400 mL"
-    label: "Sixth ingredient quantity is displayed"
-
-- assertVisible:
-    id: "RecipeIngredients::.*::IngredientName"
-    text: "lait de coco"
-    label: "Sixth ingredient name is displayed"
-
-- assertVisible:
-    id: "RecipeIngredients::.*::QuantityAndUnit"
-    text: "2 "
-    label: "Seventh ingredient quantity is displayed"
-
-- assertVisible:
-    id: "RecipeIngredients::.*::IngredientName"
-    text: "oignon jaune"
-    label: "Seventh ingredient name is displayed"
-
-- assertVisible:
-    id: "RecipeIngredients::.*::QuantityAndUnit"
-    text: "1 "
-    label: "Eighth ingredient quantity is displayed"
-
-- assertVisible:
-    id: "RecipeIngredients::.*::IngredientName"
-    text: "oignon nouveau"
-    label: "Eighth ingredient name is displayed"
-
-- assertVisible:
-    id: "RecipeIngredients::.*::QuantityAndUnit"
-    text: "300 g"
-    label: "Ninth ingredient quantity is displayed"
-
-- assertVisible:
-    id: "RecipeIngredients::.*::IngredientName"
-    text: "riz basmati  Bio"
-    label: "Ninth ingredient name is displayed"
+    centerElement: true
+    label: "Scroll to preparation time"
 
 - assertVisible:
     id: "RecipeTime::Text"
@@ -186,6 +161,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::3::SectionParagraph"
     direction: DOWN
     speed: 60
+    centerElement: true
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::3::SectionTitle"

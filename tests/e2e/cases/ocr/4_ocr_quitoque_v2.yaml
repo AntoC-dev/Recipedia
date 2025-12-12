@@ -55,6 +55,14 @@ tags:
 
 - pressKey: enter
 
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::RecipeCards::0::.*"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to recipe card"
+
 - tapOn:
     id: "SearchScreen::RecipeCards::0::.*"
     label: "Verification - Open newly created recipe"

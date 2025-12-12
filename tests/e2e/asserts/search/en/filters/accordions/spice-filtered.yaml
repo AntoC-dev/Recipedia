@@ -11,6 +11,14 @@ appId: "com.recipedia"
     label: "Spice accordion title is displayed"
 
 # Expand the accordion
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Spice accordion"
+
 - tapOn:
     text: "Spice"
     label: "Expand Spice accordion"
@@ -54,6 +62,14 @@ appId: "com.recipedia"
       true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Paprika')=== undefined}
     file: "spice-items/paprika-hidden.yaml"
 
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    direction: UP
+    speed: 60
+    centerElement: true
+    label: "Scroll back up to accordion header"
 
 # Collapse the accordion back
 - tapOn:

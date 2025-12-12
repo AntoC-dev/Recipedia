@@ -15,6 +15,14 @@ tags:
     file: "../../asserts/parameters/defaultPersons/en/assertDefaultPersonsSettingsScreen.yaml"
     label: "Assert - Verify Default Persons Settings screen"
 
+- scrollUntilVisible:
+    element:
+      id: "DefaultPersonSettings::PersonsValue"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to persons value setting"
+
 - assertVisible:
     id: "DefaultPersonSettings::PersonsValue"
     text: "4 persons"
@@ -39,6 +47,7 @@ tags:
       id: "SearchScreen::RecipeCards::7::.*"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Action - Scroll to Pesto Pasta recipe"
 
 - tapOn:
@@ -71,6 +80,14 @@ tags:
     id: "BottomTabs::Search"
     label: "Verification - Return to Search screen"
 
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::RecipeCards::7::.*"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to recipe card"
+
 - tapOn:
     id: "SearchScreen::RecipeCards::7::.*"
     label: "Verification - Open Pesto Pasta recipe"
@@ -88,6 +105,7 @@ tags:
       id: "SearchScreen::SearchBar"
     direction: UP
     speed: 95
+    centerElement: true
     label: "Cleanup - Scroll back to top of Search screen"
 
 - tapOn:

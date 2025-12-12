@@ -14,6 +14,14 @@ appId: "com.recipedia"
 
 - pressKey: "enter"
 
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::RecipeCards::0::Cover"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to recipe card"
+
 - assertVisible:
     id: "SearchScreen::RecipeCards::0::.*"
     label: "Verify recipe is found in search results"

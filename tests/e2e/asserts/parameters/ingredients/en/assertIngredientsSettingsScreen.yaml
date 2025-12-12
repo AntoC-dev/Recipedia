@@ -277,6 +277,7 @@ env:
       id: "IngredientsSettings::BottomActionButton"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Scroll down to find Add button"
 
 - assertVisible:

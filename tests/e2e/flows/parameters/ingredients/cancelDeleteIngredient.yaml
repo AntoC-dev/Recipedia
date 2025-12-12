@@ -1,5 +1,13 @@
 appId: "com.recipedia"
 ---
+- scrollUntilVisible:
+    element:
+      id: "IngredientsSettings::30::DeleteButton"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Spaghetti ingredient"
+
 - tapOn:
     id: "IngredientsSettings::30::DeleteButton"
     label: "Open Delete dialog for Spaghetti ingredient"
@@ -11,6 +19,14 @@ appId: "com.recipedia"
 - tapOn:
     id: "IngredientsSettings::ItemDialog::DeleteModal::CancelButton"
     label: "Cancel delete operation"
+
+- scrollUntilVisible:
+    element:
+      text: "Spaghetti"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Spaghetti ingredient"
 
 - assertVisible:
     text: "Spaghetti"

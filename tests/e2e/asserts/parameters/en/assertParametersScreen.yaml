@@ -14,6 +14,7 @@ appId: "com.recipedia"
       id: "Parameters::Section::About::Version::Item"
     direction: DOWN
     speed: 60
+    centerElement: true
 - runFlow:
     file: "./assertDataManagementSection.yaml"
     label: "Check that the data management section is displayed correctly in English"
@@ -26,3 +27,4 @@ appId: "com.recipedia"
       id: "Parameters::Section::Appearance::SubHeader"
     direction: UP
     speed: 60
+    centerElement: true

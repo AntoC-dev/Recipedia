@@ -1,5 +1,13 @@
 appId: "com.recipedia"
 ---
+- scrollUntilVisible:
+    element:
+      id: "Parameters::Section::Appearance::SubHeader"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Appearance section"
+
 - assertVisible:
     id: "Parameters::Section::Appearance::SubHeader"
     label: "Appearance section header is displayed"

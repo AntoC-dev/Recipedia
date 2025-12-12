@@ -1,36 +1,68 @@
 appId: "com.recipedia"
 ---
-# Assert accordion is displayed
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Cheese accordion"
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    text: "Fromage"
     label: "Cheese accordion is displayed"
 
-- assertVisible:
-    text: "Fromage"
-    label: "Cheese accordion title is displayed in French"
-
-# Expand the accordion
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Expand Cheese accordion"
 
-# Assert all items are visible
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Cheddar Cheese filter"
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
     label: "Cheddar Cheese filter is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::1"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Mozzarella Cheese filter"
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::1"
     label: "Mozzarella Cheese filter is visible"
 
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::2"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Parmesan Cheese filter"
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::2"
     label: "Parmesan Cheese filter is visible"
 
-# Collapse the accordion back
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    direction: UP
+    speed: 60
+    centerElement: true
+    label: "Scroll back up to accordion header"
+
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Collapse Cheese accordion"
 
-# Increment accordion index for next accordion
 - evalScript: ${output.accordionIndex = output.accordionIndex + 1}

@@ -1,5 +1,13 @@
 appId: "com.recipedia"
 ---
+- scrollUntilVisible:
+    element:
+      id: "Parameters::Section::RecipeDefaults::SubHeader"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Recipe Defaults section"
+
 - assertVisible:
     id: "Parameters::Section::RecipeDefaults::SubHeader"
     label: "Recipe Defaults section header is displayed"

@@ -5,6 +5,7 @@ appId: "com.recipedia"
       id: "RecipePersons::NumericTextInput"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Scroll to persons field"
 
 - tapOn:

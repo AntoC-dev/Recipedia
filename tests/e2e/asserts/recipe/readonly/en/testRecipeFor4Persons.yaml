@@ -10,6 +10,7 @@ appId: "com.recipedia"
       id: "RecipePersons::Text"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Scroll to ingredients section"
 
 - assertVisible:
@@ -19,11 +20,11 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeIngredients::1::IngredientName"
+      id: "RecipeIngredients::0::IngredientName"
     direction: DOWN
     speed: 60
-    label: "Scroll to end of ingredients section"
-
+    centerElement: true
+    label: "Scroll to Pasta ingredient"
 
 - assertVisible:
     id: "RecipeIngredients::0::IngredientName"
@@ -34,6 +35,14 @@ appId: "com.recipedia"
     id: "RecipeIngredients::0::QuantityAndUnit"
     text: "400 g"
     label: "Pasta quantity is scaled to 400g"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::1::IngredientName"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Tomatoes ingredient"
 
 - assertVisible:
     id: "RecipeIngredients::1::IngredientName"
