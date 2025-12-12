@@ -23,6 +23,7 @@ from scraper import (
     _extract_structured_ingredients,
     _split_quantity_unit,
     _clean_ingredient_name,
+    _parse_kitchen_item,
     AuthenticationRequiredError,
 )
 
@@ -757,6 +758,32 @@ UNSTRUCTURED_INGREDIENTS_HTML = """
 </html>
 """
 
+STRUCTURED_WITH_KITCHEN_LIST_HTML = """
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+<ul class="ingredient-list">
+    <li>
+        <span class="bold">375 g</span>
+        <span>camembert au lait cru</span>
+    </li>
+    <li>
+        <span class="bold">3x</span>
+        <span>petits pains (240g)</span>
+    </li>
+</ul>
+<p class="bold m-0 mb-1">Dans votre cuisine</p>
+<ul class="kitchen-list">
+    <li class="regular body-2 mb-2">sel</li>
+    <li class="regular body-2 mb-2">poivre</li>
+    <li class="regular body-2 mb-2">2 càs huile d'olive</li>
+    <li class="regular body-2 mb-2">1 càs vinaigre de votre choix</li>
+</ul>
+</body>
+</html>
+"""
+
 
 class TestSplitQuantityUnit:
     def test_splits_quantity_and_unit(self):
@@ -822,3 +849,55 @@ class TestExtractStructuredIngredients:
         result = _extract_structured_ingredients(soup)
 
         assert result is None
+
+    def test_extracts_kitchen_list_items(self):
+        soup = BeautifulSoup(STRUCTURED_WITH_KITCHEN_LIST_HTML, "html.parser")
+
+        result = _extract_structured_ingredients(soup)
+
+        assert result is not None
+        assert len(result) == 6
+
+        assert result[0]["quantity"] == "375"
+        assert result[0]["unit"] == "g"
+        assert result[0]["name"] == "camembert au lait cru"
+
+        assert result[1]["quantity"] == "3"
+        assert result[1]["unit"] == "x"
+        assert result[1]["name"] == "petits pains (240g)"
+
+        assert result[2]["quantity"] == ""
+        assert result[2]["unit"] == ""
+        assert result[2]["name"] == "sel"
+
+        assert result[3]["quantity"] == ""
+        assert result[3]["unit"] == ""
+        assert result[3]["name"] == "poivre"
+
+        assert result[4]["quantity"] == "2"
+        assert result[4]["unit"] == "càs"
+        assert result[4]["name"] == "huile d'olive"
+
+        assert result[5]["quantity"] == "1"
+        assert result[5]["unit"] == "càs"
+        assert result[5]["name"] == "vinaigre de votre choix"
+
+
+class TestParseKitchenItem:
+    def test_parses_item_with_quantity_and_unit(self):
+        assert _parse_kitchen_item("2 càs huile d'olive") == ("2", "càs", "huile d'olive")
+
+    def test_parses_item_with_decimal_quantity(self):
+        assert _parse_kitchen_item("0,5 càc sel") == ("0.5", "càc", "sel")
+
+    def test_parses_simple_name_only(self):
+        assert _parse_kitchen_item("sel") == ("", "", "sel")
+
+    def test_parses_name_with_spaces(self):
+        assert _parse_kitchen_item("poivre noir") == ("", "", "poivre noir")
+
+    def test_handles_empty_string(self):
+        assert _parse_kitchen_item("") == ("", "", "")
+
+    def test_handles_whitespace(self):
+        assert _parse_kitchen_item("  sel  ") == ("", "", "sel")
