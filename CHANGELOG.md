@@ -1,3 +1,18 @@
+## [2.2.0](https://github.com/AntoC-dev/Recipedia/compare/v2.1.0...v2.2.0) (2025-12-12)
+
+### Features
+
+* **auth-dialog:** add password visibility toggle and reset logic ([15704af](https://github.com/AntoC-dev/Recipedia/commit/15704afe6f7e7b2788a5b1ea6f1b57acc7441207))
+* **build-test:** add Maestro CLI caching and version management ([d9c117b](https://github.com/AntoC-dev/Recipedia/commit/d9c117b7557da39c6611910e4c304ffad9bb73a9))
+* quitoque parsing ([#151](https://github.com/AntoC-dev/Recipedia/issues/151)) ([6fc2df9](https://github.com/AntoC-dev/Recipedia/commit/6fc2df90a382d8945ef2da3cf30768370ddb1d03))
+* **recipe-scraper:** add auth dialogs + enhance scraping logic ([6a21178](https://github.com/AntoC-dev/Recipedia/commit/6a21178d36cef5fc9acd36fe257386b93f3edad9))
+* **recipe-scraper:** add authentication support and improve data extraction ([88db593](https://github.com/AntoC-dev/Recipedia/commit/88db593d49f22ae5194d050bafb608c4364ac019))
+* **recipe-scraper:** add kitchen staple extraction and parsing logic ([291e97e](https://github.com/AntoC-dev/Recipedia/commit/291e97e2c971aed43f7f67a25d84b7621636f451))
+* **recipe-scraper:** add structured instruction extraction with titles ([be9dabf](https://github.com/AntoC-dev/Recipedia/commit/be9dabf4ec0e326ef23ba95fc77ced180f464fcf))
+* **recipe-scraper:** extend ingredient extraction to include staples ([14937bf](https://github.com/AntoC-dev/Recipedia/commit/14937bf8b2cab75366ef99d217e2420d3906340a))
+* **recipe-scraper:** integrate parsed instructions ([1f51301](https://github.com/AntoC-dev/Recipedia/commit/1f513016a7dce43a16b8b9c842f7a0cc654cfa6d))
+* **url-validation:** improve validation with hostname check ([7dad8da](https://github.com/AntoC-dev/Recipedia/commit/7dad8da0e68bf80e81e08974f19dc18111f1e59c))
+
 ## [2.1.0](https://github.com/AntoC-dev/Recipedia/compare/v2.0.0...v2.1.0) (2025-12-11)
 
 ### Features
