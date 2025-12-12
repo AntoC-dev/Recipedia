@@ -105,6 +105,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Scroll to preparation content input"
 
 - tapOn:
@@ -123,6 +124,7 @@ appId: "com.recipedia"
       id: "Recipe::BottomActionButton"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Scroll to validate button"
 
 - tapOn:

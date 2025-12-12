@@ -35,6 +35,14 @@ appId: "com.recipedia"
     id: "RecipeTags::RoundButton"
     label: "Tap to add tag to recipe"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeTags::List::0::CustomTextInput"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to tag input"
+
 - tapOn:
     id: "RecipeTags::List::0::CustomTextInput"
     label: "Focus on first tag input"

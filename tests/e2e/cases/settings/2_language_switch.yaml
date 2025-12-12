@@ -8,12 +8,20 @@ tags:
     label: "Setup - Launch app and wait for ready"
 
 - tapOn:
-    text: "Parameters"
+    id: "BottomTabs::Parameters"
     label: "Action - Navigate to Parameters screen"
 
+- tapOn:
+    id: "Parameters::Section::Appearance::Language::Item"
+    label: "Action - Open language settings"
+
 - runFlow:
-    file: "../../flows/parameters/language/switchToFrench.yaml"
-    label: "Action - Switch language to French"
+    file: "../../asserts/parameters/en/assertLanguageScreen.yaml"
+    label: "Assert - Verify language screen in English"
+
+- tapOn:
+    id: "LanguageSettings::Item::1"
+    label: "Action - Select French language"
 
 - runFlow:
     file: "../../asserts/parameters/fr/assertParametersScreen.yaml"
@@ -39,8 +47,16 @@ tags:
     text: "Paramètres"
     label: "Action - Navigate back to Parameters screen"
 
+- tapOn:
+    id: "Parameters::Section::Appearance::Language::Item"
+    label: "Action - Open language settings"
+
 - runFlow:
-    file: "../../flows/parameters/language/switchToEnglish.yaml"
+    file: "../../asserts/parameters/fr/assertLanguageScreen.yaml"
+    label: "Assert - Verify language screen in French"
+
+- tapOn:
+    id: "LanguageSettings::Item::0"
     label: "Cleanup - Restore language to English"
 
 - tapOn:

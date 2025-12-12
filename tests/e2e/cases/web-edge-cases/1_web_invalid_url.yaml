@@ -26,20 +26,14 @@ tags:
     id: "VerticalBottomButtons::UrlDialog::SubmitButton"
     label: "Try to import the recipe with an invalid URL"
 
-- extendedWaitUntil:
-    visible:
-      id: "VerticalBottomButtons::UrlDialog::HelperText"
-    timeout: 30000
-    label: "Wait for scraping error to appear"
-
 - assertVisible:
     id: "VerticalBottomButtons::UrlDialog::HelperText"
     label: "Assert - Error helper text is visible"
 
 - assertVisible:
     id: "VerticalBottomButtons::UrlDialog::HelperText"
-    text: "Could not extract recipe from this URL"
-    label: "Assert - Network error message is displayed"
+    text: "Please enter a valid URL"
+    label: "Assert - Invalid URL error message is displayed"
 
 - tapOn:
     id: "VerticalBottomButtons::UrlDialog::CancelButton"
