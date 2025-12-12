@@ -5,26 +5,25 @@
  * for use throughout the app. All implementation details are in the module.
  */
 
-import type {
-  ScraperErrorResult,
-  ScraperResult,
-  ScraperSuccessResult,
-} from '@app/modules/recipe-scraper';
+import type { ScraperResult, ScraperSuccessResult } from '@app/modules/recipe-scraper';
+import { ScraperErrorTypes } from '@app/modules/recipe-scraper';
 
-export { RecipeScraper, recipeScraper } from '@app/modules/recipe-scraper';
+export { RecipeScraper, recipeScraper, ScraperErrorTypes } from '@app/modules/recipe-scraper';
 
 export type {
-  ScrapedNutrients,
+  HostSupportedResult,
   IngredientGroup,
+  ParsedIngredient,
+  ParsedInstruction,
   RecipeLink,
+  ScrapeOptions,
+  ScrapedNutrients,
   ScrapedRecipe,
   ScraperError,
-  ScraperSuccessResult,
   ScraperErrorResult,
   ScraperResult,
+  ScraperSuccessResult,
   SupportedHostsResult,
-  HostSupportedResult,
-  ScrapeOptions,
 } from '@app/modules/recipe-scraper';
 
 /**
@@ -38,28 +37,22 @@ export function isScraperSuccess<T>(result: ScraperResult<T>): result is Scraper
 }
 
 /**
- * Type guard to check if a scraper result is an error.
- *
- * @param result - The scraper result to check
- * @returns True if the result contains an error, false if it contains data
- */
-export function isScraperError<T>(result: ScraperResult<T>): result is ScraperErrorResult {
-  return !result.success;
-}
-
-/**
  * Maps Python scraper error types to i18n translation keys.
  *
  * Used to display user-friendly error messages instead of raw Python exceptions.
  * Keys are Python exception class names, values are i18n keys.
  */
 export const SCRAPER_ERROR_I18N_KEYS: Record<string, string> = {
-  NoSchemaFoundInWildMode: 'urlDialog.errorNoRecipeFound',
-  WebsiteNotImplementedError: 'urlDialog.errorUnsupportedSite',
-  ConnectionError: 'urlDialog.errorNetwork',
-  HTTPError: 'urlDialog.errorNetwork',
-  URLError: 'urlDialog.errorNetwork',
-  timeout: 'urlDialog.errorTimeout',
+  [ScraperErrorTypes.NoSchemaFoundInWildMode]: 'urlDialog.errorNoRecipeFound',
+  [ScraperErrorTypes.WebsiteNotImplementedError]: 'urlDialog.errorUnsupportedSite',
+  [ScraperErrorTypes.ConnectionError]: 'urlDialog.errorNetwork',
+  [ScraperErrorTypes.HTTPError]: 'urlDialog.errorNetwork',
+  [ScraperErrorTypes.URLError]: 'urlDialog.errorNetwork',
+  [ScraperErrorTypes.Timeout]: 'urlDialog.errorTimeout',
+  [ScraperErrorTypes.AuthenticationRequired]: 'urlDialog.errorAuthRequired',
+  [ScraperErrorTypes.AuthenticationFailed]: 'urlDialog.errorAuthFailed',
+  [ScraperErrorTypes.UnsupportedAuthSite]: 'urlDialog.errorUnsupportedAuth',
+  [ScraperErrorTypes.UnsupportedPlatform]: 'urlDialog.errorUnsupportedPlatform',
 };
 
 /** Default i18n key used when error type is not in SCRAPER_ERROR_I18N_KEYS. */

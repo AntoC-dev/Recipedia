@@ -8,7 +8,8 @@
  * Validates URL format.
  *
  * Accepts URLs with or without protocol. URLs without protocol
- * are tested with https:// prefix.
+ * are tested with https:// prefix. Requires a valid hostname with
+ * at least one dot (e.g., example.com).
  *
  * @param url - URL string to validate
  * @returns true if URL is valid
@@ -27,7 +28,10 @@ export function isValidUrl(url: string): boolean {
   }
 
   try {
-    new URL(urlToTest);
+    const parsed = new URL(urlToTest);
+    if (!parsed.hostname.includes('.')) {
+      return false;
+    }
     return true;
   } catch {
     return false;

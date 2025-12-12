@@ -11,9 +11,24 @@ Requires: recipe-scrapers[online]>=15.0.0
 """
 
 import json
+import re
 from typing import Any, Optional, List, Dict
+from urllib.parse import urlparse
 
+import requests
 from recipe_scrapers import scrape_html, SCRAPERS
+
+
+AUTH_URL_PATTERNS = ['/login', '/signin', '/sign-in', '/auth', '/connexion', '/account/login', '/user/login']
+AUTH_TITLE_KEYWORDS = ['login', 'sign in', 'connexion', 'se connecter', 'log in', 'anmelden', 'iniciar sesión']
+
+
+class AuthenticationRequiredError(Exception):
+    """Raised when a recipe page requires authentication."""
+    def __init__(self, host: str, message: str = "This recipe requires authentication"):
+        self.host = host
+        self.message = message
+        super().__init__(message)
 
 
 def scrape_recipe(url: str, wild_mode: bool = True) -> str:
@@ -21,6 +36,7 @@ def scrape_recipe(url: str, wild_mode: bool = True) -> str:
     Scrape a recipe from URL, returning all available data.
 
     Uses scrape_html with online=True to fetch and parse the recipe.
+    Detects authentication-protected pages and returns specific error.
 
     Args:
         url: Recipe page URL to scrape.
@@ -30,10 +46,22 @@ def scrape_recipe(url: str, wild_mode: bool = True) -> str:
         JSON string with success/error result containing all recipe data.
     """
     try:
-        scraper = scrape_html(html=None, org_url=url, online=True, supported_only=not wild_mode)
+        response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, allow_redirects=True, timeout=30)
+        response.raise_for_status()
+
+        auth_error = _detect_auth_required(response.text, response.url, url)
+        if auth_error:
+            raise auth_error
+
+        scraper = scrape_html(html=response.text, org_url=url, supported_only=not wild_mode)
         return json.dumps({
             "success": True,
             "data": _extract_all_data(scraper)
+        }, ensure_ascii=False)
+    except AuthenticationRequiredError as e:
+        return json.dumps({
+            "success": False,
+            "error": {"type": "AuthenticationRequired", "message": e.message, "host": e.host}
         }, ensure_ascii=False)
     except Exception as e:
         return json.dumps({
@@ -42,7 +70,7 @@ def scrape_recipe(url: str, wild_mode: bool = True) -> str:
         }, ensure_ascii=False)
 
 
-def scrape_recipe_from_html(html: str, url: str, wild_mode: bool = True) -> str:
+def scrape_recipe_from_html(html: str, url: str, wild_mode: bool = True, final_url: Optional[str] = None) -> str:
     """
     Scrape a recipe from HTML content.
 
@@ -50,15 +78,25 @@ def scrape_recipe_from_html(html: str, url: str, wild_mode: bool = True) -> str:
         html: HTML content of the recipe page.
         url: Original URL (used for host detection).
         wild_mode: If True, attempt to scrape using schema.org.
+        final_url: The final URL after redirects (for auth detection).
 
     Returns:
         JSON string with success/error result containing all recipe data.
     """
     try:
+        auth_error = _detect_auth_required(html, final_url or url, url)
+        if auth_error:
+            raise auth_error
+
         scraper = scrape_html(html=html, org_url=url, supported_only=not wild_mode)
         return json.dumps({
             "success": True,
             "data": _extract_all_data(scraper)
+        }, ensure_ascii=False)
+    except AuthenticationRequiredError as e:
+        return json.dumps({
+            "success": False,
+            "error": {"type": "AuthenticationRequired", "message": e.message, "host": e.host}
         }, ensure_ascii=False)
     except Exception as e:
         return json.dumps({
@@ -132,14 +170,23 @@ def _extract_all_data(scraper) -> Dict[str, Any]:
     description = _clean_description(description, ingredients)
     keywords = _clean_keywords(keywords, ingredients, title)
 
+    # Try to extract structured ingredients from HTML
+    parsed_ingredients = _extract_structured_ingredients(scraper.soup)
+
+    # Try to extract structured instructions with titles from HTML
+    instructions_list = _safe_call(scraper.instructions_list)
+    parsed_instructions = _extract_structured_instructions(scraper.soup, instructions_list or [])
+
     return {
         # Core recipe data
         "title": title,
         "description": description,
         "ingredients": ingredients,
+        "parsedIngredients": parsed_ingredients,
         "ingredientGroups": _safe_call_ingredient_groups(scraper),
         "instructions": _safe_call(scraper.instructions),
-        "instructionsList": _safe_call(scraper.instructions_list),
+        "instructionsList": instructions_list,
+        "parsedInstructions": parsed_instructions,
 
         # Timing (use numeric call to preserve 0 as valid)
         "totalTime": _safe_call_numeric(scraper.total_time),
@@ -171,7 +218,7 @@ def _extract_all_data(scraper) -> Dict[str, Any]:
         "ratingsCount": _safe_call_numeric(scraper.ratings_count),
 
         # Additional data
-        "nutrients": _safe_call(scraper.nutrients),
+        "nutrients": _infer_serving_size_from_html(scraper.soup, _safe_call(scraper.nutrients)),
         "equipment": _safe_call(scraper.equipment),
         "links": _safe_call(scraper.links),
     }
@@ -389,3 +436,356 @@ def _clean_keywords(
         cleaned.append(kw)
 
     return cleaned if cleaned else None
+
+
+def _infer_serving_size_from_html(soup, nutrients: Optional[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+    """
+    Infer serving size when missing by finding per-100g nutrition in HTML.
+
+    Some sites display both per-portion and per-100g nutrition values.
+    By comparing them, we can calculate the portion weight.
+    """
+    if not nutrients:
+        return nutrients
+
+    if nutrients.get('servingSize'):
+        return nutrients
+
+    per_portion_str = nutrients.get('calories', '')
+    per_portion = _extract_numeric_value(per_portion_str)
+    if not per_portion:
+        return nutrients
+
+    per_100g_kcal = _find_per_100g_calories(soup)
+    if not per_100g_kcal or per_100g_kcal <= 0:
+        return nutrients
+
+    serving_size = round((per_portion / per_100g_kcal) * 100)
+    if serving_size > 0:
+        nutrients['servingSize'] = f"{serving_size}g"
+
+    return nutrients
+
+
+def _find_per_100g_calories(soup) -> float:
+    """
+    Search HTML for per-100g calorie value.
+
+    Looks for common patterns:
+    - Tab/section with "100g" in id or text
+    - Labels like "Énergie", "Calories", "kcal" near "100g"
+    """
+    for tab_id in ['quantity', '100g', 'per100g']:
+        tab = soup.find(id=tab_id)
+        if tab:
+            kcal = _extract_kcal_from_section(tab)
+            if kcal:
+                return kcal
+
+    for marker in soup.find_all(string=lambda t: t and '100g' in t.lower()):
+        parent = marker.find_parent(['div', 'section', 'table', 'ul'])
+        if parent:
+            kcal = _extract_kcal_from_section(parent)
+            if kcal:
+                return kcal
+
+    return 0
+
+
+def _extract_kcal_from_section(section) -> float:
+    """Extract kcal value from a nutrition section."""
+    for label_text in ['Énergie (kCal)', 'Énergie (kcal)', 'Calories', 'kcal', 'kCal']:
+        label = section.find(string=lambda t: t and label_text in t)
+        if label:
+            parent = label.find_parent()
+            if parent:
+                value_elem = parent.find_next_sibling()
+                if value_elem:
+                    return _extract_numeric_value(value_elem.get_text())
+    return 0
+
+
+def _extract_numeric_value(text: str) -> float:
+    """Extract first number from string like '876kCal' -> 876"""
+    if not text:
+        return 0
+    text = text.replace(',', '.').replace(' ', '')
+    match = re.search(r'[\d.]+', text)
+    return float(match.group()) if match else 0
+
+
+def _extract_structured_ingredients(soup) -> Optional[List[Dict[str, str]]]:
+    """
+    Try to extract structured ingredients from well-formatted HTML.
+
+    Includes both main ingredients and kitchen staples (Dans votre cuisine).
+
+    Returns list of {quantity, unit, name} dicts if structure detected,
+    None otherwise (caller should use raw strings).
+    """
+    ing_list = soup.find('ul', class_='ingredient-list')
+    if not ing_list:
+        return None
+
+    results = []
+
+    # Extract main ingredients (with quantity/unit in first span)
+    for li in ing_list.find_all('li', recursive=False):
+        spans = li.find_all('span', recursive=False)
+        if len(spans) >= 2:
+            qty_unit = spans[0].get_text(strip=True)
+            # Use separator to handle nested spans (e.g., "miel" + badge "Bio")
+            name = spans[1].get_text(separator=' ', strip=True)
+
+            quantity, unit = _split_quantity_unit(qty_unit)
+            results.append({
+                'quantity': quantity,
+                'unit': unit,
+                'name': _clean_ingredient_name(name)
+            })
+        else:
+            return None
+
+    # Extract kitchen staples (Dans votre cuisine)
+    kitchen_list = soup.find('ul', class_='kitchen-list')
+    if kitchen_list:
+        for li in kitchen_list.find_all('li', recursive=False):
+            text = li.get_text(strip=True)
+            if text:
+                quantity, unit, name = _parse_kitchen_item(text)
+                results.append({
+                    'quantity': quantity,
+                    'unit': unit,
+                    'name': name
+                })
+
+    return results if results else None
+
+
+def _parse_kitchen_item(text: str) -> tuple:
+    """
+    Parse kitchen staple items like "2 càs huile d'olive" or "sel".
+
+    Returns (quantity, unit, name) tuple.
+    """
+    text = text.strip()
+
+    # Try to extract quantity and unit from start
+    match = re.match(r'^([\d.,/]+)\s*(\S+)\s+(.+)$', text)
+    if match:
+        quantity = match.group(1).replace(',', '.')
+        unit = match.group(2)
+        name = _clean_ingredient_name(match.group(3))
+        return (quantity, unit, name)
+
+    # No quantity - just a name like "sel" or "poivre"
+    return ('', '', _clean_ingredient_name(text))
+
+
+def _extract_structured_instructions(soup, instructions_list: List[str]) -> Optional[List[Dict[str, Any]]]:
+    """
+    Extract structured instructions with step titles from HTML.
+
+    Looks for common patterns where recipe steps are grouped with titles.
+    Only returns data when meaningful structure is found (grouped steps with titles).
+    Returns None if no structure found - the converter will use instructionsList directly.
+    """
+    # Common container IDs and classes for recipe instructions
+    container_ids = ['preparation-steps', 'recipe-steps', 'instructions', 'method', 'directions']
+    container_classes = ['recipe-steps', 'instructions', 'method', 'directions', 'preparation']
+
+    # Try to find a container with step groups
+    container = None
+    for container_id in container_ids:
+        container = soup.find('div', id=container_id)
+        if container:
+            break
+
+    if not container:
+        for container_class in container_classes:
+            container = soup.find('div', class_=container_class)
+            if container:
+                break
+
+    if not container:
+        return None
+
+    # Look for step groups: divs containing a title element and instruction list
+    results = []
+    # Exact class names that indicate a step container
+    step_classes = {'step', 'toggle', 'instruction', 'etape', 'step-instructions'}
+
+    def is_step_container(tag):
+        if tag.name != 'div':
+            return False
+        classes = set(cls.lower() for cls in tag.get('class', []))
+        return bool(classes & step_classes)
+
+    for step_div in container.find_all(is_step_container):
+        title = _extract_step_title(step_div)
+        instructions = _extract_step_instructions(step_div)
+
+        if instructions:
+            results.append({"title": title, "instructions": instructions})
+
+    return results if results else None
+
+
+def _extract_step_title(step_div) -> Optional[str]:
+    """
+    Extract step title from a step container.
+
+    Looks for common title patterns: bold paragraphs, headings, etc.
+    Removes leading numbers like "1. " or "Étape 1:".
+    """
+    # Try common title patterns
+    title_elem = (
+        step_div.find('p', class_='bold') or
+        step_div.find('strong') or
+        step_div.find(['h2', 'h3', 'h4', 'h5', 'h6'])
+    )
+
+    if not title_elem:
+        return None
+
+    title = title_elem.get_text(strip=True)
+    # Remove leading patterns like "1. ", "Étape 1:", "Step 2 -"
+    title = re.sub(r'^(\d+[\.\:\-\s]+|[Éé]tape\s*\d*[\.\:\-\s]*|Step\s*\d*[\.\:\-\s]*)', '', title, flags=re.IGNORECASE)
+    title = title.strip()
+
+    return title if title else None
+
+
+def _extract_step_instructions(step_div) -> List[str]:
+    """Extract instruction texts from list items within a step container."""
+    instructions = []
+    for li in step_div.find_all('li'):
+        text = li.get_text(strip=True)
+        if text:
+            instructions.append(text)
+    return instructions
+
+
+def _split_quantity_unit(text: str) -> tuple:
+    """
+    Split quantity and unit from combined string.
+
+    Examples:
+        "375 g" → ("375", "g")
+        "3x" → ("3", "x")
+        "0.25" → ("0.25", "")
+        "20 ml" → ("20", "ml")
+    """
+    text = text.strip()
+    if not text:
+        return ('', '')
+
+    match = re.match(r'^([\d.,/]+)\s*(.*)$', text)
+    if match:
+        quantity = match.group(1).replace(',', '.')
+        unit = match.group(2).strip()
+        return (quantity, unit)
+
+    return ('', text)
+
+
+def _clean_ingredient_name(name: str) -> str:
+    """
+    Clean ingredient name by removing extra whitespace and normalizing.
+
+    Preserves parenthetical content as it may contain useful info (e.g., "240g").
+    """
+    name = name.replace('\xa0', ' ')
+    name = ' '.join(name.split())
+    return name.strip()
+
+
+def _detect_auth_required(html: str, final_url: str, original_url: str) -> Optional[AuthenticationRequiredError]:
+    """
+    Detect if a page requires authentication.
+
+    Checks for:
+    1. Redirect to login URL
+    2. Login keywords in page title
+    """
+    original_parsed = urlparse(original_url)
+    final_parsed = urlparse(final_url)
+    host = original_parsed.netloc.replace('www.', '')
+
+    final_path = final_parsed.path.lower()
+    for pattern in AUTH_URL_PATTERNS:
+        if pattern in final_path:
+            return AuthenticationRequiredError(host)
+
+    title_match = re.search(r'<title[^>]*>([^<]+)</title>', html, re.IGNORECASE)
+    if title_match:
+        title = title_match.group(1).lower()
+        for keyword in AUTH_TITLE_KEYWORDS:
+            if keyword in title:
+                return AuthenticationRequiredError(host)
+
+    return None
+
+
+def scrape_recipe_authenticated(url: str, username: str, password: str, wild_mode: bool = True) -> str:
+    """
+    Scrape a recipe from an authentication-protected URL.
+
+    Logs into the site using provided credentials and scrapes the recipe.
+
+    Args:
+        url: Recipe page URL to scrape.
+        username: Username/email for authentication.
+        password: Password for authentication.
+        wild_mode: If True, attempt to scrape unsupported sites using schema.org.
+
+    Returns:
+        JSON string with success/error result containing all recipe data.
+    """
+    try:
+        parsed = urlparse(url)
+        host = parsed.netloc.replace('www.', '')
+
+        handler = _get_login_handler(host)
+        if not handler:
+            return json.dumps({
+                "success": False,
+                "error": {
+                    "type": "UnsupportedAuthSite",
+                    "message": f"Authentication not supported for {host}",
+                    "host": host
+                }
+            }, ensure_ascii=False)
+
+        session = requests.Session()
+        session.headers.update({'User-Agent': 'Mozilla/5.0'})
+
+        if not handler.login(session, username, password):
+            return json.dumps({
+                "success": False,
+                "error": {
+                    "type": "AuthenticationFailed",
+                    "message": "Login failed. Please check your credentials.",
+                    "host": host
+                }
+            }, ensure_ascii=False)
+
+        response = session.get(url, allow_redirects=True, timeout=30)
+        response.raise_for_status()
+
+        scraper = scrape_html(html=response.text, org_url=url, supported_only=not wild_mode)
+        return json.dumps({
+            "success": True,
+            "data": _extract_all_data(scraper)
+        }, ensure_ascii=False)
+    except Exception as e:
+        return json.dumps({
+            "success": False,
+            "error": {"type": type(e).__name__, "message": str(e)}
+        }, ensure_ascii=False)
+
+
+def _get_login_handler(host: str):
+    """Get the login handler for a specific host."""
+    from . import auth
+    return auth.get_handler(host)

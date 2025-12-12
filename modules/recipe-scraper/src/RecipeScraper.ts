@@ -28,6 +28,13 @@ type ScraperInterface = {
     getSupportedHosts(): Promise<string>;
     isHostSupported(host: string): Promise<string>;
     isAvailable(): Promise<boolean>;
+    scrapeRecipeAuthenticated?(
+        url: string,
+        username: string,
+        password: string,
+        wildMode?: boolean
+    ): Promise<string>;
+    getSupportedAuthHosts?(): Promise<string>;
 };
 
 const isTestEnv = process.env.NODE_ENV === 'test';
@@ -167,6 +174,68 @@ export class RecipeScraper {
     async isHostSupported(host: string): Promise<HostSupportedResult> {
         try {
             const json = await scraper.isHostSupported(host);
+            return JSON.parse(json);
+        } catch (error) {
+            return this.exceptionError(error);
+        }
+    }
+
+    /**
+     * Scrapes a recipe from an authentication-protected URL.
+     *
+     * Logs into the site using provided credentials and scrapes the recipe.
+     * Only available on Android. Returns an error on other platforms.
+     *
+     * @param url - The recipe page URL to scrape.
+     * @param username - Username/email for authentication.
+     * @param password - Password for authentication.
+     * @param options - Optional scraping options.
+     * @returns A result object with either the scraped recipe data or an error.
+     */
+    async scrapeRecipeAuthenticated(
+        url: string,
+        username: string,
+        password: string,
+        options?: ScrapeOptions
+    ): Promise<ScraperResult> {
+        if (!scraper.scrapeRecipeAuthenticated) {
+            return {
+                success: false,
+                error: {
+                    type: 'UnsupportedPlatform',
+                    message: 'Authenticated scraping is only available on Android',
+                },
+            };
+        }
+        try {
+            const json = await scraper.scrapeRecipeAuthenticated(
+                url,
+                username,
+                password,
+                options?.wildMode ?? true
+            );
+            return JSON.parse(json);
+        } catch (error) {
+            return this.exceptionError(error);
+        }
+    }
+
+    /**
+     * Gets a list of hosts that support authentication.
+     *
+     * Only available on Android. Returns an empty array on other platforms.
+     *
+     * @returns A result object with an array of host domains supporting auth.
+     */
+    async getSupportedAuthHosts(): Promise<SupportedHostsResult> {
+        if (!scraper.getSupportedAuthHosts) {
+            return {
+                success: true,
+                data: [],
+            };
+        }
+        try {
+            const json = await scraper.getSupportedAuthHosts();
             return JSON.parse(json);
         } catch (error) {
             return this.exceptionError(error);

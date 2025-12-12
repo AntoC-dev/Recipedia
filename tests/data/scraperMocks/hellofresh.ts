@@ -20,6 +20,7 @@ export const hellofreshKeftasRecipe: ScrapedRecipe = {
     '200 ml Bouillon de bœuf',
     'selon le goût Poivre et sel',
   ],
+  parsedIngredients: null,
   ingredientGroups: [
     {
       purpose: null,
@@ -51,6 +52,7 @@ export const hellofreshKeftasRecipe: ScrapedRecipe = {
     "Retirez le bouillon du feu et ajoutez-y la semoule. Mélangez. Couvrez et laissez reposer jusqu'à ce qu'elle gonfle et que toute l'eau ait été absorbée. Égrainez la semoule avec une fourchette, et assaisonnez-la avec le jus de cuisson des keftas, quelques gouttes de jus de citron (selon votre goût), le reste de la menthe, du sel et du poivre. Dans un petit bol, mélangez le yaourt avec quelques gouttes de jus de citron et une pincée de zestes (selon votre goût), du sel, du poivre, un filet d'huile d'olive (si vous ne comptez pas les calories) et un petit filet d'eau.",
     'Servez la semoule dans des assiettes creuses. Ajoutez les légumes par-dessus, puis les keftas. Arrosez le tout de sauce. LE SAVIEZ-VOUS ? Votre plat contient de la vitamine A, une vitamine qui contribue au métabolisme normal du fer.',
   ],
+  parsedInstructions: null,
   totalTime: 70,
   prepTime: 40,
   cookTime: 30,

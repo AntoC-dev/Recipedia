@@ -12,6 +12,7 @@ import {
 } from '@utils/RecipeScraperConverter';
 import { hellofreshKeftasRecipe } from '@test-data/scraperMocks/hellofresh';
 import { marmitonHamburgerRecipe } from '@test-data/scraperMocks/marmiton';
+import { quitoqueCamembertRecipe } from '@test-data/scraperMocks/quitoque';
 import { createEmptyScrapedRecipe } from '@mocks/modules/recipe-scraper-mock';
 
 describe('RecipeScraperConverter', () => {
@@ -20,16 +21,10 @@ describe('RecipeScraperConverter', () => {
     exactMatches: ['sel', 'poivre', 'sel et poivre', 'poivre et sel', 'salt', 'pepper'],
   };
   const defaultPersons = 4;
-  const getStepTitle = (index: number) => `Step ${index + 1}`;
 
   describe('HelloFresh', () => {
     it('converts complete recipe', () => {
-      const result = convertScrapedRecipe(
-        hellofreshKeftasRecipe,
-        ignoredPatterns,
-        defaultPersons,
-        getStepTitle
-      );
+      const result = convertScrapedRecipe(hellofreshKeftasRecipe, ignoredPatterns, defaultPersons);
 
       expect(result.title).toBe(hellofreshKeftasRecipe.title);
       expect(result.description).toBe(hellofreshKeftasRecipe.description);
@@ -44,7 +39,7 @@ describe('RecipeScraperConverter', () => {
     });
 
     it('parses French ingredients with units', () => {
-      const result = convertIngredients(hellofreshKeftasRecipe.ingredients, ignoredPatterns);
+      const result = convertIngredients(hellofreshKeftasRecipe.ingredients, null, ignoredPatterns);
 
       const semoule = result.ingredients.find(i => i.name === 'Semoule');
       expect(semoule?.quantity).toBe('150');
@@ -56,7 +51,7 @@ describe('RecipeScraperConverter', () => {
     });
 
     it('skips "selon le goût" prefixed ingredients', () => {
-      const result = convertIngredients(hellofreshKeftasRecipe.ingredients, ignoredPatterns);
+      const result = convertIngredients(hellofreshKeftasRecipe.ingredients, null, ignoredPatterns);
       expect(result.skipped).toContain('selon le goût Poivre et sel');
     });
 
@@ -74,11 +69,11 @@ describe('RecipeScraperConverter', () => {
       const steps = convertPreparation(
         hellofreshKeftasRecipe.instructions ?? '',
         hellofreshKeftasRecipe.instructionsList,
-        getStepTitle
+        hellofreshKeftasRecipe.parsedInstructions
       );
 
       expect(steps).toHaveLength(6);
-      expect(steps[0].title).toBe('Step 1');
+      expect(steps[0].title).toBe('');
       expect(steps[0].description).toContain('carotte');
     });
 
@@ -91,12 +86,7 @@ describe('RecipeScraperConverter', () => {
     });
 
     it('includes skipped ingredients in result', () => {
-      const result = convertScrapedRecipe(
-        hellofreshKeftasRecipe,
-        ignoredPatterns,
-        defaultPersons,
-        getStepTitle
-      );
+      const result = convertScrapedRecipe(hellofreshKeftasRecipe, ignoredPatterns, defaultPersons);
 
       expect(result.skippedIngredients).toBeDefined();
       expect(result.skippedIngredients).toContain('selon le goût Poivre et sel');
@@ -105,12 +95,7 @@ describe('RecipeScraperConverter', () => {
 
   describe('Marmiton', () => {
     it('converts complete recipe', () => {
-      const result = convertScrapedRecipe(
-        marmitonHamburgerRecipe,
-        ignoredPatterns,
-        defaultPersons,
-        getStepTitle
-      );
+      const result = convertScrapedRecipe(marmitonHamburgerRecipe, ignoredPatterns, defaultPersons);
 
       expect(result.title).toBe('Hamburger maison');
       expect(result.description).toBe('');
@@ -124,7 +109,7 @@ describe('RecipeScraperConverter', () => {
     });
 
     it('parses French ingredients without quantities', () => {
-      const result = convertIngredients(marmitonHamburgerRecipe.ingredients, ignoredPatterns);
+      const result = convertIngredients(marmitonHamburgerRecipe.ingredients, null, ignoredPatterns);
 
       expect(result.ingredients).toHaveLength(8);
       expect(result.skipped).toHaveLength(0);
@@ -155,11 +140,11 @@ describe('RecipeScraperConverter', () => {
       const steps = convertPreparation(
         marmitonHamburgerRecipe.instructions ?? '',
         marmitonHamburgerRecipe.instructionsList,
-        getStepTitle
+        marmitonHamburgerRecipe.parsedInstructions
       );
 
       expect(steps).toHaveLength(6);
-      expect(steps[0].title).toBe('Step 1');
+      expect(steps[0].title).toBe('');
       expect(steps[0].description).toContain('oignons');
       expect(steps[5].description).toContain('ketchup et moutarde');
     });
@@ -168,6 +153,85 @@ describe('RecipeScraperConverter', () => {
       const nutrition = convertNutrition(marmitonHamburgerRecipe.nutrients!);
 
       expect(nutrition).toBeUndefined();
+    });
+  });
+
+  describe('Quitoque', () => {
+    it('converts complete recipe', () => {
+      const result = convertScrapedRecipe(quitoqueCamembertRecipe, ignoredPatterns, defaultPersons);
+
+      expect(result.title).toBe('Camembert rôti au miel et mouillettes aux épices');
+      expect(result.description).toContain('camembert');
+      expect(result.image_Source).toContain('quitoque.fr');
+      expect(result.persons).toBe(2);
+      expect(result.time).toBe(20);
+      expect(result.ingredients).toHaveLength(8);
+      expect(result.preparation).toHaveLength(2);
+      expect(result.nutrition).toBeDefined();
+      expect(result.tags).toHaveLength(5);
+    });
+
+    it('parses French ingredients with metric units', () => {
+      const result = convertIngredients(quitoqueCamembertRecipe.ingredients, null, ignoredPatterns);
+
+      const camembert = result.ingredients.find(i => i.name?.includes('camembert'));
+      expect(camembert?.quantity).toBe('250');
+      expect(camembert?.unit).toBe('g');
+
+      const miel = result.ingredients.find(i => i.name?.includes('miel'));
+      expect(miel?.quantity).toBe('20');
+      expect(miel?.unit).toBe('ml');
+    });
+
+    it('skips exact match ingredients sel and poivre', () => {
+      const result = convertIngredients(quitoqueCamembertRecipe.ingredients, null, ignoredPatterns);
+
+      expect(result.skipped).toContain('sel');
+      expect(result.skipped).toContain('poivre');
+      expect(result.ingredients).toHaveLength(8);
+    });
+
+    it('extracts 5 tags from keywords', () => {
+      const tags = convertTags(
+        quitoqueCamembertRecipe.keywords ?? [],
+        quitoqueCamembertRecipe.dietaryRestrictions ?? []
+      );
+
+      expect(tags).toHaveLength(5);
+      expect(tags.map(t => t.name)).toContain('Gourmand');
+      expect(tags.map(t => t.name)).toContain('Express');
+      expect(tags.map(t => t.name)).toContain('Végétarien');
+      expect(tags.map(t => t.name)).toContain('Noël');
+      expect(tags.map(t => t.name)).toContain('Protéiné');
+    });
+
+    it('converts 2 instruction groups from parsedInstructions with titles', () => {
+      const steps = convertPreparation(
+        quitoqueCamembertRecipe.instructions ?? '',
+        quitoqueCamembertRecipe.instructionsList,
+        quitoqueCamembertRecipe.parsedInstructions
+      );
+
+      expect(steps).toHaveLength(2);
+      expect(steps[0].title).toBe('Le camembert rôti');
+      expect(steps[0].description).toContain('200°C');
+      expect(steps[1].title).toBe('Les mouillettes');
+      expect(steps[1].description).toContain('mouillettes');
+      expect(steps[1].description).toContain('salade');
+    });
+
+    it('converts nutrition per-serving to per-100g', () => {
+      const nutrition = convertNutrition(quitoqueCamembertRecipe.nutrients!);
+
+      expect(nutrition).toBeDefined();
+      expect(nutrition!.portionWeight).toBe(290);
+      expect(nutrition!.energyKcal).toBeCloseTo(304.1, 0);
+      expect(nutrition!.fat).toBeCloseTo(11.2, 0);
+      expect(nutrition!.saturatedFat).toBeCloseTo(7.6, 0);
+      expect(nutrition!.carbohydrates).toBeCloseTo(18.6, 0);
+      expect(nutrition!.sugars).toBeCloseTo(6.8, 0);
+      expect(nutrition!.fiber).toBeCloseTo(4.0, 0);
+      expect(nutrition!.protein).toBeCloseTo(11.0, 0);
     });
   });
 
@@ -376,6 +440,7 @@ describe('RecipeScraperConverter', () => {
     it('converts array of ingredient strings', () => {
       const result = convertIngredients(
         ['150 g Semoule', '1 pièce(s) Carotte', 'Tomato'],
+        null,
         ignoredPatterns
       );
 
@@ -390,6 +455,7 @@ describe('RecipeScraperConverter', () => {
     it('separates skipped ingredients from parsed ones', () => {
       const result = convertIngredients(
         ['150 g Flour', 'selon le goût Sel', '2 cups Sugar', 'to taste Pepper'],
+        null,
         ignoredPatterns
       );
 
@@ -506,17 +572,17 @@ describe('RecipeScraperConverter', () => {
       const steps = convertPreparation(
         'This should be ignored',
         ['First step', 'Second step', 'Third step'],
-        getStepTitle
+        null
       );
 
       expect(steps).toHaveLength(3);
-      expect(steps[0].title).toBe('Step 1');
+      expect(steps[0].title).toBe('');
       expect(steps[0].description).toBe('First step');
       expect(steps[1].description).toBe('Second step');
     });
 
     it('falls back to instructions string when instructionsList is empty', () => {
-      const steps = convertPreparation('1. First step\n2. Second step', [], getStepTitle);
+      const steps = convertPreparation('1. First step\n2. Second step', [], null);
 
       expect(steps).toHaveLength(2);
       expect(steps[0].description).toBe('First step');
@@ -524,7 +590,7 @@ describe('RecipeScraperConverter', () => {
     });
 
     it('falls back to instructions string when instructionsList is null', () => {
-      const steps = convertPreparation('Step one\nStep two', null, getStepTitle);
+      const steps = convertPreparation('Step one\nStep two', null, null);
 
       expect(steps).toHaveLength(2);
     });
@@ -533,7 +599,7 @@ describe('RecipeScraperConverter', () => {
       const steps = convertPreparation(
         '1. Mix ingredients\n2. Bake for 30 min\n3. Serve',
         null,
-        getStepTitle
+        null
       );
 
       expect(steps[0].description).toBe('Mix ingredients');
@@ -542,15 +608,43 @@ describe('RecipeScraperConverter', () => {
     });
 
     it('filters out empty lines', () => {
-      const steps = convertPreparation('Step one\n\n\nStep two', null, getStepTitle);
+      const steps = convertPreparation('Step one\n\n\nStep two', null, null);
 
       expect(steps).toHaveLength(2);
     });
 
     it('trims whitespace from instructionsList items', () => {
-      const steps = convertPreparation('', ['  Step with spaces  '], getStepTitle);
+      const steps = convertPreparation('', ['  Step with spaces  '], null);
 
       expect(steps[0].description).toBe('Step with spaces');
+    });
+
+    it('groups parsedInstructions by title and joins descriptions', () => {
+      const parsedInstructions = [
+        { title: 'Le camembert rôti', instructions: ['Préchauffez le four', 'Enfournez'] },
+        { title: 'Les mouillettes', instructions: ['Coupez le pain', 'Tartinez'] },
+      ];
+      const steps = convertPreparation('', null, parsedInstructions);
+
+      expect(steps).toHaveLength(2);
+      expect(steps[0].title).toBe('Le camembert rôti');
+      expect(steps[0].description).toBe('Préchauffez le four\nEnfournez');
+      expect(steps[1].title).toBe('Les mouillettes');
+      expect(steps[1].description).toBe('Coupez le pain\nTartinez');
+    });
+
+    it('uses empty string for parsedInstructions without titles', () => {
+      const parsedInstructions = [
+        { title: null, instructions: ['Step one', 'Step two'] },
+        { title: null, instructions: ['Step three'] },
+      ];
+      const steps = convertPreparation('', null, parsedInstructions);
+
+      expect(steps).toHaveLength(2);
+      expect(steps[0].title).toBe('');
+      expect(steps[0].description).toBe('Step one\nStep two');
+      expect(steps[1].title).toBe('');
+      expect(steps[1].description).toBe('Step three');
     });
   });
 
@@ -564,21 +658,20 @@ describe('RecipeScraperConverter', () => {
       expect(nutrition).toBeUndefined();
     });
 
-    it('uses default portion weight (100g) when servingSize is missing', () => {
+    it('returns undefined when servingSize is missing', () => {
       const nutrition = convertNutrition({
         calories: '200 kcal',
         fatContent: '10 g',
       });
 
-      expect(nutrition!.portionWeight).toBe(100);
-      expect(nutrition!.energyKcal).toBe(200);
-      expect(nutrition!.fat).toBe(10);
+      expect(nutrition).toBeUndefined();
     });
 
     it('converts sodium from mg to g when value is high (> 10)', () => {
       const nutrition = convertNutrition({
         calories: '200 kcal',
         sodiumContent: '500 mg',
+        servingSize: '100 g',
       });
 
       expect(nutrition!.salt).toBe(0.5);
@@ -588,6 +681,7 @@ describe('RecipeScraperConverter', () => {
       const nutrition = convertNutrition({
         calories: '200 kcal',
         sodiumContent: '2 g',
+        servingSize: '100 g',
       });
 
       expect(nutrition!.salt).toBe(2);
@@ -596,6 +690,7 @@ describe('RecipeScraperConverter', () => {
     it('calculates energyKj from energyKcal', () => {
       const nutrition = convertNutrition({
         calories: '100 kcal',
+        servingSize: '100 g',
       });
 
       expect(nutrition!.energyKj).toBeCloseTo(418, 0);
@@ -610,6 +705,7 @@ describe('RecipeScraperConverter', () => {
         sugarContent: '10 g',
         fiberContent: '3 g',
         proteinContent: '8 g',
+        servingSize: '100 g',
       });
 
       expect(nutrition!.fat).toBe(15);
@@ -646,8 +742,7 @@ describe('RecipeScraperConverter', () => {
           prefixes: [],
           exactMatches: [],
         },
-        defaultPersons,
-        getStepTitle
+        defaultPersons
       );
 
       expect(result.time).toBe(60);
@@ -665,8 +760,7 @@ describe('RecipeScraperConverter', () => {
           prefixes: [],
           exactMatches: [],
         },
-        defaultPersons,
-        getStepTitle
+        defaultPersons
       );
 
       expect(result.time).toBe(30);
@@ -683,8 +777,7 @@ describe('RecipeScraperConverter', () => {
           prefixes: [],
           exactMatches: [],
         },
-        defaultPersons,
-        getStepTitle
+        defaultPersons
       );
 
       expect(result.persons).toBe(4);
@@ -706,8 +799,7 @@ describe('RecipeScraperConverter', () => {
           prefixes: [],
           exactMatches: [],
         },
-        defaultPersons,
-        getStepTitle
+        defaultPersons
       );
 
       expect(result.title).toBe('Simple Recipe');

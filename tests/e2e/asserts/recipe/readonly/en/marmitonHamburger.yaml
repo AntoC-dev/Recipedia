@@ -141,8 +141,8 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
-    text: "1) Step 1"
-    label: "First preparation title is displayed"
+    text: "1) "
+    label: "First preparation title is displayed (empty title)"
 
 - scrollUntilVisible:
     element:
@@ -159,16 +159,120 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
+      id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to second preparation section"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
+    text: "2) "
+    label: "Second preparation title is displayed (empty title)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::1::SectionParagraph"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to second preparation paragraph"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::1::SectionParagraph"
+    text: "Ajouter les steaks."
+    label: "Second preparation paragraph is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to third preparation section"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"
+    text: "3) "
+    label: "Third preparation title is displayed (empty title)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::2::SectionParagraph"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to third preparation paragraph"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::2::SectionParagraph"
+    text: "Une fois saisi, poser une tranche de cheddar sur le steak et laisser fondre."
+    label: "Third preparation paragraph is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::3::SectionTitle"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to fourth preparation section"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::3::SectionTitle"
+    text: "4) "
+    label: "Fourth preparation title is displayed (empty title)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::3::SectionParagraph"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to fourth preparation paragraph"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::3::SectionParagraph"
+    text: "Une fois cuit, déposer le steak et le fromage sur une des tranches du pain que vous aurez auparavant tartinée d'un mélange de ketchup et de moutarde."
+    label: "Fourth preparation paragraph is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::4::SectionTitle"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to fifth preparation section"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::4::SectionTitle"
+    text: "5) "
+    label: "Fifth preparation title is displayed (empty title)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::4::SectionParagraph"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to fifth preparation paragraph"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::4::SectionParagraph"
+    text: "Ajouter la salade et de petites rondelles de tomates."
+    label: "Fifth preparation paragraph is displayed"
+
+- scrollUntilVisible:
+    element:
       id: "RecipePreparation::ReadOnlyStep::5::SectionTitle"
     direction: DOWN
     centerElement: true
     speed: 60
-    label: "Scroll to last preparation section"
+    label: "Scroll to sixth preparation section"
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::5::SectionTitle"
-    text: "6) Step 6"
-    label: "Last preparation title is displayed"
+    text: "6) "
+    label: "Sixth preparation title is displayed (empty title)"
 
 - scrollUntilVisible:
     element:
@@ -176,9 +280,9 @@ appId: "com.recipedia"
     direction: DOWN
     centerElement: true
     speed: 60
-    label: "Scroll to last preparation paragraph"
+    label: "Scroll to sixth preparation paragraph"
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::5::SectionParagraph"
     text: "Vous pouvez maintenant recouvrir la préparation de l'autre tranche (avec ketchup et moutarde)"
-    label: "Last preparation paragraph is displayed"
+    label: "Sixth preparation paragraph is displayed"

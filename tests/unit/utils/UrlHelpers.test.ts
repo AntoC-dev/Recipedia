@@ -12,7 +12,16 @@ describe('UrlHelpers', () => {
       'www.example.com/recipe',
     ];
 
-    const invalidUrls = ['', '   ', 'not a url', 'ftp://example.com', '://missing-protocol.com'];
+    const invalidUrls = [
+      '',
+      '   ',
+      'not a url',
+      'ftp://example.com',
+      '://missing-protocol.com',
+      'not-a-valid-url',
+      'localhost',
+      'https://localhost',
+    ];
 
     test.each(validUrls)('returns true for valid URL: %s', url => {
       expect(isValidUrl(url)).toBe(true);

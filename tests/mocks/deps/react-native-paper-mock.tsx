@@ -25,11 +25,13 @@ export const RadioButton: React.FC<any> & { Group: React.FC<any> } = props => (
   </TouchableOpacity>
 );
 
-RadioButton.Group = props => (
+const RadioButtonGroup: React.FC<any> = props => (
   <View testID={props.testID} {...{ value: props.value, onValueChange: props.onValueChange }}>
     {props.children}
   </View>
 );
+RadioButtonGroup.displayName = 'RadioButton.Group';
+RadioButton.Group = RadioButtonGroup;
 
 export const Dialog: React.FC<any> & {
   Title: React.FC<any>;
@@ -49,17 +51,25 @@ export const Dialog: React.FC<any> & {
   );
 };
 
-Dialog.Title = props => <RNText testID={props.testID}>{props.children}</RNText>;
+const DialogTitle: React.FC<any> = props => <RNText testID={props.testID}>{props.children}</RNText>;
+DialogTitle.displayName = 'Dialog.Title';
+Dialog.Title = DialogTitle;
 
-Dialog.Content = props => <View testID={props.testID}>{props.children}</View>;
+const DialogContent: React.FC<any> = props => <View testID={props.testID}>{props.children}</View>;
+DialogContent.displayName = 'Dialog.Content';
+Dialog.Content = DialogContent;
 
-Dialog.Actions = props => <View testID={props.testID}>{props.children}</View>;
+const DialogActions: React.FC<any> = props => <View testID={props.testID}>{props.children}</View>;
+DialogActions.displayName = 'Dialog.Actions';
+Dialog.Actions = DialogActions;
 
-Dialog.Icon = props => (
+const DialogIcon: React.FC<any> = props => (
   <View testID={props.testID}>
     <RNText testID={props.testID + '::Icon'}>{props.icon}</RNText>
   </View>
 );
+DialogIcon.displayName = 'Dialog.Icon';
+Dialog.Icon = DialogIcon;
 
 export const Menu: React.FC<any> & { Item: React.FC<any> } = props => (
   <View testID={props.testID} {...{ visible: props.visible, onDismiss: props.onDismiss }}>
@@ -67,11 +77,13 @@ export const Menu: React.FC<any> & { Item: React.FC<any> } = props => (
   </View>
 );
 
-Menu.Item = props => (
+const MenuItem: React.FC<any> = props => (
   <TouchableOpacity testID={props.testID} onPress={props.onPress}>
     <RNText>{props.title || props.children}</RNText>
   </TouchableOpacity>
 );
+MenuItem.displayName = 'Menu.Item';
+Menu.Item = MenuItem;
 
 export const Portal: React.FC<any> = props => <View testID={props.testID}>{props.children}</View>;
 
@@ -97,7 +109,7 @@ export const Text: React.FC<any> = props => (
   </RNText>
 );
 
-const TextInputComponent = React.forwardRef<any, any>((props, ref) => {
+const TextInputComponent = React.forwardRef<any, any>((props, _ref) => {
   const textInputProps: TextInputProps = {
     testID: props.testID,
     style: props.style,
@@ -111,6 +123,7 @@ const TextInputComponent = React.forwardRef<any, any>((props, ref) => {
     editable: props.editable,
     multiline: props.multiline,
     keyboardType: props.keyboardType,
+    secureTextEntry: props.secureTextEntry,
   };
 
   return (
@@ -123,14 +136,26 @@ const TextInputComponent = React.forwardRef<any, any>((props, ref) => {
           mode: props.mode,
           dense: props.dense,
           right: props.right,
+          secureTextEntry: props.secureTextEntry,
         }}
       />
       {props.right && <View testID={props.testID + '::Right'}>{props.right}</View>}
     </View>
   );
-}) as any;
+});
+TextInputComponent.displayName = 'TextInput';
 
-TextInputComponent.Affix = (props: any) => <RNText testID={props.testID}>{props.text}</RNText>;
+const TextInputAffix: React.FC<any> = props => <RNText testID={props.testID}>{props.text}</RNText>;
+TextInputAffix.displayName = 'TextInput.Affix';
+(TextInputComponent as any).Affix = TextInputAffix;
+
+const TextInputIcon: React.FC<any> = props => (
+  <TouchableOpacity testID={props.testID} onPress={props.onPress}>
+    <RNText testID={props.testID + '::Icon'}>{props.icon}</RNText>
+  </TouchableOpacity>
+);
+TextInputIcon.displayName = 'TextInput.Icon';
+(TextInputComponent as any).Icon = TextInputIcon;
 
 export const TextInput = TextInputComponent;
 
@@ -156,25 +181,31 @@ export const Card: React.FC<any> & {
   </TouchableOpacity>
 );
 
-Card.Content = props => (
+const CardContent: React.FC<any> = props => (
   <View testID={props.testID} style={props.style}>
     {props.children}
   </View>
 );
+CardContent.displayName = 'Card.Content';
+Card.Content = CardContent;
 
-Card.Actions = props => (
+const CardActions: React.FC<any> = props => (
   <View testID={props.testID} style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
     {props.children}
   </View>
 );
+CardActions.displayName = 'Card.Actions';
+Card.Actions = CardActions;
 
-Card.Cover = props => (
+const CardCover: React.FC<any> = props => (
   <View testID={props.testID} style={props.style}>
     <RNText testID={props.testID + '::Source'}>{props.source?.uri || 'no-image'}</RNText>
   </View>
 );
+CardCover.displayName = 'Card.Cover';
+Card.Cover = CardCover;
 
-Card.Title = props => (
+const CardTitle: React.FC<any> = props => (
   <View testID={props.testID}>
     <RNText testID={props.testID + '::TitleText'} numberOfLines={props.titleNumberOfLines}>
       {props.title}
@@ -182,6 +213,8 @@ Card.Title = props => (
     <RNText testID={props.testID + '::TitleVariant'}>{props.titleVariant}</RNText>
   </View>
 );
+CardTitle.displayName = 'Card.Title';
+Card.Title = CardTitle;
 
 export const Divider: React.FC<any> = props => (
   <View testID={props.testID || 'divider'} {...props} />
@@ -367,31 +400,39 @@ export const DataTable: React.FC<any> & {
   </View>
 );
 
-DataTable.Header = props => (
+const DataTableHeader: React.FC<any> = props => (
   <View testID={props.testID} style={props.style}>
     {props.children}
   </View>
 );
+DataTableHeader.displayName = 'DataTable.Header';
+DataTable.Header = DataTableHeader;
 
-DataTable.Title = props => (
+const DataTableTitle: React.FC<any> = props => (
   <View testID={props.testID} style={props.style}>
     <RNText testID={props.testID + '::Text'} style={props.textStyle}>
       {props.children}
     </RNText>
   </View>
 );
+DataTableTitle.displayName = 'DataTable.Title';
+DataTable.Title = DataTableTitle;
 
-DataTable.Row = props => (
+const DataTableRow: React.FC<any> = props => (
   <View testID={props.testID} style={props.style}>
     {props.children}
   </View>
 );
+DataTableRow.displayName = 'DataTable.Row';
+DataTable.Row = DataTableRow;
 
-DataTable.Cell = props => (
+const DataTableCell: React.FC<any> = props => (
   <View testID={props.testID} style={props.style}>
     {props.children}
   </View>
 );
+DataTableCell.displayName = 'DataTable.Cell';
+DataTable.Cell = DataTableCell;
 
 export const HelperText: React.FC<any> = props => {
   if (!props.visible) {
@@ -410,7 +451,7 @@ export const FAB: React.FC<any> & { Group: React.FC<any> } = props => (
   </TouchableOpacity>
 );
 
-FAB.Group = props => {
+const FABGroup: React.FC<any> = props => {
   const renderActions = () => {
     if (!props.open || !props.actions) return null;
     return props.actions.map((action: any, index: number) => (
@@ -437,6 +478,8 @@ FAB.Group = props => {
     </View>
   );
 };
+FABGroup.displayName = 'FAB.Group';
+FAB.Group = FABGroup;
 
 export const Appbar: React.FC<any> & {
   Header: React.FC<any>;
@@ -449,26 +492,34 @@ export const Appbar: React.FC<any> & {
   </View>
 );
 
-Appbar.Header = props => (
+const AppbarHeader: React.FC<any> = props => (
   <View testID={props.testID} style={props.style}>
     {props.children}
   </View>
 );
+AppbarHeader.displayName = 'Appbar.Header';
+Appbar.Header = AppbarHeader;
 
-Appbar.Content = props => (
+const AppbarContent: React.FC<any> = props => (
   <View testID={props.testID} style={props.style}>
     <RNText testID={props.testID + '::Title'}>{props.title}</RNText>
   </View>
 );
+AppbarContent.displayName = 'Appbar.Content';
+Appbar.Content = AppbarContent;
 
-Appbar.Action = props => (
+const AppbarAction: React.FC<any> = props => (
   <TouchableOpacity testID={props.testID} onPress={props.onPress}>
     <RNText testID={props.testID + '::Icon'}>{props.icon}</RNText>
   </TouchableOpacity>
 );
+AppbarAction.displayName = 'Appbar.Action';
+Appbar.Action = AppbarAction;
 
-Appbar.BackAction = props => (
+const AppbarBackAction: React.FC<any> = props => (
   <TouchableOpacity testID={props.testID} onPress={props.onPress}>
     <RNText>Back</RNText>
   </TouchableOpacity>
 );
+AppbarBackAction.displayName = 'Appbar.BackAction';
+Appbar.BackAction = AppbarBackAction;

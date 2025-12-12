@@ -72,5 +72,18 @@ export default {
     errorUnsupportedSite: 'This website is not yet supported',
     errorNetwork: 'Network error. Please check your connection.',
     errorTimeout: 'Request timed out. Please try again.',
+    errorAuthRequired: 'This page requires authentication',
+    errorAuthFailed: 'Authentication failed. Please check your credentials.',
+    errorUnsupportedAuth: 'Authentication is not supported for this site',
+    errorUnsupportedPlatform: 'This feature is only available on Android',
+  },
+
+  authDialog: {
+    title: 'Sign in to {{host}}',
+    username: 'Email or username',
+    password: 'Password',
+    submit: 'Sign in',
+    loading: 'Signing in...',
+    notice: 'Your credentials will not be saved',
   },
 };

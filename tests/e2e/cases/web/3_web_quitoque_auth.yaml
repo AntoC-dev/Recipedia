@@ -1,0 +1,81 @@
+name: "3 - Web Quitoque Auth Flow (French)"
+appId: "com.recipedia"
+tags:
+  - web
+  - auth
+---
+- runFlow:
+    file: "../../flows/setupTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- runFlow:
+    file: "../../flows/parameters/language/switchToFrench.yaml"
+    label: "Setup - Switch app language to French"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Setup - Return to home screen"
+
+- runFlow:
+    file: "../../flows/recipe/adding/web/addRecipeFromUrlWithAuth.yaml"
+    env:
+      RECIPE_URL: "https://www.quitoque.fr/products/camembert-roti-au-miel-et-mouillettes-aux-epices-18628"
+      QUITOQUE_USERNAME: ${QUITOQUE_USERNAME}
+      QUITOQUE_PASSWORD: ${QUITOQUE_PASSWORD}
+    label: "Action - Add recipe from Quitoque URL with authentication"
+
+- tapOn:
+    id: "Recipe::BottomActionButton"
+    label: "Action - Validate the recipe (should succeed first try)"
+
+- runFlow:
+    file: "../../asserts/alerts/fr/recipeAddedToDatabase.yaml"
+    env:
+      RECIPE_NAME: "Camembert rôti au miel et mouillettes aux épices"
+    label: "Assert - Verify recipe added successfully (French)"
+
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Verification - Navigate to Search screen"
+
+- tapOn:
+    id: "SearchScreen::SearchBar"
+    label: "Verification - Focus on search bar"
+
+- inputText:
+    text: "Camembert"
+    label: "Verification - Search for new recipe"
+
+- pressKey: enter
+
+- tapOn:
+    id: "SearchScreen::RecipeCards::0::.*"
+    label: "Verification - Open newly created recipe"
+
+- runFlow:
+    file: "../../asserts/recipe/readonly/fr/quitoqueCamembert.yaml"
+    label: "Assert - Verify recipe content in read-only mode (French)"
+
+- tapOn:
+    id: "Recipe::AppBar::Delete"
+    label: "Cleanup - Remove the recipe"
+
+- tapOn:
+    id: "Recipe::Dialog::Confirm"
+    label: "Cleanup - Confirm recipe deletion"
+
+- tapOn:
+    id: "Recipe::Dialog::Confirm"
+    label: "Cleanup - Close confirmation dialog"
+
+- tapOn:
+    id: "SearchScreen::SearchBar::RightIcon"
+    label: "Cleanup - Clear search filter"
+
+- runFlow:
+    file: "../../flows/parameters/language/switchToEnglish.yaml"
+    label: "Cleanup - Switch app language back to English"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Cleanup - Return to home screen"

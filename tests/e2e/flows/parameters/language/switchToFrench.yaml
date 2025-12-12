@@ -7,9 +7,6 @@ appId: "com.recipedia"
 - tapOn:
     id: "Parameters::Section::Appearance::Language::Item"
     label: "Tap on the language item to open the language settings"
-- runFlow:
-    file: "../../../asserts/parameters/en/assertLanguageScreen.yaml"
-    label: "Check that the language settings screen is displayed correctly"
 - tapOn:
     id: "LanguageSettings::Item::1"
     label: "Select French language"

@@ -42,6 +42,27 @@ declare class RecipeScraperModuleType extends NativeModule {
      * @returns true if available, false otherwise.
      */
     isAvailable(): Promise<boolean>;
+
+    /**
+     * Scrapes a recipe from an authentication-protected URL.
+     * @param url - The URL of the recipe page to scrape.
+     * @param username - Username/email for authentication.
+     * @param password - Password for authentication.
+     * @param wildMode - If true, attempt to scrape unsupported sites using schema.org.
+     * @returns A JSON string containing the scraped recipe data or an error.
+     */
+    scrapeRecipeAuthenticated(
+        url: string,
+        username: string,
+        password: string,
+        wildMode?: boolean
+    ): Promise<string>;
+
+    /**
+     * Gets list of hosts that support authentication.
+     * @returns A JSON string containing an array of host domains supporting auth.
+     */
+    getSupportedAuthHosts(): Promise<string>;
 }
 
 export default requireNativeModule<RecipeScraperModuleType>('RecipeScraper');

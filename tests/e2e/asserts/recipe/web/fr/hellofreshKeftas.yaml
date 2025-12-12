@@ -209,7 +209,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::0::Step"
-    text: "Étape 1"
+    text: ""
     label: "Preparation section for first step is rendered (French)"
 
 - scrollUntilVisible:
@@ -227,7 +227,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
-    text: "Étape 1"
+    text: ""
     label: "First preparation step title is rendered (French)"
 
 - scrollUntilVisible:

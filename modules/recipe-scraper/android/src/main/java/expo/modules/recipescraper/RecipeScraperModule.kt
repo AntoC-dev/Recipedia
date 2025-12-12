@@ -83,6 +83,32 @@ class RecipeScraperModule : Module() {
                 false
             }
         }
+
+        /**
+         * Scrape a recipe from an authentication-protected URL.
+         * @param url The recipe page URL to scrape.
+         * @param username Username/email for authentication.
+         * @param password Password for authentication.
+         * @param wildMode If true, attempt to scrape unsupported sites using schema.org.
+         * @return JSON string with success/error result containing recipe data.
+         */
+        AsyncFunction("scrapeRecipeAuthenticated") { url: String, username: String, password: String, wildMode: Boolean? ->
+            ensurePythonStarted()
+            val py = Python.getInstance()
+            val scraperModule = py.getModule("recipe_scraper.scraper")
+            scraperModule.callAttr("scrape_recipe_authenticated", url, username, password, wildMode ?: true).toString()
+        }
+
+        /**
+         * Get list of hosts that support authentication.
+         * @return JSON string with list of host domains supporting auth.
+         */
+        AsyncFunction("getSupportedAuthHosts") {
+            ensurePythonStarted()
+            val py = Python.getInstance()
+            val authModule = py.getModule("recipe_scraper.auth")
+            authModule.callAttr("get_supported_auth_hosts").toString()
+        }
     }
 
     private fun ensurePythonStarted() {

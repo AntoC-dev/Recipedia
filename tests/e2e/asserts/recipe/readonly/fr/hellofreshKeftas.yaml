@@ -80,8 +80,8 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
-    text: "1) Étape 1"
-    label: "First preparation title is displayed"
+    text: "1) "
+    label: "First preparation title is displayed (empty title)"
 
 - scrollUntilVisible:
     element:
@@ -106,8 +106,8 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
-    text: "2) Étape 2"
-    label: "Second preparation title is displayed"
+    text: "2) "
+    label: "Second preparation title is displayed (empty title)"
 
 - scrollUntilVisible:
     element:
@@ -132,8 +132,8 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"
-    text: "3) Étape 3"
-    label: "Third preparation title is displayed"
+    text: "3) "
+    label: "Third preparation title is displayed (empty title)"
 
 - scrollUntilVisible:
     element:
@@ -158,8 +158,8 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::3::SectionTitle"
-    text: "4) Étape 4"
-    label: "Fourth preparation title is displayed"
+    text: "4) "
+    label: "Fourth preparation title is displayed (empty title)"
 
 - scrollUntilVisible:
     element:
@@ -184,8 +184,8 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::4::SectionTitle"
-    text: "5) Étape 5"
-    label: "Fifth preparation title is displayed"
+    text: "5) "
+    label: "Fifth preparation title is displayed (empty title)"
 
 - scrollUntilVisible:
     element:
@@ -210,8 +210,8 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::5::SectionTitle"
-    text: "6) Étape 6"
-    label: "Sixth preparation title is displayed"
+    text: "6) "
+    label: "Sixth preparation title is displayed (empty title)"
 
 - scrollUntilVisible:
     element:

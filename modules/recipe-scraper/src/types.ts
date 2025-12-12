@@ -33,11 +33,30 @@ export interface IngredientGroup {
 }
 
 /**
+ * Structured ingredient data extracted from well-formatted HTML.
+ * Only available for sites that have clear quantity/unit/name separation in their HTML.
+ */
+export interface ParsedIngredient {
+    quantity: string;
+    unit: string;
+    name: string;
+}
+
+/**
  * A link found in the recipe page.
  */
 export interface RecipeLink {
     href: string;
     text?: string;
+}
+
+/**
+ * Structured instruction step with optional title and grouped instructions.
+ * Extracted from well-formatted HTML when step structure is detected.
+ */
+export interface ParsedInstruction {
+    title: string | null;
+    instructions: string[];
 }
 
 /**
@@ -49,9 +68,11 @@ export interface ScrapedRecipe {
     title: string | null;
     description: string | null;
     ingredients: string[];
+    parsedIngredients: ParsedIngredient[] | null;
     ingredientGroups: IngredientGroup[] | null;
     instructions: string | null;
     instructionsList: string[] | null;
+    parsedInstructions: ParsedInstruction[] | null;
 
     // Timing (in minutes)
     totalTime: number | null;
@@ -94,6 +115,44 @@ export interface ScrapedRecipe {
 export interface ScraperError {
     type: string;
     message: string;
+    host?: string;
+}
+
+/**
+ * Known error types returned by the scraper.
+ */
+export const ScraperErrorTypes = {
+    AuthenticationRequired: 'AuthenticationRequired',
+    AuthenticationFailed: 'AuthenticationFailed',
+    UnsupportedAuthSite: 'UnsupportedAuthSite',
+    NoRecipeFoundError: 'NoRecipeFoundError',
+    FetchError: 'FetchError',
+    NoSchemaFoundInWildMode: 'NoSchemaFoundInWildMode',
+    WebsiteNotImplementedError: 'WebsiteNotImplementedError',
+    ConnectionError: 'ConnectionError',
+    HTTPError: 'HTTPError',
+    URLError: 'URLError',
+    Timeout: 'timeout',
+    UnsupportedPlatform: 'UnsupportedPlatform',
+} as const;
+
+export type ScraperErrorType = (typeof ScraperErrorTypes)[keyof typeof ScraperErrorTypes] | string;
+
+/**
+ * Error result specifically for authentication-required pages.
+ */
+export interface AuthenticationRequiredError extends ScraperError {
+    type: 'AuthenticationRequired';
+    host: string;
+}
+
+/**
+ * Credentials for authenticating to a recipe site.
+ */
+export interface SiteCredentials {
+    host: string;
+    username: string;
+    password: string;
 }
 
 /**

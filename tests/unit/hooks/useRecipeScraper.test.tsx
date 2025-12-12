@@ -4,6 +4,9 @@ import { ScrapeResult, useRecipeScraper } from '@hooks/useRecipeScraper';
 import { hellofreshKeftasRecipe } from '@test-data/scraperMocks/hellofresh';
 import {
   mockScrapeRecipe,
+  mockScrapeRecipeAuthenticated,
+  mockScrapeRecipeAuthenticatedError,
+  mockScrapeRecipeAuthenticatedSuccess,
   mockScrapeRecipeError,
   mockScrapeRecipeSuccess,
 } from '@mocks/modules/recipe-scraper-mock';
@@ -203,6 +206,192 @@ describe('useRecipeScraper', () => {
       });
 
       expect(result.current.error).toBeUndefined();
+    });
+  });
+
+  describe('authentication flow', () => {
+    test('sets authRequired when AuthenticationRequired error returned', async () => {
+      mockScrapeRecipeError('Login required', 'AuthenticationRequired', 'quitoque.fr');
+
+      const { result } = renderHook(() => useRecipeScraper(), {
+        wrapper: createWrapper(),
+      });
+
+      await act(async () => {
+        await result.current.scrapeAndPrepare('https://www.quitoque.fr/recipe/123');
+      });
+
+      expect(result.current.authRequired).toEqual({
+        url: 'https://www.quitoque.fr/recipe/123',
+        host: 'quitoque.fr',
+      });
+    });
+
+    test('extracts host from URL when not provided in error', async () => {
+      mockScrapeRecipeError('Login required', 'AuthenticationRequired');
+
+      const { result } = renderHook(() => useRecipeScraper(), {
+        wrapper: createWrapper(),
+      });
+
+      await act(async () => {
+        await result.current.scrapeAndPrepare('https://www.quitoque.fr/recipe/123');
+      });
+
+      expect(result.current.authRequired?.host).toBe('quitoque.fr');
+    });
+
+    test('clearAuthRequired resets authRequired state', async () => {
+      mockScrapeRecipeError('Login required', 'AuthenticationRequired', 'quitoque.fr');
+
+      const { result } = renderHook(() => useRecipeScraper(), {
+        wrapper: createWrapper(),
+      });
+
+      await act(async () => {
+        await result.current.scrapeAndPrepare('https://www.quitoque.fr/recipe/123');
+      });
+
+      expect(result.current.authRequired).not.toBeNull();
+
+      act(() => {
+        result.current.clearAuthRequired();
+      });
+
+      expect(result.current.authRequired).toBeNull();
+    });
+  });
+
+  describe('scrapeWithAuth', () => {
+    test('returns success result with recipe data', async () => {
+      mockScrapeRecipeAuthenticatedSuccess(hellofreshKeftasRecipe);
+
+      const { result } = renderHook(() => useRecipeScraper(), {
+        wrapper: createWrapper(),
+      });
+
+      let scrapeResult: ScrapeResult | undefined;
+      await act(async () => {
+        scrapeResult = await result.current.scrapeWithAuth(
+          'https://www.quitoque.fr/recipe/123',
+          'user@test.com',
+          'password123'
+        );
+      });
+
+      expect(scrapeResult?.success).toBe(true);
+      if (scrapeResult?.success) {
+        expect(scrapeResult.data.title).toBe(hellofreshKeftasRecipe.title);
+      }
+      expect(mockScrapeRecipeAuthenticated).toHaveBeenCalledWith(
+        'https://www.quitoque.fr/recipe/123',
+        'user@test.com',
+        'password123'
+      );
+    });
+
+    test('clears authRequired on successful authenticated scrape', async () => {
+      mockScrapeRecipeError('Login required', 'AuthenticationRequired', 'quitoque.fr');
+
+      const { result } = renderHook(() => useRecipeScraper(), {
+        wrapper: createWrapper(),
+      });
+
+      await act(async () => {
+        await result.current.scrapeAndPrepare('https://www.quitoque.fr/recipe/123');
+      });
+
+      expect(result.current.authRequired).not.toBeNull();
+
+      mockScrapeRecipeAuthenticatedSuccess(hellofreshKeftasRecipe);
+
+      await act(async () => {
+        await result.current.scrapeWithAuth(
+          'https://www.quitoque.fr/recipe/123',
+          'user@test.com',
+          'password123'
+        );
+      });
+
+      expect(result.current.authRequired).toBeNull();
+    });
+
+    test('returns error on authentication failure', async () => {
+      mockScrapeRecipeAuthenticatedError('Invalid credentials', 'AuthenticationFailed');
+
+      const { result } = renderHook(() => useRecipeScraper(), {
+        wrapper: createWrapper(),
+      });
+
+      let scrapeResult: ScrapeResult | undefined;
+      await act(async () => {
+        scrapeResult = await result.current.scrapeWithAuth(
+          'https://www.quitoque.fr/recipe/123',
+          'user@test.com',
+          'wrongpassword'
+        );
+      });
+
+      expect(scrapeResult?.success).toBe(false);
+      if (scrapeResult && !scrapeResult.success) {
+        expect(scrapeResult.error).toBe('urlDialog.errorAuthFailed');
+      }
+    });
+
+    test('handles network failure during authenticated scrape', async () => {
+      mockScrapeRecipeAuthenticated.mockRejectedValue(new Error('Connection refused'));
+
+      const { result } = renderHook(() => useRecipeScraper(), {
+        wrapper: createWrapper(),
+      });
+
+      let scrapeResult: ScrapeResult | undefined;
+      await act(async () => {
+        scrapeResult = await result.current.scrapeWithAuth(
+          'https://www.quitoque.fr/recipe/123',
+          'user@test.com',
+          'password123'
+        );
+      });
+
+      expect(scrapeResult?.success).toBe(false);
+      if (scrapeResult && !scrapeResult.success) {
+        expect(scrapeResult.error).toBe('urlDialog.errorNetwork');
+      }
+    });
+
+    test('sets isLoading during authenticated scrape', async () => {
+      mockScrapeRecipeAuthenticated.mockImplementation(
+        () =>
+          new Promise(resolve =>
+            setTimeout(() => resolve({ success: true, data: hellofreshKeftasRecipe }), 100)
+          )
+      );
+
+      const { result } = renderHook(() => useRecipeScraper(), {
+        wrapper: createWrapper(),
+      });
+
+      expect(result.current.isLoading).toBe(false);
+
+      let promise: Promise<unknown>;
+      act(() => {
+        promise = result.current.scrapeWithAuth(
+          'https://www.quitoque.fr/recipe/123',
+          'user@test.com',
+          'password123'
+        );
+      });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(true);
+      });
+
+      await act(async () => {
+        await promise;
+      });
+
+      expect(result.current.isLoading).toBe(false);
     });
   });
 });
