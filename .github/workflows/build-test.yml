@@ -348,6 +348,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-android
     timeout-minutes: 60
+    env:
+      MAESTRO_VERSION: '2.0.10'
     strategy:
       fail-fast: false
       matrix:
@@ -374,10 +376,23 @@ jobs:
         with:
           name: build-apk
 
+      - name: Cache Maestro CLI
+        uses: actions/cache@v4
+        id: maestro-cache
+        with:
+          path: ~/.maestro
+          key: maestro-${{ runner.os }}-${{ env.MAESTRO_VERSION }}
+
       - name: Install Maestro CLI
+        if: steps.maestro-cache.outputs.cache-hit != 'true'
+        run: bash .github/scripts/install-maestro.sh ${{ env.MAESTRO_VERSION }}
+
+      - name: Add Maestro to PATH
+        run: echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+
+      - name: Verify Maestro installation
         run: |
-          curl -Ls "https://get.maestro.mobile.dev" | bash
-          echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+          maestro --version || { echo "Maestro installation failed"; exit 1; }
 
       - name: Enable KVM
         run: |
