@@ -1,0 +1,207 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    file: "../../common/fr/buttonsReadOnly.yaml"
+    label: "Assert common ReadOnly buttons and image (French)"
+
+- assertVisible:
+    id: "RecipeTitle::Text"
+    text: "Camembert rôti au miel et mouillettes aux épices"
+    label: "Title text is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeDescription::Text"
+    direction: DOWN
+    centerElement: true
+    speed: 40
+    label: "Scroll to description section"
+
+- assertVisible:
+    id: "RecipeDescription::Text"
+    text: "Né en Normandie, le camembert se fait fondant et gourmand rôti au miel, à savourer avec ses mouillettes épicées !"
+    label: "Description text is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTags::0::Chip"
+    direction: DOWN
+    centerElement: true
+    speed: 40
+    label: "Scroll to tags section"
+
+- assertVisible:
+    id: "RecipeTags::0::Chip"
+    text: "Gourmand"
+    label: "First tag 'Gourmand' is rendered"
+
+- assertVisible:
+    id: "RecipeTags::1::Chip"
+    text: "Express"
+    label: "Second tag 'Express' is rendered"
+
+- assertVisible:
+    id: "RecipeTags::2::Chip"
+    text: "Végétarien"
+    label: "Third tag 'Végétarien' is rendered"
+
+- assertVisible:
+    id: "RecipeTags::3::Chip"
+    text: "Noël"
+    label: "Fourth tag 'Noël' is rendered"
+
+- assertVisible:
+    id: "RecipeTags::4::Chip"
+    text: "Protéiné"
+    label: "Fifth tag 'Protéiné' is rendered"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePersons::Text"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to ingredients section"
+
+- assertVisible:
+    text: "Ingrédients (4 personnes)"
+    label: "Ingredient section and persons is displayed (French)"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "camembert au lait cru"
+      INGREDIENT_QUANTITY_AND_UNIT: "500 g"
+    label: "Assert camembert ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "miel Bio"
+      INGREDIENT_QUANTITY_AND_UNIT: "40 g"
+    label: "Assert miel ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "salade"
+      INGREDIENT_QUANTITY_AND_UNIT: "100 g"
+    label: "Assert salade ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "petits pains aux épices"
+      INGREDIENT_QUANTITY_AND_UNIT: "4 g"
+    label: "Assert pains aux épices ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "carotte"
+      INGREDIENT_QUANTITY_AND_UNIT: "2 g"
+    label: "Assert carotte ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "herbes de Provence"
+      INGREDIENT_QUANTITY_AND_UNIT: "0,5 g"
+    label: "Assert herbes de Provence ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "huile d'olive"
+      INGREDIENT_QUANTITY_AND_UNIT: "4 g"
+    label: "Assert huile d'olive ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "vinaigre de votre choix"
+      INGREDIENT_QUANTITY_AND_UNIT: "2 g"
+    label: "Assert vinaigre ingredient"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTime::Text"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to preparation section"
+
+- assertVisible:
+    id: "RecipeTime::Text"
+    text: "Préparation (20 min)"
+    label: "Preparation section and time are displayed (French)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to first preparation section"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
+    text: "1) Le camembert rôti"
+    label: "First section title is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::0::SectionParagraph"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to first section paragraph"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::0::SectionParagraph"
+    text: "Préchauffez votre four à 200°C en chaleur tournante !\nPendant ce temps, déposez le camembert sur une plaque allant au four.\nIncisez légèrement le dessus du fromage en croix pour éviter qu’il ne s’ouvre trop à la cuisson.\nParsemez dessus les herbes de Provence et nappez de miel. Poivrez."
+    label: "First section paragraph contains all 4 instructions"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to second preparation section"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
+    text: "2) Les mouillettes"
+    label: "Second section title is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::1::SectionParagraph"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to second section paragraph"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::1::SectionParagraph"
+    text: "Coupez les petits pains pour réaliser des mouillettes.\nPlacez-les à côté du camembert. Versez un filet d'huile d'olive, salez et poivrez-les.\nEnfournez le tout 12 à 15 min jusqu'à ce que les mouillettes soient dorées et le fromage coulant.\nÉpluchez et râpez la carotte.\nDans un saladier, mélangez l'huile d'olive et le vinaigre pour obtenir une vinaigrette. Salez, poivrez.\nAjoutez la salade et la carotte."
+    label: "Second section paragraph contains all 6 instructions"
+
+- assertNotVisible:
+    id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"
+    label: "Assert no third section exists"
+
+- runFlow:
+    file: "../../common/fr/nutritionReadOnly.yaml"
+    env:
+      ENERGY_KCAL: "304.1"
+      ENERGY_KJ: "1272.4"
+      FAT: "11"
+      SATURATED_FAT: "7.6"
+      CARBOHYDRATES: "18.6"
+      SUGARS: "6.6"
+      FIBER: "3.8"
+      PROTEIN: "10.7"
+      SALT: "0"
+    label: "Assert nutrition values (French, converted to per-100g from 290g serving)"

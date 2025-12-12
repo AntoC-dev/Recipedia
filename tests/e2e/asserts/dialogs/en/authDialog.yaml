@@ -1,0 +1,30 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    id: "VerticalBottomButtons::AuthDialog::Title"
+    text: "Sign in to ${HOST}"
+    label: "Dialog title shows host name"
+
+- assertVisible:
+    id: "VerticalBottomButtons::AuthDialog::UsernameInput"
+    label: "Username input is visible"
+
+- assertVisible:
+    id: "VerticalBottomButtons::AuthDialog::PasswordInput"
+    label: "Password input is visible"
+
+- assertVisible:
+    id: "VerticalBottomButtons::AuthDialog::PasswordToggle"
+    label: "Password visibility toggle is visible"
+
+- assertVisible:
+    id: "VerticalBottomButtons::AuthDialog::CancelButton"
+    label: "Cancel button is visible"
+
+- assertVisible:
+    id: "VerticalBottomButtons::AuthDialog::SubmitButton"
+    label: "Submit button is visible"
+
+- assertVisible:
+    text: "Your credentials will not be saved"
+    label: "Privacy notice is visible"

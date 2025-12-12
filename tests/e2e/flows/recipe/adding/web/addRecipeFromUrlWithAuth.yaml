@@ -1,0 +1,17 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    file: "openUrlDialog.yaml"
+    label: "Open URL input dialog"
+
+- runFlow:
+    file: "submitUrlWithAuth.yaml"
+    env:
+      RECIPE_URL: ${RECIPE_URL}
+      QUITOQUE_USERNAME: ${QUITOQUE_USERNAME}
+      QUITOQUE_PASSWORD: ${QUITOQUE_PASSWORD}
+    label: "Submit recipe URL with authentication"
+
+- runFlow:
+    file: "validateAllDialogs.yaml"
+    label: "Add all tags and ingredients from validation dialogs"

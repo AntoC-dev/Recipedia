@@ -1,0 +1,62 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "VerticalBottomButtons::UrlDialog::Input::CustomTextInput"
+    label: "Focus on URL input field"
+
+- inputText: ${RECIPE_URL}
+
+- hideKeyboard:
+    label: "Close keyboard"
+
+- tapOn:
+    id: "VerticalBottomButtons::UrlDialog::SubmitButton"
+    label: "Submit URL for scraping"
+
+- extendedWaitUntil:
+    visible:
+      id: "VerticalBottomButtons::AuthDialog::UsernameInput"
+    timeout: 30000
+    label: "Wait for authentication dialog to appear"
+
+- runFlow:
+    file: "../../../../asserts/dialogs/fr/authDialog.yaml"
+    env:
+      HOST: "quitoque.fr"
+    label: "Assert authentication dialog elements (French)"
+
+- tapOn:
+    id: "VerticalBottomButtons::AuthDialog::UsernameInput"
+    label: "Focus on username input"
+
+- inputText: ${QUITOQUE_USERNAME}
+
+- tapOn:
+    id: "VerticalBottomButtons::AuthDialog::PasswordInput"
+    label: "Focus on password input"
+
+- inputText: ${QUITOQUE_PASSWORD}
+
+- hideKeyboard:
+    label: "Close keyboard"
+
+- assertVisible:
+    id: "VerticalBottomButtons::AuthDialog::PasswordInput"
+    text: "^•+$"
+    label: "Password is masked (only bullet characters visible)"
+
+- tapOn:
+    id: "VerticalBottomButtons::AuthDialog::SubmitButton"
+    label: "Submit authentication credentials"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipeImage::Image"
+    timeout: 30000
+    label: "Wait for recipe screen to load after authenticated scraping"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipeTitle::CustomTextInput"
+    timeout: 5000
+    label: "Wait for recipe title to be populated"
