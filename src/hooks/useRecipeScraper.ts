@@ -107,8 +107,6 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
     };
   };
 
-  const getStepTitle = (index: number) => t('recipe.scraper.stepTitle', { number: index + 1 });
-
   const clearError = () => setError(undefined);
 
   const processScrapedData = async (
@@ -138,14 +136,14 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
       yields: scraperResult.data.yields,
       description: scraperResult.data.description,
       instructionsList: scraperResult.data.instructionsList,
+      parsedInstructions: scraperResult.data.parsedInstructions,
       nutrients: scraperResult.data.nutrients,
     });
 
     const recipeData = convertScrapedRecipe(
       scraperResult.data,
       getIgnoredPatterns(),
-      defaultPersons,
-      getStepTitle
+      defaultPersons
     );
 
     if (recipeData.skippedIngredients?.length) {

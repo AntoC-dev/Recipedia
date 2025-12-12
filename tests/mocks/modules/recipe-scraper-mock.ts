@@ -70,6 +70,7 @@ export function createEmptyScrapedRecipe(overrides: Partial<ScrapedRecipe> = {})
     ingredientGroups: null,
     instructions: null,
     instructionsList: null,
+    parsedInstructions: null,
     totalTime: null,
     prepTime: null,
     cookTime: null,

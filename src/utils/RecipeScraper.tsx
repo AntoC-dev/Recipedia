@@ -14,6 +14,7 @@ export type {
   HostSupportedResult,
   IngredientGroup,
   ParsedIngredient,
+  ParsedInstruction,
   RecipeLink,
   ScrapeOptions,
   ScrapedNutrients,

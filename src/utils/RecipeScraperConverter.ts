@@ -22,6 +22,7 @@ import {
 } from '@customTypes/DatabaseElementTypes';
 import {
   ParsedIngredient as ScrapedParsedIngredient,
+  ParsedInstruction,
   ScrapedNutrients,
   ScrapedRecipe,
 } from '@utils/RecipeScraper';
@@ -136,14 +137,22 @@ export function convertIngredients(
 ): ConvertedIngredients {
   // Use pre-parsed ingredients if available (from well-structured HTML)
   if (parsedIngredients && parsedIngredients.length > 0) {
-    return {
-      ingredients: parsedIngredients.map(p => ({
-        quantity: p.quantity,
-        unit: p.unit,
-        name: cleanIngredientName(p.name),
-      })),
-      skipped: [],
-    };
+    const ingredients: FormIngredientElement[] = [];
+    const skipped: string[] = [];
+
+    for (const p of parsedIngredients) {
+      if (isUnparseableIngredient(p.name, patterns)) {
+        skipped.push(p.name);
+      } else {
+        ingredients.push({
+          quantity: p.quantity,
+          unit: p.unit,
+          name: cleanIngredientName(p.name),
+        });
+      }
+    }
+
+    return { ingredients, skipped };
   }
 
   // Fall back to string parsing
@@ -198,11 +207,18 @@ export function removeNumberedPrefix(text: string): string {
 export function convertPreparation(
   instructions: string,
   instructionsList: string[] | undefined | null,
-  getStepTitle: (index: number) => string
+  parsedInstructions: ParsedInstruction[] | undefined | null
 ): preparationStepElement[] {
+  if (parsedInstructions && parsedInstructions.length > 0) {
+    return parsedInstructions.map(group => ({
+      title: group.title ?? '',
+      description: group.instructions.map(i => i.trim()).join('\n'),
+    }));
+  }
+
   if (instructionsList && instructionsList.length > 0) {
-    return instructionsList.map((step, index) => ({
-      title: getStepTitle(index),
+    return instructionsList.map(step => ({
+      title: '',
       description: step.trim(),
     }));
   }
@@ -212,8 +228,8 @@ export function convertPreparation(
     .map(removeNumberedPrefix)
     .filter(step => step.length > 0);
 
-  return steps.map((step, index) => ({
-    title: getStepTitle(index),
+  return steps.map(step => ({
+    title: '',
     description: step,
   }));
 }
@@ -273,8 +289,7 @@ export function cleanImageUrl(url: string): string {
 export function convertScrapedRecipe(
   scraped: ScrapedRecipe,
   ignoredPatterns: IgnoredIngredientPatterns,
-  defaultPersons: number,
-  getStepTitle: (index: number) => string
+  defaultPersons: number
 ): ScrapedRecipeResult {
   const { ingredients, skipped } = convertIngredients(
     scraped.ingredients,
@@ -293,7 +308,7 @@ export function convertScrapedRecipe(
     preparation: convertPreparation(
       scraped.instructions ?? '',
       scraped.instructionsList ?? undefined,
-      getStepTitle
+      scraped.parsedInstructions ?? undefined
     ),
     nutrition: scraped.nutrients ? convertNutrition(scraped.nutrients) : undefined,
     tags: convertTags(scraped.keywords ?? [], scraped.dietaryRestrictions ?? []),

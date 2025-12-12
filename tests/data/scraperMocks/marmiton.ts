@@ -39,6 +39,7 @@ export const marmitonHamburgerRecipe: ScrapedRecipe = {
     'Ajouter la salade et de petites rondelles de tomates.',
     "Vous pouvez maintenant recouvrir la préparation de l'autre tranche (avec ketchup et moutarde)",
   ],
+  parsedInstructions: null,
   totalTime: 10,
   prepTime: 5,
   cookTime: 5,
