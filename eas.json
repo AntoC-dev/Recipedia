@@ -36,6 +36,13 @@
         "EXPO_PUBLIC_DATASET_TYPE": "test"
       }
     },
+    "performance": {
+      "extends": "maestro",
+      "env": {
+        "NODE_OPTIONS": "--max-old-space-size=4096",
+        "EXPO_PUBLIC_DATASET_TYPE": "performance"
+      }
+    },
     "production": {
       "autoIncrement": true,
       "distribution": "store",

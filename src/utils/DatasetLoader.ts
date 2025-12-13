@@ -16,8 +16,11 @@ import { englishRecipes } from '@assets/datasets/en/recipes';
 import { frenchIngredients } from '@assets/datasets/fr/ingredients';
 import { frenchTags } from '@assets/datasets/fr/tags';
 import { frenchRecipes } from '@assets/datasets/fr/recipes';
+import { performanceIngredients } from '@assets/datasets/performance/ingredients';
+import { performanceTags } from '@assets/datasets/performance/tags';
+import { performanceRecipes } from '@assets/datasets/performance/recipes';
 
-export type DatasetType = 'test' | 'production';
+export type DatasetType = 'test' | 'production' | 'performance';
 
 export interface DatasetCollection {
   ingredients: ingredientTableElement[];
@@ -49,6 +52,14 @@ function loadFrenchDataset(): DatasetCollection {
   };
 }
 
+function loadPerformanceDataset(): DatasetCollection {
+  return {
+    ingredients: performanceIngredients,
+    tags: performanceTags,
+    recipes: performanceRecipes,
+  };
+}
+
 function loadProductionDataset(language: SupportedLanguage): DatasetCollection {
   switch (language) {
     case LANGUAGE_NAMES.fr:
@@ -64,11 +75,18 @@ function loadProductionDataset(language: SupportedLanguage): DatasetCollection {
  *
  * Priority: EXPO_PUBLIC_DATASET_TYPE takes precedence if set, otherwise falls back to NODE_ENV
  *
- * @returns 'production' if the active variable is 'production', otherwise 'test'
+ * @returns 'production' if the active variable is 'production', 'performance' for performance testing, otherwise 'test'
  */
 export function getDatasetType(): DatasetType {
   if (process.env.EXPO_PUBLIC_DATASET_TYPE !== undefined) {
-    return process.env.EXPO_PUBLIC_DATASET_TYPE === 'production' ? 'production' : 'test';
+    switch (process.env.EXPO_PUBLIC_DATASET_TYPE) {
+      case 'production':
+        return 'production';
+      case 'performance':
+        return 'performance';
+      default:
+        return 'test';
+    }
   }
   return process.env.NODE_ENV === 'production' ? 'production' : 'test';
 }
@@ -76,8 +94,20 @@ export function getDatasetType(): DatasetType {
 export function getDataset(language: SupportedLanguage): DatasetCollection {
   try {
     const datasetType = getDatasetType();
-    const dataset =
-      datasetType === 'production' ? loadProductionDataset(language) : loadTestDataset();
+    let dataset: DatasetCollection;
+
+    switch (datasetType) {
+      case 'production':
+        dataset = loadProductionDataset(language);
+        break;
+      case 'performance':
+        dataset = loadPerformanceDataset();
+        break;
+      case 'test':
+      default:
+        dataset = loadTestDataset();
+        break;
+    }
 
     appLogger.info('Loaded dataset', {
       datasetType,
