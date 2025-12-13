@@ -1,0 +1,70 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Navigate to Home screen"
+
+- runFlow:
+    file: "../fab/expand.yaml"
+    label: "Expand FAB menu"
+
+- runFlow:
+    file: "../recipe/adding/ocr/android/addMedia.yaml"
+    env:
+      RECIPE_NAME: hellofresh
+      FIELD_NAME: image
+    when:
+      platform: Android
+    label: "Add recipe image to gallery"
+
+- tapOn:
+    id: "GalleryButton"
+    label: "Open gallery for OCR"
+
+- runFlow:
+    file: "../recipe/adding/ocr/android/selectFromGallery.yaml"
+    when:
+      platform: Android
+    label: "Select image from gallery"
+
+- tapOn:
+    id: "RecipeImage::RoundButton"
+    label: "Tap on OCR button of recipe image"
+
+- tapOn:
+    id: "Modal::List#0::SquareButton::Image"
+    label: "Select first image from app modal"
+
+- runFlow:
+    file: "../recipe/adding/ocr/android/validateWithoutCropping.yaml"
+    when:
+      platform: Android
+    label: "Validate without cropping"
+
+- evalScript: ${output.modalImageCounter = 1}
+
+- runFlow:
+    file: "../recipe/adding/ocr/gallery/ocrPreparation.yaml"
+    env:
+      RECIPE_NAME: hellofresh
+    label: "OCR preparation"
+
+- runFlow:
+    file: "../recipe/adding/ocr/gallery/ocrIngredients.yaml"
+    env:
+      RECIPE_NAME: hellofresh
+    label: "OCR ingredients"
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,20%"
+    label: "Scroll in OCR result screen"
+
+- swipe:
+    start: "50%,20%"
+    end: "50%,80%"
+    label: "Scroll back up"
+
+- tapOn:
+    id: "Recipe::AppBar::BackButton"
+    label: "Cancel OCR without saving"

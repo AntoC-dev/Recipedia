@@ -1,0 +1,36 @@
+name: "1 - Full Performance Flow"
+appId: "com.recipedia"
+tags:
+  - performance
+---
+- runFlow:
+    file: "../../flows/setupFirstTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- runFlow:
+    file: "../../flows/performance/homeScreen.yaml"
+    label: "Home screen interactions"
+
+- runFlow:
+    file: "../../flows/performance/searchScreen.yaml"
+    label: "Search screen interactions"
+
+- runFlow:
+    file: "../../flows/performance/recipeView.yaml"
+    label: "Recipe view and edit interactions"
+
+- runFlow:
+    file: "../../flows/performance/shoppingScreen.yaml"
+    label: "Shopping screen interactions"
+
+- runFlow:
+    file: "../../flows/performance/ocrFlow.yaml"
+    label: "OCR flow interactions"
+
+- runFlow:
+    file: "../../flows/performance/webScraping.yaml"
+    label: "Web scraping interactions"
+
+- runFlow:
+    file: "../../flows/performance/parametersScreen.yaml"
+    label: "Parameters screen interactions"
