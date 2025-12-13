@@ -1,5 +1,13 @@
 appId: "com.recipedia"
 ---
+- scrollUntilVisible:
+    element:
+      id: "RecipePersons::Text"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to persons section"
+
 - assertVisible:
     id: "RecipePersons::Text"
     text: "Ingredients (4 persons)"

@@ -18,6 +18,7 @@ tags:
     direction: DOWN
     speed: 70
     timeout: 30000
+    centerElement: true
     label: "Action - Scroll to Lettuce ingredient"
 
 - assertVisible:
@@ -30,14 +31,8 @@ tags:
       id: "IngredientsSettings::15::EditButton"
     direction: DOWN
     speed: 40
+    centerElement: true
     label: "Action - Scroll to Lettuce edit button"
-
-- scrollUntilVisible:
-    element:
-      id: "IngredientsSettings::15::EditButton"
-    direction: DOWN
-    speed: 50
-    label: "Action - Scroll to Edit button"
 
 - tapOn:
     id: "IngredientsSettings::15::EditButton"
@@ -87,6 +82,14 @@ tags:
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::ConfirmButton"
     label: "Action - Save edited ingredient"
+
+- scrollUntilVisible:
+    element:
+      id: "IngredientsSettings::15::IngredientName"
+    direction: UP
+    speed: 40
+    centerElement: true
+    label: "Action - Scroll to ingredient name to ensure it is visible"
 
 - assertVisible:
     id: "IngredientsSettings::15::IngredientName"

@@ -40,9 +40,11 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeTime::Text"
+      id: "RecipeIngredients::0::IngredientName"
     direction: DOWN
     speed: 60
+    centerElement: true
+    label: "Scroll to Carrots ingredient"
 
 - assertVisible:
     id: "RecipeIngredients::0::IngredientName"
@@ -54,6 +56,14 @@ appId: "com.recipedia"
     text: "150 g"
     label: "Quantity of Carrots is rendered"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::1::IngredientName"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Celery ingredient"
+
 - assertVisible:
     id: "RecipeIngredients::1::IngredientName"
     text: "Celery"
@@ -63,6 +73,14 @@ appId: "com.recipedia"
     id: "RecipeIngredients::1::QuantityAndUnit"
     text: "100 g"
     label: "Quantity of Celery is rendered"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::2::IngredientName"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Potatoes ingredient"
 
 - assertVisible:
     id: "RecipeIngredients::2::IngredientName"
@@ -74,6 +92,14 @@ appId: "com.recipedia"
     text: "200 g"
     label: "Quantity of Potatoes is rendered"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::3::IngredientName"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Vegetable Broth ingredient"
+
 - assertVisible:
     id: "RecipeIngredients::3::IngredientName"
     text: "Vegetable Broth"
@@ -84,6 +110,14 @@ appId: "com.recipedia"
     text: "500 ml"
     label: "Quantity of Vegetable Broth is rendered"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeTime::Text"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to preparation time"
+
 - assertVisible:
     id: "RecipeTime::Text"
     text: "Preparation (40 min)"
@@ -91,19 +125,37 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"
+      id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
     direction: DOWN
     speed: 60
+    centerElement: true
+    label: "Scroll to first preparation step"
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
     text: "1) Prepare vegetables"
     label: "First section of the preparation is rendered"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to second preparation step"
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
     text: "2) Cook soup"
     label: "Second section of the preparation is rendered"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to third preparation step"
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"

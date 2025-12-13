@@ -6,12 +6,12 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 40
     centerElement: true
-    label: "Scroll to vegetable accordion"
+    label: "Scroll to Vegetable accordion"
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     text: "Vegetable"
-    label: "Vegetable accordion title is displayed"
+    label: "Vegetable accordion is displayed"
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -19,34 +19,83 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::6"
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
     direction: DOWN
     speed: 40
-    label: "Scroll to last  vegetable item"
+    centerElement: true
+    label: "Scroll to Lettuce filter"
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
     label: "Lettuce filter is visible"
 
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::1"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to Romaine Lettuce filter"
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::1"
     label: "Romaine Lettuce filter is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::2"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to Carrots filter"
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::2"
     label: "Carrots filter is visible"
 
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::3"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to Celery filter"
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::3"
     label: "Celery filter is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::4"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to Potatoes filter"
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::4"
     label: "Potatoes filter is visible"
 
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::5"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to Onions filter"
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::5"
     label: "Onions filter is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::6"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to Tomatoes filter"
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::6"
@@ -57,7 +106,8 @@ appId: "com.recipedia"
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     direction: UP
     speed: 40
-    label: "Scroll to up to accordion"
+    centerElement: true
+    label: "Scroll back up to Vegetable accordion header"
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"

@@ -118,6 +118,7 @@ appId: "com.recipedia"
     element:
       text: "Nuts and Seeds"
     direction: DOWN
+    centerElement: true
     label: "Scroll to Nuts and Seeds category"
 
 - runFlow:

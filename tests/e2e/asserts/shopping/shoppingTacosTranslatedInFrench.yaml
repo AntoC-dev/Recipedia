@@ -1,5 +1,13 @@
 appId: "com.recipedia"
 ---
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Cereales category"
+
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
     label: "Cereales subheader is displayed"

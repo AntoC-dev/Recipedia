@@ -10,6 +10,13 @@ appId: "com.recipedia"
     label: "Fruit accordion title is displayed"
 
 # Expand the accordion
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    direction: DOWN
+    speed: 60
+    label: "Scroll to Fruit accordion"
+
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Expand Fruit accordion"
@@ -18,6 +25,14 @@ appId: "com.recipedia"
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
     label: "Avocado filter is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    direction: UP
+    speed: 60
+    centerElement: true
+    label: "Scroll back up to accordion header"
 
 # Collapse the accordion back
 - tapOn:

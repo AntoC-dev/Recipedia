@@ -16,6 +16,7 @@ tags:
       text: "Pesto Pasta"
     direction: DOWN
     speed: 40
+    centerElement: true
     label: "Action - Scroll to find Pesto Pasta"
 
 - tapOn:
@@ -49,6 +50,7 @@ tags:
       id: "RecipeImage::Image"
     direction: UP
     speed: 95
+    centerElement: true
     label: "Action - Scroll back to top to find image"
 
 - tapOn:
@@ -64,6 +66,7 @@ tags:
       id: "Recipe::RecipeNutrition::NutritionTable::Title"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Action - Scroll to nutrition section"
 
 - runFlow:
@@ -85,6 +88,7 @@ tags:
       id: "RecipeImage"
     direction: UP
     speed: 95
+    centerElement: true
     label: "Action - Scroll back to top"
 
 - tapOn:
@@ -96,6 +100,7 @@ tags:
       id: "SearchScreen::SearchBar"
     direction: UP
     speed: 95
+    centerElement: true
     label: "Cleanup - Scroll back to top of Search screen"
 
 - tapOn:

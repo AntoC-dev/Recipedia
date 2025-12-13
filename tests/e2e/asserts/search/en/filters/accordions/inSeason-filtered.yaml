@@ -10,6 +10,14 @@ appId: "com.recipedia"
     label: "Only in-season ingredients accordion title is displayed"
 
 # Expand the accordion
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Only in-season ingredients accordion"
+
 - tapOn:
     text: "Only in-season ingredients"
     label: "Expand Only in-season ingredients accordion"
@@ -28,6 +36,14 @@ appId: "com.recipedia"
     when:
       true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Only in-season ingredients')=== undefined}
     file: "inSeason-items/onlyInSeasonIngredients-hidden.yaml"
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    direction: UP
+    speed: 60
+    centerElement: true
+    label: "Scroll back up to accordion header"
 
 # Collapse the accordion back
 - tapOn:

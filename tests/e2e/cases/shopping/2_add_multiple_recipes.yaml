@@ -11,6 +11,14 @@ tags:
     id: "BottomTabs::Search"
     label: "Action - Navigate to Search screen"
 
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::RecipeCards::0::.*"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to recipe card"
+
 - tapOn:
     id: "SearchScreen::RecipeCards::0::.*"
     label: "Action - Open Spaghetti Bolognese recipe"

@@ -10,6 +10,7 @@ appId: "com.recipedia"
       id: "RecipePersons::Text"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Scroll to ingredients section"
 
 - assertVisible:
@@ -19,10 +20,11 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeIngredients::4::IngredientName"
+      id: "RecipeIngredients::0::IngredientName"
     direction: DOWN
     speed: 60
-    label: "Scroll to end of ingredients section"
+    centerElement: true
+    label: "Scroll to Pasta ingredient"
 
 - assertVisible:
     id: "RecipeIngredients::0::IngredientName"
@@ -34,6 +36,14 @@ appId: "com.recipedia"
     text: "600 g"
     label: "Pasta quantity is 600g"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::1::IngredientName"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Basil Leaves ingredient"
+
 - assertVisible:
     id: "RecipeIngredients::1::IngredientName"
     text: "Basil Leaves"
@@ -43,6 +53,14 @@ appId: "com.recipedia"
     id: "RecipeIngredients::1::QuantityAndUnit"
     text: "150 g"
     label: "Basil Leaves quantity is 150g"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::2::IngredientName"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Parmesan ingredient"
 
 - assertVisible:
     id: "RecipeIngredients::2::IngredientName"
@@ -54,6 +72,14 @@ appId: "com.recipedia"
     text: "90 g"
     label: "Parmesan quantity is 90g"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::3::IngredientName"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Olive Oil ingredient"
+
 - assertVisible:
     id: "RecipeIngredients::3::IngredientName"
     text: "Olive Oil"
@@ -63,6 +89,14 @@ appId: "com.recipedia"
     id: "RecipeIngredients::3::QuantityAndUnit"
     text: "150 ml"
     label: "Olive Oil quantity is 150ml"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::4::IngredientName"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Pine Nuts ingredient"
 
 - assertVisible:
     id: "RecipeIngredients::4::IngredientName"

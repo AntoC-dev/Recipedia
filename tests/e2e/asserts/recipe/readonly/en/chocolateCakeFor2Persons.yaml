@@ -10,6 +10,7 @@ appId: "com.recipedia"
       id: "RecipePersons::Text"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Scroll to ingredients section"
 
 - assertVisible:
@@ -19,10 +20,11 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeIngredients::3::IngredientName"
+      id: "RecipeIngredients::0::IngredientName"
     direction: DOWN
     speed: 60
-    label: "Scroll to end of ingredients section"
+    centerElement: true
+    label: "Scroll to Flour ingredient"
 
 - assertVisible:
     id: "RecipeIngredients::0::IngredientName"
@@ -34,6 +36,14 @@ appId: "com.recipedia"
     text: "66,67 g"
     label: "Flour quantity is scaled to 66,67g"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::1::IngredientName"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Cocoa Powder ingredient"
+
 - assertVisible:
     id: "RecipeIngredients::1::IngredientName"
     text: "Cocoa Powder"
@@ -44,6 +54,14 @@ appId: "com.recipedia"
     text: "16,67 g"
     label: "Cocoa Powder quantity is scaled to 16,67g"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::2::IngredientName"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Sugar ingredient"
+
 - assertVisible:
     id: "RecipeIngredients::2::IngredientName"
     text: "Sugar"
@@ -53,6 +71,14 @@ appId: "com.recipedia"
     id: "RecipeIngredients::2::QuantityAndUnit"
     text: "50 g"
     label: "Sugar quantity is scaled to 50g"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::3::IngredientName"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Butter ingredient"
 
 - assertVisible:
     id: "RecipeIngredients::3::IngredientName"

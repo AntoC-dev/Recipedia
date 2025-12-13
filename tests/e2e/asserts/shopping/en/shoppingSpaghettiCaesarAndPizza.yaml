@@ -83,6 +83,7 @@ appId: "com.recipedia"
       id: "ShoppingScreen::SectionList::Basil Leaves"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Scroll to last item (Basil Leaves)"
 
 - runFlow:

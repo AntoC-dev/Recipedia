@@ -4,6 +4,14 @@ appId: "com.recipedia"
     file: "./assertShoppingScreenUI.yaml"
     label: "Assert shopping screen UI elements"
 
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Cereal category"
+
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
     label: "Cereal category header is displayed"
@@ -21,6 +29,14 @@ appId: "com.recipedia"
       UNIT: "g"
       RECIPE_NAMES: "Classic Pancakes"
     label: "Assert and check Flour ingredient"
+
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.plantProtein::SubHeader"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Plant Protein category"
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.plantProtein::SubHeader"
@@ -40,6 +56,14 @@ appId: "com.recipedia"
       RECIPE_NAMES: "Classic Pancakes"
     label: "Assert and check Eggs ingredient"
 
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.dairy::SubHeader"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Dairy category"
+
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.dairy::SubHeader"
     label: "Dairy category header is displayed"
@@ -47,6 +71,14 @@ appId: "com.recipedia"
 - assertVisible:
     text: "Dairy"
     label: "Dairy category text is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.oilAndFat::SubHeader"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Oil and Fat category"
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.oilAndFat::SubHeader"

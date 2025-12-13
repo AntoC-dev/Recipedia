@@ -2,6 +2,14 @@ appId: "com.recipedia"
 
 
 ---
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::${ITEM_INDEX}"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Flour filter item"
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::${ITEM_INDEX}"
     label: "Flour filter is visible"

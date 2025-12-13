@@ -1,32 +1,56 @@
 appId: "com.recipedia"
 ---
-# Assert accordion is displayed
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Condiment accordion"
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    text: "Condiment"
     label: "Condiment accordion is displayed"
 
-- assertVisible:
-    text: "Condiment"
-    label: "Condiment accordion title is displayed"
-
-# Expand the accordion
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Expand Condiment accordion"
 
-# Assert all items are visible
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Mayonnaise filter"
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
     label: "Mayonnaise filter is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::1"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Mustard filter"
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::1"
     label: "Mustard filter is visible"
 
-# Collapse the accordion back
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    direction: UP
+    speed: 60
+    centerElement: true
+    label: "Scroll back up to accordion header"
+
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Collapse Condiment accordion"
 
-# Increment accordion index for next accordion
 - evalScript: ${output.accordionIndex = output.accordionIndex + 1}

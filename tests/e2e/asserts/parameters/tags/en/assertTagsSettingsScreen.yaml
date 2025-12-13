@@ -318,6 +318,7 @@ appId: "com.recipedia"
       id: "TagsSettings::BottomActionButton"
     direction: DOWN
     speed: 40
+    centerElement: true
     label: "Scroll to Add button"
 
 - assertVisible:

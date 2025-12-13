@@ -23,6 +23,7 @@ tags:
     element:
       text: "Spaghetti"
     direction: DOWN
+    centerElement: true
     label: "Action - Scroll to Spaghetti item"
 
 - tapOn:

@@ -31,6 +31,14 @@ tags:
 
 - pressKey: "ENTER"
 
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::RecipeCards::0::Cover"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to recipe card"
+
 - tapOn:
     id: "SearchScreen::RecipeCards::0::Cover"
     label: "Action - Open Test Recipe"
@@ -74,4 +82,3 @@ tags:
 - tapOn:
     id: "BottomTabs::Home"
     label: "Cleanup - Navigate to Home screen"
-

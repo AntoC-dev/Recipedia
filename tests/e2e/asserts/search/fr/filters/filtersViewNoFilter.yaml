@@ -22,6 +22,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::FilterAccordion::Accordion::6"
     direction: DOWN
+    centerElement: true
     label: "Scroll until Plant Protein accordion is visible to position Tags at top"
 
 # Accordion 2: Tags
@@ -59,6 +60,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::FilterAccordion::Accordion::12"
     direction: DOWN
+    centerElement: true
     label: "Scroll to Dairy accordion"
 
 
@@ -87,6 +89,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::FilterAccordion::Accordion::18"
     direction: DOWN
+    centerElement: true
     label: "Scroll to Nuts and Seeds accordion"
 
 # Accordion 12: Dairy
@@ -124,6 +127,7 @@ appId: "com.recipedia"
     element:
       text: "Noix et Graines"
     direction: DOWN
+    centerElement: true
     label: "Scroll to Nuts and Seeds accordion"
 
 # Accordion 18: Nuts and Seeds

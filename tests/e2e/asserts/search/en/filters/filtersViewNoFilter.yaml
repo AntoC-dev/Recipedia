@@ -29,6 +29,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::FilterAccordion::Accordion::2"
     direction: DOWN
+    centerElement: true
     label: "Scroll until third accordion is visible to position Tags at top"
 
 - runFlow:
@@ -210,6 +211,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::FilterAccordion::Accordion::16"
     direction: DOWN
+    centerElement: true
     label: "Scroll until seventeenth accordion is visible to position Tags at top"
 
 - runFlow:
@@ -222,6 +224,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::FilterAccordion::Accordion::17"
     direction: DOWN
+    centerElement: true
     label: "Scroll until eighteenth accordion is visible to position Tags at top"
 
 - runFlow:
@@ -234,6 +237,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::FilterAccordion::Accordion::18"
     direction: DOWN
+    centerElement: true
     label: "Scroll until nineteenth accordion is visible to position Tags at top"
 
 - runFlow:

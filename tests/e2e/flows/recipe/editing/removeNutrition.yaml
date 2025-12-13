@@ -5,6 +5,7 @@ appId: "com.recipedia"
       id: "Recipe::RecipeNutrition::NutritionTable::EditForm::RemoveButton"
     direction: DOWN
     speed: 95
+    centerElement: true
     label: "Scroll to remove nutrition button"
 
 - tapOn:

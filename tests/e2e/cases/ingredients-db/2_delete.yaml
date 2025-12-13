@@ -17,6 +17,7 @@ tags:
       id: "IngredientsSettings::36::IngredientName"
     direction: DOWN
     speed: 95
+    centerElement: true
     label: "Action - Scroll to bottom of the screen"
 
 - scrollUntilVisible:
@@ -24,6 +25,7 @@ tags:
       id: "IngredientsSettings::34::DeleteButton"
     direction: UP
     speed: 60
+    centerElement: true
     label: "Action - Scroll to ingredient to delete"
 
 - tapOn:

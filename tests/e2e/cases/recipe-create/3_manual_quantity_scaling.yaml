@@ -16,6 +16,7 @@ tags:
       id: "RecipeImage"
     direction: UP
     speed: 95
+    centerElement: true
     label: "Action - Scroll back to top"
 
 - runFlow:
@@ -45,6 +46,14 @@ tags:
     label: "Action - Search for Test Recipe"
 
 - pressKey: "ENTER"
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::RecipeCards::0::Cover"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to recipe card"
 
 - tapOn:
     id: "SearchScreen::RecipeCards::0::Cover"

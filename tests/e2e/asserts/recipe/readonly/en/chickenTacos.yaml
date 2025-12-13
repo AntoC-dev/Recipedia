@@ -38,9 +38,11 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeTime::Text"
+      id: "RecipeIngredients::0::IngredientName"
     direction: DOWN
     speed: 60
+    centerElement: true
+    label: "Scroll to Taco Shells ingredient"
 
 - assertVisible:
     id: "RecipeIngredients::0::IngredientName"
@@ -52,6 +54,14 @@ appId: "com.recipedia"
     text: "12 pieces"
     label: "Quantity of Taco Shells is rendered"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::1::IngredientName"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Chicken Breast ingredient"
+
 - assertVisible:
     id: "RecipeIngredients::1::IngredientName"
     text: "Chicken Breast"
@@ -61,6 +71,14 @@ appId: "com.recipedia"
     id: "RecipeIngredients::1::QuantityAndUnit"
     text: "600 g"
     label: "Quantity of Chicken Breast is rendered"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::2::IngredientName"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Lettuce ingredient"
 
 - assertVisible:
     id: "RecipeIngredients::2::IngredientName"
@@ -72,6 +90,14 @@ appId: "com.recipedia"
     text: "100 g"
     label: "Quantity of Lettuce is rendered"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::3::IngredientName"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Cheddar ingredient"
+
 - assertVisible:
     id: "RecipeIngredients::3::IngredientName"
     text: "Cheddar"
@@ -81,6 +107,14 @@ appId: "com.recipedia"
     id: "RecipeIngredients::3::QuantityAndUnit"
     text: "100 g"
     label: "Quantity of Cheddar is rendered"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTime::Text"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to preparation time"
 
 - assertVisible:
     id: "RecipeTime::Text"
@@ -92,6 +126,8 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::0::SectionParagraph"
     direction: DOWN
     speed: 40
+    centerElement: true
+    label: "Scroll to first preparation step"
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
@@ -103,6 +139,8 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::1::SectionParagraph"
     direction: DOWN
     speed: 40
+    centerElement: true
+    label: "Scroll to second preparation step"
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
@@ -114,6 +152,8 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::2::SectionParagraph"
     direction: DOWN
     speed: 40
+    centerElement: true
+    label: "Scroll to third preparation step"
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"
@@ -133,6 +173,14 @@ appId: "com.recipedia"
       PROTEIN: "28.5"
       SALT: "1.2"
     label: "Verify nutrition information is displayed"
+
+- scrollUntilVisible:
+    element:
+      text: "per portion"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to per portion button"
 
 - tapOn:
     text: "per portion"

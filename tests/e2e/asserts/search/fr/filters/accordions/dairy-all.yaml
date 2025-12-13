@@ -10,6 +10,14 @@ appId: "com.recipedia"
     label: "Dairy accordion title is displayed in French"
 
 # Expand the accordion
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Dairy accordion"
+
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Expand Dairy accordion"
@@ -18,6 +26,14 @@ appId: "com.recipedia"
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
     label: "Milk filter is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    direction: UP
+    speed: 60
+    centerElement: true
+    label: "Scroll back up to accordion header"
 
 # Collapse the accordion back
 - tapOn:

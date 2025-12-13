@@ -24,6 +24,7 @@ appId: "com.recipedia"
       text: "RecipeTag"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Scroll to find the newly added tag"
 
 - assertVisible:

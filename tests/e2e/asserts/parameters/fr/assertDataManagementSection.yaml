@@ -1,5 +1,13 @@
 appId: "com.recipedia"
 ---
+- scrollUntilVisible:
+    element:
+      id: "Parameters::Section::Data::SubHeader"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Data Management section"
+
 - assertVisible:
     id: "Parameters::Section::Data::SubHeader"
     label: "Data Management section header is displayed"

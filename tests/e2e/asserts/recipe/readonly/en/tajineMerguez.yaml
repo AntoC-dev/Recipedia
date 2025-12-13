@@ -29,12 +29,6 @@ appId: "com.recipedia"
     text: "Ingredients (4 persons)"
     label: "Ingredient section and persons is displayed"
 
-- scrollUntilVisible:
-    element:
-      id: "RecipeTime::Text"
-    direction: DOWN
-    speed: 60
-
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
@@ -109,6 +103,6 @@ appId: "com.recipedia"
     text: "[\\s\\S]+"
     label: "Second preparation paragraph is displayed"
 
-- runFlow:
-    file: "../../common/nutritionEmptyReadOnly.yaml"
-    label: "Verify nutrition section is not displayed (OCR recipe)"
+- assertNotVisible:
+    id: "Recipe::RecipeNutrition::NutritionTable"
+    label: "Nutrition table is not displayed (no nutrition data)"

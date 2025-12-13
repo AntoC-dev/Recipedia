@@ -10,6 +10,14 @@ appId: "com.recipedia"
     label: "Tags accordion title is displayed"
 
 # Expand the accordion
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Tags accordion"
+
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Expand Tags accordion"
@@ -212,6 +220,14 @@ appId: "com.recipedia"
     when:
       true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Vegetarian')== false}
     file: "tags-items/vegetarian-hidden.yaml"
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    direction: UP
+    speed: 60
+    centerElement: true
+    label: "Scroll back up to accordion header"
 
 # Collapse the accordion back
 - tapOn:

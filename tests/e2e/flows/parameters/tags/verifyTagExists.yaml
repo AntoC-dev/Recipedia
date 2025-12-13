@@ -5,6 +5,7 @@ appId: "com.recipedia"
       text: "${TAG_NAME}"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Scroll to find ${TAG_NAME} tag"
 
 - assertVisible:

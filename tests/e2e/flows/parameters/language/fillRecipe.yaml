@@ -64,6 +64,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::AddButton::RoundButton"
     direction: DOWN
     speed: 60
+    centerElement: true
 
 - tapOn:
     id: "RecipePreparation::AddButton::RoundButton"

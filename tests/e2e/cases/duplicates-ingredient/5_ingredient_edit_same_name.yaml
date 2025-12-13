@@ -16,6 +16,7 @@ tags:
       text: "Butter"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Action - Scroll to find Butter ingredient"
 
 - assertVisible:
@@ -28,6 +29,7 @@ tags:
       id: "IngredientsSettings::2::EditButton"
     direction: DOWN
     speed: 40
+    centerElement: true
     label: "Action - Scroll to find Butter edit button"
 
 - tapOn:

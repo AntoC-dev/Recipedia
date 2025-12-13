@@ -91,6 +91,7 @@ appId: "com.recipedia"
     element:
       text: "Oil and Fat"
     direction: DOWN
+    centerElement: true
     label: "Scroll to Sugar category"
 
 - runFlow:

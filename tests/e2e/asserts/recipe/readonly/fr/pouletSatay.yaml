@@ -160,6 +160,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::3::SectionParagraph"
     direction: DOWN
     speed: 60
+    centerElement: true
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::3::SectionTitle"

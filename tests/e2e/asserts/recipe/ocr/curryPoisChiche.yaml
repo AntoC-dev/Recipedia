@@ -16,14 +16,24 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeDescription::CustomTextInput"
+      id: "RecipeDescription::Text"
     direction: DOWN
-    speed: 60
+    speed: 40
+    centerElement: true
+    label: "Scroll down to description text"
 
 - assertVisible:
     id: "RecipeDescription::Text"
     text: "Description:"
     label: "Intro text for the description is rendered"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeDescription::CustomTextInput"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll down to description text input"
 
 - assertVisible:
     id: "RecipeDescription::CustomTextInput"
@@ -128,9 +138,11 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeTime::PrefixText"
+      id: "RecipeIngredients::AddButton::RoundButton"
     direction: DOWN
     speed: 60
+    centerElement: true
+    label: "Scroll down to ingredients add button"
 
 - assertVisible:
     id: "RecipeIngredients::AddButton::RoundButton"
@@ -139,6 +151,14 @@ appId: "com.recipedia"
 - assertVisible:
     text: "󰐕"
     label: "Add button of the ingredients has the correct icon"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTime::PrefixText"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll down to time part"
 
 - assertVisible:
     id: "RecipeTime::PrefixText"

@@ -1,5 +1,13 @@
 appId: "com.recipedia"
 ---
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::0::QuantityInput"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to ingredient quantity input"
+
 - tapOn:
     id: "RecipeIngredients::0::QuantityInput"
     label: "Press on ingredient quantity input"

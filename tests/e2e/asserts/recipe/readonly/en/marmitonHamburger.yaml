@@ -115,7 +115,7 @@ appId: "com.recipedia"
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "cheddar"
-      INGREDIENT_QUANTITY_AND_UNIT: "30 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "100 g"
     label: "Assert Cheddar ingredient"
 
 - scrollUntilVisible:

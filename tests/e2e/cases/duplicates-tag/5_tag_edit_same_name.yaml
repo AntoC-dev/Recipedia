@@ -16,6 +16,7 @@ tags:
       text: "Dessert"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Action - Scroll to find Dessert tag"
 
 - assertVisible:

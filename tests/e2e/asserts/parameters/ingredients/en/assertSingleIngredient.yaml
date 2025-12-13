@@ -6,6 +6,7 @@ appId: "com.recipedia"
       id: "IngredientsSettings::${INGREDIENT_INDEX}::IngredientName"
     direction: DOWN
     speed: 50
+    centerElement: true
     label: "Scroll to ${INGREDIENT_NAME} ingredient name"
 
 - assertVisible:
@@ -18,6 +19,7 @@ appId: "com.recipedia"
       id: "IngredientsSettings::${INGREDIENT_INDEX}::EditButton"
     direction: DOWN
     speed: 50
+    centerElement: true
     label: "Scroll to ${INGREDIENT_NAME} edit button"
 
 - assertVisible:
@@ -29,6 +31,7 @@ appId: "com.recipedia"
       id: "IngredientsSettings::${INGREDIENT_INDEX}::DeleteButton"
     direction: DOWN
     speed: 50
+    centerElement: true
     label: "Scroll to ${INGREDIENT_NAME} delete button"
 
 - assertVisible:

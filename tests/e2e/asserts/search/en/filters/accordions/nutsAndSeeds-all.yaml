@@ -21,6 +21,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
     direction: DOWN
+    centerElement: true
     label: "Scroll down to ensure Sesame Seeds is rendered"
 
 - assertVisible:
@@ -31,6 +32,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     direction: UP
+    centerElement: true
     label: "Scroll back up to Nuts and Seeds accordion header"
 
 - tapOn:

@@ -9,6 +9,7 @@ appId: "com.recipedia"
       id: "Parameters::Section::Data::Tags::Item"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Scroll down to find Tags option"
 
 - tapOn:

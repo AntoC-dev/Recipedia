@@ -10,6 +10,7 @@ appId: "com.recipedia"
             id: "IngredientsSettings::${INGREDIENT_INDEX}::IngredientName"
           direction: DOWN
           speed: 60
+          centerElement: true
           label: "Scroll to find ${INGREDIENT_NAME} ingredient"
 
 - assertVisible:

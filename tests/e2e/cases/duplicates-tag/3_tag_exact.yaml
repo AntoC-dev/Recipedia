@@ -45,6 +45,14 @@ tags:
 
 - pressKey: "ENTER"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeTags::0::Chip"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to recipe tags"
+
 - assertVisible:
     id: "RecipeTags::0::Chip"
     label: "Assert - Verify first tag added to recipe"

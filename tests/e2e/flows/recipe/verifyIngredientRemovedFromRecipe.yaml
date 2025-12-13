@@ -4,6 +4,14 @@ appId: "com.recipedia"
     file: "openTestRecipe.yaml"
     label: "Navigate to and open E2E Test Recipe"
 
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::RecipeCards::0::Cover"
+    direction: DOWN
+    speed: 50
+    centerElement: true
+    label: "Scroll to recipe card"
+
 - tapOn:
     id: "SearchScreen::RecipeCards::0::Cover"
     label: "Open the E2E Test Recipe"
@@ -13,6 +21,7 @@ appId: "com.recipedia"
       id: "RecipeTime::Text"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Scroll to ingredients section"
 
 - assertNotVisible:

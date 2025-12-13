@@ -11,6 +11,14 @@ tags:
     id: "BottomTabs::Search"
     label: "Action - Navigate to Search screen"
 
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::RecipeCards::1::Chicken Tacos"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to recipe card"
+
 - tapOn:
     id: "SearchScreen::RecipeCards::1::Chicken Tacos"
     label: "Action - Open Chicken Tacos recipe"

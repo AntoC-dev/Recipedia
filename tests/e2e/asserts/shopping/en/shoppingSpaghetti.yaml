@@ -4,6 +4,14 @@ appId: "com.recipedia"
     file: "./assertShoppingScreenUI.yaml"
     label: "Assert shopping screen UI elements"
 
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Cereal category"
+
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
     label: "Cereal category header is displayed"
@@ -21,6 +29,14 @@ appId: "com.recipedia"
       UNIT: "g"
       RECIPE_NAMES: "Spaghetti Bolognese"
     label: "Assert and check Spaghetti ingredient"
+
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.sauce::SubHeader"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Sauce category"
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.sauce::SubHeader"
@@ -40,6 +56,14 @@ appId: "com.recipedia"
       RECIPE_NAMES: "Spaghetti Bolognese"
     label: "Assert and check Tomato Sauce ingredient"
 
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.meat::SubHeader"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Meat category"
+
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.meat::SubHeader"
     label: "Meat category header is displayed"
@@ -57,6 +81,14 @@ appId: "com.recipedia"
       UNIT: "g"
       RECIPE_NAMES: "Spaghetti Bolognese"
     label: "Assert and check Ground Beef ingredient"
+
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.cheese::SubHeader"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Cheese category"
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.cheese::SubHeader"

@@ -30,6 +30,7 @@ tags:
       id: "TagsSettings::6::EditButton"
     direction: DOWN
     speed: 40
+    centerElement: true
     label: "Action - Scroll to Italian tag edit button"
 
 - tapOn:

@@ -69,6 +69,7 @@ appId: "com.recipedia"
       id: "SearchScreen::SearchBarResults::Item::9-content"
     direction: DOWN
     speed: 40
+    centerElement: true
 
 - assertVisible:
     id: "SearchScreen::SearchBarResults::Item::8-content"
@@ -91,4 +92,5 @@ appId: "com.recipedia"
       text: "Caesar Salad"
     direction: UP
     speed: 40
+    centerElement: true
     label: "Scroll back to top of dropdown"

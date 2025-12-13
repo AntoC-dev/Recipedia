@@ -34,6 +34,7 @@ tags:
       id: "RecipeImage::Image"
     direction: UP
     speed: 95
+    centerElement: true
 
 - runFlow:
     file: "../../flows/recipe/adding/setRecipeTitle.yaml"

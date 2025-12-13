@@ -4,6 +4,14 @@ appId: "com.recipedia"
     id: "BottomTabs::Search"
     label: "Go to Search screen via bottom tab"
 
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::RecipeCards::1::.*"
+    direction: DOWN
+    speed: 50
+    centerElement: true
+    label: "Scroll to recipe card"
+
 - tapOn:
     id: "SearchScreen::RecipeCards::1::.*"
     label: "Open a recipe"

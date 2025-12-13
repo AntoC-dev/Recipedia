@@ -8,9 +8,25 @@ appId: "com.recipedia"
     id: "SearchScreen::FiltersToggleButtons"
     label: "Open filter accordion"
 
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::0"
+    direction: DOWN
+    speed: 50
+    centerElement: true
+    label: "Scroll to season accordion"
+
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::0"
     label: "Expand season filter accordion"
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::0::Item::0"
+    direction: DOWN
+    speed: 50
+    centerElement: true
+    label: "Scroll to first season filter item"
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::0::Item::0"

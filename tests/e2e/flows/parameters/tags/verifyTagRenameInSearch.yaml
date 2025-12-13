@@ -13,6 +13,7 @@ appId: "com.recipedia"
       id: "SearchScreen::FilterAccordion::Accordion::2"
     direction: DOWN
     speed: 60
+    centerElement: true
     label: "Scroll to Tags accordion"
 
 - tapOn:
@@ -44,15 +45,32 @@ appId: "com.recipedia"
       id: "SearchScreen::SearchBar"
     direction: UP
     speed: 60
+    centerElement: true
     label: "Scroll to top of the Search screen"
 
 - tapOn:
     id: "SearchScreen::FiltersToggleButtons"
     label: "Wrap the filters part"
 
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::RecipeCards::0::Cover"
+    direction: DOWN
+    speed: 50
+    centerElement: true
+    label: "Scroll to recipe card"
+
 - tapOn:
     id: "SearchScreen::RecipeCards::0::Cover"
     label: "Select first recipe from the list"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTags::0::Chip"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to recipe tag"
 
 - assertVisible:
     id: "RecipeTags::0::Chip"
