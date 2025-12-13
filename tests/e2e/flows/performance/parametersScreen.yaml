@@ -1,0 +1,163 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "BottomTabs::Parameters"
+    label: "Navigate to Parameters screen"
+
+- tapOn:
+    id: "Parameters::Section::Appearance::DarkMode::Switch"
+    label: "Toggle dark mode on"
+
+- tapOn:
+    id: "Parameters::Section::Appearance::DarkMode::Switch"
+    label: "Toggle dark mode off"
+
+- tapOn:
+    id: "Parameters::Section::Appearance::Language::Item"
+    label: "Open language settings"
+
+- tapOn:
+    id: "LanguageSettings::Item::1"
+    label: "Switch to French"
+
+- tapOn:
+    id: "BottomTabs::Parameters"
+    label: "Return to Parameters screen"
+
+- tapOn:
+    id: "Parameters::Section::Appearance::Language::Item"
+    label: "Open language settings again"
+
+- tapOn:
+    id: "LanguageSettings::Item::0"
+    label: "Switch back to English"
+
+- tapOn:
+    id: "BottomTabs::Parameters"
+    label: "Return to Parameters screen"
+
+- tapOn:
+    id: "Parameters::Section::RecipeDefaults::Persons::Item"
+    label: "Open default persons settings"
+
+- tapOn:
+    id: "DefaultPersonSettings::Slider"
+    point: "56%,50%"
+    label: "Change slider to 6 persons"
+
+- tapOn:
+    id: "DefaultPersonSettings::Save"
+    label: "Save new default persons"
+
+- extendedWaitUntil:
+    visible:
+      id: "BottomTabs::Parameters"
+    timeout: 120000
+    label: "Wait for scaling to complete"
+
+- tapOn:
+    id: "Parameters::Section::RecipeDefaults::Persons::Item"
+    label: "Open default persons settings again"
+
+- scrollUntilVisible:
+    element:
+      id: "DefaultPersonSettings::PersonsValue"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to persons value"
+
+- tapOn:
+    id: "DefaultPersonSettings::Slider"
+    point: "36%,50%"
+    label: "Change slider back to 4 persons"
+
+- tapOn:
+    id: "DefaultPersonSettings::Save"
+    label: "Save restored default persons"
+
+- extendedWaitUntil:
+    visible:
+      id: "BottomTabs::Parameters"
+    timeout: 120000
+    label: "Wait for scaling to complete"
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,20%"
+    label: "Scroll to Data Management section"
+
+- tapOn:
+    id: "Parameters::Section::Data::Ingredients::Item"
+    label: "Open Ingredients settings"
+
+- extendedWaitUntil:
+    visible:
+      id: "IngredientsSettings::0::.*"
+    timeout: 5000
+    label: "Wait for Ingredients list"
+    optional: true
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,20%"
+    label: "Scroll in Ingredients list"
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,20%"
+    label: "Continue scrolling"
+
+- runFlow:
+    file: "../parameters/ingredients/addNewIngredient.yaml"
+    label: "Add a new ingredient"
+
+- scrollUntilVisible:
+    element:
+      id: "IngredientsSettings::0::IngredientName"
+    direction: UP
+    speed: 60
+    label: "Scroll back to top"
+
+- pressKey: "BACK"
+
+- scrollUntilVisible:
+    element:
+      id: "Parameters::Section::Data::Tags::Item"
+    direction: UP
+    speed: 60
+    label: "Scroll to see tag list"
+
+- tapOn:
+    id: "Parameters::Section::Data::Tags::Item"
+    label: "Open Tags settings"
+
+- extendedWaitUntil:
+    visible:
+      id: "TagsSettings::0::.*"
+    timeout: 5000
+    label: "Wait for Tags list"
+    optional: true
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,20%"
+    label: "Scroll in Tags list"
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,20%"
+    label: "Continue scrolling"
+
+- runFlow:
+    file: "../parameters/tags/addNewTag.yaml"
+    label: "Add a new tag"
+
+- scrollUntilVisible:
+    element:
+      id: "TagsSettings::0::TagName"
+    direction: UP
+    speed: 60
+    label: "Scroll back to top"
+
+- pressKey: "BACK"

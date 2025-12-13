@@ -1,0 +1,110 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Navigate to Search screen"
+
+- extendedWaitUntil:
+    visible:
+      id: "SearchScreen::SearchBar"
+    timeout: 10000
+    label: "Wait for Search screen to load"
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,20%"
+    label: "Scroll down through recipe list"
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,20%"
+    label: "Continue scrolling"
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,20%"
+    label: "Continue scrolling"
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::SearchBar"
+    direction: UP
+    speed: 60
+    label: "Scroll back to SearchBar"
+
+- tapOn:
+    id: "SearchScreen::FiltersToggleButtons"
+    label: "Open filter page"
+
+- extendedWaitUntil:
+    visible:
+      id: "SearchScreen::FilterAccordion::Accordion::0"
+    timeout: 5000
+    label: "Wait for filter accordions"
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::2"
+    direction: DOWN
+    speed: 40
+    label: "Scroll to tag accordion"
+
+- tapOn:
+    id: "SearchScreen::FilterAccordion::Accordion::2"
+    label: "Expand tag accordion"
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::2::Item::0"
+    direction: UP
+    speed: 40
+    label: "Scroll to tag item"
+
+- tapOn:
+    id: "SearchScreen::FilterAccordion::Accordion::2::Item::0"
+    label: "Select first tag filter"
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::6"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to chees accordion"
+
+- tapOn:
+    id: "SearchScreen::FilterAccordion::Accordion::6"
+    label: "Expand cheese accordion"
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::6::Item::0"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to parmesan item"
+
+- tapOn:
+    id: "SearchScreen::FilterAccordion::Accordion::6::Item::0"
+    label: "Select parmesan filter"
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::SearchBar"
+    direction: UP
+    speed: 40
+    label: "Scroll to search bar"
+
+- tapOn:
+    id: "SearchScreen::FiltersToggleButtons"
+    label: "Return to filtered Search screen"
+
+- tapOn:
+    id: "SearchScreen::FiltersSelection::0::Chip"
+    label: "Remove first filter chip"
+    optional: true
+
+- tapOn:
+    id: "SearchScreen::FiltersSelection::0::Chip"
+    label: "Remove second filter chip"
+    optional: true

@@ -1,0 +1,6 @@
+flows:
+  - cases/performance/*
+
+executionOrder:
+  flowsOrder:
+    - "1 - Full Performance Flow"

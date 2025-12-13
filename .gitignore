@@ -41,6 +41,9 @@ jest-results.json
 # Maestro
 maestro_logs
 
+# Reassure
+.reassure/current*
+
 # Documentation build
 docs/
 

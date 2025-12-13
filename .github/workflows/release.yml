@@ -33,3 +33,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run release
+
+      - name: Update Reassure baseline
+        run: |
+          npm run test:perf -- --baseline
+          git add .reassure/baseline.perf
+          git diff --staged --quiet || (
+            git commit -m "perf: update reassure baseline [skip ci]" &&
+            git push
+          )

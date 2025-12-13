@@ -60,7 +60,7 @@ module.exports = defineConfig([
             'react/prop-types': 'off', // TypeScript handles this
             'react/react-in-jsx-scope': 'off', // Not needed in React Native
             'react-hooks/rules-of-hooks': 'error',
-            'react-hooks/exhaustive-deps': 'warn',
+            'react-hooks/exhaustive-deps': 'off', // React Compiler handles memoization
 
             // React Native specific rules
             'react-native/no-unused-styles': 'error',
