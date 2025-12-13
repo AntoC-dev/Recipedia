@@ -1,0 +1,112 @@
+name: Performance Tests (Flashlight)
+
+on:
+  # Nightly at 2 AM UTC
+  schedule:
+    - cron: '0 2 * * *'
+
+  # Manual trigger
+  workflow_dispatch:
+    inputs:
+      test_name:
+        description: 'Test name for Flashlight dashboard'
+        required: false
+        default: 'manual-run'
+
+  # PR trigger on label
+  pull_request:
+    types: [labeled]
+
+permissions:
+  contents: read
+
+jobs:
+  build-performance-apk:
+    name: Build Performance APK
+    # Only run if: scheduled, manual, OR has 'perf-test' label
+    if: |
+      github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' && github.event.label.name == 'perf-test')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Build Performance APK
+        run: npm run build:perf:android
+
+      - name: Find APK file
+        id: find-apk
+        run: |
+          APK_PATH=$(find . -name "*.apk" -type f | head -1)
+          echo "apk_path=$APK_PATH" >> $GITHUB_OUTPUT
+          echo "Found APK: $APK_PATH"
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: performance-apk
+          path: ${{ steps.find-apk.outputs.apk_path }}
+          retention-days: 1
+
+  flashlight-test:
+    name: Run Flashlight Cloud Tests
+    needs: build-performance-apk
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Download APK
+        uses: actions/download-artifact@v5
+        with:
+          name: performance-apk
+          path: ./apk
+
+      - name: Find APK file
+        id: find-apk
+        run: |
+          APK_PATH=$(find ./apk -name "*.apk" -type f | head -1)
+          echo "apk_path=$APK_PATH" >> $GITHUB_OUTPUT
+          echo "Found APK: $APK_PATH"
+
+      - name: Determine test name
+        id: test-name
+        run: |
+          if [ "${{ github.event_name }}" == "schedule" ]; then
+            echo "name=main-nightly" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "name=${{ github.event.inputs.test_name || 'manual-run' }}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "name=PR-${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install Flashlight CLI
+        run: curl https://get.flashlight.dev | bash
+
+      - name: Run Flashlight Cloud
+        env:
+          FLASHLIGHT_API_KEY: ${{ secrets.FLASHLIGHT_API_KEY }}
+        run: |
+          ~/.flashlight/bin/flashlight cloud \
+            --projectId "recipedia" \
+            --testName "${{ steps.test-name.outputs.name }}" \
+            --app "${{ steps.find-apk.outputs.apk_path }}" \
+            --test tests/e2e/cases/performance/1_full_flow.yaml \
+            --apiKey "$FLASHLIGHT_API_KEY" \
+            --duration 120000
