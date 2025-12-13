@@ -47,6 +47,12 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Setup Python for Chaquopy (Android only)
+        if: matrix.platform == 'android'
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: '.python-version'
+
       - name: Setup EAS
         uses: expo/expo-github-action@v8
         with:
