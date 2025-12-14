@@ -226,6 +226,12 @@ export const Checkbox: React.FC<any> = props => (
   </TouchableOpacity>
 );
 
+export const Icon: React.FC<any> = props => (
+  <View testID={props.testID} {...{ size: props.size, color: props.color }}>
+    <RNText testID={props.testID + '::Source'}>{props.source}</RNText>
+  </View>
+);
+
 export const IconButton: React.FC<any> = props => (
   <TouchableOpacity testID={props.testID} onPress={props.onPress} style={props.style}>
     <RNText testID={props.testID + '::Icon'}>{props.icon}</RNText>
@@ -275,11 +281,13 @@ export const useTheme = jest.fn(() => ({
     tertiary: '#7c5800',
     background: '#f6f6f6',
     surface: '#ffffff',
+    surfaceVariant: '#e7e0ec',
     error: '#b00020',
     onPrimary: '#ffffff',
     onSecondary: '#000000',
     onBackground: '#000000',
     onSurface: '#000000',
+    onSurfaceVariant: '#49454f',
     onError: '#ffffff',
     text: '#000000',
     disabled: '#9e9e9e',

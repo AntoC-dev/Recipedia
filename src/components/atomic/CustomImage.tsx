@@ -31,10 +31,11 @@
  * ```
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleProp, View, ViewStyle } from 'react-native';
 import { Image } from 'expo-image';
-import { useTheme } from 'react-native-paper';
+import { Icon, useTheme } from 'react-native-paper';
+import { Icons } from '@assets/Icons';
 
 /**
  * Props for the CustomImage component
@@ -50,6 +51,8 @@ export type CustomImageProps = {
   size?: number;
   /** Whether to make the image circular (applies size/2 as border radius) */
   circular?: boolean;
+  /** Custom border radius (overrides circular if provided) */
+  borderRadius?: number;
   /** Callback fired when image loads successfully */
   onLoadSuccess?: () => void;
   /** Callback fired when image fails to load */
@@ -70,29 +73,61 @@ export function CustomImage({
   backgroundColor,
   size,
   circular,
+  borderRadius: customBorderRadius,
   onLoadSuccess,
   onLoadError,
   testID,
 }: CustomImageProps) {
   const { colors } = useTheme();
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    setHasError(false);
+  }, [uri]);
 
   const dimensions: StyleProp<ViewStyle> = size ? { width: size, height: size } : { flex: 1 };
-  const borderRadius = circular && size ? size / 2 : 0;
+  const borderRadius = customBorderRadius ?? (circular && size ? size / 2 : 0);
+  const showPlaceholder = !uri || hasError;
+
+  const handleError = () => {
+    setHasError(true);
+    onLoadError?.();
+  };
 
   return (
-    <View style={dimensions}>
+    <View
+      style={[
+        dimensions,
+        {
+          backgroundColor: backgroundColor || colors.surfaceVariant,
+          borderRadius,
+          justifyContent: 'center',
+          alignItems: 'center',
+          overflow: 'hidden',
+        },
+      ]}
+      testID={testID}
+    >
+      {showPlaceholder && (
+        <Icon
+          source={Icons.imageOff}
+          size={size ? size * 0.4 : 24}
+          color={colors.onSurfaceVariant}
+          testID={testID + '::Placeholder'}
+        />
+      )}
       <Image
         style={{
-          flex: 1,
+          width: '100%',
+          height: '100%',
           backgroundColor: backgroundColor || colors.tertiary,
-          borderRadius: borderRadius,
-          width: size,
-          height: size,
+          position: showPlaceholder ? 'absolute' : 'relative',
+          opacity: showPlaceholder ? 0 : 1,
         }}
         testID={testID + '::Image'}
         source={uri}
         contentFit={contentFit}
-        onError={onLoadError}
+        onError={handleError}
         onLoad={onLoadSuccess}
       />
     </View>
