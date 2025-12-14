@@ -6,6 +6,7 @@
  */
 
 import { numericQuantity } from 'numeric-quantity';
+import { decode } from 'html-entities';
 import {
   extractFirstInteger,
   extractNumericValue,
@@ -30,6 +31,12 @@ import {
 const DEFAULT_PORTION_WEIGHT_GRAMS = 100;
 const SODIUM_MG_THRESHOLD = 10;
 const MG_PER_GRAM = 1000;
+
+function stripHtml(text: string): string {
+  return decode(text.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, ''))
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 
 export type ParsedIngredient =
   | { success: true; ingredient: FormIngredientElement }
@@ -211,21 +218,21 @@ export function convertPreparation(
 ): preparationStepElement[] {
   if (parsedInstructions && parsedInstructions.length > 0) {
     return parsedInstructions.map(group => ({
-      title: group.title ?? '',
-      description: group.instructions.map(i => i.trim()).join('\n'),
+      title: group.title ? stripHtml(group.title) : '',
+      description: group.instructions.map(i => stripHtml(i.trim())).join('\n'),
     }));
   }
 
   if (instructionsList && instructionsList.length > 0) {
     return instructionsList.map(step => ({
       title: '',
-      description: step.trim(),
+      description: stripHtml(step.trim()),
     }));
   }
 
   const steps = instructions
     .split('\n')
-    .map(removeNumberedPrefix)
+    .map(s => stripHtml(removeNumberedPrefix(s)))
     .filter(step => step.length > 0);
 
   return steps.map(step => ({

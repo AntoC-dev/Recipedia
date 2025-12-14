@@ -543,7 +543,7 @@ export class RecipeDatabase {
 
     if (!success) {
       databaseLogger.error('Failed to batch insert recipes');
-      return;
+      throw new Error('Failed to insert recipes into database');
     }
 
     const titles = processedRecipes.map(r => r.title);
