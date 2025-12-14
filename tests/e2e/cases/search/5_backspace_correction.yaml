@@ -35,16 +35,18 @@ tags:
 
 - inputText: "i"
 
+- hideKeyboard:
+    label: "Action - Dismiss keyboard"
+
 - runFlow:
     file: "../../asserts/search/searchbar/searchBarFilteredOnPi.yaml"
     label: "Assert - Verify dropdown filtered on 'Pi'"
 
-- hideKeyboard:
-    label: "Action - Dismiss keyboard"
 
 - tapOn:
-    text: "Margherita Pizza"
-    label: "Action - Select Margherita Pizza from dropdown"
+    id: "SearchScreen::SearchBarResults::Item::0"
+    retryTapIfNoChange: false
+    label: "Action - Select first item (Margherita Pizza) from dropdown"
 
 - runFlow:
     file: "../../asserts/search/en/searchScreenFilteredOnPizza.yaml"
@@ -52,6 +54,7 @@ tags:
 
 - tapOn:
     id: "SearchScreen::SearchBar::RightIcon"
+    retryTapIfNoChange: false
     label: "Action - Tap clear icon to remove search filter"
 
 - runFlow:

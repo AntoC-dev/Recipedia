@@ -270,7 +270,8 @@ appId: "com.recipedia"
       id: "RecipePreparation::EditableStep::5::Title"
     direction: DOWN
     centerElement: true
-    speed: 80
+    speed: 60
+    timeout: 60000
     label: "Scroll down to sixth and last step"
 
 - assertVisible:

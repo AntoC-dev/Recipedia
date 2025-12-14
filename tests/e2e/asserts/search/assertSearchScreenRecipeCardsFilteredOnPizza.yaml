@@ -82,11 +82,3 @@ appId: "com.recipedia"
 - assertNotVisible:
     text: "Lentil Curry"
     label: "Lentil Curry title is not visible"
-
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::SearchBar"
-    direction: UP
-    speed: 95
-    centerElement: true
-    label: "Scroll back to top of Search screen"

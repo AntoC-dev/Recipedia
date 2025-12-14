@@ -73,7 +73,7 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipePreparation::EditableStep::0::Content"
+      id: "RecipePreparation::PrefixText"
     direction: DOWN
     speed: 60
     centerElement: true
