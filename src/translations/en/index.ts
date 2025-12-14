@@ -9,10 +9,12 @@ import filters from './filters';
 import alerts from './alerts';
 import months from './months';
 import onboarding from './onboarding';
+import bulkImport from './bulkImport';
 
 export default {
   ...common,
   ...parameters,
+  bulkImport,
   ...seasons,
   ...months,
   ...recipe,

@@ -190,7 +190,7 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
         setValidationQueue({
           type: 'Tag',
           items: needsValidation,
-          onValidated: addTagIfNotDuplicate,
+          onValidated: (_, validatedTag) => addTagIfNotDuplicate(validatedTag),
         });
       }
     }
@@ -217,7 +217,7 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
         setValidationQueue({
           type: 'Ingredient',
           items: needsValidation,
-          onValidated: addOrMergeIngredient,
+          onValidated: (_, validatedIngredient) => addOrMergeIngredient(validatedIngredient),
         });
       }
     }

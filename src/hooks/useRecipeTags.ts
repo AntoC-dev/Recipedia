@@ -120,7 +120,7 @@ export function useRecipeTags(): UseRecipeTagsReturn {
       setValidationQueue({
         type: 'Tag',
         items: needsValidation,
-        onValidated: addTagIfNotDuplicate,
+        onValidated: (_, validatedTag) => addTagIfNotDuplicate(validatedTag),
       });
     }
   };

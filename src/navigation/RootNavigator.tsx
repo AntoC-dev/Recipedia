@@ -61,6 +61,9 @@ import { LanguageSettings } from '@screens/LanguageSettings';
 import { DefaultPersonsSettings } from '@screens/DefaultPersonsSettings';
 import { IngredientsSettings } from '@screens/IngredientsSettings';
 import { TagsSettings } from '@screens/TagsSettings';
+import { BulkImportSettings } from '@screens/BulkImportSettings';
+import { BulkImportDiscovery } from '@screens/BulkImportDiscovery';
+import { BulkImportValidation } from '@screens/BulkImportValidation';
 import { Stack } from '@customTypes/ScreenTypes';
 import { BottomTabs } from '@navigation/BottomTabs';
 import { navigationLogger } from '@utils/logger';
@@ -92,6 +95,9 @@ export function RootNavigator() {
       <Stack.Screen name='DefaultPersonsSettings' component={DefaultPersonsSettings} />
       <Stack.Screen name='IngredientsSettings' component={IngredientsSettings} />
       <Stack.Screen name='TagsSettings' component={TagsSettings} />
+      <Stack.Screen name='BulkImportSettings' component={BulkImportSettings} />
+      <Stack.Screen name='BulkImportDiscovery' component={BulkImportDiscovery} />
+      <Stack.Screen name='BulkImportValidation' component={BulkImportValidation} />
     </Stack.Navigator>
   );
 }

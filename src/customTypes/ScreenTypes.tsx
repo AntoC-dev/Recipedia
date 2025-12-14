@@ -48,6 +48,7 @@ import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navig
 import React from 'react';
 import { BottomTabScreenProps, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import type { RecipePropType } from '@customTypes/RecipeNavigationTypes';
+import type { ConvertedImportRecipe } from '@customTypes/BulkImportTypes';
 
 /**
  * Recipe screen mode types
@@ -83,6 +84,12 @@ export type StackScreenParamList = {
   IngredientsSettings: undefined;
   /** Tag management screen (no parameters) */
   TagsSettings: undefined;
+  /** Bulk import provider selection screen (no parameters) */
+  BulkImportSettings: undefined;
+  /** Bulk import discovery screen with provider ID */
+  BulkImportDiscovery: { providerId: string };
+  /** Bulk import validation screen with selected recipes */
+  BulkImportValidation: { providerId: string; selectedRecipes: ConvertedImportRecipe[] };
 };
 
 /**
