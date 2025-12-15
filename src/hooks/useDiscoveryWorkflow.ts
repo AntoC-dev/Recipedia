@@ -17,6 +17,7 @@ import {
 } from '@customTypes/BulkImportTypes';
 import { bulkImportLogger } from '@utils/logger';
 import { useI18n } from '@utils/i18n';
+import { getIgnoredPatterns } from '@utils/RecipeScraperConverter';
 
 /** Current phase of the discovery screen */
 export type DiscoveryPhase = 'discovering' | 'selecting' | 'parsing';
@@ -202,6 +203,7 @@ export function useDiscoveryWorkflow(
       const generator = provider.parseSelectedRecipes(selectedRecipes, {
         signal: abortController.signal,
         defaultPersons,
+        ignoredPatterns: getIgnoredPatterns(t),
       });
 
       let finalProgress: ParsingProgress | null = null;

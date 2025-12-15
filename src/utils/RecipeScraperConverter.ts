@@ -32,6 +32,28 @@ const DEFAULT_PORTION_WEIGHT_GRAMS = 100;
 const SODIUM_MG_THRESHOLD = 10;
 const MG_PER_GRAM = 1000;
 
+/**
+ * Retrieves ignored ingredient patterns from i18n translations.
+ *
+ * @param t - i18n translation function
+ * @returns Patterns for ingredients to skip during parsing
+ */
+export function getIgnoredPatterns(
+  t: (key: string, options?: { returnObjects: boolean }) => unknown
+): IgnoredIngredientPatterns {
+  const prefixes = t('recipe.scraper.ignoredIngredientPrefixes', { returnObjects: true });
+  const exactMatches = t('recipe.scraper.ignoredIngredientExactMatches', { returnObjects: true });
+
+  return {
+    prefixes: Array.isArray(prefixes)
+      ? prefixes.filter((p): p is string => typeof p === 'string')
+      : [],
+    exactMatches: Array.isArray(exactMatches)
+      ? exactMatches.filter((e): e is string => typeof e === 'string')
+      : [],
+  };
+}
+
 function stripHtml(text: string): string {
   return decode(text.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, ''))
     .replace(/\s+/g, ' ')
