@@ -49,7 +49,7 @@ jobs:
 
       - name: Setup Python for Chaquopy (Android only)
         if: matrix.platform == 'android'
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version-file: '.python-version'
 

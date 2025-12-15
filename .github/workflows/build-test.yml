@@ -247,7 +247,7 @@ jobs:
           github.ref == 'refs/heads/main' ||
           startsWith(github.ref, 'refs/tags/') ||
           env.BUILD_FALLBACK == 'true'
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version-file: '.python-version'
 
