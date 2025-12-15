@@ -1841,5 +1841,86 @@ describe('Recipe Component tests', () => {
     });
   });
 
-  // TODO add delete test
+  describe('delete functionality', () => {
+    test('shows delete confirmation dialog in readOnly mode', async () => {
+      const { getByTestId } = await renderRecipe(createMockRoute(mockRouteReadOnly));
+
+      fireEvent.press(getByTestId('Recipe::AppBar::Delete'));
+
+      expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
+      expect(getByTestId('Recipe::Alert::Title').props.children).toBe('deleteRecipe');
+      expect(getByTestId('Recipe::Alert::Content').props.children).toBe('confirmDelete');
+    });
+
+    test('deletes recipe and shows success message on confirm', async () => {
+      const deleteRecipeSpy = jest.spyOn(dbInstance, 'deleteRecipe');
+      const { getByTestId } = await renderRecipe(createMockRoute(mockRouteReadOnly));
+
+      fireEvent.press(getByTestId('Recipe::AppBar::Delete'));
+      fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
+
+      await waitFor(() => {
+        expect(deleteRecipeSpy).toHaveBeenCalled();
+      });
+
+      await waitFor(() => {
+        expect(getByTestId('Recipe::Alert::Content').props.children).toContain(
+          'deletedFromDatabase'
+        );
+      });
+
+      deleteRecipeSpy.mockRestore();
+    });
+
+    test('navigates back after confirming delete success', async () => {
+      const { getByTestId } = await renderRecipe(createMockRoute(mockRouteReadOnly));
+
+      fireEvent.press(getByTestId('Recipe::AppBar::Delete'));
+      fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
+
+      await waitFor(() => {
+        expect(getByTestId('Recipe::Alert::Content').props.children).toContain(
+          'deletedFromDatabase'
+        );
+      });
+
+      fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
+
+      expect(mockNavigation.goBack).toHaveBeenCalled();
+    });
+  });
+
+  describe('cancel functionality', () => {
+    test('cancel button resets form to original values', async () => {
+      const { getByTestId, queryByTestId } = await renderRecipe(createMockRoute(mockRouteEdit));
+
+      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Modified Title');
+      expect(getByTestId('RecipeTitle::TextEditable').props.children).toBe('Modified Title');
+
+      fireEvent.press(getByTestId('Recipe::AppBar::Cancel'));
+
+      await waitFor(() => {
+        checkAppbarButtons(mockRouteReadOnly, getByTestId, queryByTestId);
+      });
+    });
+  });
+
+  describe('similar recipe detection', () => {
+    test('shows similar recipe warning when adding duplicate', async () => {
+      const { getByTestId } = await renderRecipe(createMockRoute(mockRouteAddManually));
+
+      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), testRecipes[0].title);
+      fireEvent.press(getByTestId('RecipeDescription::SetTextToEdit'), 'Test description');
+      fireEvent.press(getByTestId('RecipePersons::SetTextToEdit'), '4');
+      fireEvent.press(getByTestId('RecipeTime::SetTextToEdit'), '30');
+      fireEvent.press(getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction'));
+      fireEvent.press(getByTestId('RecipePreparation::AddButton::RoundButton::OnPressFunction'));
+
+      fireEvent.press(getByTestId('Recipe::BottomActionButton'));
+
+      await waitFor(() => {
+        expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
+      });
+    });
+  });
 });

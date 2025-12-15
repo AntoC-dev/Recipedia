@@ -657,6 +657,28 @@ describe('RecipeValidationHelpers', () => {
 
       expect(result).toHaveLength(2);
     });
+
+    test('preserves type and season from exactMatch when merging with FormIngredient', () => {
+      const currentWithFormIngredient = [
+        { name: 'Flour', quantity: '200', unit: 'g' } as ingredientTableElement,
+      ];
+
+      const validatedIngredient: ingredientTableElement = {
+        id: 1,
+        name: 'Flour',
+        quantity: '100',
+        unit: 'g',
+        type: ingredientType.cereal,
+        season: ['1', '2', '3'],
+      };
+
+      const result = addOrMergeIngredientMatches(currentWithFormIngredient, [validatedIngredient]);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].quantity).toBe('300');
+      expect(result[0].type).toBe(ingredientType.cereal);
+      expect(result[0].season).toEqual(['1', '2', '3']);
+    });
   });
 
   describe('addNonDuplicateTags', () => {

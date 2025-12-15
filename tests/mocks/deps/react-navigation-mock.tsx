@@ -1,13 +1,23 @@
 export const mockNavigate = jest.fn();
 export const mockAddListener = jest.fn((event, handler) => {
-  // Store the handler for testing
   if (event === 'state') {
     setTimeout(() => handler(), 0);
   }
-  return jest.fn(); // Return unsubscribe function
+  return jest.fn();
 });
 
 export const mockGoBack = jest.fn();
+export const mockDispatch = jest.fn();
+
+let mockRouteParams: Record<string, unknown> = {};
+
+export function setMockRouteParams(params: Record<string, unknown>) {
+  mockRouteParams = params;
+}
+
+export function resetMockRouteParams() {
+  mockRouteParams = {};
+}
 
 export function reactNavigationMock() {
   return {
@@ -16,12 +26,16 @@ export function reactNavigationMock() {
       navigate: mockNavigate,
       addListener: mockAddListener,
       goBack: mockGoBack,
+      dispatch: mockDispatch,
     }),
-    useFocusEffect: jest.fn(() => {
-      // Don't call the callback - this simulates a screen that's already focused
-      // and won't receive focus/blur events during the test
+    useRoute: () => ({
+      params: mockRouteParams,
     }),
+    useFocusEffect: jest.fn(() => {}),
     useIsFocused: () => true,
+    CommonActions: {
+      reset: jest.fn(config => ({ type: 'reset', ...config })),
+    },
   };
 }
 

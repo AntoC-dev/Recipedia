@@ -306,4 +306,248 @@ describe('WelcomeScreen Component', () => {
       jest.restoreAllMocks();
     });
   });
+
+  describe('Loading state handling', () => {
+    test('shows loading overlay when start tour clicked before data loads', async () => {
+      const mockContextEmpty = {
+        recipes: [],
+        ingredients: [],
+        tags: [],
+        shopping: [],
+        datasetLoadError: undefined,
+        dismissDatasetLoadError: jest.fn(),
+        isDatabaseReady: true,
+        scalingProgress: undefined,
+        addRecipe: jest.fn(),
+        editRecipe: jest.fn(),
+        deleteRecipe: jest.fn(),
+        addIngredient: jest.fn(),
+        editIngredient: jest.fn(),
+        deleteIngredient: jest.fn(),
+        addTag: jest.fn(),
+        editTag: jest.fn(),
+        deleteTag: jest.fn(),
+        addRecipeToShopping: jest.fn(),
+        purchaseIngredientInShoppingList: jest.fn(),
+        clearShoppingList: jest.fn(),
+        findSimilarRecipes: jest.fn(),
+        findSimilarIngredients: jest.fn(),
+        findSimilarTags: jest.fn(),
+        getRandomIngredients: jest.fn(),
+        getRandomTags: jest.fn(),
+        searchRandomlyTags: jest.fn(),
+        scaleAllRecipesForNewDefaultPersons: jest.fn(),
+        isDatabaseEmpty: jest.fn(),
+        addMultipleIngredients: jest.fn(),
+        addMultipleTags: jest.fn(),
+        addMultipleRecipes: jest.fn(),
+      };
+
+      jest
+        .spyOn(require('@context/RecipeDatabaseContext'), 'useRecipeDatabase')
+        .mockReturnValue(mockContextEmpty);
+
+      const { getByTestId } = render(
+        <WelcomeScreen onStartTutorial={mockOnStartTutorial} onSkip={mockOnSkip} />
+      );
+
+      await waitFor(() => {
+        expect(getByTestId('WelcomeScreen::StartTourButton')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('WelcomeScreen::StartTourButton'));
+
+      expect(mockOnStartTutorial).not.toHaveBeenCalled();
+      expect(getByTestId('WelcomeScreen::LoadingOverlay::Overlay')).toBeTruthy();
+      expect(getByTestId('WelcomeScreen::LoadingOverlay::Overlay::Message')).toHaveTextContent(
+        'welcome.loadingData'
+      );
+
+      jest.restoreAllMocks();
+    });
+
+    test('shows loading overlay when skip clicked before data loads', async () => {
+      const mockContextEmpty = {
+        recipes: [],
+        ingredients: [],
+        tags: [],
+        shopping: [],
+        datasetLoadError: undefined,
+        dismissDatasetLoadError: jest.fn(),
+        isDatabaseReady: true,
+        scalingProgress: undefined,
+        addRecipe: jest.fn(),
+        editRecipe: jest.fn(),
+        deleteRecipe: jest.fn(),
+        addIngredient: jest.fn(),
+        editIngredient: jest.fn(),
+        deleteIngredient: jest.fn(),
+        addTag: jest.fn(),
+        editTag: jest.fn(),
+        deleteTag: jest.fn(),
+        addRecipeToShopping: jest.fn(),
+        purchaseIngredientInShoppingList: jest.fn(),
+        clearShoppingList: jest.fn(),
+        findSimilarRecipes: jest.fn(),
+        findSimilarIngredients: jest.fn(),
+        findSimilarTags: jest.fn(),
+        getRandomIngredients: jest.fn(),
+        getRandomTags: jest.fn(),
+        searchRandomlyTags: jest.fn(),
+        scaleAllRecipesForNewDefaultPersons: jest.fn(),
+        isDatabaseEmpty: jest.fn(),
+        addMultipleIngredients: jest.fn(),
+        addMultipleTags: jest.fn(),
+        addMultipleRecipes: jest.fn(),
+      };
+
+      jest
+        .spyOn(require('@context/RecipeDatabaseContext'), 'useRecipeDatabase')
+        .mockReturnValue(mockContextEmpty);
+
+      const { getByTestId } = render(
+        <WelcomeScreen onStartTutorial={mockOnStartTutorial} onSkip={mockOnSkip} />
+      );
+
+      await waitFor(() => {
+        expect(getByTestId('WelcomeScreen::SkipButton')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('WelcomeScreen::SkipButton'));
+
+      expect(mockOnSkip).not.toHaveBeenCalled();
+      expect(getByTestId('WelcomeScreen::LoadingOverlay::Overlay')).toBeTruthy();
+      expect(getByTestId('WelcomeScreen::LoadingOverlay::Overlay::Message')).toHaveTextContent(
+        'welcome.loadingData'
+      );
+
+      jest.restoreAllMocks();
+    });
+
+    test('calls onStartTutorial after data loads when pending tutorial action', async () => {
+      let mockRecipes: any[] = [];
+      const mockContext = {
+        get recipes() {
+          return mockRecipes;
+        },
+        ingredients: [],
+        tags: [],
+        shopping: [],
+        datasetLoadError: undefined,
+        dismissDatasetLoadError: jest.fn(),
+        isDatabaseReady: true,
+        scalingProgress: undefined,
+        addRecipe: jest.fn(),
+        editRecipe: jest.fn(),
+        deleteRecipe: jest.fn(),
+        addIngredient: jest.fn(),
+        editIngredient: jest.fn(),
+        deleteIngredient: jest.fn(),
+        addTag: jest.fn(),
+        editTag: jest.fn(),
+        deleteTag: jest.fn(),
+        addRecipeToShopping: jest.fn(),
+        purchaseIngredientInShoppingList: jest.fn(),
+        clearShoppingList: jest.fn(),
+        findSimilarRecipes: jest.fn(),
+        findSimilarIngredients: jest.fn(),
+        findSimilarTags: jest.fn(),
+        getRandomIngredients: jest.fn(),
+        getRandomTags: jest.fn(),
+        searchRandomlyTags: jest.fn(),
+        scaleAllRecipesForNewDefaultPersons: jest.fn(),
+        isDatabaseEmpty: jest.fn(),
+        addMultipleIngredients: jest.fn(),
+        addMultipleTags: jest.fn(),
+        addMultipleRecipes: jest.fn(),
+      };
+
+      const useRecipeDbSpy = jest
+        .spyOn(require('@context/RecipeDatabaseContext'), 'useRecipeDatabase')
+        .mockReturnValue(mockContext);
+
+      const { getByTestId, rerender } = render(
+        <WelcomeScreen onStartTutorial={mockOnStartTutorial} onSkip={mockOnSkip} />
+      );
+
+      await waitFor(() => {
+        expect(getByTestId('WelcomeScreen::StartTourButton')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('WelcomeScreen::StartTourButton'));
+      expect(mockOnStartTutorial).not.toHaveBeenCalled();
+
+      mockRecipes = [{ id: 1 }];
+      rerender(<WelcomeScreen onStartTutorial={mockOnStartTutorial} onSkip={mockOnSkip} />);
+
+      await waitFor(() => {
+        expect(mockOnStartTutorial).toHaveBeenCalledTimes(1);
+      });
+
+      useRecipeDbSpy.mockRestore();
+    });
+
+    test('calls onSkip after data loads when pending skip action', async () => {
+      let mockRecipes: any[] = [];
+      const mockContext = {
+        get recipes() {
+          return mockRecipes;
+        },
+        ingredients: [],
+        tags: [],
+        shopping: [],
+        datasetLoadError: undefined,
+        dismissDatasetLoadError: jest.fn(),
+        isDatabaseReady: true,
+        scalingProgress: undefined,
+        addRecipe: jest.fn(),
+        editRecipe: jest.fn(),
+        deleteRecipe: jest.fn(),
+        addIngredient: jest.fn(),
+        editIngredient: jest.fn(),
+        deleteIngredient: jest.fn(),
+        addTag: jest.fn(),
+        editTag: jest.fn(),
+        deleteTag: jest.fn(),
+        addRecipeToShopping: jest.fn(),
+        purchaseIngredientInShoppingList: jest.fn(),
+        clearShoppingList: jest.fn(),
+        findSimilarRecipes: jest.fn(),
+        findSimilarIngredients: jest.fn(),
+        findSimilarTags: jest.fn(),
+        getRandomIngredients: jest.fn(),
+        getRandomTags: jest.fn(),
+        searchRandomlyTags: jest.fn(),
+        scaleAllRecipesForNewDefaultPersons: jest.fn(),
+        isDatabaseEmpty: jest.fn(),
+        addMultipleIngredients: jest.fn(),
+        addMultipleTags: jest.fn(),
+        addMultipleRecipes: jest.fn(),
+      };
+
+      const useRecipeDbSpy = jest
+        .spyOn(require('@context/RecipeDatabaseContext'), 'useRecipeDatabase')
+        .mockReturnValue(mockContext);
+
+      const { getByTestId, rerender } = render(
+        <WelcomeScreen onStartTutorial={mockOnStartTutorial} onSkip={mockOnSkip} />
+      );
+
+      await waitFor(() => {
+        expect(getByTestId('WelcomeScreen::SkipButton')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('WelcomeScreen::SkipButton'));
+      expect(mockOnSkip).not.toHaveBeenCalled();
+
+      mockRecipes = [{ id: 1 }];
+      rerender(<WelcomeScreen onStartTutorial={mockOnStartTutorial} onSkip={mockOnSkip} />);
+
+      await waitFor(() => {
+        expect(mockOnSkip).toHaveBeenCalledTimes(1);
+      });
+
+      useRecipeDbSpy.mockRestore();
+    });
+  });
 });

@@ -556,7 +556,7 @@ describe('ValidationQueue', () => {
       mockOnDismissed.mockClear();
     });
 
-    test('calls onDismissed with original ingredient before onValidated', async () => {
+    test('calls onDismissed with original ingredient when dismissed', async () => {
       const formIngredients: FormIngredientElement[] = [
         { name: 'Oignon', quantity: '100', unit: 'g' },
       ];
@@ -565,12 +565,12 @@ describe('ValidationQueue', () => {
 
       fireEvent.press(
         getByTestId(
-          'test-validation::ValidationQueue::Ingredient::SimilarityDialog::Mock::item.onConfirm'
+          'test-validation::ValidationQueue::Ingredient::SimilarityDialog::Mock::item.onDismiss'
         )
       );
 
       expect(mockOnDismissed).toHaveBeenCalledTimes(1);
-      expect(mockOnValidated).toHaveBeenCalledTimes(1);
+      expect(mockOnValidated).not.toHaveBeenCalled();
 
       const dismissedIngredient = mockOnDismissed.mock.calls[0][0];
       expect(dismissedIngredient.name).toBe('Oignon');
@@ -590,8 +590,8 @@ describe('ValidationQueue', () => {
         )
       );
 
-      const validatedIngredient = mockOnValidated.mock.calls[0][0];
-      expect(validatedIngredient.quantity).toBe('250');
+      const mergedIngredient = mockOnValidated.mock.calls[0][1];
+      expect(mergedIngredient.quantity).toBe('250');
     });
 
     test('uses validated quantity when original quantity is undefined', () => {
@@ -605,8 +605,8 @@ describe('ValidationQueue', () => {
         )
       );
 
-      const validatedIngredient = mockOnValidated.mock.calls[0][0];
-      expect(validatedIngredient.quantity).toBe('100');
+      const mergedIngredient = mockOnValidated.mock.calls[0][1];
+      expect(mergedIngredient.quantity).toBe('100');
     });
 
     test('uses validated quantity when original quantity is empty string', () => {
@@ -622,8 +622,8 @@ describe('ValidationQueue', () => {
         )
       );
 
-      const validatedIngredient = mockOnValidated.mock.calls[0][0];
-      expect(validatedIngredient.quantity).toBe('100');
+      const mergedIngredient = mockOnValidated.mock.calls[0][1];
+      expect(mergedIngredient.quantity).toBe('100');
     });
 
     test('preserves database ingredient metadata in validated result', () => {
@@ -639,8 +639,9 @@ describe('ValidationQueue', () => {
         )
       );
 
-      const validatedIngredient = mockOnValidated.mock.calls[0][0];
-      expect(validatedIngredient.name).toBeDefined();
+      const mergedIngredient = mockOnValidated.mock.calls[0][1];
+      expect(mergedIngredient.name).toBeDefined();
+      expect(mergedIngredient.id).toBeDefined();
     });
 
     test('handles onUseExisting similarly to onConfirm for ingredients', () => {
@@ -656,11 +657,11 @@ describe('ValidationQueue', () => {
         )
       );
 
-      expect(mockOnDismissed).toHaveBeenCalledTimes(1);
+      expect(mockOnDismissed).not.toHaveBeenCalled();
       expect(mockOnValidated).toHaveBeenCalledTimes(1);
 
-      const validatedIngredient = mockOnValidated.mock.calls[0][0];
-      expect(validatedIngredient.quantity).toBe('50');
+      const mergedIngredient = mockOnValidated.mock.calls[0][1];
+      expect(mergedIngredient.quantity).toBe('50');
     });
   });
 });
