@@ -23,6 +23,14 @@ appId: "com.recipedia"
     label: "Expand Fruit accordion"
 
 # Assert all items are visible
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to Avocado filter"
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
     label: "Avocado filter is visible"

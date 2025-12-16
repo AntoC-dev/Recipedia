@@ -1,0 +1,121 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "SearchScreen::RecipeCards::0::Cover"
+    label: "Open first recipe"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::AppBar::Edit"
+    timeout: 5000
+    label: "Wait for recipe detail to load"
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,20%"
+    duration: 400
+    label: "Scroll down in recipe detail"
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,20%"
+    duration: 400
+    label: "Continue scrolling down"
+
+- swipe:
+    start: "50%,20%"
+    end: "50%,80%"
+    duration: 300
+    label: "Scroll back up"
+
+- tapOn:
+    id: "Recipe::AppBar::Edit"
+    label: "Enter edit mode"
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,20%"
+    duration: 400
+    label: "Scroll down in edit mode"
+
+- swipe:
+    start: "50%,20%"
+    end: "50%,80%"
+    duration: 300
+    label: "Scroll back up in edit mode"
+
+- tapOn:
+    id: "Recipe::AppBar::Validate"
+    label: "Validate without changes"
+
+- tapOn:
+    id: "Recipe::BottomActionButton"
+    label: "Add first recipe to menu"
+
+- tapOn:
+    id: "Recipe::Dialog::Confirm"
+    label: "Close validation dialog"
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::RecipeCards::1::Cover"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to second recipe"
+
+- tapOn:
+    id: "SearchScreen::RecipeCards::1::Cover"
+    label: "Open second recipe"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::AppBar::Edit"
+    timeout: 5000
+    label: "Wait for recipe detail"
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,20%"
+    duration: 400
+    label: "Scroll in second recipe"
+
+- swipe:
+    start: "50%,20%"
+    end: "50%,80%"
+    duration: 300
+    label: "Scroll back up"
+
+- tapOn:
+    id: "Recipe::BottomActionButton"
+    label: "Add second recipe to menu"
+
+- tapOn:
+    id: "Recipe::Dialog::Confirm"
+    label: "Close confirmation dialog"
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::RecipeCards::2::Cover"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to third recipe"
+
+- tapOn:
+    id: "SearchScreen::RecipeCards::2::Cover"
+    label: "Open third recipe"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::AppBar::Edit"
+    timeout: 5000
+    label: "Wait for recipe detail"
+
+- tapOn:
+    id: "Recipe::BottomActionButton"
+    label: "Add third recipe to menu"
+
+- tapOn:
+    id: "Recipe::Dialog::Confirm"
+    label: "Close validation dialog"

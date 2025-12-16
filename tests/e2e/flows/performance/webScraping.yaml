@@ -1,0 +1,37 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    file: "../recipe/adding/web/openUrlDialog.yaml"
+    label: "Open URL input dialog"
+
+- runFlow:
+    file: "../recipe/adding/web/submitUrl.yaml"
+    env:
+      RECIPE_URL: "https://www.hellofresh.fr/recipes/keftas-de-boeuf-and-semoule-aux-epices-66e83b9e7dfc60d59bf5f913"
+    label: "Submit recipe URL and wait for scraping"
+
+- runFlow:
+    file: "../recipe/adding/web/validateAllDialogs.yaml"
+    label: "Validate all tags and ingredients dialogs"
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,20%"
+    duration: 400
+    label: "Scroll through scraped recipe"
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,20%"
+    duration: 400
+    label: "Continue scrolling"
+
+- swipe:
+    start: "50%,20%"
+    end: "50%,80%"
+    duration: 300
+    label: "Scroll back up"
+
+- tapOn:
+    id: "Recipe::AppBar::BackButton"
+    label: "Cancel without saving"

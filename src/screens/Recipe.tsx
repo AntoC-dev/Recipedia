@@ -46,7 +46,7 @@ import { RecipeNutrition } from '@components/organisms/RecipeNutrition';
 import { recipeLogger, validationLogger } from '@utils/logger';
 import { LoadingOverlay } from '@components/dialogs/LoadingOverlay';
 import { ValidationQueue } from '@components/dialogs/ValidationQueue';
-import BottomActionButton from '@components/atomic/BottomActionButton';
+import { BottomActionButton } from '@components/atomic/BottomActionButton';
 
 import { useRecipeIngredients } from '@hooks/useRecipeIngredients';
 import { useRecipeTags } from '@hooks/useRecipeTags';

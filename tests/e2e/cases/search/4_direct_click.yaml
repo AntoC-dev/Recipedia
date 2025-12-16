@@ -19,8 +19,9 @@ tags:
     label: "Action - Dismiss keyboard"
 
 - tapOn:
-    text: "Lentil Curry"
-    label: "Action - Click directly on Lentil Curry from dropdown"
+    id: "SearchScreen::SearchBarResults::Item::4"
+    retryTapIfNoChange: false
+    label: "Action - Click directly on Lentil Curry (item 4) from dropdown"
 
 - runFlow:
     file: "../../asserts/search/en/searchScreenFilteredOnLentilCury.yaml"

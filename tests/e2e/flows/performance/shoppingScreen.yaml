@@ -1,0 +1,35 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "BottomTabs::Shopping"
+    label: "Navigate to Shopping screen"
+
+- extendedWaitUntil:
+    visible:
+      id: "ShoppingScreen::SectionList"
+    timeout: 5000
+    label: "Wait for Shopping screen"
+    optional: true
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,20%"
+    label: "Scroll down through shopping list"
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,20%"
+    label: "Continue scrolling down"
+
+- longPressOn:
+    id: "ShoppingScreen::SectionList::.*"
+    label: "Long press on any ingredient item"
+    optional: true
+
+- tapOn:
+    id: "ShoppingScreen::ClearShoppingListButton::RoundButton"
+    label: "Tap on the delete button"
+
+- tapOn:
+    id: "ShoppingScreen::ClearConfirmation::Dialog::Confirm"
+    label: "Validate the deletion"

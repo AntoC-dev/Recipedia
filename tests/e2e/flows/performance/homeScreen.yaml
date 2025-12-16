@@ -1,0 +1,38 @@
+appId: "com.recipedia"
+---
+- swipe:
+    start: "75%,25%"
+    end: "25%,25%"
+    label: "Swipe horizontally in random carousel"
+
+- swipe:
+    start: "75%,25%"
+    end: "25%,25%"
+    label: "Continue horizontal swipe"
+
+- swipe:
+    start: "25%,25%"
+    end: "75%,25%"
+    label: "Swipe back in carousel"
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,20%"
+    label: "Scroll down through recommendations"
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,20%"
+    label: "Continue scrolling down"
+
+- scrollUntilVisible:
+    element:
+      id: "Home::RecipeRecommendation::random::Carousel::Card::.*"
+    direction: UP
+    speed: 40
+    label: "Scroll back to top"
+
+- swipe:
+    start: "50%,20%"
+    end: "50%,80%"
+    label: "Pull to refresh"

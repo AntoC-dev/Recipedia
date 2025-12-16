@@ -60,6 +60,7 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 60
     centerElement: true
+    label: "Scroll to time part"
 
 - assertVisible:
     id: "RecipeTime::PrefixText"
@@ -72,23 +73,51 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipePreparation::EditableStep::0::Content"
+      id: "RecipePreparation::PrefixText"
     direction: DOWN
     speed: 60
     centerElement: true
+    label: "Scroll to preparation part"
 
 - assertVisible:
     id: "RecipePreparation::PrefixText"
     text: "Préparation : "
     label: "Preparation prefix text is rendered"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::0::Step"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to first preparation step"
+
 - assertVisible:
     id: "RecipePreparation::EditableStep::0::Step"
     text: "Étape 1"
     label: "Recipe preparation section is displayed in French"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::0::Title"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to preparation title part"
+
 - assertVisible:
     id: "RecipePreparation::EditableStep::0::Title"
     text: "Titre de l'étape 1 : "
     label: "Intro text for the recipe title of the first step is displayed in French"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::0::Content"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to preparation content part"
+
 - assertVisible:
     id: "RecipePreparation::EditableStep::0::Content"
     text: "Contenu de l'étape 1 : "
