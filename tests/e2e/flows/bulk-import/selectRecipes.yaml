@@ -1,0 +1,20 @@
+appId: "com.recipedia"
+---
+# Select N recipes by scrolling and tapping each checkbox
+# Expects env variable: RECIPE_COUNT (number of recipes to select)
+
+- evalScript: ${output.currentIndex = 0}
+
+- repeat:
+    while:
+      true: ${output.currentIndex < RECIPE_COUNT}
+    commands:
+      - scrollUntilVisible:
+          element:
+            id: "BulkImportDiscovery::Recipe::${output.currentIndex}::Checkbox"
+          direction: DOWN
+          speed: 40
+          centerElement: true
+      - tapOn:
+          id: "BulkImportDiscovery::Recipe::${output.currentIndex}::Checkbox"
+      - evalScript: ${output.currentIndex = output.currentIndex + 1}

@@ -32,5 +32,9 @@ tags:
     label: "Web scraping interactions"
 
 - runFlow:
+    file: "../../flows/performance/bulkImport.yaml"
+    label: "Bulk import interactions"
+
+- runFlow:
     file: "../../flows/performance/parametersScreen.yaml"
     label: "Parameters screen interactions"
