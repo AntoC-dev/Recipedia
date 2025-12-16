@@ -59,8 +59,17 @@ tags:
     timeout: 120000
     label: "Wait - For validation screen"
 
+- extendedWaitUntil:
+    notVisible:
+      id: "BulkImportValidation::InitializingIndicator"
+    timeout: 120000
+    label: "Wait - For initialization to complete"
+
 - runFlow:
-    file: "../../flows/bulk-import/validateAllBulkImportDialogs.yaml"
+    file: "../../flows/recipe/validation/validateAllDialogs.yaml"
+    env:
+      TAG_PREFIX: "BulkImportValidation::TagQueue"
+      INGREDIENT_PREFIX: "BulkImportValidation::IngredientQueue"
     label: "Action - Validate all tags and ingredients"
 
 - runFlow:

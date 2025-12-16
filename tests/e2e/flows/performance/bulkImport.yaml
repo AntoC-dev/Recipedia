@@ -466,8 +466,17 @@ appId: "com.recipedia"
     timeout: 600000
     label: "Wait for parsing 50 recipes (10 min timeout)"
 
+- extendedWaitUntil:
+    notVisible:
+      id: "BulkImportValidation::InitializingIndicator"
+    timeout: 300000
+    label: "Wait for initialization to complete"
+
 - runFlow:
-    file: "../bulk-import/validateAllBulkImportDialogs.yaml"
+    file: "../recipe/validation/validateAllDialogs.yaml"
+    env:
+      TAG_PREFIX: "BulkImportValidation::TagQueue"
+      INGREDIENT_PREFIX: "BulkImportValidation::IngredientQueue"
     label: "Validate all tags and ingredients"
 
 - extendedWaitUntil:

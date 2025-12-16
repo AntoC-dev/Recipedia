@@ -3,7 +3,7 @@ appId: "com.recipedia"
 - repeat:
     while:
       visible:
-        id: "RecipeValidation::ValidationQueue::Tag::SimilarityDialog::Title"
+        id: "${PREFIX}::ValidationQueue::Tag::SimilarityDialog::Title"
     commands:
       - tapOn:
           id: "RecipeImage::RoundButton"
@@ -12,7 +12,7 @@ appId: "com.recipedia"
 - repeat:
     while:
       visible:
-        id: "RecipeValidation::ValidationQueue::Ingredient::SimilarityDialog::Title"
+        id: "${PREFIX}::ValidationQueue::Ingredient::SimilarityDialog::Title"
     commands:
       - tapOn:
           id: "RecipeImage::RoundButton"
@@ -20,6 +20,6 @@ appId: "com.recipedia"
 
 - extendedWaitUntil:
     notVisible:
-      id: "RecipeValidation::ValidationQueue::Ingredient::SimilarityDialog::Title"
+      id: "${PREFIX}::ValidationQueue::Ingredient::SimilarityDialog::Title"
     timeout: 3000
     label: "Wait for all dialogs to be dismissed"

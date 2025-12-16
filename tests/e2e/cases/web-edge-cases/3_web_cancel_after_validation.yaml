@@ -20,18 +20,26 @@ tags:
 
 - runFlow:
     file: "../../flows/recipe/validation/validateOneTag.yaml"
+    env:
+      PREFIX: "RecipeValidation"
     label: "Action - Add one tag through validation"
 
 - runFlow:
     file: "../../flows/recipe/validation/cancelAllRemainingTagDialogs.yaml"
+    env:
+      PREFIX: "RecipeValidation"
     label: "Action - Cancel all remaining tag validation dialogs"
 
 - runFlow:
     file: "../../flows/recipe/validation/validateOneIngredient.yaml"
+    env:
+      PREFIX: "RecipeValidation"
     label: "Action - Add one ingredient through validation"
 
 - runFlow:
     file: "../../flows/recipe/validation/cancelAllRemainingDialogs.yaml"
+    env:
+      PREFIX: "RecipeValidation"
     label: "Action - Cancel all remaining ingredient validation dialogs"
 
 - tapOn:

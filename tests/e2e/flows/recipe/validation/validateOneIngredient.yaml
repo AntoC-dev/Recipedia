@@ -2,16 +2,16 @@ appId: "com.recipedia"
 ---
 - extendedWaitUntil:
     visible:
-      id: "RecipeValidation::ValidationQueue::Ingredient::SimilarityDialog::Title"
-    timeout: 5000
+      id: "${PREFIX}::ValidationQueue::Ingredient::SimilarityDialog::Title"
+    timeout: 10000
     label: "Wait for ingredient validation dialog"
 
 - tapOn:
-    id: "RecipeValidation::ValidationQueue::Ingredient::SimilarityDialog::AddButton"
+    id: "${PREFIX}::ValidationQueue::Ingredient::SimilarityDialog::AddButton"
     label: "Select to add the ingredient"
 
 - tapOn:
-    id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::Menu::Button"
+    id: "${PREFIX}::ValidationQueue::Ingredient::ItemDialog::AddModal::Menu::Button"
     label: "Open ingredient type menu"
 
 - tapOn:
@@ -19,7 +19,7 @@ appId: "com.recipedia"
     label: "Select ingredient type"
 
 - tapOn:
-    id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::Unit::CustomTextInput"
+    id: "${PREFIX}::ValidationQueue::Ingredient::ItemDialog::AddModal::Unit::CustomTextInput"
     label: "Focus on ingredient unit field"
 
 - inputText:
@@ -30,5 +30,5 @@ appId: "com.recipedia"
     label: "Close keyboard"
 
 - tapOn:
-    id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::ConfirmButton"
+    id: "${PREFIX}::ValidationQueue::Ingredient::ItemDialog::AddModal::ConfirmButton"
     label: "Confirm adding the ingredient"
