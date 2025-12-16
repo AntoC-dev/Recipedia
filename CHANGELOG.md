@@ -1,3 +1,9 @@
+## [2.2.1](https://github.com/AntoC-dev/Recipedia/compare/v2.2.0...v2.2.1) (2025-12-16)
+
+### Performance Improvements
+
+* add measures ([#154](https://github.com/AntoC-dev/Recipedia/issues/154)) ([921807a](https://github.com/AntoC-dev/Recipedia/commit/921807a585651800cd23123dedad2450aeda47e2))
+
 ## [2.2.0](https://github.com/AntoC-dev/Recipedia/compare/v2.1.0...v2.2.0) (2025-12-12)
 
 ### Features
