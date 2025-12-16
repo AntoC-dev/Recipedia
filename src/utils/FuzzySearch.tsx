@@ -25,6 +25,7 @@
  */
 
 import Fuse from 'fuse.js';
+import { normalizeKey } from '@utils/NutritionUtils';
 
 /**
  * Semantic matching levels for fuzzy search
@@ -127,7 +128,7 @@ export function fuzzySearch<T>(
   }
 
   const exactMatch = items.find(
-    item => getValue(item).toLowerCase() === trimmedValue.toLowerCase()
+    item => normalizeKey(getValue(item)) === normalizeKey(trimmedValue)
   );
   if (exactMatch) {
     return { exact: exactMatch, similar: [] };

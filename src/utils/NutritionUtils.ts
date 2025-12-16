@@ -7,6 +7,19 @@
 const KCAL_TO_KJ_FACTOR = 4.184;
 
 /**
+ * Normalizes a string key for consistent comparison.
+ *
+ * Applies lowercase, trim, Unicode NFC normalization, and whitespace collapsing
+ * to ensure consistent string matching regardless of input variations.
+ *
+ * @param name - The name to normalize
+ * @returns Lowercase, trimmed, NFC-normalized string with collapsed whitespace
+ */
+export function normalizeKey(name: string): string {
+  return name.toLowerCase().trim().normalize('NFC').replace(/\s+/g, ' ');
+}
+
+/**
  * Extracts digits from a string, optionally including decimal point.
  * Stops at the first non-digit character after finding digits.
  */
@@ -80,14 +93,14 @@ export function isAllDigits(str: string): boolean {
 }
 
 /**
- * Compares two strings case-insensitively.
- * Useful for matching ingredient/tag names.
+ * Compares two strings using normalized comparison.
+ * Useful for matching ingredient/tag names with Unicode normalization.
  *
  * @param a - First string to compare
  * @param b - Second string to compare
- * @returns true if both strings are defined and match (case-insensitive)
+ * @returns true if both strings are defined and match after normalization
  */
 export function namesMatch(a: string | undefined, b: string | undefined): boolean {
   if (!a || !b) return false;
-  return a.toLowerCase() === b.toLowerCase();
+  return normalizeKey(a) === normalizeKey(b);
 }

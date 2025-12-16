@@ -18,16 +18,7 @@ import {
   ValidatedRecipe,
 } from '@customTypes/BulkImportTypes';
 import { bulkImportLogger } from '@utils/logger';
-
-/**
- * Normalizes a string key for consistent comparison
- *
- * @param name - The name to normalize
- * @returns Lowercase, trimmed, NFC-normalized string with collapsed whitespace
- */
-function normalizeKey(name: string): string {
-  return name.toLowerCase().trim().normalize('NFC').replace(/\s+/g, ' ');
-}
+import { normalizeKey } from '@utils/NutritionUtils';
 
 /**
  * Collects unique ingredients and tags from multiple recipes

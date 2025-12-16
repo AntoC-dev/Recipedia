@@ -4,6 +4,7 @@ import {
   isAllDigits,
   kcalToKj,
   namesMatch,
+  normalizeKey,
 } from '@utils/NutritionUtils';
 
 describe('NutritionUtils', () => {
@@ -103,6 +104,45 @@ describe('NutritionUtils', () => {
     });
   });
 
+  describe('normalizeKey', () => {
+    it('converts to lowercase', () => {
+      expect(normalizeKey('APPLE')).toBe('apple');
+      expect(normalizeKey('Apple')).toBe('apple');
+    });
+
+    it('trims whitespace', () => {
+      expect(normalizeKey('  apple  ')).toBe('apple');
+      expect(normalizeKey('\tapple\n')).toBe('apple');
+    });
+
+    it('collapses multiple spaces', () => {
+      expect(normalizeKey('olive   oil')).toBe('olive oil');
+      expect(normalizeKey('sea  salt')).toBe('sea salt');
+    });
+
+    it('normalizes Unicode to NFC form', () => {
+      const nfd = 'Épicé'.normalize('NFD');
+      const nfc = 'Épicé'.normalize('NFC');
+
+      expect(normalizeKey(nfd)).toBe(normalizeKey(nfc));
+    });
+
+    it('handles accented characters consistently', () => {
+      expect(normalizeKey('Crème fraîche')).toBe('crème fraîche');
+      expect(normalizeKey('PÂTÉ')).toBe('pâté');
+    });
+
+    it('handles empty string', () => {
+      expect(normalizeKey('')).toBe('');
+    });
+
+    it('combines all normalizations', () => {
+      const input = '  CRÈME   Fraîche  '.normalize('NFD');
+
+      expect(normalizeKey(input)).toBe('crème fraîche');
+    });
+  });
+
   describe('namesMatch', () => {
     it('returns true for identical strings', () => {
       expect(namesMatch('Apple', 'Apple')).toBe(true);
@@ -132,6 +172,34 @@ describe('NutritionUtils', () => {
     it('returns false for empty strings', () => {
       expect(namesMatch('', '')).toBe(false);
       expect(namesMatch('Apple', '')).toBe(false);
+    });
+
+    describe('Unicode normalization', () => {
+      it('matches NFC and NFD forms of accented strings', () => {
+        const nfc = 'Épicé';
+        const nfd = 'Épicé'.normalize('NFD');
+
+        expect(namesMatch(nfc, nfd)).toBe(true);
+      });
+
+      it('matches when database has NFD and input has NFC', () => {
+        const dbValue = 'Crème fraîche'.normalize('NFD');
+        const userInput = 'Crème fraîche';
+
+        expect(namesMatch(dbValue, userInput)).toBe(true);
+      });
+
+      it('matches accented strings case-insensitively', () => {
+        expect(namesMatch('ÉPICÉ', 'épicé')).toBe(true);
+        expect(namesMatch('Café', 'CAFÉ')).toBe(true);
+      });
+
+      it('matches strings with multiple accents', () => {
+        const nfc = 'Pâté de foie gras';
+        const nfd = 'Pâté de foie gras'.normalize('NFD');
+
+        expect(namesMatch(nfc, nfd)).toBe(true);
+      });
     });
   });
 });
