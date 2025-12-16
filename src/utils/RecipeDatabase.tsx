@@ -755,7 +755,7 @@ export class RecipeDatabase {
         const res = [];
         while (res.length < numOfElements) {
           let skipElem = false;
-          const randomId = Math.floor(Math.random() * this._recipes.length);
+          const randomId = Math.floor(Math.random() * this._tags.length);
 
           for (let i = 0; i < res.length && !skipElem; i++) {
             if (isTagEqual(res[i], this._tags[randomId])) {
