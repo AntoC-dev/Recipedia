@@ -1,0 +1,177 @@
+name: "1 - Bulk Import HelloFresh Flow (French)"
+appId: "com.recipedia"
+tags:
+  - bulk-import
+---
+- runFlow:
+    file: "../../flows/setupFirstTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- runFlow:
+    file: "../../flows/parameters/language/switchToFrench.yaml"
+    label: "Setup - Switch to French language"
+
+- runFlow:
+    file: "../../flows/bulk-import/navigateToBulkImport.yaml"
+    label: "Action - Navigate to Bulk Import from Parameters"
+
+- runFlow:
+    file: "../../asserts/bulk-import/fr/assertBulkImportSettingsScreen.yaml"
+    label: "Assert - Verify provider selection screen"
+
+- runFlow:
+    file: "../../flows/bulk-import/selectProvider.yaml"
+    env:
+      PROVIDER_ID: "hellofresh"
+    label: "Action - Select HelloFresh provider"
+
+- runFlow:
+    file: "../../flows/bulk-import/waitForDiscovery.yaml"
+    label: "Action - Wait for recipe discovery"
+
+- runFlow:
+    file: "../../asserts/bulk-import/fr/assertDiscoveryScreen.yaml"
+    label: "Assert - Verify discovery screen with recipes"
+
+- tapOn:
+    id: "BulkImportDiscovery::Recipe::0"
+    label: "Action - Select first recipe"
+
+- tapOn:
+    id: "BulkImportDiscovery::Recipe::1"
+    label: "Action - Select second recipe"
+
+- tapOn:
+    id: "BulkImportDiscovery::Recipe::2"
+    label: "Action - Select third recipe"
+
+- assertVisible:
+    id: "BulkImportDiscovery::ContinueButton"
+    label: "Verify - Continue button is available"
+
+- tapOn:
+    id: "BulkImportDiscovery::ContinueButton"
+    label: "Action - Continue to validation"
+
+- extendedWaitUntil:
+    visible:
+      id: "BulkImportValidation::AppBar::Title"
+    timeout: 120000
+    label: "Wait - For validation screen"
+
+- runFlow:
+    file: "../../flows/bulk-import/validateAllBulkImportDialogs.yaml"
+    label: "Action - Validate all tags and ingredients"
+
+- runFlow:
+    file: "../../asserts/bulk-import/fr/assertImportComplete.yaml"
+    label: "Assert - Verify import success message"
+
+- tapOn:
+    id: "BulkImportValidation::FinishButton"
+    label: "Action - Finish import and return home"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Verification - Navigate to Search"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::RecipeCards::12::Cover"
+    direction: DOWN
+    speed: 60
+    timeout: 20000
+    centerElement: true
+    label: "Verification - Scroll to third imported recipe"
+
+- assertVisible:
+    id: "SearchScreen::RecipeCards::12::Cover"
+    label: "Verification - Third imported recipe exists"
+
+- assertNotVisible:
+    id: "SearchScreen::RecipeCards::13::Cover"
+    label: "Verification - No extra recipes imported"
+
+- tapOn:
+    id: "SearchScreen::RecipeCards::12::Cover"
+    label: "Cleanup - Open third imported recipe"
+
+- tapOn:
+    id: "Recipe::AppBar::Delete"
+    label: "Cleanup - Delete recipe"
+
+- tapOn:
+    id: "Recipe::Dialog::Confirm"
+    label: "Cleanup - Confirm deletion"
+
+- tapOn:
+    id: "Recipe::Dialog::Confirm"
+    label: "Cleanup - Close confirmation"
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::RecipeCards::11::Cover"
+    direction: UP
+    speed: 40
+    centerElement: true
+    label: "Verification - Scroll to second imported recipe"
+
+- assertVisible:
+    id: "SearchScreen::RecipeCards::11::Cover"
+    label: "Verification - Second imported recipe exists"
+
+- tapOn:
+    id: "SearchScreen::RecipeCards::11::Cover"
+    label: "Cleanup - Open second imported recipe"
+
+- tapOn:
+    id: "Recipe::AppBar::Delete"
+    label: "Cleanup - Delete recipe"
+
+- tapOn:
+    id: "Recipe::Dialog::Confirm"
+    label: "Cleanup - Confirm deletion"
+
+- tapOn:
+    id: "Recipe::Dialog::Confirm"
+    label: "Cleanup - Close confirmation"
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::RecipeCards::10::Cover"
+    direction: UP
+    speed: 40
+    centerElement: true
+    label: "Verification - Scroll to first imported recipe"
+
+- assertVisible:
+    id: "SearchScreen::RecipeCards::10::Cover"
+    label: "Verification - First imported recipe exists"
+
+- tapOn:
+    id: "SearchScreen::RecipeCards::10::Cover"
+    label: "Cleanup - Open first imported recipe"
+
+- tapOn:
+    id: "Recipe::AppBar::Delete"
+    label: "Cleanup - Delete recipe"
+
+- tapOn:
+    id: "Recipe::Dialog::Confirm"
+    label: "Cleanup - Confirm deletion"
+
+- tapOn:
+    id: "Recipe::Dialog::Confirm"
+    label: "Cleanup - Close confirmation"
+
+- runFlow:
+    file: "../../flows/parameters/language/switchToEnglish.yaml"
+    label: "Cleanup - Switch back to English"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Cleanup - Return to home"

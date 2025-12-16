@@ -1,0 +1,10 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    text: "Import terminé !"
+    label: "Import complete message is displayed (French)"
+
+- assertVisible:
+    id: "BulkImportValidation::FinishButton"
+    text: "Terminer"
+    label: "Finish button displays correct text (French)"

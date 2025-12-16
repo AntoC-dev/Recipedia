@@ -1,0 +1,19 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    id: "BulkImportSettings::AppBar::Title-title-text"
+    text: "Importer depuis un service"
+    label: "App bar title displays correct text (French)"
+
+- assertVisible:
+    id: "BulkImportSettings::Subheader"
+    label: "Subheader is displayed"
+
+- assertVisible:
+    id: "BulkImportSettings::Provider::hellofresh"
+    text: "HelloFresh, Importer les recettes depuis HelloFresh"
+    label: "HelloFresh provider displays name and description (French)"
+
+- assertVisible:
+    id: "BulkImportSettings::Provider::hellofresh::Logo"
+    label: "HelloFresh provider displays logo"

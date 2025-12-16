@@ -1,0 +1,6 @@
+flows:
+  - cases/bulk-import/*
+
+executionOrder:
+  flowsOrder:
+    - "1 - Bulk Import HelloFresh Flow (French)"

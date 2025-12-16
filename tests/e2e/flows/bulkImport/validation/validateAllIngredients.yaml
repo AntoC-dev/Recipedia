@@ -1,0 +1,35 @@
+appId: "com.recipedia"
+---
+- repeat:
+    while:
+      visible:
+        id: "BulkImportValidation::IngredientQueue::ValidationQueue::Ingredient::SimilarityDialog::Title"
+    commands:
+      - tapOn:
+          id: "BulkImportValidation::IngredientQueue::ValidationQueue::Ingredient::SimilarityDialog::AddButton"
+          label: "Select to add the ingredient"
+
+      - tapOn:
+          id: "BulkImportValidation::IngredientQueue::ValidationQueue::Ingredient::ItemDialog::AddModal::Menu::Button"
+          label: "Open ingredient type menu"
+      - tapOn:
+          id: "menu-item"
+          label: "Select ingredient type"
+
+      - tapOn:
+          id: "BulkImportValidation::IngredientQueue::ValidationQueue::Ingredient::ItemDialog::AddModal::Unit::CustomTextInput"
+          label: "Focus on ingredient unit field"
+      - inputText:
+          text: "g"
+          label: "Enter unit"
+      - hideKeyboard:
+          label: "Close keyboard"
+
+      - assertVisible:
+          id: "BulkImportValidation::IngredientQueue::ValidationQueue::Ingredient::ItemDialog::AddModal::ConfirmButton"
+          enabled: true
+          label: "Verify Add button is enabled"
+
+      - tapOn:
+          id: "BulkImportValidation::IngredientQueue::ValidationQueue::Ingredient::ItemDialog::AddModal::ConfirmButton"
+          label: "Confirm adding the ingredient"

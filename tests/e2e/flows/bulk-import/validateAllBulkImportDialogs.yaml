@@ -1,0 +1,46 @@
+appId: "com.recipedia"
+---
+- repeat:
+    while:
+      visible:
+        id: "BulkImportValidation::TagQueue::ValidationQueue::Tag::SimilarityDialog::Title"
+    commands:
+      - tapOn:
+          id: "BulkImportValidation::TagQueue::ValidationQueue::Tag::SimilarityDialog::AddButton"
+          label: "Select to add the tag"
+
+      - tapOn:
+          id: "BulkImportValidation::TagQueue::ValidationQueue::Tag::ItemDialog::AddModal::ConfirmButton"
+          label: "Confirm adding the tag"
+
+- repeat:
+    while:
+      visible:
+        id: "BulkImportValidation::IngredientQueue::ValidationQueue::Ingredient::SimilarityDialog::Title"
+    commands:
+      - tapOn:
+          id: "BulkImportValidation::IngredientQueue::ValidationQueue::Ingredient::SimilarityDialog::AddButton"
+          label: "Select to add the ingredient"
+
+      - tapOn:
+          id: "BulkImportValidation::IngredientQueue::ValidationQueue::Ingredient::ItemDialog::AddModal::Menu::Button"
+          label: "Open category menu"
+
+      - tapOn:
+          text: "Condiments"
+          label: "Select Condiments category"
+
+      - tapOn:
+          id: "BulkImportValidation::IngredientQueue::ValidationQueue::Ingredient::ItemDialog::AddModal::Unit::CustomTextInput"
+          label: "Focus on unit text input"
+
+      - inputText:
+          text: "g"
+          label: "Enter unit for ingredient"
+
+      - hideKeyboard:
+          label: "Hide the keyboard"
+
+      - tapOn:
+          id: "BulkImportValidation::IngredientQueue::ValidationQueue::Ingredient::ItemDialog::AddModal::ConfirmButton"
+          label: "Confirm adding the ingredient"

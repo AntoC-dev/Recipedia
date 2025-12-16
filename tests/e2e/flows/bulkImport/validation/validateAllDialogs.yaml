@@ -1,0 +1,15 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    file: "validateAllTags.yaml"
+    label: "Validate all tags from bulk import"
+
+- runFlow:
+    file: "validateAllIngredients.yaml"
+    label: "Validate all ingredients from bulk import"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "BulkImportValidation::IngredientQueue::ValidationQueue::Ingredient::SimilarityDialog::Title"
+    timeout: 5000
+    label: "Wait for all validation dialogs to close"
