@@ -1,3 +1,9 @@
+## [2.2.2](https://github.com/AntoC-dev/Recipedia/compare/v2.2.1...v2.2.2) (2025-12-16)
+
+### Bug Fixes
+
+* **utils:** use correct array for random tag selection in RecipeDatabase ([f122892](https://github.com/AntoC-dev/Recipedia/commit/f12289201e9cc9ce33811d5950baf35d8455597c))
+
 ## [2.2.1](https://github.com/AntoC-dev/Recipedia/compare/v2.2.0...v2.2.1) (2025-12-16)
 
 ### Performance Improvements
