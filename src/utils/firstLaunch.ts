@@ -3,8 +3,27 @@ import { appLogger } from '@utils/logger';
 
 const FIRST_LAUNCH_KEY = 'first_launch';
 
+function isPerformanceBuild(): boolean {
+  return process.env.EXPO_PUBLIC_DATASET_TYPE === 'performance';
+}
+
+async function resetForPerformanceBuild(): Promise<void> {
+  if (!isPerformanceBuild()) {
+    return;
+  }
+
+  try {
+    await AsyncStorage.removeItem(FIRST_LAUNCH_KEY);
+    appLogger.info('Performance build detected - reset first launch state');
+  } catch (error) {
+    appLogger.error('Failed to reset first launch state for performance build', { error });
+  }
+}
+
 export async function isFirstLaunch(): Promise<boolean> {
   try {
+    await resetForPerformanceBuild();
+
     const hasLaunchedBefore = await AsyncStorage.getItem(FIRST_LAUNCH_KEY);
     const isFirst = hasLaunchedBefore === null;
 
