@@ -137,7 +137,7 @@ jobs:
             adb wait-for-device
 
             adb install "${{ steps.find-apk.outputs.apk_path }}"
-            ~/.flashlight/bin/flashlight test --bundleId "com.recipedia" --testCommand "maestro test tests/e2e/cases/performance/1_full_flow.yaml" --resultsFilePath "./performance-results.json" --duration 120000
+            ~/.flashlight/bin/flashlight test --bundleId "com.recipedia" --testCommand "adb shell pm clear com.recipedia && maestro test tests/e2e/cases/performance/1_full_flow.yaml" --resultsFilePath "./performance-results.json" --duration 120000
 
       - name: Upload Performance Report
         uses: actions/upload-artifact@v5
@@ -146,3 +146,18 @@ jobs:
           name: performance-report-${{ steps.test-name.outputs.name }}-${{ github.run_number }}
           path: ./performance-results.json
           retention-days: 30
+
+      - name: Prepare Maestro logs
+        if: always()
+        run: |
+          mkdir -p maestro_logs_performance
+          cp -r ~/.maestro/tests/* maestro_logs_performance/ || true
+          zip -r maestro_logs_performance.zip maestro_logs_performance/
+
+      - name: Upload Maestro logs
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: maestro-logs-performance-${{ steps.test-name.outputs.name }}-${{ github.run_number }}
+          path: maestro_logs_performance.zip
+          retention-days: 7
