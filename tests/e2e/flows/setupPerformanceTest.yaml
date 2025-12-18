@@ -1,0 +1,52 @@
+appId: "com.recipedia"
+---
+- launchApp:
+    clearState: true
+    label: "Setup - Launch app with fresh state"
+
+- runFlow:
+    file: "handleAnr.yaml"
+    label: "Handle ANR dialog if it appears"
+
+- extendedWaitUntil:
+    visible:
+      id: "WelcomeScreen::SkipButton"
+    timeout: 5000
+    optional: true
+    label: "Check if onboarding appears"
+
+- tapOn:
+    id: "WelcomeScreen::SkipButton"
+    optional: true
+    label: "Skip onboarding if visible"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "WelcomeScreen::LoadingOverlay"
+    timeout: 30000
+    optional: true
+    label: "Wait for data to load"
+
+- runFlow:
+    file: "handleAnr.yaml"
+    label: "Handle ANR dialog after data load"
+
+- extendedWaitUntil:
+    visible:
+      id: "Home::RecipeRecommendation::random::Carousel::Card::0::Cover"
+    timeout: 10000
+    label: "Wait for Home screen"
+
+- assertVisible:
+    id: "Home::RecipeRecommendation::random::Carousel::Card::0::Cover"
+    label: "Verify app is ready"
+
+- extendedWaitUntil:
+    visible:
+      id: "ExpandButton"
+    timeout: 5000
+    label: "Wait for FAB"
+
+- waitForAnimationToEnd:
+    timeout: 3000
+    label: "Wait for FAB animation"

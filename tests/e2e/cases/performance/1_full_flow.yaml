@@ -4,7 +4,7 @@ tags:
   - performance
 ---
 - runFlow:
-    file: "../../flows/setupFirstTest.yaml"
+    file: "../../flows/setupPerformanceTest.yaml"
     label: "Setup - Launch app and wait for ready"
 
 - runFlow:
