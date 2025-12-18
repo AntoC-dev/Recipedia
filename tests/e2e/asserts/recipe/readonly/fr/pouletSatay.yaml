@@ -157,15 +157,24 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipePreparation::ReadOnlyStep::3::SectionParagraph"
+      id: "RecipePreparation::ReadOnlyStep::3::SectionTitle"
     direction: DOWN
     speed: 60
     centerElement: true
+    label: "Fourth preparation title is displayed"
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::3::SectionTitle"
     text: "4) Le riz"
     label: "Fourth preparation title is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::3::SectionParagraph"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Fourth preparation paragraph is displayed"
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::3::SectionParagraph"

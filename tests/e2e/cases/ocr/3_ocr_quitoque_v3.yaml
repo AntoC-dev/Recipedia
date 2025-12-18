@@ -32,7 +32,7 @@ tags:
 
 - scrollUntilVisible:
     element:
-      id: "RecipeImage::Image"
+      id: "RecipeImage"
     direction: UP
     speed: 95
     centerElement: true

@@ -26,5 +26,5 @@ appId: "com.recipedia"
     label: "OCR image button has the right icon"
 
 - assertVisible:
-    id: "RecipeImage::Image"
-    label: "Image is displayed"
+    id: "RecipeImage"
+    label: "Image container is displayed"

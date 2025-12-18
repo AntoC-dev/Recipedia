@@ -22,5 +22,5 @@ appId: "com.recipedia"
     label: "Image button has the right icon"
 
 - assertVisible:
-    id: "RecipeImage::Image"
-    label: "Image is displayed"
+    id: "RecipeImage"
+    label: "Image container is displayed"
