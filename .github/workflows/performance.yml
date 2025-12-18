@@ -13,9 +13,9 @@ on:
         required: false
         default: 'manual-run'
 
-  # PR trigger on label
+  # PR trigger when 'perf-test' label is present
   pull_request:
-    types: [ labeled ]
+    types: [ opened, synchronize, reopened, labeled ]
 
 permissions:
   contents: read
@@ -23,11 +23,11 @@ permissions:
 jobs:
   build-performance-apk:
     name: Build Performance APK
-    # Only run if: scheduled, manual, OR has 'perf-test' label
+    # Only run if: scheduled, manual, OR PR has 'perf-test' label
     if: |
       github.event_name == 'schedule' ||
       github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'pull_request' && github.event.label.name == 'perf-test')
+      (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'perf-test'))
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
