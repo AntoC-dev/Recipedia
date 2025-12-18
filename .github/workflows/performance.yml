@@ -41,11 +41,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Setup EAS
-        uses: expo/expo-github-action@v8
+      - name: Setup Android build environment
+        uses: ./.github/actions/setup-android-build
         with:
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
+          setup-android-sdk: 'true'
+          expo-token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Build Performance APK
         run: npm run build:perf:android
