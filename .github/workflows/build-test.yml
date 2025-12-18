@@ -391,13 +391,7 @@ jobs:
 
       - name: Prepare suite logs
         if: always()
-        run: |
-          cd maestro_logs_${{ matrix.suite }}
-          mv .maestro/tests/*/maestro.log .
-          mv .maestro/tests/*/*.png . || true
-          rm -rf .maestro/*
-          cd ..
-          zip -r maestro_logs_${{ matrix.suite }}.zip maestro_logs_${{ matrix.suite }}/
+        run: bash .github/scripts/prepare-maestro-logs.sh maestro_logs_${{ matrix.suite }}
 
       - name: Upload test suite logs
         if: always()

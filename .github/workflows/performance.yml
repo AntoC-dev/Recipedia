@@ -98,17 +98,6 @@ jobs:
           echo "apk_path=$APK_PATH" >> $GITHUB_OUTPUT
           echo "Found APK: $APK_PATH"
 
-      - name: Determine test name
-        id: test-name
-        run: |
-          if [ "${{ github.event_name }}" == "schedule" ]; then
-            echo "name=main-nightly" >> $GITHUB_OUTPUT
-          elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "name=${{ github.event.inputs.test_name || 'manual-run' }}" >> $GITHUB_OUTPUT
-          elif [ "${{ github.event_name }}" == "pull_request" ]; then
-            echo "name=PR-${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
-          fi
-
       - name: Install Flashlight CLI
         run: curl https://get.flashlight.dev | bash
 
@@ -137,27 +126,24 @@ jobs:
             adb wait-for-device
 
             adb install "${{ steps.find-apk.outputs.apk_path }}"
-            ~/.flashlight/bin/flashlight test --bundleId "com.recipedia" --testCommand "adb shell pm clear com.recipedia && maestro test tests/e2e/cases/performance/1_full_flow.yaml" --resultsFilePath "./performance-results.json" --duration 120000
+            ~/.flashlight/bin/flashlight test --bundleId "com.recipedia" --testCommand "adb shell pm clear com.recipedia && maestro test tests/e2e/cases/performance/1_full_flow.yaml --debug-output=maestro_logs_performance" --resultsFilePath "./performance-results.json" --duration 120000
 
       - name: Upload Performance Report
         uses: actions/upload-artifact@v5
         if: always()
         with:
-          name: performance-report-${{ steps.test-name.outputs.name }}-${{ github.run_number }}
+          name: performance-report
           path: ./performance-results.json
           retention-days: 30
 
       - name: Prepare Maestro logs
         if: always()
-        run: |
-          mkdir -p maestro_logs_performance
-          cp -r ~/.maestro/tests/* maestro_logs_performance/ || true
-          zip -r maestro_logs_performance.zip maestro_logs_performance/
+        run: bash .github/scripts/prepare-maestro-logs.sh maestro_logs_performance
 
       - name: Upload Maestro logs
         if: always()
         uses: actions/upload-artifact@v5
         with:
-          name: maestro-logs-performance-${{ steps.test-name.outputs.name }}-${{ github.run_number }}
+          name: maestro-logs-performance
           path: maestro_logs_performance.zip
           retention-days: 7
