@@ -951,6 +951,24 @@ export const frenchIngredients: ingredientTableElement[] = [
     season: ['*'],
   },
   {
+    name: 'Sucre blanc',
+    unit: 'g',
+    type: ingredientType.sugar,
+    season: ['*'],
+  },
+  {
+    name: 'Sucre roux',
+    unit: 'g',
+    type: ingredientType.sugar,
+    season: ['*'],
+  },
+  {
+    name: 'Sucre glace',
+    unit: 'g',
+    type: ingredientType.sugar,
+    season: ['*'],
+  },
+  {
     name: 'Sel',
     unit: 'pincée',
     type: ingredientType.spice,

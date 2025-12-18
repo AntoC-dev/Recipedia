@@ -11,10 +11,10 @@ appId: "com.recipedia"
     commands:
       - scrollUntilVisible:
           element:
-            id: "BulkImportDiscovery::Recipe::${output.currentIndex}::Checkbox"
+            id: "BulkImportDiscovery::fresh-${output.currentIndex}::Checkbox"
           direction: DOWN
           speed: 40
           centerElement: true
       - tapOn:
-          id: "BulkImportDiscovery::Recipe::${output.currentIndex}::Checkbox"
+          id: "BulkImportDiscovery::fresh-${output.currentIndex}::Checkbox"
       - evalScript: ${output.currentIndex = output.currentIndex + 1}

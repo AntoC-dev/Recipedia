@@ -5,7 +5,7 @@ export const quitoqueCamembertRecipe: ScrapedRecipe = {
   description:
     'Né en Normandie, le camembert se fait fondant et gourmand rôti au miel, à savourer avec ses mouillettes épicées !',
   ingredients: [
-    '250 g camembert au lait cru',
+    '500 g camembert au lait cru',
     '20 ml miel Bio',
     '50 g salade',
     '2x petits pains aux épices (160g)',
@@ -21,7 +21,7 @@ export const quitoqueCamembertRecipe: ScrapedRecipe = {
     {
       purpose: null,
       ingredients: [
-        '250 g camembert au lait cru',
+        '500 g camembert au lait cru',
         '20 ml miel Bio',
         '50 g salade',
         '2x petits pains aux épices (160g)',

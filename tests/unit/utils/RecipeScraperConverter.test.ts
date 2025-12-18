@@ -175,7 +175,7 @@ describe('RecipeScraperConverter', () => {
       const result = convertIngredients(quitoqueCamembertRecipe.ingredients, null, ignoredPatterns);
 
       const camembert = result.ingredients.find(i => i.name?.includes('camembert'));
-      expect(camembert?.quantity).toBe('250');
+      expect(camembert?.quantity).toBe('500');
       expect(camembert?.unit).toBe('g');
 
       const miel = result.ingredients.find(i => i.name?.includes('miel'));
