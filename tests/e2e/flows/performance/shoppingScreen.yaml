@@ -27,8 +27,14 @@ appId: "com.recipedia"
     optional: true
 
 - tapOn:
-    id: "ShoppingScreen::ClearShoppingListButton::RoundButton"
+    id: "ShoppingScreen::ClearShoppingListButton"
     label: "Tap on the delete button"
+
+- extendedWaitUntil:
+    visible:
+      id: "ShoppingScreen::ClearConfirmation::Dialog::Confirm"
+    timeout: 3000
+    label: "Wait for confirmation dialog"
 
 - tapOn:
     id: "ShoppingScreen::ClearConfirmation::Dialog::Confirm"

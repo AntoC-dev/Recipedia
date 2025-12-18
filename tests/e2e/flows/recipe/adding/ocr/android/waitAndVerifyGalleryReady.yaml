@@ -30,9 +30,7 @@ appId: "com.recipedia"
     commands:
       - evalScript: ${output.retryCount = output.retryCount + 1}
 
-      - tapOn:
-          text: "Cancel"
-          label: "Close the gallery picker"
+      - pressKey: "BACK"
 
       - runFlow:
           when:

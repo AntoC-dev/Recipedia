@@ -116,7 +116,7 @@ appId: "com.recipedia"
     element:
       id: "IngredientsSettings::0::IngredientName"
     direction: UP
-    speed: 60
+    speed: 95
     label: "Scroll back to top"
 
 - pressKey: "BACK"
@@ -157,7 +157,7 @@ appId: "com.recipedia"
     element:
       id: "TagsSettings::0::TagName"
     direction: UP
-    speed: 60
+    speed: 95
     label: "Scroll back to top"
 
 - pressKey: "BACK"

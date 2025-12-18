@@ -29,7 +29,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::SearchBar"
     direction: UP
-    speed: 60
+    speed: 90
     label: "Scroll back to SearchBar"
 
 - tapOn:
@@ -44,49 +44,49 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::FilterAccordion::Accordion::2"
+      text: "Tags"
     direction: DOWN
     speed: 40
-    label: "Scroll to tag accordion"
+    label: "Scroll to Tags accordion"
 
 - tapOn:
-    id: "SearchScreen::FilterAccordion::Accordion::2"
-    label: "Expand tag accordion"
+    text: "Tags"
+    label: "Expand Tags accordion"
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::FilterAccordion::Accordion::2::Item::0"
+      text: "Breakfast"
     direction: UP
     speed: 40
-    label: "Scroll to tag item"
+    label: "Scroll to Breakfast tag"
 
 - tapOn:
-    id: "SearchScreen::FilterAccordion::Accordion::2::Item::0"
-    label: "Select first tag filter"
+    text: "Breakfast"
+    label: "Select Breakfast filter"
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::FilterAccordion::Accordion::6"
+      text: "Cheese"
     direction: DOWN
     speed: 40
     centerElement: true
-    label: "Scroll to chees accordion"
+    label: "Scroll to Cheese accordion"
 
 - tapOn:
-    id: "SearchScreen::FilterAccordion::Accordion::6"
-    label: "Expand cheese accordion"
+    text: "Cheese"
+    label: "Expand Cheese accordion"
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::FilterAccordion::Accordion::6::Item::0"
+      text: "Parmesan"
     direction: DOWN
     speed: 40
     centerElement: true
-    label: "Scroll to parmesan item"
+    label: "Scroll to Parmesan item"
 
 - tapOn:
-    id: "SearchScreen::FilterAccordion::Accordion::6::Item::0"
-    label: "Select parmesan filter"
+    text: "Parmesan"
+    label: "Select Parmesan filter"
 
 - scrollUntilVisible:
     element:
