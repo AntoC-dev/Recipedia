@@ -6,7 +6,6 @@ describe('DiscoveryFooter', () => {
   const defaultProps = {
     error: null,
     selectedCount: 5,
-    isDiscovering: false,
     onContinue: jest.fn(),
     testID: 'test-footer',
   };
@@ -36,13 +35,7 @@ describe('DiscoveryFooter', () => {
     expect(getByTestId('test-footer::ContinueButton').props.accessibilityState.disabled).toBe(true);
   });
 
-  test('disables button when discovering', () => {
-    const { getByTestId } = render(<DiscoveryFooter {...defaultProps} isDiscovering={true} />);
-
-    expect(getByTestId('test-footer::ContinueButton').props.accessibilityState.disabled).toBe(true);
-  });
-
-  test('enables button when has selection and not discovering', () => {
+  test('enables button when has selection', () => {
     const { getByTestId } = render(<DiscoveryFooter {...defaultProps} />);
 
     expect(getByTestId('test-footer::ContinueButton').props.accessibilityState.disabled).toBe(

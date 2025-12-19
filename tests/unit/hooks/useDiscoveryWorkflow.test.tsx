@@ -51,7 +51,7 @@ const createMockProvider = (options?: {
   name: 'Mock Provider',
   logoUrl: 'https://example.com/logo.png',
   getBaseUrl: jest.fn().mockResolvedValue('https://example.com'),
-  discoverRecipeUrls: jest.fn(async function* ({ signal, onImageLoaded }) {
+  discoverRecipeUrls: jest.fn(async function* ({ signal, onImageLoaded: _onImageLoaded }) {
     if (options?.discoveryError) {
       throw options.discoveryError;
     }
@@ -129,6 +129,7 @@ const createMockProvider = (options?: {
     url: 'https://example.com/recipe',
     converted: {} as ConvertedImportRecipe,
   }),
+  fetchImageUrlForRecipe: jest.fn().mockResolvedValue('https://example.com/image.jpg'),
 });
 
 describe('useDiscoveryWorkflow', () => {
@@ -402,58 +403,23 @@ describe('useDiscoveryWorkflow', () => {
   });
 
   describe('image loading', () => {
-    it('updates image map when onImageLoaded is called', async () => {
-      let capturedOnImageLoaded: ((recipeUrl: string, imageUrl: string) => void) | null = null;
+    it('uses imageMap parameter to populate recipesWithImages', async () => {
+      const provider = createMockProvider();
+      const imageMap = new Map<string, string>();
+      imageMap.set('https://example.com/recipe-1', 'https://cdn.example.com/new-image.jpg');
 
-      const provider: RecipeProvider = {
-        id: 'mock',
-        name: 'Mock Provider',
-        logoUrl: 'https://example.com/logo.png',
-        getBaseUrl: jest.fn().mockResolvedValue('https://example.com'),
-        discoverRecipeUrls: jest.fn(async function* ({ onImageLoaded }) {
-          capturedOnImageLoaded = onImageLoaded ?? null;
-          yield {
-            phase: 'discovering',
-            recipesFound: 1,
-            categoriesScanned: 1,
-            totalCategories: 1,
-            isComplete: true,
-            recipes: [createMockDiscoveredRecipe(1)],
-          } as DiscoveryProgress;
-        }),
-        parseSelectedRecipes: jest.fn(async function* () {
-          yield {
-            phase: 'complete' as const,
-            current: 0,
-            total: 0,
-            parsedRecipes: [],
-            failedRecipes: [],
-          };
-        }),
-        fetchRecipe: jest.fn(),
-      };
-
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock', imageMap), {
+        wrapper,
+      });
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
       });
 
-      expect(capturedOnImageLoaded).not.toBeNull();
-
-      act(() => {
-        capturedOnImageLoaded!(
-          'https://example.com/recipe-1',
-          'https://cdn.example.com/new-image.jpg'
-        );
-      });
-
-      await waitFor(() => {
-        const recipe = result.current.recipesWithImages.find(
-          r => r.url === 'https://example.com/recipe-1'
-        );
-        expect(recipe?.imageUrl).toBe('https://cdn.example.com/new-image.jpg');
-      });
+      const recipe = result.current.recipesWithImages.find(
+        r => r.url === 'https://example.com/recipe-1'
+      );
+      expect(recipe?.imageUrl).toBe('https://cdn.example.com/new-image.jpg');
     });
   });
 
@@ -498,6 +464,7 @@ describe('useDiscoveryWorkflow', () => {
           };
         }),
         fetchRecipe: jest.fn(),
+        fetchImageUrlForRecipe: jest.fn().mockResolvedValue(null),
       };
 
       const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
@@ -519,6 +486,7 @@ describe('useDiscoveryWorkflow', () => {
         name: 'Mock Provider',
         logoUrl: 'https://example.com/logo.png',
         getBaseUrl: jest.fn().mockResolvedValue('https://example.com'),
+        // eslint-disable-next-line require-yield
         discoverRecipeUrls: jest.fn(async function* () {
           const abortError = new Error('Aborted');
           abortError.name = 'AbortError';
@@ -534,6 +502,7 @@ describe('useDiscoveryWorkflow', () => {
           };
         }),
         fetchRecipe: jest.fn(),
+        fetchImageUrlForRecipe: jest.fn().mockResolvedValue(null),
       };
 
       const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
@@ -598,6 +567,7 @@ describe('useDiscoveryWorkflow', () => {
           };
         }),
         fetchRecipe: jest.fn(),
+        fetchImageUrlForRecipe: jest.fn().mockResolvedValue(null),
       };
 
       const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
@@ -663,12 +633,14 @@ describe('useDiscoveryWorkflow', () => {
             recipes: [createMockDiscoveredRecipe(1)],
           } as DiscoveryProgress;
         }),
+        // eslint-disable-next-line require-yield
         parseSelectedRecipes: jest.fn(async function* () {
           const abortError = new Error('Aborted');
           abortError.name = 'AbortError';
           throw abortError;
         }),
         fetchRecipe: jest.fn(),
+        fetchImageUrlForRecipe: jest.fn().mockResolvedValue(null),
       };
 
       const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });

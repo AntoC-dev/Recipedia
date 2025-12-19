@@ -33,7 +33,7 @@ import React, { useState } from 'react';
 import { StyleSheet, View, ViewabilityConfig, ViewToken } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ActivityIndicator, Text, useTheme } from 'react-native-paper';
+import { Text, useTheme } from 'react-native-paper';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { StackScreenNavigation, StackScreenParamList } from '@customTypes/ScreenTypes';
 import { DiscoveryListItem } from '@customTypes/BulkImportTypes';
@@ -43,6 +43,7 @@ import { RecipeSelectionCard } from '@components/molecules/RecipeSelectionCard';
 import { DiscoveryFooter } from '@components/molecules/DiscoveryFooter';
 import { DiscoveryHeader } from '@components/molecules/DiscoveryHeader';
 import { RecipeParsingProgress } from '@components/molecules/RecipeParsingProgress';
+import { RecipeCardSkeleton } from '@components/molecules/RecipeCardSkeleton';
 import { SelectAllRow } from '@components/molecules/SelectAllRow';
 import { useI18n } from '@utils/i18n';
 import { getProvider } from '@providers/ProviderRegistry';
@@ -177,10 +178,13 @@ export function BulkImportDiscovery() {
 
   /**
    * Handles the continue action after recipe selection.
-   * Marks discovered URLs as seen, parses selected recipes,
-   * and navigates to the validation screen if successful.
+   * Aborts discovery if still running, marks discovered URLs as seen,
+   * parses selected recipes, and navigates to the validation screen if successful.
    */
   const handleContinue = async () => {
+    if (isDiscovering) {
+      abort();
+    }
     await markUrlsAsSeen();
     const convertedRecipes = await parseSelectedRecipes();
     if (convertedRecipes) {
@@ -236,15 +240,16 @@ export function BulkImportDiscovery() {
               </Text>
             </View>
           ) : (
-            <View style={styles.initialLoading}>
-              <ActivityIndicator size='large' />
+            <View style={styles.skeletonContainer}>
+              {[1, 2, 3, 4, 5].map(i => (
+                <RecipeCardSkeleton key={i} testID={`${screenId}::Skeleton::${i}`} />
+              ))}
             </View>
           )}
 
           <DiscoveryFooter
             error={error}
             selectedCount={selectedCount}
-            isDiscovering={isDiscovering}
             onContinue={handleContinue}
             testID={screenId}
           />
@@ -270,10 +275,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: padding.large,
     paddingVertical: padding.small,
   },
-  initialLoading: {
+  skeletonContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    paddingTop: padding.medium,
   },
   emptyState: {
     flex: 1,

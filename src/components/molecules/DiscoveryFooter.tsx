@@ -13,7 +13,6 @@ import { padding } from '@styles/spacing';
 export type DiscoveryFooterProps = {
   error: string | null;
   selectedCount: number;
-  isDiscovering: boolean;
   onContinue: () => void;
   testID: string;
 };
@@ -21,7 +20,6 @@ export type DiscoveryFooterProps = {
 export function DiscoveryFooter({
   error,
   selectedCount,
-  isDiscovering,
   onContinue,
   testID,
 }: DiscoveryFooterProps) {
@@ -38,7 +36,7 @@ export function DiscoveryFooter({
       <Button
         mode='contained'
         onPress={onContinue}
-        disabled={selectedCount === 0 || isDiscovering}
+        disabled={selectedCount === 0}
         testID={testID + '::ContinueButton'}
       >
         {t('bulkImport.selection.continueToValidation')}
