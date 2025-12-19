@@ -23,8 +23,8 @@ appId: "com.recipedia"
 - scrollUntilVisible:
     element:
       text: "Spaghetti"
-    direction: DOWN
-    speed: 60
+    direction: UP
+    speed: 40
     centerElement: true
     label: "Scroll to Spaghetti ingredient"
 

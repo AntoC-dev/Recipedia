@@ -8,6 +8,12 @@ tags:
     label: "Setup - Launch app and wait for ready"
 
 - runFlow:
+    file: "../../flows/recipe/deleteRecipeBySearchIfExists.yaml"
+    env:
+      SEARCH_TEXT: "Test Recipe"
+    label: "Cleanup - Remove any leftover Test Recipe from previous runs"
+
+- runFlow:
     file: "../../flows/recipe/adding/createBaseRecipeForDuplicateTests.yaml"
     label: "Action - Create base recipe"
 
@@ -56,6 +62,18 @@ tags:
 
 - hideKeyboard:
     label: "Action - Hide keyboard"
+
+- scrollUntilVisible:
+    element:
+      id: "Recipe::BottomActionButton"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Action - Scroll to Add button"
+
+- waitForAnimationToEnd:
+    timeout: 2000
+    label: "Wait for UI to stabilize"
 
 - tapOn:
     id: "Recipe::BottomActionButton"
