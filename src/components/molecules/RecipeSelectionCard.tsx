@@ -120,9 +120,24 @@ export function RecipeSelectionCard({
         </View>
 
         <View style={styles.textContainer}>
-          <Text variant='titleMedium' numberOfLines={2} testID={testId + '::Title'}>
-            {recipe.title}
-          </Text>
+          <View style={styles.titleRow}>
+            {isPreviouslySeen && (
+              <Icon
+                source='history'
+                size={16}
+                color={colors.onSurfaceVariant}
+                testID={testId + '::SeenIndicator'}
+              />
+            )}
+            <Text
+              variant='titleMedium'
+              numberOfLines={2}
+              style={isPreviouslySeen && styles.titleWithIcon}
+              testID={testId + '::Title'}
+            >
+              {recipe.title}
+            </Text>
+          </View>
         </View>
       </View>
     </Card>
@@ -152,6 +167,14 @@ const styles = StyleSheet.create({
     right: padding.verySmall,
     borderRadius: padding.small,
     padding: padding.verySmall,
+  },
+    titleRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  titleWithIcon: {
+    flex: 1,
+    marginLeft: padding.verySmall,
   },
 });
 
