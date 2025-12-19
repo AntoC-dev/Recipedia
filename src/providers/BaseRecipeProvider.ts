@@ -137,59 +137,82 @@ export abstract class BaseRecipeProvider implements RecipeProvider {
       recipes: [],
     };
 
-    for (let i = 0; i < categoryUrls.length; i++) {
+    const CONCURRENT_CATEGORY_LIMIT = 3;
+    let categoriesScanned = 0;
+    let reachedMaxRecipes = false;
+
+    for (let i = 0; i < categoryUrls.length; i += CONCURRENT_CATEGORY_LIMIT) {
       if (signal?.aborted) {
         bulkImportLogger.info('Discovery aborted by user');
         break;
       }
 
-      const categoryUrl = categoryUrls[i];
+      if (reachedMaxRecipes) {
+        break;
+      }
 
-      try {
-        const html = await this.fetchHtml(categoryUrl, signal);
-        const links = this.extractRecipeLinksFromHtml(html);
+      const batch = categoryUrls.slice(i, i + CONCURRENT_CATEGORY_LIMIT);
 
-        bulkImportLogger.debug('Found recipe links in category', {
-          category: categoryUrl,
-          linkCount: links.length,
-        });
+      const results = await Promise.allSettled(
+        batch.map(async categoryUrl => {
+          const html = await this.fetchHtml(categoryUrl, signal);
+          return {
+            categoryUrl,
+            links: this.extractRecipeLinksFromHtml(html),
+          };
+        })
+      );
 
-        for (const link of links) {
-          if (!discoveredUrls.has(link.url)) {
-            discoveredUrls.add(link.url);
-            recipes.push({
-              url: link.url,
-              title: link.title ?? '',
-              imageUrl: link.imageUrl,
-            });
+      for (const result of results) {
+        categoriesScanned++;
 
-            if (maxRecipes && recipes.length >= maxRecipes) {
-              bulkImportLogger.info('Max recipes reached', { count: recipes.length });
-              break;
+        if (result.status === 'fulfilled') {
+          const { categoryUrl, links } = result.value;
+
+          bulkImportLogger.debug('Found recipe links in category', {
+            category: categoryUrl,
+            linkCount: links.length,
+          });
+
+          for (const link of links) {
+            if (!discoveredUrls.has(link.url)) {
+              discoveredUrls.add(link.url);
+              recipes.push({
+                url: link.url,
+                title: link.title ?? '',
+                imageUrl: link.imageUrl,
+              });
+
+              if (maxRecipes && recipes.length >= maxRecipes) {
+                bulkImportLogger.info('Max recipes reached', { count: recipes.length });
+                reachedMaxRecipes = true;
+                break;
+              }
             }
           }
+        } else {
+          bulkImportLogger.warn('Failed to fetch category', {
+            error: result.reason instanceof Error ? result.reason.message : String(result.reason),
+          });
         }
-      } catch (error) {
-        bulkImportLogger.warn('Failed to fetch category', {
-          category: categoryUrl,
-          error: error instanceof Error ? error.message : String(error),
-        });
+
+        if (reachedMaxRecipes) {
+          break;
+        }
       }
 
       yield {
         phase: 'discovering',
         recipesFound: recipes.length,
-        categoriesScanned: i + 1,
+        categoriesScanned,
         totalCategories: categoryUrls.length,
         isComplete: false,
         recipes: [...recipes],
       };
 
-      if (maxRecipes && recipes.length >= maxRecipes) {
-        break;
+      if (!reachedMaxRecipes && i + CONCURRENT_CATEGORY_LIMIT < categoryUrls.length) {
+        await this.delay(FETCH_DELAY_MS);
       }
-
-      await this.delay(FETCH_DELAY_MS);
     }
 
     bulkImportLogger.info('Discovery complete', {
@@ -235,81 +258,109 @@ export abstract class BaseRecipeProvider implements RecipeProvider {
       count: selectedRecipes.length,
     });
 
-    for (let i = 0; i < selectedRecipes.length; i++) {
+    const CONCURRENT_PARSE_LIMIT = 3;
+    let processedCount = 0;
+
+    for (let i = 0; i < selectedRecipes.length; i += CONCURRENT_PARSE_LIMIT) {
       if (signal?.aborted) {
         bulkImportLogger.info('Parsing aborted by user');
         break;
       }
 
-      const recipe = selectedRecipes[i];
+      const batch = selectedRecipes.slice(i, i + CONCURRENT_PARSE_LIMIT);
 
       yield {
         phase: 'parsing',
-        current: i,
+        current: processedCount,
         total: selectedRecipes.length,
-        currentRecipeTitle: recipe.title,
+        currentRecipeTitle: batch.map(r => r.title).join(', '),
         parsedRecipes: [...parsedRecipes],
         failedRecipes: [...failedRecipes],
       };
 
-      try {
-        const html = await this.fetchHtml(recipe.url, signal);
-        const result = this.parser.parse(html, recipe.url);
+      const results = await Promise.allSettled(
+        batch.map(async recipe => {
+          const html = await this.fetchHtml(recipe.url, signal);
+          const result = this.parser.parse(html, recipe.url);
 
-        if (result.success) {
-          const converted = convertScrapedRecipe(result.data, ignoredPatterns, defaultPersons);
+          if (result.success) {
+            const converted = convertScrapedRecipe(result.data, ignoredPatterns, defaultPersons);
 
-          let localImageUri: string | undefined;
-          const imageUrl = cleanImageUrl(converted.image_Source || recipe.imageUrl || '');
-          if (imageUrl) {
-            const downloadedUri = await downloadImageToCache(imageUrl);
-            localImageUri = downloadedUri || undefined;
+            let localImageUri: string | undefined;
+            const imageUrl = cleanImageUrl(converted.image_Source || recipe.imageUrl || '');
+            if (imageUrl) {
+              const downloadedUri = await downloadImageToCache(imageUrl);
+              localImageUri = downloadedUri || undefined;
+            }
+
+            return {
+              success: true as const,
+              recipe: {
+                url: recipe.url,
+                title: converted.title || recipe.title,
+                description: converted.description || '',
+                localImageUri,
+                persons: converted.persons ?? defaultPersons,
+                time: converted.time ?? 0,
+                ingredients: converted.ingredients,
+                tags: converted.tags ?? [],
+                preparation: converted.preparation ?? [],
+                nutrition: converted.nutrition,
+                skippedIngredients: converted.skippedIngredients,
+              },
+            };
+          } else {
+            return {
+              success: false as const,
+              recipe,
+              error: result.error.message,
+            };
           }
+        })
+      );
 
-          parsedRecipes.push({
-            url: recipe.url,
-            title: converted.title || recipe.title,
-            description: converted.description || '',
-            localImageUri,
-            persons: converted.persons ?? defaultPersons,
-            time: converted.time ?? 0,
-            ingredients: converted.ingredients,
-            tags: converted.tags ?? [],
-            preparation: converted.preparation ?? [],
-            nutrition: converted.nutrition,
-            skippedIngredients: converted.skippedIngredients,
-          });
+      for (let j = 0; j < results.length; j++) {
+        const originalRecipe = batch[j];
+        const result = results[j];
+        processedCount++;
 
-          bulkImportLogger.debug('Recipe parsed successfully', {
-            url: recipe.url,
-            title: converted.title,
-            hasImage: !!localImageUri,
-          });
+        if (result.status === 'fulfilled') {
+          if (result.value.success) {
+            parsedRecipes.push(result.value.recipe);
+            bulkImportLogger.debug('Recipe parsed successfully', {
+              url: result.value.recipe.url,
+              title: result.value.recipe.title,
+              hasImage: !!result.value.recipe.localImageUri,
+            });
+          } else {
+            failedRecipes.push({
+              url: originalRecipe.url,
+              title: originalRecipe.title,
+              error: result.value.error,
+            });
+            bulkImportLogger.warn('Failed to parse recipe', {
+              url: originalRecipe.url,
+              error: result.value.error,
+            });
+          }
         } else {
+          const errorMessage =
+            result.reason instanceof Error ? result.reason.message : String(result.reason);
           failedRecipes.push({
-            url: recipe.url,
-            title: recipe.title,
-            error: result.error.message,
+            url: originalRecipe.url,
+            title: originalRecipe.title,
+            error: errorMessage,
           });
-          bulkImportLogger.warn('Failed to parse recipe', {
-            url: recipe.url,
-            error: result.error.message,
+          bulkImportLogger.warn('Failed to fetch recipe', {
+            url: originalRecipe.url,
+            error: errorMessage,
           });
         }
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        failedRecipes.push({
-          url: recipe.url,
-          title: recipe.title,
-          error: errorMessage,
-        });
-        bulkImportLogger.warn('Failed to fetch recipe', {
-          url: recipe.url,
-          error: errorMessage,
-        });
       }
 
-      await this.delay(FETCH_DELAY_MS);
+      if (i + CONCURRENT_PARSE_LIMIT < selectedRecipes.length) {
+        await this.delay(FETCH_DELAY_MS);
+      }
     }
 
     yield {
@@ -425,6 +476,7 @@ export abstract class BaseRecipeProvider implements RecipeProvider {
           'User-Agent': 'Mozilla/5.0 (compatible; RecipediaApp/1.0; +https://github.com/recipedia)',
           Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
           'Accept-Language': 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7',
+          'Accept-Encoding': 'gzip, deflate',
         },
       });
 
