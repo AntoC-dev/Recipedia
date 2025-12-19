@@ -115,7 +115,7 @@ export abstract class BaseRecipeProvider implements RecipeProvider {
    * @yields Progress updates with discovered recipes
    */
   async *discoverRecipeUrls(options: DiscoveryOptions = {}): AsyncGenerator<DiscoveryProgress> {
-    const { maxRecipes, signal, onImageLoaded } = options;
+    const { maxRecipes, signal } = options;
     const baseUrl = await this.getBaseUrl();
     const recipes: DiscoveredRecipe[] = [];
     const discoveredUrls = new Set<string>();
@@ -162,10 +162,6 @@ export abstract class BaseRecipeProvider implements RecipeProvider {
               title: link.title ?? '',
               imageUrl: link.imageUrl,
             });
-
-            if (onImageLoaded && !link.imageUrl) {
-              this.fetchSingleImageInBackground(link.url, onImageLoaded, signal);
-            }
 
             if (maxRecipes && recipes.length >= maxRecipes) {
               bulkImportLogger.info('Max recipes reached', { count: recipes.length });
@@ -384,6 +380,26 @@ export abstract class BaseRecipeProvider implements RecipeProvider {
       url,
       converted: importRecipe,
     };
+  }
+
+  /**
+   * Fetches just the image URL for a recipe page on-demand
+   *
+   * Used for visibility-based lazy loading of images. Fetches the recipe
+   * page HTML and extracts the image URL from JSON-LD schema data.
+   *
+   * @param url - Recipe page URL to fetch image for
+   * @param signal - Abort signal for cancellation
+   * @returns Promise resolving to image URL or null if not found/failed
+   */
+  async fetchImageUrlForRecipe(url: string, signal: AbortSignal): Promise<string | null> {
+    try {
+      const html = await this.fetchHtml(url, signal);
+      const metadata = this.extractPreviewMetadata(html);
+      return metadata.imageUrl;
+    } catch {
+      return null;
+    }
   }
 
   /**

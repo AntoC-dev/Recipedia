@@ -13,7 +13,7 @@
  *
  * Key Features:
  * - Real-time recipe discovery with streaming progress
- * - Background image loading for discovered recipes
+ * - Visibility-based lazy loading of recipe images (only loads images for visible items)
  * - Select all/deselect all functionality
  * - Progress tracking during recipe parsing
  * - Abort support for long-running operations
@@ -29,8 +29,8 @@
  * ```
  */
 
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, ViewabilityConfig, ViewToken } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ActivityIndicator, Text, useTheme } from 'react-native-paper';
@@ -48,6 +48,7 @@ import { useI18n } from '@utils/i18n';
 import { getProvider } from '@providers/ProviderRegistry';
 import { useDefaultPersons } from '@context/DefaultPersonsContext';
 import { useDiscoveryWorkflow } from '@hooks/useDiscoveryWorkflow';
+import { useVisibleImageLoader } from '@hooks/useVisibleImageLoader';
 import { padding } from '@styles/spacing';
 
 type BulkImportDiscoveryRouteProp = RouteProp<StackScreenParamList, 'BulkImportDiscovery'>;
@@ -55,6 +56,13 @@ type BulkImportDiscoveryRouteProp = RouteProp<StackScreenParamList, 'BulkImportD
 const screenId = 'BulkImportDiscovery';
 const RECIPE_CARD_HEIGHT = 88;
 const SECTION_HEADER_HEIGHT = 40;
+const FLASH_LIST_DRAW_DISTANCE = 200;
+
+const viewabilityConfig: ViewabilityConfig = {
+  itemVisiblePercentThreshold: 10,
+  waitForInteraction: false,
+  minimumViewTime: 100,
+};
 
 /**
  * BulkImportDiscovery screen component
@@ -74,8 +82,11 @@ export function BulkImportDiscovery() {
 
   const provider = getProvider(providerId);
 
+  const [visibleUrls, setVisibleUrls] = useState<Set<string>>(new Set());
+
   const {
     phase,
+    recipes,
     freshRecipes,
     seenRecipes,
     selectedCount,
@@ -94,14 +105,53 @@ export function BulkImportDiscovery() {
     markUrlsAsSeen,
   } = useDiscoveryWorkflow(provider, defaultPersons, providerId);
 
-  const totalRecipesCount = freshRecipes.length + seenRecipes.length;
-  const listData = buildDiscoveryListData(freshRecipes, seenRecipes);
+  const { imageMap } = useVisibleImageLoader({
+    recipes,
+    visibleUrls,
+    fetchImageUrl: (url, signal) =>
+      provider?.fetchImageUrlForRecipe(url, signal) ?? Promise.resolve(null),
+  });
 
+  const freshRecipesWithImages = freshRecipes.map(r => ({
+    ...r,
+    imageUrl: imageMap.get(r.url) ?? r.imageUrl,
+  }));
+  const seenRecipesWithImages = seenRecipes.map(r => ({
+    ...r,
+    imageUrl: imageMap.get(r.url) ?? r.imageUrl,
+  }));
+
+  const totalRecipesCount = freshRecipesWithImages.length + seenRecipesWithImages.length;
+  const listData = buildDiscoveryListData(freshRecipesWithImages, seenRecipesWithImages);
+
+  /**
+   * Handles FlashList viewability changes to track visible recipe URLs.
+   * Updates the visibleUrls state for visibility-based image loading.
+   *
+   * @param viewableItems - Array of currently visible list items from FlashList
+   */
+  const handleViewableItemsChanged = ({ viewableItems }: { viewableItems: ViewToken[] }) => {
+    const urls = viewableItems
+      .filter(item => item.item?.type === 'recipe')
+      .map(item => item.item.recipe.url);
+    setVisibleUrls(new Set(urls));
+  };
+
+  /**
+   * Handles cancel action by aborting any in-progress operations
+   * and navigating back to the previous screen.
+   */
   const handleCancel = () => {
     abort();
     navigation.goBack();
   };
 
+  /**
+   * Renders a list item based on its type (header or recipe card).
+   *
+   * @param item - The discovery list item to render
+   * @returns JSX element for either a section header or recipe selection card
+   */
   const renderListItem = ({ item }: { item: DiscoveryListItem }) => {
     if (item.type === 'header') {
       return (
@@ -125,6 +175,11 @@ export function BulkImportDiscovery() {
     );
   };
 
+  /**
+   * Handles the continue action after recipe selection.
+   * Marks discovered URLs as seen, parses selected recipes,
+   * and navigates to the validation screen if successful.
+   */
   const handleContinue = async () => {
     await markUrlsAsSeen();
     const convertedRecipes = await parseSelectedRecipes();
@@ -170,6 +225,9 @@ export function BulkImportDiscovery() {
                 layout.size = item.type === 'header' ? SECTION_HEADER_HEIGHT : RECIPE_CARD_HEIGHT;
               }}
               renderItem={renderListItem}
+              onViewableItemsChanged={handleViewableItemsChanged}
+              viewabilityConfig={viewabilityConfig}
+              drawDistance={FLASH_LIST_DRAW_DISTANCE}
             />
           ) : phase === 'selecting' ? (
             <View style={styles.emptyState}>
