@@ -1,0 +1,10 @@
+appId: "com.recipedia"
+---
+- repeat:
+    while:
+      notVisible:
+        id: "ShoppingScreen::Dialog::Title"
+    commands:
+      - longPressOn:
+          id: "ShoppingScreen::SectionList::${INGREDIENT_PATTERN}"
+          label: "Long press on ingredient to show recipe usage"

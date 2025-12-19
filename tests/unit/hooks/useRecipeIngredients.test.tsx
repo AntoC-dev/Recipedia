@@ -564,6 +564,44 @@ describe('useRecipeIngredients', () => {
         expect(result.current.form.state.recipeIngredients[0].quantity).toBe('300');
       });
 
+      test('preserves type and season from validated ingredient when merging with FormIngredient', async () => {
+        const recipeWithFormIngredient: recipeTableElement = {
+          ...recipeWithIngredients,
+          ingredients: [{ name: 'Flour', unit: 'g', quantity: '200' } as never],
+        };
+        const wrapper = createIngredientsWrapper(
+          createMockRecipeProp('edit', recipeWithFormIngredient)
+        );
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+        });
+
+        act(() => {
+          result.current.ingredients.addOrMergeIngredient({
+            id: 1,
+            name: 'Flour',
+            unit: 'g',
+            quantity: '100',
+            type: ingredientType.cereal,
+            season: ['1', '2', '3'],
+          });
+        });
+
+        const merged = result.current.form.state.recipeIngredients[0];
+        expect(merged.quantity).toBe('300');
+        expect(merged.type).toBe(ingredientType.cereal);
+        expect(merged.season).toEqual(['1', '2', '3']);
+      });
+
       test('handles existing ingredient with undefined name gracefully', async () => {
         const recipeWithEmptyNameIngredient: recipeTableElement = {
           ...recipeWithIngredients,

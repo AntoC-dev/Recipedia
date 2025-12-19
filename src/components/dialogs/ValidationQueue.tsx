@@ -53,11 +53,12 @@ import {
 import { SimilarityDialog } from './SimilarityDialog';
 import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
 import { uiLogger } from '@utils/logger';
+import { normalizeKey } from '@utils/NutritionUtils';
 
 export type ValidationQueuePropsBase<T extends 'Tag' | 'Ingredient', ItemType, ValidatedType> = {
   type: T;
   items: ItemType[];
-  onValidated: (item: ValidatedType) => void;
+  onValidated: (originalItem: ItemType, validatedItem: ValidatedType) => void;
   onDismissed?: (item: ItemType) => void;
 };
 
@@ -122,11 +123,10 @@ export function ValidationQueue({
         ...validatedIngredient,
         quantity: originalIngredient?.quantity || validatedIngredient.quantity,
       };
-      // First remove the original ingredient (e.g., "Oignon"), then add the validated one (e.g., "Onions")
-      onDismissed?.(originalIngredient);
-      onValidated(mergedIngredient);
+      onValidated(originalIngredient, mergedIngredient);
     } else {
-      onValidated(item);
+      const originalTag = currentItem as tagTableElement;
+      onValidated(originalTag, item as tagTableElement);
     }
     // Note: Don't call moveToNext() here - SimilarityDialog's onClose handles it
   };
@@ -147,7 +147,7 @@ export function ValidationQueue({
   const itemName = currentItem.name;
   const similarItems =
     type === 'Tag' ? findSimilarTags(itemName) : findSimilarIngredients(itemName);
-  const exactMatch = similarItems.find(item => item.name.toLowerCase() === itemName.toLowerCase());
+  const exactMatch = similarItems.find(item => normalizeKey(item.name) === normalizeKey(itemName));
   const similarItem = exactMatch || similarItems[0];
 
   uiLogger.debug('ValidationQueue showing dialog', {

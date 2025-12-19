@@ -79,7 +79,7 @@ export function addOrMergeIngredientMatches(
       const existing = updated[existingIndex];
       if (existing && existing.name && existing.unit === ingredient.unit) {
         updated[existingIndex] = {
-          ...existing,
+          ...ingredient,
           quantity: String(Number(existing.quantity || 0) + Number(ingredient.quantity || 0)),
         };
       } else {

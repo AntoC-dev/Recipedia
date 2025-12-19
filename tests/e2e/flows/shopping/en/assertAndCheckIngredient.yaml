@@ -16,14 +16,11 @@ appId: "com.recipedia"
     text: "${INGREDIENT_NAME} (${QUANTITY}${UNIT})"
     label: "${INGREDIENT_NAME} with quantity is displayed"
 
-- repeat:
-    while:
-      notVisible:
-        id: "ShoppingScreen::Dialog::Title"
-    commands:
-      - longPressOn:
-          id: "ShoppingScreen::SectionList::${INGREDIENT_NAME}"
-          label: "Long press on ${INGREDIENT_NAME} to show recipe usage"
+- runFlow:
+    file: "../longPressIngredient.yaml"
+    env:
+      INGREDIENT_PATTERN: "${INGREDIENT_NAME}"
+    label: "Long press on ${INGREDIENT_NAME} to show recipe usage"
 
 - runFlow:
     file: "../../../asserts/alerts/en/longPressOnIngredient.yaml"

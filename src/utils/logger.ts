@@ -79,6 +79,7 @@ const log = logger.createLogger({
     'Navigation',
     'App',
     'Tutorial',
+    'BulkImport',
   ],
 });
 
@@ -150,6 +151,9 @@ export const appLogger = log.extend('App');
 /** Logger for tutorial system events and step management */
 export const tutorialLogger = log.extend('Tutorial');
 
+/** Logger for bulk recipe import operations */
+export const bulkImportLogger = log.extend('BulkImport');
+
 /**
  * Default export providing organized access to all loggers
  *
@@ -182,4 +186,5 @@ export default {
   navigation: navigationLogger,
   app: appLogger,
   tutorial: tutorialLogger,
+  bulkImport: bulkImportLogger,
 };

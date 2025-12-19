@@ -16,7 +16,7 @@ tags:
     element:
       id: "TagsSettings::6::TagName"
     direction: DOWN
-    speed: 70
+    speed: 60
     centerElement: true
     label: "Action - Scroll to Italian tag"
 

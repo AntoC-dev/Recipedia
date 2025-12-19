@@ -42,7 +42,7 @@ import { uiLogger } from '@utils/logger';
 import { useDefaultPersons } from '@context/DefaultPersonsContext';
 import {
   convertScrapedRecipe,
-  IgnoredIngredientPatterns,
+  getIgnoredPatterns,
   ScrapedRecipeResult,
 } from '@utils/RecipeScraperConverter';
 
@@ -93,20 +93,6 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
 
   const clearAuthRequired = () => setAuthRequired(null);
 
-  const getIgnoredPatterns = (): IgnoredIngredientPatterns => {
-    const prefixes = t('recipe.scraper.ignoredIngredientPrefixes', { returnObjects: true });
-    const exactMatches = t('recipe.scraper.ignoredIngredientExactMatches', { returnObjects: true });
-
-    return {
-      prefixes: Array.isArray(prefixes)
-        ? prefixes.filter((p): p is string => typeof p === 'string')
-        : [],
-      exactMatches: Array.isArray(exactMatches)
-        ? exactMatches.filter((e): e is string => typeof e === 'string')
-        : [],
-    };
-  };
-
   const clearError = () => setError(undefined);
 
   const processScrapedData = async (
@@ -142,7 +128,7 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
 
     const recipeData = convertScrapedRecipe(
       scraperResult.data,
-      getIgnoredPatterns(),
+      getIgnoredPatterns(t),
       defaultPersons
     );
 

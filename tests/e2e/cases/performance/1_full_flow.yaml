@@ -4,7 +4,7 @@ tags:
   - performance
 ---
 - runFlow:
-    file: "../../flows/setupFirstTest.yaml"
+    file: "../../flows/setupPerformanceTest.yaml"
     label: "Setup - Launch app and wait for ready"
 
 - runFlow:
@@ -30,6 +30,10 @@ tags:
 - runFlow:
     file: "../../flows/performance/webScraping.yaml"
     label: "Web scraping interactions"
+
+- runFlow:
+    file: "../../flows/performance/bulkImport.yaml"
+    label: "Bulk import interactions"
 
 - runFlow:
     file: "../../flows/performance/parametersScreen.yaml"

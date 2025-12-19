@@ -6,6 +6,7 @@
  */
 
 import { numericQuantity } from 'numeric-quantity';
+import { decode } from 'html-entities';
 import {
   extractFirstInteger,
   extractNumericValue,
@@ -30,6 +31,34 @@ import {
 const DEFAULT_PORTION_WEIGHT_GRAMS = 100;
 const SODIUM_MG_THRESHOLD = 10;
 const MG_PER_GRAM = 1000;
+
+/**
+ * Retrieves ignored ingredient patterns from i18n translations.
+ *
+ * @param t - i18n translation function
+ * @returns Patterns for ingredients to skip during parsing
+ */
+export function getIgnoredPatterns(
+  t: (key: string, options?: { returnObjects: boolean }) => unknown
+): IgnoredIngredientPatterns {
+  const prefixes = t('recipe.scraper.ignoredIngredientPrefixes', { returnObjects: true });
+  const exactMatches = t('recipe.scraper.ignoredIngredientExactMatches', { returnObjects: true });
+
+  return {
+    prefixes: Array.isArray(prefixes)
+      ? prefixes.filter((p): p is string => typeof p === 'string')
+      : [],
+    exactMatches: Array.isArray(exactMatches)
+      ? exactMatches.filter((e): e is string => typeof e === 'string')
+      : [],
+  };
+}
+
+function stripHtml(text: string): string {
+  return decode(text.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, ''))
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 
 export type ParsedIngredient =
   | { success: true; ingredient: FormIngredientElement }
@@ -211,21 +240,21 @@ export function convertPreparation(
 ): preparationStepElement[] {
   if (parsedInstructions && parsedInstructions.length > 0) {
     return parsedInstructions.map(group => ({
-      title: group.title ?? '',
-      description: group.instructions.map(i => i.trim()).join('\n'),
+      title: group.title ? stripHtml(group.title) : '',
+      description: group.instructions.map(i => stripHtml(i.trim())).join('\n'),
     }));
   }
 
   if (instructionsList && instructionsList.length > 0) {
     return instructionsList.map(step => ({
       title: '',
-      description: step.trim(),
+      description: stripHtml(step.trim()),
     }));
   }
 
   const steps = instructions
     .split('\n')
-    .map(removeNumberedPrefix)
+    .map(s => stripHtml(removeNumberedPrefix(s)))
     .filter(step => step.length > 0);
 
   return steps.map(step => ({

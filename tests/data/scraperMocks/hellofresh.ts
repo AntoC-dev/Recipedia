@@ -1,5 +1,76 @@
 import { ScrapedRecipe } from '@app/modules/recipe-scraper';
 
+export const hellofreshRecipesPageHtml = `
+<!DOCTYPE html>
+<html lang="fr">
+<head><title>Recettes HelloFresh</title></head>
+<body>
+  <nav>
+    <a href="/recipes/recettes-faciles">Recettes Faciles</a>
+    <a href="/recipes/recettes-vegetariennes">Recettes Végétariennes</a>
+    <a href="/recipes/recettes-rapides">Recettes Rapides</a>
+    <a href="https://www.hellofresh.fr/recipes/plats-principaux">Plats Principaux</a>
+    <a href="/recipes/poulet-tikka-masala-abc123def456789012345678">A recipe not a category</a>
+  </nav>
+</body>
+</html>
+`;
+
+export const hellofreshCategoryPageHtml = `
+<!DOCTYPE html>
+<html lang="fr">
+<head><title>Recettes Faciles - HelloFresh</title></head>
+<body>
+  <div class="recipes-list">
+    <a href="/recipes/keftas-de-boeuf-66e83b9e7dfc60d59bf5f913">
+      <img src="https://img.hellofresh.com/image1.jpg" alt="Keftas de boeuf" />
+      <span>Keftas de boeuf</span>
+    </a>
+    <a href="https://www.hellofresh.fr/recipes/poulet-tikka-masala-66e83b9e7dfc60d59bf5f914">
+      <img src="https://img.hellofresh.com/image2.jpg" alt="Poulet tikka masala" />
+      <span>Poulet tikka masala</span>
+    </a>
+    <a href="/recipes/spaghetti-bolognese-66e83b9e7dfc60d59bf5f915">
+      <span>Spaghetti bolognese</span>
+    </a>
+    <a href="/recipes/keftas-de-boeuf-66e83b9e7dfc60d59bf5f913">
+      <!-- Duplicate -->
+    </a>
+    <a href="/recipes/recettes-italiennes">
+      <!-- This is a category, not a recipe -->
+    </a>
+  </div>
+</body>
+</html>
+`;
+
+export const hellofreshRecipePageHtml = `
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <title>Keftas de bœuf - HelloFresh</title>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Recipe",
+    "name": "Keftas de bœuf & semoule aux épices",
+    "description": "Délicieuses keftas de bœuf accompagnées de semoule aux épices",
+    "image": "https://img.hellofresh.com/keftas.jpg",
+    "recipeYield": "2 servings",
+    "totalTime": "PT70M",
+    "recipeIngredient": ["1 pièce(s) Carotte", "150 g Semoule"],
+    "recipeInstructions": [
+      {"@type": "HowToStep", "text": "Épluchez la carotte"},
+      {"@type": "HowToStep", "text": "Préparez la semoule"}
+    ],
+    "keywords": ["Épicé", "Facile"]
+  }
+  </script>
+</head>
+<body></body>
+</html>
+`;
+
 export const hellofreshKeftasRecipe: ScrapedRecipe = {
   title: 'Keftas de bœuf & semoule aux épices avec de la menthe & une sauce yaourt',
   description:

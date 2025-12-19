@@ -1,0 +1,17 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "BottomTabs::Parameters"
+    label: "Navigate to Parameters screen"
+
+- scrollUntilVisible:
+    element:
+      id: "Parameters::Section::Import::FromWebsite::Item"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Bulk Import section"
+
+- tapOn:
+    id: "Parameters::Section::Import::FromWebsite::Item"
+    label: "Open Bulk Import settings"

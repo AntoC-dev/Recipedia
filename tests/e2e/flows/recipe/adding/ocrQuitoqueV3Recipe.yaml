@@ -21,7 +21,7 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeImage::Image"
+      id: "RecipeImage"
     direction: UP
     speed: 80
     centerElement: true

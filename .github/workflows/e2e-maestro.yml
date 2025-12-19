@@ -1,0 +1,77 @@
+name: E2E Maestro Tests
+
+on:
+  workflow_call:
+    inputs:
+      apk-artifact:
+        description: 'Name of the APK artifact to download'
+        required: true
+        type: string
+      suites:
+        description: 'JSON array of test suites to run'
+        required: true
+        type: string
+    secrets:
+      QUITOQUE_USERNAME:
+        required: false
+      QUITOQUE_PASSWORD:
+        required: false
+
+jobs:
+  e2e-tests:
+    name: E2E (${{ matrix.suite }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: ${{ fromJson(inputs.suites) }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+
+      - name: Setup Maestro environment
+        uses: ./.github/actions/setup-maestro
+        with:
+          apk-artifact: ${{ inputs.apk-artifact }}
+
+      - name: Run E2E tests
+        uses: ReactiveCircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          profile: Nexus 5
+          emulator-options: -no-snapshot -no-window -noaudio -no-boot-anim -wipe-data -memory 2048 -cores 4
+          script: |
+            sleep 10
+            echo "🔄 Waiting for device..."
+            adb wait-for-device
+
+            echo "🚀 Running E2E tests on suite: ${{ matrix.suite }} ..."
+            npm run install:android
+            maestro test tests/e2e/ --config=tests/e2e/${{ matrix.suite }}.yaml --debug-output=maestro_logs_${{ matrix.suite }} --format junit -s 1 -e QUITOQUE_USERNAME='${{ secrets.QUITOQUE_USERNAME }}' -e QUITOQUE_PASSWORD='${{ secrets.QUITOQUE_PASSWORD }}'
+
+      - name: Prepare suite logs
+        if: always()
+        run: bash .github/scripts/prepare-maestro-logs.sh maestro_logs_${{ matrix.suite }}
+
+      - name: Upload test suite logs
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: maestro-logs-${{ matrix.suite }}
+          path: maestro_logs_${{ matrix.suite }}.zip
+          retention-days: 1
+
+      - name: Upload JUnit report for suite
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: junit-e2e-${{ matrix.suite }}
+          path: report.xml
+          retention-days: 1

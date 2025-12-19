@@ -40,20 +40,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Setup Java (Android only)
+      - name: Setup Android build environment
         if: matrix.platform == 'android'
-        uses: actions/setup-java@v5
+        uses: ./.github/actions/setup-android-build
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          expo-token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Setup Python for Chaquopy (Android only)
-        if: matrix.platform == 'android'
-        uses: actions/setup-python@v5
-        with:
-          python-version-file: '.python-version'
-
-      - name: Setup EAS
+      - name: Setup EAS (iOS)
+        if: matrix.platform == 'ios'
         uses: expo/expo-github-action@v8
         with:
           eas-version: latest

@@ -20,8 +20,8 @@ appId: "com.recipedia"
     label: "Open type dropdown menu"
 
 - tapOn:
-    text: "Vegetable"
-    label: "Select vegetable type"
+    text: "Legumes"
+    label: "Select legumes type"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::Unit::CustomTextInput"

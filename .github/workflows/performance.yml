@@ -13,9 +13,9 @@ on:
         required: false
         default: 'manual-run'
 
-  # PR trigger on label
+  # PR trigger when 'perf-test' label is present
   pull_request:
-    types: [ labeled ]
+    types: [ opened, synchronize, reopened, labeled ]
 
 permissions:
   contents: read
@@ -23,11 +23,11 @@ permissions:
 jobs:
   build-performance-apk:
     name: Build Performance APK
-    # Only run if: scheduled, manual, OR has 'perf-test' label
+    # Only run if: scheduled, manual, OR PR has 'perf-test' label
     if: |
       github.event_name == 'schedule' ||
       github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'pull_request' && github.event.label.name == 'perf-test')
+      (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'perf-test'))
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -41,11 +41,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Setup EAS
-        uses: expo/expo-github-action@v8
+      - name: Setup Android build environment
+        uses: ./.github/actions/setup-android-build
         with:
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
+          setup-android-sdk: 'true'
+          expo-token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Build Performance APK
         run: npm run build:perf:android
@@ -98,19 +98,14 @@ jobs:
           echo "apk_path=$APK_PATH" >> $GITHUB_OUTPUT
           echo "Found APK: $APK_PATH"
 
-      - name: Determine test name
-        id: test-name
-        run: |
-          if [ "${{ github.event_name }}" == "schedule" ]; then
-            echo "name=main-nightly" >> $GITHUB_OUTPUT
-          elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "name=${{ github.event.inputs.test_name || 'manual-run' }}" >> $GITHUB_OUTPUT
-          elif [ "${{ github.event_name }}" == "pull_request" ]; then
-            echo "name=PR-${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
-          fi
-
       - name: Install Flashlight CLI
         run: curl https://get.flashlight.dev | bash
+
+      - name: Install Maestro CLI
+        run: bash .github/scripts/install-maestro.sh 2.0.10
+
+      - name: Add Maestro to PATH
+        run: echo "$HOME/.maestro/bin" >> $GITHUB_PATH
 
       - name: Enable KVM
         run: |
@@ -129,18 +124,26 @@ jobs:
             sleep 10
             echo "🔄 Waiting for device..."
             adb wait-for-device
-            
+
             adb install "${{ steps.find-apk.outputs.apk_path }}"
-            ~/.flashlight/bin/flashlight test \
-              --bundleId "com.recipedia" \
-              --testCommand "npx @perf-profiler/maestro@latest test tests/e2e/cases/performance/1_full_flow.yaml" \
-              --resultsFilePath "./performance-results.json" \
-              --duration 120000
+            ~/.flashlight/bin/flashlight test --bundleId "com.recipedia" --testCommand "maestro test tests/e2e/cases/performance/1_full_flow.yaml --debug-output=maestro_logs_performance" --resultsFilePath "./performance-results.json" --duration 120000
 
       - name: Upload Performance Report
         uses: actions/upload-artifact@v5
         if: always()
         with:
-          name: performance-report-${{ steps.test-name.outputs.name }}-${{ github.run_number }}
+          name: performance-report
           path: ./performance-results.json
           retention-days: 30
+
+      - name: Prepare Maestro logs
+        if: always()
+        run: bash .github/scripts/prepare-maestro-logs.sh maestro_logs_performance
+
+      - name: Upload Maestro logs
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: maestro-logs-performance
+          path: maestro_logs_performance.zip
+          retention-days: 7

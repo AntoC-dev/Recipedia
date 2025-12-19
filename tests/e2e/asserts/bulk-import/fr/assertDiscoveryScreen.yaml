@@ -1,0 +1,45 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    id: "BulkImportDiscovery::AppBar::Title-title-text"
+    text: "Sélectionner les recettes"
+    label: "App bar title displays correct text (French)"
+
+- assertVisible:
+    id: "BulkImportDiscovery::RecipeCount"
+    text: "\\d+ recette trouvée"
+    label: "Recipe count displays correct format (French)"
+
+- assertVisible:
+    id: "BulkImportDiscovery::SelectedCount"
+    text: "\\d+ sur \\d+ sélectionnées"
+    label: "Selection count displays correct format (French)"
+
+- assertVisible:
+    id: "BulkImportDiscovery::SelectAllCheckbox"
+    label: "Select all checkbox is displayed"
+
+- assertVisible:
+    text: "Sélectionner toutes les recettes à importer"
+    label: "Select all checkbox label displays correct text (French)"
+
+- assertVisible:
+    id: "BulkImportDiscovery::Recipe::0"
+    label: "First recipe card is displayed"
+
+- assertVisible:
+    id: "BulkImportDiscovery::Recipe::0::Checkbox"
+    label: "First recipe checkbox is displayed"
+
+- assertVisible:
+    id: "BulkImportDiscovery::Recipe::0::Thumbnail"
+    label: "First recipe thumbnail is displayed"
+
+- assertVisible:
+    id: "BulkImportDiscovery::Recipe::0::Title"
+    label: "First recipe title is displayed"
+
+- assertVisible:
+    id: "BulkImportDiscovery::ContinueButton"
+    text: "Continuer"
+    label: "Continue button displays correct text (French)"

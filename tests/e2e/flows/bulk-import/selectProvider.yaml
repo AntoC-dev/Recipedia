@@ -1,0 +1,9 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    id: "BulkImportSettings::AppBar::Title"
+    label: "Verify BulkImportSettings screen is displayed"
+
+- tapOn:
+    id: "BulkImportSettings::Provider::${PROVIDER_ID}"
+    label: "Select provider ${PROVIDER_ID}"

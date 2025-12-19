@@ -11,6 +11,7 @@
     "src/screens/*.tsx",
     "src/utils/*.tsx",
     "src/utils/*.ts",
+    "src/providers/*.ts",
     "src/customTypes/*.tsx",
     "src/assets/Icons.tsx",
     "src/assets/datasets/**/*.ts",

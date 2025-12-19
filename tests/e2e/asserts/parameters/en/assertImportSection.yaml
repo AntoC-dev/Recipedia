@@ -1,0 +1,19 @@
+appId: "com.recipedia"
+---
+- scrollUntilVisible:
+    element:
+      id: "Parameters::Section::Import::SubHeader"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Bulk Import section"
+
+- assertVisible:
+    id: "Parameters::Section::Import::SubHeader"
+    text: "Bulk Import Recipes"
+    label: "Bulk Import section header is displayed with correct text"
+
+- assertVisible:
+    id: "Parameters::Section::Import::FromWebsite::Item"
+    text: "Import from meal kit service, Import all recipes from supported services"
+    label: "Import from service item shows correct text"

@@ -125,6 +125,9 @@ export function Parameters() {
   const ingredientsId = dataId + '::Ingredients';
   const tagsId = dataId + '::Tags';
 
+  const importId = sectionId + '::Import';
+  const importFromWebsiteId = importId + '::FromWebsite';
+
   const aboutId = sectionId + '::About';
   const versionId = aboutId + '::Version';
 
@@ -226,6 +229,21 @@ export function Parameters() {
             left={props => <List.Icon {...props} icon={Icons.tags} />}
             right={props => <List.Icon {...props} icon={Icons.chevronRight} />}
             onPress={handleTagsPress}
+          />
+        </List.Section>
+
+        {/* Bulk Import Recipes Section */}
+        <List.Section>
+          <List.Subheader testID={importId + '::SubHeader'}>{t('bulkImport.title')}</List.Subheader>
+          <List.Item
+            testID={importFromWebsiteId + '::Item'}
+            title={t('bulkImport.fromService')}
+            description={t('bulkImport.fromServiceDescription')}
+            left={props => <List.Icon {...props} icon='web' />}
+            right={props => <List.Icon {...props} icon={Icons.chevronRight} />}
+            onPress={() => {
+              navigate('BulkImportSettings');
+            }}
           />
         </List.Section>
 

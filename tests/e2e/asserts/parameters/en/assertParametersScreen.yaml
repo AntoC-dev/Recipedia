@@ -19,6 +19,9 @@ appId: "com.recipedia"
     file: "./assertDataManagementSection.yaml"
     label: "Check that the data management section is displayed correctly in English"
 - runFlow:
+    file: "./assertImportSection.yaml"
+    label: "Check that the import section is displayed correctly in English"
+- runFlow:
     file: "./assertAboutSection.yaml"
     label: "Check that the about section is displayed correctly in English"
 

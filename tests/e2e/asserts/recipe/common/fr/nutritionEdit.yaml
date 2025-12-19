@@ -4,7 +4,7 @@ appId: "com.recipedia"
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::Title"
     direction: DOWN
-    speed: 60
+    speed: 40
     centerElement: true
     label: "Scroll to nutrition section"
 
@@ -13,10 +13,27 @@ appId: "com.recipedia"
     text: "Valeurs nutritionnelles"
     label: "Nutrition table title is displayed (French)"
 
+- scrollUntilVisible:
+    element:
+      id: "Recipe::RecipeNutrition::NutritionTable::Subtitle"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to subtitle"
+
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::Subtitle"
     text: "pour 100g"
     label: "Nutrition subtitle (pour 100g) is displayed in edit mode (French)"
+
+- scrollUntilVisible:
+    element:
+      id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to energy kcal section"
+
 
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
@@ -27,27 +44,35 @@ appId: "com.recipedia"
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKj::NumericTextInput"
     direction: DOWN
-    speed: 60
+    speed: 40
     centerElement: true
     label: "Scroll to energy kj section"
-
-- scrollUntilVisible:
-    element:
-      id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::SaturatedFat::NumericTextInput"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to middle of nutrition table"
 
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKj::NumericTextInput"
     text: "${ENERGY_KJ}"
     label: "Energy kJ input is displayed with correct value"
 
+- scrollUntilVisible:
+    element:
+      id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::NumericTextInput"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to protein section"
+
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::NumericTextInput"
     text: "${FAT}"
     label: "Fat input is displayed with correct value"
+
+- scrollUntilVisible:
+    element:
+      id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::SaturatedFat::NumericTextInput"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to protein section"
 
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::SaturatedFat::NumericTextInput"
@@ -56,11 +81,11 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Salt::NumericTextInput"
+      id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Carbohydrates::NumericTextInput"
     direction: DOWN
-    speed: 60
+    speed: 40
     centerElement: true
-    label: "Scroll to end of nutrition table"
+    label: "Scroll to protein section"
 
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Carbohydrates::NumericTextInput"
@@ -72,15 +97,40 @@ appId: "com.recipedia"
     text: "${SUGARS}"
     label: "Sugars input is displayed with correct value"
 
+- scrollUntilVisible:
+    element:
+      id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Sugars::NumericTextInput"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to sugars section"
+
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fiber::NumericTextInput"
     text: "${FIBER}"
     label: "Fiber input is displayed with correct value"
 
+- scrollUntilVisible:
+    element:
+      id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::NumericTextInput"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to protein section"
+
+
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::NumericTextInput"
     text: "${PROTEIN}"
     label: "Protein input is displayed with correct value"
+
+- scrollUntilVisible:
+    element:
+      id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Salt::NumericTextInput"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to end of nutrition table"
 
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Salt::NumericTextInput"

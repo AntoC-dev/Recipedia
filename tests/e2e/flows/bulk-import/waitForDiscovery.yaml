@@ -1,0 +1,7 @@
+appId: "com.recipedia"
+---
+- extendedWaitUntil:
+    notVisible:
+      id: "BulkImportDiscovery::DiscoveryProgress"
+    timeout: 900000
+    label: "Wait for recipe discovery to complete"

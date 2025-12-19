@@ -141,7 +141,7 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
 
         if (existing.unit === ingredient.unit) {
           updated[existingIndex] = {
-            ...existing,
+            ...ingredient,
             quantity: String(Number(existing.quantity || 0) + Number(ingredient.quantity || 0)),
           };
         } else {
@@ -249,7 +249,7 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
         setValidationQueue({
           type: 'Ingredient',
           items: needsValidation,
-          onValidated: addOrMergeIngredient,
+          onValidated: (_, validatedIngredient) => addOrMergeIngredient(validatedIngredient),
         });
       }
     } else {

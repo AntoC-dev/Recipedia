@@ -1,0 +1,186 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    text: "Parameters"
+    label: "Navigate to Parameters screen"
+
+- scrollUntilVisible:
+    element:
+      id: "Parameters::Section::Import::FromWebsite::Item"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to bulk import section"
+
+- tapOn:
+    id: "Parameters::Section::Import::FromWebsite::Item"
+    label: "Open bulk import settings"
+
+- tapOn:
+    id: "BulkImportSettings::Provider::hellofresh"
+    label: "Select HelloFresh provider"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "BulkImportDiscovery::DiscoveryProgress"
+    timeout: 900000
+    label: "Wait for recipe discovery to complete"
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,30%"
+    duration: 400
+    label: "Scroll through discovered recipes"
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,30%"
+    duration: 400
+    label: "Continue scrolling discovered recipes"
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,30%"
+    duration: 400
+    label: "Keep scrolling discovered recipes"
+
+- scrollUntilVisible:
+    element:
+      id: "BulkImportDiscovery::Recipe::0"
+    direction: UP
+    speed: 50
+    timeout: 20000
+    label: "Scroll back to top and wait for first checkbox"
+
+- runFlow:
+    file: "../bulk-import/selectRecipes.yaml"
+    env:
+      RECIPE_COUNT: "25"
+    label: "Select 25 recipes for performance test"
+
+- assertVisible:
+    id: "BulkImportDiscovery::ContinueButton"
+    label: "Verify - Continue button is available"
+
+- tapOn:
+    id: "BulkImportDiscovery::ContinueButton"
+    label: "Continue to validation"
+
+- extendedWaitUntil:
+    visible:
+      id: "BulkImportValidation::AppBar::Title"
+    timeout: 300000
+    label: "Wait for parsing 25 recipes (5 min timeout)"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "BulkImportValidation::InitializingIndicator"
+    timeout: 180000
+    label: "Wait for initialization to complete (3 min timeout)"
+
+- runFlow:
+    file: "../recipe/validation/validateAllDialogs.yaml"
+    env:
+      TAG_PREFIX: "BulkImportValidation::TagQueue"
+      INGREDIENT_PREFIX: "BulkImportValidation::IngredientQueue"
+    label: "Validate all tags and ingredients"
+
+- extendedWaitUntil:
+    visible:
+      id: "BulkImportValidation::FinishButton"
+    timeout: 120000
+    label: "Wait for import completion"
+
+- tapOn:
+    id: "BulkImportValidation::FinishButton"
+    label: "Finish import"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Navigate to Home screen"
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,20%"
+    duration: 400
+    label: "Scroll home screen after bulk import"
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,20%"
+    duration: 400
+    label: "Continue scrolling home"
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,20%"
+    duration: 400
+    label: "Keep scrolling home"
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,20%"
+    duration: 400
+    label: "More scrolling home"
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,20%"
+    duration: 400
+    label: "Even more scrolling home"
+
+- swipe:
+    start: "50%,20%"
+    end: "50%,80%"
+    duration: 300
+    label: "Scroll back to top of home"
+
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Navigate to Search screen"
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,20%"
+    duration: 400
+    label: "Scroll search results with many recipes"
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,20%"
+    duration: 400
+    label: "Continue scrolling search"
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,20%"
+    duration: 400
+    label: "Keep scrolling search"
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,20%"
+    duration: 400
+    label: "More scrolling search"
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,20%"
+    duration: 400
+    label: "Even more scrolling search"
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,20%"
+    duration: 400
+    label: "Additional scrolling search"
+
+- swipe:
+    start: "50%,20%"
+    end: "50%,80%"
+    duration: 300
+    label: "Scroll back to top of search"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Return to Home screen"

@@ -28,6 +28,8 @@ appId: "com.recipedia"
 
 - runFlow:
     file: "../../../validation/validateAllIngredients.yaml"
+    env:
+      PREFIX: "RecipeValidation"
     label: "Validate all ingredients from OCR"
 
 - extendedWaitUntil:

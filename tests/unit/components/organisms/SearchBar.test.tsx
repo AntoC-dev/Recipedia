@@ -238,4 +238,18 @@ describe('SearchBar Component', () => {
       jest.clearAllMocks();
     });
   });
+
+  test('clears search and dismisses keyboard when clear button is pressed', () => {
+    const { Keyboard } = require('react-native');
+    jest.spyOn(Keyboard, 'dismiss').mockImplementation(() => {});
+
+    const prop: SearchBarProps = { ...defaultProps, searchPhrase: 'test search' };
+    const { getByTestId } = renderSearchBar(prop);
+
+    fireEvent.press(getByTestId(defaultTestId + '::RightIcon'));
+
+    expect(Keyboard.dismiss).toHaveBeenCalled();
+    expect(mockSetSearchBarClicked).toHaveBeenCalledWith(false);
+    expect(mockUpdateSearchString).toHaveBeenCalledWith('');
+  });
 });

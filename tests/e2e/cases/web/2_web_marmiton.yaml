@@ -8,6 +8,14 @@ tags:
     label: "Setup - Launch app and wait for ready"
 
 - runFlow:
+    file: "../../flows/parameters/language/switchToEnglish.yaml"
+    label: "Setup - Ensure English language"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Setup - Return to Home screen"
+
+- runFlow:
     file: "../../flows/recipe/adding/web/addRecipeFromUrl.yaml"
     env:
       RECIPE_URL: "https://www.marmiton.org/recettes/recette_hamburger-maison_32672.aspx"

@@ -543,7 +543,7 @@ export class RecipeDatabase {
 
     if (!success) {
       databaseLogger.error('Failed to batch insert recipes');
-      return;
+      throw new Error('Failed to insert recipes into database');
     }
 
     const titles = processedRecipes.map(r => r.title);
@@ -1601,6 +1601,11 @@ export class RecipeDatabase {
    * @returns Promise resolving to the permanent image URI
    */
   private async prepareRecipeImage(imageUri: string, recipeTitle: string): Promise<string> {
+    if (!imageUri) {
+      databaseLogger.debug('No image URI provided for recipe', { recipeTitle });
+      return '';
+    }
+
     if (isTemporaryImageUri(imageUri)) {
       databaseLogger.info('Recipe image is temporary, saving to permanent storage', {
         temporaryUri: imageUri,

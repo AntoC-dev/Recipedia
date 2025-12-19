@@ -143,19 +143,19 @@ describe('FileGestion Utility', () => {
       { input: 'Simple Recipe', expected: defaultDocumentsPath + 'simple_recipe.jpg' },
       {
         input: 'Recipe with Special@#$%Characters',
-        expected: defaultDocumentsPath + 'recipe_with_special@#$%characters.jpg',
+        expected: defaultDocumentsPath + 'recipe_with_special_characters.jpg',
       },
       {
         input: '   Spaced   Recipe   ',
-        expected: defaultDocumentsPath + '___spaced___recipe___.jpg',
+        expected: defaultDocumentsPath + 'spaced_recipe.jpg',
       },
       {
         input: 'Recipe/With\\Slashes',
-        expected: defaultDocumentsPath + 'recipe/with\\slashes.jpg',
+        expected: defaultDocumentsPath + 'recipe_with_slashes.jpg',
       },
       {
         input: 'Recipe:With;Colons,And<More>',
-        expected: defaultDocumentsPath + 'recipe:with;colons,and<more>.jpg',
+        expected: defaultDocumentsPath + 'recipe_with_colons_and_more.jpg',
       },
     ];
 
@@ -251,14 +251,14 @@ describe('FileGestion Utility', () => {
   test('handles edge cases in recipe name sanitization', async () => {
     const edgeCases = [
       { input: '', expected: defaultDocumentsPath + '.jpg' },
-      { input: '   ', expected: defaultDocumentsPath + '___.jpg' },
-      { input: '!@#$%^&*()', expected: defaultDocumentsPath + '!@#$%^&*().jpg' },
-      { input: 'Recipe.with.dots', expected: defaultDocumentsPath + 'recipe.with.dots.jpg' },
+      { input: '   ', expected: defaultDocumentsPath + '.jpg' },
+      { input: '!@#$%^&*()', expected: defaultDocumentsPath + '.jpg' },
+      { input: 'Recipe.with.dots', expected: defaultDocumentsPath + 'recipe_with_dots.jpg' },
       {
         input: 'Recipe\nwith\nnewlines',
-        expected: defaultDocumentsPath + 'recipe\nwith\nnewlines.jpg',
+        expected: defaultDocumentsPath + 'recipe_with_newlines.jpg',
       },
-      { input: 'Recipe\twith\ttabs', expected: defaultDocumentsPath + 'recipe\twith\ttabs.jpg' },
+      { input: 'Recipe\twith\ttabs', expected: defaultDocumentsPath + 'recipe_with_tabs.jpg' },
     ];
 
     setupImageSavingMocks();

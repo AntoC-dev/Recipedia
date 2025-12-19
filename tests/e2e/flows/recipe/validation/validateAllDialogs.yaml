@@ -1,0 +1,33 @@
+appId: "com.recipedia"
+---
+- extendedWaitUntil:
+    visible:
+      id: "${TAG_PREFIX}::ValidationQueue::Tag::SimilarityDialog::Title"
+    timeout: 30000
+    optional: true
+    label: "Wait for tag validation dialog (if any)"
+
+- runFlow:
+    file: "validateAllTags.yaml"
+    env:
+      PREFIX: "${TAG_PREFIX}"
+    label: "Validate all tags"
+
+- extendedWaitUntil:
+    visible:
+      id: "${INGREDIENT_PREFIX}::ValidationQueue::Ingredient::SimilarityDialog::Title"
+    timeout: 30000
+    optional: true
+    label: "Wait for ingredient validation dialog (if any)"
+
+- runFlow:
+    file: "validateAllIngredients.yaml"
+    env:
+      PREFIX: "${INGREDIENT_PREFIX}"
+    label: "Validate all ingredients"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "${INGREDIENT_PREFIX}::ValidationQueue::Ingredient::SimilarityDialog::Title"
+    timeout: 10000
+    label: "Wait for all validation dialogs to close"

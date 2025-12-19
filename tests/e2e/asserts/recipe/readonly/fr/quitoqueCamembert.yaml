@@ -71,7 +71,7 @@ appId: "com.recipedia"
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "camembert au lait cru"
-      INGREDIENT_QUANTITY_AND_UNIT: "500 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "1000 g"
     label: "Assert camembert ingredient"
 
 - runFlow:

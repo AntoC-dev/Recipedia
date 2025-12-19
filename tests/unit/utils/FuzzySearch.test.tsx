@@ -209,5 +209,53 @@ describe('FuzzySearch', () => {
         expect(Array.isArray(result.similar)).toBe(true);
       });
     });
+
+    describe('Unicode normalization', () => {
+      const accentedItems: TestItem[] = [
+        { id: 1, name: 'Épicé' },
+        { id: 2, name: 'Crème fraîche' },
+        { id: 3, name: 'Café' },
+      ];
+
+      const searchAccented = (searchValue: string) => {
+        return fuzzySearch<TestItem>(
+          accentedItems,
+          searchValue,
+          item => item.name,
+          FuzzyMatchLevel.STRICT
+        );
+      };
+
+      it('finds exact match with NFC vs NFD accented characters', () => {
+        const nfdSearch = 'Épicé'.normalize('NFD');
+
+        const result = searchAccented(nfdSearch);
+
+        expect(result.exact).toBeDefined();
+        expect(result.exact?.id).toBe(1);
+      });
+
+      it('finds exact match when database has NFD and search has NFC', () => {
+        const nfdItems: TestItem[] = [{ id: 1, name: 'Épicé'.normalize('NFD') }];
+
+        const result = fuzzySearch<TestItem>(
+          nfdItems,
+          'Épicé',
+          item => item.name,
+          FuzzyMatchLevel.STRICT
+        );
+
+        expect(result.exact).toBeDefined();
+      });
+
+      it('handles multiple accented characters', () => {
+        const nfdSearch = 'Crème fraîche'.normalize('NFD');
+
+        const result = searchAccented(nfdSearch);
+
+        expect(result.exact).toBeDefined();
+        expect(result.exact?.id).toBe(2);
+      });
+    });
   });
 });

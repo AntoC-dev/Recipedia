@@ -8,6 +8,12 @@ tags:
     label: "Setup - Launch app and wait for ready"
 
 - runFlow:
+    file: "../../flows/recipe/deleteRecipeBySearchIfExists.yaml"
+    env:
+      SEARCH_TEXT: "Test Recipe"
+    label: "Cleanup - Remove any leftover Test Recipe from previous runs"
+
+- runFlow:
     file: "../../flows/recipe/adding/createBaseRecipeForDuplicateTests.yaml"
     label: "Action - Create base recipe"
 

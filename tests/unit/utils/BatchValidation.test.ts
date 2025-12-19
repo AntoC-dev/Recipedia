@@ -1,0 +1,542 @@
+import {
+  collectUniqueItems,
+  initializeBatchValidation,
+  addIngredientMapping,
+  addTagMapping,
+  applyMappingsToRecipes,
+  getValidationProgress,
+} from '@utils/BatchValidation';
+import {
+  ingredientType,
+  ingredientTableElement,
+  tagTableElement,
+} from '@customTypes/DatabaseElementTypes';
+import { ConvertedImportRecipe } from '@customTypes/BulkImportTypes';
+
+const createMockRecipe = (
+  title: string,
+  tags: { id: number; name: string }[],
+  ingredients: { name: string; quantity?: string; unit?: string }[]
+): ConvertedImportRecipe => ({
+  title,
+  description: `${title} description`,
+  imageUrl: 'https://example.com/image.jpg',
+  persons: 4,
+  time: 30,
+  tags: tags,
+  ingredients: ingredients.map((ing, index) => ({
+    id: index,
+    name: ing.name,
+    unit: ing.unit ?? 'g',
+    quantity: ing.quantity ?? '100',
+    type: ingredientType.vegetable,
+    season: [],
+  })),
+  preparation: [{ title: 'Step 1', description: 'Do something' }],
+  sourceUrl: `https://example.com/${title.toLowerCase().replace(' ', '-')}`,
+});
+
+const mockFindSimilarIngredients = (name: string): ingredientTableElement[] => {
+  const db: Record<string, ingredientTableElement> = {
+    chicken: {
+      id: 1,
+      name: 'Chicken',
+      unit: 'g',
+      quantity: '',
+      type: ingredientType.meat,
+      season: [],
+    },
+    tomato: {
+      id: 2,
+      name: 'Tomato',
+      unit: 'piece',
+      quantity: '',
+      type: ingredientType.vegetable,
+      season: ['1', '2', '3'],
+    },
+    onion: {
+      id: 3,
+      name: 'Onion',
+      unit: 'piece',
+      quantity: '',
+      type: ingredientType.vegetable,
+      season: [],
+    },
+  };
+  const key = name.toLowerCase().trim();
+  return db[key] ? [db[key]] : [];
+};
+
+const mockFindSimilarTags = (name: string): tagTableElement[] => {
+  const db: Record<string, tagTableElement> = {
+    italian: { id: 1, name: 'Italian' },
+    dinner: { id: 2, name: 'Dinner' },
+    quick: { id: 3, name: 'Quick' },
+  };
+  const key = name.toLowerCase().trim();
+  return db[key] ? [db[key]] : [];
+};
+
+describe('BatchValidation', () => {
+  describe('collectUniqueItems', () => {
+    it('collects unique ingredients from single recipe', () => {
+      const recipes = [
+        createMockRecipe(
+          'Test',
+          [{ id: 1, name: 'Italian' }],
+          [{ name: 'Chicken' }, { name: 'Tomato' }]
+        ),
+      ];
+
+      const { uniqueIngredients } = collectUniqueItems(recipes);
+
+      expect(uniqueIngredients.size).toBe(2);
+      expect(uniqueIngredients.has('chicken')).toBe(true);
+      expect(uniqueIngredients.has('tomato')).toBe(true);
+    });
+
+    it('collects unique tags from single recipe', () => {
+      const recipes = [
+        createMockRecipe(
+          'Test',
+          [
+            { id: 1, name: 'Italian' },
+            { id: 2, name: 'Quick' },
+          ],
+          [{ name: 'Chicken' }]
+        ),
+      ];
+
+      const { uniqueTags } = collectUniqueItems(recipes);
+
+      expect(uniqueTags.size).toBe(2);
+      expect(uniqueTags.has('italian')).toBe(true);
+      expect(uniqueTags.has('quick')).toBe(true);
+    });
+
+    it('deduplicates ingredients across recipes', () => {
+      const recipes = [
+        createMockRecipe('Recipe 1', [], [{ name: 'Chicken' }]),
+        createMockRecipe('Recipe 2', [], [{ name: 'Chicken' }, { name: 'Tomato' }]),
+      ];
+
+      const { uniqueIngredients } = collectUniqueItems(recipes);
+
+      expect(uniqueIngredients.size).toBe(2);
+    });
+
+    it('deduplicates tags across recipes', () => {
+      const recipes = [
+        createMockRecipe('Recipe 1', [{ id: 1, name: 'Italian' }], []),
+        createMockRecipe(
+          'Recipe 2',
+          [
+            { id: 1, name: 'Italian' },
+            { id: 2, name: 'Quick' },
+          ],
+          []
+        ),
+      ];
+
+      const { uniqueTags } = collectUniqueItems(recipes);
+
+      expect(uniqueTags.size).toBe(2);
+    });
+
+    it('normalizes keys to lowercase', () => {
+      const recipes = [
+        createMockRecipe('Test', [{ id: 1, name: 'ITALIAN' }], [{ name: 'CHICKEN' }]),
+      ];
+
+      const { uniqueIngredients, uniqueTags } = collectUniqueItems(recipes);
+
+      expect(uniqueIngredients.has('chicken')).toBe(true);
+      expect(uniqueTags.has('italian')).toBe(true);
+    });
+
+    it('normalizes keys by trimming whitespace', () => {
+      const recipes = [
+        createMockRecipe('Test', [{ id: 1, name: '  Italian  ' }], [{ name: '  Chicken  ' }]),
+      ];
+
+      const { uniqueIngredients, uniqueTags } = collectUniqueItems(recipes);
+
+      expect(uniqueIngredients.has('italian')).toBeFalsy();
+      expect(uniqueIngredients.has('chicken')).toBe(true);
+      expect(uniqueTags.has('italian')).toBe(true);
+    });
+
+    it('skips ingredients without names', () => {
+      const recipes = [createMockRecipe('Test', [], [{ name: '' }, { name: 'Chicken' }])];
+
+      const { uniqueIngredients } = collectUniqueItems(recipes);
+
+      expect(uniqueIngredients.size).toBe(1);
+    });
+
+    it('collapses multiple whitespace in names', () => {
+      const recipes = [
+        createMockRecipe('Test', [], [{ name: 'Chicken   Breast' }, { name: 'Chicken Breast' }]),
+      ];
+
+      const { uniqueIngredients } = collectUniqueItems(recipes);
+
+      expect(uniqueIngredients.size).toBe(1);
+    });
+  });
+
+  describe('initializeBatchValidation', () => {
+    it('separates exact matches from unknowns', () => {
+      const recipes = [
+        createMockRecipe(
+          'Test',
+          [
+            { id: 1, name: 'Italian' },
+            { id: 2, name: 'NewTag' },
+          ],
+          [{ name: 'Chicken' }, { name: 'NewIngredient' }]
+        ),
+      ];
+
+      const state = initializeBatchValidation(
+        recipes,
+        mockFindSimilarIngredients,
+        mockFindSimilarTags
+      );
+
+      expect(state.exactMatchIngredients).toHaveLength(1);
+      expect(state.ingredientsToValidate).toHaveLength(1);
+      expect(state.exactMatchTags).toHaveLength(1);
+      expect(state.tagsToValidate).toHaveLength(1);
+    });
+
+    it('populates ingredient mappings for exact matches', () => {
+      const recipes = [createMockRecipe('Test', [], [{ name: 'Chicken' }])];
+
+      const state = initializeBatchValidation(
+        recipes,
+        mockFindSimilarIngredients,
+        mockFindSimilarTags
+      );
+
+      expect(state.ingredientMappings.size).toBe(1);
+      expect(state.ingredientMappings.get('chicken')?.name).toBe('Chicken');
+    });
+
+    it('populates tag mappings for exact matches', () => {
+      const recipes = [createMockRecipe('Test', [{ id: 1, name: 'Italian' }], [])];
+
+      const state = initializeBatchValidation(
+        recipes,
+        mockFindSimilarIngredients,
+        mockFindSimilarTags
+      );
+
+      expect(state.tagMappings.size).toBe(1);
+      expect(state.tagMappings.get('italian')?.name).toBe('Italian');
+    });
+
+    it('preserves quantity and unit from import in exact matches', () => {
+      const recipes = [
+        createMockRecipe('Test', [], [{ name: 'Chicken', quantity: '500', unit: 'kg' }]),
+      ];
+
+      const state = initializeBatchValidation(
+        recipes,
+        mockFindSimilarIngredients,
+        mockFindSimilarTags
+      );
+
+      const mappedChicken = state.ingredientMappings.get('chicken');
+      expect(mappedChicken?.quantity).toBe('500');
+      expect(mappedChicken?.unit).toBe('kg');
+    });
+
+    it('is case-insensitive for matching', () => {
+      const recipes = [
+        createMockRecipe('Test', [{ id: 1, name: 'ITALIAN' }], [{ name: 'CHICKEN' }]),
+      ];
+
+      const state = initializeBatchValidation(
+        recipes,
+        mockFindSimilarIngredients,
+        mockFindSimilarTags
+      );
+
+      expect(state.ingredientMappings.has('chicken')).toBe(true);
+      expect(state.tagMappings.has('italian')).toBe(true);
+    });
+  });
+
+  describe('addIngredientMapping', () => {
+    it('adds mapping to state', () => {
+      const recipes = [createMockRecipe('Test', [], [{ name: 'NewIngredient' }])];
+      const state = initializeBatchValidation(
+        recipes,
+        mockFindSimilarIngredients,
+        mockFindSimilarTags
+      );
+
+      const validatedIngredient: ingredientTableElement = {
+        id: 100,
+        name: 'Validated Ingredient',
+        unit: 'g',
+        quantity: '',
+        type: ingredientType.vegetable,
+        season: [],
+      };
+
+      addIngredientMapping(state, 'NewIngredient', validatedIngredient);
+
+      expect(state.ingredientMappings.get('newingredient')?.name).toBe('Validated Ingredient');
+    });
+
+    it('normalizes key to lowercase', () => {
+      const recipes = [createMockRecipe('Test', [], [{ name: 'NEW INGREDIENT' }])];
+      const state = initializeBatchValidation(
+        recipes,
+        mockFindSimilarIngredients,
+        mockFindSimilarTags
+      );
+
+      const validatedIngredient: ingredientTableElement = {
+        id: 100,
+        name: 'Validated',
+        unit: 'g',
+        quantity: '',
+        type: ingredientType.vegetable,
+        season: [],
+      };
+
+      addIngredientMapping(state, 'NEW INGREDIENT', validatedIngredient);
+
+      expect(state.ingredientMappings.has('new ingredient')).toBe(true);
+    });
+  });
+
+  describe('addTagMapping', () => {
+    it('adds mapping to state', () => {
+      const recipes = [createMockRecipe('Test', [{ id: 1, name: 'NewTag' }], [])];
+      const state = initializeBatchValidation(
+        recipes,
+        mockFindSimilarIngredients,
+        mockFindSimilarTags
+      );
+
+      const validatedTag: tagTableElement = { id: 100, name: 'Validated Tag' };
+
+      addTagMapping(state, 'NewTag', validatedTag);
+
+      expect(state.tagMappings.get('newtag')?.name).toBe('Validated Tag');
+    });
+
+    it('normalizes key to lowercase', () => {
+      const recipes = [createMockRecipe('Test', [{ id: 1, name: 'NEW TAG' }], [])];
+      const state = initializeBatchValidation(
+        recipes,
+        mockFindSimilarIngredients,
+        mockFindSimilarTags
+      );
+
+      const validatedTag: tagTableElement = { id: 100, name: 'Validated' };
+
+      addTagMapping(state, 'NEW TAG', validatedTag);
+
+      expect(state.tagMappings.has('new tag')).toBe(true);
+    });
+  });
+
+  describe('applyMappingsToRecipes', () => {
+    it('applies all mappings correctly', () => {
+      const recipes = [
+        createMockRecipe('Test Recipe', [{ id: 1, name: 'Italian' }], [{ name: 'Chicken' }]),
+      ];
+      const state = initializeBatchValidation(
+        recipes,
+        mockFindSimilarIngredients,
+        mockFindSimilarTags
+      );
+
+      const validatedRecipes = applyMappingsToRecipes(recipes, state);
+
+      expect(validatedRecipes).toHaveLength(1);
+      expect(validatedRecipes[0].ingredients[0].name).toBe('Chicken');
+      expect(validatedRecipes[0].tags[0].name).toBe('Italian');
+    });
+
+    it('preserves quantity and unit from original import', () => {
+      const recipes = [
+        createMockRecipe('Test', [], [{ name: 'Chicken', quantity: '500', unit: 'kg' }]),
+      ];
+      const state = initializeBatchValidation(
+        recipes,
+        mockFindSimilarIngredients,
+        mockFindSimilarTags
+      );
+
+      const validatedRecipes = applyMappingsToRecipes(recipes, state);
+
+      expect(validatedRecipes[0].ingredients[0].quantity).toBe('500');
+      expect(validatedRecipes[0].ingredients[0].unit).toBe('kg');
+    });
+
+    it('uses mapped ingredient properties for unmapped fields', () => {
+      const recipes = [createMockRecipe('Test', [], [{ name: 'Chicken', quantity: '', unit: '' }])];
+      const state = initializeBatchValidation(
+        recipes,
+        mockFindSimilarIngredients,
+        mockFindSimilarTags
+      );
+
+      const validatedRecipes = applyMappingsToRecipes(recipes, state);
+
+      expect(validatedRecipes[0].ingredients[0].type).toBe(ingredientType.meat);
+    });
+
+    it('skips unmapped ingredients', () => {
+      const recipes = [createMockRecipe('Test', [], [{ name: 'UnknownIngredient' }])];
+      const state = initializeBatchValidation(
+        recipes,
+        mockFindSimilarIngredients,
+        mockFindSimilarTags
+      );
+
+      const validatedRecipes = applyMappingsToRecipes(recipes, state);
+
+      expect(validatedRecipes[0].ingredients).toHaveLength(0);
+    });
+
+    it('skips unmapped tags', () => {
+      const recipes = [
+        createMockRecipe('Test', [{ id: 1, name: 'UnknownTag' }], [{ name: 'Chicken' }]),
+      ];
+      const state = initializeBatchValidation(
+        recipes,
+        mockFindSimilarIngredients,
+        mockFindSimilarTags
+      );
+
+      const validatedRecipes = applyMappingsToRecipes(recipes, state);
+
+      expect(validatedRecipes[0].tags).toHaveLength(0);
+    });
+
+    it('preserves recipe metadata', () => {
+      const recipes = [
+        createMockRecipe('Test Recipe', [{ id: 1, name: 'Italian' }], [{ name: 'Chicken' }]),
+      ];
+      const state = initializeBatchValidation(
+        recipes,
+        mockFindSimilarIngredients,
+        mockFindSimilarTags
+      );
+
+      const validatedRecipes = applyMappingsToRecipes(recipes, state);
+
+      expect(validatedRecipes[0].title).toBe('Test Recipe');
+      expect(validatedRecipes[0].description).toBe('Test Recipe description');
+      expect(validatedRecipes[0].persons).toBe(4);
+      expect(validatedRecipes[0].time).toBe(30);
+    });
+
+    it('handles multiple recipes', () => {
+      const recipes = [
+        createMockRecipe('Recipe 1', [{ id: 1, name: 'Italian' }], [{ name: 'Chicken' }]),
+        createMockRecipe('Recipe 2', [{ id: 2, name: 'Quick' }], [{ name: 'Tomato' }]),
+      ];
+      const state = initializeBatchValidation(
+        recipes,
+        mockFindSimilarIngredients,
+        mockFindSimilarTags
+      );
+
+      const validatedRecipes = applyMappingsToRecipes(recipes, state);
+
+      expect(validatedRecipes).toHaveLength(2);
+      expect(validatedRecipes[0].title).toBe('Recipe 1');
+      expect(validatedRecipes[1].title).toBe('Recipe 2');
+    });
+  });
+
+  describe('getValidationProgress', () => {
+    it('returns accurate counts for fully matched recipes', () => {
+      const recipes = [
+        createMockRecipe(
+          'Test',
+          [{ id: 1, name: 'Italian' }],
+          [{ name: 'Chicken' }, { name: 'Tomato' }]
+        ),
+      ];
+      const state = initializeBatchValidation(
+        recipes,
+        mockFindSimilarIngredients,
+        mockFindSimilarTags
+      );
+
+      const progress = getValidationProgress(state);
+
+      expect(progress.totalIngredients).toBe(2);
+      expect(progress.validatedIngredients).toBe(2);
+      expect(progress.remainingIngredients).toBe(0);
+      expect(progress.totalTags).toBe(1);
+      expect(progress.validatedTags).toBe(1);
+      expect(progress.remainingTags).toBe(0);
+    });
+
+    it('returns accurate counts with unmatched items', () => {
+      const recipes = [
+        createMockRecipe(
+          'Test',
+          [
+            { id: 1, name: 'Italian' },
+            { id: 2, name: 'NewTag' },
+          ],
+          [{ name: 'Chicken' }, { name: 'NewIngredient' }]
+        ),
+      ];
+      const state = initializeBatchValidation(
+        recipes,
+        mockFindSimilarIngredients,
+        mockFindSimilarTags
+      );
+
+      const progress = getValidationProgress(state);
+
+      expect(progress.totalIngredients).toBe(2);
+      expect(progress.validatedIngredients).toBe(1);
+      expect(progress.remainingIngredients).toBe(1);
+      expect(progress.totalTags).toBe(2);
+      expect(progress.validatedTags).toBe(1);
+      expect(progress.remainingTags).toBe(1);
+    });
+
+    it('updates after adding mappings', () => {
+      const recipes = [
+        createMockRecipe('Test', [{ id: 1, name: 'NewTag' }], [{ name: 'NewIngredient' }]),
+      ];
+      const state = initializeBatchValidation(
+        recipes,
+        mockFindSimilarIngredients,
+        mockFindSimilarTags
+      );
+
+      let progress = getValidationProgress(state);
+      expect(progress.remainingIngredients).toBe(1);
+      expect(progress.remainingTags).toBe(1);
+
+      addIngredientMapping(state, 'NewIngredient', {
+        id: 100,
+        name: 'Validated',
+        unit: 'g',
+        quantity: '',
+        type: ingredientType.vegetable,
+        season: [],
+      });
+      addTagMapping(state, 'NewTag', { id: 100, name: 'Validated Tag' });
+
+      progress = getValidationProgress(state);
+      expect(progress.validatedIngredients).toBe(1);
+      expect(progress.validatedTags).toBe(1);
+    });
+  });
+});

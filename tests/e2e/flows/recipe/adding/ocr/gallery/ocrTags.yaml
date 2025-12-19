@@ -29,6 +29,8 @@ appId: "com.recipedia"
 
 - runFlow:
     file: "../../../validation/validateAllTags.yaml"
+    env:
+      PREFIX: "RecipeValidation"
     label: "Validate all tags from OCR"
 
 - extendedWaitUntil:

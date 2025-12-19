@@ -66,7 +66,7 @@ export function useRecipeScraperValidation(): void {
     setValidationQueue({
       type: 'Ingredient',
       items: ingredients,
-      onValidated: addOrMergeIngredient,
+      onValidated: (_, validatedIngredient) => addOrMergeIngredient(validatedIngredient),
       onDismissed: (item: FormIngredientElement) => {
         setRecipeIngredients(prev => removeIngredientByName(prev, item.name));
       },
@@ -89,7 +89,7 @@ export function useRecipeScraperValidation(): void {
     setValidationQueue({
       type: 'Tag',
       items: tags,
-      onValidated: addTagIfNotDuplicate,
+      onValidated: (_, validatedTag) => addTagIfNotDuplicate(validatedTag),
       onDismissed: tag => {
         setRecipeTags(prev => removeTagByName(prev, tag.name));
       },

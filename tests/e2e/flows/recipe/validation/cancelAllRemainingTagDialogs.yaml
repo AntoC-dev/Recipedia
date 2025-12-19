@@ -3,7 +3,7 @@ appId: "com.recipedia"
 - repeat:
     while:
       visible:
-        id: "RecipeValidation::ValidationQueue::Tag::SimilarityDialog::Title"
+        id: "${PREFIX}::ValidationQueue::Tag::SimilarityDialog::Title"
     commands:
       - tapOn:
           id: "RecipeImage::RoundButton"

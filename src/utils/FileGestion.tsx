@@ -48,6 +48,38 @@ const IMANGE_MANIPULATOR_CACHE_URI = FileSystem.cacheDirectory + 'ImageManipulat
 const CAMERA_CACHE_URI = FileSystem.cacheDirectory + 'ExperienceData/';
 
 /**
+ * Sanitizes a string for use as a safe filename
+ *
+ * Converts the input to a filesystem-safe format by:
+ * - Converting to lowercase
+ * - Removing diacritics/accents (e.g., "café" → "cafe")
+ * - Replacing non-alphanumeric characters with underscores
+ * - Collapsing multiple underscores into one
+ * - Removing leading/trailing underscores
+ * - Truncating to maximum 100 characters
+ *
+ * @param name - The original string to sanitize
+ * @returns A sanitized, filesystem-safe string
+ *
+ * @example
+ * ```typescript
+ * sanitizeFilename("Crème Brûlée!") // Returns: "creme_brulee"
+ * sanitizeFilename("Recipe #1: Test") // Returns: "recipe_1_test"
+ * sanitizeFilename("___test___") // Returns: "test"
+ * ```
+ */
+function sanitizeFilename(name: string): string {
+  return name
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]/g, '_')
+    .replace(/_+/g, '_')
+    .replace(/^_|_$/g, '')
+    .substring(0, 100);
+}
+
+/**
  * Gets the main app directory URI for permanent storage
  *
  * @returns URI path to the main app directory
@@ -202,11 +234,17 @@ export async function downloadImageToCache(remoteUrl: string): Promise<string> {
   fileSystemLogger.info('Starting image download', { remoteUrl });
 
   try {
-    const extension = remoteUrl.split('.').pop()?.split('?')[0] || 'jpg';
+    const urlWithoutQuery = remoteUrl.split('?')[0];
+    const extensionMatch = urlWithoutQuery.match(/\.(jpe?g|png|webp|gif)$/i);
+    const extension = extensionMatch ? extensionMatch[1].toLowerCase() : 'jpg';
     const filename = `scraped_${Date.now()}.${extension}`;
     const localUri = CACHE_URI + filename;
 
-    const downloadResult = await FileSystem.downloadAsync(remoteUrl, localUri);
+    const downloadResult = await FileSystem.downloadAsync(remoteUrl, localUri, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; RecipediaApp/1.0; +https://github.com/recipedia)',
+      },
+    });
 
     if (downloadResult.status !== 200) {
       fileSystemLogger.warn('Image download failed with status', {
@@ -253,15 +291,16 @@ export async function saveRecipeImage(cacheFileUri: string, recName: string): Pr
     permanentStorageDir: DIRECTORY_URI,
   });
 
-  const extension = cacheFileUri.split('.');
-  const imgName = recName.replace(/ /g, '_').toLowerCase() + '.' + extension[extension.length - 1];
+  const extensionParts = cacheFileUri.split('.');
+  const extension = extensionParts[extensionParts.length - 1].split('?')[0] || 'jpg';
+  const imgName = sanitizeFilename(recName) + '.' + extension;
   const imgUri: string = DIRECTORY_URI + imgName;
 
   fileSystemLogger.info('Generated filename and destination', {
     originalRecipeName: recName,
     sanitizedFilename: imgName,
     fullDestinationUri: imgUri,
-    fileExtension: extension[extension.length - 1],
+    fileExtension: extension,
   });
 
   try {

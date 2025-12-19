@@ -59,8 +59,8 @@ function IngredientValidationWrapper({ items }: { items: FormIngredientElement[]
         testId='IngredientValidation'
         type='Ingredient'
         items={items}
-        onValidated={(ing: ingredientTableElement) =>
-          setValidatedIngredients(prev => [...prev, ing])
+        onValidated={(_, validatedIng: ingredientTableElement) =>
+          setValidatedIngredients(prev => [...prev, validatedIng])
         }
         onComplete={() => {}}
       />

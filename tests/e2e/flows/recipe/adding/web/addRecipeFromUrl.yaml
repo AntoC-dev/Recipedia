@@ -11,5 +11,8 @@ appId: "com.recipedia"
     label: "Submit recipe URL and wait for scraping"
 
 - runFlow:
-    file: "validateAllDialogs.yaml"
+    file: "../../validation/validateAllDialogs.yaml"
+    env:
+      TAG_PREFIX: "RecipeValidation"
+      INGREDIENT_PREFIX: "RecipeValidation"
     label: "Add all tags and ingredients from validation dialogs"
