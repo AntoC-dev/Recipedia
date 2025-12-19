@@ -1,15 +1,5 @@
 appId: "com.recipedia"
 ---
-# Assert accordion is displayed
-- assertVisible:
-    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-    label: "Cereal accordion is displayed"
-
-- assertVisible:
-    text: "Céréales"
-    label: "Cereal accordion title is displayed in French"
-
-# Expand the accordion
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -17,6 +7,11 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Cereal accordion"
+
+- assertVisible:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    text: "Céréales"
+    label: "Cereal accordion is displayed"
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"

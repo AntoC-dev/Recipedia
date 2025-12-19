@@ -113,7 +113,16 @@ appId: "com.recipedia"
     id: "RecipeIngredients::AddButton::RoundButton"
     label: "Add ingredient button is displayed with the correct icon"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeTime::PrefixText"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to time section"
+
 - assertVisible:
+    id: "RecipeTime::PrefixText"
     text: "Time to prepare the recipe :"
     label: "Time to prepare text is displayed"
 
