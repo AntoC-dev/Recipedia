@@ -2,10 +2,10 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { BulkImportValidation } from '@screens/BulkImportValidation';
 import React from 'react';
 import {
-  mockGoBack,
   mockDispatch,
-  setMockRouteParams,
+  mockGoBack,
   resetMockRouteParams,
+  setMockRouteParams,
 } from '@mocks/deps/react-navigation-mock';
 import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 import RecipeDatabase from '@utils/RecipeDatabase';
@@ -35,6 +35,7 @@ const createTestRecipe = (
   tags: [],
   preparation: [{ title: 'Step 1', description: 'Cook' }],
   sourceUrl: 'https://example.com/recipe',
+  sourceProvider: 'hellofresh',
   ...overrides,
 });
 

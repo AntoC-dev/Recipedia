@@ -177,4 +177,180 @@ describe('RecipeDatabaseContext', () => {
       });
     });
   });
+
+  describe('import memory methods', () => {
+    test('getImportedSourceUrls returns empty set when no recipes imported', async () => {
+      const { result } = renderHook(() => useRecipeDatabase(), {
+        wrapper: RecipeDatabaseProvider,
+      });
+
+      await waitFor(() => {
+        expect(result.current.isDatabaseReady).toBe(true);
+      });
+
+      const importedUrls = result.current.getImportedSourceUrls('hellofresh');
+
+      expect(importedUrls).toBeInstanceOf(Set);
+      expect(importedUrls.size).toBe(0);
+    });
+
+    test('getImportedSourceUrls returns URLs of imported recipes for provider', async () => {
+      const { result } = renderHook(() => useRecipeDatabase(), {
+        wrapper: RecipeDatabaseProvider,
+      });
+
+      await waitFor(() => {
+        expect(result.current.isDatabaseReady).toBe(true);
+      });
+
+      const importedRecipe = {
+        ...testRecipes[0],
+        id: undefined,
+        title: 'Imported Recipe',
+        sourceUrl: 'https://hellofresh.com/recipe-123',
+        sourceProvider: 'hellofresh',
+      };
+      await result.current.addRecipe(importedRecipe);
+
+      await waitFor(() => {
+        const importedUrls = result.current.getImportedSourceUrls('hellofresh');
+        expect(importedUrls.has('https://hellofresh.com/recipe-123')).toBe(true);
+      });
+    });
+
+    test('getImportedSourceUrls filters by provider', async () => {
+      const { result } = renderHook(() => useRecipeDatabase(), {
+        wrapper: RecipeDatabaseProvider,
+      });
+
+      await waitFor(() => {
+        expect(result.current.isDatabaseReady).toBe(true);
+      });
+
+      const hellofreshRecipe = {
+        ...testRecipes[0],
+        id: undefined,
+        title: 'HelloFresh Recipe',
+        sourceUrl: 'https://hellofresh.com/recipe-1',
+        sourceProvider: 'hellofresh',
+      };
+      const marmitonRecipe = {
+        ...testRecipes[0],
+        id: undefined,
+        title: 'Marmiton Recipe',
+        sourceUrl: 'https://marmiton.org/recipe-1',
+        sourceProvider: 'marmiton',
+      };
+      await result.current.addRecipe(hellofreshRecipe);
+      await result.current.addRecipe(marmitonRecipe);
+
+      await waitFor(() => {
+        const hellofreshUrls = result.current.getImportedSourceUrls('hellofresh');
+        const marmitonUrls = result.current.getImportedSourceUrls('marmiton');
+
+        expect(hellofreshUrls.size).toBe(1);
+        expect(hellofreshUrls.has('https://hellofresh.com/recipe-1')).toBe(true);
+        expect(marmitonUrls.size).toBe(1);
+        expect(marmitonUrls.has('https://marmiton.org/recipe-1')).toBe(true);
+      });
+    });
+
+    test('getSeenUrls returns empty set when no URLs marked as seen', async () => {
+      const { result } = renderHook(() => useRecipeDatabase(), {
+        wrapper: RecipeDatabaseProvider,
+      });
+
+      await waitFor(() => {
+        expect(result.current.isDatabaseReady).toBe(true);
+      });
+
+      const seenUrls = result.current.getSeenUrls('hellofresh');
+
+      expect(seenUrls).toBeInstanceOf(Set);
+      expect(seenUrls.size).toBe(0);
+    });
+
+    test('markUrlsAsSeen adds URLs to seen history', async () => {
+      const { result } = renderHook(() => useRecipeDatabase(), {
+        wrapper: RecipeDatabaseProvider,
+      });
+
+      await waitFor(() => {
+        expect(result.current.isDatabaseReady).toBe(true);
+      });
+
+      const urls = ['https://hellofresh.com/recipe-1', 'https://hellofresh.com/recipe-2'];
+      await result.current.markUrlsAsSeen('hellofresh', urls);
+
+      const seenUrls = result.current.getSeenUrls('hellofresh');
+      expect(seenUrls.size).toBe(2);
+      expect(seenUrls.has('https://hellofresh.com/recipe-1')).toBe(true);
+      expect(seenUrls.has('https://hellofresh.com/recipe-2')).toBe(true);
+    });
+
+    test('markUrlsAsSeen is provider-specific', async () => {
+      const { result } = renderHook(() => useRecipeDatabase(), {
+        wrapper: RecipeDatabaseProvider,
+      });
+
+      await waitFor(() => {
+        expect(result.current.isDatabaseReady).toBe(true);
+      });
+
+      await result.current.markUrlsAsSeen('hellofresh', ['https://hellofresh.com/recipe-1']);
+      await result.current.markUrlsAsSeen('marmiton', ['https://marmiton.org/recipe-1']);
+
+      const hellofreshSeen = result.current.getSeenUrls('hellofresh');
+      const marmitonSeen = result.current.getSeenUrls('marmiton');
+
+      expect(hellofreshSeen.size).toBe(1);
+      expect(marmitonSeen.size).toBe(1);
+      expect(hellofreshSeen.has('https://hellofresh.com/recipe-1')).toBe(true);
+      expect(marmitonSeen.has('https://marmiton.org/recipe-1')).toBe(true);
+    });
+
+    test('removeFromSeenHistory removes URLs from seen history', async () => {
+      const { result } = renderHook(() => useRecipeDatabase(), {
+        wrapper: RecipeDatabaseProvider,
+      });
+
+      await waitFor(() => {
+        expect(result.current.isDatabaseReady).toBe(true);
+      });
+
+      const urls = ['https://hellofresh.com/recipe-1', 'https://hellofresh.com/recipe-2'];
+      await result.current.markUrlsAsSeen('hellofresh', urls);
+
+      let seenUrls = result.current.getSeenUrls('hellofresh');
+      expect(seenUrls.size).toBe(2);
+
+      await result.current.removeFromSeenHistory('hellofresh', ['https://hellofresh.com/recipe-1']);
+
+      seenUrls = result.current.getSeenUrls('hellofresh');
+      expect(seenUrls.size).toBe(1);
+      expect(seenUrls.has('https://hellofresh.com/recipe-1')).toBe(false);
+      expect(seenUrls.has('https://hellofresh.com/recipe-2')).toBe(true);
+    });
+
+    test('removeFromSeenHistory only affects specified provider', async () => {
+      const { result } = renderHook(() => useRecipeDatabase(), {
+        wrapper: RecipeDatabaseProvider,
+      });
+
+      await waitFor(() => {
+        expect(result.current.isDatabaseReady).toBe(true);
+      });
+
+      await result.current.markUrlsAsSeen('hellofresh', ['https://example.com/recipe-1']);
+      await result.current.markUrlsAsSeen('marmiton', ['https://example.com/recipe-1']);
+
+      await result.current.removeFromSeenHistory('hellofresh', ['https://example.com/recipe-1']);
+
+      const hellofreshSeen = result.current.getSeenUrls('hellofresh');
+      const marmitonSeen = result.current.getSeenUrls('marmiton');
+
+      expect(hellofreshSeen.size).toBe(0);
+      expect(marmitonSeen.size).toBe(1);
+    });
+  });
 });
