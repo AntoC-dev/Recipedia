@@ -18,6 +18,8 @@ import {
 import { bulkImportLogger } from '@utils/logger';
 import { useI18n } from '@utils/i18n';
 import { getIgnoredPatterns } from '@utils/RecipeScraperConverter';
+import { useImportMemory } from '@hooks/useImportMemory';
+import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
 
 /** Current phase of the discovery screen */
 export type DiscoveryPhase = 'discovering' | 'selecting' | 'parsing';
@@ -27,6 +29,8 @@ export interface UseDiscoveryWorkflowReturn {
   phase: DiscoveryPhase;
   recipes: DiscoveredRecipe[];
   recipesWithImages: DiscoveredRecipe[];
+  freshRecipes: DiscoveredRecipe[];
+  seenRecipes: DiscoveredRecipe[];
   selectedCount: number;
   allSelected: boolean;
   isDiscovering: boolean;
@@ -40,6 +44,7 @@ export interface UseDiscoveryWorkflowReturn {
   toggleSelectAll: () => void;
   parseSelectedRecipes: () => Promise<ConvertedImportRecipe[] | null>;
   abort: () => void;
+  markUrlsAsSeen: () => Promise<void>;
 }
 
 /**
@@ -50,16 +55,21 @@ export interface UseDiscoveryWorkflowReturn {
  * - Image loading for discovered recipes
  * - Selection management (select, unselect, toggle all)
  * - Parsing selected recipes for validation
+ * - Import memory tracking (hide imported, mark seen)
  *
  * @param provider - The bulk import provider to use for discovery
  * @param defaultPersons - Default number of persons for recipes
+ * @param providerId - Provider identifier for import memory tracking
  * @returns Workflow state and handlers
  */
 export function useDiscoveryWorkflow(
   provider: RecipeProvider | undefined,
-  defaultPersons: number
+  defaultPersons: number,
+  providerId: string
 ): UseDiscoveryWorkflowReturn {
   const { t } = useI18n();
+  const { processDiscoveredRecipes } = useImportMemory(providerId);
+  const { markUrlsAsSeen } = useRecipeDatabase();
 
   const [phase, setPhase] = useState<DiscoveryPhase>('discovering');
   const [recipes, setRecipes] = useState<DiscoveredRecipe[]>([]);
@@ -166,16 +176,17 @@ export function useDiscoveryWorkflow(
   };
 
   /**
-   * Toggles selection state of all recipes
+   * Toggles selection state of all visible recipes
    *
-   * If all recipes are selected, deselects all.
-   * Otherwise, selects all recipes.
+   * If all visible recipes are selected, deselects all.
+   * Otherwise, selects all visible recipes (excluding hidden imported ones).
    */
   const toggleSelectAll = () => {
-    if (selectedUrls.size === recipes.length) {
+    const visibleRecipes = processDiscoveredRecipes(recipes, true);
+    if (selectedUrls.size === visibleRecipes.length) {
       setSelectedUrls(new Set());
     } else {
-      setSelectedUrls(new Set(recipes.map(r => r.url)));
+      setSelectedUrls(new Set(visibleRecipes.map(r => r.url)));
     }
   };
 
@@ -230,6 +241,7 @@ export function useDiscoveryWorkflow(
           nutrition: r.nutrition,
           skippedIngredients: r.skippedIngredients,
           sourceUrl: r.url,
+          sourceProvider: providerId,
         }));
 
         bulkImportLogger.info('Recipes parsed successfully', {
@@ -256,20 +268,33 @@ export function useDiscoveryWorkflow(
     }
   };
 
-  const selectedCount = selectedUrls.size;
-  const allSelected = selectedCount === recipes.length && recipes.length > 0;
-  const isDiscovering = phase === 'discovering';
-  const showSelectionUI = isDiscovering || phase === 'selecting';
-
   const recipesWithImages = recipes.map(r => ({
     ...r,
     imageUrl: imageMap.get(r.url) ?? r.imageUrl,
   }));
 
+  const processedRecipes = processDiscoveredRecipes(recipesWithImages, true);
+
+  const freshRecipes = processedRecipes.filter(r => r.memoryStatus === 'fresh');
+  const seenRecipes = processedRecipes.filter(r => r.memoryStatus === 'seen');
+  const totalVisibleCount = freshRecipes.length + seenRecipes.length;
+
+  const selectedCount = selectedUrls.size;
+  const allSelected = selectedCount === totalVisibleCount && totalVisibleCount > 0;
+  const isDiscovering = phase === 'discovering';
+  const showSelectionUI = isDiscovering || phase === 'selecting';
+
+  const markDiscoveredUrlsAsSeen = async () => {
+    const urls = recipes.map(r => r.url);
+    await markUrlsAsSeen(providerId, urls);
+  };
+
   return {
     phase,
     recipes,
     recipesWithImages,
+    freshRecipes,
+    seenRecipes,
     selectedCount,
     allSelected,
     isDiscovering,
@@ -283,5 +308,6 @@ export function useDiscoveryWorkflow(
     toggleSelectAll,
     parseSelectedRecipes,
     abort,
+    markUrlsAsSeen: markDiscoveredUrlsAsSeen,
   };
 }

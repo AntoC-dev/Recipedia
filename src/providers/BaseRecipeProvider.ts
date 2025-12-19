@@ -370,6 +370,7 @@ export abstract class BaseRecipeProvider implements RecipeProvider {
       nutrition: converted.nutrition,
       skippedIngredients: converted.skippedIngredients,
       sourceUrl: url,
+      sourceProvider: this.id,
     };
 
     bulkImportLogger.debug('Recipe parsed successfully', {

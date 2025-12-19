@@ -260,6 +260,8 @@ export function applyMappingsToRecipes(
       preparation: recipe.preparation,
       nutrition: recipe.nutrition,
       season: [],
+      sourceUrl: recipe.sourceUrl,
+      sourceProvider: recipe.sourceProvider,
     };
 
     validatedRecipes.push(validatedRecipe);
