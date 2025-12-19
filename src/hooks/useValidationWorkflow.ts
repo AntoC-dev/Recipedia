@@ -81,17 +81,19 @@ export interface UseValidationWorkflowReturn {
  * - Final recipe import to database
  *
  * @param selectedRecipes - Recipes to validate and import
- * @param findSimilarIngredients - Database function to find similar ingredients
- * @param findSimilarTags - Database function to find similar tags
+ * @param allIngredients - All ingredients from database for fuzzy matching
+ * @param allTags - All tags from database for fuzzy matching
  * @param addMultipleRecipes - Database function to save recipes
+ * @param isDatabaseReady - Whether the database context has loaded data
  * @param onImportComplete - Optional callback called after successful import with source URLs
  * @returns Workflow state and handlers
  */
 export function useValidationWorkflow(
   selectedRecipes: ConvertedImportRecipe[],
-  findSimilarIngredients: (name: string) => ingredientTableElement[],
-  findSimilarTags: (name: string) => tagTableElement[],
+  allIngredients: ingredientTableElement[],
+  allTags: tagTableElement[],
   addMultipleRecipes: (recipes: recipeTableElement[]) => Promise<void>,
+  isDatabaseReady: boolean,
   onImportComplete?: (importedSourceUrls: string[]) => void
 ): UseValidationWorkflowReturn {
   const { t } = useI18n();
@@ -153,7 +155,12 @@ export function useValidationWorkflow(
   saveRecipesRef.current = saveRecipes;
 
   useEffect(() => {
-    if (hasInitializedRef.current) return;
+    if (hasInitializedRef.current) {
+      return;
+    }
+    if (!isDatabaseReady) {
+      return;
+    }
     hasInitializedRef.current = true;
 
     const runInit = async () => {
@@ -164,11 +171,7 @@ export function useValidationWorkflow(
       await new Promise(r => setTimeout(r, 100));
 
       setInitStage('matching-tags');
-      const state = initializeBatchValidation(
-        selectedRecipes,
-        findSimilarIngredients,
-        findSimilarTags
-      );
+      const state = initializeBatchValidation(selectedRecipes, allIngredients, allTags);
       setValidationState(state);
 
       setInitStage('ready');
@@ -184,7 +187,7 @@ export function useValidationWorkflow(
     };
 
     runInit();
-  }, [selectedRecipes, findSimilarIngredients, findSimilarTags]);
+  }, [selectedRecipes, allIngredients, allTags, isDatabaseReady]);
 
   /**
    * Handles tag validation by adding a mapping from original to validated tag

@@ -8,12 +8,14 @@
 
 import { RecipeProvider } from '@customTypes/BulkImportTypes';
 import { HelloFreshProvider } from './HelloFreshProvider';
+import { QuitoqueProvider } from './QuitoqueProvider';
 
 /** Internal registry mapping provider IDs to their instances */
 const providerRegistry: Map<string, RecipeProvider> = new Map();
 
 /** Register all available providers */
 providerRegistry.set('hellofresh', new HelloFreshProvider());
+providerRegistry.set('quitoque', new QuitoqueProvider());
 
 /**
  * Gets a provider by its unique identifier

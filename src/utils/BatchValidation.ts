@@ -19,6 +19,7 @@ import {
 } from '@customTypes/BulkImportTypes';
 import { bulkImportLogger } from '@utils/logger';
 import { normalizeKey } from '@utils/NutritionUtils';
+import { cleanIngredientName, FuzzyMatchLevel, fuzzySearch } from '@utils/FuzzySearch';
 
 /**
  * Collects unique ingredients and tags from multiple recipes
@@ -67,19 +68,23 @@ export function collectUniqueItems(recipes: ConvertedImportRecipe[]): {
 /**
  * Initializes batch validation state for imported recipes
  *
- * Collects unique items, matches them against the database using the provided
- * search functions, and separates items into exact matches and those needing
- * manual validation.
+ * Collects unique items, matches them against the database using fuzzySearch
+ * directly (same logic as ItemDialog), and separates items into exact matches
+ * and those needing manual validation.
+ *
+ * Uses cleanIngredientName for ingredients to match ItemDialog behavior:
+ * - "Tomato (diced)" will match existing "Tomato"
+ * - This ensures consistency between batch validation and manual item dialogs
  *
  * @param recipes - Array of converted recipes to validate
- * @param findSimilarIngredients - Function to search database for similar ingredients
- * @param findSimilarTags - Function to search database for similar tags
+ * @param allIngredients - All ingredients from database for fuzzy matching
+ * @param allTags - All tags from database for fuzzy matching
  * @returns Initial batch validation state with categorized items
  */
 export function initializeBatchValidation(
   recipes: ConvertedImportRecipe[],
-  findSimilarIngredients: (name: string) => ingredientTableElement[],
-  findSimilarTags: (name: string) => tagTableElement[]
+  allIngredients: ingredientTableElement[],
+  allTags: tagTableElement[]
 ): BatchValidationState {
   const { uniqueIngredients, uniqueTags } = collectUniqueItems(recipes);
 
@@ -95,18 +100,18 @@ export function initializeBatchValidation(
       continue;
     }
 
-    const ingredientName = ingredient.name;
-    const similarIngredients = findSimilarIngredients(ingredientName);
-    const normalizedIngredientName = normalizeKey(ingredientName);
-    const exactMatch = similarIngredients.find(
-      dbIng => normalizeKey(dbIng.name) === normalizedIngredientName
+    const result = fuzzySearch<ingredientTableElement>(
+      allIngredients,
+      cleanIngredientName(ingredient.name),
+      ing => cleanIngredientName(ing.name),
+      FuzzyMatchLevel.PERMISSIVE
     );
 
-    if (exactMatch) {
+    if (result.exact) {
       const mergedIngredient: ingredientTableElement = {
-        ...exactMatch,
-        quantity: ingredient.quantity || exactMatch.quantity,
-        unit: ingredient.unit || exactMatch.unit,
+        ...result.exact,
+        quantity: ingredient.quantity || result.exact.quantity,
+        unit: ingredient.unit || result.exact.unit,
       };
       ingredientMappings.set(originalKey, mergedIngredient);
       exactMatchIngredients.push(mergedIngredient);
@@ -120,14 +125,16 @@ export function initializeBatchValidation(
   const exactMatchTags: tagTableElement[] = [];
 
   for (const [originalKey, tag] of tagsToProcess) {
-    const similarTags = findSimilarTags(tag.name);
-    const exactMatch = similarTags.find(
-      dbTag => normalizeKey(dbTag.name) === normalizeKey(tag.name)
+    const result = fuzzySearch<tagTableElement>(
+      allTags,
+      tag.name,
+      t => t.name,
+      FuzzyMatchLevel.MODERATE
     );
 
-    if (exactMatch) {
-      tagMappings.set(originalKey, exactMatch);
-      exactMatchTags.push(exactMatch);
+    if (result.exact) {
+      tagMappings.set(originalKey, result.exact);
+      exactMatchTags.push(result.exact);
     } else {
       tagsToValidate.push(tag);
     }
