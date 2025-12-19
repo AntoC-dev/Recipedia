@@ -40,6 +40,8 @@ export default {
     failedRecipes: '{{count}} failed',
     noRecipesParsed: 'No recipes could be parsed',
     fetchingRecipes: 'Fetching recipe {{current}} of {{total}}...',
+    newRecipes: 'New recipes ({{count}})',
+    previouslySeen: 'Previously seen ({{count}})',
   },
 
   validation: {
