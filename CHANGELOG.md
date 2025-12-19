@@ -1,3 +1,21 @@
+## [2.3.0](https://github.com/AntoC-dev/Recipedia/compare/v2.2.2...v2.3.0) (2025-12-19)
+
+### Features
+
+* bulk import for hellofresh recipes ([#159](https://github.com/AntoC-dev/Recipedia/issues/159)) ([12158a9](https://github.com/AntoC-dev/Recipedia/commit/12158a9b9141c4a00fee459a067510ef06a13d9a))
+* **bulk-import:** introduce components and workflow for bulk import ([cdb551b](https://github.com/AntoC-dev/Recipedia/commit/cdb551b7f17a94e87cb46b31f066b41638b5a806))
+* **providers:** add HelloFresh provider and provider registry ([bf77941](https://github.com/AntoC-dev/Recipedia/commit/bf779412b4e905b4ed770e19b61362bb849cc0ac))
+* **recipe-scraper:** centralize ignored patterns logic in hook ([bb5bdac](https://github.com/AntoC-dev/Recipedia/commit/bb5bdace97786b0eda8fde233a1ca6e22cae33b0))
+* **recipe-scraper:** handle HTML decoding and improve error handling ([4a8b3e7](https://github.com/AntoC-dev/Recipedia/commit/4a8b3e73302e55790979ca36ef26e08814a2c895))
+* **tests:** expand unit test coverage for components, workflows, hooks ([6e001d8](https://github.com/AntoC-dev/Recipedia/commit/6e001d83b9d9b71c5a2662f0c20c2c968a85d940))
+* **ui:** add error placeholder and custom borderRadius to CustomImage ([75ed210](https://github.com/AntoC-dev/Recipedia/commit/75ed21015cb5a95f02c654b434f1b5b7a39abb52))
+* **utils:** add logging for missing recipe image URI ([b2f0eed](https://github.com/AntoC-dev/Recipedia/commit/b2f0eedba76fbd0f96546fcd3be83748b0df2cd0))
+* **utils:** improve filename sanitization and enhance image downloading ([06a6998](https://github.com/AntoC-dev/Recipedia/commit/06a69984b42845d1c8e0ad8c7bb8413058096f7b))
+
+### Performance Improvements
+
+* update reassure baseline [skip ci] ([2b3c59c](https://github.com/AntoC-dev/Recipedia/commit/2b3c59cd6bd30f40166068517777b3e11840bea0))
+
 ## [2.2.2](https://github.com/AntoC-dev/Recipedia/compare/v2.2.1...v2.2.2) (2025-12-16)
 
 ### Bug Fixes
