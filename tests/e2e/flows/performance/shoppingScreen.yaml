@@ -21,13 +21,26 @@ appId: "com.recipedia"
     end: "50%,20%"
     label: "Continue scrolling down"
 
-- longPressOn:
-    id: "ShoppingScreen::SectionList::.*"
-    label: "Long press on any ingredient item"
-    optional: true
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::Butter"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Butter ingredient"
+
+- runFlow:
+    file: "../shopping/longPressIngredient.yaml"
+    env:
+      INGREDIENT_PATTERN: "Butter"
+    label: "Long press on Butter ingredient"
 
 - tapOn:
-    id: "ShoppingScreen::ClearShoppingListButton"
+    id: "ShoppingScreen::Dialog::Confirm"
+    label: "Dismiss ingredient usage dialog"
+
+- tapOn:
+    id: "ShoppingScreen::ClearShoppingListButton::RoundButton"
     label: "Tap on the delete button"
 
 - extendedWaitUntil:
