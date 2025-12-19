@@ -80,13 +80,15 @@ export interface UseValidationWorkflowReturn {
  * @param findSimilarIngredients - Database function to find similar ingredients
  * @param findSimilarTags - Database function to find similar tags
  * @param addMultipleRecipes - Database function to save recipes
+ * @param onImportComplete - Optional callback called after successful import with source URLs
  * @returns Workflow state and handlers
  */
 export function useValidationWorkflow(
   selectedRecipes: ConvertedImportRecipe[],
   findSimilarIngredients: (name: string) => ingredientTableElement[],
   findSimilarTags: (name: string) => tagTableElement[],
-  addMultipleRecipes: (recipes: recipeTableElement[]) => Promise<void>
+  addMultipleRecipes: (recipes: recipeTableElement[]) => Promise<void>,
+  onImportComplete?: (importedSourceUrls: string[]) => void
 ): UseValidationWorkflowReturn {
   const { t } = useI18n();
 
@@ -129,6 +131,11 @@ export function useValidationWorkflow(
       bulkImportLogger.info('Bulk import complete', {
         importedCount: recipesWithIngredients.length,
       });
+
+      if (onImportComplete) {
+        const importedUrls = recipesRef.current.map(r => r.sourceUrl);
+        onImportComplete(importedUrls);
+      }
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);
       setErrorMessage(msg);

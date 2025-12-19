@@ -8,6 +8,11 @@ import {
   RecipeProvider,
 } from '@customTypes/BulkImportTypes';
 import { ingredientType } from '@customTypes/DatabaseElementTypes';
+import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
+import RecipeDatabase from '@utils/RecipeDatabase';
+import { testIngredients } from '@test-data/ingredientsDataset';
+import { testTags } from '@test-data/tagsDataset';
+import React, { ReactNode } from 'react';
 
 const createMockDiscoveredRecipe = (id: number): DiscoveredRecipe => ({
   url: `https://example.com/recipe-${id}`,
@@ -127,21 +132,35 @@ const createMockProvider = (options?: {
 });
 
 describe('useDiscoveryWorkflow', () => {
-  beforeEach(() => {
+  let database: RecipeDatabase;
+
+  beforeEach(async () => {
     jest.clearAllMocks();
+    database = RecipeDatabase.getInstance();
+    await database.init();
+    await database.addMultipleIngredients(testIngredients);
+    await database.addMultipleTags(testTags);
   });
+
+  afterEach(async () => {
+    await database.closeAndReset();
+  });
+
+  const wrapper = ({ children }: { children: ReactNode }) => (
+    <RecipeDatabaseProvider>{children}</RecipeDatabaseProvider>
+  );
 
   describe('initialization', () => {
     it('starts in discovering phase with provider', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
 
       expect(result.current.phase).toBe('discovering');
       expect(result.current.isDiscovering).toBe(true);
     });
 
     it('sets error and selecting phase when provider is undefined', async () => {
-      const { result } = renderHook(() => useDiscoveryWorkflow(undefined, 4));
+      const { result } = renderHook(() => useDiscoveryWorkflow(undefined, 4, 'mock'), { wrapper });
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -152,7 +171,7 @@ describe('useDiscoveryWorkflow', () => {
 
     it('transitions to selecting phase after discovery completes', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -161,7 +180,7 @@ describe('useDiscoveryWorkflow', () => {
 
     it('populates recipes after discovery', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -174,7 +193,7 @@ describe('useDiscoveryWorkflow', () => {
   describe('selection', () => {
     it('selectRecipe adds URL to selection', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -190,7 +209,7 @@ describe('useDiscoveryWorkflow', () => {
 
     it('unselectRecipe removes URL from selection', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -210,7 +229,7 @@ describe('useDiscoveryWorkflow', () => {
 
     it('toggleSelectAll selects all when none selected', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -226,7 +245,7 @@ describe('useDiscoveryWorkflow', () => {
 
     it('toggleSelectAll deselects all when all selected', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -246,7 +265,7 @@ describe('useDiscoveryWorkflow', () => {
 
     it('isSelected returns correct state', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -265,7 +284,7 @@ describe('useDiscoveryWorkflow', () => {
   describe('parseSelectedRecipes', () => {
     it('returns null when no recipes selected', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -282,7 +301,7 @@ describe('useDiscoveryWorkflow', () => {
 
     it('returns converted recipes after successful parsing', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -305,7 +324,7 @@ describe('useDiscoveryWorkflow', () => {
 
     it('updates parsingProgress during parsing', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -327,7 +346,7 @@ describe('useDiscoveryWorkflow', () => {
   describe('abort', () => {
     it('aborts cleanup on unmount', async () => {
       const provider = createMockProvider();
-      const { unmount } = renderHook(() => useDiscoveryWorkflow(provider, 4));
+      const { unmount } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
 
       unmount();
     });
@@ -339,7 +358,7 @@ describe('useDiscoveryWorkflow', () => {
         discoveryError: new Error('Discovery failed'),
       });
 
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -352,7 +371,7 @@ describe('useDiscoveryWorkflow', () => {
   describe('recipesWithImages', () => {
     it('merges image map with recipes', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
 
       await waitFor(() => {
         expect(result.current.recipesWithImages.length).toBeGreaterThan(0);
@@ -365,20 +384,383 @@ describe('useDiscoveryWorkflow', () => {
   describe('showSelectionUI', () => {
     it('is true during discovering phase', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
 
       expect(result.current.showSelectionUI).toBe(true);
     });
 
     it('is true during selecting phase', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
       });
 
       expect(result.current.showSelectionUI).toBe(true);
+    });
+  });
+
+  describe('image loading', () => {
+    it('updates image map when onImageLoaded is called', async () => {
+      let capturedOnImageLoaded: ((recipeUrl: string, imageUrl: string) => void) | null = null;
+
+      const provider: RecipeProvider = {
+        id: 'mock',
+        name: 'Mock Provider',
+        logoUrl: 'https://example.com/logo.png',
+        getBaseUrl: jest.fn().mockResolvedValue('https://example.com'),
+        discoverRecipeUrls: jest.fn(async function* ({ onImageLoaded }) {
+          capturedOnImageLoaded = onImageLoaded ?? null;
+          yield {
+            phase: 'discovering',
+            recipesFound: 1,
+            categoriesScanned: 1,
+            totalCategories: 1,
+            isComplete: true,
+            recipes: [createMockDiscoveredRecipe(1)],
+          } as DiscoveryProgress;
+        }),
+        parseSelectedRecipes: jest.fn(async function* () {
+          yield {
+            phase: 'complete' as const,
+            current: 0,
+            total: 0,
+            parsedRecipes: [],
+            failedRecipes: [],
+          };
+        }),
+        fetchRecipe: jest.fn(),
+      };
+
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.phase).toBe('selecting');
+      });
+
+      expect(capturedOnImageLoaded).not.toBeNull();
+
+      act(() => {
+        capturedOnImageLoaded!(
+          'https://example.com/recipe-1',
+          'https://cdn.example.com/new-image.jpg'
+        );
+      });
+
+      await waitFor(() => {
+        const recipe = result.current.recipesWithImages.find(
+          r => r.url === 'https://example.com/recipe-1'
+        );
+        expect(recipe?.imageUrl).toBe('https://cdn.example.com/new-image.jpg');
+      });
+    });
+  });
+
+  describe('abort functionality', () => {
+    it('aborts when abort function is called', async () => {
+      let abortSignal: AbortSignal | null = null;
+
+      const provider: RecipeProvider = {
+        id: 'mock',
+        name: 'Mock Provider',
+        logoUrl: 'https://example.com/logo.png',
+        getBaseUrl: jest.fn().mockResolvedValue('https://example.com'),
+        discoverRecipeUrls: jest.fn(async function* ({ signal }) {
+          abortSignal = signal ?? null;
+          yield {
+            phase: 'discovering',
+            recipesFound: 0,
+            categoriesScanned: 0,
+            totalCategories: 1,
+            isComplete: false,
+            recipes: [],
+          } as DiscoveryProgress;
+
+          await new Promise(resolve => setTimeout(resolve, 100));
+
+          yield {
+            phase: 'complete',
+            recipesFound: 0,
+            categoriesScanned: 1,
+            totalCategories: 1,
+            isComplete: true,
+            recipes: [],
+          } as DiscoveryProgress;
+        }),
+        parseSelectedRecipes: jest.fn(async function* () {
+          yield {
+            phase: 'complete' as const,
+            current: 0,
+            total: 0,
+            parsedRecipes: [],
+            failedRecipes: [],
+          };
+        }),
+        fetchRecipe: jest.fn(),
+      };
+
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
+
+      await waitFor(() => {
+        expect(abortSignal).not.toBeNull();
+      });
+
+      act(() => {
+        result.current.abort();
+      });
+
+      expect(abortSignal!.aborted).toBe(true);
+    });
+
+    it('handles AbortError during discovery gracefully', async () => {
+      const provider: RecipeProvider = {
+        id: 'mock',
+        name: 'Mock Provider',
+        logoUrl: 'https://example.com/logo.png',
+        getBaseUrl: jest.fn().mockResolvedValue('https://example.com'),
+        discoverRecipeUrls: jest.fn(async function* () {
+          const abortError = new Error('Aborted');
+          abortError.name = 'AbortError';
+          throw abortError;
+        }),
+        parseSelectedRecipes: jest.fn(async function* () {
+          yield {
+            phase: 'complete' as const,
+            current: 0,
+            total: 0,
+            parsedRecipes: [],
+            failedRecipes: [],
+          };
+        }),
+        fetchRecipe: jest.fn(),
+      };
+
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.phase).toBe('selecting');
+      });
+
+      expect(result.current.error).toBeNull();
+    });
+  });
+
+  describe('markUrlsAsSeen', () => {
+    it('persists URLs to database as seen', async () => {
+      const provider = createMockProvider();
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.recipes.length).toBeGreaterThan(0);
+      });
+
+      await act(async () => {
+        await result.current.markUrlsAsSeen();
+      });
+
+      const seenUrls = database.getSeenUrls('mock');
+      expect(seenUrls.has('https://example.com/recipe-1')).toBe(true);
+      expect(seenUrls.has('https://example.com/recipe-2')).toBe(true);
+    });
+  });
+
+  describe('parsing edge cases', () => {
+    it('returns null and sets error when no recipes are parsed', async () => {
+      const provider: RecipeProvider = {
+        id: 'mock',
+        name: 'Mock Provider',
+        logoUrl: 'https://example.com/logo.png',
+        getBaseUrl: jest.fn().mockResolvedValue('https://example.com'),
+        discoverRecipeUrls: jest.fn(async function* () {
+          yield {
+            phase: 'complete',
+            recipesFound: 1,
+            categoriesScanned: 1,
+            totalCategories: 1,
+            isComplete: true,
+            recipes: [createMockDiscoveredRecipe(1)],
+          } as DiscoveryProgress;
+        }),
+        parseSelectedRecipes: jest.fn(async function* () {
+          yield {
+            phase: 'complete' as const,
+            current: 1,
+            total: 1,
+            parsedRecipes: [],
+            failedRecipes: [
+              {
+                url: 'https://example.com/recipe-1',
+                title: 'Recipe 1',
+                error: 'Parse failed',
+              },
+            ],
+          };
+        }),
+        fetchRecipe: jest.fn(),
+      };
+
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.phase).toBe('selecting');
+      });
+
+      act(() => {
+        result.current.selectRecipe('https://example.com/recipe-1');
+      });
+
+      let parseResult: ConvertedImportRecipe[] | null = null;
+
+      await act(async () => {
+        parseResult = await result.current.parseSelectedRecipes();
+      });
+
+      expect(parseResult).toBeNull();
+      expect(result.current.error).toBeTruthy();
+      expect(result.current.phase).toBe('selecting');
+    });
+
+    it('sets error on parsing failure', async () => {
+      const provider = createMockProvider({
+        parsingError: new Error('Parsing failed'),
+      });
+
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.recipes.length).toBeGreaterThan(0);
+      });
+
+      act(() => {
+        result.current.selectRecipe('https://example.com/recipe-1');
+      });
+
+      let parseResult: ConvertedImportRecipe[] | null = null;
+
+      await act(async () => {
+        parseResult = await result.current.parseSelectedRecipes();
+      });
+
+      expect(parseResult).toBeNull();
+      expect(result.current.error).toBe('Parsing failed');
+      expect(result.current.phase).toBe('selecting');
+    });
+
+    it('handles AbortError during parsing gracefully', async () => {
+      const provider: RecipeProvider = {
+        id: 'mock',
+        name: 'Mock Provider',
+        logoUrl: 'https://example.com/logo.png',
+        getBaseUrl: jest.fn().mockResolvedValue('https://example.com'),
+        discoverRecipeUrls: jest.fn(async function* () {
+          yield {
+            phase: 'complete',
+            recipesFound: 1,
+            categoriesScanned: 1,
+            totalCategories: 1,
+            isComplete: true,
+            recipes: [createMockDiscoveredRecipe(1)],
+          } as DiscoveryProgress;
+        }),
+        parseSelectedRecipes: jest.fn(async function* () {
+          const abortError = new Error('Aborted');
+          abortError.name = 'AbortError';
+          throw abortError;
+        }),
+        fetchRecipe: jest.fn(),
+      };
+
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.phase).toBe('selecting');
+      });
+
+      act(() => {
+        result.current.selectRecipe('https://example.com/recipe-1');
+      });
+
+      let parseResult: ConvertedImportRecipe[] | null = null;
+
+      await act(async () => {
+        parseResult = await result.current.parseSelectedRecipes();
+      });
+
+      expect(parseResult).toBeNull();
+      expect(result.current.error).toBeNull();
+      expect(result.current.phase).toBe('selecting');
+    });
+
+    it('returns null when provider is undefined during parsing', async () => {
+      const { result } = renderHook(() => useDiscoveryWorkflow(undefined, 4, 'mock'), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.phase).toBe('selecting');
+      });
+
+      let parseResult: ConvertedImportRecipe[] | null = null;
+
+      await act(async () => {
+        parseResult = await result.current.parseSelectedRecipes();
+      });
+
+      expect(parseResult).toBeNull();
+    });
+
+    it('correctly converts parsed recipe fields', async () => {
+      const provider = createMockProvider();
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.recipes.length).toBeGreaterThan(0);
+      });
+
+      act(() => {
+        result.current.selectRecipe('https://example.com/recipe-1');
+      });
+
+      let parseResult: ConvertedImportRecipe[] | null = null;
+
+      await act(async () => {
+        parseResult = await result.current.parseSelectedRecipes();
+      });
+
+      expect(parseResult).not.toBeNull();
+      expect(parseResult![0]).toMatchObject({
+        title: 'Recipe 1',
+        description: 'Description 1',
+        imageUrl: '/local/image-1.jpg',
+        persons: 4,
+        time: 30,
+        sourceUrl: 'https://example.com/recipe-1',
+        sourceProvider: 'mock',
+      });
+    });
+  });
+
+  describe('fresh and seen recipe separation', () => {
+    it('returns empty arrays when no recipes', async () => {
+      const provider = createMockProvider({ recipes: [] });
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.phase).toBe('selecting');
+      });
+
+      expect(result.current.freshRecipes).toEqual([]);
+      expect(result.current.seenRecipes).toEqual([]);
+    });
+
+    it('allSelected is false when no visible recipes', async () => {
+      const provider = createMockProvider({ recipes: [] });
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.phase).toBe('selecting');
+      });
+
+      expect(result.current.allSelected).toBe(false);
     });
   });
 });

@@ -36,12 +36,16 @@ jest.mock('@components/molecules/ValidationProgress', () =>
   require('@mocks/components/molecules/ValidationProgress-mock')
 );
 
-function generateMockRecipes(count: number): DiscoveredRecipe[] {
+function generateMockRecipes(
+  count: number,
+  memoryStatus: 'fresh' | 'seen' = 'fresh'
+): DiscoveredRecipe[] {
   return Array.from({ length: count }, (_, i) => ({
-    url: `https://example.com/recipe-${i + 1}`,
+    url: `https://example.com/${memoryStatus}-recipe-${i + 1}`,
     title: `Performance Test Recipe ${i + 1}`,
     imageUrl: `https://example.com/img${i + 1}.jpg`,
     description: `A delicious recipe for performance testing number ${i + 1}`,
+    memoryStatus,
   }));
 }
 
@@ -63,6 +67,7 @@ function generateConvertedRecipes(count: number): ConvertedImportRecipe[] {
       { title: '', description: `Cook everything ${i + 1}` },
     ],
     sourceUrl: `https://example.com/recipe-${i + 1}`,
+    sourceProvider: 'hellofresh',
   }));
 }
 
@@ -112,58 +117,107 @@ describe('BulkImportDiscovery Performance', () => {
       phase: 'discovering',
       isDiscovering: true,
       showSelectionUI: true,
-      recipes: [],
+      freshRecipes: [],
+      seenRecipes: [],
     });
 
     await measureRenders(<BulkImportDiscoveryWrapper />, { runs: 10 });
   });
 
-  test('initial render with small recipe list (10 recipes)', async () => {
-    const recipes = generateMockRecipes(10);
+  test('initial render with small recipe list (10 fresh recipes)', async () => {
+    const freshRecipes = generateMockRecipes(10, 'fresh');
     setMockDiscoveryState({
       phase: 'selecting',
       isDiscovering: false,
       showSelectionUI: true,
-      recipes,
+      freshRecipes,
+      seenRecipes: [],
       selectedCount: 0,
     });
 
     await measureRenders(<BulkImportDiscoveryWrapper />, { runs: 10 });
   });
 
-  test('initial render with medium recipe list (30 recipes)', async () => {
-    const recipes = generateMockRecipes(30);
+  test('initial render with medium recipe list (30 fresh recipes)', async () => {
+    const freshRecipes = generateMockRecipes(30, 'fresh');
     setMockDiscoveryState({
       phase: 'selecting',
       isDiscovering: false,
       showSelectionUI: true,
-      recipes,
+      freshRecipes,
+      seenRecipes: [],
       selectedCount: 0,
     });
 
     await measureRenders(<BulkImportDiscoveryWrapper />, { runs: 10 });
   });
 
-  test('initial render with large recipe list (50 recipes)', async () => {
-    const recipes = generateMockRecipes(50);
+  test('initial render with large recipe list (50 fresh recipes)', async () => {
+    const freshRecipes = generateMockRecipes(50, 'fresh');
     setMockDiscoveryState({
       phase: 'selecting',
       isDiscovering: false,
       showSelectionUI: true,
-      recipes,
+      freshRecipes,
+      seenRecipes: [],
       selectedCount: 0,
     });
 
     await measureRenders(<BulkImportDiscoveryWrapper />, { runs: 10 });
   });
 
-  test('initial render with very large recipe list (100 recipes)', async () => {
-    const recipes = generateMockRecipes(100);
+  test('initial render with very large recipe list (100 fresh recipes)', async () => {
+    const freshRecipes = generateMockRecipes(100, 'fresh');
     setMockDiscoveryState({
       phase: 'selecting',
       isDiscovering: false,
       showSelectionUI: true,
-      recipes,
+      freshRecipes,
+      seenRecipes: [],
+      selectedCount: 0,
+    });
+
+    await measureRenders(<BulkImportDiscoveryWrapper />, { runs: 10 });
+  });
+
+  test('initial render with mixed fresh and seen recipes (30 fresh + 20 seen)', async () => {
+    const freshRecipes = generateMockRecipes(30, 'fresh');
+    const seenRecipes = generateMockRecipes(20, 'seen');
+    setMockDiscoveryState({
+      phase: 'selecting',
+      isDiscovering: false,
+      showSelectionUI: true,
+      freshRecipes,
+      seenRecipes,
+      selectedCount: 0,
+    });
+
+    await measureRenders(<BulkImportDiscoveryWrapper />, { runs: 10 });
+  });
+
+  test('initial render with only seen recipes (50 seen)', async () => {
+    const seenRecipes = generateMockRecipes(50, 'seen');
+    setMockDiscoveryState({
+      phase: 'selecting',
+      isDiscovering: false,
+      showSelectionUI: true,
+      freshRecipes: [],
+      seenRecipes,
+      selectedCount: 0,
+    });
+
+    await measureRenders(<BulkImportDiscoveryWrapper />, { runs: 10 });
+  });
+
+  test('initial render with large mixed list (70 fresh + 30 seen)', async () => {
+    const freshRecipes = generateMockRecipes(70, 'fresh');
+    const seenRecipes = generateMockRecipes(30, 'seen');
+    setMockDiscoveryState({
+      phase: 'selecting',
+      isDiscovering: false,
+      showSelectionUI: true,
+      freshRecipes,
+      seenRecipes,
       selectedCount: 0,
     });
 
@@ -171,12 +225,13 @@ describe('BulkImportDiscovery Performance', () => {
   });
 
   test('initial render with all recipes selected', async () => {
-    const recipes = generateMockRecipes(50);
+    const freshRecipes = generateMockRecipes(50, 'fresh');
     setMockDiscoveryState({
       phase: 'selecting',
       isDiscovering: false,
       showSelectionUI: true,
-      recipes,
+      freshRecipes,
+      seenRecipes: [],
       selectedCount: 50,
       allSelected: true,
     });
@@ -185,21 +240,22 @@ describe('BulkImportDiscovery Performance', () => {
   });
 
   test('initial render during discovery with progress', async () => {
-    const recipes = generateMockRecipes(20);
+    const freshRecipes = generateMockRecipes(20, 'fresh');
     const discoveryProgress: DiscoveryProgress = {
       phase: 'discovering',
       recipesFound: 20,
       categoriesScanned: 3,
       totalCategories: 10,
       isComplete: false,
-      recipes,
+      recipes: freshRecipes,
     };
 
     setMockDiscoveryState({
       phase: 'discovering',
       isDiscovering: true,
       showSelectionUI: true,
-      recipes,
+      freshRecipes,
+      seenRecipes: [],
       discoveryProgress,
     });
 
@@ -220,7 +276,8 @@ describe('BulkImportDiscovery Performance', () => {
       phase: 'parsing',
       isDiscovering: false,
       showSelectionUI: false,
-      recipes: generateMockRecipes(20),
+      freshRecipes: generateMockRecipes(20, 'fresh'),
+      seenRecipes: [],
       parsingProgress,
     });
 
@@ -232,7 +289,8 @@ describe('BulkImportDiscovery Performance', () => {
       phase: 'selecting',
       isDiscovering: false,
       showSelectionUI: true,
-      recipes: generateMockRecipes(5),
+      freshRecipes: generateMockRecipes(5, 'fresh'),
+      seenRecipes: [],
       error: 'Network error: Unable to fetch recipes',
     });
 
@@ -289,6 +347,7 @@ describe('BulkImportValidation Performance', () => {
         })),
         preparation: [{ title: '', description: 'Cook' }],
         sourceUrl: 'https://example.com/recipe',
+        sourceProvider: 'hellofresh',
       },
     ];
     setMockRouteParams({ providerId: 'hellofresh', selectedRecipes: recipes });
@@ -312,6 +371,7 @@ describe('BulkImportValidation Performance', () => {
         tags: [],
         preparation: [{ title: '', description: 'Cook' }],
         sourceUrl: 'https://example.com/recipe',
+        sourceProvider: 'hellofresh',
       },
     ];
     setMockRouteParams({ providerId: 'hellofresh', selectedRecipes: recipes });
@@ -336,6 +396,7 @@ describe('BulkImportValidation Performance', () => {
         tags: [],
         preparation: [{ title: '', description: 'Cook' }],
         sourceUrl: 'https://example.com/recipe',
+        sourceProvider: 'hellofresh',
       },
     ];
     setMockRouteParams({ providerId: 'hellofresh', selectedRecipes: recipes });
@@ -358,6 +419,7 @@ describe('BulkImportValidation Performance', () => {
         })),
         preparation: [{ title: '', description: 'Cook' }],
         sourceUrl: 'https://example.com/recipe',
+        sourceProvider: 'hellofresh',
       },
     ];
     setMockRouteParams({ providerId: 'hellofresh', selectedRecipes: recipes });
@@ -383,6 +445,7 @@ describe('BulkImportValidation Performance', () => {
       tags: [],
       preparation: [{ title: '', description: 'Cook' }],
       sourceUrl: `https://example.com/recipe-${i}`,
+      sourceProvider: 'hellofresh',
       nutrition: {
         energyKcal: 450 + i * 50,
         energyKj: 1880 + i * 200,
@@ -428,6 +491,7 @@ describe('BulkImportValidation Performance', () => {
         ],
         preparation: [{ title: '', description: 'Cook' }],
         sourceUrl: 'https://example.com/recipe',
+        sourceProvider: 'hellofresh',
       },
     ];
     setMockRouteParams({ providerId: 'hellofresh', selectedRecipes: recipes });

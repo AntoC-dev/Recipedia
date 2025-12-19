@@ -95,6 +95,8 @@ export enum recipeColumnsNames {
   preparation = 'PREPARATION',
   time = 'TIME',
   nutrition = 'NUTRITION',
+  sourceUrl = 'SOURCE_URL',
+  sourceProvider = 'SOURCE_PROVIDER',
 }
 
 /**
@@ -124,6 +126,10 @@ export type recipeTableElement = {
   time: number;
   /** Optional nutrition facts (undefined when not available) */
   nutrition?: nutritionTableElement;
+  /** Original URL from bulk import source (undefined for manually created recipes) */
+  sourceUrl?: string;
+  /** Provider ID from bulk import (e.g., 'hellofresh') */
+  sourceProvider?: string;
 };
 
 export type encodedRecipeElement = {
@@ -137,6 +143,8 @@ export type encodedRecipeElement = {
   PREPARATION: string;
   TIME: number;
   NUTRITION: string;
+  SOURCE_URL: string;
+  SOURCE_PROVIDER: string;
 };
 
 export const recipeColumnsEncoding: databaseColumnType[] = [
@@ -149,6 +157,8 @@ export const recipeColumnsEncoding: databaseColumnType[] = [
   { colName: recipeColumnsNames.preparation, type: encodedType.TEXT },
   { colName: recipeColumnsNames.time, type: encodedType.INTEGER },
   { colName: recipeColumnsNames.nutrition, type: encodedType.TEXT },
+  { colName: recipeColumnsNames.sourceUrl, type: encodedType.TEXT },
+  { colName: recipeColumnsNames.sourceProvider, type: encodedType.TEXT },
 ];
 
 /**
@@ -307,6 +317,43 @@ export const shoppingListColumnsEncoding: databaseColumnType[] = [
   { colName: shoppingListColumnsNames.unit, type: encodedType.TEXT },
   { colName: shoppingListColumnsNames.recipeTitles, type: encodedType.TEXT },
   { colName: shoppingListColumnsNames.purchased, type: encodedType.BLOB },
+];
+
+/** Import history table name for tracking discovered recipes */
+export const importHistoryTableName = 'ImportHistoryTable';
+
+/**
+ * Import history record for tracking discovered-but-not-imported recipes
+ * Used to show visual indicators for previously seen recipes during bulk import
+ */
+export type importHistoryTableElement = {
+  /** Optional database ID (undefined for new records) */
+  id?: number;
+  /** Provider identifier (e.g., 'hellofresh') */
+  providerId: string;
+  /** Full recipe URL from the provider */
+  recipeUrl: string;
+  /** Timestamp when recipe was last seen (Unix ms) */
+  lastSeenAt: number;
+};
+
+export type encodedImportHistoryElement = {
+  ID: number;
+  PROVIDER_ID: string;
+  RECIPE_URL: string;
+  LAST_SEEN_AT: number;
+};
+
+export enum importHistoryColumnsNames {
+  providerId = 'PROVIDER_ID',
+  recipeUrl = 'RECIPE_URL',
+  lastSeenAt = 'LAST_SEEN_AT',
+}
+
+export const importHistoryColumnsEncoding: databaseColumnType[] = [
+  { colName: importHistoryColumnsNames.providerId, type: encodedType.TEXT },
+  { colName: importHistoryColumnsNames.recipeUrl, type: encodedType.TEXT },
+  { colName: importHistoryColumnsNames.lastSeenAt, type: encodedType.INTEGER },
 ];
 
 export function arrayOfType(

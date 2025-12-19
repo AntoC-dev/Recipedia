@@ -7,6 +7,7 @@ const mockRecipe: DiscoveredRecipe = {
   url: 'https://example.com/recipe-1',
   title: 'Test Recipe',
   imageUrl: 'https://example.com/image.jpg',
+  memoryStatus: 'fresh',
 };
 
 describe('RecipeSelectionCard', () => {
@@ -77,5 +78,18 @@ describe('RecipeSelectionCard', () => {
     fireEvent.press(getByTestId('test-card::Checkbox'));
 
     expect(onSelected).toHaveBeenCalledTimes(1);
+  });
+
+  test('renders seen indicator for previously seen recipes', () => {
+    const seenRecipe: DiscoveredRecipe = { ...mockRecipe, memoryStatus: 'seen' };
+    const { getByTestId } = render(<RecipeSelectionCard {...defaultProps} recipe={seenRecipe} />);
+
+    expect(getByTestId('test-card::SeenIndicator')).toBeTruthy();
+  });
+
+  test('does not render seen indicator for fresh recipes', () => {
+    const { queryByTestId } = render(<RecipeSelectionCard {...defaultProps} />);
+
+    expect(queryByTestId('test-card::SeenIndicator')).toBeNull();
   });
 });

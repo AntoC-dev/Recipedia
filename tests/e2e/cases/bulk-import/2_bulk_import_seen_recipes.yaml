@@ -1,0 +1,151 @@
+name: "2 - Bulk Import Seen Recipes (French)"
+appId: "com.recipedia"
+tags:
+  - bulk-import
+---
+- runFlow:
+    file: "../../flows/setupTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- runFlow:
+    file: "../../flows/parameters/language/switchToFrench.yaml"
+    label: "Setup - Switch to French"
+
+- runFlow:
+    file: "../../flows/bulk-import/navigateToBulkImport.yaml"
+    label: "Phase 1 - Navigate to Bulk Import from Parameters"
+
+- runFlow:
+    file: "../../flows/bulk-import/selectProvider.yaml"
+    env:
+      PROVIDER_ID: "hellofresh"
+    label: "Phase 1 - Select HelloFresh provider"
+
+- runFlow:
+    file: "../../flows/bulk-import/waitForDiscovery.yaml"
+    label: "Phase 1 - Wait for recipe discovery"
+
+- tapOn:
+    id: "BulkImportDiscovery::(fresh|seen)-0"
+    label: "Phase 1 - Select first recipe"
+
+- tapOn:
+    id: "BulkImportDiscovery::ContinueButton"
+    label: "Phase 1 - Continue to mark URLs as seen"
+
+- extendedWaitUntil:
+    visible:
+      id: "BulkImportValidation::AppBar::Title"
+    timeout: 120000
+    label: "Phase 1 - Wait for validation screen (URLs now marked as seen)"
+
+- runFlow:
+    file: "../../flows/setupTest.yaml"
+    label: "Phase 2 - Restart app to verify seen URLs persist"
+
+- runFlow:
+    file: "../../flows/bulk-import/navigateToBulkImport.yaml"
+    label: "Phase 2 - Navigate to Bulk Import"
+
+- runFlow:
+    file: "../../flows/bulk-import/selectProvider.yaml"
+    env:
+      PROVIDER_ID: "hellofresh"
+    label: "Phase 2 - Select HelloFresh provider"
+
+- runFlow:
+    file: "../../flows/bulk-import/waitForDiscovery.yaml"
+    label: "Phase 2 - Wait for recipe discovery"
+
+- runFlow:
+    file: "../../asserts/bulk-import/fr/assertSeenSection.yaml"
+    label: "Assert - Verify seen recipes section is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "BulkImportDiscovery::seen-0"
+    direction: DOWN
+    speed: 40
+    timeout: 30000
+    centerElement: true
+    label: "Action - Scroll to first seen recipe"
+
+- tapOn:
+    id: "BulkImportDiscovery::seen-0"
+    label: "Action - Select first seen recipe"
+
+- assertVisible:
+    id: "BulkImportDiscovery::ContinueButton"
+    label: "Verify - Continue button is available"
+
+- tapOn:
+    id: "BulkImportDiscovery::ContinueButton"
+    label: "Action - Continue to validation"
+
+- extendedWaitUntil:
+    visible:
+      id: "BulkImportValidation::AppBar::Title"
+    timeout: 120000
+    label: "Wait - For validation screen"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "BulkImportValidation::InitializingIndicator"
+    timeout: 120000
+    label: "Wait - For initialization to complete"
+
+- runFlow:
+    file: "../../flows/recipe/validation/validateAllDialogs.yaml"
+    env:
+      TAG_PREFIX: "BulkImportValidation::TagQueue"
+      INGREDIENT_PREFIX: "BulkImportValidation::IngredientQueue"
+    label: "Action - Validate all tags and ingredients"
+
+- runFlow:
+    file: "../../asserts/bulk-import/fr/assertImportComplete.yaml"
+    label: "Assert - Verify import success message"
+
+- tapOn:
+    id: "BulkImportValidation::FinishButton"
+    label: "Action - Finish import and return home"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Cleanup - Navigate to Search"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::RecipeCards::10::Cover"
+    direction: DOWN
+    speed: 90
+    timeout: 20000
+    centerElement: true
+    label: "Cleanup - Scroll to imported recipe"
+
+- tapOn:
+    id: "SearchScreen::RecipeCards::10::Cover"
+    label: "Cleanup - Open imported recipe"
+
+- tapOn:
+    id: "Recipe::AppBar::Delete"
+    label: "Cleanup - Delete recipe"
+
+- tapOn:
+    id: "Recipe::Dialog::Confirm"
+    label: "Cleanup - Confirm deletion"
+
+- tapOn:
+    id: "Recipe::Dialog::Confirm"
+    label: "Cleanup - Close confirmation"
+
+- runFlow:
+    file: "../../flows/parameters/language/switchToEnglish.yaml"
+    label: "Cleanup - Switch back to English"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Cleanup - Return to home"

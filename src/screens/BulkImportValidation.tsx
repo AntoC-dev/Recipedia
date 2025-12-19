@@ -65,15 +65,21 @@ export function BulkImportValidation() {
   const { colors } = useTheme();
   const navigation = useNavigation<StackScreenNavigation>();
   const route = useRoute<BulkImportValidationRouteProp>();
-  const { selectedRecipes } = route.params;
-  const { findSimilarIngredients, findSimilarTags, addMultipleRecipes } = useRecipeDatabase();
+  const { providerId, selectedRecipes } = route.params;
+  const { findSimilarIngredients, findSimilarTags, addMultipleRecipes, removeFromSeenHistory } =
+    useRecipeDatabase();
+
+  const handleImportComplete = (importedUrls: string[]) => {
+    removeFromSeenHistory(providerId, importedUrls);
+  };
 
   const { phase, validationState, progress, importedCount, errorMessage, handlers } =
     useValidationWorkflow(
       selectedRecipes,
       findSimilarIngredients,
       findSimilarTags,
-      addMultipleRecipes
+      addMultipleRecipes,
+      handleImportComplete
     );
 
   const handleFinish = () => {

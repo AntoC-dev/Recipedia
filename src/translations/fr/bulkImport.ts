@@ -40,6 +40,8 @@ export default {
     failedRecipes: '{{count}} échouée(s)',
     noRecipesParsed: "Aucune recette n'a pu être analysée",
     fetchingRecipes: 'Récupération de la recette {{current}} sur {{total}}...',
+    newRecipes: 'Nouvelles recettes ({{count}})',
+    previouslySeen: 'Déjà vues ({{count}})',
   },
 
   validation: {

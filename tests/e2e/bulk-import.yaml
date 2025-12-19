@@ -4,3 +4,4 @@ flows:
 executionOrder:
   flowsOrder:
     - "1 - Bulk Import HelloFresh Flow (French)"
+    - "2 - Bulk Import Seen Recipes (French)"

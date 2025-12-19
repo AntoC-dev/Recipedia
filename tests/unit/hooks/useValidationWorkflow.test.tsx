@@ -24,6 +24,7 @@ const createMockRecipe = (
   })),
   preparation: [{ title: 'Step 1', description: 'Do something' }],
   sourceUrl: `https://example.com/${title.toLowerCase().replace(' ', '-')}`,
+  sourceProvider: 'mock',
 });
 
 const mockFindSimilarIngredients = jest.fn();

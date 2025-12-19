@@ -46,11 +46,11 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "BulkImportDiscovery::Recipe::0"
+      id: "BulkImportDiscovery::fresh-0"
     direction: UP
     speed: 50
     timeout: 20000
-    label: "Scroll back to top and wait for first checkbox"
+    label: "Scroll back to top and wait for first recipe"
 
 - runFlow:
     file: "../bulk-import/selectRecipes.yaml"

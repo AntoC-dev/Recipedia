@@ -105,6 +105,15 @@ export interface ParsingProgress {
 }
 
 /**
+ * Import memory status for a discovered recipe
+ *
+ * - 'fresh': Recipe has never been seen before
+ * - 'seen': Recipe was discovered but not imported in a previous session
+ * - 'imported': Recipe has been successfully imported (should be hidden)
+ */
+export type ImportMemoryStatus = 'fresh' | 'seen' | 'imported';
+
+/**
  * Lightweight recipe data discovered during URL scanning
  *
  * Contains minimal information extracted from category pages
@@ -119,6 +128,8 @@ export interface DiscoveredRecipe {
   imageUrl?: string;
   /** Recipe description if available */
   description?: string;
+  /** Import memory status (fresh, seen, or imported) */
+  memoryStatus?: ImportMemoryStatus;
 }
 
 /**
@@ -203,6 +214,8 @@ export interface ConvertedImportRecipe {
   skippedIngredients?: string[];
   /** Original URL of the recipe source */
   sourceUrl: string;
+  /** Provider identifier (e.g., 'hellofresh') */
+  sourceProvider: string;
 }
 
 /**
@@ -270,3 +283,27 @@ export interface ImportProgress {
  * Contains all recipe fields except the auto-generated ID.
  */
 export type ValidatedRecipe = Omit<recipeTableElement, 'id'>;
+
+/**
+ * Section header item for the discovery list
+ */
+export type DiscoveryListHeaderItem = {
+  type: 'header';
+  key: string;
+  titleKey: 'bulkImport.selection.newRecipes' | 'bulkImport.selection.previouslySeen';
+  count: number;
+};
+
+/**
+ * Recipe item for the discovery list
+ */
+export type DiscoveryListRecipeItem = {
+  type: 'recipe';
+  key: string;
+  recipe: DiscoveredRecipe;
+};
+
+/**
+ * Union type for all items in the discovery list (headers and recipes)
+ */
+export type DiscoveryListItem = DiscoveryListHeaderItem | DiscoveryListRecipeItem;

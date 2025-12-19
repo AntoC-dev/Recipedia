@@ -1,14 +1,14 @@
 import {
-  collectUniqueItems,
-  initializeBatchValidation,
   addIngredientMapping,
   addTagMapping,
   applyMappingsToRecipes,
+  collectUniqueItems,
   getValidationProgress,
+  initializeBatchValidation,
 } from '@utils/BatchValidation';
 import {
-  ingredientType,
   ingredientTableElement,
+  ingredientType,
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
 import { ConvertedImportRecipe } from '@customTypes/BulkImportTypes';
@@ -34,6 +34,7 @@ const createMockRecipe = (
   })),
   preparation: [{ title: 'Step 1', description: 'Do something' }],
   sourceUrl: `https://example.com/${title.toLowerCase().replace(' ', '-')}`,
+  sourceProvider: 'mock',
 });
 
 const mockFindSimilarIngredients = (name: string): ingredientTableElement[] => {

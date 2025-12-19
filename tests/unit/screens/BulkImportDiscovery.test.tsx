@@ -2,20 +2,23 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { BulkImportDiscovery } from '@screens/BulkImportDiscovery';
 import React from 'react';
 import {
-  mockNavigate,
   mockGoBack,
-  setMockRouteParams,
+  mockNavigate,
   resetMockRouteParams,
+  setMockRouteParams,
 } from '@mocks/deps/react-navigation-mock';
 import {
-  setMockDiscoveryState,
-  resetMockDiscoveryState,
+  mockAbort,
   mockDiscoveryProgress,
+  mockFreshRecipes,
+  mockIsSelected,
+  mockParseSelectedRecipes,
   mockParsingProgress,
   mockSelectRecipe,
   mockToggleSelectAll,
-  mockParseSelectedRecipes,
-  mockAbort,
+  mockUnselectRecipe,
+  resetMockDiscoveryState,
+  setMockDiscoveryState,
 } from '@mocks/hooks/useDiscoveryWorkflow-mock';
 
 jest.mock('@react-navigation/native', () => {
@@ -57,19 +60,19 @@ describe('BulkImportDiscovery', () => {
   test('shows recipe list when recipes exist', () => {
     const { getByTestId } = render(<BulkImportDiscovery />);
 
-    expect(getByTestId('BulkImportDiscovery::Recipe::0')).toBeTruthy();
-    expect(getByTestId('BulkImportDiscovery::Recipe::1')).toBeTruthy();
+    expect(getByTestId('BulkImportDiscovery::fresh-0')).toBeTruthy();
+    expect(getByTestId('BulkImportDiscovery::fresh-1')).toBeTruthy();
   });
 
   test('shows empty state when no recipes and selecting', () => {
-    setMockDiscoveryState({ recipes: [] });
+    setMockDiscoveryState({ freshRecipes: [], seenRecipes: [] });
     const { getByText } = render(<BulkImportDiscovery />);
 
     expect(getByText('bulkImport.selection.noRecipesFound')).toBeTruthy();
   });
 
   test('shows loading indicator when discovering with no recipes', () => {
-    setMockDiscoveryState({ phase: 'discovering', recipes: [] });
+    setMockDiscoveryState({ phase: 'discovering', freshRecipes: [], seenRecipes: [] });
     const { UNSAFE_getByType } = render(<BulkImportDiscovery />);
 
     const ActivityIndicator = require('react-native-paper').ActivityIndicator;
@@ -90,12 +93,21 @@ describe('BulkImportDiscovery', () => {
     expect(mockToggleSelectAll).toHaveBeenCalledTimes(1);
   });
 
-  test('calls selectRecipe when recipe card pressed', () => {
+  test('calls selectRecipe when unselected recipe card pressed', () => {
     const { getByTestId } = render(<BulkImportDiscovery />);
 
-    fireEvent.press(getByTestId('BulkImportDiscovery::Recipe::0'));
+    fireEvent.press(getByTestId('BulkImportDiscovery::fresh-0'));
 
     expect(mockSelectRecipe).toHaveBeenCalledWith('https://example.com/recipe-1');
+  });
+
+  test('calls unselectRecipe when selected recipe card pressed', () => {
+    mockIsSelected.mockReturnValue(true);
+    const { getByTestId } = render(<BulkImportDiscovery />);
+
+    fireEvent.press(getByTestId('BulkImportDiscovery::fresh-0'));
+
+    expect(mockUnselectRecipe).toHaveBeenCalledWith('https://example.com/recipe-1');
   });
 
   test('shows discovery progress when discovering', () => {
@@ -161,5 +173,69 @@ describe('BulkImportDiscovery', () => {
     const { getByText } = render(<BulkImportDiscovery />);
 
     expect(getByText('Network error')).toBeTruthy();
+  });
+
+  describe('section headers', () => {
+    test('shows fresh section header when fresh recipes exist', () => {
+      const { getByTestId } = render(<BulkImportDiscovery />);
+
+      expect(getByTestId('BulkImportDiscovery::fresh-header')).toBeTruthy();
+    });
+
+    test('shows seen section header when seen recipes exist', () => {
+      setMockDiscoveryState({
+        seenRecipes: [
+          {
+            url: 'https://example.com/seen-recipe',
+            title: 'Seen Recipe',
+            memoryStatus: 'seen',
+          },
+        ],
+      });
+      const { getByTestId } = render(<BulkImportDiscovery />);
+
+      expect(getByTestId('BulkImportDiscovery::seen-header')).toBeTruthy();
+    });
+
+    test('does not show fresh header when no fresh recipes', () => {
+      setMockDiscoveryState({
+        freshRecipes: [],
+        seenRecipes: [
+          {
+            url: 'https://example.com/seen-recipe',
+            title: 'Seen Recipe',
+            memoryStatus: 'seen',
+          },
+        ],
+      });
+      const { queryByTestId } = render(<BulkImportDiscovery />);
+
+      expect(queryByTestId('BulkImportDiscovery::fresh-header')).toBeNull();
+    });
+
+    test('does not show seen header when no seen recipes', () => {
+      const { queryByTestId } = render(<BulkImportDiscovery />);
+
+      expect(queryByTestId('BulkImportDiscovery::seen-header')).toBeNull();
+    });
+
+    test('shows both sections when both fresh and seen recipes exist', () => {
+      setMockDiscoveryState({
+        freshRecipes: mockFreshRecipes,
+        seenRecipes: [
+          {
+            url: 'https://example.com/seen-recipe',
+            title: 'Seen Recipe',
+            memoryStatus: 'seen',
+          },
+        ],
+      });
+      const { getByTestId } = render(<BulkImportDiscovery />);
+
+      expect(getByTestId('BulkImportDiscovery::fresh-header')).toBeTruthy();
+      expect(getByTestId('BulkImportDiscovery::seen-header')).toBeTruthy();
+      expect(getByTestId('BulkImportDiscovery::fresh-0')).toBeTruthy();
+      expect(getByTestId('BulkImportDiscovery::seen-0')).toBeTruthy();
+    });
   });
 });

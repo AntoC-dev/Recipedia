@@ -151,6 +151,15 @@ export interface RecipeDatabaseContextType {
   datasetLoadError: string | undefined;
   /** Dismisses the dataset load error notification */
   dismissDatasetLoadError: () => void;
+
+  /** Gets URLs that have been imported from a specific provider */
+  getImportedSourceUrls: (providerId: string) => Set<string>;
+  /** Gets URLs that have been seen (but not imported) from a specific provider */
+  getSeenUrls: (providerId: string) => Set<string>;
+  /** Marks URLs as seen for a specific provider */
+  markUrlsAsSeen: (providerId: string, urls: string[]) => Promise<void>;
+  /** Removes URLs from seen history for a specific provider */
+  removeFromSeenHistory: (providerId: string, urls: string[]) => Promise<void>;
 }
 
 const RecipeDatabaseContext = createContext<RecipeDatabaseContextType | undefined>(undefined);
@@ -486,6 +495,22 @@ export const RecipeDatabaseProvider: React.FC<{
     setDatasetLoadError(undefined);
   };
 
+  const getImportedSourceUrls = (providerId: string): Set<string> => {
+    return db.getImportedSourceUrls(providerId);
+  };
+
+  const getSeenUrls = (providerId: string): Set<string> => {
+    return db.getSeenUrls(providerId);
+  };
+
+  const markUrlsAsSeen = async (providerId: string, urls: string[]): Promise<void> => {
+    await db.markUrlsAsSeen(providerId, urls);
+  };
+
+  const removeFromSeenHistory = async (providerId: string, urls: string[]): Promise<void> => {
+    await db.removeFromSeenHistory(providerId, urls);
+  };
+
   const contextValue: RecipeDatabaseContextType = {
     recipes,
     addRecipe,
@@ -518,6 +543,10 @@ export const RecipeDatabaseProvider: React.FC<{
     scalingProgress,
     datasetLoadError,
     dismissDatasetLoadError,
+    getImportedSourceUrls,
+    getSeenUrls,
+    markUrlsAsSeen,
+    removeFromSeenHistory,
   };
 
   return (

@@ -25,7 +25,7 @@
 
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Card, Checkbox, Text, useTheme } from 'react-native-paper';
+import { Card, Checkbox, Icon, Text, useTheme } from 'react-native-paper';
 import { CustomImage } from '@components/atomic/CustomImage';
 import { padding } from '@styles/spacing';
 import { DiscoveredRecipe } from '@customTypes/BulkImportTypes';
@@ -51,6 +51,7 @@ export type RecipeSelectionCardProps = {
  *
  * Renders a selectable card with recipe thumbnail, title, and checkbox.
  * The card background changes color to indicate selection state.
+ * Shows a "Previously seen" indicator for recipes that were discovered before.
  *
  * @param props - The component props
  * @returns JSX element representing the selectable recipe card
@@ -64,6 +65,8 @@ export function RecipeSelectionCard({
 }: RecipeSelectionCardProps) {
   const { colors } = useTheme();
 
+  const isPreviouslySeen = recipe.memoryStatus === 'seen';
+
   const handlePress = () => {
     if (isSelected) {
       onUnselected();
@@ -72,14 +75,21 @@ export function RecipeSelectionCard({
     }
   };
 
+  const getBackgroundColor = () => {
+    if (isSelected) {
+      return colors.secondaryContainer;
+    }
+    if (isPreviouslySeen) {
+      return colors.surfaceVariant;
+    }
+    return colors.surface;
+  };
+
   return (
     <Card
       testID={testId}
       mode='outlined'
-      style={[
-        styles.card,
-        { backgroundColor: isSelected ? colors.secondaryContainer : colors.surface },
-      ]}
+      style={[styles.card, { backgroundColor: getBackgroundColor() }]}
       onPress={handlePress}
     >
       <View style={styles.content}>
@@ -97,6 +107,16 @@ export function RecipeSelectionCard({
             backgroundColor={colors.surfaceVariant}
             testID={testId + '::Thumbnail'}
           />
+          {isPreviouslySeen && (
+            <View style={[styles.seenBadge, { backgroundColor: colors.surfaceVariant }]}>
+              <Icon
+                source='history'
+                size={14}
+                color={colors.onSurfaceVariant}
+                testID={testId + '::SeenIndicator'}
+              />
+            </View>
+          )}
         </View>
 
         <View style={styles.textContainer}>
@@ -125,6 +145,13 @@ const styles = StyleSheet.create({
   textContainer: {
     flex: 1,
     paddingRight: padding.small,
+  },
+  seenBadge: {
+    position: 'absolute',
+    bottom: padding.verySmall,
+    right: padding.verySmall,
+    borderRadius: padding.small,
+    padding: padding.verySmall,
   },
 });
 

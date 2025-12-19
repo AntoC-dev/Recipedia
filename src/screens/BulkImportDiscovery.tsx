@@ -36,6 +36,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ActivityIndicator, Text, useTheme } from 'react-native-paper';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { StackScreenNavigation, StackScreenParamList } from '@customTypes/ScreenTypes';
+import { DiscoveryListItem } from '@customTypes/BulkImportTypes';
+import { buildDiscoveryListData } from '@utils/BulkImportUtils';
 import { AppBar } from '@components/organisms/AppBar';
 import { RecipeSelectionCard } from '@components/molecules/RecipeSelectionCard';
 import { DiscoveryFooter } from '@components/molecules/DiscoveryFooter';
@@ -46,10 +48,13 @@ import { useI18n } from '@utils/i18n';
 import { getProvider } from '@providers/ProviderRegistry';
 import { useDefaultPersons } from '@context/DefaultPersonsContext';
 import { useDiscoveryWorkflow } from '@hooks/useDiscoveryWorkflow';
+import { padding } from '@styles/spacing';
 
 type BulkImportDiscoveryRouteProp = RouteProp<StackScreenParamList, 'BulkImportDiscovery'>;
 
 const screenId = 'BulkImportDiscovery';
+const RECIPE_CARD_HEIGHT = 88;
+const SECTION_HEADER_HEIGHT = 40;
 
 /**
  * BulkImportDiscovery screen component
@@ -71,8 +76,8 @@ export function BulkImportDiscovery() {
 
   const {
     phase,
-    recipes,
-    recipesWithImages,
+    freshRecipes,
+    seenRecipes,
     selectedCount,
     allSelected,
     isDiscovering,
@@ -86,14 +91,42 @@ export function BulkImportDiscovery() {
     toggleSelectAll,
     parseSelectedRecipes,
     abort,
-  } = useDiscoveryWorkflow(provider, defaultPersons);
+    markUrlsAsSeen,
+  } = useDiscoveryWorkflow(provider, defaultPersons, providerId);
+
+  const totalRecipesCount = freshRecipes.length + seenRecipes.length;
+  const listData = buildDiscoveryListData(freshRecipes, seenRecipes);
 
   const handleCancel = () => {
     abort();
     navigation.goBack();
   };
 
+  const renderListItem = ({ item }: { item: DiscoveryListItem }) => {
+    if (item.type === 'header') {
+      return (
+        <Text
+          testID={`${screenId}::${item.key}`}
+          variant='titleSmall'
+          style={[styles.sectionHeader, { color: colors.onSurfaceVariant }]}
+        >
+          {t(item.titleKey, { count: item.count })}
+        </Text>
+      );
+    }
+    return (
+      <RecipeSelectionCard
+        testId={`${screenId}::${item.key}`}
+        recipe={item.recipe}
+        isSelected={isSelected(item.recipe.url)}
+        onSelected={() => selectRecipe(item.recipe.url)}
+        onUnselected={() => unselectRecipe(item.recipe.url)}
+      />
+    );
+  };
+
   const handleContinue = async () => {
+    await markUrlsAsSeen();
     const convertedRecipes = await parseSelectedRecipes();
     if (convertedRecipes) {
       navigation.navigate('BulkImportValidation', {
@@ -110,14 +143,14 @@ export function BulkImportDiscovery() {
       {showSelectionUI && (
         <View style={styles.selectionContainer}>
           <DiscoveryHeader
-            recipesCount={recipes.length}
+            recipesCount={totalRecipesCount}
             selectedCount={selectedCount}
             isDiscovering={isDiscovering}
             discoveryProgress={discoveryProgress}
             testID={screenId}
           />
 
-          {recipes.length > 0 && (
+          {totalRecipesCount > 0 && (
             <SelectAllRow
               allSelected={allSelected}
               selectedCount={selectedCount}
@@ -126,24 +159,18 @@ export function BulkImportDiscovery() {
             />
           )}
 
-          {recipes.length > 0 ? (
-            <View style={styles.list}>
-              <FlashList
-                data={recipesWithImages}
-                keyExtractor={item => item.url}
-                extraData={selectedCount}
-                estimatedItemSize={88}
-                renderItem={({ item, index }) => (
-                  <RecipeSelectionCard
-                    testId={screenId + `::Recipe::${index}`}
-                    recipe={item}
-                    isSelected={isSelected(item.url)}
-                    onSelected={() => selectRecipe(item.url)}
-                    onUnselected={() => unselectRecipe(item.url)}
-                  />
-                )}
-              />
-            </View>
+          {totalRecipesCount > 0 ? (
+            <FlashList
+              data={listData}
+              keyExtractor={item => item.key}
+              extraData={selectedCount}
+              estimatedItemSize={RECIPE_CARD_HEIGHT}
+              getItemType={item => item.type}
+              overrideItemLayout={(layout, item) => {
+                layout.size = item.type === 'header' ? SECTION_HEADER_HEIGHT : RECIPE_CARD_HEIGHT;
+              }}
+              renderItem={renderListItem}
+            />
           ) : phase === 'selecting' ? (
             <View style={styles.emptyState}>
               <Text variant='bodyLarge' style={styles.emptyText}>
@@ -181,8 +208,9 @@ const styles = StyleSheet.create({
   selectionContainer: {
     flex: 1,
   },
-  list: {
-    flex: 1,
+  sectionHeader: {
+    paddingHorizontal: padding.large,
+    paddingVertical: padding.small,
   },
   initialLoading: {
     flex: 1,

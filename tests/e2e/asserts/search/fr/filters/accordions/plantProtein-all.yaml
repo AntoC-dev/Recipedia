@@ -1,15 +1,5 @@
 appId: "com.recipedia"
 ---
-# Assert accordion is displayed
-- assertVisible:
-    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-    label: "Plant Protein accordion is displayed"
-
-- assertVisible:
-    text: "Protéines Végétales"
-    label: "Plant Protein accordion title is displayed in French"
-
-# Expand the accordion
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -17,6 +7,11 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Plant Protein accordion"
+
+- assertVisible:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    text: "Protéines Végétales"
+    label: "Plant Protein accordion is displayed"
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"

@@ -1,17 +1,23 @@
 import { DiscoveredRecipe, DiscoveryProgress, ParsingProgress } from '@customTypes/BulkImportTypes';
 
-export const mockDiscoveredRecipes: DiscoveredRecipe[] = [
+export const mockFreshRecipes: DiscoveredRecipe[] = [
   {
     url: 'https://example.com/recipe-1',
     title: 'Recipe 1',
     imageUrl: 'https://example.com/img1.jpg',
+    memoryStatus: 'fresh',
   },
   {
     url: 'https://example.com/recipe-2',
     title: 'Recipe 2',
     imageUrl: 'https://example.com/img2.jpg',
+    memoryStatus: 'fresh',
   },
 ];
+
+export const mockSeenRecipes: DiscoveredRecipe[] = [];
+
+export const mockDiscoveredRecipes: DiscoveredRecipe[] = [...mockFreshRecipes, ...mockSeenRecipes];
 
 export const mockDiscoveryProgress: DiscoveryProgress = {
   phase: 'discovering',
@@ -33,6 +39,8 @@ export const mockParsingProgress: ParsingProgress = {
 
 export let mockPhase = 'selecting';
 export let mockRecipes = mockDiscoveredRecipes;
+export let mockFreshRecipesState = mockFreshRecipes;
+export let mockSeenRecipesState = mockSeenRecipes;
 export let mockSelectedCount = 0;
 export let mockAllSelected = false;
 export let mockIsDiscovering = false;
@@ -51,6 +59,8 @@ export const mockAbort = jest.fn();
 export function setMockDiscoveryState(state: {
   phase?: string;
   recipes?: DiscoveredRecipe[];
+  freshRecipes?: DiscoveredRecipe[];
+  seenRecipes?: DiscoveredRecipe[];
   selectedCount?: number;
   allSelected?: boolean;
   isDiscovering?: boolean;
@@ -61,6 +71,8 @@ export function setMockDiscoveryState(state: {
 }) {
   if (state.phase !== undefined) mockPhase = state.phase;
   if (state.recipes !== undefined) mockRecipes = state.recipes;
+  if (state.freshRecipes !== undefined) mockFreshRecipesState = state.freshRecipes;
+  if (state.seenRecipes !== undefined) mockSeenRecipesState = state.seenRecipes;
   if (state.selectedCount !== undefined) mockSelectedCount = state.selectedCount;
   if (state.allSelected !== undefined) mockAllSelected = state.allSelected;
   if (state.isDiscovering !== undefined) mockIsDiscovering = state.isDiscovering;
@@ -73,6 +85,8 @@ export function setMockDiscoveryState(state: {
 export function resetMockDiscoveryState() {
   mockPhase = 'selecting';
   mockRecipes = mockDiscoveredRecipes;
+  mockFreshRecipesState = mockFreshRecipes;
+  mockSeenRecipesState = mockSeenRecipes;
   mockSelectedCount = 0;
   mockAllSelected = false;
   mockIsDiscovering = false;
@@ -88,11 +102,15 @@ export function resetMockDiscoveryState() {
   mockAbort.mockClear();
 }
 
+export const mockMarkUrlsAsSeen = jest.fn();
+
 export function useDiscoveryWorkflowMock() {
   return {
     phase: mockPhase,
     recipes: mockRecipes,
     recipesWithImages: mockRecipes,
+    freshRecipes: mockFreshRecipesState,
+    seenRecipes: mockSeenRecipesState,
     selectedCount: mockSelectedCount,
     allSelected: mockAllSelected,
     isDiscovering: mockIsDiscovering,
@@ -106,5 +124,6 @@ export function useDiscoveryWorkflowMock() {
     toggleSelectAll: mockToggleSelectAll,
     parseSelectedRecipes: mockParseSelectedRecipes,
     abort: mockAbort,
+    markUrlsAsSeen: mockMarkUrlsAsSeen,
   };
 }
