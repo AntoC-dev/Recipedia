@@ -1,0 +1,17 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    id: "BulkImportDiscovery::seen-header"
+    label: "Seen recipes section header is displayed"
+
+- assertVisible:
+    id: "BulkImportDiscovery::seen-0"
+    label: "First seen recipe card is displayed"
+
+- assertVisible:
+    id: "BulkImportDiscovery::seen-0::SeenIndicator"
+    label: "Seen indicator icon is displayed on first seen recipe"
+
+- assertVisible:
+    id: "BulkImportDiscovery::seen-0::Title"
+    label: "First seen recipe title is displayed"
