@@ -34,15 +34,15 @@ tags:
     label: "Assert - Verify discovery screen with recipes"
 
 - tapOn:
-    id: "BulkImportDiscovery::Recipe::0"
+    id: "BulkImportDiscovery::fresh-0"
     label: "Action - Select first recipe"
 
 - tapOn:
-    id: "BulkImportDiscovery::Recipe::1"
+    id: "BulkImportDiscovery::fresh-1"
     label: "Action - Select second recipe"
 
 - tapOn:
-    id: "BulkImportDiscovery::Recipe::2"
+    id: "BulkImportDiscovery::fresh-2"
     label: "Action - Select third recipe"
 
 - assertVisible:

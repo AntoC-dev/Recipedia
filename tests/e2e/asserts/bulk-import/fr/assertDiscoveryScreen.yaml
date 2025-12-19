@@ -24,20 +24,24 @@ appId: "com.recipedia"
     label: "Select all checkbox label displays correct text (French)"
 
 - assertVisible:
-    id: "BulkImportDiscovery::Recipe::0"
-    label: "First recipe card is displayed"
+    id: "BulkImportDiscovery::fresh-header"
+    label: "Fresh recipes section header is displayed"
 
 - assertVisible:
-    id: "BulkImportDiscovery::Recipe::0::Checkbox"
-    label: "First recipe checkbox is displayed"
+    id: "BulkImportDiscovery::fresh-0"
+    label: "First fresh recipe card is displayed"
 
 - assertVisible:
-    id: "BulkImportDiscovery::Recipe::0::Thumbnail"
-    label: "First recipe thumbnail is displayed"
+    id: "BulkImportDiscovery::fresh-0::Checkbox"
+    label: "First fresh recipe checkbox is displayed"
 
 - assertVisible:
-    id: "BulkImportDiscovery::Recipe::0::Title"
-    label: "First recipe title is displayed"
+    id: "BulkImportDiscovery::fresh-0::Thumbnail"
+    label: "First fresh recipe thumbnail is displayed"
+
+- assertVisible:
+    id: "BulkImportDiscovery::fresh-0::Title"
+    label: "First fresh recipe title is displayed"
 
 - assertVisible:
     id: "BulkImportDiscovery::ContinueButton"
