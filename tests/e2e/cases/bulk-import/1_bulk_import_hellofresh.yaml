@@ -25,9 +25,11 @@ tags:
       PROVIDER_ID: "hellofresh"
     label: "Action - Select HelloFresh provider"
 
-- runFlow:
-    file: "../../flows/bulk-import/waitForDiscovery.yaml"
-    label: "Action - Wait for recipe discovery"
+- extendedWaitUntil:
+    visible:
+      id: "BulkImportDiscovery::fresh-0"
+    timeout: 120000
+    label: "Wait - For first recipe to appear"
 
 - runFlow:
     file: "../../asserts/bulk-import/fr/assertDiscoveryScreen.yaml"
