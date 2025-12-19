@@ -1,3 +1,16 @@
+## [2.4.0](https://github.com/AntoC-dev/Recipedia/compare/v2.3.0...v2.4.0) (2025-12-19)
+
+### Features
+
+* already seen bulk ([#161](https://github.com/AntoC-dev/Recipedia/issues/161)) ([b767a84](https://github.com/AntoC-dev/Recipedia/commit/b767a84505cb476443836abd4f077a157b9cff90))
+* **database:** add source tracking and import history support ([73f2f64](https://github.com/AntoC-dev/Recipedia/commit/73f2f649b5b70f1a0c6ca4151e7c5df489f2acb2))
+* **import:** enhance bulk import workflows with tracking ([0890569](https://github.com/AntoC-dev/Recipedia/commit/08905691084574f073266242690dbac6562ade42))
+* **import:** enhance BulkImportDiscovery with recipe categorization ([5b159f8](https://github.com/AntoC-dev/Recipedia/commit/5b159f87aba8d6c60869efc1520b97d3cae8366b))
+
+### Performance Improvements
+
+* update reassure baseline [skip ci] ([b2e4fc2](https://github.com/AntoC-dev/Recipedia/commit/b2e4fc274d810ee70168588644f68ad80a0bcc93))
+
 ## [2.3.0](https://github.com/AntoC-dev/Recipedia/compare/v2.2.2...v2.3.0) (2025-12-19)
 
 ### Features
