@@ -143,6 +143,45 @@ tags:
     label: "Cleanup - Close confirmation"
 
 - runFlow:
+    file: "../../flows/bulk-import/navigateToBulkImport.yaml"
+    label: "Verification - Navigate to Bulk Import"
+
+- runFlow:
+    file: "../../flows/bulk-import/selectProvider.yaml"
+    env:
+      PROVIDER_ID: "hellofresh"
+    label: "Verification - Select HelloFresh provider"
+
+- runFlow:
+    file: "../../flows/bulk-import/waitForDiscovery.yaml"
+    label: "Verification - Wait for recipe discovery"
+
+- assertVisible:
+    id: "BulkImportDiscovery::fresh-header"
+    text: "Nouvelles recettes \\(\\d+\\)"
+    label: "Assert - Fresh recipes section header is displayed"
+
+- assertVisible:
+    id: "BulkImportDiscovery::fresh-0"
+    label: "Assert - Deleted recipe is rediscovered as fresh"
+
+- tapOn:
+    id: "BulkImportDiscovery::AppBar::BackButton"
+    label: "Cleanup - Go back to provider selection"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "BulkImportSettings::AppBar::BackButton"
+    label: "Cleanup - Return to parameters"
+
+- scrollUntilVisible:
+    element:
+      id: "Parameters::Section::Appearance::SubHeader"
+    direction: UP
+    label: "Scroll up to reset the screen"
+
+- runFlow:
     file: "../../flows/parameters/language/switchToEnglish.yaml"
     label: "Cleanup - Switch back to English"
 
