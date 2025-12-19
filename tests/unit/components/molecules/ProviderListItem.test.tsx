@@ -11,6 +11,7 @@ const mockProvider: RecipeProvider = {
   discoverRecipeUrls: jest.fn(),
   parseSelectedRecipes: jest.fn(),
   fetchRecipe: jest.fn(),
+  fetchImageUrlForRecipe: jest.fn().mockResolvedValue(null),
 };
 
 describe('ProviderListItem', () => {

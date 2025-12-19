@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     borderRadius: padding.small,
     padding: padding.verySmall,
   },
-    titleRow: {
+  titleRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
   },
