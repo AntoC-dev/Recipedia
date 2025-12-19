@@ -1,10 +1,14 @@
 import * as SQLite from 'expo-sqlite';
 import {
   coreIngredientElement,
+  encodedImportHistoryElement,
   encodedIngredientElement,
   encodedRecipeElement,
   encodedShoppingListElement,
   encodedTagElement,
+  importHistoryColumnsEncoding,
+  importHistoryTableElement,
+  importHistoryTableName,
   ingredientColumnsEncoding,
   ingredientsColumnsNames,
   ingredientsTableName,
@@ -78,6 +82,7 @@ export class RecipeDatabase {
   protected _tagsTable: TableManipulation;
 
   protected _shoppingListTable: TableManipulation;
+  protected _importHistoryTable: TableManipulation;
 
   protected _recipes: recipeTableElement[];
   protected _ingredients: ingredientTableElement[];
@@ -85,6 +90,7 @@ export class RecipeDatabase {
   // protected _nutrition: Array<>;
 
   protected _shopping: shoppingListTableElement[];
+  protected _importHistory: importHistoryTableElement[];
 
   /*    PRIVATE METHODS     */
   private constructor() {
@@ -98,11 +104,16 @@ export class RecipeDatabase {
       shoppingListTableName,
       shoppingListColumnsEncoding
     );
+    this._importHistoryTable = new TableManipulation(
+      importHistoryTableName,
+      importHistoryColumnsEncoding
+    );
 
     this._recipes = [];
     this._ingredients = [];
     this._tags = [];
     this._shopping = [];
+    this._importHistory = [];
   }
 
   /* PUBLIC METHODS */
@@ -219,17 +230,22 @@ export class RecipeDatabase {
     await this._ingredientsTable.createTable(this._dbConnection);
     await this._tagsTable.createTable(this._dbConnection);
     await this._shoppingListTable.createTable(this._dbConnection);
+    await this._importHistoryTable.createTable(this._dbConnection);
+
+    await this.migrateAddSourceColumns();
 
     this._ingredients = await this.getAllIngredients();
     this._tags = await this.getAllTags();
     this._recipes = await this.getAllRecipes();
     this._shopping = await this.getAllShopping();
+    this._importHistory = await this.getAllImportHistory();
 
     databaseLogger.info('Database initialization completed', {
       recipesCount: this._recipes.length,
       ingredientsCount: this._ingredients.length,
       tagsCount: this._tags.length,
       shoppingItemsCount: this._shopping.length,
+      importHistoryCount: this._importHistory.length,
     });
   }
 
@@ -1284,6 +1300,119 @@ export class RecipeDatabase {
   }
 
   /**
+   * Gets all imported recipe source URLs for a specific provider
+   *
+   * Returns URLs of recipes that have been successfully imported from the given provider.
+   * These recipes should be hidden from future discovery.
+   *
+   * @param providerId - The provider identifier (e.g., 'hellofresh')
+   * @returns Set of source URLs for imported recipes
+   */
+  public getImportedSourceUrls(providerId: string): Set<string> {
+    return new Set(
+      this._recipes
+        .filter(r => r.sourceUrl && r.sourceProvider === providerId)
+        .map(r => r.sourceUrl!)
+    );
+  }
+
+  /**
+   * Gets all seen-but-not-imported recipe URLs for a specific provider
+   *
+   * Returns URLs of recipes that were discovered but not imported.
+   * These recipes should be shown with a visual indicator.
+   *
+   * @param providerId - The provider identifier (e.g., 'hellofresh')
+   * @returns Set of URLs for seen-but-not-imported recipes
+   */
+  public getSeenUrls(providerId: string): Set<string> {
+    return new Set(
+      this._importHistory.filter(h => h.providerId === providerId).map(h => h.recipeUrl)
+    );
+  }
+
+  /**
+   * Marks recipe URLs as seen for a specific provider
+   *
+   * Records that the user has seen these recipes during discovery.
+   * Only adds new entries for URLs not already tracked.
+   *
+   * @param providerId - The provider identifier (e.g., 'hellofresh')
+   * @param urls - Array of recipe URLs to mark as seen
+   */
+  public async markUrlsAsSeen(providerId: string, urls: string[]): Promise<void> {
+    if (urls.length === 0) return;
+
+    const existingSeenUrls = this.getSeenUrls(providerId);
+    const importedUrls = this.getImportedSourceUrls(providerId);
+    const now = Date.now();
+
+    const newEntries = urls
+      .filter(url => !existingSeenUrls.has(url) && !importedUrls.has(url))
+      .map(url => ({
+        providerId,
+        recipeUrl: url,
+        lastSeenAt: now,
+      }));
+
+    if (newEntries.length === 0) return;
+
+    const encodedEntries = newEntries.map(entry => this.encodeImportHistory(entry));
+
+    databaseLogger.debug('Marking URLs as seen', {
+      providerId,
+      count: newEntries.length,
+    });
+
+    const success = await this._importHistoryTable.insertArrayOfElement(
+      encodedEntries,
+      this._dbConnection
+    );
+
+    if (success) {
+      for (const entry of newEntries) {
+        this._importHistory.push(entry as importHistoryTableElement);
+      }
+    } else {
+      databaseLogger.error('Failed to mark URLs as seen', { providerId, count: newEntries.length });
+    }
+  }
+
+  /**
+   * Removes recipe URLs from seen history for a specific provider
+   *
+   * Called after successful import to remove URLs from the "seen" list
+   * since they are now tracked as imported recipes.
+   *
+   * @param providerId - The provider identifier (e.g., 'hellofresh')
+   * @param urls - Array of recipe URLs to remove from seen history
+   */
+  public async removeFromSeenHistory(providerId: string, urls: string[]): Promise<void> {
+    if (urls.length === 0) return;
+
+    databaseLogger.debug('Removing URLs from seen history', {
+      providerId,
+      count: urls.length,
+    });
+
+    for (const url of urls) {
+      const historyEntry = this._importHistory.find(
+        h => h.providerId === providerId && h.recipeUrl === url
+      );
+
+      if (historyEntry?.id) {
+        await this._importHistoryTable.deleteElementById(historyEntry.id, this._dbConnection);
+      }
+    }
+
+    this._importHistory = this._importHistory.filter(
+      h => !(h.providerId === providerId && urls.includes(h.recipeUrl))
+    );
+  }
+
+  /* PRIVATE METHODS */
+
+  /**
    * Resets all internal state to empty values
    *
    * @private
@@ -1293,6 +1422,7 @@ export class RecipeDatabase {
     this._ingredients = [];
     this._tags = [];
     this._shopping = [];
+    this._importHistory = [];
   }
 
   /**
@@ -1318,6 +1448,8 @@ export class RecipeDatabase {
       [recipeColumnsNames.preparation, encodedRecipe.PREPARATION],
       [recipeColumnsNames.time, encodedRecipe.TIME],
       [recipeColumnsNames.nutrition, encodedRecipe.NUTRITION],
+      [recipeColumnsNames.sourceUrl, encodedRecipe.SOURCE_URL],
+      [recipeColumnsNames.sourceProvider, encodedRecipe.SOURCE_PROVIDER],
     ]);
   }
 
@@ -1355,8 +1487,6 @@ export class RecipeDatabase {
   private constructUpdateTagStructure(tag: tagTableElement): Map<string, string | number> {
     return new Map<string, string | number>([[tagsColumnsNames.name, tag.name]]);
   }
-
-  /* PRIVATE METHODS */
 
   /**
    * Opens a connection to the SQLite database
@@ -1553,6 +1683,8 @@ export class RecipeDatabase {
         .join(EncodingSeparator),
       TIME: recToEncode.time,
       NUTRITION: recToEncode.nutrition ? this.encodeNutrition(recToEncode.nutrition) : '',
+      SOURCE_URL: recToEncode.sourceUrl || '',
+      SOURCE_PROVIDER: recToEncode.sourceProvider || '',
     };
   }
 
@@ -1651,6 +1783,8 @@ export class RecipeDatabase {
       preparation: this.decodePreparation(encodedRecipe.PREPARATION),
       time: encodedRecipe.TIME,
       nutrition: this.decodeNutrition(encodedRecipe.NUTRITION),
+      sourceUrl: encodedRecipe.SOURCE_URL || undefined,
+      sourceProvider: encodedRecipe.SOURCE_PROVIDER || undefined,
     };
   }
 
@@ -2384,6 +2518,82 @@ export class RecipeDatabase {
     }
 
     return true;
+  }
+
+  /**
+   * Migrates the database to add source tracking columns if they don't exist
+   *
+   * This migration adds SOURCE_URL and SOURCE_PROVIDER columns to the recipes table
+   * to support bulk import tracking. Runs safely even if columns already exist.
+   *
+   * @private
+   */
+  private async migrateAddSourceColumns(): Promise<void> {
+    try {
+      await this._dbConnection.execAsync(
+        `ALTER TABLE "${recipeTableName}"
+                    ADD COLUMN "${recipeColumnsNames.sourceUrl}" TEXT NOT NULL DEFAULT ''`
+      );
+      databaseLogger.info('Added SOURCE_URL column to recipes table');
+    } catch {
+      databaseLogger.debug('SOURCE_URL column migration skipped (likely already exists)');
+    }
+
+    try {
+      await this._dbConnection.execAsync(
+        `ALTER TABLE "${recipeTableName}"
+                    ADD COLUMN "${recipeColumnsNames.sourceProvider}" TEXT NOT NULL DEFAULT ''`
+      );
+      databaseLogger.info('Added SOURCE_PROVIDER column to recipes table');
+    } catch {
+      databaseLogger.debug('SOURCE_PROVIDER column migration skipped (likely already exists)');
+    }
+  }
+
+  /**
+   * Retrieves all import history records from the database
+   *
+   * @private
+   * @returns Promise resolving to array of all import history records
+   */
+  private async getAllImportHistory(): Promise<importHistoryTableElement[]> {
+    const results = (await this._importHistoryTable.searchElement(
+      this._dbConnection
+    )) as encodedImportHistoryElement[];
+
+    if (!results || !Array.isArray(results) || results.length === 0) {
+      return [];
+    }
+
+    return results.map(encoded => this.decodeImportHistory(encoded));
+  }
+
+  /**
+   * Decodes an import history record from database format
+   *
+   * @private
+   */
+  private decodeImportHistory(encoded: encodedImportHistoryElement): importHistoryTableElement {
+    return {
+      id: encoded.ID,
+      providerId: encoded.PROVIDER_ID,
+      recipeUrl: encoded.RECIPE_URL,
+      lastSeenAt: encoded.LAST_SEEN_AT,
+    };
+  }
+
+  /**
+   * Encodes an import history record for database storage
+   *
+   * @private
+   */
+  private encodeImportHistory(history: importHistoryTableElement): encodedImportHistoryElement {
+    return {
+      ID: history.id || 0,
+      PROVIDER_ID: history.providerId,
+      RECIPE_URL: history.recipeUrl,
+      LAST_SEEN_AT: history.lastSeenAt,
+    };
   }
 }
 
