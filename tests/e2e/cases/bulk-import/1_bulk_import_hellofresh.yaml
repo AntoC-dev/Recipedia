@@ -35,6 +35,14 @@ tags:
     file: "../../asserts/bulk-import/fr/assertDiscoveryScreen.yaml"
     label: "Assert - Verify discovery screen with recipes"
 
+- assertNotVisible:
+    id: "BulkImportDiscovery::fresh-0::SeenIndicator::Badge"
+    label: "Assert - Fresh recipe does not show seen indicator badge"
+
+- assertNotVisible:
+    id: "BulkImportDiscovery::fresh-0::SeenIndicator::Title"
+    label: "Assert - Fresh recipe does not show seen indicator in title"
+
 - tapOn:
     id: "BulkImportDiscovery::fresh-0"
     label: "Action - Select first recipe"

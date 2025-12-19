@@ -121,19 +121,11 @@ export function RecipeSelectionCard({
 
         <View style={styles.textContainer}>
           <View style={styles.titleRow}>
-            {isPreviouslySeen && (
-              <Icon
-                source='history'
-                size={16}
-                color={colors.onSurfaceVariant}
-                testID={testId + '::SeenIndicator'}
-              />
-            )}
             <Text
               variant='titleMedium'
               numberOfLines={2}
-              style={isPreviouslySeen && styles.titleWithIcon}
               testID={testId + '::Title'}
+              style={isPreviouslySeen && styles.titleWithIcon}
             >
               {recipe.title}
             </Text>
