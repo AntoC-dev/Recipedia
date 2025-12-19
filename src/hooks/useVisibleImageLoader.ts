@@ -29,7 +29,7 @@ import {
 const DEFAULT_BUFFER_SIZE = 10;
 
 /** Default debounce delay for visibility changes in milliseconds */
-const DEFAULT_DEBOUNCE_MS = 150;
+const DEFAULT_DEBOUNCE_MS = 100;
 
 /** Default maximum concurrent image fetch requests */
 const DEFAULT_MAX_CONCURRENT = 5;
