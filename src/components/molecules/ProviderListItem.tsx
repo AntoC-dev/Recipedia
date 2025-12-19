@@ -51,7 +51,7 @@ export function ProviderListItem({ provider, onPress, testID }: ProviderListItem
       <List.Item
         testID={testID}
         title={provider.name}
-        description={t(`bulkImport.provider_${provider.id}.Description`)}
+        description={t('bulkImport.provider.description', { name: provider.name })}
         left={() => <ProviderLogo logoUrl={provider.logoUrl} testID={testID + '::Logo'} />}
         right={props => <List.Icon {...props} icon={Icons.chevronRight} />}
         onPress={onPress}
