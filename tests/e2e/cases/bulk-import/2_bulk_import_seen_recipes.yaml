@@ -21,9 +21,11 @@ tags:
       PROVIDER_ID: "hellofresh"
     label: "Phase 1 - Select HelloFresh provider"
 
-- runFlow:
-    file: "../../flows/bulk-import/waitForDiscovery.yaml"
-    label: "Phase 1 - Wait for recipe discovery"
+- extendedWaitUntil:
+    visible:
+      id: "BulkImportDiscovery::(fresh|seen)-0"
+    timeout: 120000
+    label: "Phase 1 - Wait for first recipe to appear"
 
 - tapOn:
     id: "BulkImportDiscovery::(fresh|seen)-0"
@@ -53,9 +55,11 @@ tags:
       PROVIDER_ID: "hellofresh"
     label: "Phase 2 - Select HelloFresh provider"
 
-- runFlow:
-    file: "../../flows/bulk-import/waitForDiscovery.yaml"
-    label: "Phase 2 - Wait for recipe discovery"
+- extendedWaitUntil:
+    visible:
+      id: "BulkImportDiscovery::seen-0"
+    timeout: 120000
+    label: "Phase 2 - Wait for first seen recipe to appear"
 
 - runFlow:
     file: "../../asserts/bulk-import/fr/assertSeenSection.yaml"
@@ -141,6 +145,47 @@ tags:
 - tapOn:
     id: "Recipe::Dialog::Confirm"
     label: "Cleanup - Close confirmation"
+
+- runFlow:
+    file: "../../flows/bulk-import/navigateToBulkImport.yaml"
+    label: "Verification - Navigate to Bulk Import"
+
+- runFlow:
+    file: "../../flows/bulk-import/selectProvider.yaml"
+    env:
+      PROVIDER_ID: "hellofresh"
+    label: "Verification - Select HelloFresh provider"
+
+- extendedWaitUntil:
+    visible:
+      id: "BulkImportDiscovery::fresh-0"
+    timeout: 120000
+    label: "Verification - Wait for first recipe to appear"
+
+- assertVisible:
+    id: "BulkImportDiscovery::fresh-header"
+    text: "Nouvelles recettes \\(\\d+\\)"
+    label: "Assert - Fresh recipes section header is displayed"
+
+- assertVisible:
+    id: "BulkImportDiscovery::fresh-0"
+    label: "Assert - Deleted recipe is rediscovered as fresh"
+
+- tapOn:
+    id: "BulkImportDiscovery::AppBar::BackButton"
+    label: "Cleanup - Go back to provider selection"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "BulkImportSettings::AppBar::BackButton"
+    label: "Cleanup - Return to parameters"
+
+- scrollUntilVisible:
+    element:
+      id: "Parameters::Section::Appearance::SubHeader"
+    direction: UP
+    label: "Scroll up to reset the screen"
 
 - runFlow:
     file: "../../flows/parameters/language/switchToEnglish.yaml"

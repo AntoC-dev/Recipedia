@@ -52,20 +52,24 @@ export interface UseDiscoveryWorkflowReturn {
  *
  * Handles the complete discovery lifecycle including:
  * - Recipe discovery from provider with streaming progress
- * - Image loading for discovered recipes
  * - Selection management (select, unselect, toggle all)
  * - Parsing selected recipes for validation
  * - Import memory tracking (hide imported, mark seen)
  *
+ * Note: Image loading is now handled externally via useVisibleImageLoader hook.
+ * The imageMap parameter allows injecting visibility-based loaded images.
+ *
  * @param provider - The bulk import provider to use for discovery
  * @param defaultPersons - Default number of persons for recipes
  * @param providerId - Provider identifier for import memory tracking
+ * @param imageMap - External map of recipe URLs to image URLs (from visibility-based loader)
  * @returns Workflow state and handlers
  */
 export function useDiscoveryWorkflow(
   provider: RecipeProvider | undefined,
   defaultPersons: number,
-  providerId: string
+  providerId: string,
+  imageMap: Map<string, string> = new Map()
 ): UseDiscoveryWorkflowReturn {
   const { t } = useI18n();
   const { processDiscoveredRecipes } = useImportMemory(providerId);
@@ -73,7 +77,6 @@ export function useDiscoveryWorkflow(
 
   const [phase, setPhase] = useState<DiscoveryPhase>('discovering');
   const [recipes, setRecipes] = useState<DiscoveredRecipe[]>([]);
-  const [imageMap, setImageMap] = useState<Map<string, string>>(new Map());
   const [selectedUrls, setSelectedUrls] = useState<Set<string>>(new Set());
   const [discoveryProgress, setDiscoveryProgress] = useState<DiscoveryProgress | null>(null);
   const [parsingProgress, setParsingProgress] = useState<ParsingProgress | null>(null);
@@ -91,10 +94,6 @@ export function useDiscoveryWorkflow(
     const abortController = new AbortController();
     abortControllerRef.current = abortController;
 
-    const handleImageLoaded = (recipeUrl: string, imageUrl: string) => {
-      setImageMap(prev => new Map(prev).set(recipeUrl, imageUrl));
-    };
-
     const runDiscovery = async () => {
       setPhase('discovering');
       setError(null);
@@ -102,7 +101,6 @@ export function useDiscoveryWorkflow(
       try {
         const generator = provider.discoverRecipeUrls({
           signal: abortController.signal,
-          onImageLoaded: handleImageLoaded,
         });
 
         for await (const progressUpdate of generator) {

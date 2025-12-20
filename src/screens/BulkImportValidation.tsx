@@ -73,7 +73,7 @@ export function BulkImportValidation() {
     removeFromSeenHistory(providerId, importedUrls);
   };
 
-  const { phase, validationState, progress, importedCount, errorMessage, handlers } =
+  const { phase, initStage, validationState, progress, importedCount, errorMessage, handlers } =
     useValidationWorkflow(
       selectedRecipes,
       findSimilarIngredients,
@@ -81,6 +81,21 @@ export function BulkImportValidation() {
       addMultipleRecipes,
       handleImportComplete
     );
+
+  const getInitStageText = () => {
+    switch (initStage) {
+      case 'analyzing':
+        return t('bulkImport.validation.analyzing');
+      case 'matching-ingredients':
+        return t('bulkImport.validation.matchingIngredients');
+      case 'matching-tags':
+        return t('bulkImport.validation.matchingTags');
+      case 'ready':
+        return t('bulkImport.validation.ready');
+      default:
+        return t('bulkImport.validation.initializing');
+    }
+  };
 
   const handleFinish = () => {
     navigation.dispatch(
@@ -98,14 +113,21 @@ export function BulkImportValidation() {
   const renderPhaseContent = () => {
     switch (phase) {
       case 'initializing':
-      case 'importing':
         return (
           <View style={styles.centered}>
             <ActivityIndicator size='large' testID={screenId + '::InitializingIndicator'} />
             <Text variant='bodyLarge' style={styles.loadingText}>
-              {phase === 'initializing'
-                ? t('bulkImport.validation.initializing')
-                : t('bulkImport.validation.importingRecipes')}
+              {getInitStageText()}
+            </Text>
+          </View>
+        );
+
+      case 'importing':
+        return (
+          <View style={styles.centered}>
+            <ActivityIndicator size='large' testID={screenId + '::ImportingIndicator'} />
+            <Text variant='bodyLarge' style={styles.loadingText}>
+              {t('bulkImport.validation.importingRecipes')}
             </Text>
           </View>
         );

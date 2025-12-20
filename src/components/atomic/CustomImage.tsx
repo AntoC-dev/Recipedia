@@ -57,6 +57,8 @@ export type CustomImageProps = {
   onLoadSuccess?: () => void;
   /** Callback fired when image fails to load */
   onLoadError?: () => void;
+  /** Loading priority for the image (default: 'normal') */
+  priority?: 'low' | 'normal' | 'high';
   /** Unique identifier for testing and accessibility */
   testID: string;
 };
@@ -76,6 +78,7 @@ export function CustomImage({
   borderRadius: customBorderRadius,
   onLoadSuccess,
   onLoadError,
+  priority = 'normal',
   testID,
 }: CustomImageProps) {
   const { colors } = useTheme();
@@ -127,6 +130,7 @@ export function CustomImage({
         testID={testID + '::Image'}
         source={uri}
         contentFit={contentFit}
+        priority={priority}
         onError={handleError}
         onLoad={onLoadSuccess}
       />

@@ -47,6 +47,10 @@ export default {
   validation: {
     title: 'Import en masse',
     initializing: 'Initialisation de la validation...',
+    analyzing: 'Analyse des recettes...',
+    matchingIngredients: 'Correspondance des ingrédients...',
+    matchingTags: 'Correspondance des tags...',
+    ready: 'Prêt à valider',
     validatingTags: 'Validation des tags',
     validatingIngredients: 'Validation des ingrédients',
     progress: '{{current}} sur {{total}} validés',

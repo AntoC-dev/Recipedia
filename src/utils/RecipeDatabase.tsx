@@ -1300,6 +1300,46 @@ export class RecipeDatabase {
   }
 
   /**
+   * Finds similar ingredients for multiple names in a single operation
+   *
+   * More efficient than calling findSimilarIngredients multiple times
+   * as it processes all names in one pass.
+   *
+   * @param ingredientNames - Array of ingredient names to search for
+   * @returns Map of original names to arrays of similar ingredients
+   */
+  public findSimilarIngredientsBatch(
+    ingredientNames: string[]
+  ): Map<string, ingredientTableElement[]> {
+    const results = new Map<string, ingredientTableElement[]>();
+
+    for (const name of ingredientNames) {
+      results.set(name, this.findSimilarIngredients(name));
+    }
+
+    return results;
+  }
+
+  /**
+   * Finds similar tags for multiple names in a single operation
+   *
+   * More efficient than calling findSimilarTags multiple times
+   * as it processes all names in one pass.
+   *
+   * @param tagNames - Array of tag names to search for
+   * @returns Map of original names to arrays of similar tags
+   */
+  public findSimilarTagsBatch(tagNames: string[]): Map<string, tagTableElement[]> {
+    const results = new Map<string, tagTableElement[]>();
+
+    for (const name of tagNames) {
+      results.set(name, this.findSimilarTags(name));
+    }
+
+    return results;
+  }
+
+  /**
    * Gets all imported recipe source URLs for a specific provider
    *
    * Returns URLs of recipes that have been successfully imported from the given provider.

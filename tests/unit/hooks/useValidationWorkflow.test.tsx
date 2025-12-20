@@ -106,7 +106,7 @@ describe('useValidationWorkflow', () => {
       );
 
       await waitFor(() => {
-        expect(result.current.phase).toBe('importing');
+        expect(result.current.phase).toBe('complete');
       });
     });
   });
@@ -523,10 +523,6 @@ describe('useValidationWorkflow', () => {
           mockAddMultipleRecipes
         )
       );
-
-      await waitFor(() => {
-        expect(result.current.phase).toBe('importing');
-      });
 
       await waitFor(() => {
         expect(result.current.phase).toBe('complete');

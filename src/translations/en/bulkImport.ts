@@ -47,6 +47,10 @@ export default {
   validation: {
     title: 'Bulk Import',
     initializing: 'Initializing validation...',
+    analyzing: 'Analyzing recipes...',
+    matchingIngredients: 'Matching ingredients...',
+    matchingTags: 'Matching tags...',
+    ready: 'Ready to validate',
     validatingTags: 'Validating Tags',
     validatingIngredients: 'Validating Ingredients',
     progress: '{{current}} of {{total}} validated',

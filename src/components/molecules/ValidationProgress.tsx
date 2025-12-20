@@ -1,8 +1,10 @@
 /**
  * ValidationProgress - Unified validation UI for tags and ingredients
  *
- * Shows validation progress and the ValidationQueue dialog for either
- * tags or ingredients based on the type prop.
+ * Shows validation progress, the ValidationQueue dialog, and a Skip All button
+ * for either tags or ingredients based on the type prop.
+ *
+ * @module components/molecules/ValidationProgress
  */
 
 import React, { ReactNode } from 'react';
@@ -83,6 +85,15 @@ function ValidationProgressLayout({
   );
 }
 
+/**
+ * ValidationProgress component for displaying validation progress
+ *
+ * Shows progress bar, validation queue dialog, and Skip All button
+ * for either tags or ingredients.
+ *
+ * @param props - Component props
+ * @returns JSX element representing the validation progress display
+ */
 export function ValidationProgress(props: ValidationProgressProps) {
   const { progress, onDismissed, onComplete, testID } = props;
   const { t } = useI18n();

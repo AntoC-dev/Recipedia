@@ -3,6 +3,9 @@
  *
  * Displays a centered spinner, progress counter, current recipe title,
  * progress bar, and failed recipe count during the parsing phase.
+ * Includes a "Continue Anyway" button when some recipes have been parsed.
+ *
+ * @module components/molecules/RecipeParsingProgress
  */
 
 import React from 'react';
@@ -12,12 +15,27 @@ import { useI18n } from '@utils/i18n';
 import { ParsingProgress } from '@customTypes/BulkImportTypes';
 import { padding } from '@styles/spacing';
 
+/**
+ * Props for the RecipeParsingProgress component
+ */
 export type RecipeParsingProgressProps = {
+  /** Current parsing progress state */
   progress: ParsingProgress | null;
+  /** Total number of selected recipes */
   selectedCount: number;
+  /** Test ID for testing */
   testID: string;
 };
 
+/**
+ * RecipeParsingProgress component for displaying parsing progress
+ *
+ * Shows a spinner, progress bar, and current recipe being parsed.
+ * Displays failure count when some recipes fail to parse.
+ *
+ * @param props - Component props
+ * @returns JSX element representing the parsing progress display
+ */
 export function RecipeParsingProgress({
   progress,
   selectedCount,
@@ -53,7 +71,11 @@ export function RecipeParsingProgress({
         testID={testID + '::ParsingProgressBar'}
       />
       {failedCount > 0 && (
-        <Text variant='bodySmall' style={[styles.failedText, { color: colors.error }]}>
+        <Text
+          variant='bodySmall'
+          style={[styles.failedText, { color: colors.error }]}
+          testID={testID + '::FailedCount'}
+        >
           {t('bulkImport.selection.failedRecipes', { count: failedCount })}
         </Text>
       )}

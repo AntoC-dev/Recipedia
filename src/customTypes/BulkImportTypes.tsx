@@ -50,6 +50,18 @@ export interface RecipeProvider {
     ignoredPatterns: IgnoredIngredientPatterns,
     signal?: AbortSignal
   ): Promise<FetchedRecipe>;
+
+  /**
+   * Fetches just the image URL for a recipe page on-demand
+   *
+   * Used for visibility-based lazy loading of images. Returns null if
+   * no image is found or the fetch fails.
+   *
+   * @param url - Recipe page URL to fetch image for
+   * @param signal - Abort signal for cancellation
+   * @returns Promise resolving to image URL or null
+   */
+  fetchImageUrlForRecipe(url: string, signal: AbortSignal): Promise<string | null>;
 }
 
 /**

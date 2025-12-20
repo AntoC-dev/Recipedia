@@ -46,7 +46,7 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "BulkImportDiscovery::fresh-0"
+      id: "BulkImportDiscovery::(fresh|seen)-0"
     direction: UP
     speed: 50
     timeout: 20000

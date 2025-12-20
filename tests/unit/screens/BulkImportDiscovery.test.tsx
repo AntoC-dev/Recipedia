@@ -71,12 +71,11 @@ describe('BulkImportDiscovery', () => {
     expect(getByText('bulkImport.selection.noRecipesFound')).toBeTruthy();
   });
 
-  test('shows loading indicator when discovering with no recipes', () => {
+  test('shows skeleton loading when discovering with no recipes', () => {
     setMockDiscoveryState({ phase: 'discovering', freshRecipes: [], seenRecipes: [] });
-    const { UNSAFE_getByType } = render(<BulkImportDiscovery />);
+    const { getByTestId } = render(<BulkImportDiscovery />);
 
-    const ActivityIndicator = require('react-native-paper').ActivityIndicator;
-    expect(UNSAFE_getByType(ActivityIndicator)).toBeTruthy();
+    expect(getByTestId('BulkImportDiscovery::Skeleton::1')).toBeTruthy();
   });
 
   test('shows select all row when recipes exist', () => {

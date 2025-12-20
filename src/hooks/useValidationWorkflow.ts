@@ -34,6 +34,9 @@ export type ValidationPhase =
   | 'complete'
   | 'error';
 
+/** Sub-phase during initialization for more granular progress */
+export type InitializationStage = 'analyzing' | 'matching-ingredients' | 'matching-tags' | 'ready';
+
 /** Handler functions returned by the hook */
 export interface ValidationHandlers {
   onTagValidated: (originalTag: tagTableElement, validatedTag: tagTableElement) => void;
@@ -60,6 +63,7 @@ export interface ValidationProgress {
 /** Return value of the useValidationWorkflow hook */
 export interface UseValidationWorkflowReturn {
   phase: ValidationPhase;
+  initStage: InitializationStage;
   validationState: BatchValidationState | null;
   progress: ValidationProgress | null;
   importedCount: number;
@@ -93,6 +97,7 @@ export function useValidationWorkflow(
   const { t } = useI18n();
 
   const [phase, setPhase] = useState<ValidationPhase>('initializing');
+  const [initStage, setInitStage] = useState<InitializationStage>('analyzing');
   const [validationState, setValidationState] = useState<BatchValidationState | null>(null);
   const [importedCount, setImportedCount] = useState(0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -151,20 +156,34 @@ export function useValidationWorkflow(
     if (hasInitializedRef.current) return;
     hasInitializedRef.current = true;
 
-    const state = initializeBatchValidation(
-      selectedRecipes,
-      findSimilarIngredients,
-      findSimilarTags
-    );
-    setValidationState(state);
+    const runInit = async () => {
+      setInitStage('analyzing');
+      await new Promise(r => setTimeout(r, 100));
 
-    if (state.tagsToValidate.length > 0) {
-      setPhase('tags');
-    } else if (state.ingredientsToValidate.length > 0) {
-      setPhase('ingredients');
-    } else {
-      saveRecipesRef.current(state);
-    }
+      setInitStage('matching-ingredients');
+      await new Promise(r => setTimeout(r, 100));
+
+      setInitStage('matching-tags');
+      const state = initializeBatchValidation(
+        selectedRecipes,
+        findSimilarIngredients,
+        findSimilarTags
+      );
+      setValidationState(state);
+
+      setInitStage('ready');
+      await new Promise(r => setTimeout(r, 100));
+
+      if (state.tagsToValidate.length > 0) {
+        setPhase('tags');
+      } else if (state.ingredientsToValidate.length > 0) {
+        setPhase('ingredients');
+      } else {
+        saveRecipesRef.current(state);
+      }
+    };
+
+    runInit();
   }, [selectedRecipes, findSimilarIngredients, findSimilarTags]);
 
   /**
@@ -249,6 +268,7 @@ export function useValidationWorkflow(
 
   return {
     phase,
+    initStage,
     validationState,
     progress,
     importedCount,
