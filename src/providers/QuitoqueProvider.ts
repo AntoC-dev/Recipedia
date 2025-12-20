@@ -18,14 +18,11 @@ const QUITOQUE_LOGO_URL =
 /** Base URL for Quitoque (French only) */
 const QUITOQUE_BASE_URL = 'https://www.quitoque.fr';
 
-/** Safety limit to prevent infinite loops during pagination discovery */
-const MAX_PAGES_SAFETY_LIMIT = 200;
-
-/** Number of pages to probe concurrently when discovering pagination */
-const PAGINATION_PROBE_BATCH_SIZE = 5;
-
 /** Regex to extract recipe URLs from HTML */
 const RECIPE_URL_REGEX = /href="(\/recettes\/[a-z0-9-]+)"/gi;
+
+/** Regex to extract page numbers from pagination links */
+const PAGINATION_REGEX = /\?page=(\d+)/g;
 
 /** Pattern to validate recipe paths (excludes pagination and other links) */
 const RECIPE_PATH_PATTERN = /^\/recettes\/[a-z0-9][a-z0-9-]*[a-z0-9]$/;
@@ -56,39 +53,67 @@ export class QuitoqueProvider extends BaseRecipeProvider {
   }
 
   /**
-   * Discovers recipe page URLs using dynamic pagination
+   * Discovers recipe page URLs using pagination metadata from HTML
    *
-   * Quitoque uses pagination instead of categories. This method probes pages
-   * in batches until finding one with no recipes, then returns all valid page URLs.
+   * Quitoque uses pagination instead of categories. This method extracts
+   * the max page number from pagination links in the HTML and returns
+   * URLs for all pages.
    *
    * @param baseUrl - The Quitoque base URL
    * @param signal - Optional abort signal for cancellation
    * @returns Promise resolving to array of paginated page URLs
    */
   async discoverCategoryUrls(baseUrl: string, signal?: AbortSignal): Promise<string[]> {
-    bulkImportLogger.debug('Discovering Quitoque pages via dynamic pagination');
+    bulkImportLogger.debug('Discovering Quitoque pages');
 
     try {
-      const lastPage = await this.findLastPageWithRecipes(baseUrl, signal);
+      const firstPageUrl = `${baseUrl}/recettes?page=1`;
+      const html = await this.fetchHtml(firstPageUrl, signal);
 
-      if (lastPage === 0) {
-        bulkImportLogger.warn('No recipes found on any page');
-        return [];
+      const maxPage = this.extractMaxPageFromHtml(html);
+
+      if (maxPage && maxPage > 0) {
+        const pageUrls = Array.from(
+          { length: maxPage },
+          (_, i) => `${baseUrl}/recettes?page=${i + 1}`
+        );
+        bulkImportLogger.info('Discovered pagination URLs', { count: pageUrls.length });
+        return pageUrls;
       }
 
-      const pageUrls = Array.from(
-        { length: lastPage },
-        (_, i) => `${baseUrl}/recettes?page=${i + 1}`
-      );
-
-      bulkImportLogger.info('Discovered pagination URLs', { count: pageUrls.length });
-      return pageUrls;
+      bulkImportLogger.warn('No pagination found in HTML');
+      return [];
     } catch (error) {
       bulkImportLogger.error('Failed to discover Quitoque pages', {
         error: error instanceof Error ? error.message : String(error),
       });
       return [];
     }
+  }
+
+  /**
+   * Extracts the maximum page number from pagination links in HTML
+   *
+   * Parses the HTML to find all ?page=X links and returns the highest number.
+   * This is more reliable than probing as it uses the site's own pagination.
+   *
+   * @param html - Raw HTML content containing pagination links
+   * @returns The maximum page number found, or null if no pagination found
+   */
+  extractMaxPageFromHtml(html: string): number | null {
+    let maxPage = 0;
+    let match;
+
+    while ((match = PAGINATION_REGEX.exec(html)) !== null) {
+      const pageNum = parseInt(match[1], 10);
+      if (!isNaN(pageNum) && pageNum > maxPage) {
+        maxPage = pageNum;
+      }
+    }
+
+    PAGINATION_REGEX.lastIndex = 0;
+
+    return maxPage > 0 ? maxPage : null;
   }
 
   /**
@@ -156,63 +181,6 @@ export class QuitoqueProvider extends BaseRecipeProvider {
     } catch {
       return null;
     }
-  }
-
-  /**
-   * Finds the last page that contains recipes using binary search-like probing
-   *
-   * Probes pages in batches to find where recipes end, then narrows down
-   * to find the exact last page with recipes.
-   */
-  private async findLastPageWithRecipes(baseUrl: string, signal?: AbortSignal): Promise<number> {
-    let lastKnownGoodPage = 0;
-    let currentPage = 1;
-
-    while (currentPage <= MAX_PAGES_SAFETY_LIMIT) {
-      if (signal?.aborted) break;
-
-      const pagesToProbe = Array.from(
-        { length: PAGINATION_PROBE_BATCH_SIZE },
-        (_, i) => currentPage + i
-      ).filter(p => p <= MAX_PAGES_SAFETY_LIMIT);
-
-      const results = await Promise.allSettled(
-        pagesToProbe.map(async page => {
-          const url = `${baseUrl}/recettes?page=${page}`;
-          const html = await this.fetchHtml(url, signal);
-          const hasRecipes = this.pageHasRecipes(html);
-          return { page, hasRecipes };
-        })
-      );
-
-      let foundEmptyPage = false;
-      for (const result of results) {
-        if (result.status === 'fulfilled') {
-          if (result.value.hasRecipes) {
-            lastKnownGoodPage = Math.max(lastKnownGoodPage, result.value.page);
-          } else {
-            foundEmptyPage = true;
-          }
-        }
-      }
-
-      if (foundEmptyPage) {
-        break;
-      }
-
-      currentPage += PAGINATION_PROBE_BATCH_SIZE;
-    }
-
-    return lastKnownGoodPage;
-  }
-
-  /**
-   * Checks if a page contains recipe links
-   */
-  private pageHasRecipes(html: string): boolean {
-    const hasRecipes = RECIPE_URL_REGEX.test(html);
-    RECIPE_URL_REGEX.lastIndex = 0;
-    return hasRecipes;
   }
 
   /**

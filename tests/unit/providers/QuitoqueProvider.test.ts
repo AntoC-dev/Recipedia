@@ -46,30 +46,96 @@ describe('QuitoqueProvider', () => {
     });
   });
 
+  describe('extractMaxPageFromHtml', () => {
+    it('extracts max page from pagination links', () => {
+      const html = `
+        <nav class="pagination">
+          <a href="?page=1">1</a>
+          <a href="?page=2">2</a>
+          <a href="?page=56">56</a>
+          <a href="?page=57">Next</a>
+        </nav>
+      `;
+
+      const result = provider.extractMaxPageFromHtml(html);
+
+      expect(result).toBe(57);
+    });
+
+    it('returns highest page number when multiple pagination links exist', () => {
+      const html = '<a href="?page=1">1</a><a href="?page=3">3</a><a href="?page=2">2</a>';
+
+      const result = provider.extractMaxPageFromHtml(html);
+
+      expect(result).toBe(3);
+    });
+
+    it('returns null when no pagination found', () => {
+      const html = '<div>No pagination here</div>';
+
+      const result = provider.extractMaxPageFromHtml(html);
+
+      expect(result).toBeNull();
+    });
+
+    it('handles pagination with single page', () => {
+      const html = '<a href="?page=1">1</a>';
+
+      const result = provider.extractMaxPageFromHtml(html);
+
+      expect(result).toBe(1);
+    });
+
+    it('ignores invalid page numbers', () => {
+      const html = '<a href="?page=abc">abc</a><a href="?page=5">5</a>';
+
+      const result = provider.extractMaxPageFromHtml(html);
+
+      expect(result).toBe(5);
+    });
+  });
+
   describe('discoverCategoryUrls', () => {
     const baseUrl = 'https://www.quitoque.fr';
-    const recipeHtml = '<a href="/recettes/poulet-roti">Recipe</a>';
-    const emptyHtml = '<div>No recipes here</div>';
 
-    it('discovers pages dynamically until finding empty page', async () => {
-      mockFetch
-        .mockResolvedValueOnce({ ok: true, text: () => Promise.resolve(recipeHtml) })
-        .mockResolvedValueOnce({ ok: true, text: () => Promise.resolve(recipeHtml) })
-        .mockResolvedValueOnce({ ok: true, text: () => Promise.resolve(recipeHtml) })
-        .mockResolvedValueOnce({ ok: true, text: () => Promise.resolve(emptyHtml) })
-        .mockResolvedValueOnce({ ok: true, text: () => Promise.resolve(emptyHtml) });
+    it('extracts page count from pagination in first page HTML', async () => {
+      const htmlWithPagination = `
+        <a href="/recettes/poulet-roti">Recipe</a>
+        <nav><a href="?page=1">1</a><a href="?page=56">56</a></nav>
+      `;
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        text: () => Promise.resolve(htmlWithPagination),
+      });
 
       const categories = await provider.discoverCategoryUrls(baseUrl);
 
-      expect(categories.length).toBe(3);
+      expect(categories.length).toBe(56);
       expect(categories[0]).toBe('https://www.quitoque.fr/recettes?page=1');
-      expect(categories[2]).toBe('https://www.quitoque.fr/recettes?page=3');
+      expect(categories[55]).toBe('https://www.quitoque.fr/recettes?page=56');
     });
 
-    it('returns empty array when no recipes found on first page', async () => {
-      mockFetch.mockResolvedValue({
+    it('generates correct URLs for all pages', async () => {
+      const htmlWithPagination = '<nav><a href="?page=1">1</a><a href="?page=3">3</a></nav>';
+      mockFetch.mockResolvedValueOnce({
         ok: true,
-        text: () => Promise.resolve(emptyHtml),
+        text: () => Promise.resolve(htmlWithPagination),
+      });
+
+      const categories = await provider.discoverCategoryUrls(baseUrl);
+
+      expect(categories).toEqual([
+        'https://www.quitoque.fr/recettes?page=1',
+        'https://www.quitoque.fr/recettes?page=2',
+        'https://www.quitoque.fr/recettes?page=3',
+      ]);
+    });
+
+    it('returns empty array when no pagination found', async () => {
+      const htmlWithoutPagination = '<div>No pagination here</div>';
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        text: () => Promise.resolve(htmlWithoutPagination),
       });
 
       const categories = await provider.discoverCategoryUrls(baseUrl);
