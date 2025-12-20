@@ -17,14 +17,6 @@ appId: "com.recipedia"
     file: "accordions/preparationTime-all.yaml"
     label: "Assert Preparation Time accordion with all items visible"
 
-# Scroll down to see Tags accordion at top
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::6"
-    direction: DOWN
-    centerElement: true
-    label: "Scroll until Plant Protein accordion is visible to position Tags at top"
-
 # Accordion 2: Tags
 - runFlow:
     file: "accordions/tags-all.yaml"
@@ -55,15 +47,6 @@ appId: "com.recipedia"
     file: "accordions/condiment-all.yaml"
     label: "Assert Condiment accordion with all items visible"
 
-# Scroll down to see more accordions
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::12"
-    direction: DOWN
-    centerElement: true
-    label: "Scroll to Dairy accordion"
-
-
 # Accordion 8: Sauce
 - runFlow:
     file: "accordions/sauce-all.yaml"
@@ -83,14 +66,6 @@ appId: "com.recipedia"
 - runFlow:
     file: "accordions/fish-all.yaml"
     label: "Assert Fish accordion with all items visible"
-
-# Scroll down to see more accordions
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::18"
-    direction: DOWN
-    centerElement: true
-    label: "Scroll to Nuts and Seeds accordion"
 
 # Accordion 12: Dairy
 - runFlow:
@@ -121,14 +96,6 @@ appId: "com.recipedia"
 - runFlow:
     file: "accordions/oilAndFat-all.yaml"
     label: "Assert Oil and Fat accordion with all items visible"
-
-# Scroll down to see more accordions
-- scrollUntilVisible:
-    element:
-      text: "Noix et Graines"
-    direction: DOWN
-    centerElement: true
-    label: "Scroll to Nuts and Seeds accordion"
 
 # Accordion 18: Nuts and Seeds
 - runFlow:
