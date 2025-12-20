@@ -319,6 +319,74 @@ describe('useValidationWorkflow', () => {
 
       expect(result.current.importedCount).toBe(1);
     });
+
+    test('awaits async onImportComplete callback before completing', async () => {
+      const recipes = [createMockRecipe('Test Recipe', ['Italian'], ['Chicken'])];
+
+      let resolveCallback: () => void;
+      const callbackPromise = new Promise<void>(resolve => {
+        resolveCallback = resolve;
+      });
+
+      const mockOnImportComplete = jest.fn().mockReturnValue(callbackPromise);
+
+      const { result } = renderHook(() =>
+        useValidationWorkflow(
+          recipes,
+          mockIngredients,
+          mockTags,
+          mockAddMultipleRecipes,
+          true,
+          mockOnImportComplete
+        )
+      );
+
+      await waitFor(() => {
+        expect(mockAddMultipleRecipes).toHaveBeenCalled();
+      });
+
+      expect(mockOnImportComplete).toHaveBeenCalledWith([recipes[0].sourceUrl]);
+
+      expect(result.current.phase).toBe('importing');
+
+      await act(async () => {
+        resolveCallback!();
+        await callbackPromise;
+      });
+
+      await waitFor(() => {
+        expect(result.current.phase).toBe('complete');
+      });
+    });
+
+    test('calls onImportComplete with all imported source URLs', async () => {
+      const recipes = [
+        createMockRecipe('Recipe 1', ['Italian'], ['Chicken']),
+        createMockRecipe('Recipe 2', ['Dinner'], ['Tomato']),
+      ];
+
+      const mockOnImportComplete = jest.fn().mockResolvedValue(undefined);
+
+      const { result } = renderHook(() =>
+        useValidationWorkflow(
+          recipes,
+          mockIngredients,
+          mockTags,
+          mockAddMultipleRecipes,
+          true,
+          mockOnImportComplete
+        )
+      );
+
+      await waitFor(() => {
+        expect(result.current.phase).toBe('complete');
+      });
+
+      expect(mockOnImportComplete).toHaveBeenCalledWith([
+        recipes[0].sourceUrl,
+        recipes[1].sourceUrl,
+      ]);
+    });
   });
 
   describe('progress tracking', () => {

@@ -85,7 +85,7 @@ export interface UseValidationWorkflowReturn {
  * @param allTags - All tags from database for fuzzy matching
  * @param addMultipleRecipes - Database function to save recipes
  * @param isDatabaseReady - Whether the database context has loaded data
- * @param onImportComplete - Optional callback called after successful import with source URLs
+ * @param onImportComplete - Optional async callback called after successful import with source URLs
  * @returns Workflow state and handlers
  */
 export function useValidationWorkflow(
@@ -94,7 +94,7 @@ export function useValidationWorkflow(
   allTags: tagTableElement[],
   addMultipleRecipes: (recipes: recipeTableElement[]) => Promise<void>,
   isDatabaseReady: boolean,
-  onImportComplete?: (importedSourceUrls: string[]) => void
+  onImportComplete?: (importedSourceUrls: string[]) => void | Promise<void>
 ): UseValidationWorkflowReturn {
   const { t } = useI18n();
 
@@ -133,7 +133,6 @@ export function useValidationWorkflow(
       await addMultipleRecipes(recipesWithIngredients);
 
       setImportedCount(recipesWithIngredients.length);
-      setPhase('complete');
 
       bulkImportLogger.info('Bulk import complete', {
         importedCount: recipesWithIngredients.length,
@@ -141,8 +140,10 @@ export function useValidationWorkflow(
 
       if (onImportComplete) {
         const importedUrls = recipesRef.current.map(r => r.sourceUrl);
-        onImportComplete(importedUrls);
+        await onImportComplete(importedUrls);
       }
+
+      setPhase('complete');
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);
       setErrorMessage(msg);

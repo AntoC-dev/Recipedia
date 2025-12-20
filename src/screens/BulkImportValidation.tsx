@@ -69,8 +69,8 @@ export function BulkImportValidation() {
   const { ingredients, tags, addMultipleRecipes, removeFromSeenHistory, isDatabaseReady } =
     useRecipeDatabase();
 
-  const handleImportComplete = (importedUrls: string[]) => {
-    removeFromSeenHistory(providerId, importedUrls);
+  const handleImportComplete = async (importedUrls: string[]) => {
+    await removeFromSeenHistory(providerId, importedUrls);
   };
 
   const { phase, initStage, validationState, progress, importedCount, errorMessage, handlers } =
