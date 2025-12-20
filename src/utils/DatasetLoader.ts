@@ -4,7 +4,7 @@ import {
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
 import { appLogger } from '@utils/logger';
-import { LANGUAGE_NAMES, SupportedLanguage } from '@utils/i18n';
+import { DEFAULT_LANGUAGE, SupportedLanguage } from '@utils/i18n';
 
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
@@ -20,35 +20,46 @@ import { performanceIngredients } from '@assets/datasets/performance/ingredients
 import { performanceTags } from '@assets/datasets/performance/tags';
 import { performanceRecipes } from '@assets/datasets/performance/recipes';
 
-export type DatasetType = 'test' | 'production' | 'performance';
-
 export interface DatasetCollection {
   ingredients: ingredientTableElement[];
   tags: tagTableElement[];
   recipes: recipeTableElement[];
 }
 
+export type DatasetType = 'test' | 'production' | 'performance';
+
+/**
+ * Dataset loaders for each supported language.
+ *
+ * This record maps each language code to a function that loads its dataset.
+ * TypeScript ensures this stays in sync with SupportedLanguage - if a new
+ * language is added to SUPPORTED_LANGUAGES in i18n.ts, TypeScript will
+ * error here until a loader is added.
+ *
+ * @example
+ * // Adding a new language requires:
+ * // 1. Add to SUPPORTED_LANGUAGES in i18n.ts
+ * // 2. Add dataset files in @assets/datasets/{code}/
+ * // 3. Add loader here - TypeScript will enforce this
+ */
+const datasetLoaders: Record<SupportedLanguage, () => DatasetCollection> = {
+  en: () => ({
+    ingredients: englishIngredients,
+    tags: englishTags,
+    recipes: englishRecipes,
+  }),
+  fr: () => ({
+    ingredients: frenchIngredients,
+    tags: frenchTags,
+    recipes: frenchRecipes,
+  }),
+};
+
 function loadTestDataset(): DatasetCollection {
   return {
     ingredients: testIngredients,
     tags: testTags,
     recipes: testRecipes,
-  };
-}
-
-function loadEnglishDataset(): DatasetCollection {
-  return {
-    ingredients: englishIngredients,
-    tags: englishTags,
-    recipes: englishRecipes,
-  };
-}
-
-function loadFrenchDataset(): DatasetCollection {
-  return {
-    ingredients: frenchIngredients,
-    tags: frenchTags,
-    recipes: frenchRecipes,
   };
 }
 
@@ -61,13 +72,8 @@ function loadPerformanceDataset(): DatasetCollection {
 }
 
 function loadProductionDataset(language: SupportedLanguage): DatasetCollection {
-  switch (language) {
-    case LANGUAGE_NAMES.fr:
-      return loadFrenchDataset();
-    case LANGUAGE_NAMES.en:
-    default:
-      return loadEnglishDataset();
-  }
+  const loader = datasetLoaders[language] ?? datasetLoaders[DEFAULT_LANGUAGE];
+  return loader();
 }
 
 /**

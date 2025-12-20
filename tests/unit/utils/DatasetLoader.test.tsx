@@ -1,5 +1,5 @@
 import { getDataset, getDatasetType } from '@utils/DatasetLoader';
-import { LANGUAGE_NAMES } from '@utils/i18n';
+import { SUPPORTED_LANGUAGES, SupportedLanguage } from '@utils/i18n';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
 import { testRecipes } from '@test-data/recipesDataset';
@@ -41,7 +41,7 @@ describe('DatasetLoader Utility', () => {
     });
 
     test('loads test dataset for English in development', () => {
-      const result = getDataset(LANGUAGE_NAMES.en);
+      const result = getDataset('en');
 
       expect(result.ingredients).toEqual(testIngredients);
       expect(result.tags).toEqual(testTags);
@@ -49,7 +49,7 @@ describe('DatasetLoader Utility', () => {
     });
 
     test('loads test dataset for French in development', () => {
-      const result = getDataset(LANGUAGE_NAMES.fr);
+      const result = getDataset('fr');
 
       expect(result.ingredients).toEqual(testIngredients);
       expect(result.tags).toEqual(testTags);
@@ -71,7 +71,7 @@ describe('DatasetLoader Utility', () => {
     });
 
     test('loads English production dataset', () => {
-      const result = getDataset(LANGUAGE_NAMES.en);
+      const result = getDataset('en');
 
       expect(result.ingredients).toEqual(englishIngredients);
       expect(result.tags).toEqual(englishTags);
@@ -79,7 +79,7 @@ describe('DatasetLoader Utility', () => {
     });
 
     test('loads French production dataset', () => {
-      const result = getDataset(LANGUAGE_NAMES.fr);
+      const result = getDataset('fr');
 
       expect(result.ingredients).toEqual(frenchIngredients);
       expect(result.tags).toEqual(frenchTags);
@@ -98,14 +98,14 @@ describe('DatasetLoader Utility', () => {
   describe('dataset content verification', () => {
     test('different environments return appropriate datasets', () => {
       (process.env as any).NODE_ENV = 'development';
-      const devResult = getDataset(LANGUAGE_NAMES.en);
+      const devResult = getDataset('en');
 
       expect(devResult.ingredients).toEqual(testIngredients);
       expect(devResult.tags).toEqual(testTags);
       expect(devResult.recipes).toEqual(testRecipes);
 
       (process.env as any).NODE_ENV = 'production';
-      const prodResult = getDataset(LANGUAGE_NAMES.en);
+      const prodResult = getDataset('en');
 
       expect(prodResult.ingredients).toEqual(englishIngredients);
       expect(prodResult.tags).toEqual(englishTags);
@@ -114,13 +114,13 @@ describe('DatasetLoader Utility', () => {
 
     test('different languages in production return different content', () => {
       (process.env as any).NODE_ENV = 'production';
-      const enResult = getDataset(LANGUAGE_NAMES.en);
+      const enResult = getDataset('en');
 
       expect(enResult.ingredients).toEqual(englishIngredients);
       expect(enResult.tags).toEqual(englishTags);
       expect(enResult.recipes).toEqual(englishRecipes);
 
-      const frResult = getDataset(LANGUAGE_NAMES.fr);
+      const frResult = getDataset('fr');
 
       expect(frResult.ingredients).toEqual(frenchIngredients);
       expect(frResult.tags).toEqual(frenchTags);
@@ -155,7 +155,7 @@ describe('DatasetLoader Utility', () => {
 
       expect(getDatasetType()).toBe('production');
 
-      const result = getDataset(LANGUAGE_NAMES.en);
+      const result = getDataset('en');
       expect(result.ingredients).toEqual(englishIngredients);
     });
 
@@ -165,7 +165,7 @@ describe('DatasetLoader Utility', () => {
 
       expect(getDatasetType()).toBe('test');
 
-      const result = getDataset(LANGUAGE_NAMES.en);
+      const result = getDataset('en');
       expect(result.ingredients).toEqual(testIngredients);
     });
 
@@ -174,7 +174,7 @@ describe('DatasetLoader Utility', () => {
 
       expect(getDatasetType()).toBe('performance');
 
-      const result = getDataset(LANGUAGE_NAMES.en);
+      const result = getDataset('en');
       expect(result.ingredients).toEqual(performanceIngredients);
       expect(result.tags).toEqual(performanceTags);
       expect(result.recipes).toEqual(performanceRecipes);
@@ -185,7 +185,7 @@ describe('DatasetLoader Utility', () => {
 
       expect(getDatasetType()).toBe('test');
 
-      const result = getDataset(LANGUAGE_NAMES.en);
+      const result = getDataset('en');
       expect(result.ingredients).toEqual(testIngredients);
     });
   });
@@ -196,12 +196,80 @@ describe('DatasetLoader Utility', () => {
     });
 
     test('loads performance dataset regardless of language', () => {
-      const enResult = getDataset(LANGUAGE_NAMES.en);
-      const frResult = getDataset(LANGUAGE_NAMES.fr);
+      const enResult = getDataset('en');
+      const frResult = getDataset('fr');
 
       expect(enResult.ingredients).toEqual(performanceIngredients);
       expect(frResult.ingredients).toEqual(performanceIngredients);
       expect(enResult).toEqual(frResult);
+    });
+  });
+
+  describe('regression tests', () => {
+    test('language code fr loads French dataset, not English (bug fix: was comparing against display names)', () => {
+      (process.env as any).NODE_ENV = 'production';
+
+      const frResult = getDataset('fr');
+
+      expect(frResult.ingredients).not.toEqual(englishIngredients);
+      expect(frResult.ingredients).toEqual(frenchIngredients);
+      expect(frResult.tags).toEqual(frenchTags);
+      expect(frResult.recipes).toEqual(frenchRecipes);
+    });
+
+    test('language code en loads English dataset correctly', () => {
+      (process.env as any).NODE_ENV = 'production';
+
+      const enResult = getDataset('en');
+
+      expect(enResult.ingredients).not.toEqual(frenchIngredients);
+      expect(enResult.ingredients).toEqual(englishIngredients);
+      expect(enResult.tags).toEqual(englishTags);
+      expect(enResult.recipes).toEqual(englishRecipes);
+    });
+  });
+
+  describe('language configuration sync', () => {
+    test('every SUPPORTED_LANGUAGES key has a working dataset loader', () => {
+      (process.env as any).NODE_ENV = 'production';
+
+      const languageCodes = Object.keys(SUPPORTED_LANGUAGES) as SupportedLanguage[];
+
+      languageCodes.forEach(code => {
+        const dataset = getDataset(code);
+
+        expect(dataset).toBeDefined();
+        expect(dataset.ingredients).toBeDefined();
+        expect(dataset.tags).toBeDefined();
+        expect(dataset.recipes).toBeDefined();
+        expect(Array.isArray(dataset.ingredients)).toBe(true);
+        expect(Array.isArray(dataset.tags)).toBe(true);
+        expect(Array.isArray(dataset.recipes)).toBe(true);
+      });
+    });
+
+    test('every SUPPORTED_LANGUAGES entry has a name property', () => {
+      const languageCodes = Object.keys(SUPPORTED_LANGUAGES) as SupportedLanguage[];
+
+      languageCodes.forEach(code => {
+        expect(SUPPORTED_LANGUAGES[code].name).toBeDefined();
+        expect(typeof SUPPORTED_LANGUAGES[code].name).toBe('string');
+        expect(SUPPORTED_LANGUAGES[code].name.length).toBeGreaterThan(0);
+      });
+    });
+
+    test('dataset returns valid structure with non-empty arrays in production', () => {
+      (process.env as any).NODE_ENV = 'production';
+
+      const languageCodes = Object.keys(SUPPORTED_LANGUAGES) as SupportedLanguage[];
+
+      languageCodes.forEach(code => {
+        const dataset = getDataset(code);
+
+        expect(dataset.ingredients.length).toBeGreaterThan(0);
+        expect(dataset.tags.length).toBeGreaterThan(0);
+        expect(dataset.recipes.length).toBeGreaterThan(0);
+      });
     });
   });
 });

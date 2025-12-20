@@ -1,11 +1,13 @@
 export const mockSetLocale = jest.fn();
 
-export const LANGUAGE_NAMES: { [key: string]: string } = {
-  en: 'English',
-  fr: 'Français',
-};
+export const SUPPORTED_LANGUAGES = {
+  en: { name: 'English' },
+  fr: { name: 'Français' },
+} as const;
 
-export type SupportedLanguage = keyof typeof LANGUAGE_NAMES;
+export type SupportedLanguage = keyof typeof SUPPORTED_LANGUAGES;
+
+export const DEFAULT_LANGUAGE: SupportedLanguage = 'en';
 
 export function i18nMock() {
   const ocrTerms = {
@@ -141,6 +143,7 @@ export function i18nMock() {
         const fullKey = keyPrefix ? `${keyPrefix}.${key}` : key;
         return translations[fullKey] ?? fullKey;
       },
-    LANGUAGE_NAMES,
+    SUPPORTED_LANGUAGES,
+    DEFAULT_LANGUAGE,
   };
 }

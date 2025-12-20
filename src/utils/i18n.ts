@@ -5,16 +5,32 @@ import resourcesToBackend from 'i18next-resources-to-backend';
 import fr from '@translations/fr';
 import en from '@translations/en';
 
-// Import translations
+/**
+ * Single source of truth for all supported languages.
+ *
+ * Keys are language codes (e.g., 'en', 'fr'), values contain display information.
+ * Adding a new language here will cause TypeScript to enforce updates in:
+ * - DatasetLoader.ts (datasetLoaders record)
+ *
+ * @example
+ * ```typescript
+ * // Get all language codes
+ * const codes = Object.keys(SUPPORTED_LANGUAGES); // ['en', 'fr']
+ *
+ * // Get display name
+ * const name = SUPPORTED_LANGUAGES.fr.name; // 'Français'
+ * ```
+ */
+export const SUPPORTED_LANGUAGES = {
+  en: { name: 'English' },
+  fr: { name: 'Français' },
+} as const;
 
-// Language name mapping
-export const LANGUAGE_NAMES: { [key: string]: string } = {
-  en: 'English',
-  fr: 'Français',
-};
+/** Union type of all supported language codes, derived from SUPPORTED_LANGUAGES */
+export type SupportedLanguage = keyof typeof SUPPORTED_LANGUAGES;
 
-// Export supported language type
-export type SupportedLanguage = keyof typeof LANGUAGE_NAMES;
+/** Default language used as fallback throughout the app */
+export const DEFAULT_LANGUAGE: SupportedLanguage = 'en';
 
 // Initialize i18next instance
 const i18n = createInstance();
@@ -74,14 +90,18 @@ export const useI18n = () => {
      * Gets all available locales
      * @returns Array of available locale codes
      */
-    getAvailableLocales: (): string[] => Object.keys(LANGUAGE_NAMES),
+    getAvailableLocales: (): SupportedLanguage[] =>
+      Object.keys(SUPPORTED_LANGUAGES) as SupportedLanguage[],
 
     /**
      * Gets the locale name in its own language
      * @param locale The locale code
      * @returns The name of the language in its own language
      */
-    getLocaleName: (locale: string): string => LANGUAGE_NAMES[locale] || locale,
+    getLocaleName: (locale: string): string =>
+      locale in SUPPORTED_LANGUAGES
+        ? SUPPORTED_LANGUAGES[locale as SupportedLanguage].name
+        : locale,
   };
 };
 
