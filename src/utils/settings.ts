@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Localization from 'expo-localization';
+import { Appearance } from 'react-native';
 import i18n from './i18n';
 import { settingsLogger } from '@utils/logger';
 
@@ -21,15 +22,19 @@ export const DEFAULT_SETTINGS = {
 
 /**
  * Get the dark mode setting
+ * Uses system preference on first launch, then respects user choice
  * @returns Promise resolving to dark mode boolean
  */
 export const getDarkMode = async (): Promise<boolean> => {
   try {
     const value = await AsyncStorage.getItem(SETTINGS_KEYS.DARK_MODE);
-    return value === 'true';
+    if (value !== null) {
+      return value === 'true';
+    }
+    return Appearance.getColorScheme() === 'dark';
   } catch (error) {
     settingsLogger.error('Failed to get dark mode setting', { error });
-    return DEFAULT_SETTINGS.darkMode;
+    return Appearance.getColorScheme() === 'dark';
   }
 };
 
