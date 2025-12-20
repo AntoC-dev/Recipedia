@@ -69,9 +69,15 @@ describe('WelcomeScreen Component', () => {
       'welcome.features.add'
     );
     expect(getByTestId('WelcomeScreen::Card::FeaturesList::2::Icon::Icon')).toHaveTextContent(
-      'cart'
+      'web'
     );
     expect(getByTestId('WelcomeScreen::Card::FeaturesList::2::Text')).toHaveTextContent(
+      'welcome.features.import'
+    );
+    expect(getByTestId('WelcomeScreen::Card::FeaturesList::3::Icon::Icon')).toHaveTextContent(
+      'cart'
+    );
+    expect(getByTestId('WelcomeScreen::Card::FeaturesList::3::Text')).toHaveTextContent(
       'welcome.features.shopping'
     );
   });

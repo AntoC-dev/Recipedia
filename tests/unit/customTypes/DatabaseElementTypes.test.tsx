@@ -1,27 +1,25 @@
 import {
   arrayOfType,
+  assertIngredientType,
   extractIngredientsNameWithQuantity,
   extractTagsName,
+  FormIngredientElement,
   ingredientTableElement,
   ingredientType,
   isIngredientEqual,
   isRecipeEqual,
   isRecipePartiallyEqual,
-  isShoppingEqual,
   isTagEqual,
   recipeTableElement,
-  shoppingListTableElement,
   tagTableElement,
 } from '@customTypes//DatabaseElementTypes';
 import { testRecipes } from '@test-data/recipesDataset';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
-import { testShopping } from '@test-data/shoppingListsDataset';
-import { nonIngredientFilters } from '@customTypes/RecipeFiltersTypes';
 
 describe('DatabaseElementTypes Helper Functions', () => {
   test('arrayOfType filters ingredients by type', () => {
-    const ingredients: Array<ingredientTableElement> = [
+    const ingredients: ingredientTableElement[] = [
       { name: 'Sugar', unit: 'g', quantity: '100', type: ingredientType.sugar, season: ['*'] },
       {
         name: 'Flour',
@@ -292,44 +290,40 @@ describe('DatabaseElementTypes Helper Functions', () => {
     expect(isTagEqual(testTags[0], expected)).toBe(true);
   });
 
-  test('isShoppingEqual correctly identifies equal shopping items', () => {
-    const firstShop: shoppingListTableElement = testShopping[0][0];
-    const secondShop: shoppingListTableElement = testShopping[0][1];
+  describe('assertIngredientType', () => {
+    test('does not throw when ingredient has a valid type', () => {
+      const validIngredient: FormIngredientElement = {
+        name: 'Sugar',
+        unit: 'g',
+        quantity: '100',
+        type: ingredientType.sugar,
+        season: ['*'],
+      };
 
-    expect(isShoppingEqual(firstShop, firstShop)).toBe(true);
-    expect(isShoppingEqual(firstShop, secondShop)).toBe(false);
+      expect(() => assertIngredientType(validIngredient)).not.toThrow();
+    });
 
-    let expected: shoppingListTableElement = { ...firstShop, id: 9999 };
-    expect(isShoppingEqual(firstShop, expected)).toBe(true);
+    test('throws when ingredient type is undefined', () => {
+      const invalidIngredient: FormIngredientElement = {
+        name: 'Sugar',
+        unit: 'g',
+        quantity: '100',
+        season: ['*'],
+      };
 
-    expected = { ...firstShop, type: nonIngredientFilters.tags };
-    expect(isShoppingEqual(firstShop, expected)).toBe(false);
+      expect(() => assertIngredientType(invalidIngredient)).toThrow(
+        'Ingredient "Sugar" must have a type before saving'
+      );
+    });
 
-    expected = { ...firstShop, name: 'A new name' };
-    expect(isShoppingEqual(firstShop, expected)).toBe(false);
+    test('throws with correct ingredient name in error message', () => {
+      const invalidIngredient: FormIngredientElement = {
+        name: 'Flour',
+      };
 
-    expected = { ...firstShop, quantity: '-1' };
-    expect(isShoppingEqual(firstShop, expected)).toBe(true);
-
-    expected = { ...firstShop, unit: '' };
-    expect(isShoppingEqual(firstShop, expected)).toBe(false);
-
-    expected = { ...firstShop, recipesTitle: [] };
-    expect(isShoppingEqual(firstShop, expected)).toBe(true);
-
-    expected = {
-      ...firstShop,
-      recipesTitle: ['A new array of title', 'with unknown recipes'],
-    };
-    expect(isShoppingEqual(firstShop, expected)).toBe(true);
-
-    expected = {
-      ...firstShop,
-      recipesTitle: [...firstShop.recipesTitle, 'A new title'],
-    };
-    expect(isShoppingEqual(firstShop, expected)).toBe(true);
-
-    expected = { ...firstShop, purchased: true };
-    expect(isShoppingEqual(firstShop, expected)).toBe(true);
+      expect(() => assertIngredientType(invalidIngredient)).toThrow(
+        'Ingredient "Flour" must have a type before saving'
+      );
+    });
   });
 });

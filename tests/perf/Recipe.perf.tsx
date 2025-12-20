@@ -110,12 +110,12 @@ describe('Recipe Screen Performance', () => {
     await measureRenders(<RecipeWrapper initialParams={params} />, { runs: 10 });
   });
 
-  test('re-render after adding recipe to shopping list', async () => {
+  test('re-render after adding recipe to menu', async () => {
     const params: RecipePropType = { mode: 'readOnly', recipe: testRecipe };
 
     const scenario = async () => {
       if (contextRef) {
-        await contextRef.addRecipeToShopping(testRecipe);
+        await contextRef.addRecipeToMenu(testRecipe);
       }
     };
 

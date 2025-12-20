@@ -87,7 +87,6 @@ describe('TagsSettings Screen', () => {
     await db.addMultipleIngredients(testIngredients);
     await db.addMultipleTags(testTags);
     await db.addMultipleRecipes(testRecipes);
-    await db.addMultipleShopping(testRecipes);
 
     sortedDataset = [...db.get_tags()].sort((a, b) => a.name.localeCompare(b.name));
   });

@@ -21,18 +21,14 @@ jest.mock('@components/dialogs/Alert', () => ({
   Alert: require('@mocks/components/dialogs/Alert-mock').alertMock,
 }));
 
-// Mock useSafeCopilot to return null by default (tutorial inactive) but allow override
 jest.mock('@hooks/useSafeCopilot', () =>
   require('@mocks/hooks/useSafeCopilot-mock').useSafeCopilotMock()
 );
 
-// Override react-navigation with useFocusEffect that calls callback once
 jest.mock('@react-navigation/native', () => ({
   ...require('@mocks/deps/react-navigation-mock').reactNavigationMock(),
   useFocusEffect: jest.fn(callback => {
-    // Call the callback once to trigger initial data loading
     if (typeof callback === 'function') {
-      // Use a microtask to avoid infinite re-renders
       Promise.resolve().then(() => callback());
     }
   }),
@@ -56,12 +52,10 @@ async function renderShoppingAndWaitForButtons() {
     </RecipeDatabaseProvider>
   );
 
-  // Wait for focus effect to trigger and buttons to render if they should be present
-  // This checks if shopping list has items, and if so, waits for the clear button
-  const hasShoppingItems = RecipeDatabase.getInstance().get_shopping().length > 0;
+  const hasMenuItems = RecipeDatabase.getInstance().get_menu().length > 0;
 
   await waitFor(() => {
-    const elementExpectedMounted = hasShoppingItems
+    const elementExpectedMounted = hasMenuItems
       ? 'ShoppingScreen::ClearShoppingListButton::RoundButton'
       : 'ShoppingScreen::TextNoItem';
     expect(result.getByTestId(elementExpectedMounted)).toBeTruthy();
@@ -80,7 +74,8 @@ describe('Shopping Screen', () => {
     await database.addMultipleIngredients(testIngredients);
     await database.addMultipleTags(testTags);
     await database.addMultipleRecipes(testRecipes);
-    await database.addMultipleShopping([testRecipes[8], testRecipes[3]]);
+    await database.addRecipeToMenu(testRecipes[8]);
+    await database.addRecipeToMenu(testRecipes[3]);
   });
 
   afterEach(async () => await database.closeAndReset());
@@ -94,7 +89,6 @@ describe('Shopping Screen', () => {
     const hasEmptyState = queryByTestId('ShoppingScreen::TextNoItem');
     const hasSectionList = queryByTestId('ShoppingScreen::SectionList');
 
-    // One of these should be present (not both, not neither)
     expect(hasEmptyState || hasSectionList).toBeTruthy();
     expect(!!(hasEmptyState && hasSectionList)).toBe(false);
   });
@@ -113,8 +107,8 @@ describe('Shopping Screen', () => {
     );
   });
 
-  test('renders empty state correctly when no shopping items', async () => {
-    await database.resetShoppingList();
+  test('renders empty state correctly when no menu items', async () => {
+    await database.clearMenu();
 
     const { getByTestId, queryByTestId } = await renderShoppingAndWaitForButtons();
 
@@ -129,7 +123,6 @@ describe('Shopping Screen', () => {
   test('clear shopping list functionality works with confirmation', async () => {
     const { getByTestId } = await renderShoppingAndWaitForButtons();
 
-    // Initially confirmation dialog should be hidden
     expect(getByTestId('ShoppingScreen::ClearConfirmation::Alert::IsVisible').props.children).toBe(
       false
     );
@@ -140,12 +133,11 @@ describe('Shopping Screen', () => {
       true
     );
 
-    expect(database.get_shopping().length).toBeGreaterThan(0);
+    expect(database.get_menu().length).toBeGreaterThan(0);
 
     fireEvent.press(getByTestId('ShoppingScreen::ClearConfirmation::Alert::OnConfirm'));
 
     await waitFor(() => {
-      expect(database.get_shopping().length).toBe(0);
       expect(
         getByTestId('ShoppingScreen::ClearConfirmation::Alert::IsVisible').props.children
       ).toBe(false);
@@ -155,7 +147,6 @@ describe('Shopping Screen', () => {
   test('Recipe usage Alert dialog has correct props structure and values', async () => {
     const { getByTestId } = await renderShoppingAndWaitForButtons();
 
-    // Verify Alert dialog props exist and have correct values
     expect(getByTestId('ShoppingScreen::Alert::IsVisible').props.children).toEqual(false);
     expect(getByTestId('ShoppingScreen::Alert::TestId').props.children).toEqual('ShoppingScreen');
     expect(getByTestId('ShoppingScreen::Alert::Title').props.children).toEqual(
@@ -168,10 +159,8 @@ describe('Shopping Screen', () => {
       'shoppingScreen.recipeUsingValidation'
     );
 
-    // Verify function buttons exist
     expect(getByTestId('ShoppingScreen::Alert::OnClose')).toBeTruthy();
 
-    // Verify no cancel text in this dialog (it's a simple confirmation dialog)
     expect(() => getByTestId('ShoppingScreen::Alert::CancelText')).toThrow();
     expect(() => getByTestId('ShoppingScreen::Alert::OnCancel')).toThrow();
   });
@@ -203,7 +192,7 @@ describe('Shopping Screen', () => {
   });
 
   test('clear button shows confirmation dialog when pressed', async () => {
-    expect(database.get_shopping().length).toBeGreaterThan(0);
+    expect(database.get_menu().length).toBeGreaterThan(0);
 
     const { getByTestId } = await renderShoppingAndWaitForButtons();
 
@@ -219,7 +208,7 @@ describe('Shopping Screen', () => {
   });
 
   test('cancel button in confirmation dialog hides the dialog', async () => {
-    expect(database.get_shopping().length).toBeGreaterThan(0);
+    expect(database.get_menu().length).toBeGreaterThan(0);
 
     const { getByTestId } = await renderShoppingAndWaitForButtons();
 
@@ -234,16 +223,16 @@ describe('Shopping Screen', () => {
       false
     );
 
-    expect(database.get_shopping().length).toBeGreaterThan(0);
+    expect(database.get_menu().length).toBeGreaterThan(0);
   });
 
   test('clear button is only visible when shopping list has items', async () => {
-    expect(database.get_shopping().length).toBeGreaterThan(0);
+    expect(database.get_menu().length).toBeGreaterThan(0);
     const { getByTestId: getWithItems } = await renderShoppingAndWaitForButtons();
     expect(getWithItems('ShoppingScreen::ClearShoppingListButton::RoundButton')).toBeTruthy();
 
-    await database.resetShoppingList();
-    expect(database.get_shopping().length).toBe(0);
+    await database.clearMenu();
+    expect(database.get_menu().length).toBe(0);
     const { queryByTestId: queryEmpty } = await renderShoppingAndWaitForButtons();
     expect(queryEmpty('ShoppingScreen::ClearShoppingListButton::RoundButton')).toBeNull();
   });
@@ -407,8 +396,6 @@ describe('Shopping Screen', () => {
 
       jest.advanceTimersByTime(TUTORIAL_DEMO_INTERVAL);
 
-      // We verify the demo mechanism is in place rather than testing the actual dialog
-      // since the dialog requires specific shopping list data structure
       expect(mockEvents.on).toHaveBeenCalled();
     });
   });

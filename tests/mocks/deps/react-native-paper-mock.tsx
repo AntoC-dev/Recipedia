@@ -226,6 +226,12 @@ export const Checkbox: React.FC<any> = props => (
   </TouchableOpacity>
 );
 
+export const Badge: React.FC<any> = props => (
+  <View testID={props.testID} style={props.style}>
+    <RNText>{props.children}</RNText>
+  </View>
+);
+
 export const Icon: React.FC<any> = props => (
   <View testID={props.testID} {...{ size: props.size, color: props.color }}>
     <RNText testID={props.testID + '::Source'}>{props.source}</RNText>
