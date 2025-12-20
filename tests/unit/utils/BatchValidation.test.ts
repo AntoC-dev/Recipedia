@@ -37,46 +37,38 @@ const createMockRecipe = (
   sourceProvider: 'mock',
 });
 
-const mockFindSimilarIngredients = (name: string): ingredientTableElement[] => {
-  const db: Record<string, ingredientTableElement> = {
-    chicken: {
-      id: 1,
-      name: 'Chicken',
-      unit: 'g',
-      quantity: '',
-      type: ingredientType.meat,
-      season: [],
-    },
-    tomato: {
-      id: 2,
-      name: 'Tomato',
-      unit: 'piece',
-      quantity: '',
-      type: ingredientType.vegetable,
-      season: ['1', '2', '3'],
-    },
-    onion: {
-      id: 3,
-      name: 'Onion',
-      unit: 'piece',
-      quantity: '',
-      type: ingredientType.vegetable,
-      season: [],
-    },
-  };
-  const key = name.toLowerCase().trim();
-  return db[key] ? [db[key]] : [];
-};
+const mockIngredients: ingredientTableElement[] = [
+  {
+    id: 1,
+    name: 'Chicken',
+    unit: 'g',
+    quantity: '',
+    type: ingredientType.meat,
+    season: [],
+  },
+  {
+    id: 2,
+    name: 'Tomato',
+    unit: 'piece',
+    quantity: '',
+    type: ingredientType.vegetable,
+    season: ['1', '2', '3'],
+  },
+  {
+    id: 3,
+    name: 'Onion',
+    unit: 'piece',
+    quantity: '',
+    type: ingredientType.vegetable,
+    season: [],
+  },
+];
 
-const mockFindSimilarTags = (name: string): tagTableElement[] => {
-  const db: Record<string, tagTableElement> = {
-    italian: { id: 1, name: 'Italian' },
-    dinner: { id: 2, name: 'Dinner' },
-    quick: { id: 3, name: 'Quick' },
-  };
-  const key = name.toLowerCase().trim();
-  return db[key] ? [db[key]] : [];
-};
+const mockTags: tagTableElement[] = [
+  { id: 1, name: 'Italian' },
+  { id: 2, name: 'Dinner' },
+  { id: 3, name: 'Quick' },
+];
 
 describe('BatchValidation', () => {
   describe('collectUniqueItems', () => {
@@ -199,11 +191,7 @@ describe('BatchValidation', () => {
         ),
       ];
 
-      const state = initializeBatchValidation(
-        recipes,
-        mockFindSimilarIngredients,
-        mockFindSimilarTags
-      );
+      const state = initializeBatchValidation(recipes, mockIngredients, mockTags);
 
       expect(state.exactMatchIngredients).toHaveLength(1);
       expect(state.ingredientsToValidate).toHaveLength(1);
@@ -214,11 +202,7 @@ describe('BatchValidation', () => {
     it('populates ingredient mappings for exact matches', () => {
       const recipes = [createMockRecipe('Test', [], [{ name: 'Chicken' }])];
 
-      const state = initializeBatchValidation(
-        recipes,
-        mockFindSimilarIngredients,
-        mockFindSimilarTags
-      );
+      const state = initializeBatchValidation(recipes, mockIngredients, mockTags);
 
       expect(state.ingredientMappings.size).toBe(1);
       expect(state.ingredientMappings.get('chicken')?.name).toBe('Chicken');
@@ -227,11 +211,7 @@ describe('BatchValidation', () => {
     it('populates tag mappings for exact matches', () => {
       const recipes = [createMockRecipe('Test', [{ id: 1, name: 'Italian' }], [])];
 
-      const state = initializeBatchValidation(
-        recipes,
-        mockFindSimilarIngredients,
-        mockFindSimilarTags
-      );
+      const state = initializeBatchValidation(recipes, mockIngredients, mockTags);
 
       expect(state.tagMappings.size).toBe(1);
       expect(state.tagMappings.get('italian')?.name).toBe('Italian');
@@ -242,11 +222,7 @@ describe('BatchValidation', () => {
         createMockRecipe('Test', [], [{ name: 'Chicken', quantity: '500', unit: 'kg' }]),
       ];
 
-      const state = initializeBatchValidation(
-        recipes,
-        mockFindSimilarIngredients,
-        mockFindSimilarTags
-      );
+      const state = initializeBatchValidation(recipes, mockIngredients, mockTags);
 
       const mappedChicken = state.ingredientMappings.get('chicken');
       expect(mappedChicken?.quantity).toBe('500');
@@ -258,25 +234,74 @@ describe('BatchValidation', () => {
         createMockRecipe('Test', [{ id: 1, name: 'ITALIAN' }], [{ name: 'CHICKEN' }]),
       ];
 
-      const state = initializeBatchValidation(
-        recipes,
-        mockFindSimilarIngredients,
-        mockFindSimilarTags
-      );
+      const state = initializeBatchValidation(recipes, mockIngredients, mockTags);
 
       expect(state.ingredientMappings.has('chicken')).toBe(true);
       expect(state.tagMappings.has('italian')).toBe(true);
+    });
+
+    it('matches ingredients with parenthetical content to existing ingredients', () => {
+      const recipes = [
+        createMockRecipe('Test', [], [{ name: 'Tomato (diced)' }, { name: 'Onion (chopped)' }]),
+      ];
+
+      const state = initializeBatchValidation(recipes, mockIngredients, mockTags);
+
+      expect(state.exactMatchIngredients).toHaveLength(2);
+      expect(state.ingredientsToValidate).toHaveLength(0);
+      expect(state.ingredientMappings.get('tomato (diced)')?.name).toBe('Tomato');
+      expect(state.ingredientMappings.get('onion (chopped)')?.name).toBe('Onion');
+    });
+
+    it('auto-maps ingredient with descriptor to existing base ingredient', () => {
+      const recipes = [createMockRecipe('Test', [], [{ name: 'Chicken (boneless, skinless)' }])];
+
+      const state = initializeBatchValidation(recipes, mockIngredients, mockTags);
+
+      expect(state.ingredientMappings.has('chicken (boneless, skinless)')).toBe(true);
+      expect(state.ingredientMappings.get('chicken (boneless, skinless)')?.name).toBe('Chicken');
+      expect(state.ingredientsToValidate).toHaveLength(0);
+    });
+
+    it('preserves quantity and unit for ingredient with parenthetical content', () => {
+      const recipes = [
+        createMockRecipe('Test', [], [{ name: 'Tomato (roma)', quantity: '2', unit: 'piece' }]),
+      ];
+
+      const state = initializeBatchValidation(recipes, mockIngredients, mockTags);
+
+      const mappedTomato = state.ingredientMappings.get('tomato (roma)');
+      expect(mappedTomato?.quantity).toBe('2');
+      expect(mappedTomato?.unit).toBe('piece');
+    });
+
+    it('handles tag matching with accents', () => {
+      const tagsWithAccents: tagTableElement[] = [
+        { id: 1, name: 'Végétarien' },
+        { id: 2, name: 'Été' },
+      ];
+      const recipes = [
+        createMockRecipe(
+          'Test',
+          [
+            { id: 1, name: 'Végétarien' },
+            { id: 2, name: 'Été' },
+          ],
+          []
+        ),
+      ];
+
+      const state = initializeBatchValidation(recipes, [], tagsWithAccents);
+
+      expect(state.exactMatchTags).toHaveLength(2);
+      expect(state.tagsToValidate).toHaveLength(0);
     });
   });
 
   describe('addIngredientMapping', () => {
     it('adds mapping to state', () => {
       const recipes = [createMockRecipe('Test', [], [{ name: 'NewIngredient' }])];
-      const state = initializeBatchValidation(
-        recipes,
-        mockFindSimilarIngredients,
-        mockFindSimilarTags
-      );
+      const state = initializeBatchValidation(recipes, mockIngredients, mockTags);
 
       const validatedIngredient: ingredientTableElement = {
         id: 100,
@@ -294,11 +319,7 @@ describe('BatchValidation', () => {
 
     it('normalizes key to lowercase', () => {
       const recipes = [createMockRecipe('Test', [], [{ name: 'NEW INGREDIENT' }])];
-      const state = initializeBatchValidation(
-        recipes,
-        mockFindSimilarIngredients,
-        mockFindSimilarTags
-      );
+      const state = initializeBatchValidation(recipes, mockIngredients, mockTags);
 
       const validatedIngredient: ingredientTableElement = {
         id: 100,
@@ -318,11 +339,7 @@ describe('BatchValidation', () => {
   describe('addTagMapping', () => {
     it('adds mapping to state', () => {
       const recipes = [createMockRecipe('Test', [{ id: 1, name: 'NewTag' }], [])];
-      const state = initializeBatchValidation(
-        recipes,
-        mockFindSimilarIngredients,
-        mockFindSimilarTags
-      );
+      const state = initializeBatchValidation(recipes, mockIngredients, mockTags);
 
       const validatedTag: tagTableElement = { id: 100, name: 'Validated Tag' };
 
@@ -333,11 +350,7 @@ describe('BatchValidation', () => {
 
     it('normalizes key to lowercase', () => {
       const recipes = [createMockRecipe('Test', [{ id: 1, name: 'NEW TAG' }], [])];
-      const state = initializeBatchValidation(
-        recipes,
-        mockFindSimilarIngredients,
-        mockFindSimilarTags
-      );
+      const state = initializeBatchValidation(recipes, mockIngredients, mockTags);
 
       const validatedTag: tagTableElement = { id: 100, name: 'Validated' };
 
@@ -352,11 +365,7 @@ describe('BatchValidation', () => {
       const recipes = [
         createMockRecipe('Test Recipe', [{ id: 1, name: 'Italian' }], [{ name: 'Chicken' }]),
       ];
-      const state = initializeBatchValidation(
-        recipes,
-        mockFindSimilarIngredients,
-        mockFindSimilarTags
-      );
+      const state = initializeBatchValidation(recipes, mockIngredients, mockTags);
 
       const validatedRecipes = applyMappingsToRecipes(recipes, state);
 
@@ -369,11 +378,7 @@ describe('BatchValidation', () => {
       const recipes = [
         createMockRecipe('Test', [], [{ name: 'Chicken', quantity: '500', unit: 'kg' }]),
       ];
-      const state = initializeBatchValidation(
-        recipes,
-        mockFindSimilarIngredients,
-        mockFindSimilarTags
-      );
+      const state = initializeBatchValidation(recipes, mockIngredients, mockTags);
 
       const validatedRecipes = applyMappingsToRecipes(recipes, state);
 
@@ -383,11 +388,7 @@ describe('BatchValidation', () => {
 
     it('uses mapped ingredient properties for unmapped fields', () => {
       const recipes = [createMockRecipe('Test', [], [{ name: 'Chicken', quantity: '', unit: '' }])];
-      const state = initializeBatchValidation(
-        recipes,
-        mockFindSimilarIngredients,
-        mockFindSimilarTags
-      );
+      const state = initializeBatchValidation(recipes, mockIngredients, mockTags);
 
       const validatedRecipes = applyMappingsToRecipes(recipes, state);
 
@@ -396,11 +397,7 @@ describe('BatchValidation', () => {
 
     it('skips unmapped ingredients', () => {
       const recipes = [createMockRecipe('Test', [], [{ name: 'UnknownIngredient' }])];
-      const state = initializeBatchValidation(
-        recipes,
-        mockFindSimilarIngredients,
-        mockFindSimilarTags
-      );
+      const state = initializeBatchValidation(recipes, mockIngredients, mockTags);
 
       const validatedRecipes = applyMappingsToRecipes(recipes, state);
 
@@ -411,11 +408,7 @@ describe('BatchValidation', () => {
       const recipes = [
         createMockRecipe('Test', [{ id: 1, name: 'UnknownTag' }], [{ name: 'Chicken' }]),
       ];
-      const state = initializeBatchValidation(
-        recipes,
-        mockFindSimilarIngredients,
-        mockFindSimilarTags
-      );
+      const state = initializeBatchValidation(recipes, mockIngredients, mockTags);
 
       const validatedRecipes = applyMappingsToRecipes(recipes, state);
 
@@ -426,11 +419,7 @@ describe('BatchValidation', () => {
       const recipes = [
         createMockRecipe('Test Recipe', [{ id: 1, name: 'Italian' }], [{ name: 'Chicken' }]),
       ];
-      const state = initializeBatchValidation(
-        recipes,
-        mockFindSimilarIngredients,
-        mockFindSimilarTags
-      );
+      const state = initializeBatchValidation(recipes, mockIngredients, mockTags);
 
       const validatedRecipes = applyMappingsToRecipes(recipes, state);
 
@@ -445,11 +434,7 @@ describe('BatchValidation', () => {
         createMockRecipe('Recipe 1', [{ id: 1, name: 'Italian' }], [{ name: 'Chicken' }]),
         createMockRecipe('Recipe 2', [{ id: 2, name: 'Quick' }], [{ name: 'Tomato' }]),
       ];
-      const state = initializeBatchValidation(
-        recipes,
-        mockFindSimilarIngredients,
-        mockFindSimilarTags
-      );
+      const state = initializeBatchValidation(recipes, mockIngredients, mockTags);
 
       const validatedRecipes = applyMappingsToRecipes(recipes, state);
 
@@ -468,11 +453,7 @@ describe('BatchValidation', () => {
           [{ name: 'Chicken' }, { name: 'Tomato' }]
         ),
       ];
-      const state = initializeBatchValidation(
-        recipes,
-        mockFindSimilarIngredients,
-        mockFindSimilarTags
-      );
+      const state = initializeBatchValidation(recipes, mockIngredients, mockTags);
 
       const progress = getValidationProgress(state);
 
@@ -495,11 +476,7 @@ describe('BatchValidation', () => {
           [{ name: 'Chicken' }, { name: 'NewIngredient' }]
         ),
       ];
-      const state = initializeBatchValidation(
-        recipes,
-        mockFindSimilarIngredients,
-        mockFindSimilarTags
-      );
+      const state = initializeBatchValidation(recipes, mockIngredients, mockTags);
 
       const progress = getValidationProgress(state);
 
@@ -515,11 +492,7 @@ describe('BatchValidation', () => {
       const recipes = [
         createMockRecipe('Test', [{ id: 1, name: 'NewTag' }], [{ name: 'NewIngredient' }]),
       ];
-      const state = initializeBatchValidation(
-        recipes,
-        mockFindSimilarIngredients,
-        mockFindSimilarTags
-      );
+      const state = initializeBatchValidation(recipes, mockIngredients, mockTags);
 
       let progress = getValidationProgress(state);
       expect(progress.remainingIngredients).toBe(1);

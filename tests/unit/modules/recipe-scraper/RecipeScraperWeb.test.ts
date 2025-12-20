@@ -1,8 +1,9 @@
-import { RecipeScraperWeb } from '../../../../modules/recipe-scraper/src/web/RecipeScraperWeb';
-import { pyodideScraper } from '../../../../modules/recipe-scraper/src/web/PyodideScraper';
+import { RecipeScraperWeb } from '@app/modules/recipe-scraper/src/web/RecipeScraperWeb';
+import { pyodideScraper } from '@app/modules/recipe-scraper/src/web/PyodideScraper';
 import { createEmptyScrapedRecipe } from '@mocks/modules/recipe-scraper-mock';
+import { mockFetch } from '@mocks/deps/fetch-mock';
 
-jest.mock('../../../../modules/recipe-scraper/src/web/PyodideScraper', () => ({
+jest.mock('@app/modules/recipe-scraper/src/web/PyodideScraper', () => ({
   pyodideScraper: {
     isReady: false,
     hasFailed: false,
@@ -12,9 +13,6 @@ jest.mock('../../../../modules/recipe-scraper/src/web/PyodideScraper', () => ({
     isHostSupported: jest.fn(),
   },
 }));
-
-const mockFetch = jest.fn();
-global.fetch = mockFetch;
 
 const mockPyodideScraper = pyodideScraper as jest.Mocked<typeof pyodideScraper>;
 
