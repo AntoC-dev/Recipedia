@@ -1,0 +1,215 @@
+name: "3 - Bulk Import Quitoque with Language Filter (French)"
+appId: "com.recipedia"
+tags:
+  - bulk-import
+---
+- runFlow:
+    file: "../../flows/setupTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- runFlow:
+    file: "../../flows/parameters/language/switchToEnglish.yaml"
+    label: "Setup - Ensure app is in English (in case previous test failed)"
+
+- runFlow:
+    file: "../../flows/bulk-import/navigateToBulkImport.yaml"
+    label: "Phase 1 - Navigate to Bulk Import (English)"
+
+- runFlow:
+    file: "../../asserts/bulk-import/en/assertQuitoqueNotVisible.yaml"
+    label: "Assert - Quitoque is NOT visible in English"
+
+- tapOn:
+    id: "BulkImportSettings::AppBar::BackButton"
+    label: "Go back to Parameters"
+
+- scrollUntilVisible:
+    element:
+      id: "Parameters::Section::Appearance::SubHeader"
+    direction: UP
+    label: "Scroll up to reset the screen"
+
+- runFlow:
+    file: "../../flows/parameters/language/switchToFrench.yaml"
+    label: "Setup - Switch to French language"
+
+- runFlow:
+    file: "../../flows/bulk-import/navigateToBulkImport.yaml"
+    label: "Phase 2 - Navigate to Bulk Import (French)"
+
+- runFlow:
+    file: "../../asserts/bulk-import/fr/assertQuitoqueVisible.yaml"
+    label: "Assert - Quitoque IS visible in French"
+
+- runFlow:
+    file: "../../flows/bulk-import/selectProvider.yaml"
+    env:
+      PROVIDER_ID: "quitoque"
+    label: "Action - Select Quitoque provider"
+
+- extendedWaitUntil:
+    visible:
+      id: "BulkImportDiscovery::(fresh|seen)-0"
+    timeout: 120000
+    label: "Wait - For first recipe to appear"
+
+- tapOn:
+    id: "BulkImportDiscovery::(fresh|seen)-0"
+    label: "Action - Select first recipe"
+
+- tapOn:
+    id: "BulkImportDiscovery::ContinueButton"
+    label: "Action - Continue to validation"
+
+- extendedWaitUntil:
+    visible:
+      id: "BulkImportValidation::AppBar::Title"
+    timeout: 120000
+    label: "Wait - For validation screen"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "BulkImportValidation::InitializingIndicator"
+    timeout: 120000
+    label: "Wait - For initialization to complete"
+
+- runFlow:
+    file: "../../flows/recipe/validation/validateAllDialogs.yaml"
+    env:
+      TAG_PREFIX: "BulkImportValidation::TagQueue"
+      INGREDIENT_PREFIX: "BulkImportValidation::IngredientQueue"
+    label: "Action - Validate all tags and ingredients (first import)"
+
+- runFlow:
+    file: "../../asserts/bulk-import/fr/assertImportComplete.yaml"
+    label: "Assert - Verify import success message"
+
+- tapOn:
+    id: "BulkImportValidation::FinishButton"
+    label: "Action - Finish first import"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Navigate to Search to delete the recipe"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::RecipeCards::10::Cover"
+    direction: DOWN
+    speed: 60
+    timeout: 20000
+    centerElement: true
+    label: "Scroll to imported recipe"
+
+- tapOn:
+    id: "SearchScreen::RecipeCards::10::Cover"
+    label: "Open imported recipe"
+
+- tapOn:
+    id: "Recipe::AppBar::Delete"
+    label: "Delete recipe"
+
+- tapOn:
+    id: "Recipe::Dialog::Confirm"
+    label: "Confirm deletion"
+
+- tapOn:
+    id: "Recipe::Dialog::Confirm"
+    label: "Close confirmation"
+
+- runFlow:
+    file: "../../flows/bulk-import/navigateToBulkImport.yaml"
+    label: "Phase 3 - Navigate to Bulk Import for re-import"
+
+- runFlow:
+    file: "../../flows/bulk-import/selectProvider.yaml"
+    env:
+      PROVIDER_ID: "quitoque"
+    label: "Action - Select Quitoque provider again"
+
+- extendedWaitUntil:
+    visible:
+      id: "BulkImportDiscovery::fresh-0"
+    timeout: 120000
+    label: "Wait - For deleted recipe to appear as fresh"
+
+- tapOn:
+    id: "BulkImportDiscovery::fresh-0"
+    label: "Action - Select the fresh recipe for re-import"
+
+- tapOn:
+    id: "BulkImportDiscovery::ContinueButton"
+    label: "Action - Continue to validation"
+
+- extendedWaitUntil:
+    visible:
+      id: "BulkImportValidation::AppBar::Title"
+    timeout: 120000
+    label: "Wait - For validation screen"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "BulkImportValidation::InitializingIndicator"
+    timeout: 120000
+    label: "Wait - For initialization to complete"
+
+- assertNotVisible:
+    id: "BulkImportValidation::TagQueue::ValidationQueue::Tag::SimilarityDialog::Title"
+    label: "Assert - No tag validation dialog (tags already in database)"
+
+- assertNotVisible:
+    id: "BulkImportValidation::IngredientQueue::ValidationQueue::Ingredient::SimilarityDialog::Title"
+    label: "Assert - No ingredient validation dialog (ingredients already in database)"
+
+- runFlow:
+    file: "../../asserts/bulk-import/fr/assertImportComplete.yaml"
+    label: "Assert - Verify second import success message"
+
+- tapOn:
+    id: "BulkImportValidation::FinishButton"
+    label: "Action - Finish second import"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Cleanup - Navigate to Search"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::RecipeCards::10::Cover"
+    direction: DOWN
+    speed: 60
+    timeout: 20000
+    centerElement: true
+    label: "Cleanup - Scroll to imported recipe"
+
+- tapOn:
+    id: "SearchScreen::RecipeCards::10::Cover"
+    label: "Cleanup - Open imported recipe"
+
+- tapOn:
+    id: "Recipe::AppBar::Delete"
+    label: "Cleanup - Delete recipe"
+
+- tapOn:
+    id: "Recipe::Dialog::Confirm"
+    label: "Cleanup - Confirm deletion"
+
+- tapOn:
+    id: "Recipe::Dialog::Confirm"
+    label: "Cleanup - Close confirmation"
+
+- runFlow:
+    file: "../../flows/parameters/language/switchToEnglish.yaml"
+    label: "Cleanup - Switch back to English"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Cleanup - Return to home"

@@ -1,0 +1,13 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    id: "BulkImportSettings::Provider::hellofresh"
+    label: "HelloFresh provider is visible"
+
+- assertVisible:
+    id: "BulkImportSettings::Provider::quitoque"
+    label: "Quitoque provider IS visible in French"
+
+- assertVisible:
+    id: "BulkImportSettings::Provider::quitoque::Logo"
+    label: "Quitoque provider displays logo"
