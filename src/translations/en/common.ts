@@ -13,6 +13,7 @@ export default {
   success: 'Success',
   addedToDatabase: 'Recipe "{{recipeName}}" has been successfully added to the database',
   addedToShoppingList: 'Recipe "{{recipeName}}" has been successfully added to the shopping list',
+  addedToMenu: 'Recipe "{{recipeName}}" has been added to your menu',
   deletedFromDatabase: 'Recipe "{{recipeName}}" has been successfully deleted',
   addFilter: 'Add a filter',
   seeFilterResult: 'See filtered recipes',

@@ -47,11 +47,7 @@
  * ```
  */
 
-import {
-  ingredientType,
-  recipeTableElement,
-  shoppingListTableElement,
-} from './DatabaseElementTypes';
+import { ComputedShoppingItem, ingredientType, recipeTableElement } from './DatabaseElementTypes';
 
 /** Current month for seasonal filtering (1-12) */
 export const currentMonth = new Date().getMonth() + 1;
@@ -103,7 +99,7 @@ export type ShoppingAppliedToDatabase = {
   /** Category title (filter type) */
   title: TListFilter;
   /** Array of shopping list items in this category */
-  data: shoppingListTableElement[];
+  data: ComputedShoppingItem[];
 };
 
 /**
@@ -123,7 +119,7 @@ export type FiltersAppliedToDatabase = {
  */
 export type propsForShopping = {
   /** Array of shopping list items */
-  ingList: shoppingListTableElement[];
+  ingList: ComputedShoppingItem[];
   /** Function to update ingredient purchase status */
   updateIngredientFromShopping: (ingredientName: string) => void;
 };

@@ -1,0 +1,9 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "BottomTabs::Shopping"
+    label: "Navigate to Shopping screen"
+
+- runFlow:
+    file: "../../../flows/shopping/en/clearShoppingList.yaml"
+    label: "Clear shopping list (also clears menu)"

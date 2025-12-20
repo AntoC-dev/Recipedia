@@ -1,0 +1,13 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    id: "MenuScreen::MenuItem::.*"
+    label: "Verify menu item card is visible"
+
+- assertVisible:
+    id: "MenuScreen::MenuItem::.*::Checkbox"
+    label: "Verify checkbox is visible on menu item"
+
+- assertVisible:
+    id: "MenuScreen::MenuItem::.*::RemoveButton"
+    label: "Verify remove button is visible on menu item"

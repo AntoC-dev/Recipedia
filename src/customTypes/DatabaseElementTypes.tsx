@@ -66,7 +66,6 @@ export const recipeDatabaseName = 'RecipesDatabase';
 export const recipeTableName = 'RecipesTable';
 export const ingredientsTableName = 'IngredientsTable';
 export const tagTableName = 'TagsTable';
-export const shoppingListTableName = 'ShoppingListTable';
 
 /** SQLite data type enumeration */
 export enum encodedType {
@@ -271,54 +270,6 @@ export type encodedTagElement = {
   NAME: string;
 };
 
-/**
- * Shopping list item with recipe tracking and purchase status
- */
-export type shoppingListTableElement = {
-  /** Optional database ID (undefined for new items) */
-  id?: number;
-  /** Ingredient category for organization */
-  type: TListFilter;
-  /** Ingredient name */
-  name: string;
-  /** Combined quantity from all recipes using this ingredient */
-  quantity: string;
-  /** Unit of measurement */
-  unit: string;
-  /** Array of recipe titles that use this ingredient */
-  recipesTitle: string[];
-  /** Whether the item has been purchased */
-  purchased: boolean;
-};
-
-export type encodedShoppingListElement = {
-  ID: number;
-  TYPE: string;
-  INGREDIENT: string;
-  QUANTITY: string;
-  UNIT: string;
-  TITLES: string;
-  PURCHASED: number;
-};
-
-export enum shoppingListColumnsNames {
-  type = 'TYPE',
-  ingredient = 'INGREDIENT',
-  quantity = 'QUANTITY',
-  unit = 'UNIT',
-  recipeTitles = 'TITLES',
-  purchased = 'PURCHASED',
-}
-
-export const shoppingListColumnsEncoding: databaseColumnType[] = [
-  { colName: shoppingListColumnsNames.type, type: encodedType.TEXT },
-  { colName: shoppingListColumnsNames.ingredient, type: encodedType.TEXT },
-  { colName: shoppingListColumnsNames.quantity, type: encodedType.FLOAT },
-  { colName: shoppingListColumnsNames.unit, type: encodedType.TEXT },
-  { colName: shoppingListColumnsNames.recipeTitles, type: encodedType.TEXT },
-  { colName: shoppingListColumnsNames.purchased, type: encodedType.BLOB },
-];
-
 /** Import history table name for tracking discovered recipes */
 export const importHistoryTableName = 'ImportHistoryTable';
 
@@ -355,6 +306,93 @@ export const importHistoryColumnsEncoding: databaseColumnType[] = [
   { colName: importHistoryColumnsNames.recipeUrl, type: encodedType.TEXT },
   { colName: importHistoryColumnsNames.lastSeenAt, type: encodedType.INTEGER },
 ];
+
+/** Menu table name for tracking recipes in the weekly menu */
+export const menuTableName = 'MenuTable';
+
+/**
+ * Menu item representing a recipe added to the user's cooking menu.
+ * The menu is the single source of truth - the shopping list is generated from it.
+ */
+export type menuTableElement = {
+  /** Optional database ID (undefined for new menu items) */
+  id?: number;
+  /** Recipe ID from the recipes table */
+  recipeId: number;
+  /** Recipe title (denormalized for quick display) */
+  recipeTitle: string;
+  /** Recipe image source (denormalized for quick display) */
+  imageSource: string;
+  /** Whether the recipe has been cooked */
+  isCooked: boolean;
+  /** Number of times this recipe should be cooked (default 1) */
+  count: number;
+};
+
+export type encodedMenuElement = {
+  ID: number;
+  RECIPE_ID: number;
+  COUNT: number;
+  RECIPE_TITLE: string;
+  IMAGE_SOURCE: string;
+  IS_COOKED: number;
+};
+
+export enum menuColumnsNames {
+  recipeId = 'RECIPE_ID',
+  recipeTitle = 'RECIPE_TITLE',
+  imageSource = 'IMAGE_SOURCE',
+  isCooked = 'IS_COOKED',
+  count = 'COUNT',
+}
+
+export const menuColumnsEncoding: databaseColumnType[] = [
+  { colName: menuColumnsNames.recipeId, type: encodedType.INTEGER },
+  { colName: menuColumnsNames.recipeTitle, type: encodedType.TEXT },
+  { colName: menuColumnsNames.imageSource, type: encodedType.TEXT },
+  { colName: menuColumnsNames.isCooked, type: encodedType.INTEGER },
+  { colName: menuColumnsNames.count, type: encodedType.INTEGER },
+];
+
+/** Purchased ingredients table - lightweight table to persist purchase state */
+export const purchasedIngredientsTableName = 'PurchasedIngredientsTable';
+
+/**
+ * Tracks which ingredients have been purchased.
+ * Ingredient name is the primary key - simple key-value storage.
+ */
+export type purchasedIngredientElement = {
+  ingredientName: string;
+  purchased: boolean;
+};
+
+export type encodedPurchasedIngredientElement = {
+  INGREDIENT_NAME: string;
+  PURCHASED: number;
+};
+
+export enum purchasedIngredientsColumnsNames {
+  ingredientName = 'INGREDIENT_NAME',
+  purchased = 'PURCHASED',
+}
+
+export const purchasedIngredientsColumnsEncoding: databaseColumnType[] = [
+  { colName: purchasedIngredientsColumnsNames.ingredientName, type: encodedType.TEXT },
+  { colName: purchasedIngredientsColumnsNames.purchased, type: encodedType.INTEGER },
+];
+
+/**
+ * Computed shopping list item - derived from menu and recipes.
+ * Purchase state is merged from the PurchasedIngredients table.
+ */
+export type ComputedShoppingItem = {
+  name: string;
+  type: TListFilter;
+  quantity: string;
+  unit: string;
+  recipeTitles: string[];
+  purchased: boolean;
+};
 
 export function arrayOfType(
   ingredients: ingredientTableElement[],
@@ -421,13 +459,6 @@ export function isIngredientEqual(
 
 export function isTagEqual(tag1: tagTableElement, tag2: tagTableElement): boolean {
   return tag1.name === tag2.name;
-}
-
-export function isShoppingEqual(
-  shop1: shoppingListTableElement,
-  shop2: shoppingListTableElement
-): boolean {
-  return shop1.type === shop2.type && shop1.name === shop2.name && shop1.unit === shop2.unit;
 }
 
 /**

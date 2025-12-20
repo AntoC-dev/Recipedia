@@ -1,0 +1,23 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Navigate to Search screen"
+
+- tapOn:
+    id: "SearchScreen::RecipeCards::0::Spaghetti Bolognese"
+    label: "Open Spaghetti Bolognese recipe"
+
+- tapOn:
+    id: "Recipe::BottomActionButton"
+    label: "Add recipe to menu"
+
+- runFlow:
+    file: "../../asserts/alerts/en/addingRecipe.yaml"
+    env:
+      RECIPE_NAME: "Spaghetti Bolognese"
+    label: "Verify recipe added alert"
+
+- runFlow:
+    file: "../search/scrollBackToTop.yaml"
+    label: "Scroll back to top"

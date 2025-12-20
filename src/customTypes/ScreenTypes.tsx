@@ -101,6 +101,8 @@ export type TabScreenParamList = {
   Home: undefined;
   /** Recipe search and filtering screen */
   Search: undefined;
+  /** Weekly menu screen */
+  Menu: undefined;
   /** Shopping list management screen */
   Shopping: undefined;
   /** App settings and configuration screen */
@@ -127,6 +129,9 @@ export type HomeScreenProp = BottomTabScreenProps<TabScreenParamList, 'Home'>;
 
 /** Props for Search tab screen component */
 export type SearchScreenProp = BottomTabScreenProps<TabScreenParamList, 'Search'>;
+
+/** Props for Menu tab screen component */
+export type MenuScreenProp = BottomTabScreenProps<TabScreenParamList, 'Menu'>;
 
 /** Props for Shopping tab screen component */
 export type ShoppingScreenProp = BottomTabScreenProps<TabScreenParamList, 'Shopping'>;

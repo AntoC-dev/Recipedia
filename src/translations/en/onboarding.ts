@@ -6,6 +6,7 @@ export default {
     features: {
       find: 'Find recipes quickly',
       add: 'Add recipes easily',
+      import: 'Import from your favorite websites',
       shopping: 'Generate shopping lists',
     },
     startTour: 'Explore',
@@ -33,6 +34,11 @@ export default {
       title: 'Search',
       description:
         'Search by recipe name or use "Add filter" to find recipes by ingredients, tags, cooking time, and more.',
+    },
+    menu: {
+      title: 'Menu',
+      description:
+        'Your weekly menu. Check off recipes as you cook them - their ingredients will be removed from your shopping list.',
     },
     shopping: {
       title: 'Shopping Lists',

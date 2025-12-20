@@ -1,0 +1,9 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    id: "MenuScreen::ScrollView"
+    label: "Verify ScrollView is visible when menu has items"
+
+- assertVisible:
+    text: "A cuisiner"
+    label: "Verify French 'To Cook' section header is visible"

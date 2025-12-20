@@ -1,0 +1,20 @@
+name: "1 - Menu Empty State"
+appId: "com.recipedia"
+tags:
+  - menu
+---
+- runFlow:
+    file: "../../flows/setupFirstTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- tapOn:
+    id: "BottomTabs::Menu"
+    label: "Action - Navigate to Menu screen"
+
+- runFlow:
+    file: "../../asserts/menu/en/assertMenuEmpty.yaml"
+    label: "Assert - Verify empty menu state"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Cleanup - Navigate to Home screen"

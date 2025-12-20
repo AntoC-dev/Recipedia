@@ -1,0 +1,136 @@
+appId: "com.recipedia"
+---
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Cereal category"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
+    text: "Cereal"
+    label: "Cereal category header is displayed"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Flour"
+    text: "Flour (200 g)"
+    label: "Flour from Pancakes is displayed"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Spaghetti"
+    text: "Spaghetti (200 g)"
+    label: "Spaghetti from Spaghetti Bolognese is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.sauce::SubHeader"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Sauce category"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.sauce::SubHeader"
+    text: "Sauce"
+    label: "Sauce category header is displayed"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Tomato Sauce"
+    text: "Tomato Sauce (250 ml)"
+    label: "Tomato Sauce from Spaghetti Bolognese is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.meat::SubHeader"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Meat category"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.meat::SubHeader"
+    text: "Meat"
+    label: "Meat category header is displayed"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Ground Beef"
+    text: "Ground Beef (300 g)"
+    label: "Ground Beef from Spaghetti Bolognese is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.plantProtein::SubHeader"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Plant Protein category"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.plantProtein::SubHeader"
+    text: "Plant Protein"
+    label: "Plant Protein category header is displayed"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Eggs"
+    text: "Eggs (2 pieces)"
+    label: "Eggs from Pancakes is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.dairy::SubHeader"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Dairy category"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.dairy::SubHeader"
+    text: "Dairy"
+    label: "Dairy category header is displayed"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Milk"
+    text: "Milk (300 ml)"
+    label: "Milk from Pancakes is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.oilAndFat::SubHeader"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Oil and Fat category"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.oilAndFat::SubHeader"
+    text: "Oil and Fat"
+    label: "Oil and Fat category header is displayed"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Butter"
+    text: "Butter (50 g)"
+    label: "Butter from Pancakes is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.cheese::SubHeader"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Cheese category"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.cheese::SubHeader"
+    text: "Cheese"
+    label: "Cheese category header is displayed"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Parmesan"
+    text: "Parmesan (50 g)"
+    label: "Parmesan from Spaghetti Bolognese is displayed"
+
+- runFlow:
+    file: "../../../flows/shopping/scrollToTop.yaml"
+    label: "Scroll back to top for next tests"

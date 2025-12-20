@@ -105,6 +105,14 @@ export const padding = {
 };
 
 /**
+ * Card-related size constants for consistent card layouts
+ */
+export const cardSizes = {
+  /** Size for inline recipe thumbnails in list views */
+  thumbnailSize: 56,
+};
+
+/**
  * Progress bar height - 1% of screen height for responsive design
  * Ensures consistent progress indicator sizing across different devices
  */

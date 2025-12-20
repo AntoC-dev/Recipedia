@@ -1,0 +1,128 @@
+name: "6 - Multi Recipe Shopping Integration"
+appId: "com.recipedia"
+tags:
+  - menu
+---
+- runFlow:
+    file: "../../flows/setupTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- runFlow:
+    file: "../../flows/menu/addRecipeToMenu.yaml"
+    label: "Setup - Add Classic Pancakes to menu"
+
+- runFlow:
+    file: "../../flows/menu/addSpaghettiToMenu.yaml"
+    label: "Setup - Add Spaghetti Bolognese to menu"
+
+- tapOn:
+    id: "BottomTabs::Menu"
+    label: "Action - Navigate to Menu screen"
+
+- assertVisible:
+    id: "MenuScreen::MenuItem::1::Title"
+    text: "Classic Pancakes"
+    label: "Assert - Verify Pancakes in menu"
+
+- assertVisible:
+    id: "MenuScreen::MenuItem::2::Title"
+    text: "Spaghetti Bolognese"
+    label: "Assert - Verify Spaghetti in menu"
+
+- tapOn:
+    id: "BottomTabs::Shopping"
+    label: "Action - Navigate to Shopping screen"
+
+- runFlow:
+    file: "../../asserts/shopping/en/shoppingPancakeAndSpaghetti.yaml"
+    label: "Assert - Verify both Pancakes and Spaghetti ingredients"
+
+- tapOn:
+    id: "BottomTabs::Menu"
+    label: "Action - Navigate to Menu screen"
+
+- tapOn:
+    id: "MenuScreen::MenuItem::2::Checkbox"
+    label: "Action - Mark Spaghetti as cooked"
+
+- assertVisible:
+    id: "MenuScreen::SectionHeader::ToCook"
+    text: "To Cook"
+    label: "Assert - To Cook section still visible (Pancakes)"
+
+- assertVisible:
+    id: "MenuScreen::SectionHeader::Cooked"
+    text: "Cooked"
+    label: "Assert - Cooked section now visible (Spaghetti)"
+
+- tapOn:
+    id: "BottomTabs::Shopping"
+    label: "Action - Navigate to Shopping screen"
+
+- runFlow:
+    file: "../../asserts/shopping/en/shoppingPancake.yaml"
+    label: "Assert - Verify only Pancakes ingredients visible"
+
+- assertNotVisible:
+    id: "ShoppingScreen::SectionList::Spaghetti"
+    label: "Assert - Spaghetti ingredient not visible (recipe cooked)"
+
+- assertNotVisible:
+    id: "ShoppingScreen::SectionList::Ground Beef"
+    label: "Assert - Ground Beef ingredient not visible (recipe cooked)"
+
+- assertNotVisible:
+    id: "ShoppingScreen::SectionList::Tomato Sauce"
+    label: "Assert - Tomato Sauce ingredient not visible (recipe cooked)"
+
+- assertNotVisible:
+    id: "ShoppingScreen::SectionList::Parmesan"
+    label: "Assert - Parmesan ingredient not visible (recipe cooked)"
+
+- tapOn:
+    id: "BottomTabs::Menu"
+    label: "Action - Navigate to Menu screen"
+
+- tapOn:
+    id: "MenuScreen::MenuItem::2::Checkbox"
+    label: "Action - Mark Spaghetti as uncooked"
+
+- tapOn:
+    id: "BottomTabs::Shopping"
+    label: "Action - Navigate to Shopping screen"
+
+- runFlow:
+    file: "../../asserts/shopping/en/shoppingPancakeAndSpaghetti.yaml"
+    label: "Assert - Verify both recipes ingredients back"
+
+- tapOn:
+    id: "BottomTabs::Menu"
+    label: "Action - Navigate to Menu screen"
+
+- tapOn:
+    id: "MenuScreen::MenuItem::2::RemoveButton"
+    label: "Action - Remove Spaghetti from menu"
+
+- tapOn:
+    id: "BottomTabs::Shopping"
+    label: "Action - Navigate to Shopping screen"
+
+- runFlow:
+    file: "../../asserts/shopping/en/shoppingPancake.yaml"
+    label: "Assert - Verify only Pancakes ingredients visible"
+
+- assertNotVisible:
+    id: "ShoppingScreen::SectionList::Spaghetti"
+    label: "Assert - Spaghetti ingredient not visible (recipe removed)"
+
+- assertNotVisible:
+    id: "ShoppingScreen::SectionList::Ground Beef"
+    label: "Assert - Ground Beef ingredient not visible (recipe removed)"
+
+- runFlow:
+    file: "../../flows/shopping/en/clearShoppingList.yaml"
+    label: "Cleanup - Clear shopping list"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Cleanup - Navigate to Home screen"

@@ -12,6 +12,7 @@ export default {
   success: 'Succès',
   addedToDatabase: 'La recette "{{recipeName}}" ajoutée avec succès à la base de donnée',
   addedToShoppingList: 'La recette "{{recipeName}}" ajoutée avec succès à la liste de courses',
+  addedToMenu: 'La recette "{{recipeName}}" a été ajoutée à votre menu',
   deletedFromDatabase: 'La recette "{{recipeName}}" a été supprimée avec succès',
   addFilter: 'Ajouter un filtre',
   seeFilterResult: 'Voir les recettes filtrées',
