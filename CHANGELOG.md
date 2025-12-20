@@ -1,3 +1,19 @@
+## [2.5.0](https://github.com/AntoC-dev/Recipedia/compare/v2.4.0...v2.5.0) (2025-12-20)
+
+### Features
+
+* bulk optimizations ([#162](https://github.com/AntoC-dev/Recipedia/issues/162)) ([5500b21](https://github.com/AntoC-dev/Recipedia/commit/5500b21f0b614f0e66d393d5d01ce79cf7f24cc6))
+* **database:** add batch methods for ingredient and tag similarity ([2196a70](https://github.com/AntoC-dev/Recipedia/commit/2196a708c49a86cf10e340ccd25d1cf6d5861a0e))
+* **discovery:** add skeleton loading and allow continue during discovery ([556b36a](https://github.com/AntoC-dev/Recipedia/commit/556b36a1475936106819ccb915e213b87e1fc8c4))
+* **discovery:** scan categories concurrently for faster discovery ([dd60762](https://github.com/AntoC-dev/Recipedia/commit/dd60762bebfef4f22c8f7c807e73b4633bd63009))
+* **import:** enhance BulkImportDiscovery with recipe categorization ([afebd8d](https://github.com/AntoC-dev/Recipedia/commit/afebd8d40458a494cc15ea6dd1bec71f9799d3f7))
+* **import:** introduce visibility-based lazy loading for recipe images ([28c1ed1](https://github.com/AntoC-dev/Recipedia/commit/28c1ed1b961bfae994320570d0982e467d8a05fb))
+* **validation:** show granular initialization progress ([5d121f6](https://github.com/AntoC-dev/Recipedia/commit/5d121f65a3f8d4e8cebe71c0d070049e55fcae11))
+
+### Performance Improvements
+
+* update reassure baseline [skip ci] ([91b5bf7](https://github.com/AntoC-dev/Recipedia/commit/91b5bf75fe267f73b1f322d63024699d8190680a))
+
 ## [2.4.0](https://github.com/AntoC-dev/Recipedia/compare/v2.3.0...v2.4.0) (2025-12-19)
 
 ### Features
