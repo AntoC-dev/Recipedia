@@ -188,6 +188,10 @@ tags:
     label: "Cleanup - Close confirmation"
 
 - runFlow:
+    file: "../../flows/bulk-import/deleteAllImportedRecipes.yaml"
+    label: "Safety - Delete any remaining imported recipes"
+
+- runFlow:
     file: "../../flows/parameters/language/switchToEnglish.yaml"
     label: "Cleanup - Switch back to English"
 

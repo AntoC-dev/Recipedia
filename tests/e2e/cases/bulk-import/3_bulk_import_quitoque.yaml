@@ -90,36 +90,9 @@ tags:
 
 - waitForAnimationToEnd
 
-- tapOn:
-    id: "BottomTabs::Search"
-    label: "Navigate to Search to delete the recipe"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::RecipeCards::10::Cover"
-    direction: DOWN
-    speed: 60
-    timeout: 20000
-    centerElement: true
-    label: "Scroll to imported recipe"
-
-- tapOn:
-    id: "SearchScreen::RecipeCards::10::Cover"
-    label: "Open imported recipe"
-
-- tapOn:
-    id: "Recipe::AppBar::Delete"
-    label: "Delete recipe"
-
-- tapOn:
-    id: "Recipe::Dialog::Confirm"
-    label: "Confirm deletion"
-
-- tapOn:
-    id: "Recipe::Dialog::Confirm"
-    label: "Close confirmation"
+- runFlow:
+    file: "../../flows/bulk-import/deleteAllImportedRecipes.yaml"
+    label: "Delete imported recipe to test re-import as fresh"
 
 - runFlow:
     file: "../../flows/bulk-import/navigateToBulkImport.yaml"
@@ -175,36 +148,9 @@ tags:
 
 - waitForAnimationToEnd
 
-- tapOn:
-    id: "BottomTabs::Search"
-    label: "Cleanup - Navigate to Search"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::RecipeCards::10::Cover"
-    direction: DOWN
-    speed: 60
-    timeout: 20000
-    centerElement: true
-    label: "Cleanup - Scroll to imported recipe"
-
-- tapOn:
-    id: "SearchScreen::RecipeCards::10::Cover"
-    label: "Cleanup - Open imported recipe"
-
-- tapOn:
-    id: "Recipe::AppBar::Delete"
-    label: "Cleanup - Delete recipe"
-
-- tapOn:
-    id: "Recipe::Dialog::Confirm"
-    label: "Cleanup - Confirm deletion"
-
-- tapOn:
-    id: "Recipe::Dialog::Confirm"
-    label: "Cleanup - Close confirmation"
+- runFlow:
+    file: "../../flows/bulk-import/deleteAllImportedRecipes.yaml"
+    label: "Cleanup - Delete all imported recipes"
 
 - runFlow:
     file: "../../flows/parameters/language/switchToEnglish.yaml"
