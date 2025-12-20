@@ -35,6 +35,9 @@ export interface RecipeProvider {
   readonly name: string;
   readonly logoUrl: string;
 
+  /** Languages this provider supports. If undefined, available for all languages. */
+  readonly supportedLanguages?: readonly string[];
+
   getBaseUrl(): Promise<string>;
 
   discoverRecipeUrls(options: DiscoveryOptions): AsyncGenerator<DiscoveryProgress>;

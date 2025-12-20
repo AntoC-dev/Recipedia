@@ -28,12 +28,18 @@ export function getProvider(id: string): RecipeProvider | undefined {
 }
 
 /**
- * Gets all available recipe providers
+ * Gets all available recipe providers for the given language
  *
- * @returns Array of all registered provider instances
+ * @param language - The user's current language code (e.g., 'en', 'fr')
+ * @returns Array of provider instances available for that language
  */
-export function getAvailableProviders(): RecipeProvider[] {
-  return Array.from(providerRegistry.values());
+export function getAvailableProviders(language: string): RecipeProvider[] {
+  return Array.from(providerRegistry.values()).filter(provider => {
+    if (!provider.supportedLanguages) {
+      return true;
+    }
+    return provider.supportedLanguages.includes(language);
+  });
 }
 
 /**
