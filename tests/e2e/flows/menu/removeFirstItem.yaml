@@ -1,5 +1,0 @@
-appId: "com.recipedia"
----
-- tapOn:
-    id: "MenuScreen::MenuItem::.*::RemoveButton"
-    label: "Remove first item from menu"

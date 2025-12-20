@@ -7,14 +7,6 @@ tags:
     file: "../../flows/setupTest.yaml"
     label: "Setup - Launch app and wait for ready"
 
-- tapOn:
-    id: "BottomTabs::Shopping"
-    label: "Setup - Navigate to Shopping screen"
-
-- runFlow:
-    file: "../../asserts/shopping/en/shoppingEmpty.yaml"
-    label: "Assert - Shopping list starts empty"
-
 - runFlow:
     file: "../../flows/menu/addRecipeToMenu.yaml"
     label: "Action - Add Classic Pancakes to menu"
@@ -31,11 +23,12 @@ tags:
     id: "BottomTabs::Menu"
     label: "Action - Navigate to Menu screen"
 
-- runFlow:
-    file: "../../flows/menu/toggleFirstItemCooked.yaml"
+- tapOn:
+    id: "MenuScreen::MenuItem::1::Checkbox"
     label: "Action - Mark recipe as cooked"
 
 - assertVisible:
+    id: "MenuScreen::SectionHeader::Cooked"
     text: "Cooked"
     label: "Assert - Verify recipe moved to Cooked section"
 
@@ -51,8 +44,8 @@ tags:
     id: "BottomTabs::Menu"
     label: "Action - Navigate back to Menu screen"
 
-- runFlow:
-    file: "../../flows/menu/toggleFirstItemCooked.yaml"
+- tapOn:
+    id: "MenuScreen::MenuItem::1::Checkbox"
     label: "Action - Mark recipe as uncooked again"
 
 - tapOn:

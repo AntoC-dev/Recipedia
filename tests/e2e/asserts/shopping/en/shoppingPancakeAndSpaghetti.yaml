@@ -25,11 +25,15 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "ShoppingScreen::SectionList::ingredientTypes.sauce::SubHeader"
+      id: "ShoppingScreen::SectionList::ingredientTypes.plantProtein::SubHeader"
     direction: DOWN
     speed: 60
     centerElement: true
-    label: "Scroll to Sauce category"
+    label: "Scroll to Plant Protein category"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.plantProtein::SubHeader"
+    label: "Plant Protein category header is displayed"
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.sauce::SubHeader"

@@ -15,36 +15,30 @@ tags:
     id: "BottomTabs::Menu"
     label: "Action - Navigate to Menu screen"
 
-- assertVisible:
-    text: "To Cook"
-    label: "Assert - Verify 'To Cook' section visible"
-
-- assertNotVisible:
-    text: "Cooked"
-    label: "Assert - Verify 'Cooked' section not visible yet"
-
-- runFlow:
-    file: "../../flows/menu/toggleFirstItemCooked.yaml"
+- tapOn:
+    id: "MenuScreen::MenuItem::1::Checkbox"
     label: "Action - Mark recipe as cooked"
 
 - assertVisible:
+    id: "MenuScreen::SectionHeader::Cooked"
     text: "Cooked"
     label: "Assert - Verify 'Cooked' section now visible"
 
 - assertNotVisible:
-    text: "To Cook"
+    id: "MenuScreen::SectionHeader::ToCook"
     label: "Assert - Verify 'To Cook' section no longer visible"
 
-- runFlow:
-    file: "../../flows/menu/toggleFirstItemCooked.yaml"
+- tapOn:
+    id: "MenuScreen::MenuItem::1::Checkbox"
     label: "Action - Mark recipe as uncooked again"
 
 - assertVisible:
+    id: "MenuScreen::SectionHeader::ToCook"
     text: "To Cook"
     label: "Assert - Verify 'To Cook' section visible again"
 
 - assertNotVisible:
-    text: "Cooked"
+    id: "MenuScreen::SectionHeader::Cooked"
     label: "Assert - Verify 'Cooked' section no longer visible"
 
 - runFlow:

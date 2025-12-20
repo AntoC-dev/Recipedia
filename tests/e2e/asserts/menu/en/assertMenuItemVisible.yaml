@@ -1,13 +1,27 @@
 appId: "com.recipedia"
 ---
 - assertVisible:
-    id: "MenuScreen::MenuItem::.*"
+    id: "MenuScreen::ScrollView"
+    label: "Verify menu ScrollView is visible"
+
+- assertVisible:
+    id: "MenuScreen::SectionHeader::ToCook"
+    text: "To Cook"
+    label: "Verify 'To Cook' section header"
+
+- assertVisible:
+    id: "MenuScreen::MenuItem::1"
     label: "Verify menu item card is visible"
 
 - assertVisible:
-    id: "MenuScreen::MenuItem::.*::Checkbox"
-    label: "Verify checkbox is visible on menu item"
+    id: "MenuScreen::MenuItem::1::Title"
+    text: "${RECIPE_NAME}"
+    label: "Verify recipe title is displayed"
 
 - assertVisible:
-    id: "MenuScreen::MenuItem::.*::RemoveButton"
-    label: "Verify remove button is visible on menu item"
+    id: "MenuScreen::MenuItem::1::Checkbox"
+    label: "Verify checkbox is visible"
+
+- assertVisible:
+    id: "MenuScreen::MenuItem::1::RemoveButton"
+    label: "Verify remove button is visible"

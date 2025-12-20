@@ -32,7 +32,7 @@ tags:
 
 - runFlow:
     file: "../../asserts/onboarding/en/assertTutorialStep3.yaml"
-    label: "Assert - Verify tutorial Step 3 (Shopping screen)"
+    label: "Assert - Verify tutorial Step 3 (Menu screen)"
 
 - tapOn:
     id: "TutorialTooltip::Next"
@@ -40,15 +40,23 @@ tags:
 
 - runFlow:
     file: "../../asserts/onboarding/en/assertTutorialStep4.yaml"
-    label: "Assert - Verify tutorial Step 4 (Parameters screen)"
+    label: "Assert - Verify tutorial Step 4 (Shopping screen)"
+
+- tapOn:
+    id: "TutorialTooltip::Next"
+    label: "Action - Navigate to Step 5"
+
+- runFlow:
+    file: "../../asserts/onboarding/en/assertTutorialStep5.yaml"
+    label: "Assert - Verify tutorial Step 5 (Parameters screen)"
 
 - tapOn:
     id: "TutorialTooltip::Previous"
     label: "Action - Return to previous step"
 
 - runFlow:
-    file: "../../asserts/onboarding/en/assertTutorialStep3.yaml"
-    label: "Assert - Verify tutorial Step 3 (Shopping screen) again"
+    file: "../../asserts/onboarding/en/assertTutorialStep4.yaml"
+    label: "Assert - Verify tutorial Step 4 (Shopping screen) again"
 
 - stopApp
 - launchApp

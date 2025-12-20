@@ -6,14 +6,14 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::RecipeCards::2::Content"
+      id: "SearchScreen::RecipeCards::2::Classic Pancakes-outline"
     direction: DOWN
     speed: 60
     centerElement: true
     label: "Scroll to Classic Pancakes recipe"
 
 - tapOn:
-    id: "SearchScreen::RecipeCards::2::.*"
+    id: "SearchScreen::RecipeCards::2::Classic Pancakes"
     label: "Open Classic Pancakes recipe"
 
 - tapOn:
@@ -21,7 +21,7 @@ appId: "com.recipedia"
     label: "Add recipe to menu"
 
 - runFlow:
-    file: "../../asserts/alerts/en/addingRecipe.yaml"
+    file: "../../asserts/alerts/en/addingRecipeToMenu.yaml"
     env:
       RECIPE_NAME: "Classic Pancakes"
     label: "Verify recipe added alert"

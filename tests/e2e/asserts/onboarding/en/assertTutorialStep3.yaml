@@ -6,8 +6,8 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "TutorialTooltip::Text"
-    text: "See what ingredients you need based on selected recipes. Long press ingredients to see which recipes use them."
-    label: "Verify Step 3 (Shopping) description"
+    text: "Your weekly menu. Check off recipes as you cook them - their ingredients will be removed from your shopping list."
+    label: "Verify Step 3 (Menu) description"
 
 - extendedWaitUntil:
     visible:

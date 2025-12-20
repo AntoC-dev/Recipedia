@@ -156,7 +156,7 @@ jobs:
     uses: ./.github/workflows/e2e-maestro.yml
     with:
       apk-artifact: build-apk
-      suites: '["app-init", "search", "recipe-view", "recipe-create", "shopping", "settings", "tags-db", "ingredients-db", "duplicates-tag", "duplicates-ingredient", "duplicates-recipe", "ocr", "web-edge-cases", "web", "bulk-import"]'
+      suites: '["app-init", "search", "recipe-view", "recipe-create", "shopping", "menu", "settings", "tags-db", "ingredients-db", "duplicates-tag", "duplicates-ingredient", "duplicates-recipe", "ocr", "web-edge-cases", "web", "bulk-import"]'
     secrets:
       QUITOQUE_USERNAME: ${{ secrets.QUITOQUE_USERNAME }}
       QUITOQUE_PASSWORD: ${{ secrets.QUITOQUE_PASSWORD }}

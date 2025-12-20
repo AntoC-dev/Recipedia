@@ -1,5 +1,0 @@
-appId: "com.recipedia"
----
-- tapOn:
-    id: "MenuScreen::MenuItem::.*::Checkbox"
-    label: "Toggle first menu item cooked status"

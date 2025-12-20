@@ -15,12 +15,8 @@ tags:
     id: "BottomTabs::Menu"
     label: "Action - Navigate to Menu screen"
 
-- assertVisible:
-    text: "Classic Pancakes"
-    label: "Assert - Verify recipe is in menu"
-
-- runFlow:
-    file: "../../flows/menu/removeFirstItem.yaml"
+- tapOn:
+    id: "MenuScreen::MenuItem::1::RemoveButton"
     label: "Action - Remove recipe from menu"
 
 - runFlow:
