@@ -1,0 +1,38 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Navigate to Search screen"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::RecipeCards::10::Cover"
+    direction: DOWN
+    speed: 60
+    timeout: 10000
+    centerElement: true
+    optional: true
+    label: "Scroll to first imported recipe if it exists"
+
+# Delete recipes at index 10 until none remain (up to 4 times)
+# After each deletion, the next recipe shifts to index 10
+- repeat:
+    times: 10
+    commands:
+      - runFlow:
+          when:
+            visible:
+              id: "SearchScreen::RecipeCards::10::Cover"
+          commands:
+            - tapOn:
+                id: "SearchScreen::RecipeCards::10::Cover"
+            - tapOn:
+                id: "Recipe::AppBar::Delete"
+            - tapOn:
+                id: "Recipe::Dialog::Confirm"
+            - tapOn:
+                id: "Recipe::Dialog::Confirm"
+            - waitForAnimationToEnd
+    label: "Delete imported recipes at index 10"

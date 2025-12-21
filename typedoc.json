@@ -26,7 +26,7 @@
   "readme": "none",
   "excludePrivate": false,
   "excludeProtected": false,
-  "excludeInternal": false,
+  "excludeInternal": true,
   "hideGenerator": true,
   "treatWarningsAsErrors": true,
   "treatValidationWarningsAsErrors": true,

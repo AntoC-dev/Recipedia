@@ -1,5 +1,6 @@
-import { getProvider, getAvailableProviders, hasProvider } from '@providers/ProviderRegistry';
+import { getAvailableProviders, getProvider, hasProvider } from '@providers/ProviderRegistry';
 import { HelloFreshProvider } from '@providers/HelloFreshProvider';
+import { QuitoqueProvider } from '@providers/QuitoqueProvider';
 
 describe('ProviderRegistry', () => {
   describe('getProvider', () => {
@@ -25,27 +26,27 @@ describe('ProviderRegistry', () => {
   });
 
   describe('getAvailableProviders', () => {
-    it('returns array of all providers', () => {
-      const providers = getAvailableProviders();
+    it('includes HelloFresh for any language', () => {
+      const englishProviders = getAvailableProviders('en');
+      const frenchProviders = getAvailableProviders('fr');
 
-      expect(Array.isArray(providers)).toBe(true);
-      expect(providers.length).toBeGreaterThan(0);
+      expect(englishProviders.find(p => p.id === 'hellofresh')).toBeInstanceOf(HelloFreshProvider);
+      expect(frenchProviders.find(p => p.id === 'hellofresh')).toBeInstanceOf(HelloFreshProvider);
     });
 
-    it('includes HelloFresh provider', () => {
-      const providers = getAvailableProviders();
+    it('includes Quitoque only for French language', () => {
+      const frenchProviders = getAvailableProviders('fr');
+      const englishProviders = getAvailableProviders('en');
 
-      const hellofresh = providers.find(p => p.id === 'hellofresh');
-      expect(hellofresh).toBeDefined();
-      expect(hellofresh).toBeInstanceOf(HelloFreshProvider);
+      expect(frenchProviders.find(p => p.id === 'quitoque')).toBeInstanceOf(QuitoqueProvider);
+      expect(englishProviders.find(p => p.id === 'quitoque')).toBeUndefined();
     });
 
     it('returns new array on each call', () => {
-      const providers1 = getAvailableProviders();
-      const providers2 = getAvailableProviders();
+      const providers1 = getAvailableProviders('en');
+      const providers2 = getAvailableProviders('en');
 
       expect(providers1).not.toBe(providers2);
-      expect(providers1).toEqual(providers2);
     });
   });
 

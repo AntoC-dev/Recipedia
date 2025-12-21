@@ -23,6 +23,9 @@ appId: "com.recipedia"
 - hideKeyboard:
     label: "Dismiss keyboard"
 
+- waitForAnimationToEnd:
+    label: "Wait for screen to settle after keyboard dismissal"
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::AddButton::RoundButton"

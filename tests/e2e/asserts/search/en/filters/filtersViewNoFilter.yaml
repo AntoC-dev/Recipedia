@@ -12,25 +12,11 @@ appId: "com.recipedia"
       STATE: "all"
     label: "Assert Only in-season ingredients accordion with all items visible"
 
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::1"
-    direction: DOWN
-    centerElement: true
-    label: "Scroll until second accordion is visible"
-
 - runFlow:
     file: "accordions/preparationTime.yaml"
     env:
       STATE: "all"
     label: "Assert Preparation Time accordion with all items visible"
-
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::2"
-    direction: DOWN
-    centerElement: true
-    label: "Scroll until third accordion is visible to position Tags at top"
 
 - runFlow:
     file: "accordions/tags.yaml"
@@ -38,25 +24,11 @@ appId: "com.recipedia"
       STATE: "all"
     label: "Assert Tags accordion with all items visible"
 
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::3"
-    direction: DOWN
-    centerElement: true
-    label: "Scroll until fourth accordion is visible to position Tags at top"
-
 - runFlow:
     file: "accordions/grainOrCereal.yaml"
     env:
       STATE: "all"
     label: "Assert Cereal accordion with all items visible"
-
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::4"
-    direction: DOWN
-    centerElement: true
-    label: "Scroll until fifth accordion is visible to position Tags at top"
 
 - runFlow:
     file: "accordions/legumes.yaml"
@@ -64,25 +36,11 @@ appId: "com.recipedia"
       STATE: "all"
     label: "Assert Legumes accordion with all items visible"
 
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::5"
-    direction: DOWN
-    centerElement: true
-    label: "Scroll until sixth accordion is visible to position Tags at top"
-
 - runFlow:
     file: "accordions/vegetable.yaml"
     env:
       STATE: "all"
     label: "Assert Vegetable accordion with all items visible"
-
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::6"
-    direction: DOWN
-    centerElement: true
-    label: "Scroll until seventh accordion is visible to position Tags at top"
 
 - runFlow:
     file: "accordions/plantProtein.yaml"
@@ -90,25 +48,11 @@ appId: "com.recipedia"
       STATE: "all"
     label: "Assert Plant Protein accordion with all items visible"
 
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::7"
-    direction: DOWN
-    centerElement: true
-    label: "Scroll until eighth accordion is visible to position Tags at top"
-
 - runFlow:
     file: "accordions/condiment.yaml"
     env:
       STATE: "all"
     label: "Assert Condiment accordion with all items visible"
-
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::8"
-    direction: DOWN
-    centerElement: true
-    label: "Scroll until ninth accordion is visible to position Tags at top"
 
 - runFlow:
     file: "accordions/sauce.yaml"
@@ -116,25 +60,11 @@ appId: "com.recipedia"
       STATE: "all"
     label: "Assert Sauce accordion with all items visible"
 
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::9"
-    direction: DOWN
-    centerElement: true
-    label: "Scroll until tenth accordion is visible to position Tags at top"
-
 - runFlow:
     file: "accordions/meat.yaml"
     env:
       STATE: "all"
     label: "Assert Meat accordion with all items visible"
-
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::10"
-    direction: DOWN
-    centerElement: true
-    label: "Scroll until eleventh accordion is visible to position Tags at top"
 
 - runFlow:
     file: "accordions/poultry.yaml"
@@ -142,25 +72,11 @@ appId: "com.recipedia"
       STATE: "all"
     label: "Assert Poultry accordion with all items visible"
 
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::11"
-    direction: DOWN
-    centerElement: true
-    label: "Scroll until twelfth accordion is visible to position Tags at top"
-
 - runFlow:
     file: "accordions/fish.yaml"
     env:
       STATE: "all"
     label: "Assert Fish accordion with all items visible"
-
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::12"
-    direction: DOWN
-    centerElement: true
-    label: "Scroll until thirteenth accordion is visible to position Tags at top"
 
 - runFlow:
     file: "accordions/dairy.yaml"
@@ -168,25 +84,11 @@ appId: "com.recipedia"
       STATE: "all"
     label: "Assert Dairy accordion with all items visible"
 
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::13"
-    direction: DOWN
-    centerElement: true
-    label: "Scroll until fourteenth accordion is visible to position Tags at top"
-
 - runFlow:
     file: "accordions/cheese.yaml"
     env:
       STATE: "all"
     label: "Assert Cheese accordion with all items visible"
-
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::14"
-    direction: DOWN
-    centerElement: true
-    label: "Scroll until fifteenth accordion is visible to position Tags at top"
 
 - runFlow:
     file: "accordions/sugar.yaml"
@@ -194,25 +96,11 @@ appId: "com.recipedia"
       STATE: "all"
     label: "Assert Sugar accordion with all items visible"
 
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::15"
-    direction: DOWN
-    centerElement: true
-    label: "Scroll until sixteenth accordion is visible to position Tags at top"
-
 - runFlow:
     file: "accordions/spice.yaml"
     env:
       STATE: "all"
     label: "Assert Spice accordion with all items visible"
-
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::16"
-    direction: DOWN
-    centerElement: true
-    label: "Scroll until seventeenth accordion is visible to position Tags at top"
 
 - runFlow:
     file: "accordions/fruit.yaml"
@@ -220,25 +108,11 @@ appId: "com.recipedia"
       STATE: "all"
     label: "Assert Fruit accordion with all items visible"
 
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::17"
-    direction: DOWN
-    centerElement: true
-    label: "Scroll until eighteenth accordion is visible to position Tags at top"
-
 - runFlow:
     file: "accordions/oilAndFat.yaml"
     env:
       STATE: "all"
     label: "Assert Oil and Fat accordion with all items visible"
-
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::18"
-    direction: DOWN
-    centerElement: true
-    label: "Scroll until nineteenth accordion is visible to position Tags at top"
 
 - runFlow:
     file: "accordions/nutsAndSeeds.yaml"

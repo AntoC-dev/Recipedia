@@ -2,6 +2,10 @@ import { ScrapedRecipe, ScraperResult } from '@app/modules/recipe-scraper';
 import { hellofreshKeftasRecipe } from '@test-data/scraperMocks/hellofresh';
 
 export const mockScrapeRecipe = jest.fn<Promise<ScraperResult<ScrapedRecipe>>, [string]>();
+export const mockScrapeRecipeFromHtml = jest.fn<
+  Promise<ScraperResult<ScrapedRecipe>>,
+  [string, string]
+>();
 export const mockScrapeRecipeAuthenticated = jest.fn<
   Promise<ScraperResult<ScrapedRecipe>>,
   [string, string, string]
@@ -13,6 +17,7 @@ export const recipeScraperMock = {
   RecipeScraper: jest.fn(),
   recipeScraper: {
     scrapeRecipe: mockScrapeRecipe,
+    scrapeRecipeFromHtml: mockScrapeRecipeFromHtml,
     scrapeRecipeAuthenticated: mockScrapeRecipeAuthenticated,
     getSupportedHosts: mockGetSupportedHosts,
     isHostSupported: mockIsHostSupported,
@@ -42,6 +47,20 @@ export function mockScrapeRecipeSuccess(data: ScrapedRecipe = hellofreshKeftasRe
 
 export function mockScrapeRecipeError(message: string, type = 'Error', host?: string) {
   mockScrapeRecipe.mockResolvedValue({
+    success: false,
+    error: { type, message, host },
+  });
+}
+
+export function mockScrapeRecipeFromHtmlSuccess(data: ScrapedRecipe = hellofreshKeftasRecipe) {
+  mockScrapeRecipeFromHtml.mockResolvedValue({
+    success: true,
+    data,
+  });
+}
+
+export function mockScrapeRecipeFromHtmlError(message: string, type = 'Error', host?: string) {
+  mockScrapeRecipeFromHtml.mockResolvedValue({
     success: false,
     error: { type, message, host },
   });
