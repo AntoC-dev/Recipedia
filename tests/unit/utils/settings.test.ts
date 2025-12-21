@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Appearance } from 'react-native';
 import {
   DEFAULT_SETTINGS,
   getDarkMode,
@@ -20,6 +21,8 @@ jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 jest.mock('expo-localization', () =>
   require('@mocks/deps/expo-localization-mock').expoLocalizationMock()
 );
+
+jest.spyOn(Appearance, 'getColorScheme');
 
 describe('Settings Utility', () => {
   beforeEach(() => {
@@ -46,22 +49,24 @@ describe('Settings Utility', () => {
       expect(result).toBe(false);
     });
 
-    test('returns default value when AsyncStorage returns null', async () => {
+    test('returns system preference when AsyncStorage returns null', async () => {
       (AsyncStorage.getItem as jest.Mock).mockResolvedValue(null);
+      (Appearance.getColorScheme as jest.Mock).mockReturnValue('light');
 
       const result = await getDarkMode();
 
       expect(AsyncStorage.getItem).toHaveBeenCalledWith(SETTINGS_KEYS.DARK_MODE);
-      expect(result).toBe(DEFAULT_SETTINGS.darkMode);
+      expect(result).toBe(false);
     });
 
-    test('returns default value when AsyncStorage throws an error', async () => {
+    test('returns system preference when AsyncStorage throws an error', async () => {
       (AsyncStorage.getItem as jest.Mock).mockRejectedValue(new Error('Test error'));
+      (Appearance.getColorScheme as jest.Mock).mockReturnValue('light');
 
       const result = await getDarkMode();
 
       expect(AsyncStorage.getItem).toHaveBeenCalledWith(SETTINGS_KEYS.DARK_MODE);
-      expect(result).toBe(DEFAULT_SETTINGS.darkMode);
+      expect(result).toBe(false);
     });
   });
 
@@ -279,6 +284,44 @@ describe('Settings Utility', () => {
       await setLanguage('fr');
 
       expect(AsyncStorage.setItem).toHaveBeenCalledWith(SETTINGS_KEYS.LANGUAGE, 'fr');
+    });
+  });
+
+  describe('regression tests - dark mode system preference', () => {
+    test('uses system dark mode when no stored preference exists (bug fix: was defaulting to light)', async () => {
+      (AsyncStorage.getItem as jest.Mock).mockResolvedValue(null);
+      (Appearance.getColorScheme as jest.Mock).mockReturnValue('dark');
+
+      const result = await getDarkMode();
+
+      expect(result).toBe(true);
+    });
+
+    test('uses system light mode when no stored preference exists', async () => {
+      (AsyncStorage.getItem as jest.Mock).mockResolvedValue(null);
+      (Appearance.getColorScheme as jest.Mock).mockReturnValue('light');
+
+      const result = await getDarkMode();
+
+      expect(result).toBe(false);
+    });
+
+    test('uses system preference on error when system is dark', async () => {
+      (AsyncStorage.getItem as jest.Mock).mockRejectedValue(new Error('Test error'));
+      (Appearance.getColorScheme as jest.Mock).mockReturnValue('dark');
+
+      const result = await getDarkMode();
+
+      expect(result).toBe(true);
+    });
+
+    test('respects stored preference over system preference', async () => {
+      (AsyncStorage.getItem as jest.Mock).mockResolvedValue('false');
+      (Appearance.getColorScheme as jest.Mock).mockReturnValue('dark');
+
+      const result = await getDarkMode();
+
+      expect(result).toBe(false);
     });
   });
 });
