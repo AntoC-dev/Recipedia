@@ -19,8 +19,6 @@ jest.mock('@components/molecules/HorizontalList', () => ({
 }));
 jest.mock('@expo/vector-icons', () => require('@mocks/deps/expo-vector-icons-mock'));
 
-jest.mock('@shopify/flash-list', () => require('@mocks/deps/flashlist-mock').flashListMock());
-
 describe('RecipeTags Component', () => {
   const sampleTags = testTags.map(tag => tag.name).sort();
 

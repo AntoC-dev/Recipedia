@@ -30,8 +30,6 @@ jest.mock('@context/DefaultPersonsContext', () =>
   require('@mocks/context/DefaultPersonsContext-mock')
 );
 
-jest.mock('@shopify/flash-list', () => require('@mocks/deps/flash-list-mock'));
-
 jest.mock('@hooks/useDiscoveryWorkflow', () => {
   const { useDiscoveryWorkflowMock } = require('@mocks/hooks/useDiscoveryWorkflow-mock');
   return { useDiscoveryWorkflow: useDiscoveryWorkflowMock };
