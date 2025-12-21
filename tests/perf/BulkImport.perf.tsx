@@ -27,7 +27,6 @@ jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 jest.mock('@context/DefaultPersonsContext', () =>
   require('@mocks/context/DefaultPersonsContext-mock')
 );
-jest.mock('@shopify/flash-list', () => require('@mocks/deps/flash-list-mock'));
 jest.mock('@hooks/useDiscoveryWorkflow', () => {
   const { useDiscoveryWorkflowMock } = require('@mocks/hooks/useDiscoveryWorkflow-mock');
   return { useDiscoveryWorkflow: useDiscoveryWorkflowMock };

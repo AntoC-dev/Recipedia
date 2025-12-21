@@ -1,15 +1,12 @@
 import { fireEvent, render } from '@testing-library/react-native';
 import { BulkImportSettings } from '@screens/BulkImportSettings';
 import React from 'react';
-import { mockNavigate, mockGoBack } from '@mocks/deps/react-navigation-mock';
-import { getAvailableProviders } from '@providers/ProviderRegistry';
+import { mockGoBack, mockNavigate } from '@mocks/deps/react-navigation-mock';
 
 jest.mock('@react-navigation/native', () => {
   const { reactNavigationMock } = require('@mocks/deps/react-navigation-mock');
   return reactNavigationMock();
 });
-
-jest.mock('@shopify/flash-list', () => require('@mocks/deps/flash-list-mock'));
 
 describe('BulkImportSettings', () => {
   beforeEach(() => {

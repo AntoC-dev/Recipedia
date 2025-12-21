@@ -29,8 +29,8 @@ const Reanimated: ReanimatedMock = {
   cond: jest.fn(),
   interpolate: jest.fn(),
   View: jest.fn(() => 'Reanimated.View'),
-  Extrapolate: { 
-    CLAMP: jest.fn() 
+  Extrapolate: {
+    CLAMP: jest.fn(),
   },
   Transition: {
     Together: 'Together',
