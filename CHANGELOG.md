@@ -1,3 +1,14 @@
+## [2.7.0](https://github.com/AntoC-dev/Recipedia/compare/v2.6.0...v2.7.0) (2025-12-21)
+
+### Features
+
+* menu screen ([#164](https://github.com/AntoC-dev/Recipedia/issues/164)) ([5fa6886](https://github.com/AntoC-dev/Recipedia/commit/5fa68862fb0264a636dd50db88ce3f40315a56e7))
+* **menu:** add Menu screen with weekly recipe management ([7a48972](https://github.com/AntoC-dev/Recipedia/commit/7a489720b5ae9cba487de826b16645b326e259b2))
+
+### Bug Fixes
+
+* **recipe-database:** remove seen history when deleting a recipe ([b9b8dd8](https://github.com/AntoC-dev/Recipedia/commit/b9b8dd832ec4f403c7afe07379d61a9d8d939367))
+
 ## [2.6.0](https://github.com/AntoC-dev/Recipedia/compare/v2.5.1...v2.6.0) (2025-12-21)
 
 ### Features
