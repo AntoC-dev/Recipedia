@@ -1,3 +1,14 @@
+## [2.5.1](https://github.com/AntoC-dev/Recipedia/compare/v2.5.0...v2.5.1) (2025-12-21)
+
+### Bug Fixes
+
+* settings first launch ([#165](https://github.com/AntoC-dev/Recipedia/issues/165)) ([ac864ff](https://github.com/AntoC-dev/Recipedia/commit/ac864ffff56ee46717c6c764d1e47733334bec9c))
+* **settings:** use system dark mode preference when no user choice exist ([de97119](https://github.com/AntoC-dev/Recipedia/commit/de97119f109027f65c0bfcfce83df847eb051224))
+
+### Performance Improvements
+
+* update reassure baseline [skip ci] ([0a8fd65](https://github.com/AntoC-dev/Recipedia/commit/0a8fd65e01ea873f4fe105950a5a5b37bbbca807))
+
 ## [2.5.0](https://github.com/AntoC-dev/Recipedia/compare/v2.4.0...v2.5.0) (2025-12-20)
 
 ### Features
