@@ -63,7 +63,7 @@ tags:
     label: "Action - Navigate to Shopping screen"
 
 - runFlow:
-    file: "../../asserts/shopping/en/shoppingPancake.yaml"
+    file: "../../asserts/shopping/en/shoppingPancakeSimple.yaml"
     label: "Assert - Verify normal Pancake ingredients (not doubled)"
 
 - runFlow:
