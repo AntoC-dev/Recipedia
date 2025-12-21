@@ -1,0 +1,57 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    file: "./assertShoppingScreenUI.yaml"
+    label: "Assert shopping screen UI elements"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
+    label: "Cereal category header is displayed"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Flour"
+    label: "Flour item is displayed"
+
+- assertVisible:
+    text: "Flour (200g)"
+    label: "Flour with quantity is displayed"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.plantProtein::SubHeader"
+    label: "Plant Protein category header is displayed"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Eggs"
+    label: "Eggs item is displayed"
+
+- assertVisible:
+    text: "Eggs (2pieces)"
+    label: "Eggs with quantity is displayed"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.dairy::SubHeader"
+    label: "Dairy category header is displayed"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Milk"
+    label: "Milk item is displayed"
+
+- assertVisible:
+    text: "Milk (300ml)"
+    label: "Milk with quantity is displayed"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.oilAndFat::SubHeader"
+    label: "Oil and Fat category header is displayed"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Butter"
+    label: "Butter item is displayed"
+
+- assertVisible:
+    text: "Butter (50g)"
+    label: "Butter with quantity is displayed"
+
+- runFlow:
+    file: "../../../flows/shopping/scrollToTop.yaml"
+    label: "Scroll back to top for next tests"

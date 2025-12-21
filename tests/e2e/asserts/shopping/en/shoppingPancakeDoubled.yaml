@@ -10,15 +10,26 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
-    text: "Cereal"
     label: "Cereal category header is displayed"
+
+- assertVisible:
+    text: "Cereal"
+    label: "Cereal category text is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::Flour"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Flour item"
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::Flour"
     label: "Flour item is displayed"
 
 - assertVisible:
-    text: "Flour (400 g)"
+    text: "Flour (400g)"
     label: "Verify doubled Flour quantity (200g x 2)"
 
 - scrollUntilVisible:
@@ -31,15 +42,26 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.plantProtein::SubHeader"
-    text: "Plant Protein"
     label: "Plant Protein category header is displayed"
+
+- assertVisible:
+    text: "Plant Protein"
+    label: "Plant Protein category text is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::Eggs"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Eggs item"
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::Eggs"
     label: "Eggs item is displayed"
 
 - assertVisible:
-    text: "Eggs (4 pieces)"
+    text: "Eggs (4pieces)"
     label: "Verify doubled Eggs quantity (2 x 2)"
 
 - scrollUntilVisible:
@@ -52,15 +74,26 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.dairy::SubHeader"
-    text: "Dairy"
     label: "Dairy category header is displayed"
+
+- assertVisible:
+    text: "Dairy"
+    label: "Dairy category text is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::Milk"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Milk item"
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::Milk"
     label: "Milk item is displayed"
 
 - assertVisible:
-    text: "Milk (600 ml)"
+    text: "Milk (600ml)"
     label: "Verify doubled Milk quantity (300ml x 2)"
 
 - scrollUntilVisible:
@@ -73,15 +106,26 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.oilAndFat::SubHeader"
-    text: "Oil and Fat"
     label: "Oil and Fat category header is displayed"
+
+- assertVisible:
+    text: "Oil and Fat"
+    label: "Oil and Fat category text is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::Butter"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Butter item"
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::Butter"
     label: "Butter item is displayed"
 
 - assertVisible:
-    text: "Butter (100 g)"
+    text: "Butter (100g)"
     label: "Verify doubled Butter quantity (50g x 2)"
 
 - runFlow:

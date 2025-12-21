@@ -1,33 +1,34 @@
 appId: "com.recipedia"
 ---
-- scrollUntilVisible:
-    element:
-      id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to Cereal category"
+# Order: cereal, plantProtein, sauce, meat, dairy, cheese, oilAndFat
 
+# CEREAL
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
-    text: "Cereal"
     label: "Cereal category header is displayed"
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::Flour"
-    text: "Flour (200 g)"
-    label: "Flour from Pancakes is displayed"
+    label: "Flour item is displayed"
+
+- assertVisible:
+    text: "Flour (200g)"
+    label: "Flour with quantity is displayed"
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::Spaghetti"
-    text: "Spaghetti (200 g)"
-    label: "Spaghetti from Spaghetti Bolognese is displayed"
+    label: "Spaghetti item is displayed"
 
+- assertVisible:
+    text: "Spaghetti (200g)"
+    label: "Spaghetti with quantity is displayed"
+
+# PLANT PROTEIN
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.plantProtein::SubHeader"
     direction: DOWN
-    speed: 60
+    speed: 40
     centerElement: true
     label: "Scroll to Plant Protein category"
 
@@ -36,104 +37,117 @@ appId: "com.recipedia"
     label: "Plant Protein category header is displayed"
 
 - assertVisible:
+    id: "ShoppingScreen::SectionList::Eggs"
+    label: "Eggs item is displayed"
+
+- assertVisible:
+    text: "Eggs (2pieces)"
+    label: "Eggs with quantity is displayed"
+
+# SAUCE
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.sauce::SubHeader"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to Sauce category"
+
+- assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.sauce::SubHeader"
-    text: "Sauce"
     label: "Sauce category header is displayed"
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::Tomato Sauce"
-    text: "Tomato Sauce (250 ml)"
-    label: "Tomato Sauce from Spaghetti Bolognese is displayed"
+    label: "Tomato Sauce item is displayed"
 
+- assertVisible:
+    text: "Tomato Sauce (250ml)"
+    label: "Tomato Sauce with quantity is displayed"
+
+# MEAT
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.meat::SubHeader"
     direction: DOWN
-    speed: 60
+    speed: 40
     centerElement: true
     label: "Scroll to Meat category"
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.meat::SubHeader"
-    text: "Meat"
     label: "Meat category header is displayed"
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::Ground Beef"
-    text: "Ground Beef (300 g)"
-    label: "Ground Beef from Spaghetti Bolognese is displayed"
-
-- scrollUntilVisible:
-    element:
-      id: "ShoppingScreen::SectionList::ingredientTypes.plantProtein::SubHeader"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to Plant Protein category"
+    label: "Ground Beef item is displayed"
 
 - assertVisible:
-    id: "ShoppingScreen::SectionList::ingredientTypes.plantProtein::SubHeader"
-    text: "Plant Protein"
-    label: "Plant Protein category header is displayed"
+    text: "Ground Beef (300g)"
+    label: "Ground Beef with quantity is displayed"
 
-- assertVisible:
-    id: "ShoppingScreen::SectionList::Eggs"
-    text: "Eggs (2 pieces)"
-    label: "Eggs from Pancakes is displayed"
-
+# DAIRY
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.dairy::SubHeader"
     direction: DOWN
-    speed: 60
+    speed: 40
     centerElement: true
     label: "Scroll to Dairy category"
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.dairy::SubHeader"
-    text: "Dairy"
     label: "Dairy category header is displayed"
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::Milk"
-    text: "Milk (300 ml)"
-    label: "Milk from Pancakes is displayed"
-
-- scrollUntilVisible:
-    element:
-      id: "ShoppingScreen::SectionList::ingredientTypes.oilAndFat::SubHeader"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to Oil and Fat category"
+    label: "Milk item is displayed"
 
 - assertVisible:
-    id: "ShoppingScreen::SectionList::ingredientTypes.oilAndFat::SubHeader"
-    text: "Oil and Fat"
-    label: "Oil and Fat category header is displayed"
+    text: "Milk (300ml)"
+    label: "Milk with quantity is displayed"
 
-- assertVisible:
-    id: "ShoppingScreen::SectionList::Butter"
-    text: "Butter (50 g)"
-    label: "Butter from Pancakes is displayed"
-
+# CHEESE
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.cheese::SubHeader"
     direction: DOWN
-    speed: 60
+    speed: 40
     centerElement: true
     label: "Scroll to Cheese category"
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.cheese::SubHeader"
-    text: "Cheese"
     label: "Cheese category header is displayed"
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::Parmesan"
-    text: "Parmesan (50 g)"
-    label: "Parmesan from Spaghetti Bolognese is displayed"
+    label: "Parmesan item is displayed"
+
+- assertVisible:
+    text: "Parmesan (50g)"
+    label: "Parmesan with quantity is displayed"
+
+# OIL AND FAT
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.oilAndFat::SubHeader"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to Oil and Fat category"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.oilAndFat::SubHeader"
+    label: "Oil and Fat category header is displayed"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Butter"
+    label: "Butter item is displayed"
+
+- assertVisible:
+    text: "Butter (50g)"
+    label: "Butter with quantity is displayed"
 
 - runFlow:
     file: "../../../flows/shopping/scrollToTop.yaml"

@@ -28,7 +28,7 @@ tags:
     label: "Action - Add Spaghetti Bolognese to menu"
 
 - runFlow:
-    file: "../../asserts/alerts/en/addingRecipe.yaml"
+    file: "../../asserts/alerts/en/addingRecipeToMenu.yaml"
     env:
       RECIPE_NAME: "Spaghetti Bolognese"
     label: "Assert - Verify recipe added alert"
@@ -62,7 +62,7 @@ tags:
     label: "Action - Add Caesar Salad to menu"
 
 - runFlow:
-    file: "../../asserts/alerts/en/addingRecipe.yaml"
+    file: "../../asserts/alerts/en/addingRecipeToMenu.yaml"
     env:
       RECIPE_NAME: "Caesar Salad"
     label: "Assert - Verify recipe added alert"
@@ -100,7 +100,7 @@ tags:
     label: "Action - Add Margherita Pizza to menu"
 
 - runFlow:
-    file: "../../asserts/alerts/en/addingRecipe.yaml"
+    file: "../../asserts/alerts/en/addingRecipeToMenu.yaml"
     env:
       RECIPE_NAME: "Margherita Pizza"
     label: "Assert - Verify recipe added alert"

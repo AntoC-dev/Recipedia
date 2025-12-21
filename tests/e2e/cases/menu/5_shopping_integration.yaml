@@ -16,7 +16,7 @@ tags:
     label: "Verification - Navigate to Shopping screen"
 
 - runFlow:
-    file: "../../asserts/shopping/en/shoppingPancake.yaml"
+    file: "../../asserts/shopping/en/shoppingPancakeSimple.yaml"
     label: "Assert - Verify Pancake ingredients in shopping list"
 
 - tapOn:
@@ -53,7 +53,7 @@ tags:
     label: "Verification - Navigate to Shopping screen"
 
 - runFlow:
-    file: "../../asserts/shopping/en/shoppingPancake.yaml"
+    file: "../../asserts/shopping/en/shoppingPancakeSimple.yaml"
     label: "Assert - Pancake ingredients back in shopping list"
 
 - runFlow:
