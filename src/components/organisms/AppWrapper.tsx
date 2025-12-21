@@ -35,7 +35,7 @@ enum AppMode {
  * @returns JSX element representing the current app mode
  */
 export default function AppWrapper() {
-  const { clearShoppingList, recipes, addRecipeToShopping } = useRecipeDatabase();
+  const { clearMenu, recipes, addRecipeToMenu } = useRecipeDatabase();
   const [mode, setMode] = useState<AppMode>(AppMode.Loading);
 
   useEffect(() => {
@@ -57,8 +57,8 @@ export default function AppWrapper() {
    * This function is called both for normal app launch and after tutorial completion.
    */
   const handleAppLaunch = async () => {
-    await clearShoppingList();
-    tutorialLogger.info('App launch - resetting shopping list');
+    await clearMenu();
+    tutorialLogger.info('App launch - resetting menu');
     setMode(AppMode.Ready);
     markAsLaunched();
   };
@@ -66,14 +66,19 @@ export default function AppWrapper() {
   /**
    * Handles tutorial mode initialization
    *
-   * Prepares the app for tutorial by adding a sample recipe to the shopping list
-   * and transitioning to tutorial mode. This ensures the tutorial has meaningful
-   * data to demonstrate app features.
+   * Prepares the app for tutorial by adding sample recipes to the menu.
+   * This ensures the tutorial has meaningful data to demonstrate the
+   * Menu and Shopping screen features.
    */
   const handleStartTutorial = async () => {
-    const recipeForTutorial = recipes[0];
-    await addRecipeToShopping(recipeForTutorial);
-    tutorialLogger.info('Added recipe to shopping list for tutorial', recipeForTutorial);
+    const recipesToAdd = recipes.slice(0, 3);
+    for (const recipe of recipesToAdd) {
+      await addRecipeToMenu(recipe);
+    }
+    tutorialLogger.info(
+      'Added recipes to menu for tutorial',
+      recipesToAdd.map(r => r.title)
+    );
     setMode(AppMode.Tutorial);
   };
 

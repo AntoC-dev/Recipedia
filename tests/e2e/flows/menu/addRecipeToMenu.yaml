@@ -1,0 +1,31 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Navigate to Search screen"
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::RecipeCards::2::Classic Pancakes-outline"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Classic Pancakes recipe"
+
+- tapOn:
+    id: "SearchScreen::RecipeCards::2::Classic Pancakes"
+    label: "Open Classic Pancakes recipe"
+
+- tapOn:
+    id: "Recipe::BottomActionButton"
+    label: "Add recipe to menu"
+
+- runFlow:
+    file: "../../asserts/alerts/en/addingRecipeToMenu.yaml"
+    env:
+      RECIPE_NAME: "Classic Pancakes"
+    label: "Verify recipe added alert"
+
+- runFlow:
+    file: "../search/scrollBackToTop.yaml"
+    label: "Scroll back to top"

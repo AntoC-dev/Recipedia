@@ -115,7 +115,7 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
 
-  const { addRecipe, editRecipe, deleteRecipe, addRecipeToShopping, findSimilarRecipes } =
+  const { addRecipe, editRecipe, deleteRecipe, addRecipeToMenu, findSimilarRecipes } =
     useRecipeDatabase();
 
   const recipeTestId = 'Recipe';
@@ -180,10 +180,10 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
    * @returns {Promise<void>} Resolves when recipe is added to shopping list
    */
   async function readOnlyValidation() {
-    await addRecipeToShopping(actions.createRecipeSnapshot());
+    await addRecipeToMenu(actions.createRecipeSnapshot());
     dialogs.showValidationDialog({
       title: t('success'),
-      content: t('addedToShoppingList', { recipeName: state.recipeTitle }),
+      content: t('addedToMenu', { recipeName: state.recipeTitle }),
       confirmText: t('ok'),
       onConfirm: () => navigation.goBack(),
     });

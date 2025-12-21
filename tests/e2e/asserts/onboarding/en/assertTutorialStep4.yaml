@@ -6,8 +6,8 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "TutorialTooltip::Text"
-    text: "Adjust settings like language, default portions, and manage ingredients and tags. Update details like ingredient seasons to match your preferences."
-    label: "Verify Step 4 (Parameters) description"
+    text: "See what ingredients you need based on selected recipes. Long press ingredients to see which recipes use them."
+    label: "Verify Step 4 (Shopping) description"
 
 - extendedWaitUntil:
     visible:
@@ -22,8 +22,8 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "TutorialTooltip::Next-text"
-    text: "Finish"
-    label: "Verify Finish button shows Finish text"
+    text: "Next"
+    label: "Verify Next button is visible"
 
 - assertVisible:
     text: "4"

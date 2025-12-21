@@ -7,11 +7,7 @@ import RecipeDatabase from '@utils/RecipeDatabase';
 import { testTags } from '@test-data/tagsDataset';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
-import {
-  ingredientType,
-  shoppingListTableElement,
-  tagTableElement,
-} from '@customTypes/DatabaseElementTypes';
+import { ingredientType, tagTableElement } from '@customTypes/DatabaseElementTypes';
 import { StackScreenParamList } from '@customTypes/ScreenTypes';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
@@ -984,55 +980,17 @@ describe('Recipe Component tests', () => {
   test('validates button on read only mode', async () => {
     const { getByTestId } = await renderRecipe(createMockRoute(mockRouteReadOnly));
 
-    expect(RecipeDatabase.getInstance().get_shopping()).toEqual([]);
+    expect(RecipeDatabase.getInstance().get_menu()).toEqual([]);
 
     fireEvent.press(getByTestId('Recipe::BottomActionButton'));
 
-    // Wait for shopping list to be populated (validation dialog is shown but navigation doesn't happen immediately)
     await waitFor(() => {
-      expect(RecipeDatabase.getInstance().get_shopping()).toHaveLength(4);
+      expect(RecipeDatabase.getInstance().get_menu()).toHaveLength(1);
     });
-    expect(RecipeDatabase.getInstance().get_shopping()).toEqual(
-      new Array<shoppingListTableElement[]>(
-        {
-          //@ts-ignore id is always set at this point
-          id: 1,
-          name: 'Taco Shells',
-          purchased: false,
-          quantity: '6',
-          recipesTitle: ['Chicken Tacos'],
-          type: listFilter.cereal,
-          unit: 'pieces',
-        },
-        {
-          id: 2,
-          name: 'Chicken Breast',
-          purchased: false,
-          quantity: '300',
-          recipesTitle: ['Chicken Tacos'],
-          type: listFilter.poultry,
-          unit: 'g',
-        },
-        {
-          id: 3,
-          name: 'Lettuce',
-          purchased: false,
-          quantity: '50',
-          recipesTitle: ['Chicken Tacos'],
-          type: listFilter.vegetable,
-          unit: 'g',
-        },
-        {
-          id: 4,
-          name: 'Cheddar',
-          purchased: false,
-          quantity: '50',
-          recipesTitle: ['Chicken Tacos'],
-          type: listFilter.cheese,
-          unit: 'g',
-        }
-      )
-    );
+
+    const menu = RecipeDatabase.getInstance().get_menu();
+    expect(menu[0].recipeTitle).toEqual('Chicken Tacos');
+    expect(menu[0].isCooked).toBe(false);
   });
 
   test('validates button on edit mode', async () => {

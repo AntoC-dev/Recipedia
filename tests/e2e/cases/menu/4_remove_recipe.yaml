@@ -1,0 +1,28 @@
+name: "4 - Remove Recipe from Menu Flow"
+appId: "com.recipedia"
+tags:
+  - menu
+---
+- runFlow:
+    file: "../../flows/setupTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- runFlow:
+    file: "../../flows/menu/addRecipeToMenu.yaml"
+    label: "Setup - Add Classic Pancakes to menu"
+
+- tapOn:
+    id: "BottomTabs::Menu"
+    label: "Action - Navigate to Menu screen"
+
+- tapOn:
+    id: "MenuScreen::MenuItem::1::RemoveButton"
+    label: "Action - Remove recipe from menu"
+
+- runFlow:
+    file: "../../asserts/menu/en/assertMenuEmpty.yaml"
+    label: "Assert - Verify menu is now empty"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Cleanup - Navigate to Home screen"

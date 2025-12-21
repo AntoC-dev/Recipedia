@@ -43,6 +43,10 @@ tags:
     file: "../../flows/parameters/language/searchIsTranslated.yaml"
     label: "Verification - Verify Search screen translated to French"
 
+- runFlow:
+    file: "../../flows/parameters/language/menuIsTranslated.yaml"
+    label: "Verification - Verify Menu screen translated to French"
+
 - tapOn:
     text: "Paramètres"
     label: "Action - Navigate back to Parameters screen"

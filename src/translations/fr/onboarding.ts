@@ -6,6 +6,7 @@ export default {
     features: {
       find: 'Trouvez des recettes rapidement',
       add: 'Ajoutez des recettes facilement',
+      import: 'Importez depuis vos sites préférés',
       shopping: 'Générez des listes de courses',
     },
     startTour: 'Explorer',
@@ -33,6 +34,11 @@ export default {
       title: 'Recherche',
       description:
         'Recherchez par nom de recette ou utilisez "Ajouter un filtre" pour trouver des recettes par ingrédients, tags, temps de cuisson, et plus.',
+    },
+    menu: {
+      title: 'Menu',
+      description:
+        'Votre menu de la semaine. Cochez les recettes une fois cuisinées - leurs ingrédients seront retirés de votre liste de courses.',
     },
     shopping: {
       title: 'Listes de Courses',

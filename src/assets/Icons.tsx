@@ -28,6 +28,8 @@ export const Icons: Record<string, dictionaryIcons> = {
   homeSelectedIcon: 'home-outline',
   shoppingUnselectedIcon: 'cart',
   shoppingSelectedIcon: 'cart-outline',
+  menuUnselectedIcon: 'silverware-fork-knife',
+  menuSelectedIcon: 'silverware-fork-knife',
   plannerUnselectedIcon: 'calendar',
   plannerSelectedIcon: 'calendar-outline',
   parametersUnselectedIcon: 'cog',

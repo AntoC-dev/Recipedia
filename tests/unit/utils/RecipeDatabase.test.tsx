@@ -7,11 +7,8 @@ import {
   ingredientType,
   nutritionTableElement,
   recipeTableElement,
-  shoppingListTableElement,
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
-import { shoppingAddedMultipleTimes, testShopping } from '@test-data/shoppingListsDataset';
-import { listFilter } from '@customTypes/RecipeFiltersTypes';
 import { getRandomRecipes } from '@utils/FilterFunctions';
 
 describe('RecipeDatabase', () => {
@@ -319,371 +316,6 @@ describe('RecipeDatabase', () => {
 
     afterEach(async () => {
       await db.closeAndReset();
-    });
-
-    test('Add a recipe to the shoppingList shall update accordingly the database', async () => {
-      for (let i = 0; i < testRecipes.length; i++) {
-        await db.addRecipeToShopping(testRecipes[i]);
-        expect(db.get_shopping()).toEqual(testShopping[i]);
-      }
-    });
-
-    test('Add a recipe to the shoppingList twice shall update accordingly the database', async () => {
-      await db.addRecipeToShopping(testRecipes[0]);
-      expect(db.get_shopping()).toEqual(testShopping[0]);
-
-      await db.addRecipeToShopping(testRecipes[0]);
-      expect(db.get_shopping()).toEqual(shoppingAddedMultipleTimes);
-    });
-
-    test('Adding an array a recipe to the shoppingList shall update accordingly the database', async () => {
-      await db.addMultipleShopping(testRecipes);
-      expect(db.get_shopping()).toEqual(testShopping[testShopping.length - 1]);
-    });
-
-    test('Adding a purchased information for a recipe shall update the shopping list accordingly', async () => {
-      // TODO ...
-      await db.addMultipleShopping(testRecipes);
-      expect(db.get_shopping()).toEqual(testShopping[testShopping.length - 1]);
-    });
-
-    test('Remove a recipe from shopping and ensure it is deleted', async () => {
-      expect(expect.arrayContaining(db.get_shopping())).toEqual([]);
-      let expected = new Array<shoppingListTableElement>(
-        {
-          id: 1,
-          name: 'Pasta',
-          purchased: false,
-          quantity: '200',
-          recipesTitle: ['Pesto Pasta'],
-          type: listFilter.cereal,
-          unit: 'g',
-        },
-        {
-          id: 2,
-          name: 'Basil Leaves',
-          purchased: false,
-          quantity: '50',
-          recipesTitle: ['Pesto Pasta'],
-          type: listFilter.spice,
-          unit: 'g',
-        },
-        {
-          id: 3,
-          name: 'Parmesan',
-          purchased: false,
-          quantity: '60',
-          recipesTitle: ['Pesto Pasta', 'Caesar Salad'],
-          type: listFilter.cheese,
-          unit: 'g',
-        },
-        {
-          id: 4,
-          name: 'Olive Oil',
-          purchased: false,
-          quantity: '50',
-          recipesTitle: ['Pesto Pasta'],
-          type: listFilter.oilAndFat,
-          unit: 'ml',
-        },
-        {
-          id: 5,
-          name: 'Pine Nuts',
-          purchased: false,
-          quantity: '20',
-          recipesTitle: ['Pesto Pasta'],
-          type: listFilter.nutsAndSeeds,
-          unit: 'g',
-        },
-        {
-          id: 6,
-          name: 'Taco Shells',
-          purchased: false,
-          quantity: '6',
-          recipesTitle: ['Chicken Tacos'],
-          type: listFilter.cereal,
-          unit: 'pieces',
-        },
-        {
-          id: 7,
-          name: 'Chicken Breast',
-          purchased: false,
-          quantity: '300',
-          recipesTitle: ['Chicken Tacos'],
-          type: listFilter.poultry,
-          unit: 'g',
-        },
-        {
-          id: 8,
-          name: 'Lettuce',
-          purchased: false,
-          quantity: '50',
-          recipesTitle: ['Chicken Tacos'],
-          type: listFilter.vegetable,
-          unit: 'g',
-        },
-        {
-          id: 9,
-          name: 'Cheddar',
-          purchased: false,
-          quantity: '50',
-          recipesTitle: ['Chicken Tacos'],
-          type: listFilter.cheese,
-          unit: 'g',
-        },
-        {
-          id: 10,
-          name: 'Romaine Lettuce',
-          purchased: false,
-          quantity: '100',
-          recipesTitle: ['Caesar Salad'],
-          type: listFilter.vegetable,
-          unit: 'g',
-        },
-        {
-          id: 11,
-          name: 'Croutons',
-          purchased: false,
-          quantity: '50',
-          recipesTitle: ['Caesar Salad'],
-          type: listFilter.cereal,
-          unit: 'g',
-        },
-        {
-          id: 12,
-          name: 'Caesar Dressing',
-          purchased: false,
-          quantity: '50',
-          recipesTitle: ['Caesar Salad'],
-          type: listFilter.sauce,
-          unit: 'ml',
-        }
-      );
-
-      await db.addRecipeToShopping(testRecipes[7]);
-      await db.addRecipeToShopping(testRecipes[1]);
-      await db.addRecipeToShopping(testRecipes[3]);
-
-      expect(await db.deleteRecipe(testRecipes[0])).toEqual(true);
-      expect(expect.arrayContaining(db.get_shopping())).toEqual(expected);
-
-      expect(await db.deleteRecipe(testRecipes[7])).toEqual(true);
-      expected = expected.filter(
-        shop =>
-          !(shop.name === 'Pasta') &&
-          !(shop.name === 'Basil Leaves') &&
-          !(shop.name === 'Olive Oil') &&
-          !(shop.name === 'Pine Nuts')
-      );
-      expected.map(shop => {
-        if (shop.name.includes('Parmesan')) {
-          shop.recipesTitle = ['Caesar Salad'];
-          shop.quantity = '30';
-        }
-      });
-      expect(expect.arrayContaining(db.get_shopping())).toEqual(expected);
-
-      expect(await db.deleteRecipe({ ...testRecipes[1], id: undefined })).toEqual(true);
-      expected = expected.filter(
-        shop =>
-          !(shop.name === 'Taco Shells') &&
-          !(shop.name === 'Chicken Breast') &&
-          !(shop.name === 'Lettuce') &&
-          !(shop.name === 'Cheddar')
-      );
-
-      expect(expect.arrayContaining(db.get_shopping())).toEqual(expected);
-
-      expect(await db.deleteRecipe(testRecipes[3])).toEqual(true);
-      expect(expect.arrayContaining(db.get_shopping())).toEqual([]);
-    });
-
-    test('Edit a recipe in shopping list updates shopping ingredients', async () => {
-      await db.addRecipeToShopping(testRecipes[0]);
-
-      const shoppingBefore = db.get_shopping();
-      expect(shoppingBefore.length).toBeGreaterThan(0);
-
-      const editedRecipe = {
-        ...testRecipes[0],
-        title: 'Updated Spaghetti',
-        ingredients: [testIngredients[0]],
-      };
-
-      await db.editRecipe(editedRecipe);
-
-      const shoppingAfter = db.get_shopping();
-
-      shoppingAfter.forEach(shop => {
-        expect(shop.recipesTitle).not.toContain(testRecipes[0].title);
-        if (shop.recipesTitle.includes(editedRecipe.title)) {
-          expect(shop.recipesTitle).toContain(editedRecipe.title);
-        }
-      });
-
-      const originalIngredientInShopping = shoppingAfter.find(
-        shop => shop.name === testIngredients[0].name
-      );
-      expect(originalIngredientInShopping).toBeDefined();
-    });
-
-    test('Edit a recipe not in shopping list does not affect shopping', async () => {
-      const shoppingBefore = db.get_shopping();
-
-      const editedRecipe = {
-        ...testRecipes[0],
-        title: 'Updated Recipe Not In Shopping',
-        ingredients: [testIngredients[0]],
-      };
-
-      await db.editRecipe(editedRecipe);
-
-      const shoppingAfter = db.get_shopping();
-      expect(shoppingAfter).toEqual(shoppingBefore);
-    });
-
-    describe('Shopping list management with recipe operations', () => {
-      test('Delete recipe with unique ingredients removes all shopping items', async () => {
-        await db.addRecipeToShopping(testRecipes[0]);
-
-        const shoppingBefore = db.get_shopping();
-        expect(shoppingBefore.length).toBeGreaterThan(0);
-
-        const allIngredientsUnique = shoppingBefore.every(
-          shop => shop.recipesTitle.length === 1 && shop.recipesTitle[0] === testRecipes[0].title
-        );
-        expect(allIngredientsUnique).toBe(true);
-
-        await db.deleteRecipe(testRecipes[0]);
-
-        const shoppingAfter = db.get_shopping();
-        expect(shoppingAfter).toEqual([]);
-      });
-
-      test('Delete recipe removes ingredient when it was the last recipe using it', async () => {
-        await db.addRecipeToShopping(testRecipes[7]);
-        await db.addRecipeToShopping(testRecipes[3]);
-
-        const shoppingBefore = db.get_shopping();
-        const pastaItem = shoppingBefore.find(shop => shop.name === 'Pasta');
-        expect(pastaItem).toBeDefined();
-        expect(pastaItem?.recipesTitle).toEqual(['Pesto Pasta']);
-
-        await db.deleteRecipe(testRecipes[7]);
-
-        const shoppingAfter = db.get_shopping();
-        const pastaAfter = shoppingAfter.find(shop => shop.name === 'Pasta');
-        expect(pastaAfter).toBeUndefined();
-      });
-
-      test('Delete recipe removes ingredient with empty recipesTitle even if quantity mismatch', async () => {
-        await db.addRecipeToShopping(testRecipes[7]);
-
-        const shoppingBefore = db.get_shopping();
-        const oliveOil = shoppingBefore.find(shop => shop.name === 'Olive Oil');
-        expect(oliveOil).toBeDefined();
-        expect(oliveOil?.recipesTitle).toEqual(['Pesto Pasta']);
-        expect(oliveOil?.quantity).toBe('50');
-
-        await db.deleteRecipe(testRecipes[7]);
-
-        const shoppingAfter = db.get_shopping();
-        const oliveOilAfter = shoppingAfter.find(shop => shop.name === 'Olive Oil');
-        expect(oliveOilAfter).toBeUndefined();
-      });
-
-      test('Delete recipe with shared ingredients updates quantities correctly', async () => {
-        await db.addRecipeToShopping(testRecipes[7]);
-        await db.addRecipeToShopping(testRecipes[3]);
-
-        const shopping = db.get_shopping();
-        const parmesanItem = shopping.find(shop => shop.name === 'Parmesan');
-        expect(parmesanItem).toBeDefined();
-        expect(parmesanItem?.quantity).toBe('60');
-        expect(parmesanItem?.recipesTitle).toEqual(['Pesto Pasta', 'Caesar Salad']);
-
-        await db.deleteRecipe(testRecipes[7]);
-
-        const shoppingAfter = db.get_shopping();
-        const parmesanAfter = shoppingAfter.find(shop => shop.name === 'Parmesan');
-
-        expect(parmesanAfter).toBeDefined();
-        expect(parmesanAfter?.quantity).toBe('30');
-        expect(parmesanAfter?.recipesTitle.length).toBe(1);
-        expect(parmesanAfter?.recipesTitle[0]).toBe('Caesar Salad');
-      });
-
-      test('Delete recipe removes title from shopping item recipesTitle array', async () => {
-        await db.addRecipeToShopping(testRecipes[0]);
-
-        const shoppingBefore = db.get_shopping();
-        expect(shoppingBefore.length).toBeGreaterThan(0);
-        shoppingBefore.forEach(shop => {
-          expect(shop.recipesTitle).toContain(testRecipes[0].title);
-        });
-
-        await db.deleteRecipe(testRecipes[0]);
-
-        const shoppingAfter = db.get_shopping();
-        shoppingAfter.forEach(shop => {
-          expect(shop.recipesTitle).not.toContain(testRecipes[0].title);
-        });
-      });
-
-      test('Edit recipe quantity updates shopping list correctly', async () => {
-        const recipe = {
-          ...testRecipes[0],
-          ingredients: [{ ...testIngredients[0], quantity: '200' }],
-        };
-
-        await db.addRecipe(recipe);
-        await db.addRecipeToShopping(recipe);
-
-        const shoppingBefore = db.get_shopping();
-        const pastaItemBefore = shoppingBefore.find(shop => shop.name === testIngredients[0].name);
-        expect(pastaItemBefore).toBeDefined();
-        expect(pastaItemBefore?.quantity).toBe('200');
-
-        const editedRecipe = {
-          ...recipe,
-          ingredients: [{ ...testIngredients[0], quantity: '300' }],
-        };
-
-        await db.editRecipe(editedRecipe);
-
-        const shoppingAfter = db.get_shopping();
-        const pastaItemAfter = shoppingAfter.find(shop => shop.name === testIngredients[0].name);
-        expect(pastaItemAfter).toBeDefined();
-        expect(pastaItemAfter?.quantity).toBe('300');
-        expect(pastaItemAfter?.recipesTitle).toContain(editedRecipe.title);
-      });
-
-      test('Edit recipe ingredient quantities when multiple recipes share ingredients', async () => {
-        await db.addRecipeToShopping(testRecipes[7]);
-        await db.addRecipeToShopping(testRecipes[3]);
-
-        const shopping = db.get_shopping();
-        const parmesanBefore = shopping.find(shop => shop.name === 'Parmesan');
-        expect(parmesanBefore).toBeDefined();
-        expect(parmesanBefore?.quantity).toBe('60');
-
-        const editedRecipe = {
-          ...testRecipes[7],
-          ingredients: testRecipes[7].ingredients.map(ing =>
-            ing.name === 'Parmesan' ? { ...ing, quantity: '60' } : ing
-          ),
-        };
-
-        await db.editRecipe(editedRecipe);
-
-        const shoppingAfter = db.get_shopping();
-        const parmesanAfter = shoppingAfter.find(shop => shop.name === 'Parmesan');
-        expect(parmesanAfter).toBeDefined();
-        expect(parmesanAfter?.quantity).toBe('90');
-        expect(parmesanAfter?.recipesTitle.length).toBe(2);
-        expect(parmesanAfter?.recipesTitle).toContain('Pesto Pasta');
-        expect(parmesanAfter?.recipesTitle).toContain('Caesar Salad');
-      });
     });
 
     test('Remove a tag and ensure it is deleted', async () => {
@@ -1298,7 +930,6 @@ describe('RecipeDatabase', () => {
       await db.addMultipleIngredients(testIngredients);
       await db.addMultipleTags(testTags);
       await db.addMultipleRecipes(testRecipes);
-      await db.addMultipleShopping(testRecipes);
     });
 
     afterEach(async () => {
@@ -1339,24 +970,12 @@ describe('RecipeDatabase', () => {
       expect(db.isRecipeExist(testRecipes[0])).toBe(true);
     });
 
-    test('ResetShoppingList reset the table of shopping elements', async () => {
-      const ingredientsInDatabase = [...db.get_ingredients()];
-
-      await db.resetShoppingList();
-
-      expect(db.get_recipes()).toEqual(testRecipes);
-      expect(db.get_tags()).toEqual(testTags);
-      expect(db.get_ingredients()).toEqual(ingredientsInDatabase);
-      expect(db.get_shopping()).toEqual([]);
-    });
-
     test('Reset database clears all data', async () => {
       await db.closeAndReset();
 
       expect(db.get_recipes()).toEqual([]);
       expect(db.get_tags()).toEqual([]);
       expect(db.get_ingredients()).toEqual([]);
-      expect(db.get_shopping()).toEqual([]);
     });
 
     test('Remove a recipe and ensure it is deleted', async () => {
@@ -1416,22 +1035,11 @@ describe('RecipeDatabase', () => {
 
       const oldRecipes = [...db.get_recipes()]; // TODO to replace by getAll ...
       db.remove_recipe(testRecipes[0]);
-      const newRecipes = db.get_recipes(); // TODO to replace by getAll ...
+      const newRecipes = db.get_recipes();
       expect(newRecipes).not.toContain(testRecipes[0]);
       expect(newRecipes).not.toEqual(oldRecipes);
       expect(oldRecipes).toEqual(expect.arrayContaining(newRecipes));
-
-      const oldShopping = [...db.get_shopping()]; // TODO to replace by getAll ...
-      db.remove_shopping(testShopping[0][0]);
-      const newShopping = db.get_shopping(); // TODO to replace by getAll ...
-      expect(newShopping).not.toContain(testShopping[0][0]);
-      expect(newShopping).not.toEqual(oldShopping);
-      expect(oldShopping).toEqual(expect.arrayContaining(newShopping));
     });
-
-    // TODO test searchRandomlyTags
-
-    // TODO test decodeArrayOfShopping normal case (return the real decodedShopping)
 
     // TODO implement and test cases where we verify a tag but it doesn't exist (yet)
     // TODO implement and test cases where we verify an ingredient but it doesn't exist (yet)
@@ -2139,6 +1747,318 @@ describe('RecipeDatabase', () => {
 
       await expect(db.addMultipleRecipes(validRecipes)).resolves.not.toThrow();
       expect(db.get_recipes().length).toBe(2);
+    });
+  });
+
+  describe('Menu Operations', () => {
+    const db = RecipeDatabase.getInstance();
+
+    beforeEach(async () => {
+      await db.init();
+      await db.addMultipleIngredients(testIngredients);
+      await db.addMultipleTags(testTags);
+      await db.addMultipleRecipes(testRecipes);
+    });
+
+    afterEach(async () => {
+      await db.closeAndReset();
+    });
+
+    describe('get_menu', () => {
+      test('returns empty array when no menu items', () => {
+        expect(db.get_menu()).toEqual([]);
+      });
+
+      test('returns menu items after adding recipes', async () => {
+        await db.addRecipeToMenu(db.get_recipes()[0]);
+
+        const menu = db.get_menu();
+        expect(menu.length).toBe(1);
+        expect(menu[0].recipeTitle).toBe(testRecipes[0].title);
+      });
+    });
+
+    describe('addRecipeToMenu', () => {
+      test('adds recipe to menu successfully', async () => {
+        const recipe = db.get_recipes()[0];
+        await db.addRecipeToMenu(recipe);
+
+        const menu = db.get_menu();
+        expect(menu.length).toBe(1);
+        expect(menu[0].recipeId).toBe(recipe.id);
+        expect(menu[0].recipeTitle).toBe(recipe.title);
+        expect(menu[0].imageSource).toBe(recipe.image_Source);
+        expect(menu[0].isCooked).toBe(false);
+        expect(menu[0].count).toBe(1);
+      });
+
+      test('does not add recipe without ID', async () => {
+        const recipeWithoutId: recipeTableElement = { ...testRecipes[0], id: undefined };
+        await db.addRecipeToMenu(recipeWithoutId);
+
+        expect(db.get_menu().length).toBe(0);
+      });
+
+      test('increments count when adding same recipe twice', async () => {
+        const recipe = db.get_recipes()[0];
+        await db.addRecipeToMenu(recipe);
+        await db.addRecipeToMenu(recipe);
+
+        const menu = db.get_menu();
+        expect(menu.length).toBe(1);
+        expect(menu[0].count).toBe(2);
+      });
+
+      test('increments count when adding same recipe multiple times', async () => {
+        const recipe = db.get_recipes()[0];
+        await db.addRecipeToMenu(recipe);
+        await db.addRecipeToMenu(recipe);
+        await db.addRecipeToMenu(recipe);
+
+        const menu = db.get_menu();
+        expect(menu.length).toBe(1);
+        expect(menu[0].count).toBe(3);
+      });
+
+      test('adds different recipes as separate menu items', async () => {
+        const recipe1 = db.get_recipes()[0];
+        const recipe2 = db.get_recipes()[1];
+        await db.addRecipeToMenu(recipe1);
+        await db.addRecipeToMenu(recipe2);
+
+        const menu = db.get_menu();
+        expect(menu.length).toBe(2);
+        expect(menu[0].recipeId).toBe(recipe1.id);
+        expect(menu[1].recipeId).toBe(recipe2.id);
+      });
+    });
+
+    describe('toggleMenuItemCooked', () => {
+      test('toggles cooked status from false to true', async () => {
+        const recipe = db.get_recipes()[0];
+        await db.addRecipeToMenu(recipe);
+        const menuItem = db.get_menu()[0];
+
+        expect(menuItem.isCooked).toBe(false);
+
+        const result = await db.toggleMenuItemCooked(menuItem.id!);
+
+        expect(result).toBe(true);
+        expect(db.get_menu()[0].isCooked).toBe(true);
+      });
+
+      test('toggles cooked status from true to false', async () => {
+        const recipe = db.get_recipes()[0];
+        await db.addRecipeToMenu(recipe);
+        const menuItem = db.get_menu()[0];
+
+        await db.toggleMenuItemCooked(menuItem.id!);
+        expect(db.get_menu()[0].isCooked).toBe(true);
+
+        const result = await db.toggleMenuItemCooked(menuItem.id!);
+
+        expect(result).toBe(true);
+        expect(db.get_menu()[0].isCooked).toBe(false);
+      });
+
+      test('returns false for non-existent menu item', async () => {
+        const result = await db.toggleMenuItemCooked(99999);
+
+        expect(result).toBe(false);
+      });
+    });
+
+    describe('removeFromMenu', () => {
+      test('removes menu item when count is 1', async () => {
+        const recipe = db.get_recipes()[0];
+        await db.addRecipeToMenu(recipe);
+        const menuItem = db.get_menu()[0];
+
+        const result = await db.removeFromMenu(menuItem.id!);
+
+        expect(result).toBe(true);
+        expect(db.get_menu().length).toBe(0);
+      });
+
+      test('decrements count when count is greater than 1', async () => {
+        const recipe = db.get_recipes()[0];
+        await db.addRecipeToMenu(recipe);
+        await db.addRecipeToMenu(recipe);
+        const menuItem = db.get_menu()[0];
+
+        expect(menuItem.count).toBe(2);
+
+        const result = await db.removeFromMenu(menuItem.id!);
+
+        expect(result).toBe(true);
+        expect(db.get_menu().length).toBe(1);
+        expect(db.get_menu()[0].count).toBe(1);
+      });
+
+      test('decrements count multiple times before removing', async () => {
+        const recipe = db.get_recipes()[0];
+        await db.addRecipeToMenu(recipe);
+        await db.addRecipeToMenu(recipe);
+        await db.addRecipeToMenu(recipe);
+        const menuItem = db.get_menu()[0];
+
+        expect(menuItem.count).toBe(3);
+
+        await db.removeFromMenu(menuItem.id!);
+        expect(db.get_menu()[0].count).toBe(2);
+
+        await db.removeFromMenu(menuItem.id!);
+        expect(db.get_menu()[0].count).toBe(1);
+
+        await db.removeFromMenu(menuItem.id!);
+        expect(db.get_menu().length).toBe(0);
+      });
+
+      test('returns false for non-existent menu item', async () => {
+        const result = await db.removeFromMenu(99999);
+
+        expect(result).toBe(false);
+      });
+    });
+
+    describe('clearMenu', () => {
+      test('clears all menu items', async () => {
+        await db.addRecipeToMenu(db.get_recipes()[0]);
+        await db.addRecipeToMenu(db.get_recipes()[1]);
+
+        expect(db.get_menu().length).toBe(2);
+
+        await db.clearMenu();
+
+        expect(db.get_menu().length).toBe(0);
+      });
+
+      test('clears empty menu without error', async () => {
+        expect(db.get_menu().length).toBe(0);
+
+        await expect(db.clearMenu()).resolves.not.toThrow();
+
+        expect(db.get_menu().length).toBe(0);
+      });
+    });
+
+    describe('isRecipeInMenu', () => {
+      test('returns true when recipe is in menu', async () => {
+        const recipe = db.get_recipes()[0];
+        await db.addRecipeToMenu(recipe);
+
+        expect(db.isRecipeInMenu(recipe.id!)).toBe(true);
+      });
+
+      test('returns false when recipe is not in menu', () => {
+        const recipe = db.get_recipes()[0];
+
+        expect(db.isRecipeInMenu(recipe.id!)).toBe(false);
+      });
+
+      test('returns false after recipe is removed from menu', async () => {
+        const recipe = db.get_recipes()[0];
+        await db.addRecipeToMenu(recipe);
+        const menuItem = db.get_menu()[0];
+        await db.removeFromMenu(menuItem.id!);
+
+        expect(db.isRecipeInMenu(recipe.id!)).toBe(false);
+      });
+    });
+
+    describe('Menu persistence', () => {
+      test('menu items persist after re-initialization', async () => {
+        const recipe = db.get_recipes()[0];
+        await db.addRecipeToMenu(recipe);
+        await db.addRecipeToMenu(recipe);
+
+        await db.closeAndReset();
+        await db.init();
+        await db.addMultipleIngredients(testIngredients);
+        await db.addMultipleTags(testTags);
+        await db.addMultipleRecipes(testRecipes);
+
+        expect(db.get_menu().length).toBe(0);
+      });
+
+      test('cooked status persists correctly', async () => {
+        const recipe = db.get_recipes()[0];
+        await db.addRecipeToMenu(recipe);
+        const menuItem = db.get_menu()[0];
+        await db.toggleMenuItemCooked(menuItem.id!);
+
+        const menu = db.get_menu();
+        expect(menu[0].isCooked).toBe(true);
+      });
+    });
+  });
+
+  describe('Purchased Ingredients Operations', () => {
+    const db = RecipeDatabase.getInstance();
+
+    beforeEach(async () => {
+      await db.init();
+    });
+
+    afterEach(async () => {
+      await db.closeAndReset();
+    });
+
+    describe('get_purchasedIngredients', () => {
+      test('returns empty map initially', () => {
+        const purchased = db.get_purchasedIngredients();
+
+        expect(purchased.size).toBe(0);
+      });
+    });
+
+    describe('setPurchased', () => {
+      test('sets ingredient as purchased', async () => {
+        await db.setPurchased('Sugar', true);
+
+        const purchased = db.get_purchasedIngredients();
+        expect(purchased.get('Sugar')).toBe(true);
+      });
+
+      test('sets ingredient as not purchased', async () => {
+        await db.setPurchased('Sugar', true);
+        await db.setPurchased('Sugar', false);
+
+        const purchased = db.get_purchasedIngredients();
+        expect(purchased.get('Sugar')).toBe(false);
+      });
+
+      test('handles multiple ingredients', async () => {
+        await db.setPurchased('Sugar', true);
+        await db.setPurchased('Flour', true);
+        await db.setPurchased('Salt', false);
+
+        const purchased = db.get_purchasedIngredients();
+        expect(purchased.get('Sugar')).toBe(true);
+        expect(purchased.get('Flour')).toBe(true);
+        expect(purchased.get('Salt')).toBe(false);
+      });
+    });
+
+    describe('clearPurchasedIngredients', () => {
+      test('clears all purchased ingredients', async () => {
+        await db.setPurchased('Sugar', true);
+        await db.setPurchased('Flour', true);
+
+        expect(db.get_purchasedIngredients().size).toBe(2);
+
+        await db.clearPurchasedIngredients();
+
+        expect(db.get_purchasedIngredients().size).toBe(0);
+      });
+
+      test('clears empty purchased list without error', async () => {
+        expect(db.get_purchasedIngredients().size).toBe(0);
+
+        await expect(db.clearPurchasedIngredients()).resolves.not.toThrow();
+
+        expect(db.get_purchasedIngredients().size).toBe(0);
+      });
     });
   });
 });

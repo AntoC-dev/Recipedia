@@ -1,0 +1,154 @@
+appId: "com.recipedia"
+---
+# Order: cereal, plantProtein, sauce, meat, dairy, cheese, oilAndFat
+
+# CEREAL
+- assertVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
+    label: "Cereal category header is displayed"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Flour"
+    label: "Flour item is displayed"
+
+- assertVisible:
+    text: "Flour (200g)"
+    label: "Flour with quantity is displayed"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Spaghetti"
+    label: "Spaghetti item is displayed"
+
+- assertVisible:
+    text: "Spaghetti (200g)"
+    label: "Spaghetti with quantity is displayed"
+
+# PLANT PROTEIN
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.plantProtein::SubHeader"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to Plant Protein category"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.plantProtein::SubHeader"
+    label: "Plant Protein category header is displayed"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Eggs"
+    label: "Eggs item is displayed"
+
+- assertVisible:
+    text: "Eggs (2pieces)"
+    label: "Eggs with quantity is displayed"
+
+# SAUCE
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.sauce::SubHeader"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to Sauce category"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.sauce::SubHeader"
+    label: "Sauce category header is displayed"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Tomato Sauce"
+    label: "Tomato Sauce item is displayed"
+
+- assertVisible:
+    text: "Tomato Sauce (250ml)"
+    label: "Tomato Sauce with quantity is displayed"
+
+# MEAT
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.meat::SubHeader"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to Meat category"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.meat::SubHeader"
+    label: "Meat category header is displayed"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Ground Beef"
+    label: "Ground Beef item is displayed"
+
+- assertVisible:
+    text: "Ground Beef (300g)"
+    label: "Ground Beef with quantity is displayed"
+
+# DAIRY
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.dairy::SubHeader"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to Dairy category"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.dairy::SubHeader"
+    label: "Dairy category header is displayed"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Milk"
+    label: "Milk item is displayed"
+
+- assertVisible:
+    text: "Milk (300ml)"
+    label: "Milk with quantity is displayed"
+
+# CHEESE
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.cheese::SubHeader"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to Cheese category"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.cheese::SubHeader"
+    label: "Cheese category header is displayed"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Parmesan"
+    label: "Parmesan item is displayed"
+
+- assertVisible:
+    text: "Parmesan (50g)"
+    label: "Parmesan with quantity is displayed"
+
+# OIL AND FAT
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.oilAndFat::SubHeader"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to Oil and Fat category"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.oilAndFat::SubHeader"
+    label: "Oil and Fat category header is displayed"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Butter"
+    label: "Butter item is displayed"
+
+- assertVisible:
+    text: "Butter (50g)"
+    label: "Butter with quantity is displayed"
+
+- runFlow:
+    file: "../../../flows/shopping/scrollToTop.yaml"
+    label: "Scroll back to top for next tests"

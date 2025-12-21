@@ -42,8 +42,9 @@ export const TUTORIAL_DEMO_INTERVAL = 1500;
 export const TUTORIAL_STEPS = {
   Home: { order: 1, name: 'Home' },
   Search: { order: 2, name: 'Search' },
-  Shopping: { order: 3, name: 'Shopping' },
-  Parameters: { order: 4, name: 'Parameters' },
+  Menu: { order: 3, name: 'Menu' },
+  Shopping: { order: 4, name: 'Shopping' },
+  Parameters: { order: 5, name: 'Parameters' },
 } as const;
 
 /**

@@ -52,7 +52,7 @@
  * ```
  */
 
-import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import React, { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import { RecipeDatabase } from '@utils/RecipeDatabase';
 import {
@@ -62,10 +62,11 @@ import {
   transformDatasetRecipeImages,
 } from '@utils/FileGestion';
 import {
+  ComputedShoppingItem,
   ingredientTableElement,
   ingredientType,
+  menuTableElement,
   recipeTableElement,
-  shoppingListTableElement,
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
 import { isFirstLaunch } from '@utils/firstLaunch';
@@ -73,6 +74,7 @@ import { getDataset } from '@utils/DatasetLoader';
 import i18n, { SupportedLanguage } from '@utils/i18n';
 import { getDefaultPersons } from '@utils/settings';
 import { databaseLogger } from '@utils/logger';
+import { sumNumberInString } from '@utils/TypeCheckingFunctions';
 
 /**
  * Type definition for the RecipeDatabase context value
@@ -108,14 +110,25 @@ export interface RecipeDatabaseContextType {
   /** Deletes tag from database and refreshes both tags AND recipes state */
   deleteTag: (tag: tagTableElement) => Promise<boolean>;
 
-  /** Current shopping list state - reactive, triggers re-renders when changed */
-  shopping: shoppingListTableElement[];
-  /** Adds recipe ingredients to shopping list and refreshes shopping state */
-  addRecipeToShopping: (recipe: recipeTableElement) => Promise<void>;
-  /** Updates purchase status of ingredient in shopping list and refreshes shopping state */
-  purchaseIngredientInShoppingList: (ingredientId: number, purchased: boolean) => Promise<void>;
-  /** Clears entire shopping list and refreshes shopping state */
-  clearShoppingList: () => Promise<void>;
+  /** Computed shopping list from menu - reactive, triggers re-renders when changed */
+  shopping: ComputedShoppingItem[];
+  /** Toggles purchase status of ingredient by name */
+  togglePurchased: (ingredientName: string) => Promise<void>;
+  /** Clears all purchased ingredient states (called when menu is cleared) */
+  clearPurchased: () => Promise<void>;
+
+  /** Current menu state - reactive, triggers re-renders when changed */
+  menu: menuTableElement[];
+  /** Adds recipe to menu (shopping list auto-computed) */
+  addRecipeToMenu: (recipe: recipeTableElement) => Promise<void>;
+  /** Toggles cooked status of menu item (shopping list auto-computed) */
+  toggleMenuItemCooked: (menuId: number) => Promise<boolean>;
+  /** Removes item from menu (shopping list auto-computed) */
+  removeFromMenu: (menuId: number) => Promise<boolean>;
+  /** Clears entire menu and purchased states */
+  clearMenu: () => Promise<void>;
+  /** Checks if recipe is in menu */
+  isRecipeInMenu: (recipeId: number) => boolean;
 
   /** Finds recipes similar to the given recipe using fuzzy matching */
   findSimilarRecipes: (recipe: recipeTableElement) => recipeTableElement[];
@@ -202,7 +215,8 @@ export const RecipeDatabaseProvider: React.FC<{
   const [recipes, setRecipes] = useState<recipeTableElement[]>([]);
   const [ingredients, setIngredients] = useState<ingredientTableElement[]>([]);
   const [tags, setTags] = useState<tagTableElement[]>([]);
-  const [shopping, setShopping] = useState<shoppingListTableElement[]>([]);
+  const [menu, setMenu] = useState<menuTableElement[]>([]);
+  const [purchasedIngredients, setPurchasedIngredients] = useState<Map<string, boolean>>(new Map());
   const [isDatabaseReady, setIsDatabaseReady] = useState(false);
 
   const [scalingProgress, setScalingProgress] = useState<number | undefined>(undefined);
@@ -261,7 +275,8 @@ export const RecipeDatabaseProvider: React.FC<{
                 setTags([...db.get_tags()]);
                 setIngredients([...db.get_ingredients()]);
                 setRecipes([...db.get_recipes()]);
-                setShopping([...db.get_shopping()]);
+                setMenu([...db.get_menu()]);
+                setPurchasedIngredients(new Map(db.get_purchasedIngredients()));
 
                 databaseLogger.info('Dataset loaded successfully in background', {
                   ingredientsCount: dataset.ingredients.length,
@@ -300,7 +315,8 @@ export const RecipeDatabaseProvider: React.FC<{
         setTags([...db.get_tags()]);
         setIngredients([...db.get_ingredients()]);
         setRecipes([...db.get_recipes()]);
-        setShopping([...db.get_shopping()]);
+        setMenu([...db.get_menu()]);
+        setPurchasedIngredients(new Map(db.get_purchasedIngredients()));
         setIsDatabaseReady(true);
         databaseLogger.info('Database initialization phase completed');
       } catch (error) {
@@ -322,9 +338,52 @@ export const RecipeDatabaseProvider: React.FC<{
     setTags([...db.get_tags()]);
   };
 
-  const refreshShopping = () => {
-    setShopping([...db.get_shopping()]);
+  const refreshMenu = () => {
+    setMenu([...db.get_menu()]);
   };
+
+  const refreshPurchasedIngredients = () => {
+    setPurchasedIngredients(new Map(db.get_purchasedIngredients()));
+  };
+
+  const shopping = useMemo((): ComputedShoppingItem[] => {
+    const toCookItems = menu.filter(item => !item.isCooked);
+    const ingredientMap = new Map<string, ComputedShoppingItem>();
+
+    for (const menuItem of toCookItems) {
+      const recipe = recipes.find(r => r.id === menuItem.recipeId);
+      if (!recipe) continue;
+
+      const count = menuItem.count ?? 1;
+      for (const ingredient of recipe.ingredients) {
+        const existing = ingredientMap.get(ingredient.name);
+        const ingredientQuantity = ingredient.quantity ?? '';
+
+        let quantityToAdd = ingredientQuantity;
+        for (let i = 1; i < count; i++) {
+          quantityToAdd = sumNumberInString(quantityToAdd, ingredientQuantity);
+        }
+
+        if (existing) {
+          existing.quantity = sumNumberInString(existing.quantity, quantityToAdd);
+          if (!existing.recipeTitles.includes(recipe.title)) {
+            existing.recipeTitles.push(recipe.title);
+          }
+        } else {
+          ingredientMap.set(ingredient.name, {
+            name: ingredient.name,
+            type: ingredient.type,
+            quantity: quantityToAdd,
+            unit: ingredient.unit ?? '',
+            recipeTitles: [recipe.title],
+            purchased: purchasedIngredients.get(ingredient.name) ?? false,
+          });
+        }
+      }
+    }
+
+    return Array.from(ingredientMap.values());
+  }, [menu, recipes, purchasedIngredients]);
 
   const addRecipe = async (recipe: recipeTableElement): Promise<void> => {
     await db.addRecipe(recipe);
@@ -334,14 +393,13 @@ export const RecipeDatabaseProvider: React.FC<{
   const editRecipe = async (recipe: recipeTableElement) => {
     const result = await db.editRecipe(recipe);
     refreshRecipes();
-    refreshShopping();
     return result;
   };
 
   const deleteRecipe = async (recipe: recipeTableElement) => {
     const result = await db.deleteRecipe(recipe);
     refreshRecipes();
-    refreshShopping();
+    refreshMenu();
     return result;
   };
 
@@ -385,19 +443,43 @@ export const RecipeDatabaseProvider: React.FC<{
     return result;
   };
 
-  const addRecipeToShopping = async (recipe: recipeTableElement) => {
-    await db.addRecipeToShopping(recipe);
-    refreshShopping();
+  const togglePurchased = async (ingredientName: string): Promise<void> => {
+    const currentValue = purchasedIngredients.get(ingredientName) ?? false;
+    await db.setPurchased(ingredientName, !currentValue);
+    refreshPurchasedIngredients();
   };
 
-  const purchaseIngredientInShoppingList = async (ingredientId: number, purchased: boolean) => {
-    await db.purchaseIngredientOfShoppingList(ingredientId, purchased);
-    refreshShopping();
+  const clearPurchased = async (): Promise<void> => {
+    await db.clearPurchasedIngredients();
+    refreshPurchasedIngredients();
   };
 
-  const clearShoppingList = async () => {
-    await db.resetShoppingList();
-    refreshShopping();
+  const addRecipeToMenu = async (recipe: recipeTableElement): Promise<void> => {
+    await db.addRecipeToMenu(recipe);
+    refreshMenu();
+  };
+
+  const toggleMenuItemCooked = async (menuId: number): Promise<boolean> => {
+    const result = await db.toggleMenuItemCooked(menuId);
+    refreshMenu();
+    return result;
+  };
+
+  const removeFromMenu = async (menuId: number): Promise<boolean> => {
+    const result = await db.removeFromMenu(menuId);
+    refreshMenu();
+    return result;
+  };
+
+  const clearMenu = async (): Promise<void> => {
+    await db.clearMenu();
+    await db.clearPurchasedIngredients();
+    refreshMenu();
+    refreshPurchasedIngredients();
+  };
+
+  const isRecipeInMenu = (recipeId: number): boolean => {
+    return db.isRecipeInMenu(recipeId);
   };
 
   const findSimilarRecipes = (recipe: recipeTableElement) => {
@@ -525,9 +607,14 @@ export const RecipeDatabaseProvider: React.FC<{
     editTag,
     deleteTag,
     shopping,
-    addRecipeToShopping,
-    purchaseIngredientInShoppingList,
-    clearShoppingList,
+    togglePurchased,
+    clearPurchased,
+    menu,
+    addRecipeToMenu,
+    toggleMenuItemCooked,
+    removeFromMenu,
+    clearMenu,
+    isRecipeInMenu,
     findSimilarRecipes,
     findSimilarIngredients,
     findSimilarTags,

@@ -5,7 +5,6 @@ import RecipeDatabase from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
 import { testRecipes } from '@test-data/recipesDataset';
-import { testShopping } from '@test-data/shoppingListsDataset';
 import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 
 jest.mock('@navigation/RootNavigator', () =>
@@ -128,7 +127,7 @@ describe('AppWrapper Component', () => {
     });
 
     expect(markAsLaunched).toHaveBeenCalled();
-    expect(database.get_shopping().length).toBe(0);
+    expect(database.get_menu().length).toBe(0);
   });
 
   test('completes tutorial and goes to main app', async () => {
@@ -170,10 +169,10 @@ describe('AppWrapper Component', () => {
     });
 
     expect(markAsLaunched).toHaveBeenCalled();
-    expect(database.get_shopping().length).toBe(0);
+    expect(database.get_menu().length).toBe(0);
   });
 
-  test('adds recipe to shopping list when starting tutorial', async () => {
+  test('adds recipes to menu when starting tutorial', async () => {
     isFirstLaunch.mockResolvedValue(true);
 
     await database.addMultipleIngredients(testIngredients);
@@ -192,23 +191,26 @@ describe('AppWrapper Component', () => {
 
     fireEvent.press(getByTestId('WelcomeScreen::StartTutorial'));
 
-    // First check if the mode change happens (which indicates the function was called)
     await waitFor(() => {
       expect(getByTestId('TutorialProvider')).toBeTruthy();
       expect(queryByTestId('WelcomeScreen')).toBeNull();
     });
 
-    expect(database.get_shopping()).toEqual(testShopping[0]);
+    expect(database.get_menu().length).toBe(3);
+    expect(database.get_menu().map(m => m.recipeTitle)).toEqual(
+      testRecipes.slice(0, 3).map(r => r.title)
+    );
   });
 
-  test('resets shopping list on app launch', async () => {
+  test('clears menu on app launch', async () => {
     isFirstLaunch.mockResolvedValue(true);
 
     await database.addMultipleIngredients(testIngredients);
     await database.addMultipleTags(testTags);
     await database.addMultipleRecipes(testRecipes);
-    await database.addMultipleShopping(testRecipes);
-    expect(database.get_shopping().length).toBeGreaterThan(0);
+    await database.addRecipeToMenu(testRecipes[0]);
+    await database.addRecipeToMenu(testRecipes[1]);
+    expect(database.get_menu().length).toBeGreaterThan(0);
 
     const { getByTestId, queryByTestId } = render(
       <RecipeDatabaseProvider>
@@ -235,6 +237,6 @@ describe('AppWrapper Component', () => {
       expect(queryByTestId('TutorialProvider')).toBeNull();
     });
 
-    expect(database.get_shopping().length).toBe(0);
+    expect(database.get_menu().length).toBe(0);
   });
 });

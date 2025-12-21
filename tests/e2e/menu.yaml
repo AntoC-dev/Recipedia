@@ -1,0 +1,12 @@
+flows:
+  - cases/menu/*
+
+executionOrder:
+  flowsOrder:
+    - "1 - Menu Empty State"
+    - "2 - Add Recipe to Menu Flow"
+    - "3 - Toggle Cooked Status Flow"
+    - "4 - Remove Recipe from Menu Flow"
+    - "5 - Menu Shopping Integration"
+    - "6 - Multi Recipe Shopping Integration"
+    - "7 - Duplicate Recipe Badge and Quantities"

@@ -3,8 +3,9 @@ import {
   coreIngredientElement,
   encodedImportHistoryElement,
   encodedIngredientElement,
+  encodedMenuElement,
+  encodedPurchasedIngredientElement,
   encodedRecipeElement,
-  encodedShoppingListElement,
   encodedTagElement,
   importHistoryColumnsEncoding,
   importHistoryTableElement,
@@ -16,19 +17,21 @@ import {
   ingredientType,
   isIngredientEqual,
   isRecipePartiallyEqual,
-  isShoppingEqual,
   isTagEqual,
+  menuColumnsEncoding,
+  menuColumnsNames,
+  menuTableElement,
+  menuTableName,
   nutritionTableElement,
   preparationStepElement,
+  purchasedIngredientsColumnsEncoding,
+  purchasedIngredientsColumnsNames,
+  purchasedIngredientsTableName,
   recipeColumnsEncoding,
   recipeColumnsNames,
   recipeDatabaseName,
   recipeTableElement,
   recipeTableName,
-  shoppingListColumnsEncoding,
-  shoppingListColumnsNames,
-  shoppingListTableElement,
-  shoppingListTableName,
   tagColumnsEncoding,
   tagsColumnsNames,
   tagTableElement,
@@ -36,9 +39,7 @@ import {
 } from '@customTypes/DatabaseElementTypes';
 import { TableManipulation } from './TableManipulation';
 import { EncodingSeparator, textSeparator } from '@styles/typography';
-import { TListFilter } from '@customTypes/RecipeFiltersTypes';
 import { getDirectoryUri, isTemporaryImageUri, saveRecipeImage } from '@utils/FileGestion';
-import { isNumber, subtractNumberInString, sumNumberInString } from '@utils/TypeCheckingFunctions';
 import { cleanIngredientName, FuzzyMatchLevel, fuzzySearch } from '@utils/FuzzySearch';
 import { scaleQuantityForPersons } from '@utils/Quantity';
 import { databaseLogger } from '@utils/logger';
@@ -81,16 +82,17 @@ export class RecipeDatabase {
   protected _ingredientsTable: TableManipulation;
   protected _tagsTable: TableManipulation;
 
-  protected _shoppingListTable: TableManipulation;
   protected _importHistoryTable: TableManipulation;
+  protected _menuTable: TableManipulation;
+  protected _purchasedIngredientsTable: TableManipulation;
 
   protected _recipes: recipeTableElement[];
   protected _ingredients: ingredientTableElement[];
   protected _tags: tagTableElement[];
-  // protected _nutrition: Array<>;
 
-  protected _shopping: shoppingListTableElement[];
   protected _importHistory: importHistoryTableElement[];
+  protected _menu: menuTableElement[];
+  protected _purchasedIngredients: Map<string, boolean>;
 
   /*    PRIVATE METHODS     */
   private constructor() {
@@ -100,20 +102,22 @@ export class RecipeDatabase {
     this._ingredientsTable = new TableManipulation(ingredientsTableName, ingredientColumnsEncoding);
     this._tagsTable = new TableManipulation(tagTableName, tagColumnsEncoding);
 
-    this._shoppingListTable = new TableManipulation(
-      shoppingListTableName,
-      shoppingListColumnsEncoding
-    );
     this._importHistoryTable = new TableManipulation(
       importHistoryTableName,
       importHistoryColumnsEncoding
+    );
+    this._menuTable = new TableManipulation(menuTableName, menuColumnsEncoding);
+    this._purchasedIngredientsTable = new TableManipulation(
+      purchasedIngredientsTableName,
+      purchasedIngredientsColumnsEncoding
     );
 
     this._recipes = [];
     this._ingredients = [];
     this._tags = [];
-    this._shopping = [];
     this._importHistory = [];
+    this._menu = [];
+    this._purchasedIngredients = new Map();
   }
 
   /* PUBLIC METHODS */
@@ -229,23 +233,26 @@ export class RecipeDatabase {
     await this._recipesTable.createTable(this._dbConnection);
     await this._ingredientsTable.createTable(this._dbConnection);
     await this._tagsTable.createTable(this._dbConnection);
-    await this._shoppingListTable.createTable(this._dbConnection);
     await this._importHistoryTable.createTable(this._dbConnection);
+    await this._menuTable.createTable(this._dbConnection);
+    await this._purchasedIngredientsTable.createTable(this._dbConnection);
 
     await this.migrateAddSourceColumns();
 
     this._ingredients = await this.getAllIngredients();
     this._tags = await this.getAllTags();
     this._recipes = await this.getAllRecipes();
-    this._shopping = await this.getAllShopping();
     this._importHistory = await this.getAllImportHistory();
+    this._menu = await this.getAllMenu();
+    this._purchasedIngredients = await this.getAllPurchasedIngredients();
 
     databaseLogger.info('Database initialization completed', {
       recipesCount: this._recipes.length,
       ingredientsCount: this._ingredients.length,
       tagsCount: this._tags.length,
-      shoppingItemsCount: this._shopping.length,
       importHistoryCount: this._importHistory.length,
+      menuItemsCount: this._menu.length,
+      purchasedIngredientsCount: this._purchasedIngredients.size,
     });
   }
 
@@ -589,8 +596,6 @@ export class RecipeDatabase {
       return false;
     }
 
-    const oldRecipe = this._recipes.find(r => r.id === recipe.id);
-
     recipe.image_Source = await this.prepareRecipeImage(recipe.image_Source, recipe.title);
 
     const updateMap = this.constructUpdateRecipeStructure(this.encodeRecipe(recipe));
@@ -602,18 +607,6 @@ export class RecipeDatabase {
     );
     if (success) {
       this.update_recipe(recipe);
-
-      if (oldRecipe) {
-        const isInShopping = this._shopping.some(shop =>
-          shop.recipesTitle.includes(oldRecipe.title)
-        );
-
-        if (isInShopping) {
-          await this.removeRecipeFromShopping(oldRecipe);
-          await this.addRecipeToShopping(recipe);
-        }
-      }
-
       databaseLogger.debug('Recipe edited successfully', { recipeId: recipe.id });
     } else {
       databaseLogger.warn('Failed to edit recipe', {
@@ -656,102 +649,6 @@ export class RecipeDatabase {
       this._recipes = await this.getAllRecipes();
     }
     return success;
-  }
-
-  public async addRecipeToShopping(recipe: recipeTableElement) {
-    const shopElement = recipe.ingredients.map(ing => {
-      return {
-        type: ing.type as TListFilter,
-        name: ing.name,
-        quantity: ing.quantity ? ing.quantity : '0',
-        unit: ing.unit,
-        recipesTitle: [recipe.title],
-        purchased: false,
-      } as shoppingListTableElement;
-    });
-
-    // TODO make this a single query
-    for (const shopToAdd of shopElement) {
-      const foundShopping = this.find_shopping(shopToAdd);
-      if (foundShopping === undefined) {
-        await this.addShoppingList(shopToAdd);
-      } else {
-        await this.updateIngredientInShoppingList(shopToAdd, foundShopping);
-      }
-    }
-  }
-
-  public async updateIngredientInShoppingList(
-    shopToAdd: shoppingListTableElement,
-    previousShop: shoppingListTableElement
-  ) {
-    if (previousShop.id === undefined) {
-      databaseLogger.error('Cannot update shopping element - missing ID', {
-        ingredient: shopToAdd.name,
-      });
-      return false;
-    }
-
-    const shopToAddIsNumber = isNumber(shopToAdd.quantity);
-    const oldShopIsNumber = isNumber(previousShop.quantity);
-    if (shopToAddIsNumber && oldShopIsNumber) {
-      previousShop.quantity = (
-        Number(shopToAdd.quantity) + Number(previousShop.quantity)
-      ).toString();
-    } else if (!shopToAddIsNumber && !shopToAddIsNumber) {
-      previousShop.quantity = sumNumberInString(shopToAdd.quantity, previousShop.quantity);
-    } else {
-      // TODO to test
-      databaseLogger.error('Quantity type mismatch in shopping list', {
-        newQuantity: shopToAdd.quantity,
-        existingQuantity: previousShop.quantity,
-        ingredient: shopToAdd.name,
-      });
-      return false;
-    }
-
-    previousShop.recipesTitle = [...previousShop.recipesTitle, ...shopToAdd.recipesTitle];
-
-    if (
-      await this._shoppingListTable.editElementById(
-        previousShop.id,
-        new Map<string, number | string>([
-          [shoppingListColumnsNames.quantity, previousShop.quantity],
-          [
-            shoppingListColumnsNames.recipeTitles,
-            previousShop.recipesTitle.join(EncodingSeparator),
-          ],
-        ]),
-        this._dbConnection
-      )
-    ) {
-      this.update_shopping(previousShop);
-      return true;
-    }
-    return false;
-  }
-
-  public async purchaseIngredientOfShoppingList(ingredientId: number, newPurchasedValue: boolean) {
-    if (
-      await this._shoppingListTable.editElementById(
-        ingredientId,
-        new Map<string, number | string>([
-          [shoppingListColumnsNames.purchased, newPurchasedValue.toString()],
-        ]),
-        this._dbConnection
-      )
-    ) {
-      this.setPurchasedOfShopping(ingredientId, newPurchasedValue);
-      return true;
-    }
-    return false;
-  }
-
-  public async addMultipleShopping(recipes: recipeTableElement[]) {
-    for (const recEl of recipes) {
-      //TODO single query
-      await this.addRecipeToShopping(recEl);
-    }
   }
 
   public searchRandomlyTags(numOfElements: number): tagTableElement[] {
@@ -834,8 +731,18 @@ export class RecipeDatabase {
       );
     }
     if (recipeDeleted) {
-      await this.removeRecipeFromShopping(recipe);
       this.remove_recipe(recipe);
+
+      if (recipe.id !== undefined) {
+        const menuItem = this._menu.find(item => item.recipeId === recipe.id);
+        if (menuItem && menuItem.id !== undefined) {
+          await this.removeFromMenu(menuItem.id);
+        }
+      }
+
+      if (recipe.sourceUrl && recipe.sourceProvider) {
+        await this.removeFromSeenHistory(recipe.sourceProvider, [recipe.sourceUrl]);
+      }
     }
     return recipeDeleted;
   }
@@ -940,15 +847,6 @@ export class RecipeDatabase {
     return this._tags;
   }
 
-  /**
-   * Gets all shopping list items from the local cache
-   *
-   * @returns Array of all shopping list items
-   */
-  public get_shopping(): shoppingListTableElement[] {
-    return this._shopping;
-  }
-
   public add_recipes(recipe: recipeTableElement) {
     this._recipes.push(recipe);
   }
@@ -959,10 +857,6 @@ export class RecipeDatabase {
 
   public add_tags(tag: tagTableElement) {
     this._tags.push(tag);
-  }
-
-  public add_shopping(shop: shoppingListTableElement) {
-    this._shopping.push(shop);
   }
 
   public remove_recipe(recipe: recipeTableElement) {
@@ -993,17 +887,6 @@ export class RecipeDatabase {
       this._tags.splice(this._tags.indexOf(foundTag), 1);
     } else {
       databaseLogger.warn('Cannot remove tag - not found in local cache', { tagName: tag.name });
-    }
-  }
-
-  public remove_shopping(shop: shoppingListTableElement) {
-    const foundShopping = this.find_shopping(shop);
-    if (foundShopping !== undefined) {
-      this._shopping.splice(this._shopping.indexOf(foundShopping), 1);
-    } else {
-      databaseLogger.warn('Cannot remove shopping item - not found in local cache', {
-        itemName: shop.name,
-      });
     }
   }
 
@@ -1076,49 +959,212 @@ export class RecipeDatabase {
     return this._tags.find(element => findFunc(element));
   }
 
-  public find_shopping(toSearch: shoppingListTableElement): shoppingListTableElement | undefined {
-    let findFunc: (element: shoppingListTableElement) => boolean;
-    if (toSearch.id !== undefined) {
-      findFunc = (element: shoppingListTableElement) => element.id === toSearch.id;
-    } else {
-      findFunc = (element: shoppingListTableElement) => isShoppingEqual(element, toSearch);
-    }
-    return this._shopping.find(element => findFunc(element));
+  /**
+   * Gets all menu items from the local cache
+   *
+   * @returns Array of all menu items
+   */
+  public get_menu(): menuTableElement[] {
+    return this._menu;
   }
 
-  // TODO to test
-  public setPurchasedOfShopping(ingredientId: number, newPurchasedValue: boolean) {
-    if (ingredientId > 0 && ingredientId <= this._shopping.length) {
-      this._shopping[ingredientId - 1].purchased = newPurchasedValue;
-    } else {
-      databaseLogger.error('Shopping item ID out of bounds', {
-        ingredientId,
-        maxId: this._shopping.length,
+  /**
+   * Checks if a recipe is already in the menu
+   *
+   * @param recipeId - The recipe ID to check
+   * @returns True if recipe is in menu, false otherwise
+   */
+  public isRecipeInMenu(recipeId: number): boolean {
+    return this._menu.some(item => item.recipeId === recipeId);
+  }
+
+  /**
+   * Adds a recipe to the menu and regenerates the shopping list
+   *
+   * If the recipe is already in the menu, increments its count.
+   * Otherwise, it adds the recipe to the menu table with count = 1.
+   *
+   * @param recipe - The recipe to add to the menu
+   */
+  public async addRecipeToMenu(recipe: recipeTableElement): Promise<void> {
+    if (!recipe.id) {
+      databaseLogger.warn('Cannot add recipe to menu - missing ID', {
+        recipeTitle: recipe.title,
       });
+      return;
+    }
+
+    const existingMenuItem = this._menu.find(item => item.recipeId === recipe.id);
+    if (existingMenuItem && existingMenuItem.id) {
+      const newCount = existingMenuItem.count + 1;
+      await this._menuTable.editElementById(
+        existingMenuItem.id,
+        new Map<string, number | string>([[menuColumnsNames.count, newCount]]),
+        this._dbConnection
+      );
+      existingMenuItem.count = newCount;
+      databaseLogger.debug('Recipe count incremented in menu', {
+        recipeId: recipe.id,
+        newCount,
+      });
+      return;
+    }
+
+    const menuItem: menuTableElement = {
+      recipeId: recipe.id,
+      recipeTitle: recipe.title,
+      imageSource: recipe.image_Source,
+      isCooked: false,
+      count: 1,
+    };
+
+    const dbRes = await this._menuTable.insertElement(
+      this.encodeMenu(menuItem),
+      this._dbConnection
+    );
+
+    if (dbRes === undefined) {
+      databaseLogger.error('Failed to add recipe to menu', { recipeTitle: recipe.title });
+      return;
+    }
+
+    const dbMenu = await this._menuTable.searchElementById<encodedMenuElement>(
+      dbRes,
+      this._dbConnection
+    );
+
+    if (dbMenu) {
+      this._menu.push(this.decodeMenu(dbMenu));
+      databaseLogger.debug('Recipe added to menu', { recipeId: recipe.id });
     }
   }
 
-  // TODO to test
-  public update_shopping(shop: shoppingListTableElement) {
-    if (shop.id !== undefined) {
-      this._shopping[shop.id - 1] = shop;
-      return;
+  /**
+   * Toggles the cooked status of a menu item
+   *
+   * @param menuId - The menu item ID to toggle
+   * @returns True if successful, false otherwise
+   */
+  public async toggleMenuItemCooked(menuId: number): Promise<boolean> {
+    const menuItem = this._menu.find(item => item.id === menuId);
+    if (!menuItem) {
+      databaseLogger.warn('Menu item not found', { menuId });
+      return false;
     }
-    const foundShopping = this._shopping.findIndex(element => element.name === shop.name);
-    if (foundShopping !== -1) {
-      this._shopping[foundShopping] = shop;
-      return;
+
+    const newCookedStatus = !menuItem.isCooked;
+
+    const success = await this._menuTable.editElementById(
+      menuId,
+      new Map<string, number | string>([[menuColumnsNames.isCooked, newCookedStatus ? 1 : 0]]),
+      this._dbConnection
+    );
+
+    if (success) {
+      menuItem.isCooked = newCookedStatus;
+      databaseLogger.debug('Menu item cooked status toggled', {
+        menuId,
+        isCooked: newCookedStatus,
+      });
+      return true;
     }
-    databaseLogger.error('Cannot update shopping item - not found', {
-      itemName: shop.name,
-      itemId: shop.id,
-    });
+
+    return false;
   }
 
-  public async resetShoppingList() {
-    this._shopping.length = 0;
-    await this._shoppingListTable.deleteTable(this._dbConnection);
-    await this._shoppingListTable.createTable(this._dbConnection);
+  /**
+   * Decrements the count of a menu item, removing it if count reaches 0
+   *
+   * @param menuId - The menu item ID to decrement/remove
+   * @returns True if successful, false otherwise
+   */
+  public async removeFromMenu(menuId: number): Promise<boolean> {
+    const menuItem = this._menu.find(item => item.id === menuId);
+    if (!menuItem) {
+      databaseLogger.warn('Menu item not found', { menuId });
+      return false;
+    }
+
+    if (menuItem.count > 1) {
+      const newCount = menuItem.count - 1;
+      await this._menuTable.editElementById(
+        menuId,
+        new Map<string, number | string>([[menuColumnsNames.count, newCount]]),
+        this._dbConnection
+      );
+      menuItem.count = newCount;
+      databaseLogger.debug('Menu item count decremented', { menuId, newCount });
+      return true;
+    }
+
+    const success = await this._menuTable.deleteElementById(menuId, this._dbConnection);
+    if (success) {
+      const index = this._menu.findIndex(item => item.id === menuId);
+      if (index !== -1) {
+        this._menu.splice(index, 1);
+      }
+      databaseLogger.debug('Menu item removed', { menuId });
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Clears the entire menu
+   */
+  public async clearMenu(): Promise<void> {
+    this._menu.length = 0;
+    await this._menuTable.deleteTable(this._dbConnection);
+    await this._menuTable.createTable(this._dbConnection);
+    databaseLogger.debug('Menu cleared');
+  }
+
+  /* PURCHASED INGREDIENTS METHODS */
+
+  /**
+   * Returns the map of purchased ingredient states
+   * Key is ingredient name, value is whether it's purchased
+   */
+  public get_purchasedIngredients(): Map<string, boolean> {
+    return this._purchasedIngredients;
+  }
+
+  /**
+   * Sets the purchase state for an ingredient
+   * @param ingredientName - The ingredient name
+   * @param purchased - Whether the ingredient is purchased
+   */
+  public async setPurchased(ingredientName: string, purchased: boolean): Promise<void> {
+    const existingPurchased = this._purchasedIngredients.get(ingredientName);
+
+    if (existingPurchased !== undefined) {
+      // Update existing entry: delete then insert (no editByColumn available)
+      await this._purchasedIngredientsTable.deleteElement(
+        this._dbConnection,
+        new Map([[purchasedIngredientsColumnsNames.ingredientName, ingredientName]])
+      );
+    }
+
+    // Insert entry (new or updated)
+    await this._purchasedIngredientsTable.insertElement(
+      this.encodePurchasedIngredient({ ingredientName, purchased }),
+      this._dbConnection
+    );
+
+    this._purchasedIngredients.set(ingredientName, purchased);
+    databaseLogger.debug('Purchase state updated', { ingredientName, purchased });
+  }
+
+  /**
+   * Clears all purchased ingredient states
+   * Called when the menu is cleared to start fresh
+   */
+  public async clearPurchasedIngredients(): Promise<void> {
+    this._purchasedIngredients.clear();
+    await this._purchasedIngredientsTable.deleteTable(this._dbConnection);
+    await this._purchasedIngredientsTable.createTable(this._dbConnection);
+    databaseLogger.debug('Purchased ingredients cleared');
   }
 
   /**
@@ -1450,6 +1496,38 @@ export class RecipeDatabase {
     );
   }
 
+  /**
+   * Loads all purchased ingredients from the database
+   * @returns Map of ingredient name to purchased state
+   */
+  private async getAllPurchasedIngredients(): Promise<Map<string, boolean>> {
+    const encodedData =
+      (await this._purchasedIngredientsTable.searchElement<encodedPurchasedIngredientElement>(
+        this._dbConnection
+      )) as encodedPurchasedIngredientElement[] | undefined;
+
+    const result = new Map<string, boolean>();
+    if (encodedData) {
+      for (const encoded of encodedData) {
+        result.set(encoded.INGREDIENT_NAME, encoded.PURCHASED === 1);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Encodes a purchased ingredient element for database storage
+   */
+  private encodePurchasedIngredient(element: {
+    ingredientName: string;
+    purchased: boolean;
+  }): Record<string, string | number> {
+    return {
+      [purchasedIngredientsColumnsNames.ingredientName]: element.ingredientName,
+      [purchasedIngredientsColumnsNames.purchased]: element.purchased ? 1 : 0,
+    };
+  }
+
   /* PRIVATE METHODS */
 
   /**
@@ -1461,8 +1539,9 @@ export class RecipeDatabase {
     this._recipes = [];
     this._ingredients = [];
     this._tags = [];
-    this._shopping = [];
     this._importHistory = [];
+    this._menu = [];
+    this._purchasedIngredients = new Map();
   }
 
   /**
@@ -2244,74 +2323,6 @@ export class RecipeDatabase {
   }
 
   /**
-   * Encodes a shopping list item for database storage
-   *
-   * Converts a shopping list item from the application format to the database
-   * storage format, encoding recipe titles as a joined string and converting
-   * the purchased boolean to a numeric value.
-   *
-   * @private
-   * @param shopToEncode - The shopping list item to encode for database storage
-   * @returns Encoded shopping list element ready for database insertion/update
-   */
-  private encodeShopping(shopToEncode: shoppingListTableElement): encodedShoppingListElement {
-    return {
-      ID: shopToEncode.id ? shopToEncode.id : 0,
-      TYPE: shopToEncode.type as string,
-      INGREDIENT: shopToEncode.name,
-      QUANTITY: shopToEncode.quantity,
-      UNIT: shopToEncode.unit,
-      TITLES: shopToEncode.recipesTitle.join(EncodingSeparator),
-      PURCHASED: shopToEncode.purchased ? 1 : 0,
-    };
-  }
-
-  /**
-   * Decodes a shopping list item from database storage format
-   *
-   * Converts an encoded shopping list element from the database into the
-   * application format, parsing recipe titles and converting the numeric
-   * purchased value back to a boolean.
-   *
-   * @private
-   * @param encodedShop - The encoded shopping list data from database
-   * @returns Decoded shopping list item in application format
-   */
-  private decodeShopping(encodedShop: encodedShoppingListElement): shoppingListTableElement {
-    return {
-      id: encodedShop.ID,
-      type: encodedShop.TYPE as TListFilter,
-      name: encodedShop.INGREDIENT,
-      quantity: encodedShop.QUANTITY.toString(),
-      unit: encodedShop.UNIT,
-      recipesTitle: encodedShop.TITLES.includes(EncodingSeparator)
-        ? encodedShop.TITLES.split(EncodingSeparator)
-        : [encodedShop.TITLES],
-      purchased: Number(encodedShop.PURCHASED) !== 0,
-    };
-  }
-
-  /**
-   * Decodes an array of shopping list items from database storage format
-   *
-   * Processes multiple encoded shopping list elements from database queries,
-   * converting each one to the application format. Returns empty array if
-   * input is null, undefined, or empty.
-   *
-   * @private
-   * @param queryResult - Array of encoded shopping list elements from database
-   * @returns Array of decoded shopping list items in application format
-   */
-  private decodeArrayOfShopping(
-    queryResult: encodedShoppingListElement[]
-  ): shoppingListTableElement[] {
-    if (!queryResult || !Array.isArray(queryResult) || queryResult.length === 0) {
-      return [];
-    }
-    return queryResult.map(shoppingElement => this.decodeShopping(shoppingElement));
-  }
-
-  /**
    * Retrieves all recipes from the database
    *
    * Fetches all recipe records from the database and decodes them into
@@ -2357,156 +2368,78 @@ export class RecipeDatabase {
   }
 
   /**
-   * Retrieves all shopping list items from the database
+   * Retrieves all menu items from the database
    *
-   * Fetches all shopping list records from the database and decodes them into
+   * Fetches all menu records from the database and decodes them into
    * the application format for use in the local cache.
    *
    * @private
-   * @returns Promise resolving to array of all shopping list items in application format
+   * @returns Promise resolving to array of all menu items in application format
    */
-  private async getAllShopping(): Promise<shoppingListTableElement[]> {
-    return this.decodeArrayOfShopping(
-      (await this._shoppingListTable.searchElement(
-        this._dbConnection
-      )) as encodedShoppingListElement[]
+  private async getAllMenu(): Promise<menuTableElement[]> {
+    return this.decodeArrayOfMenu(
+      (await this._menuTable.searchElement(this._dbConnection)) as encodedMenuElement[]
     );
   }
 
   /**
-   * Adds a shopping list item to the database
+   * Encodes a menu item for database storage
    *
-   * Inserts a new shopping list item into the database, encodes it for storage,
-   * and adds it to the local cache upon successful insertion.
+   * Converts a menu element from application format into the encoded
+   * format required for database insertion.
    *
    * @private
-   * @param shop - The shopping list item to add to the database
+   * @param menu - The menu item in application format
+   * @returns Encoded menu item ready for database storage
    */
-  private async addShoppingList(shop: shoppingListTableElement) {
-    const dbRes = await this._shoppingListTable.insertElement(
-      this.encodeShopping(shop),
-      this._dbConnection
-    );
-    if (dbRes === undefined) {
-      databaseLogger.warn('Failed to add shopping item - database insertion failed', {
-        itemName: shop.name,
-      });
-      return;
-    }
-    const dbShopping = await this._shoppingListTable.searchElementById<encodedShoppingListElement>(
-      dbRes,
-      this._dbConnection
-    );
-    if (dbShopping === undefined) {
-      databaseLogger.warn('Failed to find shopping item after insertion', {
-        recipeTitles: shop.recipesTitle,
-        dbResult: dbRes,
-      });
-    } else {
-      this.add_shopping(this.decodeShopping(dbShopping));
-    }
+  private encodeMenu(menu: menuTableElement): encodedMenuElement {
+    return {
+      ID: menu.id ? menu.id : 0,
+      RECIPE_ID: menu.recipeId,
+      RECIPE_TITLE: menu.recipeTitle,
+      IMAGE_SOURCE: menu.imageSource,
+      IS_COOKED: menu.isCooked ? 1 : 0,
+      COUNT: menu.count,
+    };
   }
 
   /**
-   * Removes a recipe's ingredients from shopping list items
+   * Decodes a menu item from database storage format
    *
-   * When a recipe is deleted, this method removes the recipe's contribution
-   * from all related shopping list items. It subtracts quantities and removes
-   * the recipe title from items. Items with zero or negative quantities are deleted.
+   * Converts an encoded menu element from the database into the
+   * application format.
    *
    * @private
-   * @param recipe - The recipe whose ingredients should be removed from shopping lists
+   * @param encodedMenu - The encoded menu data from database
+   * @returns Decoded menu item in application format
    */
-  private async removeRecipeFromShopping(recipe: recipeTableElement) {
-    const editedShopping = new Set<string>();
-    const deletedShopping = new Set<string>();
+  private decodeMenu(encodedMenu: encodedMenuElement): menuTableElement {
+    return {
+      id: encodedMenu.ID,
+      recipeId: encodedMenu.RECIPE_ID,
+      recipeTitle: encodedMenu.RECIPE_TITLE,
+      imageSource: encodedMenu.IMAGE_SOURCE,
+      isCooked: encodedMenu.IS_COOKED !== 0,
+      count: encodedMenu.COUNT ?? 1,
+    };
+  }
 
-    for (const shop of this._shopping) {
-      if (shop.recipesTitle.includes(recipe.title)) {
-        shop.recipesTitle.splice(shop.recipesTitle.indexOf(recipe.title), 1);
-
-        if (shop.recipesTitle.length === 0) {
-          deletedShopping.add(shop.name);
-        } else {
-          const recipeIng = recipe.ingredients.find(ingredient => ingredient.name === shop.name);
-          if (recipeIng === undefined) {
-            databaseLogger.warn('Cannot find ingredient in recipe for shopping removal', {
-              ingredient: shop.name,
-              recipeTitle: recipe.title,
-            });
-            editedShopping.add(shop.name);
-          } else if (recipeIng.quantity === undefined) {
-            databaseLogger.warn('Missing quantity for ingredient during shopping removal', {
-              ingredient: recipeIng.name,
-              recipeTitle: recipe.title,
-            });
-            editedShopping.add(shop.name);
-          } else {
-            shop.quantity = subtractNumberInString(shop.quantity, recipeIng.quantity);
-
-            if (
-              (isNumber(shop.quantity) && Number(shop.quantity) <= 0) ||
-              shop.quantity.length === 0
-            ) {
-              deletedShopping.add(recipeIng.name);
-            } else {
-              editedShopping.add(recipeIng.name);
-            }
-          }
-        }
-      }
+  /**
+   * Decodes an array of menu items from database storage format
+   *
+   * Processes multiple encoded menu elements from database queries,
+   * converting each one to the application format. Returns empty array if
+   * input is null, undefined, or empty.
+   *
+   * @private
+   * @param queryResult - Array of encoded menu elements from database
+   * @returns Array of decoded menu items in application format
+   */
+  private decodeArrayOfMenu(queryResult: encodedMenuElement[]): menuTableElement[] {
+    if (!queryResult || !Array.isArray(queryResult) || queryResult.length === 0) {
+      return [];
     }
-    for (const nameToEdit of editedShopping) {
-      const currentShopping = this._shopping.find(
-        shop => shop.name === nameToEdit
-      ) as shoppingListTableElement;
-
-      const editMap = new Map<string, number | string>([
-        [shoppingListColumnsNames.quantity, currentShopping.quantity],
-        [
-          shoppingListColumnsNames.recipeTitles,
-          currentShopping.recipesTitle.join(EncodingSeparator),
-        ],
-      ]);
-      if (currentShopping.id !== undefined) {
-        await this._shoppingListTable.editElementById(
-          currentShopping.id,
-          editMap,
-          this._dbConnection
-        );
-      } else {
-        const foundShopping =
-          (await this._shoppingListTable.searchElement<encodedShoppingListElement>(
-            this._dbConnection,
-            new Map<string, string>([[shoppingListColumnsNames.ingredient, currentShopping.name]])
-          )) as encodedShoppingListElement;
-        await this._shoppingListTable.editElementById(
-          foundShopping.ID,
-          editMap,
-          this._dbConnection
-        );
-      }
-    }
-    for (const nameToDelete of deletedShopping) {
-      const currentShopping = this._shopping.find(
-        shop => shop.name === nameToDelete
-      ) as shoppingListTableElement;
-
-      if (currentShopping.id !== undefined) {
-        await this._shoppingListTable.deleteElementById(currentShopping.id, this._dbConnection);
-      } else {
-        await this._shoppingListTable.deleteElement(
-          this._dbConnection,
-          new Map<string, string>([[shoppingListColumnsNames.ingredient, nameToDelete]])
-        );
-      }
-      this._shopping.splice(
-        this._shopping.findIndex(shop => shop.name === nameToDelete),
-        1
-      );
-    }
-
-    this._shopping = await this.getAllShopping();
+    return queryResult.map(menuElement => this.decodeMenu(menuElement));
   }
 
   /**

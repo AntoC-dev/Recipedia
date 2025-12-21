@@ -353,4 +353,162 @@ describe('RecipeDatabaseContext', () => {
       expect(marmitonSeen.size).toBe(1);
     });
   });
+
+  describe('Menu and Shopping List', () => {
+    test('shopping is empty when menu is empty', async () => {
+      const { result } = renderHook(() => useRecipeDatabase(), {
+        wrapper: RecipeDatabaseProvider,
+      });
+
+      await waitFor(() => {
+        expect(result.current.isDatabaseReady).toBe(true);
+      });
+
+      expect(result.current.shopping).toEqual([]);
+    });
+
+    test('shopping is computed from menu items', async () => {
+      const { result } = renderHook(() => useRecipeDatabase(), {
+        wrapper: RecipeDatabaseProvider,
+      });
+
+      await waitFor(() => {
+        expect(result.current.isDatabaseReady).toBe(true);
+      });
+
+      const recipe = result.current.recipes[0];
+      await result.current.addRecipeToMenu(recipe);
+
+      await waitFor(() => {
+        expect(result.current.menu.length).toBe(1);
+      });
+
+      await waitFor(() => {
+        expect(result.current.shopping.length).toBeGreaterThan(0);
+      });
+
+      const ingredientNames = result.current.shopping.map(item => item.name);
+      recipe.ingredients.forEach(ingredient => {
+        expect(ingredientNames).toContain(ingredient.name);
+      });
+    });
+
+    test('shopping excludes ingredients from cooked menu items', async () => {
+      const { result } = renderHook(() => useRecipeDatabase(), {
+        wrapper: RecipeDatabaseProvider,
+      });
+
+      await waitFor(() => {
+        expect(result.current.isDatabaseReady).toBe(true);
+      });
+
+      const recipe = result.current.recipes[0];
+      await result.current.addRecipeToMenu(recipe);
+
+      await waitFor(() => {
+        expect(result.current.menu.length).toBe(1);
+      });
+
+      await waitFor(() => {
+        expect(result.current.shopping.length).toBeGreaterThan(0);
+      });
+
+      const menuItem = result.current.menu[0];
+      await result.current.toggleMenuItemCooked(menuItem.id!);
+
+      await waitFor(() => {
+        expect(result.current.menu[0].isCooked).toBe(true);
+      });
+
+      await waitFor(() => {
+        expect(result.current.shopping.length).toBe(0);
+      });
+    });
+
+    test('shopping aggregates same ingredients from different recipes', async () => {
+      const { result } = renderHook(() => useRecipeDatabase(), {
+        wrapper: RecipeDatabaseProvider,
+      });
+
+      await waitFor(() => {
+        expect(result.current.isDatabaseReady).toBe(true);
+      });
+
+      await result.current.addRecipeToMenu(result.current.recipes[0]);
+
+      await waitFor(() => {
+        expect(result.current.menu.length).toBe(1);
+      });
+
+      await result.current.addRecipeToMenu(result.current.recipes[1]);
+
+      await waitFor(() => {
+        expect(result.current.menu.length).toBe(2);
+      });
+
+      await waitFor(() => {
+        expect(result.current.shopping.length).toBeGreaterThan(0);
+      });
+
+      const shoppingItemNames = result.current.shopping.map(item => item.name);
+      const uniqueNames = [...new Set(shoppingItemNames)];
+      expect(shoppingItemNames.length).toBe(uniqueNames.length);
+    });
+  });
+
+  describe('togglePurchased', () => {
+    test('toggles purchased state for ingredient', async () => {
+      const { result } = renderHook(() => useRecipeDatabase(), {
+        wrapper: RecipeDatabaseProvider,
+      });
+
+      await waitFor(() => {
+        expect(result.current.isDatabaseReady).toBe(true);
+      });
+
+      await result.current.addRecipeToMenu(result.current.recipes[0]);
+
+      await waitFor(() => {
+        expect(result.current.menu.length).toBe(1);
+      });
+
+      await waitFor(() => {
+        expect(result.current.shopping.length).toBeGreaterThan(0);
+      });
+
+      const ingredientName = result.current.shopping[0].name;
+      expect(result.current.shopping[0].purchased).toBe(false);
+
+      await result.current.togglePurchased(ingredientName);
+
+      await waitFor(() => {
+        const item = result.current.shopping.find(i => i.name === ingredientName);
+        expect(item?.purchased).toBe(true);
+      });
+    });
+  });
+
+  describe('clearMenu', () => {
+    test('clears all menu items', async () => {
+      const { result } = renderHook(() => useRecipeDatabase(), {
+        wrapper: RecipeDatabaseProvider,
+      });
+
+      await waitFor(() => {
+        expect(result.current.isDatabaseReady).toBe(true);
+      });
+
+      await result.current.addRecipeToMenu(result.current.recipes[0]);
+
+      await waitFor(() => {
+        expect(result.current.menu.length).toBe(1);
+      });
+
+      await result.current.clearMenu();
+
+      await waitFor(() => {
+        expect(result.current.menu.length).toBe(0);
+      });
+    });
+  });
 });

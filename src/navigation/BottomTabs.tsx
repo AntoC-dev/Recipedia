@@ -50,6 +50,7 @@ import React, { useContext } from 'react';
 import { StatusBar, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Home } from '@screens/Home';
+import { Menu } from '@screens/Menu';
 import { Shopping } from '@screens/Shopping';
 import { Parameters } from '@screens/Parameters';
 import { padding, screenHeight } from '@styles/spacing';
@@ -83,6 +84,8 @@ export function BottomTabs() {
         return Icons.homeUnselectedIcon;
       case 'Search':
         return Icons.searchIcon;
+      case 'Menu':
+        return Icons.menuUnselectedIcon;
       case 'Shopping':
         return Icons.shoppingUnselectedIcon;
       case 'Plannification':
@@ -105,6 +108,8 @@ export function BottomTabs() {
         return Icons.homeSelectedIcon;
       case 'Search':
         return Icons.searchIcon;
+      case 'Menu':
+        return Icons.menuSelectedIcon;
       case 'Shopping':
         return Icons.shoppingSelectedIcon;
       case 'Plannification':
@@ -190,6 +195,15 @@ export function BottomTabs() {
             tabBarLabel: t('search'),
             lazy: shouldRenderLazy,
             tabBarTestID: testId + '::Search',
+          }}
+        />
+        <Tab.Screen
+          name='Menu'
+          component={Menu}
+          options={{
+            tabBarLabel: t('menu'),
+            lazy: shouldRenderLazy,
+            tabBarTestID: testId + '::Menu',
           }}
         />
         <Tab.Screen

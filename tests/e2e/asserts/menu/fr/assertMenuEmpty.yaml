@@ -1,0 +1,15 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    id: "MenuScreen::TextNoItem"
+    text: "Aucune recette dans votre menu"
+    label: "Verify French empty state message"
+
+- assertVisible:
+    id: "MenuScreen::TextHint"
+    text: "Ajoutez des recettes depuis la page recette"
+    label: "Verify French hint message"
+
+- assertNotVisible:
+    id: "MenuScreen::ScrollView"
+    label: "ScrollView should not be visible when menu is empty"

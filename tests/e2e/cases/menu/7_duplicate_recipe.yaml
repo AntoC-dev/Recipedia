@@ -1,0 +1,75 @@
+name: "7 - Duplicate Recipe Badge and Quantities"
+appId: "com.recipedia"
+tags:
+  - menu
+---
+- runFlow:
+    file: "../../flows/setupTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- runFlow:
+    file: "../../flows/menu/addRecipeToMenu.yaml"
+    label: "Action - Add Classic Pancakes to menu (first time)"
+
+- runFlow:
+    file: "../../flows/menu/addRecipeToMenu.yaml"
+    label: "Action - Add Classic Pancakes to menu (second time)"
+
+- tapOn:
+    id: "BottomTabs::Menu"
+    label: "Action - Navigate to Menu screen"
+
+- assertVisible:
+    id: "MenuScreen::MenuItem::1::Title"
+    text: "Classic Pancakes"
+    label: "Assert - Verify Pancakes in menu"
+
+- assertVisible:
+    id: "MenuScreen::MenuItem::1::CountBadge"
+    text: "2"
+    label: "Assert - Verify badge shows count of 2"
+
+- assertNotVisible:
+    id: "MenuScreen::MenuItem::2"
+    label: "Assert - Only one menu item (combined duplicate)"
+
+- tapOn:
+    id: "BottomTabs::Shopping"
+    label: "Action - Navigate to Shopping screen"
+
+- runFlow:
+    file: "../../asserts/shopping/en/shoppingPancakeDoubled.yaml"
+    label: "Assert - Verify doubled Pancake ingredients in shopping list"
+
+- tapOn:
+    id: "BottomTabs::Menu"
+    label: "Action - Navigate to Menu screen"
+
+- tapOn:
+    id: "MenuScreen::MenuItem::1::RemoveButton"
+    label: "Action - Remove one instance of Pancakes"
+
+- assertVisible:
+    id: "MenuScreen::MenuItem::1::Title"
+    text: "Classic Pancakes"
+    label: "Assert - Pancakes still in menu"
+
+- assertNotVisible:
+    id: "MenuScreen::MenuItem::1::CountBadge"
+    label: "Assert - Badge no longer visible (count is 1)"
+
+- tapOn:
+    id: "BottomTabs::Shopping"
+    label: "Action - Navigate to Shopping screen"
+
+- runFlow:
+    file: "../../asserts/shopping/en/shoppingPancake.yaml"
+    label: "Assert - Verify normal Pancake ingredients (not doubled)"
+
+- runFlow:
+    file: "../../flows/shopping/en/clearShoppingList.yaml"
+    label: "Cleanup - Clear shopping list"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Cleanup - Navigate to Home screen"

@@ -48,10 +48,10 @@ tags:
     label: "Action - Add Test Recipe to shopping"
 
 - runFlow:
-    file: "../../asserts/alerts/en/addingRecipe.yaml"
+    file: "../../asserts/alerts/en/addingRecipeToMenu.yaml"
     env:
       RECIPE_NAME: "Test Recipe"
-    label: "Assert - Verify recipe added to shopping alert"
+    label: "Assert - Verify recipe added to menu alert"
 
 - tapOn:
     id: "SearchScreen::SearchBar::RightIcon"

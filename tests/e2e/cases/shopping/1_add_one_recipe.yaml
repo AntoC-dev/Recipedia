@@ -36,7 +36,7 @@ tags:
     label: "Action - Add Classic Pancakes to menu"
 
 - runFlow:
-    file: "../../asserts/alerts/en/addingRecipe.yaml"
+    file: "../../asserts/alerts/en/addingRecipeToMenu.yaml"
     env:
       RECIPE_NAME: "Classic Pancakes"
     label: "Assert - Verify recipe added alert"

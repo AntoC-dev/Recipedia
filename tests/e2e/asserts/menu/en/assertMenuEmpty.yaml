@@ -1,0 +1,15 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    id: "MenuScreen::TextNoItem"
+    text: "No recipes in your menu"
+    label: "Verify empty state message is displayed"
+
+- assertVisible:
+    id: "MenuScreen::TextHint"
+    text: "Add recipes from the recipe screen"
+    label: "Verify hint is displayed"
+
+- assertNotVisible:
+    id: "MenuScreen::ScrollView"
+    label: "ScrollView should not be visible when menu is empty"

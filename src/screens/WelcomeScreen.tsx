@@ -120,14 +120,9 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
   type Feature = { icon: IconName; text: string };
   const featuresList: Feature[] = [
     { icon: Icons.searchIcon, text: t('welcome.features.find') },
-    {
-      icon: Icons.plusIcon,
-      text: t('welcome.features.add'),
-    },
-    {
-      icon: Icons.shoppingUnselectedIcon,
-      text: t('welcome.features.shopping'),
-    },
+    { icon: Icons.plusIcon, text: t('welcome.features.add') },
+    { icon: Icons.webIcon, text: t('welcome.features.import') },
+    { icon: Icons.shoppingUnselectedIcon, text: t('welcome.features.shopping') },
   ];
   const startTourFont = fonts.titleMedium;
   const iconSize = screenWidth / 4;

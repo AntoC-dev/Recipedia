@@ -1,0 +1,13 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "BottomTabs::Menu"
+    label: "Go to the menu screen"
+
+- runFlow:
+    file: "../../../asserts/menu/fr/assertMenuEmpty.yaml"
+    label: "Check that empty menu is translated in French"
+
+- tapOn:
+    text: "Paramètres"
+    label: "Return to Parameters screen"

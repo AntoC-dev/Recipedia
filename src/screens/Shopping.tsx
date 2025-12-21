@@ -47,7 +47,7 @@
  * ```
  */
 
-import { shoppingListTableElement } from '@customTypes/DatabaseElementTypes';
+import { ComputedShoppingItem } from '@customTypes/DatabaseElementTypes';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { SectionList, StyleProp, TextStyle, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -57,21 +57,16 @@ import { CopilotStepData } from '@customTypes/TutorialTypes';
 import { Checkbox, Divider, List, Text, useTheme } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
 import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
-import {
-  ShoppingAppliedToDatabase,
-  shoppingCategories,
-  TListFilter,
-} from '@customTypes/RecipeFiltersTypes';
+import { shoppingCategories, TListFilter } from '@customTypes/RecipeFiltersTypes';
 import { Icons } from '@assets/Icons';
 import { Alert } from '@components/dialogs/Alert';
 import { RoundButton } from '@components/atomic/RoundButton';
-import { shoppingLogger } from '@utils/logger';
 import { TUTORIAL_DEMO_INTERVAL, TUTORIAL_STEPS } from '@utils/Constants';
 import { padding } from '@styles/spacing';
 import { formatQuantityForDisplay } from '@utils/Quantity';
 
 /** Type for dialog data containing ingredient and recipe information */
-type ingredientDataForDialog = Pick<shoppingListTableElement, 'name' | 'recipesTitle'>;
+type ingredientDataForDialog = Pick<ComputedShoppingItem, 'name' | 'recipeTitles'>;
 
 /**
  * Shopping screen component - Categorized shopping list with recipe tracking
@@ -85,11 +80,7 @@ export function Shopping() {
   const { t } = useI18n();
   const { colors, fonts } = useTheme();
   const insets = useSafeAreaInsets();
-  const {
-    shopping: shoppingList,
-    purchaseIngredientInShoppingList,
-    clearShoppingList: clearShoppingListDB,
-  } = useRecipeDatabase();
+  const { shopping: shoppingList, togglePurchased, clearMenu } = useRecipeDatabase();
   const copilotData = useSafeCopilot();
   const copilotEvents = copilotData?.copilotEvents;
   const currentStep = copilotData?.currentStep;
@@ -101,7 +92,7 @@ export function Shopping() {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [ingredientDataForDialog, setIngredientDataForDialog] = useState<ingredientDataForDialog>({
-    recipesTitle: [],
+    recipeTitles: [],
     name: '',
   });
 
@@ -110,7 +101,7 @@ export function Shopping() {
   const toggleDemoDialog = useCallback(() => {
     if (isDialogOpenRef.current) {
       setIsDialogOpen(false);
-      setIngredientDataForDialog({ name: '', recipesTitle: [] });
+      setIngredientDataForDialog({ name: '', recipeTitles: [] });
       isDialogOpenRef.current = false;
     } else {
       setIngredientDataForDialog(shoppingList[2]);
@@ -121,7 +112,7 @@ export function Shopping() {
 
   const closingDialogInDemo = () => {
     setIsDialogOpen(false);
-    setIngredientDataForDialog({ name: '', recipesTitle: [] });
+    setIngredientDataForDialog({ name: '', recipeTitles: [] });
     isDialogOpenRef.current = false;
   };
 
@@ -174,12 +165,10 @@ export function Shopping() {
   }, [currentStep, copilotData, copilotEvents, handleStepChange, startDemo, stepOrder, stopDemo]);
 
   const sections = shoppingCategories
-    .map(category => {
-      return {
-        title: category,
-        data: shoppingList.filter(item => item.type === category),
-      } as ShoppingAppliedToDatabase;
-    })
+    .map(category => ({
+      title: category,
+      data: shoppingList.filter(item => item.type === category),
+    }))
     .filter(section => section.data.length > 0);
 
   const screenId = 'ShoppingScreen';
@@ -215,54 +204,15 @@ export function Shopping() {
     return (
       t('shoppingScreen.recipeUsingMessage') +
       ' :' +
-      ingredientDataForDialog.recipesTitle.map(title => `\n\t- ${title}`).join('')
+      ingredientDataForDialog.recipeTitles.map(title => `\n\t- ${title}`).join('')
     );
   }
 
   /**
-   * Updates shopping list item purchase status with database synchronization
-   *
-   * This function manages the complex process of toggling ingredient purchase status
-   * while maintaining consistency between local state and database storage.
-   * It handles both UI updates and persistent data storage.
-   *
-   * @param ingredientName - Name of the ingredient to update
-   *
-   * Update Process:
-   * 1. Creates shallow copy of shopping list for state management
-   * 2. Finds the specific ingredient by name
-   * 3. Toggles the purchased status (true ↔ false)
-   * 4. Persists change to database asynchronously
-   * 5. Updates local state to reflect change
-   *
-   * Error Handling:
-   * - Validates ingredient exists in current list
-   * - Ensures ingredient has valid ID for database operations
-   * - Logs warnings for invalid operations
-   * - Gracefully handles database failures
-   *
-   * State Management:
-   * - Maintains state consistency during async operations
-   * - Updates UI immediately for responsive experience
-   * - Synchronizes with database in background
-   *
-   * Side Effects:
-   * - Updates shoppingList state
-   * - Modifies database purchase status
-   * - Triggers UI re-render with new purchase state
+   * Toggles purchase status of an ingredient by name
    */
   function updateShoppingList(ingredientName: string) {
-    const ingToEdit = shoppingList.find(item => item.name === ingredientName);
-    if (ingToEdit !== undefined) {
-      const newPurchasedState = !ingToEdit.purchased;
-      if (ingToEdit.id !== undefined) {
-        purchaseIngredientInShoppingList(ingToEdit.id, newPurchasedState);
-      } else {
-        shoppingLogger.warn('Shopping list ingredient missing ID', { ingredientName });
-      }
-    } else {
-      shoppingLogger.warn('Shopping list ingredient not found', { ingredientName });
-    }
+    togglePurchased(ingredientName);
   }
 
   function showClearConfirmation() {
@@ -274,7 +224,7 @@ export function Shopping() {
   }
 
   async function clearShoppingList() {
-    await clearShoppingListDB();
+    await clearMenu();
     setIsConfirmationDialogOpen(false);
   }
 
@@ -293,8 +243,8 @@ export function Shopping() {
     );
   }
 
-  function renderItem({ item }: { item: shoppingListTableElement }) {
-    const recipesCount = item.recipesTitle.length;
+  function renderItem({ item }: { item: ComputedShoppingItem }) {
+    const recipesCount = item.recipeTitles.length;
     const recipesText =
       recipesCount > 1
         ? `${recipesCount} ${t('shoppingScreen.recipes')}`
@@ -336,7 +286,7 @@ export function Shopping() {
         <SectionList
           testID={sectionId}
           sections={sections}
-          keyExtractor={item => item.id?.toString() || item.name}
+          keyExtractor={item => item.name}
           renderItem={renderItem}
           renderSectionHeader={renderSectionHeader}
           stickySectionHeadersEnabled={false}
@@ -366,7 +316,7 @@ export function Shopping() {
         title={createDialogTitle()}
         onClose={() => {
           setIsDialogOpen(false);
-          setIngredientDataForDialog({ name: '', recipesTitle: [] });
+          setIngredientDataForDialog({ name: '', recipeTitles: [] });
         }}
       />
       <Alert
