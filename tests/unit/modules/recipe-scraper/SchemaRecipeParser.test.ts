@@ -1,4 +1,4 @@
-import { SchemaRecipeParser } from '../../../../modules/recipe-scraper/src/web/SchemaRecipeParser';
+import { SchemaRecipeParser } from '@app/modules/recipe-scraper/src/web/SchemaRecipeParser';
 
 describe('SchemaRecipeParser', () => {
   let parser: SchemaRecipeParser;

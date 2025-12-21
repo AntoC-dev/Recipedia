@@ -12,8 +12,8 @@ export default {
   fromServiceDescription: 'Import all recipes from supported services',
   selectSource: 'Select Source',
 
-  provider_hellofresh: {
-    Description: 'Import recipes from HelloFresh',
+  provider: {
+    description: 'Import recipes from {{name}}',
   },
 
   discovery: {

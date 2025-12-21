@@ -45,6 +45,7 @@ import {
   getIgnoredPatterns,
   ScrapedRecipeResult,
 } from '@utils/RecipeScraperConverter';
+import { extractImageFromJsonLd, fetchHtml } from '@utils/UrlHelpers';
 
 export type { ScrapedRecipeResult } from '@utils/RecipeScraperConverter';
 
@@ -98,7 +99,8 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
   const processScrapedData = async (
     scraperResult: ScraperResult<ScrapedRecipe>,
     url: string,
-    logPrefix: string
+    logPrefix: string,
+    html?: string
   ): Promise<ScrapeResult> => {
     if (!isScraperSuccess(scraperResult)) {
       const errorMessage = getErrorMessage(scraperResult.error);
@@ -138,9 +140,21 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
       });
     }
 
-    if (scraperResult.data.image) {
-      uiLogger.info('Downloading recipe image', { imageUrl: scraperResult.data.image });
-      const localImageUri = await downloadImageToCache(scraperResult.data.image);
+    let imageUrl: string | null = scraperResult.data.image;
+
+    // If the scraper returned a placeholder image, extract real one from HTML
+    if (imageUrl?.includes('placeholder') && html) {
+      const realImage = extractImageFromJsonLd(html);
+      if (realImage) {
+        imageUrl = realImage;
+      } else {
+        imageUrl = null;
+      }
+    }
+
+    if (imageUrl) {
+      uiLogger.info('Downloading recipe image', { imageUrl });
+      const localImageUri = await downloadImageToCache(imageUrl);
       if (localImageUri) {
         recipeData.image_Source = localImageUri;
       }
@@ -157,7 +171,12 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
     uiLogger.info('Starting recipe scrape', { url });
 
     try {
-      const scraperResult = await recipeScraper.scrapeRecipe(url);
+      // Fetch HTML once - used for both scraping and image extraction
+      const html = await fetchHtml(url);
+      uiLogger.debug('Fetched HTML', { length: html.length });
+
+      // Scrape using the fetched HTML
+      const scraperResult = await recipeScraper.scrapeRecipeFromHtml(html, url);
 
       if (
         !isScraperSuccess(scraperResult) &&
@@ -170,7 +189,8 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
         return { success: false, error: getErrorMessage(scraperResult.error) };
       }
 
-      const result = await processScrapedData(scraperResult, url, 'Scraping');
+      // Pass HTML to processScrapedData for potential image extraction
+      const result = await processScrapedData(scraperResult, url, 'Scraping', html);
       setIsLoading(false);
       return result;
     } catch (err) {

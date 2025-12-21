@@ -4,9 +4,7 @@ import {
   hellofreshCategoryPageHtml,
   hellofreshRecipesPageHtml,
 } from '@test-data/scraperMocks/hellofresh';
-
-const mockFetch = jest.fn();
-global.fetch = mockFetch;
+import { mockFetch } from '@mocks/deps/fetch-mock';
 
 describe('HelloFreshProvider', () => {
   let provider: HelloFreshProvider;

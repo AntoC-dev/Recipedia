@@ -7,7 +7,7 @@
  * @module providers/BaseRecipeProvider
  */
 
-import { SchemaRecipeParser } from '@app/modules/recipe-scraper/src/web/SchemaRecipeParser';
+import { isScraperSuccess, recipeScraper } from '@utils/RecipeScraper';
 import {
   cleanImageUrl,
   convertScrapedRecipe,
@@ -30,11 +30,53 @@ import { bulkImportLogger } from '@utils/logger';
 /** Delay between HTTP requests to avoid rate limiting */
 const FETCH_DELAY_MS = 300;
 
+/** Delay before retrying failed pages (longer to avoid rate limits) */
+const RETRY_DELAY_MS = 2000;
+
+/** Maximum number of retry attempts for pages with no results */
+const MAX_RETRIES = 3;
+
+/** Reduced concurrency for retries to be gentler on the server */
+const RETRY_CONCURRENT_LIMIT = 1;
+
 /** Maximum time to wait for an HTTP request before timing out */
 const FETCH_TIMEOUT_MS = 15000;
 
 /** Maximum concurrent image fetch requests to prevent memory exhaustion */
 const MAX_CONCURRENT_IMAGE_FETCHES = 5;
+
+/** Number of category pages to fetch concurrently */
+const CONCURRENT_CATEGORY_LIMIT = 3;
+
+/**
+ * Internal state for tracking discovery progress.
+ * Used by BaseRecipeProvider during recipe URL discovery.
+ */
+export interface DiscoveryState {
+  /** List of discovered recipes */
+  recipes: DiscoveredRecipe[];
+  /** Set of already discovered URLs to avoid duplicates */
+  discoveredUrls: Set<string>;
+  /** Number of category pages scanned */
+  categoriesScanned: number;
+  /** List of category URLs that returned no recipes */
+  emptyPages: string[];
+  /** Index of the last page that had recipes */
+  lastNonEmptyPageIndex: number;
+  /** Whether the max recipe limit has been reached */
+  reachedMaxRecipes: boolean;
+}
+
+/**
+ * Result of processing a single category page.
+ * Contains the extracted recipe links from the page.
+ */
+export interface CategoryResult {
+  /** URL of the category page that was fetched */
+  categoryUrl: string;
+  /** List of recipe links extracted from the page */
+  links: { url: string; title?: string; imageUrl?: string }[];
+}
 
 /**
  * Preview metadata extracted from a recipe page for display before full parsing
@@ -62,12 +104,6 @@ export abstract class BaseRecipeProvider implements RecipeProvider {
 
   /** URL to the provider's logo image */
   abstract readonly logoUrl: string;
-
-  /**
-   * JSON-LD schema parser instance for extracting recipe data
-   * @hidden
-   */
-  protected parser = new SchemaRecipeParser();
 
   /** Currently active image fetch count */
   private activeImageFetches = 0;
@@ -108,18 +144,15 @@ export abstract class BaseRecipeProvider implements RecipeProvider {
   /**
    * Discovers recipe URLs from the provider with streaming progress
    *
-   * Scans category pages and yields progress updates as recipes are found.
-   * Optionally triggers background image fetching via the onImageLoaded callback.
+   * Scans category pages in batches and yields progress updates as recipes are found.
+   * Automatically retries pages that appear rate-limited.
    *
-   * @param options - Discovery options including abort signal and callbacks
+   * @param options - Discovery options including abort signal and max recipes
    * @yields Progress updates with discovered recipes
    */
   async *discoverRecipeUrls(options: DiscoveryOptions = {}): AsyncGenerator<DiscoveryProgress> {
     const { maxRecipes, signal } = options;
     const baseUrl = await this.getBaseUrl();
-    const recipes: DiscoveredRecipe[] = [];
-    const discoveredUrls = new Set<string>();
-
     const categoryUrls = await this.discoverCategoryUrls(baseUrl, signal);
 
     bulkImportLogger.info('Starting recipe discovery', {
@@ -128,106 +161,20 @@ export abstract class BaseRecipeProvider implements RecipeProvider {
       maxRecipes,
     });
 
-    yield {
-      phase: 'discovering',
-      recipesFound: 0,
-      categoriesScanned: 0,
-      totalCategories: categoryUrls.length,
-      isComplete: false,
-      recipes: [],
-    };
+    const state = this.createDiscoveryState();
 
-    const CONCURRENT_CATEGORY_LIMIT = 3;
-    let categoriesScanned = 0;
-    let reachedMaxRecipes = false;
+    yield this.createProgressUpdate(state, categoryUrls.length, false);
 
-    for (let i = 0; i < categoryUrls.length; i += CONCURRENT_CATEGORY_LIMIT) {
-      if (signal?.aborted) {
-        bulkImportLogger.info('Discovery aborted by user');
-        break;
-      }
+    yield* this.scanCategoryPages(categoryUrls, state, maxRecipes, signal);
 
-      if (reachedMaxRecipes) {
-        break;
-      }
-
-      const batch = categoryUrls.slice(i, i + CONCURRENT_CATEGORY_LIMIT);
-
-      const results = await Promise.allSettled(
-        batch.map(async categoryUrl => {
-          const html = await this.fetchHtml(categoryUrl, signal);
-          return {
-            categoryUrl,
-            links: this.extractRecipeLinksFromHtml(html),
-          };
-        })
-      );
-
-      for (const result of results) {
-        categoriesScanned++;
-
-        if (result.status === 'fulfilled') {
-          const { categoryUrl, links } = result.value;
-
-          bulkImportLogger.debug('Found recipe links in category', {
-            category: categoryUrl,
-            linkCount: links.length,
-          });
-
-          for (const link of links) {
-            if (!discoveredUrls.has(link.url)) {
-              discoveredUrls.add(link.url);
-              recipes.push({
-                url: link.url,
-                title: link.title ?? '',
-                imageUrl: link.imageUrl,
-              });
-
-              if (maxRecipes && recipes.length >= maxRecipes) {
-                bulkImportLogger.info('Max recipes reached', { count: recipes.length });
-                reachedMaxRecipes = true;
-                break;
-              }
-            }
-          }
-        } else {
-          bulkImportLogger.warn('Failed to fetch category', {
-            error: result.reason instanceof Error ? result.reason.message : String(result.reason),
-          });
-        }
-
-        if (reachedMaxRecipes) {
-          break;
-        }
-      }
-
-      yield {
-        phase: 'discovering',
-        recipesFound: recipes.length,
-        categoriesScanned,
-        totalCategories: categoryUrls.length,
-        isComplete: false,
-        recipes: [...recipes],
-      };
-
-      if (!reachedMaxRecipes && i + CONCURRENT_CATEGORY_LIMIT < categoryUrls.length) {
-        await this.delay(FETCH_DELAY_MS);
-      }
-    }
+    await this.retryEmptyPages(categoryUrls, state, maxRecipes, signal);
 
     bulkImportLogger.info('Discovery complete', {
       provider: this.id,
-      totalRecipes: recipes.length,
+      totalRecipes: state.recipes.length,
     });
 
-    yield {
-      phase: 'complete',
-      recipesFound: recipes.length,
-      categoriesScanned: categoryUrls.length,
-      totalCategories: categoryUrls.length,
-      isComplete: true,
-      recipes: [...recipes],
-    };
+    yield this.createProgressUpdate(state, categoryUrls.length, true);
   }
 
   /**
@@ -281,9 +228,9 @@ export abstract class BaseRecipeProvider implements RecipeProvider {
       const results = await Promise.allSettled(
         batch.map(async recipe => {
           const html = await this.fetchHtml(recipe.url, signal);
-          const result = this.parser.parse(html, recipe.url);
+          const result = await recipeScraper.scrapeRecipeFromHtml(html, recipe.url);
 
-          if (result.success) {
+          if (isScraperSuccess(result)) {
             const converted = convertScrapedRecipe(result.data, ignoredPatterns, defaultPersons);
 
             let localImageUri: string | undefined;
@@ -397,9 +344,9 @@ export abstract class BaseRecipeProvider implements RecipeProvider {
     bulkImportLogger.debug('Fetching recipe', { url });
 
     const html = await this.fetchHtml(url, signal);
-    const result = this.parser.parse(html, url);
+    const result = await recipeScraper.scrapeRecipeFromHtml(html, url);
 
-    if (!result.success) {
+    if (!isScraperSuccess(result)) {
       throw new Error(`Failed to parse recipe: ${result.error.message}`);
     }
 
@@ -446,7 +393,7 @@ export abstract class BaseRecipeProvider implements RecipeProvider {
   async fetchImageUrlForRecipe(url: string, signal: AbortSignal): Promise<string | null> {
     try {
       const html = await this.fetchHtml(url, signal);
-      const metadata = this.extractPreviewMetadata(html);
+      const metadata = await this.extractPreviewMetadata(html, url);
       return metadata.imageUrl;
     } catch {
       return null;
@@ -494,11 +441,15 @@ export abstract class BaseRecipeProvider implements RecipeProvider {
    * Extracts preview metadata from HTML for display before full parsing
    *
    * @param html - Raw HTML content
-   * @returns Preview metadata with title and image URL
+   * @param url - Recipe page URL for host detection
+   * @returns Promise resolving to preview metadata with title and image URL
    */
-  protected extractPreviewMetadata(html: string): RecipePreviewMetadata {
-    const result = this.parser.parse(html, '');
-    if (!result.success) {
+  protected async extractPreviewMetadata(
+    html: string,
+    url: string
+  ): Promise<RecipePreviewMetadata> {
+    const result = await recipeScraper.scrapeRecipeFromHtml(html, url);
+    if (!isScraperSuccess(result)) {
       return { title: null, imageUrl: null };
     }
     return {
@@ -515,6 +466,263 @@ export abstract class BaseRecipeProvider implements RecipeProvider {
    */
   protected delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  /**
+   * Creates initial discovery state
+   */
+  private createDiscoveryState(): DiscoveryState {
+    return {
+      recipes: [],
+      discoveredUrls: new Set<string>(),
+      categoriesScanned: 0,
+      emptyPages: [],
+      lastNonEmptyPageIndex: -1,
+      reachedMaxRecipes: false,
+    };
+  }
+
+  /**
+   * Creates a progress update object from current state
+   */
+  private createProgressUpdate(
+    state: DiscoveryState,
+    totalCategories: number,
+    isComplete: boolean
+  ): DiscoveryProgress {
+    return {
+      phase: isComplete ? 'complete' : 'discovering',
+      recipesFound: state.recipes.length,
+      categoriesScanned: isComplete ? totalCategories : state.categoriesScanned,
+      totalCategories,
+      isComplete,
+      recipes: [...state.recipes],
+    };
+  }
+
+  /**
+   * Scans category pages in batches and yields progress updates
+   */
+  private async *scanCategoryPages(
+    categoryUrls: string[],
+    state: DiscoveryState,
+    maxRecipes: number | undefined,
+    signal: AbortSignal | undefined
+  ): AsyncGenerator<DiscoveryProgress> {
+    for (let i = 0; i < categoryUrls.length; i += CONCURRENT_CATEGORY_LIMIT) {
+      if (signal?.aborted || state.reachedMaxRecipes) break;
+
+      const batch = categoryUrls.slice(i, i + CONCURRENT_CATEGORY_LIMIT);
+      const results = await this.fetchCategoryBatch(batch, signal);
+
+      this.processCategoryResults(results, batch, state, i, maxRecipes);
+
+      yield this.createProgressUpdate(state, categoryUrls.length, false);
+
+      if (!state.reachedMaxRecipes && i + CONCURRENT_CATEGORY_LIMIT < categoryUrls.length) {
+        await this.delay(FETCH_DELAY_MS);
+      }
+    }
+  }
+
+  /**
+   * Fetches a batch of category pages concurrently
+   */
+  private async fetchCategoryBatch(
+    urls: string[],
+    signal: AbortSignal | undefined
+  ): Promise<PromiseSettledResult<CategoryResult>[]> {
+    return Promise.allSettled(
+      urls.map(async categoryUrl => {
+        const html = await this.fetchHtml(categoryUrl, signal);
+        return {
+          categoryUrl,
+          links: this.extractRecipeLinksFromHtml(html),
+        };
+      })
+    );
+  }
+
+  /**
+   * Processes results from a batch of category page fetches
+   */
+  private processCategoryResults(
+    results: PromiseSettledResult<CategoryResult>[],
+    batch: string[],
+    state: DiscoveryState,
+    batchStartIndex: number,
+    maxRecipes: number | undefined
+  ): void {
+    for (let j = 0; j < results.length; j++) {
+      if (state.reachedMaxRecipes) break;
+
+      const result = results[j];
+      const categoryUrl = batch[j];
+      state.categoriesScanned++;
+
+      if (result.status === 'fulfilled') {
+        this.processSuccessfulCategory(result.value, state, batchStartIndex + j, maxRecipes);
+      } else {
+        this.processFailedCategory(categoryUrl, result.reason, state);
+      }
+    }
+  }
+
+  /**
+   * Processes a successfully fetched category page
+   */
+  private processSuccessfulCategory(
+    result: CategoryResult,
+    state: DiscoveryState,
+    pageIndex: number,
+    maxRecipes: number | undefined
+  ): void {
+    const { categoryUrl, links } = result;
+
+    bulkImportLogger.debug('Found recipe links in category', {
+      category: categoryUrl,
+      linkCount: links.length,
+    });
+
+    if (links.length === 0) {
+      state.emptyPages.push(categoryUrl);
+      return;
+    }
+
+    state.lastNonEmptyPageIndex = pageIndex;
+    this.addRecipesToState(links, state, maxRecipes);
+  }
+
+  /**
+   * Processes a failed category page fetch
+   */
+  private processFailedCategory(categoryUrl: string, error: unknown, state: DiscoveryState): void {
+    bulkImportLogger.warn('Failed to fetch category', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    state.emptyPages.push(categoryUrl);
+  }
+
+  /**
+   * Adds discovered recipe links to state, avoiding duplicates
+   */
+  private addRecipesToState(
+    links: { url: string; title?: string; imageUrl?: string }[],
+    state: DiscoveryState,
+    maxRecipes: number | undefined
+  ): void {
+    for (const link of links) {
+      if (state.reachedMaxRecipes) break;
+
+      if (!state.discoveredUrls.has(link.url)) {
+        state.discoveredUrls.add(link.url);
+        state.recipes.push({
+          url: link.url,
+          title: link.title ?? '',
+          imageUrl: link.imageUrl,
+        });
+
+        if (maxRecipes && state.recipes.length >= maxRecipes) {
+          bulkImportLogger.info('Max recipes reached', { count: state.recipes.length });
+          state.reachedMaxRecipes = true;
+        }
+      }
+    }
+  }
+
+  /**
+   * Retries empty pages that appeared before the last successful page (likely rate-limited)
+   */
+  private async retryEmptyPages(
+    categoryUrls: string[],
+    state: DiscoveryState,
+    maxRecipes: number | undefined,
+    signal: AbortSignal | undefined
+  ): Promise<void> {
+    const pagesToRetry = state.emptyPages.filter(url => {
+      const pageIndex = categoryUrls.indexOf(url);
+      return pageIndex !== -1 && pageIndex < state.lastNonEmptyPageIndex;
+    });
+
+    if (pagesToRetry.length === 0 || signal?.aborted || state.reachedMaxRecipes) {
+      return;
+    }
+
+    bulkImportLogger.info('Retrying potentially rate-limited pages', {
+      count: pagesToRetry.length,
+    });
+
+    for (let attempt = 1; attempt <= MAX_RETRIES && pagesToRetry.length > 0; attempt++) {
+      await this.delay(RETRY_DELAY_MS * attempt);
+      if (signal?.aborted) break;
+
+      const stillEmpty = await this.executeRetryAttempt(
+        pagesToRetry,
+        state,
+        maxRecipes,
+        signal,
+        attempt
+      );
+
+      pagesToRetry.length = 0;
+      pagesToRetry.push(...stillEmpty);
+
+      if (pagesToRetry.length === 0) {
+        bulkImportLogger.info('All retries succeeded');
+        break;
+      }
+    }
+
+    if (pagesToRetry.length > 0) {
+      bulkImportLogger.warn('Some pages still empty after retries', {
+        count: pagesToRetry.length,
+      });
+    }
+  }
+
+  /**
+   * Executes a single retry attempt for failed pages
+   */
+  private async executeRetryAttempt(
+    pagesToRetry: string[],
+    state: DiscoveryState,
+    maxRecipes: number | undefined,
+    signal: AbortSignal | undefined,
+    attempt: number
+  ): Promise<string[]> {
+    const stillEmpty: string[] = [];
+    let recovered = 0;
+
+    for (let i = 0; i < pagesToRetry.length; i += RETRY_CONCURRENT_LIMIT) {
+      if (signal?.aborted || state.reachedMaxRecipes) break;
+
+      const batch = pagesToRetry.slice(i, i + RETRY_CONCURRENT_LIMIT);
+      const results = await this.fetchCategoryBatch(batch, signal);
+
+      for (let j = 0; j < results.length; j++) {
+        const result = results[j];
+        const categoryUrl = batch[j];
+
+        if (result.status === 'fulfilled' && result.value.links.length > 0) {
+          recovered++;
+          this.addRecipesToState(result.value.links, state, maxRecipes);
+        } else {
+          stillEmpty.push(categoryUrl);
+        }
+      }
+
+      if (i + RETRY_CONCURRENT_LIMIT < pagesToRetry.length) {
+        await this.delay(RETRY_DELAY_MS);
+      }
+    }
+
+    bulkImportLogger.info('Retry attempt completed', {
+      attempt,
+      recovered,
+      stillPending: stillEmpty.length,
+    });
+
+    return stillEmpty;
   }
 
   /**
@@ -562,7 +770,7 @@ export abstract class BaseRecipeProvider implements RecipeProvider {
         }
         try {
           const html = await this.fetchHtml(url, signal);
-          const metadata = this.extractPreviewMetadata(html);
+          const metadata = await this.extractPreviewMetadata(html, url);
           if (metadata.imageUrl) {
             onImageLoaded(url, metadata.imageUrl);
           }

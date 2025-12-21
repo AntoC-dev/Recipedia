@@ -1,4 +1,4 @@
-import { PyodideScraper } from '../../../../modules/recipe-scraper/src/web/PyodideScraper';
+import { PyodideScraper } from '@app/modules/recipe-scraper/src/web/PyodideScraper';
 
 const mockPyodide = {
   loadPackage: jest.fn().mockResolvedValue(undefined),

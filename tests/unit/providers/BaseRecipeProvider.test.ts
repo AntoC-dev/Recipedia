@@ -1,8 +1,6 @@
 import { BaseRecipeProvider } from '@providers/BaseRecipeProvider';
 import { hellofreshRecipePageHtml } from '@test-data/scraperMocks/hellofresh';
-
-const mockFetch = jest.fn();
-global.fetch = mockFetch;
+import { mockFetch } from '@mocks/deps/fetch-mock';
 
 class TestProvider extends BaseRecipeProvider {
   readonly id = 'test';

@@ -1,4 +1,5 @@
-import { isValidUrl, normalizeUrl } from '@utils/UrlHelpers';
+import { extractImageFromJsonLd, fetchHtml, isValidUrl, normalizeUrl } from '@utils/UrlHelpers';
+import { mockFetch } from '@mocks/deps/fetch-mock';
 
 describe('UrlHelpers', () => {
   describe('isValidUrl', () => {
@@ -59,6 +60,240 @@ describe('UrlHelpers', () => {
 
     test('preserves path and query parameters', () => {
       expect(normalizeUrl('example.com/recipe?id=123')).toBe('https://example.com/recipe?id=123');
+    });
+  });
+
+  describe('fetchHtml', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+      jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    test('returns HTML content on successful fetch', async () => {
+      const testHtml = '<html><body>Test content</body></html>';
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        text: () => Promise.resolve(testHtml),
+      });
+
+      const result = await fetchHtml('https://example.com/recipe');
+
+      expect(result).toBe(testHtml);
+    });
+
+    test('sends proper headers', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        text: () => Promise.resolve('<html></html>'),
+      });
+
+      await fetchHtml('https://example.com/recipe');
+
+      expect(mockFetch).toHaveBeenCalledWith('https://example.com/recipe', {
+        signal: expect.any(AbortSignal),
+        headers: {
+          'User-Agent': expect.stringContaining('RecipediaApp'),
+          Accept: expect.stringContaining('text/html'),
+          'Accept-Language': expect.stringContaining('fr-FR'),
+        },
+      });
+    });
+
+    test('throws on HTTP error', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: 404,
+        statusText: 'Not Found',
+      });
+
+      await expect(fetchHtml('https://example.com/recipe')).rejects.toThrow('HTTP 404');
+    });
+
+    test('throws on server error', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+        statusText: 'Internal Server Error',
+      });
+
+      await expect(fetchHtml('https://example.com/recipe')).rejects.toThrow('HTTP 500');
+    });
+
+    test('respects abort signal', async () => {
+      const controller = new AbortController();
+      controller.abort();
+
+      mockFetch.mockRejectedValueOnce(new DOMException('Aborted', 'AbortError'));
+
+      await expect(fetchHtml('https://example.com/recipe', controller.signal)).rejects.toThrow();
+    });
+  });
+
+  describe('extractImageFromJsonLd', () => {
+    test('extracts image URL from simple Recipe JSON-LD', () => {
+      const html = `
+        <html>
+          <script type="application/ld+json">
+            {"@type": "Recipe", "name": "Test", "image": "https://example.com/image.jpg"}
+          </script>
+        </html>
+      `;
+
+      const result = extractImageFromJsonLd(html);
+
+      expect(result).toBe('https://example.com/image.jpg');
+    });
+
+    test('extracts from @graph format with Recipe in array', () => {
+      const html = `
+        <html>
+          <script type="application/ld+json">
+            {"@graph": [{"@type": "WebPage"}, {"@type": "Recipe", "image": "https://example.com/graph-image.jpg"}]}
+          </script>
+        </html>
+      `;
+
+      const result = extractImageFromJsonLd(html);
+
+      expect(result).toBe('https://example.com/graph-image.jpg');
+    });
+
+    test('extracts first URL from image array', () => {
+      const html = `
+        <html>
+          <script type="application/ld+json">
+            {"@type": "Recipe", "image": ["https://example.com/first.jpg", "https://example.com/second.jpg"]}
+          </script>
+        </html>
+      `;
+
+      const result = extractImageFromJsonLd(html);
+
+      expect(result).toBe('https://example.com/first.jpg');
+    });
+
+    test('extracts from image object with url property', () => {
+      const html = `
+        <html>
+          <script type="application/ld+json">
+            {"@type": "Recipe", "image": {"@type": "ImageObject", "url": "https://example.com/object-image.jpg"}}
+          </script>
+        </html>
+      `;
+
+      const result = extractImageFromJsonLd(html);
+
+      expect(result).toBe('https://example.com/object-image.jpg');
+    });
+
+    test('extracts from array of image objects', () => {
+      const html = `
+        <html>
+          <script type="application/ld+json">
+            {"@type": "Recipe", "image": [{"url": "https://example.com/array-object.jpg"}]}
+          </script>
+        </html>
+      `;
+
+      const result = extractImageFromJsonLd(html);
+
+      expect(result).toBe('https://example.com/array-object.jpg');
+    });
+
+    test('returns null when no JSON-LD present', () => {
+      const html = '<html><body>No JSON-LD here</body></html>';
+
+      const result = extractImageFromJsonLd(html);
+
+      expect(result).toBeNull();
+    });
+
+    test('returns null for placeholder images', () => {
+      const html = `
+        <html>
+          <script type="application/ld+json">
+            {"@type": "Recipe", "image": "https://example.com/placeholder.jpg"}
+          </script>
+        </html>
+      `;
+
+      const result = extractImageFromJsonLd(html);
+
+      expect(result).toBeNull();
+    });
+
+    test('returns null for placeholder in image array', () => {
+      const html = `
+        <html>
+          <script type="application/ld+json">
+            {"@type": "Recipe", "image": ["https://example.com/placeholder-image.jpg"]}
+          </script>
+        </html>
+      `;
+
+      const result = extractImageFromJsonLd(html);
+
+      expect(result).toBeNull();
+    });
+
+    test('returns null for placeholder in image object url', () => {
+      const html = `
+        <html>
+          <script type="application/ld+json">
+            {"@type": "Recipe", "image": {"@type": "ImageObject", "url": "https://example.com/placeholder-icon.jpg"}}
+          </script>
+        </html>
+      `;
+
+      const result = extractImageFromJsonLd(html);
+
+      expect(result).toBeNull();
+    });
+
+    test('returns null when no Recipe type found', () => {
+      const html = `
+        <html>
+          <script type="application/ld+json">
+            {"@type": "WebPage", "name": "Not a recipe"}
+          </script>
+        </html>
+      `;
+
+      const result = extractImageFromJsonLd(html);
+
+      expect(result).toBeNull();
+    });
+
+    test('returns null when Recipe has no image', () => {
+      const html = `
+        <html>
+          <script type="application/ld+json">
+            {"@type": "Recipe", "name": "No image recipe"}
+          </script>
+        </html>
+      `;
+
+      const result = extractImageFromJsonLd(html);
+
+      expect(result).toBeNull();
+    });
+
+    test('returns null for malformed JSON', () => {
+      const html = `
+        <html>
+          <script type="application/ld+json">
+            {not valid json}
+          </script>
+        </html>
+      `;
+
+      const result = extractImageFromJsonLd(html);
+
+      expect(result).toBeNull();
     });
   });
 });

@@ -35,7 +35,7 @@ describe('ProviderListItem', () => {
     const { getByTestId } = render(<ProviderListItem {...defaultProps} />);
 
     expect(getByTestId('test-provider-item::Description').props.children).toBe(
-      'bulkImport.provider_test-provider.Description'
+      'bulkImport.provider.description'
     );
   });
 

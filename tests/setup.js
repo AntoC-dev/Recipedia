@@ -1,5 +1,8 @@
 // Global test setup
 
+// Global fetch mock - must be set up before any imports
+require('./mocks/deps/fetch-mock');
+
 // Centralized mocks - these are used across many test files
 jest.mock('expo-sqlite', () => require('@mocks/deps/expo-sqlite-mock').expoSqliteMock());
 jest.mock('@react-navigation/stack', () =>

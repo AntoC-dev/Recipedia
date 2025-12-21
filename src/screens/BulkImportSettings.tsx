@@ -45,11 +45,11 @@ import { getAvailableProviders } from '@providers/ProviderRegistry';
 const screenId = 'BulkImportSettings';
 
 export function BulkImportSettings() {
-  const { t } = useI18n();
+  const { t, getLocale } = useI18n();
   const { colors } = useTheme();
   const navigation = useNavigation<StackScreenNavigation>();
 
-  const providers = getAvailableProviders();
+  const providers = getAvailableProviders(getLocale());
 
   /**
    * Handles provider selection and navigates to the discovery screen
