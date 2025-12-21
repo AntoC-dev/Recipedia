@@ -177,6 +177,11 @@ def _extract_all_data(scraper) -> Dict[str, Any]:
     instructions_list = _safe_call(scraper.instructions_list)
     parsed_instructions = _extract_structured_instructions(scraper.soup, instructions_list or [])
 
+    # Try standard image extraction, fall back to JSON-LD if not found
+    image = _safe_call(scraper.image)
+    if not image or 'placeholder' in image.lower():
+        image = _extract_image_from_json_ld(scraper.soup) or image
+
     return {
         # Core recipe data
         "title": title,
@@ -197,7 +202,7 @@ def _extract_all_data(scraper) -> Dict[str, Any]:
         "yields": _safe_call(scraper.yields),
 
         # Media
-        "image": _safe_call(scraper.image),
+        "image": image,
 
         # Metadata
         "host": _safe_call(scraper.host),
@@ -305,6 +310,71 @@ def _find_tags_in_dict(data: Any, depth: int = 0) -> Optional[List[str]]:
                 return found
 
     return None
+
+
+def _extract_image_from_json_ld(soup) -> Optional[str]:
+    """
+    Extract recipe image URL from JSON-LD schema data.
+
+    Falls back to JSON-LD when standard HTML extraction fails.
+    Handles various JSON-LD formats: direct Recipe type, @graph arrays,
+    and different image formats (string, array, object with url).
+
+    Args:
+        soup: BeautifulSoup object of the page
+
+    Returns:
+        Image URL string or None if not found/invalid
+    """
+    try:
+        script_tag = soup.find("script", {"type": "application/ld+json"})
+        if not script_tag or not script_tag.string:
+            return None
+
+        data = json.loads(script_tag.string)
+
+        # Find the Recipe object (direct, in @graph, or in root-level array)
+        recipe = None
+        if isinstance(data, dict):
+            if data.get('@type') == 'Recipe':
+                recipe = data
+            elif '@graph' in data and isinstance(data['@graph'], list):
+                for item in data['@graph']:
+                    if isinstance(item, dict) and item.get('@type') == 'Recipe':
+                        recipe = item
+                        break
+        elif isinstance(data, list):
+            for item in data:
+                if isinstance(item, dict) and item.get('@type') == 'Recipe':
+                    recipe = item
+                    break
+
+        if not recipe or 'image' not in recipe:
+            return None
+
+        image = recipe['image']
+
+        # Handle string format
+        if isinstance(image, str):
+            return image if 'placeholder' not in image.lower() else None
+
+        # Handle array format (take first non-placeholder)
+        if isinstance(image, list) and image:
+            first = image[0]
+            if isinstance(first, str):
+                return first if 'placeholder' not in first.lower() else None
+            if isinstance(first, dict) and 'url' in first:
+                url = first['url']
+                return url if 'placeholder' not in url.lower() else None
+
+        # Handle object format with url field
+        if isinstance(image, dict) and 'url' in image:
+            url = image['url']
+            return url if 'placeholder' not in url.lower() else None
+
+        return None
+    except Exception:
+        return None
 
 
 def _safe_call(method) -> Optional[Any]:
