@@ -1,3 +1,21 @@
+## [2.6.0](https://github.com/AntoC-dev/Recipedia/compare/v2.5.1...v2.6.0) (2025-12-21)
+
+### Features
+
+* bulk quitoque ([#163](https://github.com/AntoC-dev/Recipedia/issues/163)) ([df58121](https://github.com/AntoC-dev/Recipedia/commit/df5812178a81d50dca7080205e74c85942320eb2))
+* **providers:** add language-based filtering for recipe providers ([62202b1](https://github.com/AntoC-dev/Recipedia/commit/62202b1312dfae2e75804509d98ebbd86a92b6a5))
+* **providers:** add QuitoqueProvider with dynamic pagination ([19146ec](https://github.com/AntoC-dev/Recipedia/commit/19146ec7079160ca38c2a16a8da955a20ead46c8))
+* **providers:** enhance discovery with retry and improved scraping ([25431db](https://github.com/AntoC-dev/Recipedia/commit/25431dba3a2a895c5914d228b99fc3df524cae9d))
+* **validation:** integrate fuzzy search and enhance provider registry ([913e801](https://github.com/AntoC-dev/Recipedia/commit/913e801c8344555f56d21d1b076786659d45b8e7))
+
+### Bug Fixes
+
+* **providers:** extract Quitoque pagination from HTML instead of probing ([d499554](https://github.com/AntoC-dev/Recipedia/commit/d4995543156bd9d28a1124df3d5d0c32b3e79271))
+
+### Performance Improvements
+
+* update reassure baseline [skip ci] ([f77fd02](https://github.com/AntoC-dev/Recipedia/commit/f77fd02edb7580fcf130543ef636fe34da25d231))
+
 ## [2.5.1](https://github.com/AntoC-dev/Recipedia/compare/v2.5.0...v2.5.1) (2025-12-21)
 
 ### Bug Fixes
