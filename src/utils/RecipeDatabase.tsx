@@ -739,6 +739,10 @@ export class RecipeDatabase {
           await this.removeFromMenu(menuItem.id);
         }
       }
+
+      if (recipe.sourceUrl && recipe.sourceProvider) {
+        await this.removeFromSeenHistory(recipe.sourceProvider, [recipe.sourceUrl]);
+      }
     }
     return recipeDeleted;
   }
@@ -1164,38 +1168,6 @@ export class RecipeDatabase {
   }
 
   /**
-   * Loads all purchased ingredients from the database
-   * @returns Map of ingredient name to purchased state
-   */
-  private async getAllPurchasedIngredients(): Promise<Map<string, boolean>> {
-    const encodedData =
-      (await this._purchasedIngredientsTable.searchElement<encodedPurchasedIngredientElement>(
-        this._dbConnection
-      )) as encodedPurchasedIngredientElement[] | undefined;
-
-    const result = new Map<string, boolean>();
-    if (encodedData) {
-      for (const encoded of encodedData) {
-        result.set(encoded.INGREDIENT_NAME, encoded.PURCHASED === 1);
-      }
-    }
-    return result;
-  }
-
-  /**
-   * Encodes a purchased ingredient element for database storage
-   */
-  private encodePurchasedIngredient(element: {
-    ingredientName: string;
-    purchased: boolean;
-  }): Record<string, string | number> {
-    return {
-      [purchasedIngredientsColumnsNames.ingredientName]: element.ingredientName,
-      [purchasedIngredientsColumnsNames.purchased]: element.purchased ? 1 : 0,
-    };
-  }
-
-  /**
    * Scales and updates a single recipe in the database
    *
    * Takes a pre-scaled recipe object and updates it in the database.
@@ -1522,6 +1494,38 @@ export class RecipeDatabase {
     this._importHistory = this._importHistory.filter(
       h => !(h.providerId === providerId && urls.includes(h.recipeUrl))
     );
+  }
+
+  /**
+   * Loads all purchased ingredients from the database
+   * @returns Map of ingredient name to purchased state
+   */
+  private async getAllPurchasedIngredients(): Promise<Map<string, boolean>> {
+    const encodedData =
+      (await this._purchasedIngredientsTable.searchElement<encodedPurchasedIngredientElement>(
+        this._dbConnection
+      )) as encodedPurchasedIngredientElement[] | undefined;
+
+    const result = new Map<string, boolean>();
+    if (encodedData) {
+      for (const encoded of encodedData) {
+        result.set(encoded.INGREDIENT_NAME, encoded.PURCHASED === 1);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Encodes a purchased ingredient element for database storage
+   */
+  private encodePurchasedIngredient(element: {
+    ingredientName: string;
+    purchased: boolean;
+  }): Record<string, string | number> {
+    return {
+      [purchasedIngredientsColumnsNames.ingredientName]: element.ingredientName,
+      [purchasedIngredientsColumnsNames.purchased]: element.purchased ? 1 : 0,
+    };
   }
 
   /* PRIVATE METHODS */
