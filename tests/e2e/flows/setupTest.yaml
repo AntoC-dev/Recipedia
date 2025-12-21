@@ -42,3 +42,7 @@ appId: "com.recipedia"
 - runFlow:
     file: "handleAnr.yaml"
     label: "Handle ANR dialog if it appears after loading"
+
+- runFlow:
+    file: "warmupScreens.yaml"
+    label: "Warmup screens to exhaust ANR issues"

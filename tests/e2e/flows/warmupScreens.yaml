@@ -1,0 +1,25 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    file: "navigateTabWithAnr.yaml"
+    env:
+      TAB_ID: "BottomTabs::Search"
+    label: "Warmup Search tab"
+
+- runFlow:
+    file: "navigateTabWithAnr.yaml"
+    env:
+      TAB_ID: "BottomTabs::Shopping"
+    label: "Warmup Shopping tab"
+
+- runFlow:
+    file: "navigateTabWithAnr.yaml"
+    env:
+      TAB_ID: "BottomTabs::Parameters"
+    label: "Warmup Parameters tab"
+
+- runFlow:
+    file: "navigateTabWithAnr.yaml"
+    env:
+      TAB_ID: "BottomTabs::Home"
+    label: "Return to Home"
