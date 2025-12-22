@@ -47,7 +47,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "WelcomeScreen::Card::FeaturesList::2::Text"
-    text: "Generate shopping lists"
+    text: "Import from your favorite websites"
     label: "Verify third card feature is visible"
 
 - assertVisible:
@@ -55,8 +55,21 @@ appId: "com.recipedia"
     label: "Verify third card feature icon is visible"
 
 - assertVisible:
-    text: "󰄐"
+    text: "󰖟"
     label: "Verify third feature icon is correct"
+
+- assertVisible:
+    id: "WelcomeScreen::Card::FeaturesList::3::Text"
+    text: "Generate shopping lists"
+    label: "Verify fourth card feature is visible"
+
+- assertVisible:
+    id: "WelcomeScreen::Card::FeaturesList::3::Icon"
+    label: "Verify fourth card feature icon is visible"
+
+- assertVisible:
+    text: "󰄐"
+    label: "Verify fourth feature icon is correct"
 
 - assertVisible:
     id: "WelcomeScreen::StartTourButton-text"

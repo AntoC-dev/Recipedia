@@ -1,0 +1,17 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    file: "handleAnr.yaml"
+    label: "Handle ANR before navigation"
+- tapOn:
+    id: ${TAB_ID}
+    label: "Navigate to tab"
+- extendedWaitUntil:
+    visible:
+      text: ".*isn't responding.*"
+    timeout: 3000
+    optional: true
+    label: "Wait for ANR dialog"
+- runFlow:
+    file: "handleAnr.yaml"
+    label: "Handle ANR after navigation"

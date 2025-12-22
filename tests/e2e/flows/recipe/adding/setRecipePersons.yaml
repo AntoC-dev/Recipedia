@@ -20,3 +20,6 @@ appId: "com.recipedia"
     label: "Enter number of persons"
 
 - pressKey: "ENTER"
+
+- waitForAnimationToEnd:
+    label: "Wait for UI to stabilize"

@@ -18,7 +18,7 @@ appId: "com.recipedia"
     direction: UP
     speed: 40
     centerElement: true
-    label: "Scroll to up in case button was too down"
+    label: "Scroll up to ingredient input"
 
 - tapOn:
     id: "RecipeIngredients::${INDEX}::QuantityInput"
@@ -58,3 +58,6 @@ appId: "com.recipedia"
     label: "Enter ingredient name"
 
 - pressKey: "ENTER"
+
+- waitForAnimationToEnd:
+    label: "Wait for UI to stabilize"
