@@ -1,4 +1,14 @@
-// Utility for scaling ingredient quantity strings when the number of persons changes
+/**
+ * Quantity - Utility functions for ingredient quantity handling
+ *
+ * This module provides functions for parsing, scaling, and formatting ingredient quantities.
+ * Used throughout the recipe management features for consistent quantity manipulation.
+ *
+ * @module Quantity
+ */
+
+import { noteSeparator, textSeparator, unitySeparator } from '@styles/typography';
+import { defaultValueNumber } from '@utils/Constants';
 
 /**
  * Scales a quantity string according to a change in persons.
@@ -92,4 +102,58 @@ export function calculateNutritionPerPortion(nutrition: {
     protein: Math.round(nutrition.protein * portionFactor * 10) / 10,
     salt: Math.round(nutrition.salt * portionFactor * 100) / 100,
   };
+}
+
+/**
+ * Parses an ingredient quantity string to a numeric value.
+ *
+ * Handles various input formats:
+ * - Empty or whitespace strings → defaultValueNumber
+ * - Comma decimal separator (European format) → converted to dot
+ * - Invalid numbers → defaultValueNumber
+ *
+ * @param quantityStr - The quantity string to parse (e.g., "2,5" or "100")
+ * @returns Parsed numeric value, or defaultValueNumber if invalid/empty
+ *
+ * @example
+ * parseIngredientQuantity("2,5") // returns 2.5
+ * parseIngredientQuantity("100") // returns 100
+ * parseIngredientQuantity("") // returns defaultValueNumber
+ * parseIngredientQuantity(undefined) // returns defaultValueNumber
+ */
+export function parseIngredientQuantity(quantityStr: string | undefined): number {
+  if (!quantityStr || quantityStr.trim().length === 0) return defaultValueNumber;
+  const parsed = parseFloat(quantityStr.replace(',', '.'));
+  return isNaN(parsed) ? defaultValueNumber : parsed;
+}
+
+/**
+ * Formats ingredient data into a serialized string for storage/callback.
+ *
+ * Creates a formatted string with quantity, unit, name, and optional note
+ * using the standard separators defined in typography:
+ * - unitySeparator (@@) between quantity and unit
+ * - textSeparator (--) between unit and name
+ * - noteSeparator (%%) between name and note (if present)
+ *
+ * @param quantity - Numeric quantity (defaultValueNumber treated as empty string)
+ * @param unit - Unit of measurement (e.g., "g", "ml", "cups")
+ * @param name - Ingredient name
+ * @param note - Optional usage note/context (e.g., "for the sauce")
+ * @returns Formatted string like "100@@g--Rice" or "100@@g--Rice%%for the sauce"
+ *
+ * @example
+ * formatIngredientForCallback(100, "g", "Rice") // returns "100@@g--Rice"
+ * formatIngredientForCallback(2, "cups", "Flour", "sifted") // returns "2@@cups--Flour%%sifted"
+ * formatIngredientForCallback(defaultValueNumber, "g", "Salt") // returns "@@g--Salt"
+ */
+export function formatIngredientForCallback(
+  quantity: number,
+  unit: string,
+  name: string,
+  note?: string
+): string {
+  const quantityStr = quantity === defaultValueNumber ? '' : quantity.toString();
+  const base = `${quantityStr}${unitySeparator}${unit}${textSeparator}${name}`;
+  return note ? `${base}${noteSeparator}${note}` : base;
 }
