@@ -1,3 +1,13 @@
+## [2.8.0](https://github.com/AntoC-dev/Recipedia/compare/v2.7.0...v2.8.0) (2025-12-22)
+
+### Features
+
+* **tutorial:** mark initial menu item as cooked during onboarding ([5bc7cf2](https://github.com/AntoC-dev/Recipedia/commit/5bc7cf24715c35904122a9ba8e19b3429fe7d9a0))
+
+### Bug Fixes
+
+* **menu:** adjust modal height or better layout alignment ([a0dfe0b](https://github.com/AntoC-dev/Recipedia/commit/a0dfe0b52544f012255c96656657bcada4463b67))
+
 ## [2.7.0](https://github.com/AntoC-dev/Recipedia/compare/v2.6.0...v2.7.0) (2025-12-21)
 
 ### Features
