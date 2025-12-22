@@ -1,3 +1,18 @@
+## [2.9.0](https://github.com/AntoC-dev/Recipedia/compare/v2.8.0...v2.9.0) (2025-12-22)
+
+### Features
+
+* **scraper:** add fallback image extraction from JSON-LD and tests ([1c360a1](https://github.com/AntoC-dev/Recipedia/commit/1c360a1d6e17daa2f1f96c5123ca6d399d9b952f))
+
+### Bug Fixes
+
+* **perf:** add 30s timeout to heavy batch selection test ([27dd757](https://github.com/AntoC-dev/Recipedia/commit/27dd757217c5abb728fb493ff134cafe3eb8f31c))
+* quitoque no auth ([#167](https://github.com/AntoC-dev/Recipedia/issues/167)) ([d85ed8e](https://github.com/AntoC-dev/Recipedia/commit/d85ed8ebec7ebd3f88ae1823c2d82181dccf0508))
+
+### Performance Improvements
+
+* update reassure baseline [skip ci] ([3beb200](https://github.com/AntoC-dev/Recipedia/commit/3beb200ba6fcd25224c8c3103216690fdef860b5))
+
 ## [2.8.0](https://github.com/AntoC-dev/Recipedia/compare/v2.7.0...v2.8.0) (2025-12-22)
 
 ### Features

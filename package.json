@@ -1,6 +1,6 @@
 {
   "name": "recipedia",
-  "version": "2.8.0",
+  "version": "2.9.0",
   "packageManager": "npm@10.9.3",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
