@@ -55,7 +55,6 @@ jobs:
       - name: Run Reassure performance tests
         if: github.event_name == 'pull_request'
         run: npm run test:perf
-        continue-on-error: true
 
       - name: Post Reassure results on PR
         if: github.event_name == 'pull_request' && hashFiles('.reassure/output.md') != ''
