@@ -134,9 +134,10 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
   /**
    * Adds an ingredient to the recipe or merges quantities if it already exists.
    *
-   * Performs case-insensitive name matching to detect duplicates. When a duplicate
-   * is found with the same unit, quantities are summed and the new note is preserved.
-   * When units differ, the new ingredient replaces the existing one entirely.
+   * Performs case-insensitive name matching to detect duplicates:
+   * - Same name + same unit + both have different notes → adds as separate ingredient
+   * - Same name + same unit + compatible notes → merges quantities, keeps note
+   * - Same name + different unit → replaces existing with new ingredient
    *
    * @param ingredient - The validated ingredient to add or merge
    */
@@ -157,10 +158,17 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
         }
 
         if (existing.unit === ingredient.unit) {
+          const existingNote = existing.note?.trim();
+          const newNote = ingredient.note?.trim();
+
+          if (existingNote && newNote && existingNote !== newNote) {
+            return [...prev, ingredient];
+          }
+
           updated[existingIndex] = {
             ...ingredient,
             quantity: String(Number(existing.quantity || 0) + Number(ingredient.quantity || 0)),
-            note: ingredient.note || existing.note,
+            note: newNote || existingNote,
           };
         } else {
           updated[existingIndex] = ingredient;

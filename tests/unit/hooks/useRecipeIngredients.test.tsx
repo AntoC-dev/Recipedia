@@ -847,7 +847,7 @@ describe('useRecipeIngredients', () => {
         ],
       };
 
-      test('uses new note when merging with same unit', async () => {
+      test('does not merge when both have different notes', async () => {
         const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithNotes));
 
         const { result } = renderHook(
@@ -874,6 +874,86 @@ describe('useRecipeIngredients', () => {
           });
         });
 
+        expect(result.current.form.state.recipeIngredients).toHaveLength(2);
+        expect(result.current.form.state.recipeIngredients[0].quantity).toBe('200');
+        expect(result.current.form.state.recipeIngredients[0].note).toBe('for the sauce');
+        expect(result.current.form.state.recipeIngredients[1].quantity).toBe('100');
+        expect(result.current.form.state.recipeIngredients[1].note).toBe('for the filling');
+      });
+
+      test('merges when both have same note', async () => {
+        const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithNotes));
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+        });
+
+        act(() => {
+          result.current.ingredients.addOrMergeIngredient({
+            id: 1,
+            name: 'Flour',
+            unit: 'g',
+            quantity: '100',
+            type: ingredientType.cereal,
+            season: [],
+            note: 'for the sauce',
+          });
+        });
+
+        expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+        expect(result.current.form.state.recipeIngredients[0].quantity).toBe('300');
+        expect(result.current.form.state.recipeIngredients[0].note).toBe('for the sauce');
+      });
+
+      test('merges when new ingredient has note but existing does not', async () => {
+        const recipeWithoutNote: recipeTableElement = {
+          ...recipeWithIngredients,
+          ingredients: [
+            {
+              id: 1,
+              name: 'Flour',
+              unit: 'g',
+              quantity: '200',
+              type: ingredientType.cereal,
+              season: [],
+            },
+          ],
+        };
+        const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithoutNote));
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+        });
+
+        act(() => {
+          result.current.ingredients.addOrMergeIngredient({
+            id: 1,
+            name: 'Flour',
+            unit: 'g',
+            quantity: '100',
+            type: ingredientType.cereal,
+            season: [],
+            note: 'for the filling',
+          });
+        });
+
+        expect(result.current.form.state.recipeIngredients).toHaveLength(1);
         expect(result.current.form.state.recipeIngredients[0].quantity).toBe('300');
         expect(result.current.form.state.recipeIngredients[0].note).toBe('for the filling');
       });
