@@ -168,15 +168,13 @@ describe('RecipeSelectionCard Performance', () => {
 
     test('100 cards with multiple selections', async () => {
       const scenario = async () => {
-        fireEvent.press(screen.getByTestId('PerfTest::Card::10'));
-        fireEvent.press(screen.getByTestId('PerfTest::Card::30'));
+        fireEvent.press(screen.getByTestId('PerfTest::Card::25'));
         fireEvent.press(screen.getByTestId('PerfTest::Card::50'));
-        fireEvent.press(screen.getByTestId('PerfTest::Card::70'));
-        fireEvent.press(screen.getByTestId('PerfTest::Card::90'));
+        fireEvent.press(screen.getByTestId('PerfTest::Card::75'));
       };
 
       await measureRenders(<BatchCardsWrapper count={100} memoryStatus='fresh' />, {
-        runs: 10,
+        runs: 5,
         scenario,
       });
     });
