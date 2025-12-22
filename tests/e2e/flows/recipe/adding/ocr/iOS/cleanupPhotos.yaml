@@ -1,0 +1,30 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    text: "Select"
+    label: "Enter selection mode in Photos"
+
+- tapOn:
+    text: "Select All"
+    label: "Select all photos in the library"
+
+- tapOn:
+    id: "DeleteButton"
+    optional: true
+    label: "Tap delete button (trash icon)"
+
+- runFlow:
+    when:
+      notVisible:
+        id: "DeleteButton"
+    commands:
+      - tapOn:
+          text: ".*Delete.*"
+          optional: true
+          label: "Tap delete text button as fallback"
+    label: "Fallback to text-based delete button"
+
+- tapOn:
+    text: "Delete.*"
+    optional: true
+    label: "Confirm deletion in the alert"

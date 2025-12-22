@@ -1,14 +1,16 @@
 appId: com.recipedia
 ---
-- stopApp
+- stopApp:
+    label: "Stop the app before cleanup"
 
 - runFlow:
     file: "android/cleanIfNeeded.yaml"
     when:
       platform: Android
+    label: "Clean up pictures from Android file system"
 
-# TODO iOS
-#- runFlow:
-#    file: "iOS/cleanIfNeeded.yaml"
-#    when:
-#      platform: iOS
+- runFlow:
+    file: "iOS/cleanIfNeeded.yaml"
+    when:
+      platform: iOS
+    label: "Clean up photos from iOS Photos library"
