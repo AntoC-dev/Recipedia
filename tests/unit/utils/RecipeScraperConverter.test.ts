@@ -39,7 +39,12 @@ describe('RecipeScraperConverter', () => {
     });
 
     it('parses French ingredients with units', () => {
-      const result = convertIngredients(hellofreshKeftasRecipe.ingredients, null, ignoredPatterns);
+      const result = convertIngredients(
+        hellofreshKeftasRecipe.ingredients,
+        null,
+        null,
+        ignoredPatterns
+      );
 
       const semoule = result.ingredients.find(i => i.name === 'Semoule');
       expect(semoule?.quantity).toBe('150');
@@ -51,7 +56,12 @@ describe('RecipeScraperConverter', () => {
     });
 
     it('skips "selon le goût" prefixed ingredients', () => {
-      const result = convertIngredients(hellofreshKeftasRecipe.ingredients, null, ignoredPatterns);
+      const result = convertIngredients(
+        hellofreshKeftasRecipe.ingredients,
+        null,
+        null,
+        ignoredPatterns
+      );
       expect(result.skipped).toContain('selon le goût Poivre et sel');
     });
 
@@ -109,7 +119,12 @@ describe('RecipeScraperConverter', () => {
     });
 
     it('parses French ingredients without quantities', () => {
-      const result = convertIngredients(marmitonHamburgerRecipe.ingredients, null, ignoredPatterns);
+      const result = convertIngredients(
+        marmitonHamburgerRecipe.ingredients,
+        null,
+        null,
+        ignoredPatterns
+      );
 
       expect(result.ingredients).toHaveLength(8);
       expect(result.skipped).toHaveLength(0);
@@ -172,7 +187,12 @@ describe('RecipeScraperConverter', () => {
     });
 
     it('parses French ingredients with metric units', () => {
-      const result = convertIngredients(quitoqueCamembertRecipe.ingredients, null, ignoredPatterns);
+      const result = convertIngredients(
+        quitoqueCamembertRecipe.ingredients,
+        null,
+        null,
+        ignoredPatterns
+      );
 
       const camembert = result.ingredients.find(i => i.name?.includes('camembert'));
       expect(camembert?.quantity).toBe('500');
@@ -184,7 +204,12 @@ describe('RecipeScraperConverter', () => {
     });
 
     it('skips exact match ingredients sel and poivre', () => {
-      const result = convertIngredients(quitoqueCamembertRecipe.ingredients, null, ignoredPatterns);
+      const result = convertIngredients(
+        quitoqueCamembertRecipe.ingredients,
+        null,
+        null,
+        ignoredPatterns
+      );
 
       expect(result.skipped).toContain('sel');
       expect(result.skipped).toContain('poivre');
@@ -335,18 +360,19 @@ describe('RecipeScraperConverter', () => {
       });
     });
 
-    describe('name cleaning', () => {
-      it('removes parenthetical content from ingredient name', () => {
+    describe('name cleaning and note extraction', () => {
+      it('removes parenthetical content from ingredient name and extracts as note', () => {
         const result = parseIngredientString('100 g cheddar (achat sous vide)', ignoredPatterns);
         expect(result.success).toBe(true);
         if (result.success) {
           expect(result.ingredient.name).toBe('cheddar');
           expect(result.ingredient.quantity).toBe('100');
           expect(result.ingredient.unit).toBe('g');
+          expect(result.ingredient.note).toBe('achat sous vide');
         }
       });
 
-      it('removes multiple parenthetical sections', () => {
+      it('extracts first parenthetical as note when multiple exist', () => {
         const result = parseIngredientString(
           '2 cups flour (all-purpose) (sifted)',
           ignoredPatterns
@@ -354,25 +380,37 @@ describe('RecipeScraperConverter', () => {
         expect(result.success).toBe(true);
         if (result.success) {
           expect(result.ingredient.name).toBe('flour');
+          expect(result.ingredient.note).toBe('all-purpose');
         }
       });
 
-      it('cleans name when only name is provided', () => {
+      it('cleans name when only name is provided and extracts note', () => {
         const result = parseIngredientString('Tomato (fresh)', ignoredPatterns);
         expect(result.success).toBe(true);
         if (result.success) {
           expect(result.ingredient.name).toBe('Tomato');
           expect(result.ingredient.quantity).toBe('');
           expect(result.ingredient.unit).toBe('');
+          expect(result.ingredient.note).toBe('fresh');
         }
       });
 
-      it('cleans name when text starts with non-numeric', () => {
+      it('cleans name when text starts with non-numeric and extracts note', () => {
         const result = parseIngredientString('Fresh basil (Thai)', ignoredPatterns);
         expect(result.success).toBe(true);
         if (result.success) {
           expect(result.ingredient.name).toBe('Fresh basil');
           expect(result.ingredient.quantity).toBe('');
+          expect(result.ingredient.note).toBe('Thai');
+        }
+      });
+
+      it('returns undefined note when no parenthetical content', () => {
+        const result = parseIngredientString('100 g flour', ignoredPatterns);
+        expect(result.success).toBe(true);
+        if (result.success) {
+          expect(result.ingredient.name).toBe('flour');
+          expect(result.ingredient.note).toBeUndefined();
         }
       });
     });
@@ -441,6 +479,7 @@ describe('RecipeScraperConverter', () => {
       const result = convertIngredients(
         ['150 g Semoule', '1 pièce(s) Carotte', 'Tomato'],
         null,
+        null,
         ignoredPatterns
       );
 
@@ -455,6 +494,7 @@ describe('RecipeScraperConverter', () => {
     it('separates skipped ingredients from parsed ones', () => {
       const result = convertIngredients(
         ['150 g Flour', 'selon le goût Sel', '2 cups Sugar', 'to taste Pepper'],
+        null,
         null,
         ignoredPatterns
       );
