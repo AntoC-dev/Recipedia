@@ -1,0 +1,33 @@
+name: 'Setup iOS Build Environment'
+description: 'Setup Python and EAS for iOS builds (CocoaPods handled by EAS cloud)'
+
+inputs:
+  eas-version:
+    description: 'EAS CLI version'
+    required: false
+    default: 'latest'
+  expo-token:
+    description: 'Expo token for EAS'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Python for recipe-scraper module
+      uses: actions/setup-python@v5
+      with:
+        python-version-file: '.python-version'
+
+    - name: Install Python packages for recipe-scraper
+      shell: bash
+      run: |
+        pip install pytest "recipe-scrapers[online]>=15.0.0"
+        python -c "from recipe_scrapers import scrape_me; print('recipe-scrapers OK')"
+        python -c "import pytest; print('pytest OK')"
+
+    - name: Setup EAS
+      uses: expo/expo-github-action@v8
+      with:
+        eas-version: ${{ inputs.eas-version }}
+        packager: 'npm'
+        token: ${{ inputs.expo-token }}

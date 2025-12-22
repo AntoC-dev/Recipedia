@@ -130,49 +130,98 @@ jobs:
   build-android:
     name: Build Android APK
     needs: install-and-doctor
-    uses: ./.github/workflows/build-android.yml
+    uses: ./.github/workflows/build-app.yml
     with:
+      platform: android
       build-profile: test
       artifact-name: build-apk
-      apk-filename: recipedia-maestro.apk
+      app-filename: recipedia-maestro.apk
     secrets:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
   build-android-performance:
     name: Build Android APK (Performance)
     needs: install-and-doctor
-    uses: ./.github/workflows/build-android.yml
+    uses: ./.github/workflows/build-app.yml
     with:
+      platform: android
       build-profile: perf
       artifact-name: build-apk-performance
-      apk-filename: recipedia-performance.apk
+      app-filename: recipedia-performance.apk
     secrets:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
-  e2e-tests:
-    name: E2E Tests
+  build-ios:
+    name: Build iOS App
+    needs: install-and-doctor
+    uses: ./.github/workflows/build-app.yml
+    with:
+      platform: ios
+      build-profile: test
+      artifact-name: build-ios-app
+      app-filename: Recipedia.app
+    secrets:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+  build-ios-performance:
+    name: Build iOS App (Performance)
+    needs: install-and-doctor
+    uses: ./.github/workflows/build-app.yml
+    with:
+      platform: ios
+      build-profile: perf
+      artifact-name: build-ios-app-performance
+      app-filename: Recipedia-performance.app
+    secrets:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+  e2e-tests-android:
+    name: E2E Tests (Android)
     needs: build-android
     uses: ./.github/workflows/e2e-maestro.yml
     with:
-      apk-artifact: build-apk
+      platform: android
+      app-artifact: build-apk
       suites: '["app-init", "search", "recipe-view", "recipe-create", "shopping", "menu", "settings", "tags-db", "ingredients-db", "duplicates-tag", "duplicates-ingredient", "duplicates-recipe", "ocr", "web-edge-cases", "web", "bulk-import"]'
     secrets:
       QUITOQUE_USERNAME: ${{ secrets.QUITOQUE_USERNAME }}
       QUITOQUE_PASSWORD: ${{ secrets.QUITOQUE_PASSWORD }}
 
-  e2e-tests-performance:
-    name: E2E Tests (Performance)
+  e2e-tests-android-performance:
+    name: E2E Tests Android (Performance)
     needs: build-android-performance
     uses: ./.github/workflows/e2e-maestro.yml
     with:
-      apk-artifact: build-apk-performance
+      platform: android
+      app-artifact: build-apk-performance
+      suites: '["performance"]'
+
+  e2e-tests-ios:
+    name: E2E Tests (iOS)
+    needs: build-ios
+    uses: ./.github/workflows/e2e-maestro.yml
+    with:
+      platform: ios
+      app-artifact: build-ios-app
+      suites: '["app-init", "search", "recipe-view", "recipe-create", "shopping", "settings", "tags-db", "ingredients-db", "duplicates-tag", "duplicates-ingredient", "duplicates-recipe", "ocr", "web-edge-cases", "web", "bulk-import"]'
+    secrets:
+      QUITOQUE_USERNAME: ${{ secrets.QUITOQUE_USERNAME }}
+      QUITOQUE_PASSWORD: ${{ secrets.QUITOQUE_PASSWORD }}
+
+  e2e-tests-ios-performance:
+    name: E2E Tests iOS (Performance)
+    needs: build-ios-performance
+    uses: ./.github/workflows/e2e-maestro.yml
+    with:
+      platform: ios
+      app-artifact: build-ios-app-performance
       suites: '["performance"]'
 
   merge-test-artifacts:
     name: Merge E2E Test Artifacts
     if: always()
     runs-on: ubuntu-latest
-    needs: [ e2e-tests, e2e-tests-performance ]
+    needs: [ e2e-tests-android, e2e-tests-android-performance, e2e-tests-ios, e2e-tests-ios-performance ]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
