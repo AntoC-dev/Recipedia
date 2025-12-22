@@ -60,10 +60,18 @@ export function replaceMatchingIngredients(
 
 /**
  * Adds or merges ingredients with existing ones.
- * - If ingredient doesn't exist: adds it
- * - If ingredient exists with same unit: merges quantities
- * - If ingredient exists with different unit: replaces it
- * Used by OCR to handle duplicate ingredients intelligently.
+ *
+ * Merging behavior:
+ * - If ingredient doesn't exist: adds it (with its note if present)
+ * - If ingredient exists with same unit: merges quantities, preserves new note
+ * - If ingredient exists with different unit: replaces it entirely
+ *
+ * Note handling: When merging quantities, the new ingredient's note takes
+ * precedence. This allows scraped data to provide usage context.
+ *
+ * @param current - Current ingredient state
+ * @param exactMatches - Validated ingredients to add or merge
+ * @returns Updated ingredient state
  */
 export function addOrMergeIngredientMatches(
   current: IngredientState,
@@ -81,6 +89,7 @@ export function addOrMergeIngredientMatches(
         updated[existingIndex] = {
           ...ingredient,
           quantity: String(Number(existing.quantity || 0) + Number(ingredient.quantity || 0)),
+          note: ingredient.note || existing.note,
         };
       } else {
         updated[existingIndex] = ingredient;
@@ -160,14 +169,17 @@ export function processTagsForValidation(
 
 /**
  * Processes ingredients for validation by filtering exact database matches.
- * Returns exact matches (preserving scraped quantity/unit) and items that need validation separately.
+ *
+ * Returns exact matches (preserving scraped quantity/unit/note) and items
+ * that need validation separately. Exact matches combine database metadata
+ * with scraped recipe-specific data.
  *
  * Note: Ingredient names should already be cleaned (parenthetical content removed)
  * by parseIngredientString in RecipeScraperConverter before reaching this function.
  *
  * @param ingredients - Array of ingredients to process (can be partial for scraped data)
  * @param findSimilarIngredients - Function to find similar ingredients in database
- * @returns Object with exactMatches and needsValidation arrays
+ * @returns Object with exactMatches (with preserved notes) and needsValidation arrays
  */
 export function processIngredientsForValidation(
   ingredients: FormIngredientElement[],
@@ -193,6 +205,7 @@ export function processIngredientsForValidation(
         ...exactMatch,
         quantity: ingredient.quantity || exactMatch.quantity,
         unit: ingredient.unit || exactMatch.unit,
+        note: ingredient.note,
       };
       exactMatches.push(mergedIngredient);
     } else {

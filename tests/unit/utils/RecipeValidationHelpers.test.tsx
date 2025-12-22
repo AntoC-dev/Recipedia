@@ -373,6 +373,46 @@ describe('RecipeValidationHelpers', () => {
       expect(result.needsValidation).toEqual([]);
       expect(mockFindSimilarIngredients).not.toHaveBeenCalled();
     });
+
+    test('preserves note from scraped ingredient in exact match', () => {
+      mockFindSimilarIngredients.mockReturnValue([dbIngredients[0]]);
+
+      const inputIngredients: ingredientTableElement[] = [
+        {
+          name: 'Tomato Sauce',
+          quantity: '300',
+          unit: 'ml',
+          type: ingredientType.vegetable,
+          season: [],
+          note: 'For the sauce',
+        },
+      ];
+
+      const result = processIngredientsForValidation(inputIngredients, mockFindSimilarIngredients);
+
+      expect(result.exactMatches).toHaveLength(1);
+      expect(result.exactMatches[0].note).toBe('For the sauce');
+      expect(result.exactMatches[0].id).toBe(dbIngredients[0].id);
+    });
+
+    test('preserves note as undefined when not provided', () => {
+      mockFindSimilarIngredients.mockReturnValue([dbIngredients[0]]);
+
+      const inputIngredients: ingredientTableElement[] = [
+        {
+          name: 'Tomato Sauce',
+          quantity: '300',
+          unit: 'ml',
+          type: ingredientType.vegetable,
+          season: [],
+        },
+      ];
+
+      const result = processIngredientsForValidation(inputIngredients, mockFindSimilarIngredients);
+
+      expect(result.exactMatches).toHaveLength(1);
+      expect(result.exactMatches[0].note).toBeUndefined();
+    });
   });
 
   describe('filterOutExistingTags', () => {
@@ -678,6 +718,71 @@ describe('RecipeValidationHelpers', () => {
       expect(result[0].quantity).toBe('300');
       expect(result[0].type).toBe(ingredientType.cereal);
       expect(result[0].season).toEqual(['1', '2', '3']);
+    });
+
+    test('adds new ingredient with note', () => {
+      const newIngredient: ingredientTableElement = {
+        id: 2,
+        name: 'Sugar',
+        quantity: '100',
+        unit: 'g',
+        type: ingredientType.sugar,
+        season: [],
+        note: 'For the frosting',
+      };
+
+      const result = addOrMergeIngredientMatches(currentIngredients, [newIngredient]);
+
+      expect(result).toHaveLength(2);
+      expect(result[1].name).toBe('Sugar');
+      expect(result[1].note).toBe('For the frosting');
+    });
+
+    test('preserves note from new ingredient when merging quantities', () => {
+      const flourWithNote: ingredientTableElement = {
+        id: 1,
+        name: 'Flour',
+        quantity: '100',
+        unit: 'g',
+        type: ingredientType.cereal,
+        season: [],
+        note: 'For the dough',
+      };
+
+      const result = addOrMergeIngredientMatches(currentIngredients, [flourWithNote]);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].quantity).toBe('300');
+      expect(result[0].note).toBe('For the dough');
+    });
+
+    test('preserves existing note when new ingredient has no note during merge', () => {
+      const currentWithNote = [
+        {
+          id: 1,
+          name: 'Flour',
+          quantity: '200',
+          unit: 'g',
+          type: ingredientType.cereal,
+          season: [],
+          note: 'Original note',
+        },
+      ];
+
+      const flourWithoutNote: ingredientTableElement = {
+        id: 1,
+        name: 'Flour',
+        quantity: '100',
+        unit: 'g',
+        type: ingredientType.cereal,
+        season: [],
+      };
+
+      const result = addOrMergeIngredientMatches(currentWithNote, [flourWithoutNote]);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].quantity).toBe('300');
+      expect(result[0].note).toBe('Original note');
     });
   });
 
