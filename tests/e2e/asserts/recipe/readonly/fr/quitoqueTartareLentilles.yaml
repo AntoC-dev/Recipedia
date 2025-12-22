@@ -1,0 +1,136 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    file: "../../common/fr/buttonsReadOnly.yaml"
+    label: "Assert common ReadOnly buttons and image (French)"
+
+- assertVisible:
+    id: "RecipeTitle::Text"
+    text: "Tartare de lentilles blondes, mangue et salade d'algues"
+    label: "Title text is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeDescription::Text"
+    direction: DOWN
+    centerElement: true
+    speed: 40
+    label: "Scroll to description section"
+
+- assertVisible:
+    id: "RecipeDescription::Text"
+    text: "Pour préparer la mangue, découpez-la en deux moitiés en évitant le noyau, puis sur chaque moitié passez une cuillère entre la peau et la chair."
+    label: "Description text is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTags::0::Chip"
+    direction: DOWN
+    centerElement: true
+    speed: 40
+    label: "Scroll to tags section"
+
+- assertVisible:
+    id: "RecipeTags::0::Chip"
+    text: "Découverte"
+    label: "First tag 'Découverte' is rendered"
+
+- assertVisible:
+    id: "RecipeTags::1::Chip"
+    text: "Végétarien"
+    label: "Second tag 'Végétarien' is rendered"
+
+- assertVisible:
+    id: "RecipeTags::2::Chip"
+    text: "Faible en calories"
+    label: "Third tag 'Faible en calories' is rendered"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePersons::Text"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to ingredients section"
+
+- assertVisible:
+    text: "Ingrédients (4 personnes)"
+    label: "Ingredient section and persons is displayed (French)"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "lentilles blondes Bio"
+      INGREDIENT_QUANTITY_AND_UNIT: "300 g"
+    label: "Assert lentilles ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "salade d'algues au sésame et au gingembre Bio"
+      INGREDIENT_QUANTITY_AND_UNIT: "200 g"
+    label: "Assert salade d'algues ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "salade"
+      INGREDIENT_QUANTITY_AND_UNIT: "100 g"
+    label: "Assert salade ingredient"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTime::Text"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to preparation section"
+
+- assertVisible:
+    id: "RecipeTime::Text"
+    text: "Préparation (30 min)"
+    label: "Preparation section and time are displayed (French)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to first preparation section"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
+    text: "1) Les lentilles blondes"
+    label: "First section title is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to second preparation section"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
+    text: "2) Le tartare"
+    label: "Second section title is displayed"
+
+- assertNotVisible:
+    id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"
+    label: "Assert no third section exists"
+
+- runFlow:
+    file: "../../common/fr/nutritionReadOnly.yaml"
+    env:
+      ENERGY_KCAL: "149.2"
+      ENERGY_KJ: "624.3"
+      FAT: "2.3"
+      SATURATED_FAT: "0.4"
+      CARBOHYDRATES: "21.9"
+      SUGARS: "6.8"
+      FIBER: "5.8"
+      PROTEIN: "8.8"
+      SALT: "0"
+    label: "Assert nutrition values (French, converted to per-100g from 256g serving)"

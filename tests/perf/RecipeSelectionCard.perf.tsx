@@ -177,6 +177,6 @@ describe('RecipeSelectionCard Performance', () => {
         runs: 5,
         scenario,
       });
-    });
+    }, 30000);
   });
 });

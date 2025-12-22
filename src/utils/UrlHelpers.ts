@@ -110,10 +110,16 @@ export function extractImageFromJsonLd(html: string): string | null {
     }
 
     const jsonLd = JSON.parse(jsonLdMatch[1]);
-    const recipe =
-      jsonLd['@type'] === 'Recipe'
-        ? jsonLd
-        : jsonLd['@graph']?.find((item: Record<string, unknown>) => item['@type'] === 'Recipe');
+
+    // Find Recipe object: direct, in @graph, or in root-level array
+    let recipe: Record<string, unknown> | undefined;
+    if (jsonLd['@type'] === 'Recipe') {
+      recipe = jsonLd;
+    } else if (jsonLd['@graph']) {
+      recipe = jsonLd['@graph'].find((item: Record<string, unknown>) => item['@type'] === 'Recipe');
+    } else if (Array.isArray(jsonLd)) {
+      recipe = jsonLd.find((item: Record<string, unknown>) => item['@type'] === 'Recipe');
+    }
 
     if (!recipe?.image) {
       return null;

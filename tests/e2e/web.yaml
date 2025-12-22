@@ -6,3 +6,4 @@ executionOrder:
     - "1 - Web HelloFresh Flow"
     - "2 - Web Marmiton Flow"
     - "3 - Web Quitoque Auth Flow (French)"
+    - "4 - Web Quitoque Public Flow (French)"

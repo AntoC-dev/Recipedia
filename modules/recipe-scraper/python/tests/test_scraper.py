@@ -27,6 +27,7 @@ from scraper import (
     _extract_structured_instructions,
     _extract_step_title,
     _extract_step_instructions,
+    _extract_image_from_json_ld,
     AuthenticationRequiredError,
 )
 
@@ -1019,3 +1020,258 @@ class TestExtractStructuredInstructions:
         result = _extract_structured_instructions(soup, ["Step 1"])
 
         assert result is None
+
+
+class TestImageFallbackIntegration:
+    """Tests for the JSON-LD image fallback in _extract_all_data()"""
+
+    def test_uses_json_ld_image(self):
+        html_with_json_ld_image = '''
+        <html>
+            <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "Recipe",
+                "name": "Test Recipe",
+                "recipeIngredient": ["1 egg"],
+                "recipeInstructions": "Mix and cook",
+                "image": "https://real-image.jpg"
+            }
+            </script>
+        </html>
+        '''
+        result = json.loads(
+            scrape_recipe_from_html(html_with_json_ld_image, "https://example.com/recipe")
+        )
+
+        assert result["success"] is True
+        assert result["data"]["image"] == "https://real-image.jpg"
+
+    def test_keeps_placeholder_when_no_better_image_available(self):
+        html_with_placeholder = '''
+        <html>
+            <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "Recipe",
+                "name": "Test Recipe",
+                "recipeIngredient": ["1 egg"],
+                "recipeInstructions": "Mix and cook",
+                "image": "https://example.com/placeholder.jpg"
+            }
+            </script>
+        </html>
+        '''
+        result = json.loads(
+            scrape_recipe_from_html(html_with_placeholder, "https://example.com/recipe")
+        )
+
+        assert result["success"] is True
+        assert result["data"]["image"] == "https://example.com/placeholder.jpg"
+
+    def test_extracts_image_from_array_format(self):
+        html_with_image_array = '''
+        <html>
+            <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "Recipe",
+                "name": "Test Recipe",
+                "recipeIngredient": ["1 egg"],
+                "recipeInstructions": "Mix and cook",
+                "image": ["https://first-image.jpg", "https://second-image.jpg"]
+            }
+            </script>
+        </html>
+        '''
+        result = json.loads(
+            scrape_recipe_from_html(html_with_image_array, "https://example.com/recipe")
+        )
+
+        assert result["success"] is True
+        assert result["data"]["image"] == "https://first-image.jpg"
+
+    def test_returns_none_when_no_image(self):
+        html_without_image = '''
+        <html>
+            <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "Recipe",
+                "name": "Test Recipe",
+                "recipeIngredient": ["1 egg"],
+                "recipeInstructions": "Mix and cook"
+            }
+            </script>
+        </html>
+        '''
+        result = json.loads(
+            scrape_recipe_from_html(html_without_image, "https://example.com/recipe")
+        )
+
+        assert result["success"] is True
+        assert result["data"]["image"] is None
+
+
+class TestExtractImageFromJsonLd:
+    def test_extracts_image_string(self):
+        html = '''
+        <html>
+            <script type="application/ld+json">
+                {"@type": "Recipe", "image": "https://example.com/image.jpg"}
+            </script>
+        </html>
+        '''
+        soup = BeautifulSoup(html, "html.parser")
+
+        result = _extract_image_from_json_ld(soup)
+
+        assert result == "https://example.com/image.jpg"
+
+    def test_extracts_image_from_array(self):
+        html = '''
+        <html>
+            <script type="application/ld+json">
+                {"@type": "Recipe", "image": ["https://example.com/image1.jpg", "https://example.com/image2.jpg"]}
+            </script>
+        </html>
+        '''
+        soup = BeautifulSoup(html, "html.parser")
+
+        result = _extract_image_from_json_ld(soup)
+
+        assert result == "https://example.com/image1.jpg"
+
+    def test_extracts_image_from_object_with_url(self):
+        html = '''
+        <html>
+            <script type="application/ld+json">
+                {"@type": "Recipe", "image": {"url": "https://example.com/image.jpg", "width": 800}}
+            </script>
+        </html>
+        '''
+        soup = BeautifulSoup(html, "html.parser")
+
+        result = _extract_image_from_json_ld(soup)
+
+        assert result == "https://example.com/image.jpg"
+
+    def test_extracts_image_from_array_of_objects(self):
+        html = '''
+        <html>
+            <script type="application/ld+json">
+                {"@type": "Recipe", "image": [{"url": "https://example.com/image.jpg"}]}
+            </script>
+        </html>
+        '''
+        soup = BeautifulSoup(html, "html.parser")
+
+        result = _extract_image_from_json_ld(soup)
+
+        assert result == "https://example.com/image.jpg"
+
+    def test_extracts_image_from_graph_format(self):
+        html = '''
+        <html>
+            <script type="application/ld+json">
+                {"@graph": [{"@type": "WebPage"}, {"@type": "Recipe", "image": "https://example.com/image.jpg"}]}
+            </script>
+        </html>
+        '''
+        soup = BeautifulSoup(html, "html.parser")
+
+        result = _extract_image_from_json_ld(soup)
+
+        assert result == "https://example.com/image.jpg"
+
+    def test_returns_none_for_placeholder_image(self):
+        html = '''
+        <html>
+            <script type="application/ld+json">
+                {"@type": "Recipe", "image": "https://example.com/placeholder.jpg"}
+            </script>
+        </html>
+        '''
+        soup = BeautifulSoup(html, "html.parser")
+
+        result = _extract_image_from_json_ld(soup)
+
+        assert result is None
+
+    def test_returns_none_for_no_json_ld(self):
+        html = '<html><body></body></html>'
+        soup = BeautifulSoup(html, "html.parser")
+
+        result = _extract_image_from_json_ld(soup)
+
+        assert result is None
+
+    def test_returns_none_for_no_image_field(self):
+        html = '''
+        <html>
+            <script type="application/ld+json">
+                {"@type": "Recipe", "name": "Test Recipe"}
+            </script>
+        </html>
+        '''
+        soup = BeautifulSoup(html, "html.parser")
+
+        result = _extract_image_from_json_ld(soup)
+
+        assert result is None
+
+    def test_returns_none_for_non_recipe_type(self):
+        html = '''
+        <html>
+            <script type="application/ld+json">
+                {"@type": "WebPage", "image": "https://example.com/image.jpg"}
+            </script>
+        </html>
+        '''
+        soup = BeautifulSoup(html, "html.parser")
+
+        result = _extract_image_from_json_ld(soup)
+
+        assert result is None
+
+    def test_handles_invalid_json(self):
+        html = '''
+        <html>
+            <script type="application/ld+json">
+                not valid json
+            </script>
+        </html>
+        '''
+        soup = BeautifulSoup(html, "html.parser")
+
+        result = _extract_image_from_json_ld(soup)
+
+        assert result is None
+
+    def test_extracts_image_from_root_level_array(self):
+        html = '''
+        <html>
+            <script type="application/ld+json">
+                [{"@context": "https://schema.org", "@type": "Recipe", "name": "Test", "image": ["https://example.com/real-image.jpg"]}]
+            </script>
+        </html>
+        '''
+        soup = BeautifulSoup(html, "html.parser")
+
+        result = _extract_image_from_json_ld(soup)
+
+        assert result == "https://example.com/real-image.jpg"
+
+    def test_extracts_image_from_root_array_with_multiple_items(self):
+        html = '''
+        <html>
+            <script type="application/ld+json">
+                [{"@type": "WebPage", "name": "Page"}, {"@type": "Recipe", "image": "https://example.com/recipe.jpg"}]
+            </script>
+        </html>
+        '''
+        soup = BeautifulSoup(html, "html.parser")
+
+        result = _extract_image_from_json_ld(soup)
+
+        assert result == "https://example.com/recipe.jpg"

@@ -1,0 +1,126 @@
+name: "4 - Web Quitoque Public Flow (French)"
+appId: "com.recipedia"
+tags:
+  - web
+---
+- runFlow:
+    file: "../../flows/setupTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- runFlow:
+    file: "../../flows/parameters/language/switchToFrench.yaml"
+    label: "Setup - Switch app language to French"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Setup - Return to home screen"
+
+- runFlow:
+    file: "../../flows/recipe/adding/web/addRecipeFromUrl.yaml"
+    env:
+      RECIPE_URL: "https://www.quitoque.fr/recettes/tartare-de-lentilles-blondes-mangue-et-salade-dalgues"
+    label: "Action - Add recipe from Quitoque URL (public, no auth)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::6::QuantityInput"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to duplicate huile d'olive ingredient"
+
+- tapOn:
+    id: "RecipeIngredients::6::QuantityInput"
+    label: "Tap on huile d'olive quantity"
+
+- inputText: "1"
+
+- pressKey: enter
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::9::QuantityInput"
+    direction: DOWN
+    centerElement: true
+    speed: 40
+    label: "Scroll to duplicate huile d'olive ingredient"
+
+- tapOn:
+    id: "RecipeIngredients::9::QuantityInput"
+    label: "Tap on huile d'olive quantity"
+
+- inputText: "1"
+
+- pressKey: enter
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeImage"
+    direction: UP
+    centerElement: true
+    speed: 95
+    label: "Scroll back to top"
+
+- tapOn:
+    id: "Recipe::BottomActionButton"
+    label: "Action - Validate the recipe"
+
+- runFlow:
+    file: "../../asserts/alerts/fr/recipeAddedToDatabase.yaml"
+    env:
+      RECIPE_NAME: "Tartare de lentilles blondes, mangue et salade d'algues"
+    label: "Assert - Verify recipe added successfully (French)"
+
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Verification - Navigate to Search screen"
+
+- tapOn:
+    id: "SearchScreen::SearchBar"
+    label: "Verification - Focus on search bar"
+
+- inputText:
+    text: "Tartare"
+    label: "Verification - Search for new recipe"
+
+- pressKey: enter
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::RecipeCards::0::.*"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to recipe card"
+
+- tapOn:
+    id: "SearchScreen::RecipeCards::0::.*"
+    label: "Verification - Open newly created recipe"
+
+- runFlow:
+    file: "../../asserts/recipe/readonly/fr/quitoqueTartareLentilles.yaml"
+    label: "Assert - Verify recipe content in read-only mode (French)"
+
+- tapOn:
+    id: "Recipe::AppBar::Delete"
+    label: "Cleanup - Remove the recipe"
+
+- tapOn:
+    id: "Recipe::Dialog::Confirm"
+    label: "Cleanup - Confirm recipe deletion"
+
+- tapOn:
+    id: "Recipe::Dialog::Confirm"
+    label: "Cleanup - Close confirmation dialog"
+
+- tapOn:
+    id: "SearchScreen::SearchBar::RightIcon"
+    label: "Cleanup - Clear search filter"
+
+- runFlow:
+    file: "../../flows/parameters/language/switchToEnglish.yaml"
+    label: "Cleanup - Switch app language back to English"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Cleanup - Return to home screen"

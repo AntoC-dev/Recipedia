@@ -295,5 +295,33 @@ describe('UrlHelpers', () => {
 
       expect(result).toBeNull();
     });
+
+    test('extracts from root-level JSON-LD array (Quitoque format)', () => {
+      const html = `
+        <html>
+          <script type="application/ld+json">
+            [{"@type": "Recipe", "name": "Test", "image": ["https://example.com/quitoque-image.jpg"]}]
+          </script>
+        </html>
+      `;
+
+      const result = extractImageFromJsonLd(html);
+
+      expect(result).toBe('https://example.com/quitoque-image.jpg');
+    });
+
+    test('finds Recipe in root-level array with multiple items', () => {
+      const html = `
+        <html>
+          <script type="application/ld+json">
+            [{"@type": "WebPage", "name": "Page"}, {"@type": "Recipe", "image": "https://example.com/recipe-in-array.jpg"}]
+          </script>
+        </html>
+      `;
+
+      const result = extractImageFromJsonLd(html);
+
+      expect(result).toBe('https://example.com/recipe-in-array.jpg');
+    });
   });
 });
