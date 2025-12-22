@@ -1,0 +1,19 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "Modal::Gallery::RoundButton"
+    label: "Open gallery for OCR"
+
+- runFlow:
+    file: selectFromGallery.yaml
+    label: "Select from iOS Photos picker and validate"
+
+- tapOn:
+    id: "Modal::List#${output.modalImageCounter}::SquareButton::Image"
+    label: "Select picture ${output.modalImageCounter} from app modal"
+
+- runFlow:
+    file: validateWithoutCropping.yaml
+    label: "Validate selected photo without cropping"
+
+- evalScript: ${output.modalImageCounter = output.modalImageCounter + 1}

@@ -14,12 +14,11 @@ appId: "com.recipedia"
     when:
       platform: Android
     label: "Take photo on Android"
-# TODO iOS
-#- runFlow:
-#    file: ./ocr/iOS/takePhoto.yaml
-#    when:
-#      platform: iOS
-#    label: "Take photo on iOS"
+- runFlow:
+    file: "../ocr/iOS/takePhoto.yaml"
+    when:
+      platform: iOS
+    label: "Take photo on iOS"
 - tapOn:
     id: "Modal::List#0::SquareButton::Image"
     label: "Select camera picture"
@@ -29,9 +28,8 @@ appId: "com.recipedia"
     when:
       platform: Android
     label: "Validate without cropping on Android"
-# TODO iOS
-#- runFlow:
-#    file: ./ocr/iOS/validateWithoutCropping.yaml
-#    when:
-#      platform: iOS
-#    label: "Validate without cropping on iOS"
+- runFlow:
+    file: "../ocr/iOS/validateWithoutCropping.yaml"
+    when:
+      platform: iOS
+    label: "Validate without cropping on iOS"

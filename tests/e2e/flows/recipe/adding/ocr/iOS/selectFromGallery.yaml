@@ -1,0 +1,14 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    file: waitAndVerifyGalleryReady.yaml
+    label: "Verify Photos picker is ready"
+
+- tapOn:
+    text: "Photo,.*"
+    index: 0
+    label: "Select most recent photo from iOS Photos picker"
+
+- runFlow:
+    file: validateWithoutCropping.yaml
+    label: "Validate selected photo without cropping"

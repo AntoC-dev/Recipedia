@@ -17,14 +17,23 @@ appId: "com.recipedia"
       FIELD_NAME: ingredients
     when:
       platform: Android
-# TODO iOS
+- runFlow:
+    file: ../iOS/addMedia.yaml
+    env:
+      FIELD_NAME: ingredients
+    when:
+      platform: iOS
 
 - runFlow:
     file: ../android/selectMostRecentFromModal.yaml
     label: "Select ingredients from modal for OCR"
     when:
       platform: Android
-# TODO iOS
+- runFlow:
+    file: ../iOS/selectMostRecentFromModal.yaml
+    label: "Select ingredients from modal for OCR"
+    when:
+      platform: iOS
 
 - runFlow:
     file: "../../../validation/validateAllIngredients.yaml"

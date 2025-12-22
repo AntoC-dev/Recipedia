@@ -1,0 +1,193 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    when:
+      true: ${RECIPE_NAME == "hellofresh" && FIELD_NAME == "image"}
+    commands:
+      - addMedia:
+          - "../../../../../../assets/aiguillettesTeriyaki/image.jpg"
+    label: "Add hellofresh image to iOS Photos"
+
+- runFlow:
+    when:
+      true: ${RECIPE_NAME == "hellofresh" && FIELD_NAME == "title"}
+    commands:
+      - addMedia:
+          - "../../../../../../assets/aiguillettesTeriyaki/title.jpg"
+    label: "Add hellofresh title to iOS Photos"
+
+- runFlow:
+    when:
+      true: ${RECIPE_NAME == "hellofresh" && FIELD_NAME == "description"}
+    commands:
+      - addMedia:
+          - "../../../../../../assets/aiguillettesTeriyaki/description.jpg"
+    label: "Add hellofresh description to iOS Photos"
+
+- runFlow:
+    when:
+      true: ${RECIPE_NAME == "hellofresh" && FIELD_NAME == "tags"}
+    commands:
+      - addMedia:
+          - "../../../../../../assets/aiguillettesTeriyaki/tags.jpg"
+    label: "Add hellofresh tags to iOS Photos"
+
+- runFlow:
+    when:
+      true: ${RECIPE_NAME == "hellofresh" && FIELD_NAME == "ingredients"}
+    commands:
+      - addMedia:
+          - "../../../../../../assets/aiguillettesTeriyaki/ingredients.jpg"
+    label: "Add hellofresh ingredients to iOS Photos"
+
+- runFlow:
+    when:
+      true: ${RECIPE_NAME == "hellofresh" && FIELD_NAME == "preparation"}
+    commands:
+      - addMedia:
+          - "../../../../../../assets/aiguillettesTeriyaki/preparation.jpg"
+    label: "Add hellofresh preparation to iOS Photos"
+
+- runFlow:
+    when:
+      true: ${RECIPE_NAME == "quitoqueV1" && FIELD_NAME == "image"}
+    commands:
+      - addMedia:
+          - "../../../../../../assets/tajineMerguez/image.jpg"
+    label: "Add quitoqueV1 image to iOS Photos"
+
+- runFlow:
+    when:
+      true: ${RECIPE_NAME == "quitoqueV1" && FIELD_NAME == "title"}
+    commands:
+      - addMedia:
+          - "../../../../../../assets/tajineMerguez/title.jpg"
+    label: "Add quitoqueV1 title to iOS Photos"
+
+- runFlow:
+    when:
+      true: ${RECIPE_NAME == "quitoqueV1" && FIELD_NAME == "personsAndTime"}
+    commands:
+      - addMedia:
+          - "../../../../../../assets/tajineMerguez/personsAndTime.jpg"
+    label: "Add quitoqueV1 personsAndTime to iOS Photos"
+
+- runFlow:
+    when:
+      true: ${RECIPE_NAME == "quitoqueV1" && FIELD_NAME == "ingredients"}
+    commands:
+      - addMedia:
+          - "../../../../../../assets/tajineMerguez/ingredients.jpg"
+    label: "Add quitoqueV1 ingredients to iOS Photos"
+
+- runFlow:
+    when:
+      true: ${RECIPE_NAME == "quitoqueV1" && FIELD_NAME == "preparation"}
+    commands:
+      - addMedia:
+          - "../../../../../../assets/tajineMerguez/preparation.jpg"
+    label: "Add quitoqueV1 preparation to iOS Photos"
+
+- runFlow:
+    when:
+      true: ${RECIPE_NAME == "quitoqueV2" && FIELD_NAME == "image"}
+    commands:
+      - addMedia:
+          - "../../../../../../assets/pouletSatay/image.jpg"
+    label: "Add quitoqueV2 image to iOS Photos"
+
+- runFlow:
+    when:
+      true: ${RECIPE_NAME == "quitoqueV2" && FIELD_NAME == "title"}
+    commands:
+      - addMedia:
+          - "../../../../../../assets/pouletSatay/title.jpg"
+    label: "Add quitoqueV2 title to iOS Photos"
+
+- runFlow:
+    when:
+      true: ${RECIPE_NAME == "quitoqueV2" && FIELD_NAME == "description"}
+    commands:
+      - addMedia:
+          - "../../../../../../assets/pouletSatay/description.jpg"
+    label: "Add quitoqueV2 description to iOS Photos"
+
+- runFlow:
+    when:
+      true: ${RECIPE_NAME == "quitoqueV2" && FIELD_NAME == "personsAndTime"}
+    commands:
+      - addMedia:
+          - "../../../../../../assets/pouletSatay/personsAndTime.jpg"
+    label: "Add quitoqueV2 personsAndTime to iOS Photos"
+
+- runFlow:
+    when:
+      true: ${RECIPE_NAME == "quitoqueV2" && FIELD_NAME == "ingredients"}
+    commands:
+      - addMedia:
+          - "../../../../../../assets/pouletSatay/ingredients.jpg"
+    label: "Add quitoqueV2 ingredients to iOS Photos"
+
+- runFlow:
+    when:
+      true: ${RECIPE_NAME == "quitoqueV2" && FIELD_NAME == "preparation"}
+    commands:
+      - addMedia:
+          - "../../../../../../assets/pouletSatay/preparation.jpg"
+    label: "Add quitoqueV2 preparation to iOS Photos"
+
+- runFlow:
+    when:
+      true: ${RECIPE_NAME == "quitoqueV2" && FIELD_NAME == "nutrition"}
+    commands:
+      - addMedia:
+          - "../../../../../../assets/pouletSatay/nutrition.jpg"
+    label: "Add quitoqueV2 nutrition to iOS Photos"
+
+- runFlow:
+    when:
+      true: ${RECIPE_NAME == "quitoqueV3" && FIELD_NAME == "image"}
+    commands:
+      - addMedia:
+          - "../../../../../../assets/curryPoisChiches/image.jpg"
+    label: "Add quitoqueV3 image to iOS Photos"
+
+- runFlow:
+    when:
+      true: ${RECIPE_NAME == "quitoqueV3" && FIELD_NAME == "title"}
+    commands:
+      - addMedia:
+          - "../../../../../../assets/curryPoisChiches/title.jpg"
+    label: "Add quitoqueV3 title to iOS Photos"
+
+- runFlow:
+    when:
+      true: ${RECIPE_NAME == "quitoqueV3" && FIELD_NAME == "description"}
+    commands:
+      - addMedia:
+          - "../../../../../../assets/curryPoisChiches/description.jpg"
+    label: "Add quitoqueV3 description to iOS Photos"
+
+- runFlow:
+    when:
+      true: ${RECIPE_NAME == "quitoqueV3" && FIELD_NAME == "personsAndTime"}
+    commands:
+      - addMedia:
+          - "../../../../../../assets/curryPoisChiches/personsAndTime.jpg"
+    label: "Add quitoqueV3 personsAndTime to iOS Photos"
+
+- runFlow:
+    when:
+      true: ${RECIPE_NAME == "quitoqueV3" && FIELD_NAME == "ingredients"}
+    commands:
+      - addMedia:
+          - "../../../../../../assets/curryPoisChiches/ingredients.jpg"
+    label: "Add quitoqueV3 ingredients to iOS Photos"
+
+- runFlow:
+    when:
+      true: ${RECIPE_NAME == "quitoqueV3" && FIELD_NAME == "preparation"}
+    commands:
+      - addMedia:
+          - "../../../../../../assets/curryPoisChiches/preparation.jpg"
+    label: "Add quitoqueV3 preparation to iOS Photos"
