@@ -12,7 +12,7 @@
 import { FormIngredientElement, ingredientTableElement } from '@customTypes/DatabaseElementTypes';
 import { processIngredientsForValidation } from '@utils/RecipeValidationHelpers';
 import { recipeLogger } from '@utils/logger';
-import { textSeparator, unitySeparator } from '@styles/typography';
+import { noteSeparator, textSeparator, unitySeparator } from '@styles/typography';
 import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
 import { useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { useRecipeForm } from '@context/RecipeFormContext';
@@ -20,20 +20,35 @@ import { useRecipeForm } from '@context/RecipeFormContext';
 /**
  * Parses an ingredient display string into its components
  *
- * Extracts quantity, unit, and name from a formatted ingredient string
+ * Extracts quantity, unit, name, and optional note from a formatted ingredient string
  * using the standard separators defined in typography.
  *
- * @param ingredientStr - Formatted string like "100|g - Rice"
- * @returns Object with quantity, unit, and name strings
+ * Supports both old format (without note) and new format (with note):
+ * - Old: "100@@g--Rice"
+ * - New: "100@@g--Rice%%For the sauce"
+ *
+ * @param ingredientStr - Formatted string like "100@@g--Rice" or "100@@g--Rice%%For the sauce"
+ * @returns Object with quantity, unit, name, and note strings
  */
 export function parseIngredientString(ingredientStr: string): {
   quantity: string;
   unit: string;
   name: string;
+  note: string;
 } {
-  const [unitAndQuantity, name] = ingredientStr.split(textSeparator);
+  const [unitAndQuantity, nameAndNote] = ingredientStr.split(textSeparator);
   const [quantity, unit] = unitAndQuantity.split(unitySeparator);
-  return { quantity: quantity || '', unit: unit || '', name: name || '' };
+
+  const [name, note] = nameAndNote?.includes(noteSeparator)
+    ? nameAndNote.split(noteSeparator)
+    : [nameAndNote, ''];
+
+  return {
+    quantity: quantity || '',
+    unit: unit || '',
+    name: name || '',
+    note: note || '',
+  };
 }
 
 /**
@@ -41,12 +56,14 @@ export function parseIngredientString(ingredientStr: string): {
  *
  * Creates a standardized string representation of an ingredient
  * using the standard separators defined in typography.
+ * Includes the usage note if present.
  *
  * @param ingredient - The ingredient element to format
- * @returns Formatted string like "100|g - Rice"
+ * @returns Formatted string like "100@@g--Rice" or "100@@g--Rice%%For the sauce"
  */
 export function formatIngredientString(ingredient: FormIngredientElement): string {
-  return `${ingredient.quantity || ''}${unitySeparator}${ingredient.unit || ''}${textSeparator}${ingredient.name || ''}`;
+  const base = `${ingredient.quantity || ''}${unitySeparator}${ingredient.unit || ''}${textSeparator}${ingredient.name || ''}`;
+  return ingredient.note ? `${base}${noteSeparator}${ingredient.note}` : base;
 }
 
 /**
@@ -118,8 +135,8 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
    * Adds an ingredient to the recipe or merges quantities if it already exists.
    *
    * Performs case-insensitive name matching to detect duplicates. When a duplicate
-   * is found with the same unit, quantities are summed. When units differ, the new
-   * ingredient replaces the existing one entirely.
+   * is found with the same unit, quantities are summed and the new note is preserved.
+   * When units differ, the new ingredient replaces the existing one entirely.
    *
    * @param ingredient - The validated ingredient to add or merge
    */
@@ -143,6 +160,7 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
           updated[existingIndex] = {
             ...ingredient,
             quantity: String(Number(existing.quantity || 0) + Number(ingredient.quantity || 0)),
+            note: ingredient.note || existing.note,
           };
         } else {
           updated[existingIndex] = ingredient;
@@ -158,10 +176,10 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
    * Parses the new ingredient string and determines the appropriate action:
    * - If the name changes, removes the old ingredient and triggers validation
    *   workflow to check for similar ingredients in the database
-   * - If only quantity/unit changes, updates the ingredient in place
+   * - If only quantity/unit/note changes, updates the ingredient in place
    *
    * @param oldIngredientId - Index of the ingredient to edit
-   * @param newIngredient - Formatted ingredient string (e.g., "100|g - Rice")
+   * @param newIngredient - Formatted ingredient string (e.g., "100@@g--Rice%%For sauce")
    */
   const editIngredients = (oldIngredientId: number, newIngredient: string) => {
     if (oldIngredientId < 0 || oldIngredientId >= recipeIngredients.length) {
@@ -176,12 +194,13 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
       quantity: newQuantity,
       unit: newUnit,
       name: newName,
+      note: newNote,
     } = parseIngredientString(newIngredient);
 
     /**
      * Updates an ingredient's properties in place without triggering validation.
      *
-     * Used when only quantity or unit changes but the ingredient name remains the same.
+     * Used when only quantity, unit, or note changes but the ingredient name remains the same.
      * Selectively updates only the fields that have changed.
      *
      * @param ingredient - The new ingredient data to apply
@@ -217,6 +236,9 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
       if (ingredient.type && foundIngredient.type !== ingredient.type) {
         foundIngredient.type = ingredient.type;
       }
+      if (ingredient.note !== undefined && foundIngredient.note !== ingredient.note) {
+        foundIngredient.note = ingredient.note;
+      }
 
       setRecipeIngredients(ingredientCopy);
     };
@@ -235,6 +257,7 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
             name: newName,
             unit: newUnit,
             quantity: newQuantity,
+            note: newNote,
             season: [],
           },
         ],
@@ -257,6 +280,7 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
         name: newName,
         unit: newUnit,
         quantity: newQuantity,
+        note: newNote,
         season: [],
       });
     }

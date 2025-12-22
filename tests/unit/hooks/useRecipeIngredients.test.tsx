@@ -72,6 +72,7 @@ describe('useRecipeIngredients', () => {
           quantity: '200',
           unit: 'g',
           name: 'Flour',
+          note: '',
         });
       });
 
@@ -81,6 +82,7 @@ describe('useRecipeIngredients', () => {
         expect(result.quantity).toBe('1.5');
         expect(result.unit).toBe('kg');
         expect(result.name).toBe('Flour');
+        expect(result.note).toBe('');
       });
 
       test('handles empty quantity', () => {
@@ -89,6 +91,7 @@ describe('useRecipeIngredients', () => {
           quantity: '',
           unit: 'g',
           name: 'Flour',
+          note: '',
         });
       });
 
@@ -98,6 +101,7 @@ describe('useRecipeIngredients', () => {
           quantity: '2',
           unit: '',
           name: 'Eggs',
+          note: '',
         });
       });
 
@@ -107,6 +111,7 @@ describe('useRecipeIngredients', () => {
           quantity: '100',
           unit: 'ml',
           name: '',
+          note: '',
         });
       });
 
@@ -116,6 +121,7 @@ describe('useRecipeIngredients', () => {
         expect(result.quantity).toBe('');
         expect(result.unit).toBe('');
         expect(result.name).toBe('Pepper');
+        expect(result.note).toBe('');
       });
 
       test('handles malformed string', () => {
@@ -123,6 +129,7 @@ describe('useRecipeIngredients', () => {
         expect(result.quantity).toBe('malformed');
         expect(result.unit).toBe('');
         expect(result.name).toBe('');
+        expect(result.note).toBe('');
       });
 
       test('handles empty string', () => {
@@ -131,6 +138,7 @@ describe('useRecipeIngredients', () => {
         expect(result.quantity).toBe('');
         expect(result.unit).toBe('');
         expect(result.name).toBe('');
+        expect(result.note).toBe('');
       });
 
       test('handles ingredient with spaces in name', () => {
@@ -139,6 +147,27 @@ describe('useRecipeIngredients', () => {
         expect(result.quantity).toBe('500');
         expect(result.unit).toBe('g');
         expect(result.name).toBe('Olive Oil');
+        expect(result.note).toBe('');
+      });
+
+      test('parses ingredient string with note', () => {
+        const result = parseIngredientString('200@@g--Flour%%For the sauce');
+        expect(result).toEqual({
+          quantity: '200',
+          unit: 'g',
+          name: 'Flour',
+          note: 'For the sauce',
+        });
+      });
+
+      test('handles ingredient with empty note after separator', () => {
+        const result = parseIngredientString('200@@g--Flour%%');
+        expect(result).toEqual({
+          quantity: '200',
+          unit: 'g',
+          name: 'Flour',
+          note: '',
+        });
       });
     });
 
@@ -190,6 +219,56 @@ describe('useRecipeIngredients', () => {
           name: parsed.name,
           unit: parsed.unit,
           quantity: parsed.quantity,
+          season: [],
+        });
+
+        expect(formatted).toBe(original);
+      });
+
+      test('formats ingredient with note', () => {
+        const ingredient = {
+          quantity: '200',
+          unit: 'g',
+          name: 'Flour',
+          note: 'For the sauce',
+          season: [],
+        };
+        const result = formatIngredientString(ingredient);
+        expect(result).toBe('200@@g--Flour%%For the sauce');
+      });
+
+      test('formats ingredient without note (undefined)', () => {
+        const ingredient = {
+          quantity: '200',
+          unit: 'g',
+          name: 'Flour',
+          note: undefined,
+          season: [],
+        };
+        const result = formatIngredientString(ingredient);
+        expect(result).toBe('200@@g--Flour');
+      });
+
+      test('formats ingredient with empty string note', () => {
+        const ingredient = {
+          quantity: '200',
+          unit: 'g',
+          name: 'Flour',
+          note: '',
+          season: [],
+        };
+        const result = formatIngredientString(ingredient);
+        expect(result).toBe('200@@g--Flour');
+      });
+
+      test('round-trips through parse and format with note', () => {
+        const original = '250@@ml--Water%%For cooking';
+        const parsed = parseIngredientString(original);
+        const formatted = formatIngredientString({
+          name: parsed.name,
+          unit: parsed.unit,
+          quantity: parsed.quantity,
+          note: parsed.note,
           season: [],
         });
 
@@ -635,6 +714,229 @@ describe('useRecipeIngredients', () => {
         });
 
         expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+      });
+    });
+
+    describe('editIngredients with notes', () => {
+      const recipeWithNotes: recipeTableElement = {
+        ...recipeWithIngredients,
+        ingredients: [
+          {
+            id: 1,
+            name: 'Flour',
+            unit: 'g',
+            quantity: '200',
+            type: ingredientType.cereal,
+            season: [],
+            note: 'for the sauce',
+          },
+          {
+            id: 2,
+            name: 'Sugar',
+            unit: 'g',
+            quantity: '100',
+            type: ingredientType.sugar,
+            season: [],
+          },
+        ],
+      };
+
+      test('preserves note when updating quantity only', async () => {
+        const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithNotes));
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(2);
+        });
+
+        act(() => {
+          result.current.ingredients.editIngredients(0, '300@@g--Flour%%for the sauce');
+        });
+
+        expect(result.current.form.state.recipeIngredients[0].quantity).toBe('300');
+        expect(result.current.form.state.recipeIngredients[0].note).toBe('for the sauce');
+      });
+
+      test('updates note when explicitly changed', async () => {
+        const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithNotes));
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(2);
+        });
+
+        act(() => {
+          result.current.ingredients.editIngredients(0, '200@@g--Flour%%for the filling');
+        });
+
+        expect(result.current.form.state.recipeIngredients[0].note).toBe('for the filling');
+      });
+
+      test('clears note when empty string passed', async () => {
+        const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithNotes));
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(2);
+        });
+
+        act(() => {
+          result.current.ingredients.editIngredients(0, '200@@g--Flour%%');
+        });
+
+        expect(result.current.form.state.recipeIngredients[0].note).toBe('');
+      });
+
+      test('adds note to ingredient without one', async () => {
+        const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithNotes));
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(2);
+        });
+
+        act(() => {
+          result.current.ingredients.editIngredients(1, '100@@g--Sugar%%for the topping');
+        });
+
+        expect(result.current.form.state.recipeIngredients[1].note).toBe('for the topping');
+      });
+    });
+
+    describe('addOrMergeIngredient with notes', () => {
+      const recipeWithNotes: recipeTableElement = {
+        ...recipeWithIngredients,
+        ingredients: [
+          {
+            id: 1,
+            name: 'Flour',
+            unit: 'g',
+            quantity: '200',
+            type: ingredientType.cereal,
+            season: [],
+            note: 'for the sauce',
+          },
+        ],
+      };
+
+      test('uses new note when merging with same unit', async () => {
+        const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithNotes));
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+        });
+
+        act(() => {
+          result.current.ingredients.addOrMergeIngredient({
+            id: 1,
+            name: 'Flour',
+            unit: 'g',
+            quantity: '100',
+            type: ingredientType.cereal,
+            season: [],
+            note: 'for the filling',
+          });
+        });
+
+        expect(result.current.form.state.recipeIngredients[0].quantity).toBe('300');
+        expect(result.current.form.state.recipeIngredients[0].note).toBe('for the filling');
+      });
+
+      test('falls back to existing note when new note is undefined', async () => {
+        const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithNotes));
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+        });
+
+        act(() => {
+          result.current.ingredients.addOrMergeIngredient({
+            id: 1,
+            name: 'Flour',
+            unit: 'g',
+            quantity: '100',
+            type: ingredientType.cereal,
+            season: [],
+          });
+        });
+
+        expect(result.current.form.state.recipeIngredients[0].quantity).toBe('300');
+        expect(result.current.form.state.recipeIngredients[0].note).toBe('for the sauce');
+      });
+
+      test('preserves new note when replacing with different unit', async () => {
+        const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithNotes));
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+        });
+
+        act(() => {
+          result.current.ingredients.addOrMergeIngredient({
+            id: 1,
+            name: 'Flour',
+            unit: 'kg',
+            quantity: '0.5',
+            type: ingredientType.cereal,
+            season: [],
+            note: 'for the bread',
+          });
+        });
+
+        expect(result.current.form.state.recipeIngredients[0].unit).toBe('kg');
+        expect(result.current.form.state.recipeIngredients[0].note).toBe('for the bread');
       });
     });
 
