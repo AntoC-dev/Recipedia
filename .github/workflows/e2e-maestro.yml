@@ -3,8 +3,13 @@ name: E2E Maestro Tests
 on:
   workflow_call:
     inputs:
-      apk-artifact:
-        description: 'Name of the APK artifact to download'
+      platform:
+        description: 'Target platform (android/ios)'
+        required: false
+        type: string
+        default: 'android'
+      app-artifact:
+        description: 'Name of the app artifact to download (APK for Android, .app.zip for iOS)'
         required: true
         type: string
       suites:
@@ -19,8 +24,8 @@ on:
 
 jobs:
   e2e-tests:
-    name: E2E (${{ matrix.suite }})
-    runs-on: ubuntu-latest
+    name: E2E ${{ inputs.platform }} (${{ matrix.suite }})
+    runs-on: ${{ inputs.platform == 'ios' && 'macos-latest' || 'ubuntu-latest' }}
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -34,12 +39,23 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Setup Maestro environment
+      # Android setup
+      - name: Setup Maestro environment (Android)
+        if: inputs.platform == 'android'
         uses: ./.github/actions/setup-maestro
         with:
-          apk-artifact: ${{ inputs.apk-artifact }}
+          apk-artifact: ${{ inputs.app-artifact }}
 
-      - name: Run E2E tests
+      # iOS setup
+      - name: Setup Maestro environment (iOS)
+        if: inputs.platform == 'ios'
+        uses: ./.github/actions/setup-maestro-ios
+        with:
+          app-artifact: ${{ inputs.app-artifact }}
+
+      # Android E2E execution
+      - name: Run E2E tests (Android)
+        if: inputs.platform == 'android'
         uses: ReactiveCircus/android-emulator-runner@v2
         with:
           api-level: 34
@@ -56,6 +72,14 @@ jobs:
             npm run install:android
             maestro test tests/e2e/ --config=tests/e2e/${{ matrix.suite }}.yaml --debug-output=maestro_logs_${{ matrix.suite }} --format junit -s 1 -e QUITOQUE_USERNAME='${{ secrets.QUITOQUE_USERNAME }}' -e QUITOQUE_PASSWORD='${{ secrets.QUITOQUE_PASSWORD }}'
 
+      # iOS E2E execution
+      - name: Run E2E tests (iOS)
+        if: inputs.platform == 'ios'
+        run: |
+          echo "🚀 Running E2E tests on iOS simulator for suite: ${{ matrix.suite }} ..."
+          npm run install:ios
+          maestro test tests/e2e/ --config=tests/e2e/${{ matrix.suite }}.yaml --debug-output=maestro_logs_${{ matrix.suite }} --format junit -s 1 -e QUITOQUE_USERNAME='${{ secrets.QUITOQUE_USERNAME }}' -e QUITOQUE_PASSWORD='${{ secrets.QUITOQUE_PASSWORD }}'
+
       - name: Prepare suite logs
         if: always()
         run: bash .github/scripts/prepare-maestro-logs.sh maestro_logs_${{ matrix.suite }}
@@ -64,7 +88,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v5
         with:
-          name: maestro-logs-${{ matrix.suite }}
+          name: maestro-logs-${{ inputs.platform }}-${{ matrix.suite }}
           path: maestro_logs_${{ matrix.suite }}.zip
           retention-days: 1
 
@@ -72,6 +96,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v5
         with:
-          name: junit-e2e-${{ matrix.suite }}
+          name: junit-e2e-${{ inputs.platform }}-${{ matrix.suite }}
           path: report.xml
           retention-days: 1

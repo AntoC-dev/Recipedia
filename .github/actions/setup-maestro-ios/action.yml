@@ -1,0 +1,80 @@
+name: 'Setup Maestro iOS Environment'
+description: 'Setup Maestro CLI and iOS simulator for E2E testing'
+
+inputs:
+  maestro-version:
+    description: 'Maestro CLI version'
+    required: false
+    default: '2.0.10'
+  app-artifact:
+    description: 'Name of the iOS app artifact to download'
+    required: true
+  simulator-device:
+    description: 'iOS simulator device name'
+    required: false
+    default: 'iPhone SE (3rd generation)'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Download iOS app
+      uses: actions/download-artifact@v6
+      with:
+        name: ${{ inputs.app-artifact }}
+
+    - name: Unzip iOS app bundle
+      shell: bash
+      run: |
+        unzip -q *.zip
+        rm -f *.zip
+        echo "📱 iOS app bundle extracted"
+        ls -la *.app || echo "No .app found at root level"
+
+    - name: Cache Maestro CLI
+      uses: actions/cache@v4
+      id: maestro-cache
+      with:
+        path: ~/.maestro
+        key: maestro-${{ runner.os }}-${{ inputs.maestro-version }}
+
+    - name: Install Maestro CLI
+      if: steps.maestro-cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: bash .github/scripts/install-maestro.sh ${{ inputs.maestro-version }}
+
+    - name: Add Maestro to PATH
+      shell: bash
+      run: echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+
+    - name: Verify Maestro installation
+      shell: bash
+      run: maestro --version || { echo "Maestro installation failed"; exit 1; }
+
+    - name: List available iOS simulators
+      shell: bash
+      run: xcrun simctl list devices available
+
+    - name: Boot iOS simulator
+      shell: bash
+      run: |
+        DEVICE_NAME="${{ inputs.simulator-device }}"
+        echo "🚀 Booting iOS simulator: $DEVICE_NAME"
+
+        # Get the UDID of the device
+        DEVICE_UDID=$(xcrun simctl list devices available -j | jq -r ".devices | to_entries[] | .value[] | select(.name == \"$DEVICE_NAME\") | .udid" | head -1)
+
+        if [ -z "$DEVICE_UDID" ]; then
+          echo "❌ Device '$DEVICE_NAME' not found. Available devices:"
+          xcrun simctl list devices available
+          exit 1
+        fi
+
+        echo "📱 Found device UDID: $DEVICE_UDID"
+
+        # Boot the simulator
+        xcrun simctl boot "$DEVICE_UDID" || echo "Simulator may already be booted"
+
+        # Wait for simulator to be ready
+        xcrun simctl bootstatus "$DEVICE_UDID" -b
+
+        echo "✅ iOS simulator booted and ready"
