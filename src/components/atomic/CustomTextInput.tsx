@@ -83,6 +83,8 @@ export type CustomTextInputProps = {
   onBlur?: () => void;
   /** Callback fired when component layout changes */
   onLayout?: (event: LayoutChangeEvent) => void;
+  /** Right element (icon or affix) to display inside the input */
+  right?: React.ReactNode;
 };
 
 /**
@@ -108,6 +110,7 @@ export function CustomTextInput({
   onEndEditing,
   onBlur,
   onLayout,
+  right,
 }: CustomTextInputProps) {
   const [inputHeight, setInputHeight] = useState(screenHeight * 0.08);
 
@@ -173,6 +176,7 @@ export function CustomTextInput({
         onLayout={handleOnLayout}
         onContentSizeChange={handleOnContentSizeChange}
         error={error}
+        right={right}
       />
     </View>
   );

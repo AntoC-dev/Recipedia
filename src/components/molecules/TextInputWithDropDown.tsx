@@ -94,6 +94,8 @@ export type TextInputWithDropDownType = {
   style?: StyleProp<ViewStyle>;
   /** Custom styles for the text content */
   contentStyle?: StyleProp<TextStyle>;
+  /** Right element (icon or affix) to display inside the input */
+  right?: React.ReactNode;
 };
 
 /**
@@ -103,7 +105,7 @@ export type TextInputWithDropDownType = {
  * @returns JSX element representing an autocomplete text input with dropdown suggestions
  */
 export function TextInputWithDropDown(props: TextInputWithDropDownType) {
-  const { onValidate } = props;
+  const { onValidate, right } = props;
   /**
    * Filters the reference array based on user input with case-insensitive matching
    *
@@ -251,6 +253,7 @@ export function TextInputWithDropDown(props: TextInputWithDropDownType) {
         onChangeText={handleSearch}
         onEndEditing={handleSubmitEditing}
         onLayout={handleOnLayoutTextInput}
+        right={right}
       />
       {showDropdown &&
         filteredTextArray.length > 0 &&

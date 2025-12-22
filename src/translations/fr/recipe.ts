@@ -17,6 +17,13 @@ export default {
   quantity: 'Quantité',
   unit: 'Unité',
   ingredientName: 'Nom',
+  ingredientNotePlaceholder: "Note d'utilisation (ex: pour la sauce)",
+
+  noteDialog: {
+    addTitle: 'Ajouter une note',
+    editTitle: 'Modifier la note',
+  },
+  addNoteHint: 'Appui long pour voir/ajouter une note',
 
   preparationReadOnly: 'Préparation : ',
   preparationOCRStep: 'Étape',
