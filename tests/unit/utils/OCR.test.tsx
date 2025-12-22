@@ -3301,6 +3301,112 @@ describe('OCR Utility Functions', () => {
           ),
         });
       });
+
+      test('extracts note from second parenthetical in ingredient header', async () => {
+        const mockResultWithNotes: TextRecognitionResult = {
+          text: 'Flour (g) (organic)\nSugar (g)\nMilk (mL) (fresh) (cold)\n4p\n200\n100\n250',
+          blocks: [
+            {
+              recognizedLanguages: [],
+              text: '',
+              lines: [
+                { elements: [], recognizedLanguages: [], text: 'Flour (g) (organic)' },
+                { elements: [], recognizedLanguages: [], text: 'Sugar (g)' },
+                { elements: [], recognizedLanguages: [], text: 'Milk (mL) (fresh) (cold)' },
+                { elements: [], recognizedLanguages: [], text: '4p' },
+                { elements: [], recognizedLanguages: [], text: '200' },
+                { elements: [], recognizedLanguages: [], text: '100' },
+                { elements: [], recognizedLanguages: [], text: '250' },
+              ],
+            },
+          ],
+        };
+
+        mockRecognize.mockResolvedValue(mockResultWithNotes);
+
+        const result = await extractFieldFromImage(
+          'uri',
+          recipeColumnsNames.ingredients,
+          baseState,
+          mockWarn
+        );
+
+        expect(result).toEqual({
+          recipeIngredients: [
+            { name: 'Flour', unit: 'g', quantity: '200', note: 'organic' },
+            { name: 'Sugar', unit: 'g', quantity: '100' },
+            { name: 'Milk', unit: 'mL', quantity: '250', note: 'fresh, cold' },
+          ],
+        });
+      });
+
+      test('does not include note when only one parenthetical exists', async () => {
+        const mockResultNoNotes: TextRecognitionResult = {
+          text: 'Flour (g)\n4p\n200',
+          blocks: [
+            {
+              recognizedLanguages: [],
+              text: '',
+              lines: [
+                { elements: [], recognizedLanguages: [], text: 'Flour (g)' },
+                { elements: [], recognizedLanguages: [], text: '4p' },
+                { elements: [], recognizedLanguages: [], text: '200' },
+              ],
+            },
+          ],
+        };
+
+        mockRecognize.mockResolvedValue(mockResultNoNotes);
+
+        const result = await extractFieldFromImage(
+          'uri',
+          recipeColumnsNames.ingredients,
+          baseState,
+          mockWarn
+        );
+
+        expect(result).toEqual({
+          recipeIngredients: [{ name: 'Flour', unit: 'g', quantity: '200' }],
+        });
+
+        const ingredient = (result as { recipeIngredients: FormIngredientElement[] })
+          .recipeIngredients[0];
+        expect(ingredient.note).toBeUndefined();
+      });
+
+      test('handles empty additional parenthetical', async () => {
+        const mockResultEmptyNote: TextRecognitionResult = {
+          text: 'Flour (g) ()\n4p\n200',
+          blocks: [
+            {
+              recognizedLanguages: [],
+              text: '',
+              lines: [
+                { elements: [], recognizedLanguages: [], text: 'Flour (g) ()' },
+                { elements: [], recognizedLanguages: [], text: '4p' },
+                { elements: [], recognizedLanguages: [], text: '200' },
+              ],
+            },
+          ],
+        };
+
+        mockRecognize.mockResolvedValue(mockResultEmptyNote);
+
+        const result = await extractFieldFromImage(
+          'uri',
+          recipeColumnsNames.ingredients,
+          baseState,
+          mockWarn
+        );
+
+        expect(result).toEqual({
+          recipeIngredients: [{ name: 'Flour', unit: 'g', quantity: '200' }],
+        });
+
+        const ingredient = (result as { recipeIngredients: FormIngredientElement[] })
+          .recipeIngredients[0];
+        expect(ingredient.note).toBeUndefined();
+      });
     });
   });
 

@@ -86,12 +86,14 @@ export type ingredientObject = {
   name: string;
   unit: string;
   quantityPerPersons: ingredientQuantityPerPersons[];
+  /** Optional usage note from additional parentheticals */
+  note?: string;
 };
 export const keysIngredientObject = Object.keys({
   name: '',
   unit: '',
   quantityPerPersons: [],
-} as ingredientObject) as (keyof ingredientObject)[];
+} as Omit<ingredientObject, 'note'>) as (keyof ingredientObject)[];
 
 /** Function type for handling OCR warnings */
 export type WarningHandler = (message: string) => void;
@@ -589,18 +591,42 @@ function tranformOCRInIngredients(ocr: TextRecognitionResult): ingredientObject[
  * Parses ingredient names and units from header strings
  *
  * Extracts ingredient names and units from header format like "Flour (cups)".
- * Units are expected to be in parentheses.
+ * The first parenthetical is used as the unit, additional parentheticals become notes.
+ * Example: "Flour (g) (organic)" → name="Flour", unit="g", note="organic"
  *
  * @param namesAndUnits - Array of header strings containing names and units
- * @returns Array of ingredient objects with parsed names and units
+ * @returns Array of ingredient objects with parsed names, units, and optional notes
  */
 function parseIngredientsNamesAndUnits(namesAndUnits: string[]): ingredientObject[] {
   return namesAndUnits.map(nameAndUnit => {
-    const unitMatch = nameAndUnit.match(/\((.*?)\)/);
+    const parentheticals = nameAndUnit.match(/\(([^)]*)\)/g);
+    if (!parentheticals || parentheticals.length === 0) {
+      return {
+        name: nameAndUnit.trim(),
+        unit: '',
+        quantityPerPersons: [],
+      };
+    }
+
+    const unit = parentheticals[0].slice(1, -1);
+    const additionalParentheticals = parentheticals
+      .slice(1)
+      .map(p => p.slice(1, -1))
+      .filter(p => p.trim().length > 0);
+    const note =
+      additionalParentheticals.length > 0 ? additionalParentheticals.join(', ') : undefined;
+
+    let name = nameAndUnit;
+    for (const p of parentheticals) {
+      name = name.replace(p, '');
+    }
+    name = name.trim();
+
     return {
-      name: unitMatch ? nameAndUnit.replace(unitMatch[0], '').trim() : nameAndUnit,
-      unit: unitMatch ? unitMatch[1] : '',
+      name,
+      unit,
       quantityPerPersons: [],
+      ...(note && { note }),
     };
   });
 }
@@ -886,6 +912,7 @@ export async function extractFieldFromImage(
                   ocrPersonsCount,
                   targetPersonsCount
                 ),
+                ...(ingredient.note && { note: ingredient.note }),
               };
             }),
           ],
