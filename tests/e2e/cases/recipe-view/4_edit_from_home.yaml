@@ -34,6 +34,40 @@ env:
     label: "Assert - Verify Sushi Rolls edit screen is displayed correctly"
 
 - runFlow:
+    file: "../../flows/recipe/ingredients/cancelNoteOnIngredient.yaml"
+    env:
+      INDEX: "1"
+      EXPECTED_TITLE: "Add Note"
+      NOTE_TEXT: "this should not be saved"
+    label: "Action - Open note dialog, type text, then cancel"
+
+- tapOn:
+    id: "Recipe::AppBar::Validate"
+    label: "Action - Validate to check cancel didn't save note"
+
+- runFlow:
+    file: "../../asserts/recipe/common/assertIngredientWithoutNote.yaml"
+    env:
+      INGREDIENT_NAME: "Nori Sheets"
+      INGREDIENT_QUANTITY_AND_UNIT: "5 pieces"
+    label: "Assert - Verify note was NOT saved after cancel"
+
+- tapOn:
+    id: "Recipe::AppBar::Edit"
+    waitToSettleTimeoutMs: 0
+    retryTapIfNoChange: false
+    label: "Action - Re-enter edit mode to add note"
+
+- runFlow:
+    file: "../../flows/recipe/ingredients/addNoteToIngredient.yaml"
+    env:
+      INDEX: "1"
+      EXPECTED_TITLE: "Add Note"
+      INGREDIENT_NAME: "Nori Sheets"
+      NOTE_TEXT: "for the rolls"
+    label: "Action - Add note to Nori Sheets ingredient"
+
+- runFlow:
     file: "../../flows/recipe/editing/removeNutrition.yaml"
     label: "Action - Remove nutrition table"
 
@@ -46,12 +80,64 @@ env:
     label: "Action - Validate the modifications"
 
 - runFlow:
+    file: "../../asserts/recipe/common/assertIngredientWithNote.yaml"
+    env:
+      INGREDIENT_NAME: "Nori Sheets"
+      INGREDIENT_QUANTITY_AND_UNIT: "5 pieces"
+      INGREDIENT_NOTE: "for the rolls"
+    label: "Assert - Verify note is displayed on Nori Sheets ingredient"
+
+- runFlow:
     file: "../../asserts/recipe/readonly/en/sushiRollsEmpty.yaml"
     label: "Assert - Verify modified Sushi Rolls recipe without nutrition is displayed correctly"
 
+- tapOn:
+    id: "Recipe::AppBar::Edit"
+    waitToSettleTimeoutMs: 0
+    retryTapIfNoChange: false
+    label: "Action - Re-enter edit mode to edit the note"
+
+- runFlow:
+    file: "../../flows/recipe/ingredients/editNoteOnIngredient.yaml"
+    env:
+      INDEX: "1"
+      EXPECTED_TITLE: "Edit Note"
+      INGREDIENT_NAME: "Nori Sheets"
+      EXISTING_NOTE: "for the rolls"
+      NEW_NOTE_TEXT: "wrap the sushi"
+    label: "Action - Edit note on Nori Sheets ingredient"
+
+- tapOn:
+    id: "Recipe::AppBar::Validate"
+    label: "Action - Validate the note edit"
+
+- runFlow:
+    file: "../../asserts/recipe/common/assertIngredientWithNote.yaml"
+    env:
+      INGREDIENT_NAME: "Nori Sheets"
+      INGREDIENT_QUANTITY_AND_UNIT: "5 pieces"
+      INGREDIENT_NOTE: "wrap the sushi"
+    label: "Assert - Verify updated note is displayed on Nori Sheets ingredient"
+
+- tapOn:
+    id: "Recipe::AppBar::Edit"
+    waitToSettleTimeoutMs: 0
+    retryTapIfNoChange: false
+    label: "Cleanup - Enter edit mode to clear note"
+
+- runFlow:
+    file: "../../flows/recipe/ingredients/clearNoteOnIngredient.yaml"
+    env:
+      INDEX: "1"
+    label: "Cleanup - Clear note from Nori Sheets ingredient"
+
+- tapOn:
+    id: "Recipe::AppBar::Validate"
+    label: "Cleanup - Validate note removal"
+
 - runFlow:
     file: "../../flows/recipe/editing/fillNutritionBackSushi.yaml"
-    label: "Cleanup - Remove nutrition table"
+    label: "Cleanup - Restore nutrition table"
 
 - tapOn:
     id: "Recipe::AppBar::BackButton"

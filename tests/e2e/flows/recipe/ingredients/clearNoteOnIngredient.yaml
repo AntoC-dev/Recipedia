@@ -1,0 +1,23 @@
+appId: "com.recipedia"
+---
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::${INDEX}::NoteButton"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to ingredient note button"
+
+- tapOn:
+    id: "RecipeIngredients::${INDEX}::NoteButton"
+    label: "Tap note button to open dialog"
+
+- tapOn:
+    id: "RecipeIngredients::NoteDialog::Input::CustomTextInput"
+    label: "Focus on note input"
+
+- eraseText
+
+- tapOn:
+    id: "RecipeIngredients::NoteDialog::SaveButton"
+    label: "Save empty note to clear it"

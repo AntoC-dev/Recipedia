@@ -1,0 +1,31 @@
+appId: "com.recipedia"
+---
+- scrollUntilVisible:
+    element:
+      text: "${INGREDIENT_NAME}.*"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to searched ingredient"
+
+- assertVisible:
+    id: "RecipeIngredients::.*::IngredientName"
+    text: "${INGREDIENT_NAME}.*"
+    label: "Ingredient name is displayed"
+
+- assertVisible:
+    id: "RecipeIngredients::.*::QuantityAndUnit"
+    text: "${INGREDIENT_QUANTITY_AND_UNIT}.*"
+    label: "Ingredient quantity is displayed"
+
+- assertNotVisible:
+    id: "RecipeIngredients::.*::Note"
+    label: "Ingredient note is NOT displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePersons::Text"
+    direction: UP
+    speed: 40
+    centerElement: true
+    label: "Scroll back up to ingredients section"
