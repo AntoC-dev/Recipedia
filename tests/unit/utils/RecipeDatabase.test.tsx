@@ -2061,4 +2061,189 @@ describe('RecipeDatabase', () => {
       });
     });
   });
+
+  describe('Ingredient note encoding/decoding', () => {
+    const db = RecipeDatabase.getInstance();
+
+    beforeEach(async () => {
+      await db.init();
+      await db.addMultipleIngredients(testIngredients);
+      await db.addMultipleTags(testTags);
+    });
+
+    afterEach(async () => {
+      await db.closeAndReset();
+    });
+
+    test('preserves ingredient notes when adding and retrieving recipe', async () => {
+      const recipeWithNotes: recipeTableElement = {
+        ...testRecipes[0],
+        id: undefined,
+        ingredients: testRecipes[0].ingredients.map((ing, index) => ({
+          ...ing,
+          note: index === 0 ? 'for the sauce' : index === 1 ? 'melted' : undefined,
+        })),
+      };
+
+      await db.addRecipe(recipeWithNotes);
+      const retrievedRecipe = db.get_recipes()[0];
+
+      expect(retrievedRecipe.ingredients[0].note).toBe('for the sauce');
+      expect(retrievedRecipe.ingredients[1].note).toBe('melted');
+      expect(retrievedRecipe.ingredients[2].note).toBeUndefined();
+    });
+
+    test('handles multiple ingredients with mixed notes', async () => {
+      const recipeWithMixedNotes: recipeTableElement = {
+        ...testRecipes[0],
+        id: undefined,
+        ingredients: testRecipes[0].ingredients.map((ing, index) => ({
+          ...ing,
+          note: index % 2 === 0 ? `note ${index}` : undefined,
+        })),
+      };
+
+      await db.addRecipe(recipeWithMixedNotes);
+      const retrievedRecipe = db.get_recipes()[0];
+
+      retrievedRecipe.ingredients.forEach((ing, index) => {
+        if (index % 2 === 0) {
+          expect(ing.note).toBe(`note ${index}`);
+        } else {
+          expect(ing.note).toBeUndefined();
+        }
+      });
+    });
+
+    test('handles empty string note (treated as no note)', async () => {
+      const recipeWithEmptyNote: recipeTableElement = {
+        ...testRecipes[0],
+        id: undefined,
+        ingredients: testRecipes[0].ingredients.map((ing, index) => ({
+          ...ing,
+          note: index === 0 ? '' : undefined,
+        })),
+      };
+
+      await db.addRecipe(recipeWithEmptyNote);
+      const retrievedRecipe = db.get_recipes()[0];
+
+      expect(retrievedRecipe.ingredients[0].note).toBeUndefined();
+    });
+
+    test('handles note with special characters', async () => {
+      const specialNote = 'for the "special" sauce (organic)';
+      const recipeWithSpecialNote: recipeTableElement = {
+        ...testRecipes[0],
+        id: undefined,
+        ingredients: testRecipes[0].ingredients.map((ing, index) => ({
+          ...ing,
+          note: index === 0 ? specialNote : undefined,
+        })),
+      };
+
+      await db.addRecipe(recipeWithSpecialNote);
+      const retrievedRecipe = db.get_recipes()[0];
+
+      expect(retrievedRecipe.ingredients[0].note).toBe(specialNote);
+    });
+
+    test('handles note with unicode characters', async () => {
+      const unicodeNote = '🌶️ spicy à volonté';
+      const recipeWithUnicodeNote: recipeTableElement = {
+        ...testRecipes[0],
+        id: undefined,
+        ingredients: testRecipes[0].ingredients.map((ing, index) => ({
+          ...ing,
+          note: index === 0 ? unicodeNote : undefined,
+        })),
+      };
+
+      await db.addRecipe(recipeWithUnicodeNote);
+      const retrievedRecipe = db.get_recipes()[0];
+
+      expect(retrievedRecipe.ingredients[0].note).toBe(unicodeNote);
+    });
+
+    test('preserves notes after database re-initialization', async () => {
+      const noteValue = 'persistent note';
+      const recipeWithNote: recipeTableElement = {
+        ...testRecipes[0],
+        id: undefined,
+        ingredients: testRecipes[0].ingredients.map((ing, index) => ({
+          ...ing,
+          note: index === 0 ? noteValue : undefined,
+        })),
+      };
+
+      await db.addRecipe(recipeWithNote);
+
+      await db.closeAndReset();
+      await db.init();
+      await db.addMultipleIngredients(testIngredients);
+      await db.addMultipleTags(testTags);
+      await db.addRecipe(recipeWithNote);
+
+      const retrievedRecipe = db.get_recipes()[0];
+      expect(retrievedRecipe.ingredients[0].note).toBe(noteValue);
+    });
+
+    test('preserves notes when editing recipe', async () => {
+      const initialNote = 'initial note';
+      const recipeWithNote: recipeTableElement = {
+        ...testRecipes[0],
+        id: undefined,
+        ingredients: testRecipes[0].ingredients.map((ing, index) => ({
+          ...ing,
+          note: index === 0 ? initialNote : undefined,
+        })),
+      };
+
+      await db.addRecipe(recipeWithNote);
+      const addedRecipe = db.get_recipes()[0];
+
+      const updatedNote = 'updated note';
+      const editedRecipe: recipeTableElement = {
+        ...addedRecipe,
+        ingredients: addedRecipe.ingredients.map((ing, index) => ({
+          ...ing,
+          note: index === 0 ? updatedNote : undefined,
+        })),
+      };
+
+      await db.editRecipe(editedRecipe);
+      const retrievedRecipe = db.get_recipes()[0];
+
+      expect(retrievedRecipe.ingredients[0].note).toBe(updatedNote);
+    });
+
+    test('can remove note when editing recipe', async () => {
+      const recipeWithNote: recipeTableElement = {
+        ...testRecipes[0],
+        id: undefined,
+        ingredients: testRecipes[0].ingredients.map((ing, index) => ({
+          ...ing,
+          note: index === 0 ? 'to be removed' : undefined,
+        })),
+      };
+
+      await db.addRecipe(recipeWithNote);
+      const addedRecipe = db.get_recipes()[0];
+
+      expect(addedRecipe.ingredients[0].note).toBe('to be removed');
+
+      const editedRecipe: recipeTableElement = {
+        ...addedRecipe,
+        ingredients: addedRecipe.ingredients.map(ing => ({
+          ...ing,
+          note: undefined,
+        })),
+      };
+
+      await db.editRecipe(editedRecipe);
+      const retrievedRecipe = db.get_recipes()[0];
+
+      expect(retrievedRecipe.ingredients[0].note).toBeUndefined();
+    });
+  });
 });
