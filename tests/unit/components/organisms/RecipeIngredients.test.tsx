@@ -72,8 +72,9 @@ describe('RecipeIngredients Component', () => {
         expect(quantityAndUnitText).toEqual([ingredient.quantity, ' ', ingredient.unit]);
 
         const ingredientNameCell = getByTestId(`ReadOnlyIngredients::${index}::IngredientName`);
-        const ingredientNameText = ingredientNameCell.props.children.props.children;
-        expect(ingredientNameText).toEqual(ingredient.name);
+        const textElement = ingredientNameCell.props.children;
+        const textChildren = textElement.props.children;
+        expect(textChildren[0]).toEqual(ingredient.name);
       });
     });
 
@@ -104,6 +105,7 @@ describe('RecipeIngredients Component', () => {
       },
       onIngredientChange: mockOnIngredientChange,
       onAddIngredient: mockOnAddIngredient,
+      noteInputPlaceholder: 'Usage note',
     };
 
     beforeEach(() => {
@@ -205,6 +207,7 @@ describe('RecipeIngredients Component', () => {
       onIngredientChange: mockOnIngredientChange,
       onAddIngredient: mockOnAddIngredient,
       openModal: mockOpenModal,
+      noteInputPlaceholder: 'Usage note',
     };
 
     const addPropsEmpty: RecipeIngredientsProps = {
@@ -220,6 +223,7 @@ describe('RecipeIngredients Component', () => {
       onIngredientChange: mockOnIngredientChange,
       onAddIngredient: mockOnAddIngredient,
       openModal: mockOpenModal,
+      noteInputPlaceholder: 'Usage note',
     };
 
     beforeEach(() => {
@@ -265,6 +269,232 @@ describe('RecipeIngredients Component', () => {
     });
   });
 
+  describe('note icon display', () => {
+    const mockOnIngredientChange = jest.fn();
+    const mockOnAddIngredient = jest.fn();
+
+    const ingredientsWithNotes: ingredientTableElement[] = [
+      {
+        quantity: '100',
+        unit: 'g',
+        name: 'flour',
+        type: ingredientType.cereal,
+        season: [],
+        note: 'for the sauce',
+      },
+      { quantity: '50', unit: 'g', name: 'sugar', type: ingredientType.condiment, season: [] },
+      {
+        quantity: '25',
+        unit: 'ml',
+        name: 'oil',
+        type: ingredientType.fat,
+        season: [],
+        note: '   ',
+      },
+    ];
+
+    const editableProps: RecipeIngredientsProps = {
+      mode: 'editable',
+      testID: 'NoteTest',
+      ingredients: ingredientsWithNotes,
+      prefixText: 'Ingredients',
+      columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
+      onIngredientChange: mockOnIngredientChange,
+      onAddIngredient: mockOnAddIngredient,
+      noteInputPlaceholder: 'Usage note',
+    };
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('shows commentEditOutline icon when note exists', async () => {
+      const { getByTestId } = await renderRecipeIngredients(editableProps);
+
+      const iconElement = getByTestId('NoteTest::0::NoteButton::Icon');
+      expect(iconElement.props.children).toBe('comment-edit-outline');
+    });
+
+    it('shows commentPlusOutline icon when no note', async () => {
+      const { getByTestId } = await renderRecipeIngredients(editableProps);
+
+      const iconElement = getByTestId('NoteTest::1::NoteButton::Icon');
+      expect(iconElement.props.children).toBe('comment-plus-outline');
+    });
+
+    it('shows commentPlusOutline icon when note is whitespace only', async () => {
+      const { getByTestId } = await renderRecipeIngredients(editableProps);
+
+      const iconElement = getByTestId('NoteTest::2::NoteButton::Icon');
+      expect(iconElement.props.children).toBe('comment-plus-outline');
+    });
+
+    it('uses primary color when note exists', async () => {
+      const { getByTestId } = await renderRecipeIngredients(editableProps);
+
+      const colorElement = getByTestId('NoteTest::0::NoteButton::Color');
+      expect(colorElement.props.children).toBe('#6200ee');
+    });
+
+    it('uses onSurfaceVariant color when no note', async () => {
+      const { getByTestId } = await renderRecipeIngredients(editableProps);
+
+      const colorElement = getByTestId('NoteTest::1::NoteButton::Color');
+      expect(colorElement.props.children).toBe('#49454f');
+    });
+  });
+
+  describe('note dialog integration', () => {
+    const mockOnIngredientChange = jest.fn();
+    const mockOnAddIngredient = jest.fn();
+
+    const ingredientsWithNote: ingredientTableElement[] = [
+      {
+        quantity: '100',
+        unit: 'g',
+        name: 'Butter',
+        type: ingredientType.fat,
+        season: [],
+        note: 'melted',
+      },
+    ];
+
+    const editableProps: RecipeIngredientsProps = {
+      mode: 'editable',
+      testID: 'DialogTest',
+      ingredients: ingredientsWithNote,
+      prefixText: 'Ingredients',
+      columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
+      onIngredientChange: mockOnIngredientChange,
+      onAddIngredient: mockOnAddIngredient,
+      noteInputPlaceholder: 'Usage note',
+    };
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('opens NoteEditDialog when note icon pressed', async () => {
+      const { getByTestId } = await renderRecipeIngredients(editableProps);
+
+      fireEvent.press(getByTestId('DialogTest::0::NoteButton'));
+
+      expect(getByTestId('DialogTest::NoteDialog::Title')).toBeTruthy();
+    });
+
+    it('passes correct ingredient name to dialog', async () => {
+      const { getByTestId } = await renderRecipeIngredients(editableProps);
+
+      fireEvent.press(getByTestId('DialogTest::0::NoteButton'));
+
+      expect(getByTestId('DialogTest::NoteDialog::IngredientName').props.children).toBe('Butter');
+    });
+
+    it('passes correct initial note to dialog', async () => {
+      const { getByTestId } = await renderRecipeIngredients(editableProps);
+
+      fireEvent.press(getByTestId('DialogTest::0::NoteButton'));
+
+      expect(getByTestId('DialogTest::NoteDialog::Input::CustomTextInput').props.value).toBe(
+        'melted'
+      );
+    });
+
+    it('calls onIngredientChange with note after dialog save', async () => {
+      const { getByTestId } = await renderRecipeIngredients(editableProps);
+
+      fireEvent.press(getByTestId('DialogTest::0::NoteButton'));
+      fireEvent.changeText(
+        getByTestId('DialogTest::NoteDialog::Input::CustomTextInput'),
+        'softened'
+      );
+      fireEvent.press(getByTestId('DialogTest::NoteDialog::SaveButton'));
+
+      expect(mockOnIngredientChange).toHaveBeenCalledWith(0, expect.stringContaining('softened'));
+    });
+
+    it('closes dialog without change on cancel', async () => {
+      const { getByTestId, queryByTestId } = await renderRecipeIngredients(editableProps);
+
+      fireEvent.press(getByTestId('DialogTest::0::NoteButton'));
+      fireEvent.press(getByTestId('DialogTest::NoteDialog::CancelButton'));
+
+      await waitFor(() => {
+        expect(queryByTestId('DialogTest::NoteDialog::Title')).toBeNull();
+      });
+      expect(mockOnIngredientChange).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('read-only note display', () => {
+    const ingredientsWithNote: ingredientTableElement[] = [
+      {
+        quantity: '100',
+        unit: 'g',
+        name: 'Butter',
+        type: ingredientType.fat,
+        season: [],
+        note: 'melted',
+      },
+      { quantity: '50', unit: 'g', name: 'Sugar', type: ingredientType.condiment, season: [] },
+      {
+        quantity: '25',
+        unit: 'ml',
+        name: 'Milk',
+        type: ingredientType.dairy,
+        season: [],
+        note: '',
+      },
+    ];
+
+    it('displays note in parentheses after ingredient name', async () => {
+      const { getByTestId } = await renderRecipeIngredients({
+        mode: 'readOnly',
+        testID: 'ReadOnlyNote',
+        ingredients: ingredientsWithNote,
+      });
+
+      const noteElement = getByTestId('ReadOnlyNote::0::Note');
+      expect(noteElement).toBeTruthy();
+      const children = noteElement.props.children;
+      expect(children[0]).toBe(' ');
+      expect(children[1]).toBe('(');
+      expect(children[2]).toBe('melted');
+      expect(children[3]).toBe(')');
+    });
+
+    it('does not display note element when no note', async () => {
+      const { queryByTestId } = await renderRecipeIngredients({
+        mode: 'readOnly',
+        testID: 'ReadOnlyNote',
+        ingredients: ingredientsWithNote,
+      });
+
+      expect(queryByTestId('ReadOnlyNote::1::Note')).toBeNull();
+    });
+
+    it('does not display note element when note is empty string', async () => {
+      const { queryByTestId } = await renderRecipeIngredients({
+        mode: 'readOnly',
+        testID: 'ReadOnlyNote',
+        ingredients: ingredientsWithNote,
+      });
+
+      expect(queryByTestId('ReadOnlyNote::2::Note')).toBeNull();
+    });
+
+    it('uses outline color for note text', async () => {
+      const { getByTestId } = await renderRecipeIngredients({
+        mode: 'readOnly',
+        testID: 'ReadOnlyNote',
+        ingredients: ingredientsWithNote,
+      });
+
+      const noteElement = getByTestId('ReadOnlyNote::0::Note');
+      expect(noteElement.props.style.color).toBe('#79767d');
+    });
+  });
+
   describe('type safety', () => {
     it('enforces required props for editable mode', async () => {
       const editableProps: RecipeIngredientsProps = {
@@ -275,6 +505,7 @@ describe('RecipeIngredients Component', () => {
         columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
         onIngredientChange: jest.fn(),
         onAddIngredient: jest.fn(),
+        noteInputPlaceholder: 'Note',
       };
 
       expect(editableProps.mode).toEqual('editable');
@@ -282,6 +513,7 @@ describe('RecipeIngredients Component', () => {
       expect(editableProps.columnTitles).toBeDefined();
       expect(editableProps.onIngredientChange).toBeDefined();
       expect(editableProps.onAddIngredient).toBeDefined();
+      expect(editableProps.noteInputPlaceholder).toBeDefined();
     });
 
     it('enforces required props for add mode', async () => {
@@ -294,10 +526,12 @@ describe('RecipeIngredients Component', () => {
         onIngredientChange: jest.fn(),
         onAddIngredient: jest.fn(),
         openModal: jest.fn(),
+        noteInputPlaceholder: 'Note',
       };
 
       expect(addProps.mode).toEqual('add');
       expect(addProps.openModal).toBeDefined();
+      expect(addProps.noteInputPlaceholder).toBeDefined();
     });
 
     it('does not require callbacks for readOnly mode', async () => {
