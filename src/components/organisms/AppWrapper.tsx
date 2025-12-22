@@ -35,7 +35,7 @@ enum AppMode {
  * @returns JSX element representing the current app mode
  */
 export default function AppWrapper() {
-  const { clearMenu, recipes, addRecipeToMenu } = useRecipeDatabase();
+  const { clearMenu, recipes, addRecipeToMenu, toggleMenuItemCooked } = useRecipeDatabase();
   const [mode, setMode] = useState<AppMode>(AppMode.Loading);
 
   useEffect(() => {
@@ -75,8 +75,10 @@ export default function AppWrapper() {
     for (const recipe of recipesToAdd) {
       await addRecipeToMenu(recipe);
     }
+    // Mark first menu item as cooked to show both "To Cook" and "Cooked" sections
+    await toggleMenuItemCooked(1);
     tutorialLogger.info(
-      'Added recipes to menu for tutorial',
+      'Added recipes to menu for tutorial (1 cooked, 3 to cook)',
       recipesToAdd.map(r => r.title)
     );
     setMode(AppMode.Tutorial);
