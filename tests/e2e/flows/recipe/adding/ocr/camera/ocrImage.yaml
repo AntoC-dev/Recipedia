@@ -7,7 +7,12 @@ appId: "com.recipedia"
       FIELD_NAME: image
     when:
       platform: Android
-# TODO iOS
+- runFlow:
+    file: ../iOS/addMedia.yaml
+    env:
+      FIELD_NAME: image
+    when:
+      platform: iOS
 
 - tapOn:
     id: "RecipeImage::RoundButton"
@@ -19,7 +24,12 @@ appId: "com.recipedia"
       FIELD_NAME: image
     when:
       platform: Android
-# TODO iOS
+- runFlow:
+    file: ../iOS/addMedia.yaml
+    env:
+      FIELD_NAME: image
+    when:
+      platform: iOS
 
 - evalScript: ${output.modalImageCounter = 1}
 
@@ -28,5 +38,8 @@ appId: "com.recipedia"
     label: "Select title from modal for OCR"
     when:
       platform: Android
-
-# TODO iOS
+- runFlow:
+    file: ../iOS/selectMostRecentFromModal.yaml
+    label: "Select title from modal for OCR"
+    when:
+      platform: iOS

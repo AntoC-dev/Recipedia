@@ -7,7 +7,12 @@ appId: "com.recipedia"
       FIELD_NAME: image
     when:
       platform: Android
-# TODO iOS
+- runFlow:
+    file: ../iOS/addMedia.yaml
+    env:
+      FIELD_NAME: image
+    when:
+      platform: iOS
 
 - runFlow:
     file: "../../../../fab/expand.yaml"
@@ -21,7 +26,10 @@ appId: "com.recipedia"
     file: ../android/selectFromGallery.yaml
     when:
       platform: Android
-# TODO iOS
+- runFlow:
+    file: ../iOS/selectFromGallery.yaml
+    when:
+      platform: iOS
 
 - tapOn:
     id: "RecipeImage::RoundButton"
@@ -35,6 +43,9 @@ appId: "com.recipedia"
     file: ../android/validateWithoutCropping.yaml
     when:
       platform: Android
-# TODO iOS
+- runFlow:
+    file: ../iOS/validateWithoutCropping.yaml
+    when:
+      platform: iOS
 
 - evalScript: ${output.modalImageCounter = 1}
