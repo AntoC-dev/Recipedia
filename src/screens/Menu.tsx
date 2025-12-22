@@ -109,10 +109,10 @@ export function Menu() {
           <CopilotView
             style={{
               position: 'absolute',
-              top: '10%',
+              top: '5%',
               left: padding.small,
               right: padding.small,
-              height: '80%',
+              height: '70%',
               pointerEvents: 'none',
             }}
           />
