@@ -1,5 +1,5 @@
 name: 'Setup iOS Build Environment'
-description: 'Setup Python and EAS for iOS builds (CocoaPods handled by EAS cloud)'
+description: 'Setup Python, EAS, CocoaPods caching, and Expo caching for iOS builds'
 
 inputs:
   eas-version:
@@ -24,6 +24,24 @@ runs:
         pip install pytest "recipe-scrapers[online]>=15.0.0"
         python -c "from recipe_scrapers import scrape_me; print('recipe-scrapers OK')"
         python -c "import pytest; print('pytest OK')"
+
+    - name: Cache CocoaPods
+      uses: actions/cache@v4
+      with:
+        path: |
+          ios/Pods
+          ~/Library/Caches/CocoaPods
+        key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-pods-
+
+    - name: Cache global Expo artifacts
+      uses: actions/cache@v4
+      with:
+        path: ~/.expo
+        key: ${{ runner.os }}-expo-${{ hashFiles('package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-expo-
 
     - name: Setup EAS
       uses: expo/expo-github-action@v8
