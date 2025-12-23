@@ -132,8 +132,6 @@ jobs:
           )
         uses: ./.github/actions/setup-android-build
         with:
-          setup-android-sdk: 'true'
-          setup-expo-cache: 'true'
           eas-version: '16.3.0'
           expo-token: ${{ secrets.EXPO_TOKEN }}
 
