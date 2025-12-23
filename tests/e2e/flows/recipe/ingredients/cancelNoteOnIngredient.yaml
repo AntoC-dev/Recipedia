@@ -25,6 +25,9 @@ appId: "com.recipedia"
     text: "${NOTE_TEXT}"
     label: "Enter note text"
 
+- hideKeyboard:
+    label: "Hide the keyboard"
+
 - tapOn:
     id: "RecipeIngredients::NoteDialog::CancelButton"
     label: "Cancel without saving"

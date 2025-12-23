@@ -45,6 +45,13 @@ env:
     id: "Recipe::AppBar::Validate"
     label: "Action - Validate to check cancel didn't save note"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeImage"
+    direction: UP
+    speed: 90
+    label: "Scroll to top of recipe before asserting ingredient"
+
 - runFlow:
     file: "../../asserts/recipe/common/assertIngredientWithoutNote.yaml"
     env:
@@ -79,6 +86,13 @@ env:
     id: "Recipe::AppBar::Validate"
     label: "Action - Validate the modifications"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeImage"
+    direction: UP
+    speed: 80
+    label: "Scroll to top of recipe before asserting ingredient"
+
 - runFlow:
     file: "../../asserts/recipe/common/assertIngredientWithNote.yaml"
     env:
@@ -111,6 +125,13 @@ env:
     id: "Recipe::AppBar::Validate"
     label: "Action - Validate the note edit"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeImage"
+    direction: UP
+    speed: 90
+    label: "Scroll to top of recipe before asserting ingredient"
+
 - runFlow:
     file: "../../asserts/recipe/common/assertIngredientWithNote.yaml"
     env:
@@ -130,10 +151,6 @@ env:
     env:
       INDEX: "1"
     label: "Cleanup - Clear note from Nori Sheets ingredient"
-
-- tapOn:
-    id: "Recipe::AppBar::Validate"
-    label: "Cleanup - Validate note removal"
 
 - runFlow:
     file: "../../flows/recipe/editing/fillNutritionBackSushi.yaml"

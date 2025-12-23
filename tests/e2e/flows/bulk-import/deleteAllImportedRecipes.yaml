@@ -30,8 +30,16 @@ appId: "com.recipedia"
                 id: "SearchScreen::RecipeCards::10::Cover"
             - tapOn:
                 id: "Recipe::AppBar::Delete"
+            - extendedWaitUntil:
+                visible:
+                  id: "Recipe::Dialog::Cancel"
+                timeout: 5000
             - tapOn:
                 id: "Recipe::Dialog::Confirm"
+            - extendedWaitUntil:
+                notVisible:
+                  id: "Recipe::Dialog::Cancel"
+                timeout: 5000
             - tapOn:
                 id: "Recipe::Dialog::Confirm"
             - waitForAnimationToEnd

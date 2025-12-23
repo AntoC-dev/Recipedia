@@ -7,6 +7,19 @@ appId: "com.recipedia"
 - tapOn:
     id: "Parameters::Section::Appearance::Language::Item"
     label: "Tap on the language item to open the language settings"
+
+- extendedWaitUntil:
+    visible:
+      id: "LanguageSettings::Item::0"
+    timeout: 5000
+    label: "Wait for language settings to load"
+
 - tapOn:
     id: "LanguageSettings::Item::0"
     label: "Select English language"
+
+- extendedWaitUntil:
+    visible:
+      id: "Parameters::Section::Appearance::SubHeader"
+    timeout: 5000
+    label: "Wait for Parameters screen to reload with new language"

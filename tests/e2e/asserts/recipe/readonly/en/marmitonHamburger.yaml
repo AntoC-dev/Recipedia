@@ -112,11 +112,12 @@ appId: "com.recipedia"
     label: "Assert Ketchup ingredient"
 
 - runFlow:
-    file: "../../common/assertIngredient.yaml"
+    file: "../../common/assertIngredientWithNote.yaml"
     env:
       INGREDIENT_NAME: "cheddar"
       INGREDIENT_QUANTITY_AND_UNIT: "100 g"
-    label: "Assert Cheddar ingredient"
+      INGREDIENT_NOTE: "achat sous vide en grande surface"
+    label: "Assert Cheddar ingredient with note"
 
 - scrollUntilVisible:
     element:

@@ -71,7 +71,7 @@ appId: "com.recipedia"
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "camembert au lait cru"
-      INGREDIENT_QUANTITY_AND_UNIT: "1000 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "500 g"
     label: "Assert camembert ingredient"
 
 - runFlow:
@@ -89,25 +89,28 @@ appId: "com.recipedia"
     label: "Assert salade ingredient"
 
 - runFlow:
-    file: "../../common/assertIngredient.yaml"
+    file: "../../common/assertIngredientWithNote.yaml"
     env:
       INGREDIENT_NAME: "petits pains aux épices"
       INGREDIENT_QUANTITY_AND_UNIT: "4 g"
-    label: "Assert pains aux épices ingredient"
+      INGREDIENT_NOTE: "160g"
+    label: "Assert pains aux épices ingredient with note"
 
 - runFlow:
-    file: "../../common/assertIngredient.yaml"
+    file: "../../common/assertIngredientWithNote.yaml"
     env:
       INGREDIENT_NAME: "carotte"
       INGREDIENT_QUANTITY_AND_UNIT: "2 g"
-    label: "Assert carotte ingredient"
+      INGREDIENT_NOTE: "100g"
+    label: "Assert carotte ingredient with note"
 
 - runFlow:
-    file: "../../common/assertIngredient.yaml"
+    file: "../../common/assertIngredientWithNote.yaml"
     env:
       INGREDIENT_NAME: "herbes de Provence"
       INGREDIENT_QUANTITY_AND_UNIT: "0,5 g"
-    label: "Assert herbes de Provence ingredient"
+      INGREDIENT_NOTE: "sachet"
+    label: "Assert herbes de Provence ingredient with note"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"

@@ -4,9 +4,21 @@ appId: "com.recipedia"
     id: "Recipe::AppBar::Delete"
     label: "Delete the test recipe for cleanup"
 
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::Dialog::Cancel"
+    timeout: 5000
+    label: "Wait for delete confirmation dialog (has Cancel button)"
+
 - tapOn:
     id: "Recipe::Dialog::Confirm"
     label: "Confirm recipe deletion"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "Recipe::Dialog::Cancel"
+    timeout: 5000
+    label: "Wait for success dialog (no Cancel button)"
 
 - tapOn:
     id: "Recipe::Dialog::Confirm"

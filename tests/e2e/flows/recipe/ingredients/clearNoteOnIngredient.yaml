@@ -18,6 +18,9 @@ appId: "com.recipedia"
 
 - eraseText
 
+- hideKeyboard:
+    label: "Hide the keyboard"
+
 - tapOn:
     id: "RecipeIngredients::NoteDialog::SaveButton"
     label: "Save empty note to clear it"

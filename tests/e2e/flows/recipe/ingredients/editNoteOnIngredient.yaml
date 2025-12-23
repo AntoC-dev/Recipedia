@@ -36,6 +36,9 @@ appId: "com.recipedia"
     text: "${NEW_NOTE_TEXT}"
     label: "Enter new note text"
 
+- hideKeyboard:
+    label: "Hide the keyboard"
+
 - tapOn:
     id: "RecipeIngredients::NoteDialog::SaveButton"
     label: "Save the updated note"
