@@ -244,12 +244,20 @@ jobs:
           path: junit-reports
           merge-multiple: false
 
-      - name: Download all Maestro logs
+      - name: Download Android Maestro logs
         if: always()
         uses: actions/download-artifact@v7
         with:
-          pattern: maestro-logs-*
-          path: maestro-logs
+          pattern: maestro-logs-android-*
+          path: maestro-logs-android
+          merge-multiple: false
+
+      - name: Download iOS Maestro logs
+        if: always()
+        uses: actions/download-artifact@v6
+        with:
+          pattern: maestro-logs-ios-*
+          path: maestro-logs-ios
           merge-multiple: false
 
       - name: Merge JUnit reports
@@ -258,9 +266,13 @@ jobs:
           mkdir -p merged-reports
           npx jrm merged-reports/report.xml "junit-reports/**/*.xml"
 
-      - name: Merge Maestro logs
+      - name: Package Android Maestro logs
         if: always()
-        run: bash .github/scripts/merge-maestro-logs.sh maestro-logs maestro-logs-all-suites.zip
+        run: bash .github/scripts/merge-maestro-logs.sh maestro-logs-android maestro-logs-android.zip
+
+      - name: Package iOS Maestro logs
+        if: always()
+        run: bash .github/scripts/merge-maestro-logs.sh maestro-logs-ios maestro-logs-ios.zip
 
       - name: Delete individual suite artifacts
         if: always()
@@ -268,7 +280,8 @@ jobs:
         with:
           name: |
             junit-e2e-*
-            maestro-logs-*
+            maestro-logs-android-*
+            maestro-logs-ios-*
           failOnError: false
 
       - name: Upload merged JUnit report
@@ -279,12 +292,20 @@ jobs:
           path: merged-reports/report.xml
           retention-days: 7
 
-      - name: Upload merged Maestro logs
+      - name: Upload Android Maestro logs
         if: always()
         uses: actions/upload-artifact@v5
         with:
-          name: maestro-logs-merged
-          path: maestro-logs-all-suites.zip
+          name: maestro-logs-android
+          path: maestro-logs-android.zip
+          retention-days: 7
+
+      - name: Upload iOS Maestro logs
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: maestro-logs-ios
+          path: maestro-logs-ios.zip
           retention-days: 7
 
   test-result-summary:
@@ -301,33 +322,40 @@ jobs:
 
       - name: Download merged E2E JUnit report
         if: always()
+        continue-on-error: true
         uses: actions/download-artifact@v7
         with:
           name: e2e-junit-merged
+          path: e2e-reports
 
-      - name: Generate E2E test summary from merged report
+      - name: Generate E2E test summary
         uses: test-summary/action@v2
         with:
-          paths: report.xml
-          output: e2e-test-summary.md
+          paths: e2e-reports/report.xml
+          output: e2e-summary.md
         if: always()
+        continue-on-error: true
 
       - name: Combine test summaries
         if: always()
         run: |
           echo "### 🧪 CI Test Results Summary" > full-summary.md
           echo "" >> full-summary.md
-          echo "" >> full-summary.md
           echo "#### 🧩 Unit Tests" >> full-summary.md
           echo "" >> full-summary.md
+          if [ -f unit-test-summary.md ]; then
+            cat unit-test-summary.md >> full-summary.md
+          else
+            echo "⚠️ Unit test results not available" >> full-summary.md
+          fi
           echo "" >> full-summary.md
-          cat unit-test-summary.md >> full-summary.md
+          echo "#### 📱 E2E Tests (Android + iOS)" >> full-summary.md
           echo "" >> full-summary.md
-          echo "" >> full-summary.md
-          echo "#### 📱 E2E Tests (All Suites)" >> full-summary.md
-          echo "" >> full-summary.md
-          echo "" >> full-summary.md
-          cat e2e-test-summary.md >> full-summary.md
+          if [ -f e2e-summary.md ]; then
+            cat e2e-summary.md >> full-summary.md
+          else
+            echo "⚠️ E2E test results not available" >> full-summary.md
+          fi
           echo "" >> full-summary.md
           echo "_📊 Coverage for changed files is posted in a separate comment. View merged logs in the Actions tab._" >> full-summary.md
 
