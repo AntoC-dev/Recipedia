@@ -75,6 +75,9 @@ jobs:
       # iOS E2E execution
       - name: Run E2E tests (iOS)
         if: inputs.platform == 'ios'
+        env:
+          # Increase driver startup timeout for CI (default 15s is too short)
+          MAESTRO_DRIVER_STARTUP_TIMEOUT: 120000
         run: |
           echo "🚀 Running E2E tests on iOS simulator for suite: ${{ matrix.suite }} ..."
           npm run install:ios
