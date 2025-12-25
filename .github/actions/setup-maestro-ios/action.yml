@@ -71,10 +71,16 @@ runs:
 
         echo "📱 Found device UDID: $DEVICE_UDID"
 
+        # Open Simulator.app first (Maestro runs more reliably with GUI visible)
+        open -a Simulator
+
         # Boot the simulator
         xcrun simctl boot "$DEVICE_UDID" || echo "Simulator may already be booted"
 
         # Wait for simulator to be ready
         xcrun simctl bootstatus "$DEVICE_UDID" -b
+
+        # Give simulator time to fully initialize
+        sleep 5
 
         echo "✅ iOS simulator booted and ready"
