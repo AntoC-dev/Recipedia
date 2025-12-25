@@ -30,6 +30,12 @@ runs:
         echo "📱 iOS app bundle extracted"
         ls -la *.app || echo "No .app found at root level"
 
+    - name: Setup Java 17 for Maestro
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
     - name: Cache Maestro CLI
       uses: actions/cache@v4
       id: maestro-cache
