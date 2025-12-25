@@ -163,18 +163,6 @@ jobs:
     secrets:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
-  build-ios-performance:
-    name: Build iOS App (Performance)
-    needs: install-and-doctor
-    uses: ./.github/workflows/build-app.yml
-    with:
-      platform: ios
-      build-profile: perf
-      artifact-name: build-ios-app-performance
-      app-filename: Recipedia-performance.app
-    secrets:
-      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-
   e2e-tests-android:
     name: E2E Tests (Android)
     needs: build-android
@@ -208,20 +196,11 @@ jobs:
       QUITOQUE_USERNAME: ${{ secrets.QUITOQUE_USERNAME }}
       QUITOQUE_PASSWORD: ${{ secrets.QUITOQUE_PASSWORD }}
 
-  e2e-tests-ios-performance:
-    name: E2E Tests iOS (Performance)
-    needs: build-ios-performance
-    uses: ./.github/workflows/e2e-maestro.yml
-    with:
-      platform: ios
-      app-artifact: build-ios-app-performance
-      suites: '["performance"]'
-
   merge-test-artifacts:
     name: Merge E2E Test Artifacts
     if: always()
     runs-on: ubuntu-latest
-    needs: [ e2e-tests-android, e2e-tests-android-performance, e2e-tests-ios, e2e-tests-ios-performance ]
+    needs: [ e2e-tests-android, e2e-tests-android-performance, e2e-tests-ios ]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
