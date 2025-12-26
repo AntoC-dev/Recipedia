@@ -46,6 +46,7 @@ import { useI18n } from '@utils/i18n';
 import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
 import { useValidationWorkflow } from '@hooks/useValidationWorkflow';
 import { padding } from '@styles/spacing';
+import { testProps } from '@utils/testProps';
 
 type BulkImportValidationRouteProp = RouteProp<StackScreenParamList, 'BulkImportValidation'>;
 
@@ -116,7 +117,7 @@ export function BulkImportValidation() {
       case 'initializing':
         return (
           <View style={styles.centered}>
-            <ActivityIndicator size='large' testID={screenId + '::InitializingIndicator'} />
+            <ActivityIndicator size='large' {...testProps(screenId + '::InitializingIndicator')} />
             <Text variant='bodyLarge' style={styles.loadingText}>
               {getInitStageText()}
             </Text>
@@ -126,7 +127,7 @@ export function BulkImportValidation() {
       case 'importing':
         return (
           <View style={styles.centered}>
-            <ActivityIndicator size='large' testID={screenId + '::ImportingIndicator'} />
+            <ActivityIndicator size='large' {...testProps(screenId + '::ImportingIndicator')} />
             <Text variant='bodyLarge' style={styles.loadingText}>
               {t('bulkImport.validation.importingRecipes')}
             </Text>

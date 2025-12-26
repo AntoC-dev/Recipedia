@@ -49,6 +49,7 @@ import { Icons } from '@assets/Icons';
 import { useI18n } from '@utils/i18n';
 import { IconButton, Searchbar } from 'react-native-paper';
 import { Keyboard } from 'react-native';
+import { testProps } from '@utils/testProps';
 
 /**
  * Props for the SearchBar component
@@ -80,7 +81,7 @@ export function SearchBar({
 
   return (
     <Searchbar
-      testID={testId}
+      {...testProps(testId)}
       mode={'bar'}
       placeholder={t('searchRecipeTitle')}
       onChangeText={updateSearchString}
@@ -96,7 +97,7 @@ export function SearchBar({
         searchPhrase.length > 0 && (
           <IconButton
             {...props}
-            testID={testId + '::RightIcon'}
+            {...testProps(testId + '::RightIcon')}
             icon={Icons.crossIcon}
             onPress={() => {
               Keyboard.dismiss();

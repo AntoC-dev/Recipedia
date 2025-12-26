@@ -39,6 +39,7 @@ import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { StackScreenNavigation } from '@customTypes/ScreenTypes';
 import { useNavigation } from '@react-navigation/native';
 import { useI18n } from '@utils/i18n';
+import { testProps } from '@utils/testProps';
 
 /**
  * Props for the RecipeCard component
@@ -67,7 +68,8 @@ export function RecipeCard({ testId, size, recipe }: RecipeCardProps) {
 
   return (
     <Card
-      testID={testId + `::${recipe.title}`}
+      accessible={false}
+      {...testProps(testId + `::${recipe.title}`)}
       mode={'outlined'}
       style={{
         flex: 1,
@@ -82,7 +84,7 @@ export function RecipeCard({ testId, size, recipe }: RecipeCardProps) {
       }}
     >
       <Card.Cover
-        testID={testId + '::Cover'}
+        {...testProps(testId + '::Cover')}
         source={{ uri: recipe.image_Source }}
         style={{
           height: cardWidth,
@@ -92,7 +94,7 @@ export function RecipeCard({ testId, size, recipe }: RecipeCardProps) {
         }}
       />
       <Card.Title
-        testID={testId + '::Title'}
+        {...testProps(testId + '::Title')}
         title={recipe.title}
         titleNumberOfLines={2}
         titleVariant={size === 'small' ? 'labelLarge' : 'titleMedium'}
@@ -100,21 +102,25 @@ export function RecipeCard({ testId, size, recipe }: RecipeCardProps) {
       {size === 'medium' && (
         <View>
           <Card.Content style={{ padding: padding.medium }}>
-            <Text style={{ color: colors.primary }} numberOfLines={1} testID={testId + '::Content'}>
+            <Text
+              style={{ color: colors.primary }}
+              numberOfLines={1}
+              {...testProps(testId + '::Content')}
+            >
               {recipe.tags.map(tag => tag.name).join(', ')}
             </Text>
           </Card.Content>
           <Card.Actions>
             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
               <Text
-                testID={testId + '::PrepTime'}
+                {...testProps(testId + '::PrepTime')}
                 variant={'bodySmall'}
                 style={{ marginLeft: -padding.verySmall }}
               >
                 {t('recipeCard.prepTime', { time: recipe.time })}
               </Text>
               <Text
-                testID={testId + '::Persons'}
+                {...testProps(testId + '::Persons')}
                 variant={'bodySmall'}
                 style={{ marginRight: -padding.verySmall }}
               >

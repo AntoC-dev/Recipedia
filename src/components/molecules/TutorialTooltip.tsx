@@ -131,6 +131,7 @@ export function TutorialTooltip() {
 
   return (
     <Card
+      accessible={false}
       testID={testId}
       mode='elevated'
       style={{

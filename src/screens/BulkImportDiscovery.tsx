@@ -51,6 +51,7 @@ import { useDefaultPersons } from '@context/DefaultPersonsContext';
 import { useDiscoveryWorkflow } from '@hooks/useDiscoveryWorkflow';
 import { useVisibleImageLoader } from '@hooks/useVisibleImageLoader';
 import { padding } from '@styles/spacing';
+import { testProps } from '@utils/testProps';
 
 type BulkImportDiscoveryRouteProp = RouteProp<StackScreenParamList, 'BulkImportDiscovery'>;
 
@@ -157,7 +158,7 @@ export function BulkImportDiscovery() {
     if (item.type === 'header') {
       return (
         <Text
-          testID={`${screenId}::${item.key}`}
+          {...testProps(`${screenId}::${item.key}`)}
           variant='titleSmall'
           style={[styles.sectionHeader, { color: colors.onSurfaceVariant }]}
         >

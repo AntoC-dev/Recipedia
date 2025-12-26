@@ -29,6 +29,7 @@ import { Card, Checkbox, Icon, Text, useTheme } from 'react-native-paper';
 import { CustomImage } from '@components/atomic/CustomImage';
 import { padding } from '@styles/spacing';
 import { DiscoveredRecipe } from '@customTypes/BulkImportTypes';
+import { testProps } from '@utils/testProps';
 
 /**
  * Props for the RecipeSelectionCard component
@@ -87,7 +88,8 @@ export function RecipeSelectionCard({
 
   return (
     <Card
-      testID={testId}
+      accessible={false}
+      {...testProps(testId)}
       mode='outlined'
       style={[styles.card, { backgroundColor: getBackgroundColor() }]}
       onPress={handlePress}
@@ -96,7 +98,7 @@ export function RecipeSelectionCard({
         <Checkbox
           status={isSelected ? 'checked' : 'unchecked'}
           onPress={handlePress}
-          testID={testId + '::Checkbox'}
+          {...testProps(testId + '::Checkbox')}
         />
 
         <View style={styles.thumbnailWrapper}>
@@ -105,7 +107,7 @@ export function RecipeSelectionCard({
             size={60}
             borderRadius={8}
             backgroundColor={colors.surfaceVariant}
-            testID={testId + '::Thumbnail'}
+            {...testProps(testId + '::Thumbnail')}
           />
           {isPreviouslySeen && (
             <View style={[styles.seenBadge, { backgroundColor: colors.surfaceVariant }]}>
@@ -113,7 +115,7 @@ export function RecipeSelectionCard({
                 source='history'
                 size={14}
                 color={colors.onSurfaceVariant}
-                testID={testId + '::SeenIndicator'}
+                {...testProps(testId + '::SeenIndicator')}
               />
             </View>
           )}
@@ -124,7 +126,7 @@ export function RecipeSelectionCard({
             <Text
               variant='titleMedium'
               numberOfLines={2}
-              testID={testId + '::Title'}
+              {...testProps(testId + '::Title')}
               style={isPreviouslySeen && styles.titleWithIcon}
             >
               {recipe.title}

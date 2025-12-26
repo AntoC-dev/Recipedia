@@ -146,6 +146,7 @@ export function BottomTabs() {
 
             return (
               <View
+                accessible={false} // Allow tabBarTestID to be accessible on iOS
                 style={[
                   {
                     paddingHorizontal: padding.medium,

@@ -61,6 +61,7 @@ import { databaseLogger } from '@utils/logger';
 import { ingredientTableElement, tagTableElement } from '@customTypes/DatabaseElementTypes';
 import { DialogMode, ItemDialog } from './ItemDialog';
 import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { testProps } from '@utils/testProps';
 
 /** Configuration for tag similarity resolution */
 export type SimilarityTagType = {
@@ -237,22 +238,26 @@ export function SimilarityDialog({ testId, isVisible, onClose, item }: Similarit
   return (
     <Portal>
       <Dialog visible={isVisible} onDismiss={handleDismiss}>
-        <Dialog.Title testID={`${modalTestId}::Title`}>{title}</Dialog.Title>
+        <Dialog.Title {...testProps(`${modalTestId}::Title`)}>{title}</Dialog.Title>
         <Dialog.Content>
-          <Text testID={`${modalTestId}::Content`} variant='bodyMedium'>
+          <Text {...testProps(`${modalTestId}::Content`)} variant='bodyMedium'>
             {content}
           </Text>
         </Dialog.Content>
         <Dialog.Actions>
           {item.similarItem ? (
             <View style={styles.actionButton}>
-              <Button testID={`${modalTestId}::AddButton`} mode='outlined' onPress={handleAddNew}>
+              <Button
+                {...testProps(`${modalTestId}::AddButton`)}
+                mode='outlined'
+                onPress={handleAddNew}
+              >
                 {item.type === 'Ingredient'
                   ? t(ingredientsTranslationPrefix + 'add')
                   : t(tagsTranslationPrefix + 'add')}
               </Button>
               <Button
-                testID={`${modalTestId}::UseButton`}
+                {...testProps(`${modalTestId}::UseButton`)}
                 mode='contained'
                 onPress={handleUseExisting}
               >
@@ -264,7 +269,7 @@ export function SimilarityDialog({ testId, isVisible, onClose, item }: Similarit
           ) : (
             <View style={styles.actionButton}>
               <Button
-                testID={`${modalTestId}::CancelButton`}
+                {...testProps(`${modalTestId}::CancelButton`)}
                 mode='outlined'
                 onPress={handleDismiss}
               >
@@ -272,7 +277,11 @@ export function SimilarityDialog({ testId, isVisible, onClose, item }: Similarit
                   ? t(ingredientsTranslationPrefix + 'cancel')
                   : t('cancel')}
               </Button>
-              <Button testID={`${modalTestId}::AddButton`} mode='contained' onPress={handleAddNew}>
+              <Button
+                {...testProps(`${modalTestId}::AddButton`)}
+                mode='contained'
+                onPress={handleAddNew}
+              >
                 {item.type === 'Ingredient'
                   ? t(ingredientsTranslationPrefix + 'add')
                   : t(tagsTranslationPrefix + 'add')}
