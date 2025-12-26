@@ -35,6 +35,14 @@ runs:
         restore-keys: |
           ${{ runner.os }}-pods-
 
+    - name: Cache Xcode Derived Data
+      uses: actions/cache@v4
+      with:
+        path: ~/Library/Developer/Xcode/DerivedData
+        key: ${{ runner.os }}-xcode-deriveddata-${{ hashFiles('**/Podfile.lock', 'package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-xcode-deriveddata-
+
     - name: Cache global Expo artifacts
       uses: actions/cache@v4
       with:
@@ -42,6 +50,14 @@ runs:
         key: ${{ runner.os }}-expo-${{ hashFiles('package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-expo-
+
+    - name: Cache Expo prebuild (iOS native)
+      uses: actions/cache@v4
+      with:
+        path: ios
+        key: ${{ runner.os }}-expo-prebuild-ios-${{ hashFiles('app.json', 'app.config.ts', 'package-lock.json', 'plugins/**', 'modules/**') }}
+        restore-keys: |
+          ${{ runner.os }}-expo-prebuild-ios-
 
     - name: Setup EAS
       uses: expo/expo-github-action@v8
