@@ -71,10 +71,8 @@ describe('RecipeIngredients Component', () => {
         const quantityAndUnitText = quantityAndUnitCell.props.children.props.children;
         expect(quantityAndUnitText).toEqual([ingredient.quantity, ' ', ingredient.unit]);
 
-        const ingredientNameCell = getByTestId(`ReadOnlyIngredients::${index}::IngredientName`);
-        const textElement = ingredientNameCell.props.children;
-        const textChildren = textElement.props.children;
-        expect(textChildren[0]).toEqual(ingredient.name);
+        const ingredientNameText = getByTestId(`ReadOnlyIngredients::${index}::IngredientName`);
+        expect(ingredientNameText.props.children).toEqual(ingredient.name);
       });
     });
 

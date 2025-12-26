@@ -220,3 +220,35 @@ export function processIngredientsForValidation(
 
   return { exactMatches, needsValidation };
 }
+
+/**
+ * Deduplicates ingredients by name for the validation queue.
+ *
+ * When the same ingredient name appears multiple times, this function:
+ * - Keeps the first occurrence's data (unit, note)
+ * - If duplicates have the same unit, sums their quantities
+ * - If units differ, keeps only the first occurrence
+ *
+ * @param ingredients - Array of form ingredients to deduplicate
+ * @returns Deduplicated array with quantities summed where applicable
+ */
+export function deduplicateIngredientsByName(
+  ingredients: FormIngredientElement[]
+): FormIngredientElement[] {
+  const seen = new Map<string, FormIngredientElement>();
+
+  for (const ing of ingredients) {
+    const key = ing.name?.toLowerCase() || '';
+    if (!key) continue;
+
+    const existing = seen.get(key);
+    if (!existing) {
+      seen.set(key, { ...ing });
+    } else if (existing.unit === ing.unit) {
+      const sum = Number(existing.quantity || 0) + Number(ing.quantity || 0);
+      existing.quantity = isNaN(sum) ? existing.quantity : String(sum);
+    }
+  }
+
+  return Array.from(seen.values());
+}

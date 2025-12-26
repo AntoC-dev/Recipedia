@@ -834,9 +834,30 @@ describe('useRecipeIngredients', () => {
         const recipeForRapidEdits: recipeTableElement = {
           ...recipeWithIngredients,
           ingredients: [
-            { id: 1, name: 'Flour', unit: 'g', quantity: '100', season: [] },
-            { id: 2, name: 'Sugar', unit: 'g', quantity: '50', season: [] },
-            { id: 3, name: 'Salt', unit: 'tsp', quantity: '1', season: [] },
+            {
+              id: 1,
+              name: 'Flour',
+              unit: 'g',
+              quantity: '100',
+              type: ingredientType.cereal,
+              season: [],
+            },
+            {
+              id: 2,
+              name: 'Sugar',
+              unit: 'g',
+              quantity: '50',
+              type: ingredientType.sugar,
+              season: [],
+            },
+            {
+              id: 3,
+              name: 'Salt',
+              unit: 'tsp',
+              quantity: '1',
+              type: ingredientType.spice,
+              season: [],
+            },
           ],
         };
         const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeForRapidEdits));
@@ -1054,6 +1075,169 @@ describe('useRecipeIngredients', () => {
 
         expect(result.current.form.state.recipeIngredients[0].unit).toBe('kg');
         expect(result.current.form.state.recipeIngredients[0].note).toBe('for the bread');
+      });
+    });
+
+    describe('replaceAllMatchingFormIngredients', () => {
+      test('replaces all matching ingredients with database metadata and unit', async () => {
+        const recipeWithDuplicates: recipeTableElement = {
+          ...recipeWithIngredients,
+          ingredients: [
+            { name: 'Olive Oil', quantity: '2', unit: 'càs' } as never,
+            { name: 'Salt', quantity: '1', unit: 'tsp' } as never,
+            { name: 'Olive Oil', quantity: '', unit: '' } as never,
+          ],
+        };
+        const wrapper = createIngredientsWrapper(
+          createMockRecipeProp('edit', recipeWithDuplicates)
+        );
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+        });
+
+        act(() => {
+          result.current.ingredients.replaceAllMatchingFormIngredients({
+            id: 10,
+            name: 'Olive Oil',
+            type: ingredientType.oilAndFat,
+            season: ['1', '2', '3'],
+            quantity: '',
+            unit: 'ml',
+          });
+        });
+
+        const ingredients = result.current.form.state.recipeIngredients;
+        expect(ingredients[0].id).toBe(10);
+        expect(ingredients[0].name).toBe('Olive Oil');
+        expect(ingredients[0].type).toBe(ingredientType.oilAndFat);
+        expect(ingredients[0].quantity).toBe('2');
+        expect(ingredients[0].unit).toBe('ml');
+
+        expect(ingredients[1].name).toBe('Salt');
+
+        expect(ingredients[2].id).toBe(10);
+        expect(ingredients[2].name).toBe('Olive Oil');
+        expect(ingredients[2].type).toBe(ingredientType.oilAndFat);
+        expect(ingredients[2].quantity).toBe('');
+        expect(ingredients[2].unit).toBe('ml');
+      });
+
+      test('preserves notes from original FormIngredients', async () => {
+        const recipeWithNotes: recipeTableElement = {
+          ...recipeWithIngredients,
+          ingredients: [
+            { name: 'Vinegar', quantity: '2', unit: 'tbsp', note: 'white or cider' } as never,
+            { name: 'Vinegar', quantity: '1', unit: 'tbsp', note: 'balsamic' } as never,
+          ],
+        };
+        const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithNotes));
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(2);
+        });
+
+        act(() => {
+          result.current.ingredients.replaceAllMatchingFormIngredients({
+            id: 5,
+            name: 'Vinegar',
+            type: ingredientType.sauce,
+            season: [],
+            quantity: '',
+            unit: '',
+          });
+        });
+
+        const ingredients = result.current.form.state.recipeIngredients;
+        expect(ingredients[0].note).toBe('white or cider');
+        expect(ingredients[1].note).toBe('balsamic');
+      });
+
+      test('handles case-insensitive matching', async () => {
+        const recipeWithMixedCase: recipeTableElement = {
+          ...recipeWithIngredients,
+          ingredients: [
+            { name: 'olive oil', quantity: '2', unit: 'tbsp' } as never,
+            { name: 'OLIVE OIL', quantity: '1', unit: 'tbsp' } as never,
+          ],
+        };
+        const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithMixedCase));
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(2);
+        });
+
+        act(() => {
+          result.current.ingredients.replaceAllMatchingFormIngredients({
+            id: 10,
+            name: 'Olive Oil',
+            type: ingredientType.oilAndFat,
+            season: [],
+            quantity: '',
+            unit: '',
+          });
+        });
+
+        const ingredients = result.current.form.state.recipeIngredients;
+        expect(ingredients[0].id).toBe(10);
+        expect(ingredients[1].id).toBe(10);
+      });
+
+      test('does not affect non-matching ingredients', async () => {
+        const wrapper = createIngredientsWrapper(
+          createMockRecipeProp('edit', recipeWithIngredients)
+        );
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+        });
+
+        act(() => {
+          result.current.ingredients.replaceAllMatchingFormIngredients({
+            id: 100,
+            name: 'NonExistent',
+            type: ingredientType.oilAndFat,
+            season: [],
+            quantity: '',
+            unit: '',
+          });
+        });
+
+        expect(result.current.form.state.recipeIngredients[0].name).toBe('Flour');
+        expect(result.current.form.state.recipeIngredients[1].name).toBe('Sugar');
+        expect(result.current.form.state.recipeIngredients[2].name).toBe('Milk');
       });
     });
 

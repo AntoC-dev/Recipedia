@@ -86,6 +86,13 @@ export interface UseRecipeIngredientsReturn {
    * If units differ, the new ingredient replaces the existing one.
    */
   addOrMergeIngredient: (ingredient: ingredientTableElement) => void;
+
+  /**
+   * Replaces ALL FormIngredients with matching name with the validated database ingredient.
+   * Preserves each ingredient's own quantity/unit/note while applying database metadata.
+   * Used by scraper validation when the same ingredient appears multiple times.
+   */
+  replaceAllMatchingFormIngredients: (validatedIngredient: ingredientTableElement) => void;
 }
 
 /**
@@ -308,9 +315,38 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
     setRecipeIngredients(prev => [...prev, { name: '' }]);
   };
 
+  /**
+   * Replaces ALL FormIngredients with matching name with the validated database ingredient.
+   *
+   * Used by scraper validation when the same ingredient appears multiple times in a recipe.
+   * Each matching ingredient keeps its own quantity and note while receiving database metadata
+   * (id, name, type, season, unit).
+   *
+   * @param validatedIngredient - The validated database ingredient to use as template
+   */
+  const replaceAllMatchingFormIngredients = (validatedIngredient: ingredientTableElement) => {
+    setRecipeIngredients(prev => {
+      return prev.map(existing => {
+        if (existing.name?.toLowerCase() === validatedIngredient.name.toLowerCase()) {
+          return {
+            id: validatedIngredient.id,
+            name: validatedIngredient.name,
+            type: validatedIngredient.type,
+            season: validatedIngredient.season,
+            quantity: existing.quantity || '',
+            unit: validatedIngredient.unit,
+            note: existing.note,
+          };
+        }
+        return existing;
+      });
+    });
+  };
+
   return {
     editIngredients,
     addNewIngredient,
     addOrMergeIngredient,
+    replaceAllMatchingFormIngredients,
   };
 }

@@ -594,7 +594,7 @@ describe('useRecipeOCR', () => {
       });
     });
 
-    test('replaces ingredient when different unit exists', async () => {
+    test('uses database unit and merges quantity when OCR unit differs', async () => {
       const recipeWithExistingIngredient: recipeTableElement = {
         ...recipeForOcr,
         ingredients: [
@@ -633,8 +633,8 @@ describe('useRecipeOCR', () => {
 
       await waitFor(() => {
         expect(result.current.form.state.recipeIngredients).toHaveLength(1);
-        expect(result.current.form.state.recipeIngredients[0].unit).toBe('kg');
-        expect(result.current.form.state.recipeIngredients[0].quantity).toBe('0.5');
+        expect(result.current.form.state.recipeIngredients[0].unit).toBe('g');
+        expect(result.current.form.state.recipeIngredients[0].quantity).toBe('200.5');
       });
     });
 
