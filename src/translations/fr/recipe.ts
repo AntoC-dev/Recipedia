@@ -117,7 +117,13 @@ export default {
       'pour garnir',
       'pour servir',
     ],
-    ignoredIngredientExactMatches: ['sel', 'poivre', 'sel et poivre', 'poivre et sel'],
+    ignoredIngredientExactMatches: [
+      'sel',
+      'poivre',
+      'sel et poivre',
+      'poivre et sel',
+      "huile d'olive",
+    ],
     stepTitle: 'Étape {{number}}',
   },
 };

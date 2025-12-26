@@ -236,7 +236,7 @@ export function convertIngredients(
 
     for (let i = 0; i < parsedIngredients.length; i++) {
       const p = parsedIngredients[i];
-      if (isUnparseableIngredient(p.name, patterns)) {
+      if (!p.quantity && isUnparseableIngredient(p.name, patterns)) {
         skipped.push(p.name);
       } else {
         const rawStr = rawIngredients[i]?.toLowerCase().trim() || '';

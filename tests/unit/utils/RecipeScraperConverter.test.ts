@@ -507,6 +507,70 @@ describe('RecipeScraperConverter', () => {
       expect(result.skipped).toContain('selon le goût Sel');
       expect(result.skipped).toContain('to taste Pepper');
     });
+
+    describe('with pre-parsed ingredients', () => {
+      const patternsWithOliveOil: IgnoredIngredientPatterns = {
+        ...ignoredPatterns,
+        exactMatches: [...ignoredPatterns.exactMatches, "huile d'olive", 'olive oil'],
+      };
+
+      it('skips ignored ingredient when it has no quantity', () => {
+        const result = convertIngredients(
+          ["huile d'olive"],
+          [{ name: "huile d'olive", quantity: '', unit: '' }],
+          null,
+          patternsWithOliveOil
+        );
+
+        expect(result.ingredients).toHaveLength(0);
+        expect(result.skipped).toContain("huile d'olive");
+      });
+
+      it('keeps ignored ingredient when it has a quantity', () => {
+        const result = convertIngredients(
+          ["4 càs huile d'olive"],
+          [{ name: "huile d'olive", quantity: '4', unit: 'càs' }],
+          null,
+          patternsWithOliveOil
+        );
+
+        expect(result.ingredients).toHaveLength(1);
+        expect(result.ingredients[0].name).toBe("huile d'olive");
+        expect(result.ingredients[0].quantity).toBe('4');
+        expect(result.skipped).toHaveLength(0);
+      });
+
+      it('handles mix of ignored with and without quantity', () => {
+        const result = convertIngredients(
+          ["4 càs huile d'olive", "huile d'olive", '100 g flour'],
+          [
+            { name: "huile d'olive", quantity: '4', unit: 'càs' },
+            { name: "huile d'olive", quantity: '', unit: '' },
+            { name: 'flour', quantity: '100', unit: 'g' },
+          ],
+          null,
+          patternsWithOliveOil
+        );
+
+        expect(result.ingredients).toHaveLength(2);
+        expect(result.ingredients[0].name).toBe("huile d'olive");
+        expect(result.ingredients[1].name).toBe('flour');
+        expect(result.skipped).toContain("huile d'olive");
+      });
+
+      it('does not skip non-ignored ingredients without quantity', () => {
+        const result = convertIngredients(
+          ['tomato'],
+          [{ name: 'tomato', quantity: '', unit: '' }],
+          null,
+          patternsWithOliveOil
+        );
+
+        expect(result.ingredients).toHaveLength(1);
+        expect(result.ingredients[0].name).toBe('tomato');
+        expect(result.skipped).toHaveLength(0);
+      });
+    });
   });
 
   describe('parseServings', () => {
