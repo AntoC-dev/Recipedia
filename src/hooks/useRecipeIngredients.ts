@@ -210,45 +210,49 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
      *
      * Used when only quantity, unit, or note changes but the ingredient name remains the same.
      * Selectively updates only the fields that have changed.
+     * Uses functional update to avoid stale closure issues.
      *
      * @param ingredient - The new ingredient data to apply
      */
     const updateIngredient = (ingredient: FormIngredientElement) => {
-      const ingredientCopy: (ingredientTableElement | FormIngredientElement)[] =
-        recipeIngredients.map(ing => ({ ...ing }));
-      const foundIngredient = ingredientCopy[oldIngredientId];
+      setRecipeIngredients(prev => {
+        const ingredientCopy: (ingredientTableElement | FormIngredientElement)[] = prev.map(
+          ing => ({ ...ing })
+        );
+        const foundIngredient = ingredientCopy[oldIngredientId];
 
-      if (!foundIngredient) {
-        return;
-      }
+        if (!foundIngredient) {
+          return prev;
+        }
 
-      if (ingredient.id && foundIngredient.id !== ingredient.id) {
-        foundIngredient.id = ingredient.id;
-      }
-      if (ingredient.name && foundIngredient.name !== ingredient.name) {
-        foundIngredient.name = ingredient.name;
-      }
-      if (ingredient.unit && foundIngredient.unit !== ingredient.unit) {
-        foundIngredient.unit = ingredient.unit;
-      }
-      if (ingredient.quantity && foundIngredient.quantity !== ingredient.quantity) {
-        foundIngredient.quantity = ingredient.quantity;
-      }
-      if (
-        ingredient.season &&
-        ingredient.season.length > 0 &&
-        foundIngredient.season !== ingredient.season
-      ) {
-        foundIngredient.season = ingredient.season;
-      }
-      if (ingredient.type && foundIngredient.type !== ingredient.type) {
-        foundIngredient.type = ingredient.type;
-      }
-      if (ingredient.note !== undefined && foundIngredient.note !== ingredient.note) {
-        foundIngredient.note = ingredient.note;
-      }
+        if (ingredient.id && foundIngredient.id !== ingredient.id) {
+          foundIngredient.id = ingredient.id;
+        }
+        if (ingredient.name && foundIngredient.name !== ingredient.name) {
+          foundIngredient.name = ingredient.name;
+        }
+        if (ingredient.unit && foundIngredient.unit !== ingredient.unit) {
+          foundIngredient.unit = ingredient.unit;
+        }
+        if (ingredient.quantity && foundIngredient.quantity !== ingredient.quantity) {
+          foundIngredient.quantity = ingredient.quantity;
+        }
+        if (
+          ingredient.season &&
+          ingredient.season.length > 0 &&
+          foundIngredient.season !== ingredient.season
+        ) {
+          foundIngredient.season = ingredient.season;
+        }
+        if (ingredient.type && foundIngredient.type !== ingredient.type) {
+          foundIngredient.type = ingredient.type;
+        }
+        if (ingredient.note !== undefined && foundIngredient.note !== ingredient.note) {
+          foundIngredient.note = ingredient.note;
+        }
 
-      setRecipeIngredients(ingredientCopy);
+        return ingredientCopy;
+      });
     };
 
     if (
@@ -257,7 +261,7 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
       recipeIngredients[oldIngredientId] &&
       recipeIngredients[oldIngredientId].name !== newName
     ) {
-      setRecipeIngredients(recipeIngredients.filter((_, index) => index !== oldIngredientId));
+      setRecipeIngredients(prev => prev.filter((_, index) => index !== oldIngredientId));
 
       const { exactMatches, needsValidation } = processIngredientsForValidation(
         [
@@ -301,7 +305,7 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
    * the user to fill in the details through the UI.
    */
   const addNewIngredient = () => {
-    setRecipeIngredients([...recipeIngredients, { name: '' }]);
+    setRecipeIngredients(prev => [...prev, { name: '' }]);
   };
 
   return {

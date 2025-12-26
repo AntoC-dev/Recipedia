@@ -829,6 +829,43 @@ describe('useRecipeIngredients', () => {
 
         expect(result.current.form.state.recipeIngredients[1].note).toBe('for the topping');
       });
+
+      test('multiple rapid edits preserve all changes (stale closure regression)', async () => {
+        const recipeForRapidEdits: recipeTableElement = {
+          ...recipeWithIngredients,
+          ingredients: [
+            { id: 1, name: 'Flour', unit: 'g', quantity: '100', season: [] },
+            { id: 2, name: 'Sugar', unit: 'g', quantity: '50', season: [] },
+            { id: 3, name: 'Salt', unit: 'tsp', quantity: '1', season: [] },
+          ],
+        };
+        const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeForRapidEdits));
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+        });
+
+        act(() => {
+          result.current.ingredients.editIngredients(0, '200@@g--Flour%%for the dough');
+          result.current.ingredients.editIngredients(1, '100@@g--Sugar%%for the topping');
+          result.current.ingredients.editIngredients(2, '2@@tsp--Salt%%a pinch');
+        });
+
+        expect(result.current.form.state.recipeIngredients[0].quantity).toBe('200');
+        expect(result.current.form.state.recipeIngredients[0].note).toBe('for the dough');
+        expect(result.current.form.state.recipeIngredients[1].quantity).toBe('100');
+        expect(result.current.form.state.recipeIngredients[1].note).toBe('for the topping');
+        expect(result.current.form.state.recipeIngredients[2].quantity).toBe('2');
+        expect(result.current.form.state.recipeIngredients[2].note).toBe('a pinch');
+      });
     });
 
     describe('addOrMergeIngredient with notes', () => {
