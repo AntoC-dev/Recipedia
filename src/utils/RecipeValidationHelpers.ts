@@ -49,10 +49,15 @@ export function replaceMatchingIngredients(
   exactMatches: ingredientTableElement[]
 ): IngredientState {
   const updated = [...current];
+  const replacedIndices = new Set<number>();
+
   for (const ingredient of exactMatches) {
-    const idx = updated.findIndex(e => namesMatch(e.name, ingredient.name));
+    const idx = updated.findIndex(
+      (e, i) => !replacedIndices.has(i) && namesMatch(e.name, ingredient.name)
+    );
     if (idx !== -1) {
       updated[idx] = ingredient;
+      replacedIndices.add(idx);
     }
   }
   return updated;
@@ -204,7 +209,7 @@ export function processIngredientsForValidation(
       const mergedIngredient: ingredientTableElement = {
         ...exactMatch,
         quantity: ingredient.quantity || exactMatch.quantity,
-        unit: ingredient.unit || exactMatch.unit,
+        unit: exactMatch.unit,
         note: ingredient.note,
       };
       exactMatches.push(mergedIngredient);

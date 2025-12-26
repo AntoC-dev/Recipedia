@@ -413,6 +413,26 @@ describe('RecipeValidationHelpers', () => {
       expect(result.exactMatches).toHaveLength(1);
       expect(result.exactMatches[0].note).toBeUndefined();
     });
+
+    test('uses database unit instead of scraped unit', () => {
+      mockFindSimilarIngredients.mockReturnValue([dbIngredients[1]]);
+
+      const inputIngredients: ingredientTableElement[] = [
+        {
+          name: 'Parmesan',
+          quantity: '2',
+          unit: 'tbsp',
+          type: ingredientType.vegetable,
+          season: [],
+        },
+      ];
+
+      const result = processIngredientsForValidation(inputIngredients, mockFindSimilarIngredients);
+
+      expect(result.exactMatches).toHaveLength(1);
+      expect(result.exactMatches[0].quantity).toBe('2');
+      expect(result.exactMatches[0].unit).toBe('g');
+    });
   });
 
   describe('filterOutExistingTags', () => {
@@ -570,6 +590,47 @@ describe('RecipeValidationHelpers', () => {
       const result = replaceMatchingIngredients(currentIngredients, []);
 
       expect(result).toEqual(currentIngredients);
+    });
+
+    test('replaces multiple ingredients with same name without overwriting', () => {
+      const current: ingredientTableElement[] = [
+        {
+          id: 1,
+          name: 'Olive Oil',
+          quantity: '2',
+          unit: 'tbsp',
+          type: ingredientType.oilAndFat,
+          season: [],
+        },
+        { id: 2, name: 'Salt', quantity: '1', unit: 'tsp', type: ingredientType.spice, season: [] },
+        { name: 'Olive Oil', quantity: '', unit: '' } as ingredientTableElement,
+      ];
+      const exactMatches: ingredientTableElement[] = [
+        {
+          id: 10,
+          name: 'Olive Oil',
+          quantity: '2',
+          unit: 'tbsp',
+          type: ingredientType.oilAndFat,
+          season: [],
+        },
+        {
+          id: 10,
+          name: 'Olive Oil',
+          quantity: '1',
+          unit: 'g',
+          type: ingredientType.oilAndFat,
+          season: [],
+        },
+      ];
+
+      const result = replaceMatchingIngredients(current, exactMatches);
+
+      expect(result).toHaveLength(3);
+      expect(result[0].quantity).toBe('2');
+      expect(result[0].unit).toBe('tbsp');
+      expect(result[2].quantity).toBe('1');
+      expect(result[2].unit).toBe('g');
     });
   });
 
