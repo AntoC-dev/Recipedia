@@ -39,21 +39,38 @@ jobs:
         with:
           node-version: '22'
 
-      # Android setup
-      - name: Setup Maestro environment (Android)
+      - name: Setup Java 17 for Maestro
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # ============================================
+      # Android Setup
+      # ============================================
+      - name: Setup Android SDK
         if: inputs.platform == 'android'
-        uses: ./.github/actions/setup-maestro
-        with:
-          apk-artifact: ${{ inputs.app-artifact }}
+        uses: android-actions/setup-android@v3
 
-      # iOS setup
-      - name: Setup Maestro environment (iOS)
-        if: inputs.platform == 'ios'
-        uses: ./.github/actions/setup-maestro-ios
+      - name: Download APK
+        if: inputs.platform == 'android'
+        uses: actions/download-artifact@v6
         with:
-          app-artifact: ${{ inputs.app-artifact }}
+          name: ${{ inputs.app-artifact }}
 
-      # Android E2E execution
+      - name: Enable KVM
+        if: inputs.platform == 'android'
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Setup Maestro CLI (Android)
+        if: inputs.platform == 'android'
+        uses: dniHze/maestro-test-action@v1
+        with:
+          version: '2.0.10'
+
       - name: Run E2E tests (Android)
         if: inputs.platform == 'android'
         uses: ReactiveCircus/android-emulator-runner@v2
@@ -72,17 +89,57 @@ jobs:
             npm run install:android
             maestro test tests/e2e/ --config=tests/e2e/${{ matrix.suite }}.yaml --debug-output=maestro_logs_${{ matrix.suite }} --format junit -s 1 -e QUITOQUE_USERNAME='${{ secrets.QUITOQUE_USERNAME }}' -e QUITOQUE_PASSWORD='${{ secrets.QUITOQUE_PASSWORD }}'
 
-      # iOS E2E execution
+      # ============================================
+      # iOS Setup
+      # ============================================
+      - name: Download iOS app
+        if: inputs.platform == 'ios'
+        uses: actions/download-artifact@v6
+        with:
+          name: ${{ inputs.app-artifact }}
+
+      - name: Unzip iOS app bundle
+        if: inputs.platform == 'ios'
+        run: |
+          unzip -q *.zip
+          rm -f *.zip
+          echo "📱 iOS app bundle extracted"
+          ls -la *.app || echo "No .app found at root level"
+
+      - name: Boot iOS Simulator
+        if: inputs.platform == 'ios'
+        id: simulator
+        uses: futureware-tech/simulator-action@v4
+        with:
+          model: 'iPhone SE (3rd generation)'
+          wait_for_boot: true
+          erase_before_boot: false
+          shutdown_after_job: true
+
+      - name: Setup Maestro CLI (iOS)
+        if: inputs.platform == 'ios'
+        uses: dniHze/maestro-test-action@v1
+        with:
+          version: '2.0.10'
+
       - name: Run E2E tests (iOS)
         if: inputs.platform == 'ios'
         env:
-          # Increase driver startup timeout for CI (default 15s is too short)
-          MAESTRO_DRIVER_STARTUP_TIMEOUT: 120000
+          MAESTRO_DRIVER_STARTUP_TIMEOUT: 180000
         run: |
           echo "🚀 Running E2E tests on iOS simulator for suite: ${{ matrix.suite }} ..."
+          echo "📱 Using simulator UDID: ${{ steps.simulator.outputs.udid }}"
           npm run install:ios
-          maestro test tests/e2e/ --config=tests/e2e/${{ matrix.suite }}.yaml --debug-output=maestro_logs_${{ matrix.suite }} --format junit -s 1 -e QUITOQUE_USERNAME='${{ secrets.QUITOQUE_USERNAME }}' -e QUITOQUE_PASSWORD='${{ secrets.QUITOQUE_PASSWORD }}'
+          maestro test tests/e2e/ \
+            --config=tests/e2e/${{ matrix.suite }}.yaml \
+            --debug-output=maestro_logs_${{ matrix.suite }} \
+            --format junit -s 1 \
+            -e QUITOQUE_USERNAME='${{ secrets.QUITOQUE_USERNAME }}' \
+            -e QUITOQUE_PASSWORD='${{ secrets.QUITOQUE_PASSWORD }}'
 
+      # ============================================
+      # Common: Logs and Artifacts
+      # ============================================
       - name: Prepare suite logs
         if: always()
         run: bash .github/scripts/prepare-maestro-logs.sh maestro_logs_${{ matrix.suite }}
