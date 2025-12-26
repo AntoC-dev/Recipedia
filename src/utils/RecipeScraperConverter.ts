@@ -22,6 +22,7 @@ import {
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
 import {
+  IngredientGroup,
   ParsedIngredient as ScrapedParsedIngredient,
   ParsedInstruction,
   ScrapedNutrients,
@@ -99,10 +100,24 @@ export function isUnparseableIngredient(
 const DEFAULT_PATTERNS: IgnoredIngredientPatterns = { prefixes: [], exactMatches: [] };
 
 /**
+ * Extracts parenthetical content from a string as a note.
+ *
+ * Captures the first parenthetical content (e.g., "cheddar (sous vide)" → "sous vide").
+ * Returns undefined if no parenthetical content is found.
+ *
+ * @param text - The text to extract parenthetical content from
+ * @returns The parenthetical content without parentheses, or undefined
+ */
+function extractParentheticalNote(text: string): string | undefined {
+  const match = text.match(/\s*\(([^)]+)\)/);
+  return match ? match[1].trim() : undefined;
+}
+
+/**
  * Parses a raw ingredient string into structured data.
  *
- * Extracts quantity, unit, and name from strings like "2 cups flour".
- * Cleans ingredient names by removing parenthetical content (e.g., "cheddar (sous vide)" → "cheddar").
+ * Extracts quantity, unit, name, and optional note from strings like "2 cups flour (for the sauce)".
+ * Parenthetical content is extracted as a note before cleaning the ingredient name.
  *
  * @param ingredientStr - Raw ingredient string from scraper
  * @param patterns - Patterns for ingredients to skip
@@ -120,9 +135,10 @@ export function parseIngredientString(
 
   const words = trimmed.split(/\s+/);
   if (words.length < 2) {
+    const note = extractParentheticalNote(trimmed);
     return {
       success: true,
-      ingredient: { name: cleanIngredientName(trimmed), quantity: '', unit: '' },
+      ingredient: { name: cleanIngredientName(trimmed), quantity: '', unit: '', note },
     };
   }
 
@@ -134,9 +150,10 @@ export function parseIngredientString(
   const parsedQuantity = numericQuantity(candidateQuantity);
 
   if (isNaN(parsedQuantity)) {
+    const note = extractParentheticalNote(trimmed);
     return {
       success: true,
-      ingredient: { name: cleanIngredientName(trimmed), quantity: '', unit: '' },
+      ingredient: { name: cleanIngredientName(trimmed), quantity: '', unit: '', note },
     };
   }
 
@@ -148,35 +165,88 @@ export function parseIngredientString(
   }
 
   if (remainingWords.length === 1) {
+    const rawWord = remainingWords[0];
+    const note = extractParentheticalNote(rawWord);
     return {
       success: true,
-      ingredient: { name: cleanIngredientName(remainingWords[0]), quantity, unit: '' },
+      ingredient: { name: cleanIngredientName(rawWord), quantity, unit: '', note },
     };
   }
 
   const unit = remainingWords[0];
-  const name = cleanIngredientName(remainingWords.slice(1).join(' '));
-  return { success: true, ingredient: { name, quantity, unit } };
+  const rawName = remainingWords.slice(1).join(' ');
+  const note = extractParentheticalNote(rawName);
+  const name = cleanIngredientName(rawName);
+  return { success: true, ingredient: { name, quantity, unit, note } };
 }
 
+/**
+ * Builds a lookup map from raw ingredient strings to their group purpose (usage note).
+ *
+ * This allows us to attach usage context (e.g., "For the sauce") to individual
+ * ingredients when the scraper provides grouped ingredient data.
+ *
+ * @param ingredientGroups - Array of ingredient groups from the scraper
+ * @returns Map from normalized ingredient string to purpose/note
+ */
+function buildIngredientNoteMap(
+  ingredientGroups: IngredientGroup[] | null | undefined
+): Map<string, string> {
+  const noteMap = new Map<string, string>();
+
+  if (!ingredientGroups) {
+    return noteMap;
+  }
+
+  for (const group of ingredientGroups) {
+    if (!group.purpose) continue;
+
+    for (const rawIngredient of group.ingredients) {
+      const normalized = rawIngredient.toLowerCase().trim();
+      noteMap.set(normalized, group.purpose);
+    }
+  }
+
+  return noteMap;
+}
+
+/**
+ * Converts raw and parsed ingredient data into application format.
+ *
+ * Prioritizes pre-parsed ingredients when available. Falls back to string parsing
+ * for raw ingredients. Optionally attaches usage notes from ingredient groups.
+ *
+ * @param rawIngredients - Raw ingredient strings from scraper
+ * @param parsedIngredients - Pre-parsed structured ingredients (may be null)
+ * @param ingredientGroups - Grouped ingredients with purpose/notes (may be null)
+ * @param patterns - Patterns for ingredients to skip during parsing
+ * @returns Converted ingredients and list of skipped unparseable ingredients
+ */
 export function convertIngredients(
   rawIngredients: string[],
   parsedIngredients: ScrapedParsedIngredient[] | null | undefined,
+  ingredientGroups: IngredientGroup[] | null | undefined = null,
   patterns: IgnoredIngredientPatterns = DEFAULT_PATTERNS
 ): ConvertedIngredients {
-  // Use pre-parsed ingredients if available (from well-structured HTML)
+  const noteMap = buildIngredientNoteMap(ingredientGroups);
+
   if (parsedIngredients && parsedIngredients.length > 0) {
     const ingredients: FormIngredientElement[] = [];
     const skipped: string[] = [];
 
-    for (const p of parsedIngredients) {
-      if (isUnparseableIngredient(p.name, patterns)) {
+    for (let i = 0; i < parsedIngredients.length; i++) {
+      const p = parsedIngredients[i];
+      if (!p.quantity && isUnparseableIngredient(p.name, patterns)) {
         skipped.push(p.name);
       } else {
+        const rawStr = rawIngredients[i]?.toLowerCase().trim() || '';
+        const groupNote = noteMap.get(rawStr);
+        const parentheticalNote = extractParentheticalNote(p.name);
         ingredients.push({
           quantity: p.quantity,
           unit: p.unit,
           name: cleanIngredientName(p.name),
+          note: groupNote || parentheticalNote,
         });
       }
     }
@@ -184,13 +254,16 @@ export function convertIngredients(
     return { ingredients, skipped };
   }
 
-  // Fall back to string parsing
   const ingredients: FormIngredientElement[] = [];
   const skipped: string[] = [];
 
   for (const raw of rawIngredients) {
     const result = parseIngredientString(raw, patterns);
     if (result.success) {
+      const note = noteMap.get(raw.toLowerCase().trim());
+      if (note) {
+        result.ingredient.note = note;
+      }
       ingredients.push(result.ingredient);
     } else {
       skipped.push(result.original);
@@ -315,6 +388,17 @@ export function cleanImageUrl(url: string): string {
   return url;
 }
 
+/**
+ * Converts a complete scraped recipe into the application's internal format.
+ *
+ * Transforms all recipe data including ingredients (with usage notes from groups),
+ * preparation steps, tags, and nutrition. Handles fallbacks for missing data.
+ *
+ * @param scraped - Raw scraped recipe data from any supported scraper
+ * @param ignoredPatterns - Patterns for ingredients to skip during parsing
+ * @param defaultPersons - Default serving size when not specified
+ * @returns Converted recipe in application format
+ */
 export function convertScrapedRecipe(
   scraped: ScrapedRecipe,
   ignoredPatterns: IgnoredIngredientPatterns,
@@ -323,6 +407,7 @@ export function convertScrapedRecipe(
   const { ingredients, skipped } = convertIngredients(
     scraped.ingredients,
     scraped.parsedIngredients,
+    scraped.ingredientGroups,
     ignoredPatterns
   );
 

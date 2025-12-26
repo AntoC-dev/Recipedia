@@ -38,7 +38,7 @@ import {
   tagTableName,
 } from '@customTypes/DatabaseElementTypes';
 import { TableManipulation } from './TableManipulation';
-import { EncodingSeparator, textSeparator } from '@styles/typography';
+import { EncodingSeparator, noteSeparator, textSeparator } from '@styles/typography';
 import { getDirectoryUri, isTemporaryImageUri, saveRecipeImage } from '@utils/FileGestion';
 import { cleanIngredientName, FuzzyMatchLevel, fuzzySearch } from '@utils/FuzzySearch';
 import { scaleQuantityForPersons } from '@utils/Quantity';
@@ -1691,11 +1691,12 @@ export class RecipeDatabase {
    * Verifies that all ingredients exist in the database and returns them with database IDs
    *
    * Checks each ingredient against the local cache and returns the database versions
-   * with recipe-specific quantities. Throws an error listing all ingredients that are not found.
+   * with recipe-specific quantities and optional usage notes. Throws an error listing
+   * all ingredients that are not found.
    *
    * @private
    * @param ingredients - Array of ingredients to verify
-   * @returns Array of ingredients with database IDs and recipe-specific quantities
+   * @returns Array of ingredients with database IDs, recipe-specific quantities, and notes
    * @throws Error if any ingredients are not found in the database, listing all missing ingredients
    */
   private verifyIngredientsExist(ingredients: ingredientTableElement[]): ingredientTableElement[] {
@@ -1707,7 +1708,7 @@ export class RecipeDatabase {
       if (elemFound === undefined) {
         missing.push(ing.name);
       } else {
-        result.push({ ...elemFound, quantity: ing.quantity });
+        result.push({ ...elemFound, quantity: ing.quantity, note: ing.note });
       }
     }
 
@@ -1930,16 +1931,27 @@ export class RecipeDatabase {
    * Encodes an ingredient for storage within a recipe's ingredients list
    *
    * Converts an ingredient to a string representation containing the ingredient's
-   * database ID and quantity, separated by a text separator. Used when storing
+   * database ID, quantity, and optional usage note. Used when storing
    * ingredient references within recipe data.
+   *
+   * Format: "ID--quantity" or "ID--quantity%%note" if note is present.
+   * This allows the same ingredient to appear multiple times with different
+   * usage contexts (e.g., "olive oil" for sauce vs garnish).
    *
    * @private
    * @param ingredientToEncode - The ingredient object to encode
-   * @returns String representation in format "ID--quantity", or empty string if ingredient not found
+   * @returns Encoded string, or empty string if ingredient not found in database
+   *
+   * @example
+   * // Without note
+   * encodeIngredient({id: 1, quantity: "200", ...}) // "1--200"
+   *
+   * // With note
+   * encodeIngredient({id: 1, quantity: "200", note: "For the sauce", ...}) // "1--200%%For the sauce"
    */
   private encodeIngredient(ingredientToEncode: ingredientTableElement): string {
-    // To encode : ID--quantity
     const quantity = ingredientToEncode.quantity ? ingredientToEncode.quantity.toString() : '';
+    const note = ingredientToEncode.note || '';
     let idForEncoding: number;
     if (ingredientToEncode.id === undefined) {
       const foundIngredient = this.find_ingredient(ingredientToEncode);
@@ -1954,23 +1966,33 @@ export class RecipeDatabase {
     } else {
       idForEncoding = ingredientToEncode.id;
     }
-    return idForEncoding + textSeparator + quantity;
+    const baseEncoding = idForEncoding + textSeparator + quantity;
+    return note ? baseEncoding + noteSeparator + note : baseEncoding;
   }
 
   /**
    * Decodes ingredients from a recipe's encoded ingredient string
    *
    * Parses the encoded ingredient string from a recipe, looking up each ingredient
-   * by ID in the database and combining it with the recipe-specific quantities.
-   * Also calculates the combined seasonal availability based on all ingredients.
+   * by ID in the database and combining it with the recipe-specific quantities
+   * and optional usage notes. Also calculates the combined seasonal availability.
+   *
+   * Supports both old format (without notes) and new format (with notes):
+   * - Old: "1--250__2--100" (backward compatible)
+   * - New: "1--250%%For sauce__2--100%%For garnish"
    *
    * @private
-   * @param encodedIngredient - Encoded string containing ingredient IDs and quantities
+   * @param encodedIngredient - Encoded string containing ingredient IDs, quantities, and optional notes
    * @returns Promise resolving to tuple of [decoded ingredients array, combined season array]
    *
    * @example
-   * Input: "1--250__2--100__3--0.5"
-   * Output: [[ingredient1 with quantity 250, ingredient2 with quantity 100, ...], ["5","6","7"]]
+   * // Old format (backward compatible)
+   * Input: "1--250__2--100"
+   * Output: [[ingredient1 with quantity 250, ingredient2 with quantity 100], ["5","6","7"]]
+   *
+   * // New format with notes
+   * Input: "1--200%%For sauce__1--100%%For garnish"
+   * Output: [[ingredient1 with quantity 200 and note "For sauce", ingredient1 with quantity 100 and note "For garnish"], ...]
    */
   private async decodeIngredientFromRecipe(
     encodedIngredient: string
@@ -1979,14 +2001,17 @@ export class RecipeDatabase {
     let recipeSeason: string[] = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
     let firstSeasonFound = true;
 
-    // Ex : 1--250__2--100__3--0.5__4--200__5--1__6--250
     const ingSplit = encodedIngredient.includes(EncodingSeparator)
       ? encodedIngredient.split(EncodingSeparator)
       : [encodedIngredient];
 
     for (const ingredient of ingSplit) {
       const id = Number(ingredient.split(textSeparator)[0]);
-      const ingQuantity = ingredient.split(textSeparator)[1];
+      const quantityAndNote = ingredient.split(textSeparator)[1] || '';
+
+      const [ingQuantity, ingNote] = quantityAndNote.includes(noteSeparator)
+        ? quantityAndNote.split(noteSeparator)
+        : [quantityAndNote, undefined];
 
       const tableIngredient =
         await this._ingredientsTable.searchElementById<encodedIngredientElement>(
@@ -2000,11 +2025,12 @@ export class RecipeDatabase {
       } else {
         const decodedIngredient = this.decodeIngredient(tableIngredient);
         decodedIngredient.quantity = ingQuantity;
+        if (ingNote) {
+          decodedIngredient.note = ingNote;
+        }
         arrDecoded.push(decodedIngredient);
 
-        // In case of *, nothing to do
         if (!decodedIngredient.season.includes('*')) {
-          // For the first element, store directly the value
           if (firstSeasonFound) {
             recipeSeason = decodedIngredient.season;
             firstSeasonFound = false;

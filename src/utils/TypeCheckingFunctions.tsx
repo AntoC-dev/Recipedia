@@ -96,16 +96,38 @@ export function isArrayOfType<T>(val: unknown, keys: (keyof T)[]): boolean {
  *
  * @param val - The value to check
  * @param keys - Array of required keys for the type T
- * @returns True if the value has all required keys
+ * @returns True if the value has all required keys (allows extra keys for optional fields)
  *
  * @example
  * ```typescript
  * interface User { name: string; age: number; }
  * isOfType<User>(obj, ["name", "age"]) // true if obj has name and age properties
+ * isOfType<User>({name: "John", age: 30, extra: "ok"}, ["name", "age"]) // true (extra keys allowed)
  * ```
  */
 export function isOfType<T>(val: unknown, keys: (keyof T)[]): boolean {
-  return Boolean(val && typeof val === 'object' && hasSameKeysAs<T>(val, keys));
+  return Boolean(val && typeof val === 'object' && hasAtLeastKeys<T>(val, keys));
+}
+
+/**
+ * Checks if an object has at least the specified keys
+ *
+ * @param val - The value to check
+ * @param keys - Array of required keys
+ * @returns True if the object has at least all specified keys (extra keys are allowed)
+ *
+ * @example
+ * ```typescript
+ * hasAtLeastKeys({a: 1, b: 2}, ["a", "b"]) // true
+ * hasAtLeastKeys({a: 1, b: 2, c: 3}, ["a", "b"]) // true (extra key allowed)
+ * hasAtLeastKeys({a: 1}, ["a", "b"]) // false (missing key)
+ * ```
+ */
+export function hasAtLeastKeys<T>(val: unknown, keys: (keyof T)[]): boolean {
+  if (typeof val !== 'object' || val === null) return false;
+
+  const valKeys = Object.keys(val);
+  return keys.every(key => valKeys.includes(key as string));
 }
 
 /**

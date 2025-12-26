@@ -1,9 +1,12 @@
 import {
   calculateNutritionPerPortion,
+  formatIngredientForCallback,
   formatQuantityForDisplay,
+  parseIngredientQuantity,
   scaleQuantityForPersons,
 } from '@utils/Quantity';
 import { nutritionTableElement } from '@customTypes/DatabaseElementTypes';
+import { defaultValueNumber } from '@utils/Constants';
 
 describe('scaleQuantityForPersons', () => {
   test('returns original when persons are equal', () => {
@@ -285,5 +288,117 @@ describe('calculateNutritionPerPortion', () => {
     expect(result.fiber).toBe(1.9);
     expect(result.protein).toBe(6.4);
     expect(result.salt).toBe(0.16);
+  });
+});
+
+describe('parseIngredientQuantity', () => {
+  test('parses integer quantity', () => {
+    expect(parseIngredientQuantity('100')).toBe(100);
+  });
+
+  test('parses decimal quantity with dot', () => {
+    expect(parseIngredientQuantity('2.5')).toBe(2.5);
+  });
+
+  test('parses decimal quantity with comma (European format)', () => {
+    expect(parseIngredientQuantity('2,5')).toBe(2.5);
+  });
+
+  test('returns defaultValueNumber for empty string', () => {
+    expect(parseIngredientQuantity('')).toBe(defaultValueNumber);
+  });
+
+  test('returns defaultValueNumber for whitespace-only string', () => {
+    expect(parseIngredientQuantity('   ')).toBe(defaultValueNumber);
+  });
+
+  test('returns defaultValueNumber for undefined', () => {
+    expect(parseIngredientQuantity(undefined)).toBe(defaultValueNumber);
+  });
+
+  test('returns defaultValueNumber for non-numeric string', () => {
+    expect(parseIngredientQuantity('abc')).toBe(defaultValueNumber);
+  });
+
+  test('parses zero correctly', () => {
+    expect(parseIngredientQuantity('0')).toBe(0);
+  });
+
+  test('parses negative numbers', () => {
+    expect(parseIngredientQuantity('-5')).toBe(-5);
+  });
+});
+
+describe('formatIngredientForCallback', () => {
+  test('formats ingredient with quantity, unit, and name', () => {
+    const result = formatIngredientForCallback(100, 'g', 'Rice');
+    expect(result).toBe('100@@g--Rice');
+  });
+
+  test('formats ingredient with note', () => {
+    const result = formatIngredientForCallback(100, 'g', 'Rice', 'for the sauce');
+    expect(result).toBe('100@@g--Rice%%for the sauce');
+  });
+
+  test('formats ingredient without note (undefined)', () => {
+    const result = formatIngredientForCallback(100, 'g', 'Rice', undefined);
+    expect(result).toBe('100@@g--Rice');
+  });
+
+  test('formats ingredient with empty string note (omits separator)', () => {
+    const result = formatIngredientForCallback(100, 'g', 'Rice', '');
+    expect(result).toBe('100@@g--Rice');
+  });
+
+  test('handles defaultValueNumber quantity (becomes empty string)', () => {
+    const result = formatIngredientForCallback(defaultValueNumber, 'g', 'Salt');
+    expect(result).toBe('@@g--Salt');
+  });
+
+  test('handles defaultValueNumber quantity with note', () => {
+    const result = formatIngredientForCallback(defaultValueNumber, 'g', 'Salt', 'to taste');
+    expect(result).toBe('@@g--Salt%%to taste');
+  });
+
+  test('handles note with special characters', () => {
+    const result = formatIngredientForCallback(100, 'g', 'Cheese', 'for the "special" sauce');
+    expect(result).toBe('100@@g--Cheese%%for the "special" sauce');
+  });
+
+  test('handles note with unicode characters', () => {
+    const result = formatIngredientForCallback(100, 'g', 'Pepper', '🌶️ spicy');
+    expect(result).toBe('100@@g--Pepper%%🌶️ spicy');
+  });
+
+  test('handles note with accented characters', () => {
+    const result = formatIngredientForCallback(100, 'g', 'Sel', 'à volonté');
+    expect(result).toBe('100@@g--Sel%%à volonté');
+  });
+
+  test('handles empty unit', () => {
+    const result = formatIngredientForCallback(2, '', 'Eggs', 'beaten');
+    expect(result).toBe('2@@--Eggs%%beaten');
+  });
+
+  test('handles decimal quantity', () => {
+    const result = formatIngredientForCallback(1.5, 'cups', 'Flour');
+    expect(result).toBe('1.5@@cups--Flour');
+  });
+
+  describe('separator collision edge cases', () => {
+    test('handles note containing noteSeparator (%%) character', () => {
+      const result = formatIngredientForCallback(100, 'g', 'Sugar', '50%% organic');
+      expect(result).toBe('100@@g--Sugar%%50%% organic');
+    });
+
+    test('handles note containing textSeparator (--) character', () => {
+      const result = formatIngredientForCallback(100, 'g', 'Water', 'room temp -- filtered');
+      expect(result).toBe('100@@g--Water%%room temp -- filtered');
+    });
+
+    test('handles note containing unitySeparator (@@) character', () => {
+      const result = formatIngredientForCallback(100, 'g', 'Email', 'contact@@example.com');
+      expect(result).toBe('100@@g--Email%%contact@@example.com');
+    });
   });
 });

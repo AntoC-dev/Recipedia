@@ -360,7 +360,6 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to the title of second step"
 
-
 - assertVisible:
     id: "RecipePreparation::EditableStep::1::TextInputTitle::CustomTextInput"
     text: "Spread rice"

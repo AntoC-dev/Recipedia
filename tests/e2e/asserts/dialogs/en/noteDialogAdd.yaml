@@ -1,0 +1,22 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    id: "RecipeIngredients::NoteDialog::Title"
+    text: "Add Note"
+    label: "Add note dialog title is displayed"
+
+- assertVisible:
+    id: "RecipeIngredients::NoteDialog::IngredientName"
+    label: "Ingredient name is displayed"
+
+- assertVisible:
+    id: "RecipeIngredients::NoteDialog::Input"
+    label: "Note input field is displayed"
+
+- assertVisible:
+    id: "RecipeIngredients::NoteDialog::CancelButton"
+    label: "Cancel button is visible"
+
+- assertVisible:
+    id: "RecipeIngredients::NoteDialog::SaveButton"
+    label: "Save button is visible"

@@ -10,6 +10,7 @@
 import { useEffect, useRef } from 'react';
 import { recipeStateType } from '@customTypes/ScreenTypes';
 import {
+  deduplicateIngredientsByName,
   processIngredientsForValidation,
   processTagsForValidation,
   removeIngredientByName,
@@ -22,7 +23,7 @@ import { useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { useRecipeForm } from '@context/RecipeFormContext';
 import { useRecipeTags } from '@hooks/useRecipeTags';
 import { useRecipeIngredients } from '@hooks/useRecipeIngredients';
-import { FormIngredientElement } from '@customTypes/DatabaseElementTypes';
+import { FormIngredientElement, ingredientTableElement } from '@customTypes/DatabaseElementTypes';
 
 /**
  * Hook that triggers ValidationQueue for scraped recipe data.
@@ -37,7 +38,7 @@ export function useRecipeScraperValidation(): void {
   const { setValidationQueue, validationQueue } = useRecipeDialogs();
   const { state, setters } = useRecipeForm();
   const { addTagIfNotDuplicate } = useRecipeTags();
-  const { addOrMergeIngredient } = useRecipeIngredients();
+  const { replaceAllMatchingFormIngredients } = useRecipeIngredients();
 
   const { stackMode, recipeIngredients, recipeTags } = state;
   const { setRecipeIngredients, setRecipeTags } = setters;
@@ -59,14 +60,15 @@ export function useRecipeScraperValidation(): void {
       setRecipeIngredients(prev => replaceMatchingIngredients(prev, exactMatches));
     }
 
-    return needsValidation;
+    return deduplicateIngredientsByName(needsValidation);
   };
 
   const startIngredientValidation = (ingredients: FormIngredientElement[]) => {
     setValidationQueue({
       type: 'Ingredient',
       items: ingredients,
-      onValidated: (_, validatedIngredient) => addOrMergeIngredient(validatedIngredient),
+      onValidated: (_, validatedIngredient: ingredientTableElement) =>
+        replaceAllMatchingFormIngredients(validatedIngredient),
       onDismissed: (item: FormIngredientElement) => {
         setRecipeIngredients(prev => removeIngredientByName(prev, item.name));
       },

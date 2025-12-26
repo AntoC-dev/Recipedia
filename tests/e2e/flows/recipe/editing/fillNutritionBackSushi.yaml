@@ -1,9 +1,5 @@
 appId: "com.recipedia"
 ---
-- tapOn:
-    id: "Recipe::AppBar::Edit"
-    label: "Enter the edit mode again"
-
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionEmptyState::AddButton::RoundButton"

@@ -54,5 +54,9 @@ export const Icons: Record<string, dictionaryIcons> = {
   apple: 'food-apple',
   tags: 'tag-multiple',
   imageOff: 'image-off-outline',
+  noteOutline: 'note-text-outline',
+  noteText: 'note-text',
+  commentPlusOutline: 'comment-plus-outline',
+  commentEditOutline: 'comment-edit-outline',
 } as const;
 export type IconName = keyof typeof Icons;

@@ -49,10 +49,15 @@ export function replaceMatchingIngredients(
   exactMatches: ingredientTableElement[]
 ): IngredientState {
   const updated = [...current];
+  const replacedIndices = new Set<number>();
+
   for (const ingredient of exactMatches) {
-    const idx = updated.findIndex(e => namesMatch(e.name, ingredient.name));
+    const idx = updated.findIndex(
+      (e, i) => !replacedIndices.has(i) && namesMatch(e.name, ingredient.name)
+    );
     if (idx !== -1) {
       updated[idx] = ingredient;
+      replacedIndices.add(idx);
     }
   }
   return updated;
@@ -60,10 +65,18 @@ export function replaceMatchingIngredients(
 
 /**
  * Adds or merges ingredients with existing ones.
- * - If ingredient doesn't exist: adds it
- * - If ingredient exists with same unit: merges quantities
- * - If ingredient exists with different unit: replaces it
- * Used by OCR to handle duplicate ingredients intelligently.
+ *
+ * Merging behavior:
+ * - If ingredient doesn't exist: adds it (with its note if present)
+ * - If ingredient exists with same unit: merges quantities, preserves new note
+ * - If ingredient exists with different unit: replaces it entirely
+ *
+ * Note handling: When merging quantities, the new ingredient's note takes
+ * precedence. This allows scraped data to provide usage context.
+ *
+ * @param current - Current ingredient state
+ * @param exactMatches - Validated ingredients to add or merge
+ * @returns Updated ingredient state
  */
 export function addOrMergeIngredientMatches(
   current: IngredientState,
@@ -81,6 +94,7 @@ export function addOrMergeIngredientMatches(
         updated[existingIndex] = {
           ...ingredient,
           quantity: String(Number(existing.quantity || 0) + Number(ingredient.quantity || 0)),
+          note: ingredient.note || existing.note,
         };
       } else {
         updated[existingIndex] = ingredient;
@@ -160,14 +174,17 @@ export function processTagsForValidation(
 
 /**
  * Processes ingredients for validation by filtering exact database matches.
- * Returns exact matches (preserving scraped quantity/unit) and items that need validation separately.
+ *
+ * Returns exact matches (preserving scraped quantity/unit/note) and items
+ * that need validation separately. Exact matches combine database metadata
+ * with scraped recipe-specific data.
  *
  * Note: Ingredient names should already be cleaned (parenthetical content removed)
  * by parseIngredientString in RecipeScraperConverter before reaching this function.
  *
  * @param ingredients - Array of ingredients to process (can be partial for scraped data)
  * @param findSimilarIngredients - Function to find similar ingredients in database
- * @returns Object with exactMatches and needsValidation arrays
+ * @returns Object with exactMatches (with preserved notes) and needsValidation arrays
  */
 export function processIngredientsForValidation(
   ingredients: FormIngredientElement[],
@@ -192,7 +209,8 @@ export function processIngredientsForValidation(
       const mergedIngredient: ingredientTableElement = {
         ...exactMatch,
         quantity: ingredient.quantity || exactMatch.quantity,
-        unit: ingredient.unit || exactMatch.unit,
+        unit: exactMatch.unit,
+        note: ingredient.note,
       };
       exactMatches.push(mergedIngredient);
     } else {
@@ -201,4 +219,36 @@ export function processIngredientsForValidation(
   }
 
   return { exactMatches, needsValidation };
+}
+
+/**
+ * Deduplicates ingredients by name for the validation queue.
+ *
+ * When the same ingredient name appears multiple times, this function:
+ * - Keeps the first occurrence's data (unit, note)
+ * - If duplicates have the same unit, sums their quantities
+ * - If units differ, keeps only the first occurrence
+ *
+ * @param ingredients - Array of form ingredients to deduplicate
+ * @returns Deduplicated array with quantities summed where applicable
+ */
+export function deduplicateIngredientsByName(
+  ingredients: FormIngredientElement[]
+): FormIngredientElement[] {
+  const seen = new Map<string, FormIngredientElement>();
+
+  for (const ing of ingredients) {
+    const key = ing.name?.toLowerCase() || '';
+    if (!key) continue;
+
+    const existing = seen.get(key);
+    if (!existing) {
+      seen.set(key, { ...ing });
+    } else if (existing.unit === ing.unit) {
+      const sum = Number(existing.quantity || 0) + Number(ing.quantity || 0);
+      existing.quantity = isNaN(sum) ? existing.quantity : String(sum);
+    }
+  }
+
+  return Array.from(seen.values());
 }

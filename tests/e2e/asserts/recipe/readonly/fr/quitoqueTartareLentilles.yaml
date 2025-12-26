@@ -69,7 +69,7 @@ appId: "com.recipedia"
     env:
       INGREDIENT_NAME: "salade d'algues au sésame et au gingembre Bio"
       INGREDIENT_QUANTITY_AND_UNIT: "200 g"
-    label: "Assert salade d'algues ingredient"
+    label: "Assert salade d'algues ingredient with note"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
@@ -77,6 +77,42 @@ appId: "com.recipedia"
       INGREDIENT_NAME: "salade"
       INGREDIENT_QUANTITY_AND_UNIT: "100 g"
     label: "Assert salade ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "huile d'olive"
+      INGREDIENT_QUANTITY_AND_UNIT: "4 g"
+    label: "Assert huile d'olive ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredientWithNote.yaml"
+    env:
+      INGREDIENT_NAME: "vinaigre"
+      INGREDIENT_QUANTITY_AND_UNIT: "2 g"
+      INGREDIENT_NOTE: "blanc ou de cidre"
+    label: "Assert vinaigre ingredient with note"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "gousse d'ail"
+      INGREDIENT_QUANTITY_AND_UNIT: "1"
+    label: "Assert gousse d'ail ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "échalote"
+      INGREDIENT_QUANTITY_AND_UNIT: "1"
+    label: "Assert échalote ingredient"
+
+- runFlow:
+    file: "../../common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "mangue"
+      INGREDIENT_QUANTITY_AND_UNIT: "1"
+    label: "Assert mangue ingredient"
 
 - scrollUntilVisible:
     element:
@@ -126,11 +162,11 @@ appId: "com.recipedia"
     env:
       ENERGY_KCAL: "149.2"
       ENERGY_KJ: "624.3"
-      FAT: "2.3"
-      SATURATED_FAT: "0.4"
-      CARBOHYDRATES: "21.9"
-      SUGARS: "6.8"
-      FIBER: "5.8"
-      PROTEIN: "8.8"
+      FAT: "2"
+      SATURATED_FAT: "0"
+      CARBOHYDRATES: "21.5"
+      SUGARS: "6.6"
+      FIBER: "5.5"
+      PROTEIN: "8.6"
       SALT: "0"
     label: "Assert nutrition values (French, converted to per-100g from 256g serving)"

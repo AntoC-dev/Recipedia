@@ -1,0 +1,33 @@
+appId: "com.recipedia"
+---
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::${INDEX}::NoteButton"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to ingredient note button"
+
+- tapOn:
+    id: "RecipeIngredients::${INDEX}::NoteButton"
+    label: "Tap note button to open dialog"
+
+- assertVisible:
+    id: "RecipeIngredients::NoteDialog::Title"
+    text: "${EXPECTED_TITLE}"
+    label: "Dialog title is correct"
+
+- tapOn:
+    id: "RecipeIngredients::NoteDialog::Input::CustomTextInput"
+    label: "Focus on note input"
+
+- inputText:
+    text: "${NOTE_TEXT}"
+    label: "Enter note text"
+
+- hideKeyboard:
+    label: "Hide the keyboard"
+
+- tapOn:
+    id: "RecipeIngredients::NoteDialog::CancelButton"
+    label: "Cancel without saving"

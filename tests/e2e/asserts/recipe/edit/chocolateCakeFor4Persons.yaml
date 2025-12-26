@@ -31,11 +31,11 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeIngredients::3::QuantityInput"
+      id: "RecipeIngredients::0::QuantityInput"
     direction: DOWN
     speed: 60
     centerElement: true
-    label: "Scroll to end of ingredients section"
+    label: "Scroll to Flour ingredient"
 
 - assertVisible:
     id: "RecipeIngredients::0::QuantityInput"
@@ -47,6 +47,14 @@ appId: "com.recipedia"
     text: "Flour"
     label: "First ingredient is Flour"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::1::QuantityInput"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Cocoa Powder ingredient"
+
 - assertVisible:
     id: "RecipeIngredients::1::QuantityInput"
     text: "33.33"
@@ -57,6 +65,14 @@ appId: "com.recipedia"
     text: "Cocoa Powder"
     label: "Second ingredient is Cocoa Powder"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::2::QuantityInput"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Sugar ingredient"
+
 - assertVisible:
     id: "RecipeIngredients::2::QuantityInput"
     text: "100"
@@ -66,6 +82,14 @@ appId: "com.recipedia"
     id: "RecipeIngredients::2::NameInput::CustomTextInput"
     text: "Sugar"
     label: "Third ingredient is Sugar"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::3::QuantityInput"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Butter ingredient"
 
 - assertVisible:
     id: "RecipeIngredients::3::QuantityInput"

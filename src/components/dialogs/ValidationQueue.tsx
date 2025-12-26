@@ -122,6 +122,8 @@ export function ValidationQueue({
       const mergedIngredient: ingredientTableElement = {
         ...validatedIngredient,
         quantity: originalIngredient?.quantity || validatedIngredient.quantity,
+        unit: validatedIngredient.unit,
+        note: originalIngredient?.note,
       };
       onValidated(originalIngredient, mergedIngredient);
     } else {

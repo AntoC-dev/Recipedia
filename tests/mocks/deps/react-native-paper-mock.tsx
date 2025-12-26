@@ -152,6 +152,7 @@ TextInputAffix.displayName = 'TextInput.Affix';
 const TextInputIcon: React.FC<any> = props => (
   <TouchableOpacity testID={props.testID} onPress={props.onPress}>
     <RNText testID={props.testID + '::Icon'}>{props.icon}</RNText>
+    <RNText testID={props.testID + '::Color'}>{props.color}</RNText>
   </TouchableOpacity>
 );
 TextInputIcon.displayName = 'TextInput.Icon';
@@ -458,6 +459,12 @@ export const HelperText: React.FC<any> = props => {
     </RNText>
   );
 };
+
+export const Tooltip: React.FC<any> = props => (
+  <View testID={props.testID} {...{ title: props.title, enterTouchDelay: props.enterTouchDelay }}>
+    {props.children}
+  </View>
+);
 export const FAB: React.FC<any> & { Group: React.FC<any> } = props => (
   <TouchableOpacity testID={props.testID} onPress={props.onPress} style={props.style}>
     <RNText testID={props.testID + '::Icon'}>{props.icon}</RNText>

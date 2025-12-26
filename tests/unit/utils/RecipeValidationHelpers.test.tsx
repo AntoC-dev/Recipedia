@@ -1,6 +1,7 @@
 import {
   addNonDuplicateTags,
   addOrMergeIngredientMatches,
+  deduplicateIngredientsByName,
   filterOutExistingTags,
   processIngredientsForValidation,
   processTagsForValidation,
@@ -373,6 +374,66 @@ describe('RecipeValidationHelpers', () => {
       expect(result.needsValidation).toEqual([]);
       expect(mockFindSimilarIngredients).not.toHaveBeenCalled();
     });
+
+    test('preserves note from scraped ingredient in exact match', () => {
+      mockFindSimilarIngredients.mockReturnValue([dbIngredients[0]]);
+
+      const inputIngredients: ingredientTableElement[] = [
+        {
+          name: 'Tomato Sauce',
+          quantity: '300',
+          unit: 'ml',
+          type: ingredientType.vegetable,
+          season: [],
+          note: 'For the sauce',
+        },
+      ];
+
+      const result = processIngredientsForValidation(inputIngredients, mockFindSimilarIngredients);
+
+      expect(result.exactMatches).toHaveLength(1);
+      expect(result.exactMatches[0].note).toBe('For the sauce');
+      expect(result.exactMatches[0].id).toBe(dbIngredients[0].id);
+    });
+
+    test('preserves note as undefined when not provided', () => {
+      mockFindSimilarIngredients.mockReturnValue([dbIngredients[0]]);
+
+      const inputIngredients: ingredientTableElement[] = [
+        {
+          name: 'Tomato Sauce',
+          quantity: '300',
+          unit: 'ml',
+          type: ingredientType.vegetable,
+          season: [],
+        },
+      ];
+
+      const result = processIngredientsForValidation(inputIngredients, mockFindSimilarIngredients);
+
+      expect(result.exactMatches).toHaveLength(1);
+      expect(result.exactMatches[0].note).toBeUndefined();
+    });
+
+    test('uses database unit instead of scraped unit', () => {
+      mockFindSimilarIngredients.mockReturnValue([dbIngredients[1]]);
+
+      const inputIngredients: ingredientTableElement[] = [
+        {
+          name: 'Parmesan',
+          quantity: '2',
+          unit: 'tbsp',
+          type: ingredientType.vegetable,
+          season: [],
+        },
+      ];
+
+      const result = processIngredientsForValidation(inputIngredients, mockFindSimilarIngredients);
+
+      expect(result.exactMatches).toHaveLength(1);
+      expect(result.exactMatches[0].quantity).toBe('2');
+      expect(result.exactMatches[0].unit).toBe('g');
+    });
   });
 
   describe('filterOutExistingTags', () => {
@@ -531,6 +592,47 @@ describe('RecipeValidationHelpers', () => {
 
       expect(result).toEqual(currentIngredients);
     });
+
+    test('replaces multiple ingredients with same name without overwriting', () => {
+      const current: ingredientTableElement[] = [
+        {
+          id: 1,
+          name: 'Olive Oil',
+          quantity: '2',
+          unit: 'tbsp',
+          type: ingredientType.oilAndFat,
+          season: [],
+        },
+        { id: 2, name: 'Salt', quantity: '1', unit: 'tsp', type: ingredientType.spice, season: [] },
+        { name: 'Olive Oil', quantity: '', unit: '' } as ingredientTableElement,
+      ];
+      const exactMatches: ingredientTableElement[] = [
+        {
+          id: 10,
+          name: 'Olive Oil',
+          quantity: '2',
+          unit: 'tbsp',
+          type: ingredientType.oilAndFat,
+          season: [],
+        },
+        {
+          id: 10,
+          name: 'Olive Oil',
+          quantity: '1',
+          unit: 'g',
+          type: ingredientType.oilAndFat,
+          season: [],
+        },
+      ];
+
+      const result = replaceMatchingIngredients(current, exactMatches);
+
+      expect(result).toHaveLength(3);
+      expect(result[0].quantity).toBe('2');
+      expect(result[0].unit).toBe('tbsp');
+      expect(result[2].quantity).toBe('1');
+      expect(result[2].unit).toBe('g');
+    });
   });
 
   describe('replaceMatchingTags', () => {
@@ -679,6 +781,71 @@ describe('RecipeValidationHelpers', () => {
       expect(result[0].type).toBe(ingredientType.cereal);
       expect(result[0].season).toEqual(['1', '2', '3']);
     });
+
+    test('adds new ingredient with note', () => {
+      const newIngredient: ingredientTableElement = {
+        id: 2,
+        name: 'Sugar',
+        quantity: '100',
+        unit: 'g',
+        type: ingredientType.sugar,
+        season: [],
+        note: 'For the frosting',
+      };
+
+      const result = addOrMergeIngredientMatches(currentIngredients, [newIngredient]);
+
+      expect(result).toHaveLength(2);
+      expect(result[1].name).toBe('Sugar');
+      expect(result[1].note).toBe('For the frosting');
+    });
+
+    test('preserves note from new ingredient when merging quantities', () => {
+      const flourWithNote: ingredientTableElement = {
+        id: 1,
+        name: 'Flour',
+        quantity: '100',
+        unit: 'g',
+        type: ingredientType.cereal,
+        season: [],
+        note: 'For the dough',
+      };
+
+      const result = addOrMergeIngredientMatches(currentIngredients, [flourWithNote]);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].quantity).toBe('300');
+      expect(result[0].note).toBe('For the dough');
+    });
+
+    test('preserves existing note when new ingredient has no note during merge', () => {
+      const currentWithNote = [
+        {
+          id: 1,
+          name: 'Flour',
+          quantity: '200',
+          unit: 'g',
+          type: ingredientType.cereal,
+          season: [],
+          note: 'Original note',
+        },
+      ];
+
+      const flourWithoutNote: ingredientTableElement = {
+        id: 1,
+        name: 'Flour',
+        quantity: '100',
+        unit: 'g',
+        type: ingredientType.cereal,
+        season: [],
+      };
+
+      const result = addOrMergeIngredientMatches(currentWithNote, [flourWithoutNote]);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].quantity).toBe('300');
+      expect(result[0].note).toBe('Original note');
+    });
   });
 
   describe('addNonDuplicateTags', () => {
@@ -737,6 +904,158 @@ describe('RecipeValidationHelpers', () => {
       const result = addNonDuplicateTags([], newTags);
 
       expect(result).toHaveLength(1);
+    });
+  });
+
+  describe('deduplicateIngredientsByName', () => {
+    test('keeps single occurrence of each ingredient', () => {
+      const ingredients = [
+        { name: 'Flour', quantity: '200', unit: 'g' },
+        { name: 'Sugar', quantity: '100', unit: 'g' },
+      ];
+
+      const result = deduplicateIngredientsByName(ingredients);
+
+      expect(result).toHaveLength(2);
+      expect(result[0].name).toBe('Flour');
+      expect(result[1].name).toBe('Sugar');
+    });
+
+    test('sums quantities for same name and unit', () => {
+      const ingredients = [
+        { name: "huile d'olive", quantity: '2', unit: 'càs' },
+        { name: "huile d'olive", quantity: '4', unit: 'càs' },
+      ];
+
+      const result = deduplicateIngredientsByName(ingredients);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].name).toBe("huile d'olive");
+      expect(result[0].quantity).toBe('6');
+      expect(result[0].unit).toBe('càs');
+    });
+
+    test('keeps first occurrence when units differ', () => {
+      const ingredients = [
+        { name: 'Olive Oil', quantity: '2', unit: 'tbsp' },
+        { name: 'Olive Oil', quantity: '50', unit: 'ml' },
+      ];
+
+      const result = deduplicateIngredientsByName(ingredients);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].quantity).toBe('2');
+      expect(result[0].unit).toBe('tbsp');
+    });
+
+    test('handles case-insensitive name matching', () => {
+      const ingredients = [
+        { name: 'Flour', quantity: '100', unit: 'g' },
+        { name: 'FLOUR', quantity: '200', unit: 'g' },
+      ];
+
+      const result = deduplicateIngredientsByName(ingredients);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].quantity).toBe('300');
+    });
+
+    test('preserves note from first occurrence', () => {
+      const ingredients = [
+        { name: 'Vinegar', quantity: '2', unit: 'tbsp', note: 'white or cider' },
+        { name: 'Vinegar', quantity: '1', unit: 'tbsp', note: 'balsamic' },
+      ];
+
+      const result = deduplicateIngredientsByName(ingredients);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].note).toBe('white or cider');
+      expect(result[0].quantity).toBe('3');
+    });
+
+    test('skips ingredients with empty names', () => {
+      const ingredients = [
+        { name: '', quantity: '100', unit: 'g' },
+        { name: 'Flour', quantity: '200', unit: 'g' },
+      ];
+
+      const result = deduplicateIngredientsByName(ingredients);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].name).toBe('Flour');
+    });
+
+    test('handles empty array', () => {
+      const result = deduplicateIngredientsByName([]);
+
+      expect(result).toEqual([]);
+    });
+
+    test('handles multiple groups of duplicates', () => {
+      const ingredients = [
+        { name: 'Oil', quantity: '2', unit: 'tbsp' },
+        { name: 'Salt', quantity: '1', unit: 'tsp' },
+        { name: 'Oil', quantity: '1', unit: 'tbsp' },
+        { name: 'Salt', quantity: '0.5', unit: 'tsp' },
+      ];
+
+      const result = deduplicateIngredientsByName(ingredients);
+
+      expect(result).toHaveLength(2);
+      const oil = result.find(i => i.name === 'Oil');
+      const salt = result.find(i => i.name === 'Salt');
+      expect(oil?.quantity).toBe('3');
+      expect(salt?.quantity).toBe('1.5');
+    });
+
+    test('handles undefined quantity', () => {
+      const ingredients = [
+        { name: 'Flour', unit: 'g' },
+        { name: 'Flour', quantity: '200', unit: 'g' },
+      ];
+
+      const result = deduplicateIngredientsByName(ingredients);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].quantity).toBe('200');
+    });
+
+    test('keeps first occurrence when notes and units differ', () => {
+      const ingredients = [
+        { name: 'Vinegar', quantity: '2', unit: 'tbsp', note: 'for the dressing' },
+        { name: 'Vinegar', quantity: '1', unit: 'tsp', note: 'for the sauce' },
+      ];
+
+      const result = deduplicateIngredientsByName(ingredients);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].quantity).toBe('2');
+      expect(result[0].unit).toBe('tbsp');
+      expect(result[0].note).toBe('for the dressing');
+    });
+
+    test('preserves first quantity when sum would be NaN', () => {
+      const ingredients = [
+        { name: 'Flour', quantity: 'some', unit: 'g' },
+        { name: 'Flour', quantity: '200', unit: 'g' },
+      ];
+
+      const result = deduplicateIngredientsByName(ingredients);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].quantity).toBe('some');
+    });
+
+    test('handles mixed numeric and non-numeric quantities gracefully', () => {
+      const ingredients = [
+        { name: 'Salt', quantity: 'a pinch', unit: '' },
+        { name: 'Salt', quantity: 'to taste', unit: '' },
+      ];
+
+      const result = deduplicateIngredientsByName(ingredients);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].quantity).toBe('a pinch');
     });
   });
 });

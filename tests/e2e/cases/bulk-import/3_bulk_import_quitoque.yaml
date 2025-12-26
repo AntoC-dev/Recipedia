@@ -106,13 +106,13 @@ tags:
 
 - extendedWaitUntil:
     visible:
-      id: "BulkImportDiscovery::fresh-0"
+      id: "BulkImportDiscovery::(fresh|seen)-0"
     timeout: 120000
-    label: "Wait - For deleted recipe to appear as fresh"
+    label: "Wait - For deleted recipe to appear (may be fresh or seen)"
 
 - tapOn:
-    id: "BulkImportDiscovery::fresh-0"
-    label: "Action - Select the fresh recipe for re-import"
+    id: "BulkImportDiscovery::(fresh|seen)-0"
+    label: "Action - Select the recipe for re-import"
 
 - tapOn:
     id: "BulkImportDiscovery::ContinueButton"

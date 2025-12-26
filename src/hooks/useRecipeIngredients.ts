@@ -12,7 +12,7 @@
 import { FormIngredientElement, ingredientTableElement } from '@customTypes/DatabaseElementTypes';
 import { processIngredientsForValidation } from '@utils/RecipeValidationHelpers';
 import { recipeLogger } from '@utils/logger';
-import { textSeparator, unitySeparator } from '@styles/typography';
+import { noteSeparator, textSeparator, unitySeparator } from '@styles/typography';
 import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
 import { useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { useRecipeForm } from '@context/RecipeFormContext';
@@ -20,20 +20,35 @@ import { useRecipeForm } from '@context/RecipeFormContext';
 /**
  * Parses an ingredient display string into its components
  *
- * Extracts quantity, unit, and name from a formatted ingredient string
+ * Extracts quantity, unit, name, and optional note from a formatted ingredient string
  * using the standard separators defined in typography.
  *
- * @param ingredientStr - Formatted string like "100|g - Rice"
- * @returns Object with quantity, unit, and name strings
+ * Supports both old format (without note) and new format (with note):
+ * - Old: "100@@g--Rice"
+ * - New: "100@@g--Rice%%For the sauce"
+ *
+ * @param ingredientStr - Formatted string like "100@@g--Rice" or "100@@g--Rice%%For the sauce"
+ * @returns Object with quantity, unit, name, and note strings
  */
 export function parseIngredientString(ingredientStr: string): {
   quantity: string;
   unit: string;
   name: string;
+  note: string;
 } {
-  const [unitAndQuantity, name] = ingredientStr.split(textSeparator);
+  const [unitAndQuantity, nameAndNote] = ingredientStr.split(textSeparator);
   const [quantity, unit] = unitAndQuantity.split(unitySeparator);
-  return { quantity: quantity || '', unit: unit || '', name: name || '' };
+
+  const [name, note] = nameAndNote?.includes(noteSeparator)
+    ? nameAndNote.split(noteSeparator)
+    : [nameAndNote, ''];
+
+  return {
+    quantity: quantity || '',
+    unit: unit || '',
+    name: name || '',
+    note: note || '',
+  };
 }
 
 /**
@@ -41,12 +56,14 @@ export function parseIngredientString(ingredientStr: string): {
  *
  * Creates a standardized string representation of an ingredient
  * using the standard separators defined in typography.
+ * Includes the usage note if present.
  *
  * @param ingredient - The ingredient element to format
- * @returns Formatted string like "100|g - Rice"
+ * @returns Formatted string like "100@@g--Rice" or "100@@g--Rice%%For the sauce"
  */
 export function formatIngredientString(ingredient: FormIngredientElement): string {
-  return `${ingredient.quantity || ''}${unitySeparator}${ingredient.unit || ''}${textSeparator}${ingredient.name || ''}`;
+  const base = `${ingredient.quantity || ''}${unitySeparator}${ingredient.unit || ''}${textSeparator}${ingredient.name || ''}`;
+  return ingredient.note ? `${base}${noteSeparator}${ingredient.note}` : base;
 }
 
 /**
@@ -69,6 +86,13 @@ export interface UseRecipeIngredientsReturn {
    * If units differ, the new ingredient replaces the existing one.
    */
   addOrMergeIngredient: (ingredient: ingredientTableElement) => void;
+
+  /**
+   * Replaces ALL FormIngredients with matching name with the validated database ingredient.
+   * Preserves each ingredient's own quantity/unit/note while applying database metadata.
+   * Used by scraper validation when the same ingredient appears multiple times.
+   */
+  replaceAllMatchingFormIngredients: (validatedIngredient: ingredientTableElement) => void;
 }
 
 /**
@@ -117,9 +141,10 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
   /**
    * Adds an ingredient to the recipe or merges quantities if it already exists.
    *
-   * Performs case-insensitive name matching to detect duplicates. When a duplicate
-   * is found with the same unit, quantities are summed. When units differ, the new
-   * ingredient replaces the existing one entirely.
+   * Performs case-insensitive name matching to detect duplicates:
+   * - Same name + same unit + both have different notes → adds as separate ingredient
+   * - Same name + same unit + compatible notes → merges quantities, keeps note
+   * - Same name + different unit → replaces existing with new ingredient
    *
    * @param ingredient - The validated ingredient to add or merge
    */
@@ -140,9 +165,17 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
         }
 
         if (existing.unit === ingredient.unit) {
+          const existingNote = existing.note?.trim();
+          const newNote = ingredient.note?.trim();
+
+          if (existingNote && newNote && existingNote !== newNote) {
+            return [...prev, ingredient];
+          }
+
           updated[existingIndex] = {
             ...ingredient,
             quantity: String(Number(existing.quantity || 0) + Number(ingredient.quantity || 0)),
+            note: newNote || existingNote,
           };
         } else {
           updated[existingIndex] = ingredient;
@@ -158,10 +191,10 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
    * Parses the new ingredient string and determines the appropriate action:
    * - If the name changes, removes the old ingredient and triggers validation
    *   workflow to check for similar ingredients in the database
-   * - If only quantity/unit changes, updates the ingredient in place
+   * - If only quantity/unit/note changes, updates the ingredient in place
    *
    * @param oldIngredientId - Index of the ingredient to edit
-   * @param newIngredient - Formatted ingredient string (e.g., "100|g - Rice")
+   * @param newIngredient - Formatted ingredient string (e.g., "100@@g--Rice%%For sauce")
    */
   const editIngredients = (oldIngredientId: number, newIngredient: string) => {
     if (oldIngredientId < 0 || oldIngredientId >= recipeIngredients.length) {
@@ -176,49 +209,57 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
       quantity: newQuantity,
       unit: newUnit,
       name: newName,
+      note: newNote,
     } = parseIngredientString(newIngredient);
 
     /**
      * Updates an ingredient's properties in place without triggering validation.
      *
-     * Used when only quantity or unit changes but the ingredient name remains the same.
+     * Used when only quantity, unit, or note changes but the ingredient name remains the same.
      * Selectively updates only the fields that have changed.
+     * Uses functional update to avoid stale closure issues.
      *
      * @param ingredient - The new ingredient data to apply
      */
     const updateIngredient = (ingredient: FormIngredientElement) => {
-      const ingredientCopy: (ingredientTableElement | FormIngredientElement)[] =
-        recipeIngredients.map(ing => ({ ...ing }));
-      const foundIngredient = ingredientCopy[oldIngredientId];
+      setRecipeIngredients(prev => {
+        const ingredientCopy: (ingredientTableElement | FormIngredientElement)[] = prev.map(
+          ing => ({ ...ing })
+        );
+        const foundIngredient = ingredientCopy[oldIngredientId];
 
-      if (!foundIngredient) {
-        return;
-      }
+        if (!foundIngredient) {
+          return prev;
+        }
 
-      if (ingredient.id && foundIngredient.id !== ingredient.id) {
-        foundIngredient.id = ingredient.id;
-      }
-      if (ingredient.name && foundIngredient.name !== ingredient.name) {
-        foundIngredient.name = ingredient.name;
-      }
-      if (ingredient.unit && foundIngredient.unit !== ingredient.unit) {
-        foundIngredient.unit = ingredient.unit;
-      }
-      if (ingredient.quantity && foundIngredient.quantity !== ingredient.quantity) {
-        foundIngredient.quantity = ingredient.quantity;
-      }
-      if (
-        ingredient.season &&
-        ingredient.season.length > 0 &&
-        foundIngredient.season !== ingredient.season
-      ) {
-        foundIngredient.season = ingredient.season;
-      }
-      if (ingredient.type && foundIngredient.type !== ingredient.type) {
-        foundIngredient.type = ingredient.type;
-      }
+        if (ingredient.id && foundIngredient.id !== ingredient.id) {
+          foundIngredient.id = ingredient.id;
+        }
+        if (ingredient.name && foundIngredient.name !== ingredient.name) {
+          foundIngredient.name = ingredient.name;
+        }
+        if (ingredient.unit && foundIngredient.unit !== ingredient.unit) {
+          foundIngredient.unit = ingredient.unit;
+        }
+        if (ingredient.quantity && foundIngredient.quantity !== ingredient.quantity) {
+          foundIngredient.quantity = ingredient.quantity;
+        }
+        if (
+          ingredient.season &&
+          ingredient.season.length > 0 &&
+          foundIngredient.season !== ingredient.season
+        ) {
+          foundIngredient.season = ingredient.season;
+        }
+        if (ingredient.type && foundIngredient.type !== ingredient.type) {
+          foundIngredient.type = ingredient.type;
+        }
+        if (ingredient.note !== undefined && foundIngredient.note !== ingredient.note) {
+          foundIngredient.note = ingredient.note;
+        }
 
-      setRecipeIngredients(ingredientCopy);
+        return ingredientCopy;
+      });
     };
 
     if (
@@ -227,7 +268,7 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
       recipeIngredients[oldIngredientId] &&
       recipeIngredients[oldIngredientId].name !== newName
     ) {
-      setRecipeIngredients(recipeIngredients.filter((_, index) => index !== oldIngredientId));
+      setRecipeIngredients(prev => prev.filter((_, index) => index !== oldIngredientId));
 
       const { exactMatches, needsValidation } = processIngredientsForValidation(
         [
@@ -235,6 +276,7 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
             name: newName,
             unit: newUnit,
             quantity: newQuantity,
+            note: newNote,
             season: [],
           },
         ],
@@ -257,6 +299,7 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
         name: newName,
         unit: newUnit,
         quantity: newQuantity,
+        note: newNote,
         season: [],
       });
     }
@@ -269,12 +312,41 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
    * the user to fill in the details through the UI.
    */
   const addNewIngredient = () => {
-    setRecipeIngredients([...recipeIngredients, { name: '' }]);
+    setRecipeIngredients(prev => [...prev, { name: '' }]);
+  };
+
+  /**
+   * Replaces ALL FormIngredients with matching name with the validated database ingredient.
+   *
+   * Used by scraper validation when the same ingredient appears multiple times in a recipe.
+   * Each matching ingredient keeps its own quantity and note while receiving database metadata
+   * (id, name, type, season, unit).
+   *
+   * @param validatedIngredient - The validated database ingredient to use as template
+   */
+  const replaceAllMatchingFormIngredients = (validatedIngredient: ingredientTableElement) => {
+    setRecipeIngredients(prev => {
+      return prev.map(existing => {
+        if (existing.name?.toLowerCase() === validatedIngredient.name.toLowerCase()) {
+          return {
+            id: validatedIngredient.id,
+            name: validatedIngredient.name,
+            type: validatedIngredient.type,
+            season: validatedIngredient.season,
+            quantity: existing.quantity || '',
+            unit: validatedIngredient.unit,
+            note: existing.note,
+          };
+        }
+        return existing;
+      });
+    });
   };
 
   return {
     editIngredients,
     addNewIngredient,
     addOrMergeIngredient,
+    replaceAllMatchingFormIngredients,
   };
 }

@@ -21,46 +21,6 @@ tags:
       RECIPE_URL: "https://www.quitoque.fr/recettes/tartare-de-lentilles-blondes-mangue-et-salade-dalgues"
     label: "Action - Add recipe from Quitoque URL (public, no auth)"
 
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::6::QuantityInput"
-    direction: DOWN
-    centerElement: true
-    speed: 60
-    label: "Scroll to duplicate huile d'olive ingredient"
-
-- tapOn:
-    id: "RecipeIngredients::6::QuantityInput"
-    label: "Tap on huile d'olive quantity"
-
-- inputText: "1"
-
-- pressKey: enter
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::9::QuantityInput"
-    direction: DOWN
-    centerElement: true
-    speed: 40
-    label: "Scroll to duplicate huile d'olive ingredient"
-
-- tapOn:
-    id: "RecipeIngredients::9::QuantityInput"
-    label: "Tap on huile d'olive quantity"
-
-- inputText: "1"
-
-- pressKey: enter
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeImage"
-    direction: UP
-    centerElement: true
-    speed: 95
-    label: "Scroll back to top"
-
 - tapOn:
     id: "Recipe::BottomActionButton"
     label: "Action - Validate the recipe"
@@ -105,13 +65,25 @@ tags:
     id: "Recipe::AppBar::Delete"
     label: "Cleanup - Remove the recipe"
 
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::Dialog::Cancel"
+    timeout: 5000
+    label: "Wait for delete confirmation dialog (has Cancel button)"
+
 - tapOn:
     id: "Recipe::Dialog::Confirm"
     label: "Cleanup - Confirm recipe deletion"
 
+- extendedWaitUntil:
+    notVisible:
+      id: "Recipe::Dialog::Cancel"
+    timeout: 5000
+    label: "Wait for success dialog (no Cancel button)"
+
 - tapOn:
     id: "Recipe::Dialog::Confirm"
-    label: "Cleanup - Close confirmation dialog"
+    label: "Cleanup - Close success dialog"
 
 - tapOn:
     id: "SearchScreen::SearchBar::RightIcon"

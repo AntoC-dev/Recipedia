@@ -17,6 +17,13 @@ export default {
   quantity: 'Quantity',
   unit: 'Unit',
   ingredientName: 'Name',
+  ingredientNotePlaceholder: 'Usage note (e.g., for the sauce)',
+
+  noteDialog: {
+    addTitle: 'Add Note',
+    editTitle: 'Edit Note',
+  },
+  addNoteHint: 'Long press to see/add note',
 
   timeReadOnlyBeforePerson: 'Preparation (',
   timeReadOnlyAfterPerson: ' min)',
@@ -102,7 +109,13 @@ export default {
 
   scraper: {
     ignoredIngredientPrefixes: ['to taste', 'as needed', 'optional', 'for garnish', 'for serving'],
-    ignoredIngredientExactMatches: ['salt', 'pepper', 'salt and pepper', 'pepper and salt'],
+    ignoredIngredientExactMatches: [
+      'salt',
+      'pepper',
+      'salt and pepper',
+      'pepper and salt',
+      'olive oil',
+    ],
     stepTitle: 'Step {{number}}',
   },
 };

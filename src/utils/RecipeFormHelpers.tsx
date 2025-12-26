@@ -623,6 +623,7 @@ export function buildRecipeIngredientsProps(
     },
     onIngredientChange: editIngredients,
     onAddIngredient: addNewIngredient,
+    noteInputPlaceholder: t('ingredientNotePlaceholder'),
   };
 
   if (stackMode === recipeStateType.addOCR) {

@@ -177,6 +177,12 @@ export type ingredientTableElement = {
   type: ingredientType;
   /** Array of month numbers when ingredient is in season */
   season: string[];
+  /**
+   * Usage context or preparation note for this ingredient occurrence
+   * Allows distinguishing duplicate ingredients used in different steps
+   * @example "For the sauce", "Pour la pâte", "To garnish"
+   */
+  note?: string;
 };
 
 /**
