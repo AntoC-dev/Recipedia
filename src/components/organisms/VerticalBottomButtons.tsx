@@ -50,6 +50,19 @@ const ACTION_BUTTON_SIZE = 40;
 const ACTION_BUTTON_SPACING = 16;
 const ACTION_BUTTON_COUNT = 4;
 
+/** TestIDs for FAB elements - used for E2E testing */
+const FAB_TEST_IDS = {
+  expand: 'ExpandButton',
+  reduce: 'ReduceButton',
+  edit: 'RecipeEdit',
+  url: 'UrlButton',
+  gallery: 'GalleryButton',
+  camera: 'CameraButton',
+} as const;
+
+/** Helper to create both testID and accessibilityLabel for iOS compatibility */
+const fabTestProps = (id: string) => ({ testID: id, accessibilityLabel: id });
+
 /**
  * VerticalBottomButtons component for expandable recipe creation menu
  *
@@ -231,13 +244,13 @@ function VerticalBottomButtons() {
           open={open}
           visible
           icon={open ? Icons.minusIcon : Icons.plusIcon}
-          testID={open ? 'ReduceButton' : 'ExpandButton'}
+          {...fabTestProps(open ? FAB_TEST_IDS.reduce : FAB_TEST_IDS.expand)}
           actions={[
             {
               icon: Icons.pencilIcon,
               label: t('fab.addManually'),
               onPress: () => navigate('Recipe', { mode: 'addManually' }),
-              testID: 'RecipeEdit',
+              ...fabTestProps(FAB_TEST_IDS.edit),
               style: { borderRadius: 999 },
               size: 'medium',
             },
@@ -245,7 +258,7 @@ function VerticalBottomButtons() {
               icon: Icons.webIcon,
               label: t('fab.addFromUrl'),
               onPress: handleOpenUrlDialog,
-              testID: 'UrlButton',
+              ...fabTestProps(FAB_TEST_IDS.url),
               style: { borderRadius: 999 },
               size: 'medium',
             },
@@ -253,7 +266,7 @@ function VerticalBottomButtons() {
               icon: Icons.galleryIcon,
               label: t('fab.pickFromGallery'),
               onPress: () => pickImageAndOpenNewRecipe(),
-              testID: 'GalleryButton',
+              ...fabTestProps(FAB_TEST_IDS.gallery),
               style: { borderRadius: 999 },
               size: 'medium',
             },
@@ -261,7 +274,7 @@ function VerticalBottomButtons() {
               icon: Icons.cameraIcon,
               label: t('fab.takePhoto'),
               onPress: () => takePhotoAndOpenNewRecipe(),
-              testID: 'CameraButton',
+              ...fabTestProps(FAB_TEST_IDS.camera),
               style: { borderRadius: 999 },
               size: 'medium',
             },

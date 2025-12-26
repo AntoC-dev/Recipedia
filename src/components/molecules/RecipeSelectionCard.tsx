@@ -87,6 +87,7 @@ export function RecipeSelectionCard({
 
   return (
     <Card
+      accessible={false}
       testID={testId}
       mode='outlined'
       style={[styles.card, { backgroundColor: getBackgroundColor() }]}

@@ -41,6 +41,7 @@ export function MenuRecipeCard({
 
   return (
     <Card
+      accessible={false}
       testID={testId}
       mode='outlined'
       style={[

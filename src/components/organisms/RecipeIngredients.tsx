@@ -188,25 +188,34 @@ function ReadOnlyIngredients({ testID, ingredients }: ReadOnlyProps) {
   const { colors } = useTheme();
 
   return (
-    <View style={{ paddingHorizontal: 10 }}>
-      <DataTable>
+    <View style={{ paddingHorizontal: 10 }} accessible={false}>
+      <DataTable accessible={false}>
         {ingredients.map((item, index) => (
           <DataTable.Row
             key={index}
             testID={`${testID}::${index}::Row`}
             style={{ borderBottomWidth: 0 }}
+            accessible={false}
           >
             <DataTable.Cell
               testID={`${testID}::${index}::QuantityAndUnit`}
               style={{ flex: recipeTableReadOnlyFlex.quantityAndUnit }}
+              accessible={false}
             >
-              <Text variant='titleMedium'>
+              <Text variant='titleMedium' accessible={true}>
                 {formatQuantityForDisplay(item.quantity ?? '')} {item.unit}
               </Text>
             </DataTable.Cell>
-            <DataTable.Cell style={{ flex: recipeTableReadOnlyFlex.name }}>
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'baseline' }}>
-                <Text testID={`${testID}::${index}::IngredientName`} variant='titleMedium'>
+            <DataTable.Cell style={{ flex: recipeTableReadOnlyFlex.name }} accessible={false}>
+              <View
+                style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'baseline' }}
+                accessible={false}
+              >
+                <Text
+                  testID={`${testID}::${index}::IngredientName`}
+                  accessible={true}
+                  variant='titleMedium'
+                >
                   {item.name}
                 </Text>
                 {item.note && (
