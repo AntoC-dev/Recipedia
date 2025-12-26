@@ -1,3 +1,31 @@
+## [2.10.0](https://github.com/AntoC-dev/Recipedia/compare/v2.9.0...v2.10.0) (2025-12-26)
+
+### Features
+
+* **db:** handle ingredient notes in database encoding/decoding ([216f976](https://github.com/AntoC-dev/Recipedia/commit/216f976d0b5f634abe31662e1b3cdc77d4516828))
+* **dialog:** add NoteEditDialog component ([a2efd0e](https://github.com/AntoC-dev/Recipedia/commit/a2efd0e641de30d17f70fd7682a44570fe4fe7ce))
+* **hook:** add note support to useRecipeIngredients ([0c0b25d](https://github.com/AntoC-dev/Recipedia/commit/0c0b25dcc3ea08b57db8fdbb95b2fcc6de421dff))
+* ingredient note ([#170](https://github.com/AntoC-dev/Recipedia/issues/170)) ([cb8f8ca](https://github.com/AntoC-dev/Recipedia/commit/cb8f8ca567aca2bce8005ffe2e36ad708c3709cd))
+* **ingredients:** integrate note feature into RecipeIngredients component ([10584a0](https://github.com/AntoC-dev/Recipedia/commit/10584a0b9d32adc1ab5d43f30c35985f66623ebc))
+* **ocr:** extract notes from OCR text in parentheses ([65fd7f6](https://github.com/AntoC-dev/Recipedia/commit/65fd7f6786be1a9af477e22ee5a3fed750626a50))
+* **quantity:** parse and format notes in ingredient strings ([cb71e64](https://github.com/AntoC-dev/Recipedia/commit/cb71e641bb7efb6b8d5695ace35ce6641adef3e4))
+* **scraper:** extract notes from web-scraped recipes ([905a249](https://github.com/AntoC-dev/Recipedia/commit/905a249992426b69693d56c2ba46ee7d5e843355))
+* **types:** add note field to ingredient types and fix isOfType validation ([ebf8547](https://github.com/AntoC-dev/Recipedia/commit/ebf8547c100aa90e8067838860a7ecac385c136a))
+* **ui:** add icons, typography, translations, and input testID for notes ([3c441e3](https://github.com/AntoC-dev/Recipedia/commit/3c441e37c4bfc911d2d211c7370e1dee74a426d9))
+* **validation:** add ingredient deduplication with NaN safety ([9523167](https://github.com/AntoC-dev/Recipedia/commit/952316795b358a580e334209b0616512b24f44eb))
+* **validation:** support notes in recipe validation helpers ([4ce0885](https://github.com/AntoC-dev/Recipedia/commit/4ce08859967a2e9fd5c6f1f47da07d6e0d470d28))
+
+### Bug Fixes
+
+* **hook:** prevent merging ingredients with different notes ([46c3ce6](https://github.com/AntoC-dev/Recipedia/commit/46c3ce63fd4ff17246ffd4583fae910263c43b10))
+* **hook:** resolve stale closure issues in ingredient updates ([7b91365](https://github.com/AntoC-dev/Recipedia/commit/7b913658143bd7d803a638db647bf9925651da22))
+* **scraper:** skip ignored ingredients only when they have no quantity ([fd49466](https://github.com/AntoC-dev/Recipedia/commit/fd49466e1389d25aebd7f8c3f1bcc9ce41a91249))
+* **validation:** use database unit and prevent duplicate replacement ([3c33a74](https://github.com/AntoC-dev/Recipedia/commit/3c33a7427bc33ac4715576babb6202334ccd56a3))
+
+### Performance Improvements
+
+* update reassure baseline [skip ci] ([50cf9f2](https://github.com/AntoC-dev/Recipedia/commit/50cf9f276fb79c1bfb0672a49bcf307009fab43c))
+
 ## [2.9.0](https://github.com/AntoC-dev/Recipedia/compare/v2.8.0...v2.9.0) (2025-12-22)
 
 ### Features
