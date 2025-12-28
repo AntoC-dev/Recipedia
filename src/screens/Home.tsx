@@ -58,6 +58,7 @@ import { padding, screenWidth } from '@styles/spacing';
 import { homeLogger } from '@utils/logger';
 import { useSeasonFilter } from '@context/SeasonFilterContext';
 import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { AdBanner } from '@components/organisms/AdBanner';
 
 const homeId = 'Home';
 const recommandationId = homeId + '::RecipeRecommendation';
@@ -145,6 +146,7 @@ export function Home() {
           />
         )}
         keyExtractor={item => item.id}
+        ListHeaderComponent={<AdBanner placement='home' testId={homeId} />}
         ListEmptyComponent={renderEmptyState}
         refreshControl={
           <RefreshControl colors={[colors.primary]} refreshing={refreshing} onRefresh={onRefresh} />
