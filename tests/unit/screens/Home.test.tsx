@@ -19,6 +19,9 @@ jest.mock('@components/organisms/RecipeRecommendation', () => ({
   RecipeRecommendation: require('@mocks/components/organisms/RecipeRecommendation-mock')
     .recipeRecommendationMock,
 }));
+jest.mock('@components/organisms/AdBanner', () => ({
+  AdBanner: require('@mocks/components/organisms/AdBanner-mock').adBannerMock,
+}));
 
 jest.mock('expo-font', () => ({
   loadAsync: jest.fn(() => Promise.resolve()), // Mock as a resolved Promise
@@ -64,6 +67,7 @@ async function renderHomeAndWaitForRecommendations() {
 describe('Home Screen', () => {
   const database = RecipeDatabase.getInstance();
   const expectedRandomRecommendationLength = Math.min(testRecipes.length, howManyItemInCarousel);
+  const originalNodeEnv = process.env.NODE_ENV;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -72,7 +76,10 @@ describe('Home Screen', () => {
     await database.addMultipleTags(testTags);
     await database.addMultipleRecipes(testRecipes);
   });
-  afterEach(async () => await database.closeAndReset());
+  afterEach(async () => {
+    process.env.NODE_ENV = originalNodeEnv;
+    await database.closeAndReset();
+  });
 
   // -------- INITIAL RENDERING TESTS --------
   test('renders all navigation buttons correctly', async () => {
@@ -285,5 +292,11 @@ describe('Home Screen', () => {
     await waitFor(() =>
       expect(queryByTestId('recommendations.randomSelection::CarouselProps')).not.toBeNull()
     );
+  });
+
+  test('renders AdBanner when ads are enabled', async () => {
+    const { getByTestId } = await renderHomeAndWaitForRecommendations();
+
+    expect(getByTestId('Home::AdBanner')).toBeTruthy();
   });
 });

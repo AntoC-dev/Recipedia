@@ -51,6 +51,7 @@ module.exports = {
         '^expo-mail-composer$': '<rootDir>/tests/mocks/deps/expo-mail-composer-mock.tsx',
         '^expo-status-bar$': '<rootDir>/tests/mocks/deps/expo-status-bar-mock.tsx',
         '^expo-image-manipulator$': '<rootDir>/tests/mocks/deps/expo-image-manipulator-mock.tsx',
+        '^react-native-google-mobile-ads$': '<rootDir>/tests/mocks/deps/react-native-google-mobile-ads-mock.tsx',
         '^@react-native-ml-kit/text-recognition$': '<rootDir>/tests/mocks/deps/react-native-ml-kit-text-recognition-mock.ts',
     },
     setupFilesAfterEnv: [

@@ -19,7 +19,14 @@ tags:
 
 - tapOn:
     id: "MenuScreen::MenuItem::1::Checkbox"
+    retryTapIfNoChange: true
     label: "Action - Mark recipe as cooked"
+
+- extendedWaitUntil:
+    visible:
+      id: "MenuScreen::SectionHeader::Cooked"
+    timeout: 5000
+    label: "Wait for recipe to became cooked"
 
 - assertVisible:
     id: "MenuScreen::SectionHeader::Cooked"

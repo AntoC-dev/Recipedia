@@ -8,3 +8,7 @@ appId: "com.recipedia"
     when:
       platform: Android
     file: "android/assertCollapsedButtons.yaml"
+
+- assertVisible:
+    id: "Home::AdBanner"
+    label: "Ad banner is displayed on home screen"

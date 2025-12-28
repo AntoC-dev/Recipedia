@@ -33,6 +33,7 @@ const defaultProps = {
 } as any;
 
 const screenId = 'MenuScreen';
+const originalNodeEnv = process.env.NODE_ENV;
 
 async function renderMenuAndWait() {
   const result = render(<Menu {...defaultProps} />);
@@ -60,7 +61,10 @@ describe('Menu Screen', () => {
     await database.addMultipleRecipes(testRecipes);
   });
 
-  afterEach(async () => await database.closeAndReset());
+  afterEach(async () => {
+    process.env.NODE_ENV = originalNodeEnv;
+    await database.closeAndReset();
+  });
 
   describe('Empty Menu State', () => {
     test('renders empty state text when menu is empty', async () => {
@@ -288,6 +292,25 @@ describe('Menu Screen', () => {
       const { getByTestId } = await renderMenuAndWait();
 
       expect(getByTestId('CopilotStep::Menu')).toBeTruthy();
+    });
+  });
+
+  describe('AdBanner', () => {
+    test('renders AdBanner when ads are enabled', async () => {
+      process.env.NODE_ENV = 'development';
+
+      const { getByTestId } = await renderMenuAndWait();
+
+      expect(getByTestId(`${screenId}::AdBanner`)).toBeTruthy();
+    });
+
+    test('renders AdBanner even when menu is empty', async () => {
+      process.env.NODE_ENV = 'development';
+
+      const { getByTestId } = await renderMenuAndWait();
+
+      expect(getByTestId(`${screenId}::TextNoItem`)).toBeTruthy();
+      expect(getByTestId(`${screenId}::AdBanner`)).toBeTruthy();
     });
   });
 });
