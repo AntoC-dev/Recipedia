@@ -38,7 +38,9 @@ describe('FilterFunctions', () => {
       Array<recipeTableElement>(testRecipes[0])
     );
     let expectedTags = testRecipes[0].tags.map(tag => tag.name).sort();
-    let expectedIngredient = testRecipes[0].ingredients.sort();
+    let expectedIngredient = [...testRecipes[0].ingredients].sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
 
     expect(resTitles).toEqual([testRecipes[0].title]);
     expect(resTags).toEqual(expectedTags);
@@ -55,7 +57,7 @@ describe('FilterFunctions', () => {
       .filter((elem: ingredientTableElement, index: number, self: ingredientTableElement[]) => {
         return index == self.indexOf(elem);
       })
-      .sort();
+      .sort((a, b) => a.name.localeCompare(b.name));
 
     expect(resTitles).toEqual([testRecipes[0].title, testRecipes[8].title]);
     expect(resTags).toEqual(expectedTags);
@@ -88,7 +90,7 @@ describe('FilterFunctions', () => {
         (elem: ingredientTableElement, index: number, self: ingredientTableElement[]) =>
           index == self.indexOf(elem)
       )
-      .sort();
+      .sort((a, b) => a.name.localeCompare(b.name));
 
     expect(resTitles).toEqual(expectedTitles);
     expect(resTags).toEqual(expectedTags);
@@ -98,6 +100,106 @@ describe('FilterFunctions', () => {
     expect(resTitles).toEqual([]);
     expect(resTags).toEqual([]);
     expect(resIngredients).toEqual([]);
+  });
+
+  test('extractFilteredRecipeDatas returns all ingredients sorted by name', () => {
+    const recipesWithMultiplePoultry: recipeTableElement[] = [
+      {
+        ...testRecipes[0],
+        ingredients: [
+          {
+            id: 101,
+            name: 'Turkey',
+            unit: 'g',
+            type: ingredientType.poultry,
+            season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+            quantity: '200',
+          },
+          {
+            id: 102,
+            name: 'Chicken',
+            unit: 'g',
+            type: ingredientType.poultry,
+            season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+            quantity: '300',
+          },
+          {
+            id: 103,
+            name: 'Duck',
+            unit: 'g',
+            type: ingredientType.poultry,
+            season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+            quantity: '150',
+          },
+          {
+            id: 104,
+            name: 'Goose',
+            unit: 'g',
+            type: ingredientType.poultry,
+            season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+            quantity: '400',
+          },
+          {
+            id: 105,
+            name: 'Pheasant',
+            unit: 'g',
+            type: ingredientType.poultry,
+            season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+            quantity: '250',
+          },
+        ],
+      },
+    ];
+
+    const [, resIngredients] = extractFilteredRecipeDatas(recipesWithMultiplePoultry);
+
+    expect(resIngredients).toHaveLength(5);
+    expect(resIngredients.map(i => i.name)).toEqual([
+      'Chicken',
+      'Duck',
+      'Goose',
+      'Pheasant',
+      'Turkey',
+    ]);
+  });
+
+  test('extractFilteredRecipeDatas returns titles sorted alphabetically', () => {
+    const recipesWithUnsortedTitles: recipeTableElement[] = [
+      { ...testRecipes[0], title: 'Zucchini Soup' },
+      { ...testRecipes[1], title: 'Apple Pie' },
+      { ...testRecipes[2], title: 'Mango Salad' },
+      { ...testRecipes[3], title: 'Banana Bread' },
+    ];
+
+    const [resTitles] = extractFilteredRecipeDatas(recipesWithUnsortedTitles);
+
+    expect(resTitles).toHaveLength(4);
+    expect(resTitles).toEqual(['Apple Pie', 'Banana Bread', 'Mango Salad', 'Zucchini Soup']);
+  });
+
+  test('extractFilteredRecipeDatas returns tags sorted alphabetically', () => {
+    const recipesWithUnsortedTags: recipeTableElement[] = [
+      {
+        ...testRecipes[0],
+        tags: [
+          { id: 1, name: 'Vegetarian' },
+          { id: 2, name: 'Asian' },
+          { id: 3, name: 'Quick' },
+        ],
+      },
+      {
+        ...testRecipes[1],
+        tags: [
+          { id: 4, name: 'Dessert' },
+          { id: 5, name: 'Breakfast' },
+        ],
+      },
+    ];
+
+    const [, , resTags] = extractFilteredRecipeDatas(recipesWithUnsortedTags);
+
+    expect(resTags).toHaveLength(5);
+    expect(resTags).toEqual(['Asian', 'Breakfast', 'Dessert', 'Quick', 'Vegetarian']);
   });
 
   test('filterFromRecipe with empty filters return the array given in input', () => {
@@ -539,7 +641,7 @@ describe('FilterFunctions', () => {
       const uniqueItems = new Set(shuffled);
       expect(uniqueItems.size).toBe(shuffled.length);
 
-      expect(shuffled.sort()).toEqual(original.sort());
+      expect([...shuffled].sort((a, b) => a - b)).toEqual([...original].sort((a, b) => a - b));
     });
 
     test('fisherYatesShuffle with numberOfElementsWanted returns correct subset', () => {
@@ -563,7 +665,7 @@ describe('FilterFunctions', () => {
       expect(result).toEqual([]);
 
       const largeResult = fisherYatesShuffle([1, 2], 5);
-      expect(largeResult.sort()).toEqual([1, 2]);
+      expect([...largeResult].sort((a, b) => a - b)).toEqual([1, 2]);
     });
 
     test('getRandomRecipes returns correct number of recipes', () => {
