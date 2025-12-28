@@ -41,16 +41,17 @@ appId: "com.recipedia"
                 id: "Modal::Gallery::RoundButton"
                 label: "Reopen gallery"
 
+      # FAB IDs use regex pattern because React Native Paper adds suffix on iOS
       - runFlow:
           when:
             visible:
-              id: "ExpandButton"
+              id: "ExpandButton.*"
           commands:
             - runFlow:
                 file: "../../../../fab/expand.yaml"
                 label: "Expand FAB menu"
             - tapOn:
-                id: "GalleryButton"
+                id: "GalleryButton.*"
                 label: "Reopen gallery"
 
       - runFlow:

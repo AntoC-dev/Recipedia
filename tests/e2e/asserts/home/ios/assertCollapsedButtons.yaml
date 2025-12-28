@@ -1,0 +1,18 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    id: "ExpandButton-container-outer-layer"
+    label: "Expand button is visible"
+
+- assertNotVisible:
+    id: "ReduceButton-container-outer-layer"
+    label: "Reduce button is not visible"
+- assertNotVisible:
+    id: "RecipeEdit-container-outer-layer"
+    label: "Edit button is not visible"
+- assertNotVisible:
+    id: "GalleryButton-container-outer-layer"
+    label: "Gallery button is not visible"
+- assertNotVisible:
+    id: "CameraButton-container-outer-layer"
+    label: "Camera button is not visible"

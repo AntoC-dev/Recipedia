@@ -4,9 +4,21 @@ appId: "com.recipedia"
     file: "../../bottomtabs/fr/assertBottomTabs.yaml"
     label: "Check bottom navigation tabs in French"
 
-- assertVisible:
-    id: "ExpandButton"
-    label: "Expand button is displayed"
+# Platform-specific FAB assertion due to React Native Paper adding suffix on iOS
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "ExpandButton-container-outer-layer"
+          label: "Expand button is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "ExpandButton"
+          label: "Expand button is displayed"
 
 - assertVisible:
     id: "Home::RecipeRecommendation::random::SubHeader"

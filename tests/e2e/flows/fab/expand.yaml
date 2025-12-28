@@ -1,17 +1,18 @@
 appId: "com.recipedia"
 ---
+# FAB IDs use regex pattern because React Native Paper adds "-container-outer-layer" suffix on iOS
 - repeat:
     times: 5
     while:
       notVisible:
-        id: "ReduceButton"
+        id: "ReduceButton.*"
     commands:
       - tapOn:
-          id: "ExpandButton"
+          id: "ExpandButton.*"
           label: "Tap FAB expand button"
       - extendedWaitUntil:
           visible:
-            id: "ReduceButton"
+            id: "ReduceButton.*"
           timeout: 1000
           optional: true
 
