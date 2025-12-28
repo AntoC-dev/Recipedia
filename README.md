@@ -18,7 +18,8 @@ capabilities for extracting recipe information from images.
 - 📱 **Cross-platform**: Built with React Native and Expo for iOS and Android
 - 🔍 **Smart Search**: Fuzzy search for recipes and ingredients using Fuse.js
 - 📸 **OCR Integration**: Extract recipe information from images using ML Kit text recognition
-- 🌐 **Web Recipe Import**: Import recipes from 400+ websites using [recipe-scrapers](https://github.com/hhursev/recipe-scrapers)
+- 🌐 **Web Recipe Import**: Import recipes from 400+ websites
+  using [recipe-scrapers](https://github.com/hhursev/recipe-scrapers)
 - 🌍 **Multi-language**: Full internationalization support (English & French)
 - 🌙 **Dark Mode**: Complete dark/light theme support
 - 🗃️ **Local Storage**: SQLite database for offline functionality
@@ -93,7 +94,9 @@ src/
 - **Internationalization**: i18next
 - **Search**: Fuse.js for fuzzy search
 - **OCR**: @react-native-ml-kit/text-recognition
-- **Recipe Scraping**: [recipe-scrapers](https://github.com/hhursev/recipe-scrapers) via Python (Chaquopy on Android, BeeWare on iOS, Pyodide on Web)
+- **Ads**: Google AdMob (banner ads with GDPR consent)
+- **Recipe Scraping**: [recipe-scrapers](https://github.com/hhursev/recipe-scrapers) via Python (Chaquopy on Android,
+  BeeWare on iOS, Pyodide on Web)
 - **Testing**: Jest + React Native Testing Library + Maestro (E2E)
 
 ## 📖 Documentation
@@ -240,7 +243,8 @@ When reporting bugs, please include:
 - **Local Data**: All recipes are stored locally on your device
 - **No Cloud Sync**: Your data stays on your device
 - **Camera Permissions**: Only used for OCR recipe scanning
-- **No Analytics**: No user tracking or data collection
+- **Ads**: The app displays banner ads via Google AdMob. For EU users, a GDPR consent dialog is shown before
+  personalized ads. See our [Privacy Policy](privacy-policy.md) for details.
 
 ## 📄 License
 
@@ -252,7 +256,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [React Native](https://reactnative.dev/) team for the framework
 - [React Native Paper](https://reactnativepaper.com/) for the UI components
 - [ML Kit](https://developers.google.com/ml-kit) for OCR capabilities
-- **[recipe-scrapers](https://github.com/hhursev/recipe-scrapers)** - A huge thank you to [Hristo Harsev](https://github.com/hhursev) and all the [contributors](https://github.com/hhursev/recipe-scrapers/graphs/contributors) for this incredible Python library that powers our web recipe import feature, supporting 400+ recipe websites
+- **[recipe-scrapers](https://github.com/hhursev/recipe-scrapers)** - A huge thank you
+  to [Hristo Harsev](https://github.com/hhursev) and all
+  the [contributors](https://github.com/hhursev/recipe-scrapers/graphs/contributors) for this incredible Python library
+  that powers our web recipe import feature, supporting 400+ recipe websites
 - [Chaquopy](https://chaquo.com/chaquopy/) for embedding Python in Android apps
 - [BeeWare](https://beeware.org/) for Python on iOS support
 - [Pyodide](https://pyodide.org/) for running Python in the browser via WebAssembly

@@ -107,12 +107,17 @@ npm run docs:build          # Generate API documentation
 npm run docs:clean          # Clean documentation build
 
 # Building
-npm run build:test:android  # Build Android APK
-npm run build:test:ios      # Build iOS app
+npm run build:test:android  # Build Android APK (uses test ads)
+npm run build:test:ios      # Build iOS app (uses test ads)
+npm run build:prod:android  # Build production Android (requires AdMob secrets)
+npm run build:prod:ios      # Build production iOS (requires AdMob secrets)
 
 # Release
 npm run release            # Semantic release
 ```
+
+> **Note**: Production builds require AdMob environment variables. See CLAUDE.md for the list of required secrets.
+> Development and test builds use Google's test ad IDs automatically.
 
 ## 📁 Project Structure
 
