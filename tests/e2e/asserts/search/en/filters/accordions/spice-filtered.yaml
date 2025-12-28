@@ -1,7 +1,13 @@
 appId: "com.recipedia"
-
-
 ---
+- scrollUntilVisible:
+    element:
+      text: "Spice"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Spice accordion"
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Spice accordion is displayed"
@@ -11,14 +17,6 @@ appId: "com.recipedia"
     label: "Spice accordion title is displayed"
 
 # Expand the accordion
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to Spice accordion"
-
 - tapOn:
     text: "Spice"
     label: "Expand Spice accordion"
@@ -26,41 +24,41 @@ appId: "com.recipedia"
 # Initialize counter for visible items
 - evalScript: ${output.itemIndex = 0}
 
-# Item 0: Black Pepper - Assert visible if in VISIBLE_ITEMS
+# Item 0: Basil Leaves - Assert visible if in VISIBLE_ITEMS
 - runFlow:
     when:
-      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Black Pepper')!== undefined}
-    file: "spice-items/blackPepper-visible.yaml"
+      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Basil Leaves')!== undefined}
+    file: "spice-items/basilLeaves-visible.yaml"
 
-# Item 0: Black Pepper - Assert NOT visible if not in VISIBLE_ITEMS
+# Item 0: Basil Leaves - Assert NOT visible if not in VISIBLE_ITEMS
 - runFlow:
     when:
-      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Black Pepper')=== undefined}
-    file: "spice-items/blackPepper-hidden.yaml"
+      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Basil Leaves')=== undefined}
+    file: "spice-items/basilLeaves-hidden.yaml"
 
-# Item 1: Cumin - Assert visible if in VISIBLE_ITEMS
+# Item 1: Cocoa Powder - Assert visible if in VISIBLE_ITEMS
 - runFlow:
     when:
-      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Cumin')!== undefined}
-    file: "spice-items/cumin-visible.yaml"
+      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Cocoa Powder')!== undefined}
+    file: "spice-items/cocoaPowder-visible.yaml"
 
-# Item 1: Cumin - Assert NOT visible if not in VISIBLE_ITEMS
+# Item 1: Cocoa Powder - Assert NOT visible if not in VISIBLE_ITEMS
 - runFlow:
     when:
-      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Cumin')=== undefined}
-    file: "spice-items/cumin-hidden.yaml"
+      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Cocoa Powder')=== undefined}
+    file: "spice-items/cocoaPowder-hidden.yaml"
 
-# Item 2: Paprika - Assert visible if in VISIBLE_ITEMS
+# Item 2: Curry Powder - Assert visible if in VISIBLE_ITEMS
 - runFlow:
     when:
-      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Paprika')!== undefined}
-    file: "spice-items/paprika-visible.yaml"
+      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Curry Powder')!== undefined}
+    file: "spice-items/curryPowder-visible.yaml"
 
-# Item 2: Paprika - Assert NOT visible if not in VISIBLE_ITEMS
+# Item 2: Curry Powder - Assert NOT visible if not in VISIBLE_ITEMS
 - runFlow:
     when:
-      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Paprika')=== undefined}
-    file: "spice-items/paprika-hidden.yaml"
+      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Curry Powder')=== undefined}
+    file: "spice-items/curryPowder-hidden.yaml"
 
 
 - scrollUntilVisible:

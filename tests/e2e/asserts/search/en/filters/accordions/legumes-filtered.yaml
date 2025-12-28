@@ -1,7 +1,13 @@
 appId: "com.recipedia"
-
-
 ---
+- scrollUntilVisible:
+    element:
+      text: "Legumes"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Legumes accordion"
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Legumes accordion is displayed"
@@ -11,14 +17,6 @@ appId: "com.recipedia"
     label: "Legumes accordion title is displayed"
 
 # Expand the accordion
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to Legumes accordion"
-
 - tapOn:
     text: "Legumes"
     label: "Expand Legumes accordion"
@@ -26,17 +24,17 @@ appId: "com.recipedia"
 # Initialize counter for visible items
 - evalScript: ${output.itemIndex = 0}
 
-# Item 0: Black Beans - Assert visible if in VISIBLE_ITEMS
+# Item 0: Red Lentils - Assert visible if in VISIBLE_ITEMS
 - runFlow:
     when:
-      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Black Beans')!== undefined}
-    file: "legumes-items/blackBeans-visible.yaml"
+      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Red Lentils')!== undefined}
+    file: "legumes-items/redLentils-visible.yaml"
 
-# Item 0: Black Beans - Assert NOT visible if not in VISIBLE_ITEMS
+# Item 0: Red Lentils - Assert NOT visible if not in VISIBLE_ITEMS
 - runFlow:
     when:
-      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Black Beans')=== undefined}
-    file: "legumes-items/blackBeans-hidden.yaml"
+      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Red Lentils')=== undefined}
+    file: "legumes-items/redLentils-hidden.yaml"
 
 
 - scrollUntilVisible:

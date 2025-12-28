@@ -6,10 +6,10 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 60
     centerElement: true
-    label: "Scroll to Tartar Sauce filter item"
+    label: "Scroll to Vegetable Broth filter item"
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::${output.itemIndex}"
-    label: "Tartar Sauce filter is visible"
+    label: "Vegetable Broth filter is visible"
 
 - evalScript: ${output.itemIndex = output.itemIndex + 1}

@@ -1,5 +1,0 @@
-appId: "com.recipedia"
----
-- assertNotVisible:
-    text: "Mustard"
-    label: "Mustard filter is not visible"

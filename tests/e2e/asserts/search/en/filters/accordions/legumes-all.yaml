@@ -1,6 +1,13 @@
 appId: "com.recipedia"
 ---
-# Assert accordion is displayed
+- scrollUntilVisible:
+    element:
+      text: "Legumes"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Legumes accordion"
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Legumes accordion is displayed"
@@ -8,15 +15,6 @@ appId: "com.recipedia"
 - assertVisible:
     text: "Legumes"
     label: "Legumes accordion title is displayed"
-
-# Expand the accordion
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to Legumes accordion"
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -29,11 +27,11 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 40
     centerElement: true
-    label: "Scroll to Black Beans filter"
+    label: "Scroll to Red Lentils filter"
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
-    label: "Black Beans filter is visible"
+    label: "Red Lentils filter is visible"
 
 - scrollUntilVisible:
     element:

@@ -24,11 +24,11 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 40
     centerElement: true
-    label: "Scroll to Tofu filter"
+    label: "Scroll to Eggs filter"
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
-    label: "Tofu filter is visible"
+    label: "Eggs filter is visible"
 
 - scrollUntilVisible:
     element:

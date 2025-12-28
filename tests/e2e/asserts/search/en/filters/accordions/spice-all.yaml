@@ -23,11 +23,11 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 60
     centerElement: true
-    label: "Scroll to Black Pepper filter"
+    label: "Scroll to Basil Leaves filter"
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
-    label: "Black Pepper filter is visible"
+    label: "Basil Leaves filter is visible"
 
 - scrollUntilVisible:
     element:
@@ -35,11 +35,11 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 60
     centerElement: true
-    label: "Scroll to Cumin filter"
+    label: "Scroll to Cocoa Powder filter"
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::1"
-    label: "Cumin filter is visible"
+    label: "Cocoa Powder filter is visible"
 
 - scrollUntilVisible:
     element:
@@ -47,11 +47,11 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 60
     centerElement: true
-    label: "Scroll to Paprika filter"
+    label: "Scroll to Curry Powder filter"
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::2"
-    label: "Paprika filter is visible"
+    label: "Curry Powder filter is visible"
 
 - scrollUntilVisible:
     element:

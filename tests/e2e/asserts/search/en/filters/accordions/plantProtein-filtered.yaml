@@ -1,7 +1,13 @@
 appId: "com.recipedia"
-
-
 ---
+- scrollUntilVisible:
+    element:
+      text: "Plant Protein"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Plant Protein accordion"
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Plant Protein accordion is displayed"
@@ -11,14 +17,6 @@ appId: "com.recipedia"
     label: "Plant Protein accordion title is displayed"
 
 # Expand the accordion
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to Plant Protein accordion"
-
 - tapOn:
     text: "Plant Protein"
     label: "Expand Plant Protein accordion"
@@ -26,17 +24,17 @@ appId: "com.recipedia"
 # Initialize counter for visible items
 - evalScript: ${output.itemIndex = 0}
 
-# Item 0: Tofu - Assert visible if in VISIBLE_ITEMS
+# Item 0: Eggs - Assert visible if in VISIBLE_ITEMS
 - runFlow:
     when:
-      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Tofu')!== undefined}
-    file: "plantProtein-items/tofu-visible.yaml"
+      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Eggs')!== undefined}
+    file: "plantProtein-items/eggs-visible.yaml"
 
-# Item 0: Tofu - Assert NOT visible if not in VISIBLE_ITEMS
+# Item 0: Eggs - Assert NOT visible if not in VISIBLE_ITEMS
 - runFlow:
     when:
-      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Tofu')=== undefined}
-    file: "plantProtein-items/tofu-hidden.yaml"
+      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Eggs')=== undefined}
+    file: "plantProtein-items/eggs-hidden.yaml"
 
 
 - scrollUntilVisible:

@@ -1,7 +1,13 @@
 appId: "com.recipedia"
-
-
 ---
+- scrollUntilVisible:
+    element:
+      text: "Preparation Time"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Preparation Time accordion"
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Preparation Time accordion is displayed"
@@ -11,14 +17,6 @@ appId: "com.recipedia"
     label: "Preparation Time accordion title is displayed"
 
 # Expand the accordion
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to Preparation Time accordion"
-
 - tapOn:
     text: "Preparation Time"
     label: "Expand Preparation Time accordion"

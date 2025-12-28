@@ -6,10 +6,10 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 60
     centerElement: true
-    label: "Scroll to Mayonnaise filter item"
+    label: "Scroll to Curry Powder filter item"
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::${output.itemIndex}"
-    label: "Mayonnaise filter is visible"
+    label: "Curry Powder filter is visible"
 
 - evalScript: ${output.itemIndex = output.itemIndex + 1}

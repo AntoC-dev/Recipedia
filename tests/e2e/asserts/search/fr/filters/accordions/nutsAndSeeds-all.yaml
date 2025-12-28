@@ -23,12 +23,12 @@ appId: "com.recipedia"
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
     direction: DOWN
     centerElement: true
-    label: "Scroll down to ensure Sesame Seeds is rendered"
+    label: "Scroll down to ensure Pine Nuts is rendered"
 
 # Assert all items are visible
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
-    label: "Sesame Seeds filter is visible"
+    label: "Pine Nuts filter is visible"
 
 # Scroll back up to accordion header
 - scrollUntilVisible:

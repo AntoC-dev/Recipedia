@@ -1,5 +1,13 @@
 appId: "com.recipedia"
 ---
+- scrollUntilVisible:
+    element:
+      text: "Tags"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Tags accordion"
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Tags accordion is displayed"
@@ -7,14 +15,6 @@ appId: "com.recipedia"
 - assertVisible:
     text: "Tags"
     label: "Tags accordion title is displayed"
-
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to Tags accordion"
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"

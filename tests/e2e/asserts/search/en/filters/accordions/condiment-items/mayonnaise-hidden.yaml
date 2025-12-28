@@ -1,5 +1,0 @@
-appId: "com.recipedia"
----
-- assertNotVisible:
-    text: "Mayonnaise"
-    label: "Mayonnaise filter is not visible"

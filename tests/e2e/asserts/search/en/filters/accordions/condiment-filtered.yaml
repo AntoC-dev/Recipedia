@@ -1,7 +1,13 @@
 appId: "com.recipedia"
-
-
 ---
+- scrollUntilVisible:
+    element:
+      text: "Condiment"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Condiment accordion"
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Condiment accordion is displayed"
@@ -11,14 +17,6 @@ appId: "com.recipedia"
     label: "Condiment accordion title is displayed"
 
 # Expand the accordion
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to Condiment accordion"
-
 - tapOn:
     text: "Condiment"
     label: "Expand Condiment accordion"
@@ -26,29 +24,29 @@ appId: "com.recipedia"
 # Initialize counter for visible items
 - evalScript: ${output.itemIndex = 0}
 
-# Item 0: Mayonnaise - Assert visible if in VISIBLE_ITEMS
+# Item 0: Nori Sheets - Assert visible if in VISIBLE_ITEMS
 - runFlow:
     when:
-      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Mayonnaise')!== undefined}
-    file: "condiment-items/mayonnaise-visible.yaml"
+      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Nori Sheets')!== undefined}
+    file: "condiment-items/noriSheets-visible.yaml"
 
-# Item 0: Mayonnaise - Assert NOT visible if not in VISIBLE_ITEMS
+# Item 0: Nori Sheets - Assert NOT visible if not in VISIBLE_ITEMS
 - runFlow:
     when:
-      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Mayonnaise')=== undefined}
-    file: "condiment-items/mayonnaise-hidden.yaml"
+      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Nori Sheets')=== undefined}
+    file: "condiment-items/noriSheets-hidden.yaml"
 
-# Item 1: Mustard - Assert visible if in VISIBLE_ITEMS
+# Item 1: Soy Sauce - Assert visible if in VISIBLE_ITEMS
 - runFlow:
     when:
-      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Mustard')!== undefined}
-    file: "condiment-items/mustard-visible.yaml"
+      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Soy Sauce')!== undefined}
+    file: "condiment-items/soySauce-visible.yaml"
 
-# Item 1: Mustard - Assert NOT visible if not in VISIBLE_ITEMS
+# Item 1: Soy Sauce - Assert NOT visible if not in VISIBLE_ITEMS
 - runFlow:
     when:
-      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Mustard')=== undefined}
-    file: "condiment-items/mustard-hidden.yaml"
+      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Soy Sauce')=== undefined}
+    file: "condiment-items/soySauce-hidden.yaml"
 
 
 - scrollUntilVisible:

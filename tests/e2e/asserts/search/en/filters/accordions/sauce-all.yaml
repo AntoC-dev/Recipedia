@@ -23,11 +23,11 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 60
     centerElement: true
-    label: "Scroll to Soy Sauce filter"
+    label: "Scroll to Caesar Dressing filter"
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
-    label: "Soy Sauce filter is visible"
+    label: "Caesar Dressing filter is visible"
 
 - scrollUntilVisible:
     element:
@@ -35,11 +35,11 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 60
     centerElement: true
-    label: "Scroll to Sriracha filter"
+    label: "Scroll to Coconut Milk filter"
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::1"
-    label: "Sriracha filter is visible"
+    label: "Coconut Milk filter is visible"
 
 - scrollUntilVisible:
     element:
@@ -47,11 +47,11 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 60
     centerElement: true
-    label: "Scroll to Tartar Sauce filter"
+    label: "Scroll to Tomato Sauce filter"
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::2"
-    label: "Tartar Sauce filter is visible"
+    label: "Tomato Sauce filter is visible"
 
 - scrollUntilVisible:
     element:
@@ -59,11 +59,11 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 60
     centerElement: true
-    label: "Scroll to Tomato Sauce filter"
+    label: "Scroll to Vegetable Broth filter"
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::3"
-    label: "Tomato Sauce filter is visible"
+    label: "Vegetable Broth filter is visible"
 
 - scrollUntilVisible:
     element:

@@ -1,7 +1,13 @@
 appId: "com.recipedia"
-
-
 ---
+- scrollUntilVisible:
+    element:
+      text: "Oil and Fat"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Oil and Fat accordion"
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Oil and Fat accordion is displayed"
@@ -11,14 +17,6 @@ appId: "com.recipedia"
     label: "Oil and Fat accordion title is displayed"
 
 # Expand the accordion
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to Oil and Fat accordion"
-
 - tapOn:
     text: "Oil and Fat"
     label: "Expand Oil and Fat accordion"

@@ -24,11 +24,11 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 40
     centerElement: true
-    label: "Scroll to Chicken filter"
+    label: "Scroll to Chicken Breast filter"
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
-    label: "Chicken filter is visible"
+    label: "Chicken Breast filter is visible"
 
 - scrollUntilVisible:
     element:

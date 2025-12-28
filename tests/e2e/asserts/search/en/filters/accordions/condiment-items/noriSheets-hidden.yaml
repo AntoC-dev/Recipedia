@@ -1,0 +1,5 @@
+appId: "com.recipedia"
+---
+- assertNotVisible:
+    text: "Nori Sheets"
+    label: "Nori Sheets filter is not visible"

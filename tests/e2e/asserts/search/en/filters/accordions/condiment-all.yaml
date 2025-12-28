@@ -23,11 +23,11 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 60
     centerElement: true
-    label: "Scroll to Mayonnaise filter"
+    label: "Scroll to Nori Sheets filter"
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
-    label: "Mayonnaise filter is visible"
+    label: "Nori Sheets filter is visible"
 
 - scrollUntilVisible:
     element:
@@ -35,11 +35,11 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 60
     centerElement: true
-    label: "Scroll to Mustard filter"
+    label: "Scroll to Soy Sauce filter"
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::1"
-    label: "Mustard filter is visible"
+    label: "Soy Sauce filter is visible"
 
 - scrollUntilVisible:
     element:

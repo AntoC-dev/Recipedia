@@ -1,0 +1,5 @@
+appId: "com.recipedia"
+---
+- assertNotVisible:
+    text: "Eggs"
+    label: "Eggs filter is not visible"
