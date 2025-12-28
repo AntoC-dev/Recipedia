@@ -25,3 +25,7 @@ appId: "com.recipedia"
 - assertVisible:
     id: "MenuScreen::MenuItem::1::RemoveButton"
     label: "Verify remove button is visible"
+
+- assertVisible:
+    id: "MenuScreen::AdBanner"
+    label: "Ad banner is displayed on menu screen"
