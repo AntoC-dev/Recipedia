@@ -44,7 +44,8 @@ module.exports = {
         '^react-native-paper$': '<rootDir>/tests/mocks/deps/react-native-paper-mock.tsx',
         '^react-native-image-crop-picker$': '<rootDir>/tests/mocks/deps/react-native-image-crop-picker-mock.tsx',
         '^react-native-copilot$': '<rootDir>/tests/mocks/deps/react-native-copilot-mock.tsx',
-        '^react-native-reanimated$': '<rootDir>/tests/mocks/deps/react-native-reanimated-mock.ts'
+        '^react-native-reanimated$': '<rootDir>/tests/mocks/deps/react-native-reanimated-mock.ts',
+        '^react-native-google-mobile-ads$': '<rootDir>/tests/mocks/deps/react-native-google-mobile-ads-mock.tsx'
     },
     setupFilesAfterEnv: [
         '<rootDir>/tests/setup-community-mocks.js',
