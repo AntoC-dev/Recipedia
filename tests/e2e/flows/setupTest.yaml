@@ -29,9 +29,10 @@ appId: "com.recipedia"
     file: "handleAnr.yaml"
     label: "Handle ANR dialog if it appears after home render"
 
+# FAB IDs use regex pattern because React Native Paper adds "-container-outer-layer" suffix on iOS
 - extendedWaitUntil:
     visible:
-      id: "ExpandButton"
+      id: "ExpandButton.*"
     timeout: 5000
     label: "Wait for FAB to be visible"
 

@@ -17,8 +17,9 @@ appId: "com.recipedia"
       platform: Android
     label: "Add recipe image to gallery"
 
+# FAB ID uses regex pattern because React Native Paper adds suffix on iOS
 - tapOn:
-    id: "GalleryButton"
+    id: "GalleryButton.*"
     label: "Open gallery for OCR"
 
 - runFlow:
