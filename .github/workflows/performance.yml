@@ -21,13 +21,40 @@ permissions:
   contents: read
 
 jobs:
+  check-new-commits:
+    name: Check for New Commits
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    outputs:
+      has_new_commits: ${{ steps.check.outputs.has_new_commits }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Check for commits in last 24 hours
+        id: check
+        run: |
+          COMMITS=$(git log --oneline --since="24 hours ago" | wc -l)
+          if [ "$COMMITS" -gt 0 ]; then
+            echo "has_new_commits=true" >> $GITHUB_OUTPUT
+            echo "Found $COMMITS commit(s) in the last 24 hours"
+          else
+            echo "has_new_commits=false" >> $GITHUB_OUTPUT
+            echo "No commits in the last 24 hours, skipping performance tests"
+          fi
+
   build-performance-apk:
     name: Build Performance APK
-    # Only run if: scheduled, manual, OR PR has 'perf-test' label
+    needs: [ check-new-commits ]
+    # Only run if: manual, PR with label, OR scheduled with new commits
     if: |
-      github.event_name == 'schedule' ||
-      github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'perf-test'))
+      always() && (
+        github.event_name == 'workflow_dispatch' ||
+        (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'perf-test')) ||
+        (github.event_name == 'schedule' && needs.check-new-commits.outputs.has_new_commits == 'true')
+      )
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
