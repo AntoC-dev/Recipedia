@@ -55,6 +55,15 @@ jobs:
 
       - name: Build for ${{ matrix.platform }}
         if: matrix.enabled
+        env:
+          EXPO_PUBLIC_ADMOB_ANDROID_APP_ID: ${{ secrets.EXPO_PUBLIC_ADMOB_ANDROID_APP_ID }}
+          EXPO_PUBLIC_ADMOB_IOS_APP_ID: ${{ secrets.EXPO_PUBLIC_ADMOB_IOS_APP_ID }}
+          EXPO_PUBLIC_ADMOB_BANNER_HOME_ANDROID: ${{ secrets.EXPO_PUBLIC_ADMOB_BANNER_HOME_ANDROID }}
+          EXPO_PUBLIC_ADMOB_BANNER_HOME_IOS: ${{ secrets.EXPO_PUBLIC_ADMOB_BANNER_HOME_IOS }}
+          EXPO_PUBLIC_ADMOB_BANNER_MENU_ANDROID: ${{ secrets.EXPO_PUBLIC_ADMOB_BANNER_MENU_ANDROID }}
+          EXPO_PUBLIC_ADMOB_BANNER_MENU_IOS: ${{ secrets.EXPO_PUBLIC_ADMOB_BANNER_MENU_IOS }}
+          EXPO_PUBLIC_ADMOB_BANNER_SHOPPING_ANDROID: ${{ secrets.EXPO_PUBLIC_ADMOB_BANNER_SHOPPING_ANDROID }}
+          EXPO_PUBLIC_ADMOB_BANNER_SHOPPING_IOS: ${{ secrets.EXPO_PUBLIC_ADMOB_BANNER_SHOPPING_IOS }}
         run: npm run build:prod:${{ matrix.platform }}
 
       - name: Submit to store (${{ matrix.platform }})
