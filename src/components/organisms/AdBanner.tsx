@@ -29,6 +29,7 @@ import { padding } from '@styles/spacing';
 export type AdBannerProps = {
   placement: AdPlacement;
   testId: string;
+  onHeightChange?: (height: number) => void;
 };
 
 /**
@@ -38,7 +39,7 @@ export type AdBannerProps = {
  * @param props.placement - Screen placement identifier for ad targeting
  * @param props.testId - Test ID prefix for automated testing
  */
-export function AdBanner({ placement, testId }: AdBannerProps) {
+export function AdBanner({ placement, testId, onHeightChange }: AdBannerProps) {
   const { colors } = useTheme();
   const [hasError, setHasError] = useState(false);
 
@@ -52,6 +53,11 @@ export function AdBanner({ placement, testId }: AdBannerProps) {
     <View
       testID={`${testId}::AdBanner`}
       style={[styles.container, { backgroundColor: colors.surface }]}
+      onLayout={e => {
+        const height = e.nativeEvent.layout.height;
+        adLogger.debug('Banner layout updated', { placement, height });
+        onHeightChange?.(height);
+      }}
     >
       <BannerAd
         unitId={adUnitId}
