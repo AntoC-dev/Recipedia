@@ -133,7 +133,7 @@ export function extractFilteredRecipeDatas(
 
   return [
     titleSortedArray,
-    ingredientsUniqueCollection.sort(),
+    ingredientsUniqueCollection.sort((a, b) => a.name.localeCompare(b.name)),
     Array.from(tagsUniqueCollection).sort(),
   ];
 }
