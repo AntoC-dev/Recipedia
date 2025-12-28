@@ -66,6 +66,7 @@ async function renderHomeAndWaitForRecommendations() {
 describe('Home Screen', () => {
   const database = RecipeDatabase.getInstance();
   const expectedRandomRecommendationLength = Math.min(testRecipes.length, howManyItemInCarousel);
+  const originalNodeEnv = process.env.NODE_ENV;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -74,7 +75,10 @@ describe('Home Screen', () => {
     await database.addMultipleTags(testTags);
     await database.addMultipleRecipes(testRecipes);
   });
-  afterEach(async () => await database.closeAndReset());
+  afterEach(async () => {
+    process.env.NODE_ENV = originalNodeEnv;
+    await database.closeAndReset();
+  });
 
   // -------- INITIAL RENDERING TESTS --------
   test('renders all navigation buttons correctly', async () => {
@@ -233,5 +237,13 @@ describe('Home Screen', () => {
     randomReco.forEach((recipe: recipeTableElement) => {
       expect(testRecipeIds).toContain(recipe.id);
     });
+  });
+
+  test('renders AdBanner when ads are enabled', async () => {
+    process.env.NODE_ENV = 'development';
+
+    const { getByTestId } = await renderHomeAndWaitForRecommendations();
+
+    expect(getByTestId('Home::AdBanner')).toBeTruthy();
   });
 });
