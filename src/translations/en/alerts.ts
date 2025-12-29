@@ -5,7 +5,7 @@ export default {
     titlePlural: 'Missing elements',
     messageAll:
       "You haven't add any of the elements to your recipe. Please enter before validate at least: \
-                                                \n\t- an image\n\t- a title\n\t- some ingredients\n\t- for how many persons this recipe is\n\t- some instructions for the preparation",
+                                                            \n\t- an image\n\t- a title\n\t- some ingredients\n\t- for how many persons this recipe is\n\t- some instructions for the preparation",
     messageSingularBeginning: "You're missing ",
     messageSingularEnding: ' to your recipe. Please add this before validate.',
     messageSingularNutrition:
@@ -32,7 +32,7 @@ export default {
   tagSimilarity: {
     similarTagFound: 'Similar tag found',
     similarTagFoundContent:
-      'A similar tag already exists: "{{existingTag}}". You can use it or modify the name below to create a new one.',
+      'You\'re adding "{{newTag}}". A similar tag already exists: "{{existingTag}}". You can use it or modify the name below to create a new one.',
     newTagTitle: 'Tag not found',
     newTagContent: 'The tag "{{tagName}}" doesn\'t exist. You can modify it below before adding.',
     add: 'Add',
@@ -41,7 +41,8 @@ export default {
   },
   ingredientSimilarity: {
     similarIngredientFound: 'Similar ingredient found',
-    similarIngredientFoundContent: 'A similar ingredient already exists: "{{existingIngredient}}".',
+    similarIngredientFoundContent:
+      'You\'re adding "{{newIngredient}}". A similar ingredient already exists: "{{existingIngredient}}". You can use it or modify the name below to create a new one.',
     newIngredientTitle: 'Ingredient not found',
     newIngredientContent:
       'The ingredient "{{ingredientName}}" doesn\'t exist. You can modify it before adding.',

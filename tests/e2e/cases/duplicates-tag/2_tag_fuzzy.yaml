@@ -32,6 +32,8 @@ tags:
 
 - runFlow:
     file: "../../flows/recipe/tags/useFuzzyTag.yaml"
+    env:
+      NEW_ITEM_NAME: "Dessrt"
     label: "Action - Use existing Dessert tag"
 
 - assertNotVisible:
