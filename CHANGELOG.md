@@ -1,3 +1,14 @@
+## [2.10.2](https://github.com/AntoC-dev/Recipedia/compare/v2.10.1...v2.10.2) (2025-12-29)
+
+### Bug Fixes
+
+* filters sort ([#173](https://github.com/AntoC-dev/Recipedia/issues/173)) ([42a6a45](https://github.com/AntoC-dev/Recipedia/commit/42a6a459a233ff728288e24e145d2ae4f0b8a645))
+* **filters:** sort ingredient objects by name property ([0d69e6f](https://github.com/AntoC-dev/Recipedia/commit/0d69e6f9ee83578eb545fd4d6f48b445814c1b52))
+
+### Performance Improvements
+
+* update reassure baseline [skip ci] ([3a07271](https://github.com/AntoC-dev/Recipedia/commit/3a072712de6f8d82269de6df90ed8c69201a2141))
+
 ## [2.10.1](https://github.com/AntoC-dev/Recipedia/compare/v2.10.0...v2.10.1) (2025-12-28)
 
 ### Performance Improvements
