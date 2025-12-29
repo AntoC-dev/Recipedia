@@ -1,0 +1,5 @@
+appId: "com.recipedia"
+---
+- assertNotVisible:
+    text: "Pine Nuts"
+    label: "Pine Nuts filter is not visible"

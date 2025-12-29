@@ -1,7 +1,13 @@
 appId: "com.recipedia"
-
-
 ---
+- scrollUntilVisible:
+    element:
+      text: "Vegetable"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Vegetable accordion"
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Vegetable accordion is displayed"
@@ -11,14 +17,6 @@ appId: "com.recipedia"
     label: "Vegetable accordion title is displayed"
 
 # Expand the accordion
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to Vegetable accordion"
-
 - tapOn:
     text: "Vegetable"
     label: "Expand Vegetable accordion"

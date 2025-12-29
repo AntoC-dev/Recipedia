@@ -1,0 +1,5 @@
+appId: "com.recipedia"
+---
+- assertNotVisible:
+    text: "Curry Powder"
+    label: "Curry Powder filter is not visible"

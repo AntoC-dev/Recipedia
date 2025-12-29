@@ -1,6 +1,13 @@
 appId: "com.recipedia"
-
 ---
+- scrollUntilVisible:
+    element:
+      text: "Only in-season ingredients"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Only in-season ingredients accordion"
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Only in-season ingredients accordion is displayed"
@@ -10,14 +17,6 @@ appId: "com.recipedia"
     label: "Only in-season ingredients accordion title is displayed"
 
 # Expand the accordion
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to Only in-season ingredients accordion"
-
 - tapOn:
     text: "Only in-season ingredients"
     label: "Expand Only in-season ingredients accordion"

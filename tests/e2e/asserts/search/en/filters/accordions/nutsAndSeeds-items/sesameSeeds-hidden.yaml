@@ -1,5 +1,0 @@
-appId: "com.recipedia"
----
-- assertNotVisible:
-    text: "Sesame Seeds"
-    label: "Sesame Seeds filter is not visible"

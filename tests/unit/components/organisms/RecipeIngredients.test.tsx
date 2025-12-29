@@ -544,4 +544,80 @@ describe('RecipeIngredients Component', () => {
       expect('columnTitles' in readOnlyProps).toBeFalsy();
     });
   });
+
+  describe('ingredient name sorting', () => {
+    it('provides available ingredients sorted alphabetically to TextInputWithDropDown', async () => {
+      const dbInstanceLocal = RecipeDatabase.getInstance();
+      await dbInstanceLocal.closeAndReset();
+      await dbInstanceLocal.init();
+      await dbInstanceLocal.addMultipleIngredients([
+        {
+          id: 200,
+          name: 'Zucchini',
+          unit: 'g',
+          type: ingredientType.vegetable,
+          season: ['1', '2', '3'],
+        },
+        {
+          id: 201,
+          name: 'Apple',
+          unit: 'piece',
+          type: ingredientType.fruit,
+          season: ['9', '10', '11'],
+        },
+        {
+          id: 202,
+          name: 'Mango',
+          unit: 'piece',
+          type: ingredientType.fruit,
+          season: ['5', '6', '7'],
+        },
+        {
+          id: 203,
+          name: 'Banana',
+          unit: 'piece',
+          type: ingredientType.fruit,
+          season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        },
+      ]);
+
+      const mockOnIngredientChange = jest.fn();
+      const mockOnAddIngredient = jest.fn();
+
+      const existingIngredient: ingredientTableElement = {
+        quantity: '1',
+        unit: 'piece',
+        name: 'Existing',
+        type: ingredientType.condiment,
+        season: [],
+      };
+
+      const editableProps: RecipeIngredientsProps = {
+        mode: 'editable',
+        testID: 'SortTest',
+        ingredients: [existingIngredient],
+        prefixText: 'Ingredients',
+        columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
+        onIngredientChange: mockOnIngredientChange,
+        onAddIngredient: mockOnAddIngredient,
+        noteInputPlaceholder: 'Note',
+      };
+
+      const { getByTestId } = await renderRecipeIngredients(editableProps);
+
+      const referenceArray = JSON.parse(
+        getByTestId('SortTest::0::NameInput::TextInputWithDropdown::ReferenceTextArray').props
+          .children
+      );
+
+      const sortedCopy = [...referenceArray].sort((a: string, b: string) => a.localeCompare(b));
+      expect(referenceArray).toEqual(sortedCopy);
+
+      expect(referenceArray.indexOf('Apple')).toBeLessThan(referenceArray.indexOf('Banana'));
+      expect(referenceArray.indexOf('Banana')).toBeLessThan(referenceArray.indexOf('Mango'));
+      expect(referenceArray.indexOf('Mango')).toBeLessThan(referenceArray.indexOf('Zucchini'));
+
+      await dbInstanceLocal.closeAndReset();
+    });
+  });
 });

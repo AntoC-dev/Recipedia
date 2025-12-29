@@ -1,7 +1,13 @@
 appId: "com.recipedia"
-
-
 ---
+- scrollUntilVisible:
+    element:
+      text: "Nuts and Seeds"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Nuts and Seeds accordion"
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Nuts and Seeds accordion is displayed"
@@ -11,14 +17,6 @@ appId: "com.recipedia"
     label: "Nuts and Seeds accordion title is displayed"
 
 # Expand the accordion
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to Nuts and Seeds accordion"
-
 - tapOn:
     text: "Nuts and Seeds"
     label: "Expand Nuts and Seeds accordion"
@@ -26,17 +24,17 @@ appId: "com.recipedia"
 # Initialize counter for visible items
 - evalScript: ${output.itemIndex = 0}
 
-# Item 0: Sesame Seeds - Assert visible if in VISIBLE_ITEMS
+# Item 0: Pine Nuts - Assert visible if in VISIBLE_ITEMS
 - runFlow:
     when:
-      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Sesame Seeds')!== undefined}
-    file: "nutsAndSeeds-items/sesameSeeds-visible.yaml"
+      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Pine Nuts')!== undefined}
+    file: "nutsAndSeeds-items/pineNuts-visible.yaml"
 
-# Item 0: Sesame Seeds - Assert NOT visible if not in VISIBLE_ITEMS
+# Item 0: Pine Nuts - Assert NOT visible if not in VISIBLE_ITEMS
 - runFlow:
     when:
-      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Sesame Seeds')=== undefined}
-    file: "nutsAndSeeds-items/sesameSeeds-hidden.yaml"
+      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Pine Nuts')=== undefined}
+    file: "nutsAndSeeds-items/pineNuts-hidden.yaml"
 
 
 - scrollUntilVisible:

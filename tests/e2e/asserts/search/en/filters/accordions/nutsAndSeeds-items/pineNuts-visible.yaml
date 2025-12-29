@@ -6,10 +6,10 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 60
     centerElement: true
-    label: "Scroll to Paprika filter item"
+    label: "Scroll to Pine Nuts filter item"
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::${output.itemIndex}"
-    label: "Paprika filter is visible"
+    label: "Pine Nuts filter is visible"
 
 - evalScript: ${output.itemIndex = output.itemIndex + 1}

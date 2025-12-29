@@ -1,0 +1,5 @@
+appId: "com.recipedia"
+---
+- assertNotVisible:
+    text: "Chicken Breast"
+    label: "Chicken Breast filter is not visible"

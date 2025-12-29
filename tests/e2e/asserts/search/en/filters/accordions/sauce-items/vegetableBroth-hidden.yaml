@@ -1,0 +1,5 @@
+appId: "com.recipedia"
+---
+- assertNotVisible:
+    text: "Vegetable Broth"
+    label: "Vegetable Broth filter is not visible"

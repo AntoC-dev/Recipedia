@@ -246,4 +246,49 @@ describe('RecipeTags Component', () => {
       });
     });
   });
+
+  describe('tag sorting', () => {
+    it('provides available tags sorted alphabetically to TextInputWithDropDown', async () => {
+      const dbInstance = RecipeDatabase.getInstance();
+      await dbInstance.init();
+      await dbInstance.addMultipleTags([
+        { id: 100, name: 'Zebra' },
+        { id: 101, name: 'Apple' },
+        { id: 102, name: 'Mango' },
+        { id: 103, name: 'Banana' },
+      ]);
+
+      const props: RecipeTagProps = {
+        type: 'addOrEdit',
+        editType: 'edit',
+        tagsList: [],
+        randomTags: '',
+        addNewTag: jest.fn(),
+        removeTag: jest.fn(),
+      };
+
+      const { getByTestId } = await renderRecipeTags(props);
+
+      fireEvent.press(getByTestId('RecipeTags::RoundButton::OnPressFunction'));
+
+      await waitFor(() =>
+        expect(
+          getByTestId('RecipeTags::List::0::TextInputWithDropdown::ReferenceTextArray')
+        ).toBeTruthy()
+      );
+
+      const referenceArray = JSON.parse(
+        getByTestId('RecipeTags::List::0::TextInputWithDropdown::ReferenceTextArray').props.children
+      );
+
+      const sortedCopy = [...referenceArray].sort((a: string, b: string) => a.localeCompare(b));
+      expect(referenceArray).toEqual(sortedCopy);
+
+      expect(referenceArray.indexOf('Apple')).toBeLessThan(referenceArray.indexOf('Banana'));
+      expect(referenceArray.indexOf('Banana')).toBeLessThan(referenceArray.indexOf('Mango'));
+      expect(referenceArray.indexOf('Mango')).toBeLessThan(referenceArray.indexOf('Zebra'));
+
+      await dbInstance.closeAndReset();
+    });
+  });
 });

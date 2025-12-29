@@ -19,6 +19,8 @@ tags:
     centerElement: true
     label: "Scroll to recipe card"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "SearchScreen::RecipeCards::1::Chicken Tacos"
     label: "Action - Open Chicken Tacos recipe"

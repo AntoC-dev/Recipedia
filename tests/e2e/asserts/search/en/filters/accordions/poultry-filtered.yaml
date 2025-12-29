@@ -1,7 +1,13 @@
 appId: "com.recipedia"
-
-
 ---
+- scrollUntilVisible:
+    element:
+      text: "Poultry"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Poultry accordion"
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Poultry accordion is displayed"
@@ -11,14 +17,6 @@ appId: "com.recipedia"
     label: "Poultry accordion title is displayed"
 
 # Expand the accordion
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to Poultry accordion"
-
 - tapOn:
     text: "Poultry"
     label: "Expand Poultry accordion"
@@ -26,17 +24,17 @@ appId: "com.recipedia"
 # Initialize counter for visible items
 - evalScript: ${output.itemIndex = 0}
 
-# Item 0: Chicken - Assert visible if in VISIBLE_ITEMS
+# Item 0: Chicken Breast - Assert visible if in VISIBLE_ITEMS
 - runFlow:
     when:
-      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Chicken')!== undefined}
-    file: "poultry-items/chicken-visible.yaml"
+      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Chicken Breast')!== undefined}
+    file: "poultry-items/chickenBreast-visible.yaml"
 
-# Item 0: Chicken - Assert NOT visible if not in VISIBLE_ITEMS
+# Item 0: Chicken Breast - Assert NOT visible if not in VISIBLE_ITEMS
 - runFlow:
     when:
-      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Chicken')=== undefined}
-    file: "poultry-items/chicken-hidden.yaml"
+      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Chicken Breast')=== undefined}
+    file: "poultry-items/chickenBreast-hidden.yaml"
 
 
 - scrollUntilVisible:

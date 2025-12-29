@@ -24,53 +24,53 @@ appId: "com.recipedia"
 # Initialize counter for visible items
 - evalScript: ${output.itemIndex = 0}
 
-# Item 0: Soy Sauce - Assert visible if in VISIBLE_ITEMS
+# Item 0: Caesar Dressing - Assert visible if in VISIBLE_ITEMS
 - runFlow:
     when:
-      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Soy Sauce')!== undefined}
-    file: "sauce-items/soySauce-visible.yaml"
+      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Caesar Dressing')!== undefined}
+    file: "sauce-items/caesarDressing-visible.yaml"
 
-# Item 0: Soy Sauce - Assert NOT visible if not in VISIBLE_ITEMS
+# Item 0: Caesar Dressing - Assert NOT visible if not in VISIBLE_ITEMS
 - runFlow:
     when:
-      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Soy Sauce')=== undefined}
-    file: "sauce-items/soySauce-hidden.yaml"
+      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Caesar Dressing')=== undefined}
+    file: "sauce-items/caesarDressing-hidden.yaml"
 
-# Item 1: Sriracha - Assert visible if in VISIBLE_ITEMS
+# Item 1: Coconut Milk - Assert visible if in VISIBLE_ITEMS
 - runFlow:
     when:
-      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Sriracha')!== undefined}
-    file: "sauce-items/sriracha-visible.yaml"
+      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Coconut Milk')!== undefined}
+    file: "sauce-items/coconutMilk-visible.yaml"
 
-# Item 1: Sriracha - Assert NOT visible if not in VISIBLE_ITEMS
+# Item 1: Coconut Milk - Assert NOT visible if not in VISIBLE_ITEMS
 - runFlow:
     when:
-      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Sriracha')=== undefined}
-    file: "sauce-items/sriracha-hidden.yaml"
+      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Coconut Milk')=== undefined}
+    file: "sauce-items/coconutMilk-hidden.yaml"
 
-# Item 2: Tartar Sauce - Assert visible if in VISIBLE_ITEMS
-- runFlow:
-    when:
-      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Tartar Sauce')!== undefined}
-    file: "sauce-items/tartarSauce-visible.yaml"
-
-# Item 2: Tartar Sauce - Assert NOT visible if not in VISIBLE_ITEMS
-- runFlow:
-    when:
-      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Tartar Sauce')=== undefined}
-    file: "sauce-items/tartarSauce-hidden.yaml"
-
-# Item 3: Tomato Sauce - Assert visible if in VISIBLE_ITEMS
+# Item 2: Tomato Sauce - Assert visible if in VISIBLE_ITEMS
 - runFlow:
     when:
       true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Tomato Sauce')!== undefined}
     file: "sauce-items/tomatoSauce-visible.yaml"
 
-# Item 3: Tomato Sauce - Assert NOT visible if not in VISIBLE_ITEMS
+# Item 2: Tomato Sauce - Assert NOT visible if not in VISIBLE_ITEMS
 - runFlow:
     when:
       true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Tomato Sauce')=== undefined}
     file: "sauce-items/tomatoSauce-hidden.yaml"
+
+# Item 3: Vegetable Broth - Assert visible if in VISIBLE_ITEMS
+- runFlow:
+    when:
+      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Vegetable Broth')!== undefined}
+    file: "sauce-items/vegetableBroth-visible.yaml"
+
+# Item 3: Vegetable Broth - Assert NOT visible if not in VISIBLE_ITEMS
+- runFlow:
+    when:
+      true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Vegetable Broth')=== undefined}
+    file: "sauce-items/vegetableBroth-hidden.yaml"
 
 - scrollUntilVisible:
     element:

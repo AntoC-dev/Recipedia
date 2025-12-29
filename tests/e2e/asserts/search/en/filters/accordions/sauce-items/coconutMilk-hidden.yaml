@@ -1,0 +1,5 @@
+appId: "com.recipedia"
+---
+- assertNotVisible:
+    text: "Coconut Milk"
+    label: "Coconut Milk filter is not visible"

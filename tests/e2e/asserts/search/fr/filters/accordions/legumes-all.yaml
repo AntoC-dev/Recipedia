@@ -29,7 +29,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
-    label: "Lettuce filter is visible"
+    label: "Red Lentils filter is visible"
 
 - scrollUntilVisible:
     element:
