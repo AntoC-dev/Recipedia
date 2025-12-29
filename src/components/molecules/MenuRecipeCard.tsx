@@ -14,6 +14,7 @@ import { StackScreenNavigation } from '@customTypes/ScreenTypes';
 import { useNavigation } from '@react-navigation/native';
 import { Icons } from '@assets/Icons';
 import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { testProps } from '@utils/testProps';
 
 export type MenuRecipeCardProps = {
   testId: string;
@@ -41,7 +42,8 @@ export function MenuRecipeCard({
 
   return (
     <Card
-      testID={testId}
+      accessible={false}
+      {...testProps(testId)}
       mode='outlined'
       style={[
         styles.card,
@@ -53,7 +55,7 @@ export function MenuRecipeCard({
     >
       <View style={styles.content}>
         <Checkbox
-          testID={`${testId}::Checkbox`}
+          {...testProps(`${testId}::Checkbox`)}
           status={menuItem.isCooked ? 'checked' : 'unchecked'}
           onPress={onToggleCooked}
           color={colors.primary}
@@ -61,13 +63,13 @@ export function MenuRecipeCard({
 
         <View style={styles.imageContainer}>
           <Image
-            testID={`${testId}::Cover`}
+            {...testProps(`${testId}::Cover`)}
             source={{ uri: menuItem.imageSource }}
             style={[styles.image, { backgroundColor: colors.surfaceVariant }]}
           />
           {menuItem.count > 1 && (
             <Badge
-              testID={`${testId}::CountBadge`}
+              {...testProps(`${testId}::CountBadge`)}
               style={[styles.badge, { backgroundColor: colors.tertiary }]}
             >
               {menuItem.count}
@@ -76,7 +78,7 @@ export function MenuRecipeCard({
         </View>
 
         <Text
-          testID={`${testId}::Title`}
+          {...testProps(`${testId}::Title`)}
           variant='titleMedium'
           numberOfLines={2}
           style={[styles.title, menuItem.isCooked && styles.cookedTitle]}
@@ -85,7 +87,7 @@ export function MenuRecipeCard({
         </Text>
 
         <IconButton
-          testID={`${testId}::RemoveButton`}
+          {...testProps(`${testId}::RemoveButton`)}
           icon={Icons.crossIcon}
           iconColor={colors.onSurfaceVariant}
           onPress={onRemove}

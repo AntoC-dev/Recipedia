@@ -179,7 +179,7 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
             </Text>
           </View>
 
-          <Card mode='elevated' testID={cardTestId}>
+          <Card mode='elevated' accessible={false} testID={cardTestId}>
             <Card.Content>
               <Text
                 variant='titleMedium'

@@ -20,6 +20,7 @@ import React from 'react';
 import { IconName } from '@assets/Icons';
 import { FAB } from 'react-native-paper';
 import { StyleProp, View, ViewStyle } from 'react-native';
+import { testProps } from '@utils/testProps';
 
 /**
  * Props for the RoundButton component
@@ -56,7 +57,7 @@ export function RoundButton({ icon, onPressFunction, testID, style }: RoundButto
       ]}
     >
       <FAB
-        testID={testID + '::RoundButton'}
+        {...testProps(testID + '::RoundButton')}
         icon={icon}
         size={'medium'}
         mode={'elevated'}
@@ -66,4 +67,5 @@ export function RoundButton({ icon, onPressFunction, testID, style }: RoundButto
     </View>
   );
 }
+
 export default RoundButton;

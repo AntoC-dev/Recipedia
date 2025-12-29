@@ -40,6 +40,7 @@ import { squareButtonStyles, viewInsideButtonCentered } from '@styles/buttons';
 
 import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { CustomImage } from '@components/atomic/CustomImage';
+import { testProps } from '@utils/testProps';
 
 /** Props for recipe type button */
 export type propIsRecipe = { type: 'recipe'; recipe: recipeTableElement };
@@ -83,7 +84,7 @@ export function SquareButton(buttonProps: SquareButtonProps) {
       onPress={buttonProps.onPressFunction}
     >
       <View style={viewInsideButtonCentered}>
-        <CustomImage testID={buttonProps.testID + '::SquareButton'} uri={img} />
+        <CustomImage {...testProps(buttonProps.testID + '::SquareButton')} uri={img} />
       </View>
     </Pressable>
   );

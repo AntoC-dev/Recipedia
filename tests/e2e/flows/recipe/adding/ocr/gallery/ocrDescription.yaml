@@ -18,14 +18,23 @@ appId: "com.recipedia"
       FIELD_NAME: description
     when:
       platform: Android
-# TODO iOS
+- runFlow:
+    file: ../iOS/addMedia.yaml
+    env:
+      FIELD_NAME: description
+    when:
+      platform: iOS
 
 - runFlow:
     file: ../android/selectMostRecentFromModal.yaml
     label: "Select description from modal for OCR"
     when:
       platform: Android
-# TODO iOS
+- runFlow:
+    file: ../iOS/selectMostRecentFromModal.yaml
+    label: "Select description from modal for OCR"
+    when:
+      platform: iOS
 
 - extendedWaitUntil:
     visible:

@@ -44,6 +44,7 @@ import React from 'react';
 import { IconName } from '@assets/Icons';
 import { Chip, Icon, MD3Theme, useTheme } from 'react-native-paper';
 import { padding } from '@styles/spacing';
+import { testProps } from '@utils/testProps';
 
 /**
  * Props for the TagButton component
@@ -81,7 +82,7 @@ export function TagButton(props: TagButtonProps) {
 
   return (
     <Chip
-      testID={props.testID + '::Chip'}
+      {...testProps(props.testID + '::Chip')}
       style={{
         backgroundColor: colors.secondaryContainer,
         borderRadius: 20,
@@ -99,4 +100,5 @@ export function TagButton(props: TagButtonProps) {
     </Chip>
   );
 }
+
 export default TagButton;

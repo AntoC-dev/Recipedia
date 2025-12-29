@@ -3,8 +3,13 @@ name: E2E Maestro Tests
 on:
   workflow_call:
     inputs:
-      apk-artifact:
-        description: 'Name of the APK artifact to download'
+      platform:
+        description: 'Target platform (android/ios)'
+        required: false
+        type: string
+        default: 'android'
+      app-artifact:
+        description: 'Name of the app artifact to download (APK for Android, .app.zip for iOS)'
         required: true
         type: string
       suites:
@@ -19,8 +24,8 @@ on:
 
 jobs:
   e2e-tests:
-    name: E2E (${{ matrix.suite }})
-    runs-on: ubuntu-latest
+    name: E2E ${{ inputs.platform }} (${{ matrix.suite }})
+    runs-on: ${{ inputs.platform == 'ios' && 'macos-15-intel' || 'ubuntu-latest' }}
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -34,12 +39,40 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Setup Maestro environment
-        uses: ./.github/actions/setup-maestro
+      - name: Setup Java 17 for Maestro
+        uses: actions/setup-java@v4
         with:
-          apk-artifact: ${{ inputs.apk-artifact }}
+          distribution: 'temurin'
+          java-version: '17'
 
-      - name: Run E2E tests
+      # ============================================
+      # Android Setup
+      # ============================================
+      - name: Setup Android SDK
+        if: inputs.platform == 'android'
+        uses: android-actions/setup-android@v3
+
+      - name: Download APK
+        if: inputs.platform == 'android'
+        uses: actions/download-artifact@v6
+        with:
+          name: ${{ inputs.app-artifact }}
+
+      - name: Enable KVM
+        if: inputs.platform == 'android'
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Setup Maestro CLI (Android)
+        if: inputs.platform == 'android'
+        uses: dniHze/maestro-test-action@v1
+        with:
+          version: '2.0.10'
+
+      - name: Run E2E tests (Android)
+        if: inputs.platform == 'android'
         uses: ReactiveCircus/android-emulator-runner@v2
         with:
           api-level: 34
@@ -56,6 +89,57 @@ jobs:
             npm run install:android
             maestro test tests/e2e/ --config=tests/e2e/${{ matrix.suite }}.yaml --debug-output=maestro_logs_${{ matrix.suite }} --format junit -s 1 -e QUITOQUE_USERNAME='${{ secrets.QUITOQUE_USERNAME }}' -e QUITOQUE_PASSWORD='${{ secrets.QUITOQUE_PASSWORD }}'
 
+      # ============================================
+      # iOS Setup
+      # ============================================
+      - name: Download iOS app
+        if: inputs.platform == 'ios'
+        uses: actions/download-artifact@v6
+        with:
+          name: ${{ inputs.app-artifact }}
+
+      - name: Unzip iOS app bundle
+        if: inputs.platform == 'ios'
+        run: |
+          unzip -q *.zip
+          rm -f *.zip
+          echo "📱 iOS app bundle extracted"
+          ls -la *.app || echo "No .app found at root level"
+
+      - name: Boot iOS Simulator
+        if: inputs.platform == 'ios'
+        id: simulator
+        uses: futureware-tech/simulator-action@v4
+        with:
+          model: 'iPhone SE (3rd generation)'
+          wait_for_boot: true
+          erase_before_boot: true
+          shutdown_after_job: true
+
+      - name: Setup Maestro CLI (iOS)
+        if: inputs.platform == 'ios'
+        uses: dniHze/maestro-test-action@v1
+        with:
+          version: '2.0.10'
+
+      - name: Run E2E tests (iOS)
+        if: inputs.platform == 'ios'
+        env:
+          MAESTRO_DRIVER_STARTUP_TIMEOUT: 120000
+        run: |
+          echo "🚀 Running E2E tests on iOS simulator for suite: ${{ matrix.suite }} ..."
+          echo "📱 Using simulator UDID: ${{ steps.simulator.outputs.udid }}"
+          npm run install:ios
+          maestro test tests/e2e/ \
+            --config=tests/e2e/${{ matrix.suite }}.yaml \
+            --debug-output=maestro_logs_${{ matrix.suite }} \
+            --format junit -s 1 \
+            -e QUITOQUE_USERNAME='${{ secrets.QUITOQUE_USERNAME }}' \
+            -e QUITOQUE_PASSWORD='${{ secrets.QUITOQUE_PASSWORD }}'
+
+      # ============================================
+      # Common: Logs and Artifacts
+      # ============================================
       - name: Prepare suite logs
         if: always()
         run: bash .github/scripts/prepare-maestro-logs.sh maestro_logs_${{ matrix.suite }}
@@ -64,7 +148,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v5
         with:
-          name: maestro-logs-${{ matrix.suite }}
+          name: maestro-logs-${{ inputs.platform }}-${{ matrix.suite }}
           path: maestro_logs_${{ matrix.suite }}.zip
           retention-days: 1
 
@@ -72,6 +156,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v5
         with:
-          name: junit-e2e-${{ matrix.suite }}
+          name: junit-e2e-${{ inputs.platform }}-${{ matrix.suite }}
           path: report.xml
           retention-days: 1

@@ -1,0 +1,37 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    text: "Take Picture"
+    optional: true
+    label: "Take the photo (Take Picture button)"
+
+- runFlow:
+    when:
+      notVisible:
+        text: "Take Picture"
+    commands:
+      - tapOn:
+          text: "Shutter"
+          optional: true
+          label: "Take the photo (Shutter button)"
+    label: "Fallback to Shutter button if Take Picture not visible"
+
+- tapOn:
+    text: "Use Photo"
+    optional: true
+    label: "Validate that we want this picture (Use Photo)"
+
+- runFlow:
+    when:
+      notVisible:
+        text: "Use Photo"
+    commands:
+      - tapOn:
+          text: "Done"
+          optional: true
+          label: "Validate that we want this picture (Done)"
+    label: "Fallback to Done button if Use Photo not visible"
+
+- runFlow:
+    file: "validateWithoutCropping.yaml"
+    label: "Validate image without cropping"

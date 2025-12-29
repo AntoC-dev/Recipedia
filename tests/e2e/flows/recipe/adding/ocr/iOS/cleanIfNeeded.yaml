@@ -1,0 +1,19 @@
+appId: "com.recipedia"
+---
+- launchApp:
+    appId: "com.apple.mobileslideshow"
+    label: "Open iOS Photos app"
+
+- runFlow:
+    when:
+      visible:
+        text: "Select"
+    commands:
+      - runFlow:
+          file: "cleanupPhotos.yaml"
+          label: "Delete all photos from library"
+    label: "Clean up photos if any exist"
+
+- stopApp:
+    appId: "com.apple.mobileslideshow"
+    label: "Close Photos app"
