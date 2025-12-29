@@ -1339,7 +1339,7 @@ export class RecipeDatabase {
       this._ingredients,
       cleanedSearchName,
       ingredient => cleanIngredientName(ingredient.name),
-      FuzzyMatchLevel.PERMISSIVE
+      FuzzyMatchLevel.MODERATE
     );
 
     return result.exact ? [result.exact] : result.similar;
