@@ -7,7 +7,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeValidation::ValidationQueue::Ingredient::SimilarityDialog::Content"
-    text: 'A similar ingredient already exists: ".*".'
+    text: "You're adding \"${NEW_ITEM_NAME}\". A similar ingredient already exists: \".*\". You can use it or modify the name below to create a new one."
     label: "Alert message is rendered"
 
 - assertVisible:

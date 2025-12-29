@@ -2,6 +2,8 @@ appId: "com.recipedia"
 ---
 - runFlow:
     file: "../../../asserts/alerts/en/ingredientFuzzy.yaml"
+    env:
+      NEW_ITEM_NAME: "${NEW_ITEM_NAME}"
     label: "Check that fuzzy alert appears"
 
 - tapOn:
