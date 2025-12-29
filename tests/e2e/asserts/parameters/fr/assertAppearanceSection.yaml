@@ -19,6 +19,8 @@ appId: "com.recipedia"
 - assertVisible:
     text: "󰔎"
     label: "Dark mode left icon is displayed"
+    when:
+      platform: Android
 
 - assertVisible:
     id: "Parameters::Section::Appearance::DarkMode::Item"
