@@ -45,6 +45,8 @@ const defaultProps = {
   route: mockRoute,
 } as any;
 
+const originalNodeEnv = process.env.NODE_ENV;
+
 async function renderShoppingAndWaitForButtons() {
   const result = render(
     <RecipeDatabaseProvider>
@@ -78,7 +80,10 @@ describe('Shopping Screen', () => {
     await database.addRecipeToMenu(testRecipes[3]);
   });
 
-  afterEach(async () => await database.closeAndReset());
+  afterEach(async () => {
+    process.env.NODE_ENV = originalNodeEnv;
+    await database.closeAndReset();
+  });
 
   test('renders Shopping screen with proper components structure', async () => {
     const { getByTestId, queryByTestId } = await renderShoppingAndWaitForButtons();
@@ -397,6 +402,25 @@ describe('Shopping Screen', () => {
       jest.advanceTimersByTime(TUTORIAL_DEMO_INTERVAL);
 
       expect(mockEvents.on).toHaveBeenCalled();
+    });
+  });
+
+  describe('AdBanner', () => {
+    test('renders AdBanner when ads are enabled and list has items', async () => {
+      process.env.NODE_ENV = 'development';
+
+      const { getByTestId } = await renderShoppingAndWaitForButtons();
+
+      expect(getByTestId('ShoppingScreen::AdBanner')).toBeTruthy();
+    });
+
+    test('does not render AdBanner when list is empty', async () => {
+      process.env.NODE_ENV = 'development';
+      await database.clearMenu();
+
+      const { queryByTestId } = await renderShoppingAndWaitForButtons();
+
+      expect(queryByTestId('ShoppingScreen::AdBanner')).toBeNull();
     });
   });
 });

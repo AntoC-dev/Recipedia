@@ -64,6 +64,7 @@ import { RoundButton } from '@components/atomic/RoundButton';
 import { TUTORIAL_DEMO_INTERVAL, TUTORIAL_STEPS } from '@utils/Constants';
 import { padding } from '@styles/spacing';
 import { formatQuantityForDisplay } from '@utils/Quantity';
+import { AdBanner } from '@components/organisms/AdBanner';
 
 /** Type for dialog data containing ingredient and recipe information */
 type ingredientDataForDialog = Pick<ComputedShoppingItem, 'name' | 'recipeTitles'>;
@@ -289,6 +290,7 @@ export function Shopping() {
           keyExtractor={item => item.name}
           renderItem={renderItem}
           renderSectionHeader={renderSectionHeader}
+          ListHeaderComponent={<AdBanner placement='shopping' testId={screenId} />}
           stickySectionHeadersEnabled={false}
         />
       )}

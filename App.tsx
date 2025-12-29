@@ -13,6 +13,8 @@ import {DefaultPersonsProvider} from '@context/DefaultPersonsContext';
 import {RecipeDatabaseProvider, useRecipeDatabase} from '@context/RecipeDatabaseContext';
 import {appLogger} from '@utils/logger';
 import {isFirstLaunch} from '@utils/firstLaunch';
+import mobileAds from 'react-native-google-mobile-ads';
+import {initializeAdConsent} from '@utils/AdConfig';
 
 // TODO manage horizontal mode
 
@@ -49,6 +51,12 @@ function AppContent() {
                 const isDarkMode = await getDarkMode();
                 setDarkMode(isDarkMode);
                 appLogger.debug('Dark mode setting loaded', {isDarkMode});
+
+                appLogger.debug('Initializing Mobile Ads SDK');
+                await mobileAds().initialize();
+
+                appLogger.debug('Initializing ad consent');
+                await initializeAdConsent();
 
                 appLogger.info('App initialization completed successfully');
                 setIsAppInitialized(true);

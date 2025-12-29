@@ -16,3 +16,7 @@ appId: "com.recipedia"
 - assertNotVisible:
     id: "CameraButton"
     label: "Camera button is not visible"
+
+- assertVisible:
+    id: "Home::AdBanner"
+    label: "Ad banner is displayed on home screen"
