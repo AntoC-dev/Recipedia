@@ -1,3 +1,13 @@
+## [2.10.3](https://github.com/AntoC-dev/Recipedia/compare/v2.10.2...v2.10.3) (2025-12-29)
+
+### Bug Fixes
+
+* adjust fuzzy matching level to MODERATE for ingredient ([1ed888f](https://github.com/AntoC-dev/Recipedia/commit/1ed888f828c5661cbabd0a72d0d486fda495da68))
+
+### Performance Improvements
+
+* update reassure baseline [skip ci] ([c99fd3d](https://github.com/AntoC-dev/Recipedia/commit/c99fd3d0e0e039b5e690346b0e5aa96ebaa763ec))
+
 ## [2.10.2](https://github.com/AntoC-dev/Recipedia/compare/v2.10.1...v2.10.2) (2025-12-29)
 
 ### Bug Fixes
