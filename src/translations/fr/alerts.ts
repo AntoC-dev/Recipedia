@@ -30,7 +30,7 @@ export default {
   tagSimilarity: {
     similarTagFound: 'Tag similaire trouvé',
     similarTagFoundContent:
-      'Un tag similaire existe déjà : "{{existingTag}}". Vous pouvez l\'utiliser ou modifier le nom ci-dessous pour en créer un nouveau.',
+      'Vous ajoutez "{{newTag}}". Un tag similaire existe déjà : "{{existingTag}}". Vous pouvez l\'utiliser ou modifier le nom ci-dessous pour en créer un nouveau.',
     newTagTitle: 'Tag introuvable',
     newTagContent:
       'Le tag "{{tagName}}" n\'existe pas. Vous pouvez le modifier ci-dessous avant de l\'ajouter.',
@@ -41,7 +41,7 @@ export default {
   ingredientSimilarity: {
     similarIngredientFound: 'Ingrédient similaire trouvé',
     similarIngredientFoundContent:
-      'Un ingrédient similaire existe déjà : "{{existingIngredient}}".',
+      'Vous ajoutez "{{newIngredient}}". Un ingrédient similaire existe déjà : "{{existingIngredient}}". Vous pouvez l\'utiliser ou modifier le nom ci-dessous pour en créer un nouveau.',
     newIngredientTitle: 'Ingrédient introuvable',
     newIngredientContent:
       "L'ingrédient \"{{ingredientName}}\" n'existe pas. Vous pouvez le modifier avant de l'ajouter.",

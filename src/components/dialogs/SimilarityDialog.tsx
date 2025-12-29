@@ -225,9 +225,13 @@ export function SimilarityDialog({ testId, isVisible, onClose, item }: Similarit
   const content = item.similarItem
     ? item.type === 'Ingredient'
       ? t(ingredientsTranslationPrefix + 'similarIngredientFoundContent', {
+          newIngredient: item.newItemName,
           existingIngredient: item.similarItem.name,
         })
-      : t(tagsTranslationPrefix + 'similarTagFoundContent', { existingTag: item.similarItem.name })
+      : t(tagsTranslationPrefix + 'similarTagFoundContent', {
+          newTag: item.newItemName,
+          existingTag: item.similarItem.name,
+        })
     : item.type === 'Ingredient'
       ? t(ingredientsTranslationPrefix + 'newIngredientContent', {
           ingredientName: item.newItemName,
