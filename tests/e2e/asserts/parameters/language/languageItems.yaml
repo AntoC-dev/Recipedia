@@ -4,7 +4,25 @@ appId: "com.recipedia"
     id: "LanguageSettings::Item::0"
     text: "English"
     label: "English language option is visible"
+    when:
+      platform: Android
+
+- assertVisible:
+    id: "LanguageSettings::Item::0"
+    text: "󰄬 English"
+    label: "English language option is visible"
+    when:
+      platform: iOS
+
 - assertVisible:
     id: "LanguageSettings::Item::1"
     text: "Français"
     label: "French language option is visible"
+    when:
+      platform: Android
+- assertVisible:
+    id: "LanguageSettings::Item::1"
+    text: "󰄬 Français"
+    label: "French language option is visible"
+    when:
+      platform: iOS
