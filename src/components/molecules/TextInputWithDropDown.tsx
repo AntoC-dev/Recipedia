@@ -2,19 +2,18 @@
  * TextInputWithDropDown - Autocomplete text input with dropdown suggestions
  *
  * An enhanced text input component that provides real-time autocomplete functionality
- * with a dropdown list of filtered suggestions. Features intelligent keyboard handling,
- * customizable positioning (absolute or relative), and comprehensive state management
- * for optimal user experience.
+ * with a dropdown list of filtered suggestions. Uses Portal for proper overlay rendering
+ * that works in any container context (tables, nested views, ScrollViews, etc.).
  *
  * Key Features:
  * - Real-time text filtering with case-insensitive search
- * - Configurable dropdown positioning (absolute/relative)
- * - Intelligent keyboard event handling and auto-dismiss
+ * - Material Design styling using react-native-paper List.Item
+ * - Portal-based dropdown (renders outside view hierarchy, no layout issues)
+ * - Automatic repositioning when keyboard shows/hides
  * - Smart suggestion logic (hides exact matches)
- * - Performance optimizations for testing environments
- * - Customizable styling for input and dropdown
+ * - Customizable styling for input
  * - Automatic validation callbacks on selection/submission
- * - Responsive dropdown sizing based on input height
+ * - Support for right icons via CustomTextInput
  *
  * @example
  * ```typescript
@@ -23,57 +22,42 @@
  *   referenceTextArray={ingredientNames}
  *   value={selectedIngredient}
  *   label="Ingredient"
- *   absoluteDropDown={false}
  *   onValidate={(ingredient) => addIngredient(ingredient)}
  *   testID="ingredient-input"
  * />
  *
- * // Absolute positioned dropdown for overlay contexts
+ * // With right icon (e.g., for note editing)
  * <TextInputWithDropDown
- *   referenceTextArray={tagOptions}
- *   value={currentTag}
- *   label="Add Tag"
- *   absoluteDropDown={true}
- *   onValidate={(tag) => handleTagSelection(tag)}
- *   testID="tag-autocomplete"
- *   style={{margin: 16}}
- * />
- *
- * // Pre-populated with custom styling
- * <TextInputWithDropDown
- *   referenceTextArray={recipeTypes}
- *   value="Dessert"
- *   label="Recipe Type"
- *   absoluteDropDown={false}
- *   onValidate={(type) => updateRecipeType(type)}
- *   testID="recipe-type-input"
- *   contentStyle={{fontSize: 16}}
+ *   referenceTextArray={ingredientNames}
+ *   value={currentIngredient}
+ *   label="Ingredient"
+ *   dense
+ *   mode="flat"
+ *   onValidate={(name) => updateIngredient(name)}
+ *   testID="ingredient-input"
+ *   right={<TextInput.Icon icon="comment" onPress={openNote} />}
  * />
  * ```
  */
 
 import {
-  FlatList,
   Keyboard,
-  LayoutChangeEvent,
-  LogBox,
+  ScrollView,
   StyleProp,
+  StyleSheet,
   TextStyle,
-  TouchableOpacity,
   View,
   ViewStyle,
 } from 'react-native';
-import { List, TextInput } from 'react-native-paper';
+import { List, Portal, useTheme } from 'react-native-paper';
 import React, { useEffect, useRef, useState } from 'react';
-import { palette } from '@styles/colors';
 import { CustomTextInput } from '@components/atomic/CustomTextInput';
+import { padding, screenHeight } from '@styles/spacing';
 
 /**
  * Props for the TextInputWithDropDown component
  */
 export type TextInputWithDropDownType = {
-  /** Whether dropdown should use absolute positioning (for overlays) */
-  absoluteDropDown: boolean;
   /** Array of reference strings to filter and display as suggestions */
   referenceTextArray: string[];
   /** Current value of the text input */
@@ -96,211 +80,179 @@ export type TextInputWithDropDownType = {
   contentStyle?: StyleProp<TextStyle>;
   /** Right element (icon or affix) to display inside the input */
   right?: React.ReactNode;
+  /** Force hide the dropdown (e.g., during scroll) */
+  hideDropdown?: boolean;
 };
 
 /**
  * TextInputWithDropDown component for autocomplete functionality
  *
+ * Uses Portal for proper dropdown overlay positioning outside the view hierarchy,
+ * combined with react-native-paper components for Material Design styling.
+ *
  * @param props - The component props
  * @returns JSX element representing an autocomplete text input with dropdown suggestions
  */
-export function TextInputWithDropDown(props: TextInputWithDropDownType) {
-  const { onValidate, right } = props;
-  /**
-   * Filters the reference array based on user input with case-insensitive matching
-   *
-   * This function implements the core autocomplete filtering logic, providing
-   * case-insensitive substring matching against the reference text array.
-   * It's the foundation of the dropdown suggestion system.
-   *
-   * @param filterText - The text input to filter against
-   * @returns string[] - Filtered array of matching suggestions
-   */
-  const filterArray = (filterText: string): string[] => {
-    return props.referenceTextArray.filter(element =>
-      element.toLowerCase().includes(filterText.toLowerCase())
-    );
-  };
+export function TextInputWithDropDown({
+  onValidate,
+  right,
+  testID,
+  label,
+  mode,
+  dense,
+  style,
+  contentStyle,
+  referenceTextArray,
+  value,
+  hideDropdown,
+}: TextInputWithDropDownType) {
+  const { colors } = useTheme();
+  const containerRef = useRef<View>(null);
+  const prevValueRef = useRef(value);
 
-  const [textInput, setTextInput] = useState(props.value ?? '');
-  const [filteredTextArray, setFilteredTextArray] = useState(
-    props.value ? filterArray(props.value) : props.referenceTextArray
-  );
+  const [textInput, setTextInput] = useState(value ?? '');
   const [showDropdown, setShowDropdown] = useState(false);
-  const [inputHeight, setInputHeight] = useState(0);
-
-  const inputRef = useRef<React.ElementRef<typeof TextInput>>(null);
+  const [dropdownLayout, setDropdownLayout] = useState({ top: 0, left: 0, width: 0 });
 
   useEffect(() => {
-    if (process.env.NODE_ENV !== 'test') {
-      LogBox.ignoreLogs([
-        'VirtualizedLists should never be nested inside plain ScrollViews', // Disable only this warning
-      ]);
+    if (value !== prevValueRef.current) {
+      prevValueRef.current = value;
+      setTextInput(value ?? '');
     }
-  }, []);
+  }, [value]);
 
-  /**
-   * Sync internal state with external props.value changes
-   *
-   * Uses a ref to track the previous value to detect external changes.
-   * This allows the component to be "semi-controlled" - maintaining internal state
-   * for typing while accepting external value changes from parent.
-   */
-  const prevValueRef = useRef(props.value);
+  // Re-measure position when keyboard shows/hides (after KeyboardAvoidingView animation)
   useEffect(() => {
-    if (props.value !== prevValueRef.current) {
-      prevValueRef.current = props.value;
-      if (props.value !== undefined) {
-        setTextInput(props.value);
-        const filtered = props.referenceTextArray.filter(element =>
-          element.toLowerCase().includes(props.value!.toLowerCase())
-        );
-        setFilteredTextArray(filtered);
-      } else {
-        setFilteredTextArray(props.referenceTextArray);
-      }
+    if (!showDropdown) {
+      return;
     }
-  }, [props.value, props.referenceTextArray]);
 
-  /**
-   * Handles the submission of text input when editing is complete
-   *
-   * Validates the current input and manages dropdown visibility based on filtered results:
-   * - Accepts input when only one or zero suggestions remain
-   * - Hides dropdown and triggers validation callback
-   * - Encourages selection from suggestions when multiple matches exist
-   */
-  const handleSubmitEditing = () => {
-    setShowDropdown(false);
-    onValidate?.(textInput);
-  };
+    const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
+      setTimeout(measurePosition, 150);
+    });
 
-  useEffect(() => {
-    const keyboardListener = Keyboard.addListener('keyboardDidHide', () => {
-      if (inputRef.current && inputRef.current.isFocused()) {
-        setShowDropdown(false);
-        onValidate?.(textInput);
-      }
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+      setTimeout(measurePosition, 150);
     });
 
     return () => {
-      keyboardListener.remove();
+      showSubscription.remove();
+      hideSubscription.remove();
     };
-  }, [textInput, onValidate]);
+  }, [showDropdown]);
 
-  function handleSelect(text: string) {
-    setTextInput(text);
-    setFilteredTextArray([]);
-    setShowDropdown(false);
-    Keyboard.dismiss();
-    props.onValidate?.(text);
+  // Re-measure position when dropdown becomes visible again after being hidden
+  const prevHideDropdownRef = useRef(hideDropdown);
+  useEffect(() => {
+    if (prevHideDropdownRef.current && !hideDropdown && showDropdown) {
+      measurePosition();
+    }
+    prevHideDropdownRef.current = hideDropdown;
+  }, [hideDropdown, showDropdown]);
+
+  function measurePosition() {
+    containerRef.current?.measureInWindow((x, y, width, height) => {
+      if (width > 0 && height > 0) {
+        setDropdownLayout({ top: y + height, left: x, width });
+      }
+    });
   }
 
-  function handleSearch(textEntered: string) {
-    setTextInput(textEntered);
-    setFilteredTextArray(filterArray(textEntered));
+  const filteredItems = showDropdown
+    ? referenceTextArray.filter(item => item.toLowerCase().includes(textInput.toLowerCase()))
+    : [];
+
+  const isExactMatch =
+    filteredItems.length === 1 && filteredItems[0].toLowerCase() === textInput.toLowerCase();
+
+  const shouldShowDropdown =
+    showDropdown && !hideDropdown && filteredItems.length > 0 && !isExactMatch;
+
+  function handleFocus() {
+    measurePosition();
     setShowDropdown(true);
   }
 
-  /**
-   * Handles submission validation with intelligent logic based on filtered array length
-   *
-   * This function implements smart validation logic that only triggers when the user
-   * has either entered a completely new value or when there's only one possible
-   * suggestion remaining. This prevents accidental submissions when multiple
-   * suggestions are still available.
-   *
-   * Validation Logic:
-   * - Validates when filteredTextArray.length <= 1
-   * - Case 1: Length 0 = user entered new value not in reference array
-   * - Case 2: Length 1 = user typed exact match or only one suggestion remains
-   * - Prevents submission when multiple suggestions are available (length > 1)
-   *
-   * Side Effects:
-   * - Hides dropdown when validation occurs
-   * - Calls onValidate callback with current text input
-   * - Provides clear user feedback by closing suggestions
-   *
-   * User Experience:
-   * - Prevents accidental submission with ambiguous input
-   * - Allows creation of new values not in reference array
-   * - Enables quick submission when intent is clear
-   * - Encourages selection from suggestions when multiple matches exist
-   */
-  function handleOnLayoutTextInput(event: LayoutChangeEvent) {
-    setInputHeight(event.nativeEvent.layout.height);
+  function handleChangeText(text: string) {
+    setTextInput(text);
+    measurePosition();
+    setShowDropdown(true);
   }
 
-  const dropdownStyle: StyleProp<ViewStyle> = {
-    backgroundColor: palette.backgroundColor,
-    // TODO do not hard code
-    borderRadius: 5,
-    elevation: 5,
-    marginTop: 4,
-    maxHeight: inputHeight * 4,
-  };
+  function handleSelect(text: string) {
+    setTextInput(text);
+    setShowDropdown(false);
+    Keyboard.dismiss();
+    onValidate?.(text);
+  }
+
+  function handleEndEditing() {
+    onValidate?.(textInput);
+  }
+
+  function handleLayout() {
+    if (showDropdown) {
+      measurePosition();
+    }
+  }
+
   return (
-    <View style={props.style as ViewStyle}>
+    <View ref={containerRef} style={style} collapsable={false} onLayout={handleLayout}>
       <CustomTextInput
-        label={props.label}
-        testID={props.testID}
+        testID={testID}
+        label={label}
         value={textInput}
-        style={props.style}
-        contentStyle={props.contentStyle}
-        mode={props.mode}
-        dense={props.dense}
-        onFocus={() => setShowDropdown(true)}
-        onChangeText={handleSearch}
-        onEndEditing={handleSubmitEditing}
-        onLayout={handleOnLayoutTextInput}
+        onChangeText={handleChangeText}
+        onFocus={handleFocus}
+        onEndEditing={handleEndEditing}
+        mode={mode}
+        dense={dense}
+        contentStyle={contentStyle}
         right={right}
       />
-      {showDropdown &&
-        filteredTextArray.length > 0 &&
-        !(
-          filteredTextArray.length === 1 &&
-          filteredTextArray[0].toLowerCase() === textInput.toLowerCase()
-        ) && (
-          <View
-            testID={props.testID + '::DropdownContainer'}
-            style={
-              props.absoluteDropDown
-                ? {
-                    ...dropdownStyle,
-                    position: 'absolute',
-                    top: inputHeight,
-                    left: 0,
-                    right: 0,
-                    zIndex: 1000, // TODO doesn't seems to work that wells
-                  }
-                : dropdownStyle
-            }
+      {shouldShowDropdown && (
+        <Portal>
+          <ScrollView
+            testID={`${testID}::AutocompleteList`}
+            keyboardShouldPersistTaps='handled'
+            style={[
+              styles.dropdown,
+              {
+                top: dropdownLayout.top,
+                left: dropdownLayout.left,
+                width: dropdownLayout.width,
+                backgroundColor: colors.surface,
+                shadowColor: colors.shadow,
+              },
+            ]}
           >
-            <FlatList
-              data={filteredTextArray}
-              keyboardShouldPersistTaps='handled'
-              nestedScrollEnabled={true}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  testID={'TextInputWithDropDown::TouchableOpacity::' + item}
-                  key={item}
-                  onPress={() => handleSelect(item)}
-                >
-                  <List.Item testID={'TextInputWithDropDown::List::' + item} title={item} />
-                </TouchableOpacity>
-              )}
-              {...(process.env.NODE_ENV === 'test'
-                ? {
-                    initialNumToRender: filteredTextArray.length,
-                    maxToRenderPerBatch: filteredTextArray.length,
-                    windowSize: filteredTextArray.length,
-                  }
-                : null)}
-            />
-          </View>
-        )}
+            {filteredItems.map(item => (
+              <List.Item
+                key={item}
+                testID={`${testID}::AutocompleteItem::${item}`}
+                title={item}
+                titleStyle={{ color: colors.onSurfaceVariant }}
+                style={{ backgroundColor: colors.surfaceVariant }}
+                onPress={() => handleSelect(item)}
+              />
+            ))}
+          </ScrollView>
+        </Portal>
+      )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  dropdown: {
+    position: 'absolute',
+    maxHeight: screenHeight * 0.33,
+    borderRadius: padding.verySmall,
+    elevation: padding.small,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: padding.verySmall,
+  },
+});
 
 export default TextInputWithDropDown;
