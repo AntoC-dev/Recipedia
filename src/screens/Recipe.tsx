@@ -16,7 +16,7 @@
  * @module screens/Recipe
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { RecipeScreenProp, recipeStateType } from '@customTypes/ScreenTypes';
 import {
   isRecipeEqual,
@@ -114,6 +114,7 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
   const { t } = useI18n();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+  const [isScrolling, setIsScrolling] = useState(false);
 
   const { addRecipe, editRecipe, deleteRecipe, addRecipeToMenu, findSimilarRecipes } =
     useRecipeDatabase();
@@ -367,6 +368,9 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
           contentContainerStyle={{ paddingBottom: BUTTON_CONTAINER_HEIGHT + insets.bottom }}
           keyboardShouldPersistTaps={'handled'}
           nestedScrollEnabled={true}
+          onScrollBeginDrag={() => setIsScrolling(true)}
+          onScrollEndDrag={() => setIsScrolling(false)}
+          onMomentumScrollEnd={() => setIsScrolling(false)}
         >
           <RecipeImage
             {...buildRecipeImageProps(state.stackMode, state.recipeImage, ocr.openModalForField)}
@@ -396,7 +400,8 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
               state.randomTags,
               tags.addTag,
               tags.removeTag,
-              ocr.openModalForField
+              ocr.openModalForField,
+              isScrolling
             )}
           />
           <RecipeNumber
@@ -415,7 +420,8 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
               ingredients.editIngredients,
               ingredients.addNewIngredient,
               ocr.openModalForField,
-              t
+              t,
+              isScrolling
             )}
           />
           <RecipeNumber

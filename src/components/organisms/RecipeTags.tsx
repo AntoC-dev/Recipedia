@@ -53,7 +53,6 @@ import { Icons } from '@assets/Icons';
 import { HorizontalList } from '@components/molecules/HorizontalList';
 import { TextInputWithDropDown } from '@components/molecules/TextInputWithDropDown';
 import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
-import { FlashList } from '@shopify/flash-list';
 import { recipeTagsStyles } from '@styles/recipeComponents';
 import { Text, useTheme } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
@@ -73,6 +72,8 @@ export type RecipeTagsAddOrEditProps = {
   addNewTag: (newTag: string) => void;
   /** Callback fired when a tag is removed */
   removeTag: (tag: string) => void;
+  /** Force hide the dropdown (e.g., during scroll) */
+  hideDropdown?: boolean;
 } & (RecipeTagsEditProps | RecipeTagsAddProps);
 
 /** Props for read-only mode */
@@ -138,28 +139,20 @@ export function RecipeTags(tagsProps: RecipeTagProps) {
                 onPress={tagsProps.removeTag}
               />
             </View>
-            {newTags.length > 0 ? (
-              <FlashList
-                data={newTags}
-                estimatedItemSize={100}
-                nestedScrollEnabled={true}
-                keyboardShouldPersistTaps={'handled'}
-                renderItem={({ item }) => (
-                  <View key={item}>
-                    <TextInputWithDropDown
-                      style={recipeTagsStyles.containerSection}
-                      testID={tagsTestID + '::List::' + item}
-                      absoluteDropDown={false}
-                      referenceTextArray={allTagsNamesSorted}
-                      onValidate={(newText: string) => {
-                        tagsProps.addNewTag(newText);
-                        setNewTags(newTags.filter(itemToFilter => itemToFilter !== item));
-                      }}
-                    />
-                  </View>
-                )}
-              />
-            ) : null}
+            {newTags.map(item => (
+              <View key={item}>
+                <TextInputWithDropDown
+                  style={recipeTagsStyles.containerSection}
+                  testID={tagsTestID + '::List::' + item}
+                  referenceTextArray={allTagsNamesSorted}
+                  hideDropdown={tagsProps.hideDropdown}
+                  onValidate={(newText: string) => {
+                    tagsProps.addNewTag(newText);
+                    setNewTags(newTags.filter(itemToFilter => itemToFilter !== item));
+                  }}
+                />
+              </View>
+            ))}
 
             <View style={recipeTagsStyles.roundButtonsContainer}>
               {tagsProps.editType === 'add' ? (

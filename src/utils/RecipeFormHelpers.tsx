@@ -429,7 +429,8 @@ export function buildRecipeTagsProps(
   randomTags: string[],
   addTag: (newTag: string) => void,
   removeTag: (tagName: string) => void,
-  openModalForField: (field: recipeColumnsNames) => void
+  openModalForField: (field: recipeColumnsNames) => void,
+  hideDropdown?: boolean
 ): RecipeTagProps {
   const tagsExtracted = extractTagsName(recipeTags);
   const editProps: RecipeTagProps = {
@@ -439,6 +440,7 @@ export function buildRecipeTagsProps(
     randomTags: randomTags.join(', '),
     addNewTag: addTag,
     removeTag: removeTag,
+    hideDropdown,
   };
 
   if (stackMode === recipeStateType.readOnly) {
@@ -599,7 +601,8 @@ export function buildRecipeIngredientsProps(
   editIngredients: (oldIngredientId: number, newIngredient: string) => void,
   addNewIngredient: () => void,
   openModalForField: (field: recipeColumnsNames) => void,
-  t: (key: string) => string
+  t: (key: string) => string,
+  hideDropdown?: boolean
 ): RecipeIngredientsProps {
   const ingredientTestID = 'RecipeIngredients';
   const ingredientPrefixText = t('ingredients') + ': ';
@@ -624,6 +627,7 @@ export function buildRecipeIngredientsProps(
     onIngredientChange: editIngredients,
     onAddIngredient: addNewIngredient,
     noteInputPlaceholder: t('ingredientNotePlaceholder'),
+    hideDropdown,
   };
 
   if (stackMode === recipeStateType.addOCR) {

@@ -94,6 +94,8 @@ export type EditableBaseProps = BaseProps & {
   onAddIngredient: () => void;
   /** Placeholder text for the ingredient note input */
   noteInputPlaceholder: string;
+  /** Force hide the dropdown (e.g., during scroll) */
+  hideDropdown?: boolean;
 };
 
 /**
@@ -172,6 +174,8 @@ type EditableIngredientsProps = {
   onAddIngredient: () => void;
   /** Placeholder text for the ingredient note input */
   noteInputPlaceholder: string;
+  /** Force hide the dropdown (e.g., during scroll) */
+  hideDropdown?: boolean;
 };
 
 /**
@@ -240,6 +244,7 @@ function EditableIngredients(props: EditableIngredientsProps) {
     onIngredientChange,
     onAddIngredient,
     noteInputPlaceholder,
+    hideDropdown,
   } = props;
   const { ingredients: dbIngredients } = useRecipeDatabase();
   const { colors, fonts } = useTheme();
@@ -393,10 +398,10 @@ function EditableIngredients(props: EditableIngredientsProps) {
                 <TextInputWithDropDown
                   testID={`${testID}::${index}::NameInput`}
                   value={item.name}
-                  absoluteDropDown={false}
                   referenceTextArray={availableIngredients}
                   dense
                   mode='flat'
+                  hideDropdown={hideDropdown}
                   onValidate={newName =>
                     handleIngredientChange(index, quantity, item.unit ?? '', newName, item.note)
                   }
@@ -462,6 +467,7 @@ function AddIngredients(props: AddProps) {
     columnTitles,
     onIngredientChange,
     noteInputPlaceholder,
+    hideDropdown,
   } = props;
 
   if (ingredients.length === 0) {
@@ -496,6 +502,7 @@ function AddIngredients(props: AddProps) {
       onIngredientChange={onIngredientChange}
       onAddIngredient={onAddIngredient}
       noteInputPlaceholder={noteInputPlaceholder}
+      hideDropdown={hideDropdown}
     />
   );
 }
@@ -522,6 +529,7 @@ export function RecipeIngredients(props: RecipeIngredientsProps) {
           onIngredientChange={props.onIngredientChange}
           onAddIngredient={props.onAddIngredient}
           noteInputPlaceholder={props.noteInputPlaceholder}
+          hideDropdown={props.hideDropdown}
         />
       );
   }
