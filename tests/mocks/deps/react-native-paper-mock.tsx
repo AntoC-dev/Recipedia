@@ -73,7 +73,8 @@ Dialog.Icon = DialogIcon;
 
 export const Menu: React.FC<any> & { Item: React.FC<any> } = props => (
   <View testID={props.testID} {...{ visible: props.visible, onDismiss: props.onDismiss }}>
-    {props.children}
+    {props.anchor}
+    {props.visible && props.children}
   </View>
 );
 
