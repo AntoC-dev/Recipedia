@@ -5,9 +5,6 @@ import { TextInputWithDropDownType } from '@components/molecules/TextInputWithDr
 export function textInputWithDropdownMock(inputWithDropdownProps: TextInputWithDropDownType) {
   return (
     <View>
-      <Text testID={inputWithDropdownProps.testID + '::TextInputWithDropdown::AbsoluteDropDown'}>
-        {inputWithDropdownProps.absoluteDropDown}
-      </Text>
       <Text testID={inputWithDropdownProps.testID + '::TextInputWithDropdown::ReferenceTextArray'}>
         {JSON.stringify(inputWithDropdownProps.referenceTextArray)}
       </Text>
@@ -16,6 +13,9 @@ export function textInputWithDropdownMock(inputWithDropdownProps: TextInputWithD
       </Text>
       <Text testID={inputWithDropdownProps.testID + '::TextInputWithDropdown::Label'}>
         {inputWithDropdownProps.label}
+      </Text>
+      <Text testID={inputWithDropdownProps.testID + '::TextInputWithDropdown::HideDropdown'}>
+        {String(inputWithDropdownProps.hideDropdown ?? false)}
       </Text>
       <Button
         testID={inputWithDropdownProps.testID + '::TextInputWithDropdown::OnValidate'}

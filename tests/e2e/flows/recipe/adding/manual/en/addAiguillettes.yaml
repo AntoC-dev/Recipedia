@@ -168,7 +168,7 @@ appId: "com.recipedia"
     label: "Hide the keyboard"
 
 - tapOn:
-    id: "TextInputWithDropDown::List::Onions"
+    id: "RecipeIngredients::1::NameInput::AutocompleteItem::Onions"
     label: "Press the ingredient from the dropdown"
 
 - scrollUntilVisible:
@@ -191,7 +191,7 @@ appId: "com.recipedia"
     label: "Hide the keyboard "
 
 - tapOn:
-    id: "TextInputWithDropDown::List::Avocado"
+    id: "RecipeIngredients::2::NameInput::AutocompleteItem::Avocado"
     label: "Press the ingredient from the dropdown"
 
 - tapOn:

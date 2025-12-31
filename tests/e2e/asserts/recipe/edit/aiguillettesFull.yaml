@@ -371,11 +371,11 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeTags::HeaderText"
+      id: "RecipeTags::0::Chip"
     direction: UP
-    speed: 60
+    speed: 40
     centerElement: true
-    label: "Scroll to header text of tags"
+    label: "Scroll to chip of first tags"
 
 - assertVisible:
     id: "RecipeTags::1::Chip"
@@ -398,11 +398,27 @@ appId: "com.recipedia"
     id: "RecipeTags::0::Chip"
     label: "First tag's chip is displayed"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeTags::ElementText"
+    direction: UP
+    speed: 40
+    centerElement: true
+    label: "Scroll to element text  of tags"
+
 - assertVisible:
     id: "RecipeTags::ElementText"
     text: "Tags are a way to identify a recipe and make easier its search.\n\
       Here are some examples of tags you can have : .*, .*, .*"
     label: "Explanation text id for the tags is displayed with the correct text"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTags::HeaderText"
+    direction: UP
+    speed: 40
+    centerElement: true
+    label: "Scroll to header text of tags"
 
 - assertVisible:
     id: "RecipeTags::HeaderText"

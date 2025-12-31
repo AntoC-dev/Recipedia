@@ -545,6 +545,78 @@ describe('RecipeIngredients Component', () => {
     });
   });
 
+  describe('hideDropdown prop', () => {
+    const mockOnIngredientChange = jest.fn();
+    const mockOnAddIngredient = jest.fn();
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('passes hideDropdown=false to TextInputWithDropDown by default', async () => {
+      const editableProps: RecipeIngredientsProps = {
+        mode: 'editable',
+        testID: 'HideDropdownTest',
+        ingredients: sampleIngredients,
+        prefixText: 'Ingredients',
+        columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
+        onIngredientChange: mockOnIngredientChange,
+        onAddIngredient: mockOnAddIngredient,
+        noteInputPlaceholder: 'Note',
+      };
+
+      const { getByTestId } = await renderRecipeIngredients(editableProps);
+
+      expect(
+        getByTestId('HideDropdownTest::0::NameInput::TextInputWithDropdown::HideDropdown').props
+          .children
+      ).toEqual('false');
+    });
+
+    it('passes hideDropdown=true to TextInputWithDropDown when set', async () => {
+      const editableProps: RecipeIngredientsProps = {
+        mode: 'editable',
+        testID: 'HideDropdownTest',
+        ingredients: sampleIngredients,
+        prefixText: 'Ingredients',
+        columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
+        onIngredientChange: mockOnIngredientChange,
+        onAddIngredient: mockOnAddIngredient,
+        noteInputPlaceholder: 'Note',
+        hideDropdown: true,
+      };
+
+      const { getByTestId } = await renderRecipeIngredients(editableProps);
+
+      expect(
+        getByTestId('HideDropdownTest::0::NameInput::TextInputWithDropdown::HideDropdown').props
+          .children
+      ).toEqual('true');
+    });
+
+    it('passes hideDropdown to TextInputWithDropDown in add mode', async () => {
+      const addProps: RecipeIngredientsProps = {
+        mode: 'add',
+        testID: 'HideDropdownAddTest',
+        ingredients: sampleIngredients,
+        prefixText: 'Ingredients',
+        columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
+        onIngredientChange: mockOnIngredientChange,
+        onAddIngredient: mockOnAddIngredient,
+        openModal: jest.fn(),
+        noteInputPlaceholder: 'Note',
+        hideDropdown: true,
+      };
+
+      const { getByTestId } = await renderRecipeIngredients(addProps);
+
+      expect(
+        getByTestId('HideDropdownAddTest::0::NameInput::TextInputWithDropdown::HideDropdown').props
+          .children
+      ).toEqual('true');
+    });
+  });
+
   describe('ingredient name sorting', () => {
     it('provides available ingredients sorted alphabetically to TextInputWithDropDown', async () => {
       const dbInstanceLocal = RecipeDatabase.getInstance();

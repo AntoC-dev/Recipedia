@@ -16,14 +16,14 @@
  * @module screens/Recipe
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { RecipeScreenProp, recipeStateType } from '@customTypes/ScreenTypes';
 import {
   isRecipeEqual,
   recipeColumnsNames,
   recipeTableElement,
 } from '@customTypes/DatabaseElementTypes';
-import { ScrollView } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { padding } from '@styles/spacing';
 import { RecipeImage } from '@components/organisms/RecipeImage';
@@ -114,6 +114,7 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
   const { t } = useI18n();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+  const [isScrolling, setIsScrolling] = useState(false);
 
   const { addRecipe, editRecipe, deleteRecipe, addRecipeToMenu, findSimilarRecipes } =
     useRecipeDatabase();
@@ -341,108 +342,119 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-      <AppBar
-        testID={recipeTestId}
-        isEditing={state.stackMode === recipeStateType.edit}
-        onGoBack={() => navigation.goBack()}
-        onCancel={handleCancel}
-        onValidate={validationFunction}
-        onDelete={state.stackMode === recipeStateType.readOnly ? onDelete : undefined}
-        onEdit={
-          state.stackMode === recipeStateType.readOnly
-            ? () => setters.setStackMode(recipeStateType.edit)
-            : undefined
-        }
-      />
-
-      <ScrollView
-        horizontal={false}
-        showsVerticalScrollIndicator={false}
-        style={{ flex: 1, backgroundColor: colors.background }}
-        contentContainerStyle={{ paddingBottom: BUTTON_CONTAINER_HEIGHT + insets.bottom }}
-        keyboardShouldPersistTaps={'handled'}
-        nestedScrollEnabled={true}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+        keyboardVerticalOffset={insets.top}
       >
-        <RecipeImage
-          {...buildRecipeImageProps(state.stackMode, state.recipeImage, ocr.openModalForField)}
+        <AppBar
+          testID={recipeTestId}
+          isEditing={state.stackMode === recipeStateType.edit}
+          onGoBack={() => navigation.goBack()}
+          onCancel={handleCancel}
+          onValidate={validationFunction}
+          onDelete={state.stackMode === recipeStateType.readOnly ? onDelete : undefined}
+          onEdit={
+            state.stackMode === recipeStateType.readOnly
+              ? () => setters.setStackMode(recipeStateType.edit)
+              : undefined
+          }
         />
-        <RecipeText
-          {...buildRecipeTitleProps(
-            state.stackMode,
-            state.recipeTitle,
-            setters.setRecipeTitle,
-            ocr.openModalForField,
-            t
-          )}
-        />
-        <RecipeText
-          {...buildRecipeDescriptionProps(
-            state.stackMode,
-            state.recipeDescription,
-            setters.setRecipeDescription,
-            ocr.openModalForField,
-            t
-          )}
-        />
-        <RecipeTags
-          {...buildRecipeTagsProps(
-            state.stackMode,
-            state.recipeTags,
-            state.randomTags,
-            tags.addTag,
-            tags.removeTag,
-            ocr.openModalForField
-          )}
-        />
-        <RecipeNumber
-          {...buildRecipePersonsProps(
-            state.stackMode,
-            state.recipePersons,
-            setters.setRecipePersons,
-            ocr.openModalForField,
-            t
-          )}
-        />
-        <RecipeIngredients
-          {...buildRecipeIngredientsProps(
-            state.stackMode,
-            state.recipeIngredients,
-            ingredients.editIngredients,
-            ingredients.addNewIngredient,
-            ocr.openModalForField,
-            t
-          )}
-        />
-        <RecipeNumber
-          {...buildRecipeTimeProps(
-            state.stackMode,
-            state.recipeTime,
-            setters.setRecipeTime,
-            ocr.openModalForField,
-            t
-          )}
-        />
-        <RecipePreparation
-          {...buildRecipePreparationProps(
-            state.stackMode,
-            state.recipePreparation,
-            preparation.editPreparationTitle,
-            preparation.editPreparationDescription,
-            preparation.addNewPreparationStep,
-            ocr.openModalForField,
-            t
-          )}
-        />
-        <RecipeNutrition
-          {...buildRecipeNutritionProps(
-            state.stackMode,
-            state.recipeNutrition,
-            setters.setRecipeNutrition,
-            ocr.openModalForField,
-            recipeTestId
-          )}
-        />
-      </ScrollView>
+
+        <ScrollView
+          horizontal={false}
+          showsVerticalScrollIndicator={false}
+          style={{ flex: 1, backgroundColor: colors.background }}
+          contentContainerStyle={{ paddingBottom: BUTTON_CONTAINER_HEIGHT + insets.bottom }}
+          keyboardShouldPersistTaps={'handled'}
+          nestedScrollEnabled={true}
+          onScrollBeginDrag={() => setIsScrolling(true)}
+          onScrollEndDrag={() => setIsScrolling(false)}
+          onMomentumScrollEnd={() => setIsScrolling(false)}
+        >
+          <RecipeImage
+            {...buildRecipeImageProps(state.stackMode, state.recipeImage, ocr.openModalForField)}
+          />
+          <RecipeText
+            {...buildRecipeTitleProps(
+              state.stackMode,
+              state.recipeTitle,
+              setters.setRecipeTitle,
+              ocr.openModalForField,
+              t
+            )}
+          />
+          <RecipeText
+            {...buildRecipeDescriptionProps(
+              state.stackMode,
+              state.recipeDescription,
+              setters.setRecipeDescription,
+              ocr.openModalForField,
+              t
+            )}
+          />
+          <RecipeTags
+            {...buildRecipeTagsProps(
+              state.stackMode,
+              state.recipeTags,
+              state.randomTags,
+              tags.addTag,
+              tags.removeTag,
+              ocr.openModalForField,
+              isScrolling
+            )}
+          />
+          <RecipeNumber
+            {...buildRecipePersonsProps(
+              state.stackMode,
+              state.recipePersons,
+              setters.setRecipePersons,
+              ocr.openModalForField,
+              t
+            )}
+          />
+          <RecipeIngredients
+            {...buildRecipeIngredientsProps(
+              state.stackMode,
+              state.recipeIngredients,
+              ingredients.editIngredients,
+              ingredients.addNewIngredient,
+              ocr.openModalForField,
+              t,
+              isScrolling
+            )}
+          />
+          <RecipeNumber
+            {...buildRecipeTimeProps(
+              state.stackMode,
+              state.recipeTime,
+              setters.setRecipeTime,
+              ocr.openModalForField,
+              t
+            )}
+          />
+          <RecipePreparation
+            {...buildRecipePreparationProps(
+              state.stackMode,
+              state.recipePreparation,
+              preparation.editPreparationTitle,
+              preparation.editPreparationDescription,
+              preparation.addNewPreparationStep,
+              ocr.openModalForField,
+              t
+            )}
+          />
+          <RecipeNutrition
+            {...buildRecipeNutritionProps(
+              state.stackMode,
+              state.recipeNutrition,
+              setters.setRecipeNutrition,
+              ocr.openModalForField,
+              recipeTestId
+            )}
+          />
+        </ScrollView>
+      </KeyboardAvoidingView>
 
       {state.stackMode !== recipeStateType.edit && (
         <BottomActionButton
