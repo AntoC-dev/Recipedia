@@ -60,7 +60,7 @@ jobs:
       - name: Run ESLint
         run: npm run lint
       - name: Upload ESLint results
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: eslint-results
           path: eslint-results.json
@@ -157,7 +157,7 @@ jobs:
         run: npm run docs:build
 
       - name: Upload documentation
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: documentation
           path: docs/
