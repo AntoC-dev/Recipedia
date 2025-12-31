@@ -43,11 +43,11 @@ tags:
 
 - scrollUntilVisible:
     element:
-      id: "RecipeIngredients::PrefixText"
+      id: "RecipeIngredients::0::QuantityInput"
     direction: UP
     speed: 60
     centerElement: true
-    label: "Action - Scroll up to ingredients"
+    label: "Action - Scroll up to first ingredient"
 
 - tapOn:
     id: "RecipeIngredients::0::QuantityInput"

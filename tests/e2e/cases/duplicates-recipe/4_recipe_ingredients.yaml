@@ -43,7 +43,7 @@ tags:
 
 - scrollUntilVisible:
     element:
-      id: "RecipeIngredients::PrefixText"
+      id: "RecipeIngredients::1::NameInput::CustomTextInput"
     direction: UP
     speed: 60
     centerElement: true
@@ -52,6 +52,14 @@ tags:
 - tapOn:
     id: "RecipeIngredients::1::NameInput::CustomTextInput"
     label: "Action - Focus on ingredient input"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::PrefixText"
+    direction: UP
+    speed: 40
+    centerElement: true
+    label: "Action - Scroll up for adding ingredient"
 
 - hideKeyboard:
     label: "Action - Hide keyboard"
