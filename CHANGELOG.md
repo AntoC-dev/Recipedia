@@ -1,3 +1,13 @@
+## [2.11.0](https://github.com/AntoC-dev/Recipedia/compare/v2.10.4...v2.11.0) (2025-12-31)
+
+### Features
+
+* add hideDropdown prop to manage dropdown visibility during scroll ([2e20108](https://github.com/AntoC-dev/Recipedia/commit/2e20108b3c06be792fe6a1ad67e7944e41c67e5c))
+
+### Performance Improvements
+
+* update reassure baseline [skip ci] ([a090dc9](https://github.com/AntoC-dev/Recipedia/commit/a090dc9b74728bd3e2458da3a6bd6d57e2e9796b))
+
 ## [2.10.4](https://github.com/AntoC-dev/Recipedia/compare/v2.10.3...v2.10.4) (2025-12-31)
 
 ### Performance Improvements
