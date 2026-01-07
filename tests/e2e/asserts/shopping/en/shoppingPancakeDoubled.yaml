@@ -24,13 +24,23 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Flour item"
 
-- assertVisible:
-    id: "ShoppingScreen::SectionList::Flour"
-    label: "Flour item is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "ShoppingScreen::SectionList::Flour"
+          text: "Flour (400g)"
+          label: "Flour item on Android (doubled 200g x 2)"
 
-- assertVisible:
-    text: "Flour (400g)"
-    label: "Verify doubled Flour quantity (200g x 2)"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "ShoppingScreen::SectionList::Flour"
+          text: "󰄬 Flour (400g) 1 recipe"
+          label: "Flour item on iOS (doubled 200g x 2)"
 
 - scrollUntilVisible:
     element:
@@ -56,13 +66,23 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Eggs item"
 
-- assertVisible:
-    id: "ShoppingScreen::SectionList::Eggs"
-    label: "Eggs item is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "ShoppingScreen::SectionList::Eggs"
+          text: "Eggs (4pieces)"
+          label: "Eggs item on Android (doubled 2 x 2)"
 
-- assertVisible:
-    text: "Eggs (4pieces)"
-    label: "Verify doubled Eggs quantity (2 x 2)"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "ShoppingScreen::SectionList::Eggs"
+          text: "󰄬 Eggs (4pieces) 1 recipe"
+          label: "Eggs item on iOS (doubled 2 x 2)"
 
 - scrollUntilVisible:
     element:
@@ -88,13 +108,23 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Milk item"
 
-- assertVisible:
-    id: "ShoppingScreen::SectionList::Milk"
-    label: "Milk item is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "ShoppingScreen::SectionList::Milk"
+          text: "Milk (600ml)"
+          label: "Milk item on Android (doubled 300ml x 2)"
 
-- assertVisible:
-    text: "Milk (600ml)"
-    label: "Verify doubled Milk quantity (300ml x 2)"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "ShoppingScreen::SectionList::Milk"
+          text: "󰄬 Milk (600ml) 1 recipe"
+          label: "Milk item on iOS (doubled 300ml x 2)"
 
 - scrollUntilVisible:
     element:
@@ -120,13 +150,23 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Butter item"
 
-- assertVisible:
-    id: "ShoppingScreen::SectionList::Butter"
-    label: "Butter item is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "ShoppingScreen::SectionList::Butter"
+          text: "Butter (100g)"
+          label: "Butter item on Android (doubled 50g x 2)"
 
-- assertVisible:
-    text: "Butter (100g)"
-    label: "Verify doubled Butter quantity (50g x 2)"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "ShoppingScreen::SectionList::Butter"
+          text: "󰄬 Butter (100g) 1 recipe"
+          label: "Butter item on iOS (doubled 50g x 2)"
 
 - runFlow:
     file: "../../../flows/shopping/scrollToTop.yaml"

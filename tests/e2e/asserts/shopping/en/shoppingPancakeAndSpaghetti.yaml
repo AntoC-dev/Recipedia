@@ -7,21 +7,31 @@ appId: "com.recipedia"
     id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
     label: "Cereal category header is displayed"
 
-- assertVisible:
-    id: "ShoppingScreen::SectionList::Flour"
-    label: "Flour item is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "ShoppingScreen::SectionList::Flour"
+          text: "Flour (200g)"
+          label: "Flour item on Android"
+      - assertVisible:
+          id: "ShoppingScreen::SectionList::Spaghetti"
+          text: "Spaghetti (200g)"
+          label: "Spaghetti item on Android"
 
-- assertVisible:
-    text: "Flour (200g)"
-    label: "Flour with quantity is displayed"
-
-- assertVisible:
-    id: "ShoppingScreen::SectionList::Spaghetti"
-    label: "Spaghetti item is displayed"
-
-- assertVisible:
-    text: "Spaghetti (200g)"
-    label: "Spaghetti with quantity is displayed"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "ShoppingScreen::SectionList::Flour"
+          text: "󰄬 Flour (200g) 1 recipe"
+          label: "Flour item on iOS"
+      - assertVisible:
+          id: "ShoppingScreen::SectionList::Spaghetti"
+          text: "󰄬 Spaghetti (200g) 1 recipe"
+          label: "Spaghetti item on iOS"
 
 # PLANT PROTEIN
 - scrollUntilVisible:
@@ -36,13 +46,23 @@ appId: "com.recipedia"
     id: "ShoppingScreen::SectionList::ingredientTypes.plantProtein::SubHeader"
     label: "Plant Protein category header is displayed"
 
-- assertVisible:
-    id: "ShoppingScreen::SectionList::Eggs"
-    label: "Eggs item is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "ShoppingScreen::SectionList::Eggs"
+          text: "Eggs (2pieces)"
+          label: "Eggs item on Android"
 
-- assertVisible:
-    text: "Eggs (2pieces)"
-    label: "Eggs with quantity is displayed"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "ShoppingScreen::SectionList::Eggs"
+          text: "󰄬 Eggs (2pieces) 1 recipe"
+          label: "Eggs item on iOS"
 
 # SAUCE
 - scrollUntilVisible:
@@ -57,13 +77,23 @@ appId: "com.recipedia"
     id: "ShoppingScreen::SectionList::ingredientTypes.sauce::SubHeader"
     label: "Sauce category header is displayed"
 
-- assertVisible:
-    id: "ShoppingScreen::SectionList::Tomato Sauce"
-    label: "Tomato Sauce item is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "ShoppingScreen::SectionList::Tomato Sauce"
+          text: "Tomato Sauce (250ml)"
+          label: "Tomato Sauce item on Android"
 
-- assertVisible:
-    text: "Tomato Sauce (250ml)"
-    label: "Tomato Sauce with quantity is displayed"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "ShoppingScreen::SectionList::Tomato Sauce"
+          text: "󰄬 Tomato Sauce (250ml) 1 recipe"
+          label: "Tomato Sauce item on iOS"
 
 # MEAT
 - scrollUntilVisible:
@@ -78,13 +108,23 @@ appId: "com.recipedia"
     id: "ShoppingScreen::SectionList::ingredientTypes.meat::SubHeader"
     label: "Meat category header is displayed"
 
-- assertVisible:
-    id: "ShoppingScreen::SectionList::Ground Beef"
-    label: "Ground Beef item is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "ShoppingScreen::SectionList::Ground Beef"
+          text: "Ground Beef (300g)"
+          label: "Ground Beef item on Android"
 
-- assertVisible:
-    text: "Ground Beef (300g)"
-    label: "Ground Beef with quantity is displayed"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "ShoppingScreen::SectionList::Ground Beef"
+          text: "󰄬 Ground Beef (300g) 1 recipe"
+          label: "Ground Beef item on iOS"
 
 # DAIRY
 - scrollUntilVisible:
@@ -99,13 +139,23 @@ appId: "com.recipedia"
     id: "ShoppingScreen::SectionList::ingredientTypes.dairy::SubHeader"
     label: "Dairy category header is displayed"
 
-- assertVisible:
-    id: "ShoppingScreen::SectionList::Milk"
-    label: "Milk item is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "ShoppingScreen::SectionList::Milk"
+          text: "Milk (300ml)"
+          label: "Milk item on Android"
 
-- assertVisible:
-    text: "Milk (300ml)"
-    label: "Milk with quantity is displayed"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "ShoppingScreen::SectionList::Milk"
+          text: "󰄬 Milk (300ml) 1 recipe"
+          label: "Milk item on iOS"
 
 # CHEESE
 - scrollUntilVisible:
@@ -120,13 +170,23 @@ appId: "com.recipedia"
     id: "ShoppingScreen::SectionList::ingredientTypes.cheese::SubHeader"
     label: "Cheese category header is displayed"
 
-- assertVisible:
-    id: "ShoppingScreen::SectionList::Parmesan"
-    label: "Parmesan item is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "ShoppingScreen::SectionList::Parmesan"
+          text: "Parmesan (50g)"
+          label: "Parmesan item on Android"
 
-- assertVisible:
-    text: "Parmesan (50g)"
-    label: "Parmesan with quantity is displayed"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "ShoppingScreen::SectionList::Parmesan"
+          text: "󰄬 Parmesan (50g) 1 recipe"
+          label: "Parmesan item on iOS"
 
 # OIL AND FAT
 - scrollUntilVisible:
@@ -141,13 +201,23 @@ appId: "com.recipedia"
     id: "ShoppingScreen::SectionList::ingredientTypes.oilAndFat::SubHeader"
     label: "Oil and Fat category header is displayed"
 
-- assertVisible:
-    id: "ShoppingScreen::SectionList::Butter"
-    label: "Butter item is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "ShoppingScreen::SectionList::Butter"
+          text: "Butter (50g)"
+          label: "Butter item on Android"
 
-- assertVisible:
-    text: "Butter (50g)"
-    label: "Butter with quantity is displayed"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "ShoppingScreen::SectionList::Butter"
+          text: "󰄬 Butter (50g) 1 recipe"
+          label: "Butter item on iOS"
 
 - runFlow:
     file: "../../../flows/shopping/scrollToTop.yaml"
