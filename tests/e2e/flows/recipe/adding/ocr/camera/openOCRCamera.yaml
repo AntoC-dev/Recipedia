@@ -9,9 +9,21 @@ appId: "com.recipedia"
     label: "Expand FAB menu"
 
 # FAB ID uses regex pattern because React Native Paper adds suffix on iOS
-- tapOn:
-    id: "CameraButton.*"
-    label: "Open camera for OCR"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - tapOn:
+          id: "CameraButton"
+          label: "Open camera for OCR on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "GalleryButton-container-outer-layer"
+          label: "Open gallery for OCR on iOS (simulator doesn't support camera)"
 
 - runFlow:
     file: "../android/takePhoto.yaml"
@@ -19,7 +31,7 @@ appId: "com.recipedia"
     when:
       platform: Android
 - runFlow:
-    file: "../iOS/takePhoto.yaml"
-    label: "Take photo (iOS)"
+    file: "../iOS/selectAnyRecentPhoto.yaml"
+    label: "Select any recent photo from gallery (iOS)"
     when:
       platform: iOS

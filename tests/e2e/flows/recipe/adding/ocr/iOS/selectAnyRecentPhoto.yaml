@@ -1,0 +1,18 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    text: "Recents"
+    label: "Go to recents photos"
+
+- tapOn:
+    point: 10%,11%
+    label: "Select any photos of the gallery"
+
+- extendedWaitUntil:
+    visible:
+      text: "Choose"
+    label: "Wait for cropper to be displayed"
+
+- runFlow:
+    file: validateWithoutCropping.yaml
+    label: "Validate selected photo without cropping"

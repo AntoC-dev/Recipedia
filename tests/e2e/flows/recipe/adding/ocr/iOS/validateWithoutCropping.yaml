@@ -2,16 +2,4 @@ appId: "com.recipedia"
 ---
 - tapOn:
     text: "Choose"
-    optional: true
     label: "Validate the picture without crop (Choose button)"
-
-- runFlow:
-    when:
-      notVisible:
-        text: "Choose"
-    commands:
-      - tapOn:
-          text: "Done"
-          optional: true
-          label: "Validate the picture without crop (Done button)"
-    label: "Fallback to Done button if Choose not visible"
