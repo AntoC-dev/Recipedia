@@ -52,8 +52,13 @@ appId: "com.recipedia"
     text: "RecipeT"
     label: "Enter the newly created tag name"
 
-- hideKeyboard:
-    label: "Hide the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - assertVisible:
     id: "RecipeTags::List::0::AutocompleteItem::RecipeTag"
@@ -87,8 +92,13 @@ appId: "com.recipedia"
     text: "100"
     label: "Enter ingredient quantity"
 
-- hideKeyboard:
-    label: "Dismiss keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "RecipeIngredients::0::NameInput::CustomTextInput"
@@ -98,8 +108,13 @@ appId: "com.recipedia"
     text: "Tomatoes"
     label: "Enter ingredient name"
 
-- hideKeyboard:
-    label: "Dismiss keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -117,8 +132,13 @@ appId: "com.recipedia"
     text: "10"
     label: "Enter cooking time"
 
-- hideKeyboard:
-    label: "Dismiss keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -148,8 +168,13 @@ appId: "com.recipedia"
     text: "Test preparation step"
     label: "Enter preparation instructions"
 
-- hideKeyboard:
-    label: "Dismiss keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:

@@ -28,8 +28,13 @@ appId: "com.recipedia"
     text: "Step title"
     label: "Write the preparation step title in the input text"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -47,5 +52,10 @@ appId: "com.recipedia"
     text: "Step paragraph"
     label: "Write the preparation step paragraph in the input text"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"

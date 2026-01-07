@@ -26,8 +26,13 @@ appId: "com.recipedia"
     text: "g"
     label: "Enter unit"
 
-- hideKeyboard:
-    label: "Close keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "${PREFIX}::ValidationQueue::Ingredient::ItemDialog::AddModal::ConfirmButton"

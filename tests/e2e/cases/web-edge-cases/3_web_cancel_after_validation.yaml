@@ -62,7 +62,8 @@ tags:
     text: "Keftas"
     label: "Verification - Search for the recipe"
 
-- pressKey: enter
+- hideKeyboard:
+    label: "Dismiss keyboard"
 
 - assertVisible:
     id: "SearchScreen::TextWhenEmpty"

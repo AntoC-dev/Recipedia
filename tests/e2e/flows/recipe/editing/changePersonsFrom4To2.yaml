@@ -19,4 +19,10 @@ appId: "com.recipedia"
     text: "2"
     label: "Enter 2 persons"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: "ENTER"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"

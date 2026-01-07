@@ -23,8 +23,13 @@ tags:
     text: "g"
     label: "Action - Enter a unit"
 
-- hideKeyboard:
-    label: "Action - Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::Menu::Button"
@@ -42,8 +47,13 @@ tags:
     text: "TestIngredient"
     label: "Action - Type non-existant text"
 
-- hideKeyboard:
-    label: "Action - Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - assertNotVisible:
     id: "IngredientsSettings::ItemDialog::AddModal::HelperText"
@@ -60,8 +70,13 @@ tags:
     text: "Butte"
     label: "Action - Type fuzzy matching text"
 
-- hideKeyboard:
-    label: "Action - Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - extendedWaitUntil:
     visible:
@@ -90,8 +105,13 @@ tags:
     text: "Butter"
     label: "Action - Type exact duplicate"
 
-- hideKeyboard:
-    label: "Action - Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - extendedWaitUntil:
     visible:

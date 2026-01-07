@@ -8,5 +8,10 @@ appId: "com.recipedia"
     text: "Title"
     label: "Write the title in the input text"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"

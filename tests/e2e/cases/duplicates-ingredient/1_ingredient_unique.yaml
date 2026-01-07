@@ -44,7 +44,13 @@ tags:
     text: "AUniqueIngredient"
     label: "Action - Enter unique ingredient name first attempt"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: "ENTER"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - runFlow:
     file: "../../asserts/alerts/en/ingredientNotFound.yaml"
@@ -70,7 +76,13 @@ tags:
     text: "AUniqueIngredient"
     label: "Action - Enter unique ingredient name second attempt"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: "ENTER"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Ingredient::SimilarityDialog::AddButton"
@@ -98,8 +110,13 @@ tags:
     text: "MyUnit"
     label: "Action - Enter unit"
 
-- hideKeyboard:
-    label: "Action - Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::SeasonalityCalendar::2"

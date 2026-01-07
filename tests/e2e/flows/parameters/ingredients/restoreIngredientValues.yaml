@@ -28,8 +28,13 @@ appId: "com.recipedia"
     text: "Lettuce"
     label: "Restore name to 'Lettuce'"
 
-- hideKeyboard:
-    label: "Dismiss keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::Menu::Button"
@@ -50,8 +55,13 @@ appId: "com.recipedia"
     text: "g"
     label: "Restore unit to g"
 
-- hideKeyboard:
-    label: "Dismiss keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::SeasonalityCalendar::10"

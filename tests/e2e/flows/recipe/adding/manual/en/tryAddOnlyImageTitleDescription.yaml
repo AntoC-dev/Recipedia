@@ -16,5 +16,10 @@ appId: "com.recipedia"
     text: "Description"
     label: "Write the description in the input text"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"

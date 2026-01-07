@@ -54,8 +54,13 @@ tags:
     text: "1000"
     label: "Action - Change Pasta to 1000g (far from scaled)"
 
-- hideKeyboard:
-    label: "Action - Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "RecipeIngredients::1::QuantityInput"
@@ -68,8 +73,13 @@ tags:
     text: "500"
     label: "Action - Change Tomatoes to 500g"
 
-- hideKeyboard:
-    label: "Action - Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "Recipe::BottomActionButton"

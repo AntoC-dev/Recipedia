@@ -46,7 +46,8 @@ tags:
     text: "Camembert"
     label: "Verification - Search for new recipe"
 
-- pressKey: enter
+- hideKeyboard:
+    label: "Dismiss keyboard"
 
 - scrollUntilVisible:
     element:

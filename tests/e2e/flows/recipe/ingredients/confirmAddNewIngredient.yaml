@@ -29,8 +29,13 @@ appId: "com.recipedia"
     text: "kg"
     label: "Enter unit"
 
-- hideKeyboard:
-    label: "Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::SeasonalityCalendar::5"

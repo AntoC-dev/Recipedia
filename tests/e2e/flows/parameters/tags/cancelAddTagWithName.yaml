@@ -12,6 +12,14 @@ appId: "com.recipedia"
     text: "Test Cancel Tag"
     label: "Enter a tag name"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
 - tapOn:
     id: "TagsSettings::ItemDialog::AddModal::CancelButton"
     label: "Cancel after entering tag name"

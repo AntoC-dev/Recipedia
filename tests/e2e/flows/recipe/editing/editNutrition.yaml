@@ -16,8 +16,13 @@ appId: "com.recipedia"
 
 - eraseText
 - inputText: "${NEW_ENERGY_KCAL}"
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::NumericTextInput"
@@ -25,8 +30,13 @@ appId: "com.recipedia"
 
 - eraseText
 - inputText: "${NEW_FAT}"
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -43,5 +53,10 @@ appId: "com.recipedia"
 - eraseText
 - inputText: "${NEW_PROTEIN}"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"

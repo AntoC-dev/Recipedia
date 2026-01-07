@@ -41,7 +41,8 @@ tags:
     text: "Aig"
     label: "Action - Search for new recipe"
 
-- pressKey: enter
+- hideKeyboard:
+    label: "Dismiss keyboard"
 
 - scrollUntilVisible:
     element:

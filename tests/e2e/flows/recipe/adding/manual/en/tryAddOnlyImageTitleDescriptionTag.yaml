@@ -20,4 +20,10 @@ appId: "com.recipedia"
     text: "Japanese"
     label: "Write the tag in the input text"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"

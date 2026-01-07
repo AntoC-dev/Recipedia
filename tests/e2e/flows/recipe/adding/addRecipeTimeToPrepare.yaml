@@ -16,5 +16,10 @@ appId: "com.recipedia"
     text: "${PERSONS_VALUE}"
     label: "Enter the time to prepare to ${PERSONS_VALUE}"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"

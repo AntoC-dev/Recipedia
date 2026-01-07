@@ -18,8 +18,13 @@ appId: "com.recipedia"
 
 - eraseText
 
-- hideKeyboard:
-    label: "Hide the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "RecipeIngredients::NoteDialog::SaveButton"

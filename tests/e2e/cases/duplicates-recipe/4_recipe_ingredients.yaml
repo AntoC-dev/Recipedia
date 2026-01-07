@@ -61,8 +61,13 @@ tags:
     centerElement: true
     label: "Action - Scroll up for adding ingredient"
 
-- hideKeyboard:
-    label: "Action - Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - runFlow:
     file: "../../flows/recipe/adding/addIngredientToRecipe.yaml"

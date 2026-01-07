@@ -31,8 +31,13 @@ tags:
     text: "can"
     label: "Action - Enter unit"
 
-- hideKeyboard:
-    label: "Action - Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::Name::CustomTextInput"
@@ -42,8 +47,13 @@ tags:
     text: "Tomatoes (canned)"
     label: "Action - Enter ingredient with parenthetical"
 
-- hideKeyboard:
-    label: "Action - Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - extendedWaitUntil:
     visible:

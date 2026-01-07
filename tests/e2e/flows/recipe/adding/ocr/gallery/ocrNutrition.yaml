@@ -58,5 +58,10 @@ appId: "com.recipedia"
     text: "200"
     label: "Enter the weight of a portion"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"

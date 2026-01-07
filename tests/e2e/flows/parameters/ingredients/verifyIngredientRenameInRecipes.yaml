@@ -12,7 +12,13 @@ appId: "com.recipedia"
     text: "Taco"
     label: "Search for Taco recipe that uses Lettuce"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: "enter"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:

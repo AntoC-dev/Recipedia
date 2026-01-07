@@ -17,8 +17,13 @@ appId: "com.recipedia"
     text: "${EDIT_SUFFIX}"
     label: "Edit the tag name"
 
-- hideKeyboard:
-    label: "Hide the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Tag::ItemDialog::AddModal::ConfirmButton"

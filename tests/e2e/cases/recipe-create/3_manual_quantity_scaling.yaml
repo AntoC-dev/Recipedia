@@ -45,7 +45,13 @@ tags:
     text: "Test Recipe"
     label: "Action - Search for Test Recipe"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: "ENTER"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:

@@ -23,8 +23,13 @@ tags:
     text: "TestTag"
     label: "Action - Type non-existant text"
 
-- hideKeyboard:
-    label: "Action - Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - assertNotVisible:
     id: "TagsSettings::ItemDialog::AddModal::HelperText"
@@ -41,8 +46,13 @@ tags:
     text: "Dessrt"
     label: "Action - Type fuzzy matching text"
 
-- hideKeyboard:
-    label: "Action - Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - extendedWaitUntil:
     visible:

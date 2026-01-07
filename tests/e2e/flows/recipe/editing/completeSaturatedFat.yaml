@@ -16,5 +16,10 @@ appId: "com.recipedia"
     text: "2,5"
     label: "Enter saturated fat value"
 
-- hideKeyboard:
-    label: "Close keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"

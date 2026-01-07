@@ -20,5 +20,10 @@ appId: "com.recipedia"
     text: "Celery"
     label: "Write the ingredient name in the input text"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"

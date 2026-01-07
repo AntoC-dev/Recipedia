@@ -16,4 +16,10 @@ appId: "com.recipedia"
     text: "200"
     label: "Enter portion weight value"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: "ENTER"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"

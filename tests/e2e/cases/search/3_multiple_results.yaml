@@ -24,7 +24,13 @@ tags:
     file: "../../asserts/search/searchbar/searchBarFilteredOnCa.yaml"
     label: "Assert - Verify search bar dropdown shows filtered results for 'Ca'"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: "enter"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - runFlow:
     file: "../../asserts/search/en/searchScreenFilteredOnCa.yaml"

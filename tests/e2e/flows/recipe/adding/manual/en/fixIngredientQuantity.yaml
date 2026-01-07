@@ -14,4 +14,10 @@ appId: "com.recipedia"
 
 - inputText: "4321"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"

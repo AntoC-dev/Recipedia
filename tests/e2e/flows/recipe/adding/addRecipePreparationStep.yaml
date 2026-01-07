@@ -28,5 +28,10 @@ appId: "com.recipedia"
     text: "${TEXT}"
     label: "Enter preparation step"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"

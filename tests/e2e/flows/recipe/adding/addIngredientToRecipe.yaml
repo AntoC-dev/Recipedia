@@ -37,8 +37,13 @@ appId: "com.recipedia"
     text: "${QUANTITY}"
     label: "Enter ingredient quantity"
 
-- hideKeyboard:
-    label: "Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "RecipeIngredients::${INDEX}::NameInput::CustomTextInput"
@@ -57,7 +62,13 @@ appId: "com.recipedia"
     text: "${NAME}"
     label: "Enter ingredient name"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: "ENTER"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - waitForAnimationToEnd:
     label: "Wait for UI to stabilize"

@@ -12,8 +12,13 @@ appId: "com.recipedia"
     text: "Aiguillettes de poulet a la sauce satay"
     label: "Enter text for recipe title"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -31,8 +36,13 @@ appId: "com.recipedia"
     text: "Cuisinez nos filets de poulet francais avec du riz basmati bio et une sauce satay maison: un condiment asiatique a base de cacahuetes et gingembre !"
     label: "Enter text for recipe description"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -54,7 +64,13 @@ appId: "com.recipedia"
     text: "Healthy"
     label: "Enter text for recipe first tag"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "RecipeTags::RoundButton"
@@ -64,8 +80,13 @@ appId: "com.recipedia"
     id: "RecipeTags::List::1::CustomTextInput"
     label: "Press the TextInput of second tags"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - repeat:
     while:
@@ -101,8 +122,13 @@ appId: "com.recipedia"
     text: "200"
     label: "Enter text for recipe first ingredient quantity"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "RecipeIngredients::0::NameInput::CustomTextInput"
@@ -112,7 +138,13 @@ appId: "com.recipedia"
     text: "Chicken Breast"
     label: "Enter text for recipe first ingredient name"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: Enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -154,7 +186,13 @@ appId: "com.recipedia"
     text: "2"
     label: "Enter text for recipe second ingredient quantity"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: Enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "RecipeIngredients::1::NameInput::CustomTextInput"
@@ -164,8 +202,13 @@ appId: "com.recipedia"
     text: "Oni"
     label: "Enter text for recipe second ingredient name (partial)"
 
-- hideKeyboard:
-    label: "Hide the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "RecipeIngredients::1::NameInput::AutocompleteItem::Onions"
@@ -187,8 +230,13 @@ appId: "com.recipedia"
     id: "RecipeIngredients::2::NameInput::CustomTextInput"
     label: "Press the TextInput of third ingredient's name"
 
-- hideKeyboard:
-    label: "Hide the keyboard "
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "RecipeIngredients::2::NameInput::AutocompleteItem::Avocado"
@@ -202,7 +250,13 @@ appId: "com.recipedia"
     text: "5"
     label: "Enter text for recipe third ingredient quantity"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: Enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -220,7 +274,13 @@ appId: "com.recipedia"
     text: "20"
     label: "Enter text for recipe time"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: Enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -250,8 +310,13 @@ appId: "com.recipedia"
     text: "Le riz"
     label: "Enter text for recipe first preparation title"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
@@ -261,8 +326,13 @@ appId: "com.recipedia"
     text: "Portez a ebullition une casserole d'eau salee.Faites cuire le riz selon les indications du paquet.Pendant ce temps, preparez les filets de poulet a la sauce satay."
     label: "Enter text for recipe first preparation paragraph"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -292,8 +362,13 @@ appId: "com.recipedia"
     text: "La sauce"
     label: "Enter text for recipe second preparation title"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -311,26 +386,49 @@ appId: "com.recipedia"
     text: "Dans le bol d'un mixeur, deposez les ingredients suivants :"
     label: "Enter text for recipe second preparation paragraph (first line)"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - inputText:
     text: "epluchez et hachez le gingembre."
     label: "Enter text for recipe second preparation paragraph (second line)"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - inputText:
     text: "Ajoutez les cacahuetes, le sucre et le lait de coco."
     label: "Enter text for recipe second preparation paragraph (third line)"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - inputText:
     text: "Salez, poivrez. Mixez jusqu'a obtenir une texture homogene."
     label: "Enter text for recipe second preparation paragraph (fourth line)"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -362,8 +460,13 @@ appId: "com.recipedia"
     text: "LA CUISSON DU POULET"
     label: "Enter text for recipe third preparation title"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -381,8 +484,13 @@ appId: "com.recipedia"
     text: "Coupez les filets de poulet en lanieres.\nemincez l'oignon.\nPressez ou hachez l'ail.\nDans une poele, faites chauffer un filet d'huile de cuisson a feu moyen a vif.\n"
     label: "Enter text for recipe third preparation paragraph"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:

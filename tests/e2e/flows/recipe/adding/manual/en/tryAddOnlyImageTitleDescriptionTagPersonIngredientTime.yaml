@@ -24,5 +24,10 @@ appId: "com.recipedia"
     text: "56789"
     label: "Write the time in the input text"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"

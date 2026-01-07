@@ -24,7 +24,13 @@ tags:
     file: "../../asserts/search/searchbar/searchBarFilteredOnLentil.yaml"
     label: "Assert - Verify dropdown filtered on 'Lentil'"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: "enter"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - runFlow:
     file: "../../asserts/search/en/searchScreenFilteredOnLentilCury.yaml"

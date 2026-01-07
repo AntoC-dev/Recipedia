@@ -50,8 +50,13 @@ tags:
     text: " Edited"
     label: "Action - Append Edited to ingredient name"
 
-- hideKeyboard:
-    label: "Action - Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::Menu::Button"
@@ -72,8 +77,13 @@ tags:
     text: "kg"
     label: "Action - Change unit from g to kg"
 
-- hideKeyboard:
-    label: "Action - Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::SeasonalityCalendar::10"

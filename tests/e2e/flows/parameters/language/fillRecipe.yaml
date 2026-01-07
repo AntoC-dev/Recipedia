@@ -10,8 +10,13 @@ appId: "com.recipedia"
 - inputText:
     text: "Titre"
     label: "Write a title in the input text"
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -29,8 +34,13 @@ appId: "com.recipedia"
 - inputText:
     text: "200"
     label: "Write an ingredient quantity in the input text"
-- hideKeyboard:
-    label: "Hide the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "RecipeIngredients::0::NameInput::CustomTextInput"
@@ -38,8 +48,13 @@ appId: "com.recipedia"
 - inputText:
     text: "Avocado"
     label: "Write an ingredient name in the input text"
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -56,8 +71,13 @@ appId: "com.recipedia"
 - inputText:
     text: "5"
     label: "Write a time in the input text"
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -83,13 +103,23 @@ appId: "com.recipedia"
 - inputText:
     text: "Titre de preparation"
     label: "Write a preparation title in the input text"
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 - tapOn:
     id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
     label: "Tap on recipe preparation content text input"
 - inputText:
     text: "Etape de la preparation"
     label: "Write a preparation content in the input text"
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"

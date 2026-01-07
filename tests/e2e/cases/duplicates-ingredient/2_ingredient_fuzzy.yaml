@@ -36,7 +36,13 @@ tags:
     text: "Butte"
     label: "Action - Enter fuzzy ingredient name"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: "ENTER"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - runFlow:
     file: "../../flows/recipe/ingredients/useFuzzyIngredient.yaml"
@@ -65,7 +71,13 @@ tags:
     text: "Butte"
     label: "Action - Enter fuzzy ingredient name again"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: "ENTER"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - runFlow:
     file: "../../flows/recipe/ingredients/confirmAddNewIngredient.yaml"

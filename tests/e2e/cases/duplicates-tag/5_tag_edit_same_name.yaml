@@ -53,8 +53,13 @@ tags:
     text: "Sweet"
     label: "Action - Change to different unique name"
 
-- hideKeyboard:
-    label: "Action - Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - extendedWaitUntil:
     visible:

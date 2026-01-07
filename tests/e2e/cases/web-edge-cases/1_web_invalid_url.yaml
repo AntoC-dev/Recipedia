@@ -20,8 +20,13 @@ tags:
     text: "not-a-valid-url"
     label: "Action - Enter invalid URL"
 
-- hideKeyboard:
-    label: "Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 - tapOn:
     id: "VerticalBottomButtons::UrlDialog::SubmitButton"
     label: "Try to import the recipe with an invalid URL"

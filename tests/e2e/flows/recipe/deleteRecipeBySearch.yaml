@@ -12,7 +12,13 @@ appId: "com.recipedia"
     text: "${SEARCH_TEXT}"
     label: "Enter search text to find recipe"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: "ENTER"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:

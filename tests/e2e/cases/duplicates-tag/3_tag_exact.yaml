@@ -44,7 +44,13 @@ tags:
     text: "Dessert"
     label: "Action - Enter existing tag name"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: "ENTER"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -74,7 +80,13 @@ tags:
     text: "Dessert"
     label: "Action - Try to add same tag again"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: "ENTER"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - assertVisible:
     id: "RecipeTags::0::Chip"

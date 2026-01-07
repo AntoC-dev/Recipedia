@@ -20,8 +20,13 @@ tags:
     text: "https://example.com"
     label: "Action - Enter valid URL without recipe data"
 
-- hideKeyboard:
-    label: "Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "VerticalBottomButtons::UrlDialog::SubmitButton"

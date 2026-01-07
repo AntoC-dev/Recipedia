@@ -20,4 +20,10 @@ appId: "com.recipedia"
     text: "${TAG_NAME}"
     label: "Enter tag name"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: "ENTER"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"

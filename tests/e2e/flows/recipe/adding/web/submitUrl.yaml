@@ -6,8 +6,13 @@ appId: "com.recipedia"
 
 - inputText: ${RECIPE_URL}
 
-- hideKeyboard:
-    label: "Close keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "VerticalBottomButtons::UrlDialog::SubmitButton"

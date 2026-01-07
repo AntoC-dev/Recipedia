@@ -19,7 +19,13 @@ tags:
     text: "Chocolate"
     label: "Action - Search for Chocolate Cake"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: "ENTER"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -101,7 +107,13 @@ tags:
     text: "Chocolate"
     label: "Action - Search for Chocolate Cake again"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: "ENTER"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:

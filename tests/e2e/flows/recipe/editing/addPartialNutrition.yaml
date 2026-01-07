@@ -17,8 +17,13 @@ appId: "com.recipedia"
     text: "250"
     label: "Enter energy kcal value"
 
-- hideKeyboard:
-    label: "Close keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -36,8 +41,13 @@ appId: "com.recipedia"
     text: "1000"
     label: "Enter energy kj value"
 
-- hideKeyboard:
-    label: "Close keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -56,8 +66,13 @@ appId: "com.recipedia"
     text: "10"
     label: "Enter fat value"
 
-- hideKeyboard:
-    label: "Close keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -75,8 +90,13 @@ appId: "com.recipedia"
     text: "30"
     label: "Enter carbohydrates value"
 
-- hideKeyboard:
-    label: "Close keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -94,8 +114,13 @@ appId: "com.recipedia"
     text: "1"
     label: "Enter sugar value"
 
-- hideKeyboard:
-    label: "Close keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -113,8 +138,13 @@ appId: "com.recipedia"
     text: "42"
     label: "Enter fiber value"
 
-- hideKeyboard:
-    label: "Close keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -132,8 +162,13 @@ appId: "com.recipedia"
     text: "15"
     label: "Enter protein value"
 
-- hideKeyboard:
-    label: "Close keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -151,5 +186,10 @@ appId: "com.recipedia"
     text: "3"
     label: "Enter salt value"
 
-- hideKeyboard:
-    label: "Close keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"

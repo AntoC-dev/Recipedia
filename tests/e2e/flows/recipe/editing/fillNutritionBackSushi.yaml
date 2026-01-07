@@ -21,8 +21,13 @@ appId: "com.recipedia"
     text: "195"
     label: "Enter 195 kcal"
 
-- hideKeyboard:
-    label: "Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -40,8 +45,13 @@ appId: "com.recipedia"
     text: "816"
     label: "Enter 816 kcal"
 
-- hideKeyboard:
-    label: "Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -59,8 +69,13 @@ appId: "com.recipedia"
     text: "8.2"
     label: "Enter 8.2 g for fat"
 
-- hideKeyboard:
-    label: "Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -78,8 +93,13 @@ appId: "com.recipedia"
     text: "1.8"
     label: "Enter 1.8 for saturated fat"
 
-- hideKeyboard:
-    label: "Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -97,8 +117,13 @@ appId: "com.recipedia"
     text: "22"
     label: "Enter 22 for carbohydrates"
 
-- hideKeyboard:
-    label: "Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -116,8 +141,13 @@ appId: "com.recipedia"
     text: "2.5"
     label: "Enter 2.5 for sugar"
 
-- hideKeyboard:
-    label: "Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -135,8 +165,13 @@ appId: "com.recipedia"
     text: "1.2"
     label: "Enter 1.2 for fiber"
 
-- hideKeyboard:
-    label: "Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -154,8 +189,13 @@ appId: "com.recipedia"
     text: "12.5"
     label: "Enter 12.5 for protein"
 
-- hideKeyboard:
-    label: "Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -173,8 +213,13 @@ appId: "com.recipedia"
     text: "1.85"
     label: "Enter 1.85 for salt"
 
-- hideKeyboard:
-    label: "Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -192,8 +237,13 @@ appId: "com.recipedia"
     text: "160"
     label: "Enter 160 for portion weight"
 
-- hideKeyboard:
-    label: "Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "Recipe::AppBar::Validate"

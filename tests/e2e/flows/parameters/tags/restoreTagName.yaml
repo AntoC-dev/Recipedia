@@ -39,6 +39,14 @@ appId: "com.recipedia"
     text: "Italian"
     label: "Change tag name back to 'Italian'"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
 - tapOn:
     id: "TagsSettings::ItemDialog::EditModal::ConfirmButton"
     label: "Save the restored tag"
