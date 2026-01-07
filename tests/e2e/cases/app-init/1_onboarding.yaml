@@ -61,6 +61,12 @@ tags:
 - stopApp
 - launchApp
 
+- extendedWaitUntil:
+    visible:
+      id: "WelcomeScreen::AppIcon::Image"
+    timeout: 30000
+    label: "Wait for welcome screen to be displayed"
+
 - runFlow:
     file: "../../asserts/onboarding/en/assertWelcomeScreen.yaml"
     label: "Assert - Verify Welcome Screen reappears after incomplete tutorial"

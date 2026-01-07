@@ -70,7 +70,11 @@ appId: "com.recipedia"
 - runFlow:
     file: "../../modal/fr/CameraModalTranslatedInFrench.yaml"
     label: "Check that modal is translated in French"
-- pressKey: "BACK"
+
+- tapOn:
+    id: "Recipe::AppBar::BackButton"
+    label: "Tap outside the modal to close it"
+
 - assertVisible:
     id: "Recipe::BottomActionButton-text"
     text: "Ajouter cette nouvelle recette"

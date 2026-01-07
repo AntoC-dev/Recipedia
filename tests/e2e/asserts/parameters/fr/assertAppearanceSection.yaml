@@ -16,28 +16,45 @@ appId: "com.recipedia"
     text: "Apparence"
     label: "Appearance section header shows French text"
 
-- assertVisible:
-    text: "󰔎"
-    label: "Dark mode left icon is displayed"
+- runFlow:
     when:
       platform: Android
+    commands:
+      - assertVisible:
+          text: "󰔎"
+          label: "Dark mode left icon is displayed on Android"
+      - assertVisible:
+          id: "Parameters::Section::Appearance::DarkMode::Item"
+          text: "Mode Sombre"
+          label: "Dark mode item on Android"
 
-- assertVisible:
-    id: "Parameters::Section::Appearance::DarkMode::Item"
-    label: "Dark mode item is displayed"
-
-- assertVisible:
-    text: "Mode Sombre"
-    label: "Dark mode item shows French text"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "Parameters::Section::Appearance::DarkMode::Item"
+          text: "󰔎 Mode Sombre"
+          label: "Dark mode item with icon on iOS"
 
 - assertVisible:
     id: "Parameters::Section::Appearance::DarkMode::Switch"
     label: "Dark mode switch is visible"
 
-- assertVisible:
-    id: "Parameters::Section::Appearance::Language::Item"
-    label: "Language item is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "Parameters::Section::Appearance::Language::Item"
+          text: "Langue, Français"
+          label: "Language item on Android"
 
-- assertVisible:
-    text: "Langue, Français"
-    label: "Language item shows French as selected"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "Parameters::Section::Appearance::Language::Item"
+          text: "󰗊 Langue Français 󰅂"
+          label: "Language item with icon on iOS"

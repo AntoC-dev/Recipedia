@@ -13,7 +13,20 @@ appId: "com.recipedia"
     text: "Import en masse"
     label: "Bulk Import section header is displayed with correct text"
 
-- assertVisible:
-    id: "Parameters::Section::Import::FromWebsite::Item"
-    text: "Importer depuis un service, Importer toutes les recettes depuis les services supportés"
-    label: "Import from service item shows correct text"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "Parameters::Section::Import::FromWebsite::Item"
+          text: "󰖟 Importer depuis un service Importer toutes les recettes depuis les services supportés 󰅂"
+          label: "Import item with icon on iOS"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "Parameters::Section::Import::FromWebsite::Item"
+          text: "Importer depuis un service, Importer toutes les recettes depuis les services supportés"
+          label: "Import item on Android"

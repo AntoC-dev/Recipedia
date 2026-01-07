@@ -1,9 +1,23 @@
 appId: "com.recipedia"
 ---
-- tapOn:
-    id: "DefaultPersonSettings::Slider"
-    point: "33%,50%"
-    label: "Set slider to 4 persons"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - tapOn:
+          id: "DefaultPersonSettings::Slider"
+          point: "33%,50%"
+          label: "Set slider to 4 persons on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - swipe:
+          start: "56%,25%"
+          end: "34%,25%"
+          duration: 300
+          label: "Drag slider to 4 persons on iOS"
 
 - assertVisible:
     id: "DefaultPersonSettings::PersonsValue"

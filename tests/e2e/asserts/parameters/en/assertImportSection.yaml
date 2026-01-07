@@ -13,7 +13,20 @@ appId: "com.recipedia"
     text: "Bulk Import Recipes"
     label: "Bulk Import section header is displayed with correct text"
 
-- assertVisible:
-    id: "Parameters::Section::Import::FromWebsite::Item"
-    text: "Import from meal kit service, Import all recipes from supported services"
-    label: "Import from service item shows correct text"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "Parameters::Section::Import::FromWebsite::Item"
+          text: "󰖟 Import from meal kit service Import all recipes from supported services 󰅂"
+          label: "Import item with icon on iOS"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "Parameters::Section::Import::FromWebsite::Item"
+          text: "Import from meal kit service, Import all recipes from supported services"
+          label: "Import item on Android"

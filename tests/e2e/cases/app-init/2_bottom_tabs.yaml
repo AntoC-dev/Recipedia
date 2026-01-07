@@ -25,6 +25,8 @@ tags:
     id: "BottomTabs::Home"
     label: "Action - Navigate back to Home screen"
 
+# TODO Menu
+
 # Check Shopping Screen
 - tapOn:
     id: "BottomTabs::Shopping"

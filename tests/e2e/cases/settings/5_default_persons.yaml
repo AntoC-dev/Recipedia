@@ -105,7 +105,7 @@ tags:
       id: "SearchScreen::SearchBar"
     direction: UP
     speed: 95
-    centerElement: true
+    timeout: 120000
     label: "Cleanup - Scroll back to top of Search screen"
 
 - tapOn:

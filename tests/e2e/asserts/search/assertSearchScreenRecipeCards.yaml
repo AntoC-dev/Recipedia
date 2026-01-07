@@ -178,10 +178,9 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::RecipeCards::8::Content"
+      id: "SearchScreen::RecipeCards::8::Persons"
     direction: DOWN
     speed: 60
-    centerElement: true
     label: "Scroll to ninth recipe card"
 
 - assertVisible:
@@ -227,5 +226,5 @@ appId: "com.recipedia"
       id: "SearchScreen::SearchBar"
     direction: UP
     speed: 95
-    centerElement: true
+    timeout: 60000
     label: "Scroll back to top of Search screen"

@@ -8,13 +8,28 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to ${INGREDIENT_NAME} item"
 
-- assertVisible:
-    id: "ShoppingScreen::SectionList::${INGREDIENT_NAME}"
-    label: "${INGREDIENT_NAME} item is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "ShoppingScreen::SectionList::${INGREDIENT_NAME}"
+          text: "${INGREDIENT_NAME} (${QUANTITY}${UNIT})"
+          label: "${INGREDIENT_NAME} item title on Android"
 
-- assertVisible:
-    text: "${INGREDIENT_NAME} (${QUANTITY}${UNIT})"
-    label: "${INGREDIENT_NAME} with quantity is displayed"
+      - assertVisible:
+          id: "ShoppingScreen::SectionList::${INGREDIENT_NAME}::Description"
+          text: "${RECIPE_COUNT}"
+          label: "${INGREDIENT_NAME} recipe count description on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "ShoppingScreen::SectionList::${INGREDIENT_NAME}"
+          text: "󰄬 ${INGREDIENT_NAME} (${QUANTITY}${UNIT}) ${RECIPE_COUNT}"
+          label: "${INGREDIENT_NAME} item with checkbox and recipe count on iOS"
 
 - runFlow:
     file: "../longPressIngredient.yaml"

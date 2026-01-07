@@ -341,7 +341,20 @@ appId: "com.recipedia"
     text: "Delete"
     label: "Delete button for Vegetarian is displayed"
 
-- assertVisible:
-    id: "TagsSettings::BottomActionButton"
-    text: "Add tag"
-    label: "Add tag button is visible with correct text"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "TagsSettings::BottomActionButton"
+          text: "Add tag"
+          label: "Add tag button is visible with correct text"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "TagsSettings::BottomActionButton"
+          text: "󰐕 Add Tag"
+          label: "Add tag button is visible with correct text"

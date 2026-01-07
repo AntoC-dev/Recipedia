@@ -16,34 +16,56 @@ appId: "com.recipedia"
     text: "Paramètres par défaut des recettes"
     label: "Recipe Defaults section header shows French text"
 
-- assertVisible:
-    text: "󰡉"
-    label: "Default persons icon is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          text: "󰡉"
+          label: "Default persons icon is displayed on Android"
+      - assertVisible:
+          id: "Parameters::Section::RecipeDefaults::Persons::Item"
+          text: "Nombre de personnes par défaut, 4 personnes"
+          label: "Default persons item on Android"
 
-- assertVisible:
-    id: "Parameters::Section::RecipeDefaults::Persons::Item"
-    label: "Default persons item is displayed"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "Parameters::Section::RecipeDefaults::Persons::Item"
+          text: "󰡉 Nombre de personnes par défaut 4 personnes 󰅂"
+          label: "Default persons item with icon on iOS"
 
-- assertVisible:
-    text: "Nombre de personnes par défaut, 4 personnes"
-    label: "Default persons item shows French text"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          text: "󰅂"
+          index: 0
+          label: "Default persons has a chevron icon on Android"
 
-- assertVisible:
-    text: "󰅂"
-    index: 0
-    label: "Default persons has a chevron icon"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          text: "󰃭"
+          label: "Default season filter icon is displayed on Android"
+      - assertVisible:
+          id: "Parameters::Section::RecipeDefaults::Season::Item"
+          text: "Filtre de saison par défaut"
+          label: "Default season filter item on Android"
 
-- assertVisible:
-    text: "󰃭"
-    label: "Default season filter icon is displayed"
-
-- assertVisible:
-    id: "Parameters::Section::RecipeDefaults::Season::Item"
-    label: "Default season filter item is displayed"
-
-- assertVisible:
-    text: "Filtre de saison par défaut"
-    label: "Default season filter item shows French text"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "Parameters::Section::RecipeDefaults::Season::Item"
+          text: "󰃭 Filtre de saison par défaut"
+          label: "Default season filter item with icon on iOS"
 
 - assertVisible:
     id: "Parameters::Section::RecipeDefaults::Season::Switch"

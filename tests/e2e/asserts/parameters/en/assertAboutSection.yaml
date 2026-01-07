@@ -5,7 +5,6 @@ appId: "com.recipedia"
       id: "Parameters::Section::About::Version::Item-content"
     direction: DOWN
     speed: 60
-    centerElement: true
     label: "Scroll to see the entire version items"
 
 - assertVisible:
@@ -16,14 +15,23 @@ appId: "com.recipedia"
     text: "About"
     label: "About section header text is displayed"
 
-- assertVisible:
-    text: "󰋼"
-    label: "Version icon is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          text: "󰋼"
+          label: "Version icon is displayed on Android"
+      - assertVisible:
+          id: "Parameters::Section::About::Version::Item"
+          text: "Version, .*\\d+\\.\\d+\\.\\d+"
+          label: "Version item on Android"
 
-- assertVisible:
-    id: "Parameters::Section::About::Version::Item"
-    label: "Version item is displayed"
-
-- assertVisible:
-    text: "Version, .*\\d+\\.\\d+\\.\\d+"
-    label: "Version number format is displayed correctly"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "Parameters::Section::About::Version::Item"
+          text: "󰋼 Version .*\\d+\\.\\d+\\.\\d+"
+          label: "Version item with icon on iOS"
