@@ -12,9 +12,23 @@ appId: "com.recipedia"
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Legumes accordion is displayed"
 
-- assertVisible:
-    text: "Legumes"
-    label: "Legumes accordion title is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Legumes"
+          label: "Legumes accordion title on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Legumes 󰅀"
+          label: "Legumes accordion title with chevron on iOS"
 
 # Expand the accordion
 - tapOn:

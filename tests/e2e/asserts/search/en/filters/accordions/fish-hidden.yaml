@@ -1,6 +1,18 @@
 appId: "com.recipedia"
 ---
 # Assert accordion is NOT displayed
-- assertNotVisible:
-    text: "Fish"
-    label: "Fish accordion is not displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertNotVisible:
+          text: "Fish"
+          label: "Fish accordion not displayed on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertNotVisible:
+          text: "Fish 󰅀"
+          label: "Fish accordion not displayed on iOS"

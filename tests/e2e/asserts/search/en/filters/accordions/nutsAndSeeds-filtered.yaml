@@ -12,9 +12,23 @@ appId: "com.recipedia"
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Nuts and Seeds accordion is displayed"
 
-- assertVisible:
-    text: "Nuts and Seeds"
-    label: "Nuts and Seeds accordion title is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Nuts and Seeds"
+          label: "Nuts and Seeds accordion title on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Nuts and Seeds 󰅀"
+          label: "Nuts and Seeds accordion title with chevron on iOS"
 
 # Expand the accordion
 - tapOn:

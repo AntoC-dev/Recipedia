@@ -1,6 +1,18 @@
 appId: "com.recipedia"
 ---
 # Assert accordion is NOT displayed
-- assertNotVisible:
-    text: "Nuts and Seeds"
-    label: "Nuts and Seeds accordion is not displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertNotVisible:
+          text: "Nuts and Seeds"
+          label: "Nuts and Seeds accordion not displayed on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertNotVisible:
+          text: "Nuts and Seeds 󰅀"
+          label: "Nuts and Seeds accordion not displayed on iOS"

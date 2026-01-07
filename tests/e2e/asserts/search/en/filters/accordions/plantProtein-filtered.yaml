@@ -12,9 +12,23 @@ appId: "com.recipedia"
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Plant Protein accordion is displayed"
 
-- assertVisible:
-    text: "Plant Protein"
-    label: "Plant Protein accordion title is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Plant Protein"
+          label: "Plant Protein accordion title on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Plant Protein 󰅀"
+          label: "Plant Protein accordion title with chevron on iOS"
 
 # Expand the accordion
 - tapOn:

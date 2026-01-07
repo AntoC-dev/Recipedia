@@ -12,9 +12,23 @@ appId: "com.recipedia"
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Preparation Time accordion is displayed"
 
-- assertVisible:
-    text: "Preparation Time"
-    label: "Preparation Time accordion title is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Preparation Time"
+          label: "Preparation Time accordion title on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Preparation Time 󰅀"
+          label: "Preparation Time accordion title with chevron on iOS"
 
 # Expand the accordion
 - tapOn:
