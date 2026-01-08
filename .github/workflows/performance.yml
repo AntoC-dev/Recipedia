@@ -85,7 +85,7 @@ jobs:
           echo "Found APK: $APK_PATH"
 
       - name: Upload APK artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: performance-apk
           path: ${{ steps.find-apk.outputs.apk_path }}
@@ -157,7 +157,7 @@ jobs:
             ~/.flashlight/bin/flashlight test --bundleId "com.recipedia" --testCommand "maestro test tests/e2e/cases/performance/1_full_flow.yaml --debug-output=maestro_logs_performance" --resultsFilePath "./performance-results.json" --duration 120000 --iterationCount 5
 
       - name: Upload Performance Report
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         if: always()
         with:
           name: performance-report
@@ -170,7 +170,7 @@ jobs:
 
       - name: Upload Maestro logs
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: maestro-logs-performance
           path: maestro_logs_performance.zip
