@@ -206,6 +206,7 @@ export function Search() {
         <SearchBar
           testId={screenId + '::SearchBar'}
           searchPhrase={searchPhrase}
+          searchBarClicked={searchBarClicked}
           setSearchBarClicked={setSearchBarClicked}
           updateSearchString={updateSearchString}
         />

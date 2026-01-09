@@ -58,6 +58,8 @@ export type SearchBarProps = {
   testId: string;
   /** Current search text value */
   searchPhrase: string;
+  /** Current search bar active/focused state */
+  searchBarClicked: boolean;
   /** State setter for tracking search bar focus/active state */
   setSearchBarClicked: React.Dispatch<React.SetStateAction<boolean>>;
   /** Callback fired when search text changes */
@@ -73,6 +75,7 @@ export type SearchBarProps = {
 export function SearchBar({
   testId,
   searchPhrase,
+  searchBarClicked,
   setSearchBarClicked,
   updateSearchString,
 }: SearchBarProps) {
@@ -93,7 +96,7 @@ export function SearchBar({
       onFocus={() => setSearchBarClicked(true)}
       onSubmitEditing={() => setSearchBarClicked(false)}
       right={props =>
-        searchPhrase.length > 0 && (
+        (searchPhrase.length > 0 || searchBarClicked) && (
           <IconButton
             {...props}
             testID={testId + '::RightIcon'}
