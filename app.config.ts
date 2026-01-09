@@ -54,7 +54,9 @@ export default ({config}: ConfigContext): ExpoConfig => {
             bundleIdentifier: appId,
             buildNumber: pkg.version,
             infoPlist: {
-                "ITSAppUsesNonExemptEncryption": false
+                "ITSAppUsesNonExemptEncryption": false,
+                "NSCameraUsageDescription": "This app needs camera access to take photos of recipes",
+                "NSPhotoLibraryUsageDescription": "This app needs photo library access to select recipe images"
             }
         },
         android: {
