@@ -61,14 +61,13 @@ public class PythonScraper {
     }
 
     private func doInitializePython() throws {
-        guard let resourceBundle = findResourceBundle() else {
-            throw PythonScraperError.bundleNotFound
+        // Find PythonStdlib.bundle
+        guard let stdlibBundleUrl = Bundle.main.url(forResource: "PythonStdlib", withExtension: "bundle"),
+              let stdlibBundle = Bundle(url: stdlibBundleUrl) else {
+            throw PythonScraperError.moduleNotFound("PythonStdlib.bundle")
         }
 
-        guard let stdlibPath = resourceBundle.path(forResource: "python-stdlib", ofType: nil)
-                ?? resourceBundle.path(forResource: "lib", ofType: nil, inDirectory: "python-stdlib") else {
-            throw PythonScraperError.moduleNotFound("python-stdlib")
-        }
+        let stdlibPath = stdlibBundle.bundlePath
 
         setenv("PYTHONHOME", stdlibPath, 1)
         setenv("PYTHONPATH", stdlibPath, 1)
@@ -83,12 +82,10 @@ public class PythonScraper {
 
         sys.path.insert(0, PythonObject(stdlibPath))
 
-        if let packagesPath = resourceBundle.path(forResource: "python_packages", ofType: nil) {
-            sys.path.insert(0, PythonObject(packagesPath))
-        }
-
-        if let scraperPath = resourceBundle.path(forResource: "python", ofType: nil) {
-            sys.path.insert(0, PythonObject(scraperPath))
+        // Find PythonPackages.bundle
+        if let packagesBundleUrl = Bundle.main.url(forResource: "PythonPackages", withExtension: "bundle"),
+           let packagesBundle = Bundle(url: packagesBundleUrl) {
+            sys.path.insert(0, PythonObject(packagesBundle.bundlePath))
         }
 
         scraper = try Python.attemptImport("recipe_scraper.scraper")
