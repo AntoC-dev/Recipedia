@@ -197,7 +197,13 @@ export function TextInputWithDropDown({
   }
 
   return (
-    <View ref={containerRef} style={style} collapsable={false} onLayout={handleLayout}>
+    <View
+      ref={containerRef}
+      style={style}
+      collapsable={false}
+      onLayout={handleLayout}
+      accessible={false}
+    >
       <CustomTextInput
         testID={testID}
         label={label}

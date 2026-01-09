@@ -144,7 +144,7 @@ function PrefixTextWrapper({
   children: React.ReactNode;
 }) {
   return (
-    <View style={recipeTableStyles.container}>
+    <View style={recipeTableStyles.container} accessible={false}>
       <Text
         testID={`${testID}::PrefixText`}
         variant='headlineSmall'
@@ -305,8 +305,8 @@ function EditableIngredients(props: EditableIngredientsProps) {
 
   return (
     <PrefixTextWrapper testID={testID} prefixText={prefixText}>
-      <DataTable style={recipeTableStyles.table}>
-        <DataTable.Header style={{ borderBottomWidth: 0 }}>
+      <DataTable style={recipeTableStyles.table} accessible={false}>
+        <DataTable.Header style={{ borderBottomWidth: 0 }} accessible={false}>
           <DataTable.Title
             testID={headerTestId + '::Quantity'}
             style={[
@@ -348,12 +348,14 @@ function EditableIngredients(props: EditableIngredientsProps) {
               key={index}
               testID={`${testID}::${index}::Row`}
               style={{ borderBottomWidth: 0 }}
+              accessible={false}
             >
               <DataTable.Cell
                 style={[
                   recipeTableStyles.cellBase,
                   { flex: recipeTableFlex.quantity, borderColor: colors.outline },
                 ]}
+                accessible={false}
               >
                 <NumericTextInput
                   testID={`${testID}::${index}::QuantityInput`}
@@ -381,6 +383,7 @@ function EditableIngredients(props: EditableIngredientsProps) {
                     alignItems: 'stretch',
                   },
                 ]}
+                accessible={false}
               >
                 <Text
                   testID={`${testID}::${index}::Unit`}
@@ -403,6 +406,7 @@ function EditableIngredients(props: EditableIngredientsProps) {
                   { flex: recipeTableFlex.name, borderColor: colors.outline },
                   recipeTableStyles.rightBorder,
                 ]}
+                accessible={false}
               >
                 <TextInputWithDropDown
                   testID={`${testID}::${index}::NameInput`}

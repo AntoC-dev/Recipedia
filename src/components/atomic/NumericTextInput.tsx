@@ -123,7 +123,7 @@ export function NumericTextInput({
   ];
 
   return (
-    <View style={style} testID={testID} pointerEvents={'box-none'}>
+    <View style={style} pointerEvents={'box-none'} accessible={false}>
       <TextInput
         testID={testID}
         nativeID={testID}
