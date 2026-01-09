@@ -15,8 +15,12 @@ tags:
     id: "SearchScreen::SearchBar"
     label: "Action - Focus on search bar"
 
-- hideKeyboard:
-    label: "Action - Dismiss keyboard"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
 
 - tapOn:
     id: "SearchScreen::SearchBarResults::Item::4"

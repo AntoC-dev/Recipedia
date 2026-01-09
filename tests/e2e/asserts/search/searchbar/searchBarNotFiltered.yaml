@@ -1,6 +1,10 @@
 appId: "com.recipedia"
 ---
 - assertVisible:
+    id: "SearchScreen::SearchBar::RightIcon"
+    label: "Assert - Close icon is visible when dropdown open"
+
+- assertVisible:
     id: "SearchScreen::SearchBarResults::Item::0-content"
     label: "First dropdown item is displayed"
 
@@ -91,6 +95,5 @@ appId: "com.recipedia"
     element:
       text: "Caesar Salad"
     direction: UP
-    speed: 40
-    centerElement: true
+    speed: 60
     label: "Scroll back to top of dropdown"

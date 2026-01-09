@@ -17,15 +17,9 @@ tags:
 
 - inputText: "Lentil"
 
-- hideKeyboard:
-    label: "Action - Dismiss keyboard"
-
 - runFlow:
     file: "../../asserts/search/searchbar/searchBarFilteredOnLentil.yaml"
     label: "Assert - Verify dropdown filtered on 'Lentil'"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
 
 - pressKey: "enter"
 

@@ -15,22 +15,27 @@ tags:
     id: "SearchScreen::SearchBar"
     label: "Action - Focus on search bar to open dropdown"
 
-- hideKeyboard:
-    label: "Action - Dismiss keyboard"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
 
 - scrollUntilVisible:
     element:
       text: "Sushi Rolls"
     direction: DOWN
     speed: 40
-    centerElement: true
     label: "Action - Scroll down in dropdown to bottom recipes"
 
 - assertVisible:
     text: "Sushi Rolls"
     label: "Assert - Verify Sushi Rolls is visible in dropdown"
 
-- pressKey: "BACK"
+- tapOn:
+    id: "SearchScreen::SearchBar::RightIcon"
+    label: "Action - Close dropdown by tapping close icon"
 
 - scrollUntilVisible:
     element:

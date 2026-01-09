@@ -21,13 +21,13 @@ tags:
 
 - scrollUntilVisible:
     element:
-      text: "Spaghetti"
+      text: ".*Spaghetti"
     direction: DOWN
     centerElement: true
     label: "Action - Scroll to Spaghetti item"
 
 - tapOn:
-    text: "Spaghetti"
+    text: ".*Spaghetti"
     label: "Action - Select Spaghetti as filter"
 
 - runFlow:
