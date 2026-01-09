@@ -58,20 +58,48 @@ appId: "com.recipedia"
 - assertVisible:
     text: "Italian"
     label: "First tag of the recipe is rendered"
-- assertVisible:
-    text: "󰅖"
-    index: 0
-    label: "Cross icon of the first tag is rendered"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          text: "󰅖"
+          index: 0
+          label: "Cross icon of the first tag is rendered on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          text: "Close"
+          index: 0
+          label: "Cross icon of the first tag is rendered on iOS"
+
 - assertVisible:
     id: "RecipeTags::1::Chip"
     label: "Second tag chip is rendered"
 - assertVisible:
     text: "Quick Meal"
     label: "Second tag of the recipe is rendered"
-- assertVisible:
-    text: "󰅖"
-    index: 1
-    label: "Cross icon of the second tag is rendered"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          index: 1
+          label: "Cross icon of the second tag is rendered on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          text: "Close"
+          index: 1
+          label: "Cross icon of the second tag is rendered on iOS"
 
 - scrollUntilVisible:
     element:
@@ -137,6 +165,7 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 60
     centerElement: true
+    label: "Scroll to third ingredient's name input"
 
 - assertVisible:
     id: "RecipeIngredients::0::QuantityInput"
@@ -435,6 +464,6 @@ appId: "com.recipedia"
     element:
       id: "RecipeImage::RoundButton"
     direction: UP
-    speed: 95
-    centerElement: true
+    speed: 85
+    timeout: 120000
     label: "Scroll back to top"

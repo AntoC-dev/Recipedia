@@ -1198,6 +1198,51 @@ Using `pressKey: enter` on SearchBar validates/submits the search text instead
 of just dismissing the keyboard. `hideKeyboard` works correctly for SearchBar on
 both platforms.
 
+**Important**: If you tap on SearchBar **without entering text** (to open the
+dropdown without typing), the keyboard doesn't appear on iOS. In this case, use
+`hideKeyboard` on **Android only**:
+
+```yaml
+# Tap SearchBar to open dropdown (no text input)
+- tapOn:
+    id: 'SearchScreen::SearchBar'
+    label: 'Focus on search bar to open dropdown'
+
+# Dismiss keyboard on Android only (iOS doesn't show keyboard)
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: 'Dismiss keyboard on Android'
+```
+
+**Closing SearchBar Dropdown**: Following Material Design pattern, the SearchBar
+close icon (RightIcon) is visible when:
+
+- Search has text content (clears text and closes dropdown)
+- Search is active/focused even without text (closes dropdown)
+
+This provides consistent cross-platform behavior for closing the dropdown:
+
+```yaml
+# Open search dropdown
+- tapOn:
+    id: 'SearchScreen::SearchBar'
+    label: 'Open search dropdown'
+
+# Close dropdown with icon (works on both platforms)
+- tapOn:
+    id: 'SearchScreen::SearchBar::RightIcon'
+    label: 'Close dropdown'
+```
+
+The icon replaces platform-specific approaches:
+
+- ❌ OLD: `pressKey: "BACK"` (Android only)
+- ❌ OLD: `tapOn: point: "50%,95%"` (fragile coordinates on iOS)
+- ✅ NEW: Tap close icon (works on both platforms)
+
 ### List Item Selection Pattern
 
 ```yaml
@@ -1425,10 +1470,19 @@ file: "../../flows/feature/flow.yaml"  # Relative from current location
 
 ---
 
-**Last Updated**: 2026-01-07
+**Last Updated**: 2026-01-09
 
 **Key Changes**:
 
+- **SearchBar close icon (Material Design pattern)**: SearchBar now shows close
+  icon when search is active (even without text), providing consistent
+  cross-platform behavior for closing dropdown. Replaced platform-specific
+  approaches (`pressKey: "BACK"` on Android, coordinate taps on iOS) with icon
+  tap. Updated 2 code files, 1 unit test file, 6 E2E assertion files, 2 E2E test
+  files.
+- **hideKeyboard after tapOn (without inputText)**: Made Android-only because
+  iOS doesn't show keyboard when tapping without typing (3 search tests updated:
+  1_open_close.yaml, 2_scroll_independence.yaml, 4_direct_click.yaml)
 - **SearchBar keyboard dismissal**: SearchBar now uses `hideKeyboard` instead of
   `pressKey: enter` to avoid submitting the search (12 files updated)
 - **Platform-specific autocomplete keyboard dismissal**: Autocomplete fields

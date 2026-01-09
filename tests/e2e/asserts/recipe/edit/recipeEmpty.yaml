@@ -48,9 +48,22 @@ appId: "com.recipedia"
     id: "RecipeTags::0::Chip"
     label: "No tag is not displayed"
 
-- assertNotVisible:
-    text: "󰅖"
-    label: "Tag's icon is not displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertNotVisible:
+          text: "󰅖"
+          label: "Tag's icon is not displayed on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertNotVisible:
+          text: "Close"
+          label: "Tag's icon is not displayed on iOS"
+
 
 - scrollUntilVisible:
     element:

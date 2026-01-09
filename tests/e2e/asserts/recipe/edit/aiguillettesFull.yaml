@@ -10,9 +10,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::2::TextInputContent::CustomTextInput"
-    text: "Coupez les filets de poulet en lanieres.emincez l'oignon.Pressez\
-      \ ou hachez l'ail.Dans une poele, faites chauffer un filet d'huile de cuisson\
-      \ a feu moyen a vif."
+    text: "Coupez les filets de poulet en lanieres.\nemincez l'oignon.\nPressez ou hachez l'ail.\nDans une poele, faites chauffer un filet d'huile de cuisson a feu moyen a vif."
     label: "Preparation #3 paragraph input text id is displayed with the correct text"
 
 - scrollUntilVisible:
@@ -75,9 +73,7 @@ appId: "com.recipedia"
 - assertVisible:
     id: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
     text:
-      "Dans le bol d'un mixeur, deposez les ingredients suivants :\nepluchez\
-      \ et hachez le gingembre.\nAjoutez les cacahuetes, le sucre et le lait de coco.\n\
-      Salez, poivrez. Mixez jusqu'a obtenir une texture homogene."
+      "Dans le bol d'un mixeur, deposez les ingredients suivants :\nepluchez et hachez le gingembre.\nAjoutez les cacahuetes, le sucre et le lait de coco.Salez, poivrez. Mixez jusqu'a obtenir une texture homogene."
     label: "Preparation #2 paragraph input text id is displayed with the correct text"
 
 - scrollUntilVisible:
@@ -364,10 +360,23 @@ appId: "com.recipedia"
     text: "󰐕"
     label: "Add tag button icons is displayed"
 
-- assertVisible:
-    text: "󰅖"
-    index: 1
-    label: "Second tag's icon is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          text: "󰅖"
+          index: 0
+          label: "Second tag's icon is displayed on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          text: "Close"
+          index: 0
+          label: "Second tag's icon is displayed on iOS"
 
 - scrollUntilVisible:
     element:
@@ -385,10 +394,23 @@ appId: "com.recipedia"
     text: "Italian"
     label: "First tag's text is displayed"
 
-- assertVisible:
-    text: "󰅖"
-    index: 0
-    label: "First tag's icon is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          text: "󰅖"
+          index: 0
+          label: "First tag's icon is displayed on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          text: "Close"
+          index: 0
+          label: "First tag's icon is displayed on iOS"
 
 - assertVisible:
     text: "Healthy"

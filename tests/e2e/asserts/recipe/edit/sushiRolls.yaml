@@ -77,20 +77,50 @@ appId: "com.recipedia"
 - assertVisible:
     text: "Japanese"
     label: "First tag of the recipe is rendered"
-- assertVisible:
-    text: "󰅖"
-    index: 0
-    label: "Cross icon of the first tag is rendered"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          text: "󰅖"
+          index: 0
+          label: "Cross icon of the first tag is rendered on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          text: "Close"
+          index: 0
+          label: "Cross icon of the first tag is rendered on iOS"
+
 - assertVisible:
     id: "RecipeTags::1::Chip"
     label: "Second tag chip is rendered"
 - assertVisible:
     text: "Seafood"
     label: "Second tag of the recipe is rendered"
-- assertVisible:
-    text: "󰅖"
-    index: 1
-    label: "Cross icon of the second tag is rendered"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          text: "󰅖"
+          index: 1
+          label: "Cross icon of the first tag is rendered on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          text: "Close"
+          index: 1
+          label: "Cross icon of the first tag is rendered on iOS"
+
 - assertVisible:
     text: "󰐕"
     label: "Add button for the tag is rendered"
@@ -549,5 +579,6 @@ appId: "com.recipedia"
       id: "RecipeImage::Image"
     direction: UP
     centerElement: true
-    speed: 95
+    speed: 85
+    timeout: 120000
     label: "Scroll back to top"

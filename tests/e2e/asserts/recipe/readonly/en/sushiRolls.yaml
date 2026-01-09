@@ -4,9 +4,21 @@ appId: "com.recipedia"
     id: "Recipe::AppBar::BackButton"
     label: "Back button is displayed"
 
-- assertVisible:
-    text: "󰁍"
-    label: "Back button icon is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          text: "󰁍"
+          label: "Back button icon is displayed on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          text: "Back"
+          label: "Back button icon is displayed on iOS"
 
 - assertVisible:
     id: "RecipeImage"
