@@ -87,6 +87,9 @@ export default ({config}: ConfigContext): ExpoConfig => {
                         targetSdkVersion: 35,
                         buildToolsVersion: '35.0.0',
                     },
+                    ios: {
+                        deploymentTarget: '18.0',
+                    },
                 },
             ],
             './modules/recipe-scraper/plugin/build/index.js',
