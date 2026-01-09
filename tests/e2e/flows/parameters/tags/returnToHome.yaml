@@ -9,7 +9,6 @@ appId: "com.recipedia"
       id: "Parameters::Section::Appearance::DarkMode::Switch"
     direction: UP
     speed: 60
-    centerElement: true
     label: "Scroll back to top of Parameters screen"
 
 - tapOn:

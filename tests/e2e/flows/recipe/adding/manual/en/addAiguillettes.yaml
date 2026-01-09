@@ -4,6 +4,14 @@ appId: "com.recipedia"
     file: "../../en/addRecipeImage.yaml"
     label: "Add recipe image"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeTitle::CustomTextInput"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to title text input"
+
 - tapOn:
     id: "RecipeTitle::CustomTextInput"
     label: "Press the TextInput of title"
@@ -12,13 +20,9 @@ appId: "com.recipedia"
     text: "Aiguillettes de poulet a la sauce satay"
     label: "Enter text for recipe title"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
+- tapOn:
+    id: "RecipeTitle::Text"
+    label: "Tap the title to close the keyboard"
 
 - scrollUntilVisible:
     element:
@@ -36,13 +40,9 @@ appId: "com.recipedia"
     text: "Cuisinez nos filets de poulet francais avec du riz basmati bio et une sauce satay maison: un condiment asiatique a base de cacahuetes et gingembre !"
     label: "Enter text for recipe description"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
+- tapOn:
+    id: "RecipeDescription::Text"
+    label: "Tap the description to close the keyboard"
 
 - scrollUntilVisible:
     element:
@@ -80,25 +80,33 @@ appId: "com.recipedia"
     id: "RecipeTags::List::1::CustomTextInput"
     label: "Press the TextInput of second tags"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Hide keyboard on Android before scrolling dropdown"
 
-- pressKey: enter
+      - swipe:
+        start: "50%,40%"
+        end: "50%,25%"
+        label: "Swipe down to scroll dropdown on iOS"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
+      - assertNotVisible:
+          text: "Breakfast"
+          label: "Assert - First tag no longer visible after scrolling"
 
-- repeat:
-    while:
-      notVisible:
-        text: "Italian"
+- runFlow:
+    when:
+      platform: iOS
     commands:
       - swipe:
-          start: "50%,40%"
-          end: "50%,25%"
-          label: "Swipe down to see dropdown items"
+          start: "50%,80%"
+          end: "50%,65%"
+          label: "Swipe down to scroll dropdown on Android"
 
 - tapOn:
+    id: "RecipeTags::List::.*::AutocompleteItem::Italian"
     text: "Italian"
     label: "Press the tag from dropdown list"
 
@@ -202,14 +210,6 @@ appId: "com.recipedia"
     text: "Oni"
     label: "Enter text for recipe second ingredient name (partial)"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
-
 - tapOn:
     id: "RecipeIngredients::1::NameInput::AutocompleteItem::Onions"
     label: "Press the ingredient from the dropdown"
@@ -310,13 +310,9 @@ appId: "com.recipedia"
     text: "Le riz"
     label: "Enter text for recipe first preparation title"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
+- tapOn:
+    id: "RecipePreparation::EditableStep::0::Title"
+    label: "Tap on the title text to close the keyboard"
 
 - tapOn:
     id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
@@ -326,13 +322,9 @@ appId: "com.recipedia"
     text: "Portez a ebullition une casserole d'eau salee.Faites cuire le riz selon les indications du paquet.Pendant ce temps, preparez les filets de poulet a la sauce satay."
     label: "Enter text for recipe first preparation paragraph"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
+- tapOn:
+    id: "RecipePreparation::EditableStep::0::Content"
+    label: "Tap on the content text to close the keyboard"
 
 - scrollUntilVisible:
     element:
@@ -362,13 +354,9 @@ appId: "com.recipedia"
     text: "La sauce"
     label: "Enter text for recipe second preparation title"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
+- tapOn:
+    id: "RecipePreparation::EditableStep::1::Title"
+    label: "Tap on the title text to close the keyboard"
 
 - scrollUntilVisible:
     element:
@@ -410,25 +398,13 @@ appId: "com.recipedia"
     text: "Ajoutez les cacahuetes, le sucre et le lait de coco."
     label: "Enter text for recipe second preparation paragraph (third line)"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
-
 - inputText:
     text: "Salez, poivrez. Mixez jusqu'a obtenir une texture homogene."
     label: "Enter text for recipe second preparation paragraph (fourth line)"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
+- tapOn:
+    id: "RecipePreparation::EditableStep::1::Content"
+    label: "Tap on the content text to close the keyboard"
 
 - scrollUntilVisible:
     element:
@@ -460,13 +436,9 @@ appId: "com.recipedia"
     text: "LA CUISSON DU POULET"
     label: "Enter text for recipe third preparation title"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
+- tapOn:
+    id: "RecipePreparation::EditableStep::2::Title"
+    label: "Tap on the title text to close the keyboard"
 
 - scrollUntilVisible:
     element:
@@ -481,16 +453,12 @@ appId: "com.recipedia"
     label: "Press the TextInput of third preparation paragraph"
 
 - inputText:
-    text: "Coupez les filets de poulet en lanieres.\nemincez l'oignon.\nPressez ou hachez l'ail.\nDans une poele, faites chauffer un filet d'huile de cuisson a feu moyen a vif.\n"
+    text: "Coupez les filets de poulet en lanieres.\nemincez l'oignon.\nPressez ou hachez l'ail.\nDans une poele, faites chauffer un filet d'huile de cuisson a feu moyen a vif."
     label: "Enter text for recipe third preparation paragraph"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
+- tapOn:
+    id: "RecipePreparation::EditableStep::2::Content"
+    label: "Tap on the content text to close the keyboard"
 
 - scrollUntilVisible:
     element:

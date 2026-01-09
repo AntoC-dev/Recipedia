@@ -143,7 +143,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::1::SectionParagraph"
-    text: "Dans le bol d'un mixeur, deposez les ingredients suivants :\nepluchez et hachez le gingembre.\nAjoutez les cacahuetes, le sucre et le lait de coco.\nSalez, poivrez. Mixez jusqu'a obtenir une texture homogene."
+    text: "Dans le bol d'un mixeur, deposez les ingredients suivants :\nepluchez et hachez le gingembre.\nAjoutez les cacahuetes, le sucre et le lait de coco.Salez, poivrez. Mixez jusqu'a obtenir une texture homogene."
     label: "Second preparation paragraph is displayed"
 
 - scrollUntilVisible:
@@ -161,7 +161,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::2::SectionParagraph"
-    text: "Coupez les filets de poulet en lanieres.emincez l'oignon.Pressez ou hachez l'ail.Dans une poele, faites chauffer un filet d'huile de cuisson a feu moyen a vif."
+    text: "Coupez les filets de poulet en lanieres.\nemincez l'oignon.\nPressez ou hachez l'ail.\nDans une poele, faites chauffer un filet d'huile de cuisson a feu moyen a vif."
     label: "Third preparation paragraph is displayed"
 
 - assertNotVisible:

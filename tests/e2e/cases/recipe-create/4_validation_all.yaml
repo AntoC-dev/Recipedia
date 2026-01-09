@@ -168,22 +168,34 @@ tags:
     label: "Assert - Verify validation error for missing ingredients and preparation"
 
 - runFlow:
-    file: "../../flows/recipe/adding/manual/en/tryAddOnlyImageTitleDescriptionTagPersonIngredient.yaml"
-    label: "Action - Add ingredient"
+    when:
+      platform: Android
+    commands:
+      - runFlow:
+          file: "../../flows/recipe/adding/manual/en/tryAddOnlyImageTitleDescriptionTagPersonIngredient.yaml"
+          label: "Action - Add ingredient"
 
-- tapOn:
-    id: "Recipe::BottomActionButton"
-    label: "Action - Validate the recipe"
+      - tapOn:
+          id: "Recipe::BottomActionButton"
+          label: "Action - Validate the recipe"
+
+      - runFlow:
+          file: "../../asserts/alerts/en/recipeValidationError.yaml"
+          env:
+            MISSING_ELEMENTS: "\n\t- names for all ingredients\n\t- quantities for all ingredients\n\t- all ingredients to be known by Recipedia\n\t- some instructions for the preparation\n\t- a preparation time"
+          label: "Assert - Verify validation error for missing name on ingredient and preparation"
+
+      - runFlow:
+          file: "../../flows/recipe/adding/manual/en/fixIngredientName.yaml"
+          label: "Action - Validate the ingredient name"
 
 - runFlow:
-    file: "../../asserts/alerts/en/recipeValidationError.yaml"
-    env:
-      MISSING_ELEMENTS: "\n\t- names for all ingredients\n\t- quantities for all ingredients\n\t- all ingredients to be known by Recipedia\n\t- some instructions for the preparation\n\t- a preparation time"
-    label: "Assert - Verify validation error for missing name on ingredient and preparation"
-
-- runFlow:
-    file: "../../flows/recipe/adding/manual/en/fixIngredientName.yaml"
-    label: "Action - Validate the ingredient name"
+    when:
+      platform: iOS
+    commands:
+      - runFlow:
+          file: "../../flows/recipe/adding/manual/en/tryAddOnlyImageTitleDescriptionTagPersonIngredient.yaml"
+          label: "Action - Add ingredient"
 
 - tapOn:
     id: "Recipe::BottomActionButton"

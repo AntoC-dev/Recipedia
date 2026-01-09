@@ -41,6 +41,8 @@ env:
       NOTE_TEXT: "this should not be saved"
     label: "Action - Open note dialog, type text, then cancel"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "Recipe::AppBar::Validate"
     label: "Action - Validate to check cancel didn't save note"

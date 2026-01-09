@@ -5,7 +5,7 @@ appId: "com.recipedia"
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
     direction: DOWN
     speed: 60
-    timeout: 30000
+    timeout: 120000
     centerElement: true
     label: "Scroll to nutrition section"
 

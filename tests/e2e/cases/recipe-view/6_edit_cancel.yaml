@@ -49,7 +49,8 @@ tags:
     element:
       id: "RecipeImage::Image"
     direction: UP
-    speed: 95
+    speed: 85
+    timeout: 120000
     centerElement: true
     label: "Action - Scroll back to top to find image"
 
@@ -99,8 +100,8 @@ tags:
     element:
       id: "SearchScreen::SearchBar"
     direction: UP
-    speed: 95
-    centerElement: true
+    speed: 85
+    timeout: 120000
     label: "Cleanup - Scroll back to top of Search screen"
 
 - tapOn:

@@ -28,13 +28,9 @@ appId: "com.recipedia"
     text: "Step title"
     label: "Write the preparation step title in the input text"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
+- tapOn:
+    id: "RecipePreparation::EditableStep::0::Title"
+    label: "Tap on preparation title to close the keyboard"
 
 - scrollUntilVisible:
     element:
@@ -52,10 +48,6 @@ appId: "com.recipedia"
     text: "Step paragraph"
     label: "Write the preparation step paragraph in the input text"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
+- tapOn:
+    id: "RecipePreparation::EditableStep::0::Content"
+    label: "Tap on preparation content to close the keyboard"

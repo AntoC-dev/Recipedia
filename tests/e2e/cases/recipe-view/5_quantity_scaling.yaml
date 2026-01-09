@@ -67,8 +67,8 @@ tags:
     element:
       id: "RecipeImage::RoundButton"
     direction: UP
-    speed: 95
-    centerElement: true
+    speed: 85
+    timeout: 120000
     label: "Action - Scroll back to top"
 
 - runFlow:

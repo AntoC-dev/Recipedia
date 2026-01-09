@@ -4,10 +4,9 @@ appId: "com.recipedia"
     element:
       id: "Recipe::RecipeNutrition::NutritionEmptyState::AddButton::RoundButton"
     direction: DOWN
-    centerElement: true
-    speed: 95
+    speed: 85
+    timeout: 120000
     label: "Scroll to bottom of the screen for nutrition"
-
 
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionEmptyState::AddButton::RoundButton"

@@ -28,10 +28,6 @@ appId: "com.recipedia"
     text: "${TEXT}"
     label: "Enter preparation step"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
+- tapOn:
+    id: "RecipePreparation::EditableStep::${INDEX}::Content"
+    label: "Tap on preparation content to close the keyboard"

@@ -9,7 +9,7 @@ appId: "com.recipedia"
     label: "Scroll to Italian tag"
 
 - tapOn:
-    text: "Delete"
+    id: "TagsSettings::6::DeleteButton"
     index: 0
     label: "Open Delete dialog for Italian tag"
 

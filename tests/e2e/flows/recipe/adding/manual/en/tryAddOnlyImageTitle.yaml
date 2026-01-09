@@ -1,5 +1,13 @@
 appId: "com.recipedia"
 ---
+- scrollUntilVisible:
+    element:
+      id: "RecipeTitle::CustomTextInput"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to centered recipe title"
+
 - tapOn:
     id: "RecipeTitle::CustomTextInput"
     label: "Tap on Title's TextInput"
@@ -8,10 +16,6 @@ appId: "com.recipedia"
     text: "Title"
     label: "Write the title in the input text"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
+- tapOn:
+    id: "RecipeTitle::Text"
+    label: "Tap on title to close the keyboard"

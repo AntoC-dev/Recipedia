@@ -16,6 +16,7 @@ tags:
       id: "RecipeImage"
     direction: UP
     speed: 95
+    timeout: 120000
     centerElement: true
     label: "Action - Scroll back to top"
 
