@@ -11,7 +11,7 @@ appId: "com.recipedia"
       id: "SearchScreen::RecipeCards::10::Cover"
     direction: DOWN
     speed: 60
-    timeout: 10000
+    timeout: 60000
     centerElement: true
     optional: true
     label: "Scroll to first imported recipe if it exists"

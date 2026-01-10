@@ -44,7 +44,7 @@ tags:
 - scrollUntilVisible:
     element:
       id: "RecipeTags::0::Chip"
-    direction: DOWN
+    direction: UP
     speed: 60
     centerElement: true
     label: "Scroll to recipe tags"

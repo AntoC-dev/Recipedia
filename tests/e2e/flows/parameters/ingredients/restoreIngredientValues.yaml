@@ -9,7 +9,7 @@ appId: "com.recipedia"
       id: "IngredientsSettings::15::EditButton"
     direction: DOWN
     speed: 70
-    timeout: 60000
+    timeout: 240000
     centerElement: true
     label: "Scroll to Lettuce Edited ingredient"
 

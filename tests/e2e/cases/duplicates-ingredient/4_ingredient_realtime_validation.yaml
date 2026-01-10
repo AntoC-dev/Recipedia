@@ -66,6 +66,9 @@ tags:
 - eraseText:
     label: "Action - Clear input"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - inputText:
     text: "Butte"
     label: "Action - Type fuzzy matching text"

@@ -101,6 +101,9 @@ tags:
     id: "TagsSettings::ItemDialog::AddModal::CancelButton"
     label: "Cleanup - Cancel add tag dialog"
 
+- waitForAnimationToEnd:
+    label: "Wait for dialog to hide"
+
 - runFlow:
     file: "../../flows/parameters/tags/returnToHome.yaml"
     label: "Cleanup - Return to Home screen"

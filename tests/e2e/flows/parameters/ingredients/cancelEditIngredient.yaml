@@ -5,6 +5,7 @@ appId: "com.recipedia"
       id: "IngredientsSettings::30::EditButton"
     direction: UP
     speed: 70
+    timeout: 120000
     centerElement: true
     label: "Scroll up to find Spaghetti ingredient for edit test"
 

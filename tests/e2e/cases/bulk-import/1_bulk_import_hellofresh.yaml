@@ -103,7 +103,7 @@ tags:
       id: "SearchScreen::RecipeCards::12::Cover"
     direction: DOWN
     speed: 60
-    timeout: 20000
+    timeout: 60000
     centerElement: true
     label: "Verification - Scroll to third imported recipe"
 

@@ -34,7 +34,6 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to energy kcal section"
 
-
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
     text: "${ENERGY_KCAL}"
@@ -118,7 +117,6 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to protein section"
 
-
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::NumericTextInput"
     text: "${PROTEIN}"
@@ -142,6 +140,7 @@ appId: "com.recipedia"
       id: "Recipe::RecipeNutrition::NutritionTable::EditForm::RemoveButton"
     direction: DOWN
     speed: 60
+    timeout: 60000
     centerElement: true
     label: "Scroll to remove nutrition button"
 

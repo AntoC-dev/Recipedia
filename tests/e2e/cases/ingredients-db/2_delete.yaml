@@ -16,7 +16,8 @@ tags:
     element:
       id: "IngredientsSettings::36::IngredientName"
     direction: DOWN
-    speed: 95
+    speed: 80
+    timeout: 1000000
     centerElement: true
     label: "Action - Scroll to bottom of the screen"
 

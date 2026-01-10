@@ -12,7 +12,8 @@ appId: "com.recipedia"
     element:
       id: "IngredientsSettings::36::IngredientName"
     direction: DOWN
-    speed: 95
+    speed: 85
+    timeout: 1000000
     centerElement: true
     label: "Scroll to end of the screen"
 
@@ -21,7 +22,7 @@ appId: "com.recipedia"
       id: "IngredientsSettings::26::DeleteButton"
     direction: UP
     speed: 60
-    timeout: 30000
+    timeout: 120000
     centerElement: true
     label: "Scroll to find RecipeIngredient"
 

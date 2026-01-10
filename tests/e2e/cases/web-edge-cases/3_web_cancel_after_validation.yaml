@@ -62,8 +62,13 @@ tags:
     text: "Keftas"
     label: "Verification - Search for the recipe"
 
-- hideKeyboard:
-    label: "Dismiss keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - assertVisible:
     id: "SearchScreen::TextWhenEmpty"

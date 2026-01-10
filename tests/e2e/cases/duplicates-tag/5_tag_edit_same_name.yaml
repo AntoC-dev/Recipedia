@@ -133,6 +133,9 @@ tags:
     id: "TagsSettings::ItemDialog::EditModal::CancelButton"
     label: "Cleanup - Cancel edit tag dialog"
 
+- waitForAnimationToEnd:
+    label: "Wait for dialog to close"
+
 - runFlow:
     file: "../../flows/parameters/tags/returnToHome.yaml"
     label: "Cleanup - Return to Home screen"

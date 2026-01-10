@@ -9,11 +9,46 @@ appId: "com.recipedia"
     id: "BulkImportSettings::Subheader"
     label: "Subheader is displayed"
 
-- assertVisible:
-    id: "BulkImportSettings::Provider::hellofresh"
-    text: "HelloFresh, Importer les recettes depuis HelloFresh"
-    label: "HelloFresh provider displays name and description (French)"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "BulkImportSettings::Provider::hellofresh"
+          text: "HelloFresh, Importer les recettes depuis HelloFresh"
+          label: "HelloFresh provider displays name and description (French - Android)"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "BulkImportSettings::Provider::hellofresh"
+          text: "HelloFresh Importer les recettes depuis HelloFresh 󰅂"
+          label: "HelloFresh provider displays name and description (French - iOS)"
 
 - assertVisible:
     id: "BulkImportSettings::Provider::hellofresh::Logo"
     label: "HelloFresh provider displays logo"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "BulkImportSettings::Provider::quitoque"
+          text: "Quitoque, Importer les recettes depuis Quitoque"
+          label: "Quitoque provider displays name and description (French - Android)"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "BulkImportSettings::Provider::quitoque"
+          text: "Quitoque Importer les recettes depuis Quitoque 󰅂"
+          label: "Quitoque provider displays name and description (French - iOS)"
+
+- assertVisible:
+    id: "BulkImportSettings::Provider::quitoque::Logo"
+    label: "Quitoque provider displays logo"

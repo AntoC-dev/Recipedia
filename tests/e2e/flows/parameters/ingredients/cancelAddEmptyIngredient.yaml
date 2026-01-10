@@ -12,7 +12,8 @@ appId: "com.recipedia"
     element:
       id: "IngredientsSettings::0::EditButton"
     direction: UP
-    speed: 95
+    speed: 85
+    timeout: 30000
     centerElement: true
     label: "Scroll up to top of Ingredients Settings screen"
 

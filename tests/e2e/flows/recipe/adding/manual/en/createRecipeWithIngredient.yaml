@@ -21,13 +21,9 @@ appId: "com.recipedia"
     text: "E2E Test Recipe"
     label: "Enter recipe title"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
+- tapOn:
+    id: "RecipeImage::Image"
+    label: "Tap on the image to close the keyboard"
 
 - waitForAnimationToEnd:
     label: "Wait for screen to settle after keyboard dismissal"
@@ -43,6 +39,14 @@ appId: "com.recipedia"
 - tapOn:
     id: "RecipeIngredients::AddButton::RoundButton"
     label: "Add an ingredient"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::0::QuantityInput"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to center ingredient row"
 
 - tapOn:
     id: "RecipeIngredients::0::QuantityInput"
@@ -68,13 +72,12 @@ appId: "com.recipedia"
     text: "RecipeIng"
     label: "Enter the newly created ingredient name"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
 
 - assertVisible:
     id: "RecipeIngredients::0::NameInput::AutocompleteItem::RecipeIngredient"
@@ -140,21 +143,9 @@ appId: "com.recipedia"
     text: "Test preparation step"
     label: "Enter preparation instructions"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
-
-- scrollUntilVisible:
-    element:
-      id: "Recipe::BottomActionButton"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to validate button"
+- tapOn:
+    id: "RecipePreparation::EditableStep::0::Content"
+    label: "Tap on content text to hide keyboard"
 
 - tapOn:
     id: "Recipe::BottomActionButton"

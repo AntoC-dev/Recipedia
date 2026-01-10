@@ -272,15 +272,20 @@ env:
     file: "assertSingleIngredient.yaml"
     label: "Assert ingredient Vegetable Broth at index 36"
 
-- scrollUntilVisible:
-    element:
-      id: "IngredientsSettings::BottomActionButton"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll down to find Add button"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "IngredientsSettings::BottomActionButton"
+          text: "Add ingredient"
+          label: "Add ingredient button is visible with correct text on Android"
 
-- assertVisible:
-    id: "IngredientsSettings::BottomActionButton"
-    text: "Add ingredient"
-    label: "Add ingredient button is visible with correct text"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "IngredientsSettings::BottomActionButton"
+          text: "󰐕 Add Ingredient"
+          label: "Add ingredient button is visible with correct text on Android"
