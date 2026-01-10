@@ -109,13 +109,11 @@ export function RecipeSelectionCard({
             testID={testId + '::Thumbnail'}
           />
           {isPreviouslySeen && (
-            <View style={[styles.seenBadge, { backgroundColor: colors.surfaceVariant }]}>
-              <Icon
-                source='history'
-                size={14}
-                color={colors.onSurfaceVariant}
-                testID={testId + '::SeenIndicator'}
-              />
+            <View
+              testID={testId + '::SeenIndicator'}
+              style={[styles.seenBadge, { backgroundColor: colors.surfaceVariant }]}
+            >
+              <Icon source='history' size={14} color={colors.onSurfaceVariant} />
             </View>
           )}
         </View>
