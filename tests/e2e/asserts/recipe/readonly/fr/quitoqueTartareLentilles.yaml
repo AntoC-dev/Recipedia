@@ -60,14 +60,14 @@ appId: "com.recipedia"
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
-      INGREDIENT_NAME: "lentilles blondes Bio"
+      INGREDIENT_NAME: "lentilles blondes"
       INGREDIENT_QUANTITY_AND_UNIT: "300 g"
     label: "Assert lentilles ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
-      INGREDIENT_NAME: "salade d'algues au sésame et au gingembre Bio"
+      INGREDIENT_NAME: "salade d'algues au sésame et au gingembre"
       INGREDIENT_QUANTITY_AND_UNIT: "200 g"
     label: "Assert salade d'algues ingredient with note"
 

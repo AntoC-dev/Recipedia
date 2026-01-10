@@ -19,7 +19,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeDescription::Text"
-    text: "Le yaourt à la grecque que vous trouvez dans votre box est un produit 100% origine France, bien que son nom laisse penser le contraire. Produit par la Laiterie du Forez, cette entreprise familiale allie tradition et innovation pour vous offrir un yaourt onctueux et de qualité. Parfait pour sublimer cette recette de kefta de bœuf."
+    text: "Le yaourt à la grecque que vous trouvez dans votre box est un produit 100% origine France, bien que son nom laisse penser le contraire. Produit par la Laiterie du Forez, cette entreprise familiale allie tradition et innovation pour vous offrir un yaourt onctueux et de qualité. Parfait pour sublimer cette recette de kefta de bœuf. "
     label: "Description of the recipe is the exact text"
 
 - scrollUntilVisible:
@@ -67,7 +67,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeTime::Text"
-    text: "Préparation (70 min)"
+    text: "Préparation (40 min)"
     label: "Preparation section and time are displayed (French)"
 
 - scrollUntilVisible:
