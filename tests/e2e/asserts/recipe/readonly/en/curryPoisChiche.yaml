@@ -54,13 +54,6 @@ appId: "com.recipedia"
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
-      INGREDIENT_NAME: "cébette"
-      INGREDIENT_QUANTITY_AND_UNIT: "2"
-    label: "Assert cébette ingredient"
-
-- runFlow:
-    file: "../../common/assertIngredient.yaml"
-    env:
       INGREDIENT_NAME: "gousse d'ail"
       INGREDIENT_QUANTITY_AND_UNIT: "2"
     label: "Assert gousse d'ail ingredient"

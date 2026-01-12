@@ -32,10 +32,10 @@ tags:
 
 - scrollUntilVisible:
     element:
-      id: "RecipeImage"
+      id: "RecipeImage::RoundButton"
     direction: UP
-    speed: 95
-    centerElement: true
+    speed: 85
+    timeout: 120000
     label: "Action - Scroll back to top"
 
 - runFlow:
@@ -64,8 +64,13 @@ tags:
     text: "CURRY"
     label: "Verification - Search for new recipe"
 
-- hideKeyboard:
-    label: "Dismiss keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:

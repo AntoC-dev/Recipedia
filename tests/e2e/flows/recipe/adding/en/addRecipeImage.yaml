@@ -28,10 +28,10 @@ appId: "com.recipedia"
       platform: Android
     label: "Take photo on Android"
 - runFlow:
-    file: "../ocr/iOS/selectAnyRecentPhoto.yaml"
+    file: "../ocr/iOS/selectFromGallery.yaml"
     when:
       platform: iOS
-    label: "Select any recent photo from gallery on iOS"
+    label: "Select most recent photo from gallery on iOS"
 
 - tapOn:
     id: "Modal::List#0::SquareButton::Image"

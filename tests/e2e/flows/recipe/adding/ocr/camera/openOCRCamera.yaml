@@ -21,6 +21,8 @@ appId: "com.recipedia"
     when:
       platform: iOS
     commands:
+      - addMedia:
+          - "../../../../../../assets/pouletSatay/image.jpg"
       - tapOn:
           id: "GalleryButton-container-outer-layer"
           label: "Open gallery for OCR on iOS (simulator doesn't support camera)"
@@ -31,7 +33,7 @@ appId: "com.recipedia"
     when:
       platform: Android
 - runFlow:
-    file: "../iOS/selectAnyRecentPhoto.yaml"
-    label: "Select any recent photo from gallery (iOS)"
+    file: "../iOS/selectFromGallery.yaml"
+    label: "Select most recent photo from gallery (iOS)"
     when:
       platform: iOS

@@ -53,8 +53,13 @@ tags:
     text: "SATAY"
     label: "Verification - Search for new recipe"
 
-- hideKeyboard:
-    label: "Dismiss keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:

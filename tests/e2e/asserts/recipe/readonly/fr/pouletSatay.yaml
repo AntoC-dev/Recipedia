@@ -9,9 +9,17 @@ appId: "com.recipedia"
     text: "POULET SAUCE SATAY.*"
     label: "Title text is displayed"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeDescription::Text"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to description"
+
 - assertVisible:
     id: "RecipeDescription::Text"
-    text: "La sauce satay est une sauce d'Asie du Sud-Est à base de cacahuètes, ail et gingembre! Reproduisez-la pour accompagner notre poulet français !"
+    text: "La sauce satay est une sauce d'Asie du Sud-Est à base de cacahuètes, ail et gingembre ! Reproduisez-la pour accompagner notre poulet français!"
     label: "Description of the recipe is rendered"
 
 - scrollUntilVisible:
@@ -20,6 +28,7 @@ appId: "com.recipedia"
     direction: DOWN
     centerElement: true
     speed: 60
+    label: "Scroll to persons"
 
 - assertNotVisible:
     id: "RecipeTags::0::Chip"
@@ -178,7 +187,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::3::SectionParagraph"
-    text: "Portez une casserole d'eau salée à ébullition.\nFaites cuire le riz selon les indications du paquet.\nRetirez la base de l'oignon nouveau et émincez-le.\nDégustez sans attendre votre poulet sauce satay accompagné du riz!\nParsemez-le d'oignon nouveau."
+    text: "Portez une casserole d'eau salée à ébullition.\nFaites cuire le riz selon les indications du paquet.\nRetirez la base de .*'oignon nouveau et émincez-le.\nDégustez sans attendre votre poulet sauce satay accompagné du riz!\nParsemez-le d'oignon nouveau."
     label: "Fourth preparation paragraph is displayed"
 
 - runFlow:

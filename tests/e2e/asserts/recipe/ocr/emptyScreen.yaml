@@ -141,5 +141,6 @@ appId: "com.recipedia"
       id: "RecipeImage"
     direction: UP
     speed: 80
+    timeout: 120000
     centerElement: true
     label: "Scroll back to top"
