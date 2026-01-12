@@ -93,10 +93,10 @@
     "i18next": "^25.5.2",
     "i18next-resources-to-backend": "^1.2.1",
     "numeric-quantity": "2.1.0",
-    "react": "19.0.0",
+    "react": "19.2.3",
     "react-compiler-runtime": "1.0.0",
-    "react-dom": "19.0.0",
-    "react-i18next": "^15.5.1",
+    "react-dom": "19.2.3",
+    "react-i18next": "^16.5.2",
     "react-native": "0.79.6",
     "react-native-copilot": "3.3.3",
     "react-native-extended-stylesheet": "~0.12.0",
@@ -109,8 +109,8 @@
     "react-native-svg": "15.11.2"
   },
   "resolutions": {
-    "react": "19.0.0",
-    "react-dom": "19.0.0"
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
   },
   "private": true,
   "devDependencies": {
@@ -129,7 +129,7 @@
     "@testing-library/react-native": "~13.0.1",
     "@types/better-sqlite3": "^7.6.12",
     "@types/jest": "~29.5.14",
-    "@types/react": "~19.0.10",
+    "@types/react": "~19.2.8",
     "@typescript-eslint/eslint-plugin": "^8.43.0",
     "@typescript-eslint/parser": "^8.43.0",
     "babel-jest": "~30.1.2",
