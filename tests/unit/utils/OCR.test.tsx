@@ -39,6 +39,12 @@ describe('OCR Utility Functions', () => {
     recipeTags: [],
   };
 
+  const createBlock = (text: string): TextBlock => ({
+    recognizedLanguages: [],
+    text: '',
+    lines: [{ elements: [], recognizedLanguages: [], text }],
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -163,6 +169,87 @@ describe('OCR Utility Functions', () => {
   });
 
   describe('on preparation field', () => {
+    const mockResultPreparationQuitoqueIOS: TextRecognitionResult = {
+      text: "1. LA PRÉPARATION\n•Émincez l'oignon.\n•Épluchez et coupez la carotte en demi-rondelles.\n•Coupez et retirez la base du poireau.\nIncisez-le en deux dans la longueur et rincez-le soigneusement. Emincez-le.\n•Retirez la partie racine de la citronnelle (5 cm environ). Emincez finement le reste.\n•Pressez ou hachez l'ail.\n•Egouttez et rincez les pois chiches.\n2. LE CURRY\n•Dans une sauteuse, faites chauffer un filet d'huile de cuisson à feu moyen à vif.\nFaites revenir l'oignon, le poireau, la carotte, l'ail, la citronnelle et les épices cachemire\n10 min environ. Salez, poivrez.\nAstuce: Ne remuez pas les légumes immédiatement après les avoir déposés dans la sauteuse,\nlaissez-les caraméliser quelques minutes pour obtenir une belle couleur dorée.\n• Au bout des 10 min, ajoutez le lait de coco et laissez mijoter 10 min à couvert.\n•Ajoutez la purée de tomates et les pois chiches égouttés et poursuivez la cuisson 10 min.\nSalez, poivrez.\n•Goûtez et rectifiez l'assaisonnement si nécessaire.\n•En parallèle, faites cuire le riz.\n3. LE RIZ\n•Portez à ébullition une casserole d'eau salée.\nFaites cuire le riz selon les indications du paquet.\n•Pendant ce temps, retirez la base de la cébette et émincez-la.\nParsemez-la sur le curry au moment de servir.",
+      blocks: new Array<TextBlock>(
+        {
+          recognizedLanguages: [],
+          text: '1. LA PRÉPARATION',
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: "•Émincez l'oignon.",
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: '•Épluchez et coupez la carotte en demi-rondelles.',
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: '•Coupez et retirez la base du poireau.',
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: "Incisez-le en deux dans la longueur et rincez-le soigneusement. Emincez-le.\n•Retirez la partie racine de la citronnelle (5 cm environ). Emincez finement le reste.\n• Pressez ou hachez l'ail.",
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: '•Egouttez et rincez les pois chiches.',
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: '2. LE CURRY',
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: "•Dans une sauteuse, faites chauffer un filet d'huile de cuisson à feu moyen à vif.",
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: "Faites revenir l'oignon, le poireau, la carotte, l'ail, la citronnelle et les épices cachemire",
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: '10 min environ. Salez, poivrez.\nAstuce: Ne remuez pas les légumes immédiatement après les avoir déposés dans la sauteuse, laissez-les caraméliser quelques minutes pour obtenir une belle couleur dorée.\n• Au bout des 10 min, ajoutez le lait de coco et laissez mijoter 10 min à couvert.\n•Ajoutez la purée de tomates et les pois chiches égouttés et poursuivez la cuisson 10 min.',
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: 'Salez, poivrez.',
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: "•Goûtez et rectifiez l'assaisonnement si nécessaire.\n•En parallèle, faites cuire le riz.",
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: '3. LE RIZ',
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: "•Portez à ébullition une casserole d'eau salée.",
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: 'Faites cuire le riz selon les indications du paquet.\n•Pendant ce temps, retirez la base de la cébette et émincez-la.\nParsemez-la sur le curry au moment de servir.',
+          lines: new Array<TextLine>(),
+        }
+      ),
+    };
+
     const mockResultPreparationQuitoque: TextRecognitionResult = {
       text: "1. LA PRÉPARATION\n•Émincez l'oignon.\n•Épluchez et coupez la carotte en demi-rondelles.\n•Coupez et retirez la base du poireau.\nIncisez-le en deux dans la longueur et rincez-le soigneusement. Émincez-le.\n•Retirez la partie racine de la citronnelle (5 cm environ). Émincez finement le reste.\n•Pressez ou hachez I'ail.\n•Egouttez et rincez les pois chiches.\n2. LE CURRY\n•Dans une sauteuse, faites chauffer un filet d'huile de cuisson à feu moyen à vif.\nFaites revenir l'oignon, le poireau, la carotte, I'ail, la citronnelle et les épices cachemire\n10 min environ. Salez, poivrez.\nAstuce: Ne remuez pas les légumes immédiatement après les avoir déposés dans la sauteuse,\nlaissez-les caraméliser quelques minutes pour obtenir une belle couleur dorée.\n• Au bout des 10 min, ajoutez le lait de coco et laissez mijoter 10 min à couvert.\n• Ajoutez la purée de tomates et les pois chiches égouttés et poursuivez la cuisson 10 min.\nSalez, poivrez.\n•Goûtez et rectifiez l'assaisonnement si nécessaire.\n•En parallèle, faites cuire le riz.\n3. LE RIZ\n•Portezà ébullition une casserole d'eau salée.\nFaites cuire le riz selon les indications du paquet.\n•Pendant ce temps, retirez la base de la cébette et émincez-la.\nParsemez-la sur le curry au moment de servir.",
       blocks: new Array<TextBlock>(
@@ -265,6 +352,23 @@ describe('OCR Utility Functions', () => {
           "•Portez à ébullition une casserole d'eau salée.\nFaites cuire le riz selon les indications du paquet.\n•Pendant ce temps, retirez la base de la cébette et émincez-la.\nParsemez-la sur le curry au moment de servir.",
       },
     ];
+    const expectedPreparationQuitoqueIOS = [
+      {
+        title: 'La préparation',
+        description:
+          "•Émincez l'oignon.\n•Épluchez et coupez la carotte en demi-rondelles.\n•Coupez et retirez la base du poireau.\nIncisez-le en deux dans la longueur et rincez-le soigneusement. Emincez-le.\n•Retirez la partie racine de la citronnelle (5 cm environ). Emincez finement le reste.\n• Pressez ou hachez l'ail.\n•Egouttez et rincez les pois chiches.",
+      },
+      {
+        title: 'Le curry',
+        description:
+          "•Dans une sauteuse, faites chauffer un filet d'huile de cuisson à feu moyen à vif.\nFaites revenir l'oignon, le poireau, la carotte, l'ail, la citronnelle et les épices cachemire\n10 min environ. Salez, poivrez.\nAstuce: Ne remuez pas les légumes immédiatement après les avoir déposés dans la sauteuse, laissez-les caraméliser quelques minutes pour obtenir une belle couleur dorée.\n• Au bout des 10 min, ajoutez le lait de coco et laissez mijoter 10 min à couvert.\n•Ajoutez la purée de tomates et les pois chiches égouttés et poursuivez la cuisson 10 min.\nSalez, poivrez.\n•Goûtez et rectifiez l'assaisonnement si nécessaire.\n•En parallèle, faites cuire le riz.",
+      },
+      {
+        title: 'Le riz',
+        description:
+          "•Portez à ébullition une casserole d'eau salée.\nFaites cuire le riz selon les indications du paquet.\n•Pendant ce temps, retirez la base de la cébette et émincez-la.\nParsemez-la sur le curry au moment de servir.",
+      },
+    ];
     const expectedPreparationHelloFresh = [
       {
         title: 'Cuire le riz',
@@ -287,6 +391,132 @@ describe('OCR Utility Functions', () => {
           "Faites chauffer un filet d'huile d'olive dans une poêle à feu moyen-vif et faites-y cuire le poulet 2-4 min.\nAjoutez la sauce et laissez-la réduire 1-2 min à feu vif, ou jusqu'à ce\nqu'elle soit légèrement nappante (ajoutez un peu d'eau si besoin).\nServez le riz dans des assiettes creuses et disposez les légumes et le\npoulet par-dessus avec la sauce.\nSaupoudrez de ciboulette et de gomasio.\nA vos fourchettes!",
       },
     ];
+
+    const mockResultPreparationHelloFreshIOS: TextRecognitionResult = {
+      text: '1\n2\nCuire le riz\nVeillez à bien respecter les quantités indiquées à gauche pour\npréparer votre recette!\n...',
+      blocks: new Array<TextBlock>(
+        {
+          recognizedLanguages: [],
+          text: '1',
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: '2',
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: 'Cuire le riz',
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: 'Veillez à bien respecter les quantités indiquées à gauche pour\npréparer votre recette!',
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: "Portez une casserole d'eau salée à ébullition et faites-y cuire le riz\n12-14 min.",
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: 'Égouttez-le et réservez-le à couvert.',
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: 'Cuire les légumes',
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: "Pendant ce temps, coupez l'oignon en fines demi-lunes. Épluchez\net râpez la carotte. Coupez le poireau en quatre dans l'épaisseur,\nlavez-le bien, puis ciselez-le finement.",
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: "Faites chauffer un filet d'huile d'olive à feu moyen-vif dans un wok\nou une sauteuse. Faites-y revenir les légumes 4-6 min à couvert.\nRemuez régulièrement.",
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: 'CONSEIL: Vous pouvez faire cuire les légumes plus longtemps si vous\nles préférez fondants',
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: '3',
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: '4',
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: 'Faire la sauce',
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: "Pendant ce temps, ciselez la ciboulette et l'ail séparément.",
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: 'Râpez le gingembre (si vous le souhaitez avec la peau).',
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: "Dans un bol, mélangez I'ail et le gingembre avec la sauce soja\n(voir CONSEIL), l'huile de sésame et, par personne:1 cs de sucre et\n30 ml d'eau.",
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: 'Coupez le poulet en 3 aiguillettes.',
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: "CONSEIL:Si vous faites attention à votre consommation de sel ou\nn'aimez pas manger trop salé, réduisez la quantité de sauce soja et de\ngomasio et ne salez pas le plat par la suite.",
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: 'Finir et servir',
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: "Faites chauffer un filet d'huile d'olive dans une poêle à feu moyen-vif et faites-y cuire le poulet 2-4 min.",
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: "Ajoutez la sauce et laissez-la réduire 1-2 min à feu vif, ou jusqu'à ce\nqu'elle soit légèrement nappante (ajoutez un peu d'eau si besoin).",
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: 'Servez le riz dans des assiettes creuses et disposez les légumes et le\npoulet par-dessus avec la sauce.',
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: 'Saupoudrez de ciboulette et de gomasio.',
+          lines: new Array<TextLine>(),
+        },
+        {
+          recognizedLanguages: [],
+          text: 'A vos fourchettes!',
+          lines: new Array<TextLine>(),
+        }
+      ),
+    };
 
     const mockResultPreparationHelloFresh: TextRecognitionResult = {
       text: "1\nCuire le riz\nVeillez à bien respecter les quantités indiquées à gauche pour\npréparer votre recette!\nPortez une casserole d'eau salée à ébullition et faites-y cuire le riz\n12-14 min.\nÉgouttez-le et réservez-le à couvert.\n3\nFaire la sauce\nPendant ce temps, ciselez la ciboulette et l'ail séparément.\nRâpez le gingembre (si vous le souhaitez avec la peau).\nDans un bol, mélangez l'ail et le gingembre avec la sauce soja\n(voir CONSEIL), l'huile de sésame et, par personne:1 cs de sucre et\n30 ml d'eau.\nCoupez le poulet en 3 aiguillettes.\nCONSEIL:Si vous faites attention à votre consommation de sel ou\nn'aimez pas manger trop salé, réduisez la quantité de sauce soja et de\ngomasio et ne salez pas le plat par la suite.\n2\nCuire les légumes\nPendant ce temps, coupez l'oignon en fines demi-lunes. Épluchez\net râpez la carotte. Coupez le poireau en quatre dans l'épaisseur,\nlavez-le bien, puis ciselez-le finement.\nFaites chauffer un filet d'huile d'olive à feu moyen-if dans un wok\nou une sauteuse. Faites-y revenir les légumes 4-6 min à couvert.\nRemuez régulièrement.\nCONSEIL: Vous pouvez faire cuire les légumes plus longtemps si vous\nles préférez fondants.\nFinir et servir\nFaites chauffer un filet d'huile d'olive dans une poêle à feu moyen-\nvif et faites-y cuire le poulet 2-4 min.\nAjoutez la sauce et laissez-la réduire 12 min à feu vif, ou jusqư'à ce\nqu'elle soit légèrement nappante (ajoutez un peu d'eau si besoin).\nServez le riz dans des assiettes creuses et disposez les légumes et le\npoulet par-dessus avec la sauce.\nSaupoudrez de ciboulette et de gomasio.\nA vos fourchettes!",
@@ -422,8 +652,22 @@ describe('OCR Utility Functions', () => {
 
         expect(received).toEqual(expectedPreparationQuitoque);
       });
+      test('(quitoque iOS) returns correct value with time values not parsed as steps', async () => {
+        mockRecognize.mockResolvedValue(mockResultPreparationQuitoqueIOS);
+
+        const received = await recognizeText(uriForOCR, recipeColumnsNames.preparation);
+
+        expect(received).toEqual(expectedPreparationQuitoqueIOS);
+      });
       test('(hellofresh) returns the correct value', async () => {
         mockRecognize.mockResolvedValue(mockResultPreparationHelloFresh);
+
+        const received = await recognizeText(uriForOCR, recipeColumnsNames.preparation);
+
+        expect(received).toEqual(expectedPreparationHelloFresh);
+      });
+      test('(hellofresh iOS) returns the correct value with grouped numbers', async () => {
+        mockRecognize.mockResolvedValue(mockResultPreparationHelloFreshIOS);
 
         const received = await recognizeText(uriForOCR, recipeColumnsNames.preparation);
 
@@ -2355,6 +2599,242 @@ describe('OCR Utility Functions', () => {
     };
     const mockEmptyOcr: TextRecognitionResult = { text: '', blocks: [] };
 
+    const mockResultIngredientPouletSatayIOS: TextRecognitionResult = {
+      text: "2p\n100\n35\n2\n1à3\n1\n200\n1\n0.5\n150\n3p\n150\n35\n3\n1à3\n1\n200\n1\n1\n225\n4p\n200\n70\n4\n1à3\n2\n400\n2\n1\n300\n5p\n250\n70\n5\n1à3\n2\n400\n2\n2\n375\ncacahuètes grillées (g)\nconcentré de tomates (g)\nfilet de poulet\ngingembre (cm)\ngoussed'ail\nlait de coco (mL)\noignon jaune\noignon nouveau\nriz basmati (g) Bio",
+      blocks: [
+        createBlock('2p'),
+        createBlock('100'),
+        createBlock('35'),
+        createBlock('2'),
+        createBlock('1à3'),
+        createBlock('1'),
+        createBlock('200'),
+        createBlock('1'),
+        createBlock('0.5'),
+        createBlock('150'),
+        createBlock('3p'),
+        createBlock('150'),
+        createBlock('35'),
+        createBlock('3'),
+        createBlock('1à3'),
+        createBlock('1'),
+        createBlock('200'),
+        createBlock('1'),
+        createBlock('1'),
+        createBlock('225'),
+        createBlock('4p'),
+        createBlock('200'),
+        createBlock('70'),
+        createBlock('4'),
+        createBlock('1à3'),
+        createBlock('2'),
+        createBlock('400'),
+        createBlock('2'),
+        createBlock('1'),
+        createBlock('300'),
+        createBlock('5p'),
+        createBlock('250'),
+        createBlock('70'),
+        createBlock('5'),
+        createBlock('1à3'),
+        createBlock('2'),
+        createBlock('400'),
+        createBlock('2'),
+        createBlock('2'),
+        createBlock('375'),
+        createBlock('cacahuètes grillées (g)'),
+        createBlock('concentré de tomates (g)'),
+        createBlock('filet de poulet'),
+        createBlock('gingembre (cm)'),
+        createBlock("goussed'ail"),
+        createBlock('lait de coco (mL)'),
+        createBlock('oignon jaune'),
+        createBlock('oignon nouveau'),
+        createBlock('riz basmati (g) Bio'),
+      ],
+    };
+
+    const mockResultIngredientTajineMerguezIOS: TextRecognitionResult = {
+      text: 'carotte\ncumin (sachet)\nmerguez\nnavet\npommes de terre jaunes (g)\n5p\n3\n1\n8\n2\n800\n3p\n2\n1\n6\n2\n600\n2p\n1\n1\n4\n1\n400\n4p\n3\n2\n10\n2\n1000',
+      blocks: [
+        createBlock('carotte'),
+        createBlock('cumin (sachet)'),
+        createBlock('merguez'),
+        createBlock('navet'),
+        createBlock('pommes de terre jaunes (g)'),
+        createBlock('5p'),
+        createBlock('3'),
+        createBlock('1'),
+        createBlock('8'),
+        createBlock('2'),
+        createBlock('800'),
+        createBlock('3p'),
+        createBlock('2'),
+        createBlock('1'),
+        createBlock('6'),
+        createBlock('2'),
+        createBlock('600'),
+        createBlock('2p'),
+        createBlock('1'),
+        createBlock('1'),
+        createBlock('4'),
+        createBlock('1'),
+        createBlock('400'),
+        createBlock('4p'),
+        createBlock('3'),
+        createBlock('2'),
+        createBlock('10'),
+        createBlock('2'),
+        createBlock('1000'),
+      ],
+    };
+
+    const expectedTajineMerguez = new Array<ingredientObject>(
+      {
+        name: 'carotte',
+        unit: '',
+        quantityPerPersons: [
+          { persons: 2, quantity: '1' },
+          { persons: 3, quantity: '2' },
+          { persons: 4, quantity: '3' },
+          { persons: 5, quantity: '3' },
+        ],
+      },
+      {
+        name: 'cumin',
+        unit: 'sachet',
+        quantityPerPersons: [
+          { persons: 2, quantity: '1' },
+          { persons: 3, quantity: '1' },
+          { persons: 4, quantity: '2' },
+          { persons: 5, quantity: '1' },
+        ],
+      },
+      {
+        name: 'merguez',
+        unit: '',
+        quantityPerPersons: [
+          { persons: 2, quantity: '4' },
+          { persons: 3, quantity: '6' },
+          { persons: 4, quantity: '10' },
+          { persons: 5, quantity: '8' },
+        ],
+      },
+      {
+        name: 'navet',
+        unit: '',
+        quantityPerPersons: [
+          { persons: 2, quantity: '1' },
+          { persons: 3, quantity: '2' },
+          { persons: 4, quantity: '2' },
+          { persons: 5, quantity: '2' },
+        ],
+      },
+      {
+        name: 'pommes de terre jaunes',
+        unit: 'g',
+        quantityPerPersons: [
+          { persons: 2, quantity: '400' },
+          { persons: 3, quantity: '600' },
+          { persons: 4, quantity: '1000' },
+          { persons: 5, quantity: '800' },
+        ],
+      }
+    );
+
+    const expectedPouletSatay = new Array<ingredientObject>(
+      {
+        name: 'cacahuètes grillées',
+        unit: 'g',
+        quantityPerPersons: [
+          { persons: 2, quantity: '100' },
+          { persons: 3, quantity: '150' },
+          { persons: 4, quantity: '200' },
+          { persons: 5, quantity: '250' },
+        ],
+      },
+      {
+        name: 'concentré de tomates',
+        unit: 'g',
+        quantityPerPersons: [
+          { persons: 2, quantity: '35' },
+          { persons: 3, quantity: '35' },
+          { persons: 4, quantity: '70' },
+          { persons: 5, quantity: '70' },
+        ],
+      },
+      {
+        name: 'filet de poulet',
+        unit: '',
+        quantityPerPersons: [
+          { persons: 2, quantity: '2' },
+          { persons: 3, quantity: '3' },
+          { persons: 4, quantity: '4' },
+          { persons: 5, quantity: '5' },
+        ],
+      },
+      {
+        name: 'gingembre',
+        unit: 'cm',
+        quantityPerPersons: [
+          { persons: 2, quantity: '1à3' },
+          { persons: 3, quantity: '1à3' },
+          { persons: 4, quantity: '1à3' },
+          { persons: 5, quantity: '1à3' },
+        ],
+      },
+      {
+        name: "goussed'ail",
+        unit: '',
+        quantityPerPersons: [
+          { persons: 2, quantity: '1' },
+          { persons: 3, quantity: '1' },
+          { persons: 4, quantity: '2' },
+          { persons: 5, quantity: '2' },
+        ],
+      },
+      {
+        name: 'lait de coco',
+        unit: 'mL',
+        quantityPerPersons: [
+          { persons: 2, quantity: '200' },
+          { persons: 3, quantity: '200' },
+          { persons: 4, quantity: '400' },
+          { persons: 5, quantity: '400' },
+        ],
+      },
+      {
+        name: 'oignon jaune',
+        unit: '',
+        quantityPerPersons: [
+          { persons: 2, quantity: '1' },
+          { persons: 3, quantity: '1' },
+          { persons: 4, quantity: '2' },
+          { persons: 5, quantity: '2' },
+        ],
+      },
+      {
+        name: 'oignon nouveau',
+        unit: '',
+        quantityPerPersons: [
+          { persons: 2, quantity: '0.5' },
+          { persons: 3, quantity: '1' },
+          { persons: 4, quantity: '1' },
+          { persons: 5, quantity: '2' },
+        ],
+      },
+      {
+        name: 'riz basmati  Bio',
+        unit: 'g',
+        quantityPerPersons: [
+          { persons: 2, quantity: '150' },
+          { persons: 3, quantity: '225' },
+          { persons: 4, quantity: '300' },
+          { persons: 5, quantity: '375' },
+        ],
+      }
+    );
+
     const mockIngredientHelloFresh: TextRecognitionResult = {
       text: 'Riz basmati\nOignon jaune\nCarotte"\nPoireau*\nCiboulette\nGousse d\'ail\nGingembre frais\nSauce soja 11) 13) 15)\nHuile de sésame 3)\nFilet de poulet\nGomasio 3)\n140 g\n1 pièce\n1 pièce\n1 pièce\n3g\n1 pièce\n2 cm\n40 ml\n10 ml\n2 pièce\n2 cC',
       blocks: new Array<TextBlock>(
@@ -3106,6 +3586,20 @@ describe('OCR Utility Functions', () => {
         const received = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
 
         expect(received).toEqual(expected);
+      });
+      test('(poulet satay iOS) returns correct value with reversed block order (quantities before names)', async () => {
+        mockRecognize.mockResolvedValue(mockResultIngredientPouletSatayIOS);
+
+        const received = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+
+        expect(received).toEqual(expectedPouletSatay);
+      });
+      test('(tajine merguez iOS) returns correct value with out-of-order markers (5p, 3p, 2p, 4p)', async () => {
+        mockRecognize.mockResolvedValue(mockResultIngredientTajineMerguezIOS);
+
+        const received = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+
+        expect(received).toEqual(expectedTajineMerguez);
       });
     });
 
@@ -4213,6 +4707,33 @@ describe('OCR Utility Functions', () => {
       salt: 0.65,
     };
 
+    const mockResultQuitoqueIOS: TextRecognitionResult = {
+      text: 'Valeurs nutritionnelles\nPar portion\nPour 10Og\nÉnergie (kJ)\nEnergie (kCal)\nMatières grasses\ndont acides gras saturés\nGlucides\ndont sucre\nFibres\nProtéines\nSel\n911 kJ\n218 kCal\n8,53 g\n0,46g\n24,37 g\n2,92 g\n0,81g\n9.93 g\n0,65 g',
+      blocks: [
+        createBlock('Valeurs nutritionnelles'),
+        createBlock('Par portion'),
+        createBlock('Pour 10Og'),
+        createBlock('Énergie (kJ)'),
+        createBlock('Energie (kCal)'),
+        createBlock('Matières grasses'),
+        createBlock('dont acides gras saturés'),
+        createBlock('Glucides'),
+        createBlock('dont sucre'),
+        createBlock('Fibres'),
+        createBlock('Protéines'),
+        createBlock('Sel'),
+        createBlock('911 kJ'),
+        createBlock('218 kCal'),
+        createBlock('8,53 g'),
+        createBlock('0,46g'),
+        createBlock('24,37 g'),
+        createBlock('2,92 g'),
+        createBlock('0,81g'),
+        createBlock('9.93 g'),
+        createBlock('0,65 g'),
+      ],
+    };
+
     describe('on recognizeText', () => {
       test('returns correct nutrition data from French label 1', async () => {
         mockRecognize.mockResolvedValue(mockResultNutrition1);
@@ -4223,6 +4744,13 @@ describe('OCR Utility Functions', () => {
 
       test('returns correct nutrition data from quitoque', async () => {
         mockRecognize.mockResolvedValue(mockResultQuitoque);
+
+        const result = await recognizeText(uriForOCR, recipeColumnsNames.nutrition);
+        expect(result).toEqual(expectedNutritionQuitoque);
+      });
+
+      test('(quitoque iOS) returns correct nutrition with per100g before labels and typo 10Og', async () => {
+        mockRecognize.mockResolvedValue(mockResultQuitoqueIOS);
 
         const result = await recognizeText(uriForOCR, recipeColumnsNames.nutrition);
         expect(result).toEqual(expectedNutritionQuitoque);
