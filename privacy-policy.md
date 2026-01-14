@@ -1,15 +1,38 @@
 # Privacy Policy
 
-Effective Date: 06/10/2025
+Effective Date: 28/12/2025
 
 Recipedia respects your privacy.
 
-This Privacy Policy explains how our app uses permissions and what information it handles.
+This Privacy Policy explains how our app uses permissions, displays advertising, and what information it handles.
 
 ## Information Collection and Use
 
-Our app does not collect, store, or share any personal information.
-All operations happen entirely on the user’s device — no data is transmitted to our servers or any third party.
+Your recipe data is stored locally on your device and is never transmitted to our servers.
+
+However, our app displays advertisements through Google AdMob, which may collect certain information as described below.
+
+## Advertising
+
+Our app uses Google AdMob to display banner advertisements. AdMob may collect and use data to provide personalized ads,
+including:
+
+* Device identifiers (advertising ID)
+* IP address
+* General location (country/region level)
+* App usage data
+
+**For users in the European Union (EU)**: Before displaying personalized ads, we will ask for your consent through a
+GDPR-compliant consent dialog. You can choose to:
+
+* Accept personalized ads
+* Receive only non-personalized ads
+
+You can manage your ad preferences at any time through your device settings.
+
+For more information about how Google uses data, please
+see [Google's Privacy Policy](https://policies.google.com/privacy)
+and [How Google uses data when you use our partners' sites or apps](https://policies.google.com/technologies/partner-sites).
 
 ## Permissions Used
 

@@ -23,6 +23,7 @@ import { useSafeCopilot } from '@hooks/useSafeCopilot';
 import { MenuRecipeCard } from '@components/molecules/MenuRecipeCard';
 import { TUTORIAL_STEPS } from '@utils/Constants';
 import { padding } from '@styles/spacing';
+import { AdBanner } from '@components/organisms/AdBanner';
 
 const CopilotView = walkthroughable(View);
 
@@ -48,6 +49,7 @@ export function Menu() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <AdBanner placement='menu' testId={screenId} />
       {menu.length === 0 ? (
         <View style={styles.emptyState}>
           <Text testID={`${screenId}::TextNoItem`} variant='titleMedium' style={styles.emptyText}>

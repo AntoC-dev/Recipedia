@@ -13,3 +13,7 @@ appId: "com.recipedia"
 - assertNotVisible:
     id: "MenuScreen::ScrollView"
     label: "ScrollView should not be visible when menu is empty"
+
+- assertVisible:
+    id: "MenuScreen::AdBanner"
+    label: "Ad banner is displayed on menu screen"
