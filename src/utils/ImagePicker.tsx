@@ -49,8 +49,8 @@ function createImageOptionsWithTheme(themeColors: MD3Colors) {
   const backgroundColor = themeColors.onSurface;
   // TODO to translate
   return {
-    mediaType: 'photo',
-    sortOrder: 'desc',
+    mediaType: 'photo' as const,
+    sortOrder: 'desc' as const,
     cropperCancelText: 'Cancel',
     cropperChooseText: 'Choose',
     cropping: true,

@@ -19,6 +19,11 @@ export default {
   ingredientName: 'Name',
   ingredientNotePlaceholder: 'Usage note (e.g., for the sauce)',
 
+  ingredientsOcr: {
+    boxHeaders: ['box', 'in your box'],
+    personsSuffix: ['pers.', 'pers', 'persons'],
+  },
+
   noteDialog: {
     addTitle: 'Add Note',
     editTitle: 'Edit Note',

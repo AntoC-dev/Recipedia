@@ -24,6 +24,11 @@ export function i18nMock() {
     perPortion: ['Par portion', 'Pour ce plat'],
   };
 
+  const ingredientsOcrTerms = {
+    boxHeaders: ['box', 'dans votre box'],
+    personsSuffix: ['pers.', 'pers'],
+  };
+
   const translations: Record<string, string> = {
     'preparationTimes.noneToTen': '0-10 min',
     'preparationTimes.tenToFifteen': '10-15 min',
@@ -127,6 +132,9 @@ export function i18nMock() {
     getResource: (language: string, namespace: string, key: string) => {
       if (key === 'recipe.nutrition.ocr') {
         return ocrTerms;
+      }
+      if (key === 'recipe.ingredientsOcr') {
+        return ingredientsOcrTerms;
       }
       if (key === 'recipe.scraper.ignoredIngredientPrefixes') {
         return ['to taste', 'as needed', 'optional', 'for garnish', 'for serving'];

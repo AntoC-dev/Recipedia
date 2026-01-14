@@ -62,6 +62,30 @@ import { ocrLogger } from '@utils/logger';
 import i18n from '@utils/i18n';
 import Fuse from 'fuse.js';
 
+/**
+ * Constants for ingredient parsing heuristics
+ *
+ * These values are tuned based on observed OCR behavior differences between iOS and Android.
+ * iOS's ML Kit tends to return blocks in different orders than Android.
+ */
+const INGREDIENT_PARSING = {
+  /**
+   * If the first person marker (e.g., "2p") appears within this many lines from the start,
+   * it likely indicates iOS reversed block order (quantities before ingredient names).
+   * Android typically has all ingredient names before any person markers.
+   */
+  REVERSED_ORDER_THRESHOLD: 3,
+
+  /** Pattern to match person markers like "2p", "3 p", "4P", "2 pers." */
+  PERSON_MARKER_PATTERN: /\d+\s*p\s*$/i,
+
+  /** Pattern to match ingredient with unit in parentheses like "flour (g)" */
+  INGREDIENT_WITH_UNIT_PATTERN: /\([^)]+\)/,
+
+  /** Quantities above this value without units are considered suspicious (possible parsing error) */
+  SUSPICIOUS_QUANTITY_THRESHOLD: 10,
+} as const;
+
 /** Type representing person count and cooking time extracted from OCR */
 export type personAndTimeObject = { person: number; time: number };
 export const keysPersonsAndTimeObject = Object.keys({
@@ -122,7 +146,8 @@ export type WarningHandler = (message: string) => void;
  */
 export async function recognizeText(imageUri: string, fieldName: recipeColumnsNames) {
   try {
-    const ocr = await TextRecognition.recognize(imageUri);
+    const normalizedUri = imageUri.startsWith('file://') ? imageUri : `file://${imageUri}`;
+    const ocr = await TextRecognition.recognize(normalizedUri);
     switch (fieldName) {
       // TODO should be really use OCR for these ?
       case recipeColumnsNames.time:
@@ -291,9 +316,10 @@ function tranformOCRInPreparation(ocr: TextRecognitionResult): preparationStepEl
   const steps: { step: preparationStepElement; order: number }[] = [];
   let currentStep: preparationStepElement | null = null;
   let currentOrder = 0;
-  let waitingForTitle = false;
+  const pendingStepNumbers: number[] = [];
 
-  for (const block of ocr.blocks) {
+  for (let i = 0; i < ocr.blocks.length; i++) {
+    const block = ocr.blocks[i];
     const text = block.text.trim();
     if (!text) {
       continue;
@@ -301,33 +327,35 @@ function tranformOCRInPreparation(ocr: TextRecognitionResult): preparationStepEl
 
     const stepNumber = extractStepNumber(text);
 
-    if (stepNumber && isValidStepProgression(stepNumber, currentOrder)) {
-      if (currentStep) {
+    if (stepNumber && isNumberOnlyBlock(text)) {
+      pendingStepNumbers.push(stepNumber);
+    } else if (!hasTextContent(text)) {
+      // Skip blocks with no text content
+    } else if (stepNumber && !isNumberOnlyBlock(text)) {
+      if (currentStep && (currentStep.title || currentStep.description)) {
         steps.push({ step: currentStep, order: currentOrder });
       }
 
       currentOrder = stepNumber;
+      const { title, description } = parseStepContent(text);
+      currentStep = { title, description };
+    } else if (pendingStepNumbers.length > 0 && looksLikeTitle(text)) {
+      pendingStepNumbers.sort((a, b) => a - b);
+      const nextStepNumber = pendingStepNumbers.shift()!;
 
-      if (isNumberOnlyBlock(text)) {
-        currentStep = { title: '', description: '' };
-        waitingForTitle = true;
-      } else {
-        const { title, description } = parseStepContent(text);
-        currentStep = { title, description };
-        waitingForTitle = false;
+      if (currentStep && (currentStep.title || currentStep.description)) {
+        steps.push({ step: currentStep, order: currentOrder });
       }
-    } else if (waitingForTitle && hasTextContent(text)) {
-      if (currentStep) {
-        currentStep.title = formatTitle(text);
-        waitingForTitle = false;
-      }
-    } else if (currentStep && hasTextContent(text)) {
+
+      currentOrder = nextStepNumber;
+      currentStep = { title: formatTitle(text), description: '' };
+    } else if (currentStep) {
       const separator = currentStep.description ? '\n' : '';
       currentStep.description += separator + text;
     }
   }
 
-  if (currentStep) {
+  if (currentStep && (currentStep.title || currentStep.description)) {
     steps.push({ step: currentStep, order: currentOrder });
   }
 
@@ -337,6 +365,9 @@ function tranformOCRInPreparation(ocr: TextRecognitionResult): preparationStepEl
 /**
  * Extracts step number from text if it starts with a number
  *
+ * Excludes numbers followed by time units (e.g., "10 min", "5 h") which are
+ * cooking instructions, not step numbers.
+ *
  * @param text - Text to extract step number from
  * @returns Step number if found, null otherwise
  */
@@ -344,29 +375,20 @@ function extractStepNumber(text: string): number | null {
   if (!numberAtFirstIndex.test(text)) {
     return null;
   }
+  if (startsWithTimeValue(text)) {
+    return null;
+  }
   return retrieveNumberInStr(text);
 }
 
 /**
- * Validates if a step number represents a valid progression from the current step
+ * Checks if text starts with a time value (number followed by time unit)
  *
- * Uses heuristics to determine if a detected step number is likely correct:
- * - For early steps (1-2): allows up to 4x jump
- * - For later steps: allows up to 2x jump
- * - Always allows the first step
- *
- * @param stepNumber - Detected step number
- * @param currentOrder - Current step order
- * @returns True if the progression seems valid
+ * @param text - Text to check
+ * @returns True if text starts with a time value like "10 min", "5 h", "30 sec"
  */
-function isValidStepProgression(stepNumber: number, currentOrder: number): boolean {
-  if (currentOrder === 0) {
-    return true;
-  }
-  if (currentOrder <= 2) {
-    return stepNumber <= 4 * currentOrder;
-  }
-  return stepNumber <= 2 * currentOrder;
+function startsWithTimeValue(text: string): boolean {
+  return /^\d+\s*(min|minutes?|h|hours?|sec|seconds?|mn)\b/i.test(text);
 }
 
 /**
@@ -451,7 +473,257 @@ function isNumberOnlyBlock(text: string): boolean {
   return numberAtFirstIndex.test(text) && !letterRegExp.test(text);
 }
 
+/**
+ * Checks if text looks like a preparation step title
+ *
+ * Titles are typically short phrases that:
+ * - Don't start with bullets (•) or periods
+ * - Don't contain line breaks
+ * - Don't end with a period
+ * - Don't contain numbers (measurements like "12-14 min")
+ * - Start with a capital letter
+ *
+ * @param text - Text to check
+ * @returns True if text appears to be a step title
+ */
+function looksLikeTitle(text: string): boolean {
+  return (
+    text.length < 50 &&
+    text.length > 3 &&
+    !text.startsWith('•') &&
+    !text.startsWith('.') &&
+    !text.includes('\n') &&
+    !text.endsWith('.') &&
+    !/\d/.test(text) &&
+    /^[A-ZÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝ]/.test(text)
+  );
+}
+
 type groupType = { person: string; quantity: string[] };
+
+/** Result of separating markers from quantities in token stream */
+type ParsedTokens = {
+  markers: string[];
+  quantities: string[];
+};
+
+/** Information about marker ordering */
+type MarkerOrderInfo = {
+  sortedMarkers: string[];
+  isOutOfOrder: boolean;
+};
+
+/**
+ * Separates person markers from quantity values in a token stream
+ *
+ * Person markers (e.g., "2p", "3p") indicate serving sizes, while quantities
+ * are the ingredient amounts. Tokens containing spaces are split into separate values.
+ *
+ * @param tokens - Array of string tokens from ingredient data
+ * @returns Object containing separated markers and quantities arrays
+ */
+function separateMarkersAndQuantities(tokens: string[]): ParsedTokens {
+  const markers: string[] = [];
+  const quantities: string[] = [];
+
+  for (const token of tokens) {
+    if (INGREDIENT_PARSING.PERSON_MARKER_PATTERN.test(token)) {
+      markers.push(token);
+    } else if (token.includes(' ')) {
+      // Split space-separated values into individual quantities
+      quantities.push(...token.split(' '));
+    } else {
+      quantities.push(token);
+    }
+  }
+
+  return { markers, quantities };
+}
+
+/**
+ * Analyzes the order of person markers and detects iOS out-of-order cases
+ *
+ * iOS OCR sometimes returns markers out of order (e.g., "5p", "3p", "2p", "4p" instead
+ * of "2p", "3p", "4p", "5p"). This function detects this and provides sorted markers.
+ *
+ * @param markers - Array of person marker strings (e.g., ["5p", "3p", "2p", "4p"])
+ * @returns Object with sorted markers and boolean indicating if reordering was needed
+ */
+function analyzeMarkerOrder(markers: string[]): MarkerOrderInfo {
+  const sortedMarkers = [...markers].sort((a, b) => {
+    const numA = parseInt(a.match(/\d+/)?.[0] || '0');
+    const numB = parseInt(b.match(/\d+/)?.[0] || '0');
+    return numA - numB;
+  });
+
+  const isOutOfOrder = markers.some((m, i) => m !== sortedMarkers[i]);
+
+  return { sortedMarkers, isOutOfOrder };
+}
+
+/**
+ * Builds ingredient groups for iOS out-of-order markers case
+ *
+ * When iOS returns markers out of order (e.g., "5p", "3p", "2p", "4p"), the quantities
+ * are still in their original positions. This function redistributes quantities to
+ * match the sorted marker order by looking up each marker's original position.
+ *
+ * @param markers - Original markers in order they were found in OCR
+ * @param sortedMarkers - Markers sorted by person count
+ * @param allQuantities - All quantity values extracted from tokens
+ * @param nIngredients - Expected number of quantities per group
+ * @returns Array of grouped ingredient data with quantities redistributed
+ */
+function buildGroupsForOutOfOrderMarkers(
+  markers: string[],
+  sortedMarkers: string[],
+  allQuantities: string[],
+  nIngredients: number
+): groupType[] {
+  const groups: groupType[] = [];
+
+  for (const sortedMarker of sortedMarkers) {
+    const originalIndex = markers.indexOf(sortedMarker);
+    const startIdx = originalIndex * nIngredients;
+    const quantities = allQuantities.slice(startIdx, startIdx + nIngredients);
+
+    while (quantities.length < nIngredients) {
+      quantities.push('');
+    }
+
+    groups.push({ person: sortedMarker, quantity: quantities });
+  }
+
+  return groups;
+}
+
+/**
+ * Builds ingredient groups using sequential accumulation (Android case)
+ *
+ * Processes tokens sequentially, accumulating quantities as they appear between
+ * markers. This handles cases where quantity counts may vary due to space-split
+ * tokens or OCR inconsistencies.
+ *
+ * @param tokens - Original token array from ingredient data
+ * @param nIngredients - Expected number of quantities per group
+ * @returns Array of grouped ingredient data
+ */
+function buildGroupsSequentially(tokens: string[], nIngredients: number): groupType[] {
+  const groups: groupType[] = [];
+  let group: groupType = { person: '', quantity: [] };
+
+  for (const token of tokens) {
+    if (INGREDIENT_PARSING.PERSON_MARKER_PATTERN.test(token)) {
+      if (group.person.length > 0) {
+        while (group.quantity.length < nIngredients) {
+          group.quantity.push('');
+        }
+        groups.push(group);
+        group = { person: '', quantity: [] };
+      }
+      group.person = token;
+    } else {
+      if (token.includes(' ')) {
+        group.quantity.push(...token.split(' '));
+      }
+      group.quantity.push(token);
+    }
+  }
+
+  if (group.person.length > 0) {
+    groups.push(group);
+  }
+
+  return groups;
+}
+
+/** Result of detecting block order in ingredient data */
+type BlockOrderResult = {
+  ingredientNames: string[];
+  dataTokens: string[];
+  isReversed: boolean;
+};
+
+/**
+ * Preprocesses OCR lines for ingredient parsing
+ *
+ * Performs several cleaning operations:
+ * - Removes box header lines (e.g., "Dans votre box", "In your box")
+ * - Converts person suffixes (e.g., "pers.") to "p" for marker detection
+ * - Filters empty lines
+ *
+ * @param ocr - Text recognition result from ML Kit
+ * @returns Cleaned array of text lines
+ */
+function preprocessIngredientLines(ocr: TextRecognitionResult): string[] {
+  const lines: string[] = [];
+  const ocrLines = ocr.blocks.flatMap(block => block.lines);
+  const ingredientTerms = getIngredientOcrTerms(i18n.language);
+
+  const boxHeaders = ingredientTerms?.boxHeaders ?? [];
+  const personsSuffixes = ingredientTerms?.personsSuffix ?? [];
+
+  const firstLineText = ocrLines[0]?.text.toLowerCase();
+  if (firstLineText && boxHeaders.some(header => firstLineText.includes(header.toLowerCase()))) {
+    ocrLines.shift();
+  }
+
+  for (const line of ocrLines) {
+    const trimmed = line.text.trim();
+    if (!trimmed) continue;
+
+    const matchedSuffix = personsSuffixes.find(suffix => trimmed.includes(suffix));
+    if (matchedSuffix) {
+      lines[lines.length - 1] += 'p';
+    } else {
+      lines.push(trimmed);
+    }
+  }
+
+  return lines;
+}
+
+/**
+ * Detects block order and splits lines into ingredient names and data tokens
+ *
+ * iOS OCR sometimes returns blocks in reversed order (quantities/markers before
+ * ingredient names). This function detects this by checking if the first person
+ * marker appears early in the data, and if ingredient names appear after it.
+ *
+ * @param lines - Preprocessed OCR lines
+ * @returns Object with ingredient names, data tokens, and whether order was reversed
+ */
+function detectBlockOrder(lines: string[]): BlockOrderResult | null {
+  const headerBoundary = lines.findIndex(line =>
+    INGREDIENT_PARSING.PERSON_MARKER_PATTERN.test(line)
+  );
+
+  if (headerBoundary === -1) {
+    return null;
+  }
+
+  // Check if this is reversed order (quantities before names)
+  // If first person marker appears early, check if ingredient names come after
+  if (headerBoundary < INGREDIENT_PARSING.REVERSED_ORDER_THRESHOLD) {
+    const firstIngredientNameIndex = lines.findIndex(line =>
+      INGREDIENT_PARSING.INGREDIENT_WITH_UNIT_PATTERN.test(line)
+    );
+
+    if (firstIngredientNameIndex > headerBoundary) {
+      return {
+        ingredientNames: lines.slice(firstIngredientNameIndex),
+        dataTokens: lines.slice(headerBoundary, firstIngredientNameIndex),
+        isReversed: true,
+      };
+    }
+  }
+
+  return {
+    ingredientNames: lines.slice(0, headerBoundary),
+    dataTokens: lines.slice(headerBoundary),
+    isReversed: false,
+  };
+}
 
 /**
  * Transforms OCR results into structured ingredient objects
@@ -460,129 +732,24 @@ type groupType = { person: string; quantity: string[] };
  * followed by data rows with person counts and quantities. Handles OCR inconsistencies
  * by detecting and correcting misplaced elements and merging multi-line ingredients.
  *
- * Expected format:
- * - Header: ingredient names with units in parentheses
- * - Data rows: person count (e.g., "2p") followed by quantities
- *
  * @param ocr - ML Kit text recognition result
  * @returns Array of structured ingredient objects with quantities per person count
- *
- * @example
- * ```typescript
- * // OCR text like:
- * // "Flour (cups)  Sugar (tsp)  Salt (pinch)"
- * // "2p"
- * // "2 1 1"
- * // "4p"
- * // "4 2 2"
- * //
- * // Returns:
- * // [
- * //   { name: "Flour", unit: "cups", quantityPerPersons: [{persons: 2, quantity: "2"}, {persons: 4, quantity: "4"}] },
- * //   { name: "Sugar", unit: "tsp", quantityPerPersons: [{persons: 2, quantity: "1"}, {persons: 4, quantity: "2"}] }
- * // ]
- * ```
  */
 function tranformOCRInIngredients(ocr: TextRecognitionResult): ingredientObject[] {
-  const lines: string[] = [];
-  const ocrLines = ocr.blocks.flatMap(block => block.lines);
-  if (ocrLines[0]?.text.toLowerCase().includes('box')) ocrLines.shift();
+  const lines = preprocessIngredientLines(ocr);
+  const blockOrder = detectBlockOrder(lines);
 
-  for (const line of ocrLines) {
-    const trimmed = line.text.trim();
-    if (!trimmed) continue;
-    if (trimmed.includes('pers.')) {
-      lines[lines.length - 1] += 'p';
-    } else {
-      lines.push(trimmed);
-    }
-  }
-
-  const headerBoundary = lines.findIndex(line => line.endsWith('p'));
-  if (headerBoundary === -1) {
-    ocrLogger.debug('No ingredient header found in OCR data');
+  if (!blockOrder) {
     return parseIngredientsNoHeader(lines);
   }
-  const ingredientsNames = lines.slice(0, headerBoundary);
-  const dataTokens = lines.slice(headerBoundary);
 
-  const ingredientsOCR = parseIngredientsNamesAndUnits(ingredientsNames);
+  const { ingredientNames, dataTokens } = blockOrder;
 
+  const ingredientsOCR = parseIngredientsNamesAndUnits(ingredientNames);
   const groups = getIngredientsGroups(dataTokens, ingredientsOCR.length);
 
-  function areIngredientsMergeable(indexFirstSuspicious: number): boolean {
-    if (indexFirstSuspicious === firstGroup.quantity.length) {
-      return false;
-    }
-    for (
-      let indexNextIngredient = indexFirstSuspicious + 1;
-      indexNextIngredient < firstGroup.quantity.length &&
-      indexNextIngredient < ingredientsOCR.length;
-      indexNextIngredient++
-    ) {
-      if (
-        isIngredientSuspicious(
-          firstGroup.quantity[indexNextIngredient],
-          ingredientsOCR[indexNextIngredient].unit
-        )
-      ) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  function mergeIngredients(indexFirstSuspicious: number) {
-    const currentIngredient = ingredientsOCR[indexFirstSuspicious];
-    const nextIngredient = ingredientsOCR[indexFirstSuspicious + 1];
-
-    if (nextIngredient) {
-      currentIngredient.name += ' ' + nextIngredient.name;
-      currentIngredient.unit += nextIngredient.unit;
-
-      ingredientsOCR.splice(indexFirstSuspicious + 1, 1);
-      return true;
-    }
-    return false;
-  }
-
-  const firstGroup = groups[0];
-  if (groups.length > 0) {
-    let indexFirstSuspicious = isSuspiciousGroup(firstGroup, ingredientsOCR);
-    while (indexFirstSuspicious > -1) {
-      if (areIngredientsMergeable(indexFirstSuspicious)) {
-        if (!mergeIngredients(indexFirstSuspicious)) {
-          break;
-        }
-      } else {
-        ocrLogger.warn('Cannot merge ingredients - breaking loop', {
-          ingredient1: ingredientsOCR[indexFirstSuspicious]?.name || 'unknown',
-          ingredient2: ingredientsOCR[indexFirstSuspicious + 1]?.name || 'unknown',
-        });
-        break;
-      }
-      indexFirstSuspicious = isSuspiciousGroup(firstGroup, ingredientsOCR);
-    }
-  }
-  let groupToCheckId = 1;
-  while (groupToCheckId < groups.length) {
-    if (isSuspiciousGroup(groups[groupToCheckId], ingredientsOCR) === -1) {
-      groupToCheckId++;
-    } else {
-      groups.splice(groupToCheckId, 1);
-    }
-  }
-  // Map groups to ingredientObjects
-  groups.forEach(g => {
-    const personsMatch = g.person.match(/(\d+)\s*p\s*$/i);
-    const persons = personsMatch ? parseInt(personsMatch[1]) : NaN;
-    for (let ingIdx = 0; ingIdx < ingredientsOCR.length; ingIdx++) {
-      ingredientsOCR[ingIdx].quantityPerPersons.push({
-        persons,
-        quantity: g.quantity[ingIdx] ?? '',
-      });
-    }
-  });
+  adjustForSuspiciousData(groups, ingredientsOCR);
+  assignQuantitiesToIngredients(groups, ingredientsOCR);
 
   return ingredientsOCR;
 }
@@ -635,37 +802,25 @@ function parseIngredientsNamesAndUnits(namesAndUnits: string[]): ingredientObjec
  * Groups ingredient tokens by person count and quantities
  *
  * Parses tokens from ingredient table data, grouping them by person markers (e.g., "2p")
- * and collecting associated quantity values. Ensures each group has the expected number
- * of quantities by padding with empty strings.
+ * and collecting associated quantity values. Handles iOS where markers may appear
+ * out of order by detecting and redistributing quantities.
  *
  * @param tokens - Array of string tokens from ingredient data
  * @param nIngredients - Expected number of ingredients per group
  * @returns Array of grouped ingredient data
  */
 function getIngredientsGroups(tokens: string[], nIngredients: number): groupType[] {
-  const groups = [];
-  let group: groupType = { person: '', quantity: [] };
-  for (const token of tokens) {
-    if (token.match(/\d+\s*p\s*$/i)) {
-      if (group.person.length > 0) {
-        while (group.quantity.length < nIngredients) {
-          group.quantity.push('');
-        }
-        groups.push(group);
-        group = { person: '', quantity: [] };
-      }
-      group.person = token;
-    } else {
-      if (token.includes(' ')) {
-        const tokenSplit = token.split(' ');
-        for (const split of tokenSplit) {
-          group.quantity.push(split);
-        }
-      }
-      group.quantity.push(token);
-    }
+  const { markers, quantities: allQuantities } = separateMarkersAndQuantities(tokens);
+  const { sortedMarkers, isOutOfOrder } = analyzeMarkerOrder(markers);
+
+  let groups: groupType[];
+
+  if (isOutOfOrder) {
+    groups = buildGroupsForOutOfOrderMarkers(markers, sortedMarkers, allQuantities, nIngredients);
+  } else {
+    groups = buildGroupsSequentially(tokens, nIngredients);
   }
-  groups.push(group);
+
   return groups;
 }
 
@@ -685,7 +840,7 @@ function isIngredientSuspicious(quantity: string, unit: string): boolean {
     return true;
   }
   const num = parseFloat(quantity.replace(/[^\d.]/g, ''));
-  return unit === '' && num > 10;
+  return unit === '' && num > INGREDIENT_PARSING.SUSPICIOUS_QUANTITY_THRESHOLD;
 }
 
 /**
@@ -706,6 +861,132 @@ function isSuspiciousGroup(group: groupType, ingredients: ingredientObject[]): n
     }
   }
   return -1;
+}
+
+/**
+ * Checks if ingredients can be merged at the suspicious index
+ *
+ * Verifies that merging won't create additional suspicious entries
+ * by checking if subsequent ingredients are valid.
+ *
+ * @param indexFirstSuspicious - Index of first suspicious ingredient
+ * @param firstGroup - First group to check quantities against
+ * @param ingredients - Array of ingredient objects
+ * @returns True if merge is safe
+ */
+function canMergeIngredients(
+  indexFirstSuspicious: number,
+  firstGroup: groupType,
+  ingredients: ingredientObject[]
+): boolean {
+  if (indexFirstSuspicious === firstGroup.quantity.length) {
+    return false;
+  }
+
+  for (
+    let i = indexFirstSuspicious + 1;
+    i < firstGroup.quantity.length && i < ingredients.length;
+    i++
+  ) {
+    if (isIngredientSuspicious(firstGroup.quantity[i], ingredients[i].unit)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/**
+ * Merges two adjacent ingredients by combining their names and units
+ *
+ * Used to fix OCR errors where a single ingredient was split across
+ * multiple lines.
+ *
+ * @param ingredients - Array of ingredients to modify (mutated in place)
+ * @param index - Index of first ingredient to merge
+ * @returns True if merge was successful
+ */
+function mergeAdjacentIngredients(ingredients: ingredientObject[], index: number): boolean {
+  const current = ingredients[index];
+  const next = ingredients[index + 1];
+
+  if (!next) {
+    return false;
+  }
+
+  current.name += ' ' + next.name;
+  current.unit += next.unit;
+  ingredients.splice(index + 1, 1);
+
+  return true;
+}
+
+/**
+ * Adjusts groups and ingredients for suspicious data patterns
+ *
+ * When OCR incorrectly splits ingredients across lines, this function:
+ * 1. Detects suspicious quantity patterns in the first group
+ * 2. Merges adjacent ingredients to fix the split
+ * 3. Removes remaining suspicious groups
+ *
+ * @param groups - Array of groups (mutated in place - suspicious ones removed)
+ * @param ingredients - Array of ingredients (mutated in place - merges applied)
+ */
+function adjustForSuspiciousData(groups: groupType[], ingredients: ingredientObject[]): void {
+  if (groups.length === 0) {
+    return;
+  }
+
+  const firstGroup = groups[0];
+  let indexFirstSuspicious = isSuspiciousGroup(firstGroup, ingredients);
+
+  while (indexFirstSuspicious > -1) {
+    if (canMergeIngredients(indexFirstSuspicious, firstGroup, ingredients)) {
+      if (!mergeAdjacentIngredients(ingredients, indexFirstSuspicious)) {
+        break;
+      }
+    } else {
+      ocrLogger.warn('Cannot merge ingredients - breaking loop', {
+        ingredient1: ingredients[indexFirstSuspicious]?.name || 'unknown',
+        ingredient2: ingredients[indexFirstSuspicious + 1]?.name || 'unknown',
+      });
+      break;
+    }
+    indexFirstSuspicious = isSuspiciousGroup(firstGroup, ingredients);
+  }
+
+  // Remove remaining suspicious groups (after index 0)
+  let groupIndex = 1;
+  while (groupIndex < groups.length) {
+    if (isSuspiciousGroup(groups[groupIndex], ingredients) === -1) {
+      groupIndex++;
+    } else {
+      groups.splice(groupIndex, 1);
+    }
+  }
+}
+
+/**
+ * Assigns quantity values from groups to ingredient objects
+ *
+ * Maps each group's quantities to the corresponding ingredients,
+ * creating the quantityPerPersons array for each ingredient.
+ *
+ * @param groups - Array of groups with person markers and quantities
+ * @param ingredients - Array of ingredients to populate (mutated in place)
+ */
+function assignQuantitiesToIngredients(groups: groupType[], ingredients: ingredientObject[]): void {
+  groups.forEach(g => {
+    const personsMatch = g.person.match(/(\d+)\s*p\s*$/i);
+    const persons = personsMatch ? parseInt(personsMatch[1]) : NaN;
+
+    for (let i = 0; i < ingredients.length; i++) {
+      ingredients[i].quantityPerPersons.push({
+        persons,
+        quantity: g.quantity[i] ?? '',
+      });
+    }
+  });
 }
 
 /**
@@ -1046,6 +1327,30 @@ function parseNutritionValue(ocrText: string): number | undefined {
   return Math.round(parsedNumber * DECIMAL_PRECISION) / DECIMAL_PRECISION;
 }
 
+/** OCR terms for ingredient parsing from i18n */
+type IngredientOcrTerms = {
+  boxHeaders: string[];
+  personsSuffix: string[];
+};
+
+/**
+ * Retrieves ingredient OCR terms for the specified language from i18n
+ *
+ * @param language - Language code to get ingredient terms for
+ * @returns Ingredient OCR terms object or undefined if not found/error
+ */
+function getIngredientOcrTerms(language: string): IngredientOcrTerms | undefined {
+  try {
+    const result = i18n.getResource(language, 'translation', 'recipe.ingredientsOcr');
+    if (result && typeof result === 'object') {
+      return result as IngredientOcrTerms;
+    }
+  } catch (error) {
+    ocrLogger.error('i18n ingredient OCR terms failed', { error });
+    return undefined;
+  }
+}
+
 /**
  * Retrieves nutrition terms for the specified language from i18n
  *
@@ -1065,6 +1370,22 @@ function getNutritionTermsForLanguage(language: string) {
 }
 
 /**
+ * Normalizes common OCR errors in text
+ *
+ * Fixes common OCR misrecognitions:
+ * - Capital O read as 0 in numbers (e.g., "10Og" -> "100g")
+ * - Capital O surrounded by digits
+ *
+ * @param text - Raw OCR text to normalize
+ * @returns Normalized text with OCR errors corrected
+ */
+function normalizeOcrErrors(text: string): string {
+  // Replace capital O with 0 when between digits or at start/end of digit sequences
+  // "10Og" -> "100g", "1O0g" -> "100g", "O0g" -> "00g"
+  return text.replace(/(\d)O/g, '$10').replace(/O(\d)/g, '0$1');
+}
+
+/**
  * Finds and merges "per 100g" indicator lines in nutrition text
  *
  * Searches for nutrition table headers indicating "per 100g" values using fuzzy matching.
@@ -1081,12 +1402,14 @@ function findAndMergePer100gLines(lines: string[], nutritionTerms: NutritionTerm
   });
 
   for (let i = 0; i < lines.length; i++) {
-    if (per100gFuse.search(lines[i].toLowerCase()).length > 0) {
+    const normalizedLine = normalizeOcrErrors(lines[i].toLowerCase());
+    if (per100gFuse.search(normalizedLine).length > 0) {
       let endIndex = i;
 
       while (endIndex + 1 < lines.length) {
         const currentMerged = lines.slice(i, endIndex + 2).join(' ');
-        if (per100gFuse.search(currentMerged.toLowerCase()).length > 0) {
+        const normalizedMerged = normalizeOcrErrors(currentMerged.toLowerCase());
+        if (per100gFuse.search(normalizedMerged).length > 0) {
           endIndex++;
         } else {
           break;
@@ -1129,10 +1452,25 @@ function createFuseObjects(nutritionTerms: NutritionTerms): Record<OcrKeys, Fuse
 }
 
 /**
+ * Checks if a line matches any known nutrition term
+ */
+function isNutritionLabel(
+  line: string,
+  fuseOfNutritionTerms: Record<OcrKeys, Fuse<string>>
+): boolean {
+  for (const [key, fuse] of Object.entries(fuseOfNutritionTerms)) {
+    if (key !== per100gKey && key !== perPortionKey && fuse.search(line.toLowerCase()).length > 0) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
  * Filters lines to extract nutrition labels from OCR text
  *
- * Searches through lines up to the "per 100g" indicator to find lines that
- * match known nutrition terms using fuzzy matching.
+ * Searches through lines to find lines that match known nutrition terms.
+ * Handles both Android (labels before per100g) and iOS (labels after per100g) block orders.
  *
  * @param lines - Array of text lines from nutrition table
  * @param per100gIndex - Index of the "per 100g" indicator line
@@ -1144,20 +1482,17 @@ function filterNutritionLabels(
   per100gIndex: number,
   fuseOfNutritionTerms: Record<OcrKeys, Fuse<string>>
 ): string[] {
-  const linesToSearch = lines.slice(0, per100gIndex + 1);
+  // First try: search before per100g (Android case)
+  const linesBeforePer100g = lines.slice(0, per100gIndex + 1);
+  let filteredLines = linesBeforePer100g.filter(item =>
+    isNutritionLabel(item, fuseOfNutritionTerms)
+  );
 
-  const filteredLines = linesToSearch.filter(item => {
-    for (const [key, fuse] of Object.entries(fuseOfNutritionTerms)) {
-      if (
-        key !== per100gKey &&
-        key !== perPortionKey &&
-        fuse.search(item.toLowerCase()).length > 0
-      ) {
-        return true;
-      }
-    }
-    return false;
-  });
+  // If no labels found before per100g, search after it (iOS case)
+  if (filteredLines.length === 0) {
+    const linesAfterPer100g = lines.slice(per100gIndex + 1);
+    filteredLines = linesAfterPer100g.filter(item => isNutritionLabel(item, fuseOfNutritionTerms));
+  }
 
   return duplicateEnergyLabelIfNeeded(filteredLines, fuseOfNutritionTerms);
 }
@@ -1167,16 +1502,19 @@ function filterNutritionLabels(
  *
  * Gets the value lines that correspond to nutrition labels, stopping at
  * "per portion" indicator if found (indicating two-column format).
+ * Filters out nutrition labels to handle iOS case where labels come after per100g.
  *
  * @param lines - Array of text lines from nutrition table
  * @param per100gIndex - Index of the "per 100g" indicator line
  * @param nutritionTerms - Localized nutrition terminology
+ * @param fuseOfNutritionTerms - Fuse objects for nutrition term matching
  * @returns Array of nutrition value lines
  */
 function extractNutritionValues(
   lines: string[],
   per100gIndex: number,
-  nutritionTerms: NutritionTerms
+  nutritionTerms: NutritionTerms,
+  fuseOfNutritionTerms: Record<OcrKeys, Fuse<string>>
 ): string[] {
   const linesAfterPer100g = lines.slice(per100gIndex + 1);
 
@@ -1189,11 +1527,15 @@ function extractNutritionValues(
     return perPortionFuse.search(line.toLowerCase()).length > 0;
   });
 
+  let valueCandidates: string[];
   if (perPortionIndex !== -1) {
-    return linesAfterPer100g.slice(0, perPortionIndex);
+    valueCandidates = linesAfterPer100g.slice(0, perPortionIndex);
   } else {
-    return linesAfterPer100g;
+    valueCandidates = linesAfterPer100g;
   }
+
+  // Filter out lines that are nutrition labels (for iOS case where labels come after per100g)
+  return valueCandidates.filter(line => !isNutritionLabel(line, fuseOfNutritionTerms));
 }
 
 /**
@@ -1331,7 +1673,8 @@ function transformOCRInNutrition(ocr: TextRecognitionResult): nutritionObject {
   const extractedValues = extractNutritionValues(
     originalLines,
     per100gIndex,
-    nutritionTerms as NutritionTerms
+    nutritionTerms as NutritionTerms,
+    nutritionSearches
   );
 
   if (extractedValues.length < extractedLabels.length) {
