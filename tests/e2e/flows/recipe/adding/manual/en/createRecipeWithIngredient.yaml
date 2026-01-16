@@ -21,6 +21,9 @@ appId: "com.recipedia"
     text: "E2E Test Recipe"
     label: "Enter recipe title"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - tapOn:
     id: "RecipeImage::Image"
     label: "Tap on the image to close the keyboard"
@@ -42,11 +45,11 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeIngredients::0::QuantityInput"
+      id: "RecipeIngredients::AddButton::RoundButton"
     direction: DOWN
     speed: 40
     centerElement: true
-    label: "Scroll to center ingredient row"
+    label: "Scroll to round button again to center ingredient row"
 
 - tapOn:
     id: "RecipeIngredients::0::QuantityInput"

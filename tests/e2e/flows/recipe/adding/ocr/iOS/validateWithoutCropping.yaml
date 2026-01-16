@@ -1,5 +1,11 @@
 appId: "com.recipedia"
 ---
+- extendedWaitUntil:
+    visible:
+      text: "Choose"
+    timeout: 3000
+    label: "Wait until the Choose button is visible"
+
 - tapOn:
     text: "Choose"
     label: "Validate the picture without crop (Choose button)"

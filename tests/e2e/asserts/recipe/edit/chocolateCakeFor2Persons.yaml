@@ -9,8 +9,10 @@ appId: "com.recipedia"
     element:
       id: "RecipePersons::PrefixText"
     direction: DOWN
-    speed: 60
+    speed: 50
+    timeout: 60000
     centerElement: true
+    label: "Scroll to Number of persons input"
 
 - assertVisible:
     id: "RecipePersons::NumericTextInput"

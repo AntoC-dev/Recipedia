@@ -5,6 +5,7 @@ appId: "com.recipedia"
       text: "${INGREDIENT_NAME}"
     direction: DOWN
     speed: 60
+    timeout: 120000
     centerElement: true
     label: "Scroll to find ${INGREDIENT_NAME} ingredient"
 

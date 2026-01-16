@@ -16,6 +16,12 @@ appId: "com.recipedia"
     text: "Title"
     label: "Write the title in the input text"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation to end"
+
 - tapOn:
     id: "RecipeTitle::Text"
     label: "Tap on title to close the keyboard"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to close"

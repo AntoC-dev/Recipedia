@@ -48,6 +48,12 @@ tags:
     id: "IngredientsSettings::ItemDialog::AddModal::Menu::Button"
     label: "Action - Open type menu"
 
+- extendedWaitUntil:
+    visible:
+      text: "Cereal"
+    timeout: 30000
+    label: "Wait for select menu to appear"
+
 - tapOn:
     text: "Cereal"
     label: "Action - Select Cereal type"
@@ -87,6 +93,7 @@ tags:
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::Name::CustomTextInput"
+    point: "50%,75%"
     label: "Action - Focus on ingredient name input again"
 
 - eraseText:

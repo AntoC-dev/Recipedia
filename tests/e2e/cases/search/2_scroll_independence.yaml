@@ -33,15 +33,29 @@ tags:
     text: "Sushi Rolls"
     label: "Assert - Verify Sushi Rolls is visible in dropdown"
 
+- waitForAnimationToEnd:
+    label: "Wait for dropdown animation to finish"
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::SearchBar::RightIcon"
+    direction: UP
+    speed: 40
+    label: "Action - Scroll back to top of the screen"
+
 - tapOn:
     id: "SearchScreen::SearchBar::RightIcon"
     label: "Action - Close dropdown by tapping close icon"
+
+- waitForAnimationToEnd:
+    label: "Wait for dropdown animation to finish"
 
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::0::Spaghetti Bolognese"
     direction: UP
     speed: 60
+    timeout: 120000
     centerElement: true
     label: "Scroll to first recipe card"
 

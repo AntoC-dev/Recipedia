@@ -45,6 +45,7 @@ appId: "com.recipedia"
       id: "SearchScreen::SearchBar"
     direction: UP
     speed: 60
+    timeout: 120000
     centerElement: true
     label: "Scroll to top of the Search screen"
 

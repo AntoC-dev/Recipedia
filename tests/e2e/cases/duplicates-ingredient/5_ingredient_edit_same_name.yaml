@@ -57,6 +57,9 @@ tags:
 - eraseText:
     label: "Action - Clear input"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - inputText:
     text: "Margarine"
     label: "Action - Change to different unique name"
@@ -103,6 +106,9 @@ tags:
 
 - eraseText:
     label: "Action - Clear input"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
 
 - inputText:
     text: "Eggs"

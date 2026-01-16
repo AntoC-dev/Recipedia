@@ -4,6 +4,9 @@ appId: "com.recipedia"
     id: "TagsSettings::AppBar::BackButton"
     label: "Navigate back to Parameters"
 
+- waitForAnimationToEnd:
+    label: "Wait for animation to end"
+
 - scrollUntilVisible:
     element:
       id: "Parameters::Section::Appearance::DarkMode::Switch"

@@ -7,6 +7,15 @@ appId: "com.recipedia"
 - runFlow:
     when:
       visible:
+        text: "What's New.*"
+    commands:
+      - tapOn:
+          text: "Continue"
+          label: "CLose the what's new screen if it appears"
+
+- runFlow:
+    when:
+      visible:
         text: "Select"
     commands:
       - runFlow:

@@ -22,6 +22,12 @@ tags:
       - hideKeyboard:
           label: "Dismiss keyboard on Android"
 
+- extendedWaitUntil:
+    visible:
+      id: "SearchScreen::SearchBarResults::Item::4"
+    timeout: 3000
+    label: "Wait for element to tap to be displayed"
+
 - tapOn:
     id: "SearchScreen::SearchBarResults::Item::4"
     retryTapIfNoChange: false

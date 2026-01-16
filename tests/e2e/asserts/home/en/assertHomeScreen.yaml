@@ -121,5 +121,6 @@ appId: "com.recipedia"
     element:
       id: "Home::RecipeRecommendation::random::SubHeader"
     direction: UP
-    speed: 90
+    speed: 80
+    timeout: 120000
     label: "Scroll back to top of Home screen"

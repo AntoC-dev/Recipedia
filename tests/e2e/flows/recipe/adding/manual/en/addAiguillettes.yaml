@@ -67,7 +67,20 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- pressKey: enter
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard to dismiss"
@@ -76,39 +89,42 @@ appId: "com.recipedia"
     id: "RecipeTags::RoundButton"
     label: "Press the round button of second tags"
 
+- scroll:
+    label: "Scroll a little more to ensure the dropdown will be visible"
+
+- assertVisible:
+    id: "RecipeTags::List::1::CustomTextInput"
+    label: "Assert - TextInput of second tags is visible"
+
 - tapOn:
     id: "RecipeTags::List::1::CustomTextInput"
     label: "Press the TextInput of second tags"
 
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - hideKeyboard:
-          label: "Hide keyboard on Android before scrolling dropdown"
+- extendedWaitUntil:
+    visible:
+      id: "RecipeTags::List::1::AutocompleteItem::Breakfast"
+    timeout: 30000
+    label: "Wait for the autocomplete list to appear"
 
-      - swipe:
-        start: "50%,40%"
-        end: "50%,25%"
-        label: "Swipe down to scroll dropdown on iOS"
+- swipe:
+    start: "50%,40%"
+    end: "50%,25%"
+    label: "Swipe down to scroll dropdown"
 
-      - assertNotVisible:
-          text: "Breakfast"
-          label: "Assert - First tag no longer visible after scrolling"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - swipe:
-          start: "50%,80%"
-          end: "50%,65%"
-          label: "Swipe down to scroll dropdown on Android"
+- assertVisible:
+    text: "Italian"
+    label: "Assert - Italian tag is displayed"
 
 - tapOn:
     id: "RecipeTags::List::.*::AutocompleteItem::Italian"
     text: "Italian"
     label: "Press the tag from dropdown list"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipeTags::1::Chip"
+    timeout: 30000
+    label: "Wait for the second chip to appear"
 
 - scrollUntilVisible:
     element:

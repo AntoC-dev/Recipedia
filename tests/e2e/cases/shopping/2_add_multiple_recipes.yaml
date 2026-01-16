@@ -92,7 +92,7 @@ tags:
     label: "Action - Scroll to Margherita Pizza recipe"
 
 - tapOn:
-    id: "SearchScreen::RecipeCards::4::.*"
+    id: "SearchScreen::RecipeCards::4::Content"
     label: "Action - Open Margherita Pizza recipe"
 
 - tapOn:

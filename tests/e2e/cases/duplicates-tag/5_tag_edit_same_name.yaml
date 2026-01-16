@@ -191,6 +191,11 @@ tags:
 - waitForAnimationToEnd:
     label: "Wait for dialog to close"
 
+- assertNotVisible:
+    id: "TagsSettings::ItemDialog::AddModal::CancelButton"
+    label: "Check - Dialog is hidden"
+
+
 - runFlow:
     file: "../../flows/parameters/tags/returnToHome.yaml"
     label: "Cleanup - Return to Home screen"

@@ -10,13 +10,28 @@ appId: "com.recipedia"
     id: "${PREFIX}::ValidationQueue::Ingredient::SimilarityDialog::AddButton"
     label: "Select to add the ingredient"
 
+- extendedWaitUntil:
+    visible:
+      id: "${PREFIX}::::ValidationQueue::Ingredient::ItemDialog::AddModal::Unit::CustomTextInput"
+    timeout: 10000
+    label: "Wait for menu button to be visible"
+
 - tapOn:
     id: "${PREFIX}::ValidationQueue::Ingredient::ItemDialog::AddModal::Menu::Button"
     label: "Open ingredient type menu"
 
+- extendedWaitUntil:
+    visible:
+      id: "menu-item"
+    timeout: 10000
+    label: "Wait for menu items to be visible"
+
 - tapOn:
     id: "menu-item"
     label: "Select ingredient type"
+
+- waitForAnimationToEnd:
+    label: "Wait for menu to disappear"
 
 - tapOn:
     id: "${PREFIX}::ValidationQueue::Ingredient::ItemDialog::AddModal::Unit::CustomTextInput"

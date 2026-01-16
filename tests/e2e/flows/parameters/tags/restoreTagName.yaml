@@ -35,6 +35,9 @@ appId: "com.recipedia"
 - eraseText:
     label: "Clear existing tag name"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - inputText:
     text: "Italian"
     label: "Change tag name back to 'Italian'"

@@ -2,7 +2,7 @@ appId: "com.recipedia"
 ---
 - scrollUntilVisible:
     element:
-      text: "Tags"
+      text: "Tags.*"
     direction: DOWN
     speed: 60
     centerElement: true

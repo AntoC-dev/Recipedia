@@ -148,7 +148,6 @@ appId: "com.recipedia"
       id: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightNumericTextInput"
     direction: DOWN
     speed: 40
-    centerElement: true
     label: "Scroll to portion weight input"
 
 - assertVisible:
@@ -161,7 +160,6 @@ appId: "com.recipedia"
       id: "Recipe::RecipeNutrition::NutritionTable::EditForm::RemoveButton"
     direction: DOWN
     speed: 40
-    centerElement: true
     label: "Scroll to remove nutrition button"
 
 - assertVisible:

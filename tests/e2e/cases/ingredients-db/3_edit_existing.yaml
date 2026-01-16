@@ -17,7 +17,7 @@ tags:
       id: "IngredientsSettings::15::IngredientName"
     direction: DOWN
     speed: 70
-    timeout: 100000
+    timeout: 120000
     centerElement: true
     label: "Action - Scroll to Lettuce ingredient"
 

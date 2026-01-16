@@ -72,16 +72,6 @@ tags:
       NEW_FAT: "15.8"
     label: "Action - Revert nutrition values"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "Recipe::AppBar::Validate"
-    direction: UP
-    speed: 95
-    centerElement: true
-    label: "Action - Scroll to validate button"
-
 - tapOn:
     id: "Recipe::AppBar::Validate"
     label: "Action - Save changes and return to read-only mode"

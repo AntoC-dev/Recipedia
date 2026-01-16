@@ -38,11 +38,11 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeTags::List::0::CustomTextInput"
+      id: "RecipeTags::RoundButton"
     direction: DOWN
-    speed: 60
+    speed: 40
     centerElement: true
-    label: "Scroll to tag input"
+    label: "Scroll to tag button again to ensure dropdown will be visible"
 
 - tapOn:
     id: "RecipeTags::List::0::CustomTextInput"
@@ -54,11 +54,6 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
-
-- pressKey: enter
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
 
 - assertVisible:
     id: "RecipeTags::List::0::AutocompleteItem::RecipeTag"
@@ -171,21 +166,19 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- pressKey: enter
+- tapOn:
+    id: "RecipePreparation::EditableStep::0::Content"
+    label: "Tap on preparation content to dismiss keyboard"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard to dismiss"
 
-- scrollUntilVisible:
-    element:
-      id: "Recipe::BottomActionButton"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to validate button"
-
 - tapOn:
     id: "Recipe::BottomActionButton"
+
+- assertVisible:
+    id: "Recipe::Dialog::Confirm"
+    label: "Confirm recipe creation dialog is visible"
 
 - tapOn:
     id: "Recipe::Dialog::Confirm"

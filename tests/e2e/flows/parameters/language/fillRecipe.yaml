@@ -4,16 +4,27 @@ appId: "com.recipedia"
     file: "../../recipe/adding/fr/addRecipeImage.yaml"
     label: "Add recipe image in French"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeTitle::CustomTextInput"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Action - Center title text input"
+
 - tapOn:
     id: "RecipeTitle::CustomTextInput"
     label: "Tap on recipe title text input"
 - inputText:
     text: "Titre"
     label: "Write a title in the input text"
+
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- pressKey: enter
+- tapOn:
+    id: "RecipeTitle::Text"
+    label: "Tap on recipe title text to close the keyboard"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard to dismiss"
@@ -106,7 +117,9 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- pressKey: enter
+- tapOn:
+    id: "RecipePreparation::EditableStep::0::Content"
+    label: "Tap on recipe preparation content to close the keyboard"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard to dismiss"
@@ -119,7 +132,9 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- pressKey: enter
+- tapOn:
+    id: "RecipePreparation::EditableStep::0::Content"
+    label: "Tap on recipe preparation content to close the keyboard"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard to dismiss"

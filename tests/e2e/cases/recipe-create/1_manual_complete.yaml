@@ -3,6 +3,7 @@ appId: "com.recipedia"
 tags:
   - recipe-create
 ---
+- eraseText
 - runFlow:
     file: "../../flows/setupFirstTest.yaml"
     label: "Setup - Launch app and wait for ready"

@@ -4,9 +4,13 @@ appId: "com.recipedia"
     element:
       id: "RecipePersons::NumericTextInput"
     direction: DOWN
-    speed: 60
+    speed: 50
     centerElement: true
     label: "Scroll to persons field"
+
+- assertVisible:
+    id: "RecipePersons::NumericTextInput"
+    label: "Ensure persons field is visible"
 
 - tapOn:
     id: "RecipePersons::NumericTextInput"
@@ -15,6 +19,9 @@ appId: "com.recipedia"
 - eraseText:
     label: "Erase the default number of persons"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - inputText:
     text: "${PERSONS}"
     label: "Enter number of persons"
@@ -22,7 +29,20 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- pressKey: "ENTER"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "RecipePersons::PrefixText"
+          label: "Tap on prefix text on iOS to close the keyboard"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard to dismiss"

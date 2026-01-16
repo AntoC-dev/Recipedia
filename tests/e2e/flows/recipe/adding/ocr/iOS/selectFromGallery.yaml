@@ -4,6 +4,9 @@ appId: "com.recipedia"
     text: "Recents"
     label: "Go to recents photos"
 
+- waitForAnimationToEnd:
+    label: "Wait for gallery to load"
+
 - tapOn:
     point: 10%,11%
     label: "Select any photos of the gallery"

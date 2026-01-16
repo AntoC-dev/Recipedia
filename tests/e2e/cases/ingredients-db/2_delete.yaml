@@ -25,8 +25,7 @@ tags:
     element:
       id: "IngredientsSettings::34::DeleteButton"
     direction: UP
-    speed: 60
-    centerElement: true
+    speed: 50
     label: "Action - Scroll to ingredient to delete"
 
 - tapOn:

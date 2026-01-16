@@ -5,7 +5,6 @@ appId: "com.recipedia"
       id: "RecipeIngredients::${INDEX}::NoteButton"
     direction: DOWN
     speed: 40
-    centerElement: true
     label: "Scroll to ingredient note button"
 
 - tapOn:

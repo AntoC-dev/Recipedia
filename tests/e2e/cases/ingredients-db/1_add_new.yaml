@@ -105,7 +105,8 @@ tags:
     element:
       text: "TestIngredient"
     direction: UP
-    speed: 60
+    speed: 70
+    timeout: 240000
     centerElement: true
     label: "Action - Scroll to new ingredient"
 

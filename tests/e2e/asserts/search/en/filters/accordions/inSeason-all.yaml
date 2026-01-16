@@ -1,13 +1,5 @@
 appId: "com.recipedia"
 ---
-- scrollUntilVisible:
-    element:
-      text: "Only in-season ingredients"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to Only in-season ingredients accordion"
-
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Only in-season ingredients accordion is displayed"

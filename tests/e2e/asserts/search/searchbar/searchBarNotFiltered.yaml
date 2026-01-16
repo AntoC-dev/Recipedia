@@ -93,7 +93,7 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      text: "Caesar Salad"
+      id: "SearchScreen::SearchBar::RightIcon"
     direction: UP
     speed: 60
     label: "Scroll back to top of dropdown"
