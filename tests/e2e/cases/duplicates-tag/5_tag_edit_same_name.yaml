@@ -56,7 +56,20 @@ tags:
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- pressKey: enter
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard to dismiss"
@@ -87,6 +100,27 @@ tags:
     text: "Dessert"
     label: "Action - Change back to original name"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
 - extendedWaitUntil:
     visible:
       id: "TagsSettings::ItemDialog::EditModal::ConfirmButton"
@@ -112,6 +146,27 @@ tags:
 - inputText:
     text: "Chocolate"
     label: "Action - Enter the name of another tag"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - extendedWaitUntil:
     visible:

@@ -23,7 +23,20 @@ tags:
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- pressKey: enter
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard to dismiss"

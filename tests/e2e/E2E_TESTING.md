@@ -1083,17 +1083,55 @@ asserts/
     label: 'Wait for keyboard to dismiss'
 ```
 
-**Note**: Always wrap `pressKey: enter` with `waitForAnimationToEnd` before and
-after:
+**Note**: Always wrap keyboard dismissal commands with `waitForAnimationToEnd`
+before and after:
 
-- **Before**: Ensures keyboard animation is complete before pressing enter
+- **Before**: Ensures keyboard animation is complete before dismissing
 - **After**: Ensures keyboard dismissal animation completes before next
   interaction
 - This prevents race conditions where Maestro taps on the wrong element while
   keyboard is animating
-- `pressKey: enter` is preferred over `hideKeyboard` for most input fields as
-  `hideKeyboard` doesn't work reliably with React Native Paper's Portal-based
-  dialogs
+
+**Modal Dialogs (ItemDialog, NoteEditDialog, UrlInputDialog)**: For single-line
+inputs in modal dialogs, use platform-specific keyboard dismissal. The iOS
+keyboard shows "Done" button (via `returnKeyType="done"` on CustomTextInput):
+
+```yaml
+# Enter text in modal
+- inputText:
+    text: 'Item name'
+    label: 'Enter item name'
+
+- waitForAnimationToEnd:
+    label: 'Wait for keyboard animation'
+
+# Platform-specific keyboard dismissal
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: 'Dismiss keyboard on Android'
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: 'Done'
+          label: 'Tap Done key to dismiss keyboard on iOS'
+
+- waitForAnimationToEnd:
+    label: 'Wait for keyboard to dismiss'
+```
+
+This approach is more reliable than `pressKey: enter` for iOS modals, where the
+enter key press can be flaky on CI simulators. Android continues to use
+`hideKeyboard` which works reliably.
+
+**Non-Modal Single-Line Inputs**: For inputs on regular screens (not in modals),
+`pressKey: enter` can still be used but may be replaced with the
+platform-specific approach if flakiness is observed.
 
 **Exception 1 - Autocomplete Fields**: For tag and ingredient name inputs that
 show autocomplete dropdowns, use `hideKeyboard` on **Android only**:

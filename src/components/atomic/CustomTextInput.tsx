@@ -177,6 +177,7 @@ export function CustomTextInput({
         onContentSizeChange={handleOnContentSizeChange}
         error={error}
         right={right}
+        returnKeyType={multiline ? 'default' : 'done'}
       />
     </View>
   );
