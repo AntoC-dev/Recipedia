@@ -33,28 +33,15 @@
  * ```
  */
 
-import { consoleTransport, logger } from 'react-native-logs';
+import { consoleTransport, fileAsyncTransport, logger } from 'react-native-logs';
+import * as FileSystem from 'expo-file-system';
 
 /**
- * Main logger configuration
- *
- * Configures different behavior for development and production:
- * - Development: debug level, console output, colored logs
- * - Production: error level only, no console output
+ * Shared logger configuration
  */
-const log = logger.createLogger({
-  severity: __DEV__ ? 'debug' : 'error',
-  transport: __DEV__ ? consoleTransport : undefined,
-  transportOptions: {
-    colors: {
-      info: 'blueBright',
-      warn: 'yellowBright',
-      error: 'redBright',
-      debug: 'cyan',
-    },
-  },
+const sharedConfig = {
   async: true,
-  dateFormat: 'time',
+  dateFormat: 'time' as const,
   printLevel: true,
   printDate: true,
   enabled: true,
@@ -81,7 +68,38 @@ const log = logger.createLogger({
     'Tutorial',
     'BulkImport',
   ],
-});
+};
+
+/**
+ * Main logger configuration
+ *
+ * Configures different behavior for development and production:
+ * - Development: debug level, console output, colored logs
+ * - Production: info level, file output for CI debugging
+ */
+const log = __DEV__
+  ? logger.createLogger({
+      ...sharedConfig,
+      severity: 'debug',
+      transport: consoleTransport,
+      transportOptions: {
+        colors: {
+          info: 'blueBright',
+          warn: 'yellowBright',
+          error: 'redBright',
+          debug: 'cyan',
+        },
+      },
+    })
+  : logger.createLogger({
+      ...sharedConfig,
+      severity: 'info',
+      transport: fileAsyncTransport,
+      transportOptions: {
+        FS: FileSystem,
+        fileName: 'recipedia-logs.txt',
+      },
+    });
 
 /* UTILITY LOGGERS - For backend services and utilities */
 
