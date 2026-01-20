@@ -515,10 +515,11 @@ export class RecipeDatabase {
 
     const recipeConverted = this.encodeRecipe(recipe);
 
-    databaseLogger.debug('Adding recipe to database', {
+    databaseLogger.info('Adding recipe to database', {
       recipeTitle: recipe.title,
       ingredientsCount: recipe.ingredients.length,
       tagsCount: recipe.tags.length,
+      recipeCacheCountBefore: this._recipes.length,
     });
     const dbRes = await this._recipesTable.insertElement(recipeConverted, this._dbConnection);
     if (dbRes === undefined) {
@@ -537,7 +538,14 @@ export class RecipeDatabase {
         dbResult: dbRes,
       });
     } else {
-      this.add_recipes(await this.decodeRecipe(dbRecipe));
+      const decodedRecipe = await this.decodeRecipe(dbRecipe);
+      this.add_recipes(decodedRecipe);
+      databaseLogger.info('Recipe added to cache successfully', {
+        recipeTitle: decodedRecipe.title,
+        recipeId: decodedRecipe.id,
+        recipeCacheCountAfter: this._recipes.length,
+        cachedRecipeTitles: this._recipes.map(r => r.title),
+      });
     }
   }
 
@@ -1232,6 +1240,14 @@ export class RecipeDatabase {
    * ```
    */
   public findSimilarRecipes(recipeToCompare: recipeTableElement): recipeTableElement[] {
+    databaseLogger.info('findSimilarRecipes called', {
+      recipeTitle: recipeToCompare.title,
+      recipePersons: recipeToCompare.persons,
+      recipeIngredientsCount: recipeToCompare.ingredients.length,
+      totalRecipesInCache: this._recipes.length,
+      cachedRecipeTitles: this._recipes.map(r => r.title),
+    });
+
     const ingredientTypesToIgnore: ingredientType[] = [
       ingredientType.condiment,
       ingredientType.oilAndFat,
@@ -1259,7 +1275,20 @@ export class RecipeDatabase {
 
     const processedRecipeToCompareIngredients = processIngredients(recipeToCompare);
 
+    databaseLogger.info('Processed ingredients for comparison', {
+      recipeTitle: recipeToCompare.title,
+      processedIngredients: processedRecipeToCompareIngredients,
+      rawIngredients: recipeToCompare.ingredients.map(i => ({
+        name: i.name,
+        type: i.type,
+        quantity: i.quantity,
+      })),
+    });
+
     if (processedRecipeToCompareIngredients.length === 0) {
+      databaseLogger.warn('No valid ingredients after processing, returning empty', {
+        recipeTitle: recipeToCompare.title,
+      });
       return [];
     }
 
@@ -1268,13 +1297,26 @@ export class RecipeDatabase {
         return false;
       }
       const processedExistingRecipeIngredients = processIngredients(existingRecipe);
-      return this.areIngredientsSimilar(
+      const areSimilar = this.areIngredientsSimilar(
         processedRecipeToCompareIngredients,
         processedExistingRecipeIngredients
       );
+      if (areSimilar) {
+        databaseLogger.info('Found recipe with similar ingredients', {
+          existingRecipeTitle: existingRecipe.title,
+          existingRecipeId: existingRecipe.id,
+        });
+      }
+      return areSimilar;
+    });
+
+    databaseLogger.info('Ingredient similarity check complete', {
+      recipeTitle: recipeToCompare.title,
+      recipesWithSimilarIngredientsCount: recipesWithSimilarIngredients.length,
     });
 
     if (recipesWithSimilarIngredients.length === 0) {
+      databaseLogger.info('No similar recipes found after ingredient check');
       return [];
     }
 
@@ -1285,7 +1327,14 @@ export class RecipeDatabase {
       FuzzyMatchLevel.PERMISSIVE
     );
 
-    return result.exact ? [result.exact] : result.similar;
+    const finalResult = result.exact ? [result.exact] : result.similar;
+    databaseLogger.info('findSimilarRecipes result', {
+      recipeTitle: recipeToCompare.title,
+      foundCount: finalResult.length,
+      foundTitles: finalResult.map(r => r.title),
+    });
+
+    return finalResult;
   }
 
   /**
