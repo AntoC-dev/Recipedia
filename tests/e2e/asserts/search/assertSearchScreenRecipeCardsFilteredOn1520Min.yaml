@@ -33,6 +33,8 @@ appId: "com.recipedia"
     text: "Caesar Salad"
     label: "Caesar Salad title is visible"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::3::Content"
@@ -40,6 +42,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to fourth recipe card"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::RecipeCards::2::Content"
@@ -91,6 +95,8 @@ appId: "com.recipedia"
     text: "Lentil Curry"
     label: "Lentil Curry title is visible"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::SearchBar"
@@ -98,3 +104,6 @@ appId: "com.recipedia"
     speed: 80
     centerElement: true
     label: "Scroll back to top of Search screen"
+
+- waitForAnimationToEnd
+

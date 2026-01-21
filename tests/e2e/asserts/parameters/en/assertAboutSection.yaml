@@ -1,11 +1,16 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Parameters::Section::About::Version::Item-content"
     direction: DOWN
     speed: 60
     label: "Scroll to see the entire version items"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "Parameters::Section::About::SubHeader"

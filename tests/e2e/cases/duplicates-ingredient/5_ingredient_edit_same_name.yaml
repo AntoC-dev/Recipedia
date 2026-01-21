@@ -11,6 +11,8 @@ tags:
     file: "../../flows/parameters/ingredients/navigateToIngredientsSettings.yaml"
     label: "Action - Navigate to Ingredients Settings"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       text: "Butter"
@@ -19,10 +21,14 @@ tags:
     centerElement: true
     label: "Action - Scroll to find Butter ingredient"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "IngredientsSettings::2::IngredientName"
     text: "Butter"
     label: "Assert - Verify Butter ingredient exists in database"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -31,6 +37,8 @@ tags:
     speed: 40
     centerElement: true
     label: "Action - Scroll to find Butter edit button"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "IngredientsSettings::2::EditButton"

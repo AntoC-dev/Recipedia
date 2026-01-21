@@ -11,6 +11,8 @@ appId: "com.recipedia"
     text: "Description:"
     label: "Intro text for the recipe description is displayed in French"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTags::HeaderText"
@@ -18,6 +20,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll down until tags section is displayed"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeTags::HeaderText"
@@ -28,6 +32,8 @@ appId: "com.recipedia"
     text: "Les étiquettes représentent une façon d'identifier une recette afin d'en faciliter la recherche.\nVoici certains exemples d'étiquettes que vous pouvez utiliser : .*, .*, .*"
     label: "Explanation text for the recipe tags is displayed in French"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::PrefixText"
@@ -35,6 +41,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll down until ingredients section is displayed"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePersons::PrefixText"
@@ -49,12 +57,16 @@ appId: "com.recipedia"
     text: "Ingrédients : "
     label: "Intro text for the recipe ingredients is displayed in French"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::PrefixText"
     direction: DOWN
     speed: 60
     centerElement: true
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeTime::PrefixText"

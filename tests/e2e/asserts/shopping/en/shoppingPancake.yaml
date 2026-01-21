@@ -4,6 +4,8 @@ appId: "com.recipedia"
     file: "./assertShoppingScreenUI.yaml"
     label: "Assert shopping screen UI elements"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
@@ -11,6 +13,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Cereal category"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
@@ -31,6 +35,8 @@ appId: "com.recipedia"
       RECIPE_NAMES: "Classic Pancakes"
     label: "Assert and check Flour ingredient"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.plantProtein::SubHeader"
@@ -38,6 +44,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Plant Protein category"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.plantProtein::SubHeader"
@@ -58,6 +66,8 @@ appId: "com.recipedia"
       RECIPE_NAMES: "Classic Pancakes"
     label: "Assert and check Eggs ingredient"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.dairy::SubHeader"
@@ -65,6 +75,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Dairy category"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.dairy::SubHeader"
@@ -74,6 +86,8 @@ appId: "com.recipedia"
     text: "Dairy"
     label: "Dairy category text is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.oilAndFat::SubHeader"
@@ -81,6 +95,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Oil and Fat category"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.oilAndFat::SubHeader"

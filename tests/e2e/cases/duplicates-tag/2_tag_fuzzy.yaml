@@ -16,6 +16,8 @@ tags:
     id: "RecipeEdit.*"
     label: "Action - Open manual recipe creation"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTags::RoundButton"
@@ -23,6 +25,8 @@ tags:
     speed: 60
     centerElement: true
     label: "Action - Scroll to tags section"
+
+- waitForAnimationToEnd
 
 - runFlow:
     file: "../../flows/recipe/tags/addTagToRecipeInput.yaml"
@@ -41,6 +45,8 @@ tags:
     text: "Dessrt"
     label: "Assert - Verify fuzzy tag not added to recipe"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTags::0::Chip"
@@ -48,6 +54,8 @@ tags:
     speed: 60
     centerElement: true
     label: "Scroll to recipe tags"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeTags::0::Chip"

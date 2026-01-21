@@ -16,6 +16,8 @@ appId: "com.recipedia"
     optional: true
     label: "Scroll to first imported recipe if it exists"
 
+- waitForAnimationToEnd
+
 # Delete recipes at index 10 until none remain (up to 4 times)
 # After each deletion, the next recipe shifts to index 10
 - repeat:

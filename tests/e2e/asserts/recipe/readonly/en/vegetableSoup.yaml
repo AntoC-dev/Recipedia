@@ -50,6 +50,8 @@ appId: "com.recipedia"
     text: "Soup"
     label: "Tag Soup is rendered"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::0::IngredientName"
@@ -57,6 +59,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Carrots ingredient"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::0::IngredientName"
@@ -68,6 +72,8 @@ appId: "com.recipedia"
     text: "150 g"
     label: "Quantity of Carrots is rendered"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::1::IngredientName"
@@ -75,6 +81,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Celery ingredient"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::1::IngredientName"
@@ -86,6 +94,8 @@ appId: "com.recipedia"
     text: "100 g"
     label: "Quantity of Celery is rendered"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::2::IngredientName"
@@ -93,6 +103,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Potatoes ingredient"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::2::IngredientName"
@@ -104,6 +116,8 @@ appId: "com.recipedia"
     text: "200 g"
     label: "Quantity of Potatoes is rendered"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::3::IngredientName"
@@ -111,6 +125,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Vegetable Broth ingredient"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::3::IngredientName"
@@ -122,6 +138,8 @@ appId: "com.recipedia"
     text: "500 ml"
     label: "Quantity of Vegetable Broth is rendered"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTime::Text"
@@ -130,10 +148,14 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to preparation time"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipeTime::Text"
     text: "Preparation (40 min)"
     label: "Preparation title and time of preparation is rendered"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -143,10 +165,14 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to first preparation step"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
     text: "1) Prepare vegetables"
     label: "First section of the preparation is rendered"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -156,10 +182,14 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to second preparation step"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
     text: "2) Cook soup"
     label: "Second section of the preparation is rendered"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -168,6 +198,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to third preparation step"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"
@@ -204,6 +236,8 @@ appId: "com.recipedia"
     text: "Add to the menu"
     label: "Add to menu button has the correct text"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeImage"
@@ -211,3 +245,6 @@ appId: "com.recipedia"
     centerElement: true
     speed: 80
     label: "Scroll back to top"
+
+- waitForAnimationToEnd
+

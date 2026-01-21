@@ -4,6 +4,8 @@ appId: "com.recipedia"
     file: "navigateToIngredientsSettings.yaml"
     label: "Navigate to Ingredients Settings screen"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "IngredientsSettings::15::EditButton"
@@ -12,6 +14,8 @@ appId: "com.recipedia"
     timeout: 240000
     centerElement: true
     label: "Scroll to Lettuce Edited ingredient"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "IngredientsSettings::15::EditButton"

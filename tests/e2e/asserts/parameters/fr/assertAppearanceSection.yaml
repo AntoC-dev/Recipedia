@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Parameters::Section::Appearance::SubHeader"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Appearance section"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "Parameters::Section::Appearance::SubHeader"

@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::Title"
@@ -8,10 +11,14 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to nutrition section"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::Title"
     text: "Nutritional values"
     label: "Nutrition table title is displayed"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -21,10 +28,14 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to nutrition subtitle"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::Subtitle"
     text: "per 100g"
     label: "Nutrition subtitle (per 100g) is displayed in edit mode"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -34,10 +45,14 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to energy kcal input"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
     text: "${ENERGY_KCAL}"
     label: "Energy kcal input is displayed with correct value"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -47,10 +62,14 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to energy kj input"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKj::NumericTextInput"
     text: "${ENERGY_KJ}"
     label: "Energy kJ input is displayed with correct value"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -60,10 +79,14 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to fat input"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::NumericTextInput"
     text: "${FAT}"
     label: "Fat input is displayed with correct value"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -73,10 +96,14 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to saturated fat input"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::SaturatedFat::NumericTextInput"
     text: "${SATURATED_FAT}"
     label: "Saturated fat input is displayed with correct value"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -86,10 +113,14 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to carbohydrates input"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Carbohydrates::NumericTextInput"
     text: "${CARBOHYDRATES}"
     label: "Carbohydrates input is displayed with correct value"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -99,10 +130,14 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to sugars input"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Sugars::NumericTextInput"
     text: "${SUGARS}"
     label: "Sugars input is displayed with correct value"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -112,10 +147,14 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to fiber input"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fiber::NumericTextInput"
     text: "${FIBER}"
     label: "Fiber input is displayed with correct value"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -125,10 +164,14 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to protein input"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::NumericTextInput"
     text: "${PROTEIN}"
     label: "Protein input is displayed with correct value"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -138,10 +181,14 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to salt input"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Salt::NumericTextInput"
     text: "${SALT}"
     label: "Salt input is displayed with correct value"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -150,10 +197,14 @@ appId: "com.recipedia"
     speed: 40
     label: "Scroll to portion weight input"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightNumericTextInput"
     text: "${PORTION_WEIGHT}"
     label: "Portion weight input is displayed with correct value"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -161,6 +212,8 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 40
     label: "Scroll to remove nutrition button"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::EditForm::RemoveButton"

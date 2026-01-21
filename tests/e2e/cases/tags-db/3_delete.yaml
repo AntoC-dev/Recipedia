@@ -12,6 +12,8 @@ tags:
     file: "../../flows/parameters/tags/navigateToTagsSettings.yaml"
     label: "Action - Navigate to Tags Settings"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       text: "TestTag"
@@ -20,6 +22,8 @@ tags:
     timeout: 120000
     centerElement: true
     label: "Action - Scroll to TestTag"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "TagsSettings::15::DeleteButton"

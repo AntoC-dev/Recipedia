@@ -41,6 +41,8 @@ tags:
     id: "Recipe::Dialog::Cancel"
     label: "Action - Cancel adding duplicate recipe"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::1::NameInput::CustomTextInput"
@@ -49,9 +51,13 @@ tags:
     centerElement: true
     label: "Action - Scroll up for adding ingredient"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeIngredients::1::NameInput::CustomTextInput"
     label: "Action - Focus on ingredient input"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -60,6 +66,8 @@ tags:
     speed: 40
     centerElement: true
     label: "Action - Scroll up for adding ingredient"
+
+- waitForAnimationToEnd
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"

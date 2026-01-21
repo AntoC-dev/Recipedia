@@ -19,12 +19,16 @@ tags:
     id: "SearchScreen::FilterAccordion::Accordion::3"
     label: "Action - Expand Cereal accordion"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       text: ".*Spaghetti"
     direction: DOWN
     centerElement: true
     label: "Action - Scroll to Spaghetti item"
+
+- waitForAnimationToEnd
 
 - tapOn:
     text: ".*Spaghetti"

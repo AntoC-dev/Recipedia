@@ -72,6 +72,8 @@ appId: "com.recipedia"
       RECIPE_NAMES: "Spaghetti Bolognese"
     label: "Assert and check Tomato Sauce ingredient"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::Parmesan"
@@ -79,6 +81,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to see Parmesan (last item) on screen"
+
+- waitForAnimationToEnd
 
 - runFlow:
     file: "../../../flows/shopping/en/assertAndCheckIngredient.yaml"

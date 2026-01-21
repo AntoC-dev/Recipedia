@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightNumericTextInput"
@@ -8,6 +11,8 @@ appId: "com.recipedia"
     timeout: 120000
     centerElement: true
     label: "Scroll to portion weight field"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightNumericTextInput"

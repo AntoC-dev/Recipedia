@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::ReadOnlyStep::3::SectionParagraph"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     speed: 95
     centerElement: true
     label: "Scroll to the bottom of the screen"
+
+- waitForAnimationToEnd
 
 - assertNotVisible:
     id: "Recipe::RecipeNutrition::NutritionTable"

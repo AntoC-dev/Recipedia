@@ -5,6 +5,8 @@ appId: "com.recipedia"
     text: "TEST RECIPE"
     label: "Recipe title is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePersons::Text"
@@ -13,10 +15,14 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to ingredients section"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePersons::Text"
     text: "Ingredients (2 persons)"
     label: "Recipe is for 2 persons"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -25,6 +31,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Pasta ingredient"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::0::IngredientName"
@@ -36,6 +44,8 @@ appId: "com.recipedia"
     text: "200 g"
     label: "Pasta quantity is 200g"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::1::IngredientName"
@@ -43,6 +53,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Tomatoes ingredient"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::1::IngredientName"
@@ -54,6 +66,8 @@ appId: "com.recipedia"
     text: "100 g"
     label: "Tomatoes quantity is 100g"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
@@ -61,6 +75,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to preparation section"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"

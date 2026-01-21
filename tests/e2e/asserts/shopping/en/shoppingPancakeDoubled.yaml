@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Cereal category"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
@@ -16,6 +21,8 @@ appId: "com.recipedia"
     text: "Cereal"
     label: "Cereal category text is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::Flour"
@@ -23,6 +30,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Flour item"
+
+- waitForAnimationToEnd
 
 - runFlow:
     when:
@@ -42,6 +51,8 @@ appId: "com.recipedia"
           text: "󰄬 Flour (400g) 1 recipe"
           label: "Flour item on iOS (doubled 200g x 2)"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.plantProtein::SubHeader"
@@ -49,6 +60,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Plant Protein category"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.plantProtein::SubHeader"
@@ -58,6 +71,8 @@ appId: "com.recipedia"
     text: "Plant Protein"
     label: "Plant Protein category text is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::Eggs"
@@ -65,6 +80,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Eggs item"
+
+- waitForAnimationToEnd
 
 - runFlow:
     when:
@@ -84,6 +101,8 @@ appId: "com.recipedia"
           text: "󰄬 Eggs (4pieces) 1 recipe"
           label: "Eggs item on iOS (doubled 2 x 2)"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.dairy::SubHeader"
@@ -91,6 +110,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Dairy category"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.dairy::SubHeader"
@@ -100,6 +121,8 @@ appId: "com.recipedia"
     text: "Dairy"
     label: "Dairy category text is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::Milk"
@@ -107,6 +130,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Milk item"
+
+- waitForAnimationToEnd
 
 - runFlow:
     when:
@@ -126,6 +151,8 @@ appId: "com.recipedia"
           text: "󰄬 Milk (600ml) 1 recipe"
           label: "Milk item on iOS (doubled 300ml x 2)"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.oilAndFat::SubHeader"
@@ -133,6 +160,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Oil and Fat category"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.oilAndFat::SubHeader"
@@ -142,6 +171,8 @@ appId: "com.recipedia"
     text: "Oil and Fat"
     label: "Oil and Fat category text is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::Butter"
@@ -149,6 +180,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Butter item"
+
+- waitForAnimationToEnd
 
 - runFlow:
     when:

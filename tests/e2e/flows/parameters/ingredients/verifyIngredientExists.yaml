@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       text: "${INGREDIENT_NAME}"
@@ -9,10 +12,14 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to find ${INGREDIENT_NAME} ingredient"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     text: "${INGREDIENT_NAME}"
     id: "IngredientsSettings::${INGREDIENT_INDEX}::IngredientName"
     label: "Verify ${INGREDIENT_NAME} ingredient name exists in database"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -21,6 +28,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to find ingredient type"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "IngredientsSettings::${INGREDIENT_INDEX}::IntroType"
@@ -32,6 +41,8 @@ appId: "com.recipedia"
     text: "${INGREDIENT_TYPE}"
     label: "Verify ingredient type ${INGREDIENT_TYPE} is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "IngredientsSettings::${INGREDIENT_INDEX}::IntroUnit"
@@ -39,6 +50,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to find ingredient unit"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "IngredientsSettings::${INGREDIENT_INDEX}::IntroUnit"
@@ -50,6 +63,8 @@ appId: "com.recipedia"
     text: "${INGREDIENT_UNIT}"
     label: "Verify ingredient unit ${INGREDIENT_UNIT} is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "IngredientsSettings::${INGREDIENT_INDEX}::SeasonalityCalendar::SeasonalityText"
@@ -58,10 +73,14 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to find ingredient unit"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "IngredientsSettings::${INGREDIENT_INDEX}::SeasonalityCalendar::SeasonalityText"
     text: "Seasonality:"
     label: "Verify seasonality label is displayed"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -70,6 +89,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to find edit and delete buttons"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "IngredientsSettings::${INGREDIENT_INDEX}::EditButton-text"

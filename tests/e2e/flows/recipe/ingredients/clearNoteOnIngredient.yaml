@@ -1,11 +1,16 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::${INDEX}::NoteButton"
     direction: DOWN
     speed: 40
     label: "Scroll to ingredient note button"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeIngredients::${INDEX}::NoteButton"

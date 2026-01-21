@@ -22,6 +22,9 @@ tags:
       - hideKeyboard:
           label: "Dismiss keyboard on Android"
 
+- waitForAnimationToEnd:
+    label: "Wait for screen to finish opening"
+
 - runFlow:
     file: "../../asserts/search/searchbar/searchBarNotFiltered.yaml"
     label: "Assert - Verify search bar dropdown shows all recipes"

@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::0::QuantityInput"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     centerElement: true
     speed: 60
     label: "Scroll to ingredients section"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeIngredients::0::QuantityInput"
@@ -64,6 +69,8 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard to dismiss"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::4::QuantityInput"
@@ -71,6 +78,8 @@ appId: "com.recipedia"
     centerElement: true
     speed: 40
     label: "Scroll to more ingredients"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeIngredients::4::QuantityInput"
@@ -86,6 +95,8 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard to dismiss"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::5::QuantityInput"
@@ -93,6 +104,8 @@ appId: "com.recipedia"
     centerElement: true
     speed: 40
     label: "Scroll to more ingredients"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeIngredients::5::QuantityInput"
@@ -108,6 +121,8 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard to dismiss"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::6::QuantityInput"
@@ -115,6 +130,8 @@ appId: "com.recipedia"
     centerElement: true
     speed: 40
     label: "Scroll to more ingredients"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeIngredients::6::QuantityInput"
@@ -130,6 +147,8 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard to dismiss"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::7::QuantityInput"
@@ -137,6 +156,8 @@ appId: "com.recipedia"
     centerElement: true
     speed: 40
     label: "Scroll to more ingredients"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeIngredients::7::QuantityInput"
@@ -152,6 +173,8 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard to dismiss"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeImage"
@@ -159,3 +182,6 @@ appId: "com.recipedia"
     speed: 85
     timeout: 120000
     label: "Scroll back to top"
+
+- waitForAnimationToEnd
+

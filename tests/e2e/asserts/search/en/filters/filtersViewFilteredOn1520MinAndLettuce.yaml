@@ -66,12 +66,16 @@ appId: "com.recipedia"
     env:
       STATE: "hidden"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::6"
     direction: DOWN
     centerElement: true
     label: "Scroll to Sauce category"
+
+- waitForAnimationToEnd
 
 - runFlow:
     file: "accordions/sauce.yaml"

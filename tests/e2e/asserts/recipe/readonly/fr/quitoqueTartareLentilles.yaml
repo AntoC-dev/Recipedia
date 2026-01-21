@@ -9,6 +9,8 @@ appId: "com.recipedia"
     text: "Tartare de lentilles blondes, mangue et salade d'algues"
     label: "Title text is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeDescription::Text"
@@ -17,10 +19,14 @@ appId: "com.recipedia"
     speed: 40
     label: "Scroll to description section"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipeDescription::Text"
     text: "Pour préparer la mangue, découpez-la en deux moitiés en évitant le noyau, puis sur chaque moitié passez une cuillère entre la peau et la chair."
     label: "Description text is displayed"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -29,6 +35,8 @@ appId: "com.recipedia"
     centerElement: true
     speed: 40
     label: "Scroll to tags section"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeTags::0::Chip"
@@ -45,6 +53,8 @@ appId: "com.recipedia"
     text: "Faible en calories"
     label: "Third tag 'Faible en calories' is rendered"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePersons::Text"
@@ -52,6 +62,8 @@ appId: "com.recipedia"
     centerElement: true
     speed: 60
     label: "Scroll to ingredients section"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     text: "Ingrédients (4 personnes)"
@@ -114,6 +126,8 @@ appId: "com.recipedia"
       INGREDIENT_QUANTITY_AND_UNIT: "1"
     label: "Assert mangue ingredient"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTime::Text"
@@ -122,10 +136,14 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to preparation section"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipeTime::Text"
     text: "Préparation (30 min)"
     label: "Preparation section and time are displayed (French)"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -135,10 +153,14 @@ appId: "com.recipedia"
     speed: 60
     label: "Scroll to first preparation section"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
     text: "1) Les lentilles blondes"
     label: "First section title is displayed"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -147,6 +169,8 @@ appId: "com.recipedia"
     centerElement: true
     speed: 60
     label: "Scroll to second preparation section"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"

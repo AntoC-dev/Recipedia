@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       text: "Condiment"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Condiment accordion"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -63,6 +68,8 @@ appId: "com.recipedia"
     file: "condiment-items/soySauce-hidden.yaml"
 
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -70,6 +77,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll back up to accordion header"
+
+- waitForAnimationToEnd
 
 # Collapse the accordion back
 - tapOn:

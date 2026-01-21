@@ -1,11 +1,16 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTime::OpenModal::RoundButton"
     direction: DOWN
     speed: 60
     centerElement: true
+
+- waitForAnimationToEnd
 
 - runFlow:
     when:

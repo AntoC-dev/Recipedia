@@ -18,6 +18,8 @@ appId: "com.recipedia"
     id: "RecipeTags::0::Chip"
     label: "Tags part is not rendered"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePersons::Text"
@@ -25,6 +27,8 @@ appId: "com.recipedia"
     centerElement: true
     speed: 60
     label: "Scroll to ingredients section"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     text: "Ingredients (4 persons)"
@@ -107,6 +111,8 @@ appId: "com.recipedia"
       INGREDIENT_QUANTITY_AND_UNIT: "2 g"
     label: "Assert épices Cachemire ingredient"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTime::Text"
@@ -114,10 +120,14 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipeTime::Text"
     text: "Preparation (40 min)"
     label: "Preparation section and time are displayed"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -125,6 +135,8 @@ appId: "com.recipedia"
     direction: DOWN
     centerElement: true
     speed: 60
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
@@ -136,12 +148,16 @@ appId: "com.recipedia"
     text: "[\\s\\S]+"
     label: "First preparation paragraph is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
     direction: DOWN
     centerElement: true
     speed: 60
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
@@ -153,12 +169,16 @@ appId: "com.recipedia"
     text: "[\\s\\S]+"
     label: "Second preparation paragraph is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"
     direction: DOWN
     centerElement: true
     speed: 60
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"

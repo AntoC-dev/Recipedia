@@ -31,6 +31,8 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for screen to settle after keyboard dismissal"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::AddButton::RoundButton"
@@ -39,9 +41,13 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to ingredients section"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeIngredients::AddButton::RoundButton"
     label: "Add an ingredient"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -50,6 +56,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to round button again to center ingredient row"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeIngredients::0::QuantityInput"
@@ -94,6 +102,8 @@ appId: "com.recipedia"
     id: "RecipeIngredients::0::NameInput::AutocompleteItem::RecipeIngredient"
     label: "Select the new ingredient"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTime::NumericTextInput"
@@ -101,6 +111,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to recipe time secrion"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeTime::NumericTextInput"
@@ -118,6 +130,8 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard to dismiss"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::AddButton::RoundButton"
@@ -126,9 +140,13 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to preparation section"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipePreparation::AddButton::RoundButton"
     label: "Add preparation step"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -137,6 +155,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to preparation content input"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"

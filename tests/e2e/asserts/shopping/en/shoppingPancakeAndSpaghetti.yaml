@@ -34,6 +34,9 @@ appId: "com.recipedia"
           label: "Spaghetti item on iOS"
 
 # PLANT PROTEIN
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.plantProtein::SubHeader"
@@ -41,6 +44,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to Plant Protein category"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.plantProtein::SubHeader"
@@ -65,6 +70,9 @@ appId: "com.recipedia"
           label: "Eggs item on iOS"
 
 # SAUCE
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.sauce::SubHeader"
@@ -72,6 +80,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to Sauce category"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.sauce::SubHeader"
@@ -96,6 +106,9 @@ appId: "com.recipedia"
           label: "Tomato Sauce item on iOS"
 
 # MEAT
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.meat::SubHeader"
@@ -103,6 +116,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to Meat category"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.meat::SubHeader"
@@ -127,6 +142,9 @@ appId: "com.recipedia"
           label: "Ground Beef item on iOS"
 
 # DAIRY
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.dairy::SubHeader"
@@ -134,6 +152,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to Dairy category"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.dairy::SubHeader"
@@ -158,6 +178,9 @@ appId: "com.recipedia"
           label: "Milk item on iOS"
 
 # CHEESE
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.cheese::SubHeader"
@@ -165,6 +188,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to Cheese category"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.cheese::SubHeader"
@@ -189,6 +214,9 @@ appId: "com.recipedia"
           label: "Parmesan item on iOS"
 
 # OIL AND FAT
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.oilAndFat::SubHeader"
@@ -196,6 +224,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to Oil and Fat category"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.oilAndFat::SubHeader"

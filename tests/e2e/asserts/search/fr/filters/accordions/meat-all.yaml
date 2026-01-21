@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Meat accordion"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -35,6 +40,9 @@ appId: "com.recipedia"
     label: "Expand Meat accordion"
 
 # Assert all items are visible
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
@@ -43,9 +51,13 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Beef filter"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
     label: "Beef filter is visible"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -54,6 +66,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll back up to accordion header"
+
+- waitForAnimationToEnd
 
 # Collapse the accordion back
 - tapOn:

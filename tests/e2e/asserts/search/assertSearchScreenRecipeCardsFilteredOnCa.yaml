@@ -83,6 +83,8 @@ appId: "com.recipedia"
     text: "Lentil Curry"
     label: "Lentil Curry title is visible"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::SearchBar"
@@ -90,3 +92,6 @@ appId: "com.recipedia"
     speed: 80
     centerElement: true
     label: "Scroll back to top of Search screen"
+
+- waitForAnimationToEnd
+

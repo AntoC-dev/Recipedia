@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       text: "${TAG_NAME}"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     speed: 60
     timeout: 120000
     label: "Scroll to find ${TAG_NAME} tag"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     text: "${TAG_NAME}"

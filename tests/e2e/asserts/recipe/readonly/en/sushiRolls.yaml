@@ -44,6 +44,8 @@ appId: "com.recipedia"
     text: "Seafood"
     label: "Tag Seafood is rendered"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::0::IngredientName"
@@ -51,6 +53,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Sushi Rice ingredient"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::0::IngredientName"
@@ -61,6 +65,8 @@ appId: "com.recipedia"
     text: "250 g"
     label: "Quantity of Sushi Rice is rendered"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::1::IngredientName"
@@ -68,6 +74,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Nori Sheets ingredient"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::1::IngredientName"
@@ -78,6 +86,8 @@ appId: "com.recipedia"
     text: "5 pieces"
     label: "Quantity of Nori Sheets is rendered"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::2::IngredientName"
@@ -85,6 +95,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Salmon ingredient"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::2::IngredientName"
@@ -95,6 +107,8 @@ appId: "com.recipedia"
     text: "200 g"
     label: "Quantity of Salmon is rendered"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::3::IngredientName"
@@ -102,6 +116,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Avocado ingredient"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::3::IngredientName"
@@ -112,6 +128,8 @@ appId: "com.recipedia"
     text: "100 g"
     label: "Quantity of Avocado is rendered"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::4::IngredientName"
@@ -119,6 +137,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Soy Sauce ingredient"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::4::IngredientName"
@@ -129,6 +149,8 @@ appId: "com.recipedia"
     text: "50 ml"
     label: "Quantity of Soy Sauce is rendered"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTime::Text"
@@ -137,10 +159,14 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to preparation time"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipeTime::Text"
     text: "Preparation (45 min)"
     label: "Preparation title and time is rendered"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -149,10 +175,15 @@ appId: "com.recipedia"
     centerElement: true
     speed: 60
     label: "Scroll to first preparation step"
+
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
     text: "1) Prepare rice"
     label: "First section of the preparation is rendered"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -161,10 +192,15 @@ appId: "com.recipedia"
     centerElement: true
     speed: 60
     label: "Scroll to second preparation step"
+
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
     text: "2) Spread rice"
     label: "Second section of the preparation is rendered"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -173,10 +209,15 @@ appId: "com.recipedia"
     centerElement: true
     speed: 60
     label: "Scroll to third preparation step"
+
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"
     text: "3) Add fillings and roll"
     label: "Third section of the preparation is rendered"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -185,6 +226,9 @@ appId: "com.recipedia"
     centerElement: true
     speed: 60
     label: "Scroll to fourth preparation step"
+
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::3::SectionTitle"
     text: "4) Serve"
@@ -220,6 +264,8 @@ appId: "com.recipedia"
     text: "Add to the menu"
     label: "Add to menu button has the correct text"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeImage"
@@ -227,3 +273,6 @@ appId: "com.recipedia"
     centerElement: true
     speed: 95
     label: "Scroll back to top"
+
+- waitForAnimationToEnd
+

@@ -22,12 +22,16 @@ tags:
       - hideKeyboard:
           label: "Dismiss keyboard on Android"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       text: "Sushi Rolls"
     direction: DOWN
     speed: 40
     label: "Action - Scroll down in dropdown to bottom recipes"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     text: "Sushi Rolls"
@@ -36,6 +40,8 @@ tags:
 - waitForAnimationToEnd:
     label: "Wait for dropdown animation to finish"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::SearchBar::RightIcon"
@@ -43,12 +49,16 @@ tags:
     speed: 40
     label: "Action - Scroll back to top of the screen"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "SearchScreen::SearchBar::RightIcon"
     label: "Action - Close dropdown by tapping close icon"
 
 - waitForAnimationToEnd:
     label: "Wait for dropdown animation to finish"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -58,6 +68,8 @@ tags:
     timeout: 120000
     centerElement: true
     label: "Scroll to first recipe card"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::RecipeCards::0::Spaghetti Bolognese"

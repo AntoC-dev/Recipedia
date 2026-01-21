@@ -11,6 +11,8 @@ tags:
     id: "BottomTabs::Search"
     label: "Action - Navigate to Search screen"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       text: "Pesto Pasta"
@@ -18,6 +20,8 @@ tags:
     speed: 40
     centerElement: true
     label: "Action - Scroll to find Pesto Pasta"
+
+- waitForAnimationToEnd
 
 - tapOn:
     text: "Pesto Pasta"
@@ -37,6 +41,8 @@ tags:
     file: "../../asserts/recipe/edit/pestoPasta.yaml"
     label: "Assert - Verify Pesto Pasta edit screen is displayed correctly"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::Title"
@@ -45,6 +51,8 @@ tags:
     timeout: 120000
     centerElement: true
     label: "Action - Scroll back to top of nutrition part"
+
+- waitForAnimationToEnd
 
 - runFlow:
     file: "../../flows/recipe/editing/editNutrition.yaml"
@@ -64,6 +72,8 @@ tags:
     centerElement: true
     label: "Action - Scroll back to top of nutrition part"
 
+- waitForAnimationToEnd
+
 - runFlow:
     file: "../../flows/recipe/editing/editNutrition.yaml"
     env:
@@ -80,6 +90,8 @@ tags:
     id: "Recipe::AppBar::BackButton"
     label: "Action - Back to the Search Screen"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::SearchBar"
@@ -87,6 +99,8 @@ tags:
     speed: 85
     timeout: 120000
     label: "Cleanup - Scroll back to top of Search screen"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "BottomTabs::Home"

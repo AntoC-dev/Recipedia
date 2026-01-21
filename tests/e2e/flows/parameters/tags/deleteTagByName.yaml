@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       text: "${TAG_NAME}"
@@ -8,6 +11,8 @@ appId: "com.recipedia"
     timeout: 120000
     centerElement: true
     label: "Scroll to find ${TAG_NAME} tag"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "TagsSettings::${TAG_INDEX}::TagName"

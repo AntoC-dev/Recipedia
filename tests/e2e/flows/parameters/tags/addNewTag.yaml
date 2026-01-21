@@ -37,6 +37,8 @@ appId: "com.recipedia"
     id: "TagsSettings::ItemDialog::AddModal::ConfirmButton"
     label: "Confirm adding the new tag"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       text: "RecipeTag"
@@ -44,6 +46,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to find the newly added tag"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     text: "RecipeTag"

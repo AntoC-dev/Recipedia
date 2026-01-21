@@ -16,6 +16,8 @@ appId: "com.recipedia"
     id: "SearchScreen::FiltersToggleButtons"
     label: "Open filter accordion"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::1"
@@ -24,9 +26,13 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Preparation Time accordion"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::1"
     label: "Expand Preparation Time accordion"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -35,6 +41,8 @@ appId: "com.recipedia"
     speed: 50
     centerElement: true
     label: "Scroll to first preparation time filter item"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::1::Item::0"

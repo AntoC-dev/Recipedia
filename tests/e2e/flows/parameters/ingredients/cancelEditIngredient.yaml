@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "IngredientsSettings::30::EditButton"
@@ -8,6 +11,8 @@ appId: "com.recipedia"
     timeout: 120000
     centerElement: true
     label: "Scroll up to find Spaghetti ingredient for edit test"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     text: "Spaghetti"

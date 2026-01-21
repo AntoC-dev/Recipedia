@@ -1,5 +1,7 @@
 appId: "com.recipedia"
 ---
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Parameters::Section::RecipeDefaults::SubHeader"
@@ -7,6 +9,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Recipe Defaults section"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "Parameters::Section::RecipeDefaults::SubHeader"

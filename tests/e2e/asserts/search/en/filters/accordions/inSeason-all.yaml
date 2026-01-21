@@ -33,6 +33,8 @@ appId: "com.recipedia"
 - runFlow:
     file: "inSeason-items/onlyInSeasonIngredients-visible.yaml"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -40,6 +42,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll back up to accordion header"
+
+- waitForAnimationToEnd
 
 # Collapse the accordion back
 - tapOn:

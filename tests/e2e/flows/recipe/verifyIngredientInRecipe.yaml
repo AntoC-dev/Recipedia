@@ -8,6 +8,8 @@ appId: "com.recipedia"
     id: "SearchScreen::RecipeCards::0::Cover"
     label: "Open recipe from the card"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::0::IngredientName"
@@ -15,6 +17,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to ingredients section"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::0::IngredientName"

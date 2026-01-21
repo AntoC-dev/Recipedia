@@ -4,6 +4,8 @@ appId: "com.recipedia"
     file: "openTestRecipe.yaml"
     label: "Navigate to and open E2E Test Recipe"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::0::Cover"
@@ -12,9 +14,13 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to recipe card"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "SearchScreen::RecipeCards::0::Cover"
     label: "Open the E2E Test Recipe"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -23,6 +29,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to ingredients section"
+
+- waitForAnimationToEnd
 
 - assertNotVisible:
     text: "RecipeIngredient"

@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
@@ -8,6 +11,8 @@ appId: "com.recipedia"
     timeout: 120000
     centerElement: true
     label: "Scroll to nutrition section"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
@@ -38,6 +43,8 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard to dismiss"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::NumericTextInput"
@@ -45,6 +52,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to protein field"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::NumericTextInput"

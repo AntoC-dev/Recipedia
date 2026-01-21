@@ -25,6 +25,8 @@ appId: "com.recipedia"
     text: ""
     label: "Description TextInput is displayed with the empty text"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTags::HeaderText"
@@ -32,6 +34,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to tags section"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeTags::HeaderText"
@@ -65,6 +69,8 @@ appId: "com.recipedia"
           label: "Tag's icon is not displayed on iOS"
 
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePersons::NumericTextInput"
@@ -72,6 +78,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to person section"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     text: "This recipe is for : "
@@ -86,6 +94,8 @@ appId: "com.recipedia"
     text: " persons"
     label: "Person text sentence end is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::PrefixText"
@@ -93,6 +103,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to ingredients section"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     text: "Ingredients: "
@@ -126,6 +138,8 @@ appId: "com.recipedia"
     id: "RecipeIngredients::AddButton::RoundButton"
     label: "Add ingredient button is displayed with the correct icon"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTime::PrefixText"
@@ -133,6 +147,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to time section"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeTime::PrefixText"
@@ -148,6 +164,8 @@ appId: "com.recipedia"
     text: "min"
     label: "Minute text is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::AddButton::RoundButton"
@@ -155,6 +173,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to preparation add button"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePreparation::PrefixText"
@@ -185,9 +205,14 @@ appId: "com.recipedia"
     file: "../common/nutritionEmptyEdit.yaml"
     label: "Verify nutrition section is empty with add button"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeImage"
     direction: UP
     speed: 95
     centerElement: true
+
+- waitForAnimationToEnd
+

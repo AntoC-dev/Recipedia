@@ -1,6 +1,9 @@
 appId: "com.recipedia"
 ---
 # Scroll to accordion first
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -8,6 +11,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Fruit accordion"
+
+- waitForAnimationToEnd
 
 # Assert accordion is displayed
 - assertVisible:
@@ -38,6 +43,9 @@ appId: "com.recipedia"
     label: "Expand Fruit accordion"
 
 # Assert all items are visible
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
@@ -46,9 +54,13 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Avocado filter"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
     label: "Avocado filter is visible"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -57,6 +69,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll back up to accordion header"
+
+- waitForAnimationToEnd
 
 # Collapse the accordion back
 - tapOn:

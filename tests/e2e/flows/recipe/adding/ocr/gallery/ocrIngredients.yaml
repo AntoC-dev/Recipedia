@@ -1,11 +1,16 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::OpenModal::RoundButton"
     direction: UP
     speed: 40
     centerElement: true
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeIngredients::OpenModal::RoundButton"

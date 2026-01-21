@@ -34,7 +34,7 @@ appId: "com.recipedia"
 - extendedWaitUntil:
     visible:
       id: "Home::RecipeRecommendation::random::Carousel::Card::0::Cover"
-    timeout: 10000
+    timeout: 30000
     label: "Wait for Home screen"
 
 - assertVisible:

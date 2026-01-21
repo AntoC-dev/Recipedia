@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTags::OpenModal::RoundButton"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to tags section"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeTags::OpenModal::RoundButton"

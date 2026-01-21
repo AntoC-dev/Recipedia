@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::0::NameInput::CustomTextInput"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to ingredient name input"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeIngredients::0::NameInput::CustomTextInput"

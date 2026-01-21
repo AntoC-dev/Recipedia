@@ -57,6 +57,8 @@ tags:
     id: "TagsSettings::ItemDialog::AddModal::ConfirmButton"
     label: "Action - Confirm adding new tag"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       text: "TestTag"
@@ -64,6 +66,8 @@ tags:
     speed: 60
     centerElement: true
     label: "Action - Scroll to new tag"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "TagsSettings::15::TagName"

@@ -47,12 +47,16 @@ env:
     id: "Recipe::AppBar::Validate"
     label: "Action - Validate to check cancel didn't save note"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeImage"
     direction: UP
     speed: 90
     label: "Scroll to top of recipe before asserting ingredient"
+
+- waitForAnimationToEnd
 
 - runFlow:
     file: "../../asserts/recipe/common/assertIngredientWithoutNote.yaml"
@@ -88,12 +92,16 @@ env:
     id: "Recipe::AppBar::Validate"
     label: "Action - Validate the modifications"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeImage"
     direction: UP
     speed: 80
     label: "Scroll to top of recipe before asserting ingredient"
+
+- waitForAnimationToEnd
 
 - runFlow:
     file: "../../asserts/recipe/common/assertIngredientWithNote.yaml"
@@ -127,12 +135,16 @@ env:
     id: "Recipe::AppBar::Validate"
     label: "Action - Validate the note edit"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeImage"
     direction: UP
     speed: 90
     label: "Scroll to top of recipe before asserting ingredient"
+
+- waitForAnimationToEnd
 
 - runFlow:
     file: "../../asserts/recipe/common/assertIngredientWithNote.yaml"

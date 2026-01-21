@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to nuts and seeds accordion"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -34,6 +39,8 @@ appId: "com.recipedia"
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Expand Nuts and Seeds accordion"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
@@ -41,9 +48,13 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to ensure Pine Nuts is rendered"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
     label: "Pine Nuts filter is visible"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -51,6 +62,8 @@ appId: "com.recipedia"
     direction: UP
     centerElement: true
     label: "Scroll back up to Nuts and Seeds accordion header"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"

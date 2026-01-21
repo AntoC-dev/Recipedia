@@ -4,6 +4,8 @@ appId: "com.recipedia"
     file: "../../recipe/adding/fr/addRecipeImage.yaml"
     label: "Add recipe image in French"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTitle::CustomTextInput"
@@ -11,6 +13,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Action - Center title text input"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeTitle::CustomTextInput"
@@ -29,12 +33,16 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard to dismiss"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::AddButton::RoundButton"
     direction: DOWN
     speed: 60
     centerElement: true
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeIngredients::AddButton::RoundButton"
@@ -67,6 +75,8 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard to dismiss"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTime::NumericTextInput"
@@ -74,6 +84,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll until preparation time is visible"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeTime::NumericTextInput"
@@ -90,6 +102,8 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard to dismiss"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::AddButton::RoundButton"
@@ -97,9 +111,13 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipePreparation::AddButton::RoundButton"
     label: "Tap on recipe preparation adding button"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -107,6 +125,8 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 60
     centerElement: true
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"

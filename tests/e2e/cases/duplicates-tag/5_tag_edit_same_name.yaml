@@ -11,6 +11,8 @@ tags:
     file: "../../flows/parameters/tags/navigateToTagsSettings.yaml"
     label: "Action - Navigate to Tags Settings"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       text: "Dessert"
@@ -18,6 +20,8 @@ tags:
     speed: 60
     centerElement: true
     label: "Action - Scroll to find Dessert tag"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "TagsSettings::2::TagName"

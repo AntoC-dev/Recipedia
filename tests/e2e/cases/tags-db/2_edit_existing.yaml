@@ -12,6 +12,8 @@ tags:
     file: "../../flows/parameters/tags/navigateToTagsSettings.yaml"
     label: "Action - Navigate to Tags Settings"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "TagsSettings::6::TagName"
@@ -20,10 +22,14 @@ tags:
     centerElement: true
     label: "Action - Scroll to Italian tag"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "TagsSettings::6::TagName"
     text: "Italian"
     label: "Assert - Verify Italian tag exists"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -32,6 +38,8 @@ tags:
     speed: 40
     centerElement: true
     label: "Action - Scroll to Italian tag edit button"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "TagsSettings::6::EditButton"

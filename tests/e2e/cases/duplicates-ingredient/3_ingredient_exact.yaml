@@ -16,6 +16,8 @@ tags:
     id: "RecipeEdit.*"
     label: "Action - Open manual recipe creation"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::AddButton::RoundButton"
@@ -23,6 +25,8 @@ tags:
     speed: 60
     centerElement: true
     label: "Action - Scroll to ingredients section"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeIngredients::AddButton::RoundButton"

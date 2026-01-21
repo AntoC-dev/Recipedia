@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -8,6 +11,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to legumes accordion"
 
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -35,6 +40,8 @@ appId: "com.recipedia"
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Expand Legumes accordion"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
@@ -43,9 +50,13 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to first filter item"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
     label: "Red Lentils filter is visible"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -54,6 +65,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll back up to Legumes accordion header"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"

@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::Title"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to nutrition section"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::Title"
@@ -21,6 +26,8 @@ appId: "com.recipedia"
     text: "par portion"
     label: "Per portion text is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::Value"
@@ -28,6 +35,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to energy section"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::Value"
@@ -40,6 +49,8 @@ appId: "com.recipedia"
     label: "Energy kJ value is displayed"
 
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Salt::Text"
@@ -47,6 +58,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to the end of the nutrition table"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::Value"

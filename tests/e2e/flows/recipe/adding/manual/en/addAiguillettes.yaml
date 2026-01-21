@@ -4,6 +4,8 @@ appId: "com.recipedia"
     file: "../../en/addRecipeImage.yaml"
     label: "Add recipe image"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTitle::CustomTextInput"
@@ -11,6 +13,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to title text input"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeTitle::CustomTextInput"
@@ -24,6 +28,8 @@ appId: "com.recipedia"
     id: "RecipeTitle::Text"
     label: "Tap the title to close the keyboard"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeDescription::CustomTextInput"
@@ -31,6 +37,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to description text input"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeDescription::CustomTextInput"
@@ -44,6 +52,8 @@ appId: "com.recipedia"
     id: "RecipeDescription::Text"
     label: "Tap the description to close the keyboard"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTags::RoundButton"
@@ -51,6 +61,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to tags's adding button"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeTags::RoundButton"
@@ -126,6 +138,8 @@ appId: "com.recipedia"
     timeout: 30000
     label: "Wait for the second chip to appear"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::AddButton::RoundButton"
@@ -133,6 +147,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to ingredients section"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeIngredients::AddButton::RoundButton"
@@ -170,6 +186,8 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard to dismiss"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::AddButton::RoundButton"
@@ -177,11 +195,15 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to ensure add button is still visible"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeIngredients::AddButton::RoundButton"
     label: "Press the round button of second ingredient"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::AddButton::RoundButton"
@@ -190,9 +212,13 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to ensure add button is still visible"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeIngredients::AddButton::RoundButton"
     label: "Press the round button of third ingredient"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -201,6 +227,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to second ingredient quantity input"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeIngredients::1::QuantityInput"
@@ -230,6 +258,8 @@ appId: "com.recipedia"
     id: "RecipeIngredients::1::NameInput::AutocompleteItem::Onions"
     label: "Press the ingredient from the dropdown"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::AddButton::RoundButton"
@@ -237,6 +267,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to ensure add button is visible"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeIngredients::AddButton::RoundButton"
@@ -274,6 +306,8 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard to dismiss"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTime::NumericTextInput"
@@ -281,6 +315,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to persons section"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeTime::NumericTextInput"
@@ -298,6 +334,8 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard to dismiss"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::AddButton::RoundButton"
@@ -306,9 +344,13 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to preparation section"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipePreparation::AddButton::RoundButton"
     label: "Press the round button of first preparation"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -317,6 +359,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to first preparation title input"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
@@ -342,6 +386,8 @@ appId: "com.recipedia"
     id: "RecipePreparation::EditableStep::0::Content"
     label: "Tap on the content text to close the keyboard"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::AddButton::RoundButton"
@@ -350,9 +396,13 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to see the add button of second preparation"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipePreparation::AddButton::RoundButton"
     label: "Press the round button of second preparation"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -361,6 +411,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to second preparation title input"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipePreparation::EditableStep::1::TextInputTitle::CustomTextInput"
@@ -374,6 +426,8 @@ appId: "com.recipedia"
     id: "RecipePreparation::EditableStep::1::Title"
     label: "Tap on the title text to close the keyboard"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
@@ -381,6 +435,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to preparation section"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
@@ -422,6 +478,8 @@ appId: "com.recipedia"
     id: "RecipePreparation::EditableStep::1::Content"
     label: "Tap on the content text to close the keyboard"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::AddButton::RoundButton"
@@ -430,11 +488,15 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to second preparation title input"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipePreparation::AddButton::RoundButton"
     waitToSettleTimeoutMs: 0
     retryTapIfNoChange: false
     label: "Press the round button of third preparation"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -443,6 +505,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to third preparation title input"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipePreparation::EditableStep::2::TextInputTitle::CustomTextInput"
@@ -456,6 +520,8 @@ appId: "com.recipedia"
     id: "RecipePreparation::EditableStep::2::Title"
     label: "Tap on the title text to close the keyboard"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::EditableStep::2::TextInputContent::CustomTextInput"
@@ -463,6 +529,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to third preparation paragraph input"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipePreparation::EditableStep::2::TextInputContent::CustomTextInput"
@@ -476,6 +544,8 @@ appId: "com.recipedia"
     id: "RecipePreparation::EditableStep::2::Content"
     label: "Tap on the content text to close the keyboard"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionEmptyState::AddButton::RoundButton"
@@ -483,3 +553,6 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to see the nutrition add button"
+
+- waitForAnimationToEnd
+

@@ -61,6 +61,8 @@ tags:
 - waitForAnimationToEnd:
     label: "Wait for keyboard to dismiss"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::0::.*"
@@ -68,6 +70,8 @@ tags:
     speed: 40
     centerElement: true
     label: "Scroll to recipe card"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::RecipeCards::0::.*"

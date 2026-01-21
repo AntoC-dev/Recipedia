@@ -29,12 +29,16 @@ tags:
     id: "Recipe::Dialog::Cancel"
     label: "Action - Cancel adding duplicate recipe"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeImage::Image"
     direction: UP
     speed: 95
     centerElement: true
+
+- waitForAnimationToEnd
 
 - runFlow:
     file: "../../flows/recipe/adding/setRecipeTitle.yaml"

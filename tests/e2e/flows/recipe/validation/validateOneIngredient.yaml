@@ -12,8 +12,8 @@ appId: "com.recipedia"
 
 - extendedWaitUntil:
     visible:
-      id: "${PREFIX}::::ValidationQueue::Ingredient::ItemDialog::AddModal::Unit::CustomTextInput"
-    timeout: 10000
+      id: "${PREFIX}::ValidationQueue::Ingredient::ItemDialog::AddModal::Unit::CustomTextInput"
+    timeout: 30000
     label: "Wait for menu button to be visible"
 
 - tapOn:

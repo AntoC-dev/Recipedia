@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTitle::CustomTextInput"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to center recipe title"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeTitle::CustomTextInput"

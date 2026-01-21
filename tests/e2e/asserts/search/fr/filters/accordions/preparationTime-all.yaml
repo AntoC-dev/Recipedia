@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Preparation Time accordion"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -49,12 +54,16 @@ appId: "com.recipedia"
 - runFlow:
     file: "../../../en/filters/accordions/preparationTime-items/20-30min-visible.yaml"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::7"
     direction: DOWN
     centerElement: true
     label: "Scroll to see remaining preparation time options"
+
+- waitForAnimationToEnd
 
 - runFlow:
     file: "../../../en/filters/accordions/preparationTime-items/30-45min-visible.yaml"
@@ -63,12 +72,16 @@ appId: "com.recipedia"
 - runFlow:
     file: "../../../en/filters/accordions/preparationTime-items/moreThan1Hour-visible.yaml"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     direction: UP
     centerElement: true
     label: "Scroll back to accordion header"
+
+- waitForAnimationToEnd
 
 # Collapse the accordion back
 - tapOn:

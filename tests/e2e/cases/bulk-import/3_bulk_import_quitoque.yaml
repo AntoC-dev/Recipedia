@@ -23,11 +23,15 @@ tags:
     id: "BulkImportSettings::AppBar::BackButton"
     label: "Go back to Parameters"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Parameters::Section::Appearance::SubHeader"
     direction: UP
     label: "Scroll up to reset the screen"
+
+- waitForAnimationToEnd
 
 - runFlow:
     file: "../../flows/parameters/language/switchToFrench.yaml"

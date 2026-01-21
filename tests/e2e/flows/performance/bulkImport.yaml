@@ -4,6 +4,8 @@ appId: "com.recipedia"
     text: "Parameters"
     label: "Navigate to Parameters screen"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Parameters::Section::Import::FromWebsite::Item"
@@ -11,6 +13,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to bulk import section"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "Parameters::Section::Import::FromWebsite::Item"
@@ -44,6 +48,8 @@ appId: "com.recipedia"
     duration: 400
     label: "Keep scrolling discovered recipes"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "BulkImportDiscovery::(fresh|seen)-0"
@@ -51,6 +57,8 @@ appId: "com.recipedia"
     speed: 50
     timeout: 20000
     label: "Scroll back to top and wait for first recipe"
+
+- waitForAnimationToEnd
 
 - runFlow:
     file: "../bulk-import/selectRecipes.yaml"

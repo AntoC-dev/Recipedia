@@ -9,12 +9,18 @@ appId: "com.recipedia"
 - runFlow:
     file: "./assertRecipeDefaultsSection.yaml"
     label: "Check that the recipe defaults section is displayed correctly in French"
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Parameters::Section::About::Version::Item"
     direction: DOWN
     speed: 60
     centerElement: true
+
+- waitForAnimationToEnd
+
 - runFlow:
     file: "./assertDataManagementSection.yaml"
     label: "Check that the data management section is displayed correctly in French"
@@ -25,9 +31,14 @@ appId: "com.recipedia"
     file: "./assertAboutSection.yaml"
     label: "Check that the about section is displayed correctly in French"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Parameters::Section::Appearance::SubHeader"
     direction: UP
     speed: 60
     centerElement: true
+
+- waitForAnimationToEnd
+

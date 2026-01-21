@@ -44,6 +44,8 @@ tags:
       EDIT_SUFFIX: "Edited"
     label: "Action - Confirm and edit tag to BreakfastSpecialEdited"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTags::0::Chip"
@@ -51,6 +53,8 @@ tags:
     speed: 60
     centerElement: true
     label: "Scroll to recipe tags"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeTags::0::Chip"

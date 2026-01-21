@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       text: "Tags.*"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Tags accordion"
+
+- waitForAnimationToEnd
 
 # Assert accordion is displayed
 - assertVisible:
@@ -235,6 +240,8 @@ appId: "com.recipedia"
       true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Vegetarian')== false}
     file: "tags-items/vegetarian-hidden.yaml"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -242,6 +249,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll back up to accordion header"
+
+- waitForAnimationToEnd
 
 # Collapse the accordion back
 - tapOn:

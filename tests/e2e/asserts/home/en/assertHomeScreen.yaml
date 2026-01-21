@@ -37,6 +37,8 @@ appId: "com.recipedia"
     id: "Home::RecipeRecommendation::seasonal::Carousel::Card::0::.*"
     label: "Seasonal recommendation has its first card"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Home::RecipeRecommendation::grain-1::SubHeader"
@@ -44,6 +46,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to first grain-based recommendations"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "Home::RecipeRecommendation::grain-1::SubHeader"
@@ -53,6 +57,8 @@ appId: "com.recipedia"
     id: "Home::RecipeRecommendation::grain-1::Carousel::Card::0::.*"
     label: "First grain recommendation has its first card"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Home::RecipeRecommendation::grain-2::SubHeader"
@@ -60,6 +66,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to second grain-based recommendations"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "Home::RecipeRecommendation::grain-2::SubHeader"
@@ -69,6 +77,8 @@ appId: "com.recipedia"
     id: "Home::RecipeRecommendation::grain-2::Carousel::Card::0::.*"
     label: "Second grain recommendation has its first card"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Home::RecipeRecommendation::tag-1::SubHeader"
@@ -76,6 +86,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to first tag-based recommendations"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "Home::RecipeRecommendation::tag-1::SubHeader"
@@ -85,6 +97,8 @@ appId: "com.recipedia"
     id: "Home::RecipeRecommendation::tag-1::Carousel::Card::0::.*"
     label: "First tag recommendation has its first card"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Home::RecipeRecommendation::tag-2::SubHeader"
@@ -92,6 +106,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to second tag-based recommendations"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "Home::RecipeRecommendation::tag-2::SubHeader"
@@ -101,6 +117,8 @@ appId: "com.recipedia"
     id: "Home::RecipeRecommendation::tag-2::Carousel::Card::0::.*"
     label: "Second tag recommendation has its first card"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Home::RecipeRecommendation::tag-3::SubHeader"
@@ -108,6 +126,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to third tag-based recommendations"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "Home::RecipeRecommendation::tag-3::SubHeader"
@@ -117,6 +137,8 @@ appId: "com.recipedia"
     id: "Home::RecipeRecommendation::tag-3::Carousel::Card::0::.*"
     label: "Third tag recommendation has its first card"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Home::RecipeRecommendation::random::SubHeader"
@@ -124,3 +146,6 @@ appId: "com.recipedia"
     speed: 80
     timeout: 120000
     label: "Scroll back to top of Home screen"
+
+- waitForAnimationToEnd
+

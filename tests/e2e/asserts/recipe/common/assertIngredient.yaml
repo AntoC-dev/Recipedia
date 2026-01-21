@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       text: "${INGREDIENT_NAME}.*"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to searched ingredient"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::.*::IngredientName"
@@ -18,6 +23,8 @@ appId: "com.recipedia"
     text: "${INGREDIENT_QUANTITY_AND_UNIT}.*"
     label: "Ingredient quantity is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePersons::Text"
@@ -25,3 +32,6 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to up to ingredients section"
+
+- waitForAnimationToEnd
+

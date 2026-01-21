@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionEmptyState::OCRButton::RoundButton"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     speed: 90
     centerElement: true
     label: "Scroll to nutrition section"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionEmptyState::OCRButton::RoundButton"
@@ -42,6 +47,8 @@ appId: "com.recipedia"
     timeout: 10000
     label: "Wait for nutrition values to be populated by OCR"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightNumericTextInput"
@@ -49,6 +56,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to weight of a portion"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightNumericTextInput"

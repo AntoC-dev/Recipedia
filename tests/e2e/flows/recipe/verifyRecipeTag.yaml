@@ -19,6 +19,8 @@ appId: "com.recipedia"
     text: "E2E Test Recipe"
     label: "Select recipe name from the list"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::0::Cover"
@@ -27,9 +29,13 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to recipe card"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "SearchScreen::RecipeCards::0::Cover"
     label: "Open recipe from the card"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -38,6 +44,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to recipe tag"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeTags::0::Chip"

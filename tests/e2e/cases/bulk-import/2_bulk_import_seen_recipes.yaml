@@ -65,6 +65,8 @@ tags:
     file: "../../asserts/bulk-import/fr/assertSeenSection.yaml"
     label: "Assert - Verify seen recipes section is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "BulkImportDiscovery::seen-0"
@@ -73,6 +75,8 @@ tags:
     timeout: 30000
     centerElement: true
     label: "Action - Scroll to first seen recipe"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "BulkImportDiscovery::seen-0"
@@ -154,11 +158,15 @@ tags:
     id: "BulkImportSettings::AppBar::BackButton"
     label: "Cleanup - Return to parameters"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Parameters::Section::Appearance::SubHeader"
     direction: UP
     label: "Scroll up to reset the screen"
+
+- waitForAnimationToEnd
 
 - runFlow:
     file: "../../flows/parameters/language/switchToEnglish.yaml"

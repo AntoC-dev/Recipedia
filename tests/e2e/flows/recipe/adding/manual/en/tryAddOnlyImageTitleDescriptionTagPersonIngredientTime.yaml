@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTime::NumericTextInput"
@@ -8,6 +11,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to time section"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTime::NumericTextInput"
@@ -15,6 +20,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to time input"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeTime::NumericTextInput"

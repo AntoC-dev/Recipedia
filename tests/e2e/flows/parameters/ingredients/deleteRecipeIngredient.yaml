@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "IngredientsSettings::BottomActionButton-container"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     speed: 95
     centerElement: true
     label: "Scroll to bottom of the screen"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -17,6 +22,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to end of the screen"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "IngredientsSettings::26::DeleteButton"
@@ -25,6 +32,8 @@ appId: "com.recipedia"
     timeout: 120000
     centerElement: true
     label: "Scroll to find RecipeIngredient"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "IngredientsSettings::26::DeleteButton"

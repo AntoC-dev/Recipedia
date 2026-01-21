@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       text: "Italian"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Italian tag"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "TagsSettings::6::DeleteButton"
@@ -21,6 +26,8 @@ appId: "com.recipedia"
     id: "TagsSettings::ItemDialog::DeleteModal::CancelButton"
     label: "Cancel delete operation"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       text: "Italian"
@@ -28,6 +35,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Italian tag"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     text: "Italian"

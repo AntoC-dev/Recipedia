@@ -12,6 +12,8 @@ tags:
     file: "../../flows/parameters/ingredients/navigateToIngredientsSettings.yaml"
     label: "Action - Navigate to Ingredients Settings"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "IngredientsSettings::36::IngredientName"
@@ -21,12 +23,16 @@ tags:
     centerElement: true
     label: "Action - Scroll to bottom of the screen"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "IngredientsSettings::34::DeleteButton"
     direction: UP
     speed: 50
     label: "Action - Scroll to ingredient to delete"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "IngredientsSettings::34::DeleteButton"
