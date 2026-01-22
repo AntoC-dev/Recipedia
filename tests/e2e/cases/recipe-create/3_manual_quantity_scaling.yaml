@@ -11,13 +11,18 @@ tags:
     file: "../../flows/recipe/adding/fillTestRecipeFor2Persons.yaml"
     label: "Action - Fill Test Recipe (2 persons, Pasta 200g, Tomatoes 100g)"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeImage"
     direction: UP
     speed: 95
+    timeout: 120000
     centerElement: true
     label: "Action - Scroll back to top"
+
+- waitForAnimationToEnd
 
 - runFlow:
     file: "../../asserts/recipe/edit/testRecipeFor2Persons.yaml"
@@ -45,7 +50,15 @@ tags:
     text: "Test Recipe"
     label: "Action - Search for Test Recipe"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: "ENTER"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -54,6 +67,8 @@ tags:
     speed: 40
     centerElement: true
     label: "Scroll to recipe card"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::RecipeCards::0::Cover"

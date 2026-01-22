@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::AddButton::RoundButton"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to ingredients section"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeIngredients::AddButton::RoundButton"
@@ -20,5 +25,15 @@ appId: "com.recipedia"
     text: "Celery"
     label: "Write the ingredient name in the input text"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Hide keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - pressKey: enter

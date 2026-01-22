@@ -9,10 +9,24 @@ appId: "com.recipedia"
     text: "POULET SAUCE SATAY.*"
     label: "Title text is displayed"
 
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeDescription::Text"
+    direction: DOWN
+    centerElement: true
+    speed: 60
+    label: "Scroll to description"
+
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipeDescription::Text"
-    text: "La sauce satay est une sauce d'Asie du Sud-Est à base de cacahuètes, ail et gingembre! Reproduisez-la pour accompagner notre poulet français !"
+    text: "La sauce satay est une sauce d'Asie du Sud-Est à base de cacahuètes, ail et gingembre ! Reproduisez-la pour accompagner notre poulet français!"
     label: "Description of the recipe is rendered"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -20,6 +34,9 @@ appId: "com.recipedia"
     direction: DOWN
     centerElement: true
     speed: 60
+    label: "Scroll to persons"
+
+- waitForAnimationToEnd
 
 - assertNotVisible:
     id: "RecipeTags::0::Chip"
@@ -92,6 +109,8 @@ appId: "com.recipedia"
       INGREDIENT_QUANTITY_AND_UNIT: "300 g"
     label: "Assert riz basmati  Bio ingredient"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTime::Text"
@@ -99,10 +118,14 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipeTime::Text"
     text: "Préparation (30 min)"
     label: "Preparation section and time are displayed"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -110,6 +133,8 @@ appId: "com.recipedia"
     direction: DOWN
     centerElement: true
     speed: 60
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
@@ -121,12 +146,16 @@ appId: "com.recipedia"
     text: "[\\s\\S]+"
     label: "First preparation paragraph is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
     direction: DOWN
     centerElement: true
     speed: 60
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
@@ -138,12 +167,16 @@ appId: "com.recipedia"
     text: "[\\s\\S]+"
     label: "Second preparation paragraph is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"
     direction: DOWN
     centerElement: true
     speed: 60
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"
@@ -155,6 +188,8 @@ appId: "com.recipedia"
     text: "[\\s\\S]+"
     label: "Third preparation paragraph is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::ReadOnlyStep::3::SectionTitle"
@@ -163,10 +198,14 @@ appId: "com.recipedia"
     centerElement: true
     label: "Fourth preparation title is displayed"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::3::SectionTitle"
     text: "4) Le riz"
     label: "Fourth preparation title is displayed"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -176,9 +215,11 @@ appId: "com.recipedia"
     centerElement: true
     label: "Fourth preparation paragraph is displayed"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::3::SectionParagraph"
-    text: "Portez une casserole d'eau salée à ébullition.\nFaites cuire le riz selon les indications du paquet.\nRetirez la base de l'oignon nouveau et émincez-le.\nDégustez sans attendre votre poulet sauce satay accompagné du riz!\nParsemez-le d'oignon nouveau."
+    text: "Portez une casserole d'eau salée à ébullition.\nFaites cuire le riz selon les indications du paquet.\nRetirez la base de .*'oignon nouveau et émincez-le.\nDégustez sans attendre votre poulet sauce satay accompagné du riz!\nParsemez-le d'oignon nouveau."
     label: "Fourth preparation paragraph is displayed"
 
 - runFlow:

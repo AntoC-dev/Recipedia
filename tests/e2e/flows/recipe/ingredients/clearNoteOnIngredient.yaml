@@ -1,12 +1,16 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::${INDEX}::NoteButton"
     direction: DOWN
     speed: 40
-    centerElement: true
     label: "Scroll to ingredient note button"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeIngredients::${INDEX}::NoteButton"
@@ -18,8 +22,26 @@ appId: "com.recipedia"
 
 - eraseText
 
-- hideKeyboard:
-    label: "Hide the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "RecipeIngredients::NoteDialog::SaveButton"

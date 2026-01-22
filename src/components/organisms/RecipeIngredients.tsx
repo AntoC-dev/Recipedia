@@ -144,7 +144,7 @@ function PrefixTextWrapper({
   children: React.ReactNode;
 }) {
   return (
-    <View style={recipeTableStyles.container}>
+    <View style={recipeTableStyles.container} accessible={false}>
       <Text
         testID={`${testID}::PrefixText`}
         variant='headlineSmall'
@@ -188,25 +188,34 @@ function ReadOnlyIngredients({ testID, ingredients }: ReadOnlyProps) {
   const { colors } = useTheme();
 
   return (
-    <View style={{ paddingHorizontal: 10 }}>
-      <DataTable>
+    <View style={{ paddingHorizontal: 10 }} accessible={false}>
+      <DataTable accessible={false}>
         {ingredients.map((item, index) => (
           <DataTable.Row
             key={index}
             testID={`${testID}::${index}::Row`}
             style={{ borderBottomWidth: 0 }}
+            accessible={false}
           >
             <DataTable.Cell
               testID={`${testID}::${index}::QuantityAndUnit`}
               style={{ flex: recipeTableReadOnlyFlex.quantityAndUnit }}
+              accessible={false}
             >
-              <Text variant='titleMedium'>
+              <Text variant='titleMedium' accessible={true}>
                 {formatQuantityForDisplay(item.quantity ?? '')} {item.unit}
               </Text>
             </DataTable.Cell>
-            <DataTable.Cell style={{ flex: recipeTableReadOnlyFlex.name }}>
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'baseline' }}>
-                <Text testID={`${testID}::${index}::IngredientName`} variant='titleMedium'>
+            <DataTable.Cell style={{ flex: recipeTableReadOnlyFlex.name }} accessible={false}>
+              <View
+                style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'baseline' }}
+                accessible={false}
+              >
+                <Text
+                  testID={`${testID}::${index}::IngredientName`}
+                  accessible={true}
+                  variant='titleMedium'
+                >
                   {item.name}
                 </Text>
                 {item.note && (
@@ -296,8 +305,8 @@ function EditableIngredients(props: EditableIngredientsProps) {
 
   return (
     <PrefixTextWrapper testID={testID} prefixText={prefixText}>
-      <DataTable style={recipeTableStyles.table}>
-        <DataTable.Header style={{ borderBottomWidth: 0 }}>
+      <DataTable style={recipeTableStyles.table} accessible={false}>
+        <DataTable.Header style={{ borderBottomWidth: 0 }} accessible={false}>
           <DataTable.Title
             testID={headerTestId + '::Quantity'}
             style={[
@@ -339,12 +348,14 @@ function EditableIngredients(props: EditableIngredientsProps) {
               key={index}
               testID={`${testID}::${index}::Row`}
               style={{ borderBottomWidth: 0 }}
+              accessible={false}
             >
               <DataTable.Cell
                 style={[
                   recipeTableStyles.cellBase,
                   { flex: recipeTableFlex.quantity, borderColor: colors.outline },
                 ]}
+                accessible={false}
               >
                 <NumericTextInput
                   testID={`${testID}::${index}::QuantityInput`}
@@ -372,6 +383,7 @@ function EditableIngredients(props: EditableIngredientsProps) {
                     alignItems: 'stretch',
                   },
                 ]}
+                accessible={false}
               >
                 <Text
                   testID={`${testID}::${index}::Unit`}
@@ -394,6 +406,7 @@ function EditableIngredients(props: EditableIngredientsProps) {
                   { flex: recipeTableFlex.name, borderColor: colors.outline },
                   recipeTableStyles.rightBorder,
                 ]}
+                accessible={false}
               >
                 <TextInputWithDropDown
                   testID={`${testID}::${index}::NameInput`}

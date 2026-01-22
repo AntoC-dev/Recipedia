@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       text: "Spice"
@@ -8,13 +11,29 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Spice accordion"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Spice accordion is displayed"
 
-- assertVisible:
-    text: "Spice"
-    label: "Spice accordion title is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Spice"
+          label: "Spice accordion title on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Spice 󰅀"
+          label: "Spice accordion title with chevron on iOS"
 
 # Expand the accordion
 - tapOn:
@@ -61,6 +80,8 @@ appId: "com.recipedia"
     file: "spice-items/curryPowder-hidden.yaml"
 
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -68,6 +89,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll back up to accordion header"
+
+- waitForAnimationToEnd
 
 # Collapse the accordion back
 - tapOn:

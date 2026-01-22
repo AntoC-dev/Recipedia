@@ -6,8 +6,26 @@ appId: "com.recipedia"
 
 - inputText: ${RECIPE_URL}
 
-- hideKeyboard:
-    label: "Close keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "VerticalBottomButtons::UrlDialog::SubmitButton"
@@ -37,8 +55,26 @@ appId: "com.recipedia"
 
 - inputText: ${QUITOQUE_PASSWORD}
 
-- hideKeyboard:
-    label: "Close keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - assertVisible:
     id: "VerticalBottomButtons::AuthDialog::PasswordInput"

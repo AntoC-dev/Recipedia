@@ -8,13 +8,18 @@ appId: "com.recipedia"
     id: "IngredientsSettings::ItemDialog::AddModal::CancelButton"
     label: "Cancel adding ingredient without entering name"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "IngredientsSettings::0::EditButton"
     direction: UP
-    speed: 95
+    speed: 85
+    timeout: 30000
     centerElement: true
     label: "Scroll up to top of Ingredients Settings screen"
+
+- waitForAnimationToEnd
 
 - runFlow:
     file: "../../../asserts/parameters/ingredients/en/assertIngredientsSettingsScreen.yaml"

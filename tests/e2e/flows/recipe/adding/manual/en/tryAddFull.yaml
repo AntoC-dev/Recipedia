@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::AddButton::RoundButton"
@@ -8,9 +11,13 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to preparation add button"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipePreparation::AddButton::RoundButton"
     label: "Press new preparation step button"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -20,6 +27,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to preparation step"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
     label: "Press preparation step title"
@@ -28,8 +37,11 @@ appId: "com.recipedia"
     text: "Step title"
     label: "Write the preparation step title in the input text"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- tapOn:
+    id: "RecipePreparation::EditableStep::0::Title"
+    label: "Tap on preparation title to close the keyboard"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -39,6 +51,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to preparation content"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
     label: "Press preparation step paragraph"
@@ -47,5 +61,6 @@ appId: "com.recipedia"
     text: "Step paragraph"
     label: "Write the preparation step paragraph in the input text"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- tapOn:
+    id: "RecipePreparation::EditableStep::0::Content"
+    label: "Tap on preparation content to close the keyboard"

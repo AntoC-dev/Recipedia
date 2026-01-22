@@ -3,8 +3,9 @@ appId: "com.recipedia"
 - runFlow:
     file: "../../fab/expand.yaml"
     label: "Expand the FAB buttons"
+# FAB ID uses regex pattern because React Native Paper adds suffix on iOS
 - tapOn:
-    id: "RecipeEdit"
+    id: "RecipeEdit.*"
     label: "Go to adding manually a recipe screen"
 - tapOn:
     id: "Recipe::BottomActionButton"

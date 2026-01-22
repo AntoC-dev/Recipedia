@@ -30,13 +30,17 @@ tags:
       RECIPE_NAME: quitoqueV3
     label: "Action - Add recipe from camera using OCR"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
-      id: "RecipeImage"
+      id: "RecipeImage::RoundButton"
     direction: UP
-    speed: 95
-    centerElement: true
+    speed: 85
+    timeout: 120000
     label: "Action - Scroll back to top"
+
+- waitForAnimationToEnd
 
 - runFlow:
     file: "../../asserts/recipe/ocr/curryPoisChiche.yaml"
@@ -64,7 +68,15 @@ tags:
     text: "CURRY"
     label: "Verification - Search for new recipe"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -73,6 +85,8 @@ tags:
     speed: 40
     centerElement: true
     label: "Scroll to recipe card"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::RecipeCards::0::.*"

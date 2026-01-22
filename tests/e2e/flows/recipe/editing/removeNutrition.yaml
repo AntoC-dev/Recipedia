@@ -1,12 +1,18 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::EditForm::RemoveButton"
     direction: DOWN
-    speed: 95
+    speed: 85
     centerElement: true
+    timeout: 120000
     label: "Scroll to remove nutrition button"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::EditForm::RemoveButton"

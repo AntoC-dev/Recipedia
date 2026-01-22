@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::SearchBar"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     speed: 90
     centerElement: true
     label: "Scroll up to search bar"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "BottomTabs::Search"

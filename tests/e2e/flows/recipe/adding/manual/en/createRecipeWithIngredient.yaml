@@ -4,8 +4,9 @@ appId: "com.recipedia"
     file: "../../../../fab/expand.yaml"
     label: "Expand FAB menu"
 
+# FAB ID uses regex pattern because React Native Paper adds suffix on iOS
 - tapOn:
-    id: "RecipeEdit"
+    id: "RecipeEdit.*"
     label: "Tap manual recipe add button"
 
 - runFlow:
@@ -20,11 +21,17 @@ appId: "com.recipedia"
     text: "E2E Test Recipe"
     label: "Enter recipe title"
 
-- hideKeyboard:
-    label: "Dismiss keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- tapOn:
+    id: "RecipeImage::Image"
+    label: "Tap on the image to close the keyboard"
 
 - waitForAnimationToEnd:
     label: "Wait for screen to settle after keyboard dismissal"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -34,9 +41,23 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to ingredients section"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeIngredients::AddButton::RoundButton"
     label: "Add an ingredient"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::AddButton::RoundButton"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to round button again to center ingredient row"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeIngredients::0::QuantityInput"
@@ -46,8 +67,13 @@ appId: "com.recipedia"
     text: "100"
     label: "Enter ingredient quantity"
 
-- hideKeyboard:
-    label: "Hide the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "RecipeIngredients::0::NameInput::CustomTextInput"
@@ -57,8 +83,12 @@ appId: "com.recipedia"
     text: "RecipeIng"
     label: "Enter the newly created ingredient name"
 
-- hideKeyboard:
-    label: "Hide the keyboard"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
 
 - assertVisible:
     id: "RecipeIngredients::0::NameInput::AutocompleteItem::RecipeIngredient"
@@ -72,6 +102,8 @@ appId: "com.recipedia"
     id: "RecipeIngredients::0::NameInput::AutocompleteItem::RecipeIngredient"
     label: "Select the new ingredient"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTime::NumericTextInput"
@@ -79,6 +111,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to recipe time secrion"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeTime::NumericTextInput"
@@ -88,8 +122,15 @@ appId: "com.recipedia"
     text: "10"
     label: "Enter cooking time"
 
-- hideKeyboard:
-    label: "Dismiss keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -99,9 +140,13 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to preparation section"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipePreparation::AddButton::RoundButton"
     label: "Add preparation step"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -111,6 +156,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to preparation content input"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
     label: "Focus on preparation content"
@@ -119,16 +166,9 @@ appId: "com.recipedia"
     text: "Test preparation step"
     label: "Enter preparation instructions"
 
-- hideKeyboard:
-    label: "Dismiss keyboard"
-
-- scrollUntilVisible:
-    element:
-      id: "Recipe::BottomActionButton"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to validate button"
+- tapOn:
+    id: "RecipePreparation::EditableStep::0::Content"
+    label: "Tap on content text to hide keyboard"
 
 - tapOn:
     id: "Recipe::BottomActionButton"

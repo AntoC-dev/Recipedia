@@ -4,6 +4,8 @@ appId: "com.recipedia"
     id: "BottomTabs::Search"
     label: "Navigate to Search screen"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::0::Cover"
@@ -11,6 +13,8 @@ appId: "com.recipedia"
     speed: 50
     centerElement: true
     label: "Scroll to recipe card"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::RecipeCards::0::Cover"

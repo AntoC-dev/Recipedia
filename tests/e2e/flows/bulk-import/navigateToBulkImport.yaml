@@ -4,6 +4,8 @@ appId: "com.recipedia"
     id: "BottomTabs::Parameters"
     label: "Navigate to Parameters screen"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Parameters::Section::Import::FromWebsite::Item"
@@ -11,6 +13,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Bulk Import section"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "Parameters::Section::Import::FromWebsite::Item"

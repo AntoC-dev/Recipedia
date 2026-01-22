@@ -4,14 +4,36 @@ appId: "com.recipedia"
     file: "../../recipe/adding/fr/addRecipeImage.yaml"
     label: "Add recipe image in French"
 
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTitle::CustomTextInput"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Action - Center title text input"
+
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeTitle::CustomTextInput"
     label: "Tap on recipe title text input"
 - inputText:
     text: "Titre"
     label: "Write a title in the input text"
-- hideKeyboard:
-    label: "Close the keyboard"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- tapOn:
+    id: "RecipeTitle::Text"
+    label: "Tap on recipe title text to close the keyboard"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -19,6 +41,8 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 60
     centerElement: true
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeIngredients::AddButton::RoundButton"
@@ -29,8 +53,13 @@ appId: "com.recipedia"
 - inputText:
     text: "200"
     label: "Write an ingredient quantity in the input text"
-- hideKeyboard:
-    label: "Hide the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "RecipeIngredients::0::NameInput::CustomTextInput"
@@ -38,8 +67,15 @@ appId: "com.recipedia"
 - inputText:
     text: "Avocado"
     label: "Write an ingredient name in the input text"
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -49,6 +85,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll until preparation time is visible"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeTime::NumericTextInput"
     label: "Focus on the preparation time text input"
@@ -56,8 +94,15 @@ appId: "com.recipedia"
 - inputText:
     text: "5"
     label: "Write a time in the input text"
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -66,9 +111,13 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipePreparation::AddButton::RoundButton"
     label: "Tap on recipe preparation adding button"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -77,19 +126,35 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
     label: "Tap on recipe preparation title text input"
 - inputText:
     text: "Titre de preparation"
     label: "Write a preparation title in the input text"
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- tapOn:
+    id: "RecipePreparation::EditableStep::0::Content"
+    label: "Tap on recipe preparation content to close the keyboard"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 - tapOn:
     id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
     label: "Tap on recipe preparation content text input"
 - inputText:
     text: "Etape de la preparation"
     label: "Write a preparation content in the input text"
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- tapOn:
+    id: "RecipePreparation::EditableStep::0::Content"
+    label: "Tap on recipe preparation content to close the keyboard"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"

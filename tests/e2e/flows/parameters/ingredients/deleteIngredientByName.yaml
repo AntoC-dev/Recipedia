@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "IngredientsSettings::${INGREDIENT_INDEX}::DeleteButton"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to find ${INGREDIENT_NAME} ingredient"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "IngredientsSettings::${INGREDIENT_INDEX}::DeleteButton"

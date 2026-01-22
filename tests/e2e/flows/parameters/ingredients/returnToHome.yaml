@@ -4,6 +4,8 @@ appId: "com.recipedia"
     id: "IngredientsSettings::AppBar::BackButton"
     label: "Navigate back to Parameters"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Parameters::Section::Appearance::DarkMode::Switch"
@@ -11,6 +13,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll back to top of Parameters screen"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "BottomTabs::Home"

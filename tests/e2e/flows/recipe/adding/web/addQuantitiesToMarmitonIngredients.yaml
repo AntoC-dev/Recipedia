@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::0::QuantityInput"
@@ -8,13 +11,21 @@ appId: "com.recipedia"
     speed: 60
     label: "Scroll to ingredients section"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeIngredients::0::QuantityInput"
     label: "Tap on Oignon quantity"
 
 - inputText: "1"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "RecipeIngredients::1::QuantityInput"
@@ -22,7 +33,13 @@ appId: "com.recipedia"
 
 - inputText: "100"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "RecipeIngredients::2::QuantityInput"
@@ -30,7 +47,13 @@ appId: "com.recipedia"
 
 - inputText: "4"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "RecipeIngredients::3::QuantityInput"
@@ -38,7 +61,15 @@ appId: "com.recipedia"
 
 - inputText: "400"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -48,13 +79,23 @@ appId: "com.recipedia"
     speed: 40
     label: "Scroll to more ingredients"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeIngredients::4::QuantityInput"
     label: "Tap on Tomate quantity"
 
 - inputText: "1"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -64,13 +105,23 @@ appId: "com.recipedia"
     speed: 40
     label: "Scroll to more ingredients"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeIngredients::5::QuantityInput"
     label: "Tap on Salade quantity"
 
 - inputText: "50"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -80,13 +131,23 @@ appId: "com.recipedia"
     speed: 40
     label: "Scroll to more ingredients"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeIngredients::6::QuantityInput"
     label: "Tap on Moutarde quantity"
 
 - inputText: "30"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -96,18 +157,31 @@ appId: "com.recipedia"
     speed: 40
     label: "Scroll to more ingredients"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeIngredients::7::QuantityInput"
     label: "Tap on Ketchup quantity"
 
 - inputText: "30"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
       id: "RecipeImage"
     direction: UP
-    centerElement: true
-    speed: 95
+    speed: 85
+    timeout: 120000
     label: "Scroll back to top"
+
+- waitForAnimationToEnd
+

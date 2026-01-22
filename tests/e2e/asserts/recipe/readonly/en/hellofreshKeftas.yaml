@@ -9,6 +9,8 @@ appId: "com.recipedia"
     text: "Keftas de bœuf & semoule aux épices avec de la menthe & une sauce yaourt"
     label: "Title text is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeDescription::Text"
@@ -17,10 +19,14 @@ appId: "com.recipedia"
     speed: 40
     label: "Scroll to description section"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipeDescription::Text"
     text: "Le yaourt à la grecque que vous trouvez dans votre box est un produit 100% origine France, bien que son nom laisse penser le contraire. Produit par la Laiterie du Forez, cette entreprise familiale allie tradition et innovation pour vous offrir un yaourt onctueux et de qualité. Parfait pour sublimer cette recette de kefta de bœuf."
     label: "Description of the recipe is the exact text"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -29,6 +35,8 @@ appId: "com.recipedia"
     centerElement: true
     speed: 40
     label: "Scroll to tags section"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeTags::0::Chip"
@@ -45,6 +53,8 @@ appId: "com.recipedia"
     text: "Calorie Smart"
     label: "Third tag 'Calorie Smart' is rendered"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePersons::Text"
@@ -52,6 +62,8 @@ appId: "com.recipedia"
     centerElement: true
     speed: 60
     label: "Scroll to ingredients section"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     text: "Ingredients (4 persons)"
@@ -148,6 +160,8 @@ appId: "com.recipedia"
       INGREDIENT_QUANTITY_AND_UNIT: "400 g"
     label: "Assert Bouillon de bœuf ingredient"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTime::Text"
@@ -156,10 +170,14 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to preparation section"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipeTime::Text"
     text: "Preparation (40 min)"
     label: "Preparation section and time are displayed"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -169,10 +187,14 @@ appId: "com.recipedia"
     speed: 60
     label: "Scroll to first preparation section"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
     text: "1) "
     label: "First preparation title is displayed (empty title)"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -182,10 +204,14 @@ appId: "com.recipedia"
     speed: 60
     label: "Scroll to first preparation paragraph"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::0::SectionParagraph"
     text: "Veillez à bien respecter les quantités indiquées à gauche pour préparer votre recette ! Épluchez et coupez la carotte en fines demi-lunes de 5 mm (plus la découpe sera fine, plus elle cuira vite). Ciselez l'oignon finement. Faites chauffer un petit filet d'huile d'olive dans une grande sauteuse à feu moyen. Faites-y revenir la carotte et les ⅔ de l'oignon (gardez le reste pour les keftas) 10-15 min avec un filet d'eau à couvert, ou jusqu'à ce que les carottes commencent à devenir fondantes."
     label: "First preparation paragraph is displayed"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -195,10 +221,14 @@ appId: "com.recipedia"
     speed: 60
     label: "Scroll to second preparation section"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
     text: "2) "
     label: "Second preparation title is displayed (empty title)"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -208,10 +238,14 @@ appId: "com.recipedia"
     speed: 60
     label: "Scroll to second preparation paragraph"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::1::SectionParagraph"
     text: "Pendant ce temps, ciselez l'ail. Effeuillez et ciselez la menthe. Lavez bien le citron et prélevez-en le zeste avec une râpe fine, puis coupez-le en quartiers. Dans un saladier, mélangez le bœuf avec le reste d'oignon, la moitié de l'ail, ⅓ de la menthe, ½ cc d'épices du Moyen-Orient par personne (ça pique ! Dosez-les selon votre goût), une pincée de zestes de citron (selon votre goût), du sel et du poivre. Versez un petit filet de lait. Avec vos mains, formez 3 petites boulettes allongées et légèrement aplaties par personne."
     label: "Second preparation paragraph is displayed"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -221,10 +255,14 @@ appId: "com.recipedia"
     speed: 60
     label: "Scroll to third preparation section"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"
     text: "3) "
     label: "Third preparation title is displayed (empty title)"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -234,10 +272,14 @@ appId: "com.recipedia"
     speed: 60
     label: "Scroll to third preparation paragraph"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::2::SectionParagraph"
     text: "Faites chauffer un petit filet d'huile d'olive dans une poêle à feu moyen-vif. Faites-y revenir les keftas 4-5 min de chaque côté, ou jusqu'à ce qu'elles soient cuites (conservez les sucs de cuisson)."
     label: "Third preparation paragraph is displayed"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -247,10 +289,14 @@ appId: "com.recipedia"
     speed: 60
     label: "Scroll to fourth preparation section"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::3::SectionTitle"
     text: "4) "
     label: "Fourth preparation title is displayed (empty title)"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -260,10 +306,14 @@ appId: "com.recipedia"
     speed: 60
     label: "Scroll to fourth preparation paragraph"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::3::SectionParagraph"
     text: "Préparez le bouillon dans une casserole à couvert (portez-le à ébullition). Au bout de 10-15 min de cuisson de la carotte et de l'oignon, ajoutez aux légumes le reste de l'ail, 1 cc d'épices du Moyen-Orient par personne et ⅓ de la menthe. Après avoir lavé les épinards, déchirez-les grossièrement avec vos mains par-dessus. Versez 1-2 cs d'eau par personne. Baissez le feu sur doux, couvrez et faites cuire 8-10 min, ou jusqu'à ce que les légumes soient fondants. Salez et poivrez."
     label: "Fourth preparation paragraph is displayed"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -273,10 +323,14 @@ appId: "com.recipedia"
     speed: 60
     label: "Scroll to fifth preparation section"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::4::SectionTitle"
     text: "5) "
     label: "Fifth preparation title is displayed (empty title)"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -286,10 +340,14 @@ appId: "com.recipedia"
     speed: 60
     label: "Scroll to fifth preparation paragraph"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::4::SectionParagraph"
     text: "Retirez le bouillon du feu et ajoutez-y la semoule. Mélangez. Couvrez et laissez reposer jusqu'à ce qu'elle gonfle et que toute l'eau ait été absorbée. Égrainez la semoule avec une fourchette, et assaisonnez-la avec le jus de cuisson des keftas, quelques gouttes de jus de citron (selon votre goût), le reste de la menthe, du sel et du poivre. Dans un petit bol, mélangez le yaourt avec quelques gouttes de jus de citron et une pincée de zestes (selon votre goût), du sel, du poivre, un filet d’huile d’olive (si vous ne comptez pas les calories) et un petit filet d'eau."
     label: "Fifth preparation paragraph is displayed"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -299,10 +357,14 @@ appId: "com.recipedia"
     speed: 60
     label: "Scroll to sixth preparation section"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::5::SectionTitle"
     text: "6) "
     label: "Sixth preparation title is displayed (empty title)"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -311,6 +373,8 @@ appId: "com.recipedia"
     centerElement: true
     speed: 60
     label: "Scroll to sixth preparation paragraph"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::5::SectionParagraph"

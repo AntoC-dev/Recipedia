@@ -4,6 +4,8 @@ appId: "com.recipedia"
     text: "Parameters"
     label: "Navigate to Parameters screen"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Parameters::Section::Data::Tags::Item"
@@ -12,9 +14,13 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to find Tags option"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "Parameters::Section::Data::Tags::Item"
     label: "Navigate to Tags Settings screen"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -23,6 +29,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Italian Cuisine tag"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "TagsSettings::6::EditButton"
@@ -35,13 +43,39 @@ appId: "com.recipedia"
 - eraseText:
     label: "Clear existing tag name"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - inputText:
     text: "Italian"
     label: "Change tag name back to 'Italian'"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
 - tapOn:
     id: "TagsSettings::ItemDialog::EditModal::ConfirmButton"
     label: "Save the restored tag"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -50,6 +84,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Italian tag"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "TagsSettings::6::TagName"

@@ -1,11 +1,16 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::OpenModal::RoundButton"
     direction: DOWN
     speed: 90
     centerElement: true
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipePreparation::OpenModal::RoundButton"
@@ -17,14 +22,23 @@ appId: "com.recipedia"
       FIELD_NAME: preparation
     when:
       platform: Android
-# TODO iOS
+- runFlow:
+    file: ../iOS/addMedia.yaml
+    env:
+      FIELD_NAME: preparation
+    when:
+      platform: iOS
 
 - runFlow:
     file: ../android/selectMostRecentFromModal.yaml
     label: "Select preparation from modal for OCR"
     when:
       platform: Android
-# TODO iOS
+- runFlow:
+    file: ../iOS/selectMostRecentFromModal.yaml
+    label: "Select preparation from modal for OCR"
+    when:
+      platform: iOS
 
 - extendedWaitUntil:
     visible:

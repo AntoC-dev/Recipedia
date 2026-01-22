@@ -32,12 +32,16 @@ appId: "com.recipedia"
     index: 2
     label: "OCR button for the description has the correct icon"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTags::OpenModal::RoundButton"
     direction: DOWN
     speed: 60
     centerElement: true
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeTags::HeaderText"
@@ -80,12 +84,16 @@ appId: "com.recipedia"
     text: " persons"
     label: "Outro text for the number of persons is rendered"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::OpenModal::RoundButton"
     direction: DOWN
     speed: 60
     centerElement: true
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::PrefixText"
@@ -100,12 +108,16 @@ appId: "com.recipedia"
     id: "RecipeIngredients::AddButton::RoundButton"
     label: "OCR button for manually adding the ingredients is rendered"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTime::OpenModal::RoundButton"
     direction: DOWN
     speed: 60
     centerElement: true
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeTime::PrefixText"
@@ -116,12 +128,16 @@ appId: "com.recipedia"
     id: "RecipeTime::OpenModal::RoundButton"
     label: "OCR button for the time is rendered"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::OpenModal::RoundButton"
     direction: DOWN
     speed: 60
     centerElement: true
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePreparation::PrefixText"
@@ -136,10 +152,16 @@ appId: "com.recipedia"
     file: "../common/nutritionEmptyOCR.yaml"
     label: "Verify nutrition section is empty with OCR scan button"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeImage"
     direction: UP
     speed: 80
+    timeout: 120000
     centerElement: true
     label: "Scroll back to top"
+
+- waitForAnimationToEnd
+

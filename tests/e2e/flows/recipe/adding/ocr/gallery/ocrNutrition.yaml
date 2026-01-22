@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionEmptyState::OCRButton::RoundButton"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     speed: 90
     centerElement: true
     label: "Scroll to nutrition section"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionEmptyState::OCRButton::RoundButton"
@@ -18,20 +23,31 @@ appId: "com.recipedia"
       FIELD_NAME: nutrition
     when:
       platform: Android
-# TODO iOS
+- runFlow:
+    file: ../iOS/addMedia.yaml
+    env:
+      FIELD_NAME: nutrition
+    when:
+      platform: iOS
 
 - runFlow:
     file: ../android/selectMostRecentFromModal.yaml
     label: "Select nutrition from modal for OCR"
     when:
       platform: Android
-# TODO iOS
+- runFlow:
+    file: ../iOS/selectMostRecentFromModal.yaml
+    label: "Select nutrition from modal for OCR"
+    when:
+      platform: iOS
 
 - extendedWaitUntil:
     visible:
       id: "Recipe::RecipeNutrition::NutritionTable"
     timeout: 10000
     label: "Wait for nutrition values to be populated by OCR"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -41,6 +57,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to weight of a portion"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightNumericTextInput"
     label: "Tap on weight input"
@@ -49,5 +67,10 @@ appId: "com.recipedia"
     text: "200"
     label: "Enter the weight of a portion"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"

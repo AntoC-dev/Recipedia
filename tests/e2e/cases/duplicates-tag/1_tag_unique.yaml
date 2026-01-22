@@ -11,8 +11,9 @@ tags:
     file: "../../flows/fab/expand.yaml"
     label: "Action - Expand FAB menu"
 
+# FAB ID uses regex pattern because React Native Paper adds suffix on iOS
 - tapOn:
-    id: "RecipeEdit"
+    id: "RecipeEdit.*"
     label: "Action - Open manual recipe creation"
 
 - runFlow:
@@ -43,6 +44,8 @@ tags:
       EDIT_SUFFIX: "Edited"
     label: "Action - Confirm and edit tag to BreakfastSpecialEdited"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTags::0::Chip"
@@ -50,6 +53,8 @@ tags:
     speed: 60
     centerElement: true
     label: "Scroll to recipe tags"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeTags::0::Chip"

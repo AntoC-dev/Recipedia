@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       text: "Vegetable"
@@ -8,13 +11,29 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Vegetable accordion"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Vegetable accordion is displayed"
 
-- assertVisible:
-    text: "Vegetable"
-    label: "Vegetable accordion title is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Vegetable"
+          label: "Vegetable accordion title on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Vegetable 󰅀"
+          label: "Vegetable accordion title with chevron on iOS"
 
 # Expand the accordion
 - tapOn:
@@ -109,6 +128,8 @@ appId: "com.recipedia"
     file: "vegetable-items/tomatoes-hidden.yaml"
 
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -116,6 +137,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll back up to accordion header"
+
+- waitForAnimationToEnd
 
 # Collapse the accordion back
 - tapOn:

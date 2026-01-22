@@ -147,6 +147,7 @@ function ReadOnlyPreparation({ steps }: ReadOnlyProps) {
             testID={testId + `::${index}::SectionTitle`}
             variant='titleLarge'
             style={recipeTextRenderStyles.headlineElement}
+            accessible={true}
           >
             {index + 1}) {item.title}
           </Text>
@@ -154,6 +155,7 @@ function ReadOnlyPreparation({ steps }: ReadOnlyProps) {
             testID={testId + `::${index}::SectionParagraph`}
             variant='titleMedium'
             style={recipeTextRenderStyles.containerElement}
+            accessible={true}
           >
             {item.description}
           </Text>

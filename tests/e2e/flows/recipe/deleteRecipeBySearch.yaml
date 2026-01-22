@@ -12,7 +12,15 @@ appId: "com.recipedia"
     text: "${SEARCH_TEXT}"
     label: "Enter search text to find recipe"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: "ENTER"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -21,6 +29,8 @@ appId: "com.recipedia"
     speed: 50
     centerElement: true
     label: "Scroll to recipe card"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::RecipeCards::0::Cover"

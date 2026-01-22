@@ -1,24 +1,45 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
-      text: "Meat"
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     direction: DOWN
     speed: 60
     centerElement: true
     label: "Scroll to meat accordion"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Meat accordion is displayed"
 
-- assertVisible:
-    text: "Meat"
-    label: "Meat accordion title is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Meat"
+          label: "Meat accordion title on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Meat 󰅀"
+          label: "Meat accordion title with chevron on iOS"
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Expand Meat accordion"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -28,9 +49,13 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Beef filter"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
     label: "Beef filter is visible"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -39,6 +64,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll back up to accordion header"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"

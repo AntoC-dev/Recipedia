@@ -9,12 +9,16 @@ appId: "com.recipedia"
     text: "Description:"
     label: "Intro text for the recipe description is displayed in French"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTags::ElementText"
     direction: DOWN
     speed: 60
     centerElement: true
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeTags::HeaderText"
@@ -25,6 +29,8 @@ appId: "com.recipedia"
     text: "Les étiquettes représentent une façon d'identifier une recette afin d'en faciliter la recherche.\nVoici certains exemples d'étiquettes que vous pouvez utiliser : .*, .*, .*"
     label: "Explanation text for the recipe tags is displayed in French"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePersons::NumericTextInput"
@@ -32,6 +38,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to persons part"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePersons::PrefixText"
@@ -42,6 +50,8 @@ appId: "com.recipedia"
     text: " personnes"
     label: "Outro text for the recipe persons is displayed in French"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::PrefixText"
@@ -49,10 +59,14 @@ appId: "com.recipedia"
     speed: 70
     centerElement: true
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipeIngredients::PrefixText"
     text: "Ingrédients : "
     label: "Intro text for the recipe ingredients is displayed in French"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -61,6 +75,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to time part"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeTime::PrefixText"
@@ -71,6 +87,8 @@ appId: "com.recipedia"
     text: "min"
     label: "Outro text for the recipe time is displayed in French"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::PrefixText"
@@ -79,10 +97,14 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to preparation part"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::PrefixText"
     text: "Préparation : "
     label: "Preparation prefix text is rendered"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -92,10 +114,14 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to first preparation step"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::EditableStep::0::Step"
     text: "Étape 1"
     label: "Recipe preparation section is displayed in French"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -105,10 +131,14 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to preparation title part"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::EditableStep::0::Title"
     text: "Titre de l'étape 1 : "
     label: "Intro text for the recipe title of the first step is displayed in French"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -117,6 +147,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to preparation content part"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::0::Content"

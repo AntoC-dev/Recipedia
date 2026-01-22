@@ -19,16 +19,24 @@ tags:
     id: "SearchScreen::FilterAccordion::Accordion::3"
     label: "Action - Expand Cereal accordion"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
-      text: "Spaghetti"
+      text: ".*Spaghetti"
     direction: DOWN
     centerElement: true
     label: "Action - Scroll to Spaghetti item"
 
+- waitForAnimationToEnd
+
 - tapOn:
-    text: "Spaghetti"
+    text: ".*Spaghetti"
     label: "Action - Select Spaghetti as filter"
+
+- runFlow:
+    file: "../../flows/search/scrollBackToTop.yaml"
+    label: "Scroll back to top of search screen"
 
 - runFlow:
     file: "../../asserts/search/en/filters/filtersViewFilteredOnSpaghetti.yaml"

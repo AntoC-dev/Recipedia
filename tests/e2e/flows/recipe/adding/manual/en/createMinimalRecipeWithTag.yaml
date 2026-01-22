@@ -4,8 +4,9 @@ appId: "com.recipedia"
     file: "../../../../fab/expand.yaml"
     label: "Expand FAB menu"
 
+# FAB ID uses regex pattern because React Native Paper adds suffix on iOS
 - tapOn:
-    id: "RecipeEdit"
+    id: "RecipeEdit.*"
     label: "Tap manual recipe add button"
 
 - runFlow:
@@ -23,6 +24,8 @@ appId: "com.recipedia"
 - hideKeyboard:
     label: "Dismiss keyboard"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTags::RoundButton"
@@ -31,17 +34,23 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to find add tag button"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeTags::RoundButton"
     label: "Tap to add tag to recipe"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
-      id: "RecipeTags::List::0::CustomTextInput"
+      id: "RecipeTags::RoundButton"
     direction: DOWN
-    speed: 60
+    speed: 40
     centerElement: true
-    label: "Scroll to tag input"
+    label: "Scroll to tag button again to ensure dropdown will be visible"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeTags::List::0::CustomTextInput"
@@ -51,8 +60,8 @@ appId: "com.recipedia"
     text: "RecipeT"
     label: "Enter the newly created tag name"
 
-- hideKeyboard:
-    label: "Hide the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
 
 - assertVisible:
     id: "RecipeTags::List::0::AutocompleteItem::RecipeTag"
@@ -66,6 +75,8 @@ appId: "com.recipedia"
     id: "RecipeTags::List::0::AutocompleteItem::RecipeTag"
     label: "Select the new tag"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::AddButton::RoundButton"
@@ -73,6 +84,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to ingredients section"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeIngredients::AddButton::RoundButton"
@@ -86,8 +99,13 @@ appId: "com.recipedia"
     text: "100"
     label: "Enter ingredient quantity"
 
-- hideKeyboard:
-    label: "Dismiss keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "RecipeIngredients::0::NameInput::CustomTextInput"
@@ -97,8 +115,15 @@ appId: "com.recipedia"
     text: "Tomatoes"
     label: "Enter ingredient name"
 
-- hideKeyboard:
-    label: "Dismiss keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -108,6 +133,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to time part"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeTime::NumericTextInput"
     label: "Focus on time input"
@@ -116,8 +143,15 @@ appId: "com.recipedia"
     text: "10"
     label: "Enter cooking time"
 
-- hideKeyboard:
-    label: "Dismiss keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -127,9 +161,13 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to preparation section"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipePreparation::AddButton::RoundButton"
     label: "Add preparation step"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -139,6 +177,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to preparation content input"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
     label: "Focus on preparation content"
@@ -147,19 +187,22 @@ appId: "com.recipedia"
     text: "Test preparation step"
     label: "Enter preparation instructions"
 
-- hideKeyboard:
-    label: "Dismiss keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
 
-- scrollUntilVisible:
-    element:
-      id: "Recipe::BottomActionButton"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to validate button"
+- tapOn:
+    id: "RecipePreparation::EditableStep::0::Content"
+    label: "Tap on preparation content to dismiss keyboard"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "Recipe::BottomActionButton"
+
+- assertVisible:
+    id: "Recipe::Dialog::Confirm"
+    label: "Confirm recipe creation dialog is visible"
 
 - tapOn:
     id: "Recipe::Dialog::Confirm"

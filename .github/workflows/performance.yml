@@ -128,11 +128,10 @@ jobs:
       - name: Install Flashlight CLI
         run: curl https://get.flashlight.dev | bash
 
-      - name: Install Maestro CLI
-        run: bash .github/scripts/install-maestro.sh 2.0.10
-
-      - name: Add Maestro to PATH
-        run: echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+      - name: Setup Maestro CLI
+        uses: dniHze/maestro-test-action@v1
+        with:
+          version: '2.0.10'
 
       - name: Enable KVM
         run: |

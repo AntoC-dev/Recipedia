@@ -32,12 +32,32 @@ tags:
     text: "TestTag"
     label: "Action - Enter new tag name"
 
-- hideKeyboard:
-    label: "Hide the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "TagsSettings::ItemDialog::AddModal::ConfirmButton"
     label: "Action - Confirm adding new tag"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -46,6 +66,8 @@ tags:
     speed: 60
     centerElement: true
     label: "Action - Scroll to new tag"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "TagsSettings::15::TagName"

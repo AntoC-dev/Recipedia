@@ -19,6 +19,8 @@ tags:
     id: "BottomTabs::Search"
     label: "Action - Navigate to Search screen"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::2::Content"
@@ -26,6 +28,8 @@ tags:
     speed: 60
     centerElement: true
     label: "Action - Scroll to Classic Pancakes recipe"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::RecipeCards::2::.*"

@@ -1,0 +1,12 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    text: "aspectratio.fill"
+    label: "Open aspect ratio menu"
+
+- tapOn:
+    text: "Original"
+    label: "Select original aspect ratio to show full image"
+
+- waitForAnimationToEnd:
+    label: "Wait for animation to end"

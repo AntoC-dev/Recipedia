@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Parameters::Section::Data::SubHeader"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Data Management section"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "Parameters::Section::Data::SubHeader"
@@ -16,36 +21,62 @@ appId: "com.recipedia"
     text: "Gestion des données"
     label: "Data Management section header shows French text"
 
-- assertVisible:
-    text: "󰉛"
-    label: "Ingredient icon is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          text: "󰉛"
+          label: "Ingredient icon is displayed on Android"
+      - assertVisible:
+          id: "Parameters::Section::Data::Ingredients::Item"
+          text: "Ingrédients , Modifier les ingrédients et leur saisonnalité"
+          label: "Ingredients item on Android"
 
-- assertVisible:
-    id: "Parameters::Section::Data::Ingredients::Item"
-    label: "Ingredients item is displayed"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "Parameters::Section::Data::Ingredients::Item"
+          text: "󰉛 Ingrédients  Modifier les ingrédients et leur saisonnalité 󰅂"
+          label: "Ingredients item with icon on iOS"
 
-- assertVisible:
-    text: "Ingrédients , Modifier les ingrédients et leur saisonnalité"
-    label: "Ingredients item shows French text"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          text: "󰅂"
+          index: 1
+          label: "Ingredients has a chevron icon on Android"
 
-- assertVisible:
-    text: "󰅂"
-    index: 1
-    label: "Ingredients has a chevron icon"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          text: "󰓻"
+          label: "Tags icon is displayed on Android"
+      - assertVisible:
+          id: "Parameters::Section::Data::Tags::Item"
+          text: "Étiquettes, Gérer les tags de recettes"
+          label: "Tags item on Android"
 
-- assertVisible:
-    text: "󰓻"
-    label: "Tags icon is displayed"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "Parameters::Section::Data::Tags::Item"
+          text: "󰓻 Étiquettes Gérer les tags de recettes 󰅂"
+          label: "Tags item with icon on iOS"
 
-- assertVisible:
-    id: "Parameters::Section::Data::Tags::Item"
-    label: "Tags item is displayed"
-
-- assertVisible:
-    text: "Étiquettes, Gérer les tags de recettes"
-    label: "Tags item shows French text"
-
-- assertVisible:
-    text: "󰅂"
-    index: 2
-    label: "Tags has a chevron icon"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          text: "󰅂"
+          index: 2
+          label: "Tags has a chevron icon on Android"

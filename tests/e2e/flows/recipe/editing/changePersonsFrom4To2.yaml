@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePersons::NumericTextInput"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to persons field"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipePersons::NumericTextInput"
@@ -19,4 +24,10 @@ appId: "com.recipedia"
     text: "2"
     label: "Enter 2 persons"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: "ENTER"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"

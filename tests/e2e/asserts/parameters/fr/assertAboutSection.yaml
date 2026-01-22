@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Parameters::Section::About::SubHeader"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to About section"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "Parameters::Section::About::SubHeader"
@@ -16,14 +21,23 @@ appId: "com.recipedia"
     text: "À propos"
     label: "About section header shows French text"
 
-- assertVisible:
-    text: "󰋼"
-    label: "Version icon is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          text: "󰋼"
+          label: "Version icon is displayed on Android"
+      - assertVisible:
+          id: "Parameters::Section::About::Version::Item"
+          text: "Version, .*\\d+\\.\\d+\\.\\d+"
+          label: "Version item on Android"
 
-- assertVisible:
-    id: "Parameters::Section::About::Version::Item"
-    label: "Version item is displayed"
-
-- assertVisible:
-    text: "Version, .*\\d+\\.\\d+\\.\\d+"
-    label: "Version number format is displayed correctly"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "Parameters::Section::About::Version::Item"
+          text: "󰋼 Version .*\\d+\\.\\d+\\.\\d+"
+          label: "Version item with icon on iOS"

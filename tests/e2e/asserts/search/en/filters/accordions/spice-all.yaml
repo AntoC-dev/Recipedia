@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -8,14 +11,35 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Spice accordion"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-    text: "Spice"
     label: "Spice accordion is displayed"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Spice"
+          label: "Spice accordion title on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Spice 󰅀"
+          label: "Spice accordion title with chevron on iOS"
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Expand Spice accordion"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -25,9 +49,13 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Basil Leaves filter"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
     label: "Basil Leaves filter is visible"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -37,9 +65,13 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Cocoa Powder filter"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::1"
     label: "Cocoa Powder filter is visible"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -49,9 +81,13 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Curry Powder filter"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::2"
     label: "Curry Powder filter is visible"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -60,6 +96,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll back up to accordion header"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"

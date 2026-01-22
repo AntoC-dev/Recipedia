@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       text: "Oil and Fat"
@@ -8,13 +11,29 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Oil and Fat accordion"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Oil and Fat accordion is displayed"
 
-- assertVisible:
-    text: "Oil and Fat"
-    label: "Oil and Fat accordion title is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Oil and Fat"
+          label: "Oil and Fat accordion title on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Oil and Fat 󰅀"
+          label: "Oil and Fat accordion title with chevron on iOS"
 
 # Expand the accordion
 - tapOn:
@@ -49,6 +68,8 @@ appId: "com.recipedia"
     file: "oilAndFat-items/oliveOil-hidden.yaml"
 
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -56,6 +77,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll back up to accordion header"
+
+- waitForAnimationToEnd
 
 # Collapse the accordion back
 - tapOn:

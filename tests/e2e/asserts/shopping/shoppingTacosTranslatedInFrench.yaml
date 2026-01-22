@@ -1,13 +1,5 @@
 appId: "com.recipedia"
 ---
-- scrollUntilVisible:
-    element:
-      id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to Cereales category"
-
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
     label: "Cereales subheader is displayed"
@@ -16,13 +8,23 @@ appId: "com.recipedia"
     text: "Céréales"
     label: "Cereales subheader shows French text"
 
-- assertVisible:
-    id: "ShoppingScreen::SectionList::Taco Shells"
-    label: "Taco Shells ingredient is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "ShoppingScreen::SectionList::Taco Shells"
+          text: "Taco Shells (12pieces), 1 recette"
+          label: "Taco Shells item on Android"
 
-- assertVisible:
-    text: "Taco Shells (12pieces), 1 recette"
-    label: "Ingredient with quantity and counter shows French text"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "ShoppingScreen::SectionList::Taco Shells"
+          text: "󰄬 Taco Shells (12pieces) 1 recette"
+          label: "Taco Shells item on iOS"
 
 - repeat:
     while:

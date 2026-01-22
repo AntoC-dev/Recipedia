@@ -23,12 +23,36 @@ tags:
     text: "g"
     label: "Action - Enter a unit"
 
-- hideKeyboard:
-    label: "Action - Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::Menu::Button"
     label: "Action - Open type menu"
+
+- extendedWaitUntil:
+    visible:
+      text: "Cereal"
+    timeout: 30000
+    label: "Wait for select menu to appear"
 
 - tapOn:
     text: "Cereal"
@@ -42,8 +66,26 @@ tags:
     text: "TestIngredient"
     label: "Action - Type non-existant text"
 
-- hideKeyboard:
-    label: "Action - Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - assertNotVisible:
     id: "IngredientsSettings::ItemDialog::AddModal::HelperText"
@@ -51,17 +93,39 @@ tags:
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::Name::CustomTextInput"
+    point: "50%,75%"
     label: "Action - Focus on ingredient name input again"
 
 - eraseText:
     label: "Action - Clear input"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - inputText:
     text: "Butte"
     label: "Action - Type fuzzy matching text"
 
-- hideKeyboard:
-    label: "Action - Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - extendedWaitUntil:
     visible:
@@ -90,8 +154,26 @@ tags:
     text: "Butter"
     label: "Action - Type exact duplicate"
 
-- hideKeyboard:
-    label: "Action - Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - extendedWaitUntil:
     visible:

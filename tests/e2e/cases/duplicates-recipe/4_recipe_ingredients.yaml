@@ -41,6 +41,8 @@ tags:
     id: "Recipe::Dialog::Cancel"
     label: "Action - Cancel adding duplicate recipe"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::1::NameInput::CustomTextInput"
@@ -49,9 +51,13 @@ tags:
     centerElement: true
     label: "Action - Scroll up for adding ingredient"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeIngredients::1::NameInput::CustomTextInput"
     label: "Action - Focus on ingredient input"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -61,8 +67,15 @@ tags:
     centerElement: true
     label: "Action - Scroll up for adding ingredient"
 
-- hideKeyboard:
-    label: "Action - Hide keyboard"
+- waitForAnimationToEnd
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - runFlow:
     file: "../../flows/recipe/adding/addIngredientToRecipe.yaml"

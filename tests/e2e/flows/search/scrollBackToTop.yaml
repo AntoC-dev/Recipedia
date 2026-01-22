@@ -1,12 +1,17 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::SearchBar"
     direction: UP
-    speed: 95
-    centerElement: true
+    speed: 85
+    timeout: 60000
     label: "Scroll back to top of Search screen"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::SearchBar"

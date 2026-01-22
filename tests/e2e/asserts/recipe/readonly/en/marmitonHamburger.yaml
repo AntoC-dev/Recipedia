@@ -9,6 +9,8 @@ appId: "com.recipedia"
     text: "Hamburger maison"
     label: "Title text is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeDescription::Text"
@@ -17,10 +19,14 @@ appId: "com.recipedia"
     speed: 40
     label: "Scroll to description section"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipeDescription::Text"
     text: ""
     label: "Description has empty text"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -29,6 +35,8 @@ appId: "com.recipedia"
     centerElement: true
     speed: 40
     label: "Scroll to tags section"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeTags::0::Chip"
@@ -50,6 +58,8 @@ appId: "com.recipedia"
     text: "rapide"
     label: "Fourth tag 'rapide' is rendered"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePersons::Text"
@@ -57,6 +67,8 @@ appId: "com.recipedia"
     centerElement: true
     speed: 60
     label: "Scroll to ingredients section"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     text: "Ingredients (4 persons)"
@@ -119,6 +131,8 @@ appId: "com.recipedia"
       INGREDIENT_NOTE: "achat sous vide en grande surface"
     label: "Assert Cheddar ingredient with note"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTime::Text"
@@ -127,10 +141,14 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to preparation section"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipeTime::Text"
     text: "Preparation (10 min)"
     label: "Preparation section and time are displayed"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -140,10 +158,14 @@ appId: "com.recipedia"
     speed: 60
     label: "Scroll to first preparation section"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
     text: "1) "
     label: "First preparation title is displayed (empty title)"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -153,10 +175,14 @@ appId: "com.recipedia"
     speed: 60
     label: "Scroll to first preparation paragraph"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::0::SectionParagraph"
     text: "Faites revenir les oignons à feux doux."
     label: "First preparation paragraph is displayed"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -166,10 +192,14 @@ appId: "com.recipedia"
     speed: 60
     label: "Scroll to second preparation section"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
     text: "2) "
     label: "Second preparation title is displayed (empty title)"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -179,10 +209,14 @@ appId: "com.recipedia"
     speed: 60
     label: "Scroll to second preparation paragraph"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::1::SectionParagraph"
     text: "Ajouter les steaks."
     label: "Second preparation paragraph is displayed"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -192,10 +226,14 @@ appId: "com.recipedia"
     speed: 60
     label: "Scroll to third preparation section"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"
     text: "3) "
     label: "Third preparation title is displayed (empty title)"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -205,10 +243,14 @@ appId: "com.recipedia"
     speed: 60
     label: "Scroll to third preparation paragraph"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::2::SectionParagraph"
     text: "Une fois saisi, poser une tranche de cheddar sur le steak et laisser fondre."
     label: "Third preparation paragraph is displayed"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -218,10 +260,14 @@ appId: "com.recipedia"
     speed: 60
     label: "Scroll to fourth preparation section"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::3::SectionTitle"
     text: "4) "
     label: "Fourth preparation title is displayed (empty title)"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -231,10 +277,14 @@ appId: "com.recipedia"
     speed: 60
     label: "Scroll to fourth preparation paragraph"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::3::SectionParagraph"
     text: "Une fois cuit, déposer le steak et le fromage sur une des tranches du pain que vous aurez auparavant tartinée d'un mélange de ketchup et de moutarde."
     label: "Fourth preparation paragraph is displayed"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -244,10 +294,14 @@ appId: "com.recipedia"
     speed: 60
     label: "Scroll to fifth preparation section"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::4::SectionTitle"
     text: "5) "
     label: "Fifth preparation title is displayed (empty title)"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -257,10 +311,14 @@ appId: "com.recipedia"
     speed: 60
     label: "Scroll to fifth preparation paragraph"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::4::SectionParagraph"
     text: "Ajouter la salade et de petites rondelles de tomates."
     label: "Fifth preparation paragraph is displayed"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -270,10 +328,14 @@ appId: "com.recipedia"
     speed: 60
     label: "Scroll to sixth preparation section"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::5::SectionTitle"
     text: "6) "
     label: "Sixth preparation title is displayed (empty title)"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -282,6 +344,8 @@ appId: "com.recipedia"
     centerElement: true
     speed: 60
     label: "Scroll to sixth preparation paragraph"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::5::SectionParagraph"

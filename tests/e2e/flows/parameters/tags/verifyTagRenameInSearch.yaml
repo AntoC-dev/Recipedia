@@ -8,6 +8,8 @@ appId: "com.recipedia"
     id: "SearchScreen::FiltersToggleButtons"
     label: "Open filters"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::2"
@@ -16,9 +18,13 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Tags accordion"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::2"
     label: "Expand Tags accordion"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -27,6 +33,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Italian items"
+
+- waitForAnimationToEnd
 
 - assertNotVisible:
     text: "Italian"
@@ -40,17 +48,24 @@ appId: "com.recipedia"
     id: "SearchScreen::FilterAccordion::Accordion::2::Item::6"
     label: "Select the renamed tag filter"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::SearchBar"
     direction: UP
     speed: 60
+    timeout: 120000
     centerElement: true
     label: "Scroll to top of the Search screen"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::FiltersToggleButtons"
     label: "Wrap the filters part"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -60,9 +75,13 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to recipe card"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "SearchScreen::RecipeCards::0::Cover"
     label: "Select first recipe from the list"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -71,6 +90,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to recipe tag"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeTags::0::Chip"

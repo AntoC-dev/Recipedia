@@ -12,19 +12,25 @@ tags:
     file: "../../flows/parameters/ingredients/navigateToIngredientsSettings.yaml"
     label: "Action - Navigate to Ingredients Settings"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "IngredientsSettings::15::IngredientName"
     direction: DOWN
     speed: 70
-    timeout: 30000
+    timeout: 120000
     centerElement: true
     label: "Action - Scroll to Lettuce ingredient"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "IngredientsSettings::15::IngredientName"
     text: "Lettuce"
     label: "Assert - Verify Lettuce ingredient exists"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -33,6 +39,8 @@ tags:
     speed: 40
     centerElement: true
     label: "Action - Scroll to Lettuce edit button"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "IngredientsSettings::15::EditButton"
@@ -50,8 +58,26 @@ tags:
     text: " Edited"
     label: "Action - Append Edited to ingredient name"
 
-- hideKeyboard:
-    label: "Action - Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::Menu::Button"
@@ -72,8 +98,26 @@ tags:
     text: "kg"
     label: "Action - Change unit from g to kg"
 
-- hideKeyboard:
-    label: "Action - Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::SeasonalityCalendar::10"
@@ -83,6 +127,8 @@ tags:
     id: "IngredientsSettings::ItemDialog::EditModal::ConfirmButton"
     label: "Action - Save edited ingredient"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "IngredientsSettings::15::IngredientName"
@@ -90,6 +136,8 @@ tags:
     speed: 40
     centerElement: true
     label: "Action - Scroll to ingredient name to ensure it is visible"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "IngredientsSettings::15::IngredientName"

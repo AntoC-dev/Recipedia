@@ -8,18 +8,32 @@ appId: "com.recipedia"
     file: "../../../../fab/expand.yaml"
     label: "Expand FAB menu"
 
-- tapOn:
-    id: "CameraButton"
-    label: "Open camera for OCR"
+# FAB ID uses regex pattern because React Native Paper adds suffix on iOS
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - tapOn:
+          id: "CameraButton"
+          label: "Open camera for OCR on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - addMedia:
+          - "../../../../../../assets/pouletSatay/image.jpg"
+      - tapOn:
+          id: "GalleryButton-container-outer-layer"
+          label: "Open gallery for OCR on iOS (simulator doesn't support camera)"
 
 - runFlow:
     file: "../android/takePhoto.yaml"
     label: "Take photo (Android)"
     when:
       platform: Android
-# TODO iOS
-#- runFlow:
-#    file: "../iOS/takePhoto.yaml"
-#    label: "Take photo (iOS)"
-#    when:
-#      platform: iOS
+- runFlow:
+    file: "../iOS/selectFromGallery.yaml"
+    label: "Select most recent photo from gallery (iOS)"
+    when:
+      platform: iOS

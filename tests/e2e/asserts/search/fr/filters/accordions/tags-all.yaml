@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -8,10 +11,29 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Tags accordion"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-    text: "Étiquettes"
-    label: "Tags accordion is displayed"
+    label: "Étiquettes accordion is displayed"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Étiquettes"
+          label: "Étiquettes accordion title on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Étiquettes 󰅀"
+          label: "Étiquettes accordion title with chevron on iOS"
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -96,12 +118,17 @@ appId: "com.recipedia"
       ITEM_INDEX: "14"
 
 # Scroll back up to see accordion header
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     direction: UP
     centerElement: true
     label: "Scroll back up to Tags accordion header"
+
+- waitForAnimationToEnd
 
 # Collapse the accordion back
 - tapOn:

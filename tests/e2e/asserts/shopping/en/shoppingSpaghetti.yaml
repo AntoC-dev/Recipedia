@@ -4,6 +4,8 @@ appId: "com.recipedia"
     file: "./assertShoppingScreenUI.yaml"
     label: "Assert shopping screen UI elements"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
@@ -11,6 +13,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Cereal category"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
@@ -27,8 +31,11 @@ appId: "com.recipedia"
       INGREDIENT_NAME_LOWER: "spaghetti"
       QUANTITY: "200"
       UNIT: "g"
+      RECIPE_COUNT: "1 recipe"
       RECIPE_NAMES: "Spaghetti Bolognese"
     label: "Assert and check Spaghetti ingredient"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -37,6 +44,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Sauce category"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.sauce::SubHeader"
@@ -53,8 +62,11 @@ appId: "com.recipedia"
       INGREDIENT_NAME_LOWER: "tomato sauce"
       QUANTITY: "250"
       UNIT: "ml"
+      RECIPE_COUNT: "1 recipe"
       RECIPE_NAMES: "Spaghetti Bolognese"
     label: "Assert and check Tomato Sauce ingredient"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -63,6 +75,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Meat category"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.meat::SubHeader"
@@ -79,8 +93,11 @@ appId: "com.recipedia"
       INGREDIENT_NAME_LOWER: "ground beef"
       QUANTITY: "300"
       UNIT: "g"
+      RECIPE_COUNT: "1 recipe"
       RECIPE_NAMES: "Spaghetti Bolognese"
     label: "Assert and check Ground Beef ingredient"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -89,6 +106,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Cheese category"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.cheese::SubHeader"
@@ -105,6 +124,7 @@ appId: "com.recipedia"
       INGREDIENT_NAME_LOWER: "parmesan"
       QUANTITY: "50"
       UNIT: "g"
+      RECIPE_COUNT: "1 recipe"
       RECIPE_NAMES: "Spaghetti Bolognese"
     label: "Assert and check Parmesan ingredient"
 

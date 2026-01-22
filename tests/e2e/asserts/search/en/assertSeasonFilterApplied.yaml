@@ -4,6 +4,18 @@ appId: "com.recipedia"
     id: "SearchScreen::FiltersSelection::0::Chip"
     label: "Season filter chip is visible"
 
-- assertVisible:
-    text: "Only in-season ingredients"
-    label: "Season filter text is displayed in chip"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          text: "Only in-season ingredients"
+          label: "Season filter text is displayed in chip"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          text: "Only in-season ingredients Close"
+          label: "Season filter text is displayed in chip"

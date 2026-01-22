@@ -1,6 +1,10 @@
 appId: "com.recipedia"
 ---
 - assertVisible:
+    id: "SearchScreen::SearchBar::RightIcon"
+    label: "Assert - Close icon is visible when dropdown open"
+
+- assertVisible:
     id: "SearchScreen::SearchBarResults::Item::0-content"
     label: "First dropdown item is displayed"
 
@@ -64,12 +68,16 @@ appId: "com.recipedia"
     text: "Spaghetti Bolognese"
     label: "Spaghetti Bolognese is displayed in dropdown"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::SearchBarResults::Item::9-content"
     direction: DOWN
     speed: 40
     centerElement: true
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::SearchBarResults::Item::8-content"
@@ -87,10 +95,14 @@ appId: "com.recipedia"
     text: "Vegetable Soup"
     label: "Vegetable Soup is displayed in dropdown"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
-      text: "Caesar Salad"
+      id: "SearchScreen::SearchBar::RightIcon"
     direction: UP
-    speed: 40
-    centerElement: true
+    speed: 60
     label: "Scroll back to top of dropdown"
+
+- waitForAnimationToEnd
+

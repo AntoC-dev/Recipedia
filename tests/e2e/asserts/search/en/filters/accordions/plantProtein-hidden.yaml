@@ -1,6 +1,18 @@
 appId: "com.recipedia"
 ---
 # Assert accordion is NOT displayed
-- assertNotVisible:
-    text: "Plant Protein"
-    label: "Plant Protein accordion is not displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertNotVisible:
+          text: "Plant Protein"
+          label: "Plant Protein accordion not displayed on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertNotVisible:
+          text: "Plant Protein 󰅀"
+          label: "Plant Protein accordion not displayed on iOS"

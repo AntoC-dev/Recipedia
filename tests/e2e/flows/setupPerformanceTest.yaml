@@ -34,16 +34,17 @@ appId: "com.recipedia"
 - extendedWaitUntil:
     visible:
       id: "Home::RecipeRecommendation::random::Carousel::Card::0::Cover"
-    timeout: 10000
+    timeout: 30000
     label: "Wait for Home screen"
 
 - assertVisible:
     id: "Home::RecipeRecommendation::random::Carousel::Card::0::Cover"
     label: "Verify app is ready"
 
+# FAB ID uses regex pattern because React Native Paper adds suffix on iOS
 - extendedWaitUntil:
     visible:
-      id: "ExpandButton"
+      id: "ExpandButton.*"
     timeout: 5000
     label: "Wait for FAB"
 

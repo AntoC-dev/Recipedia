@@ -1,10 +1,27 @@
 appId: "com.recipedia"
 ---
-- assertVisible:
-    id: "LanguageSettings::Item::0"
-    text: "English"
-    label: "English language option is visible"
-- assertVisible:
-    id: "LanguageSettings::Item::1"
-    text: "Français"
-    label: "French language option is visible"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "LanguageSettings::Item::0"
+          text: "English"
+          label: "English language option on Android"
+      - assertVisible:
+          id: "LanguageSettings::Item::1"
+          text: "Français"
+          label: "French language option on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "LanguageSettings::Item::0"
+          text: "󰄬 English"
+          label: "English language option on iOS"
+      - assertVisible:
+          id: "LanguageSettings::Item::1"
+          text: "󰄬 Français"
+          label: "French language option on iOS"

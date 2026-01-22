@@ -58,7 +58,8 @@ tags:
     text: "Title"
     label: "Verification - Search for cancelled recipe"
 
-- pressKey: enter
+- hideKeyboard:
+    label: "Dismiss keyboard"
 
 - assertNotVisible:
     text: "Title, Japanese, Prep. 56789 min, 2 p."

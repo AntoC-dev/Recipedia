@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Parameters::Section::Appearance::SubHeader"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Appearance section"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "Parameters::Section::Appearance::SubHeader"
@@ -16,26 +21,45 @@ appId: "com.recipedia"
     text: "Appearance"
     label: "Appearance section header text is displayed"
 
-- assertVisible:
-    text: "󰔎"
-    label: "Dark mode left icon is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          text: "󰔎"
+          label: "Dark mode left icon is displayed on Android"
+      - assertVisible:
+          id: "Parameters::Section::Appearance::DarkMode::Item"
+          text: "Dark Mode"
+          label: "Dark mode item on Android"
 
-- assertVisible:
-    id: "Parameters::Section::Appearance::DarkMode::Item"
-    label: "Dark mode item is displayed"
-
-- assertVisible:
-    text: "Dark Mode"
-    label: "Dark mode item text is displayed"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "Parameters::Section::Appearance::DarkMode::Item"
+          text: "󰔎 Dark Mode"
+          label: "Dark mode item with icon on iOS"
 
 - assertVisible:
     id: "Parameters::Section::Appearance::DarkMode::Switch"
     label: "Dark mode switch is visible"
 
-- assertVisible:
-    id: "Parameters::Section::Appearance::Language::Item"
-    label: "Language item is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "Parameters::Section::Appearance::Language::Item"
+          text: "Language, English"
+          label: "Language item on Android"
 
-- assertVisible:
-    text: "Language, English"
-    label: "Language item shows English as selected"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "Parameters::Section::Appearance::Language::Item"
+          text: "󰗊 Language English 󰅂"
+          label: "Language item with icon on iOS"

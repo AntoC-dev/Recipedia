@@ -4,6 +4,8 @@ appId: "com.recipedia"
     file: "./assertShoppingScreenUI.yaml"
     label: "Assert shopping screen UI elements"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
@@ -11,6 +13,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Cereal category"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
@@ -27,8 +31,11 @@ appId: "com.recipedia"
       INGREDIENT_NAME_LOWER: "pasta"
       QUANTITY: "400"
       UNIT: "g"
+      RECIPE_COUNT: "1 recipe"
       RECIPE_NAMES: "Test Recipe"
     label: "Assert and check Pasta ingredient"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -37,6 +44,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Vegetable category"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.vegetable::SubHeader"
@@ -53,6 +62,7 @@ appId: "com.recipedia"
       INGREDIENT_NAME_LOWER: "tomatoes"
       QUANTITY: "200"
       UNIT: "g"
+      RECIPE_COUNT: "1 recipe"
       RECIPE_NAMES: "Test Recipe"
     label: "Assert and check Tomatoes ingredient"
 

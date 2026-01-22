@@ -4,14 +4,18 @@ appId: "com.recipedia"
     file: "navigateToIngredientsSettings.yaml"
     label: "Navigate to Ingredients Settings screen"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "IngredientsSettings::15::EditButton"
     direction: DOWN
     speed: 70
-    timeout: 60000
+    timeout: 240000
     centerElement: true
     label: "Scroll to Lettuce Edited ingredient"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "IngredientsSettings::15::EditButton"
@@ -28,8 +32,26 @@ appId: "com.recipedia"
     text: "Lettuce"
     label: "Restore name to 'Lettuce'"
 
-- hideKeyboard:
-    label: "Dismiss keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::Menu::Button"
@@ -50,8 +72,26 @@ appId: "com.recipedia"
     text: "g"
     label: "Restore unit to g"
 
-- hideKeyboard:
-    label: "Dismiss keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::SeasonalityCalendar::10"

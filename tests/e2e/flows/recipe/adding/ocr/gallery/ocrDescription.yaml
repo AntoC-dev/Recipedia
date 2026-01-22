@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeDescription::OpenModal::RoundButton"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to description section"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeDescription::OpenModal::RoundButton"
@@ -18,14 +23,23 @@ appId: "com.recipedia"
       FIELD_NAME: description
     when:
       platform: Android
-# TODO iOS
+- runFlow:
+    file: ../iOS/addMedia.yaml
+    env:
+      FIELD_NAME: description
+    when:
+      platform: iOS
 
 - runFlow:
     file: ../android/selectMostRecentFromModal.yaml
     label: "Select description from modal for OCR"
     when:
       platform: Android
-# TODO iOS
+- runFlow:
+    file: ../iOS/selectMostRecentFromModal.yaml
+    label: "Select description from modal for OCR"
+    when:
+      platform: iOS
 
 - extendedWaitUntil:
     visible:

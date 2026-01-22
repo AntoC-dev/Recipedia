@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       text: "Preparation Time"
@@ -8,13 +11,29 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Preparation Time accordion"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Preparation Time accordion is displayed"
 
-- assertVisible:
-    text: "Preparation Time"
-    label: "Preparation Time accordion title is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Preparation Time"
+          label: "Preparation Time accordion title on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Preparation Time 󰅀"
+          label: "Preparation Time accordion title with chevron on iOS"
 
 # Expand the accordion
 - tapOn:
@@ -120,6 +139,8 @@ appId: "com.recipedia"
       true: ${VISIBLE_ITEMS.split(',').find(item => item === 'More than 1 hour')=== undefined}
     file: "preparationTime-items/moreThan1Hour-hidden.yaml"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -127,6 +148,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll back up to accordion header"
+
+- waitForAnimationToEnd
 
 # Collapse the accordion back
 - tapOn:

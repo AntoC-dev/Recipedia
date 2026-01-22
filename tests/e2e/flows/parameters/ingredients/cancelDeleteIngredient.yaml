@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "IngredientsSettings::30::DeleteButton"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Spaghetti ingredient"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "IngredientsSettings::30::DeleteButton"
@@ -20,6 +25,8 @@ appId: "com.recipedia"
     id: "IngredientsSettings::ItemDialog::DeleteModal::CancelButton"
     label: "Cancel delete operation"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       text: "Spaghetti"
@@ -27,6 +34,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to Spaghetti ingredient"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     text: "Spaghetti"

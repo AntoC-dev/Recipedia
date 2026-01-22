@@ -21,6 +21,13 @@ appId: "com.recipedia"
     file: "handleAnr.yaml"
     label: "Handle ANR dialog if it appears during initialization"
 
+- extendedWaitUntil:
+    visible:
+      id: "Home::RecipeRecommendation::random::Carousel::Card::0::Cover"
+    timeout: 30000
+    optional: true
+    label: "Wait for app to be ready"
+
 - assertVisible:
     id: "Home::RecipeRecommendation::random::Carousel::Card::0::Cover"
     label: "Verify app is ready"
@@ -29,9 +36,10 @@ appId: "com.recipedia"
     file: "handleAnr.yaml"
     label: "Handle ANR dialog if it appears after home render"
 
+# FAB IDs use regex pattern because React Native Paper adds "-container-outer-layer" suffix on iOS
 - extendedWaitUntil:
     visible:
-      id: "ExpandButton"
+      id: "ExpandButton.*"
     timeout: 5000
     label: "Wait for FAB to be visible"
 

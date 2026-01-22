@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::0::QuantityInput"
@@ -8,10 +11,18 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to ingredient quantity input"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeIngredients::0::QuantityInput"
     label: "Press on ingredient quantity input"
 
 - inputText: "4321"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"

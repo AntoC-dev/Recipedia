@@ -47,12 +47,16 @@ function createImageOptionsWithTheme(themeColors: MD3Colors) {
   const statusBarColor = themeColors.primaryContainer;
   const actionColor = themeColors.surface;
   const backgroundColor = themeColors.onSurface;
+  // TODO to translate
   return {
-    mediaType: 'photo',
+    mediaType: 'photo' as const,
+    sortOrder: 'desc' as const,
     cropperCancelText: 'Cancel',
     cropperChooseText: 'Choose',
     cropping: true,
-    avoidEmptySpaceAroundImage: true,
+    width: 10000,
+    height: 10000,
+    avoidEmptySpaceAroundImage: false,
     cropperToolbarTitle: '',
     freeStyleCropEnabled: true,
     showCropGuidelines: true,

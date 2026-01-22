@@ -601,8 +601,14 @@ find tests/e2e -name "*.yaml" -exec sed -i '' 's/OldTestID/NewTestID/g' {} +
     id: 'Button::RoundButton'
     label: 'Tap button'
 
-- hideKeyboard: # New step
-    label: 'Dismiss keyboard'
+# New steps with animation waits
+- waitForAnimationToEnd:
+    label: 'Wait for keyboard animation'
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: 'Wait for keyboard to dismiss'
 
 - runFlow:
     file: 'assert.yaml'
@@ -1067,10 +1073,213 @@ asserts/
     text: 'Sample text'
     label: 'Enter text'
 
-# Dismiss keyboard
+# Dismiss keyboard with animation waits
+- waitForAnimationToEnd:
+    label: 'Wait for keyboard animation'
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: 'Wait for keyboard to dismiss'
+```
+
+**Note**: Always wrap keyboard dismissal commands with `waitForAnimationToEnd`
+before and after:
+
+- **Before**: Ensures keyboard animation is complete before dismissing
+- **After**: Ensures keyboard dismissal animation completes before next
+  interaction
+- This prevents race conditions where Maestro taps on the wrong element while
+  keyboard is animating
+
+**Modal Dialogs (ItemDialog, NoteEditDialog, UrlInputDialog)**: For single-line
+inputs in modal dialogs, use platform-specific keyboard dismissal. The iOS
+keyboard shows "Done" button (via `returnKeyType="done"` on CustomTextInput):
+
+```yaml
+# Enter text in modal
+- inputText:
+    text: 'Item name'
+    label: 'Enter item name'
+
+- waitForAnimationToEnd:
+    label: 'Wait for keyboard animation'
+
+# Platform-specific keyboard dismissal
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: 'Dismiss keyboard on Android'
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: 'Done'
+          label: 'Tap Done key to dismiss keyboard on iOS'
+
+- waitForAnimationToEnd:
+    label: 'Wait for keyboard to dismiss'
+```
+
+This approach is more reliable than `pressKey: enter` for iOS modals, where the
+enter key press can be flaky on CI simulators. Android continues to use
+`hideKeyboard` which works reliably.
+
+**Non-Modal Single-Line Inputs**: For inputs on regular screens (not in modals),
+`pressKey: enter` can still be used but may be replaced with the
+platform-specific approach if flakiness is observed.
+
+**Exception 1 - Autocomplete Fields**: For tag and ingredient name inputs that
+show autocomplete dropdowns, use `hideKeyboard` on **Android only**:
+
+```yaml
+# Type partial text to trigger autocomplete
+- inputText:
+    text: 'RecipeT'
+    label: 'Enter partial tag name'
+
+# Dismiss keyboard on Android only (iOS handled case-by-case)
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: 'Dismiss keyboard on Android'
+
+# Verify autocomplete dropdown is visible
+- assertVisible:
+    id: 'RecipeTags::List::0::AutocompleteItem::RecipeTag'
+    label: 'Autocomplete item is displayed'
+
+# Manually select from dropdown
+- tapOn:
+    id: 'RecipeTags::List::0::AutocompleteItem::RecipeTag'
+    label: 'Select from autocomplete dropdown'
+```
+
+Using `pressKey: enter` on autocomplete fields will auto-select the first
+suggestion instead of allowing manual selection from the dropdown. iOS
+autocomplete keyboard dismissal is handled case-by-case when test failures
+occur.
+
+**Exception 2 - Multiline Text Inputs**: For title, description, and preparation
+fields that support multiline text, tap on a nearby section header label to
+dismiss the keyboard:
+
+```yaml
+# Title field - tap on Description label
+- tapOn:
+    id: 'RecipeTitle::CustomTextInput'
+    label: 'Focus on title input'
+
+- inputText:
+    text: 'My Recipe Title'
+    label: 'Enter title'
+
+- tapOn:
+    id: 'RecipeDescription::Text'
+    label: 'Tap on description label to dismiss keyboard'
+
+# Description field - tap on Tags header
+- tapOn:
+    id: 'RecipeDescription::CustomTextInput'
+    label: 'Focus on description input'
+
+- inputText:
+    text: 'Recipe description'
+    label: 'Enter description'
+
+- tapOn:
+    id: 'RecipeTags::HeaderText'
+    label: 'Tap on tags header to dismiss keyboard'
+
+# Preparation content - tap on Time label
+- tapOn:
+    id: 'RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput'
+    label: 'Focus on preparation content'
+
+- inputText:
+    text: 'Preparation instructions'
+    label: 'Enter preparation'
+
+- tapOn:
+    id: 'RecipeTime::Text'
+    label: 'Tap on time label to dismiss keyboard'
+```
+
+For multiline inputs, `pressKey: enter` adds a newline character instead of
+dismissing the keyboard, so we tap on section headers to dismiss safely.
+
+**Exception 3 - SearchBar**: For the SearchBar component, use `hideKeyboard`
+instead of `pressKey: enter`:
+
+```yaml
+# Type in SearchBar
+- tapOn:
+    id: 'SearchScreen::SearchBar'
+    label: 'Open SearchBar'
+
+- inputText:
+    text: 'E2E'
+    label: 'Enter search text'
+
+# Dismiss keyboard WITHOUT submitting search
 - hideKeyboard:
     label: 'Dismiss keyboard'
 ```
+
+Using `pressKey: enter` on SearchBar validates/submits the search text instead
+of just dismissing the keyboard. `hideKeyboard` works correctly for SearchBar on
+both platforms.
+
+**Important**: If you tap on SearchBar **without entering text** (to open the
+dropdown without typing), the keyboard doesn't appear on iOS. In this case, use
+`hideKeyboard` on **Android only**:
+
+```yaml
+# Tap SearchBar to open dropdown (no text input)
+- tapOn:
+    id: 'SearchScreen::SearchBar'
+    label: 'Focus on search bar to open dropdown'
+
+# Dismiss keyboard on Android only (iOS doesn't show keyboard)
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: 'Dismiss keyboard on Android'
+```
+
+**Closing SearchBar Dropdown**: Following Material Design pattern, the SearchBar
+close icon (RightIcon) is visible when:
+
+- Search has text content (clears text and closes dropdown)
+- Search is active/focused even without text (closes dropdown)
+
+This provides consistent cross-platform behavior for closing the dropdown:
+
+```yaml
+# Open search dropdown
+- tapOn:
+    id: 'SearchScreen::SearchBar'
+    label: 'Open search dropdown'
+
+# Close dropdown with icon (works on both platforms)
+- tapOn:
+    id: 'SearchScreen::SearchBar::RightIcon'
+    label: 'Close dropdown'
+```
+
+The icon replaces platform-specific approaches:
+
+- ❌ OLD: `pressKey: "BACK"` (Android only)
+- ❌ OLD: `tapOn: point: "50%,95%"` (fragile coordinates on iOS)
+- ✅ NEW: Tap close icon (works on both platforms)
 
 ### List Item Selection Pattern
 
@@ -1299,12 +1508,47 @@ file: "../../flows/feature/flow.yaml"  # Relative from current location
 
 ---
 
-**Last Updated**: 2025-11-10
+**Last Updated**: 2026-01-09
 
-**Key Changes**: Restructured test execution to use suite-based configuration
-files at the root of `tests/e2e/`. Each suite (app-init, search, ocr, settings,
-etc.) has its own YAML config that defines test discovery and execution order.
-Tests run one suite at a time using `maestro test . --config={suite}.yaml`.
+**Key Changes**:
+
+- **SearchBar close icon (Material Design pattern)**: SearchBar now shows close
+  icon when search is active (even without text), providing consistent
+  cross-platform behavior for closing dropdown. Replaced platform-specific
+  approaches (`pressKey: "BACK"` on Android, coordinate taps on iOS) with icon
+  tap. Updated 2 code files, 1 unit test file, 6 E2E assertion files, 2 E2E test
+  files.
+- **hideKeyboard after tapOn (without inputText)**: Made Android-only because
+  iOS doesn't show keyboard when tapping without typing (3 search tests updated:
+  1_open_close.yaml, 2_scroll_independence.yaml, 4_direct_click.yaml)
+- **SearchBar keyboard dismissal**: SearchBar now uses `hideKeyboard` instead of
+  `pressKey: enter` to avoid submitting the search (12 files updated)
+- **Platform-specific autocomplete keyboard dismissal**: Autocomplete fields
+  (tags/ingredients) now use `hideKeyboard` on Android only, iOS failures
+  handled case-by-case (4 files updated)
+- **Multiline text input pattern**: Title, description, and preparation fields
+  now tap on nearby section labels (RecipeDescription::Text,
+  RecipeTags::HeaderText, RecipeTime::Text) to dismiss keyboard instead of
+  `pressKey: enter` (4 files updated)
+- Reasoning: `pressKey: enter` on SearchBar submits search; on autocomplete
+  auto-selects first suggestion; on multiline inputs adds newlines
+- Regular inputs (quantity, time, single-line) continue to use
+  `waitForAnimationToEnd` + `pressKey: enter` + `waitForAnimationToEnd`
+- Added `waitForAnimationToEnd` before and after all `pressKey: enter` commands
+  (83 files updated earlier today)
+- This prevents race conditions where Maestro taps on wrong elements during
+  keyboard animations
+- Previously replaced all `hideKeyboard` commands with `pressKey: enter` (54
+  files)
+- `hideKeyboard` doesn't work reliably with React Native Paper's Portal-based
+  dialogs, but is necessary for Android autocomplete use cases
+- `pressKey: enter` works consistently for regular single-line inputs
+
+**Previous Update** (2025-11-10): Restructured test execution to use suite-based
+configuration files at the root of `tests/e2e/`. Each suite (app-init, search,
+ocr, settings, etc.) has its own YAML config that defines test discovery and
+execution order. Tests run one suite at a time using
+`maestro test . --config={suite}.yaml`.
 
 **Maintainer**: Development Team
 

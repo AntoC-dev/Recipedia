@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -9,15 +12,35 @@ appId: "com.recipedia"
     label: "Scroll to legumes accordion"
 
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-    text: "Légumineuses"
-    label: "Legumes accordion title is displayed in French"
+    label: "Légumineuses accordion is displayed"
 
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Légumineuses"
+          label: "Légumineuses accordion title on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Légumineuses 󰅀"
+          label: "Légumineuses accordion title with chevron on iOS"
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Expand Legumes accordion"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -27,9 +50,13 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to first filter item"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
     label: "Red Lentils filter is visible"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -38,6 +65,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll back up to Legumes accordion header"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"

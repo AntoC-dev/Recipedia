@@ -127,6 +127,14 @@ export function BottomTabs() {
   const copilotData = useSafeCopilot();
   const shouldRenderLazy = !copilotData;
 
+  const labels = {
+    home: t('home'),
+    search: t('search'),
+    menu: t('menu'),
+    shopping: t('shopping'),
+    parameters: t('parameters'),
+  };
+
   return (
     <>
       <StatusBar
@@ -146,6 +154,7 @@ export function BottomTabs() {
 
             return (
               <View
+                accessible={false} // Allow tabBarTestID to be accessible on iOS
                 style={[
                   {
                     paddingHorizontal: padding.medium,
@@ -183,7 +192,8 @@ export function BottomTabs() {
           name='Home'
           component={Home}
           options={{
-            tabBarLabel: t('home'),
+            tabBarLabel: labels.home,
+            tabBarAccessibilityLabel: labels.home,
             lazy: shouldRenderLazy,
             tabBarTestID: testId + '::Home',
           }}
@@ -192,7 +202,8 @@ export function BottomTabs() {
           name='Search'
           component={Search}
           options={{
-            tabBarLabel: t('search'),
+            tabBarLabel: labels.search,
+            tabBarAccessibilityLabel: labels.search,
             lazy: shouldRenderLazy,
             tabBarTestID: testId + '::Search',
           }}
@@ -201,7 +212,8 @@ export function BottomTabs() {
           name='Menu'
           component={Menu}
           options={{
-            tabBarLabel: t('menu'),
+            tabBarLabel: labels.menu,
+            tabBarAccessibilityLabel: labels.menu,
             lazy: shouldRenderLazy,
             tabBarTestID: testId + '::Menu',
           }}
@@ -210,7 +222,8 @@ export function BottomTabs() {
           name='Shopping'
           component={Shopping}
           options={{
-            tabBarLabel: t('shopping'),
+            tabBarLabel: labels.shopping,
+            tabBarAccessibilityLabel: labels.shopping,
             lazy: shouldRenderLazy,
             tabBarTestID: testId + '::Shopping',
           }}
@@ -219,7 +232,8 @@ export function BottomTabs() {
           name='Parameters'
           component={Parameters}
           options={{
-            tabBarLabel: t('parameters'),
+            tabBarLabel: labels.parameters,
+            tabBarAccessibilityLabel: labels.parameters,
             lazy: shouldRenderLazy,
             tabBarTestID: testId + '::Parameters',
           }}

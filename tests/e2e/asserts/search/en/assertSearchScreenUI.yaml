@@ -12,6 +12,6 @@ appId: "com.recipedia"
     label: "Search placeholder text is displayed in English"
 
 - assertVisible:
-    id: "SearchScreen::FiltersToggleButtons"
+    id: "SearchScreen::FiltersToggleButtons-text"
     text: "Add a filter"
     label: "Add filter button is displayed in English"

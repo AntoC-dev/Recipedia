@@ -2,9 +2,11 @@
  * RecipeScraper - TypeScript wrapper for the recipe-scraper module.
  *
  * Provides a complete, type-safe API for scraping recipes from URLs.
- * - Android: Uses Python recipe-scrapers library via Chaquopy
- * - iOS: Uses native schema.org JSON-LD parsing via SwiftSoup
- * - Web: Uses TypeScript schema.org JSON-LD parsing
+ * - Android: Uses Python recipe-scrapers library for base parsing + TypeScript enhancements
+ * - iOS: Uses TypeScript schema.org parsing + TypeScript enhancements
+ * - Web: Uses TypeScript schema.org parsing + TypeScript enhancements
+ *
+ * All platforms use the same TypeScript enhancement module for consistent behavior.
  *
  * @example
  * ```typescript
@@ -19,15 +21,43 @@
  */
 
 import {Platform} from 'react-native';
-import {RecipeScraperWeb} from './web/RecipeScraperWeb';
-import type {HostSupportedResult, ScraperErrorResult, ScraperResult, SupportedHostsResult,} from './types';
+import {SchemaRecipeParser} from './web/SchemaRecipeParser';
+import {applyEnhancements} from './enhancements';
+import type {
+    HostSupportedResult,
+    ScraperErrorResult,
+    ScraperResult,
+    SupportedHostsResult,
+} from './types';
 
-type ScraperInterface = {
-    scrapeRecipe(url: string, wildMode?: boolean): Promise<string>;
-    scrapeRecipeFromHtml(html: string, url: string, wildMode?: boolean): Promise<string>;
+// Auth detection patterns
+const AUTH_URL_PATTERNS = [
+    '/login',
+    '/signin',
+    '/sign-in',
+    '/auth',
+    '/connexion',
+    '/account/login',
+    '/user/login',
+];
+const AUTH_TITLE_KEYWORDS = [
+    'login',
+    'sign in',
+    'connexion',
+    'se connecter',
+    'log in',
+    'anmelden',
+    'iniciar sesión',
+];
+
+type NativeScraperInterface = {
+    scrapeRecipeFromHtml(
+        html: string,
+        url: string,
+        wildMode?: boolean
+    ): Promise<string>;
     getSupportedHosts(): Promise<string>;
     isHostSupported(host: string): Promise<string>;
-    isAvailable(): Promise<boolean>;
     scrapeRecipeAuthenticated?(
         url: string,
         username: string,
@@ -38,18 +68,19 @@ type ScraperInterface = {
 };
 
 const isTestEnv = process.env.NODE_ENV === 'test';
-const useWebImplementation = Platform.OS === 'web' || isTestEnv;
+const useNativeModule = Platform.OS === 'android' && !isTestEnv;
 
-function getScraper(): ScraperInterface {
-    if (useWebImplementation) {
-        return new RecipeScraperWeb();
+function getNativeModule(): NativeScraperInterface | null {
+    if (!useNativeModule) {
+        return null;
     }
-    // Only import native module when actually needed (not in test/web environments)
+    // Only import native module when actually needed (not in test/web/iOS environments)
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     return require('./RecipeScraperModule').default;
 }
 
-const scraper = getScraper();
+const nativeModule = getNativeModule();
+const schemaParser = new SchemaRecipeParser();
 
 /**
  * Options for scraping a recipe.
@@ -58,7 +89,6 @@ export interface ScrapeOptions {
     /**
      * If true (default), attempt to scrape unsupported sites using schema.org.
      * Disable for stricter scraping that only works on known sites.
-     * Note: On iOS, this option is ignored as it always uses schema.org parsing.
      */
     wildMode?: boolean;
 }
@@ -70,18 +100,6 @@ export interface ScrapeOptions {
  * Supported on Android, iOS, and Web.
  */
 export class RecipeScraper {
-    /**
-     * Checks if the scraper is available on the current platform.
-     * Always returns true on Android, iOS, and Web.
-     */
-    async isAvailable(): Promise<boolean> {
-        try {
-            return await scraper.isAvailable();
-        } catch {
-            return false;
-        }
-    }
-
     /**
      * Scrapes a recipe from a URL.
      *
@@ -100,10 +118,34 @@ export class RecipeScraper {
      * }
      * ```
      */
-    async scrapeRecipe(url: string, options?: ScrapeOptions): Promise<ScraperResult> {
+    async scrapeRecipe(
+        url: string,
+        options?: ScrapeOptions
+    ): Promise<ScraperResult> {
         try {
-            const json = await scraper.scrapeRecipe(url, options?.wildMode ?? true);
-            return JSON.parse(json);
+            // 1. Fetch HTML in TypeScript (works on all platforms)
+            const response = await fetch(url, {
+                headers: {'User-Agent': 'Mozilla/5.0'},
+            });
+
+            if (!response.ok) {
+                return this.errorResult(
+                    'FetchError',
+                    `HTTP ${response.status}: ${response.statusText}`
+                );
+            }
+
+            const html = await response.text();
+            const finalUrl = response.url;
+
+            // 2. Check for auth redirect
+            const authError = this.detectAuthRequired(html, finalUrl, url);
+            if (authError) {
+                return authError;
+            }
+
+            // 3. Parse and enhance
+            return this.scrapeRecipeFromHtml(html, url, options);
         } catch (error) {
             return this.exceptionError(error);
         }
@@ -126,12 +168,31 @@ export class RecipeScraper {
         options?: ScrapeOptions
     ): Promise<ScraperResult> {
         try {
-            const json = await scraper.scrapeRecipeFromHtml(
-                html,
-                url,
-                options?.wildMode ?? true
-            );
-            return JSON.parse(json);
+            // 1. Get base parsing from native module (Android) or TypeScript (iOS/Web)
+            let baseResult: ScraperResult;
+
+            if (nativeModule) {
+                // Android: Use Python recipe-scrapers for base parsing (500+ site parsers)
+                const json = await nativeModule.scrapeRecipeFromHtml(
+                    html,
+                    url,
+                    options?.wildMode ?? true
+                );
+                baseResult = JSON.parse(json);
+            } else {
+                // iOS/Web: Use TypeScript schema.org parser
+                baseResult = schemaParser.parse(html, url);
+            }
+
+            // 2. Apply TypeScript enhancements (ALL platforms)
+            if (baseResult.success) {
+                baseResult.data = applyEnhancements({
+                    html,
+                    baseResult: baseResult.data,
+                });
+            }
+
+            return baseResult;
         } catch (error) {
             return this.exceptionError(error);
         }
@@ -153,8 +214,11 @@ export class RecipeScraper {
      * ```
      */
     async getSupportedHosts(): Promise<SupportedHostsResult> {
+        if (!nativeModule) {
+            return {success: true, data: []};
+        }
         try {
-            const json = await scraper.getSupportedHosts();
+            const json = await nativeModule.getSupportedHosts();
             return JSON.parse(json);
         } catch (error) {
             return this.exceptionError(error);
@@ -172,8 +236,11 @@ export class RecipeScraper {
      * @returns A result object with a boolean indicating support.
      */
     async isHostSupported(host: string): Promise<HostSupportedResult> {
+        if (!nativeModule) {
+            return {success: true, data: false};
+        }
         try {
-            const json = await scraper.isHostSupported(host);
+            const json = await nativeModule.isHostSupported(host);
             return JSON.parse(json);
         } catch (error) {
             return this.exceptionError(error);
@@ -198,7 +265,7 @@ export class RecipeScraper {
         password: string,
         options?: ScrapeOptions
     ): Promise<ScraperResult> {
-        if (!scraper.scrapeRecipeAuthenticated) {
+        if (!nativeModule?.scrapeRecipeAuthenticated) {
             return {
                 success: false,
                 error: {
@@ -208,13 +275,17 @@ export class RecipeScraper {
             };
         }
         try {
-            const json = await scraper.scrapeRecipeAuthenticated(
+            const json = await nativeModule.scrapeRecipeAuthenticated(
                 url,
                 username,
                 password,
                 options?.wildMode ?? true
             );
-            return JSON.parse(json);
+            const baseResult: ScraperResult = JSON.parse(json);
+
+            // Note: For authenticated scraping, we can't easily apply TypeScript enhancements
+            // because we don't have access to the HTML. The Python scraper handles this.
+            return baseResult;
         } catch (error) {
             return this.exceptionError(error);
         }
@@ -228,18 +299,76 @@ export class RecipeScraper {
      * @returns A result object with an array of host domains supporting auth.
      */
     async getSupportedAuthHosts(): Promise<SupportedHostsResult> {
-        if (!scraper.getSupportedAuthHosts) {
-            return {
-                success: true,
-                data: [],
-            };
+        if (!nativeModule?.getSupportedAuthHosts) {
+            return {success: true, data: []};
         }
         try {
-            const json = await scraper.getSupportedAuthHosts();
+            const json = await nativeModule.getSupportedAuthHosts();
             return JSON.parse(json);
         } catch (error) {
             return this.exceptionError(error);
         }
+    }
+
+    /**
+     * Detect if a page requires authentication.
+     * Checks for login URL patterns and page title keywords.
+     */
+    private detectAuthRequired(
+        html: string,
+        finalUrl: string,
+        originalUrl: string
+    ): ScraperErrorResult | null {
+        const getHost = (urlStr: string): string => {
+            try {
+                return new URL(urlStr).hostname.replace('www.', '');
+            } catch {
+                return '';
+            }
+        };
+
+        const host = getHost(originalUrl);
+
+        try {
+            const finalPath = new URL(finalUrl).pathname.toLowerCase();
+            for (const pattern of AUTH_URL_PATTERNS) {
+                if (finalPath.includes(pattern)) {
+                    return this.authErrorResult(host);
+                }
+            }
+        } catch {
+            // Invalid URL, continue
+        }
+
+        const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+        if (titleMatch) {
+            const title = titleMatch[1].toLowerCase();
+            for (const keyword of AUTH_TITLE_KEYWORDS) {
+                if (title.includes(keyword)) {
+                    return this.authErrorResult(host);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private authErrorResult(host: string): ScraperErrorResult {
+        return {
+            success: false,
+            error: {
+                type: 'AuthenticationRequired',
+                message: 'This recipe requires authentication',
+                host,
+            },
+        };
+    }
+
+    private errorResult(type: string, message: string): ScraperErrorResult {
+        return {
+            success: false,
+            error: {type, message},
+        };
     }
 
     private exceptionError(error: unknown): ScraperErrorResult {

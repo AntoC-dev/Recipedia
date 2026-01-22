@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -8,10 +11,29 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Only in-season ingredients accordion"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-    text: "Recettes de saisons uniquement"
-    label: "Only in-season ingredients accordion is displayed"
+    label: "Recettes de saisons uniquement accordion is displayed"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Recettes de saisons uniquement"
+          label: "Recettes de saisons uniquement accordion title on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Recettes de saisons uniquement 󰅀"
+          label: "Recettes de saisons uniquement accordion title with chevron on iOS"
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -24,13 +46,16 @@ appId: "com.recipedia"
 - runFlow:
     file: "../../../en/filters/accordions/inSeason-items/onlyInSeasonIngredients-visible.yaml"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     direction: UP
     speed: 60
-    centerElement: true
     label: "Scroll back up to accordion header"
+
+- waitForAnimationToEnd
 
 # Collapse the accordion back
 - tapOn:

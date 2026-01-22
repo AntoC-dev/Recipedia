@@ -27,3 +27,6 @@ appId: "com.recipedia"
 - tapOn:
     id: "ShoppingScreen::Dialog::Confirm"
     label: "Close the alert"
+
+- waitForAnimationToEnd:
+    label: "Wait for dialog to close"

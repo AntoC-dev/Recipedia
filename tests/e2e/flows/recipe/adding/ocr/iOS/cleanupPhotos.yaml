@@ -1,0 +1,19 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    point: "10%,61%"
+    label: "Tap on the first picture"
+
+- repeat:
+    while:
+      notVisible:
+        text: "No Photos or Videos"
+    commands:
+      - tapOn:
+          id: "trash"
+          label: "Tap on the trash button"
+      - tapOn:
+          text: "Delete Photo"
+          label: "Tap on the delete button"
+      - waitForAnimationToEnd:
+          label: "Wait for image animation to end"

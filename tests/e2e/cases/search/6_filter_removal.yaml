@@ -17,14 +17,14 @@ tags:
 
 - inputText: "Lentil"
 
-- hideKeyboard:
-    label: "Action - Dismiss keyboard"
-
 - runFlow:
     file: "../../asserts/search/searchbar/searchBarFilteredOnLentil.yaml"
     label: "Assert - Verify dropdown filtered on 'Lentil'"
 
 - pressKey: "enter"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - runFlow:
     file: "../../asserts/search/en/searchScreenFilteredOnLentilCury.yaml"
@@ -37,6 +37,10 @@ tags:
 - runFlow:
     file: "../../asserts/search/en/assertSearchScreen.yaml"
     label: "Assert - Verify all recipe cards are visible again"
+
+- runFlow:
+    file: "../../flows/search/scrollBackToTop.yaml"
+    label: "Scroll back to top of search screen"
 
 - tapOn:
     id: "BottomTabs::Home"

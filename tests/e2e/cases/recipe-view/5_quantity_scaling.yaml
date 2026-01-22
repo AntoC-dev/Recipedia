@@ -19,7 +19,15 @@ tags:
     text: "Chocolate"
     label: "Action - Search for Chocolate Cake"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: "ENTER"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -28,6 +36,8 @@ tags:
     speed: 40
     centerElement: true
     label: "Scroll to recipe card"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::RecipeCards::0::Cover"
@@ -41,6 +51,8 @@ tags:
     id: "Recipe::AppBar::Edit"
     label: "Action - Enter edit mode"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeImage"
@@ -48,6 +60,8 @@ tags:
     speed: 95
     centerElement: true
     label: "Action - Scroll back to top"
+
+- waitForAnimationToEnd
 
 - runFlow:
     file: "../../asserts/recipe/edit/chocolateCakeFor4Persons.yaml"
@@ -57,13 +71,17 @@ tags:
     file: "../../flows/recipe/editing/changePersonsFrom4To2.yaml"
     label: "Action - Change persons from 4 to 2"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeImage::RoundButton"
     direction: UP
-    speed: 95
-    centerElement: true
+    speed: 85
+    timeout: 120000
     label: "Action - Scroll back to top"
+
+- waitForAnimationToEnd
 
 - runFlow:
     file: "../../asserts/recipe/edit/chocolateCakeFor2Persons.yaml"
@@ -73,6 +91,8 @@ tags:
     id: "Recipe::AppBar::Validate"
     label: "Action - Validate the edit"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeImage"
@@ -80,6 +100,8 @@ tags:
     speed: 95
     centerElement: true
     label: "Action - Scroll back to top"
+
+- waitForAnimationToEnd
 
 - runFlow:
     file: "../../asserts/recipe/readonly/en/chocolateCakeFor2Persons.yaml"
@@ -101,7 +123,15 @@ tags:
     text: "Chocolate"
     label: "Action - Search for Chocolate Cake again"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: "ENTER"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -111,10 +141,14 @@ tags:
     centerElement: true
     label: "Scroll to recipe card"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "SearchScreen::RecipeCards::0::Persons"
     text: "4 persons"
     label: "Assert - Card is showing a 4 persons (default value) recipe"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -123,6 +157,8 @@ tags:
     speed: 40
     centerElement: true
     label: "Scroll to recipe card"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::RecipeCards::0::Cover"

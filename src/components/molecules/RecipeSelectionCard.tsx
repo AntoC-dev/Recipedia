@@ -87,6 +87,7 @@ export function RecipeSelectionCard({
 
   return (
     <Card
+      accessible={false}
       testID={testId}
       mode='outlined'
       style={[styles.card, { backgroundColor: getBackgroundColor() }]}
@@ -108,13 +109,11 @@ export function RecipeSelectionCard({
             testID={testId + '::Thumbnail'}
           />
           {isPreviouslySeen && (
-            <View style={[styles.seenBadge, { backgroundColor: colors.surfaceVariant }]}>
-              <Icon
-                source='history'
-                size={14}
-                color={colors.onSurfaceVariant}
-                testID={testId + '::SeenIndicator'}
-              />
+            <View
+              testID={testId + '::SeenIndicator'}
+              style={[styles.seenBadge, { backgroundColor: colors.surfaceVariant }]}
+            >
+              <Icon source='history' size={14} color={colors.onSurfaceVariant} />
             </View>
           )}
         </View>

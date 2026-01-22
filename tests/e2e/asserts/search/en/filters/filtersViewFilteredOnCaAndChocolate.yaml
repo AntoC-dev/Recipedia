@@ -87,12 +87,16 @@ appId: "com.recipedia"
     env:
       STATE: "hidden"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       text: "Oil and Fat"
     direction: DOWN
     centerElement: true
     label: "Scroll to Sugar category"
+
+- waitForAnimationToEnd
 
 - runFlow:
     file: "accordions/sugar.yaml"

@@ -156,7 +156,7 @@ export function CustomTextInput({
     editable ? {} : { backgroundColor: colors.backdrop },
   ];
   return (
-    <View style={style} pointerEvents={'box-none'}>
+    <View style={style} pointerEvents={'box-none'} accessible={false}>
       <TextInput
         testID={testID + '::CustomTextInput'}
         ref={inputRef}
@@ -177,6 +177,7 @@ export function CustomTextInput({
         onContentSizeChange={handleOnContentSizeChange}
         error={error}
         right={right}
+        returnKeyType={multiline ? 'default' : 'done'}
       />
     </View>
   );

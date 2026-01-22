@@ -41,6 +41,8 @@ tags:
     id: "Recipe::Dialog::Cancel"
     label: "Action - Cancel adding duplicate recipe"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::0::QuantityInput"
@@ -48,6 +50,8 @@ tags:
     speed: 60
     centerElement: true
     label: "Action - Scroll up to first ingredient"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeIngredients::0::QuantityInput"
@@ -60,8 +64,15 @@ tags:
     text: "260"
     label: "Action - Change Pasta to 260g (30% difference)"
 
-- hideKeyboard:
-    label: "Action - Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -70,6 +81,8 @@ tags:
     speed: 60
     centerElement: true
     label: "Action - Scroll to Add button"
+
+- waitForAnimationToEnd
 
 - waitForAnimationToEnd:
     timeout: 2000

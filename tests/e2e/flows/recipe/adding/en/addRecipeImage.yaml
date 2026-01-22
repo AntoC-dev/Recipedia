@@ -6,20 +6,37 @@ appId: "com.recipedia"
 - runFlow:
     file: "../../../../asserts/modal/en/CameraModalNoImages.yaml"
     label: "Check camera modal is displayed"
-- tapOn:
-    id: "Modal::Camera::RoundButton"
-    label: "Select camera option"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - tapOn:
+          id: "Modal::Camera::RoundButton"
+          label: "Select camera option on Android"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Modal::Gallery::RoundButton"
+          label: "Select gallery option on iOS (simulator doesn't support camera)"
+
 - runFlow:
     file: "../ocr/android/takePhoto.yaml"
     when:
       platform: Android
     label: "Take photo on Android"
-# TODO iOS
-#- runFlow:
-#    file: ./ocr/iOS/takePhoto.yaml
-#    when:
-#      platform: iOS
-#    label: "Take photo on iOS"
+- runFlow:
+    file: "../ocr/iOS/selectFromGallery.yaml"
+    when:
+      platform: iOS
+    label: "Select most recent photo from gallery on iOS"
+
+- assertVisible:
+    id: "Modal::List#0::SquareButton::Image"
+    label: "Check that the most recent photo is displayed in the modal"
+
 - tapOn:
     id: "Modal::List#0::SquareButton::Image"
     label: "Select camera picture"
@@ -29,9 +46,8 @@ appId: "com.recipedia"
     when:
       platform: Android
     label: "Validate without cropping on Android"
-# TODO iOS
-#- runFlow:
-#    file: ./ocr/iOS/validateWithoutCropping.yaml
-#    when:
-#      platform: iOS
-#    label: "Validate without cropping on iOS"
+- runFlow:
+    file: "../ocr/iOS/validateWithoutCropping.yaml"
+    when:
+      platform: iOS
+    label: "Validate without cropping on iOS"

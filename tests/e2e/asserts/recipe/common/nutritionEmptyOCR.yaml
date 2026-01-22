@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionEmptyState::OCRButton::RoundButton"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to empty nutrition section"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionEmptyState::Title"

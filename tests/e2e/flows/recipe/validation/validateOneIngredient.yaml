@@ -10,13 +10,28 @@ appId: "com.recipedia"
     id: "${PREFIX}::ValidationQueue::Ingredient::SimilarityDialog::AddButton"
     label: "Select to add the ingredient"
 
+- extendedWaitUntil:
+    visible:
+      id: "${PREFIX}::ValidationQueue::Ingredient::ItemDialog::AddModal::Unit::CustomTextInput"
+    timeout: 30000
+    label: "Wait for menu button to be visible"
+
 - tapOn:
     id: "${PREFIX}::ValidationQueue::Ingredient::ItemDialog::AddModal::Menu::Button"
     label: "Open ingredient type menu"
 
+- extendedWaitUntil:
+    visible:
+      id: "menu-item"
+    timeout: 10000
+    label: "Wait for menu items to be visible"
+
 - tapOn:
     id: "menu-item"
     label: "Select ingredient type"
+
+- waitForAnimationToEnd:
+    label: "Wait for menu to disappear"
 
 - tapOn:
     id: "${PREFIX}::ValidationQueue::Ingredient::ItemDialog::AddModal::Unit::CustomTextInput"
@@ -26,8 +41,26 @@ appId: "com.recipedia"
     text: "g"
     label: "Enter unit"
 
-- hideKeyboard:
-    label: "Close keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "${PREFIX}::ValidationQueue::Ingredient::ItemDialog::AddModal::ConfirmButton"

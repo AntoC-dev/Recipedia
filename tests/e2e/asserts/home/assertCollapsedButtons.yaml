@@ -1,18 +1,10 @@
 appId: "com.recipedia"
 ---
-- assertVisible:
-    id: "ExpandButton"
-    label: "Expand button is visible"
-
-- assertNotVisible:
-    id: "ReduceButton"
-    label: "Reduce button is not visible"
-- assertNotVisible:
-    id: "RecipeEdit"
-    label: "Edit button is not visible"
-- assertNotVisible:
-    id: "GalleryButton"
-    label: "Gallery button is not visible"
-- assertNotVisible:
-    id: "CameraButton"
-    label: "Camera button is not visible"
+- runFlow:
+    when:
+      platform: iOS
+    file: "ios/assertCollapsedButtons.yaml"
+- runFlow:
+    when:
+      platform: Android
+    file: "android/assertCollapsedButtons.yaml"

@@ -67,6 +67,7 @@ export function RecipeCard({ testId, size, recipe }: RecipeCardProps) {
 
   return (
     <Card
+      accessible={false}
       testID={testId + `::${recipe.title}`}
       mode={'outlined'}
       style={{
@@ -100,7 +101,12 @@ export function RecipeCard({ testId, size, recipe }: RecipeCardProps) {
       {size === 'medium' && (
         <View>
           <Card.Content style={{ padding: padding.medium }}>
-            <Text style={{ color: colors.primary }} numberOfLines={1} testID={testId + '::Content'}>
+            <Text
+              style={{ color: colors.primary }}
+              numberOfLines={1}
+              testID={testId + '::Content'}
+              accessible={true}
+            >
               {recipe.tags.map(tag => tag.name).join(', ')}
             </Text>
           </Card.Content>
@@ -110,6 +116,7 @@ export function RecipeCard({ testId, size, recipe }: RecipeCardProps) {
                 testID={testId + '::PrepTime'}
                 variant={'bodySmall'}
                 style={{ marginLeft: -padding.verySmall }}
+                accessible={true}
               >
                 {t('recipeCard.prepTime', { time: recipe.time })}
               </Text>
@@ -117,6 +124,7 @@ export function RecipeCard({ testId, size, recipe }: RecipeCardProps) {
                 testID={testId + '::Persons'}
                 variant={'bodySmall'}
                 style={{ marginRight: -padding.verySmall }}
+                accessible={true}
               >
                 {t('recipeCard.persons', { count: recipe.persons })}
               </Text>

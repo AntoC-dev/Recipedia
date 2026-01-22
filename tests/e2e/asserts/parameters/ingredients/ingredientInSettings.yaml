@@ -5,6 +5,7 @@ appId: "com.recipedia"
       notVisible:
         id: "IngredientsSettings::${INGREDIENT_INDEX}::IngredientName"
     commands:
+      - waitForAnimationToEnd
       - scrollUntilVisible:
           element:
             id: "IngredientsSettings::${INGREDIENT_INDEX}::IngredientName"
@@ -12,6 +13,7 @@ appId: "com.recipedia"
           speed: 60
           centerElement: true
           label: "Scroll to find ${INGREDIENT_NAME} ingredient"
+      - waitForAnimationToEnd
 
 - assertVisible:
     id: "IngredientsSettings::${INGREDIENT_INDEX}::IngredientName"

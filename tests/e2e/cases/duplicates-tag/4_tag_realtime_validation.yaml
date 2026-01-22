@@ -23,8 +23,26 @@ tags:
     text: "TestTag"
     label: "Action - Type non-existant text"
 
-- hideKeyboard:
-    label: "Action - Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - assertNotVisible:
     id: "TagsSettings::ItemDialog::AddModal::HelperText"
@@ -41,8 +59,26 @@ tags:
     text: "Dessrt"
     label: "Action - Type fuzzy matching text"
 
-- hideKeyboard:
-    label: "Action - Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - extendedWaitUntil:
     visible:
@@ -71,6 +107,27 @@ tags:
     text: "Dessert"
     label: "Action - Type exact duplicate"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
 - extendedWaitUntil:
     visible:
       id: "TagsSettings::ItemDialog::AddModal::HelperText"
@@ -90,6 +147,13 @@ tags:
 - tapOn:
     id: "TagsSettings::ItemDialog::AddModal::CancelButton"
     label: "Cleanup - Cancel add tag dialog"
+
+- waitForAnimationToEnd:
+    label: "Wait for dialog to hide"
+
+- assertNotVisible:
+    id: "TagsSettings::ItemDialog::AddModal::CancelButton"
+    label: "Check - Dialog is hidden"
 
 - runFlow:
     file: "../../flows/parameters/tags/returnToHome.yaml"

@@ -65,6 +65,8 @@ appId: "com.recipedia"
     text: "Delete"
     label: "Delete button for Dinner is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "TagsSettings::4::TagName"
@@ -72,6 +74,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to tag Healthy"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "TagsSettings::4::TagName"
@@ -88,6 +92,8 @@ appId: "com.recipedia"
     text: "Delete"
     label: "Delete button for Healthy is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "TagsSettings::5::EditButton"
@@ -95,6 +101,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to tag Indian"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "TagsSettings::5::TagName"
@@ -111,6 +119,8 @@ appId: "com.recipedia"
     text: "Delete"
     label: "Delete button for Indian is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "TagsSettings::6::EditButton"
@@ -118,6 +128,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to tag Italian"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "TagsSettings::6::TagName"
@@ -134,6 +146,8 @@ appId: "com.recipedia"
     text: "Delete"
     label: "Delete button for Italian is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "TagsSettings::7::EditButton"
@@ -141,6 +155,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to tag Japanese"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "TagsSettings::7::TagName"
@@ -157,6 +173,8 @@ appId: "com.recipedia"
     text: "Delete"
     label: "Delete button for Japanese is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "TagsSettings::8::EditButton"
@@ -164,6 +182,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to tag Lunch"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "TagsSettings::8::TagName"
@@ -180,6 +200,8 @@ appId: "com.recipedia"
     text: "Delete"
     label: "Delete button for Lunch is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "TagsSettings::9::TagName"
@@ -187,6 +209,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to tag Mexican"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "TagsSettings::9::TagName"
@@ -203,6 +227,8 @@ appId: "com.recipedia"
     text: "Delete"
     label: "Delete button for Mexican is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "TagsSettings::10::EditButton"
@@ -210,6 +236,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to tag Quick Meal"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "TagsSettings::10::TagName"
@@ -226,6 +254,8 @@ appId: "com.recipedia"
     text: "Delete"
     label: "Delete button for Quick Meal is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "TagsSettings::11::EditButton"
@@ -233,6 +263,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to tag Salad"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "TagsSettings::11::TagName"
@@ -249,6 +281,8 @@ appId: "com.recipedia"
     text: "Delete"
     label: "Delete button for Salad is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "TagsSettings::12::EditButton"
@@ -256,6 +290,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to tag Seafood"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "TagsSettings::12::TagName"
@@ -272,6 +308,8 @@ appId: "com.recipedia"
     text: "Delete"
     label: "Delete button for Seafood is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "TagsSettings::13::TagName"
@@ -279,6 +317,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to tag Soup"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "TagsSettings::13::TagName"
@@ -295,6 +335,8 @@ appId: "com.recipedia"
     text: "Delete"
     label: "Delete button for Soup is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "TagsSettings::14::EditButton"
@@ -302,6 +344,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to tag Tag with space"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "TagsSettings::14::TagName"
@@ -313,6 +357,8 @@ appId: "com.recipedia"
     text: "Edit"
     label: "Edit button for Tag with space is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "TagsSettings::BottomActionButton"
@@ -320,6 +366,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to Add button"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "TagsSettings::14::DeleteButton-text"
@@ -341,7 +389,20 @@ appId: "com.recipedia"
     text: "Delete"
     label: "Delete button for Vegetarian is displayed"
 
-- assertVisible:
-    id: "TagsSettings::BottomActionButton"
-    text: "Add tag"
-    label: "Add tag button is visible with correct text"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "TagsSettings::BottomActionButton"
+          text: "Add tag"
+          label: "Add tag button is visible with correct text"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "TagsSettings::BottomActionButton"
+          text: "󰐕 Add Tag"
+          label: "Add tag button is visible with correct text"

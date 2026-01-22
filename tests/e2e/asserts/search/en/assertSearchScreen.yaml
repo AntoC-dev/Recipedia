@@ -4,6 +4,10 @@ appId: "com.recipedia"
     file: "./assertSearchScreenUI.yaml"
     label: "Assert Search screen UI elements in English"
 
+- assertNotVisible:
+    id: "SearchScreen::SearchBar::RightIcon"
+    label: "Search bar close icon is not visible"
+
 - runFlow:
     file: "../assertSearchScreenRecipeCards.yaml"
     label: "Assert Search screen recipe cards"

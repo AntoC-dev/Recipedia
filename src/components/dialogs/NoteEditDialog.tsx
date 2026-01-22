@@ -100,11 +100,10 @@ export function NoteEditDialog({
             label={placeholder}
             value={note}
             onChangeText={setNote}
-            multiline
           />
         </Dialog.Content>
         <Dialog.Actions>
-          <View style={styles.dialogActions}>
+          <View style={styles.dialogActions} accessible={false}>
             <Button testID={modalTestId + '::CancelButton'} mode='outlined' onPress={handleDismiss}>
               {t('cancel')}
             </Button>

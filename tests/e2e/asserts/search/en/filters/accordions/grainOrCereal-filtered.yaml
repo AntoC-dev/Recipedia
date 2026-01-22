@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       text: "Cereal"
@@ -8,18 +11,36 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Cereal accordion"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Cereal accordion is displayed"
 
-- assertVisible:
-    text: "Cereal"
-    label: "Cereal accordion title is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Cereal"
+          label: "Cereal accordion title on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Cereal 󰅀"
+          label: "Cereal accordion title with chevron on iOS"
 
 # Expand the accordion
 - tapOn:
     text: "Cereal"
     label: "Expand Cereal accordion"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -29,6 +50,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to the next accordion to ensure all elements are displayed"
 
+
+- waitForAnimationToEnd
 
 # Initialize counter for visible items
 - evalScript: ${output.itemIndex = 0}
@@ -124,6 +147,8 @@ appId: "com.recipedia"
       true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Sushi Rice')=== undefined}
     file: "grainOrCereal-items/sushiRice-hidden.yaml"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -131,6 +156,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll back up to accordion header"
+
+- waitForAnimationToEnd
 
 # Collapse the accordion back
 - tapOn:

@@ -20,6 +20,8 @@ appId: "com.recipedia"
     id: "SearchScreen::FiltersToggleButtons"
     label: "Open filter accordion"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::0"
@@ -28,9 +30,13 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to season accordion"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::0"
     label: "Expand season filter accordion"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -39,6 +45,8 @@ appId: "com.recipedia"
     speed: 50
     centerElement: true
     label: "Scroll to first season filter item"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::0::Item::0"
@@ -56,6 +64,8 @@ appId: "com.recipedia"
     id: "SearchScreen::FiltersToggleButtons"
     label: "Open filter accordion"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::0"
@@ -64,9 +74,13 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to season accordion"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::0"
     label: "Expand season filter accordion"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -75,6 +89,8 @@ appId: "com.recipedia"
     speed: 50
     centerElement: true
     label: "Scroll to first season filter item"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::0::Item::0"

@@ -15,6 +15,8 @@ tags:
     file: "../../asserts/parameters/defaultPersons/en/assertDefaultPersonsSettingsScreen.yaml"
     label: "Assert - Verify Default Persons Settings screen"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "DefaultPersonSettings::PersonsValue"
@@ -22,6 +24,8 @@ tags:
     speed: 60
     centerElement: true
     label: "Scroll to persons value setting"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "DefaultPersonSettings::PersonsValue"
@@ -42,6 +46,8 @@ tags:
     id: "BottomTabs::Search"
     label: "Action - Return to Search screen"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::7::.*"
@@ -49,6 +55,8 @@ tags:
     speed: 60
     centerElement: true
     label: "Action - Scroll to Pesto Pasta recipe"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::RecipeCards::7::.*"
@@ -80,6 +88,8 @@ tags:
     id: "BottomTabs::Search"
     label: "Verification - Return to Search screen"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::7::.*"
@@ -87,6 +97,8 @@ tags:
     speed: 60
     centerElement: true
     label: "Scroll to recipe card"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::RecipeCards::7::.*"
@@ -100,13 +112,17 @@ tags:
     id: "Recipe::AppBar::BackButton"
     label: "Action - Return to Search screen"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::SearchBar"
     direction: UP
     speed: 95
-    centerElement: true
+    timeout: 120000
     label: "Cleanup - Scroll back to top of Search screen"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "BottomTabs::Home"

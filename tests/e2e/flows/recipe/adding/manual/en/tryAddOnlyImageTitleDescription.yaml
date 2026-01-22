@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeDescription::CustomTextInput"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to description text input"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeDescription::CustomTextInput"
@@ -16,5 +21,6 @@ appId: "com.recipedia"
     text: "Description"
     label: "Write the description in the input text"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- tapOn:
+    id: "RecipeDescription::Text"
+    label: "Tap on title to close the keyboard"

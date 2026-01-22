@@ -4,9 +4,21 @@ appId: "com.recipedia"
     id: "Recipe::AppBar::BackButton"
     label: "Back button is displayed"
 
-- assertVisible:
-    text: "󰁍"
-    label: "Back button icon is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          text: "󰁍"
+          label: "Back button icon is displayed on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          text: "Back"
+          label: "Back button icon is displayed on iOS"
 
 - assertVisible:
     id: "RecipeImage"
@@ -32,6 +44,8 @@ appId: "com.recipedia"
     text: "Quick Meal"
     label: "Tag Quick Meal is rendered"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::0::IngredientName"
@@ -39,6 +53,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Pasta ingredient"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::0::IngredientName"
@@ -49,6 +65,8 @@ appId: "com.recipedia"
     text: "400 g"
     label: "Quantity of Pasta is rendered"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::1::IngredientName"
@@ -56,6 +74,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Basil Leaves ingredient"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::1::IngredientName"
@@ -66,6 +86,8 @@ appId: "com.recipedia"
     text: "100 g"
     label: "Quantity of Basil Leaves is rendered"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::2::IngredientName"
@@ -73,6 +95,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Parmesan ingredient"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::2::IngredientName"
@@ -83,6 +107,8 @@ appId: "com.recipedia"
     text: "60 g"
     label: "Quantity of Parmesan is rendered"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::3::IngredientName"
@@ -90,6 +116,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Olive Oil ingredient"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::3::IngredientName"
@@ -100,6 +128,8 @@ appId: "com.recipedia"
     text: "100 ml"
     label: "Quantity of Olive Oil is rendered"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::4::IngredientName"
@@ -107,6 +137,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Pine Nuts ingredient"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::4::IngredientName"
@@ -117,6 +149,8 @@ appId: "com.recipedia"
     text: "40 g"
     label: "Quantity of Pine Nuts is rendered"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTime::Text"
@@ -125,10 +159,14 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to preparation time"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipeTime::Text"
     text: "Preparation (20 min)"
     label: "Preparation title and time is rendered"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -138,10 +176,14 @@ appId: "com.recipedia"
     speed: 60
     label: "Scroll to first preparation step"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
     text: "1) Cook pasta"
     label: "First section of the preparation is rendered"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -151,10 +193,14 @@ appId: "com.recipedia"
     speed: 60
     label: "Scroll to second preparation step"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
     text: "2) Make pesto"
     label: "Second section of the preparation is rendered"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -163,6 +209,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to third preparation step"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"
@@ -199,6 +247,8 @@ appId: "com.recipedia"
     text: "Add to the menu"
     label: "Add to menu button has the correct text"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeImage"
@@ -206,3 +256,6 @@ appId: "com.recipedia"
     speed: 95
     centerElement: true
     label: "Scroll back to top"
+
+- waitForAnimationToEnd
+

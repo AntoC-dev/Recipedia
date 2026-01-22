@@ -9,6 +9,8 @@ appId: "com.recipedia"
     text: "Camembert rôti au miel et mouillettes aux épices"
     label: "Title text is displayed"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeDescription::Text"
@@ -17,10 +19,14 @@ appId: "com.recipedia"
     speed: 40
     label: "Scroll to description section"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipeDescription::Text"
     text: "Né en Normandie, le camembert se fait fondant et gourmand rôti au miel, à savourer avec ses mouillettes épicées !"
     label: "Description text is displayed"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -29,6 +35,8 @@ appId: "com.recipedia"
     centerElement: true
     speed: 40
     label: "Scroll to tags section"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeTags::0::Chip"
@@ -55,6 +63,8 @@ appId: "com.recipedia"
     text: "Protéiné"
     label: "Fifth tag 'Protéiné' is rendered"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePersons::Text"
@@ -62,6 +72,8 @@ appId: "com.recipedia"
     centerElement: true
     speed: 60
     label: "Scroll to ingredients section"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     text: "Ingrédients (4 personnes)"
@@ -126,6 +138,8 @@ appId: "com.recipedia"
       INGREDIENT_QUANTITY_AND_UNIT: "2 g"
     label: "Assert vinaigre ingredient"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTime::Text"
@@ -134,10 +148,14 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to preparation section"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipeTime::Text"
     text: "Préparation (20 min)"
     label: "Preparation section and time are displayed (French)"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -147,10 +165,14 @@ appId: "com.recipedia"
     speed: 60
     label: "Scroll to first preparation section"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
     text: "1) Le camembert rôti"
     label: "First section title is displayed"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -160,10 +182,14 @@ appId: "com.recipedia"
     speed: 60
     label: "Scroll to first section paragraph"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::0::SectionParagraph"
     text: "Préchauffez votre four à 200°C en chaleur tournante !\nPendant ce temps, déposez le camembert sur une plaque allant au four.\nIncisez légèrement le dessus du fromage en croix pour éviter qu’il ne s’ouvre trop à la cuisson.\nParsemez dessus les herbes de Provence et nappez de miel. Poivrez."
     label: "First section paragraph contains all 4 instructions"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -173,10 +199,14 @@ appId: "com.recipedia"
     speed: 60
     label: "Scroll to second preparation section"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
     text: "2) Les mouillettes"
     label: "Second section title is displayed"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -185,6 +215,8 @@ appId: "com.recipedia"
     centerElement: true
     speed: 60
     label: "Scroll to second section paragraph"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::1::SectionParagraph"

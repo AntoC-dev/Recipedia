@@ -15,14 +15,23 @@ tags:
     id: "SearchScreen::SearchBar"
     label: "Action - Focus on search bar to open dropdown"
 
-- hideKeyboard:
-    label: "Action - Dismiss keyboard"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- waitForAnimationToEnd:
+    label: "Wait for screen to finish opening"
 
 - runFlow:
     file: "../../asserts/search/searchbar/searchBarNotFiltered.yaml"
     label: "Assert - Verify search bar dropdown shows all recipes"
 
-- pressKey: "BACK"
+- tapOn:
+    id: "SearchScreen::SearchBar::RightIcon"
+    label: "Action - Close dropdown by tapping close icon"
 
 - runFlow:
     file: "../../asserts/search/en/assertSearchScreen.yaml"

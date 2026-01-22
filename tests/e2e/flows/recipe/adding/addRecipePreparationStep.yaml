@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::AddButton::RoundButton"
@@ -8,9 +11,13 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to preparation section"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipePreparation::AddButton::RoundButton"
     label: "Add preparation step"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -20,6 +27,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to preparation step input"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipePreparation::EditableStep::${INDEX}::TextInputContent::CustomTextInput"
     label: "Focus on preparation step content"
@@ -28,5 +37,6 @@ appId: "com.recipedia"
     text: "${TEXT}"
     label: "Enter preparation step"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- tapOn:
+    id: "RecipePreparation::EditableStep::${INDEX}::Content"
+    label: "Tap on preparation content to close the keyboard"

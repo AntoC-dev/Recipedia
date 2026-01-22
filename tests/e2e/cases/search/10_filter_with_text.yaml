@@ -19,7 +19,13 @@ tags:
     text: "Ca"
     label: "Action - Input text 'Ca' in the Bar"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: "enter"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - runFlow:
     file: "../../asserts/search/en/searchScreenFilteredOnCa.yaml"

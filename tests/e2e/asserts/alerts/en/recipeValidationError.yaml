@@ -1,7 +1,5 @@
 appId: "com.recipedia"
-
 ---
-
 - assertVisible:
     id: "Recipe::Dialog::Title"
     label: "Alert title is displayed"
@@ -29,3 +27,6 @@ appId: "com.recipedia"
 - tapOn:
     id: "Recipe::Dialog::Confirm"
     label: "Close the alert"
+
+- waitForAnimationToEnd:
+    label: "Wait for dialog to close"

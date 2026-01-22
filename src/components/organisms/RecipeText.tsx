@@ -126,7 +126,12 @@ export function RecipeText({ rootText, testID, addOrEditProps }: RecipeTextProps
 
   return (
     <View style={containerStyle}>
-      <Text testID={testID + '::Text'} variant={variant} style={recipeTextStyles.containerElement}>
+      <Text
+        testID={testID + '::Text'}
+        variant={variant}
+        style={recipeTextStyles.containerElement}
+        accessible={true}
+      >
         {rootText.value}
       </Text>
       {addOrEditProps ? <RecipeTextEditablePart {...addOrEditProps} /> : null}

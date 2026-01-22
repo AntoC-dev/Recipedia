@@ -103,9 +103,11 @@ tags:
       id: "SearchScreen::RecipeCards::12::Cover"
     direction: DOWN
     speed: 60
-    timeout: 20000
+    timeout: 60000
     centerElement: true
     label: "Verification - Scroll to third imported recipe"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::RecipeCards::12::Cover"
@@ -131,6 +133,8 @@ tags:
     id: "Recipe::Dialog::Confirm"
     label: "Cleanup - Close confirmation"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::11::Cover"
@@ -138,6 +142,8 @@ tags:
     speed: 40
     centerElement: true
     label: "Verification - Scroll to second imported recipe"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::RecipeCards::11::Cover"
@@ -159,6 +165,8 @@ tags:
     id: "Recipe::Dialog::Confirm"
     label: "Cleanup - Close confirmation"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::10::Cover"
@@ -166,6 +174,8 @@ tags:
     speed: 40
     centerElement: true
     label: "Verification - Scroll to first imported recipe"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::RecipeCards::10::Cover"

@@ -14,6 +14,7 @@ describe('SearchBar Component', () => {
   const defaultProps: SearchBarProps = {
     testId: defaultTestId,
     searchPhrase: '',
+    searchBarClicked: false,
     setSearchBarClicked: mockSetSearchBarClicked,
     updateSearchString: mockUpdateSearchString,
   };
@@ -38,7 +39,7 @@ describe('SearchBar Component', () => {
     expect(textInput.props.placeholder).toBe(defaultPlaceholder);
     expect(textInput.props.onChangeText).toBeDefined();
 
-    if (expectedProps.searchPhrase.length > 0) {
+    if (expectedProps.searchPhrase.length > 0 || expectedProps.searchBarClicked) {
       expect(getByTestId(expectedProps.testId + '::RightIcon')).toBeTruthy();
       expect(getByTestId(expectedProps.testId + '::RightIcon::Icon').props.children).toBe('close');
     } else {
@@ -251,5 +252,68 @@ describe('SearchBar Component', () => {
     expect(Keyboard.dismiss).toHaveBeenCalled();
     expect(mockSetSearchBarClicked).toHaveBeenCalledWith(false);
     expect(mockUpdateSearchString).toHaveBeenCalledWith('');
+  });
+
+  describe('Right icon visibility with searchBarClicked state', () => {
+    test('shows icon when searchBarClicked is true with empty searchPhrase', () => {
+      const prop: SearchBarProps = {
+        ...defaultProps,
+        searchPhrase: '',
+        searchBarClicked: true,
+      };
+      const { getByTestId } = renderSearchBar(prop);
+
+      expect(getByTestId(defaultTestId + '::RightIcon')).toBeTruthy();
+    });
+
+    test('does not show icon when searchBarClicked is false with empty searchPhrase', () => {
+      const prop: SearchBarProps = {
+        ...defaultProps,
+        searchPhrase: '',
+        searchBarClicked: false,
+      };
+      const { queryByTestId } = renderSearchBar(prop);
+
+      expect(queryByTestId(defaultTestId + '::RightIcon')).toBeNull();
+    });
+
+    test('shows icon when searchPhrase has text regardless of searchBarClicked', () => {
+      const propWithClickedFalse: SearchBarProps = {
+        ...defaultProps,
+        searchPhrase: 'test',
+        searchBarClicked: false,
+      };
+      const { getByTestId, rerender } = renderSearchBar(propWithClickedFalse);
+
+      expect(getByTestId(defaultTestId + '::RightIcon')).toBeTruthy();
+
+      const propWithClickedTrue: SearchBarProps = {
+        ...defaultProps,
+        searchPhrase: 'test',
+        searchBarClicked: true,
+      };
+      rerender(<SearchBar {...propWithClickedTrue} />);
+
+      expect(getByTestId(defaultTestId + '::RightIcon')).toBeTruthy();
+    });
+
+    test('toggles icon visibility based on searchBarClicked state changes', () => {
+      const props: SearchBarProps = {
+        ...defaultProps,
+        searchPhrase: '',
+        searchBarClicked: false,
+      };
+      const { queryByTestId, rerender } = renderSearchBar(props);
+
+      expect(queryByTestId(defaultTestId + '::RightIcon')).toBeNull();
+
+      props.searchBarClicked = true;
+      rerender(<SearchBar {...props} />);
+      expect(queryByTestId(defaultTestId + '::RightIcon')).toBeTruthy();
+
+      props.searchBarClicked = false;
+      rerender(<SearchBar {...props} />);
+      expect(queryByTestId(defaultTestId + '::RightIcon')).toBeNull();
+    });
   });
 });

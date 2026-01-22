@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTags::RoundButton"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to tags's adding button"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeTags::RoundButton-content"
@@ -20,4 +25,10 @@ appId: "com.recipedia"
     text: "Japanese"
     label: "Write the tag in the input text"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"

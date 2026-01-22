@@ -1,20 +1,39 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
-      text: "Tags"
+      text: "Tags.*"
     direction: DOWN
     speed: 60
     centerElement: true
     label: "Scroll to Tags accordion"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Tags accordion is displayed"
 
-- assertVisible:
-    text: "Tags"
-    label: "Tags accordion title is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Tags"
+          label: "Tags accordion title on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Tags 󰅀"
+          label: "Tags accordion title with chevron on iOS"
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -96,12 +115,16 @@ appId: "com.recipedia"
     env:
       ITEM_INDEX: "14"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     direction: UP
     centerElement: true
     label: "Scroll back up to Tags accordion header"
+
+- waitForAnimationToEnd
 
 # Collapse the accordion back
 - tapOn:

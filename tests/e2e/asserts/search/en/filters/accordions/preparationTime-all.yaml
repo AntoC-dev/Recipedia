@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       text: "Preparation Time"
@@ -8,13 +11,29 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Preparation Time accordion"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Preparation Time accordion is displayed"
 
-- assertVisible:
-    text: "Preparation Time"
-    label: "Preparation Time accordion title is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Preparation Time"
+          label: "Preparation Time accordion title on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Preparation Time 󰅀"
+          label: "Preparation Time accordion title with chevron on iOS"
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -35,12 +54,16 @@ appId: "com.recipedia"
 - runFlow:
     file: "preparationTime-items/20-30min-visible.yaml"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::7"
     direction: DOWN
     centerElement: true
     label: "Scroll to see remaining preparation time options"
+
+- waitForAnimationToEnd
 
 - runFlow:
     file: "preparationTime-items/30-45min-visible.yaml"
@@ -49,12 +72,16 @@ appId: "com.recipedia"
 - runFlow:
     file: "preparationTime-items/moreThan1Hour-visible.yaml"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     direction: UP
     centerElement: true
     label: "Scroll back to accordion header"
+
+- waitForAnimationToEnd
 
 # Collapse the accordion back
 - tapOn:

@@ -58,12 +58,16 @@ appId: "com.recipedia"
     env:
       STATE: "hidden"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       text: "Sauce"
     direction: DOWN
     centerElement: true
     label: "Scroll to Sauce category"
+
+- waitForAnimationToEnd
 
 - runFlow:
     file: "accordions/sauce.yaml"
@@ -113,13 +117,6 @@ appId: "com.recipedia"
     file: "accordions/fruit.yaml"
     env:
       STATE: "hidden"
-
-- scrollUntilVisible:
-    element:
-      text: "Nuts and Seeds"
-    direction: DOWN
-    centerElement: true
-    label: "Scroll to Nuts and Seeds category"
 
 - runFlow:
     file: "accordions/oilAndFat.yaml"

@@ -11,13 +11,18 @@ tags:
     id: "BottomTabs::Search"
     label: "Action - Navigate to Search screen"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       text: "Pesto Pasta"
     direction: DOWN
     speed: 40
+    timeout: 120000
     centerElement: true
     label: "Action - Scroll to find Pesto Pasta"
+
+- waitForAnimationToEnd
 
 - tapOn:
     text: "Pesto Pasta"
@@ -45,13 +50,18 @@ tags:
       NEW_FAT: "99"
     label: "Action - Make changes to nutrition values"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeImage::Image"
     direction: UP
-    speed: 95
+    speed: 85
+    timeout: 120000
     centerElement: true
     label: "Action - Scroll back to top to find image"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "Recipe::AppBar::Cancel"
@@ -61,6 +71,8 @@ tags:
     file: "../../asserts/recipe/common/buttonsReadOnly.yaml"
     label: "Assert - Verify returned to read-only mode"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::Title"
@@ -68,6 +80,8 @@ tags:
     speed: 60
     centerElement: true
     label: "Action - Scroll to nutrition section"
+
+- waitForAnimationToEnd
 
 - runFlow:
     file: "../../asserts/recipe/common/nutritionReadOnly.yaml"
@@ -83,6 +97,8 @@ tags:
       SALT: "0.85"
     label: "Assert - Verify original nutrition values are preserved (changes were cancelled)"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeImage"
@@ -91,17 +107,23 @@ tags:
     centerElement: true
     label: "Action - Scroll back to top"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "Recipe::AppBar::BackButton"
     label: "Action - Back to the Search Screen"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
       id: "SearchScreen::SearchBar"
     direction: UP
-    speed: 95
-    centerElement: true
+    speed: 85
+    timeout: 120000
     label: "Cleanup - Scroll back to top of Search screen"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "BottomTabs::Home"

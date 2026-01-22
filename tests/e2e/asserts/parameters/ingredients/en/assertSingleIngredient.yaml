@@ -1,6 +1,9 @@
 appId: "com.recipedia"
 
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "IngredientsSettings::${INGREDIENT_INDEX}::IngredientName"
@@ -9,30 +12,38 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to ${INGREDIENT_NAME} ingredient name"
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "IngredientsSettings::${INGREDIENT_INDEX}::IngredientName"
     text: "${INGREDIENT_NAME}"
     label: "Ingredient ${INGREDIENT_NAME} is displayed"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
       id: "IngredientsSettings::${INGREDIENT_INDEX}::EditButton"
     direction: DOWN
     speed: 50
-    centerElement: true
     label: "Scroll to ${INGREDIENT_NAME} edit button"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "IngredientsSettings::${INGREDIENT_INDEX}::EditButton"
     label: "Edit button for ${INGREDIENT_NAME} is displayed"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
       id: "IngredientsSettings::${INGREDIENT_INDEX}::DeleteButton"
     direction: DOWN
     speed: 50
-    centerElement: true
     label: "Scroll to ${INGREDIENT_NAME} delete button"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "IngredientsSettings::${INGREDIENT_INDEX}::DeleteButton"

@@ -1,13 +1,17 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionEmptyState::AddButton::RoundButton"
     direction: DOWN
-    centerElement: true
-    speed: 95
+    speed: 85
+    timeout: 120000
     label: "Scroll to bottom of the screen for nutrition"
 
+- waitForAnimationToEnd
 
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionEmptyState::AddButton::RoundButton"
@@ -21,8 +25,27 @@ appId: "com.recipedia"
     text: "195"
     label: "Enter 195 kcal"
 
-- hideKeyboard:
-    label: "Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -32,6 +55,8 @@ appId: "com.recipedia"
     speed: 40
     label: "Scroll to KJ input"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKj::NumericTextInput"
     label: "Focus on KJ input"
@@ -40,8 +65,28 @@ appId: "com.recipedia"
     text: "816"
     label: "Enter 816 kcal"
 
-- hideKeyboard:
-    label: "Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -51,6 +96,8 @@ appId: "com.recipedia"
     speed: 40
     label: "Scroll to fat input"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::NumericTextInput"
     label: "Focus on fat"
@@ -59,8 +106,28 @@ appId: "com.recipedia"
     text: "8.2"
     label: "Enter 8.2 g for fat"
 
-- hideKeyboard:
-    label: "Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -70,6 +137,8 @@ appId: "com.recipedia"
     speed: 40
     label: "Scroll to saturated fat input"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::SaturatedFat::NumericTextInput"
     label: "Focus on saturated fat"
@@ -78,8 +147,28 @@ appId: "com.recipedia"
     text: "1.8"
     label: "Enter 1.8 for saturated fat"
 
-- hideKeyboard:
-    label: "Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -89,6 +178,8 @@ appId: "com.recipedia"
     speed: 40
     label: "Scroll to carbohydrates input"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Carbohydrates::NumericTextInput"
     label: "Focus on carbohydrates"
@@ -97,8 +188,28 @@ appId: "com.recipedia"
     text: "22"
     label: "Enter 22 for carbohydrates"
 
-- hideKeyboard:
-    label: "Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -108,6 +219,8 @@ appId: "com.recipedia"
     speed: 40
     label: "Scroll to sugar input"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Sugars::NumericTextInput"
     label: "Focus on sugar"
@@ -116,8 +229,28 @@ appId: "com.recipedia"
     text: "2.5"
     label: "Enter 2.5 for sugar"
 
-- hideKeyboard:
-    label: "Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -127,6 +260,8 @@ appId: "com.recipedia"
     speed: 40
     label: "Scroll to fiber input"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fiber::NumericTextInput"
     label: "Focus on fiber"
@@ -135,8 +270,28 @@ appId: "com.recipedia"
     text: "1.2"
     label: "Enter 1.2 for fiber"
 
-- hideKeyboard:
-    label: "Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -146,6 +301,8 @@ appId: "com.recipedia"
     speed: 40
     label: "Scroll to protein input"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::NumericTextInput"
     label: "Focus on protein"
@@ -154,8 +311,28 @@ appId: "com.recipedia"
     text: "12.5"
     label: "Enter 12.5 for protein"
 
-- hideKeyboard:
-    label: "Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -165,6 +342,8 @@ appId: "com.recipedia"
     speed: 40
     label: "Scroll to salt input"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Salt::NumericTextInput"
     label: "Focus on salt"
@@ -173,8 +352,28 @@ appId: "com.recipedia"
     text: "1.85"
     label: "Enter 1.85 for salt"
 
-- hideKeyboard:
-    label: "Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -184,6 +383,8 @@ appId: "com.recipedia"
     speed: 40
     label: "Scroll to portion weight input"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightNumericTextInput"
     label: "Focus on portion weight"
@@ -192,8 +393,16 @@ appId: "com.recipedia"
     text: "160"
     label: "Enter 160 for portion weight"
 
-- hideKeyboard:
-    label: "Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- tapOn:
+    id: "RecipePersons::PrefixText"
+    label: "Tap on prefix text to dismiss keyboard"
+
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "Recipe::AppBar::Validate"

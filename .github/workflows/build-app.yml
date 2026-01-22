@@ -1,0 +1,226 @@
+name: Build App
+
+on:
+  workflow_call:
+    inputs:
+      platform:
+        description: 'Target platform (android or ios)'
+        required: true
+        type: string
+      build-profile:
+        description: 'EAS build profile'
+        required: true
+        type: string
+      artifact-name:
+        description: 'Name for the output artifact'
+        required: true
+        type: string
+      app-filename:
+        description: 'Filename for the app (APK or .app bundle)'
+        required: true
+        type: string
+    secrets:
+      EXPO_TOKEN:
+        required: true
+
+jobs:
+  build:
+    name: Build ${{ inputs.platform == 'ios' && 'iOS App' || 'APK' }} (${{ inputs.build-profile }})
+    runs-on: ${{ inputs.platform == 'ios' && 'macos-15-intel' || 'ubuntu-latest' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed files
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            build_required:
+              - 'src/**'
+              - '${{ inputs.platform }}/**'
+              - 'plugins/**'
+              - 'modules/**'
+              - 'app.json'
+              - 'app.config.ts'
+              - 'eas.json'
+              - 'package.json'
+              - 'package-lock.json'
+              - 'metro.config.js'
+              - 'babel.config.js'
+              - 'tsconfig.json'
+          base: ${{ github.event.pull_request.base.sha || github.event.before }}
+
+      - name: Restore node modules
+        uses: actions/cache/restore@v5
+        with:
+          path: node_modules
+          key: Linux-node_modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            Linux-node_modules-
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+
+      - name: Install dependencies (for cache miss)
+        if: inputs.platform == 'ios'
+        run: npm ci
+
+      - name: Build decision summary
+        env:
+          PLATFORM_LABEL: ${{ inputs.platform == 'ios' && 'iOS app' || 'APK' }}
+        run: |
+          ./.github/scripts/build-decision.sh \
+            "${{ inputs.build-profile }}" \
+            "${{ steps.filter.outputs.build_required }}" \
+            "${{ github.head_ref || github.ref_name }}" \
+            "${{ github.ref }}" \
+            "$PLATFORM_LABEL"
+
+      - name: Find cached app
+        if: |
+          steps.filter.outputs.build_required != 'true' &&
+          github.ref != 'refs/heads/main' &&
+          !startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PLATFORM_LABEL: ${{ inputs.platform == 'ios' && 'iOS app' || 'APK' }}
+        run: |
+          ./.github/scripts/find-cached-artifact.sh \
+            "${{ inputs.artifact-name }}" \
+            "build-test.yml" \
+            "${{ github.head_ref || github.ref_name }}" \
+            "$PLATFORM_LABEL"
+
+      - name: Download cached app
+        if: |
+          steps.filter.outputs.build_required != 'true' &&
+          github.ref != 'refs/heads/main' &&
+          !startsWith(github.ref, 'refs/tags/') &&
+          env.CACHED_RUN_ID != ''
+        continue-on-error: true
+        id: download
+        uses: actions/download-artifact@v6
+        with:
+          name: ${{ inputs.artifact-name }}
+          run-id: ${{ env.CACHED_RUN_ID }}
+          github-token: ${{ github.token }}
+
+      - name: Handle download failure
+        if: |
+          steps.filter.outputs.build_required != 'true' &&
+          github.ref != 'refs/heads/main' &&
+          !startsWith(github.ref, 'refs/tags/') &&
+          steps.download.outcome == 'failure'
+        env:
+          PLATFORM_LABEL: ${{ inputs.platform == 'ios' && 'iOS app' || 'APK' }}
+        run: |
+          echo "⚠️  Download failed → Will build fresh $PLATFORM_LABEL"
+          echo "BUILD_FALLBACK=true" >> $GITHUB_ENV
+
+      - name: Setup Android build environment
+        if: |
+          inputs.platform == 'android' && (
+            steps.filter.outputs.build_required == 'true' ||
+            github.ref == 'refs/heads/main' ||
+            startsWith(github.ref, 'refs/tags/') ||
+            env.BUILD_FALLBACK == 'true'
+          )
+        uses: ./.github/actions/setup-android-build
+        with:
+          eas-version: '16.3.0'
+          expo-token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Setup iOS build environment
+        if: |
+          inputs.platform == 'ios' && (
+            steps.filter.outputs.build_required == 'true' ||
+            github.ref == 'refs/heads/main' ||
+            startsWith(github.ref, 'refs/tags/') ||
+            env.BUILD_FALLBACK == 'true'
+          )
+        uses: ./.github/actions/setup-ios-build
+        with:
+          eas-version: '16.3.0'
+          expo-token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Build app
+        if: |
+          steps.filter.outputs.build_required == 'true' ||
+          github.ref == 'refs/heads/main' ||
+          startsWith(github.ref, 'refs/tags/') ||
+          env.BUILD_FALLBACK == 'true'
+        run: npm run build:${{ inputs.build-profile }}:${{ inputs.platform }}
+
+      - name: Package Android APK
+        if: |
+          inputs.platform == 'android' && (
+            steps.filter.outputs.build_required == 'true' ||
+            github.ref == 'refs/heads/main' ||
+            startsWith(github.ref, 'refs/tags/') ||
+            env.BUILD_FALLBACK == 'true'
+          )
+        run: |
+          mv build-*.apk ${{ inputs.app-filename }}
+          echo "✅ APK built: ${{ inputs.app-filename }}"
+
+      - name: Package iOS app bundle
+        if: |
+          inputs.platform == 'ios' && (
+            steps.filter.outputs.build_required == 'true' ||
+            github.ref == 'refs/heads/main' ||
+            startsWith(github.ref, 'refs/tags/') ||
+            env.BUILD_FALLBACK == 'true'
+          )
+        run: |
+          # EAS local build outputs a .tar.gz archive
+          TARBALL=$(find . -name "build-*.tar.gz" -type f | head -1)
+          if [ -z "$TARBALL" ]; then
+            echo "❌ No build tarball found!"
+            exit 1
+          fi
+          echo "📦 Found build archive: $TARBALL"
+
+          # Extract to temp directory to avoid naming conflicts
+          mkdir -p _extracted
+          tar -xzf "$TARBALL" -C _extracted
+
+          # Find the .app bundle
+          APP_PATH=$(find _extracted -name "*.app" -type d | head -1)
+          if [ -z "$APP_PATH" ]; then
+            echo "❌ No .app bundle found after extraction!"
+            exit 1
+          fi
+          echo "📱 Found app: $APP_PATH"
+
+          mv "$APP_PATH" "${{ inputs.app-filename }}"
+          zip -r "${{ inputs.app-filename }}.zip" "${{ inputs.app-filename }}"
+          rm -rf _extracted
+          echo "✅ iOS app built and packaged: ${{ inputs.app-filename }}.zip"
+
+      - name: Verify app availability
+        env:
+          PLATFORM_LABEL: ${{ inputs.platform == 'ios' && 'iOS app' || 'APK' }}
+          APP_FILE: ${{ inputs.platform == 'ios' && format('{0}.zip', inputs.app-filename) || inputs.app-filename }}
+        run: |
+          if [ -f "$APP_FILE" ]; then
+            if [ "${{ env.CACHED_RUN_ID }}" != "" ]; then
+              echo "✅ Using cached $PLATFORM_LABEL from run #${{ env.CACHED_RUN_ID }}"
+            else
+              echo "✅ Using freshly built $PLATFORM_LABEL"
+            fi
+          else
+            echo "❌ $APP_FILE not found!"
+            exit 1
+          fi
+
+      - name: Upload app
+        uses: actions/upload-artifact@v5
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: ${{ inputs.platform == 'ios' && format('{0}.zip', inputs.app-filename) || inputs.app-filename }}
+          retention-days: 7

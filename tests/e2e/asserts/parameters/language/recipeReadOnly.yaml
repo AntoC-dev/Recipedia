@@ -2,16 +2,23 @@ appId: "com.recipedia"
 ---
 # TODO a lot is missing here
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePersons::Text"
     direction: DOWN
     speed: 60
     centerElement: true
+
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePersons::Text"
     text: "Ingrédients (4 personnes)"
     label: "Persons text is displayed in French"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -19,6 +26,9 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 60
     centerElement: true
+
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipeTime::Text"
     text: "Préparation (20 min)"
@@ -27,10 +37,16 @@ appId: "com.recipedia"
     id: "Recipe::BottomActionButton-text"
     text: "Ajouter au menu"
     label: "Read only validate button is displayed in French"
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeImage::Image"
     direction: UP
     speed: 60
     centerElement: true
+
+- waitForAnimationToEnd
+
 # TODO add the alert for deleting recipe

@@ -6,25 +6,23 @@ Pod::Spec.new do |s|
   s.homepage       = 'https://github.com/example/recipedia'
   s.license        = 'MIT'
   s.author         = { 'Recipedia' => 'contact@recipedia.app' }
-  s.platform       = :ios, '13.4'
+  s.platform       = :ios, '18.0'
   s.swift_version  = '5.0'
   s.source         = { git: '' }
   s.source_files   = '*.swift'
 
   # Exclude scripts and Python source from source_files
-  s.exclude_files  = 'scripts/**/*', 'python/**/*'
+  s.exclude_files = 'scripts/**/*', 'python/**/*'
 
   # Python runtime framework (added by setup script during prebuild)
   s.vendored_frameworks = 'Frameworks/Python.xcframework'
 
-  # Bundle Python stdlib and packages as resources
-  s.resource_bundles = {
-    'RecipeScraperPython' => [
-      'Frameworks/python-stdlib/**/*',
-      'python_packages/**/*',
-      'python/**/*'
-    ]
-  }
+  # Use .bundle wrappers created by setup-python.sh (avoids codesign issues in Xcode 26+)
+  # Bundles are treated as opaque data containers, not code objects
+  s.resources = [
+    'Frameworks/PythonStdlib.bundle',
+    'Frameworks/PythonPackages.bundle'
+  ]
 
   # Preserve paths for Python resources
   s.preserve_paths = 'Frameworks/**/*', 'python_packages/**/*', 'python/**/*', 'scripts/**/*'
@@ -38,7 +36,8 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig = {
     'SWIFT_INCLUDE_PATHS' => '$(inherited) "${PODS_TARGET_SRCROOT}/Frameworks"',
     'FRAMEWORK_SEARCH_PATHS' => '$(inherited) "${PODS_TARGET_SRCROOT}/Frameworks"',
-    'LD_RUNPATH_SEARCH_PATHS' => '$(inherited) @executable_path/Frameworks @loader_path/Frameworks'
+    'LD_RUNPATH_SEARCH_PATHS' => '$(inherited) @executable_path/Frameworks @loader_path/Frameworks',
+    'CODE_SIGNING_ALLOWED' => 'NO'
   }
 
   # Script phases for build

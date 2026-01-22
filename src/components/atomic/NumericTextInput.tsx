@@ -26,7 +26,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Keyboard, StyleProp, TextStyle } from 'react-native';
+import { Keyboard, StyleProp, TextStyle, View } from 'react-native';
 import { TextInput, useTheme } from 'react-native-paper';
 import { defaultValueNumber } from '@utils/Constants';
 
@@ -123,21 +123,24 @@ export function NumericTextInput({
   ];
 
   return (
-    <TextInput
-      testID={testID}
-      label={label}
-      value={rawText}
-      onChangeText={handleChangeText}
-      onFocus={handleFocus}
-      onBlur={handleBlur}
-      mode={mode}
-      dense={dense}
-      keyboardType={keyboardType}
-      editable={editable}
-      style={inputStyle}
-      contentStyle={contentStyle}
-      right={right}
-    />
+    <View style={style} pointerEvents={'box-none'} accessible={false}>
+      <TextInput
+        testID={testID}
+        nativeID={testID}
+        label={label}
+        value={rawText}
+        onChangeText={handleChangeText}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        mode={mode}
+        dense={dense}
+        keyboardType={keyboardType}
+        editable={editable}
+        style={inputStyle}
+        contentStyle={contentStyle}
+        right={right}
+      />
+    </View>
   );
 }
 

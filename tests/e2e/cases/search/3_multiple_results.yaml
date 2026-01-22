@@ -17,9 +17,6 @@ tags:
 
 - inputText: "Ca"
 
-- hideKeyboard:
-    label: "Action - Dismiss keyboard"
-
 - runFlow:
     file: "../../asserts/search/searchbar/searchBarFilteredOnCa.yaml"
     label: "Assert - Verify search bar dropdown shows filtered results for 'Ca'"

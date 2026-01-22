@@ -4,6 +4,18 @@ appId: "com.recipedia"
     file: "../../en/addRecipeImage.yaml"
     label: "Add recipe image"
 
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTitle::CustomTextInput"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to title text input"
+
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeTitle::CustomTextInput"
     label: "Press the TextInput of title"
@@ -12,8 +24,11 @@ appId: "com.recipedia"
     text: "Aiguillettes de poulet a la sauce satay"
     label: "Enter text for recipe title"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- tapOn:
+    id: "RecipeTitle::Text"
+    label: "Tap the title to close the keyboard"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -23,6 +38,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to description text input"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeDescription::CustomTextInput"
     label: "Press the TextInput of description"
@@ -31,8 +48,11 @@ appId: "com.recipedia"
     text: "Cuisinez nos filets de poulet francais avec du riz basmati bio et une sauce satay maison: un condiment asiatique a base de cacahuetes et gingembre !"
     label: "Enter text for recipe description"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- tapOn:
+    id: "RecipeDescription::Text"
+    label: "Tap the description to close the keyboard"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -41,6 +61,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to tags's adding button"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeTags::RoundButton"
@@ -54,32 +76,69 @@ appId: "com.recipedia"
     text: "Healthy"
     label: "Enter text for recipe first tag"
 
-- pressKey: enter
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "RecipeTags::RoundButton"
     label: "Press the round button of second tags"
 
+- scroll:
+    label: "Scroll a little more to ensure the dropdown will be visible"
+
+- assertVisible:
+    id: "RecipeTags::List::1::CustomTextInput"
+    label: "Assert - TextInput of second tags is visible"
+
 - tapOn:
     id: "RecipeTags::List::1::CustomTextInput"
     label: "Press the TextInput of second tags"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- extendedWaitUntil:
+    visible:
+      id: "RecipeTags::List::1::AutocompleteItem::Breakfast"
+    timeout: 30000
+    label: "Wait for the autocomplete list to appear"
 
-- repeat:
-    while:
-      notVisible:
-        text: "Italian"
-    commands:
-      - swipe:
-          start: "50%,40%"
-          end: "50%,25%"
-          label: "Swipe down to see dropdown items"
+- swipe:
+    start: "50%,40%"
+    end: "50%,25%"
+    label: "Swipe down to scroll dropdown"
+
+- assertVisible:
+    text: "Italian"
+    label: "Assert - Italian tag is displayed"
 
 - tapOn:
+    id: "RecipeTags::List::.*::AutocompleteItem::Italian"
     text: "Italian"
     label: "Press the tag from dropdown list"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipeTags::1::Chip"
+    timeout: 30000
+    label: "Wait for the second chip to appear"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -88,6 +147,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to ingredients section"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeIngredients::AddButton::RoundButton"
@@ -101,8 +162,13 @@ appId: "com.recipedia"
     text: "200"
     label: "Enter text for recipe first ingredient quantity"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "RecipeIngredients::0::NameInput::CustomTextInput"
@@ -112,7 +178,15 @@ appId: "com.recipedia"
     text: "Chicken Breast"
     label: "Enter text for recipe first ingredient name"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: Enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -121,11 +195,15 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to ensure add button is still visible"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeIngredients::AddButton::RoundButton"
     label: "Press the round button of second ingredient"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::AddButton::RoundButton"
@@ -134,9 +212,13 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to ensure add button is still visible"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeIngredients::AddButton::RoundButton"
     label: "Press the round button of third ingredient"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -146,6 +228,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to second ingredient quantity input"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeIngredients::1::QuantityInput"
     label: "Press the TextInput of second ingredient's quantity"
@@ -154,7 +238,13 @@ appId: "com.recipedia"
     text: "2"
     label: "Enter text for recipe second ingredient quantity"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: Enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "RecipeIngredients::1::NameInput::CustomTextInput"
@@ -164,12 +254,11 @@ appId: "com.recipedia"
     text: "Oni"
     label: "Enter text for recipe second ingredient name (partial)"
 
-- hideKeyboard:
-    label: "Hide the keyboard"
-
 - tapOn:
     id: "RecipeIngredients::1::NameInput::AutocompleteItem::Onions"
     label: "Press the ingredient from the dropdown"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -179,6 +268,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to ensure add button is visible"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeIngredients::AddButton::RoundButton"
     label: "Press the round button of third ingredient"
@@ -187,8 +278,13 @@ appId: "com.recipedia"
     id: "RecipeIngredients::2::NameInput::CustomTextInput"
     label: "Press the TextInput of third ingredient's name"
 
-- hideKeyboard:
-    label: "Hide the keyboard "
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "RecipeIngredients::2::NameInput::AutocompleteItem::Avocado"
@@ -202,7 +298,15 @@ appId: "com.recipedia"
     text: "5"
     label: "Enter text for recipe third ingredient quantity"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: Enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -212,6 +316,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to persons section"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeTime::NumericTextInput"
     label: "Press the TextInput of time"
@@ -220,7 +326,15 @@ appId: "com.recipedia"
     text: "20"
     label: "Enter text for recipe time"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: Enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -230,9 +344,13 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to preparation section"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipePreparation::AddButton::RoundButton"
     label: "Press the round button of first preparation"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -242,6 +360,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to first preparation title input"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
     label: "Press the TextInput of first preparation title"
@@ -250,8 +370,9 @@ appId: "com.recipedia"
     text: "Le riz"
     label: "Enter text for recipe first preparation title"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- tapOn:
+    id: "RecipePreparation::EditableStep::0::Title"
+    label: "Tap on the title text to close the keyboard"
 
 - tapOn:
     id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
@@ -261,8 +382,11 @@ appId: "com.recipedia"
     text: "Portez a ebullition une casserole d'eau salee.Faites cuire le riz selon les indications du paquet.Pendant ce temps, preparez les filets de poulet a la sauce satay."
     label: "Enter text for recipe first preparation paragraph"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- tapOn:
+    id: "RecipePreparation::EditableStep::0::Content"
+    label: "Tap on the content text to close the keyboard"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -272,9 +396,13 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to see the add button of second preparation"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipePreparation::AddButton::RoundButton"
     label: "Press the round button of second preparation"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -284,6 +412,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to second preparation title input"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipePreparation::EditableStep::1::TextInputTitle::CustomTextInput"
     label: "Press the TextInput of second preparation title"
@@ -292,8 +422,11 @@ appId: "com.recipedia"
     text: "La sauce"
     label: "Enter text for recipe second preparation title"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- tapOn:
+    id: "RecipePreparation::EditableStep::1::Title"
+    label: "Tap on the title text to close the keyboard"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -303,6 +436,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to preparation section"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
     label: "Press the TextInput of second preparation paragraph"
@@ -311,26 +446,39 @@ appId: "com.recipedia"
     text: "Dans le bol d'un mixeur, deposez les ingredients suivants :"
     label: "Enter text for recipe second preparation paragraph (first line)"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - inputText:
     text: "epluchez et hachez le gingembre."
     label: "Enter text for recipe second preparation paragraph (second line)"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - inputText:
     text: "Ajoutez les cacahuetes, le sucre et le lait de coco."
     label: "Enter text for recipe second preparation paragraph (third line)"
 
-- pressKey: enter
-
 - inputText:
     text: "Salez, poivrez. Mixez jusqu'a obtenir une texture homogene."
     label: "Enter text for recipe second preparation paragraph (fourth line)"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- tapOn:
+    id: "RecipePreparation::EditableStep::1::Content"
+    label: "Tap on the content text to close the keyboard"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -340,11 +488,15 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to second preparation title input"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipePreparation::AddButton::RoundButton"
     waitToSettleTimeoutMs: 0
     retryTapIfNoChange: false
     label: "Press the round button of third preparation"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -354,6 +506,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to third preparation title input"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipePreparation::EditableStep::2::TextInputTitle::CustomTextInput"
     label: "Press the TextInput of third preparation title"
@@ -362,8 +516,11 @@ appId: "com.recipedia"
     text: "LA CUISSON DU POULET"
     label: "Enter text for recipe third preparation title"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- tapOn:
+    id: "RecipePreparation::EditableStep::2::Title"
+    label: "Tap on the title text to close the keyboard"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -373,16 +530,21 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to third preparation paragraph input"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipePreparation::EditableStep::2::TextInputContent::CustomTextInput"
     label: "Press the TextInput of third preparation paragraph"
 
 - inputText:
-    text: "Coupez les filets de poulet en lanieres.\nemincez l'oignon.\nPressez ou hachez l'ail.\nDans une poele, faites chauffer un filet d'huile de cuisson a feu moyen a vif.\n"
+    text: "Coupez les filets de poulet en lanieres.\nemincez l'oignon.\nPressez ou hachez l'ail.\nDans une poele, faites chauffer un filet d'huile de cuisson a feu moyen a vif."
     label: "Enter text for recipe third preparation paragraph"
 
-- hideKeyboard:
-    label: "Close the keyboard"
+- tapOn:
+    id: "RecipePreparation::EditableStep::2::Content"
+    label: "Tap on the content text to close the keyboard"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -391,3 +553,6 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to see the nutrition add button"
+
+- waitForAnimationToEnd
+

@@ -46,7 +46,15 @@ tags:
     text: "Camembert"
     label: "Verification - Search for new recipe"
 
-- pressKey: enter
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: "ENTER"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -55,6 +63,8 @@ tags:
     speed: 40
     centerElement: true
     label: "Scroll to recipe card"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::RecipeCards::0::.*"

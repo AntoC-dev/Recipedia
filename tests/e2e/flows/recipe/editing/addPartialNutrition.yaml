@@ -1,6 +1,8 @@
 appId: "com.recipedia"
 ---
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
@@ -8,6 +10,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to energy kcal field"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
@@ -17,8 +21,15 @@ appId: "com.recipedia"
     text: "250"
     label: "Enter energy kcal value"
 
-- hideKeyboard:
-    label: "Close keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -28,6 +39,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to energy kj field"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKj::NumericTextInput"
     label: "Tap energy kj input"
@@ -36,8 +49,15 @@ appId: "com.recipedia"
     text: "1000"
     label: "Enter energy kj value"
 
-- hideKeyboard:
-    label: "Close keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -48,6 +68,8 @@ appId: "com.recipedia"
     label: "Scroll to fat field"
 
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::NumericTextInput"
     label: "Tap fat input"
@@ -56,8 +78,15 @@ appId: "com.recipedia"
     text: "10"
     label: "Enter fat value"
 
-- hideKeyboard:
-    label: "Close keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -67,6 +96,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to carbohydrates field"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Carbohydrates::NumericTextInput"
     label: "Tap carbohydrates input"
@@ -75,8 +106,15 @@ appId: "com.recipedia"
     text: "30"
     label: "Enter carbohydrates value"
 
-- hideKeyboard:
-    label: "Close keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -86,6 +124,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to sugar field"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Sugars::NumericTextInput"
     label: "Tap sugar input"
@@ -94,8 +134,15 @@ appId: "com.recipedia"
     text: "1"
     label: "Enter sugar value"
 
-- hideKeyboard:
-    label: "Close keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -105,6 +152,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to fiber field"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fiber::NumericTextInput"
     label: "Tap fiber input"
@@ -113,8 +162,15 @@ appId: "com.recipedia"
     text: "42"
     label: "Enter fiber value"
 
-- hideKeyboard:
-    label: "Close keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -124,6 +180,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to protein field"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::NumericTextInput"
     label: "Tap protein input"
@@ -132,8 +190,15 @@ appId: "com.recipedia"
     text: "15"
     label: "Enter protein value"
 
-- hideKeyboard:
-    label: "Close keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -143,6 +208,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to salt field"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Salt::NumericTextInput"
     label: "Tap salt input"
@@ -151,5 +218,10 @@ appId: "com.recipedia"
     text: "3"
     label: "Enter salt value"
 
-- hideKeyboard:
-    label: "Close keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: enter
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"

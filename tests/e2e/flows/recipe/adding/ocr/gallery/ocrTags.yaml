@@ -1,5 +1,8 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTags::OpenModal::RoundButton"
@@ -7,6 +10,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to tags section"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeTags::OpenModal::RoundButton"
@@ -18,14 +23,23 @@ appId: "com.recipedia"
       FIELD_NAME: tags
     when:
       platform: Android
-# TODO iOS
+- runFlow:
+    file: ../iOS/addMedia.yaml
+    env:
+      FIELD_NAME: tags
+    when:
+      platform: iOS
 
 - runFlow:
     file: ../android/selectMostRecentFromModal.yaml
     label: "Select tags from modal for OCR"
     when:
       platform: Android
-# TODO iOS
+- runFlow:
+    file: ../iOS/selectMostRecentFromModal.yaml
+    label: "Select tags from modal for OCR"
+    when:
+      platform: iOS
 
 - runFlow:
     file: "../../../validation/validateAllTags.yaml"

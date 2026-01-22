@@ -3,6 +3,7 @@ appId: "com.recipedia"
 tags:
   - recipe-create
 ---
+- eraseText
 - runFlow:
     file: "../../flows/setupFirstTest.yaml"
     label: "Setup - Launch app and wait for ready"
@@ -43,6 +44,8 @@ tags:
 
 - pressKey: enter
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::0::.*"
@@ -50,6 +53,8 @@ tags:
     speed: 40
     centerElement: true
     label: "Scroll to recipe card"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::RecipeCards::0::.*"

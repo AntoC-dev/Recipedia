@@ -25,12 +25,16 @@ appId: "com.recipedia"
     end: "50%,20%"
     label: "Continue scrolling"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "SearchScreen::SearchBar"
     direction: UP
     speed: 90
     label: "Scroll back to SearchBar"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::FiltersToggleButtons"
@@ -42,6 +46,8 @@ appId: "com.recipedia"
     timeout: 5000
     label: "Wait for filter accordions"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       text: "Tags"
@@ -49,9 +55,13 @@ appId: "com.recipedia"
     speed: 40
     label: "Scroll to Tags accordion"
 
+- waitForAnimationToEnd
+
 - tapOn:
     text: "Tags"
     label: "Expand Tags accordion"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -60,9 +70,13 @@ appId: "com.recipedia"
     speed: 40
     label: "Scroll to Breakfast tag"
 
+- waitForAnimationToEnd
+
 - tapOn:
     text: "Breakfast"
     label: "Select Breakfast filter"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -72,9 +86,13 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Cheese accordion"
 
+- waitForAnimationToEnd
+
 - tapOn:
     text: "Cheese"
     label: "Expand Cheese accordion"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -84,9 +102,13 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Parmesan item"
 
+- waitForAnimationToEnd
+
 - tapOn:
     text: "Parmesan"
     label: "Select Parmesan filter"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -94,6 +116,8 @@ appId: "com.recipedia"
     direction: UP
     speed: 40
     label: "Scroll to search bar"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::FiltersToggleButtons"

@@ -35,8 +35,26 @@ tags:
     text: "TestIngredient"
     label: "Action - Enter new ingredient name"
 
-- hideKeyboard:
-    label: "Action - Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::Menu::Button"
@@ -54,8 +72,26 @@ tags:
     text: "g"
     label: "Action - Enter unit"
 
-- hideKeyboard:
-    label: "Action - Hide keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::12"
@@ -65,13 +101,18 @@ tags:
     id: "IngredientsSettings::ItemDialog::AddModal::ConfirmButton"
     label: "Action - Confirm adding new ingredient"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       text: "TestIngredient"
     direction: UP
-    speed: 60
+    speed: 70
+    timeout: 240000
     centerElement: true
     label: "Action - Scroll to new ingredient"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "IngredientsSettings::34::IngredientName"

@@ -1,12 +1,18 @@
 appId: "com.recipedia"
 ---
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "IngredientsSettings::30::EditButton"
     direction: UP
     speed: 70
+    timeout: 120000
     centerElement: true
     label: "Scroll up to find Spaghetti ingredient for edit test"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     text: "Spaghetti"
@@ -23,8 +29,26 @@ appId: "com.recipedia"
     text: " Modified"
     label: "Modify ingredient name"
 
-- hideKeyboard:
-    label: "Dismiss keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::CancelButton"

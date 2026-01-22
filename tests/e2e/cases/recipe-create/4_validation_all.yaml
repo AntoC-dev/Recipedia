@@ -25,6 +25,8 @@ tags:
       MISSING_ELEMENTS: "\n\t- an image\n\t- a title\n\t- some ingredients\n\t- some instructions for the preparation\n\t- a preparation time"
     label: "Assert - Verify validation error for all missing elements"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionEmptyState::AddButton::RoundButton"
@@ -32,6 +34,8 @@ tags:
     speed: 95
     centerElement: true
     label: "Action - Scroll to nutrition section"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionEmptyState::AddButton::RoundButton"
@@ -89,6 +93,8 @@ tags:
       MISSING_ELEMENTS: "\n\t- an image\n\t- a title\n\t- some ingredients\n\t- some instructions for the preparation\n\t- a preparation time"
     label: "Assert - Verify validation error NO LONGER includes nutrition"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeImage"
@@ -96,6 +102,8 @@ tags:
     centerElement: true
     speed: 95
     label: "Action - Scroll back to top"
+
+- waitForAnimationToEnd
 
 - runFlow:
     file: "../../flows/recipe/adding/en/addRecipeImage.yaml"
@@ -168,22 +176,34 @@ tags:
     label: "Assert - Verify validation error for missing ingredients and preparation"
 
 - runFlow:
-    file: "../../flows/recipe/adding/manual/en/tryAddOnlyImageTitleDescriptionTagPersonIngredient.yaml"
-    label: "Action - Add ingredient"
+    when:
+      platform: Android
+    commands:
+      - runFlow:
+          file: "../../flows/recipe/adding/manual/en/tryAddOnlyImageTitleDescriptionTagPersonIngredient.yaml"
+          label: "Action - Add ingredient"
 
-- tapOn:
-    id: "Recipe::BottomActionButton"
-    label: "Action - Validate the recipe"
+      - tapOn:
+          id: "Recipe::BottomActionButton"
+          label: "Action - Validate the recipe"
+
+      - runFlow:
+          file: "../../asserts/alerts/en/recipeValidationError.yaml"
+          env:
+            MISSING_ELEMENTS: "\n\t- names for all ingredients\n\t- quantities for all ingredients\n\t- all ingredients to be known by Recipedia\n\t- some instructions for the preparation\n\t- a preparation time"
+          label: "Assert - Verify validation error for missing name on ingredient and preparation"
+
+      - runFlow:
+          file: "../../flows/recipe/adding/manual/en/fixIngredientName.yaml"
+          label: "Action - Validate the ingredient name"
 
 - runFlow:
-    file: "../../asserts/alerts/en/recipeValidationError.yaml"
-    env:
-      MISSING_ELEMENTS: "\n\t- names for all ingredients\n\t- quantities for all ingredients\n\t- all ingredients to be known by Recipedia\n\t- some instructions for the preparation\n\t- a preparation time"
-    label: "Assert - Verify validation error for missing name on ingredient and preparation"
-
-- runFlow:
-    file: "../../flows/recipe/adding/manual/en/fixIngredientName.yaml"
-    label: "Action - Validate the ingredient name"
+    when:
+      platform: iOS
+    commands:
+      - runFlow:
+          file: "../../flows/recipe/adding/manual/en/tryAddOnlyImageTitleDescriptionTagPersonIngredient.yaml"
+          label: "Action - Add ingredient"
 
 - tapOn:
     id: "Recipe::BottomActionButton"

@@ -5,6 +5,8 @@ appId: "com.recipedia"
     text: "Chocolate Cake"
     label: "Title input shows 'Chocolate Cake'"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipePersons::NumericTextInput"
@@ -12,10 +14,14 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePersons::NumericTextInput"
     text: "4"
     label: "Number of persons is 4"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -24,10 +30,14 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
 
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipeIngredients::PrefixText"
     text: "Ingredients: "
     label: "Section Ingredients is rendered"
+
+- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -36,6 +46,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Flour ingredient"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::0::QuantityInput"
@@ -47,6 +59,8 @@ appId: "com.recipedia"
     text: "Flour"
     label: "First ingredient is Flour"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::1::QuantityInput"
@@ -54,6 +68,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Cocoa Powder ingredient"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::1::QuantityInput"
@@ -65,6 +81,8 @@ appId: "com.recipedia"
     text: "Cocoa Powder"
     label: "Second ingredient is Cocoa Powder"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::2::QuantityInput"
@@ -72,6 +90,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Sugar ingredient"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::2::QuantityInput"
@@ -83,6 +103,8 @@ appId: "com.recipedia"
     text: "Sugar"
     label: "Third ingredient is Sugar"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::3::QuantityInput"
@@ -90,6 +112,8 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Butter ingredient"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::3::QuantityInput"
