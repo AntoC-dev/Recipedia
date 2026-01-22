@@ -1,3 +1,33 @@
+## [2.12.0](https://github.com/AntoC-dev/Recipedia/compare/v2.11.1...v2.12.0) (2026-01-22)
+
+### Features
+
+* **app-config:** add iOS deployment target configuration ([0587541](https://github.com/AntoC-dev/Recipedia/commit/0587541c1aac9fea12952d42859e631af3b33a73))
+* **app-config:** add iOS privacy descriptions for camera and photo ([77df272](https://github.com/AntoC-dev/Recipedia/commit/77df2723b7f90ab2391d1d895d0bd5520b722c85))
+* **ImagePicker:** update cropping defaults and add sortOrder ([33e10f8](https://github.com/AntoC-dev/Recipedia/commit/33e10f8f12d93951b52d96c4eb7fce3810de994c))
+* iOS ([#171](https://github.com/AntoC-dev/Recipedia/issues/171)) ([f856f3d](https://github.com/AntoC-dev/Recipedia/commit/f856f3d78649befe8eb63b705de0d70277be9af9))
+* **logger:** add file-based logging for production and CI debugging ([61cef33](https://github.com/AntoC-dev/Recipedia/commit/61cef33a605cc6c5907dd4d2ceb4c34f6758d6b9))
+* **OCR:** improve OCR ingredient and preparation parsing ([61fb142](https://github.com/AntoC-dev/Recipedia/commit/61fb142c6d5addcf0b6cbcb4293b912900e0d584))
+* **recipe-scraper:** add cross-platform TypeScript enhancements ([a45d522](https://github.com/AntoC-dev/Recipedia/commit/a45d52220e8781a081b08532fff7ca0a693be575))
+* **recipe-scraper:** update iOS support and streamline Python handling ([f31b89b](https://github.com/AntoC-dev/Recipedia/commit/f31b89bf8192631113a12a6f515e3474048a6af7))
+* **RecipeIngredients:** improve accessibility ([d7f0301](https://github.com/AntoC-dev/Recipedia/commit/d7f03018236ebed4aabd2fbff8dbed3173811087))
+* **SearchBar:** add `searchBarClicked` state to enhance focus handling ([44874b0](https://github.com/AntoC-dev/Recipedia/commit/44874b0810d75e567702cc4a92c55458b52971e0))
+
+### Bug Fixes
+
+* **e2e:** add accessibilityLabel for iOS testID compatibility ([d415d27](https://github.com/AntoC-dev/Recipedia/commit/d415d274f2a9db11430ee36bc5e1a529eba8cbb2))
+* **e2e:** add platform condition for dark mode icon assertion on Android ([b9e3248](https://github.com/AntoC-dev/Recipedia/commit/b9e324857b5ccb5aca79ca7811a622097482c80f))
+* **e2e:** add platform-specific assertions for language options ([33818e7](https://github.com/AntoC-dev/Recipedia/commit/33818e7593a3b1361d36c481d948f042749529ac))
+* **e2e:** iOS compatibility for FAB and BottomTabs testIDs ([495e6ab](https://github.com/AntoC-dev/Recipedia/commit/495e6ab4556155e04f40f9f2bbf9f75e80a9066d))
+* **e2e:** stabilize iOS CI tests with wait before/after scroll operation ([b8a368f](https://github.com/AntoC-dev/Recipedia/commit/b8a368f0cb887b66297ec9bef8d9c659351c3517))
+* **e2e:** use platform-specific keyboard dismissal for iOS modals ([026a1d6](https://github.com/AntoC-dev/Recipedia/commit/026a1d68aa7600947a3d3bad4ab41d1d31bffc46))
+* **RecipeSelectionCard:** adjust testID prop and simplify JSX structure ([5adbdca](https://github.com/AntoC-dev/Recipedia/commit/5adbdcaf1996c9097d31396e8a739a5ac6b38625))
+
+### Performance Improvements
+
+* **ci:** add build caching optimizations for faster builds ([54bf8a7](https://github.com/AntoC-dev/Recipedia/commit/54bf8a734b25d33a87f02d61b3a86c1e91608348))
+* update reassure baseline [skip ci] ([d16692b](https://github.com/AntoC-dev/Recipedia/commit/d16692b8530f51fd8acedae3be78f0afbaa0e0f3))
+
 ## [2.11.1](https://github.com/AntoC-dev/Recipedia/compare/v2.11.0...v2.11.1) (2026-01-05)
 
 ### Performance Improvements
