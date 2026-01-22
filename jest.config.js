@@ -4,7 +4,7 @@ module.exports = {
         '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
     },
     testMatch: ['**/tests/unit/**/*.test.{js,jsx,ts,tsx}'],
-    maxWorkers: '50%',
+    maxWorkers: process.env.CI ? '100%' : '50%',
     testTimeout: 10000,
     workerIdleMemoryLimit: '512MB',
     clearMocks: true,

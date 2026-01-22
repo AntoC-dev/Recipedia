@@ -57,9 +57,9 @@ jobs:
         uses: actions/cache/restore@v5
         with:
           path: node_modules
-          key: Linux-node_modules-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
           restore-keys: |
-            Linux-node_modules-
+            ${{ runner.os }}-node_modules-
 
       - name: Setup Node.js
         uses: actions/setup-node@v6

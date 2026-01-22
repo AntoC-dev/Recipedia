@@ -27,6 +27,8 @@
         "paths": [
           "node_modules",
           ".expo",
+          ".expo/cache",
+          "~/.gradle/wrapper",
           "android/.gradle",
           "android/build"
         ]
@@ -51,6 +53,8 @@
         "paths": [
           "node_modules",
           ".expo",
+          ".expo/cache",
+          "~/.gradle/wrapper",
           "android/.gradle",
           "android/build"
         ]
