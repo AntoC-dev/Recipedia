@@ -55,8 +55,6 @@ import { padding } from '@styles/spacing';
 type BulkImportDiscoveryRouteProp = RouteProp<StackScreenParamList, 'BulkImportDiscovery'>;
 
 const screenId = 'BulkImportDiscovery';
-const RECIPE_CARD_HEIGHT = 88;
-const SECTION_HEADER_HEIGHT = 40;
 const FLASH_LIST_DRAW_DISTANCE = 200;
 
 const viewabilityConfig: ViewabilityConfig = {
@@ -223,11 +221,7 @@ export function BulkImportDiscovery() {
               data={listData}
               keyExtractor={item => item.key}
               extraData={selectedCount}
-              estimatedItemSize={RECIPE_CARD_HEIGHT}
               getItemType={item => item.type}
-              overrideItemLayout={(layout, item) => {
-                layout.size = item.type === 'header' ? SECTION_HEADER_HEIGHT : RECIPE_CARD_HEIGHT;
-              }}
               renderItem={renderListItem}
               onViewableItemsChanged={handleViewableItemsChanged}
               viewabilityConfig={viewabilityConfig}

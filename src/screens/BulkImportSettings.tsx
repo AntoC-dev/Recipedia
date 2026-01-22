@@ -76,7 +76,6 @@ export function BulkImportSettings() {
           data={providers}
           keyExtractor={provider => provider.id}
           ItemSeparatorComponent={() => <Divider />}
-          estimatedItemSize={72}
           renderItem={({ item: provider }) => (
             <ProviderListItem
               provider={provider}
