@@ -8,14 +8,14 @@ import {
   saveRecipeImage,
   transformDatasetRecipeImages,
 } from '@utils/FileGestion';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import { Asset } from 'expo-asset';
 import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { setMockDatasetType } from '@mocks/utils/DatasetLoader-mock';
 
 jest.unmock('@utils/FileGestion');
 
-jest.mock('expo-file-system', () =>
+jest.mock('expo-file-system/legacy', () =>
   require('@mocks/deps/expo-file-system-mock').expoFileSystemMock()
 );
 

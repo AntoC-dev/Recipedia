@@ -345,9 +345,11 @@ describe('useValidationWorkflow', () => {
         expect(mockAddMultipleRecipes).toHaveBeenCalled();
       });
 
-      expect(mockOnImportComplete).toHaveBeenCalledWith([recipes[0].sourceUrl]);
+      await waitFor(() => {
+        expect(result.current.phase).toBe('importing');
+      });
 
-      expect(result.current.phase).toBe('importing');
+      expect(mockOnImportComplete).toHaveBeenCalledWith([recipes[0].sourceUrl]);
 
       await act(async () => {
         resolveCallback!();
