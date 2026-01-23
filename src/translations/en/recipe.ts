@@ -112,6 +112,11 @@ export default {
     },
   },
 
+  sourceUrl: {
+    label: 'Imported from:',
+    copied: 'URL copied to clipboard',
+  },
+
   scraper: {
     ignoredIngredientPrefixes: ['to taste', 'as needed', 'optional', 'for garnish', 'for serving'],
     ignoredIngredientExactMatches: [

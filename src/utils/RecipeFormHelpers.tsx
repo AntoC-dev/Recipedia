@@ -35,6 +35,7 @@ import { RecipeNumberProps } from '@components/organisms/RecipeNumber';
 import { RecipeIngredientsProps } from '@components/organisms/RecipeIngredients';
 import { RecipePreparationProps } from '@components/organisms/RecipePreparation';
 import { RecipeNutritionProps } from '@components/organisms/RecipeNutrition';
+import { RecipeSourceUrlProps } from '@components/molecules/RecipeSourceUrl';
 
 export type {
   RecipeMode,
@@ -825,5 +826,35 @@ export function getMissingFieldsErrorContent(
     content:
       t(translatedMissingElemPrefix + 'messagePlural') +
       missingElem.map(elem => `\n\t- ${elem}`).join(''),
+  };
+}
+
+/**
+ * Builds props for RecipeSourceUrl component based on current mode and source URL availability
+ *
+ * Only returns props when in read-only mode with a non-empty source URL.
+ * Returns undefined in all other cases to conditionally hide the component.
+ *
+ * @param stackMode - Current recipe screen mode
+ * @param sourceUrl - Source URL from the recipe (if available)
+ * @param onCopied - Callback fired after URL is copied to clipboard
+ * @returns Props object for RecipeSourceUrl or undefined if component should not be shown
+ */
+export function buildRecipeSourceUrlProps(
+  stackMode: recipeStateType,
+  sourceUrl: string | undefined,
+  onCopied: () => void
+): RecipeSourceUrlProps | undefined {
+  if (stackMode !== recipeStateType.readOnly) {
+    return undefined;
+  }
+
+  if (!sourceUrl || sourceUrl.trim().length === 0) {
+    return undefined;
+  }
+
+  return {
+    sourceUrl,
+    onCopied,
   };
 }

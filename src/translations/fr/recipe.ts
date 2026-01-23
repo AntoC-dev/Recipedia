@@ -113,6 +113,11 @@ export default {
     },
   },
 
+  sourceUrl: {
+    label: 'Importée depuis:',
+    copied: 'URL copiée dans le presse-papiers',
+  },
+
   scraper: {
     ignoredIngredientPrefixes: [
       'selon le goût',

@@ -303,6 +303,14 @@ export const useTheme = jest.fn(() => ({
     backdrop: 'rgba(0,0,0,0.5)',
     notification: '#f50057',
     outline: '#79767d',
+    elevation: {
+      level0: 'transparent',
+      level1: '#f7f2fa',
+      level2: '#f3edf7',
+      level3: '#ece6f0',
+      level4: '#e8e0eb',
+      level5: '#e6dde9',
+    },
   },
   fonts: {
     bodySmall: { fontSize: 12 },
@@ -545,3 +553,18 @@ const AppbarBackAction: React.FC<any> = props => (
 );
 AppbarBackAction.displayName = 'Appbar.BackAction';
 Appbar.BackAction = AppbarBackAction;
+
+export const Surface: React.FC<any> = props => (
+  <View testID={props.testID} style={props.style}>
+    {props.children}
+  </View>
+);
+
+export const Snackbar: React.FC<any> = props => {
+  if (!props.visible) return null;
+  return (
+    <View testID={props.testID}>
+      <RNText testID={props.testID + '::Text'}>{props.children}</RNText>
+    </View>
+  );
+};
