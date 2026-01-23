@@ -34,7 +34,7 @@
  */
 
 import { consoleTransport, fileAsyncTransport, logger } from 'react-native-logs';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 
 /**
  * Shared logger configuration

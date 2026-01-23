@@ -36,9 +36,6 @@ export default ({config}: ConfigContext): ExpoConfig => {
         version: pkg.version,
         orientation: "portrait",
         icon: "./src/assets/app/icon.png",
-        notification: {
-            icon: './src/assets/app/notification_icon.png',
-        },
         userInterfaceStyle: "automatic",
         splash: {
             image: './src/assets/app/splash_light.png',
@@ -83,9 +80,9 @@ export default ({config}: ConfigContext): ExpoConfig => {
                 'expo-build-properties',
                 {
                     android: {
-                        compileSdkVersion: 35,
-                        targetSdkVersion: 35,
-                        buildToolsVersion: '35.0.0',
+                        compileSdkVersion: 36,
+                        targetSdkVersion: 36,
+                        buildToolsVersion: '36.0.0',
                     },
                     ios: {
                         deploymentTarget: '18.0',

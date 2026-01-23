@@ -4,12 +4,12 @@ module.exports = {
         '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
     },
     testMatch: ['**/tests/unit/**/*.test.{js,jsx,ts,tsx}'],
-    maxWorkers: '50%',
+    maxWorkers: process.env.CI ? '100%' : '50%',
     testTimeout: 10000,
     workerIdleMemoryLimit: '512MB',
     clearMocks: true,
     transformIgnorePatterns: [
-        "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-svg)"
+        "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-svg|@shopify/flash-list)"
     ],
     collectCoverageFrom: [
         'src/**/*.{js,jsx,ts,tsx}',

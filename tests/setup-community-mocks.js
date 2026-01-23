@@ -3,7 +3,7 @@
 
 import 'react-native-gesture-handler/jestSetup';
 
-// @shopify/flash-list
+// @shopify/flash-list (official jest setup - fixed in v2.0.3+)
 import '@shopify/flash-list/jestSetup';
 
 // react-native-safe-area-context

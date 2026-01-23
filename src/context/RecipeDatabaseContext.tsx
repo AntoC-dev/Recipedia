@@ -507,15 +507,13 @@ export const RecipeDatabaseProvider: React.FC<{
   };
 
   const scaleAllRecipesForNewDefaultPersons = async (newDefaultPersons: number) => {
-    const recipesToScale = db
-      .get_recipes()
-      .filter(
-        recipe =>
-          recipe.persons &&
-          recipe.persons > 0 &&
-          recipe.id !== undefined &&
-          recipe.persons !== newDefaultPersons
-      );
+    const recipesToScale = recipes.filter(
+      recipe =>
+        recipe.persons &&
+        recipe.persons > 0 &&
+        recipe.id !== undefined &&
+        recipe.persons !== newDefaultPersons
+    );
 
     if (recipesToScale.length === 0) {
       databaseLogger.info('No recipes need scaling', { newDefaultPersons });
