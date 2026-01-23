@@ -266,6 +266,12 @@ export function RecipeFormProvider({ props, children }: RecipeFormProviderProps)
     setStackMode(recipeStateType.readOnly);
   };
 
+  const getSourceUrl = (): string | undefined => {
+    if (initStateFromProp) return props.recipe.sourceUrl;
+    if (initStateFromScrape) return props.sourceUrl;
+    return undefined;
+  };
+
   const createRecipeSnapshot = (): recipeTableElement => {
     const originalRecipe = initStateFromProp ? props.recipe : undefined;
     return {
@@ -280,6 +286,8 @@ export function RecipeFormProvider({ props, children }: RecipeFormProviderProps)
       preparation: recipePreparation,
       time: recipeTime,
       nutrition: recipeNutrition,
+      sourceUrl: getSourceUrl(),
+      sourceProvider: originalRecipe?.sourceProvider,
     };
   };
 
