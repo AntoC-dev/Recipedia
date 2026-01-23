@@ -1,3 +1,9 @@
+## [2.12.1](https://github.com/AntoC-dev/Recipedia/compare/v2.12.0...v2.12.1) (2026-01-23)
+
+### Performance Improvements
+
+* update reassure baseline [skip ci] ([0b7252f](https://github.com/AntoC-dev/Recipedia/commit/0b7252feb348ac95e61ceec9ccaba838f7a5efc1))
+
 ## [2.12.0](https://github.com/AntoC-dev/Recipedia/compare/v2.11.1...v2.12.0) (2026-01-22)
 
 ### Features
