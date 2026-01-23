@@ -1,0 +1,28 @@
+appId: "com.recipedia"
+---
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "Recipe::RecipeSourceUrl::Text"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to source URL section"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "Recipe::RecipeSourceUrl::Label"
+    text: "Importée depuis:"
+    label: "Source URL label is displayed (French)"
+
+- assertVisible:
+    id: "Recipe::RecipeSourceUrl::Text"
+    text: "${SOURCE_URL}"
+    label: "Source URL text is displayed"
+
+- assertVisible:
+    id: "Recipe::RecipeSourceUrl::CopyButton"
+    label: "Source URL copy button is displayed"

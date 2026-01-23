@@ -1,0 +1,6 @@
+appId: "com.recipedia"
+---
+
+- assertNotVisible:
+    id: "Recipe::RecipeSourceUrl"
+    label: "Source URL section is not displayed for non-imported recipe"
