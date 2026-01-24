@@ -1,3 +1,17 @@
+## [2.13.0](https://github.com/AntoC-dev/Recipedia/compare/v2.12.1...v2.13.0) (2026-01-24)
+
+### Features
+
+* **recipe:** add source URL display with clipboard copy ([1353fd4](https://github.com/AntoC-dev/Recipedia/commit/1353fd458f8c264e27fcd28626cd9f23088a36a5))
+
+### Bug Fixes
+
+* include sourceUrl in recipe snapshot when saving from scrape ([4d5756d](https://github.com/AntoC-dev/Recipedia/commit/4d5756dffd8ac15a113cabc76c6e43f345ae93cd))
+
+### Performance Improvements
+
+* update reassure baseline [skip ci] ([3d55f70](https://github.com/AntoC-dev/Recipedia/commit/3d55f70421f6fd8d8a3ee12b44b0be2585fcb396))
+
 ## [2.12.1](https://github.com/AntoC-dev/Recipedia/compare/v2.12.0...v2.12.1) (2026-01-23)
 
 ### Performance Improvements
