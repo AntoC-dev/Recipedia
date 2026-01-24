@@ -303,3 +303,9 @@ appId: "com.recipedia"
       PROTEIN: "6.4"
       SALT: "0.7"
     label: "Verify nutrition section is displayed with correct values (French)"
+
+- runFlow:
+    file: "../../common/fr/sourceUrlReadOnly.yaml"
+    env:
+      SOURCE_URL: "https://www.hellofresh.fr/recipes/keftas-de-boeuf-and-semoule-aux-epices-66e83b9e7dfc60d59bf5f913"
+    label: "Assert source URL is displayed (French)"

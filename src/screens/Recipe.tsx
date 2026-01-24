@@ -34,7 +34,7 @@ import { RecipeTags } from '@components/organisms/RecipeTags';
 import { clearCache } from '@utils/FileGestion';
 import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
 import { RecipeNumber } from '@components/organisms/RecipeNumber';
-import { useTheme } from 'react-native-paper';
+import { Snackbar, useTheme } from 'react-native-paper';
 import { AppBar } from '@components/organisms/AppBar';
 import { ModalImageSelect } from '@screens/ModalImageSelect';
 import { cropImage } from '@utils/ImagePicker';
@@ -43,6 +43,7 @@ import { Alert } from '@components/dialogs/Alert';
 import { getDefaultPersons } from '@utils/settings';
 import { SimilarityDialog } from '@components/dialogs/SimilarityDialog';
 import { RecipeNutrition } from '@components/organisms/RecipeNutrition';
+import { RecipeSourceUrl } from '@components/molecules/RecipeSourceUrl';
 import { recipeLogger, validationLogger } from '@utils/logger';
 import { LoadingOverlay } from '@components/dialogs/LoadingOverlay';
 import { ValidationQueue } from '@components/dialogs/ValidationQueue';
@@ -64,10 +65,12 @@ import {
   buildRecipeNutritionProps,
   buildRecipePersonsProps,
   buildRecipePreparationProps,
+  buildRecipeSourceUrlProps,
   buildRecipeTagsProps,
   buildRecipeTimeProps,
   buildRecipeTitleProps,
   getValidationButtonConfig,
+  hasRecipeFromProps,
   scaleRecipeForSave,
   validateRecipeData,
 } from '@utils/RecipeFormHelpers';
@@ -115,6 +118,7 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const [isScrolling, setIsScrolling] = useState(false);
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
 
   const { addRecipe, editRecipe, deleteRecipe, addRecipeToMenu, findSimilarRecipes } =
     useRecipeDatabase();
@@ -130,6 +134,10 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
   const ocr = useRecipeOCR();
   useRecipeScraperValidation();
   const validationButtonConfig = getValidationButtonConfig(state.stackMode, t);
+  const sourceUrl = hasRecipeFromProps(props) ? props.recipe.sourceUrl : undefined;
+  const sourceUrlProps = buildRecipeSourceUrlProps(state.stackMode, sourceUrl, () =>
+    setSnackbarVisible(true)
+  );
 
   /**
    * Handles recipe deletion with user confirmation.
@@ -453,6 +461,9 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
               recipeTestId
             )}
           />
+          {sourceUrlProps && (
+            <RecipeSourceUrl {...sourceUrlProps} testID={recipeTestId + '::RecipeSourceUrl'} />
+          )}
         </ScrollView>
       </KeyboardAvoidingView>
 
@@ -508,6 +519,15 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
         message={t('extractingRecipeData')}
         testID='RecipeOcrLoading'
       />
+
+      <Snackbar
+        visible={snackbarVisible}
+        onDismiss={() => setSnackbarVisible(false)}
+        duration={2000}
+        testID='RecipeSourceUrlSnackbar'
+      >
+        {t('sourceUrl.copied')}
+      </Snackbar>
     </SafeAreaView>
   );
 }

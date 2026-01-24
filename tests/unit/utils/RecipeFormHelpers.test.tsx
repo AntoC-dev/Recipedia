@@ -4,6 +4,7 @@ import {
   buildRecipeNutritionProps,
   buildRecipePersonsProps,
   buildRecipePreparationProps,
+  buildRecipeSourceUrlProps,
   buildRecipeTagsProps,
   buildRecipeTitleProps,
   convertModeFromProps,
@@ -701,6 +702,54 @@ describe('RecipeFormHelpers', () => {
 
     test('has scan icon for addOCR mode', () => {
       expect(IMAGE_BUTTON_CONFIG[recipeStateType.addOCR]).toBe(Icons.scanImageIcon);
+    });
+  });
+
+  describe('buildRecipeSourceUrlProps', () => {
+    const mockOnCopied = jest.fn();
+    const testUrl = 'https://www.hellofresh.fr/recipes/test-recipe';
+
+    test('returns undefined for edit mode', () => {
+      const result = buildRecipeSourceUrlProps(recipeStateType.edit, testUrl, mockOnCopied);
+      expect(result).toBeUndefined();
+    });
+
+    test('returns undefined for addManual mode', () => {
+      const result = buildRecipeSourceUrlProps(recipeStateType.addManual, testUrl, mockOnCopied);
+      expect(result).toBeUndefined();
+    });
+
+    test('returns undefined for addOCR mode', () => {
+      const result = buildRecipeSourceUrlProps(recipeStateType.addOCR, testUrl, mockOnCopied);
+      expect(result).toBeUndefined();
+    });
+
+    test('returns undefined for addScrape mode', () => {
+      const result = buildRecipeSourceUrlProps(recipeStateType.addScrape, testUrl, mockOnCopied);
+      expect(result).toBeUndefined();
+    });
+
+    test('returns undefined when sourceUrl is undefined', () => {
+      const result = buildRecipeSourceUrlProps(recipeStateType.readOnly, undefined, mockOnCopied);
+      expect(result).toBeUndefined();
+    });
+
+    test('returns undefined when sourceUrl is empty string', () => {
+      const result = buildRecipeSourceUrlProps(recipeStateType.readOnly, '', mockOnCopied);
+      expect(result).toBeUndefined();
+    });
+
+    test('returns undefined when sourceUrl is whitespace only', () => {
+      const result = buildRecipeSourceUrlProps(recipeStateType.readOnly, '   ', mockOnCopied);
+      expect(result).toBeUndefined();
+    });
+
+    test('returns correct props for readOnly mode with valid sourceUrl', () => {
+      const result = buildRecipeSourceUrlProps(recipeStateType.readOnly, testUrl, mockOnCopied);
+      expect(result).toEqual({
+        sourceUrl: testUrl,
+        onCopied: mockOnCopied,
+      });
     });
   });
 });

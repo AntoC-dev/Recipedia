@@ -249,6 +249,10 @@ appId: "com.recipedia"
       SALT: "2.4"
     label: "Verify nutrition information have been calculated per portions"
 
+- runFlow:
+    file: "../../common/sourceUrlNotVisible.yaml"
+    label: "Assert source URL is not displayed for manual recipe"
+
 - assertVisible:
     id: "Recipe::AppBar::Edit"
     label: "Edit button is rendered"

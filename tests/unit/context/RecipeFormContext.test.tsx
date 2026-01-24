@@ -290,6 +290,51 @@ describe('RecipeFormContext', () => {
       expect(snapshot.title).toBe('New Recipe');
       expect(snapshot.description).toBe('New Description');
     });
+
+    test('includes sourceUrl from scrape props in addFromScrape mode', async () => {
+      const wrapper = createFormWrapper(createMockRecipeProp('addFromScrape', defaultTestRecipe));
+      const { result } = renderHook(() => useRecipeForm(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.state.stackMode).toBe(recipeStateType.addScrape);
+      });
+
+      const snapshot = result.current.actions.createRecipeSnapshot();
+
+      expect(snapshot.sourceUrl).toBe('https://example.com/recipe');
+    });
+
+    test('includes sourceUrl from existing recipe in edit mode', async () => {
+      const recipeWithUrl: recipeTableElement = {
+        ...defaultTestRecipe,
+        sourceUrl: 'https://www.hellofresh.fr/recipes/existing-recipe',
+        sourceProvider: 'hellofresh',
+      };
+      const wrapper = createFormWrapper(createMockRecipeProp('edit', recipeWithUrl));
+      const { result } = renderHook(() => useRecipeForm(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.state.recipeTitle).toBe(recipeWithUrl.title);
+      });
+
+      const snapshot = result.current.actions.createRecipeSnapshot();
+
+      expect(snapshot.sourceUrl).toBe('https://www.hellofresh.fr/recipes/existing-recipe');
+      expect(snapshot.sourceProvider).toBe('hellofresh');
+    });
+
+    test('has undefined sourceUrl for addManually mode', async () => {
+      const wrapper = createFormWrapper(createMockRecipeProp('addManually'));
+      const { result } = renderHook(() => useRecipeForm(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.state.stackMode).toBe(recipeStateType.addManual);
+      });
+
+      const snapshot = result.current.actions.createRecipeSnapshot();
+
+      expect(snapshot.sourceUrl).toBeUndefined();
+    });
   });
 
   describe('setters', () => {
