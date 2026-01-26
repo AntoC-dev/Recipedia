@@ -40,6 +40,7 @@ export default {
     ocrRecipe: alerts.ocrRecipe,
     tagSimilarity: alerts.tagSimilarity,
     ingredientSimilarity: alerts.ingredientSimilarity,
+    databasePicker: alerts.databasePicker,
   },
   ingredientTypes,
   filterTypes: filters.filterTypes,
