@@ -54,7 +54,7 @@ jobs:
 
       - name: Download APK
         if: inputs.platform == 'android'
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: ${{ inputs.app-artifact }}
 
@@ -109,7 +109,7 @@ jobs:
       # ============================================
       - name: Download iOS app
         if: inputs.platform == 'ios'
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: ${{ inputs.app-artifact }}
 
