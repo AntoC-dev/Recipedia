@@ -1,0 +1,67 @@
+name: "7 - Ingredient Pick From Database Flow"
+appId: "com.recipedia"
+tags:
+  - duplicates
+---
+- runFlow:
+    file: "../../flows/setupTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- runFlow:
+    file: "../../flows/fab/expand.yaml"
+    label: "Action - Expand FAB menu"
+
+- tapOn:
+    id: "RecipeEdit.*"
+    label: "Action - Open manual recipe creation"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::AddButton::RoundButton"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Action - Scroll to ingredients section"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "RecipeIngredients::AddButton::RoundButton"
+    label: "Action - Add ingredient to recipe"
+
+- tapOn:
+    id: "RecipeIngredients::0::NameInput::CustomTextInput"
+    label: "Action - Focus on ingredient name input"
+
+- inputText:
+    text: "Butte"
+    label: "Action - Enter fuzzy ingredient name to trigger similarity dialog"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: "ENTER"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- runFlow:
+    file: "../../flows/recipe/ingredients/pickIngredientFromDatabase.yaml"
+    env:
+      SEARCH_TERM: "Milk"
+    label: "Action - Pick Coconut milk ingredient from database"
+
+- assertNotVisible:
+    text: "Butte"
+    label: "Assert - Verify fuzzy name not shown"
+
+- assertVisible:
+    id: "RecipeIngredients::0::NameInput::CustomTextInput"
+    text: "Coconut Milk"
+    label: "Assert - Verify Coconut Milk ingredient was picked"
+
+- tapOn:
+    id: "Recipe::AppBar::BackButton"
+    label: "Cleanup - Exit recipe creation without saving"

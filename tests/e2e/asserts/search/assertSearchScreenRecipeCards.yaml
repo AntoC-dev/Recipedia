@@ -185,7 +185,7 @@ appId: "com.recipedia"
     label: "Scroll to fifth recipe card preparation time"
 
 - waitForAnimationToEnd
--
+
 - assertVisible:
     id: "SearchScreen::RecipeCards::4::PrepTime"
     text: "20 min"

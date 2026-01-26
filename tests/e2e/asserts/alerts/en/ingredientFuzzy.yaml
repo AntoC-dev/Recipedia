@@ -19,3 +19,8 @@ appId: "com.recipedia"
     id: "RecipeValidation::ValidationQueue::Ingredient::SimilarityDialog::UseButton-text"
     text: "Use"
     label: "Alert use button is rendered"
+
+- assertVisible:
+    id: "RecipeValidation::ValidationQueue::Ingredient::SimilarityDialog::PickButton-text"
+    text: "Choose another"
+    label: "Alert pick button is rendered"

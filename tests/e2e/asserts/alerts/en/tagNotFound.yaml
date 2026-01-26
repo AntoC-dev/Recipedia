@@ -20,3 +20,8 @@ appId: "com.recipedia"
     id: "RecipeValidation::ValidationQueue::Tag::SimilarityDialog::AddButton-text"
     text: "Add"
     label: "Alert add button is rendered"
+
+- assertVisible:
+    id: "RecipeValidation::ValidationQueue::Tag::SimilarityDialog::PickButton-text"
+    text: "Choose another"
+    label: "Alert pick button is rendered"
