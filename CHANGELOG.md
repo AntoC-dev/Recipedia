@@ -1,3 +1,13 @@
+## [2.14.0](https://github.com/AntoC-dev/Recipedia/compare/v2.13.0...v2.14.0) (2026-01-27)
+
+### Features
+
+* **similarity-dialog:** add database picker and confirmation dialogs ([8e78588](https://github.com/AntoC-dev/Recipedia/commit/8e78588d39e307e115de38e269c94006b5b98c84))
+
+### Performance Improvements
+
+* update reassure baseline [skip ci] ([da4e080](https://github.com/AntoC-dev/Recipedia/commit/da4e080a5de6396865c2b6d5c1c71a69108ab430))
+
 ## [2.13.0](https://github.com/AntoC-dev/Recipedia/compare/v2.12.1...v2.13.0) (2026-01-24)
 
 ### Features
