@@ -1,0 +1,62 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "RecipeValidation::ValidationQueue::Ingredient::SimilarityDialog::PickButton"
+    label: "Tap Choose another to open picker"
+
+- assertVisible:
+    id: "RecipeValidation::ValidationQueue::Ingredient::DatabasePicker"
+    label: "Database picker is visible"
+
+- tapOn:
+    id: "RecipeValidation::ValidationQueue::Ingredient::DatabasePicker::Searchbar"
+    label: "Focus on search bar"
+
+- inputText:
+    text: "${SEARCH_TERM}"
+    label: "Search for ingredient in database"
+
+- waitForAnimationToEnd:
+    label: "Wait for list to filter"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- tapOn:
+    id: "RecipeValidation::ValidationQueue::Ingredient::DatabasePicker::Item::0"
+    label: "Select first matching ingredient from filtered list"
+
+- assertVisible:
+    id: "RecipeValidation::ValidationQueue::Ingredient::PickConfirmation"
+    label: "Confirmation dialog is visible"
+
+- assertVisible:
+    id: "RecipeValidation::ValidationQueue::Ingredient::PickConfirmation::Title"
+    text: "Confirm selection"
+    label: "Confirmation title is correct"
+
+- assertVisible:
+    id: "RecipeValidation::ValidationQueue::Ingredient::PickConfirmation::ConfirmButton-text"
+    text: "Confirm"
+    label: "Confirm button is visible"
+
+- assertVisible:
+    id: "RecipeValidation::ValidationQueue::Ingredient::PickConfirmation::CancelButton-text"
+    text: "Back"
+    label: "Back button is visible"
+
+- tapOn:
+    id: "RecipeValidation::ValidationQueue::Ingredient::PickConfirmation::ConfirmButton"
+    label: "Confirm ingredient selection"

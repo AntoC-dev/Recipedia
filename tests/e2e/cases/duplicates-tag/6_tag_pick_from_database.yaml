@@ -1,0 +1,70 @@
+name: "6 - Tag Pick From Database Flow"
+appId: "com.recipedia"
+tags:
+  - duplicates
+---
+- runFlow:
+    file: "../../flows/setupTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- runFlow:
+    file: "../../flows/fab/expand.yaml"
+    label: "Action - Expand FAB menu"
+
+- tapOn:
+    id: "RecipeEdit.*"
+    label: "Action - Open manual recipe creation"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTags::RoundButton"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Action - Scroll to tags section"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: "../../flows/recipe/tags/addTagToRecipeInput.yaml"
+    env:
+      TAG_NAME: "Dessrt"
+      TAG_INDEX: "0"
+    label: "Action - Enter fuzzy tag name to trigger similarity dialog"
+
+- runFlow:
+    file: "../../flows/recipe/tags/pickTagFromDatabase.yaml"
+    env:
+      SEARCH_TERM: "Salad"
+    label: "Action - Pick Salad tag from database"
+
+- assertNotVisible:
+    text: "Dessrt"
+    label: "Assert - Verify fuzzy name not shown"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTags::0::Chip"
+    direction: UP
+    speed: 60
+    centerElement: true
+    label: "Scroll to recipe tags"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "RecipeTags::0::Chip"
+    text: "Salad"
+    label: "Assert - Verify tag added to recipe"
+
+- assertVisible:
+    text: "Salad"
+    label: "Assert - Verify Salad tag was picked"
+
+- tapOn:
+    id: "Recipe::AppBar::BackButton"
+    label: "Cleanup - Exit recipe creation without saving"

@@ -53,14 +53,17 @@
  * ```
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Button, Dialog, Portal, Text } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
 import { databaseLogger } from '@utils/logger';
 import { ingredientTableElement, tagTableElement } from '@customTypes/DatabaseElementTypes';
 import { DialogMode, ItemDialog } from './ItemDialog';
+import { DatabasePickerDialog } from './DatabasePickerDialog';
+import { ConfirmationDialog } from './ConfirmationDialog';
 import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { padding } from '@styles/spacing';
 
 /** Configuration for tag similarity resolution */
 export type SimilarityTagType = {
@@ -109,9 +112,8 @@ export type SimilarityDialogProps = {
 const styles = StyleSheet.create({
   actionButton: {
     flex: 1,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    flexDirection: 'column',
+    gap: padding.small,
   },
 });
 
@@ -123,8 +125,24 @@ const styles = StyleSheet.create({
  */
 export function SimilarityDialog({ testId, isVisible, onClose, item }: SimilarityDialogProps) {
   const { t } = useI18n();
-  const { addIngredient, addTag } = useRecipeDatabase();
+  const { addIngredient, addTag, ingredients, tags } = useRecipeDatabase();
   const [showItemDialog, setShowItemDialog] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
+  const [pickedItem, setPickedItem] = useState<ingredientTableElement | tagTableElement | null>(
+    null
+  );
+
+  useEffect(() => {
+    if (isVisible) {
+      setShowPicker(false);
+      setPickedItem(null);
+    }
+  }, [isVisible]);
+
+  const sortedPickerItems =
+    item.type === 'Ingredient'
+      ? [...ingredients].sort((a, b) => a.name.localeCompare(b.name))
+      : [...tags].sort((a, b) => a.name.localeCompare(b.name));
 
   const handleAddNew = () => {
     setShowItemDialog(true);
@@ -136,6 +154,30 @@ export function SimilarityDialog({ testId, isVisible, onClose, item }: Similarit
         item.onUseExisting(item.similarItem as ingredientTableElement);
       } else {
         item.onUseExisting(item.similarItem as tagTableElement);
+      }
+    }
+    onClose();
+  };
+
+  const handlePickFromDatabase = () => {
+    setShowPicker(true);
+  };
+
+  const handlePickerSelect = (selected: ingredientTableElement | tagTableElement) => {
+    setPickedItem(selected);
+    setShowPicker(false);
+  };
+
+  const handlePickerDismiss = () => {
+    setShowPicker(false);
+  };
+
+  const handleConfirmPicked = () => {
+    if (pickedItem && item.onUseExisting) {
+      if (item.type === 'Ingredient') {
+        item.onUseExisting(pickedItem as ingredientTableElement);
+      } else {
+        item.onUseExisting(pickedItem as tagTableElement);
       }
     }
     onClose();
@@ -238,9 +280,14 @@ export function SimilarityDialog({ testId, isVisible, onClose, item }: Similarit
         })
       : t(tagsTranslationPrefix + 'newTagContent', { tagName: item.newItemName });
 
+  const translationPrefix =
+    item.type === 'Ingredient' ? ingredientsTranslationPrefix : tagsTranslationPrefix;
+
+  const pickerTitle = t(translationPrefix + 'pickerTitle');
+
   return (
     <Portal>
-      <Dialog visible={isVisible} onDismiss={handleDismiss}>
+      <Dialog visible={isVisible && !showPicker && !pickedItem} onDismiss={handleDismiss}>
         <Dialog.Title testID={`${modalTestId}::Title`}>{title}</Dialog.Title>
         <Dialog.Content>
           <Text testID={`${modalTestId}::Content`} variant='bodyMedium'>
@@ -250,23 +297,36 @@ export function SimilarityDialog({ testId, isVisible, onClose, item }: Similarit
         <Dialog.Actions>
           {item.similarItem ? (
             <View style={styles.actionButton}>
-              <Button testID={`${modalTestId}::AddButton`} mode='outlined' onPress={handleAddNew}>
-                {item.type === 'Ingredient'
-                  ? t(ingredientsTranslationPrefix + 'add')
-                  : t(tagsTranslationPrefix + 'add')}
-              </Button>
               <Button
                 testID={`${modalTestId}::UseButton`}
                 mode='contained'
                 onPress={handleUseExisting}
               >
-                {item.type === 'Ingredient'
-                  ? t(ingredientsTranslationPrefix + 'use')
-                  : t(tagsTranslationPrefix + 'use')}
+                {t(translationPrefix + 'use')}
+              </Button>
+              <Button testID={`${modalTestId}::AddButton`} mode='outlined' onPress={handleAddNew}>
+                {t(translationPrefix + 'add')}
+              </Button>
+              <Button
+                testID={`${modalTestId}::PickButton`}
+                mode='outlined'
+                onPress={handlePickFromDatabase}
+              >
+                {t(translationPrefix + 'chooseAnother')}
               </Button>
             </View>
           ) : (
             <View style={styles.actionButton}>
+              <Button testID={`${modalTestId}::AddButton`} mode='contained' onPress={handleAddNew}>
+                {t(translationPrefix + 'add')}
+              </Button>
+              <Button
+                testID={`${modalTestId}::PickButton`}
+                mode='outlined'
+                onPress={handlePickFromDatabase}
+              >
+                {t(translationPrefix + 'chooseAnother')}
+              </Button>
               <Button
                 testID={`${modalTestId}::CancelButton`}
                 mode='outlined'
@@ -276,17 +336,38 @@ export function SimilarityDialog({ testId, isVisible, onClose, item }: Similarit
                   ? t(ingredientsTranslationPrefix + 'cancel')
                   : t('cancel')}
               </Button>
-              <Button testID={`${modalTestId}::AddButton`} mode='contained' onPress={handleAddNew}>
-                {item.type === 'Ingredient'
-                  ? t(ingredientsTranslationPrefix + 'add')
-                  : t(tagsTranslationPrefix + 'add')}
-              </Button>
             </View>
           )}
         </Dialog.Actions>
       </Dialog>
 
-      {/* ItemDialog for creating new items */}
+      <ConfirmationDialog
+        testId={`${testId}::PickConfirmation`}
+        isVisible={pickedItem !== null}
+        title={t('alerts.databasePicker.confirmTitle')}
+        content={
+          pickedItem
+            ? t('alerts.databasePicker.confirmContent', {
+                selectedItem: pickedItem.name,
+                newItem: item.newItemName,
+              })
+            : ''
+        }
+        confirmLabel={t('alerts.databasePicker.confirm')}
+        cancelLabel={t('alerts.databasePicker.back')}
+        onConfirm={handleConfirmPicked}
+        onCancel={() => setPickedItem(null)}
+      />
+
+      <DatabasePickerDialog
+        testId={`${testId}::DatabasePicker`}
+        isVisible={showPicker}
+        title={pickerTitle}
+        items={sortedPickerItems}
+        onSelect={handlePickerSelect}
+        onDismiss={handlePickerDismiss}
+      />
+
       {showItemDialog && (
         <ItemDialog
           testId={`${testId}::ItemDialog`}

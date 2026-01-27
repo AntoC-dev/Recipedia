@@ -37,6 +37,8 @@ export default {
     add: 'Ajouter',
     use: 'Utiliser',
     cancel: 'Annuler',
+    chooseAnother: 'En choisir un autre',
+    pickerTitle: 'Choisir un tag',
   },
   ingredientSimilarity: {
     similarIngredientFound: 'Ingrédient similaire trouvé',
@@ -48,5 +50,15 @@ export default {
     add: 'Ajouter',
     use: 'Utiliser',
     cancel: 'Annuler',
+    chooseAnother: 'En choisir un autre',
+    pickerTitle: 'Choisir un ingrédient',
+  },
+  databasePicker: {
+    searchPlaceholder: 'Rechercher...',
+    noResults: 'Aucun élément trouvé',
+    confirmTitle: 'Confirmer la sélection',
+    confirmContent: 'Utiliser "{{selectedItem}}" à la place de "{{newItem}}" ?',
+    confirm: 'Confirmer',
+    back: 'Retour',
   },
 };

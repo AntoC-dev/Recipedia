@@ -1,3 +1,9 @@
+platform:
+  ios:
+    disableAnimations: true
+  android:
+    disableAnimations: true
+
 flows:
   - cases/duplicates-tag/*
 
@@ -8,3 +14,4 @@ executionOrder:
     - "3 - Duplicate Tag Exact Prevention Flow"
     - "4 - Tag Real-Time Validation Flow"
     - "5 - Tag Edit Same Name Flow"
+    - "6 - Tag Pick From Database Flow"
