@@ -20,6 +20,7 @@ import {
 import { bulkImportLogger } from '@utils/logger';
 import { normalizeKey } from '@utils/NutritionUtils';
 import { cleanIngredientName, FuzzyMatchLevel, fuzzySearch } from '@utils/FuzzySearch';
+import { IngredientWithSimilarity, TagWithSimilarity } from '@utils/RecipeValidationHelpers';
 
 /**
  * Collects unique ingredients and tags from multiple recipes
@@ -92,7 +93,8 @@ export function initializeBatchValidation(
   const tagsToProcess = [...uniqueTags.entries()];
 
   const ingredientMappings = new Map<string, ingredientTableElement>();
-  const ingredientsToValidate: FormIngredientElement[] = [];
+  const ingredientsWithoutSimilar: IngredientWithSimilarity[] = [];
+  const ingredientsWithSimilar: IngredientWithSimilarity[] = [];
   const exactMatchIngredients: ingredientTableElement[] = [];
 
   for (const [originalKey, ingredient] of ingredientsToProcess) {
@@ -116,12 +118,21 @@ export function initializeBatchValidation(
       ingredientMappings.set(originalKey, mergedIngredient);
       exactMatchIngredients.push(mergedIngredient);
     } else {
-      ingredientsToValidate.push(ingredient);
+      const ingredientWithSimilarity: IngredientWithSimilarity = {
+        ...ingredient,
+        similarItems: result.similar,
+      };
+      if (result.similar.length > 0) {
+        ingredientsWithSimilar.push(ingredientWithSimilarity);
+      } else {
+        ingredientsWithoutSimilar.push(ingredientWithSimilarity);
+      }
     }
   }
 
   const tagMappings = new Map<string, tagTableElement>();
-  const tagsToValidate: tagTableElement[] = [];
+  const tagsWithoutSimilar: TagWithSimilarity[] = [];
+  const tagsWithSimilar: TagWithSimilarity[] = [];
   const exactMatchTags: tagTableElement[] = [];
 
   for (const [originalKey, tag] of tagsToProcess) {
@@ -136,9 +147,17 @@ export function initializeBatchValidation(
       tagMappings.set(originalKey, result.exact);
       exactMatchTags.push(result.exact);
     } else {
-      tagsToValidate.push(tag);
+      const tagWithSimilarity: TagWithSimilarity = { ...tag, similarItems: result.similar };
+      if (result.similar.length > 0) {
+        tagsWithSimilar.push(tagWithSimilarity);
+      } else {
+        tagsWithoutSimilar.push(tagWithSimilarity);
+      }
     }
   }
+
+  const ingredientsToValidate = [...ingredientsWithoutSimilar, ...ingredientsWithSimilar];
+  const tagsToValidate = [...tagsWithoutSimilar, ...tagsWithSimilar];
 
   bulkImportLogger.info('Batch validation initialized', {
     exactMatchIngredients: exactMatchIngredients.length,

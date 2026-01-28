@@ -12,19 +12,16 @@ import { StyleSheet, View } from 'react-native';
 import { ProgressBar, Text } from 'react-native-paper';
 import { ValidationQueue } from '@components/dialogs/ValidationQueue';
 import { useI18n } from '@utils/i18n';
-import {
-  FormIngredientElement,
-  ingredientTableElement,
-  tagTableElement,
-} from '@customTypes/DatabaseElementTypes';
+import { ingredientTableElement, tagTableElement } from '@customTypes/DatabaseElementTypes';
 import { ValidationProgress as ValidationProgressData } from '@hooks/useValidationWorkflow';
 import { padding } from '@styles/spacing';
+import { IngredientWithSimilarity, TagWithSimilarity } from '@utils/RecipeValidationHelpers';
 
 /** Props for tag validation progress */
 export type TagValidationProgressProps = {
   type: 'Tag';
-  items: tagTableElement[];
-  onValidated: (originalTag: tagTableElement, validatedTag: tagTableElement) => void;
+  items: TagWithSimilarity[];
+  onValidated: (originalTag: TagWithSimilarity, validatedTag: tagTableElement) => void;
   progress: ValidationProgressData | null;
   onDismissed: () => void;
   onComplete: () => void;
@@ -34,9 +31,9 @@ export type TagValidationProgressProps = {
 /** Props for ingredient validation progress */
 export type IngredientValidationProgressProps = {
   type: 'Ingredient';
-  items: FormIngredientElement[];
+  items: IngredientWithSimilarity[];
   onValidated: (
-    originalIngredient: FormIngredientElement,
+    originalIngredient: IngredientWithSimilarity,
     validatedIngredient: ingredientTableElement
   ) => void;
   progress: ValidationProgressData | null;

@@ -8,6 +8,22 @@ import { namesMatch } from '@utils/NutritionUtils';
 export type IngredientState = (ingredientTableElement | FormIngredientElement)[];
 
 /**
+ * A tag that needs validation, with pre-computed similar items from the database.
+ * Used by ValidationQueue to display appropriate dialog without re-querying.
+ */
+export type TagWithSimilarity = tagTableElement & {
+  similarItems: tagTableElement[];
+};
+
+/**
+ * An ingredient that needs validation, with pre-computed similar items from the database.
+ * Used by ValidationQueue to display appropriate dialog without re-querying.
+ */
+export type IngredientWithSimilarity = FormIngredientElement & {
+  similarItems: ingredientTableElement[];
+};
+
+/**
  * Filters out tags that already exist in the current list.
  * Used before validation to avoid processing duplicates.
  */
@@ -141,22 +157,26 @@ export function addNonDuplicateTags(
 }
 
 /**
- * Processes tags for validation by filtering exact database matches
- * Returns exact matches and items that need validation separately
+ * Processes tags for validation by filtering exact database matches.
+ *
+ * Returns exact matches and items that need validation separately.
+ * Items needing validation include their pre-computed similar items,
+ * sorted so items WITHOUT similar matches come first (better UX: "add new" before "choose existing").
  *
  * @param tags - Array of tags to process
  * @param findSimilarTags - Function to find similar tags in database
- * @returns Object with exactMatches and needsValidation arrays
+ * @returns Object with exactMatches and needsValidation arrays (with similarity info)
  */
 export function processTagsForValidation(
   tags: tagTableElement[],
   findSimilarTags: (name: string) => tagTableElement[]
 ): {
   exactMatches: tagTableElement[];
-  needsValidation: tagTableElement[];
+  needsValidation: TagWithSimilarity[];
 } {
   const exactMatches: tagTableElement[] = [];
-  const needsValidation: tagTableElement[] = [];
+  const withoutSimilar: TagWithSimilarity[] = [];
+  const withSimilar: TagWithSimilarity[] = [];
 
   for (const tag of tags) {
     const similarTags = findSimilarTags(tag.name);
@@ -165,11 +185,16 @@ export function processTagsForValidation(
     if (exactMatch) {
       exactMatches.push(exactMatch);
     } else {
-      needsValidation.push(tag);
+      const tagWithSimilarity: TagWithSimilarity = { ...tag, similarItems: similarTags };
+      if (similarTags.length > 0) {
+        withSimilar.push(tagWithSimilarity);
+      } else {
+        withoutSimilar.push(tagWithSimilarity);
+      }
     }
   }
 
-  return { exactMatches, needsValidation };
+  return { exactMatches, needsValidation: [...withoutSimilar, ...withSimilar] };
 }
 
 /**
@@ -177,24 +202,26 @@ export function processTagsForValidation(
  *
  * Returns exact matches (preserving scraped quantity/unit/note) and items
  * that need validation separately. Exact matches combine database metadata
- * with scraped recipe-specific data.
+ * with scraped recipe-specific data. Items needing validation include their
+ * pre-computed similar items, sorted so items WITHOUT similar matches come first.
  *
  * Note: Ingredient names should already be cleaned (parenthetical content removed)
  * by parseIngredientString in RecipeScraperConverter before reaching this function.
  *
  * @param ingredients - Array of ingredients to process (can be partial for scraped data)
  * @param findSimilarIngredients - Function to find similar ingredients in database
- * @returns Object with exactMatches (with preserved notes) and needsValidation arrays
+ * @returns Object with exactMatches (with preserved notes) and needsValidation arrays (with similarity info)
  */
 export function processIngredientsForValidation(
   ingredients: FormIngredientElement[],
   findSimilarIngredients: (name: string) => ingredientTableElement[]
 ): {
   exactMatches: ingredientTableElement[];
-  needsValidation: FormIngredientElement[];
+  needsValidation: IngredientWithSimilarity[];
 } {
   const exactMatches: ingredientTableElement[] = [];
-  const needsValidation: FormIngredientElement[] = [];
+  const withoutSimilar: IngredientWithSimilarity[] = [];
+  const withSimilar: IngredientWithSimilarity[] = [];
 
   for (const ingredient of ingredients) {
     if (!ingredient.name) {
@@ -214,28 +241,36 @@ export function processIngredientsForValidation(
       };
       exactMatches.push(mergedIngredient);
     } else {
-      needsValidation.push(ingredient);
+      const ingredientWithSimilarity: IngredientWithSimilarity = {
+        ...ingredient,
+        similarItems: similarIngredients,
+      };
+      if (similarIngredients.length > 0) {
+        withSimilar.push(ingredientWithSimilarity);
+      } else {
+        withoutSimilar.push(ingredientWithSimilarity);
+      }
     }
   }
 
-  return { exactMatches, needsValidation };
+  return { exactMatches, needsValidation: [...withoutSimilar, ...withSimilar] };
 }
 
 /**
  * Deduplicates ingredients by name for the validation queue.
  *
  * When the same ingredient name appears multiple times, this function:
- * - Keeps the first occurrence's data (unit, note)
+ * - Keeps the first occurrence's data (unit, note, similarItems if present)
  * - If duplicates have the same unit, sums their quantities
  * - If units differ, keeps only the first occurrence
  *
- * @param ingredients - Array of form ingredients to deduplicate
+ * @param ingredients - Array of form ingredients to deduplicate (may include similarity info)
  * @returns Deduplicated array with quantities summed where applicable
  */
-export function deduplicateIngredientsByName(
-  ingredients: FormIngredientElement[]
-): FormIngredientElement[] {
-  const seen = new Map<string, FormIngredientElement>();
+export function deduplicateIngredientsByName<T extends FormIngredientElement>(
+  ingredients: T[]
+): T[] {
+  const seen = new Map<string, T>();
 
   for (const ing of ingredients) {
     const key = ing.name?.toLowerCase() || '';

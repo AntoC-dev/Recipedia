@@ -23,6 +23,7 @@ import {
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
 import { IgnoredIngredientPatterns } from '@utils/RecipeScraperConverter';
+import { IngredientWithSimilarity, TagWithSimilarity } from '@utils/RecipeValidationHelpers';
 
 /**
  * Interface for recipe source providers
@@ -268,10 +269,10 @@ export interface BatchValidationState {
   ingredientMappings: Map<string, ingredientTableElement>;
   /** Map of tag names to their validated database entries */
   tagMappings: Map<string, tagTableElement>;
-  /** Ingredients requiring user validation */
-  ingredientsToValidate: FormIngredientElement[];
-  /** Tags requiring user validation */
-  tagsToValidate: tagTableElement[];
+  /** Ingredients requiring user validation (with pre-computed similarity info) */
+  ingredientsToValidate: IngredientWithSimilarity[];
+  /** Tags requiring user validation (with pre-computed similarity info) */
+  tagsToValidate: TagWithSimilarity[];
   /** Ingredients that matched exactly in the database */
   exactMatchIngredients: ingredientTableElement[];
   /** Tags that matched exactly in the database */
