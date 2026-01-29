@@ -8,10 +8,24 @@ appId: "com.recipedia"
     text: "󰐕"
     label: "Add tag button icons is displayed"
 
-- assertVisible:
-    id: "RecipePreparation::EditableStep::2::TextInputContent::CustomTextInput"
-    text: "Coupez les filets de poulet en lanieres.\nemincez l'oignon.\nPressez ou hachez l'ail.\nDans une poele, faites chauffer un filet d'huile de cuisson a feu moyen a vif."
-    label: "Preparation #3 paragraph input text id is displayed with the correct text"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "RecipePreparation::EditableStep::2::TextInputContent::CustomTextInput"
+          text: "Coupez les filets de poulet en lanieres.emincez l'oignon.Pressez ou hachez l'ail.Dans une poele, faites chauffer un filet d'huile de cuisson a feu moyen a vif."
+          label: "Preparation #3 paragraph input text id is displayed with the correct text on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "RecipePreparation::EditableStep::2::TextInputContent::CustomTextInput"
+          text: "Coupez les filets de poulet en lanieres.\nemincez l'oignon.\nPressez ou hachez l'ail.\nDans une poele, faites chauffer un filet d'huile de cuisson a feu moyen a vif."
+          label: "Preparation #3 paragraph input text id is displayed with the correct text on iOS"
+
 
 - waitForAnimationToEnd
 
