@@ -59,8 +59,7 @@ tags:
     when:
       platform: Android
     commands:
-      - hideKeyboard:
-          label: "Dismiss keyboard on Android"
+      - pressKey: "ENTER"
 
 - runFlow:
     when:
@@ -110,8 +109,7 @@ tags:
     when:
       platform: Android
     commands:
-      - hideKeyboard:
-          label: "Dismiss keyboard on Android"
+      - pressKey: "ENTER"
 
 - runFlow:
     when:
