@@ -93,7 +93,9 @@ jobs:
             set +e
             maestro test tests/e2e/ --config=tests/e2e/${{ matrix.suite }}.yaml --debug-output=maestro_logs_${{ matrix.suite }} --format junit -s 1 -e QUITOQUE_USERNAME='${{ secrets.QUITOQUE_USERNAME }}' -e QUITOQUE_PASSWORD='${{ secrets.QUITOQUE_PASSWORD }}'
             TEST_EXIT_CODE=$?
-            set -e
+
+            # Ensure log directory exists (Maestro may not have created it on early failure)
+            mkdir -p maestro_logs_${{ matrix.suite }}
 
             # Dump logcat to file after test
             echo "📋 Collecting Android logs..."
@@ -104,6 +106,7 @@ jobs:
             echo "📋 Collecting app log file..."
             adb shell run-as com.recipedia cat files/recipedia-logs.txt > maestro_logs_${{ matrix.suite }}/recipedia-app-logs.txt 2>/dev/null && echo "📋 App log file collected ($(wc -l < maestro_logs_${{ matrix.suite }}/recipedia-app-logs.txt) lines)" || echo "⚠️ App log file not found"
 
+            set -e
             exit $TEST_EXIT_CODE
 
       # ============================================
