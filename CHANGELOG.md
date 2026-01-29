@@ -1,3 +1,14 @@
+## [2.15.0](https://github.com/AntoC-dev/Recipedia/compare/v2.14.0...v2.15.0) (2026-01-29)
+
+### Features
+
+* sorted validation queue ([#190](https://github.com/AntoC-dev/Recipedia/issues/190)) ([646593d](https://github.com/AntoC-dev/Recipedia/commit/646593d2adfe4509aafc1f2b6dda1a2436a62750))
+* **validation:** add similarity info for improved user workflow ([0774c3d](https://github.com/AntoC-dev/Recipedia/commit/0774c3ddeaba1761ad233cd8039a6da3a2ca4515))
+
+### Performance Improvements
+
+* update reassure baseline [skip ci] ([ee2b683](https://github.com/AntoC-dev/Recipedia/commit/ee2b683f63b17e39a511f428f3716ea71a79904c))
+
 ## [2.14.0](https://github.com/AntoC-dev/Recipedia/compare/v2.13.0...v2.14.0) (2026-01-27)
 
 ### Features
