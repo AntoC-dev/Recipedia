@@ -93,6 +93,7 @@ describe('RecipeDatabaseContext', () => {
 
       await waitFor(() => {
         expect(result.current.scalingProgress).toBeUndefined();
+        expect(result.current.recipes.every(r => r.persons === 6)).toBe(true);
       });
 
       const recipesAfterFirstScale = [...result.current.recipes];

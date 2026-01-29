@@ -11,12 +11,14 @@ import { useEffect, useRef } from 'react';
 import { recipeStateType } from '@customTypes/ScreenTypes';
 import {
   deduplicateIngredientsByName,
+  IngredientWithSimilarity,
   processIngredientsForValidation,
   processTagsForValidation,
   removeIngredientByName,
   removeTagByName,
   replaceMatchingIngredients,
   replaceMatchingTags,
+  TagWithSimilarity,
 } from '@utils/RecipeValidationHelpers';
 import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
 import { useRecipeDialogs } from '@context/RecipeDialogsContext';
@@ -44,9 +46,9 @@ export function useRecipeScraperValidation(): void {
   const { setRecipeIngredients, setRecipeTags } = setters;
 
   const hasRunRef = useRef(false);
-  const pendingIngredientsRef = useRef<FormIngredientElement[] | null>(null);
+  const pendingIngredientsRef = useRef<IngredientWithSimilarity[] | null>(null);
 
-  const getIngredientsNeedingValidation = (): FormIngredientElement[] => {
+  const getIngredientsNeedingValidation = (): IngredientWithSimilarity[] => {
     if (recipeIngredients.length === 0) {
       return [];
     }
@@ -63,13 +65,13 @@ export function useRecipeScraperValidation(): void {
     return deduplicateIngredientsByName(needsValidation);
   };
 
-  const startIngredientValidation = (ingredients: FormIngredientElement[]) => {
+  const startIngredientValidation = (ingredients: IngredientWithSimilarity[]) => {
     setValidationQueue({
       type: 'Ingredient',
       items: ingredients,
       onValidated: (_, validatedIngredient: ingredientTableElement) =>
         replaceAllMatchingFormIngredients(validatedIngredient),
-      onDismissed: (item: FormIngredientElement) => {
+      onDismissed: (item: IngredientWithSimilarity) => {
         setRecipeIngredients(prev => removeIngredientByName(prev, item.name));
       },
     });
@@ -87,12 +89,12 @@ export function useRecipeScraperValidation(): void {
     return needsValidation;
   };
 
-  const startTagValidation = (tags: typeof recipeTags) => {
+  const startTagValidation = (tags: TagWithSimilarity[]) => {
     setValidationQueue({
       type: 'Tag',
       items: tags,
       onValidated: (_, validatedTag) => addTagIfNotDuplicate(validatedTag),
-      onDismissed: tag => {
+      onDismissed: (tag: TagWithSimilarity) => {
         setRecipeTags(prev => removeTagByName(prev, tag.name));
       },
     });

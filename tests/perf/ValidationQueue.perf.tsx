@@ -9,11 +9,8 @@ import {
   RecipeDatabaseProvider,
   useRecipeDatabase,
 } from '@context/RecipeDatabaseContext';
-import {
-  FormIngredientElement,
-  ingredientTableElement,
-  tagTableElement,
-} from '@customTypes/DatabaseElementTypes';
+import { ingredientTableElement, tagTableElement } from '@customTypes/DatabaseElementTypes';
+import { IngredientWithSimilarity, TagWithSimilarity } from '@utils/RecipeValidationHelpers';
 
 jest.mock('@react-navigation/native', () =>
   require('@mocks/deps/react-navigation-mock').reactNavigationMock()
@@ -30,7 +27,7 @@ function ContextCapture() {
   return null;
 }
 
-function TagValidationWrapper({ items }: { items: tagTableElement[] }) {
+function TagValidationWrapper({ items }: { items: TagWithSimilarity[] }) {
   const [validatedTags, setValidatedTags] = React.useState<tagTableElement[]>([]);
 
   return (
@@ -40,14 +37,14 @@ function TagValidationWrapper({ items }: { items: tagTableElement[] }) {
         testId='TagValidation'
         type='Tag'
         items={items}
-        onValidated={(tag: tagTableElement) => setValidatedTags(prev => [...prev, tag])}
+        onValidated={(_, tag: tagTableElement) => setValidatedTags(prev => [...prev, tag])}
         onComplete={() => {}}
       />
     </RecipeDatabaseProvider>
   );
 }
 
-function IngredientValidationWrapper({ items }: { items: FormIngredientElement[] }) {
+function IngredientValidationWrapper({ items }: { items: IngredientWithSimilarity[] }) {
   const [validatedIngredients, setValidatedIngredients] = React.useState<ingredientTableElement[]>(
     []
   );
@@ -83,28 +80,30 @@ describe('ValidationQueue Performance', () => {
   });
 
   test('initial render with single tag to validate', async () => {
-    const tagsToValidate: tagTableElement[] = [{ name: 'New Tag' }];
+    const tagsToValidate: TagWithSimilarity[] = [{ name: 'New Tag', similarItems: [] }];
     await measureRenders(<TagValidationWrapper items={tagsToValidate} />, { runs: 10 });
   });
 
   test('initial render with multiple tags to validate', async () => {
-    const tagsToValidate: tagTableElement[] = Array.from({ length: 10 }, (_, i) => ({
+    const tagsToValidate: TagWithSimilarity[] = Array.from({ length: 10 }, (_, i) => ({
       name: `New Tag ${i + 1}`,
+      similarItems: [],
     }));
     await measureRenders(<TagValidationWrapper items={tagsToValidate} />, { runs: 10 });
   });
 
   test('initial render with tags similar to existing', async () => {
     const existingTagNames = performanceTags.slice(0, 5).map(t => t.name);
-    const tagsToValidate: tagTableElement[] = existingTagNames.map(name => ({
+    const tagsToValidate: TagWithSimilarity[] = existingTagNames.map(name => ({
       name: name.substring(0, 3) + ' variant',
+      similarItems: [],
     }));
     await measureRenders(<TagValidationWrapper items={tagsToValidate} />, { runs: 10 });
   });
 
   test('initial render with single ingredient to validate', async () => {
-    const ingredientsToValidate: FormIngredientElement[] = [
-      { name: 'New Ingredient', quantity: '100', unit: 'g' },
+    const ingredientsToValidate: IngredientWithSimilarity[] = [
+      { name: 'New Ingredient', quantity: '100', unit: 'g', similarItems: [] },
     ];
     await measureRenders(<IngredientValidationWrapper items={ingredientsToValidate} />, {
       runs: 10,
@@ -112,11 +111,15 @@ describe('ValidationQueue Performance', () => {
   });
 
   test('initial render with multiple ingredients to validate', async () => {
-    const ingredientsToValidate: FormIngredientElement[] = Array.from({ length: 15 }, (_, i) => ({
-      name: `Unknown Ingredient ${i + 1}`,
-      quantity: String(50 + i * 10),
-      unit: 'g',
-    }));
+    const ingredientsToValidate: IngredientWithSimilarity[] = Array.from(
+      { length: 15 },
+      (_, i) => ({
+        name: `Unknown Ingredient ${i + 1}`,
+        quantity: String(50 + i * 10),
+        unit: 'g',
+        similarItems: [],
+      })
+    );
     await measureRenders(<IngredientValidationWrapper items={ingredientsToValidate} />, {
       runs: 10,
     });
@@ -124,9 +127,10 @@ describe('ValidationQueue Performance', () => {
 
   test('initial render with ingredients similar to existing', async () => {
     const existingIngNames = performanceIngredients.slice(0, 8).map(i => i.name);
-    const ingredientsToValidate: FormIngredientElement[] = existingIngNames.map(name => ({
+    const ingredientsToValidate: IngredientWithSimilarity[] = existingIngNames.map(name => ({
       name: name.substring(0, 4) + ' fresh',
       quantity: '200',
+      similarItems: [],
       unit: 'g',
     }));
     await measureRenders(<IngredientValidationWrapper items={ingredientsToValidate} />, {
@@ -135,11 +139,15 @@ describe('ValidationQueue Performance', () => {
   });
 
   test('initial render with large ingredient queue from scraping', async () => {
-    const ingredientsToValidate: FormIngredientElement[] = Array.from({ length: 25 }, (_, i) => ({
-      name: `Scraped Ingredient ${i + 1} from website`,
-      quantity: String(Math.floor(Math.random() * 500) + 50),
-      unit: ['g', 'ml', 'piece', 'tbsp', 'tsp'][i % 5],
-    }));
+    const ingredientsToValidate: IngredientWithSimilarity[] = Array.from(
+      { length: 25 },
+      (_, i) => ({
+        name: `Scraped Ingredient ${i + 1} from website`,
+        quantity: String(Math.floor(Math.random() * 500) + 50),
+        unit: ['g', 'ml', 'piece', 'tbsp', 'tsp'][i % 5],
+        similarItems: [],
+      })
+    );
     await measureRenders(<IngredientValidationWrapper items={ingredientsToValidate} />, {
       runs: 10,
     });

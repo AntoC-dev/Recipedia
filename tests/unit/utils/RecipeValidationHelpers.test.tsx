@@ -48,7 +48,9 @@ describe('RecipeValidationHelpers', () => {
       const result = processTagsForValidation(inputTags, mockFindSimilarTags);
 
       expect(result.exactMatches).toEqual([]);
-      expect(result.needsValidation).toEqual(inputTags);
+      expect(result.needsValidation).toHaveLength(1);
+      expect(result.needsValidation[0].name).toBe('Vegan');
+      expect(result.needsValidation[0].similarItems).toEqual([dbTags[0]]);
       expect(mockFindSimilarTags).toHaveBeenCalledWith('Vegan');
     });
 
@@ -77,7 +79,11 @@ describe('RecipeValidationHelpers', () => {
       const result = processTagsForValidation(inputTags, mockFindSimilarTags);
 
       expect(result.exactMatches).toEqual([dbTags[0]]);
-      expect(result.needsValidation).toEqual([{ name: 'Vegan' }, { name: 'Gluten-Free' }]);
+      expect(result.needsValidation).toHaveLength(2);
+      expect(result.needsValidation[0].name).toBe('Gluten-Free');
+      expect(result.needsValidation[0].similarItems).toEqual([]);
+      expect(result.needsValidation[1].name).toBe('Vegan');
+      expect(result.needsValidation[1].similarItems).toEqual([dbTags[1]]);
     });
 
     test('returns empty arrays for empty input', () => {
@@ -95,7 +101,182 @@ describe('RecipeValidationHelpers', () => {
       const result = processTagsForValidation(inputTags, mockFindSimilarTags);
 
       expect(result.exactMatches).toEqual([]);
-      expect(result.needsValidation).toEqual(inputTags);
+      expect(result.needsValidation).toHaveLength(1);
+      expect(result.needsValidation[0].name).toBe('NewTag');
+    });
+
+    describe('similarItems attachment', () => {
+      test('attaches empty similarItems array when no similar tags found', () => {
+        mockFindSimilarTags.mockReturnValue([]);
+
+        const inputTags: tagTableElement[] = [{ name: 'NewTag' }];
+        const result = processTagsForValidation(inputTags, mockFindSimilarTags);
+
+        expect(result.needsValidation).toHaveLength(1);
+        expect(result.needsValidation[0].similarItems).toEqual([]);
+      });
+
+      test('attaches similar tags to needsValidation items', () => {
+        const similarResults = [dbTags[0], dbTags[1]];
+        mockFindSimilarTags.mockReturnValue(similarResults);
+
+        const inputTags: tagTableElement[] = [{ name: 'Veg' }];
+        const result = processTagsForValidation(inputTags, mockFindSimilarTags);
+
+        expect(result.needsValidation).toHaveLength(1);
+        expect(result.needsValidation[0].similarItems).toEqual(similarResults);
+      });
+
+      test('attaches different similarItems to different tags', () => {
+        mockFindSimilarTags
+          .mockReturnValueOnce([dbTags[0]])
+          .mockReturnValueOnce([dbTags[1], dbTags[2]]);
+
+        const inputTags: tagTableElement[] = [{ name: 'Veg' }, { name: 'Fast' }];
+        const result = processTagsForValidation(inputTags, mockFindSimilarTags);
+
+        expect(result.needsValidation).toHaveLength(2);
+        expect(result.needsValidation[0].similarItems).toEqual([dbTags[0]]);
+        expect(result.needsValidation[1].similarItems).toEqual([dbTags[1], dbTags[2]]);
+      });
+
+      test('preserves original tag properties alongside similarItems', () => {
+        mockFindSimilarTags.mockReturnValue([dbTags[0]]);
+
+        const inputTags: tagTableElement[] = [{ id: 99, name: 'CustomTag' }];
+        const result = processTagsForValidation(inputTags, mockFindSimilarTags);
+
+        expect(result.needsValidation[0].id).toBe(99);
+        expect(result.needsValidation[0].name).toBe('CustomTag');
+        expect(result.needsValidation[0].similarItems).toEqual([dbTags[0]]);
+      });
+    });
+
+    describe('sorting behavior', () => {
+      test('sorts items without similar matches before items with similar matches', () => {
+        mockFindSimilarTags
+          .mockReturnValueOnce([dbTags[0]])
+          .mockReturnValueOnce([])
+          .mockReturnValueOnce([dbTags[1]]);
+
+        const inputTags: tagTableElement[] = [
+          { name: 'HasMatch1' },
+          { name: 'NoMatch' },
+          { name: 'HasMatch2' },
+        ];
+
+        const result = processTagsForValidation(inputTags, mockFindSimilarTags);
+
+        expect(result.needsValidation).toHaveLength(3);
+        expect(result.needsValidation[0].name).toBe('NoMatch');
+        expect(result.needsValidation[0].similarItems).toEqual([]);
+        expect(result.needsValidation[1].name).toBe('HasMatch1');
+        expect(result.needsValidation[1].similarItems).toEqual([dbTags[0]]);
+        expect(result.needsValidation[2].name).toBe('HasMatch2');
+        expect(result.needsValidation[2].similarItems).toEqual([dbTags[1]]);
+      });
+
+      test('maintains relative order within same group (no matches)', () => {
+        mockFindSimilarTags.mockReturnValue([]);
+
+        const inputTags: tagTableElement[] = [
+          { name: 'First' },
+          { name: 'Second' },
+          { name: 'Third' },
+        ];
+
+        const result = processTagsForValidation(inputTags, mockFindSimilarTags);
+
+        expect(result.needsValidation[0].name).toBe('First');
+        expect(result.needsValidation[1].name).toBe('Second');
+        expect(result.needsValidation[2].name).toBe('Third');
+      });
+
+      test('maintains relative order within same group (with matches)', () => {
+        mockFindSimilarTags.mockReturnValue([dbTags[0]]);
+
+        const inputTags: tagTableElement[] = [
+          { name: 'First' },
+          { name: 'Second' },
+          { name: 'Third' },
+        ];
+
+        const result = processTagsForValidation(inputTags, mockFindSimilarTags);
+
+        expect(result.needsValidation[0].name).toBe('First');
+        expect(result.needsValidation[1].name).toBe('Second');
+        expect(result.needsValidation[2].name).toBe('Third');
+      });
+
+      test('handles all items having similar matches', () => {
+        mockFindSimilarTags.mockReturnValue([dbTags[0]]);
+
+        const inputTags: tagTableElement[] = [{ name: 'Tag1' }, { name: 'Tag2' }];
+
+        const result = processTagsForValidation(inputTags, mockFindSimilarTags);
+
+        expect(result.needsValidation).toHaveLength(2);
+        expect(result.needsValidation.every(t => t.similarItems.length > 0)).toBe(true);
+      });
+
+      test('handles all items having no similar matches', () => {
+        mockFindSimilarTags.mockReturnValue([]);
+
+        const inputTags: tagTableElement[] = [{ name: 'Tag1' }, { name: 'Tag2' }];
+
+        const result = processTagsForValidation(inputTags, mockFindSimilarTags);
+
+        expect(result.needsValidation).toHaveLength(2);
+        expect(result.needsValidation.every(t => t.similarItems.length === 0)).toBe(true);
+      });
+
+      test('handles mixed exact matches and validation items with correct sorting', () => {
+        mockFindSimilarTags
+          .mockReturnValueOnce([dbTags[0]])
+          .mockReturnValueOnce([dbTags[1]])
+          .mockReturnValueOnce([])
+          .mockReturnValueOnce([dbTags[2]]);
+
+        const inputTags: tagTableElement[] = [
+          { name: 'Vegetarian' },
+          { name: 'SimilarToItalian' },
+          { name: 'BrandNew' },
+          { name: 'SimilarToQuick' },
+        ];
+
+        const result = processTagsForValidation(inputTags, mockFindSimilarTags);
+
+        expect(result.exactMatches).toHaveLength(1);
+        expect(result.exactMatches[0].name).toBe('Vegetarian');
+        expect(result.needsValidation).toHaveLength(3);
+        expect(result.needsValidation[0].name).toBe('BrandNew');
+        expect(result.needsValidation[1].name).toBe('SimilarToItalian');
+        expect(result.needsValidation[2].name).toBe('SimilarToQuick');
+      });
+
+      test('handles single item without similar matches', () => {
+        mockFindSimilarTags.mockReturnValue([]);
+
+        const inputTags: tagTableElement[] = [{ name: 'SingleTag' }];
+
+        const result = processTagsForValidation(inputTags, mockFindSimilarTags);
+
+        expect(result.needsValidation).toHaveLength(1);
+        expect(result.needsValidation[0].name).toBe('SingleTag');
+        expect(result.needsValidation[0].similarItems).toEqual([]);
+      });
+
+      test('handles single item with similar matches', () => {
+        mockFindSimilarTags.mockReturnValue([dbTags[0], dbTags[1]]);
+
+        const inputTags: tagTableElement[] = [{ name: 'SingleTag' }];
+
+        const result = processTagsForValidation(inputTags, mockFindSimilarTags);
+
+        expect(result.needsValidation).toHaveLength(1);
+        expect(result.needsValidation[0].name).toBe('SingleTag');
+        expect(result.needsValidation[0].similarItems).toEqual([dbTags[0], dbTags[1]]);
+      });
     });
   });
 
@@ -219,7 +400,9 @@ describe('RecipeValidationHelpers', () => {
       const result = processIngredientsForValidation(inputIngredients, mockFindSimilarIngredients);
 
       expect(result.exactMatches).toEqual([]);
-      expect(result.needsValidation).toEqual(inputIngredients);
+      expect(result.needsValidation).toHaveLength(1);
+      expect(result.needsValidation[0].name).toBe('Tomato');
+      expect(result.needsValidation[0].similarItems).toEqual([dbIngredients[0]]);
     });
 
     test('handles exact match case-insensitively', () => {
@@ -286,7 +469,11 @@ describe('RecipeValidationHelpers', () => {
           unit: 'ml',
         },
       ]);
-      expect(result.needsValidation).toEqual([inputIngredients[1], inputIngredients[2]]);
+      expect(result.needsValidation).toHaveLength(2);
+      expect(result.needsValidation[0].name).toBe('DragonFruit');
+      expect(result.needsValidation[0].similarItems).toEqual([]);
+      expect(result.needsValidation[1].name).toBe('Tomato');
+      expect(result.needsValidation[1].similarItems).toEqual([dbIngredients[1]]);
     });
 
     test('returns empty arrays for empty input', () => {
@@ -313,7 +500,318 @@ describe('RecipeValidationHelpers', () => {
       const result = processIngredientsForValidation(inputIngredients, mockFindSimilarIngredients);
 
       expect(result.exactMatches).toEqual([]);
-      expect(result.needsValidation).toEqual(inputIngredients);
+      expect(result.needsValidation).toHaveLength(1);
+      expect(result.needsValidation[0].name).toBe('NewIngredient');
+    });
+
+    describe('similarItems attachment', () => {
+      test('attaches empty similarItems array when no similar ingredients found', () => {
+        mockFindSimilarIngredients.mockReturnValue([]);
+
+        const inputIngredients: ingredientTableElement[] = [
+          {
+            name: 'NewIngredient',
+            quantity: '100',
+            unit: 'g',
+            type: ingredientType.vegetable,
+            season: [],
+          },
+        ];
+
+        const result = processIngredientsForValidation(
+          inputIngredients,
+          mockFindSimilarIngredients
+        );
+
+        expect(result.needsValidation).toHaveLength(1);
+        expect(result.needsValidation[0].similarItems).toEqual([]);
+      });
+
+      test('attaches similar ingredients to needsValidation items', () => {
+        mockFindSimilarIngredients.mockReturnValue([dbIngredients[0], dbIngredients[1]]);
+
+        const inputIngredients: ingredientTableElement[] = [
+          {
+            name: 'Tom',
+            quantity: '100',
+            unit: 'g',
+            type: ingredientType.vegetable,
+            season: [],
+          },
+        ];
+
+        const result = processIngredientsForValidation(
+          inputIngredients,
+          mockFindSimilarIngredients
+        );
+
+        expect(result.needsValidation).toHaveLength(1);
+        expect(result.needsValidation[0].similarItems).toEqual([
+          dbIngredients[0],
+          dbIngredients[1],
+        ]);
+      });
+
+      test('attaches different similarItems to different ingredients', () => {
+        mockFindSimilarIngredients
+          .mockReturnValueOnce([dbIngredients[0]])
+          .mockReturnValueOnce([dbIngredients[1]]);
+
+        const inputIngredients: ingredientTableElement[] = [
+          { name: 'Tom', quantity: '100', unit: 'ml', type: ingredientType.vegetable, season: [] },
+          { name: 'Parm', quantity: '50', unit: 'g', type: ingredientType.cheese, season: [] },
+        ];
+
+        const result = processIngredientsForValidation(
+          inputIngredients,
+          mockFindSimilarIngredients
+        );
+
+        expect(result.needsValidation).toHaveLength(2);
+        expect(result.needsValidation[0].similarItems).toEqual([dbIngredients[0]]);
+        expect(result.needsValidation[1].similarItems).toEqual([dbIngredients[1]]);
+      });
+
+      test('preserves original ingredient properties alongside similarItems', () => {
+        mockFindSimilarIngredients.mockReturnValue([dbIngredients[0]]);
+
+        const inputIngredients: ingredientTableElement[] = [
+          {
+            id: 99,
+            name: 'CustomIng',
+            quantity: '250',
+            unit: 'ml',
+            type: ingredientType.vegetable,
+            season: ['1', '2'],
+            note: 'Test note',
+          },
+        ];
+
+        const result = processIngredientsForValidation(
+          inputIngredients,
+          mockFindSimilarIngredients
+        );
+
+        const validationItem = result.needsValidation[0];
+        expect(validationItem.id).toBe(99);
+        expect(validationItem.name).toBe('CustomIng');
+        expect(validationItem.quantity).toBe('250');
+        expect(validationItem.unit).toBe('ml');
+        expect(validationItem.note).toBe('Test note');
+        expect(validationItem.similarItems).toEqual([dbIngredients[0]]);
+      });
+    });
+
+    describe('sorting behavior', () => {
+      test('sorts items without similar matches before items with similar matches', () => {
+        mockFindSimilarIngredients
+          .mockReturnValueOnce([dbIngredients[0]])
+          .mockReturnValueOnce([])
+          .mockReturnValueOnce([dbIngredients[1]]);
+
+        const inputIngredients: ingredientTableElement[] = [
+          {
+            name: 'HasMatch1',
+            quantity: '1',
+            unit: 'g',
+            type: ingredientType.vegetable,
+            season: [],
+          },
+          { name: 'NoMatch', quantity: '2', unit: 'g', type: ingredientType.vegetable, season: [] },
+          {
+            name: 'HasMatch2',
+            quantity: '3',
+            unit: 'g',
+            type: ingredientType.vegetable,
+            season: [],
+          },
+        ];
+
+        const result = processIngredientsForValidation(
+          inputIngredients,
+          mockFindSimilarIngredients
+        );
+
+        expect(result.needsValidation).toHaveLength(3);
+        expect(result.needsValidation[0].name).toBe('NoMatch');
+        expect(result.needsValidation[0].similarItems).toEqual([]);
+        expect(result.needsValidation[1].name).toBe('HasMatch1');
+        expect(result.needsValidation[1].similarItems).toEqual([dbIngredients[0]]);
+        expect(result.needsValidation[2].name).toBe('HasMatch2');
+        expect(result.needsValidation[2].similarItems).toEqual([dbIngredients[1]]);
+      });
+
+      test('maintains relative order within same group (no matches)', () => {
+        mockFindSimilarIngredients.mockReturnValue([]);
+
+        const inputIngredients: ingredientTableElement[] = [
+          { name: 'First', quantity: '1', unit: 'g', type: ingredientType.vegetable, season: [] },
+          { name: 'Second', quantity: '2', unit: 'g', type: ingredientType.vegetable, season: [] },
+          { name: 'Third', quantity: '3', unit: 'g', type: ingredientType.vegetable, season: [] },
+        ];
+
+        const result = processIngredientsForValidation(
+          inputIngredients,
+          mockFindSimilarIngredients
+        );
+
+        expect(result.needsValidation[0].name).toBe('First');
+        expect(result.needsValidation[1].name).toBe('Second');
+        expect(result.needsValidation[2].name).toBe('Third');
+      });
+
+      test('maintains relative order within same group (with matches)', () => {
+        mockFindSimilarIngredients.mockReturnValue([dbIngredients[0]]);
+
+        const inputIngredients: ingredientTableElement[] = [
+          { name: 'First', quantity: '1', unit: 'g', type: ingredientType.vegetable, season: [] },
+          { name: 'Second', quantity: '2', unit: 'g', type: ingredientType.vegetable, season: [] },
+          { name: 'Third', quantity: '3', unit: 'g', type: ingredientType.vegetable, season: [] },
+        ];
+
+        const result = processIngredientsForValidation(
+          inputIngredients,
+          mockFindSimilarIngredients
+        );
+
+        expect(result.needsValidation[0].name).toBe('First');
+        expect(result.needsValidation[1].name).toBe('Second');
+        expect(result.needsValidation[2].name).toBe('Third');
+      });
+
+      test('handles all items having similar matches', () => {
+        mockFindSimilarIngredients.mockReturnValue([dbIngredients[0]]);
+
+        const inputIngredients: ingredientTableElement[] = [
+          { name: 'Ing1', quantity: '1', unit: 'g', type: ingredientType.vegetable, season: [] },
+          { name: 'Ing2', quantity: '2', unit: 'g', type: ingredientType.vegetable, season: [] },
+        ];
+
+        const result = processIngredientsForValidation(
+          inputIngredients,
+          mockFindSimilarIngredients
+        );
+
+        expect(result.needsValidation).toHaveLength(2);
+        expect(result.needsValidation.every(i => i.similarItems.length > 0)).toBe(true);
+      });
+
+      test('handles all items having no similar matches', () => {
+        mockFindSimilarIngredients.mockReturnValue([]);
+
+        const inputIngredients: ingredientTableElement[] = [
+          { name: 'Ing1', quantity: '1', unit: 'g', type: ingredientType.vegetable, season: [] },
+          { name: 'Ing2', quantity: '2', unit: 'g', type: ingredientType.vegetable, season: [] },
+        ];
+
+        const result = processIngredientsForValidation(
+          inputIngredients,
+          mockFindSimilarIngredients
+        );
+
+        expect(result.needsValidation).toHaveLength(2);
+        expect(result.needsValidation.every(i => i.similarItems.length === 0)).toBe(true);
+      });
+
+      test('handles mixed exact matches and validation items with correct sorting', () => {
+        mockFindSimilarIngredients
+          .mockReturnValueOnce([dbIngredients[0]])
+          .mockReturnValueOnce([dbIngredients[1]])
+          .mockReturnValueOnce([])
+          .mockReturnValueOnce([dbIngredients[0]]);
+
+        const inputIngredients: ingredientTableElement[] = [
+          {
+            name: 'Tomato Sauce',
+            quantity: '100',
+            unit: 'ml',
+            type: ingredientType.sauce,
+            season: [],
+          },
+          {
+            name: 'SimilarToParm',
+            quantity: '50',
+            unit: 'g',
+            type: ingredientType.cheese,
+            season: [],
+          },
+          {
+            name: 'BrandNew',
+            quantity: '200',
+            unit: 'g',
+            type: ingredientType.vegetable,
+            season: [],
+          },
+          {
+            name: 'SimilarToTomato',
+            quantity: '150',
+            unit: 'ml',
+            type: ingredientType.sauce,
+            season: [],
+          },
+        ];
+
+        const result = processIngredientsForValidation(
+          inputIngredients,
+          mockFindSimilarIngredients
+        );
+
+        expect(result.exactMatches).toHaveLength(1);
+        expect(result.exactMatches[0].name).toBe('Tomato Sauce');
+        expect(result.needsValidation).toHaveLength(3);
+        expect(result.needsValidation[0].name).toBe('BrandNew');
+        expect(result.needsValidation[1].name).toBe('SimilarToParm');
+        expect(result.needsValidation[2].name).toBe('SimilarToTomato');
+      });
+
+      test('handles single item without similar matches', () => {
+        mockFindSimilarIngredients.mockReturnValue([]);
+
+        const inputIngredients: ingredientTableElement[] = [
+          {
+            name: 'SingleIng',
+            quantity: '100',
+            unit: 'g',
+            type: ingredientType.vegetable,
+            season: [],
+          },
+        ];
+
+        const result = processIngredientsForValidation(
+          inputIngredients,
+          mockFindSimilarIngredients
+        );
+
+        expect(result.needsValidation).toHaveLength(1);
+        expect(result.needsValidation[0].name).toBe('SingleIng');
+        expect(result.needsValidation[0].similarItems).toEqual([]);
+      });
+
+      test('handles single item with similar matches', () => {
+        mockFindSimilarIngredients.mockReturnValue([dbIngredients[0], dbIngredients[1]]);
+
+        const inputIngredients: ingredientTableElement[] = [
+          {
+            name: 'SingleIng',
+            quantity: '100',
+            unit: 'g',
+            type: ingredientType.vegetable,
+            season: [],
+          },
+        ];
+
+        const result = processIngredientsForValidation(
+          inputIngredients,
+          mockFindSimilarIngredients
+        );
+
+        expect(result.needsValidation).toHaveLength(1);
+        expect(result.needsValidation[0].name).toBe('SingleIng');
+        expect(result.needsValidation[0].similarItems).toEqual([
+          dbIngredients[0],
+          dbIngredients[1],
+        ]);
+      });
     });
 
     test('handles multiple exact matches in sequence', () => {
@@ -1056,6 +1554,117 @@ describe('RecipeValidationHelpers', () => {
 
       expect(result).toHaveLength(1);
       expect(result[0].quantity).toBe('a pinch');
+    });
+
+    describe('similarItems preservation', () => {
+      const mockSimilarItems: ingredientTableElement[] = [
+        {
+          id: 10,
+          name: 'Similar Item',
+          type: ingredientType.vegetable,
+          unit: 'g',
+          quantity: '100',
+          season: [],
+        },
+      ];
+
+      test('preserves similarItems from first occurrence', () => {
+        const ingredients = [
+          { name: 'Flour', quantity: '200', unit: 'g', similarItems: mockSimilarItems },
+          { name: 'Flour', quantity: '100', unit: 'g', similarItems: [] },
+        ];
+
+        const result = deduplicateIngredientsByName(ingredients);
+
+        expect(result).toHaveLength(1);
+        expect(result[0].quantity).toBe('300');
+        expect(result[0].similarItems).toEqual(mockSimilarItems);
+      });
+
+      test('preserves empty similarItems array', () => {
+        const ingredients = [
+          { name: 'Flour', quantity: '200', unit: 'g', similarItems: [] },
+          { name: 'Flour', quantity: '100', unit: 'g', similarItems: mockSimilarItems },
+        ];
+
+        const result = deduplicateIngredientsByName(ingredients);
+
+        expect(result).toHaveLength(1);
+        expect(result[0].similarItems).toEqual([]);
+      });
+
+      test('handles ingredients without similarItems property', () => {
+        const ingredients = [
+          { name: 'Flour', quantity: '200', unit: 'g' },
+          { name: 'Sugar', quantity: '100', unit: 'g', similarItems: mockSimilarItems },
+        ];
+
+        const result = deduplicateIngredientsByName(ingredients);
+
+        expect(result).toHaveLength(2);
+        expect(result[0].similarItems).toBeUndefined();
+        expect(result[1].similarItems).toEqual(mockSimilarItems);
+      });
+
+      test('preserves multiple similarItems in array', () => {
+        const multipleSimilarItems: ingredientTableElement[] = [
+          {
+            id: 10,
+            name: 'Item A',
+            type: ingredientType.vegetable,
+            unit: 'g',
+            quantity: '50',
+            season: [],
+          },
+          {
+            id: 11,
+            name: 'Item B',
+            type: ingredientType.vegetable,
+            unit: 'g',
+            quantity: '75',
+            season: [],
+          },
+          {
+            id: 12,
+            name: 'Item C',
+            type: ingredientType.vegetable,
+            unit: 'g',
+            quantity: '100',
+            season: [],
+          },
+        ];
+
+        const ingredients = [
+          { name: 'Flour', quantity: '200', unit: 'g', similarItems: multipleSimilarItems },
+        ];
+
+        const result = deduplicateIngredientsByName(ingredients);
+
+        expect(result).toHaveLength(1);
+        expect(result[0].similarItems).toEqual(multipleSimilarItems);
+        expect(result[0].similarItems).toHaveLength(3);
+      });
+
+      test('handles mixed ingredients with and without similarItems during deduplication', () => {
+        const ingredients = [
+          { name: 'Flour', quantity: '100', unit: 'g', similarItems: mockSimilarItems },
+          { name: 'Sugar', quantity: '50', unit: 'g' },
+          { name: 'Flour', quantity: '200', unit: 'g' },
+          { name: 'Salt', quantity: '1', unit: 'tsp', similarItems: [] },
+        ];
+
+        const result = deduplicateIngredientsByName(ingredients);
+
+        expect(result).toHaveLength(3);
+        const flour = result.find(i => i.name === 'Flour');
+        const sugar = result.find(i => i.name === 'Sugar');
+        const salt = result.find(i => i.name === 'Salt');
+
+        expect(flour?.similarItems).toEqual(mockSimilarItems);
+        expect(flour?.quantity).toBe('300');
+        expect(sugar?.similarItems).toBeUndefined();
+        expect(salt?.similarItems).toEqual([]);
+      });
     });
   });
 });

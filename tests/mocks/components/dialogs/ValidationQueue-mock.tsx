@@ -16,9 +16,12 @@ export function ValidationQueue(props: ValidationQueueProps) {
         title='onValidated'
         onPress={() =>
           props.type === 'Tag'
-            ? props.onValidated({ id: 1, name: 'originalTag' }, { id: 2, name: 'mockTag' })
+            ? props.onValidated(
+                { id: 1, name: 'originalTag', similarItems: [] },
+                { id: 2, name: 'mockTag' }
+              )
             : props.onValidated(
-                { name: 'originalIngredient', quantity: '50' },
+                { name: 'originalIngredient', quantity: '50', similarItems: [] },
                 {
                   id: 1,
                   name: 'mockIngredient',
@@ -36,7 +39,7 @@ export function ValidationQueue(props: ValidationQueueProps) {
           title='onDismissed'
           onPress={() =>
             props.type === 'Tag'
-              ? props.onDismissed?.({ id: 1, name: 'mockTag' })
+              ? props.onDismissed?.({ id: 1, name: 'mockTag', similarItems: [] })
               : props.onDismissed?.({
                   id: 1,
                   name: 'mockIngredient',
@@ -44,6 +47,7 @@ export function ValidationQueue(props: ValidationQueueProps) {
                   unit: 'g',
                   quantity: '100',
                   season: [],
+                  similarItems: [],
                 })
           }
         />

@@ -511,6 +511,119 @@ describe('useRecipeIngredients', () => {
           expect(hasSpaghettiIngredient).toBe(true);
         });
       });
+
+      describe('validation queue with similarItems', () => {
+        test('validation queue items include similarItems property', async () => {
+          const similarIngredient = testIngredients.find(i => i.name === 'Spaghetti')!;
+          mockFindSimilarIngredients.mockImplementation((name: string) => {
+            if (name.toLowerCase() === 'spaghettis') {
+              return [similarIngredient];
+            }
+            return [];
+          });
+
+          const wrapper = createIngredientsWrapper(
+            createMockRecipeProp('edit', recipeWithIngredients)
+          );
+
+          const { result } = renderHook(
+            () => ({
+              ingredients: useRecipeIngredients(),
+              form: useRecipeForm(),
+              dialogs: useRecipeDialogs(),
+            }),
+            { wrapper }
+          );
+
+          await waitFor(() => {
+            expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+          });
+
+          act(() => {
+            result.current.ingredients.editIngredients(0, '200@@g--Spaghettis');
+          });
+
+          await waitFor(() => {
+            expect(result.current.dialogs.validationQueue).not.toBeNull();
+          });
+
+          const queueItems = result.current.dialogs.validationQueue?.items;
+          expect(queueItems).toBeDefined();
+          expect(queueItems?.[0]).toHaveProperty('similarItems');
+        });
+
+        test('validation queue items have empty similarItems when no matches', async () => {
+          mockFindSimilarIngredients.mockImplementation(() => []);
+
+          const wrapper = createIngredientsWrapper(
+            createMockRecipeProp('edit', recipeWithIngredients)
+          );
+
+          const { result } = renderHook(
+            () => ({
+              ingredients: useRecipeIngredients(),
+              form: useRecipeForm(),
+              dialogs: useRecipeDialogs(),
+            }),
+            { wrapper }
+          );
+
+          await waitFor(() => {
+            expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+          });
+
+          act(() => {
+            result.current.ingredients.editIngredients(0, '200@@g--CompletelyUnknown');
+          });
+
+          await waitFor(() => {
+            expect(result.current.dialogs.validationQueue).not.toBeNull();
+          });
+
+          const queueItems = result.current.dialogs.validationQueue?.items;
+          expect(queueItems).toBeDefined();
+          expect(queueItems?.[0].similarItems).toEqual([]);
+        });
+
+        test('validation queue items have similar ingredients when fuzzy match exists', async () => {
+          const similarIngredient = testIngredients.find(i => i.name === 'Tomatoes')!;
+          mockFindSimilarIngredients.mockImplementation((name: string) => {
+            if (name.toLowerCase() === 'tomatos') {
+              return [similarIngredient];
+            }
+            return [];
+          });
+
+          const wrapper = createIngredientsWrapper(
+            createMockRecipeProp('edit', recipeWithIngredients)
+          );
+
+          const { result } = renderHook(
+            () => ({
+              ingredients: useRecipeIngredients(),
+              form: useRecipeForm(),
+              dialogs: useRecipeDialogs(),
+            }),
+            { wrapper }
+          );
+
+          await waitFor(() => {
+            expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+          });
+
+          act(() => {
+            result.current.ingredients.editIngredients(0, '200@@g--Tomatos');
+          });
+
+          await waitFor(() => {
+            expect(result.current.dialogs.validationQueue).not.toBeNull();
+          });
+
+          const queueItems = result.current.dialogs.validationQueue?.items;
+          expect(queueItems).toBeDefined();
+          expect(queueItems?.[0].similarItems).toEqual([similarIngredient]);
+        });
+      });
     });
 
     describe('addOrMergeIngredient', () => {

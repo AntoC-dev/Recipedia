@@ -7,8 +7,8 @@
  *
  * Key Features:
  * - Sequential processing of single item type
- * - Similarity detection and resolution dialogs
- * - Duplicate prevention against existing items
+ * - Pre-computed similarity info (no redundant database queries)
+ * - Items sorted: "add new" first, then "choose existing"
  * - Item name prominence in dialogs
  * - Automatic progression through queue
  * - Callbacks for validated items
@@ -16,44 +16,30 @@
  * Note: Only accepts tags OR ingredients, not both at the same time, since
  * the modal dialog blocks user interaction.
  *
- * Important: Items that would be blocked by ItemDialog's duplicate detection
- * (e.g., ingredients whose cleaned names match existing database entries)
- * should be filtered upstream by `processIngredientsForValidation` before
- * being passed to this component. This prevents showing dialogs that lead
- * to dead ends where the user cannot proceed.
+ * Important: Items must be processed through `processTagsForValidation` or
+ * `processIngredientsForValidation` before being passed to this component.
+ * These functions attach pre-computed similarity info and handle sorting.
  *
  * @example
  * ```typescript
- * // For tags
+ * // Process tags first to get similarity info
+ * const { needsValidation } = processTagsForValidation(tags, findSimilarTags);
+ *
  * <ValidationQueue
  *   type="Tag"
- *   items={ocrExtractedTags}
+ *   items={needsValidation}
  *   onItemValidated={(tag) => setRecipeTags(prev => [...prev, tag])}
  *   onComplete={() => setTagQueue([])}
- *   existingItems={recipeTags}
- * />
- *
- * // For ingredients
- * <ValidationQueue
- *   type="Ingredient"
- *   items={ocrExtractedIngredients}
- *   onItemValidated={(ing) => setRecipeIngredients(prev => [...prev, ing])}
- *   onComplete={() => setIngredientQueue([])}
- *   existingItems={recipeIngredients}
  * />
  * ```
  */
 
 import React, { useEffect, useState } from 'react';
-import {
-  FormIngredientElement,
-  ingredientTableElement,
-  tagTableElement,
-} from '@customTypes/DatabaseElementTypes';
+import { ingredientTableElement, tagTableElement } from '@customTypes/DatabaseElementTypes';
 import { SimilarityDialog } from './SimilarityDialog';
-import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
 import { uiLogger } from '@utils/logger';
 import { normalizeKey } from '@utils/NutritionUtils';
+import { IngredientWithSimilarity, TagWithSimilarity } from '@utils/RecipeValidationHelpers';
 
 export type ValidationQueuePropsBase<T extends 'Tag' | 'Ingredient', ItemType, ValidatedType> = {
   type: T;
@@ -62,10 +48,14 @@ export type ValidationQueuePropsBase<T extends 'Tag' | 'Ingredient', ItemType, V
   onDismissed?: (item: ItemType) => void;
 };
 
-export type TagValidationProps = ValidationQueuePropsBase<'Tag', tagTableElement, tagTableElement>;
+export type TagValidationProps = ValidationQueuePropsBase<
+  'Tag',
+  TagWithSimilarity,
+  tagTableElement
+>;
 export type IngredientValidationProps = ValidationQueuePropsBase<
   'Ingredient',
-  FormIngredientElement,
+  IngredientWithSimilarity,
   ingredientTableElement
 >;
 
@@ -82,8 +72,6 @@ export function ValidationQueue({
   onComplete,
   testId,
 }: ValidationQueueProps) {
-  const { findSimilarTags, findSimilarIngredients } = useRecipeDatabase();
-
   const [remainingItems, setRemainingItems] = useState(items);
   const [showDialog, setShowDialog] = useState(false);
 
@@ -117,7 +105,7 @@ export function ValidationQueue({
 
   const handleItemValidated = (item: tagTableElement | ingredientTableElement) => {
     if (type === 'Ingredient') {
-      const originalIngredient = currentItem as FormIngredientElement;
+      const originalIngredient = currentItem as IngredientWithSimilarity;
       const validatedIngredient = item as ingredientTableElement;
       const mergedIngredient: ingredientTableElement = {
         ...validatedIngredient,
@@ -127,19 +115,17 @@ export function ValidationQueue({
       };
       onValidated(originalIngredient, mergedIngredient);
     } else {
-      const originalTag = currentItem as tagTableElement;
+      const originalTag = currentItem as TagWithSimilarity;
       onValidated(originalTag, item as tagTableElement);
     }
-    // Note: Don't call moveToNext() here - SimilarityDialog's onClose handles it
   };
 
   const handleDismiss = () => {
     if (type === 'Ingredient') {
-      onDismissed?.(currentItem as FormIngredientElement);
+      onDismissed?.(currentItem as IngredientWithSimilarity);
     } else {
-      onDismissed?.(currentItem as tagTableElement);
+      onDismissed?.(currentItem as TagWithSimilarity);
     }
-    // Note: Don't call moveToNext() here - SimilarityDialog's onClose already handles it
   };
 
   if (remainingItems.length === 0 || !currentItem || !currentItem.name) {
@@ -147,8 +133,7 @@ export function ValidationQueue({
   }
 
   const itemName = currentItem.name;
-  const similarItems =
-    type === 'Tag' ? findSimilarTags(itemName) : findSimilarIngredients(itemName);
+  const similarItems = currentItem.similarItems;
   const exactMatch = similarItems.find(item => normalizeKey(item.name) === normalizeKey(itemName));
   const similarItem = exactMatch || similarItems[0];
 

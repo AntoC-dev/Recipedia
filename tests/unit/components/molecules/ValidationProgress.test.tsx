@@ -1,8 +1,8 @@
 import { render } from '@testing-library/react-native';
 import { ValidationProgress } from '@components/molecules/ValidationProgress';
 import React from 'react';
-import { FormIngredientElement, tagTableElement } from '@customTypes/DatabaseElementTypes';
 import { ValidationProgress as ValidationProgressData } from '@hooks/useValidationWorkflow';
+import { IngredientWithSimilarity, TagWithSimilarity } from '@utils/RecipeValidationHelpers';
 
 jest.mock('@components/dialogs/ValidationQueue', () =>
   require('@mocks/components/dialogs/ValidationQueue-mock')
@@ -27,10 +27,10 @@ describe('ValidationProgress', () => {
     remainingIngredients: 6,
   };
 
-  const mockTags: tagTableElement[] = [{ id: 1, name: 'Italian' }];
+  const mockTags: TagWithSimilarity[] = [{ id: 1, name: 'Italian', similarItems: [] }];
 
-  const mockIngredients: FormIngredientElement[] = [
-    { id: 1, name: 'Chicken', quantity: '500', unit: 'g' },
+  const mockIngredients: IngredientWithSimilarity[] = [
+    { id: 1, name: 'Chicken', quantity: '500', unit: 'g', similarItems: [] },
   ];
 
   describe('Tag validation', () => {

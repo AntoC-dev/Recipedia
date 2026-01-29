@@ -42,6 +42,6 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .reassure/baseline.perf
           git diff --staged --quiet || (
-            git commit -m "perf: update reassure baseline [skip ci]" &&
+            git commit -m "chore: update reassure baseline [skip ci]" &&
             git push
           )
