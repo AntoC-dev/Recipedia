@@ -46,7 +46,7 @@ tags:
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::Title"
-    direction: UP
+    direction: DOWN
     speed: 40
     centerElement: true
     label: "Action - Scroll back to top of nutrition part"

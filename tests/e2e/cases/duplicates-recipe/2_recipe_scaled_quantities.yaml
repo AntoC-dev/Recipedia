@@ -39,11 +39,11 @@ tags:
 
 - scrollUntilVisible:
     element:
-      id: "RecipeIngredients::PrefixText"
+      id: "RecipeIngredients::0::QuantityInput"
     direction: UP
-    speed: 60
+    speed: 40
     centerElement: true
-    label: "Action - Scroll up to ingredients"
+    label: "Action - Scroll up to Pasta quantity input"
 
 - waitForAnimationToEnd
 

@@ -1,8 +1,20 @@
 appId: "com.recipedia"
 ---
+- extendedWaitUntil:
+    visible:
+      text: "Shutter"
+    timeout: 10000
+    label: "Wait for the camera button to appear"
+
 - tapOn:
     text: "Shutter"
     label: "Take the photo"
+
+- extendedWaitUntil:
+    visible:
+      text: "Done"
+    timeout: 10000
+    label: "Wait for the done button to appear"
 
 - tapOn:
     text: "Done"

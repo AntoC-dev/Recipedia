@@ -419,7 +419,7 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipePreparation::EditableStep::1::TextInputTitle::Title"
+      id: "RecipePreparation::EditableStep::1::Title"
     direction: UP
     speed: 40
     label: "Scroll up in case the step title is not visible"

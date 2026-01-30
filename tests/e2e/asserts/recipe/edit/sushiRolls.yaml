@@ -245,10 +245,11 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeIngredients::4::QuantityInput"
+      id: "RecipeIngredients::3::QuantityInput"
     direction: DOWN
-    speed: 60
+    speed: 40
     centerElement: true
+    label: "Scroll down to the third ingredient"
 
 - waitForAnimationToEnd
 
@@ -713,4 +714,3 @@ appId: "com.recipedia"
     label: "Scroll back to top"
 
 - waitForAnimationToEnd
-
