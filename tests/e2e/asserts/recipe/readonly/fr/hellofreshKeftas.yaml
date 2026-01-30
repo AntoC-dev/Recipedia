@@ -83,7 +83,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeTime::Text"
-    text: "Préparation (70 min)"
+    text: "Préparation (45 min)"
     label: "Preparation section and time are displayed (French)"
 
 - waitForAnimationToEnd
