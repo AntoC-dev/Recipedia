@@ -88,26 +88,24 @@ jobs:
             # Clear logcat before test
             adb logcat -c
 
+            # Collect logs on exit regardless of test outcome (trap runs even under set -e)
+            SUITE_LOG_DIR="maestro_logs_${{ matrix.suite }}"
+            collect_logs() {
+              echo "📋 Collecting Android logs..."
+              mkdir -p "$SUITE_LOG_DIR"
+              timeout 30 adb logcat -d > "$SUITE_LOG_DIR/android-app-logs.txt" 2>&1 || true
+              echo "📋 Android logs collected ($(wc -l < "$SUITE_LOG_DIR/android-app-logs.txt" 2>/dev/null || echo 0) lines)"
+
+              echo "📋 Collecting app log file..."
+              timeout 10 adb shell run-as com.recipedia find . -name "recipedia-logs.txt" -type f 2>/dev/null || true
+              timeout 30 adb shell run-as com.recipedia sh -c 'find . -name "recipedia-logs.txt" -exec cat {} +' > "$SUITE_LOG_DIR/recipedia-app-logs.txt" 2>/dev/null || true
+              [ -s "$SUITE_LOG_DIR/recipedia-app-logs.txt" ] && echo "📋 App log file collected ($(wc -l < "$SUITE_LOG_DIR/recipedia-app-logs.txt") lines)" || echo "⚠️ App log file not found or empty"
+            }
+            trap collect_logs EXIT
+
             echo "🚀 Running E2E tests on suite: ${{ matrix.suite }} ..."
             npm run install:android
-            set +e
             maestro test tests/e2e/ --config=tests/e2e/${{ matrix.suite }}.yaml --debug-output=maestro_logs_${{ matrix.suite }} --format junit -s 1 -e QUITOQUE_USERNAME='${{ secrets.QUITOQUE_USERNAME }}' -e QUITOQUE_PASSWORD='${{ secrets.QUITOQUE_PASSWORD }}'
-            TEST_EXIT_CODE=$?
-
-            # Ensure log directory exists (Maestro may not have created it on early failure)
-            mkdir -p maestro_logs_${{ matrix.suite }}
-
-            # Dump logcat to file after test
-            echo "📋 Collecting Android logs..."
-            adb logcat -d > maestro_logs_${{ matrix.suite }}/android-app-logs.txt 2>&1
-            echo "📋 Android logs collected ($(wc -l < maestro_logs_${{ matrix.suite }}/android-app-logs.txt) lines)"
-
-            # Collect app log file from Documents directory
-            echo "📋 Collecting app log file..."
-            adb shell run-as com.recipedia cat files/recipedia-logs.txt > maestro_logs_${{ matrix.suite }}/recipedia-app-logs.txt 2>/dev/null && echo "📋 App log file collected ($(wc -l < maestro_logs_${{ matrix.suite }}/recipedia-app-logs.txt) lines)" || echo "⚠️ App log file not found"
-
-            set -e
-            exit $TEST_EXIT_CODE
 
       # ============================================
       # iOS Setup
