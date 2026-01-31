@@ -21,10 +21,24 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd
 
-- assertVisible:
-    id: "RecipeDescription::Text"
-    text: "La sauce satay est une sauce d'Asie du Sud-Est à base de cacahuètes, ail et gingembre ! Reproduisez-la pour accompagner notre poulet français!"
-    label: "Description of the recipe is rendered"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "RecipeDescription::Text"
+          text: "La sauce satay est une sauce d'Asie du Sud-Est à base de cacahuètes, ail et gingembre! Reproduisez-la pour accompagner notre poulet français !"
+          label: "Description of the recipe is rendered"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "RecipeDescription::Text"
+          text: "La sauce satay est une sauce d'Asie du Sud-Est à base de cacahuètes, ail et gingembre ! Reproduisez-la pour accompagner notre poulet français!"
+          label: "Description of the recipe is rendered"
+
 
 - waitForAnimationToEnd
 
