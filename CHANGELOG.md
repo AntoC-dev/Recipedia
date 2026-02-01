@@ -1,3 +1,12 @@
+## [2.15.1](https://github.com/AntoC-dev/Recipedia/compare/v2.15.0...v2.15.1) (2026-02-01)
+
+### Bug Fixes
+
+* e2e tests ([#191](https://github.com/AntoC-dev/Recipedia/issues/191)) ([f870b10](https://github.com/AntoC-dev/Recipedia/commit/f870b106f5b6601af96aa8b49cac0bad08b3cc7a))
+* **NumericTextInput:** remove duplicated style on inner TextInput ([4a6a034](https://github.com/AntoC-dev/Recipedia/commit/4a6a0341d8270633e79b0812c88b8da572ec013b))
+* **recipe-ingredients:** add missing testID for quantity and unit cell ([cc952f4](https://github.com/AntoC-dev/Recipedia/commit/cc952f4de87f4d4b3decf2abb506bfbca52c9ccc))
+* **utils/ImagePicker:** remove hardcoded width and height properties ([756bf9b](https://github.com/AntoC-dev/Recipedia/commit/756bf9bb9b93622d34491d72dd2393930ae23285))
+
 ## [2.15.0](https://github.com/AntoC-dev/Recipedia/compare/v2.14.0...v2.15.0) (2026-01-29)
 
 ### Features
