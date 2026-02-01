@@ -273,7 +273,7 @@ export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialo
     }
 
     if (item.type === 'Ingredient') {
-      return ingType === undefined || !ingUnit.trim();
+      return ingType === undefined;
     }
 
     return false;

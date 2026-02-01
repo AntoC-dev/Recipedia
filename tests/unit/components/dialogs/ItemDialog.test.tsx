@@ -459,8 +459,8 @@ describe('ItemDialog Component', () => {
       ).toBe(true);
     });
 
-    test('disables confirm button when ingredient has empty unit in add mode', () => {
-      const invalidIngredient: ingredientTableElement = {
+    test('enables confirm button when ingredient has empty unit in add mode', () => {
+      const ingredientWithoutUnit: ingredientTableElement = {
         name: 'Test Ingredient',
         type: ingredientType.fruit,
         unit: '',
@@ -474,7 +474,7 @@ describe('ItemDialog Component', () => {
         onClose: mockOnClose,
         item: {
           type: 'Ingredient',
-          value: invalidIngredient,
+          value: ingredientWithoutUnit,
           onConfirmIngredient: mockOnConfirmIngredient,
         },
       };
@@ -483,7 +483,63 @@ describe('ItemDialog Component', () => {
 
       expect(
         getByTestId('IngredientDialog::AddModal::ConfirmButton').props.accessibilityState.disabled
-      ).toBe(true);
+      ).toBe(false);
+    });
+
+    test('enables confirm button when ingredient has empty unit in edit mode', () => {
+      const ingredientWithoutUnit: ingredientTableElement = {
+        id: 1,
+        name: 'Test Ingredient',
+        type: ingredientType.fruit,
+        unit: '',
+        season: [],
+      };
+
+      const props: ItemDialogProps = {
+        testId: 'IngredientDialog',
+        mode: 'edit',
+        isVisible: true,
+        onClose: mockOnClose,
+        item: {
+          type: 'Ingredient',
+          value: ingredientWithoutUnit,
+          onConfirmIngredient: mockOnConfirmIngredient,
+        },
+      };
+
+      const { getByTestId } = render(<ItemDialog {...props} />);
+
+      expect(
+        getByTestId('IngredientDialog::EditModal::ConfirmButton').props.accessibilityState.disabled
+      ).toBe(false);
+    });
+
+    test('passes empty unit to onConfirmIngredient callback', () => {
+      const ingredientWithoutUnit: ingredientTableElement = {
+        id: 1,
+        name: 'Salt',
+        type: ingredientType.spice,
+        unit: '',
+        season: [],
+      };
+
+      const props: ItemDialogProps = {
+        testId: 'IngredientDialog',
+        mode: 'add',
+        isVisible: true,
+        onClose: mockOnClose,
+        item: {
+          type: 'Ingredient',
+          value: ingredientWithoutUnit,
+          onConfirmIngredient: mockOnConfirmIngredient,
+        },
+      };
+
+      const { getByTestId } = render(<ItemDialog {...props} />);
+
+      fireEvent.press(getByTestId('IngredientDialog::AddModal::ConfirmButton'));
+
+      expect(mockOnConfirmIngredient).toHaveBeenCalledWith('add', ingredientWithoutUnit);
     });
 
     test('disables confirm button when ingredient has empty name', () => {
