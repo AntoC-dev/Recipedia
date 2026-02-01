@@ -397,8 +397,8 @@ appId: "com.recipedia"
     label: "Wait for keyboard animation"
 
 - tapOn:
-    id: "RecipePersons::PrefixText"
-    label: "Tap on prefix text to dismiss keyboard"
+    id: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightText"
+    label: "Tap on weight text to dismiss keyboard"
 
 
 - waitForAnimationToEnd:

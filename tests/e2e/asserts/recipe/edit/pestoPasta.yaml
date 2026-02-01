@@ -232,10 +232,11 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeIngredients::4::QuantityInput"
+      id: "RecipeIngredients::3::QuantityInput"
     direction: DOWN
     speed: 60
     centerElement: true
+    label: "Scroll to fourth ingredient"
 
 - waitForAnimationToEnd
 
@@ -251,6 +252,19 @@ appId: "com.recipedia"
     id: "RecipeIngredients::3::NameInput::CustomTextInput"
     text: "Olive Oil"
     label: "Ingredient Olive Oil is rendered"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::4::QuantityInput"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to last ingredient"
+
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipeIngredients::4::QuantityInput"
     text: "40"
@@ -555,4 +569,3 @@ appId: "com.recipedia"
     label: "Scroll back to top"
 
 - waitForAnimationToEnd
-

@@ -39,7 +39,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "ShoppingScreen::SectionList::Flour"
-          text: "Flour (400g)"
+          text: "Flour (400g), 1 recipe"
           label: "Flour item on Android (doubled 200g x 2)"
 
 - runFlow:
@@ -89,7 +89,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "ShoppingScreen::SectionList::Eggs"
-          text: "Eggs (4pieces)"
+          text: "Eggs (4pieces), 1 recipe"
           label: "Eggs item on Android (doubled 2 x 2)"
 
 - runFlow:
@@ -139,7 +139,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "ShoppingScreen::SectionList::Milk"
-          text: "Milk (600ml)"
+          text: "Milk (600ml), 1 recipe"
           label: "Milk item on Android (doubled 300ml x 2)"
 
 - runFlow:
@@ -189,7 +189,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "ShoppingScreen::SectionList::Butter"
-          text: "Butter (100g)"
+          text: "Butter (100g), 1 recipe"
           label: "Butter item on Android (doubled 50g x 2)"
 
 - runFlow:

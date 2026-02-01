@@ -117,10 +117,7 @@ export function NumericTextInput({
     setIsFocused(true);
   }
 
-  const inputStyle: StyleProp<TextStyle> = [
-    style,
-    editable ? {} : { backgroundColor: colors.backdrop },
-  ];
+  const inputStyle: StyleProp<TextStyle> = [editable ? {} : { backgroundColor: colors.backdrop }];
 
   return (
     <View style={style} pointerEvents={'box-none'} accessible={false}>

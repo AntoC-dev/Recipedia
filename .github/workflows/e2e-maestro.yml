@@ -80,31 +80,10 @@ jobs:
           arch: x86_64
           profile: Nexus 5
           emulator-options: -no-snapshot -no-window -noaudio -no-boot-anim -wipe-data -memory 4096 -cores 4
-          script: |
-            sleep 10
-            echo "🔄 Waiting for device..."
-            adb wait-for-device
-
-            # Clear logcat before test
-            adb logcat -c
-
-            echo "🚀 Running E2E tests on suite: ${{ matrix.suite }} ..."
-            npm run install:android
-            set +e
-            maestro test tests/e2e/ --config=tests/e2e/${{ matrix.suite }}.yaml --debug-output=maestro_logs_${{ matrix.suite }} --format junit -s 1 -e QUITOQUE_USERNAME='${{ secrets.QUITOQUE_USERNAME }}' -e QUITOQUE_PASSWORD='${{ secrets.QUITOQUE_PASSWORD }}'
-            TEST_EXIT_CODE=$?
-            set -e
-
-            # Dump logcat to file after test
-            echo "📋 Collecting Android logs..."
-            adb logcat -d > maestro_logs_${{ matrix.suite }}/android-app-logs.txt 2>&1
-            echo "📋 Android logs collected ($(wc -l < maestro_logs_${{ matrix.suite }}/android-app-logs.txt) lines)"
-
-            # Collect app log file from Documents directory
-            echo "📋 Collecting app log file..."
-            adb shell run-as com.recipedia cat files/recipedia-logs.txt > maestro_logs_${{ matrix.suite }}/recipedia-app-logs.txt 2>/dev/null && echo "📋 App log file collected ($(wc -l < maestro_logs_${{ matrix.suite }}/recipedia-app-logs.txt) lines)" || echo "⚠️ App log file not found"
-
-            exit $TEST_EXIT_CODE
+          script: bash .github/scripts/run-e2e-android.sh ${{ matrix.suite }}
+        env:
+          QUITOQUE_USERNAME: ${{ secrets.QUITOQUE_USERNAME }}
+          QUITOQUE_PASSWORD: ${{ secrets.QUITOQUE_PASSWORD }}
 
       # ============================================
       # iOS Setup
@@ -143,44 +122,13 @@ jobs:
         if: inputs.platform == 'ios'
         env:
           MAESTRO_DRIVER_STARTUP_TIMEOUT: 180000
-        run: |
-          echo "🚀 Running E2E tests on iOS simulator for suite: ${{ matrix.suite }} ..."
-          echo "📱 Using simulator UDID: ${{ steps.simulator.outputs.udid }}"
-          npm run install:ios
-          maestro test tests/e2e/ \
-            --config=tests/e2e/${{ matrix.suite }}.yaml \
-            --debug-output=maestro_logs_${{ matrix.suite }} \
-            --format junit -s 1 \
-            -e QUITOQUE_USERNAME='${{ secrets.QUITOQUE_USERNAME }}' \
-            -e QUITOQUE_PASSWORD='${{ secrets.QUITOQUE_PASSWORD }}'
+          QUITOQUE_USERNAME: ${{ secrets.QUITOQUE_USERNAME }}
+          QUITOQUE_PASSWORD: ${{ secrets.QUITOQUE_PASSWORD }}
+        run: bash .github/scripts/run-e2e-ios.sh ${{ matrix.suite }}
 
       - name: Collect iOS logs
         if: always() && inputs.platform == 'ios'
-        run: |
-          echo "📋 Collecting iOS logs..."
-          mkdir -p maestro_logs_${{ matrix.suite }}
-          xcrun simctl spawn ${{ steps.simulator.outputs.udid }} log show \
-            --predicate 'subsystem CONTAINS "com.recipedia" OR process CONTAINS "Recipedia"' \
-            --style compact \
-            --last 1h > maestro_logs_${{ matrix.suite }}/ios-app-logs.txt 2>&1 || true
-          echo "📋 iOS logs collected ($(wc -l < maestro_logs_${{ matrix.suite }}/ios-app-logs.txt 2>/dev/null || echo 0) lines)"
-
-      - name: Collect app log file (iOS)
-        if: always() && inputs.platform == 'ios'
-        run: |
-          echo "📋 Collecting app log file from Documents directory..."
-          APP_CONTAINER=$(xcrun simctl get_app_container ${{ steps.simulator.outputs.udid }} com.recipedia data 2>/dev/null || echo "")
-          if [ -n "$APP_CONTAINER" ]; then
-            LOG_FILE="$APP_CONTAINER/Documents/recipedia-logs.txt"
-            if [ -f "$LOG_FILE" ]; then
-              cp "$LOG_FILE" maestro_logs_${{ matrix.suite }}/recipedia-app-logs.txt
-              echo "📋 App log file collected ($(wc -l < maestro_logs_${{ matrix.suite }}/recipedia-app-logs.txt) lines)"
-            else
-              echo "⚠️ App log file not found at $LOG_FILE"
-            fi
-          else
-            echo "⚠️ Could not find app container"
-          fi
+        run: bash .github/scripts/collect-ios-logs.sh ${{ matrix.suite }} ${{ steps.simulator.outputs.udid }}
 
       # ============================================
       # Common: Logs and Artifacts

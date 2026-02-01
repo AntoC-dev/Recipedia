@@ -83,8 +83,7 @@ appId: "com.recipedia"
     when:
       platform: Android
     commands:
-      - hideKeyboard:
-          label: "Dismiss keyboard on Android"
+      - pressKey: enter
 
 - runFlow:
     when:
@@ -101,9 +100,6 @@ appId: "com.recipedia"
     id: "RecipeTags::RoundButton"
     label: "Press the round button of second tags"
 
-- scroll:
-    label: "Scroll a little more to ensure the dropdown will be visible"
-
 - assertVisible:
     id: "RecipeTags::List::1::CustomTextInput"
     label: "Assert - TextInput of second tags is visible"
@@ -118,8 +114,15 @@ appId: "com.recipedia"
     timeout: 30000
     label: "Wait for the autocomplete list to appear"
 
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Hide keyboard on Android"
+
 - swipe:
-    start: "50%,40%"
+    start: "50%,50%"
     end: "50%,25%"
     label: "Swipe down to scroll dropdown"
 
@@ -414,6 +417,15 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd
 
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::1::Title"
+    direction: UP
+    speed: 40
+    label: "Scroll up in case the step title is not visible"
+
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipePreparation::EditableStep::1::TextInputTitle::CustomTextInput"
     label: "Press the TextInput of second preparation title"
@@ -474,9 +486,20 @@ appId: "com.recipedia"
     text: "Salez, poivrez. Mixez jusqu'a obtenir une texture homogene."
     label: "Enter text for recipe second preparation paragraph (fourth line)"
 
-- tapOn:
-    id: "RecipePreparation::EditableStep::1::Content"
-    label: "Tap on the content text to close the keyboard"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "RecipePreparation::EditableStep::1::Content"
+          label: "Tap on the second content text to close the keyboard"
 
 - waitForAnimationToEnd
 
@@ -540,9 +563,20 @@ appId: "com.recipedia"
     text: "Coupez les filets de poulet en lanieres.\nemincez l'oignon.\nPressez ou hachez l'ail.\nDans une poele, faites chauffer un filet d'huile de cuisson a feu moyen a vif."
     label: "Enter text for recipe third preparation paragraph"
 
-- tapOn:
-    id: "RecipePreparation::EditableStep::2::Content"
-    label: "Tap on the content text to close the keyboard"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "RecipePreparation::EditableStep::2::Content"
+          label: "Tap on the third content text to close the keyboard"
 
 - waitForAnimationToEnd
 
@@ -555,4 +589,3 @@ appId: "com.recipedia"
     label: "Scroll to see the nutrition add button"
 
 - waitForAnimationToEnd
-

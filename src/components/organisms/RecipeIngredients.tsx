@@ -198,11 +198,14 @@ function ReadOnlyIngredients({ testID, ingredients }: ReadOnlyProps) {
             accessible={false}
           >
             <DataTable.Cell
-              testID={`${testID}::${index}::QuantityAndUnit`}
               style={{ flex: recipeTableReadOnlyFlex.quantityAndUnit }}
               accessible={false}
             >
-              <Text variant='titleMedium' accessible={true}>
+              <Text
+                variant='titleMedium'
+                accessible={true}
+                testID={`${testID}::${index}::QuantityAndUnit`}
+              >
                 {formatQuantityForDisplay(item.quantity ?? '')} {item.unit}
               </Text>
             </DataTable.Cell>
