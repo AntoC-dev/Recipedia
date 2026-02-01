@@ -9,18 +9,20 @@ appId: "com.recipedia"
     while:
       true: ${output.currentIndex < RECIPE_COUNT}
     commands:
+      - waitForAnimationToEnd
 
-- waitForAnimationToEnd
-    
-    - scrollUntilVisible:
-    element:
-      id: "BulkImportDiscovery::(fresh|seen)-${output.currentIndex}"
-    direction: DOWN
-    speed: 40
-    timeout: 30000
-    centerElement: true
-    - tapOn:
-        id: "BulkImportDiscovery::(fresh|seen)-${output.currentIndex}"
-    - evalScript: ${output.currentIndex = output.currentIndex + 1}
+      - scrollUntilVisible:
+          element:
+            id: "BulkImportDiscovery::(fresh|seen)-${output.currentIndex}"
+          direction: DOWN
+          speed: 40
+          timeout: 30000
+          centerElement: true
+          label: "Scroll down to load more recipes"
 
-- waitForAnimationToEnd
+      - tapOn:
+          id: "BulkImportDiscovery::(fresh|seen)-${output.currentIndex}"
+
+      - evalScript: ${output.currentIndex = output.currentIndex + 1}
+
+      - waitForAnimationToEnd

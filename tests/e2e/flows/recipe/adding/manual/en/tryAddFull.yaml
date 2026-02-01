@@ -29,6 +29,15 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd
 
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::0::Title"
+    direction: UP
+    speed: 40
+    label: "Scroll up in case the preparation title is not visible"
+
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
     label: "Press preparation step title"
@@ -50,6 +59,15 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to preparation content"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::0::Content"
+    direction: UP
+    speed: 40
+    label: "Scroll up in case the preparation content is not visible"
 
 - waitForAnimationToEnd
 

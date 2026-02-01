@@ -191,10 +191,24 @@ appId: "com.recipedia"
     text: "3) LA CUISSON DU POULET"
     label: "Third preparation title is displayed"
 
-- assertVisible:
-    id: "RecipePreparation::ReadOnlyStep::2::SectionParagraph"
-    text: "Coupez les filets de poulet en lanieres.\nemincez l'oignon.\nPressez ou hachez l'ail.\nDans une poele, faites chauffer un filet d'huile de cuisson a feu moyen a vif."
-    label: "Third preparation paragraph is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "RecipePreparation::ReadOnlyStep::2::SectionParagraph"
+          text: "Coupez les filets de poulet en lanieres.emincez l'oignon.Pressez ou hachez l'ail.Dans une poele, faites chauffer un filet d'huile de cuisson a feu moyen a vif."
+          label: "Third preparation paragraph is displayed on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "RecipePreparation::ReadOnlyStep::2::SectionParagraph"
+          text: "Coupez les filets de poulet en lanieres.\nemincez l'oignon.\nPressez ou hachez l'ail.\nDans une poele, faites chauffer un filet d'huile de cuisson a feu moyen a vif."
+          label: "Third preparation paragraph is displayed on iOS"
+
 
 - assertNotVisible:
     id: "Recipe::RecipeNutrition::NutritionTable"

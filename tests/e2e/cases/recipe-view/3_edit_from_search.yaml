@@ -47,7 +47,7 @@ tags:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::Title"
     direction: DOWN
-    speed: 85
+    speed: 40
     timeout: 120000
     centerElement: true
     label: "Action - Scroll back to top of nutrition part"
@@ -68,7 +68,7 @@ tags:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::Title"
     direction: UP
-    speed: 60
+    speed: 40
     centerElement: true
     label: "Action - Scroll back to top of nutrition part"
 

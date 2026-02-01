@@ -54,7 +54,7 @@ tags:
     label: "Verification - Focus on search bar"
 
 - inputText:
-    text: "hamburger"
+    text: "Hamburger"
     label: "Verification - Search for new recipe"
 
 - waitForAnimationToEnd:

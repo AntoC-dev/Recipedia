@@ -1,5 +1,11 @@
 appId: "com.recipedia"
 ---
+- extendedWaitUntil:
+    visible:
+      id: "com.recipedia:id/menu_crop"
+    timeout: 10000
+    label: "Wait for crop menu"
+
 - tapOn:
     id: "com.recipedia:id/menu_crop"
     label: "Validate the picture without crop"

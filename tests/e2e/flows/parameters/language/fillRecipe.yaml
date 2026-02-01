@@ -121,10 +121,20 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
+      id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll until recipe preparation title is visible"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
       id: "RecipePreparation::EditableStep::0::Content"
     direction: DOWN
-    speed: 60
-    centerElement: true
+    speed: 40
+    label: "Scroll until recipe preparation content is visible"
 
 - waitForAnimationToEnd
 

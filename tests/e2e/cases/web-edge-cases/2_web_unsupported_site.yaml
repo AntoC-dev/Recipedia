@@ -53,7 +53,7 @@ tags:
 
 - assertVisible:
     id: "VerticalBottomButtons::UrlDialog::HelperText"
-    text: "Could not extract recipe from this URL"
+    text: "No recipe found on this page"
     label: "Assert - No recipe found error is displayed"
 
 - assertNotVisible:

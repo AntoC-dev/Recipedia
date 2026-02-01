@@ -68,7 +68,7 @@ describe('RecipeIngredients Component', () => {
       sampleIngredients.forEach((ingredient, index) => {
         expect(getByTestId(`ReadOnlyIngredients::${index}::Row`)).toBeTruthy();
         const quantityAndUnitCell = getByTestId(`ReadOnlyIngredients::${index}::QuantityAndUnit`);
-        const quantityAndUnitText = quantityAndUnitCell.props.children.props.children;
+        const quantityAndUnitText = quantityAndUnitCell.props.children;
         expect(quantityAndUnitText).toEqual([ingredient.quantity, ' ', ingredient.unit]);
 
         const ingredientNameText = getByTestId(`ReadOnlyIngredients::${index}::IngredientName`);

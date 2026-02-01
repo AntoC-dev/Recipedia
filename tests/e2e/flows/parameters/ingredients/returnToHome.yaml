@@ -8,10 +8,9 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "Parameters::Section::Appearance::DarkMode::Switch"
+      id: "Parameters::Section::Appearance::SubHeader"
     direction: UP
     speed: 60
-    centerElement: true
     label: "Scroll back to top of Parameters screen"
 
 - waitForAnimationToEnd

@@ -54,8 +54,6 @@ function createImageOptionsWithTheme(themeColors: MD3Colors) {
     cropperCancelText: 'Cancel',
     cropperChooseText: 'Choose',
     cropping: true,
-    width: 10000,
-    height: 10000,
     avoidEmptySpaceAroundImage: false,
     cropperToolbarTitle: '',
     freeStyleCropEnabled: true,
