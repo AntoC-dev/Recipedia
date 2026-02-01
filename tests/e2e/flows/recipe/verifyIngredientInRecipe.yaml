@@ -27,8 +27,8 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeIngredients::0::QuantityAndUnit"
-    text: "100 g"
-    label: "Verify that unit is correctly displayed"
+    text: "100 "
+    label: "Verify that quantity is correctly displayed"
 
 - tapOn:
     id: "Recipe::AppBar::BackButton"

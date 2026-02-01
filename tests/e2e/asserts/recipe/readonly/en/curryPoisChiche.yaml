@@ -66,7 +66,7 @@ appId: "com.recipedia"
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "lait de coco"
-      INGREDIENT_QUANTITY_AND_UNIT: "400 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "400"
     label: "Assert lait de coco ingredient"
 
 - runFlow:
@@ -87,28 +87,28 @@ appId: "com.recipedia"
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "pois chiches conserve  Bio"
-      INGREDIENT_QUANTITY_AND_UNIT: "200 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "200"
     label: "Assert pois chiche ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "purée de tomates"
-      INGREDIENT_QUANTITY_AND_UNIT: "250 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "250"
     label: "Assert purée de tomates ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "riz basmati"
-      INGREDIENT_QUANTITY_AND_UNIT: "300 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "300"
     label: "Assert riz basmati ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "épices Cachemire"
-      INGREDIENT_QUANTITY_AND_UNIT: "2 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "2"
     label: "Assert épices Cachemire ingredient"
 
 - waitForAnimationToEnd

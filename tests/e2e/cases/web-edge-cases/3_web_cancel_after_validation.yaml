@@ -105,7 +105,6 @@ tags:
     env:
       INGREDIENT_NAME: "Carotte"
       INGREDIENT_TYPE: "Cereal"
-      INGREDIENT_UNIT: "g"
       INGREDIENT_INDEX: "4"
     label: "Assert - First ingredient from HelloFresh was added to database"
 

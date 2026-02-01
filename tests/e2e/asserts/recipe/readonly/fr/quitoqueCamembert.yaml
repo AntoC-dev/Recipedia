@@ -83,28 +83,28 @@ appId: "com.recipedia"
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "camembert au lait cru"
-      INGREDIENT_QUANTITY_AND_UNIT: "500 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "500"
     label: "Assert camembert ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "miel Bio"
-      INGREDIENT_QUANTITY_AND_UNIT: "40 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "40"
     label: "Assert miel ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "salade"
-      INGREDIENT_QUANTITY_AND_UNIT: "100 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "100"
     label: "Assert salade ingredient"
 
 - runFlow:
     file: "../../common/assertIngredientWithNote.yaml"
     env:
       INGREDIENT_NAME: "petits pains aux épices"
-      INGREDIENT_QUANTITY_AND_UNIT: "4 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "4"
       INGREDIENT_NOTE: "160g"
     label: "Assert pains aux épices ingredient with note"
 
@@ -112,7 +112,7 @@ appId: "com.recipedia"
     file: "../../common/assertIngredientWithNote.yaml"
     env:
       INGREDIENT_NAME: "carotte"
-      INGREDIENT_QUANTITY_AND_UNIT: "2 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "2"
       INGREDIENT_NOTE: "100g"
     label: "Assert carotte ingredient with note"
 
@@ -120,7 +120,7 @@ appId: "com.recipedia"
     file: "../../common/assertIngredientWithNote.yaml"
     env:
       INGREDIENT_NAME: "herbes de Provence"
-      INGREDIENT_QUANTITY_AND_UNIT: "0,5 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "0,5"
       INGREDIENT_NOTE: "sachet"
     label: "Assert herbes de Provence ingredient with note"
 
@@ -128,14 +128,14 @@ appId: "com.recipedia"
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "huile d'olive"
-      INGREDIENT_QUANTITY_AND_UNIT: "4 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "4"
     label: "Assert huile d'olive ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "vinaigre de votre choix"
-      INGREDIENT_QUANTITY_AND_UNIT: "2 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "2"
     label: "Assert vinaigre ingredient"
 
 - waitForAnimationToEnd

@@ -15,10 +15,12 @@ appId: "com.recipedia"
           element:
             id: "BulkImportDiscovery::(fresh|seen)-${output.currentIndex}"
           direction: DOWN
-          speed: 40
+          speed: 30
           timeout: 30000
           centerElement: true
           label: "Scroll down to load more recipes"
+
+      - waitForAnimationToEnd
 
       - tapOn:
           id: "BulkImportDiscovery::(fresh|seen)-${output.currentIndex}"
