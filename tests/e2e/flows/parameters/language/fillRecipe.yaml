@@ -131,10 +131,10 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipePreparation::EditableStep::0::Content"
-    direction: DOWN
-    speed: 40
-    label: "Scroll until recipe preparation content is visible"
+      id: "RecipePreparation::EditableStep::0::Title"
+      direction: UP
+      speed: 20
+    label: "Ensure recipe preparation title is visible"
 
 - waitForAnimationToEnd
 
@@ -148,8 +148,8 @@ appId: "com.recipedia"
     label: "Wait for keyboard animation"
 
 - tapOn:
-    id: "RecipePreparation::EditableStep::0::Content"
-    label: "Tap on recipe preparation content to close the keyboard"
+    id: "RecipePreparation::EditableStep::0::Title"
+    label: "Tap on recipe preparation title to close the keyboard"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard to dismiss"
