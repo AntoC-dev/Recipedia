@@ -39,7 +39,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "Parameters::Section::Appearance::DarkMode::Item"
-          text: "󰔎 Dark Mode"
+          text: "󰔎, Dark Mode"
           label: "Dark mode item with icon on iOS"
 
 - assertVisible:
@@ -61,5 +61,5 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "Parameters::Section::Appearance::Language::Item"
-          text: "󰗊 Language English 󰅂"
+          text: "󰗊, Language, English, 󰅂"
           label: "Language item with icon on iOS"

@@ -1,6 +1,5 @@
 appId: "com.recipedia"
 ---
-
 - waitForAnimationToEnd
 
 - scrollUntilVisible:
@@ -24,7 +23,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "Parameters::Section::Import::FromWebsite::Item"
-          text: "󰖟 Import from meal kit service Import all recipes from supported services 󰅂"
+          text: "󰖟, Import from meal kit service, Import all recipes from supported services, 󰅂"
           label: "Import item with icon on iOS"
 
 - runFlow:

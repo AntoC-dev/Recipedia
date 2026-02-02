@@ -39,7 +39,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "Parameters::Section::Data::Ingredients::Item"
-          text: "󰉛 Ingredients Edit ingredients and their seasonality 󰅂"
+          text: "󰉛, Ingredients, Edit ingredients and their seasonality, 󰅂"
           label: "Ingredients item with icon on iOS"
 
 - runFlow:
@@ -69,7 +69,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "Parameters::Section::Data::Tags::Item"
-          text: "󰓻 Tags Manage recipe tags 󰅂"
+          text: "󰓻, Tags, Manage recipe tags, 󰅂"
           label: "Tags item with icon on iOS"
 
 - runFlow:

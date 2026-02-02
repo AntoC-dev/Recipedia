@@ -38,7 +38,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "Parameters::Section::RecipeDefaults::Persons::Item"
-          text: "󰡉 Default Number of Persons 4 persons 󰅂"
+          text: "󰡉, Default Number of Persons, 4 persons, 󰅂"
           label: "Default persons item with icon on iOS"
 
 - runFlow:
@@ -63,7 +63,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "Parameters::Section::RecipeDefaults::Season::Item"
-          text: "󰃭 Default Season Filter"
+          text: "󰃭, Default Season Filter"
           label: "Default season filter item with icon on iOS"
 
 - assertVisible:
