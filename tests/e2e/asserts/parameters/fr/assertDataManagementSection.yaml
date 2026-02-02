@@ -1,6 +1,5 @@
 appId: "com.recipedia"
 ---
-
 - waitForAnimationToEnd
 
 - scrollUntilVisible:
@@ -39,7 +38,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "Parameters::Section::Data::Ingredients::Item"
-          text: "󰉛 Ingrédients  Modifier les ingrédients et leur saisonnalité 󰅂"
+          text: "󰉛, Ingrédients , Modifier les ingrédients et leur saisonnalité, 󰅂"
           label: "Ingredients item with icon on iOS"
 
 - runFlow:
@@ -69,7 +68,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "Parameters::Section::Data::Tags::Item"
-          text: "󰓻 Étiquettes Gérer les tags de recettes 󰅂"
+          text: "󰓻, Étiquettes, Gérer les tags de recettes, 󰅂"
           label: "Tags item with icon on iOS"
 
 - runFlow:

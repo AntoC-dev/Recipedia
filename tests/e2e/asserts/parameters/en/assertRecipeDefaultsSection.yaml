@@ -63,8 +63,10 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "Parameters::Section::RecipeDefaults::Season::Item"
-          text: "󰃭, Default Season Filter"
-          label: "Default season filter item with icon on iOS"
+          label: "Default season filter item is displayed on iOS"
+      - assertVisible:
+          text: "Default Season Filter"
+          label: "Default season filter text is displayed on iOS"
 
 - assertVisible:
     id: "Parameters::Section::RecipeDefaults::Season::Switch"

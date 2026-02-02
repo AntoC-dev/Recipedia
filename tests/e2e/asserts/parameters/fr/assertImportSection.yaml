@@ -1,6 +1,5 @@
 appId: "com.recipedia"
 ---
-
 - waitForAnimationToEnd
 
 - scrollUntilVisible:
@@ -24,7 +23,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "Parameters::Section::Import::FromWebsite::Item"
-          text: "󰖟 Importer depuis un service Importer toutes les recettes depuis les services supportés 󰅂"
+          text: "󰖟, Importer depuis un service, Importer toutes les recettes depuis les services supportés, 󰅂"
           label: "Import item with icon on iOS"
 
 - runFlow:
