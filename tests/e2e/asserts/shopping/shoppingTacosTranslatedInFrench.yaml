@@ -23,7 +23,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "ShoppingScreen::SectionList::Taco Shells"
-          text: "󰄬 Taco Shells (12pieces) 1 recette"
+          text: "󰄬, Taco Shells (12pieces), 1 recette"
           label: "Taco Shells item on iOS"
 
 - repeat:

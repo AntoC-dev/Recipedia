@@ -26,11 +26,11 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "ShoppingScreen::SectionList::Flour"
-          text: "󰄬 Flour (200g) 1 recipe"
+          text: "󰄬, Flour (200g) 1 recipe"
           label: "Flour item on iOS"
       - assertVisible:
           id: "ShoppingScreen::SectionList::Spaghetti"
-          text: "󰄬 Spaghetti (200g) 1 recipe"
+          text: "󰄬, Spaghetti (200g) 1 recipe"
           label: "Spaghetti item on iOS"
 
 # PLANT PROTEIN
@@ -66,7 +66,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "ShoppingScreen::SectionList::Eggs"
-          text: "󰄬 Eggs (2pieces) 1 recipe"
+          text: "󰄬, Eggs (2pieces) 1 recipe"
           label: "Eggs item on iOS"
 
 # SAUCE
@@ -102,7 +102,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "ShoppingScreen::SectionList::Tomato Sauce"
-          text: "󰄬 Tomato Sauce (250ml) 1 recipe"
+          text: "󰄬, Tomato Sauce (250ml) 1 recipe"
           label: "Tomato Sauce item on iOS"
 
 # MEAT
@@ -138,7 +138,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "ShoppingScreen::SectionList::Ground Beef"
-          text: "󰄬 Ground Beef (300g) 1 recipe"
+          text: "󰄬, Ground Beef (300g) 1 recipe"
           label: "Ground Beef item on iOS"
 
 # DAIRY
@@ -174,7 +174,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "ShoppingScreen::SectionList::Milk"
-          text: "󰄬 Milk (300ml) 1 recipe"
+          text: "󰄬, Milk (300ml) 1 recipe"
           label: "Milk item on iOS"
 
 # CHEESE
@@ -210,7 +210,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "ShoppingScreen::SectionList::Parmesan"
-          text: "󰄬 Parmesan (50g) 1 recipe"
+          text: "󰄬, Parmesan (50g) 1 recipe"
           label: "Parmesan item on iOS"
 
 # OIL AND FAT
@@ -246,7 +246,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "ShoppingScreen::SectionList::Butter"
-          text: "󰄬 Butter (50g) 1 recipe"
+          text: "󰄬, Butter (50g) 1 recipe"
           label: "Butter item on iOS"
 
 - runFlow:

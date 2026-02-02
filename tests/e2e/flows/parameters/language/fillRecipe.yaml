@@ -132,8 +132,8 @@ appId: "com.recipedia"
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::EditableStep::0::Title"
-      direction: UP
-      speed: 20
+    direction: UP
+    speed: 20
     label: "Ensure recipe preparation title is visible"
 
 - waitForAnimationToEnd
