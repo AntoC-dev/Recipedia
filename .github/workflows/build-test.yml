@@ -191,7 +191,7 @@ jobs:
     with:
       platform: ios
       app-artifact: build-ios-app
-      suites: '["app-init", "search", "recipe-view", "recipe-create", "shopping", "menu", "settings", "tags-db", "ingredients-db", "duplicates-tag", "duplicates-ingredient", "duplicates-recipe", "ocr", "web-edge-cases", "web", "bulk-import"]'
+      suites: '["app-init", "bulk-import",  "duplicates-ingredient", "duplicates-recipe","duplicates-tag", "ingredients-db", "menu", "ocr", "recipe-create", "recipe-view", "search", "settings", "shopping", "tags-db", "web", "web-edge-cases"]'
     secrets:
       QUITOQUE_USERNAME: ${{ secrets.QUITOQUE_USERNAME }}
       QUITOQUE_PASSWORD: ${{ secrets.QUITOQUE_PASSWORD }}
