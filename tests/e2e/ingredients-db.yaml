@@ -14,3 +14,4 @@ executionOrder:
     - "3 - Edit Existing Ingredient Flow"
     - "4 - Add Ingredient And Use In Recipe Flow"
     - "5 - Ingredient Edge Cases Flow"
+    - "6 - Add Ingredient Without Unit"

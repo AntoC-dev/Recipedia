@@ -44,7 +44,7 @@ appId: "com.recipedia"
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "cumin"
-      INGREDIENT_QUANTITY_AND_UNIT: "2 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "2"
     label: "Assert cumin ingredient"
 
 - runFlow:

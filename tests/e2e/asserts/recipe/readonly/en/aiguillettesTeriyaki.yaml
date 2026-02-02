@@ -76,70 +76,70 @@ appId: "com.recipedia"
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "Riz basmati"
-      INGREDIENT_QUANTITY_AND_UNIT: "140 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "140"
     label: "Assert riz basmati ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "Oignon jaune"
-      INGREDIENT_QUANTITY_AND_UNIT: "1 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "1"
     label: "Assert riz basmati ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "Carotte"
-      INGREDIENT_QUANTITY_AND_UNIT: "1 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "1"
     label: "Assert Carotte ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "Poireau"
-      INGREDIENT_QUANTITY_AND_UNIT: "1 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "1"
     label: "Assert Poireau ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "Ciboulette"
-      INGREDIENT_QUANTITY_AND_UNIT: "3g g"
+      INGREDIENT_QUANTITY_AND_UNIT: "3g"
     label: "Assert Ciboulette ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "Gingembre frais"
-      INGREDIENT_QUANTITY_AND_UNIT: "2 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "2"
     label: "Assert Gingembre frais ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "Sauce soja"
-      INGREDIENT_QUANTITY_AND_UNIT: "40 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "40"
     label: "Assert Sauce soja ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "Huile de sésame"
-      INGREDIENT_QUANTITY_AND_UNIT: "10 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "10"
     label: "Assert Huile de sésame ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "Filet de poulet"
-      INGREDIENT_QUANTITY_AND_UNIT: "2 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "2"
     label: "Assert Filet de poulet ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "Gomasio"
-      INGREDIENT_QUANTITY_AND_UNIT: "2 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "2"
     label: "Assert Gomasio ingredient"
 
 - waitForAnimationToEnd

@@ -42,34 +42,5 @@ appId: "com.recipedia"
     label: "Select legumes type"
 
 - tapOn:
-    id: "IngredientsSettings::ItemDialog::AddModal::Unit::CustomTextInput"
-    label: "Focus on unit input field"
-
-- inputText:
-    text: "g"
-    label: "Enter unit"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - hideKeyboard:
-          label: "Dismiss keyboard on Android"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn:
-          id: "Done"
-          label: "Tap Done key to dismiss keyboard on iOS"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
-
-- tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::ConfirmButton"
     label: "Confirm adding the new ingredient"

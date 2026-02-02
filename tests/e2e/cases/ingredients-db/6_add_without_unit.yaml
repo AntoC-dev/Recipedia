@@ -1,0 +1,104 @@
+name: "6 - Add Ingredient Without Unit"
+appId: "com.recipedia"
+tags:
+  - database
+  - ingredients-db
+---
+- runFlow:
+    file: "../../flows/setupTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- runFlow:
+    file: "../../flows/parameters/ingredients/navigateToIngredientsSettings.yaml"
+    label: "Action - Navigate to Ingredients Settings"
+
+- tapOn:
+    id: "IngredientsSettings::BottomActionButton"
+    label: "Action - Open add ingredient dialog"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::Name::CustomTextInput"
+    label: "Action - Focus on ingredient name input"
+
+- eraseText:
+    label: "Action - Clear existing ingredient name"
+
+- inputText:
+    text: "UnitlessIngredient"
+    label: "Action - Enter new ingredient name"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to dismiss"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::Menu::Button"
+    label: "Action - Open type dropdown"
+
+- tapOn:
+    text: "Cereal"
+    label: "Action - Select spice type"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::ConfirmButton"
+    label: "Action - Confirm adding ingredient without unit"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      text: "UnitlessIngredient"
+    direction: DOWN
+    speed: 70
+    timeout: 240000
+    centerElement: true
+    label: "Action - Scroll to new ingredient"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: "../../flows/parameters/ingredients/verifyIngredientExists.yaml"
+    env:
+      INGREDIENT_NAME: "UnitlessIngredient"
+      INGREDIENT_TYPE: "Cereal"
+      INGREDIENT_INDEX: "36"
+    label: "Assert - Verify ingredient exists with empty unit"
+
+- scrollUntilVisible:
+    element:
+      id: "IngredientsSettings::36::DeleteButton"
+    direction: DOWN
+    speed: 50
+    centerElement: true
+    label: "Cleanup - Scroll to delete button"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "IngredientsSettings::36::DeleteButton"
+    label: "Cleanup - Open delete confirmation dialog"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::DeleteModal::ConfirmButton"
+    label: "Cleanup - Confirm deleting ingredient"
+
+- runFlow:
+    file: "../../flows/parameters/ingredients/returnToHome.yaml"
+    label: "Cleanup - Return to Home screen"

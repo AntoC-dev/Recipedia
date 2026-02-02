@@ -34,34 +34,5 @@ appId: "com.recipedia"
     label: "Wait for menu to disappear"
 
 - tapOn:
-    id: "${PREFIX}::ValidationQueue::Ingredient::ItemDialog::AddModal::Unit::CustomTextInput"
-    label: "Focus on ingredient unit field"
-
-- inputText:
-    text: "g"
-    label: "Enter unit"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - hideKeyboard:
-          label: "Dismiss keyboard on Android"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn:
-          id: "Done"
-          label: "Tap Done key to dismiss keyboard on iOS"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
-
-- tapOn:
     id: "${PREFIX}::ValidationQueue::Ingredient::ItemDialog::AddModal::ConfirmButton"
     label: "Confirm adding the ingredient"

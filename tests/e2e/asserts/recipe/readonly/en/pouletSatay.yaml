@@ -37,14 +37,14 @@ appId: "com.recipedia"
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "cacahuètes grillées"
-      INGREDIENT_QUANTITY_AND_UNIT: "200 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "200"
     label: "Assert cacahuètes grillées ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "concentré de tomates"
-      INGREDIENT_QUANTITY_AND_UNIT: "70 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "70"
     label: "Assert concentré de tomates ingredient"
 
 - runFlow:
@@ -93,7 +93,7 @@ appId: "com.recipedia"
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "riz basmati  Bio"
-      INGREDIENT_QUANTITY_AND_UNIT: "300 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "300"
     label: "Assert riz basmati Bio ingredient"
 
 - waitForAnimationToEnd

@@ -22,35 +22,6 @@ appId: "com.recipedia"
     label: "Select Plant Protein type"
 
 - tapOn:
-    id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::Unit::CustomTextInput"
-    label: "Focus on unit input"
-
-- inputText:
-    text: "kg"
-    label: "Enter unit"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - hideKeyboard:
-          label: "Dismiss keyboard on Android"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn:
-          id: "Done"
-          label: "Tap Done key to dismiss keyboard on iOS"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
-
-- tapOn:
     id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::SeasonalityCalendar::5"
     label: "Select may for seasonality"
 

@@ -78,56 +78,56 @@ appId: "com.recipedia"
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "pain pour hamburger"
-      INGREDIENT_QUANTITY_AND_UNIT: "4 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "4"
     label: "Assert Pain pour hamburger ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "viande hachée"
-      INGREDIENT_QUANTITY_AND_UNIT: "400 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "400"
     label: "Assert Viande hachée ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "oignon"
-      INGREDIENT_QUANTITY_AND_UNIT: "1 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "1"
     label: "Assert Oignon ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "tomate"
-      INGREDIENT_QUANTITY_AND_UNIT: "100 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "100"
     label: "Assert Tomate ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "salade"
-      INGREDIENT_QUANTITY_AND_UNIT: "1 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "1"
     label: "Assert Salade ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "moutarde"
-      INGREDIENT_QUANTITY_AND_UNIT: "50 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "50"
     label: "Assert Moutarde ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "Ketchup"
-      INGREDIENT_QUANTITY_AND_UNIT: "30 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "30"
     label: "Assert Ketchup ingredient"
 
 - runFlow:
     file: "../../common/assertIngredientWithNote.yaml"
     env:
       INGREDIENT_NAME: "cheddar"
-      INGREDIENT_QUANTITY_AND_UNIT: "100 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "100"
       INGREDIENT_NOTE: "achat sous vide en grande surface"
     label: "Assert Cheddar ingredient with note"
 

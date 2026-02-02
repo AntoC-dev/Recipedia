@@ -58,10 +58,9 @@ appId: "com.recipedia"
     text: "Unit:"
     label: "Verify unit label is displayed"
 
-- assertVisible:
+- assertNotVisible:
     id: "IngredientsSettings::${INGREDIENT_INDEX}::Unit"
-    text: "${INGREDIENT_UNIT}"
-    label: "Verify ingredient unit ${INGREDIENT_UNIT} is displayed"
+    label: "Verify ingredient unit is not displayed"
 
 - waitForAnimationToEnd
 

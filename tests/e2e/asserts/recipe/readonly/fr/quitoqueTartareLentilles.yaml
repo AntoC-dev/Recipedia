@@ -73,35 +73,35 @@ appId: "com.recipedia"
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "lentilles blondes"
-      INGREDIENT_QUANTITY_AND_UNIT: "300 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "300"
     label: "Assert lentilles ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "salade d'algues au sésame et au gingembre"
-      INGREDIENT_QUANTITY_AND_UNIT: "200 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "200"
     label: "Assert salade d'algues ingredient with note"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "salade"
-      INGREDIENT_QUANTITY_AND_UNIT: "100 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "100"
     label: "Assert salade ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "huile d'olive"
-      INGREDIENT_QUANTITY_AND_UNIT: "4 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "4"
     label: "Assert huile d'olive ingredient"
 
 - runFlow:
     file: "../../common/assertIngredientWithNote.yaml"
     env:
       INGREDIENT_NAME: "vinaigre"
-      INGREDIENT_QUANTITY_AND_UNIT: "2 g"
+      INGREDIENT_QUANTITY_AND_UNIT: "2"
       INGREDIENT_NOTE: "blanc ou de cidre"
     label: "Assert vinaigre ingredient with note"
 
