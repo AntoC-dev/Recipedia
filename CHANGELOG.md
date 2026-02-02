@@ -1,3 +1,10 @@
+## [2.15.2](https://github.com/AntoC-dev/Recipedia/compare/v2.15.1...v2.15.2) (2026-02-02)
+
+### Bug Fixes
+
+* add ingredient without unit ([#192](https://github.com/AntoC-dev/Recipedia/issues/192)) ([4a0286f](https://github.com/AntoC-dev/Recipedia/commit/4a0286fbe723b2c095addad4027f726fc97b37bb))
+* **e2e:** add EXIF metadata to tajineMerguez/title for Photo Picker ([4a24dfc](https://github.com/AntoC-dev/Recipedia/commit/4a24dfcfc9df1980a6333434ea83a3345cdcd7cf))
+
 ## [2.15.1](https://github.com/AntoC-dev/Recipedia/compare/v2.15.0...v2.15.1) (2026-02-01)
 
 ### Bug Fixes
