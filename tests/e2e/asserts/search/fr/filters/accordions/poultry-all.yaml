@@ -32,7 +32,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-          text: "Volaille 󰅀"
+          text: "Volaille, 󰅀"
           label: "Volaille accordion title with chevron on iOS"
 
 - tapOn:

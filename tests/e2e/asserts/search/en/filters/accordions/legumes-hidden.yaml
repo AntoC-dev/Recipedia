@@ -14,5 +14,5 @@ appId: "com.recipedia"
       platform: iOS
     commands:
       - assertNotVisible:
-          text: "Legumes 󰅀"
+          text: "Legumes, 󰅀"
           label: "Legumes accordion not displayed on iOS"

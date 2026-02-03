@@ -32,7 +32,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-          text: "Nuts and Seeds 󰅀"
+          text: "Nuts and Seeds, 󰅀"
           label: "Nuts and Seeds accordion title with chevron on iOS"
 
 # Expand the accordion

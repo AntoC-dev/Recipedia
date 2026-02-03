@@ -32,7 +32,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-          text: "Oil and Fat 󰅀"
+          text: "Oil and Fat, 󰅀"
           label: "Oil and Fat accordion title with chevron on iOS"
 
 - tapOn:

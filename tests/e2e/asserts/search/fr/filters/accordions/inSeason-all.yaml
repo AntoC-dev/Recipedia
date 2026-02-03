@@ -32,7 +32,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-          text: "Recettes de saisons uniquement 󰅀"
+          text: "Recettes de saisons uniquement, 󰅀"
           label: "Recettes de saisons uniquement accordion title with chevron on iOS"
 
 - tapOn:

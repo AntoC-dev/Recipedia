@@ -32,7 +32,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-          text: "Huiles et Graisses 󰅀"
+          text: "Huiles et Graisses, 󰅀"
           label: "Huile et matière grasse accordion title with chevron on iOS"
 
 - tapOn:

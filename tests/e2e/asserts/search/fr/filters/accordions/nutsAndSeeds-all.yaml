@@ -32,7 +32,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-          text: "Noix et Graines 󰅀"
+          text: "Noix et Graines, 󰅀"
           label: "Fruits à coque et graines accordion title with chevron on iOS"
 
 - tapOn:

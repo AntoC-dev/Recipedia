@@ -19,7 +19,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-          text: "Only in-season ingredients 󰅀"
+          text: "Only in-season ingredients, 󰅀"
           label: "Only in-season ingredients accordion title with chevron on iOS"
 
 - tapOn:

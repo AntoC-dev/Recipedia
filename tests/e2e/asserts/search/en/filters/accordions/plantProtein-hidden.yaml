@@ -14,5 +14,5 @@ appId: "com.recipedia"
       platform: iOS
     commands:
       - assertNotVisible:
-          text: "Plant Protein 󰅀"
+          text: "Plant Protein, 󰅀"
           label: "Plant Protein accordion not displayed on iOS"

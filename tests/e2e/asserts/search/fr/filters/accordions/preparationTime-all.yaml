@@ -32,7 +32,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-          text: "Temps de préparation 󰅀"
+          text: "Temps de préparation, 󰅀"
           label: "Temps de préparation accordion title with chevron on iOS"
 
 - tapOn:
