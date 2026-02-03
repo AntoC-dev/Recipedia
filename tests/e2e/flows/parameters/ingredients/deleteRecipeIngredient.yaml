@@ -5,16 +5,6 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "IngredientsSettings::BottomActionButton-container"
-    direction: DOWN
-    speed: 95
-    centerElement: true
-    label: "Scroll to bottom of the screen"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
       id: "IngredientsSettings::36::IngredientName"
     direction: DOWN
     speed: 85

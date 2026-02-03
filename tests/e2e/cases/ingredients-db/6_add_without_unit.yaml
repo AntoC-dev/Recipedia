@@ -67,7 +67,7 @@ tags:
       text: "UnitlessIngredient"
     direction: DOWN
     speed: 70
-    timeout: 240000
+    timeout: 360000
     centerElement: true
     label: "Action - Scroll to new ingredient"
 

@@ -287,5 +287,5 @@ env:
     commands:
       - assertVisible:
           id: "IngredientsSettings::BottomActionButton"
-          text: "󰐕 Add Ingredient"
+          text: "󰐕, Add Ingredient"
           label: "Add ingredient button is visible with correct text on Android"

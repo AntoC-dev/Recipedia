@@ -1,6 +1,5 @@
 appId: "com.recipedia"
 ---
-
 - waitForAnimationToEnd
 
 - scrollUntilVisible:
@@ -58,9 +57,22 @@ appId: "com.recipedia"
     text: "Unit:"
     label: "Verify unit label is displayed"
 
-- assertNotVisible:
-    id: "IngredientsSettings::${INGREDIENT_INDEX}::Unit"
-    label: "Verify ingredient unit is not displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertNotVisible:
+          id: "IngredientsSettings::${INGREDIENT_INDEX}::Unit"
+          label: "Verify ingredient unit is not displayed on android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "IngredientsSettings::${INGREDIENT_INDEX}::Unit"
+          text: ""
+          label: "Verify ingredient unit is not displayed on iOS"
 
 - waitForAnimationToEnd
 
