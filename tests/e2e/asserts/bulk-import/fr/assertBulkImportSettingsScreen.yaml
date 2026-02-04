@@ -24,7 +24,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "BulkImportSettings::Provider::hellofresh"
-          text: "HelloFresh Importer les recettes depuis HelloFresh 󰅂"
+          text: "HelloFresh, Importer les recettes depuis HelloFresh, 󰅂"
           label: "HelloFresh provider displays name and description (French - iOS)"
 
 - assertVisible:
@@ -46,7 +46,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "BulkImportSettings::Provider::quitoque"
-          text: "Quitoque Importer les recettes depuis Quitoque 󰅂"
+          text: "Quitoque, Importer les recettes depuis Quitoque, 󰅂"
           label: "Quitoque provider displays name and description (French - iOS)"
 
 - assertVisible:
