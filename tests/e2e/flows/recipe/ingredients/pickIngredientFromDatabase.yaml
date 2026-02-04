@@ -31,8 +31,8 @@ appId: "com.recipedia"
       platform: iOS
     commands:
       - tapOn:
-          id: "Done"
-          label: "Tap Done key to dismiss keyboard on iOS"
+          id: "Search"
+          label: "Tap Search key to dismiss keyboard on iOS"
 
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Ingredient::DatabasePicker::Item::0"
