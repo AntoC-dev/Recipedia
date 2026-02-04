@@ -32,8 +32,8 @@ appId: "com.recipedia"
       platform: iOS
     commands:
       - tapOn:
-          id: "Done"
-          label: "Tap Done key to dismiss keyboard on iOS"
+          id: "RecipeValidation::ValidationQueue::Tag::ItemDialog::AddModal::Title"
+          label: "Tap on modal title to dismiss keyboard on iOS"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard to dismiss"

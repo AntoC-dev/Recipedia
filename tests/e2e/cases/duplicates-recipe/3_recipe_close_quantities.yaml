@@ -98,7 +98,6 @@ tags:
       RECIPE_NAME: ".*"
     label: "Assert - Verify recipe added successfully (no duplicate)"
 
-
 - runFlow:
     file: "../../flows/recipe/deleteRecipeBySearch.yaml"
     env:

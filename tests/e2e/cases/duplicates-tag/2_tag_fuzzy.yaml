@@ -90,7 +90,6 @@ tags:
     id: "Recipe::AppBar::BackButton"
     label: "Cleanup - Exit recipe creation without saving"
 
-
 - runFlow:
     file: "../../flows/parameters/tags/navigateToTagsSettings.yaml"
     label: "Cleanup - Navigate to Tags Settings"

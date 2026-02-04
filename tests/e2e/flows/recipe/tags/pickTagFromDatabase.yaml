@@ -31,7 +31,7 @@ appId: "com.recipedia"
       platform: iOS
     commands:
       - tapOn:
-          id: "Done"
+          id: "Search"
           label: "Tap Done key to dismiss keyboard on iOS"
 
 - tapOn:
