@@ -45,6 +45,9 @@ appId: "com.recipedia"
     when:
       platform: iOS
     commands:
+      - assertVisible:
+          id: "RecipePersons::PrefixText"
+          label: "Prefix text is displayed on iOS"
       - tapOn:
           id: "RecipePersons::PrefixText"
           label: "Tap on prefix text on iOS to close the keyboard"
