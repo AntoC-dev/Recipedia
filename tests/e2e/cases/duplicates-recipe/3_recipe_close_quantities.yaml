@@ -60,6 +60,16 @@ tags:
 - eraseText:
     label: "Action - Clear Pasta quantity"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- tapOn:
+    id: "RecipeIngredients::0::QuantityInput"
+    label: "Re-focus field after erase"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to appear"
+
 - inputText:
     text: "260"
     label: "Action - Change Pasta to 260g (30% difference)"

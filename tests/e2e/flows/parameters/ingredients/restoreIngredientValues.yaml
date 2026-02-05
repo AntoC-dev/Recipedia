@@ -28,6 +28,16 @@ appId: "com.recipedia"
 - eraseText:
     label: "Clear existing ingredient name"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    label: "Re-focus field after erase"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to appear"
+
 - inputText:
     text: "Lettuce"
     label: "Restore name to 'Lettuce'"
@@ -67,6 +77,16 @@ appId: "com.recipedia"
 
 - eraseText:
     label: "Clear existing unit"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::EditModal::Unit::CustomTextInput"
+    label: "Re-focus field after erase"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to appear"
 
 - inputText:
     text: "g"

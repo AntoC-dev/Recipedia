@@ -25,6 +25,13 @@ appId: "com.recipedia"
     commands:
       - eraseText:
           label: "Erase the existing title"
+      - waitForAnimationToEnd:
+          label: "Wait for keyboard animation"
+      - tapOn:
+          id: "RecipeTitle::CustomTextInput"
+          label: "Re-focus field after erase"
+      - waitForAnimationToEnd:
+          label: "Wait for keyboard to appear"
 
 - inputText:
     text: "${TITLE}"

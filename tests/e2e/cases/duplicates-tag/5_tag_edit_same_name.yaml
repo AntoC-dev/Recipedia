@@ -53,6 +53,16 @@ tags:
 - eraseText:
     label: "Action - Clear input"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- tapOn:
+    id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    label: "Re-focus field after erase"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to appear"
+
 - inputText:
     text: "Sweet"
     label: "Action - Change to different unique name"
@@ -104,6 +114,16 @@ tags:
     label: "Action - Clear input"
 
 - waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- tapOn:
+    id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    label: "Re-focus field after erase"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to appear"
+
+- waitForAnimationToEnd:
     label: "Wait for keyboard animation to finish"
 
 - inputText:
@@ -152,6 +172,16 @@ tags:
 
 - eraseText:
     label: "Action - Clear input"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- tapOn:
+    id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    label: "Re-focus field after erase"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to appear"
 
 - inputText:
     text: "Chocolate"

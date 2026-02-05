@@ -41,6 +41,13 @@ appId: "com.recipedia"
     commands:
       - eraseText:
           label: "Erase the existing ingredient quantity"
+      - waitForAnimationToEnd:
+          label: "Wait for keyboard animation"
+      - tapOn:
+          id: "RecipeIngredients::${INDEX}::QuantityInput"
+          label: "Re-focus field after erase"
+      - waitForAnimationToEnd:
+          label: "Wait for keyboard to appear"
 
 - inputText:
     text: "${QUANTITY}"
@@ -66,7 +73,13 @@ appId: "com.recipedia"
     commands:
       - eraseText:
           label: "Erase the existing ingredient name"
-
+      - waitForAnimationToEnd:
+          label: "Wait for keyboard animation"
+      - tapOn:
+          id: "RecipeIngredients::${INDEX}::NameInput::CustomTextInput"
+          label: "Re-focus field after erase"
+      - waitForAnimationToEnd:
+          label: "Wait for keyboard to appear"
 - inputText:
     text: "${NAME}"
     label: "Enter ingredient name"

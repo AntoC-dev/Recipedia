@@ -31,6 +31,16 @@ tags:
 - eraseText:
     label: "Action - Clear existing ingredient name"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::Name::CustomTextInput"
+    label: "Re-focus field after erase"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to appear"
+
 - inputText:
     text: "TestIngredient"
     label: "Action - Enter new ingredient name"

@@ -56,6 +56,14 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
+- tapOn:
+    id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    label: "Re-focus field after erase"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to appear"
+
+
 - inputText:
     text: "Italian"
     label: "Change tag name back to 'Italian'"

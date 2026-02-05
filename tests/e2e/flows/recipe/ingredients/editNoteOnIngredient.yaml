@@ -41,6 +41,16 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
+- tapOn:
+    id: "RecipeIngredients::NoteDialog::Input::CustomTextInput"
+    label: "Re-focus field after erase"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to appear"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - inputText:
     text: "${NEW_NOTE_TEXT}"
     label: "Enter new note text"

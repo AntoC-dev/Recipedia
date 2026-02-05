@@ -20,6 +20,17 @@ appId: "com.recipedia"
 
 
 - eraseText
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- tapOn:
+    id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
+    label: "Re-focus field after erase"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to appear"
+
 - inputText: "${NEW_ENERGY_KCAL}"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
@@ -34,6 +45,17 @@ appId: "com.recipedia"
     label: "Tap on fat input"
 
 - eraseText
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- tapOn:
+    id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::NumericTextInput"
+    label: "Re-focus field after erase"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to appear"
+
 - inputText: "${NEW_FAT}"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
@@ -60,6 +82,13 @@ appId: "com.recipedia"
     label: "Tap on protein input"
 
 - eraseText
+
+
+
+- tapOn:
+    id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::NumericTextInput"
+    label: "Re-focus field after erase  
+    
 - inputText: "${NEW_PROTEIN}"
 
 - waitForAnimationToEnd:

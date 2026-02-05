@@ -94,6 +94,16 @@ tags:
 - eraseText:
     label: "Action - Clear existing unit"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::EditModal::Unit::CustomTextInput"
+    label: "Re-focus field after erase"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to appear"
+
 - inputText:
     text: "kg"
     label: "Action - Change unit from g to kg"

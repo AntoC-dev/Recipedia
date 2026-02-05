@@ -20,6 +20,14 @@ appId: "com.recipedia"
 - eraseText:
     label: "Erase current persons value"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+- tapOn:
+    id: "RecipePersons::NumericTextInput"
+    label: "Re-focus field after erase"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to appear"
 - inputText:
     text: "2"
     label: "Enter 2 persons"

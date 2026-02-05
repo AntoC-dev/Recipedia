@@ -102,6 +102,13 @@ tags:
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::Name::CustomTextInput"
+    label: "Re-focus field after erase"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to appear"
+
 - inputText:
     text: "Butte"
     label: "Action - Type fuzzy matching text"
@@ -149,6 +156,16 @@ tags:
 
 - eraseText:
     label: "Action - Clear input"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::Name::CustomTextInput"
+    label: "Re-focus field after erase"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to appear"
 
 - inputText:
     text: "Butter"

@@ -55,6 +55,16 @@ tags:
 - eraseText:
     label: "Action - Clear input"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- tapOn:
+    id: "TagsSettings::ItemDialog::AddModal::Name::CustomTextInput"
+    label: "Re-focus field after erase"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to appear"
+
 - inputText:
     text: "Dessrt"
     label: "Action - Type fuzzy matching text"
@@ -102,6 +112,16 @@ tags:
 
 - eraseText:
     label: "Action - Clear input"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- tapOn:
+    id: "TagsSettings::ItemDialog::AddModal::Name::CustomTextInput"
+    label: "Re-focus field after erase"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to appear"
 
 - inputText:
     text: "Dessert"
