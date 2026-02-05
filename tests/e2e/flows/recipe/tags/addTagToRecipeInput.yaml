@@ -13,6 +13,9 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for scroll to end"
 
+- tapOn:
+    id: "RecipeTags::RoundButton"
+    label: "Add tag to recipe"
 
 - scrollUntilVisible:
     element:
@@ -23,10 +26,6 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd:
     label: "Wait for scroll to end"
-
-- tapOn:
-    id: "RecipeTags::RoundButton"
-    label: "Add tag to recipe"
 
 - tapOn:
     id: "RecipeTags::List::${TAG_INDEX}::CustomTextInput"
