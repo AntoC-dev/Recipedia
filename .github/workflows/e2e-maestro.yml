@@ -121,7 +121,7 @@ jobs:
       - name: Run E2E tests (iOS)
         if: inputs.platform == 'ios'
         env:
-          MAESTRO_DRIVER_STARTUP_TIMEOUT: 180000
+          MAESTRO_DRIVER_STARTUP_TIMEOUT: 360000
           QUITOQUE_USERNAME: ${{ secrets.QUITOQUE_USERNAME }}
           QUITOQUE_PASSWORD: ${{ secrets.QUITOQUE_PASSWORD }}
         run: bash .github/scripts/run-e2e-ios.sh ${{ matrix.suite }}
