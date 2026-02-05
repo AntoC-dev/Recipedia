@@ -36,9 +36,19 @@ appId: "com.recipedia"
     id: "TagsSettings::6::EditButton"
     label: "Tap Edit button for Italian Cuisine tag"
 
+- extendedWaitUntil:
+    visible:
+      id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    timeout: 3000
+    label: "Wait for tag edit dialog to appear"
+
 - tapOn:
     id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    point: "50%,95%"
     label: "Focus on tag name input field"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to appear"
 
 - eraseText:
     label: "Clear existing tag name"
@@ -75,13 +85,14 @@ appId: "com.recipedia"
     id: "TagsSettings::ItemDialog::EditModal::ConfirmButton"
     label: "Save the restored tag"
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    label: "Wait for dialog to close"
 
 - scrollUntilVisible:
     element:
       id: "TagsSettings::6::TagName"
     direction: DOWN
-    speed: 60
+    speed: 40
     centerElement: true
     label: "Scroll to Italian tag"
 

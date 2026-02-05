@@ -19,6 +19,10 @@ appId: "com.recipedia"
 - tapOn:
     id: "RecipeTitle::CustomTextInput"
     label: "Tap on recipe title text input"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to appear"
+
 - inputText:
     text: "Titre"
     label: "Write a title in the input text"
