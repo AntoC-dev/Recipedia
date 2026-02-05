@@ -124,7 +124,6 @@ appId: "com.recipedia"
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fiber::Text"
     direction: DOWN
     speed: 40
-    centerElement: true
     label: "Scroll to fiber text"
 
 - waitForAnimationToEnd

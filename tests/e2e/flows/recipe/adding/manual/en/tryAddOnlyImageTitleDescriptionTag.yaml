@@ -14,8 +14,19 @@ appId: "com.recipedia"
 - waitForAnimationToEnd
 
 - tapOn:
-    id: "RecipeTags::RoundButton-content"
+    id: "RecipeTags::RoundButton"
     label: "Add a new tag"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTags::List::0::CustomTextInput"
+    direction: UP
+    speed: 20
+    label: "Scroll to ensure firsttag's text input is visible"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeTags::List::0::CustomTextInput"

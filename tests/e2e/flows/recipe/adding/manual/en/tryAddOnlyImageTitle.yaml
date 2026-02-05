@@ -1,7 +1,8 @@
 appId: "com.recipedia"
 ---
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    label: "Wait for animation to end"
 
 - scrollUntilVisible:
     element:
@@ -11,7 +12,18 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to centered recipe title"
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    label: "Wait for scrolling to end"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTitle::Text"
+    direction: UP
+    speed: 20
+    label: "Scroll to ensure the label is visible"
+
+- waitForAnimationToEnd:
+    label: "Wait for scrolling to end"
 
 - tapOn:
     id: "RecipeTitle::CustomTextInput"
