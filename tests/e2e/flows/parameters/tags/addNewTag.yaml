@@ -43,8 +43,7 @@ appId: "com.recipedia"
     element:
       text: "RecipeTag"
     direction: DOWN
-    speed: 60
-    centerElement: true
+    speed: 40
     label: "Scroll to find the newly added tag"
 
 - waitForAnimationToEnd
