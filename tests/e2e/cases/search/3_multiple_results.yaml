@@ -31,6 +31,10 @@ tags:
     file: "../../asserts/search/searchbar/searchBarFilteredOnCa.yaml"
     label: "Assert - Verify search bar dropdown shows filtered results for 'Ca'"
 
+- tapOn:
+    id: "SearchScreen::SearchBar"
+    label: "Action - Focus on search bar again"
+
 - pressKey: "enter"
 
 - runFlow:
