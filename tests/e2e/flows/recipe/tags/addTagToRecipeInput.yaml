@@ -10,7 +10,19 @@ appId: "com.recipedia"
     centerElement: true
     label: "Action - Scroll to tags section"
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    label: "Wait for scroll to end"
+
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTags::List::${TAG_INDEX}::CustomTextInput"
+    direction: UP
+    speed: 40
+    label: "Scroll up to ensure tag input field is visible"
+
+- waitForAnimationToEnd:
+    label: "Wait for scroll to end"
 
 - tapOn:
     id: "RecipeTags::RoundButton"
@@ -27,7 +39,20 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- pressKey: ENTER
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Close keyboard on iOS"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard to dismiss"

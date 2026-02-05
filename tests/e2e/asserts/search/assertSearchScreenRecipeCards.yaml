@@ -361,7 +361,6 @@ appId: "com.recipedia"
       id: "SearchScreen::RecipeCards::8::PrepTime"
     direction: DOWN
     speed: 50
-    centerElement: true
     label: "Scroll to ninth recipe card PrepTime"
 
 - waitForAnimationToEnd
@@ -380,7 +379,6 @@ appId: "com.recipedia"
       id: "SearchScreen::RecipeCards::8::Persons"
     direction: DOWN
     speed: 50
-    centerElement: true
     label: "Scroll to ninth recipe card persons"
 
 - waitForAnimationToEnd

@@ -97,8 +97,14 @@ tags:
     id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
     label: "Action - Focus on tag name input again"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to appear"
+
 - eraseText:
     label: "Action - Clear input"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation to finish"
 
 - inputText:
     text: "Dessert"

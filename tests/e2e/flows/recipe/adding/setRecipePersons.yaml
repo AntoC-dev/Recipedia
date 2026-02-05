@@ -11,15 +11,15 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to persons field"
 
-- waitForAnimationToEnd
-
-- assertVisible:
-    id: "RecipePersons::NumericTextInput"
-    label: "Ensure persons field is visible"
+- waitForAnimationToEnd:
+    label: "Wait for UI to stabilize"
 
 - tapOn:
     id: "RecipePersons::NumericTextInput"
     label: "Focus on persons input"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to appear"
 
 - eraseText:
     label: "Erase the default number of persons"
@@ -55,5 +55,7 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard to dismiss"
 
-- waitForAnimationToEnd:
-    label: "Wait for UI to stabilize"
+- assertVisible:
+    id: "RecipePersons::NumericTextInput"
+    text: "${PERSONS}"
+    label: "Check that the number of persons is displayed correctly"
