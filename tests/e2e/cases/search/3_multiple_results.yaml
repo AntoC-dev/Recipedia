@@ -17,6 +17,16 @@ tags:
 
 - inputText: "Ca"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to finish typing"
+
+- tapOn:
+    id: "SearchScreen::SearchBarResults::Item::0"
+    label: "Action - Tap on first element to close the keyboard"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to close"
+
 - runFlow:
     file: "../../asserts/search/searchbar/searchBarFilteredOnCa.yaml"
     label: "Assert - Verify search bar dropdown shows filtered results for 'Ca'"
