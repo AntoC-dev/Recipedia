@@ -213,6 +213,11 @@ appId: "com.recipedia"
     id: "Recipe::BottomActionButton"
 
 - assertVisible:
+    id: "Recipe::Dialog::Content"
+    text: "Recipe .* has been successfully added to the database"
+    label: "Recipe creation dialog is visible"
+
+- assertVisible:
     id: "Recipe::Dialog::Confirm"
     label: "Confirm recipe creation dialog is visible"
 
