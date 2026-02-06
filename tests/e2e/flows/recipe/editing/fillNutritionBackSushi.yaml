@@ -374,7 +374,6 @@ appId: "com.recipedia"
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightNumericTextInput"
     direction: DOWN
-    centerElement: true
     speed: 40
     label: "Scroll to portion weight input"
 
