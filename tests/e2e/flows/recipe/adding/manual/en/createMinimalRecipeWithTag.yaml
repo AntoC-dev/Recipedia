@@ -17,14 +17,24 @@ appId: "com.recipedia"
     id: "RecipeTitle::CustomTextInput"
     label: "Focus on recipe title input"
 
+- runFlow:
+    file: "../../../../waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
 - inputText:
     text: "E2E Test Recipe"
     label: "Enter recipe title"
 
+- tapOn:
+    id: "RecipeImage"
+    label: "Tap on recipe image to dismiss keyboard"
+
+- runFlow:
+    file: "../../../../waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to hide"
+
 - hideKeyboard:
     label: "Dismiss keyboard"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -56,6 +66,10 @@ appId: "com.recipedia"
     id: "RecipeTags::List::0::CustomTextInput"
     label: "Focus on first tag input"
 
+- runFlow:
+    file: "../../../../waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
 - inputText:
     text: "RecipeT"
     label: "Enter the newly created tag name"
@@ -75,7 +89,10 @@ appId: "com.recipedia"
     id: "RecipeTags::List::0::AutocompleteItem::RecipeTag"
     label: "Select the new tag"
 
-- waitForAnimationToEnd
+- runFlow:
+    file: "../../../../waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to hide"
+
 
 - scrollUntilVisible:
     element:
@@ -128,8 +145,6 @@ appId: "com.recipedia"
 - runFlow:
     file: "../../../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -193,6 +208,10 @@ appId: "com.recipedia"
 - tapOn:
     id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
     label: "Focus on preparation content"
+
+- runFlow:
+    file: "../../../../waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
 - inputText:
     text: "Test preparation step"
