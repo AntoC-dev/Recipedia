@@ -50,5 +50,15 @@ appId: "com.recipedia"
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Collapse Only in-season ingredients accordion"
 
+- waitForAnimationToEnd
+
+- assertNotVisible:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
+    label: "Guard - First item should not be visible after collapse"
+
+- assertVisible:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    label: "Guard - In-season accordion header still visible"
+
 # Increment accordion index for next accordion
 - evalScript: ${output.accordionIndex = output.accordionIndex + 1}

@@ -71,4 +71,14 @@ appId: "com.recipedia"
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Collapse Meat accordion"
 
+- waitForAnimationToEnd
+
+- assertNotVisible:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
+    label: "Guard - Beef item should not be visible after collapse"
+
+- assertVisible:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    label: "Guard - Meat accordion header still visible"
+
 - evalScript: ${output.accordionIndex = output.accordionIndex + 1}
