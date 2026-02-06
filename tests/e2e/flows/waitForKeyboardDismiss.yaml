@@ -1,0 +1,22 @@
+appId: "com.recipedia"
+---
+# Wait for keyboard to dismiss - platform specific
+# iOS: Waits for animation then verifies keyboard button is gone
+# Android: Uses waitForAnimationToEnd
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - waitForAnimationToEnd:
+          label: "Wait for iOS keyboard dismiss animation"
+      - assertNotVisible:
+          id: "[Dd]one|[Rr]eturn|[Gg]o|[Nn]ext|[Ss]earch|[Ss]end|[Jj]oin"
+          label: "Verify iOS keyboard is dismissed"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - waitForAnimationToEnd:
+          label: "Wait for Android keyboard to dismiss"

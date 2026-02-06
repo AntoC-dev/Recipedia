@@ -42,7 +42,8 @@ appId: "com.recipedia"
           id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::Text"
           label: "Tap on energy (kcal) text to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
@@ -81,7 +82,8 @@ appId: "com.recipedia"
           id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKj::Text"
           label: "Tap on energy (kj) text to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - waitForAnimationToEnd
@@ -122,7 +124,8 @@ appId: "com.recipedia"
           id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::Text"
           label: "Tap on fat text to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
@@ -161,7 +164,8 @@ appId: "com.recipedia"
           id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::SaturatedFat::Text"
           label: "Tap on saturatedfat text to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
@@ -200,7 +204,8 @@ appId: "com.recipedia"
           id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Carbohydrates::Text"
           label: "Tap on carbohydrates text to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
@@ -239,7 +244,8 @@ appId: "com.recipedia"
           id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Sugars::Text"
           label: "Tap on sugars text to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
@@ -278,7 +284,8 @@ appId: "com.recipedia"
           id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fiber::Text"
           label: "Tap on fiber text to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
@@ -317,7 +324,8 @@ appId: "com.recipedia"
           id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::Text"
           label: "Tap on protein text to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
@@ -356,7 +364,8 @@ appId: "com.recipedia"
           id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Salt::Text"
           label: "Tap on salt text to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - waitForAnimationToEnd
@@ -386,7 +395,8 @@ appId: "com.recipedia"
     id: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightText"
     label: "Tap on weight text to dismiss keyboard"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - tapOn:

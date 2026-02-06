@@ -35,7 +35,8 @@ appId: "com.recipedia"
           id: "Done"
           label: "Close keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - tapOn:

@@ -31,7 +31,8 @@ tags:
     id: "IngredientsSettings::ItemDialog::AddModal::Name::CustomTextInput"
     label: "Re-focus field after erase"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
     label: "Wait for keyboard to appear"
 
 - inputText:
@@ -56,7 +57,8 @@ tags:
           id: "Done"
           label: "Tap Done key to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - tapOn:

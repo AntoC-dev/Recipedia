@@ -47,7 +47,8 @@ appId: "com.recipedia"
     point: "50%,95%"
     label: "Focus on tag name input field"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboard.yaml"
     label: "Wait for keyboard to appear"
 
 - eraseText:
@@ -60,7 +61,8 @@ appId: "com.recipedia"
     id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
     label: "Re-focus field after erase"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboard.yaml"
     label: "Wait for keyboard to appear"
 
 
@@ -86,7 +88,8 @@ appId: "com.recipedia"
           id: "Done"
           label: "Tap Done key to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - tapOn:

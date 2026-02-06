@@ -45,7 +45,8 @@ appId: "com.recipedia"
     id: "RecipeIngredients::NoteDialog::Input::CustomTextInput"
     label: "Re-focus field after erase"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboard.yaml"
     label: "Wait for keyboard to appear"
 
 - waitForAnimationToEnd:
@@ -73,7 +74,8 @@ appId: "com.recipedia"
           id: "Done"
           label: "Tap Done key to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - tapOn:

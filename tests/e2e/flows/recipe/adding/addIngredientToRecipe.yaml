@@ -46,7 +46,8 @@ appId: "com.recipedia"
       - tapOn:
           id: "RecipeIngredients::${INDEX}::QuantityInput"
           label: "Re-focus field after erase"
-      - waitForAnimationToEnd:
+      - runFlow:
+          file: "../../waitForKeyboard.yaml"
           label: "Wait for keyboard to appear"
 
 - inputText:
@@ -58,7 +59,8 @@ appId: "com.recipedia"
 
 - pressKey: enter
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - tapOn:
@@ -78,7 +80,8 @@ appId: "com.recipedia"
       - tapOn:
           id: "RecipeIngredients::${INDEX}::NameInput::CustomTextInput"
           label: "Re-focus field after erase"
-      - waitForAnimationToEnd:
+      - runFlow:
+          file: "../../waitForKeyboard.yaml"
           label: "Wait for keyboard to appear"
 - inputText:
     text: "${NAME}"
@@ -89,7 +92,8 @@ appId: "com.recipedia"
 
 - pressKey: "ENTER"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - waitForAnimationToEnd:

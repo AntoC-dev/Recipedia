@@ -104,7 +104,8 @@ appId: "com.recipedia"
 
 - pressKey: enter
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - tapOn:
@@ -120,7 +121,8 @@ appId: "com.recipedia"
 
 - pressKey: enter
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - waitForAnimationToEnd
@@ -148,7 +150,8 @@ appId: "com.recipedia"
 
 - pressKey: enter
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - waitForAnimationToEnd
@@ -194,7 +197,8 @@ appId: "com.recipedia"
     id: "RecipePreparation::EditableStep::0::Content"
     label: "Tap on preparation content to dismiss keyboard"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - tapOn:

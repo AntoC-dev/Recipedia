@@ -18,7 +18,8 @@ appId: "com.recipedia"
     id: "RecipePersons::NumericTextInput"
     label: "Focus on persons input"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboard.yaml"
     label: "Wait for keyboard to appear"
 
 - eraseText:
@@ -31,7 +32,8 @@ appId: "com.recipedia"
     id: "RecipePersons::NumericTextInput"
     label: "Re-focus field after erase"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboard.yaml"
     label: "Wait for keyboard to appear"
 - inputText:
     text: "${PERSONS}"
@@ -58,7 +60,8 @@ appId: "com.recipedia"
           id: "RecipePersons::PrefixText"
           label: "Tap on prefix text on iOS to close the keyboard"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - assertVisible:

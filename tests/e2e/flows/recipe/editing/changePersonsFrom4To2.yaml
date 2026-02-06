@@ -26,7 +26,8 @@ appId: "com.recipedia"
     id: "RecipePersons::NumericTextInput"
     label: "Re-focus field after erase"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboard.yaml"
     label: "Wait for keyboard to appear"
 - inputText:
     text: "2"
@@ -37,5 +38,6 @@ appId: "com.recipedia"
 
 - pressKey: "ENTER"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"

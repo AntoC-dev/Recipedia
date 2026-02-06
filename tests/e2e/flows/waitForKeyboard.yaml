@@ -1,0 +1,18 @@
+appId: "com.recipedia"
+---
+# Wait for keyboard to appear - platform specific
+# iOS: Waits for keyboard action button to be visible (reliable)
+# Android: Uses waitForAnimationToEnd (keyboards appear fast)
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - extendedWaitUntil:
+          visible:
+            id: "[Dd]one|[Rr]eturn|[Gg]o|[Nn]ext|[Ss]earch|[Ss]end|[Jj]oin"
+          timeout: 5000
+          label: "Wait for iOS keyboard action button"
+
+- waitForAnimationToEnd:
+    label: "Wait for Android keyboard animation"

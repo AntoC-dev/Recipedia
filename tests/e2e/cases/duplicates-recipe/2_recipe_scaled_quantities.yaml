@@ -61,7 +61,8 @@ tags:
     id: "RecipeIngredients::0::QuantityInput"
     label: "Re-focus field after erase"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
     label: "Wait for keyboard to appear"
 
 - inputText:
@@ -73,7 +74,8 @@ tags:
 
 - pressKey: enter
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - tapOn:
@@ -90,7 +92,8 @@ tags:
     id: "RecipeIngredients::1::QuantityInput"
     label: "Re-focus field after erase"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
     label: "Wait for keyboard to appear"
 
 - inputText:
@@ -102,7 +105,8 @@ tags:
 
 - pressKey: enter
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - tapOn:

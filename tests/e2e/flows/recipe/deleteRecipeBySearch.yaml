@@ -17,7 +17,8 @@ appId: "com.recipedia"
 
 - pressKey: "ENTER"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - waitForAnimationToEnd

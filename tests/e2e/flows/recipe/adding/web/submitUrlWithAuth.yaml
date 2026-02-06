@@ -24,7 +24,8 @@ appId: "com.recipedia"
           id: "Done"
           label: "Tap Done key to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - tapOn:
@@ -73,7 +74,8 @@ appId: "com.recipedia"
           id: "Done"
           label: "Tap Done key to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - assertVisible:

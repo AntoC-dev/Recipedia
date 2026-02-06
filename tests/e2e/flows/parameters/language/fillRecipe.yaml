@@ -20,7 +20,8 @@ appId: "com.recipedia"
     id: "RecipeTitle::CustomTextInput"
     label: "Tap on recipe title text input"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboard.yaml"
     label: "Wait for keyboard to appear"
 
 - inputText:
@@ -34,7 +35,8 @@ appId: "com.recipedia"
     id: "RecipeTitle::Text"
     label: "Tap on recipe title text to close the keyboard"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - waitForAnimationToEnd
@@ -62,7 +64,8 @@ appId: "com.recipedia"
 
 - pressKey: enter
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - tapOn:
@@ -76,7 +79,8 @@ appId: "com.recipedia"
 
 - pressKey: enter
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - waitForAnimationToEnd
@@ -103,7 +107,8 @@ appId: "com.recipedia"
 
 - pressKey: enter
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - waitForAnimationToEnd
@@ -155,7 +160,8 @@ appId: "com.recipedia"
     id: "RecipePreparation::EditableStep::0::Title"
     label: "Tap on recipe preparation title to close the keyboard"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 - tapOn:
     id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
@@ -170,5 +176,6 @@ appId: "com.recipedia"
     id: "RecipePreparation::EditableStep::0::Content"
     label: "Tap on recipe preparation content to close the keyboard"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"

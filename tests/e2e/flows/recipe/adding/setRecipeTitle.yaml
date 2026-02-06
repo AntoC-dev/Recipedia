@@ -30,7 +30,8 @@ appId: "com.recipedia"
       - tapOn:
           id: "RecipeTitle::CustomTextInput"
           label: "Re-focus field after erase"
-      - waitForAnimationToEnd:
+      - runFlow:
+          file: "../../waitForKeyboard.yaml"
           label: "Wait for keyboard to appear"
 
 - inputText:
