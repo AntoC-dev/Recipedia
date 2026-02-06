@@ -7,6 +7,7 @@ appId: "com.recipedia"
       id: "RecipeTags::RoundButton"
     direction: DOWN
     speed: 40
+    timeout: 10000
     centerElement: true
     label: "Action - Scroll to tags section"
 
@@ -31,12 +32,20 @@ appId: "com.recipedia"
     id: "RecipeTags::List::${TAG_INDEX}::CustomTextInput"
     label: "Focus on tag input field"
 
+- runFlow:
+    file: "../../waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
 - inputText:
     text: "${TAG_NAME}"
     label: "Enter tag name"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
+- extendedWaitUntil:
+    visible:
+      text: "${TAG_NAME}"
+    timeout: 5000
+    label: "Wait for text to appear in tag input field"
+
 
 - runFlow:
     when:
