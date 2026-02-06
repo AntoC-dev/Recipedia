@@ -113,6 +113,13 @@ jobs:
           erase_before_boot: false
           shutdown_after_job: true
 
+      - name: Disable hardware keyboard
+        if: inputs.platform == 'ios'
+        run: |
+          echo "⌨️ Disabling hardware keyboard for software keyboard to appear..."
+          defaults write com.apple.iphonesimulator ConnectHardwareKeyboard -bool NO
+          echo "✅ Hardware keyboard disabled"
+
       - name: Setup Maestro CLI (iOS)
         if: inputs.platform == 'ios'
         uses: dniHze/maestro-test-action@v1
