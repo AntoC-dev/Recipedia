@@ -28,6 +28,11 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
+- assertVisible:
+    id: "RecipeTime::NumericTextInput"
+    text: "${PERSONS_VALUE}"
+    label: "Check that the time to prepare is ${PERSONS_VALUE}"
+
 - pressKey: enter
 
 - runFlow:

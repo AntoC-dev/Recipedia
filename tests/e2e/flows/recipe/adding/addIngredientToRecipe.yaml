@@ -57,6 +57,11 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
+- assertVisible:
+    id: "RecipeIngredients::${INDEX}::QuantityInput"
+    text: "${QUANTITY}"
+    label: "Verify ingredient quantity"
+
 - pressKey: enter
 
 - runFlow:
@@ -90,11 +95,13 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
+- assertVisible:
+    id: "RecipeIngredients::${INDEX}::NameInput::CustomTextInput"
+    text: "${NAME}"
+    label: "Verify ingredient name is well edited"
+
 - pressKey: "ENTER"
 
 - runFlow:
     file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
-
-- waitForAnimationToEnd:
-    label: "Wait for UI to stabilize"

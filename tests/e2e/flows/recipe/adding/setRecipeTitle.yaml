@@ -38,6 +38,14 @@ appId: "com.recipedia"
     text: "${TITLE}"
     label: "Enter recipe title"
 
+- assertVisible:
+    id: "RecipeTitle::CustomTextInput"
+    text: "${TITLE}"
+
 - tapOn:
     id: "RecipeImage"
     label: "Tap on recipe image to close the keyboard"
+
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to disappear"
