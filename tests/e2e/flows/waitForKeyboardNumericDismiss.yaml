@@ -1,0 +1,22 @@
+appId: "com.recipedia"
+---
+# Wait for numeric keyboard to dismiss - platform specific
+# iOS: Waits for animation then verifies Delete button is gone
+# Android: Uses waitForAnimationToEnd
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - waitForAnimationToEnd:
+          label: "Wait for iOS numeric keyboard dismiss animation"
+      - assertNotVisible:
+          text: "Delete"
+          label: "Verify iOS numeric keyboard is dismissed"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - waitForAnimationToEnd:
+          label: "Wait for Android keyboard to dismiss"

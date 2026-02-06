@@ -17,6 +17,10 @@ appId: "com.recipedia"
     id: "RecipeIngredients::0::QuantityInput"
     label: "Tap on Oignon quantity"
 
+- runFlow:
+    file: "../../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
+
 - inputText: "1"
 
 - waitForAnimationToEnd:
@@ -25,12 +29,16 @@ appId: "com.recipedia"
 - pressKey: enter
 
 - runFlow:
-    file: "../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
+    file: "../../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - tapOn:
     id: "RecipeIngredients::1::QuantityInput"
     label: "Tap on Cheddar quantity"
+
+- runFlow:
+    file: "../../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
 
 - inputText: "100"
 
@@ -40,12 +48,16 @@ appId: "com.recipedia"
 - pressKey: enter
 
 - runFlow:
-    file: "../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
+    file: "../../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - tapOn:
     id: "RecipeIngredients::2::QuantityInput"
     label: "Tap on Pain pour hamburger quantity"
+
+- runFlow:
+    file: "../../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
 
 - inputText: "4"
 
@@ -55,12 +67,16 @@ appId: "com.recipedia"
 - pressKey: enter
 
 - runFlow:
-    file: "../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
+    file: "../../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - tapOn:
     id: "RecipeIngredients::3::QuantityInput"
     label: "Tap on Viande hachée quantity"
+
+- runFlow:
+    file: "../../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
 
 - inputText: "400"
 
@@ -70,8 +86,8 @@ appId: "com.recipedia"
 - pressKey: enter
 
 - runFlow:
-    file: "../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
+    file: "../../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - waitForAnimationToEnd
 
@@ -89,6 +105,10 @@ appId: "com.recipedia"
     id: "RecipeIngredients::4::QuantityInput"
     label: "Tap on Tomate quantity"
 
+- runFlow:
+    file: "../../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
+
 - inputText: "1"
 
 - waitForAnimationToEnd:
@@ -97,8 +117,8 @@ appId: "com.recipedia"
 - pressKey: enter
 
 - runFlow:
-    file: "../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
+    file: "../../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - waitForAnimationToEnd
 
@@ -116,6 +136,10 @@ appId: "com.recipedia"
     id: "RecipeIngredients::5::QuantityInput"
     label: "Tap on Salade quantity"
 
+- runFlow:
+    file: "../../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
+
 - inputText: "50"
 
 - waitForAnimationToEnd:
@@ -124,8 +148,8 @@ appId: "com.recipedia"
 - pressKey: enter
 
 - runFlow:
-    file: "../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
+    file: "../../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - waitForAnimationToEnd
 
@@ -143,6 +167,10 @@ appId: "com.recipedia"
     id: "RecipeIngredients::6::QuantityInput"
     label: "Tap on Moutarde quantity"
 
+- runFlow:
+    file: "../../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
+
 - inputText: "30"
 
 - waitForAnimationToEnd:
@@ -151,8 +179,8 @@ appId: "com.recipedia"
 - pressKey: enter
 
 - runFlow:
-    file: "../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
+    file: "../../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - waitForAnimationToEnd
 
@@ -170,6 +198,10 @@ appId: "com.recipedia"
     id: "RecipeIngredients::7::QuantityInput"
     label: "Tap on Ketchup quantity"
 
+- runFlow:
+    file: "../../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
+
 - inputText: "30"
 
 - waitForAnimationToEnd:
@@ -178,8 +210,8 @@ appId: "com.recipedia"
 - pressKey: enter
 
 - runFlow:
-    file: "../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
+    file: "../../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - waitForAnimationToEnd
 

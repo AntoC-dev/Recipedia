@@ -63,6 +63,10 @@ appId: "com.recipedia"
     id: "RecipeIngredients::0::QuantityInput"
     label: "Focus on ingredient quantity"
 
+- runFlow:
+    file: "../../../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
+
 - inputText:
     text: "100"
     label: "Enter ingredient quantity"
@@ -73,8 +77,8 @@ appId: "com.recipedia"
 - pressKey: enter
 
 - runFlow:
-    file: "../../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
+    file: "../../../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - tapOn:
     id: "RecipeIngredients::0::NameInput::CustomTextInput"
@@ -130,6 +134,10 @@ appId: "com.recipedia"
     id: "RecipeTime::NumericTextInput"
     label: "Focus on time input"
 
+- runFlow:
+    file: "../../../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
+
 - inputText:
     text: "10"
     label: "Enter cooking time"
@@ -140,8 +148,8 @@ appId: "com.recipedia"
 - pressKey: enter
 
 - runFlow:
-    file: "../../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
+    file: "../../../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - waitForAnimationToEnd
 

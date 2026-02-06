@@ -27,6 +27,10 @@ appId: "com.recipedia"
     id: "RecipeTime::NumericTextInput"
     label: "Press time input"
 
+- runFlow:
+    file: "../../../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
+
 - inputText:
     text: "56789"
     label: "Write the time in the input text"
@@ -37,5 +41,5 @@ appId: "com.recipedia"
 - pressKey: enter
 
 - runFlow:
-    file: "../../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
+    file: "../../../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"

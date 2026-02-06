@@ -29,8 +29,8 @@ appId: "com.recipedia"
     label: "Re-focus field after erase"
 
 - runFlow:
-    file: "../../waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
+    file: "../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
 
 - inputText: "${NEW_ENERGY_KCAL}"
 - waitForAnimationToEnd:
@@ -39,8 +39,8 @@ appId: "com.recipedia"
 - pressKey: enter
 
 - runFlow:
-    file: "../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
+    file: "../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::NumericTextInput"
@@ -56,8 +56,8 @@ appId: "com.recipedia"
     label: "Re-focus field after erase"
 
 - runFlow:
-    file: "../../waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
+    file: "../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
 
 - inputText: "${NEW_FAT}"
 - waitForAnimationToEnd:
@@ -66,8 +66,8 @@ appId: "com.recipedia"
 - pressKey: enter
 
 - runFlow:
-    file: "../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
+    file: "../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - waitForAnimationToEnd
 
@@ -95,8 +95,8 @@ appId: "com.recipedia"
     label: "Re-focus field after erase"
 
 - runFlow:
-    file: "../../waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
+    file: "../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
 
 - inputText: "${NEW_PROTEIN}"
 
@@ -106,5 +106,5 @@ appId: "com.recipedia"
 - pressKey: enter
 
 - runFlow:
-    file: "../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
+    file: "../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"

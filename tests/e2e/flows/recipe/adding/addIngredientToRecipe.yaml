@@ -47,8 +47,8 @@ appId: "com.recipedia"
           id: "RecipeIngredients::${INDEX}::QuantityInput"
           label: "Re-focus field after erase"
       - runFlow:
-          file: "../../waitForKeyboard.yaml"
-          label: "Wait for keyboard to appear"
+          file: "../../waitForKeyboardNumeric.yaml"
+          label: "Wait for numeric keyboard to appear"
 
 - inputText:
     text: "${QUANTITY}"
@@ -60,8 +60,8 @@ appId: "com.recipedia"
 - pressKey: enter
 
 - runFlow:
-    file: "../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
+    file: "../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - tapOn:
     id: "RecipeIngredients::${INDEX}::NameInput::CustomTextInput"

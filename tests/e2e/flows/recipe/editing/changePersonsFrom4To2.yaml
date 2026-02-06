@@ -27,8 +27,8 @@ appId: "com.recipedia"
     label: "Re-focus field after erase"
 
 - runFlow:
-    file: "../../waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
+    file: "../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
 - inputText:
     text: "2"
     label: "Enter 2 persons"
@@ -39,5 +39,5 @@ appId: "com.recipedia"
 - pressKey: "ENTER"
 
 - runFlow:
-    file: "../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
+    file: "../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"

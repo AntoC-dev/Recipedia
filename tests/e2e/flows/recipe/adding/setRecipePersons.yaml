@@ -19,8 +19,8 @@ appId: "com.recipedia"
     label: "Focus on persons input"
 
 - runFlow:
-    file: "../../waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
+    file: "../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
 
 - eraseText:
     label: "Erase the default number of persons"
@@ -33,8 +33,8 @@ appId: "com.recipedia"
     label: "Re-focus field after erase"
 
 - runFlow:
-    file: "../../waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
+    file: "../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
 - inputText:
     text: "${PERSONS}"
     label: "Enter number of persons"
@@ -61,8 +61,8 @@ appId: "com.recipedia"
           label: "Tap on prefix text on iOS to close the keyboard"
 
 - runFlow:
-    file: "../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
+    file: "../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - assertVisible:
     id: "RecipePersons::NumericTextInput"

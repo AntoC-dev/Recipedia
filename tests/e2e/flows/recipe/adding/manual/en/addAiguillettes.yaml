@@ -195,18 +195,19 @@ appId: "com.recipedia"
     id: "RecipeIngredients::0::QuantityInput"
     label: "Press the TextInput of first ingredient's quantity"
 
+- runFlow:
+    file: "../../../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
+
 - inputText:
     text: "200"
     label: "Enter text for recipe first ingredient quantity"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
 - pressKey: enter
 
 - runFlow:
-    file: "../../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
+    file: "../../../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - tapOn:
     id: "RecipeIngredients::0::NameInput::CustomTextInput"
@@ -273,18 +274,19 @@ appId: "com.recipedia"
     id: "RecipeIngredients::1::QuantityInput"
     label: "Press the TextInput of second ingredient's quantity"
 
+- runFlow:
+    file: "../../../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
+
 - inputText:
     text: "2"
     label: "Enter text for recipe second ingredient quantity"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
 - pressKey: Enter
 
 - runFlow:
-    file: "../../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
+    file: "../../../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - tapOn:
     id: "RecipeIngredients::1::NameInput::CustomTextInput"
@@ -335,18 +337,19 @@ appId: "com.recipedia"
     id: "RecipeIngredients::2::QuantityInput"
     label: "Press the TextInput of third ingredient's quantity"
 
+- runFlow:
+    file: "../../../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
+
 - inputText:
     text: "5"
     label: "Enter text for recipe third ingredient quantity"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
 - pressKey: Enter
 
 - runFlow:
-    file: "../../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
+    file: "../../../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - waitForAnimationToEnd
 
@@ -364,18 +367,19 @@ appId: "com.recipedia"
     id: "RecipeTime::NumericTextInput"
     label: "Press the TextInput of time"
 
+- runFlow:
+    file: "../../../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
+
 - inputText:
     text: "20"
     label: "Enter text for recipe time"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
 - pressKey: Enter
 
 - runFlow:
-    file: "../../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
+    file: "../../../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - waitForAnimationToEnd
 

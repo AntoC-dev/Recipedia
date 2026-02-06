@@ -17,6 +17,10 @@ appId: "com.recipedia"
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::SaturatedFat::NumericTextInput"
     label: "Tap saturated fat input"
 
+- runFlow:
+    file: "../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
+
 - inputText:
     text: "2,5"
     label: "Enter saturated fat value"
@@ -27,5 +31,5 @@ appId: "com.recipedia"
 - pressKey: enter
 
 - runFlow:
-    file: "../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
+    file: "../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
