@@ -36,7 +36,7 @@ tags:
     element:
       id: "IngredientsSettings::15::EditButton"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Action - Scroll to Lettuce edit button"
 

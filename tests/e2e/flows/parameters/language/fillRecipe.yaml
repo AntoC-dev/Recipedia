@@ -10,7 +10,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeTitle::CustomTextInput"
     direction: DOWN
-    speed: 60
+    speed: 40
     centerElement: true
     label: "Action - Center title text input"
 

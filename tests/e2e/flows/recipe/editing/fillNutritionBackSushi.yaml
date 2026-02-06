@@ -55,7 +55,7 @@ appId: "com.recipedia"
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKj::NumericTextInput"
     direction: DOWN
     centerElement: true
-    speed: 40
+    speed: 20
     label: "Scroll to KJ input"
 
 - waitForAnimationToEnd
@@ -101,7 +101,7 @@ appId: "com.recipedia"
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::NumericTextInput"
     direction: DOWN
     centerElement: true
-    speed: 40
+    speed: 20
     label: "Scroll to fat input"
 
 - waitForAnimationToEnd
@@ -145,7 +145,7 @@ appId: "com.recipedia"
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::SaturatedFat::NumericTextInput"
     direction: DOWN
     centerElement: true
-    speed: 40
+    speed: 20
     label: "Scroll to saturated fat input"
 
 - waitForAnimationToEnd
@@ -189,7 +189,7 @@ appId: "com.recipedia"
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Carbohydrates::NumericTextInput"
     direction: DOWN
     centerElement: true
-    speed: 40
+    speed: 20
     label: "Scroll to carbohydrates input"
 
 - waitForAnimationToEnd
@@ -233,7 +233,7 @@ appId: "com.recipedia"
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Sugars::NumericTextInput"
     direction: DOWN
     centerElement: true
-    speed: 40
+    speed: 20
     label: "Scroll to sugar input"
 
 - waitForAnimationToEnd
@@ -277,7 +277,7 @@ appId: "com.recipedia"
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fiber::NumericTextInput"
     direction: DOWN
     centerElement: true
-    speed: 40
+    speed: 20
     label: "Scroll to fiber input"
 
 - waitForAnimationToEnd
@@ -321,7 +321,7 @@ appId: "com.recipedia"
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::NumericTextInput"
     direction: DOWN
     centerElement: true
-    speed: 40
+    speed: 20
     label: "Scroll to protein input"
 
 - waitForAnimationToEnd
@@ -365,7 +365,7 @@ appId: "com.recipedia"
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Salt::NumericTextInput"
     direction: DOWN
     centerElement: true
-    speed: 40
+    speed: 20
     label: "Scroll to salt input"
 
 - waitForAnimationToEnd
@@ -410,7 +410,7 @@ appId: "com.recipedia"
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightNumericTextInput"
     direction: DOWN
-    speed: 40
+    speed: 20
     label: "Scroll to portion weight input"
 
 - waitForAnimationToEnd

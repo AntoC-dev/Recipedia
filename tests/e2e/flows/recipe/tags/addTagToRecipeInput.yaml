@@ -18,11 +18,13 @@ appId: "com.recipedia"
     id: "RecipeTags::RoundButton"
     label: "Add tag to recipe"
 
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeTags::List::${TAG_INDEX}::CustomTextInput"
     direction: UP
-    speed: 40
+    speed: 20
     label: "Scroll up to ensure tag input field is visible"
 
 - waitForAnimationToEnd:
@@ -45,7 +47,6 @@ appId: "com.recipedia"
       text: "${TAG_NAME}"
     timeout: 5000
     label: "Wait for text to appear in tag input field"
-
 
 - runFlow:
     when:
