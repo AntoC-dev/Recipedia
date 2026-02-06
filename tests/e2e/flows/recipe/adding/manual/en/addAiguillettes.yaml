@@ -160,6 +160,10 @@ appId: "com.recipedia"
     end: "50%,25%"
     label: "Swipe down to scroll dropdown"
 
+- waitForAnimationToEnd
+-
+- label: "Wait for scrolling animation to end"
+
 - assertVisible:
     text: "Italian"
     label: "Assert - Italian tag is displayed"
@@ -169,13 +173,30 @@ appId: "com.recipedia"
     text: "Italian"
     label: "Press the tag from dropdown list"
 
-- extendedWaitUntil:
-    visible:
-      id: "RecipeTags::1::Chip"
-    timeout: 30000
-    label: "Wait for the second chip to appear"
+- runFlow:
+    file: "../../../../waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to hide"
 
-- waitForAnimationToEnd
+- extendedWaitUntil:
+    notVisible:
+      id: "RecipeTags::List::.*::AutocompleteItem::Italian"
+    timeout: 10000
+    label: "Wait for the second chip to disappear"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTags::0::Chip"
+    direction: UP
+    speed: 20
+    timeout: 120000
+    label: "Action - Scroll back to chip parts"
+
+- waitForAnimationToEnd:
+    label: "Wait for animation to end"
+
+- assertVisible:
+    id: "RecipeTags::1::Chip"
+    label: "Assert - Second tag chip is visible"
 
 - scrollUntilVisible:
     element:
