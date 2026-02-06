@@ -8,7 +8,7 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "IngredientsSettings::15::EditButton"
+      id: "IngredientsSettings::15::IngredientName"
     direction: DOWN
     speed: 70
     timeout: 120000
@@ -16,6 +16,17 @@ appId: "com.recipedia"
     label: "Scroll to Lettuce Edited ingredient"
 
 - waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "IngredientsSettings::15::EditButton"
+    direction: DOWN
+    speed: 4
+    centerElement: true
+    label: "Scroll to Lettuce Edited ingredient edit button"
+
+- waitForAnimationToEnd
+
 
 - tapOn:
     id: "IngredientsSettings::15::EditButton"
