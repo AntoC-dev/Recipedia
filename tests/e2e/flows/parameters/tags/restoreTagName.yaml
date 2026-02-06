@@ -24,7 +24,7 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "TagsSettings::6::TagName"
+      text: "Italian Cuisine"
     direction: DOWN
     speed: 60
     centerElement: true
@@ -32,43 +32,62 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd
 
+- scrollUntilVisible:
+    element:
+      id: "TagsSettings::6::DeleteButton"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to delete button for Italian Cuisine tag"
+
+- waitForAnimationToEnd
+
 - tapOn:
-    id: "TagsSettings::6::EditButton"
-    label: "Tap Edit button for Italian Cuisine tag"
+    id: "TagsSettings::6::DeleteButton"
+    label: "Tap Delete button for Italian Cuisine tag"
 
 - extendedWaitUntil:
     visible:
-      id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+      id: "TagsSettings::ItemDialog::DeleteModal::ConfirmButton"
     timeout: 3000
-    label: "Wait for tag edit dialog to appear"
+    label: "Wait for delete confirmation dialog to appear"
+
+- waitForAnimationToEnd
 
 - tapOn:
-    id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
-    point: "50%,95%"
-    label: "Focus on tag name input field"
-
-- runFlow:
-    file: "../../waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
-
-- eraseText:
-    label: "Clear existing tag name"
+    id: "TagsSettings::ItemDialog::DeleteModal::ConfirmButton"
+    label: "Confirm deletion of Italian Cuisine tag"
 
 - waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
+    label: "Wait for dialog to close"
+
+- assertNotVisible:
+    text: "Italian Cuisine"
+    label: "Verify Italian Cuisine tag was deleted"
 
 - tapOn:
-    id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
-    label: "Re-focus field after erase"
+    id: "TagsSettings::BottomActionButton"
+    label: "Open add tag dialog"
+
+- extendedWaitUntil:
+    visible:
+      id: "TagsSettings::ItemDialog::AddModal::Name::CustomTextInput"
+    timeout: 3000
+    label: "Wait for add tag dialog to appear"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "TagsSettings::ItemDialog::AddModal::Name::CustomTextInput"
+    label: "Focus on tag name input"
 
 - runFlow:
     file: "../../waitForKeyboard.yaml"
     label: "Wait for keyboard to appear"
-
 
 - inputText:
     text: "Italian"
-    label: "Change tag name back to 'Italian'"
+    label: "Enter tag name"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
@@ -93,15 +112,15 @@ appId: "com.recipedia"
     label: "Wait for keyboard to dismiss"
 
 - tapOn:
-    id: "TagsSettings::ItemDialog::EditModal::ConfirmButton"
-    label: "Save the restored tag"
+    id: "TagsSettings::ItemDialog::AddModal::ConfirmButton"
+    label: "Create Italian tag"
 
 - waitForAnimationToEnd:
     label: "Wait for dialog to close"
 
 - scrollUntilVisible:
     element:
-      id: "TagsSettings::6::TagName"
+      text: "Italian"
     direction: DOWN
     speed: 40
     centerElement: true
@@ -110,6 +129,5 @@ appId: "com.recipedia"
 - waitForAnimationToEnd
 
 - assertVisible:
-    id: "TagsSettings::6::TagName"
     text: "Italian"
-    label: "Verify tag restored to original name"
+    label: "Verify Italian tag was created"
