@@ -95,7 +95,7 @@ tags:
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::Name::CustomTextInput"
-    point: "50%,75%"
+    point: "50%,95%"
     label: "Action - Focus on ingredient name input again"
 
 - eraseText:
@@ -156,6 +156,7 @@ tags:
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::Name::CustomTextInput"
+    point: "50%,95%"
     label: "Action - Focus on ingredient name input"
 
 - eraseText:
