@@ -9,6 +9,7 @@ appId: "com.recipedia"
     direction: UP
     speed: 40
     centerElement: true
+    label: "Scroll to OCR button"
 
 - waitForAnimationToEnd
 

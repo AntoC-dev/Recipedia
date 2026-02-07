@@ -1,8 +1,20 @@
 appId: "com.recipedia"
 ---
+- extendedWaitUntil:
+    visible:
+      text: "aspectratio.fill"
+    timeout: 10000
+    label: "Wait for aspect ratio menu"
+
 - tapOn:
     text: "aspectratio.fill"
     label: "Open aspect ratio menu"
+
+- extendedWaitUntil:
+    visible:
+      text: "Original"
+    timeout: 1000
+    label: "Wait for original aspect ratio"
 
 - tapOn:
     text: "Original"

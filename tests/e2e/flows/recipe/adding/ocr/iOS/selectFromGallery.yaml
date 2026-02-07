@@ -4,17 +4,20 @@ appId: "com.recipedia"
     text: "Recents"
     label: "Go to recents photos"
 
-- waitForAnimationToEnd:
+- extendedWaitUntil:
+    visible:
+      text: "\\d+ Photo.*"
+    timeout: 3000
     label: "Wait for gallery to load"
 
 - tapOn:
-    point: 10%,11%
+    point: "10%,11%"
     label: "Select any photos of the gallery"
 
 - runFlow:
-    file: selectOriginalAspectRatio.yaml
+    file: "selectOriginalAspectRatio.yaml"
     label: "Select original aspect ratio to show full image"
 
 - runFlow:
-    file: validateWithoutCropping.yaml
+    file: "validateWithoutCropping.yaml"
     label: "Validate selected photo"

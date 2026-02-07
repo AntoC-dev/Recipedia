@@ -4,6 +4,13 @@ appId: "com.recipedia"
     appId: "com.apple.mobileslideshow"
     label: "Open iOS Photos app"
 
+- extendedWaitUntil:
+    visible:
+      text: "What's New.*"
+    timeout: 5000
+    optional: true
+    label: "Wait for what's new screen to appear"
+
 - runFlow:
     when:
       visible:
@@ -11,7 +18,13 @@ appId: "com.recipedia"
     commands:
       - tapOn:
           text: "Continue"
-          label: "CLose the what's new screen if it appears"
+          label: "Close the what's new screen if it appears"
+
+- extendedWaitUntil:
+    visible:
+      text: "Select"
+    timeout: 3000
+    label: "Wait for select button to appear"
 
 - runFlow:
     when:
