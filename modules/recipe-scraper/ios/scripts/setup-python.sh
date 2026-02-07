@@ -6,6 +6,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 IOS_DIR="$(dirname "$SCRIPT_DIR")"
+MODULE_DIR="$(dirname "$IOS_DIR")"
 FRAMEWORKS_DIR="$IOS_DIR/Frameworks"
 PACKAGES_DIR="$IOS_DIR/python_packages"
 
@@ -140,6 +141,24 @@ setup_python_framework() {
     log_info "Python framework installed"
 }
 
+# Download a wheel file from URL and extract it
+download_and_extract_wheel() {
+    local url="$1"
+    local temp_dir="$2"
+    local filename=$(basename "$url")
+
+    log_info "  Downloading $filename..."
+    if curl -fsSL "$url" -o "$temp_dir/$filename"; then
+        unzip -q -o "$temp_dir/$filename" -d "$PACKAGES_DIR" 2>/dev/null || {
+            log_warn "  Failed to extract $filename"
+            return 1
+        }
+    else
+        log_warn "  Failed to download $filename"
+        return 1
+    fi
+}
+
 # Download and extract Python packages
 setup_python_packages() {
     if [ -d "$PACKAGES_DIR" ] && [ -f "$PACKAGES_DIR/.complete" ]; then
@@ -148,29 +167,34 @@ setup_python_packages() {
     fi
 
     log_info "Setting up Python packages..."
+    rm -rf "$PACKAGES_DIR"
     mkdir -p "$PACKAGES_DIR"
 
     local TEMP_DIR=$(mktemp -d)
 
     # Download lxml from Flet's PyPI (iOS-specific wheel)
+    # Uses versioned URL path from pypi.flet.dev
     log_info "Downloading lxml for iOS..."
-    curl -L "https://pypi.flet.dev/lxml/lxml-5.3.0-1-cp312-cp312-ios_13_0_arm64_iphoneos.whl" \
-        -o "$TEMP_DIR/lxml.whl"
+    download_and_extract_wheel \
+        "https://pypi.flet.dev/-/ver_1ZftSC/lxml-5.3.0-1-cp312-cp312-ios_13_0_arm64_iphoneos.whl" \
+        "$TEMP_DIR"
 
-    # Download pure-Python packages from PyPI
-    declare -a PURE_PACKAGES=(
-        "recipe-scrapers"
+    # Download pure-Python packages using pip3
+    # Use --only-binary=:all: to get wheels, --platform any for pure-python
+    log_info "Downloading pure-Python packages via pip..."
+
+    declare -a PACKAGES=(
+        "recipe-scrapers>=15.0.0"
         "extruct"
         "beautifulsoup4"
         "soupsieve"
         "lxml-html-clean"
         "rdflib"
-        "pyrdfa3"
         "mf2py"
         "w3lib"
         "html-text"
         "isodate"
-        "jstyleson"
+        "pyparsing"
         "requests"
         "certifi"
         "charset-normalizer"
@@ -178,8 +202,7 @@ setup_python_packages() {
         "urllib3"
     )
 
-    # Use pip to download pure-Python packages
-    log_info "Downloading pure-Python packages..."
+    # Download wheels for pure-python packages
     pip3 download \
         --only-binary=:all: \
         --platform any \
@@ -187,39 +210,78 @@ setup_python_packages() {
         --implementation cp \
         --no-deps \
         -d "$TEMP_DIR" \
-        "${PURE_PACKAGES[@]}" 2>/dev/null || true
+        "${PACKAGES[@]}" 2>&1 || log_warn "Some packages may have failed to download"
 
-    # Some packages might only have source distributions, download them too
-    pip3 download \
-        --no-binary=:all: \
-        --no-deps \
-        -d "$TEMP_DIR" \
-        jstyleson pyrdfa3 2>/dev/null || true
-
-    # Extract all wheels to packages directory
-    log_info "Extracting packages..."
+    # Extract all downloaded wheels
+    log_info "Extracting wheel packages..."
     for wheel in "$TEMP_DIR"/*.whl; do
         if [ -f "$wheel" ]; then
-            unzip -q -o "$wheel" -d "$PACKAGES_DIR" 2>/dev/null || true
+            log_info "  Extracting $(basename "$wheel")..."
+            unzip -q -o "$wheel" -d "$PACKAGES_DIR" 2>/dev/null || log_warn "  Failed to extract $(basename "$wheel")"
         fi
     done
 
-    # For source distributions, extract and copy Python files
-    for tarball in "$TEMP_DIR"/*.tar.gz; do
+    # Handle source-only packages (no wheels available)
+    log_info "Downloading source-only packages..."
+
+    # jstyleson - download source and extract
+    log_info "  Downloading jstyleson..."
+    pip3 download --no-deps --no-binary=:all: -d "$TEMP_DIR" jstyleson 2>/dev/null || true
+    for tarball in "$TEMP_DIR"/jstyleson*.tar.gz; do
         if [ -f "$tarball" ]; then
-            tar -xzf "$tarball" -C "$TEMP_DIR" 2>/dev/null || true
-            # Find and copy Python source files
-            find "$TEMP_DIR" -name "*.py" -exec cp {} "$PACKAGES_DIR/" \; 2>/dev/null || true
+            tar -xzf "$tarball" -C "$TEMP_DIR"
+            # Copy the jstyleson module
+            find "$TEMP_DIR" -path "*/jstyleson/*.py" -exec cp {} "$PACKAGES_DIR/" \; 2>/dev/null || true
         fi
     done
 
-    # Copy the Python scraper module
+    # pyrdfa3 - RDFa parser
+    log_info "  Downloading pyrdfa3..."
+    pip3 download --no-deps --no-binary=:all: -d "$TEMP_DIR" pyrdfa3 2>/dev/null || true
+    for tarball in "$TEMP_DIR"/pyRdfa3*.tar.gz "$TEMP_DIR"/pyrdfa3*.tar.gz; do
+        if [ -f "$tarball" ]; then
+            tar -xzf "$tarball" -C "$TEMP_DIR"
+            # Find the pyRdfa directory and copy it
+            find "$TEMP_DIR" -type d -name "pyRdfa" -exec cp -R {} "$PACKAGES_DIR/" \; 2>/dev/null || true
+        fi
+    done
+
+    # Copy the Python scraper module from the shared python/ directory
+    # The module structure is: python/scraper.py, python/auth/, etc.
     log_info "Copying recipe_scraper module..."
-    if [ -d "$IOS_DIR/python" ]; then
-        cp -R "$IOS_DIR/python/recipe_scraper" "$PACKAGES_DIR/"
+    if [ -d "$MODULE_DIR/python" ] && [ -f "$MODULE_DIR/python/scraper.py" ]; then
+        # Create recipe_scraper package directory
+        mkdir -p "$PACKAGES_DIR/recipe_scraper"
+        # Copy main module
+        cp "$MODULE_DIR/python/scraper.py" "$PACKAGES_DIR/recipe_scraper/"
+        cp "$MODULE_DIR/python/__init__.py" "$PACKAGES_DIR/recipe_scraper/" 2>/dev/null || touch "$PACKAGES_DIR/recipe_scraper/__init__.py"
+        # Copy auth submodule if it exists
+        if [ -d "$MODULE_DIR/python/auth" ]; then
+            cp -R "$MODULE_DIR/python/auth" "$PACKAGES_DIR/recipe_scraper/"
+        fi
+        log_info "  Copied Python scraper module"
+    else
+        log_warn "  Python scraper module not found at $MODULE_DIR/python"
     fi
 
     rm -rf "$TEMP_DIR"
+
+    # Validate critical packages exist and aren't empty
+    log_info "Validating package installation..."
+    local validation_failed=0
+
+    for pkg in "recipe_scrapers" "bs4" "extruct" "lxml"; do
+        if [ ! -d "$PACKAGES_DIR/$pkg" ]; then
+            log_warn "  Package directory missing: $pkg"
+            validation_failed=1
+        fi
+    done
+
+    if [ "$validation_failed" -eq 1 ]; then
+        log_warn "Some packages may be missing, but continuing..."
+    else
+        log_info "All critical packages validated"
+    fi
 
     # Mark as complete
     touch "$PACKAGES_DIR/.complete"

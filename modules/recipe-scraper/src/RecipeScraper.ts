@@ -2,8 +2,8 @@
  * RecipeScraper - TypeScript wrapper for the recipe-scraper module.
  *
  * Provides a complete, type-safe API for scraping recipes from URLs.
- * - Android: Uses Python recipe-scrapers library for base parsing + TypeScript enhancements
- * - iOS: Uses TypeScript schema.org parsing + TypeScript enhancements
+ * - Android: Uses Python recipe-scrapers library (via Chaquopy) + TypeScript enhancements
+ * - iOS: Uses Python recipe-scrapers library (via PythonKit) + TypeScript enhancements
  * - Web: Uses TypeScript schema.org parsing + TypeScript enhancements
  *
  * All platforms use the same TypeScript enhancement module for consistent behavior.
@@ -68,7 +68,8 @@ type NativeScraperInterface = {
 };
 
 const isTestEnv = process.env.NODE_ENV === 'test';
-const useNativeModule = Platform.OS === 'android' && !isTestEnv;
+const useNativeModule =
+    (Platform.OS === 'android' || Platform.OS === 'ios') && !isTestEnv;
 
 function getNativeModule(): NativeScraperInterface | null {
     if (!useNativeModule) {
@@ -168,11 +169,11 @@ export class RecipeScraper {
         options?: ScrapeOptions
     ): Promise<ScraperResult> {
         try {
-            // 1. Get base parsing from native module (Android) or TypeScript (iOS/Web)
+            // 1. Get base parsing from native module (Android/iOS) or TypeScript (Web)
             let baseResult: ScraperResult;
 
             if (nativeModule) {
-                // Android: Use Python recipe-scrapers for base parsing (500+ site parsers)
+                // Android/iOS: Use Python recipe-scrapers for base parsing (500+ site parsers)
                 const json = await nativeModule.scrapeRecipeFromHtml(
                     html,
                     url,
@@ -180,7 +181,7 @@ export class RecipeScraper {
                 );
                 baseResult = JSON.parse(json);
             } else {
-                // iOS/Web: Use TypeScript schema.org parser
+                // Web: Use TypeScript schema.org parser
                 baseResult = schemaParser.parse(html, url);
             }
 

@@ -4,8 +4,7 @@ import { RecipeScraperPluginConfig } from './types';
  * Expo config plugin for iOS Python support in RecipeScraper module.
  *
  * This plugin:
- * 1. Adds a pre-build script phase to download Python framework
- * 2. Updates Podfile to include PythonKit
- * 3. Configures Xcode project settings for Python framework
+ * 1. Downloads the Python framework before pod install (so CocoaPods can link it)
+ * 2. PythonKit is added via SPM in the podspec using `spm_dependency` (React Native 0.75+)
  */
 export declare const withiOSPython: ConfigPlugin<RecipeScraperPluginConfig>;

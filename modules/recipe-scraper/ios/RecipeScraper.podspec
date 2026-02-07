@@ -14,23 +14,41 @@ Pod::Spec.new do |s|
   # Exclude scripts and Python source from source_files
   s.exclude_files = 'scripts/**/*', 'python/**/*'
 
-  # Python runtime framework (added by setup script during prebuild)
-  s.vendored_frameworks = 'Frameworks/Python.xcframework'
+  # Python runtime framework - only include if it exists (downloaded by setup script)
+  # This prevents pod install from failing when the framework hasn't been downloaded yet
+  python_framework = File.join(__dir__, 'Frameworks/Python.xcframework')
+  if File.exist?(python_framework)
+    s.vendored_frameworks = 'Frameworks/Python.xcframework'
+  end
 
   # Use .bundle wrappers created by setup-python.sh (avoids codesign issues in Xcode 26+)
   # Bundles are treated as opaque data containers, not code objects
-  s.resources = [
-    'Frameworks/PythonStdlib.bundle',
-    'Frameworks/PythonPackages.bundle'
-  ]
+  # Only include if they exist
+  stdlib_bundle = File.join(__dir__, 'Frameworks/PythonStdlib.bundle')
+  packages_bundle = File.join(__dir__, 'Frameworks/PythonPackages.bundle')
+  resource_bundles = []
+  resource_bundles << 'Frameworks/PythonStdlib.bundle' if File.exist?(stdlib_bundle)
+  resource_bundles << 'Frameworks/PythonPackages.bundle' if File.exist?(packages_bundle)
+  s.resources = resource_bundles unless resource_bundles.empty?
 
   # Preserve paths for Python resources
   s.preserve_paths = 'Frameworks/**/*', 'python_packages/**/*', 'python/**/*', 'scripts/**/*'
 
   s.dependency 'ExpoModulesCore'
   s.dependency 'SwiftSoup', '~> 2.6'
-  # Note: PythonKit is added via the Expo config plugin in Podfile
-  # because it's not available in CocoaPods trunk repo
+
+  # Add PythonKit via Swift Package Manager (React Native 0.75+ feature)
+  # PythonKit is not available on CocoaPods trunk, so we use SPM integration
+  install_modules_dependencies(s)
+  s.user_target_xcconfig = { 'OTHER_SWIFT_FLAGS' => '-DRN_PYTHONKIT_ENABLED' }
+
+  if defined?(spm_dependency)
+    spm_dependency(s,
+      url: 'https://github.com/pvieito/PythonKit.git',
+      requirement: { kind: 'upToNextMajorVersion', minimumVersion: '0.5.0' },
+      products: ['PythonKit']
+    )
+  end
 
   # Build settings for Python framework
   s.pod_target_xcconfig = {
