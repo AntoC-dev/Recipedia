@@ -315,7 +315,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::RecipeCards::8::Cover"
     direction: DOWN
-    speed: 50
+    speed: 40
     label: "Scroll to ninth recipe card cover"
 
 - waitForAnimationToEnd
@@ -333,8 +333,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::RecipeCards::8::Content"
     direction: DOWN
-    speed: 50
-    centerElement: true
+    speed: 20
     label: "Scroll to ninth recipe card content"
 
 - waitForAnimationToEnd
@@ -360,7 +359,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::RecipeCards::8::PrepTime"
     direction: DOWN
-    speed: 50
+    speed: 20
     label: "Scroll to ninth recipe card PrepTime"
 
 - waitForAnimationToEnd
@@ -378,7 +377,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::RecipeCards::8::Persons"
     direction: DOWN
-    speed: 50
+    speed: 20
     label: "Scroll to ninth recipe card persons"
 
 - waitForAnimationToEnd
