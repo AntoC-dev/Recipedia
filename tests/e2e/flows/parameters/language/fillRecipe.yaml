@@ -4,18 +4,6 @@ appId: "com.recipedia"
     file: "../../recipe/adding/fr/addRecipeImage.yaml"
     label: "Add recipe image in French"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeTitle::CustomTextInput"
-    direction: DOWN
-    speed: 40
-    centerElement: true
-    label: "Action - Center title text input"
-
-- waitForAnimationToEnd
-
 - tapOn:
     id: "RecipeTitle::CustomTextInput"
     label: "Tap on recipe title text input"
@@ -30,6 +18,10 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
+
+- assertVisible:
+    id: "RecipeTitle::Text"
+    label: "Ensure recipe title is visible"
 
 - tapOn:
     id: "RecipeTitle::Text"
