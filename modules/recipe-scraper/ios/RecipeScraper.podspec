@@ -9,7 +9,15 @@ Pod::Spec.new do |s|
   s.platform       = :ios, '18.0'
   s.swift_version  = '5.0'
   s.source         = { git: '' }
-  s.source_files   = '*.swift'
+
+  # Include module Swift files and vendored PythonKit source (if downloaded)
+  # PythonKit is vendored to avoid SPM linking issues with CocoaPods static linking
+  pythonkit_dir = File.join(__dir__, 'PythonKit')
+  if File.exist?(pythonkit_dir) && File.exist?(File.join(pythonkit_dir, '.complete'))
+    s.source_files = '*.swift', 'PythonKit/*.swift'
+  else
+    s.source_files = '*.swift'
+  end
 
   # Exclude scripts and Python source from source_files
   s.exclude_files = 'scripts/**/*', 'python/**/*'
@@ -31,24 +39,15 @@ Pod::Spec.new do |s|
   resource_bundles << 'Frameworks/PythonPackages.bundle' if File.exist?(packages_bundle)
   s.resources = resource_bundles unless resource_bundles.empty?
 
-  # Preserve paths for Python resources
-  s.preserve_paths = 'Frameworks/**/*', 'python_packages/**/*', 'python/**/*', 'scripts/**/*'
+  # Preserve paths for Python resources and vendored PythonKit
+  s.preserve_paths = 'Frameworks/**/*', 'python_packages/**/*', 'python/**/*', 'scripts/**/*', 'PythonKit/**/*'
 
   s.dependency 'ExpoModulesCore'
   s.dependency 'SwiftSoup', '~> 2.6'
 
-  # Add PythonKit via Swift Package Manager (React Native 0.75+ feature)
-  # PythonKit is not available on CocoaPods trunk, so we use SPM integration
+  # PythonKit is vendored as source files (downloaded by setup script)
+  # This avoids SPM linking issues with CocoaPods static linking
   install_modules_dependencies(s)
-  s.user_target_xcconfig = { 'OTHER_SWIFT_FLAGS' => '-DRN_PYTHONKIT_ENABLED' }
-
-  if defined?(spm_dependency)
-    spm_dependency(s,
-      url: 'https://github.com/pvieito/PythonKit.git',
-      requirement: { kind: 'upToNextMajorVersion', minimumVersion: '0.5.0' },
-      products: ['PythonKit']
-    )
-  end
 
   # Build settings for Python framework
   s.pod_target_xcconfig = {

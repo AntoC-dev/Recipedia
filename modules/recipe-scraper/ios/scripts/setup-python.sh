@@ -24,6 +24,40 @@ log_info() { echo -e "${GREEN}[INFO]${NC} $1"; }
 log_warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
+# Download PythonKit source files (vendored to avoid SPM linking issues)
+setup_pythonkit() {
+    local PYTHONKIT_DIR="$IOS_DIR/PythonKit"
+    local PYTHONKIT_VERSION="0.5.1"
+
+    if [ -d "$PYTHONKIT_DIR" ] && [ -f "$PYTHONKIT_DIR/.complete" ]; then
+        log_info "PythonKit already downloaded, skipping"
+        return 0
+    fi
+
+    log_info "Downloading PythonKit source files..."
+    mkdir -p "$PYTHONKIT_DIR"
+
+    local BASE_URL="https://raw.githubusercontent.com/pvieito/PythonKit/v${PYTHONKIT_VERSION}/PythonKit"
+
+    declare -a FILES=(
+        "Python.swift"
+        "PythonLibrary.swift"
+        "PythonLibrary+Symbols.swift"
+        "NumpyConversion.swift"
+    )
+
+    for file in "${FILES[@]}"; do
+        log_info "  Downloading $file..."
+        curl -fsSL "$BASE_URL/$file" -o "$PYTHONKIT_DIR/$file" || {
+            log_error "Failed to download $file"
+            return 1
+        }
+    done
+
+    touch "$PYTHONKIT_DIR/.complete"
+    log_info "PythonKit source files downloaded"
+}
+
 # Ad-hoc sign all .so and .dylib files (required for Xcode 26+ codesigning)
 sign_binary_files() {
     if [ -f "$FRAMEWORKS_DIR/.binaries_signed" ]; then
@@ -290,6 +324,7 @@ setup_python_packages() {
 
 # Main
 log_info "Setting up Python for iOS recipe-scraper..."
+setup_pythonkit
 setup_python_framework
 clean_test_directories
 sign_binary_files
