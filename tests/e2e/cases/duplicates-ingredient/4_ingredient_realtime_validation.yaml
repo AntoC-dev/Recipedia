@@ -95,8 +95,12 @@ tags:
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::Name::CustomTextInput"
-    point: "50%,95%"
+    point: "95%,5%"
     label: "Action - Focus on ingredient name input again"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
 - eraseText:
     label: "Action - Clear input"
@@ -156,7 +160,7 @@ tags:
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::Name::CustomTextInput"
-    point: "50%,95%"
+    point: "95%,50%"
     label: "Action - Focus on ingredient name input"
 
 - eraseText:

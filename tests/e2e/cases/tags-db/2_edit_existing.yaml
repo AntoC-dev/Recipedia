@@ -51,7 +51,7 @@ tags:
 
 - tapOn:
     id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
-    point: "50%,95%"
+    point: "95%,50%"
     label: "Action - Focus on tag name input"
 
 - inputText:
