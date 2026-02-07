@@ -7,7 +7,7 @@ appId: "com.recipedia"
     element:
       text: "Cheese"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to Cheese accordion"
 
@@ -86,7 +86,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     direction: UP
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll back up to accordion header"
 

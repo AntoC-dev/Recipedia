@@ -7,7 +7,7 @@ appId: "com.recipedia"
     element:
       text: "Tags.*"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to Tags accordion"
 

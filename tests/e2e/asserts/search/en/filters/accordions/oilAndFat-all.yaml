@@ -7,7 +7,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to Oil and Fat accordion"
 
@@ -45,7 +45,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to Butter filter"
 
@@ -61,7 +61,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::1"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to Olive Oil filter"
 
@@ -77,7 +77,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     direction: UP
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll back up to accordion header"
 
