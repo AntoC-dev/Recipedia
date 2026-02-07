@@ -85,9 +85,34 @@ appId: "com.recipedia"
     text: "RecipeTag"
     label: "New tag text is displayed in dropdown"
 
-- tapOn:
-    id: "RecipeTags::List::0::AutocompleteItem::RecipeTag"
-    label: "Select the new tag"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+      - tapOn:
+          id: "RecipeTags::List::0::AutocompleteItem::RecipeTag"
+          label: "Select the new tag"
+      - assertVisible:
+          id: "RecipeValidation::ValidationQueue::Tag::SimilarityDialog::Title"
+          label: "Tag validation dialog is visible"
+      - assertVisible:
+          id: "RecipeValidation::ValidationQueue::Tag::SimilarityDialog::Content"
+          text: ".*RecipeTag.*"
+          label: "Tag validation dialog contains the newly created tag"
+      - tapOn:
+          id: "RecipeValidation::ValidationQueue::Tag::SimilarityDialog::UseButton"
+          label: "Tap on use button to dismiss tag validation dialog"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to validate the tag on iOS"
+
 
 - runFlow:
     file: "../../../../waitForKeyboardDismiss.yaml"

@@ -160,9 +160,8 @@ appId: "com.recipedia"
     end: "50%,25%"
     label: "Swipe down to scroll dropdown"
 
-- waitForAnimationToEnd
--
-- label: "Wait for scrolling animation to end"
+- waitForAnimationToEnd:
+    label: "Wait for scrolling animation to end"
 
 - assertVisible:
     text: "Italian"
