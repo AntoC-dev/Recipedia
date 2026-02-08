@@ -1,6 +1,7 @@
 import json
 import sys
 from pathlib import Path
+from io import StringIO
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -11,8 +12,13 @@ from scraper import (
     _safe_call,
     _safe_call_numeric,
     _detect_auth_required,
+    _log_debug,
+    _log_info,
+    _log_warn,
+    _log_error,
     AuthenticationRequiredError,
 )
+from recipe_scrapers import scrape_html, SCRAPERS
 
 
 SIMPLE_RECIPE_HTML = """
@@ -335,3 +341,53 @@ class TestScrapeRecipeFromHtmlWithAuth:
 
         assert result["success"] is False
         assert result["error"]["type"] == "AuthenticationRequired"
+
+
+class TestLogging:
+    def test_log_debug_does_not_raise(self, capsys):
+        _log_debug("test debug message")
+        captured = capsys.readouterr()
+        assert "DEBUG" in captured.err
+        assert "test debug message" in captured.err
+
+    def test_log_info_does_not_raise(self, capsys):
+        _log_info("test info message")
+        captured = capsys.readouterr()
+        assert "INFO" in captured.err
+        assert "test info message" in captured.err
+
+    def test_log_warn_does_not_raise(self, capsys):
+        _log_warn("test warn message")
+        captured = capsys.readouterr()
+        assert "WARN" in captured.err
+        assert "test warn message" in captured.err
+
+    def test_log_error_does_not_raise(self, capsys):
+        _log_error("test error message")
+        captured = capsys.readouterr()
+        assert "ERROR" in captured.err
+        assert "test error message" in captured.err
+
+    def test_log_error_with_exception(self, capsys):
+        try:
+            raise ValueError("test exception")
+        except ValueError as e:
+            _log_error("error with exception", e)
+        captured = capsys.readouterr()
+        assert "ERROR" in captured.err
+        assert "test exception" in captured.err
+
+
+class TestModuleInitialization:
+    def test_recipe_scrapers_imported(self):
+        from scraper import SCRAPERS
+        assert len(SCRAPERS) > 100
+
+    def test_scrape_html_imported(self):
+        from scraper import scrape_html
+        assert callable(scrape_html)
+
+    def test_scrape_recipe_from_html_logs_on_call(self, capsys):
+        scrape_recipe_from_html(SIMPLE_RECIPE_HTML, "https://example.com/recipe")
+        captured = capsys.readouterr()
+        assert "scrape_recipe_from_html called" in captured.err
