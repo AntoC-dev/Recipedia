@@ -13,6 +13,7 @@ import {DefaultPersonsProvider} from '@context/DefaultPersonsContext';
 import {RecipeDatabaseProvider, useRecipeDatabase} from '@context/RecipeDatabaseContext';
 import {appLogger} from '@utils/logger';
 import {isFirstLaunch} from '@utils/firstLaunch';
+import {recipeScraper} from '@app/modules/recipe-scraper';
 
 // TODO manage horizontal mode
 
@@ -49,6 +50,17 @@ function AppContent() {
                 const isDarkMode = await getDarkMode();
                 setDarkMode(isDarkMode);
                 appLogger.debug('Dark mode setting loaded', {isDarkMode});
+
+                // Wait for Python scraper to be ready (iOS/Android only)
+                // This runs in parallel with OnCreate warmup started by native module
+                // Non-critical: app continues even if Python fails (web parsing degraded)
+                try {
+                    appLogger.debug('Waiting for Python scraper...');
+                    const pythonReady = await recipeScraper.waitForReady(10000);
+                    appLogger.debug('Python scraper ready', {pythonReady});
+                } catch (pythonError) {
+                    appLogger.warn('Python scraper initialization failed', {error: pythonError});
+                }
 
                 appLogger.info('App initialization completed successfully');
                 setIsAppInitialized(true);
