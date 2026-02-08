@@ -116,8 +116,8 @@ appId: "com.recipedia"
           id: "RecipeValidation::ValidationQueue::Tag::SimilarityDialog::UseButton"
           label: "Tap on use button to dismiss tag validation dialog"
       - extendedWaitUntil:
-          visible:
-            id: "RecipeValidation::ValidationQueue::Tag::SimilarityDialog::Title"
+          notVisible:
+          id: "RecipeValidation::ValidationQueue::Tag::SimilarityDialog::Title"
           timeout: 3000
           label: "Wait for dialog to disappear"
 

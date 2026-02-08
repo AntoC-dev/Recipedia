@@ -128,9 +128,10 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeTags::List::1::CustomTextInput"
-    direction: UP
+      id: "RecipeTags::RoundButton"
+    direction: DOWN
     speed: 20
+    centerElement: true
     label: "Scroll to ensure second tag's text input is visible"
 
 - waitForAnimationToEnd
