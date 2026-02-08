@@ -40,7 +40,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeTags::RoundButton"
     direction: DOWN
-    speed: 60
+    speed: 30
     centerElement: true
     label: "Scroll down to find add tag button"
 
@@ -54,11 +54,11 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeTags::RoundButton"
-    direction: DOWN
-    speed: 40
+      id: "RecipeTags::List::0::CustomTextInput"
+    direction: UP
+    speed: 20
     centerElement: true
-    label: "Scroll to tag button again to ensure dropdown will be visible"
+    label: "Scroll to first tag input to ensure it is visible"
 
 - waitForAnimationToEnd
 
@@ -94,6 +94,17 @@ appId: "com.recipedia"
       - tapOn:
           id: "RecipeTags::List::0::AutocompleteItem::RecipeTag"
           label: "Select the new tag"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to validate the tag on iOS"
+        runFlow:
+          file: "../../../../waitForKeyboardDismiss.yaml"
+          label: "Wait for keyboard to hide"
       - assertVisible:
           id: "RecipeValidation::ValidationQueue::Tag::SimilarityDialog::Title"
           label: "Tag validation dialog is visible"
@@ -104,18 +115,11 @@ appId: "com.recipedia"
       - tapOn:
           id: "RecipeValidation::ValidationQueue::Tag::SimilarityDialog::UseButton"
           label: "Tap on use button to dismiss tag validation dialog"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn:
-          id: "Done"
-          label: "Tap Done key to validate the tag on iOS"
-
-- runFlow:
-    file: "../../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to hide"
+      - extendedWaitUntil:
+        visible:
+          id: "RecipeValidation::ValidationQueue::Tag::SimilarityDialog::Title"
+        timeout: 3000
+        label: "Wait for dialog to disappear"
 
 - scrollUntilVisible:
     element:

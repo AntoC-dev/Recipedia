@@ -28,6 +28,10 @@ tags:
     id: "TagsSettings::ItemDialog::AddModal::Name::CustomTextInput"
     label: "Action - Focus on tag name input"
 
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
 - inputText:
     text: "TestTag"
     label: "Action - Enter new tag name"
@@ -53,6 +57,11 @@ tags:
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
+
+- assertVisible:
+    id: "TagsSettings::ItemDialog::AddModal::Name::CustomTextInput"
+    text: "TestTag"
+    label: "Assert - Verify new tag name entered"
 
 - tapOn:
     id: "TagsSettings::ItemDialog::AddModal::ConfirmButton"

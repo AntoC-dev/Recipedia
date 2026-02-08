@@ -19,13 +19,9 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- assertVisible:
-    id: "RecipeTitle::Text"
-    label: "Ensure recipe title is visible"
-
 - tapOn:
-    id: "RecipeTitle::Text"
-    label: "Tap on recipe title text to close the keyboard"
+    id: "RecipeImage"
+    label: "Tap on recipe image to close the keyboard"
 
 - runFlow:
     file: "../../waitForKeyboardDismiss.yaml"
