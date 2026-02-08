@@ -29,22 +29,32 @@ export const withiOSPython: ConfigPlugin<RecipeScraperPluginConfig> = (
             );
 
             const setupScriptPath = path.join(moduleIOSPath, 'scripts', 'setup-python.sh');
-            const frameworksPath = path.join(moduleIOSPath, 'Frameworks', 'Python.xcframework');
+            const frameworksDir = path.join(moduleIOSPath, 'Frameworks');
+            const frameworksPath = path.join(frameworksDir, 'Python.xcframework');
+            const stdlibBundlePath = path.join(frameworksDir, 'PythonStdlib.bundle');
+            const packagesBundlePath = path.join(frameworksDir, 'PythonPackages.bundle');
 
-            // Run setup script if framework doesn't exist yet
-            if (fs.existsSync(setupScriptPath) && !fs.existsSync(frameworksPath)) {
+            // Check if ALL required Python artifacts exist (not just the framework)
+            const allArtifactsExist =
+                fs.existsSync(frameworksPath) &&
+                fs.existsSync(stdlibBundlePath) &&
+                fs.existsSync(packagesBundlePath);
+
+            // Check for PythonKit source (required for compilation)
+            const pythonKitDir = path.join(moduleIOSPath, 'PythonKit');
+            const pythonKitMarker = path.join(pythonKitDir, '.complete');
+            const pythonKitExists = fs.existsSync(pythonKitMarker);
+
+            // Run setup script if any required artifact is missing
+            if (fs.existsSync(setupScriptPath) && (!allArtifactsExist || !pythonKitExists)) {
                 console.log('[RecipeScraper] Downloading Python framework for iOS...');
-                try {
-                    execSync(`bash "${setupScriptPath}"`, {
-                        cwd: moduleIOSPath,
-                        stdio: 'inherit',
-                    });
-                    console.log('[RecipeScraper] Python framework setup complete');
-                } catch (error) {
-                    console.warn('[RecipeScraper] Python setup failed, Swift fallback will be used:', error);
-                }
-            } else if (fs.existsSync(frameworksPath)) {
-                console.log('[RecipeScraper] Python framework already exists, skipping download');
+                execSync(`bash "${setupScriptPath}"`, {
+                    cwd: moduleIOSPath,
+                    stdio: 'inherit',
+                });
+                console.log('[RecipeScraper] Python framework setup complete');
+            } else if (allArtifactsExist && pythonKitExists) {
+                console.log('[RecipeScraper] Python framework and bundles already exist, skipping setup');
             }
 
             return modConfig;

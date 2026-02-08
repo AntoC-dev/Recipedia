@@ -2,7 +2,7 @@ Pod::Spec.new do |s|
   s.name           = 'RecipeScraper'
   s.version        = '1.0.0'
   s.summary        = 'Recipe scraper for iOS using Python recipe-scrapers'
-  s.description    = 'Expo native module for scraping recipes from websites using Python recipe-scrapers library with Swift fallback'
+  s.description    = 'Expo native module for scraping recipes from websites using Python recipe-scrapers library'
   s.homepage       = 'https://github.com/example/recipedia'
   s.license        = 'MIT'
   s.author         = { 'Recipedia' => 'contact@recipedia.app' }
@@ -10,14 +10,14 @@ Pod::Spec.new do |s|
   s.swift_version  = '5.0'
   s.source         = { git: '' }
 
-  # Include module Swift files and vendored PythonKit source (if downloaded)
-  # PythonKit is vendored to avoid SPM linking issues with CocoaPods static linking
+  # PythonKit is mandatory - build will fail if setup script hasn't run
   pythonkit_dir = File.join(__dir__, 'PythonKit')
-  if File.exist?(pythonkit_dir) && File.exist?(File.join(pythonkit_dir, '.complete'))
-    s.source_files = '*.swift', 'PythonKit/*.swift'
-  else
-    s.source_files = '*.swift'
+  pythonkit_marker = File.join(pythonkit_dir, '.complete')
+  unless File.exist?(pythonkit_marker)
+    raise "PythonKit source files not found. Run 'scripts/setup-python.sh' or trigger prebuild with 'npx expo run:ios'."
   end
+
+  s.source_files = '*.swift', 'PythonKit/*.swift'
 
   # Exclude scripts and Python source from source_files
   s.exclude_files = 'scripts/**/*', 'python/**/*'
@@ -115,10 +115,10 @@ Pod::Spec.new do |s|
       :execution_position => :before_compile,
       :shell_path => '/bin/bash'
     },
-    # Setup Python runtime
+    # Setup Python runtime (mandatory - build fails if setup fails)
     {
       :name => 'Setup Python Runtime',
-      :script => '"${PODS_TARGET_SRCROOT}/scripts/setup-python.sh" || echo "Warning: Python setup script failed, Swift fallback will be used"',
+      :script => '"${PODS_TARGET_SRCROOT}/scripts/setup-python.sh"',
       :execution_position => :before_compile,
       :shell_path => '/bin/bash'
     }

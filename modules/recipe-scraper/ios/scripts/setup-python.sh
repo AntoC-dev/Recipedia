@@ -14,6 +14,12 @@ PACKAGES_DIR="$IOS_DIR/python_packages"
 PYTHON_VERSION="3.12"
 SUPPORT_REVISION="4"
 
+# Detect host architecture (arm64 for Apple Silicon, x86_64 for Intel)
+HOST_ARCH=$(uname -m)
+
+# Package manifest location
+IOS_PACKAGES_MANIFEST="$SCRIPT_DIR/ios-packages.json"
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -23,6 +29,46 @@ NC='\033[0m' # No Color
 log_info() { echo -e "${GREEN}[INFO]${NC} $1"; }
 log_warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
+
+# Get wheel URL from manifest based on package name and architecture key
+# Usage: get_wheel_url <package_name> <arch_key>
+# Example: get_wheel_url "lxml" "arm64_iphonesimulator"
+get_wheel_url() {
+    local package="$1"
+    local arch_key="$2"
+
+    if [ ! -f "$IOS_PACKAGES_MANIFEST" ]; then
+        log_error "Package manifest not found: $IOS_PACKAGES_MANIFEST"
+        return 1
+    fi
+
+    # Use Python to parse JSON (more reliable than jq which may not be installed)
+    python3 -c "
+import json
+with open('$IOS_PACKAGES_MANIFEST') as f:
+    data = json.load(f)
+    print(data['packages']['$package']['wheels']['$arch_key']['url'])
+" 2>/dev/null
+}
+
+# Check if this is a device build (vs simulator)
+is_device_build() {
+    # PLATFORM_NAME is "iphoneos" for device, "iphonesimulator" for simulator
+    [ "${PLATFORM_NAME:-iphonesimulator}" = "iphoneos" ]
+}
+
+# Merge two .so files into a universal binary using lipo
+# Usage: merge_so_files <arm64_so> <x86_64_so> <output_so>
+merge_so_files() {
+    local arm64_so="$1"
+    local x86_so="$2"
+    local output_so="$3"
+
+    if [ -f "$arm64_so" ] && [ -f "$x86_so" ]; then
+        lipo -create "$arm64_so" "$x86_so" -output "$output_so" 2>/dev/null && return 0
+    fi
+    return 1
+}
 
 # Download PythonKit source files (vendored to avoid SPM linking issues)
 setup_pythonkit() {
@@ -206,45 +252,145 @@ setup_python_packages() {
 
     local TEMP_DIR=$(mktemp -d)
 
-    # Download lxml from Flet's PyPI (iOS-specific wheel)
-    # Uses versioned URL path from pypi.flet.dev
-    log_info "Downloading lxml for iOS..."
-    download_and_extract_wheel \
-        "https://pypi.flet.dev/-/ver_1ZftSC/lxml-5.3.0-1-cp312-cp312-ios_13_0_arm64_iphoneos.whl" \
-        "$TEMP_DIR"
+    # Download lxml from Flet's PyPI (iOS-specific wheels)
+    # Flet provides separate wheels for device vs simulator:
+    #   - arm64_iphoneos: Physical devices (always arm64)
+    #   - arm64_iphonesimulator: Simulator on Apple Silicon Macs
+    #   - x86_64_iphonesimulator: Simulator on Intel Macs or CI runners
+    #
+    # For simulator builds: download BOTH arm64 and x86_64 wheels, then merge
+    # with lipo to create universal binaries. This is required because:
+    # - Xcode may run simulator in x86_64 mode even on Apple Silicon
+    # - React Native/Expo builds often target x86_64 for simulator compatibility
+    # - Universal binaries work regardless of how Xcode runs the simulator
+    log_info "Detected host architecture: $HOST_ARCH"
+    log_info "Target platform: ${PLATFORM_NAME:-iphonesimulator}"
+
+    if is_device_build; then
+        # Device builds: single architecture (arm64)
+        log_info "Device build detected, downloading arm64 iphoneos wheel..."
+        local LXML_WHEEL_URL
+        LXML_WHEEL_URL=$(get_wheel_url "lxml" "arm64_iphoneos")
+        download_and_extract_wheel "$LXML_WHEEL_URL" "$TEMP_DIR"
+    else
+        # Simulator builds: download both architectures and merge with lipo
+        log_info "Simulator build detected, downloading both arm64 and x86_64 wheels..."
+
+        local ARM64_TEMP=$(mktemp -d)
+        local X86_TEMP=$(mktemp -d)
+
+        # Download arm64 wheel
+        local ARM64_URL
+        ARM64_URL=$(get_wheel_url "lxml" "arm64_iphonesimulator")
+        log_info "  Downloading arm64 wheel..."
+        curl -fsSL "$ARM64_URL" -o "$ARM64_TEMP/lxml_arm64.whl"
+        unzip -q -o "$ARM64_TEMP/lxml_arm64.whl" -d "$ARM64_TEMP/extracted" 2>/dev/null
+
+        # Download x86_64 wheel
+        local X86_URL
+        X86_URL=$(get_wheel_url "lxml" "x86_64_iphonesimulator")
+        log_info "  Downloading x86_64 wheel..."
+        curl -fsSL "$X86_URL" -o "$X86_TEMP/lxml_x86.whl"
+        unzip -q -o "$X86_TEMP/lxml_x86.whl" -d "$X86_TEMP/extracted" 2>/dev/null
+
+        # Copy arm64 as base (includes all Python files)
+        cp -R "$ARM64_TEMP/extracted/lxml" "$PACKAGES_DIR/"
+
+        # Merge .so files with lipo to create universal binaries
+        log_info "  Creating universal binaries with lipo..."
+        find "$PACKAGES_DIR/lxml" -name "*.so" -type f | while read -r so_file; do
+            local filename=$(basename "$so_file")
+            local relative_path="${so_file#$PACKAGES_DIR/lxml/}"
+            local arm64_so="$ARM64_TEMP/extracted/lxml/$relative_path"
+            local x86_so="$X86_TEMP/extracted/lxml/$relative_path"
+
+            if [ -f "$arm64_so" ] && [ -f "$x86_so" ]; then
+                log_info "    Merging $filename..."
+                lipo -create "$arm64_so" "$x86_so" -output "$so_file" 2>/dev/null || {
+                    log_warn "    Failed to merge $filename, keeping arm64 only"
+                }
+            fi
+        done
+
+        rm -rf "$ARM64_TEMP" "$X86_TEMP"
+        log_info "  Universal lxml binaries created"
+    fi
 
     # Download pure-Python packages using pip3
-    # Use --only-binary=:all: to get wheels, --platform any for pure-python
-    log_info "Downloading pure-Python packages via pip..."
+    # Let pip resolve ALL dependencies automatically
+    # Use --prefer-binary to get wheels when available, but allow source for pure-Python packages
+    # Platform-specific packages (lxml) are handled separately above
+    log_info "Downloading Python packages via pip (with dependencies)..."
 
+    # Only list top-level packages - pip resolves transitive dependencies
     declare -a PACKAGES=(
         "recipe-scrapers>=15.0.0"
         "extruct"
-        "beautifulsoup4"
-        "soupsieve"
-        "lxml-html-clean"
-        "rdflib"
-        "mf2py"
-        "w3lib"
-        "html-text"
-        "isodate"
-        "pyparsing"
         "requests"
-        "certifi"
-        "charset-normalizer"
-        "idna"
-        "urllib3"
     )
 
-    # Download wheels for pure-python packages
+    # Download packages with their dependencies
+    # --prefer-binary: prefer wheels but allow source distributions
+    # --only-binary lxml: force wheel for lxml (we provide iOS-specific one)
     pip3 download \
-        --only-binary=:all: \
-        --platform any \
-        --python-version 312 \
-        --implementation cp \
-        --no-deps \
+        --prefer-binary \
+        --only-binary lxml \
         -d "$TEMP_DIR" \
         "${PACKAGES[@]}" 2>&1 || log_warn "Some packages may have failed to download"
+
+    # Remove lxml wheel that pip downloaded (we use the iOS-specific one from Flet)
+    rm -f "$TEMP_DIR"/lxml-*.whl 2>/dev/null || true
+
+    # Extract source distributions (tar.gz) for pure-Python packages
+    log_info "Extracting source distributions..."
+    for tarball in "$TEMP_DIR"/*.tar.gz; do
+        if [ -f "$tarball" ]; then
+            pkg_name=$(basename "$tarball" | sed 's/-[0-9].*//')
+            log_info "  Extracting $(basename "$tarball")..."
+            tar -xzf "$tarball" -C "$TEMP_DIR"
+            # Find and copy the Python package from the extracted source
+            find "$TEMP_DIR" -maxdepth 2 -type d -name "$pkg_name" ! -path "$TEMP_DIR/$pkg_name-*" -exec cp -R {} "$PACKAGES_DIR/" \; 2>/dev/null || true
+            # Also try common patterns like package_name (with underscores)
+            pkg_name_underscore=$(echo "$pkg_name" | tr '-' '_')
+            find "$TEMP_DIR" -maxdepth 2 -type d -name "$pkg_name_underscore" ! -path "$TEMP_DIR/*-*/$pkg_name_underscore" -exec cp -R {} "$PACKAGES_DIR/" \; 2>/dev/null || true
+            # For single-file modules, copy .py files from src/ or package root
+            find "$TEMP_DIR" -maxdepth 3 -name "${pkg_name}.py" -exec cp {} "$PACKAGES_DIR/" \; 2>/dev/null || true
+            find "$TEMP_DIR" -maxdepth 3 -name "${pkg_name_underscore}.py" -exec cp {} "$PACKAGES_DIR/" \; 2>/dev/null || true
+        fi
+    done
+
+    # Identify and replace platform-specific binary wheels with pure-Python versions
+    log_info "Replacing platform-specific binary wheels with pure-Python versions..."
+    declare -a NEED_PURE_PYTHON=()
+    for wheel in "$TEMP_DIR"/*.whl; do
+        if [ -f "$wheel" ]; then
+            basename_wheel=$(basename "$wheel")
+            # Check if wheel is platform-specific (contains macosx, linux, win, etc.)
+            if echo "$basename_wheel" | grep -qE "(macosx|linux|win32|win_amd64|manylinux)" ; then
+                # Extract package name from wheel filename (format: name-version-...)
+                pkg_name=$(echo "$basename_wheel" | sed 's/-[0-9].*//')
+                log_warn "  Removing platform-specific wheel: $basename_wheel"
+                rm -f "$wheel"
+                # Add to list for re-download as pure-Python
+                NEED_PURE_PYTHON+=("$pkg_name")
+            fi
+        fi
+    done
+
+    # Re-download filtered packages as pure-Python wheels
+    if [ ${#NEED_PURE_PYTHON[@]} -gt 0 ]; then
+        log_info "Downloading pure-Python versions of filtered packages..."
+        for pkg in "${NEED_PURE_PYTHON[@]}"; do
+            log_info "  Downloading $pkg (pure-Python)..."
+            pip3 download \
+                --no-deps \
+                --only-binary=:all: \
+                --platform any \
+                --python-version 312 \
+                -d "$TEMP_DIR" \
+                "$pkg" 2>&1 || log_warn "  Could not find pure-Python version of $pkg"
+        done
+    fi
 
     # Extract all downloaded wheels
     log_info "Extracting wheel packages..."
@@ -300,16 +446,23 @@ setup_python_packages() {
 
     rm -rf "$TEMP_DIR"
 
-    # Validate critical packages exist and aren't empty
+    # Validate critical packages exist
     log_info "Validating package installation..."
     local validation_failed=0
 
-    for pkg in "recipe_scrapers" "bs4" "extruct" "lxml"; do
+    # Check directory-based packages
+    for pkg in "recipe_scrapers" "bs4" "extruct" "lxml" "requests" "charset_normalizer"; do
         if [ ! -d "$PACKAGES_DIR/$pkg" ]; then
             log_warn "  Package directory missing: $pkg"
             validation_failed=1
         fi
     done
+
+    # Check file-based packages (single .py file)
+    if [ ! -f "$PACKAGES_DIR/typing_extensions.py" ]; then
+        log_warn "  Package file missing: typing_extensions.py"
+        validation_failed=1
+    fi
 
     if [ "$validation_failed" -eq 1 ]; then
         log_warn "Some packages may be missing, but continuing..."
@@ -322,6 +475,31 @@ setup_python_packages() {
     log_info "Python packages installed"
 }
 
+# Validate that all required packages are present and importable
+validate_packages() {
+    log_info "Validating Python packages..."
+
+    local VALIDATE_SCRIPT="$SCRIPT_DIR/validate-packages.py"
+
+    if [ ! -f "$VALIDATE_SCRIPT" ]; then
+        log_warn "Validation script not found at $VALIDATE_SCRIPT, skipping validation"
+        return 0
+    fi
+
+    # Run validation using host Python but with bundled packages
+    python3 "$VALIDATE_SCRIPT" "$PACKAGES_DIR"
+    local result=$?
+
+    if [ $result -ne 0 ]; then
+        log_error "Package validation failed! Some required packages are missing."
+        log_error "Check the output above for details."
+        return 1
+    fi
+
+    log_info "Package validation passed!"
+    return 0
+}
+
 # Main
 log_info "Setting up Python for iOS recipe-scraper..."
 setup_pythonkit
@@ -329,5 +507,6 @@ setup_python_framework
 clean_test_directories
 sign_binary_files
 setup_python_packages
+validate_packages || exit 1
 create_bundle_wrappers
 log_info "Python setup complete!"
