@@ -11,11 +11,56 @@ Requires: recipe-scrapers[online]>=15.0.0
 """
 
 import json
+import sys
+import traceback
 from typing import Any, Optional, List, Dict
 from urllib.parse import urlparse
 
-import requests
-from recipe_scrapers import scrape_html, SCRAPERS
+
+# Debug logging - prints to stdout which is captured by native code
+DEBUG = True
+
+
+def _log(level: str, message: str) -> None:
+    """Log a message with level prefix. Captured by iOS/Android native code."""
+    if DEBUG or level in ('ERROR', 'WARN'):
+        print(f"[PyScraper:{level}] {message}", file=sys.stderr)
+
+
+def _log_debug(message: str) -> None:
+    _log('DEBUG', message)
+
+
+def _log_info(message: str) -> None:
+    _log('INFO', message)
+
+
+def _log_warn(message: str) -> None:
+    _log('WARN', message)
+
+
+def _log_error(message: str, exc: Optional[Exception] = None) -> None:
+    _log('ERROR', message)
+    if exc and DEBUG:
+        _log('ERROR', f"Traceback:\n{traceback.format_exc()}")
+
+
+# Import dependencies with detailed error logging
+try:
+    _log_debug("Importing requests...")
+    import requests
+    _log_debug("requests imported successfully")
+except ImportError as e:
+    _log_error(f"Failed to import requests: {e}", e)
+    raise
+
+try:
+    _log_debug("Importing recipe_scrapers...")
+    from recipe_scrapers import scrape_html, SCRAPERS
+    _log_info(f"recipe_scrapers imported successfully ({len(SCRAPERS)} scrapers available)")
+except ImportError as e:
+    _log_error(f"Failed to import recipe_scrapers: {e}", e)
+    raise
 
 
 AUTH_URL_PATTERNS = ['/login', '/signin', '/sign-in', '/auth', '/connexion', '/account/login', '/user/login']
@@ -44,25 +89,35 @@ def scrape_recipe(url: str, wild_mode: bool = True) -> str:
     Returns:
         JSON string with success/error result containing all recipe data.
     """
+    _log_info(f"scrape_recipe called: url={url}, wild_mode={wild_mode}")
     try:
+        _log_debug("Fetching URL...")
         response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, allow_redirects=True, timeout=30)
         response.raise_for_status()
+        _log_debug(f"Fetched {len(response.text)} bytes, status={response.status_code}")
 
         auth_error = _detect_auth_required(response.text, response.url, url)
         if auth_error:
+            _log_warn(f"Auth required detected for host: {auth_error.host}")
             raise auth_error
 
+        _log_debug("Calling scrape_html...")
         scraper = scrape_html(html=response.text, org_url=url, supported_only=not wild_mode)
+        data = _extract_all_data(scraper)
+        _log_info(f"Scrape successful: title='{data.get('title', 'N/A')}'")
+
         return json.dumps({
             "success": True,
-            "data": _extract_all_data(scraper)
+            "data": data
         }, ensure_ascii=False)
     except AuthenticationRequiredError as e:
+        _log_warn(f"AuthenticationRequiredError: {e.message}")
         return json.dumps({
             "success": False,
             "error": {"type": "AuthenticationRequired", "message": e.message, "host": e.host}
         }, ensure_ascii=False)
     except Exception as e:
+        _log_error(f"scrape_recipe failed: {type(e).__name__}: {e}", e)
         return json.dumps({
             "success": False,
             "error": {"type": type(e).__name__, "message": str(e)}
@@ -82,22 +137,33 @@ def scrape_recipe_from_html(html: str, url: str, wild_mode: bool = True, final_u
     Returns:
         JSON string with success/error result containing all recipe data.
     """
+    _log_info(f"scrape_recipe_from_html called: url={url}, wild_mode={wild_mode}, html_len={len(html)}")
     try:
+        _log_debug("Checking for auth redirect...")
         auth_error = _detect_auth_required(html, final_url or url, url)
         if auth_error:
+            _log_warn(f"Auth required detected for host: {auth_error.host}")
             raise auth_error
 
+        _log_debug(f"Calling scrape_html with supported_only={not wild_mode}...")
         scraper = scrape_html(html=html, org_url=url, supported_only=not wild_mode)
+        _log_debug("scrape_html succeeded, extracting data...")
+
+        data = _extract_all_data(scraper)
+        _log_info(f"Scrape successful: title='{data.get('title', 'N/A')}', ingredients={len(data.get('ingredients', []))}")
+
         return json.dumps({
             "success": True,
-            "data": _extract_all_data(scraper)
+            "data": data
         }, ensure_ascii=False)
     except AuthenticationRequiredError as e:
+        _log_warn(f"AuthenticationRequiredError: {e.message}")
         return json.dumps({
             "success": False,
             "error": {"type": "AuthenticationRequired", "message": e.message, "host": e.host}
         }, ensure_ascii=False)
     except Exception as e:
+        _log_error(f"scrape_recipe_from_html failed: {type(e).__name__}: {e}", e)
         return json.dumps({
             "success": False,
             "error": {"type": type(e).__name__, "message": str(e)}
