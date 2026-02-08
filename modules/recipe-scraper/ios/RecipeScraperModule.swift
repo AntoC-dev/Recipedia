@@ -9,7 +9,8 @@ public class RecipeScraperModule: Module {
         // This ensures Python is ready by the time user tries to scrape
         OnCreate {
             Task.detached(priority: .background) {
-                _ = PythonScraper.shared.isAvailable
+                let available = PythonScraper.shared.isAvailable
+                print("[RecipeScraperModule] OnCreate warmup complete: available=\(available)")
             }
         }
 

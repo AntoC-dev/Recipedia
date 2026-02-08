@@ -144,8 +144,11 @@ public class PythonScraper {
     public var isAvailable: Bool {
         do {
             try initializePython()
-            return scraper != nil
+            let available = scraper != nil
+            print("[PythonScraper] isAvailable: \(available)")
+            return available
         } catch {
+            print("[PythonScraper] isAvailable: false (error: \(error))")
             return false
         }
     }
