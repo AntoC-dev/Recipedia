@@ -1,8 +1,1 @@
-# Python framework and packages - downloaded during build
-Frameworks/
-python_packages/
-
-# Keep the setup script and source Python code
-!scripts/
-!python/
-PythonKit/
+# iOS uses Pyodide WebView for Python - no native Python artifacts

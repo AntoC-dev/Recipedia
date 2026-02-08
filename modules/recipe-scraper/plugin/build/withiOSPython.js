@@ -1,119 +1,61 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
-    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (g && (g = 0, op[0] && (_ = 0)), _) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withiOSPython = void 0;
 var config_plugins_1 = require("@expo/config-plugins");
-var path = __importStar(require("path"));
-var fs = __importStar(require("fs"));
 var child_process_1 = require("child_process");
+var fs_1 = require("fs");
+var path_1 = require("path");
+var MODULE_DIR = (0, path_1.join)(__dirname, '..', '..');
+var SCRIPTS_DIR = (0, path_1.join)(MODULE_DIR, 'scripts');
+var ASSETS_DIR = (0, path_1.join)(MODULE_DIR, 'assets');
+var BUNDLE_FILE = (0, path_1.join)(ASSETS_DIR, 'pyodide-bundle.html');
+var SETUP_SCRIPT = (0, path_1.join)(SCRIPTS_DIR, 'setup-pyodide.sh');
+var MIN_BUNDLE_SIZE = 10 * 1024 * 1024; // 10MB minimum
 /**
- * Expo config plugin for iOS Python support in RecipeScraper module.
+ * Expo config plugin for iOS RecipeScraper module.
  *
- * This plugin downloads the Python framework and PythonKit source files before
- * pod install runs. This ensures CocoaPods can properly link the vendored framework
- * and compile the PythonKit source files.
+ * This plugin runs during `expo prebuild` to:
+ * 1. Download Pyodide WASM runtime and Python packages
+ * 2. Generate a self-contained HTML bundle with all assets embedded
+ * 3. Verify the bundle was created successfully
+ *
+ * The bundle is then loaded by PyodideWebView at runtime without network access.
  */
 var withiOSPython = function (config, _pluginConfig) {
-    // Use withDangerousMod to run setup BEFORE pod install
-    // This is necessary because vendored_frameworks must exist when pod install runs
-    config = (0, config_plugins_1.withDangerousMod)(config, [
+    return (0, config_plugins_1.withDangerousMod)(config, [
         'ios',
-        function (modConfig) { return __awaiter(void 0, void 0, void 0, function () {
-            var projectRoot, moduleIOSPath, setupScriptPath, frameworksPath;
-            return __generator(this, function (_a) {
-                projectRoot = modConfig.modRequest.projectRoot;
-                moduleIOSPath = path.join(projectRoot, 'modules', 'recipe-scraper', 'ios');
-                setupScriptPath = path.join(moduleIOSPath, 'scripts', 'setup-python.sh');
-                frameworksPath = path.join(moduleIOSPath, 'Frameworks', 'Python.xcframework');
-                // Run setup script if framework doesn't exist yet
-                if (fs.existsSync(setupScriptPath) && !fs.existsSync(frameworksPath)) {
-                    console.log('[RecipeScraper] Downloading Python framework for iOS...');
-                    try {
-                        (0, child_process_1.execSync)("bash \"".concat(setupScriptPath, "\""), {
-                            cwd: moduleIOSPath,
-                            stdio: 'inherit',
-                        });
-                        console.log('[RecipeScraper] Python framework setup complete');
-                    }
-                    catch (error) {
-                        console.warn('[RecipeScraper] Python setup failed, Swift fallback will be used:', error);
-                    }
-                }
-                else if (fs.existsSync(frameworksPath)) {
-                    console.log('[RecipeScraper] Python framework already exists, skipping download');
-                }
-                return [2 /*return*/, modConfig];
-            });
-        }); },
+        function (config) {
+            console.log('[RecipeScraper] Setting up iOS Pyodide bundle...');
+            // Check if setup script exists
+            if (!(0, fs_1.existsSync)(SETUP_SCRIPT)) {
+                throw new Error("[RecipeScraper] Setup script not found: ".concat(SETUP_SCRIPT));
+            }
+            // Run the setup script
+            try {
+                console.log('[RecipeScraper] Running setup-pyodide.sh...');
+                (0, child_process_1.execSync)("bash \"".concat(SETUP_SCRIPT, "\""), {
+                    cwd: SCRIPTS_DIR,
+                    stdio: 'inherit',
+                    env: Object.assign(Object.assign({}, process.env), { FORCE_COLOR: '1' }),
+                });
+            }
+            catch (error) {
+                var message = error instanceof Error ? error.message : String(error);
+                throw new Error("[RecipeScraper] Failed to run setup script: ".concat(message));
+            }
+            // Verify bundle was created
+            if (!(0, fs_1.existsSync)(BUNDLE_FILE)) {
+                throw new Error("[RecipeScraper] Pyodide bundle not generated: ".concat(BUNDLE_FILE));
+            }
+            // Verify bundle size
+            var stats = (0, fs_1.statSync)(BUNDLE_FILE);
+            if (stats.size < MIN_BUNDLE_SIZE) {
+                throw new Error("[RecipeScraper] Pyodide bundle too small (".concat(stats.size, " bytes), expected at least ").concat(MIN_BUNDLE_SIZE, " bytes"));
+            }
+            var bundleSizeMB = (stats.size / (1024 * 1024)).toFixed(2);
+            console.log("[RecipeScraper] iOS Pyodide bundle ready (".concat(bundleSizeMB, " MB)"));
+            return config;
+        },
     ]);
-    return config;
 };
 exports.withiOSPython = withiOSPython;

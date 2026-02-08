@@ -3,7 +3,7 @@
  *
  * Provides a complete, type-safe API for scraping recipes from URLs.
  * - Android: Uses Python recipe-scrapers library (via Chaquopy) + TypeScript enhancements
- * - iOS: Uses Python recipe-scrapers library (via PythonKit) + TypeScript enhancements
+ * - iOS: Uses Python recipe-scrapers library (via Pyodide WebView) + TypeScript enhancements
  * - Web: Uses TypeScript schema.org parsing + TypeScript enhancements
  *
  * All platforms use the same TypeScript enhancement module for consistent behavior.
@@ -30,6 +30,7 @@ import type {
     ScraperResult,
     SupportedHostsResult,
 } from './types';
+import {PyodideBridge} from './ios/PyodideBridge';
 
 // Auth detection patterns
 const AUTH_URL_PATTERNS = [
@@ -70,14 +71,16 @@ type NativeScraperInterface = {
 };
 
 const isTestEnv = process.env.NODE_ENV === 'test';
-const useNativeModule =
-    (Platform.OS === 'android' || Platform.OS === 'ios') && !isTestEnv;
+const isAndroid = Platform.OS === 'android';
+const isIOS = Platform.OS === 'ios';
+const useNativeModule = isAndroid && !isTestEnv;
+const usePyodide = isIOS && !isTestEnv;
 
 function getNativeModule(): NativeScraperInterface | null {
     if (!useNativeModule) {
         return null;
     }
-    // Only import native module when actually needed (not in test/web/iOS environments)
+    // Only import native module on Android (Chaquopy)
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     return require('./RecipeScraperModule').default;
 }
@@ -171,23 +174,39 @@ export class RecipeScraper {
         options?: ScrapeOptions
     ): Promise<ScraperResult> {
         try {
-            // 1. Get base parsing from native module (Android/iOS) or TypeScript (Web)
             let baseResult: ScraperResult;
 
             if (nativeModule) {
-                // Android/iOS: Use Python recipe-scrapers for base parsing (500+ site parsers)
+                // Android: Use Python recipe-scrapers via Chaquopy
                 const json = await nativeModule.scrapeRecipeFromHtml(
                     html,
                     url,
                     options?.wildMode ?? true
                 );
                 baseResult = JSON.parse(json);
+            } else if (usePyodide) {
+                // iOS: Use Python recipe-scrapers via Pyodide WebView
+                try {
+                    const json = await PyodideBridge.scrapeRecipeFromHtml(
+                        html,
+                        url,
+                        options?.wildMode ?? true
+                    );
+                    baseResult = JSON.parse(json);
+                } catch (pyodideError) {
+                    // Fallback to TypeScript schema.org parser if Pyodide fails
+                    console.warn(
+                        '[RecipeScraper] Pyodide failed, falling back to schema.org:',
+                        pyodideError
+                    );
+                    baseResult = schemaParser.parse(html, url);
+                }
             } else {
                 // Web: Use TypeScript schema.org parser
                 baseResult = schemaParser.parse(html, url);
             }
 
-            // 2. Apply TypeScript enhancements (ALL platforms)
+            // Apply TypeScript enhancements (ALL platforms)
             if (baseResult.success) {
                 baseResult.data = applyEnhancements({
                     html,
@@ -217,15 +236,25 @@ export class RecipeScraper {
      * ```
      */
     async getSupportedHosts(): Promise<SupportedHostsResult> {
-        if (!nativeModule) {
-            return {success: true, data: []};
+        if (nativeModule) {
+            try {
+                const json = await nativeModule.getSupportedHosts();
+                return JSON.parse(json);
+            } catch (error) {
+                return this.exceptionError(error);
+            }
         }
-        try {
-            const json = await nativeModule.getSupportedHosts();
-            return JSON.parse(json);
-        } catch (error) {
-            return this.exceptionError(error);
+
+        if (usePyodide) {
+            try {
+                const json = await PyodideBridge.getSupportedHosts();
+                return JSON.parse(json);
+            } catch (error) {
+                return this.exceptionError(error);
+            }
         }
+
+        return {success: true, data: []};
     }
 
     /**
@@ -239,15 +268,25 @@ export class RecipeScraper {
      * @returns A result object with a boolean indicating support.
      */
     async isHostSupported(host: string): Promise<HostSupportedResult> {
-        if (!nativeModule) {
-            return {success: true, data: false};
+        if (nativeModule) {
+            try {
+                const json = await nativeModule.isHostSupported(host);
+                return JSON.parse(json);
+            } catch (error) {
+                return this.exceptionError(error);
+            }
         }
-        try {
-            const json = await nativeModule.isHostSupported(host);
-            return JSON.parse(json);
-        } catch (error) {
-            return this.exceptionError(error);
+
+        if (usePyodide) {
+            try {
+                const json = await PyodideBridge.isHostSupported(host);
+                return JSON.parse(json);
+            } catch (error) {
+                return this.exceptionError(error);
+            }
         }
+
+        return {success: true, data: false};
     }
 
     /**
@@ -387,21 +426,27 @@ export class RecipeScraper {
     /**
      * Checks if the Python runtime is ready for scraping.
      *
-     * On iOS/Android, this returns true once Python has finished initializing.
+     * On Android, returns true once Chaquopy Python has finished initializing.
+     * On iOS, returns true once Pyodide WebView has finished loading.
      * On Web, this always returns true (no Python needed).
      *
      * @returns true if ready, false if still initializing.
      */
     async isPythonReady(): Promise<boolean> {
-        if (!nativeModule?.isPythonAvailable) {
-            // Web platform - always ready (no Python)
-            return true;
+        if (nativeModule?.isPythonAvailable) {
+            try {
+                return await nativeModule.isPythonAvailable();
+            } catch {
+                return false;
+            }
         }
-        try {
-            return await nativeModule.isPythonAvailable();
-        } catch {
-            return false;
+
+        if (usePyodide) {
+            return PyodideBridge.isPythonReady();
         }
+
+        // Web platform - always ready (no Python)
+        return true;
     }
 
     /**
@@ -415,6 +460,10 @@ export class RecipeScraper {
      * @returns true if ready, false if timeout reached
      */
     async waitForReady(timeoutMs = 30000, pollIntervalMs = 100): Promise<boolean> {
+        if (usePyodide) {
+            return PyodideBridge.waitForReady(timeoutMs);
+        }
+
         if (!nativeModule?.isPythonAvailable) {
             // Web platform - always ready
             return true;

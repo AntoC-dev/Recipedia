@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
+import {Platform} from 'react-native';
 import {PaperProvider} from 'react-native-paper';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {darkTheme, lightTheme} from '@styles/theme';
@@ -14,6 +15,7 @@ import {RecipeDatabaseProvider, useRecipeDatabase} from '@context/RecipeDatabase
 import {appLogger} from '@utils/logger';
 import {isFirstLaunch} from '@utils/firstLaunch';
 import {recipeScraper} from '@app/modules/recipe-scraper';
+import {PyodideWebView} from '@app/modules/recipe-scraper/src/ios/PyodideWebView';
 
 // TODO manage horizontal mode
 
@@ -133,6 +135,7 @@ export function App() {
     return (
         <RecipeDatabaseProvider>
             <AppContent/>
+            {Platform.OS === 'ios' && <PyodideWebView />}
         </RecipeDatabaseProvider>
     );
 }
