@@ -44,14 +44,14 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation to end"
 
-- assertVisible:
-    id: "ecipePreparation::EditableStep::${INDEX}::TextInputContent::CustomTextInput"
-    text: "${TEXT}"
-    label: "Check that preparation content is well edited"
-
 - tapOn:
     id: "RecipePreparation::EditableStep::${INDEX}::Content"
     label: "Tap on preparation content to close the keyboard"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::${INDEX}::TextInputContent::CustomTextInput"
+    text: "${TEXT}"
+    label: "Check that preparation content is well edited"
 
 - runFlow:
     file: "../../waitForKeyboardDismiss.yaml"
