@@ -47,6 +47,17 @@ import {
 } from '@utils/RecipeScraperConverter';
 import { extractImageFromJsonLd, fetchHtml } from '@utils/UrlHelpers';
 
+function serializeError(err: unknown): Record<string, unknown> {
+  if (err instanceof Error) {
+    return {
+      name: err.name,
+      message: err.message,
+      stack: err.stack,
+    };
+  }
+  return { value: String(err) };
+}
+
 export type { ScrapedRecipeResult } from '@utils/RecipeScraperConverter';
 
 /**
@@ -195,7 +206,7 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
       return result;
     } catch (err) {
       const errorMessage = t(SCRAPER_ERROR_I18N_KEYS[ScraperErrorTypes.ConnectionError]);
-      uiLogger.error('Unexpected error during scraping', { url, error: err });
+      uiLogger.error('Unexpected error during scraping', { url, error: serializeError(err) });
       setError(errorMessage);
       setIsLoading(false);
       return { success: false, error: errorMessage };
@@ -224,7 +235,10 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
       return result;
     } catch (err) {
       const errorMessage = t(SCRAPER_ERROR_I18N_KEYS[ScraperErrorTypes.ConnectionError]);
-      uiLogger.error('Unexpected error during authenticated scraping', { url, error: err });
+      uiLogger.error('Unexpected error during authenticated scraping', {
+        url,
+        error: serializeError(err),
+      });
       setError(errorMessage);
       setIsLoading(false);
       return { success: false, error: errorMessage };

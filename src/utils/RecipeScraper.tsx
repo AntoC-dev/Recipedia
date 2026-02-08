@@ -44,6 +44,7 @@ export function isScraperSuccess<T>(result: ScraperResult<T>): result is Scraper
  */
 export const SCRAPER_ERROR_I18N_KEYS: Record<string, string> = {
   [ScraperErrorTypes.NoSchemaFoundInWildMode]: 'urlDialog.errorNoRecipeFound',
+  [ScraperErrorTypes.NoRecipeFoundError]: 'urlDialog.errorNoRecipeFound',
   [ScraperErrorTypes.WebsiteNotImplementedError]: 'urlDialog.errorUnsupportedSite',
   [ScraperErrorTypes.ConnectionError]: 'urlDialog.errorNetwork',
   [ScraperErrorTypes.HTTPError]: 'urlDialog.errorNetwork',

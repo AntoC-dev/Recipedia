@@ -51,6 +51,12 @@ describe('RecipeScraper', () => {
       );
     });
 
+    test('maps NoRecipeFoundError to errorNoRecipeFound', () => {
+      expect(SCRAPER_ERROR_I18N_KEYS[ScraperErrorTypes.NoRecipeFoundError]).toBe(
+        'urlDialog.errorNoRecipeFound'
+      );
+    });
+
     test('maps WebsiteNotImplementedError to errorUnsupportedSite', () => {
       expect(SCRAPER_ERROR_I18N_KEYS[ScraperErrorTypes.WebsiteNotImplementedError]).toBe(
         'urlDialog.errorUnsupportedSite'
