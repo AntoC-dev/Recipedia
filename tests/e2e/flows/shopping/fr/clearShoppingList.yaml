@@ -5,6 +5,12 @@ appId: "com.recipedia"
     id: "ShoppingScreen::ClearShoppingListButton::RoundButton"
     label: "Clear shopping list"
 
+- extendedWaitUntil:
+    visible:
+      id: "ShoppingScreen::ClearConfirmation::Dialog::Title"
+    timeout: 2000
+    label: "Wait clear dialog to appear"
+
 - runFlow:
     file: "../../../asserts/alerts/fr/clearShopping.yaml"
     label: "Assert alert clearing shopping list"
