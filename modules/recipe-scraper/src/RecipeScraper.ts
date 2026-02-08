@@ -21,6 +21,7 @@
  */
 
 import {Platform} from 'react-native';
+import {useEffect, useState} from 'react';
 import {SchemaRecipeParser} from './web/SchemaRecipeParser';
 import {applyEnhancements} from './enhancements';
 import type {
@@ -65,6 +66,7 @@ type NativeScraperInterface = {
         wildMode?: boolean
     ): Promise<string>;
     getSupportedAuthHosts?(): Promise<string>;
+    isPythonAvailable?(): Promise<boolean>;
 };
 
 const isTestEnv = process.env.NODE_ENV === 'test';
@@ -381,9 +383,107 @@ export class RecipeScraper {
             },
         };
     }
+
+    /**
+     * Checks if the Python runtime is ready for scraping.
+     *
+     * On iOS/Android, this returns true once Python has finished initializing.
+     * On Web, this always returns true (no Python needed).
+     *
+     * @returns true if ready, false if still initializing.
+     */
+    async isPythonReady(): Promise<boolean> {
+        if (!nativeModule?.isPythonAvailable) {
+            // Web platform - always ready (no Python)
+            return true;
+        }
+        try {
+            return await nativeModule.isPythonAvailable();
+        } catch {
+            return false;
+        }
+    }
+
+    /**
+     * Waits for Python to be ready for scraping.
+     *
+     * Call this during app initialization to ensure Python is loaded
+     * before allowing users to access web parsing features.
+     *
+     * @param timeoutMs - Maximum time to wait (default: 30000ms)
+     * @param pollIntervalMs - Time between checks (default: 100ms)
+     * @returns true if ready, false if timeout reached
+     */
+    async waitForReady(timeoutMs = 30000, pollIntervalMs = 100): Promise<boolean> {
+        if (!nativeModule?.isPythonAvailable) {
+            // Web platform - always ready
+            return true;
+        }
+
+        const startTime = Date.now();
+
+        while (Date.now() - startTime < timeoutMs) {
+            try {
+                const isReady = await nativeModule.isPythonAvailable();
+                if (isReady) {
+                    return true;
+                }
+            } catch {
+                // Ignore errors, keep polling
+            }
+            await new Promise(resolve => setTimeout(resolve, pollIntervalMs));
+        }
+
+        return false;
+    }
 }
 
 /**
  * Default scraper instance for convenience.
  */
 export const recipeScraper = new RecipeScraper();
+
+/**
+ * Hook to check if the Python scraper is ready.
+ *
+ * Use this to conditionally enable/disable web parsing features
+ * while Python is still loading.
+ *
+ * @example
+ * ```tsx
+ * function WebParsingButton() {
+ *   const isPythonReady = usePythonReady();
+ *
+ *   return (
+ *     <Button
+ *       disabled={!isPythonReady}
+ *       onPress={handleParse}
+ *     >
+ *       {isPythonReady ? 'Parse Recipe' : 'Loading...'}
+ *     </Button>
+ *   );
+ * }
+ * ```
+ */
+export function usePythonReady(): boolean {
+    const [isReady, setIsReady] = useState(false);
+
+    useEffect(() => {
+        let mounted = true;
+
+        const checkReady = async () => {
+            const ready = await recipeScraper.waitForReady();
+            if (mounted) {
+                setIsReady(ready);
+            }
+        };
+
+        checkReady();
+
+        return () => {
+            mounted = false;
+        };
+    }, []);
+
+    return isReady;
+}
