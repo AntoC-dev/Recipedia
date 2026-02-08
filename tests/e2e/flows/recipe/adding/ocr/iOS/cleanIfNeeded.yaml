@@ -4,9 +4,12 @@ appId: "com.recipedia"
     appId: "com.apple.mobileslideshow"
     label: "Open iOS Photos app"
 
+- waitForAnimationToEnd:
+    label: "Wait for Photos app to finish loading"
+
 - extendedWaitUntil:
     visible:
-      text: "What's New.*"
+      text: "Continue"
     timeout: 5000
     optional: true
     label: "Wait for what's new screen to appear"
@@ -14,7 +17,7 @@ appId: "com.recipedia"
 - runFlow:
     when:
       visible:
-        text: "What's New.*"
+        text: "Continue"
     commands:
       - tapOn:
           text: "Continue"
