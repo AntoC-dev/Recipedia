@@ -1,4 +1,5 @@
-import { RecipeScraper } from '@app/modules/recipe-scraper/src/RecipeScraper';
+import { RecipeScraper, usePythonReady } from '@app/modules/recipe-scraper/src/RecipeScraper';
+import { renderHook, waitFor } from '@testing-library/react-native';
 
 const SIMPLE_RECIPE_HTML = `
 <!DOCTYPE html>
@@ -317,6 +318,49 @@ describe('RecipeScraper', () => {
         expect(result.error.host).toBe('example.com');
         expect(result.error.host).not.toContain('www');
       }
+    });
+  });
+
+  describe('isPythonReady', () => {
+    it('returns true on web platform (no native module)', async () => {
+      const result = await scraper.isPythonReady();
+      expect(result).toBe(true);
+    });
+  });
+
+  describe('waitForReady', () => {
+    it('returns true immediately on web platform', async () => {
+      const startTime = Date.now();
+      const result = await scraper.waitForReady();
+      const elapsed = Date.now() - startTime;
+
+      expect(result).toBe(true);
+      expect(elapsed).toBeLessThan(100);
+    });
+
+    it('respects timeout parameter', async () => {
+      const result = await scraper.waitForReady(100);
+      expect(result).toBe(true);
+    });
+  });
+
+  describe('usePythonReady hook', () => {
+    it('returns true on web platform', async () => {
+      const { result } = renderHook(() => usePythonReady());
+
+      await waitFor(() => {
+        expect(result.current).toBe(true);
+      });
+    });
+
+    it('initially returns false then becomes true', async () => {
+      const { result } = renderHook(() => usePythonReady());
+
+      expect(result.current).toBe(false);
+
+      await waitFor(() => {
+        expect(result.current).toBe(true);
+      });
     });
   });
 });
