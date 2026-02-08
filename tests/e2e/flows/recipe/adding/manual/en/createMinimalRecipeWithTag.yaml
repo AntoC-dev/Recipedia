@@ -102,7 +102,7 @@ appId: "com.recipedia"
       - tapOn:
           id: "Done"
           label: "Tap Done key to validate the tag on iOS"
-        runFlow:
+      - runFlow:
           file: "../../../../waitForKeyboardDismiss.yaml"
           label: "Wait for keyboard to hide"
       - assertVisible:
@@ -116,10 +116,10 @@ appId: "com.recipedia"
           id: "RecipeValidation::ValidationQueue::Tag::SimilarityDialog::UseButton"
           label: "Tap on use button to dismiss tag validation dialog"
       - extendedWaitUntil:
-        visible:
-          id: "RecipeValidation::ValidationQueue::Tag::SimilarityDialog::Title"
-        timeout: 3000
-        label: "Wait for dialog to disappear"
+          visible:
+            id: "RecipeValidation::ValidationQueue::Tag::SimilarityDialog::Title"
+          timeout: 3000
+          label: "Wait for dialog to disappear"
 
 - scrollUntilVisible:
     element:
