@@ -12,6 +12,8 @@ export const mockScrapeRecipeAuthenticated = jest.fn<
 >();
 export const mockGetSupportedHosts = jest.fn<Promise<ScraperResult<string[]>>, []>();
 export const mockIsHostSupported = jest.fn<Promise<ScraperResult<boolean>>, [string]>();
+export const mockWaitForReady = jest.fn<Promise<boolean>, [number?, number?]>();
+export const mockIsPythonReady = jest.fn<Promise<boolean>, []>();
 
 export const recipeScraperMock = {
   RecipeScraper: jest.fn(),
@@ -21,7 +23,10 @@ export const recipeScraperMock = {
     scrapeRecipeAuthenticated: mockScrapeRecipeAuthenticated,
     getSupportedHosts: mockGetSupportedHosts,
     isHostSupported: mockIsHostSupported,
+    waitForReady: mockWaitForReady,
+    isPythonReady: mockIsPythonReady,
   },
+  usePythonReady: jest.fn(() => true),
   ScraperErrorTypes: {
     AuthenticationRequired: 'AuthenticationRequired',
     AuthenticationFailed: 'AuthenticationFailed',
@@ -78,6 +83,36 @@ export function mockScrapeRecipeAuthenticatedError(message: string, type = 'Erro
     success: false,
     error: { type, message },
   });
+}
+
+export function mockWaitForReadySuccess(ready = true) {
+  mockWaitForReady.mockResolvedValue(ready);
+}
+
+export function mockWaitForReadyTimeout() {
+  mockWaitForReady.mockResolvedValue(false);
+}
+
+export function mockWaitForReadyDelay(delayMs: number, ready = true) {
+  mockWaitForReady.mockImplementation(
+    () => new Promise(resolve => setTimeout(() => resolve(ready), delayMs))
+  );
+}
+
+export function mockIsPythonReadyValue(ready: boolean) {
+  mockIsPythonReady.mockResolvedValue(ready);
+}
+
+export function resetRecipeScraperMocks() {
+  mockScrapeRecipe.mockReset();
+  mockScrapeRecipeFromHtml.mockReset();
+  mockScrapeRecipeAuthenticated.mockReset();
+  mockGetSupportedHosts.mockReset();
+  mockIsHostSupported.mockReset();
+  mockWaitForReady.mockReset();
+  mockIsPythonReady.mockReset();
+  mockWaitForReady.mockResolvedValue(true);
+  mockIsPythonReady.mockResolvedValue(true);
 }
 
 export function createEmptyScrapedRecipe(overrides: Partial<ScrapedRecipe> = {}): ScrapedRecipe {
