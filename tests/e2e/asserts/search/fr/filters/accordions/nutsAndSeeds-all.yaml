@@ -7,7 +7,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to Nuts and Seeds accordion"
 
@@ -74,6 +74,16 @@ appId: "com.recipedia"
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Collapse Nuts and Seeds accordion"
+
+- waitForAnimationToEnd
+
+- assertNotVisible:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
+    label: "Guard - First item should not be visible after collapse"
+
+- assertVisible:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    label: "Guard - Fruits à coque et graines accordion header still visible"
 
 # Increment accordion index for next accordion
 - evalScript: ${output.accordionIndex = output.accordionIndex + 1}
