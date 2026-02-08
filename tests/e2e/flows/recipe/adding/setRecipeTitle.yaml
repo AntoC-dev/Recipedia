@@ -15,12 +15,10 @@ appId: "com.recipedia"
           label: "Erase the existing title"
       - waitForAnimationToEnd:
           label: "Wait for keyboard animation"
-      - tapOn:
+      - assertVisible:
           id: "RecipeTitle::CustomTextInput"
-          label: "Re-focus field after erase"
-      - runFlow:
-          file: "../../waitForKeyboard.yaml"
-          label: "Wait for keyboard to appear"
+          text: ""
+          label: "Check that the title is empty"
 
 - inputText:
     text: "${TITLE}"
