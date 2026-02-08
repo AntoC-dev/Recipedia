@@ -21,6 +21,18 @@ class RecipeScraperModule : Module() {
     override fun definition() = ModuleDefinition {
         Name("RecipeScraper")
 
+        // Start Python initialization in background when module loads
+        // This ensures Python is ready by the time user tries to scrape
+        OnCreate {
+            Thread {
+                try {
+                    ensurePythonStarted()
+                } catch (e: Exception) {
+                    // Ignore warmup errors - will retry on actual use
+                }
+            }.start()
+        }
+
         /**
          * Scrape a recipe from a URL.
          * @param url The recipe page URL to scrape.

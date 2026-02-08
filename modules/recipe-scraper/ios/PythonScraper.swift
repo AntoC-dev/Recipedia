@@ -1,16 +1,10 @@
 import Foundation
-#if canImport(PythonKit)
-import PythonKit
-#endif
 
 /// Bridge class for calling Python recipe-scrapers from Swift.
 /// Uses PythonKit to interface with the embedded Python runtime.
-/// Note: PythonKit is optional - if not available, isAvailable returns false
-/// and the module falls back to the Swift SchemaRecipeParser.
 public class PythonScraper {
     public static let shared = PythonScraper()
 
-    #if canImport(PythonKit)
     private var scraper: PythonObject?
     private var isInitialized = false
     private var initializationError: Error?
@@ -101,7 +95,7 @@ public class PythonScraper {
             let result = scraper.scrape_recipe(url, wildMode)
             return String(result) ?? errorJson(type: "ConversionError", message: "Failed to convert Python result")
         } catch {
-            return errorJson(type: "PythonError", message: error.localizedDescription)
+            return errorJson(type: "PythonError", message: errorMessage(from: error))
         }
     }
 
@@ -115,7 +109,7 @@ public class PythonScraper {
             let result = scraper.scrape_recipe_from_html(html, url, wildMode)
             return String(result) ?? errorJson(type: "ConversionError", message: "Failed to convert Python result")
         } catch {
-            return errorJson(type: "PythonError", message: error.localizedDescription)
+            return errorJson(type: "PythonError", message: errorMessage(from: error))
         }
     }
 
@@ -129,7 +123,7 @@ public class PythonScraper {
             let result = scraper.get_supported_hosts()
             return String(result) ?? errorJson(type: "ConversionError", message: "Failed to convert Python result")
         } catch {
-            return errorJson(type: "PythonError", message: error.localizedDescription)
+            return errorJson(type: "PythonError", message: errorMessage(from: error))
         }
     }
 
@@ -143,7 +137,7 @@ public class PythonScraper {
             let result = scraper.is_host_supported(host)
             return String(result) ?? errorJson(type: "ConversionError", message: "Failed to convert Python result")
         } catch {
-            return errorJson(type: "PythonError", message: error.localizedDescription)
+            return errorJson(type: "PythonError", message: errorMessage(from: error))
         }
     }
 
@@ -156,41 +150,44 @@ public class PythonScraper {
         }
     }
 
+    /// Pre-warm Python interpreter and load all modules.
+    /// Call this early in app lifecycle to avoid cold start delays on first scrape.
+    /// Returns JSON with success/error status.
+    public func warmup() -> String {
+        let startTime = CFAbsoluteTimeGetCurrent()
+        do {
+            try initializePython()
+            let duration = CFAbsoluteTimeGetCurrent() - startTime
+            let durationMs = Int(duration * 1000)
+            print("[PythonScraper] Warmup completed in \(durationMs)ms")
+            return "{\"success\":true,\"data\":{\"initialized\":true,\"durationMs\":\(durationMs)}}"
+        } catch {
+            let duration = CFAbsoluteTimeGetCurrent() - startTime
+            let durationMs = Int(duration * 1000)
+            print("[PythonScraper] Warmup failed after \(durationMs)ms: \(error)")
+            return errorJson(type: "WarmupError", message: errorMessage(from: error))
+        }
+    }
+
+    private func errorMessage(from error: Error) -> String {
+        if let pythonError = error as? PythonError {
+            return String(describing: pythonError)
+        }
+        if let scraperError = error as? PythonScraperError {
+            return scraperError.localizedDescription
+        }
+        return String(describing: error)
+    }
+
     private func errorJson(type: String, message: String) -> String {
-        let escapedMessage = message.replacingOccurrences(of: "\"", with: "\\\"")
+        let escapedMessage = message
+            .replacingOccurrences(of: "\\", with: "\\\\")
+            .replacingOccurrences(of: "\"", with: "\\\"")
+            .replacingOccurrences(of: "\n", with: "\\n")
+            .replacingOccurrences(of: "\r", with: "\\r")
+            .replacingOccurrences(of: "\t", with: "\\t")
         return "{\"success\":false,\"error\":{\"type\":\"\(type)\",\"message\":\"\(escapedMessage)\"}}"
     }
-
-    #else
-    // PythonKit not available - provide stub implementation
-
-    private init() {}
-
-    public func scrapeRecipe(url: String, wildMode: Bool = true) -> String {
-        return errorJson(type: "NotAvailable", message: "Python scraper not available on this platform")
-    }
-
-    public func scrapeRecipeFromHtml(html: String, url: String, wildMode: Bool = true) -> String {
-        return errorJson(type: "NotAvailable", message: "Python scraper not available on this platform")
-    }
-
-    public func getSupportedHosts() -> String {
-        return "{\"success\":true,\"data\":[]}"
-    }
-
-    public func isHostSupported(host: String) -> String {
-        return "{\"success\":true,\"data\":false}"
-    }
-
-    public var isAvailable: Bool {
-        return false
-    }
-
-    private func errorJson(type: String, message: String) -> String {
-        let escapedMessage = message.replacingOccurrences(of: "\"", with: "\\\"")
-        return "{\"success\":false,\"error\":{\"type\":\"\(type)\",\"message\":\"\(escapedMessage)\"}}"
-    }
-    #endif
 }
 
 enum PythonScraperError: Error, LocalizedError {

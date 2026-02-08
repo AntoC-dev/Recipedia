@@ -2,45 +2,47 @@ import ExpoModulesCore
 import Foundation
 
 public class RecipeScraperModule: Module {
-    /// Whether to use Python scraper (true) or Swift schema.org fallback (false)
-    private var usePythonScraper: Bool {
-        // Check if Python is available
-        return PythonScraper.shared.isAvailable
-    }
-
     public func definition() -> ModuleDefinition {
         Name("RecipeScraper")
+
+        // Start Python initialization in background when module loads
+        // This ensures Python is ready by the time user tries to scrape
+        OnCreate {
+            Task.detached(priority: .background) {
+                _ = PythonScraper.shared.isAvailable
+            }
+        }
 
         AsyncFunction("scrapeRecipe") { (url: String, wildMode: Bool?) -> String in
             await self.scrapeFromUrl(url, wildMode: wildMode ?? true)
         }
 
         AsyncFunction("scrapeRecipeFromHtml") { (html: String, url: String, wildMode: Bool?) -> String in
-            self.scrapeFromHtml(html, url: url, wildMode: wildMode ?? true)
+            PythonScraper.shared.scrapeRecipeFromHtml(html: html, url: url, wildMode: wildMode ?? true)
         }
 
         AsyncFunction("getSupportedHosts") { () -> String in
-            if self.usePythonScraper {
-                return PythonScraper.shared.getSupportedHosts()
-            }
-            // Fallback: Swift parser supports all sites via schema.org
-            return "{\"success\":true,\"data\":[]}"
+            PythonScraper.shared.getSupportedHosts()
         }
 
         AsyncFunction("isHostSupported") { (host: String) -> String in
-            if self.usePythonScraper {
-                return PythonScraper.shared.isHostSupported(host: host)
-            }
-            // Fallback: Swift parser supports all sites via schema.org
-            return "{\"success\":true,\"data\":false}"
+            PythonScraper.shared.isHostSupported(host: host)
         }
 
         AsyncFunction("isAvailable") { () -> Bool in
-            return true
+            true
         }
 
         AsyncFunction("isPythonAvailable") { () -> Bool in
-            return self.usePythonScraper
+            PythonScraper.shared.isAvailable
+        }
+
+        // Pre-warm Python to avoid cold start delays on first scrape
+        // Call this early in app lifecycle (e.g., on app launch)
+        AsyncFunction("warmup") { () -> String in
+            await Task.detached(priority: .background) {
+                PythonScraper.shared.warmup()
+            }.value
         }
     }
 
@@ -61,31 +63,13 @@ public class RecipeScraperModule: Module {
                 return errorJson(type: "EncodingError", message: "Could not decode HTML as UTF-8")
             }
 
-            return scrapeFromHtml(html, url: urlString, wildMode: wildMode)
+            return PythonScraper.shared.scrapeRecipeFromHtml(html: html, url: urlString, wildMode: wildMode)
         } catch {
             return errorJson(type: "NetworkError", message: error.localizedDescription)
         }
     }
 
-    private func scrapeFromHtml(_ html: String, url: String, wildMode: Bool) -> String {
-        // Try Python scraper first if available
-        if usePythonScraper {
-            return PythonScraper.shared.scrapeRecipeFromHtml(html: html, url: url, wildMode: wildMode)
-        }
-
-        // Fallback to Swift schema.org parser
-        let parser = SchemaRecipeParser()
-        let result = parser.parse(html: html, url: url)
-
-        do {
-            let jsonData = try JSONSerialization.data(withJSONObject: result, options: [])
-            return String(data: jsonData, encoding: .utf8) ?? errorJson(type: "SerializationError", message: "Failed to serialize result")
-        } catch {
-            return errorJson(type: "SerializationError", message: error.localizedDescription)
-        }
-    }
-
     private func errorJson(type: String, message: String) -> String {
-        return "{\"success\":false,\"error\":{\"type\":\"\(type)\",\"message\":\"\(message.replacingOccurrences(of: "\"", with: "\\\""))\"}}"
+        "{\"success\":false,\"error\":{\"type\":\"\(type)\",\"message\":\"\(message.replacingOccurrences(of: "\"", with: "\\\""))\"}}"
     }
 }
