@@ -66,6 +66,18 @@ except ImportError as e:
 AUTH_URL_PATTERNS = ['/login', '/signin', '/sign-in', '/auth', '/connexion', '/account/login', '/user/login']
 AUTH_TITLE_KEYWORDS = ['login', 'sign in', 'connexion', 'se connecter', 'log in', 'anmelden', 'iniciar sesión']
 
+# Patterns indicating schema.org Recipe data is present in HTML
+RECIPE_SCHEMA_INDICATORS = [
+    '"@type":"recipe"',
+    '"@type": "recipe"',
+    "'@type':'recipe'",
+    "'@type': 'recipe'",
+    'itemtype="http://schema.org/recipe"',
+    'itemtype="https://schema.org/recipe"',
+    "itemtype='http://schema.org/recipe'",
+    "itemtype='https://schema.org/recipe'",
+]
+
 
 class AuthenticationRequiredError(Exception):
     """Raised when a recipe page requires authentication."""
@@ -73,6 +85,35 @@ class AuthenticationRequiredError(Exception):
         self.host = host
         self.message = message
         super().__init__(message)
+
+
+class NoRecipeFoundError(Exception):
+    """Raised when HTML does not contain recipe schema data."""
+    def __init__(self, message: str = "No recipe found on this page"):
+        self.message = message
+        super().__init__(message)
+
+
+def _has_recipe_schema(html: str) -> bool:
+    """
+    Check if HTML likely contains recipe schema.org data.
+
+    Checks for indicators that suggest a recipe is present,
+    preventing lxml crashes on pages without recipe data.
+
+    Args:
+        html: HTML content to check.
+
+    Returns:
+        True if recipe schema indicators found, False otherwise.
+    """
+    lower_html = html.lower()
+
+    for indicator in RECIPE_SCHEMA_INDICATORS:
+        if indicator in lower_html:
+            return True
+
+    return False
 
 
 def scrape_recipe(url: str, wild_mode: bool = True) -> str:
@@ -145,6 +186,12 @@ def scrape_recipe_from_html(html: str, url: str, wild_mode: bool = True, final_u
             _log_warn(f"Auth required detected for host: {auth_error.host}")
             raise auth_error
 
+        # For wild mode on unknown sites, check for recipe schema first.
+        # This prevents lxml crashes when parsing HTML without recipe data.
+        if wild_mode and not _has_recipe_schema(html):
+            _log_warn(f"No recipe schema found in HTML from {url}")
+            raise NoRecipeFoundError()
+
         _log_debug(f"Calling scrape_html with supported_only={not wild_mode}...")
         scraper = scrape_html(html=html, org_url=url, supported_only=not wild_mode)
         _log_debug("scrape_html succeeded, extracting data...")
@@ -161,6 +208,11 @@ def scrape_recipe_from_html(html: str, url: str, wild_mode: bool = True, final_u
         return json.dumps({
             "success": False,
             "error": {"type": "AuthenticationRequired", "message": e.message, "host": e.host}
+        }, ensure_ascii=False)
+    except NoRecipeFoundError as e:
+        return json.dumps({
+            "success": False,
+            "error": {"type": "NoRecipeFoundError", "message": e.message}
         }, ensure_ascii=False)
     except Exception as e:
         _log_error(f"scrape_recipe_from_html failed: {type(e).__name__}: {e}", e)

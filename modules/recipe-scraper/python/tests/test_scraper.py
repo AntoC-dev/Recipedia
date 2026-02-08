@@ -12,11 +12,13 @@ from scraper import (
     _safe_call,
     _safe_call_numeric,
     _detect_auth_required,
+    _has_recipe_schema,
     _log_debug,
     _log_info,
     _log_warn,
     _log_error,
     AuthenticationRequiredError,
+    NoRecipeFoundError,
 )
 from recipe_scrapers import scrape_html, SCRAPERS
 
@@ -315,6 +317,93 @@ class TestDetectAuthRequired:
         assert result is not None
         assert result.host == "quitoque.fr"
         assert "www" not in result.host
+
+
+EXAMPLE_COM_HTML = """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Example Domain</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+</head>
+<body>
+<div>
+    <h1>Example Domain</h1>
+    <p>This domain is for use in illustrative examples in documents.</p>
+</div>
+</body>
+</html>
+"""
+
+
+class TestHasRecipeSchema:
+    def test_detects_json_ld_recipe_no_space(self):
+        html = '<script type="application/ld+json">{"@type":"Recipe"}</script>'
+        assert _has_recipe_schema(html) is True
+
+    def test_detects_json_ld_recipe_with_space(self):
+        html = '<script type="application/ld+json">{"@type": "Recipe"}</script>'
+        assert _has_recipe_schema(html) is True
+
+    def test_detects_microdata_http(self):
+        html = '<div itemtype="http://schema.org/Recipe"></div>'
+        assert _has_recipe_schema(html) is True
+
+    def test_detects_microdata_https(self):
+        html = '<div itemtype="https://schema.org/Recipe"></div>'
+        assert _has_recipe_schema(html) is True
+
+    def test_case_insensitive(self):
+        html = '<script type="application/ld+json">{"@type":"RECIPE"}</script>'
+        assert _has_recipe_schema(html) is True
+
+    def test_returns_false_for_non_recipe_page(self):
+        assert _has_recipe_schema(EXAMPLE_COM_HTML) is False
+
+    def test_returns_false_for_no_recipe_html(self):
+        assert _has_recipe_schema(NO_RECIPE_HTML) is False
+
+    def test_returns_true_for_recipe_page(self):
+        assert _has_recipe_schema(SIMPLE_RECIPE_HTML) is True
+
+
+class TestNoRecipeFoundError:
+    def test_error_has_default_message(self):
+        error = NoRecipeFoundError()
+        assert error.message == "No recipe found on this page"
+
+    def test_error_custom_message(self):
+        error = NoRecipeFoundError("Custom message")
+        assert error.message == "Custom message"
+
+
+class TestScrapeNonRecipePage:
+    def test_non_recipe_page_returns_error(self):
+        result = json.loads(
+            scrape_recipe_from_html(EXAMPLE_COM_HTML, "https://example.com/")
+        )
+
+        assert result["success"] is False
+        assert result["error"]["type"] == "NoRecipeFoundError"
+        assert "No recipe found" in result["error"]["message"]
+
+    def test_non_recipe_page_does_not_crash(self, capsys):
+        result = json.loads(
+            scrape_recipe_from_html(EXAMPLE_COM_HTML, "https://example.com/")
+        )
+
+        captured = capsys.readouterr()
+        assert "No recipe schema found" in captured.err
+        assert result["success"] is False
+
+    def test_recipe_page_still_works(self):
+        result = json.loads(
+            scrape_recipe_from_html(SIMPLE_RECIPE_HTML, "https://example.com/recipe")
+        )
+
+        assert result["success"] is True
+        assert result["data"]["title"] == "Chocolate Cake"
 
 
 class TestScrapeRecipeFromHtmlWithAuth:
