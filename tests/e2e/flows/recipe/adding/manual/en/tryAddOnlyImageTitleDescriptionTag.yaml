@@ -24,9 +24,14 @@ appId: "com.recipedia"
       id: "RecipeTags::List::0::CustomTextInput"
     direction: UP
     speed: 20
-    label: "Scroll to ensure firsttag's text input is visible"
+    centerElement: true
+    label: "Scroll to ensure first tag's text input is visible"
 
 - waitForAnimationToEnd
+
+- assertVisible:
+    id: "RecipeTags::List::0::CustomTextInput"
+    label: "Ensure first tag's text input is visible"
 
 - tapOn:
     id: "RecipeTags::List::0::CustomTextInput"

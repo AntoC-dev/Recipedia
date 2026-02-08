@@ -13,6 +13,10 @@ appId: "com.recipedia"
     point: "95%,50%"
     label: "Focus on tag name input field"
 
+- runFlow:
+    file: "../../waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
 - inputText:
     text: "${EDIT_SUFFIX}"
     label: "Edit the tag name"
@@ -38,6 +42,12 @@ appId: "com.recipedia"
 - runFlow:
     file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
+
+- assertVisible:
+    id: "RecipeValidation::ValidationQueue::Tag::ItemDialog::AddModal::Name::CustomTextInput"
+    text: "${EDIT_SUFFIX}"
+    label: "Check that tag name was edited"
+
 
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Tag::ItemDialog::AddModal::ConfirmButton"
