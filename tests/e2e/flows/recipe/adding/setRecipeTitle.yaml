@@ -1,18 +1,6 @@
 appId: "com.recipedia"
 ---
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeTitle::CustomTextInput"
-    direction: UP
-    speed: 60
-    centerElement: true
-    label: "Scroll to center recipe title"
-
-- waitForAnimationToEnd
-
 - tapOn:
     id: "RecipeTitle::CustomTextInput"
     label: "Focus on recipe title input"
@@ -38,13 +26,16 @@ appId: "com.recipedia"
     text: "${TITLE}"
     label: "Enter recipe title"
 
-- assertVisible:
-    id: "RecipeTitle::CustomTextInput"
-    text: "${TITLE}"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
 
 - tapOn:
     id: "RecipeImage"
     label: "Tap on recipe image to close the keyboard"
+
+- assertVisible:
+    id: "RecipeTitle::CustomTextInput"
+    text: "${TITLE}"
 
 - runFlow:
     file: "../../waitForKeyboardDismiss.yaml"

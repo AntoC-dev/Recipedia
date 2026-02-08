@@ -49,6 +49,7 @@ tags:
           id: "Done"
           label: "Tap Done key to dismiss keyboard on iOS"
 
+- runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
