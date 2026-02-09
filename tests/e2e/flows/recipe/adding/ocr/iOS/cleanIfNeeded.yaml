@@ -26,13 +26,13 @@ appId: "com.recipedia"
 - extendedWaitUntil:
     visible:
       text: "Select"
-    timeout: 3000
+    timeout: 10000
     label: "Wait for select button to appear"
 
 - runFlow:
     when:
       visible:
-        text: "Select"
+        text: "\\d+ Photo.*"
     commands:
       - runFlow:
           file: "cleanupPhotos.yaml"
