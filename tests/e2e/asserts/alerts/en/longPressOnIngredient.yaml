@@ -27,3 +27,9 @@ appId: "com.recipedia"
 - tapOn:
     id: "ShoppingScreen::Dialog::Confirm"
     label: "Close the alert"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "ShoppingScreen::Dialog::Title"
+    timeout: 3000
+    label: "Wait for dialog to be closed"
