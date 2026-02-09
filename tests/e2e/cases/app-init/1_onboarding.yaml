@@ -6,6 +6,17 @@ tags:
 - launchApp:
     label: "Setup - Launch app for first time"
 
+- extendedWaitUntil:
+    visible:
+      id: "WelcomeScreen::SkipButton"
+    timeout: 60000
+    optional: true
+    label: "Wait for onboarding screen to be displayed"
+
+- runFlow:
+    file: "../../flows/handleAnr.yaml"
+    label: "Handle ANR dialog if it appears during initialization"
+
 - runFlow:
     file: "../../asserts/onboarding/en/assertWelcomeScreen.yaml"
     label: "Assert - Verify Welcome Screen is displayed on first launch"
