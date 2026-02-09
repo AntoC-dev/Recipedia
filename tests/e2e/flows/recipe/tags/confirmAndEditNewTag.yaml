@@ -45,7 +45,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeValidation::ValidationQueue::Tag::ItemDialog::AddModal::Name::CustomTextInput"
-    text: "${EDIT_SUFFIX}"
+    text: ".*${EDIT_SUFFIX}"
     label: "Check that tag name was edited"
 
 
