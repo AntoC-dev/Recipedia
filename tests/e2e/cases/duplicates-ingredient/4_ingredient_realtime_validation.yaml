@@ -59,9 +59,16 @@ tags:
     text: "Cereal"
     label: "Action - Select Cereal type"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::Name::CustomTextInput"
     label: "Action - Focus on ingredient name input"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
 - inputText:
     text: "TestIngredient"
@@ -104,6 +111,21 @@ tags:
 
 - eraseText:
     label: "Action - Clear input"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::Name::CustomTextInput"
+    point: "95%,5%"
+    label: "Action - tap again on ingredient name input to ensure cursor is placed at end"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
+- eraseText:
+    label: "Action - Erase text again to ensure text input is empty (avoid flakyness)"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
@@ -152,8 +174,12 @@ tags:
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::Name::CustomTextInput"
-    point: "95%,50%"
+    point: "95%,5%"
     label: "Action - Focus on ingredient name input"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
 - eraseText:
     label: "Action - Clear input"
