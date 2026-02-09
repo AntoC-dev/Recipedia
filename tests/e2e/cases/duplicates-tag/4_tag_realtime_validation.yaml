@@ -51,6 +51,7 @@ tags:
 
 - tapOn:
     id: "TagsSettings::ItemDialog::AddModal::Name::CustomTextInput"
+    point: "95%, 5%"
     label: "Action - Focus on tag name input again"
 
 - eraseText:
@@ -108,6 +109,7 @@ tags:
 
 - tapOn:
     id: "TagsSettings::ItemDialog::AddModal::Name::CustomTextInput"
+    point: "95%, 5%"
     label: "Action - Focus on tag name input"
 
 - eraseText:
