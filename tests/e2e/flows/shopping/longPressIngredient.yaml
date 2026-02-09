@@ -8,3 +8,5 @@ appId: "com.recipedia"
       - longPressOn:
           id: "ShoppingScreen::SectionList::${INGREDIENT_PATTERN}"
           label: "Long press on ingredient to show recipe usage"
+      - waitForAnimationToEnd:
+          label: "Wait for the press animation to end"

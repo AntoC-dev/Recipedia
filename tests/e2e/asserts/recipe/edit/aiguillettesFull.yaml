@@ -26,7 +26,6 @@ appId: "com.recipedia"
           text: "Coupez les filets de poulet en lanieres.\nemincez l'oignon.\nPressez ou hachez l'ail.\nDans une poele, faites chauffer un filet d'huile de cuisson a feu moyen a vif."
           label: "Preparation #3 paragraph input text id is displayed with the correct text on iOS"
 
-
 - waitForAnimationToEnd
 
 - scrollUntilVisible:
@@ -102,8 +101,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
-    text:
-      "Dans le bol d'un mixeur, deposez les ingredients suivants :\nepluchez et hachez le gingembre.\nAjoutez les cacahuetes, le sucre et le lait de coco.Salez, poivrez. Mixez jusqu'a obtenir une texture homogene."
+    text: "Dans le bol d'un mixeur, deposez les ingredients suivants :\nepluchez et hachez le gingembre.\nAjoutez les cacahuetes, le sucre et le lait de coco.Salez, poivrez. Mixez jusqu'a obtenir une texture homogene."
     label: "Preparation #2 paragraph input text id is displayed with the correct text"
 
 - waitForAnimationToEnd
