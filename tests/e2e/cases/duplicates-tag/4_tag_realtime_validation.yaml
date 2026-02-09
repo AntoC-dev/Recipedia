@@ -59,13 +59,10 @@ tags:
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- tapOn:
+- assertVisible:
     id: "TagsSettings::ItemDialog::AddModal::Name::CustomTextInput"
-    label: "Re-focus field after erase"
-
-- runFlow:
-    file: "../../flows/waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
+    text: ""
+    label: "Assert - Input is empty"
 
 - inputText:
     text: "Dessrt"
@@ -118,14 +115,6 @@ tags:
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
-
-- tapOn:
-    id: "TagsSettings::ItemDialog::AddModal::Name::CustomTextInput"
-    label: "Re-focus field after erase"
-
-- runFlow:
-    file: "../../flows/waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
 
 - inputText:
     text: "Dessert"

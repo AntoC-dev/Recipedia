@@ -25,14 +25,6 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- tapOn:
-    id: "RecipeIngredients::NoteDialog::Input::CustomTextInput"
-    label: "Re-focus field after erase"
-
-- runFlow:
-    file: "../../waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
-
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 

@@ -68,14 +68,6 @@ tags:
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- tapOn:
-    id: "IngredientsSettings::ItemDialog::EditModal::Name::CustomTextInput"
-    label: "Re-focus field after erase"
-
-- runFlow:
-    file: "../../flows/waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
-
 - inputText:
     text: "Margarine"
     label: "Action - Change to different unique name"
@@ -123,17 +115,6 @@ tags:
 
 - eraseText:
     label: "Action - Clear input"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- tapOn:
-    id: "IngredientsSettings::ItemDialog::EditModal::Name::CustomTextInput"
-    label: "Re-focus field after erase"
-
-- runFlow:
-    file: "../../flows/waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"

@@ -56,14 +56,6 @@ tags:
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- tapOn:
-    id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
-    label: "Re-focus field after erase"
-
-- runFlow:
-    file: "../../flows/waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
-
 - inputText:
     text: "Sweet"
     label: "Action - Change to different unique name"
@@ -119,14 +111,6 @@ tags:
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- tapOn:
-    id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
-    label: "Re-focus field after erase"
-
-- runFlow:
-    file: "../../flows/waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
-
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation to finish"
 
@@ -180,14 +164,6 @@ tags:
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
-
-- tapOn:
-    id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
-    label: "Re-focus field after erase"
-
-- runFlow:
-    file: "../../flows/waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
 
 - inputText:
     text: "Chocolate"

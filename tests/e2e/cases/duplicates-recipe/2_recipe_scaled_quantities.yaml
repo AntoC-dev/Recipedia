@@ -57,14 +57,6 @@ tags:
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- tapOn:
-    id: "RecipeIngredients::0::QuantityInput"
-    label: "Re-focus field after erase"
-
-- runFlow:
-    file: "../../flows/waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
-
 - inputText:
     text: "1000"
     label: "Action - Change Pasta to 1000g (far from scaled)"
@@ -87,14 +79,6 @@ tags:
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
-
-- tapOn:
-    id: "RecipeIngredients::1::QuantityInput"
-    label: "Re-focus field after erase"
-
-- runFlow:
-    file: "../../flows/waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
 
 - inputText:
     text: "500"

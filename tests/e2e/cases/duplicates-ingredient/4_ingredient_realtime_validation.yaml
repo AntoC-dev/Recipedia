@@ -108,14 +108,6 @@ tags:
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- tapOn:
-    id: "IngredientsSettings::ItemDialog::AddModal::Name::CustomTextInput"
-    label: "Re-focus field after erase"
-
-- runFlow:
-    file: "../../flows/waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
-
 - inputText:
     text: "Butte"
     label: "Action - Type fuzzy matching text"
@@ -168,14 +160,6 @@ tags:
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
-
-- tapOn:
-    id: "IngredientsSettings::ItemDialog::AddModal::Name::CustomTextInput"
-    label: "Re-focus field after erase"
-
-- runFlow:
-    file: "../../flows/waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
 
 - inputText:
     text: "Butter"

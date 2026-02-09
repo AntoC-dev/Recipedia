@@ -24,14 +24,6 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- tapOn:
-    id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
-    label: "Re-focus field after erase"
-
-- runFlow:
-    file: "../../waitForKeyboardNumeric.yaml"
-    label: "Wait for numeric keyboard to appear"
-
 - inputText: "${NEW_ENERGY_KCAL}"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
@@ -50,14 +42,6 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
-
-- tapOn:
-    id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::NumericTextInput"
-    label: "Re-focus field after erase"
-
-- runFlow:
-    file: "../../waitForKeyboardNumeric.yaml"
-    label: "Wait for numeric keyboard to appear"
 
 - inputText: "${NEW_FAT}"
 - waitForAnimationToEnd:
@@ -89,14 +73,6 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
-
-- tapOn:
-    id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::NumericTextInput"
-    label: "Re-focus field after erase"
-
-- runFlow:
-    file: "../../waitForKeyboardNumeric.yaml"
-    label: "Wait for numeric keyboard to appear"
 
 - inputText: "${NEW_PROTEIN}"
 
