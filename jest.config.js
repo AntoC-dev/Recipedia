@@ -23,6 +23,7 @@ module.exports = {
     coverageReporters: ['json', 'lcov', 'cobertura', 'text'],
     moduleNameMapper: {
         '^fuse.js/dist/fuse.js$': '<rootDir>/node_modules/fuse.js/dist/fuse.js',
+        '^.+\\.html$': '<rootDir>/tests/mocks/deps/html-asset-mock.js',
         '^@assets/(.*)$': '<rootDir>/src/assets/$1',
         '^@components/(.*)$': '<rootDir>/src/components/$1',
         '^@context/(.*)$': '<rootDir>/src/context/$1',
