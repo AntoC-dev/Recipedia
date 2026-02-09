@@ -292,11 +292,11 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeIngredients::1::QuantityInput"
+      id: "RecipeIngredients::0::QuantityInput"
     direction: DOWN
     speed: 40
     centerElement: true
-    label: "Scroll to second ingredient quantity input"
+    label: "Scroll to first ingredient quantity input"
 
 - waitForAnimationToEnd
 
@@ -318,29 +318,38 @@ appId: "com.recipedia"
     file: "../../../../waitForKeyboardNumericDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::AddButton::RoundButton"
+    direction: DOWN
+    speed: 10
+    centerElement: true
+    label: "Scroll to ingredient's add a button to ensure second ingredient is visible"
+
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeIngredients::1::NameInput::CustomTextInput"
     label: "Press the TextInput of second ingredient's name"
+
+- runFlow:
+    file: "../../../../waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
 - inputText:
     text: "Oni"
     label: "Enter text for recipe second ingredient name (partial)"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - tapOn:
     id: "RecipeIngredients::1::NameInput::AutocompleteItem::Onions"
     label: "Press the ingredient from the dropdown"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::AddButton::RoundButton"
-    direction: DOWN
-    speed: 40
-    centerElement: true
-    label: "Scroll to ensure add button is visible"
-
-- waitForAnimationToEnd
+- runFlow:
+    file: "../../../../waitForKeyboardDismiss.yaml"
+    label: "Wait for numeric keyboard to disappear"
 
 - tapOn:
     id: "RecipeIngredients::AddButton::RoundButton"
@@ -537,10 +546,6 @@ appId: "com.recipedia"
 
 - pressKey: enter
 
-- runFlow:
-    file: "../../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
-
 - inputText:
     text: "epluchez et hachez le gingembre."
     label: "Enter text for recipe second preparation paragraph (second line)"
@@ -549,10 +554,6 @@ appId: "com.recipedia"
     label: "Wait for keyboard animation"
 
 - pressKey: enter
-
-- runFlow:
-    file: "../../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
 
 - inputText:
     text: "Ajoutez les cacahuetes, le sucre et le lait de coco."
@@ -577,8 +578,9 @@ appId: "com.recipedia"
           id: "RecipePreparation::EditableStep::1::Content"
           label: "Tap on the second content text to close the keyboard"
 
-- waitForAnimationToEnd
-
+- runFlow:
+    file: "../../../../waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to disappear"
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::AddButton::RoundButton"
@@ -654,14 +656,15 @@ appId: "com.recipedia"
           id: "RecipePreparation::EditableStep::2::Content"
           label: "Tap on the third content text to close the keyboard"
 
-- waitForAnimationToEnd
+- runFlow:
+    file: "../../../../waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to disappear"
 
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionEmptyState::AddButton::RoundButton"
     direction: DOWN
     speed: 40
-    centerElement: true
     label: "Scroll to see the nutrition add button"
 
 - waitForAnimationToEnd
