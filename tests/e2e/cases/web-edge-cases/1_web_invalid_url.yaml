@@ -16,6 +16,10 @@ tags:
     id: "VerticalBottomButtons::UrlDialog::Input::CustomTextInput"
     label: "Action - Focus on URL input"
 
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
 - inputText:
     text: "not-a-valid-url"
     label: "Action - Enter invalid URL"
@@ -41,6 +45,7 @@ tags:
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
+
 - tapOn:
     id: "VerticalBottomButtons::UrlDialog::SubmitButton"
     label: "Try to import the recipe with an invalid URL"
