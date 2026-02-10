@@ -134,7 +134,7 @@ jobs:
           QUITOQUE_PASSWORD: ${{ secrets.QUITOQUE_PASSWORD }}
         run: bash .github/scripts/run-e2e-ios.sh ${{ matrix.suite }}
 
-      - name: Collect iOS logs
+      - name: Collect iOS app log file
         if: always() && inputs.platform == 'ios'
         run: bash .github/scripts/collect-ios-logs.sh ${{ matrix.suite }} ${{ steps.simulator.outputs.udid }}
 
