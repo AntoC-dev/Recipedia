@@ -75,7 +75,6 @@ export default ({config}: ConfigContext): ExpoConfig => {
                     assets: [
                         './src/assets/app',
                         './src/assets/images',
-                        './modules/recipe-scraper/assets',
                     ],
                 },
             ],
