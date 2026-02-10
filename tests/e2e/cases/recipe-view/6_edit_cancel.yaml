@@ -77,8 +77,7 @@ tags:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::Title"
     direction: DOWN
-    speed: 60
-    centerElement: true
+    speed: 40
     label: "Action - Scroll to nutrition section"
 
 - waitForAnimationToEnd
