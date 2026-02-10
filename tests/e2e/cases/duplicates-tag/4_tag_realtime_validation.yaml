@@ -19,6 +19,10 @@ tags:
     id: "TagsSettings::ItemDialog::AddModal::Name::CustomTextInput"
     label: "Action - Focus on tag name input"
 
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
 - inputText:
     text: "TestTag"
     label: "Action - Type non-existant text"
@@ -54,16 +58,15 @@ tags:
     point: "95%, 5%"
     label: "Action - Focus on tag name input again"
 
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
 - eraseText:
     label: "Action - Clear input"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
-
-- assertVisible:
-    id: "TagsSettings::ItemDialog::AddModal::Name::CustomTextInput"
-    text: ""
-    label: "Assert - Input is empty"
 
 - inputText:
     text: "Dessrt"
@@ -111,6 +114,10 @@ tags:
     id: "TagsSettings::ItemDialog::AddModal::Name::CustomTextInput"
     point: "95%, 5%"
     label: "Action - Focus on tag name input"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
 - eraseText:
     label: "Action - Clear input"

@@ -6,7 +6,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeTags::RoundButton"
     direction: DOWN
-    speed: 40
+    speed: 20
     timeout: 10000
     centerElement: true
     label: "Action - Scroll to tags section"
@@ -17,15 +17,6 @@ appId: "com.recipedia"
 - tapOn:
     id: "RecipeTags::RoundButton"
     label: "Add tag to recipe"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeTags::List::${TAG_INDEX}::CustomTextInput"
-    direction: UP
-    speed: 20
-    label: "Scroll up to ensure tag input field is visible"
 
 - waitForAnimationToEnd:
     label: "Wait for scroll to end"

@@ -10,7 +10,7 @@ appId: "com.recipedia"
 
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Tag::ItemDialog::AddModal::Name::CustomTextInput"
-    point: "95%,50%"
+    point: "95%,5%"
     label: "Focus on tag name input field"
 
 - runFlow:
@@ -47,7 +47,6 @@ appId: "com.recipedia"
     id: "RecipeValidation::ValidationQueue::Tag::ItemDialog::AddModal::Name::CustomTextInput"
     text: ".*${EDIT_SUFFIX}"
     label: "Check that tag name was edited"
-
 
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Tag::ItemDialog::AddModal::ConfirmButton"

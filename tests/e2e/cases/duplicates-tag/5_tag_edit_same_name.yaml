@@ -50,6 +50,10 @@ tags:
     id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
     label: "Action - Focus on tag name input"
 
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
 - eraseText:
     label: "Action - Clear input"
 
@@ -81,6 +85,11 @@ tags:
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
+
+- assertVisible:
+    id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    text: "Sweet"
+    label: "Assert - Name input shows new tag name"
 
 - extendedWaitUntil:
     visible:
@@ -140,6 +149,11 @@ tags:
     file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
+- assertVisible:
+    id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    text: "Dessert"
+    label: "Assert - Name input shows new tag name"
+
 - extendedWaitUntil:
     visible:
       id: "TagsSettings::ItemDialog::EditModal::ConfirmButton"
@@ -158,6 +172,10 @@ tags:
 - tapOn:
     id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
     label: "Action - Focus on tag name input again"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
 - eraseText:
     label: "Action - Clear input"
@@ -190,6 +208,11 @@ tags:
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
+
+- assertVisible:
+    id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    text: "Chocolate"
+    label: "Assert - Name input shows new tag name"
 
 - extendedWaitUntil:
     visible:
