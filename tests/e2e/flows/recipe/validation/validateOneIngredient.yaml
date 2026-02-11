@@ -33,6 +33,11 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for menu to disappear"
 
+- assertVisible:
+    id: "${PREFIX}::ValidationQueue::Ingredient::ItemDialog::AddModal::ConfirmButton"
+    enabled: true
+    label: "Confirm button should be enabled"
+
 - tapOn:
     id: "${PREFIX}::ValidationQueue::Ingredient::ItemDialog::AddModal::ConfirmButton"
     label: "Confirm adding the ingredient"
