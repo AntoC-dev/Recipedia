@@ -85,6 +85,10 @@ export type CustomTextInputProps = {
   onLayout?: (event: LayoutChangeEvent) => void;
   /** Right element (icon or affix) to display inside the input */
   right?: React.ReactNode;
+  /** Whether to enable auto-correct (default: true) */
+  autoCorrect?: boolean;
+  /** Whether to enable spell check (default: true) */
+  spellCheck?: boolean;
 };
 
 /**
@@ -111,6 +115,8 @@ export function CustomTextInput({
   onBlur,
   onLayout,
   right,
+  autoCorrect,
+  spellCheck,
 }: CustomTextInputProps) {
   const [inputHeight, setInputHeight] = useState(screenHeight * 0.08);
 
@@ -178,6 +184,8 @@ export function CustomTextInput({
         error={error}
         right={right}
         returnKeyType={multiline ? 'default' : 'done'}
+        autoCorrect={autoCorrect}
+        spellCheck={spellCheck}
       />
     </View>
   );
