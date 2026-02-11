@@ -7,6 +7,7 @@
  */
 
 export const SCRAPER_PYTHON_CODE = `
+import html
 import json
 import sys
 import traceback
@@ -140,17 +141,26 @@ def is_host_supported(host: str) -> str:
             "error": {"type": type(e).__name__, "message": str(e)}
         }, ensure_ascii=False)
 
+def _unescape(value):
+    if value is None:
+        return None
+    if isinstance(value, str):
+        return html.unescape(value)
+    if isinstance(value, list):
+        return [html.unescape(item) if isinstance(item, str) else item for item in value]
+    return value
+
 def _extract_all_data(scraper) -> Dict[str, Any]:
     ingredients = _safe_call(scraper.ingredients) or []
 
     return {
-        "title": _safe_call(scraper.title),
-        "description": _safe_call(scraper.description),
-        "ingredients": ingredients,
+        "title": _unescape(_safe_call(scraper.title)),
+        "description": _unescape(_safe_call(scraper.description)),
+        "ingredients": _unescape(ingredients),
         "parsedIngredients": None,
         "ingredientGroups": _safe_call_ingredient_groups(scraper),
-        "instructions": _safe_call(scraper.instructions),
-        "instructionsList": _safe_call(scraper.instructions_list),
+        "instructions": _unescape(_safe_call(scraper.instructions)),
+        "instructionsList": _unescape(_safe_call(scraper.instructions_list)),
         "parsedInstructions": None,
         "totalTime": _safe_call_numeric(scraper.total_time),
         "prepTime": _safe_call_numeric(scraper.prep_time),
@@ -205,8 +215,8 @@ def _safe_call_ingredient_groups(scraper) -> Optional[List[Dict[str, Any]]]:
             return None
         return [
             {
-                "purpose": getattr(group, 'purpose', None),
-                "ingredients": getattr(group, 'ingredients', [])
+                "purpose": _unescape(getattr(group, 'purpose', None)),
+                "ingredients": _unescape(getattr(group, 'ingredients', []))
             }
             for group in groups
         ]

@@ -10,6 +10,7 @@ are now handled in TypeScript for consistency across all platforms.
 Requires: recipe-scrapers[online]>=15.0.0
 """
 
+import html
 import json
 import sys
 import traceback
@@ -265,6 +266,17 @@ def is_host_supported(host: str) -> str:
         }, ensure_ascii=False)
 
 
+def _unescape(value):
+    """Decode HTML entities in strings, lists, or None."""
+    if value is None:
+        return None
+    if isinstance(value, str):
+        return html.unescape(value)
+    if isinstance(value, list):
+        return [html.unescape(item) if isinstance(item, str) else item for item in value]
+    return value
+
+
 def _extract_all_data(scraper) -> Dict[str, Any]:
     """
     Extract all available data from a scraper instance.
@@ -276,13 +288,13 @@ def _extract_all_data(scraper) -> Dict[str, Any]:
 
     return {
         # Core recipe data (raw, no post-processing)
-        "title": _safe_call(scraper.title),
-        "description": _safe_call(scraper.description),
-        "ingredients": ingredients,
+        "title": _unescape(_safe_call(scraper.title)),
+        "description": _unescape(_safe_call(scraper.description)),
+        "ingredients": _unescape(ingredients),
         "parsedIngredients": None,  # TypeScript applies enhancements
         "ingredientGroups": _safe_call_ingredient_groups(scraper),
-        "instructions": _safe_call(scraper.instructions),
-        "instructionsList": _safe_call(scraper.instructions_list),
+        "instructions": _unescape(_safe_call(scraper.instructions)),
+        "instructionsList": _unescape(_safe_call(scraper.instructions_list)),
         "parsedInstructions": None,  # TypeScript applies enhancements
 
         # Timing (use numeric call to preserve 0 as valid)
@@ -368,8 +380,8 @@ def _safe_call_ingredient_groups(scraper) -> Optional[List[Dict[str, Any]]]:
             return None
         return [
             {
-                "purpose": getattr(group, 'purpose', None),
-                "ingredients": getattr(group, 'ingredients', [])
+                "purpose": _unescape(getattr(group, 'purpose', None)),
+                "ingredients": _unescape(getattr(group, 'ingredients', []))
             }
             for group in groups
         ]
