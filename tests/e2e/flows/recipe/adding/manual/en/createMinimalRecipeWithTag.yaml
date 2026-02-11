@@ -27,14 +27,12 @@ appId: "com.recipedia"
 
 - tapOn:
     id: "RecipeImage"
+    point: "50%,90%"
     label: "Tap on recipe image to dismiss keyboard"
 
 - runFlow:
     file: "../../../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to hide"
-
-- hideKeyboard:
-    label: "Dismiss keyboard"
 
 - scrollUntilVisible:
     element:

@@ -43,8 +43,7 @@ appId: "com.recipedia"
     when:
       platform: Android
     commands:
-      - hideKeyboard:
-          label: "Dismiss keyboard on Android"
+      - pressKey: enter
 
 - runFlow:
     when:
