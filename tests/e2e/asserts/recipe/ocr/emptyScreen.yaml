@@ -36,22 +36,48 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeTags::OpenModal::RoundButton"
+      id: "RecipeTags::HeaderText"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
+    label: "Scroll down to the tags section"
 
 - waitForAnimationToEnd
+
 
 - assertVisible:
     id: "RecipeTags::HeaderText"
     text: "Tags:"
     label: "Intro text for the tags is rendered"
 
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTags::ElementText"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll down to the tags element"
+
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipeTags::ElementText"
     text: "Tags are a way to identify a recipe and make easier its search.\nHere are some examples of tags you can have : .*, .*, .*"
     label: "Explanation text for the tags is rendered"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTags::OpenModal::RoundButton"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll down to the tags open modal button"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeTags::OpenModal::RoundButton"
@@ -68,6 +94,18 @@ appId: "com.recipedia"
 - assertVisible:
     text: "󰘤"
     label: "OCR button for the tags has the correct icon"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePersons::NumericTextInput"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll down to the number of persons part"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePersons::PrefixText"
@@ -164,4 +202,3 @@ appId: "com.recipedia"
     label: "Scroll back to top"
 
 - waitForAnimationToEnd
-
