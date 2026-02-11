@@ -288,6 +288,37 @@ describe('Recipe Scraper Integration', () => {
   });
 
   describe('Edge cases', () => {
+    it('decodes HTML entities through full pipeline', () => {
+      const htmlWithEntities = `
+            <script type="application/ld+json">
+            {
+                "@type": "Recipe",
+                "name": "Poulet d&#039;automne",
+                "description": "Un plat d&#039;hiver &amp; d&#039;automne",
+                "recipeIngredient": ["200g d&#039;eau", "sel &amp; poivre"],
+                "recipeInstructions": [
+                    {"@type": "HowToStep", "text": "Ajoutez l&#039;huile"}
+                ]
+            }
+            </script>
+            `;
+
+      const parseResult = parser.parse(htmlWithEntities, 'https://example.com');
+      expect(parseResult.success).toBe(true);
+
+      if (parseResult.success) {
+        const enhanced = applyEnhancements({
+          html: htmlWithEntities,
+          baseResult: parseResult.data,
+        });
+
+        expect(enhanced.title).toBe("Poulet d'automne");
+        expect(enhanced.description).toBe("Un plat d'hiver & d'automne");
+        expect(enhanced.ingredients).toEqual(["200g d'eau", 'sel & poivre']);
+        expect(enhanced.instructionsList).toEqual(["Ajoutez l'huile"]);
+      }
+    });
+
     it('handles @graph array structure', () => {
       const graphHtml = `
             <script type="application/ld+json">

@@ -678,6 +678,156 @@ describe('enhancements module', () => {
       expect(result.title).toBe('Test recipe');
     });
 
+    it('decodes HTML entities in ingredients', () => {
+      const baseResult: ScrapedRecipe = {
+        title: 'Test',
+        description: null,
+        ingredients: ['200g d&#039;eau', 'sel &amp; poivre'],
+        parsedIngredients: null,
+        ingredientGroups: null,
+        instructions: null,
+        instructionsList: null,
+        parsedInstructions: null,
+        totalTime: null,
+        prepTime: null,
+        cookTime: null,
+        yields: null,
+        image: null,
+        host: null,
+        canonicalUrl: null,
+        siteName: null,
+        author: null,
+        language: null,
+        category: null,
+        cuisine: null,
+        cookingMethod: null,
+        keywords: null,
+        dietaryRestrictions: null,
+        ratings: null,
+        ratingsCount: null,
+        nutrients: null,
+        equipment: null,
+        links: null,
+      };
+
+      const result = applyEnhancements({ html: '<html></html>', baseResult });
+
+      expect(result.ingredients).toEqual(["200g d'eau", 'sel & poivre']);
+    });
+
+    it('decodes HTML entities in title and description', () => {
+      const baseResult: ScrapedRecipe = {
+        title: 'Poulet d&#039;automne &amp; légumes',
+        description: 'Un plat d&#039;hiver',
+        ingredients: [],
+        parsedIngredients: null,
+        ingredientGroups: null,
+        instructions: null,
+        instructionsList: null,
+        parsedInstructions: null,
+        totalTime: null,
+        prepTime: null,
+        cookTime: null,
+        yields: null,
+        image: null,
+        host: null,
+        canonicalUrl: null,
+        siteName: null,
+        author: null,
+        language: null,
+        category: null,
+        cuisine: null,
+        cookingMethod: null,
+        keywords: null,
+        dietaryRestrictions: null,
+        ratings: null,
+        ratingsCount: null,
+        nutrients: null,
+        equipment: null,
+        links: null,
+      };
+
+      const result = applyEnhancements({ html: '<html></html>', baseResult });
+
+      expect(result.title).toBe("Poulet d'automne & légumes");
+      expect(result.description).toBe("Un plat d'hiver");
+    });
+
+    it('decodes &nbsp; in instructions to regular space', () => {
+      const baseResult: ScrapedRecipe = {
+        title: 'Test',
+        description: null,
+        ingredients: [],
+        parsedIngredients: null,
+        ingredientGroups: null,
+        instructions: 'Ajoutez\u00a0le sel',
+        instructionsList: ['Ajoutez&nbsp;le sel', 'Mélangez&nbsp;bien'],
+        parsedInstructions: null,
+        totalTime: null,
+        prepTime: null,
+        cookTime: null,
+        yields: null,
+        image: null,
+        host: null,
+        canonicalUrl: null,
+        siteName: null,
+        author: null,
+        language: null,
+        category: null,
+        cuisine: null,
+        cookingMethod: null,
+        keywords: null,
+        dietaryRestrictions: null,
+        ratings: null,
+        ratingsCount: null,
+        nutrients: null,
+        equipment: null,
+        links: null,
+      };
+
+      const result = applyEnhancements({ html: '<html></html>', baseResult });
+
+      expect(result.instructionsList).toEqual(['Ajoutez\u00a0le sel', 'Mélangez\u00a0bien']);
+    });
+
+    it('passes through clean strings unchanged', () => {
+      const baseResult: ScrapedRecipe = {
+        title: 'test recipe',
+        description: 'A delicious recipe for testing',
+        ingredients: ['200g flour', '100g sugar'],
+        parsedIngredients: null,
+        ingredientGroups: null,
+        instructions: 'Mix and bake',
+        instructionsList: ['Mix ingredients', 'Bake at 180C'],
+        parsedInstructions: null,
+        totalTime: null,
+        prepTime: null,
+        cookTime: null,
+        yields: null,
+        image: null,
+        host: null,
+        canonicalUrl: null,
+        siteName: null,
+        author: null,
+        language: null,
+        category: null,
+        cuisine: null,
+        cookingMethod: null,
+        keywords: null,
+        dietaryRestrictions: null,
+        ratings: null,
+        ratingsCount: null,
+        nutrients: null,
+        equipment: null,
+        links: null,
+      };
+
+      const result = applyEnhancements({ html: simpleRecipeHtml, baseResult });
+
+      expect(result.ingredients).toEqual(['200g flour', '100g sugar']);
+      expect(result.instructionsList).toEqual(['Mix ingredients', 'Bake at 180C']);
+    });
+
     it('extracts keywords from __NEXT_DATA__ when base has none', () => {
       const baseResult: ScrapedRecipe = {
         title: 'Test Recipe',

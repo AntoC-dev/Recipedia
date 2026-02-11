@@ -9,6 +9,8 @@
  * Ported from Python scraper.py for consistency across platforms.
  */
 
+import {decode} from 'html-entities';
+
 import type {
     ParsedIngredient,
     ParsedInstruction,
@@ -26,19 +28,41 @@ export interface EnhancementContext {
 }
 
 /**
+ * Decode HTML entities in a string, returning null if input is null.
+ */
+function decodeString(value: string | null): string | null {
+    return value ? decode(value) : null;
+}
+
+/**
+ * Decode HTML entities in each string of an array.
+ */
+function decodeStringArray(values: string[]): string[] {
+    return values.map(v => decode(v));
+}
+
+/**
  * Apply all enhancements to a base recipe result.
  * This is the main entry point for post-processing scraped recipes.
  */
 export function applyEnhancements(context: EnhancementContext): ScrapedRecipe {
     const {html, baseResult} = context;
 
-    const cleanedTitle = cleanTitle(baseResult.title);
-    const cleanedDescription = cleanDescription(baseResult.description, baseResult.ingredients);
+    const decodedIngredients = decodeStringArray(baseResult.ingredients);
+    const decodedTitle = decodeString(baseResult.title);
+    const decodedDescription = decodeString(baseResult.description);
+    const decodedInstructions = decodeString(baseResult.instructions);
+    const decodedInstructionsList = baseResult.instructionsList
+        ? decodeStringArray(baseResult.instructionsList)
+        : null;
+
+    const cleanedTitle = cleanTitle(decodedTitle);
+    const cleanedDescription = cleanDescription(decodedDescription, decodedIngredients);
 
     const extractedKeywords = extractKeywordsFromNextData(html);
     const cleanedKeywords = cleanKeywords(
         extractedKeywords ?? baseResult.keywords,
-        baseResult.ingredients,
+        decodedIngredients,
         cleanedTitle
     );
 
@@ -46,6 +70,9 @@ export function applyEnhancements(context: EnhancementContext): ScrapedRecipe {
         ...baseResult,
         title: cleanedTitle,
         description: cleanedDescription,
+        ingredients: decodedIngredients,
+        instructions: decodedInstructions,
+        instructionsList: decodedInstructionsList,
         keywords: cleanedKeywords,
         parsedIngredients:
             baseResult.parsedIngredients ?? extractStructuredIngredients(html),
