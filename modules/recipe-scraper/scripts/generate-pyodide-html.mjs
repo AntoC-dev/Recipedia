@@ -5,12 +5,10 @@
  * This script reads all downloaded Pyodide core files, converts them to base64,
  * and generates a single HTML file that can be loaded in a WebView.
  *
- * The bundle includes:
- * - Pyodide JavaScript (inline)
- * - Pyodide WASM (base64 data URL)
- * - Python standard library (base64)
- * - jstyleson shim (inline Python)
- * - Recipe scraper code (inline Python)
+ * The key trick is a fetch interceptor: when Pyodide internally fetches its
+ * assets (WASM, stdlib, lock file), we intercept those requests and serve them
+ * from the embedded base64 data. All other requests (like micropip fetching
+ * wheels from PyPI) pass through to the real network.
  *
  * Note: Python packages (recipe-scrapers, etc.) are installed at runtime
  * via micropip since they're pure Python wheels available on PyPI.
@@ -27,6 +25,9 @@ const MODULE_DIR = dirname(__dirname);
 const DOWNLOAD_DIR = join(MODULE_DIR, 'assets', 'pyodide-download');
 const OUTPUT_FILE = join(MODULE_DIR, 'assets', 'pyodide-bundle.html');
 const SCRAPER_CODE_FILE = join(MODULE_DIR, 'src', 'ios', 'scraperCode.ts');
+
+const PYODIDE_VERSION = '0.26.4';
+const PYODIDE_CDN_URL = `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full`;
 
 function readFileAsBase64(filepath) {
     const buffer = readFileSync(filepath);
@@ -49,7 +50,6 @@ function extractScraperCode() {
 function generateHtml() {
     console.log('[generate-html] Reading Pyodide core files...');
 
-    // Verify required files exist
     const requiredFiles = ['pyodide.js', 'pyodide.asm.js', 'pyodide.asm.wasm', 'python_stdlib.zip', 'pyodide-lock.json'];
     for (const file of requiredFiles) {
         const filepath = join(DOWNLOAD_DIR, file);
@@ -58,19 +58,17 @@ function generateHtml() {
         }
     }
 
-    // Read core files
     const pyodideJs = readFileAsText(join(DOWNLOAD_DIR, 'pyodide.js'));
     const pyodideAsmJs = readFileAsText(join(DOWNLOAD_DIR, 'pyodide.asm.js'));
     const pyodideWasmBase64 = readFileAsBase64(join(DOWNLOAD_DIR, 'pyodide.asm.wasm'));
     const pythonStdlibBase64 = readFileAsBase64(join(DOWNLOAD_DIR, 'python_stdlib.zip'));
-    const pyodideLock = readFileAsText(join(DOWNLOAD_DIR, 'pyodide-lock.json'));
+    const pyodideLockJson = readFileAsText(join(DOWNLOAD_DIR, 'pyodide-lock.json'));
 
     console.log('[generate-html] Extracting scraper Python code...');
     const scraperPythonCode = extractScraperCode();
 
     console.log('[generate-html] Generating HTML bundle...');
 
-    // jstyleson shim - needed because jstyleson doesn't have proper Pyodide wheels
     const jstylessonShim = `
 import json
 import re
@@ -98,7 +96,6 @@ def dump(obj, fp, **kwargs):
     return json.dump(obj, fp, **kwargs)
 `;
 
-    // Escape special characters for JavaScript template literal
     const escapedScraperCode = scraperPythonCode
         .replace(/\\/g, '\\\\')
         .replace(/`/g, '\\`')
@@ -109,7 +106,6 @@ def dump(obj, fp, **kwargs):
         .replace(/`/g, '\\`')
         .replace(/\$/g, '\\$');
 
-    // Generate the HTML
     const html = `<!DOCTYPE html>
 <html>
 <head>
@@ -125,10 +121,9 @@ def dump(obj, fp, **kwargs):
 const EMBEDDED_ASSETS = {
     wasmBase64: "${pyodideWasmBase64}",
     stdlibBase64: "${pythonStdlibBase64}",
-    lockJson: ${JSON.stringify(pyodideLock)}
+    lockJson: ${JSON.stringify(pyodideLockJson)}
 };
 
-// Convert base64 to ArrayBuffer
 function base64ToArrayBuffer(base64) {
     const binaryString = atob(base64);
     const bytes = new Uint8Array(binaryString.length);
@@ -138,15 +133,44 @@ function base64ToArrayBuffer(base64) {
     return bytes.buffer;
 }
 
-// Convert base64 to Blob URL
-function base64ToBlobUrl(base64, mimeType) {
-    const buffer = base64ToArrayBuffer(base64);
-    const blob = new Blob([buffer], { type: mimeType });
-    return URL.createObjectURL(blob);
-}
+// ============================================================================
+// FETCH INTERCEPTOR
+// Intercept Pyodide's internal fetch calls for embedded assets.
+// All other requests (micropip to PyPI, etc.) pass through to real network.
+// ============================================================================
+const _originalFetch = window.fetch.bind(window);
+window.fetch = function(resource, options) {
+    const url = typeof resource === 'string' ? resource : resource.url;
+
+    if (url.endsWith('/pyodide.asm.wasm') || url.endsWith('/pyodide.asm.wasm?') || url === 'pyodide.asm.wasm') {
+        const buffer = base64ToArrayBuffer(EMBEDDED_ASSETS.wasmBase64);
+        return Promise.resolve(new Response(buffer, {
+            status: 200,
+            headers: { 'Content-Type': 'application/wasm' }
+        }));
+    }
+
+    if (url.endsWith('/python_stdlib.zip') || url === 'python_stdlib.zip') {
+        const buffer = base64ToArrayBuffer(EMBEDDED_ASSETS.stdlibBase64);
+        return Promise.resolve(new Response(buffer, {
+            status: 200,
+            headers: { 'Content-Type': 'application/zip' }
+        }));
+    }
+
+    if (url.endsWith('/pyodide-lock.json') || url === 'pyodide-lock.json') {
+        return Promise.resolve(new Response(EMBEDDED_ASSETS.lockJson, {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' }
+        }));
+    }
+
+    // Pass through all other requests (micropip downloading wheels from PyPI, etc.)
+    return _originalFetch(resource, options);
+};
 
 // ============================================================================
-// PYODIDE LOADER (Modified to use embedded assets)
+// PYODIDE LOADER
 // ============================================================================
 ${pyodideJs}
 
@@ -164,38 +188,27 @@ ${pyodideAsmJs}
     let pyodide = null;
     let isReady = false;
 
-    // Send message to React Native
     function postToRN(message) {
         if (window.ReactNativeWebView) {
             window.ReactNativeWebView.postMessage(JSON.stringify(message));
         }
     }
 
-    // Log helper
     function log(level, message) {
         postToRN({ type: 'log', level, message });
     }
 
-    // Initialize Pyodide with embedded assets
     async function initPyodide() {
         try {
-            log('info', 'Loading Pyodide from embedded bundle...');
+            log('info', 'Loading Pyodide from embedded bundle (fetch interceptor active)...');
 
-            // Create blob URLs for WASM and stdlib
-            const wasmUrl = base64ToBlobUrl(EMBEDDED_ASSETS.wasmBase64, 'application/wasm');
-            const stdlibUrl = base64ToBlobUrl(EMBEDDED_ASSETS.stdlibBase64, 'application/zip');
-
-            // Configure Pyodide to use our embedded assets
+            // Use the real CDN URL as indexURL. The fetch interceptor above
+            // will serve WASM/stdlib/lock from embedded base64, while any
+            // other files Pyodide requests will fall through to the CDN.
             pyodide = await loadPyodide({
-                indexURL: 'blob://',
-                lockFileURL: 'data:application/json,' + encodeURIComponent(EMBEDDED_ASSETS.lockJson),
+                indexURL: '${PYODIDE_CDN_URL}/',
                 stdout: (text) => log('debug', '[Python stdout] ' + text),
                 stderr: (text) => log('warn', '[Python stderr] ' + text),
-                _loadPyodideWasm: async () => {
-                    log('info', 'Loading WASM from embedded bundle...');
-                    const response = await fetch(wasmUrl);
-                    return response.arrayBuffer();
-                },
             });
 
             log('info', 'Pyodide loaded, installing packages...');
@@ -223,7 +236,6 @@ print('[PyScraper:INFO] recipe-scrapers installed')
 
             log('info', 'Loading scraper module...');
 
-            // Execute the scraper Python code
             const pythonCode = \`${escapedScraperCode}\`;
             await pyodide.runPythonAsync(pythonCode);
 
@@ -243,7 +255,6 @@ print('[PyScraper:INFO] recipe-scrapers installed')
         }
     }
 
-    // Handle RPC calls from React Native
     async function handleRpcCall(id, method, params) {
         if (!isReady) {
             postToRN({
@@ -307,7 +318,6 @@ print('[PyScraper:INFO] recipe-scrapers installed')
         }
     }
 
-    // Message handler for React Native
     window.handleMessage = function(messageStr) {
         try {
             const message = JSON.parse(messageStr);
@@ -320,21 +330,18 @@ print('[PyScraper:INFO] recipe-scrapers installed')
         }
     };
 
-    // Start initialization
     initPyodide();
 })();
 </script>
 </body>
 </html>`;
 
-    // Write the bundle
     writeFileSync(OUTPUT_FILE, html, 'utf-8');
 
     const bundleSize = (html.length / (1024 * 1024)).toFixed(2);
     console.log(`[generate-html] Bundle written: ${OUTPUT_FILE} (${bundleSize} MB)`);
 }
 
-// Run the generator
 try {
     generateHtml();
 } catch (error) {

@@ -22,6 +22,10 @@ import {PyodideBridge} from './PyodideBridge';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const PYODIDE_BUNDLE = require('../../assets/pyodide-bundle.html');
 
+// BaseUrl gives WKWebView a valid HTTPS origin so cross-origin fetch
+// (micropip downloading wheels from PyPI) works without CORS issues.
+const PYODIDE_BASE_URL = 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full';
+
 export function PyodideWebView(): React.ReactElement | null {
     const webViewRef = useRef<WebView>(null);
     const [htmlContent, setHtmlContent] = useState<string | null>(null);
@@ -104,7 +108,7 @@ export function PyodideWebView(): React.ReactElement | null {
         <View style={styles.container}>
             <WebView
                 ref={webViewRef}
-                source={{html: htmlContent}}
+                source={{html: htmlContent, baseUrl: PYODIDE_BASE_URL}}
                 originWhitelist={['*']}
                 javaScriptEnabled={true}
                 domStorageEnabled={true}
