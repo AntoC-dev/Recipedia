@@ -158,16 +158,16 @@ appId: "com.recipedia"
           label: "Hide keyboard on Android"
 
 - swipe:
-    start: "50%,40%"
-    end: "50%,20%"
+    start: "50%,50%"
+    end: "50%,40%"
     label: "Swipe down to scroll dropdown, first scroll"
 
 - waitForAnimationToEnd:
     label: "Wait for scrolling animation to end"
 
 - swipe:
-    start: "50%,40%"
-    end: "50%,20%"
+    start: "50%,50%"
+    end: "50%,40%"
     label: "Swipe down to scroll dropdown, second scroll"
 
 - waitForAnimationToEnd:
