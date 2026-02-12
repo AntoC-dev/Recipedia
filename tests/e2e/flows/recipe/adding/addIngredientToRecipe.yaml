@@ -7,7 +7,8 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::AddButton::RoundButton"
     direction: DOWN
-    speed: 60
+    speed: 20
+    timeout: 60000
     centerElement: true
     label: "Scroll to ingredients section"
 
@@ -23,7 +24,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::${INDEX}::QuantityInput"
     direction: UP
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll up to ingredient input"
 

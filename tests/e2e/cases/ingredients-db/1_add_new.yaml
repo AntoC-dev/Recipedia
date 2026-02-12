@@ -28,11 +28,10 @@ tags:
     id: "IngredientsSettings::ItemDialog::AddModal::Name::CustomTextInput"
     label: "Action - Focus on ingredient name input"
 
-- eraseText:
-    label: "Action - Clear existing ingredient name"
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
 
 - inputText:
     text: "TestIngredient"
@@ -59,6 +58,11 @@ tags:
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
+
+- assertVisible:
+    id: "IngredientsSettings::ItemDialog::AddModal::Name::CustomTextInput"
+    text: "TestIngredient"
+    label: "Assert - Verify new ingredient name displayed in input"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::Menu::Button"
