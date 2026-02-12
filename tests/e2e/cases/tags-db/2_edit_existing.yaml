@@ -54,6 +54,10 @@ tags:
     point: "95%,50%"
     label: "Action - Focus on tag name input"
 
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
 - inputText:
     text: " Cuisine"
     label: "Action - Append Cuisine to tag name"
