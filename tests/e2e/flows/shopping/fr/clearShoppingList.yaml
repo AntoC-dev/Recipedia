@@ -1,15 +1,16 @@
 appId: "com.recipedia"
 ---
 
-- tapOn:
-    id: "ShoppingScreen::ClearShoppingListButton::RoundButton"
-    label: "Clear shopping list"
-
-- extendedWaitUntil:
-    visible:
-      id: "ShoppingScreen::ClearConfirmation::Dialog::Title"
-    timeout: 2000
-    label: "Wait clear dialog to appear"
+- repeat:
+    while:
+      notVisible:
+        id: "ShoppingScreen::ClearConfirmation::Dialog::Title"
+    commands:
+      - tapOn:
+          id: "ShoppingScreen::ClearShoppingListButton::RoundButton"
+          label: "Clear shopping list"
+      - waitForAnimationToEnd:
+          label: "Wait for the press animation to end"
 
 - runFlow:
     file: "../../../asserts/alerts/fr/clearShopping.yaml"
