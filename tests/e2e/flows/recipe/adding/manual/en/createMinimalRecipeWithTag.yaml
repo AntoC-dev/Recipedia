@@ -13,6 +13,17 @@ appId: "com.recipedia"
     file: "../../en/addRecipeImage.yaml"
     label: "Add an image to this recipe"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeTitle::CustomTextInput"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll down to center title input"
+
+- waitForAnimationToEnd
+
+
 - tapOn:
     id: "RecipeTitle::CustomTextInput"
     label: "Focus on recipe title input"
