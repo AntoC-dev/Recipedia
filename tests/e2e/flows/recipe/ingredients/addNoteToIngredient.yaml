@@ -5,9 +5,19 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeIngredients::${INDEX}::NoteButton"
+      id: "RecipeIngredients::PrefixText"
     direction: DOWN
     speed: 40
+    centerElement: true
+    label: "Scroll to ingredients section"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::${INDEX}::NoteButton"
+    direction: DOWN
+    speed: 20
     centerElement: true
     label: "Scroll to ingredient note button"
 
