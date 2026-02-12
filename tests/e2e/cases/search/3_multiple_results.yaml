@@ -33,7 +33,7 @@ tags:
 - assertVisible:
     id: "SearchScreen::SearchBar"
     text: "Ca"
-    label: "Action - Focus on search bar"
+    label: "Assert - Verify search bar shows 'Ca'"
 
 - tapOn:
     id: "SearchScreen::SearchBarResults::Item::0"
