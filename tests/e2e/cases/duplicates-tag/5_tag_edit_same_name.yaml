@@ -108,6 +108,7 @@ tags:
 
 - tapOn:
     id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    point: "95%,50%"
     label: "Action - Focus on tag name input again"
 
 - runFlow:
@@ -120,8 +121,16 @@ tags:
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
+- tapOn:
+    id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    point: "95%,50%"
+    label: "Action - Focus on tag name input again"
+
+- eraseText:
+    label: "Action - Clear input again to ensure it is empty (avoid flaky test)"
+
 - waitForAnimationToEnd:
-    label: "Wait for keyboard animation to finish"
+    label: "Wait for keyboard animation"
 
 - inputText:
     text: "Dessert"
@@ -171,6 +180,7 @@ tags:
 
 - tapOn:
     id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    point: "95%,50%"
     label: "Action - Focus on tag name input again"
 
 - runFlow:
@@ -179,6 +189,17 @@ tags:
 
 - eraseText:
     label: "Action - Clear input"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- tapOn:
+    id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    point: "95%,50%"
+    label: "Action - Focus on tag name input again"
+
+- eraseText:
+    label: "Action - Clear input again to ensure it is empty (avoid flaky test)"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
