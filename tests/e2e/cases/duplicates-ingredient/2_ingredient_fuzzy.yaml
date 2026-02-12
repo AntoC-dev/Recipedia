@@ -43,7 +43,9 @@ tags:
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- pressKey: "ENTER"
+- tapOn:
+    id: "RecipeIngredients::Header::IngredientName"
+    label: "Action - Tap on ingredient name to dismiss keyboard"
 
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"
