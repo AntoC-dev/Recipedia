@@ -31,6 +31,12 @@ tags:
     id: "SearchScreen::FiltersToggleButtons"
     label: "Action - Close the filter page"
 
+- extendedWaitUntil:
+    visible:
+      text: "Add a filter"
+    timeout: 3000
+    label: "Wait for search screen to switch to results"
+
 - runFlow:
     file: "../../asserts/search/en/searchScreenFilteredOn1520Min.yaml"
     label: "Assert - Verify search results filtered on 15-20 min"
