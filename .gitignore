@@ -57,6 +57,7 @@ ios/*
 
 # Claude
 CLAUDE.md
+CLAUDE_MODULE.md
 .claude/*
 **/__pycache__/
 

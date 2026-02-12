@@ -140,7 +140,7 @@ function base64ToArrayBuffer(base64) {
 // ============================================================================
 const _originalFetch = window.fetch.bind(window);
 window.fetch = function(resource, options) {
-    const url = typeof resource === 'string' ? resource : resource.url;
+    const url = typeof resource === 'string' ? resource : (resource.url || resource.href || String(resource));
 
     if (url.endsWith('/pyodide.asm.wasm') || url.endsWith('/pyodide.asm.wasm?') || url === 'pyodide.asm.wasm') {
         const buffer = base64ToArrayBuffer(EMBEDDED_ASSETS.wasmBase64);
@@ -230,6 +230,7 @@ print('[PyScraper:INFO] jstyleson shim installed')
             await pyodide.loadPackage('micropip');
             await pyodide.runPythonAsync(\`
 import micropip
+micropip.add_mock_package('jstyleson', '0.0.2')
 await micropip.install('recipe-scrapers', keep_going=True)
 print('[PyScraper:INFO] recipe-scrapers installed')
 \`);
