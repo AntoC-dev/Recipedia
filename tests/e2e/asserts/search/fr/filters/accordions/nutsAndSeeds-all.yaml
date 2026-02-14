@@ -8,7 +8,6 @@ appId: "com.recipedia"
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     direction: DOWN
     speed: 20
-    centerElement: true
     label: "Scroll to Nuts and Seeds accordion"
 
 - waitForAnimationToEnd
@@ -47,7 +46,6 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
     direction: DOWN
-    centerElement: true
     label: "Scroll down to ensure Pine Nuts is rendered"
 
 - waitForAnimationToEnd
@@ -65,7 +63,6 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     direction: UP
-    centerElement: true
     label: "Scroll back up to Nuts and Seeds accordion header"
 
 - waitForAnimationToEnd
