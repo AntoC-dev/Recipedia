@@ -112,10 +112,22 @@ tags:
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    point: "95%,50%"
     label: "Action - Focus on ingredient name input again"
 
 - eraseText:
     label: "Action - Clear input"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    point: "95%,50%"
+    label: "Action - Focus on ingredient name input again (avoid flaky test)"
+
+- eraseText:
+    label: "Action - Clear input again to avoid flaky test"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
