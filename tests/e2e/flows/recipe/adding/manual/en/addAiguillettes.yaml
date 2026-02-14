@@ -439,7 +439,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to first preparation title input"
 
@@ -449,6 +449,10 @@ appId: "com.recipedia"
     id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
     label: "Press the TextInput of first preparation title"
 
+- runFlow:
+    file: "../../../../waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
 - inputText:
     text: "Le riz"
     label: "Enter text for recipe first preparation title"
@@ -457,9 +461,17 @@ appId: "com.recipedia"
     id: "RecipePreparation::EditableStep::0::Title"
     label: "Tap on the title text to close the keyboard"
 
+- runFlow:
+    file: "../../../../waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to hide"
+
 - tapOn:
     id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
     label: "Press the TextInput of first preparation paragraph"
+
+- runFlow:
+    file: "../../../../waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
 - inputText:
     text: "Portez a ebullition une casserole d'eau salee.Faites cuire le riz selon les indications du paquet.Pendant ce temps, preparez les filets de poulet a la sauce satay."
@@ -469,7 +481,10 @@ appId: "com.recipedia"
     id: "RecipePreparation::EditableStep::0::Content"
     label: "Tap on the content text to close the keyboard"
 
-- waitForAnimationToEnd
+
+- runFlow:
+    file: "../../../../waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to hide"
 
 - scrollUntilVisible:
     element:
@@ -491,7 +506,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::EditableStep::1::TextInputTitle::CustomTextInput"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to second preparation title input"
 
@@ -501,7 +516,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::EditableStep::1::Title"
     direction: UP
-    speed: 40
+    speed: 20
     label: "Scroll up in case the step title is not visible"
 
 - waitForAnimationToEnd
@@ -509,6 +524,10 @@ appId: "com.recipedia"
 - tapOn:
     id: "RecipePreparation::EditableStep::1::TextInputTitle::CustomTextInput"
     label: "Press the TextInput of second preparation title"
+
+- runFlow:
+    file: "../../../../waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
 - inputText:
     text: "La sauce"
@@ -518,7 +537,9 @@ appId: "com.recipedia"
     id: "RecipePreparation::EditableStep::1::Title"
     label: "Tap on the title text to close the keyboard"
 
-- waitForAnimationToEnd
+- runFlow:
+    file: "../../../../waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to hide"
 
 - scrollUntilVisible:
     element:
@@ -533,6 +554,10 @@ appId: "com.recipedia"
 - tapOn:
     id: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
     label: "Press the TextInput of second preparation paragraph"
+
+- runFlow:
+    file: "../../../../waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
 - inputText:
     text: "Dans le bol d'un mixeur, deposez les ingredients suivants :"
@@ -580,6 +605,9 @@ appId: "com.recipedia"
     text: "Ajoutez les cacahuetes, le sucre et le lait de coco."
     label: "Enter text for recipe second preparation paragraph (third line)"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - inputText:
     text: "Salez, poivrez. Mixez jusqu'a obtenir une texture homogene."
     label: "Enter text for recipe second preparation paragraph (fourth line)"
@@ -602,6 +630,8 @@ appId: "com.recipedia"
 - runFlow:
     file: "../../../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to disappear"
+
+
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::AddButton::RoundButton"
@@ -634,6 +664,10 @@ appId: "com.recipedia"
     id: "RecipePreparation::EditableStep::2::TextInputTitle::CustomTextInput"
     label: "Press the TextInput of third preparation title"
 
+- runFlow:
+    file: "../../../../waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
 - inputText:
     text: "LA CUISSON DU POULET"
     label: "Enter text for recipe third preparation title"
@@ -642,13 +676,16 @@ appId: "com.recipedia"
     id: "RecipePreparation::EditableStep::2::Title"
     label: "Tap on the title text to close the keyboard"
 
-- waitForAnimationToEnd
+- runFlow:
+    file: "../../../../waitForKeyboard.yaml"
+    label: "Wait for keyboard to hide"
+
 
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::EditableStep::2::TextInputContent::CustomTextInput"
     direction: DOWN
-    speed: 60
+    speed: 40
     centerElement: true
     label: "Scroll to third preparation paragraph input"
 
@@ -657,6 +694,10 @@ appId: "com.recipedia"
 - tapOn:
     id: "RecipePreparation::EditableStep::2::TextInputContent::CustomTextInput"
     label: "Press the TextInput of third preparation paragraph"
+
+- runFlow:
+    file: "../../../../waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
 - inputText:
     text: "Coupez les filets de poulet en lanieres.\nemincez l'oignon.\nPressez ou hachez l'ail.\nDans une poele, faites chauffer un filet d'huile de cuisson a feu moyen a vif."
