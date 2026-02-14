@@ -106,19 +106,9 @@ tags:
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - pressKey: "ENTER"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn:
-          id: "Done"
-          label: "Tap Done key to dismiss keyboard on iOS"
+- tapOn:
+    id: "RecipeIngredients::0::Unit"
+    label: "Action - Focus on ingredient unit input to close keyboard"
 
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"
