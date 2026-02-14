@@ -88,6 +88,7 @@ export function SearchBar({
       placeholder={t('searchRecipeTitle')}
       onChangeText={updateSearchString}
       value={searchPhrase}
+      autoCorrect={false}
       style={{
         margin: padding.medium,
         marginBottom: padding.small,
