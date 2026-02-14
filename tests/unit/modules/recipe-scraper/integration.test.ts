@@ -1,11 +1,13 @@
 import { SchemaRecipeParser } from '@app/modules/recipe-scraper/src/web/SchemaRecipeParser';
 import { applyEnhancements } from '@app/modules/recipe-scraper/src/enhancements';
+import { convertNutrition } from '@app/src/utils/RecipeScraperConverter';
 import {
   hellofreshKeftasRecipe,
   hellofreshRecipePageHtml,
 } from '@test-data/scraperMocks/hellofresh';
 import { quitoqueCamembertRecipe } from '@test-data/scraperMocks/quitoque';
 import { marmitonHamburgerRecipe } from '@test-data/scraperMocks/marmiton';
+import { nutritionKcalSuffixHtml } from '@test-data/scraperMocks/htmlFixtures';
 
 const parser = new SchemaRecipeParser();
 
@@ -284,6 +286,54 @@ describe('Recipe Scraper Integration', () => {
           expect(time).toBeGreaterThan(0);
         }
       });
+    });
+  });
+
+  describe('Serving size inference pipeline', () => {
+    it('infers serving size and converts nutrition correctly from kcal-suffix HTML', () => {
+      const baseResult = {
+        title: 'Tartare de saumon',
+        description: null,
+        ingredients: ["100 g salade d'algues", '200 g saumon frais'],
+        parsedIngredients: null,
+        ingredientGroups: null,
+        instructions: null,
+        instructionsList: null,
+        parsedInstructions: null,
+        totalTime: null,
+        prepTime: null,
+        cookTime: null,
+        yields: null,
+        image: null,
+        host: 'quitoque.fr',
+        canonicalUrl: null,
+        siteName: null,
+        author: null,
+        language: null,
+        category: null,
+        cuisine: null,
+        cookingMethod: null,
+        keywords: null,
+        dietaryRestrictions: null,
+        ratings: null,
+        ratingsCount: null,
+        nutrients: { calories: '374kCal', fatContent: '20g', proteinContent: '15g' },
+        equipment: null,
+        links: null,
+      };
+
+      const enhanced = applyEnhancements({
+        html: nutritionKcalSuffixHtml,
+        baseResult,
+      });
+
+      expect(enhanced.nutrients).not.toBeNull();
+      expect(enhanced.nutrients!.servingSize).toBe('249g');
+
+      const nutrition = convertNutrition(enhanced.nutrients!);
+      expect(nutrition).toBeDefined();
+      expect(nutrition!.energyKcal).toBeCloseTo(150.2, 1);
+      expect(nutrition!.portionWeight).toBe(249);
     });
   });
 

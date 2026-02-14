@@ -163,6 +163,56 @@ export const ingredientsWithEntitiesHtml = `
 </html>
 `;
 
+export const nutritionKcalSuffixHtml = `
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+<div class="recipe-header">
+    <h1>Tartare de saumon</h1>
+    <p class="body-2 bold">374.31</p>
+    <p class="body-2 regular c-gray-400">Kcal</p>
+</div>
+<ul class="ingredient-list">
+    <li>
+        <span class="bold">100 g</span>
+        <span>salade d'algues</span>
+    </li>
+    <li>
+        <span class="bold">200 g</span>
+        <span>saumon frais</span>
+    </li>
+</ul>
+<ul class="nav nav-tabs tab-menu mb-3" role="tablist">
+    <li class="nav-item" role="portion">
+        <button class="nav-link" id="portion-tab" data-bs-target="#portion" type="button">Par portion</button>
+    </li>
+    <li class="nav-item" role="quantity">
+        <button class="nav-link active" id="quantity-tab" data-bs-target="#quantity" type="button">Pour 100g</button>
+    </li>
+</ul>
+<div class="tab-content nutritional-values">
+    <div class="tab-pane fade" id="portion" role="tabpanel">
+        <ul>
+            <li>
+                <p class="body-2 bold m-0">Énergie (kCal)</p>
+                <p class="body-2 regular m-0">374kCal</p>
+            </li>
+        </ul>
+    </div>
+    <div class="tab-pane fade show active" id="quantity" role="tabpanel">
+        <ul>
+            <li>
+                <p class="body-2 bold m-0">Énergie (kCal)</p>
+                <p class="body-2 regular m-0">150kCal</p>
+            </li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>
+`;
+
 export const instructionsWithEntitiesHtml = `
 <!DOCTYPE html>
 <html>

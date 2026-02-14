@@ -10,6 +10,7 @@ import {
   extractNumericValue,
   extractStructuredIngredients,
   extractStructuredInstructions,
+  findAllKcalInHtml,
   findPer100gCalories,
   findTagsInDict,
   inferServingSizeFromHtml,
@@ -21,6 +22,7 @@ import type { ScrapedRecipe } from '@app/modules/recipe-scraper/src/types';
 import {
   nextDataHtml,
   nutrition100gTabHtml,
+  nutritionKcalSuffixHtml,
   nutritionNo100gHtml,
   simpleRecipeHtml,
   ingredientsWithEntitiesHtml,
@@ -247,6 +249,26 @@ describe('enhancements module', () => {
     });
   });
 
+  describe('findAllKcalInHtml', () => {
+    it('extracts multiple kcal values from HTML', () => {
+      const result = findAllKcalInHtml(nutritionKcalSuffixHtml);
+      expect(result).toContain(374);
+      expect(result).toContain(150);
+      expect(result).toHaveLength(2);
+    });
+
+    it('returns empty array when no kcal values', () => {
+      const result = findAllKcalInHtml('<div>No calories here</div>');
+      expect(result).toEqual([]);
+    });
+
+    it('deduplicates same values', () => {
+      const html = '<span>200kCal</span><span>200kcal</span><span>100kCal</span>';
+      const result = findAllKcalInHtml(html);
+      expect(result).toEqual([200, 100]);
+    });
+  });
+
   describe('findPer100gCalories', () => {
     it('finds calories in quantity tab', () => {
       const result = findPer100gCalories(nutrition100gTabHtml);
@@ -255,6 +277,29 @@ describe('enhancements module', () => {
 
     it('returns zero when no 100g section', () => {
       const result = findPer100gCalories(nutritionNo100gHtml);
+      expect(result).toBe(0);
+    });
+
+    it('finds per-100g via math validation with kcal suffix HTML', () => {
+      const result = findPer100gCalories(nutritionKcalSuffixHtml, 374);
+      expect(result).toBe(150);
+    });
+
+    it('skips near-duplicates of perPortion', () => {
+      const html = '<span>374.31 Kcal</span><span>374kCal</span>';
+      const result = findPer100gCalories(html, 374);
+      expect(result).toBe(0);
+    });
+
+    it('finds per-100g via pure math when no 100g text marker', () => {
+      const html = '<div><span>500kCal</span><span>200kCal</span></div>';
+      const result = findPer100gCalories(html, 500);
+      expect(result).toBe(200);
+    });
+
+    it('returns 0 when no valid candidate', () => {
+      const html = '<div>no nutrition data</div>';
+      const result = findPer100gCalories(html, 374);
       expect(result).toBe(0);
     });
   });
@@ -291,6 +336,15 @@ describe('enhancements module', () => {
             `;
       const result = extractKcalFromSection(html);
       expect(result).toBe(0);
+    });
+
+    it('ignores digits in HTML class names', () => {
+      const html = `
+            <p class="body-2 bold m-0">Énergie (kCal)</p>
+            <p class="body-2 regular m-0">150kCal</p>
+            `;
+      const result = extractKcalFromSection(html);
+      expect(result).toBe(150);
     });
   });
 
@@ -329,6 +383,19 @@ describe('enhancements module', () => {
       const result = inferServingSizeFromHtml(nutrition100gTabHtml, nutrients);
       const expected = Math.round((594 / 297) * 100);
       expect(result?.servingSize).toBe(`${expected}g`);
+    });
+
+    it('infers from quitoque-like HTML with kcal suffixes', () => {
+      const nutrients = { calories: '374kCal' };
+      const result = inferServingSizeFromHtml(nutritionKcalSuffixHtml, nutrients);
+      expect(result?.servingSize).toBe('249g');
+    });
+
+    it('rejects absurd serving size exceeding 5000g cap', () => {
+      const html = '<span>1kCal</span>';
+      const nutrients = { calories: '50001kCal' };
+      const result = inferServingSizeFromHtml(html, nutrients);
+      expect(result?.servingSize).toBeUndefined();
     });
   });
 
