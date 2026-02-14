@@ -144,6 +144,44 @@ export const structuredWithKitchenListHtml = `
 </html>
 `;
 
+export const ingredientsWithEntitiesHtml = `
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+<ul class="ingredient-list">
+    <li>
+        <span class="bold">1 x</span>
+        <span>gousse d&#039;ail&nbsp;</span>
+    </li>
+    <li>
+        <span class="bold">200 g</span>
+        <span>p&acirc;tes fra&icirc;ches</span>
+    </li>
+</ul>
+</body>
+</html>
+`;
+
+export const instructionsWithEntitiesHtml = `
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+<div id="preparation-steps">
+    <div class="toggle w-100 mb-2">
+        <p class="regular body-3 m-0 c-gray-400">Étape 1</p>
+        <p class="bold mb-2">1. Pr&#039;paration d&#039;ail</p>
+        <ul class="ps-4">
+            <li class="body-2 regular m-0">&#201;mincez l&#039;ail et faites-le revenir.</li>
+            <li class="body-2 regular m-0">Ajoutez les p&acirc;tes&nbsp;fra&icirc;ches.</li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>
+`;
+
 export const structuredInstructionsHtml = `
 <!DOCTYPE html>
 <html>

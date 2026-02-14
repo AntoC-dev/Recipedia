@@ -23,6 +23,8 @@ import {
   nutrition100gTabHtml,
   nutritionNo100gHtml,
   simpleRecipeHtml,
+  ingredientsWithEntitiesHtml,
+  instructionsWithEntitiesHtml,
   structuredIngredientsHtml,
   structuredInstructionsHtml,
   structuredWithKitchenListHtml,
@@ -398,6 +400,21 @@ describe('enhancements module', () => {
       expect(result).toBeNull();
     });
 
+    it('decodes HTML entities in ingredient names', () => {
+      const result = extractStructuredIngredients(ingredientsWithEntitiesHtml);
+
+      expect(result).not.toBeNull();
+      expect(result).toHaveLength(2);
+
+      expect(result![0].quantity).toBe('1');
+      expect(result![0].unit).toBe('x');
+      expect(result![0].name).toBe("gousse d'ail");
+
+      expect(result![1].quantity).toBe('200');
+      expect(result![1].unit).toBe('g');
+      expect(result![1].name).toBe('pâtes fraîches');
+    });
+
     it('extracts kitchen list items', () => {
       const result = extractStructuredIngredients(structuredWithKitchenListHtml);
 
@@ -466,6 +483,17 @@ describe('enhancements module', () => {
       expect(result![0].instructions).toHaveLength(2);
       expect(result![1].title).toBe('Les mouillettes');
       expect(result![1].instructions).toHaveLength(3);
+    });
+
+    it('decodes HTML entities in step titles and instructions', () => {
+      const result = extractStructuredInstructions(instructionsWithEntitiesHtml);
+
+      expect(result).not.toBeNull();
+      expect(result).toHaveLength(1);
+      expect(result![0].title).toBe("Pr'paration d'ail");
+      expect(result![0].instructions).toHaveLength(2);
+      expect(result![0].instructions[0]).toBe("\u00C9mincez l'ail et faites-le revenir.");
+      expect(result![0].instructions[1]).toBe('Ajoutez les p\u00e2tes\u00a0fra\u00eeches.');
     });
 
     it('returns null when no container found', () => {

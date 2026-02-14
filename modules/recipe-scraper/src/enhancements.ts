@@ -684,5 +684,5 @@ function findRecipeInJsonLd(data: JsonValue): JsonObject | null {
  * Strip HTML tags from a string.
  */
 function stripHtml(html: string): string {
-    return html.replace(/<[^>]*>/g, '');
+    return decode(html.replace(/<[^>]*>/g, ''));
 }
