@@ -4,6 +4,10 @@ appId: "com.recipedia"
     id: "VerticalBottomButtons::UrlDialog::Input::CustomTextInput"
     label: "Focus on URL input field"
 
+- runFlow:
+    file: "../../../waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
 - inputText: ${RECIPE_URL}
 
 - waitForAnimationToEnd:
@@ -48,11 +52,41 @@ appId: "com.recipedia"
     id: "VerticalBottomButtons::AuthDialog::UsernameInput"
     label: "Focus on username input"
 
+- runFlow:
+    file: "../../../waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
 - inputText: ${QUITOQUE_USERNAME}
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Return"
+          label: "Tap Return key to dismiss keyboard on iOS"
+
+- runFlow:
+    file: "../../../waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to disappear"
 
 - tapOn:
     id: "VerticalBottomButtons::AuthDialog::PasswordInput"
     label: "Focus on password input"
+
+- runFlow:
+    file: "../../../waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
 - inputText: ${QUITOQUE_PASSWORD}
 
@@ -71,8 +105,8 @@ appId: "com.recipedia"
       platform: iOS
     commands:
       - tapOn:
-          id: "Done"
-          label: "Tap Done key to dismiss keyboard on iOS"
+          id: "Return"
+          label: "Tap Return key to dismiss keyboard on iOS"
 
 - runFlow:
     file: "../../../waitForKeyboardDismiss.yaml"

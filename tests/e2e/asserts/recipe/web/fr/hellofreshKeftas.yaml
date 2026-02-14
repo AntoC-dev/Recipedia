@@ -210,7 +210,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeTime::PrefixText"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll down to time part"
 

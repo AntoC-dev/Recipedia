@@ -4,6 +4,10 @@ appId: "com.recipedia"
     id: "VerticalBottomButtons::UrlDialog::Input::CustomTextInput"
     label: "Focus on URL input field"
 
+- runFlow:
+    file: "../../../waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
 - inputText: ${RECIPE_URL}
 
 - waitForAnimationToEnd:
