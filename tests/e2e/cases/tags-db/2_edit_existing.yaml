@@ -65,6 +65,11 @@ tags:
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
+- assertVisible:
+    id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    text: "Italian Cuisine"
+    label: "Assert - Verify tag name updated to Italian Cuisine"
+
 - runFlow:
     when:
       platform: Android
