@@ -51,7 +51,19 @@ tags:
     id: "SearchScreen::SearchBar"
     label: "Action - Focus on search bar again"
 
-- pressKey: "enter"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - pressKey: enter
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Search"
+          label: "Tap Search key to validates the search"
 
 - runFlow:
     file: "../../asserts/search/en/searchScreenFilteredOnCa.yaml"
