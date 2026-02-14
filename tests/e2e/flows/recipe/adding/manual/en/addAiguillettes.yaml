@@ -10,7 +10,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeTitle::CustomTextInput"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to title text input"
 
@@ -34,7 +34,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeDescription::CustomTextInput"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to description text input"
 
@@ -211,7 +211,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::AddButton::RoundButton"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to ingredients section"
 
@@ -279,7 +279,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::AddButton::RoundButton"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to ensure add button is still visible"
 
@@ -295,7 +295,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::AddButton::RoundButton"
     direction: DOWN
-    speed: 20
+    speed: 10
     centerElement: true
     label: "Scroll to ingredient's add a button to ensure second ingredient is visible"
 
@@ -654,7 +654,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::EditableStep::2::TextInputTitle::CustomTextInput"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to third preparation title input"
 
