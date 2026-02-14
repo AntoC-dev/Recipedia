@@ -5,11 +5,22 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "IngredientsSettings::${INGREDIENT_INDEX}::DeleteButton"
+      id: "IngredientsSettings::${INGREDIENT_INDEX}::IngredientName"
     direction: DOWN
-    speed: 60
+    speed: 50
+    timeout: 120000
     centerElement: true
     label: "Scroll to find ${INGREDIENT_NAME} ingredient"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "IngredientsSettings::${INGREDIENT_INDEX}::DeleteButton"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to ${INGREDIENT_NAME} delete button is visible"
 
 - waitForAnimationToEnd
 

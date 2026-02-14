@@ -22,7 +22,7 @@ tags:
     element:
       id: "RecipeIngredients::AddButton::RoundButton"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Action - Scroll to ingredients section"
 
@@ -43,9 +43,19 @@ tags:
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- tapOn:
-    id: "RecipeIngredients::Header::IngredientName"
-    label: "Action - Tap on ingredient name to dismiss keyboard"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - pressKey: enter
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to validate the input on iOS"
 
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"

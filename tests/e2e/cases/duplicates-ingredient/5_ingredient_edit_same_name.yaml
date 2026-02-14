@@ -17,7 +17,8 @@ tags:
     element:
       text: "Butter"
     direction: DOWN
-    speed: 60
+    speed: 40
+    timeout: 60000
     centerElement: true
     label: "Action - Scroll to find Butter ingredient"
 
