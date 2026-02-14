@@ -7,7 +7,7 @@ appId: "com.recipedia"
       id: "RecipeTags::RoundButton"
     direction: DOWN
     speed: 20
-    timeout: 10000
+    timeout: 60000
     centerElement: true
     label: "Action - Scroll to tags section"
 

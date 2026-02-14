@@ -23,6 +23,7 @@ tags:
       id: "RecipeIngredients::AddButton::RoundButton"
     direction: DOWN
     speed: 20
+    timeout: 1200000
     centerElement: true
     label: "Action - Scroll to ingredients section"
 

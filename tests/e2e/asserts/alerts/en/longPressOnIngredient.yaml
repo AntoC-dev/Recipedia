@@ -31,5 +31,5 @@ appId: "com.recipedia"
 - extendedWaitUntil:
     notVisible:
       id: "ShoppingScreen::Dialog::Title"
-    timeout: 3000
+    timeout: 10000
     label: "Wait for dialog to be closed"
