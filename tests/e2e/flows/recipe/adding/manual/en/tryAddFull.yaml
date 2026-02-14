@@ -42,6 +42,9 @@ appId: "com.recipedia"
     id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
     label: "Press preparation step title"
 
+- runFlow:
+    file: "../../../../waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 - inputText:
     text: "Step title"
     label: "Write the preparation step title in the input text"
@@ -50,7 +53,9 @@ appId: "com.recipedia"
     id: "RecipePreparation::EditableStep::0::Title"
     label: "Tap on preparation title to close the keyboard"
 
-- waitForAnimationToEnd
+- runFlow:
+    file: "../../../../waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -75,6 +80,11 @@ appId: "com.recipedia"
     id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
     label: "Press preparation step paragraph"
 
+- runFlow:
+    file: "../../../../waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
+
 - inputText:
     text: "Step paragraph"
     label: "Write the preparation step paragraph in the input text"
@@ -82,3 +92,7 @@ appId: "com.recipedia"
 - tapOn:
     id: "RecipePreparation::EditableStep::0::Content"
     label: "Tap on preparation content to close the keyboard"
+
+- runFlow:
+    file: "../../../../waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to dismiss"
