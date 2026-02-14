@@ -301,6 +301,15 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::1::QuantityInput"
+    direction: DOWN
+    speed: 10
+    label: "Scroll up to ensure second ingredient's quantity input is visible"
+
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeIngredients::1::QuantityInput"
     label: "Press the TextInput of second ingredient's quantity"
@@ -364,12 +373,22 @@ appId: "com.recipedia"
     label: "Wait for keyboard to appear"
 
 - tapOn:
-    id: "RecipeIngredients::2::NameInput::AutocompleteItem::Avocado"
-    label: "Press the ingredient from the dropdown"
+    id: "RecipeIngredients::2::Unit"
+    label: "Tap on third ingredient's unit to close the keyboard"
 
 - runFlow:
     file: "../../../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
+
+- tapOn:
+    id: "RecipeIngredients::2::NameInput::AutocompleteItem::Avocado"
+    label: "Press the ingredient from the dropdown"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "RecipeIngredients::2::NameInput::AutocompleteItem::Avocado"
+    timeout: 30000
+    label: "Wait for autocomplete list to disappear"
 
 - tapOn:
     id: "RecipeIngredients::2::QuantityInput"
@@ -480,7 +499,6 @@ appId: "com.recipedia"
 - tapOn:
     id: "RecipePreparation::EditableStep::0::Content"
     label: "Tap on the content text to close the keyboard"
-
 
 - runFlow:
     file: "../../../../waitForKeyboardDismiss.yaml"
@@ -631,7 +649,6 @@ appId: "com.recipedia"
     file: "../../../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to disappear"
 
-
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::AddButton::RoundButton"
@@ -677,9 +694,8 @@ appId: "com.recipedia"
     label: "Tap on the title text to close the keyboard"
 
 - runFlow:
-    file: "../../../../waitForKeyboard.yaml"
+    file: "../../../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to hide"
-
 
 - scrollUntilVisible:
     element:
