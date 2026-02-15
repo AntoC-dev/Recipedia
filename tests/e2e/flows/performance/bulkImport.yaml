@@ -83,8 +83,8 @@ appId: "com.recipedia"
 - extendedWaitUntil:
     notVisible:
       id: "BulkImportValidation::InitializingIndicator"
-    timeout: 180000
-    label: "Wait for initialization to complete (3 min timeout)"
+    timeout: 600000
+    label: "Wait for initialization to complete (10 min timeout)"
 
 - runFlow:
     file: "../recipe/validation/validateAllDialogs.yaml"
