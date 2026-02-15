@@ -65,6 +65,12 @@ tags:
           id: "Search"
           label: "Tap Search key to validates the search"
 
+- extendedWaitUntil:
+    visible:
+      id: "SearchScreen::RecipeCards::0::Cover"
+    timeout: 30000
+    label: "Wait for cards to appear"
+
 - runFlow:
     file: "../../asserts/search/en/searchScreenFilteredOnCa.yaml"
     label: "Assert - Verify Search screen shows filtered recipe cards"
