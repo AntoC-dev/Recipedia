@@ -19,7 +19,13 @@ appId: "com.recipedia"
     label: "Add tag to recipe"
 
 - waitForAnimationToEnd:
-    label: "Wait for scroll to end"
+    label: "Wait for animation to end"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipeTags::List::${TAG_INDEX}::CustomTextInput"
+    timeout: 5000
+    label: "Wait for text input field to appear"
 
 - tapOn:
     id: "RecipeTags::List::${TAG_INDEX}::CustomTextInput"
@@ -33,11 +39,13 @@ appId: "com.recipedia"
     text: "${TAG_NAME}"
     label: "Enter tag name"
 
-- extendedWaitUntil:
-    visible:
-      text: "${TAG_NAME}"
-    timeout: 5000
-    label: "Wait for text to appear in tag input field"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation to end"
+
+- assertVisible:
+    id: "RecipeTags::List::${TAG_INDEX}::CustomTextInput"
+    text: "${TAG_NAME}"
+    label: "Verify tag is filled properly"
 
 - runFlow:
     when:
