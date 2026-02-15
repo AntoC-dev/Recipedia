@@ -515,6 +515,9 @@ appId: "com.recipedia"
     text: "Portez a ebullition une casserole d'eau salee.Faites cuire le riz selon les indications du paquet.Pendant ce temps, preparez les filets de poulet a la sauce satay."
     label: "Enter text for recipe first preparation paragraph"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - tapOn:
     id: "RecipePreparation::EditableStep::0::Content"
     label: "Tap on the content text to close the keyboard"
