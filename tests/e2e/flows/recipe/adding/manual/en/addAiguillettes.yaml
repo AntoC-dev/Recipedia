@@ -130,15 +130,27 @@ appId: "com.recipedia"
     element:
       id: "RecipeTags::RoundButton"
     direction: DOWN
-    speed: 20
+    speed: 40
     centerElement: true
-    label: "Scroll to ensure second tag's text input is visible"
+    label: "Scroll to ingredient's add button"
 
 - waitForAnimationToEnd
 
-- assertVisible:
-    id: "RecipeTags::List::1::CustomTextInput"
-    label: "Assert - TextInput of second tags is visible"
+- swipe:
+    start: "50%,60%"
+    end: "50%,20%"
+    label: "Swipe down to ensure dropdown will be visible"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTags::List::1::CustomTextInput"
+    direction: UP
+    speed: 10
+    label: "Scroll up to ensure second tag's text input is visible"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeTags::List::1::CustomTextInput"
@@ -150,28 +162,35 @@ appId: "com.recipedia"
     timeout: 30000
     label: "Wait for the autocomplete list to appear"
 
+
 - runFlow:
     when:
       platform: Android
     commands:
       - hideKeyboard:
           label: "Hide keyboard on Android"
+      - swipe:
+          start: "50%,50%"
+          end: "50%,40%"
+          label: "Swipe down to scroll dropdown, first scroll"
+      - waitForAnimationToEnd:
+          label: "Wait for scrolling animation to end"
+      - swipe:
+          start: "50%,50%"
+          end: "50%,40%"
+          label: "Swipe down to scroll dropdown, second scroll"
+      - waitForAnimationToEnd:
+          label: "Wait for scrolling animation to end"
 
-- swipe:
-    start: "50%,50%"
-    end: "50%,40%"
-    label: "Swipe down to scroll dropdown, first scroll"
-
-- waitForAnimationToEnd:
-    label: "Wait for scrolling animation to end"
-
-- swipe:
-    start: "50%,50%"
-    end: "50%,40%"
-    label: "Swipe down to scroll dropdown, second scroll"
-
-- waitForAnimationToEnd:
-    label: "Wait for scrolling animation to end"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - inputText:
+          text: "I"
+          label: "Pre-fill input with some characters of italian tag to avoid flaky tests"
+      - waitForAnimationToEnd:
+          label: "Wait for keyboard animation to end"
 
 - assertVisible:
     text: "Italian"
@@ -263,7 +282,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::AddButton::RoundButton"
     direction: DOWN
-    speed: 20
+    speed: 10
     centerElement: true
     label: "Scroll to ensure add button is still visible"
 
@@ -279,7 +298,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::AddButton::RoundButton"
     direction: DOWN
-    speed: 20
+    speed: 10
     centerElement: true
     label: "Scroll to ensure add button is still visible"
 
@@ -304,7 +323,7 @@ appId: "com.recipedia"
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::1::QuantityInput"
-    direction: DOWN
+    direction: UP
     speed: 10
     label: "Scroll up to ensure second ingredient's quantity input is visible"
 
