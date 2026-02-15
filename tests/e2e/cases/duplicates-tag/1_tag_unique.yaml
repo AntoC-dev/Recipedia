@@ -16,6 +16,12 @@ tags:
     id: "RecipeEdit.*"
     label: "Action - Open manual recipe creation"
 
+- extendedWaitUntil:
+    visible:
+      id: "RecipeImage::Image"
+    timeout: 30000
+    label: "Wait for recipe screen to load"
+
 - runFlow:
     file: "../../flows/recipe/tags/addTagToRecipeInput.yaml"
     env:
