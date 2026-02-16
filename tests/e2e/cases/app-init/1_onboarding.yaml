@@ -33,6 +33,12 @@ tags:
     id: "TutorialTooltip::Next"
     label: "Action - Navigate to Step 2"
 
+- extendedWaitUntil:
+    visible:
+      text: "2"
+    timeout: 5000
+    label: "Wait for second step number to be displayed"
+
 - runFlow:
     file: "../../asserts/onboarding/en/assertTutorialStep2.yaml"
     label: "Assert - Verify tutorial Step 2 (Search screen)"
@@ -40,6 +46,12 @@ tags:
 - tapOn:
     id: "TutorialTooltip::Next"
     label: "Action - Navigate to Step 3"
+
+- extendedWaitUntil:
+    visible:
+      text: "3"
+    timeout: 5000
+    label: "Wait for thrif step number to be displayed"
 
 - runFlow:
     file: "../../asserts/onboarding/en/assertTutorialStep3.yaml"
@@ -49,6 +61,12 @@ tags:
     id: "TutorialTooltip::Next"
     label: "Action - Navigate to Step 4"
 
+- extendedWaitUntil:
+    visible:
+      text: "4"
+    timeout: 5000
+    label: "Wait for fourth step number to be displayed"
+
 - runFlow:
     file: "../../asserts/onboarding/en/assertTutorialStep4.yaml"
     label: "Assert - Verify tutorial Step 4 (Shopping screen)"
@@ -57,6 +75,13 @@ tags:
     id: "TutorialTooltip::Next"
     label: "Action - Navigate to Step 5"
 
+- extendedWaitUntil:
+    visible:
+      text: "5"
+    timeout: 5000
+    label: "Wait for fifth step number to be displayed"
+
+
 - runFlow:
     file: "../../asserts/onboarding/en/assertTutorialStep5.yaml"
     label: "Assert - Verify tutorial Step 5 (Parameters screen)"
@@ -64,6 +89,12 @@ tags:
 - tapOn:
     id: "TutorialTooltip::Previous"
     label: "Action - Return to previous step"
+
+- extendedWaitUntil:
+    visible:
+      text: "4"
+    timeout: 5000
+    label: "Wait for fourth step number to be displayed"
 
 - runFlow:
     file: "../../asserts/onboarding/en/assertTutorialStep4.yaml"
