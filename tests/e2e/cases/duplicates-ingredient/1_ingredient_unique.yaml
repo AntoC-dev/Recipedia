@@ -55,6 +55,11 @@ tags:
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
+- assertVisible:
+    id: "RecipeIngredients::0::NameInput::CustomTextInput"
+    text: "AUniqueIngredient"
+    label: "Assert - Verify ingredient name appears in recipe"
+
 - runFlow:
     when:
       platform: Android
