@@ -184,8 +184,8 @@ export function CustomTextInput({
         error={error}
         right={right}
         returnKeyType={multiline ? 'default' : 'done'}
-        autoCorrect={autoCorrect}
-        spellCheck={spellCheck}
+        autoCorrect={false}
+        spellCheck={false}
       />
     </View>
   );
