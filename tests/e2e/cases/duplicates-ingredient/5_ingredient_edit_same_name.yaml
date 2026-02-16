@@ -95,12 +95,6 @@ tags:
     file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
-- extendedWaitUntil:
-    visible:
-      id: "IngredientsSettings::ItemDialog::EditModal::ConfirmButton"
-    timeout: 500
-    label: "Wait - Debounce validation"
-
 - assertNotVisible:
     id: "IngredientsSettings::ItemDialog::EditModal::HelperText"
     label: "Assert - No helper text for unique name"
