@@ -27,6 +27,11 @@ tags:
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
+- assertVisible:
+    id: "VerticalBottomButtons::UrlDialog::Input::CustomTextInput"
+    text: "not-a-valid-url"
+    label: "Invalid URL is well presend in the text input"
+
 - runFlow:
     when:
       platform: Android
