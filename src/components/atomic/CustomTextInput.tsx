@@ -46,6 +46,7 @@ import {
 } from 'react-native';
 import { TextInput, useTheme } from 'react-native-paper';
 import { screenHeight } from '@styles/spacing';
+import { getDatasetType } from '@utils/DatasetLoader';
 
 /**
  * Props for the CustomTextInput component
@@ -90,6 +91,9 @@ export type CustomTextInputProps = {
   /** Whether to enable spell check (default: true) */
   spellCheck?: boolean;
 };
+
+/** Flag to disable the autocorrect and spell check for test purpose */
+const disableAutoCorrect = getDatasetType() === 'test';
 
 /**
  * CustomTextInput component with enhanced editing behavior
@@ -184,8 +188,8 @@ export function CustomTextInput({
         error={error}
         right={right}
         returnKeyType={multiline ? 'default' : 'done'}
-        autoCorrect={false}
-        spellCheck={false}
+        autoCorrect={disableAutoCorrect ? false : autoCorrect}
+        spellCheck={disableAutoCorrect ? false : spellCheck}
       />
     </View>
   );
