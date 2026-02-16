@@ -18,7 +18,7 @@ tags:
 
 - extendedWaitUntil:
     visible:
-      id: "RecipeImage::Image"
+      id: "RecipeImage"
     timeout: 30000
     label: "Wait for recipe screen to load"
 
