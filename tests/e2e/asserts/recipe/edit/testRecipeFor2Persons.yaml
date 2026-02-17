@@ -16,8 +16,9 @@ appId: "com.recipedia"
     element:
       id: "RecipePersons::PrefixText"
     direction: DOWN
-    speed: 60
+    speed: 40
     centerElement: true
+    label: "Scroll to persons section"
 
 - waitForAnimationToEnd
 
@@ -25,6 +26,18 @@ appId: "com.recipedia"
     id: "RecipePersons::PrefixText"
     text: "This recipe is for : "
     label: "Intro text for the number of persons is rendered"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePersons::NumericTextInput"
+    direction: UP
+    speed: 20
+    centerElement: true
+    label: "Scroll to ensure persons's text input is visible"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePersons::NumericTextInput"

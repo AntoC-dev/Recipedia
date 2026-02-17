@@ -568,3 +568,5 @@ export const Snackbar: React.FC<any> = props => {
     </View>
   );
 };
+
+export const PaperProvider: React.FC<any> = props => <>{props.children}</>;

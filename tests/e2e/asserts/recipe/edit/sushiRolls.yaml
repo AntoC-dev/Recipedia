@@ -384,7 +384,7 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
+      id: "RecipePreparation::EditableStep::0::Title"
     direction: DOWN
     speed: 60
     centerElement: true
@@ -396,6 +396,19 @@ appId: "com.recipedia"
     id: "RecipePreparation::EditableStep::0::Title"
     text: "Title of step 1 : "
     label: "Intro text for the title of first step is rendered"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll down to the title of first step"
+
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
     text: "Prepare rice"
@@ -405,10 +418,11 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
+      id: "RecipePreparation::EditableStep::0::Content"
     direction: DOWN
     speed: 40
     centerElement: true
+    label: "Scroll down to the first step content"
 
 - waitForAnimationToEnd
 
@@ -416,6 +430,19 @@ appId: "com.recipedia"
     id: "RecipePreparation::EditableStep::0::Content"
     text: "Content of step 1 : "
     label: "Intro text for first step is rendered"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll down to the first step content input"
+
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
     label: "First step input is rendered"

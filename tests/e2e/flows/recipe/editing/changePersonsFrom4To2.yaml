@@ -20,6 +20,9 @@ appId: "com.recipedia"
 - eraseText:
     label: "Erase current persons value"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - inputText:
     text: "2"
     label: "Enter 2 persons"
@@ -29,5 +32,6 @@ appId: "com.recipedia"
 
 - pressKey: "ENTER"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
+- runFlow:
+    file: "../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"

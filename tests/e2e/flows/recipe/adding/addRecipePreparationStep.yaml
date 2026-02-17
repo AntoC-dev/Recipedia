@@ -33,10 +33,26 @@ appId: "com.recipedia"
     id: "RecipePreparation::EditableStep::${INDEX}::TextInputContent::CustomTextInput"
     label: "Focus on preparation step content"
 
+- runFlow:
+    file: "../../waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
 - inputText:
     text: "${TEXT}"
     label: "Enter preparation step"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation to end"
+
 - tapOn:
     id: "RecipePreparation::EditableStep::${INDEX}::Content"
     label: "Tap on preparation content to close the keyboard"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::${INDEX}::TextInputContent::CustomTextInput"
+    text: "${TEXT}"
+    label: "Check that preparation content is well edited"
+
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to dismiss"

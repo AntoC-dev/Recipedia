@@ -45,9 +45,19 @@ tags:
 
 - scrollUntilVisible:
     element:
-      id: "RecipeIngredients::0::QuantityInput"
+      id: "RecipeIngredients::PrefixText"
     direction: UP
-    speed: 60
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll up ingredients section"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::0::QuantityInput"
+    direction: DOWN
+    speed: 20
     centerElement: true
     label: "Action - Scroll up to first ingredient"
 
@@ -60,6 +70,9 @@ tags:
 - eraseText:
     label: "Action - Clear Pasta quantity"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - inputText:
     text: "260"
     label: "Action - Change Pasta to 260g (30% difference)"
@@ -67,22 +80,13 @@ tags:
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- pressKey: enter
+- tapOn:
+    id: "RecipeIngredients::0::Unit"
+    label: "Action - Tap on Pasta unit to hide keyboard"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "Recipe::BottomActionButton"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Action - Scroll to Add button"
-
-- waitForAnimationToEnd
 
 - waitForAnimationToEnd:
     timeout: 2000
@@ -97,7 +101,6 @@ tags:
     env:
       RECIPE_NAME: ".*"
     label: "Assert - Verify recipe added successfully (no duplicate)"
-
 
 - runFlow:
     file: "../../flows/recipe/deleteRecipeBySearch.yaml"

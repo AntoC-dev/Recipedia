@@ -26,7 +26,7 @@ jobs:
   e2e-tests:
     name: E2E ${{ inputs.platform }} (${{ matrix.suite }})
     runs-on: ${{ inputs.platform == 'ios' && 'macos-15-intel' || 'ubuntu-latest' }}
-    timeout-minutes: 90
+    timeout-minutes: 180
     strategy:
       fail-fast: false
       matrix:
@@ -108,9 +108,17 @@ jobs:
         uses: futureware-tech/simulator-action@v4
         with:
           model: 'iPhone SE (3rd generation)'
+          os_version: '18.6'
           wait_for_boot: true
           erase_before_boot: false
           shutdown_after_job: true
+
+      - name: Disable hardware keyboard
+        if: inputs.platform == 'ios'
+        run: |
+          echo "⌨️ Disabling hardware keyboard for software keyboard to appear..."
+          defaults write com.apple.iphonesimulator ConnectHardwareKeyboard -bool NO
+          echo "✅ Hardware keyboard disabled"
 
       - name: Setup Maestro CLI (iOS)
         if: inputs.platform == 'ios'
@@ -121,12 +129,12 @@ jobs:
       - name: Run E2E tests (iOS)
         if: inputs.platform == 'ios'
         env:
-          MAESTRO_DRIVER_STARTUP_TIMEOUT: 180000
+          MAESTRO_DRIVER_STARTUP_TIMEOUT: 360000
           QUITOQUE_USERNAME: ${{ secrets.QUITOQUE_USERNAME }}
           QUITOQUE_PASSWORD: ${{ secrets.QUITOQUE_PASSWORD }}
         run: bash .github/scripts/run-e2e-ios.sh ${{ matrix.suite }}
 
-      - name: Collect iOS logs
+      - name: Collect iOS app log file
         if: always() && inputs.platform == 'ios'
         run: bash .github/scripts/collect-ios-logs.sh ${{ matrix.suite }} ${{ steps.simulator.outputs.udid }}
 

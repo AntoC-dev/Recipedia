@@ -17,5 +17,5 @@ appId: "com.recipedia"
       platform: iOS
     commands:
       - assertVisible:
-          text: "Only in-season ingredients Close"
+          text: "Only in-season ingredients"
           label: "Season filter text is displayed in chip"

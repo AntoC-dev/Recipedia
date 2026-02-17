@@ -1,6 +1,7 @@
 import json
 import sys
 from pathlib import Path
+from io import StringIO
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -11,8 +12,15 @@ from scraper import (
     _safe_call,
     _safe_call_numeric,
     _detect_auth_required,
+    _has_recipe_schema,
+    _log_debug,
+    _log_info,
+    _log_warn,
+    _log_error,
     AuthenticationRequiredError,
+    NoRecipeFoundError,
 )
+from recipe_scrapers import scrape_html, SCRAPERS
 
 
 SIMPLE_RECIPE_HTML = """
@@ -311,6 +319,93 @@ class TestDetectAuthRequired:
         assert "www" not in result.host
 
 
+EXAMPLE_COM_HTML = """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Example Domain</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+</head>
+<body>
+<div>
+    <h1>Example Domain</h1>
+    <p>This domain is for use in illustrative examples in documents.</p>
+</div>
+</body>
+</html>
+"""
+
+
+class TestHasRecipeSchema:
+    def test_detects_json_ld_recipe_no_space(self):
+        html = '<script type="application/ld+json">{"@type":"Recipe"}</script>'
+        assert _has_recipe_schema(html) is True
+
+    def test_detects_json_ld_recipe_with_space(self):
+        html = '<script type="application/ld+json">{"@type": "Recipe"}</script>'
+        assert _has_recipe_schema(html) is True
+
+    def test_detects_microdata_http(self):
+        html = '<div itemtype="http://schema.org/Recipe"></div>'
+        assert _has_recipe_schema(html) is True
+
+    def test_detects_microdata_https(self):
+        html = '<div itemtype="https://schema.org/Recipe"></div>'
+        assert _has_recipe_schema(html) is True
+
+    def test_case_insensitive(self):
+        html = '<script type="application/ld+json">{"@type":"RECIPE"}</script>'
+        assert _has_recipe_schema(html) is True
+
+    def test_returns_false_for_non_recipe_page(self):
+        assert _has_recipe_schema(EXAMPLE_COM_HTML) is False
+
+    def test_returns_false_for_no_recipe_html(self):
+        assert _has_recipe_schema(NO_RECIPE_HTML) is False
+
+    def test_returns_true_for_recipe_page(self):
+        assert _has_recipe_schema(SIMPLE_RECIPE_HTML) is True
+
+
+class TestNoRecipeFoundError:
+    def test_error_has_default_message(self):
+        error = NoRecipeFoundError()
+        assert error.message == "No recipe found on this page"
+
+    def test_error_custom_message(self):
+        error = NoRecipeFoundError("Custom message")
+        assert error.message == "Custom message"
+
+
+class TestScrapeNonRecipePage:
+    def test_non_recipe_page_returns_error(self):
+        result = json.loads(
+            scrape_recipe_from_html(EXAMPLE_COM_HTML, "https://example.com/")
+        )
+
+        assert result["success"] is False
+        assert result["error"]["type"] == "NoRecipeFoundError"
+        assert "No recipe found" in result["error"]["message"]
+
+    def test_non_recipe_page_does_not_crash(self, capsys):
+        result = json.loads(
+            scrape_recipe_from_html(EXAMPLE_COM_HTML, "https://example.com/")
+        )
+
+        captured = capsys.readouterr()
+        assert "No recipe schema found" in captured.err
+        assert result["success"] is False
+
+    def test_recipe_page_still_works(self):
+        result = json.loads(
+            scrape_recipe_from_html(SIMPLE_RECIPE_HTML, "https://example.com/recipe")
+        )
+
+        assert result["success"] is True
+        assert result["data"]["title"] == "Chocolate Cake"
+
+
 class TestScrapeRecipeFromHtmlWithAuth:
     def test_returns_auth_error_on_login_redirect(self):
         html = "<html><head><title>Connexion</title></head></html>"
@@ -335,3 +430,53 @@ class TestScrapeRecipeFromHtmlWithAuth:
 
         assert result["success"] is False
         assert result["error"]["type"] == "AuthenticationRequired"
+
+
+class TestLogging:
+    def test_log_debug_does_not_raise(self, capsys):
+        _log_debug("test debug message")
+        captured = capsys.readouterr()
+        assert "DEBUG" in captured.err
+        assert "test debug message" in captured.err
+
+    def test_log_info_does_not_raise(self, capsys):
+        _log_info("test info message")
+        captured = capsys.readouterr()
+        assert "INFO" in captured.err
+        assert "test info message" in captured.err
+
+    def test_log_warn_does_not_raise(self, capsys):
+        _log_warn("test warn message")
+        captured = capsys.readouterr()
+        assert "WARN" in captured.err
+        assert "test warn message" in captured.err
+
+    def test_log_error_does_not_raise(self, capsys):
+        _log_error("test error message")
+        captured = capsys.readouterr()
+        assert "ERROR" in captured.err
+        assert "test error message" in captured.err
+
+    def test_log_error_with_exception(self, capsys):
+        try:
+            raise ValueError("test exception")
+        except ValueError as e:
+            _log_error("error with exception", e)
+        captured = capsys.readouterr()
+        assert "ERROR" in captured.err
+        assert "test exception" in captured.err
+
+
+class TestModuleInitialization:
+    def test_recipe_scrapers_imported(self):
+        from scraper import SCRAPERS
+        assert len(SCRAPERS) > 100
+
+    def test_scrape_html_imported(self):
+        from scraper import scrape_html
+        assert callable(scrape_html)
+
+    def test_scrape_recipe_from_html_logs_on_call(self, capsys):
+        scrape_recipe_from_html(SIMPLE_RECIPE_HTML, "https://example.com/recipe")
+        captured = capsys.readouterr()
+        assert "scrape_recipe_from_html called" in captured.err

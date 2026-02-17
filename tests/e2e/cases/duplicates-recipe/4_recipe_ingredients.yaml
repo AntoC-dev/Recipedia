@@ -45,37 +45,15 @@ tags:
 
 - scrollUntilVisible:
     element:
-      id: "RecipeIngredients::1::NameInput::CustomTextInput"
-    direction: UP
-    speed: 60
-    centerElement: true
-    label: "Action - Scroll up for adding ingredient"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipeIngredients::1::NameInput::CustomTextInput"
-    label: "Action - Focus on ingredient input"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
       id: "RecipeIngredients::PrefixText"
     direction: UP
-    speed: 40
+    speed: 20
+    timeout: 60000
     centerElement: true
-    label: "Action - Scroll up for adding ingredient"
+    label: "Action - Scroll up to ingredient section"
 
 - waitForAnimationToEnd
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
 
 - runFlow:
     file: "../../flows/recipe/adding/addIngredientToRecipe.yaml"

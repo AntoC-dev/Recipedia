@@ -72,7 +72,10 @@ export default ({config}: ConfigContext): ExpoConfig => {
             [
                 'expo-asset',
                 {
-                    assets: ['./src/assets/app', './src/assets/images'],
+                    assets: [
+                        './src/assets/app',
+                        './src/assets/images',
+                    ],
                 },
             ],
             'expo-font',

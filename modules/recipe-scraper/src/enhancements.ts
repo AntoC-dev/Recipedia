@@ -9,6 +9,8 @@
  * Ported from Python scraper.py for consistency across platforms.
  */
 
+import {decode} from 'html-entities';
+
 import type {
     ParsedIngredient,
     ParsedInstruction,
@@ -26,19 +28,41 @@ export interface EnhancementContext {
 }
 
 /**
+ * Decode HTML entities in a string, returning null if input is null.
+ */
+function decodeString(value: string | null): string | null {
+    return value ? decode(value) : null;
+}
+
+/**
+ * Decode HTML entities in each string of an array.
+ */
+function decodeStringArray(values: string[]): string[] {
+    return values.map(v => decode(v));
+}
+
+/**
  * Apply all enhancements to a base recipe result.
  * This is the main entry point for post-processing scraped recipes.
  */
 export function applyEnhancements(context: EnhancementContext): ScrapedRecipe {
     const {html, baseResult} = context;
 
-    const cleanedTitle = cleanTitle(baseResult.title);
-    const cleanedDescription = cleanDescription(baseResult.description, baseResult.ingredients);
+    const decodedIngredients = decodeStringArray(baseResult.ingredients);
+    const decodedTitle = decodeString(baseResult.title);
+    const decodedDescription = decodeString(baseResult.description);
+    const decodedInstructions = decodeString(baseResult.instructions);
+    const decodedInstructionsList = baseResult.instructionsList
+        ? decodeStringArray(baseResult.instructionsList)
+        : null;
+
+    const cleanedTitle = cleanTitle(decodedTitle);
+    const cleanedDescription = cleanDescription(decodedDescription, decodedIngredients);
 
     const extractedKeywords = extractKeywordsFromNextData(html);
     const cleanedKeywords = cleanKeywords(
         extractedKeywords ?? baseResult.keywords,
-        baseResult.ingredients,
+        decodedIngredients,
         cleanedTitle
     );
 
@@ -46,6 +70,9 @@ export function applyEnhancements(context: EnhancementContext): ScrapedRecipe {
         ...baseResult,
         title: cleanedTitle,
         description: cleanedDescription,
+        ingredients: decodedIngredients,
+        instructions: decodedInstructions,
+        instructionsList: decodedInstructionsList,
         keywords: cleanedKeywords,
         parsedIngredients:
             baseResult.parsedIngredients ?? extractStructuredIngredients(html),
@@ -470,6 +497,8 @@ function extractStepInstructions(stepHtml: string): string[] {
 // Serving Size Inference
 // ============================================================================
 
+const MAX_INFERRED_SERVING_GRAMS = 5000;
+
 /**
  * Infer serving size when missing by finding per-100g nutrition in HTML.
  * Some sites display both per-portion and per-100g nutrition values.
@@ -485,11 +514,11 @@ export function inferServingSizeFromHtml(
     const perPortion = extractNumericValue(perPortionStr);
     if (!perPortion) return nutrients;
 
-    const per100gKcal = findPer100gCalories(html);
+    const per100gKcal = findPer100gCalories(html, perPortion);
     if (!per100gKcal || per100gKcal <= 0) return nutrients;
 
     const servingSize = Math.round((perPortion / per100gKcal) * 100);
-    if (servingSize > 0) {
+    if (servingSize > 0 && servingSize <= MAX_INFERRED_SERVING_GRAMS) {
         return {
             ...nutrients,
             servingSize: `${servingSize}g`,
@@ -500,29 +529,84 @@ export function inferServingSizeFromHtml(
 }
 
 /**
- * Search HTML for per-100g calorie value.
+ * Find all kcal values in HTML, deduplicated and in document order.
+ * Matches patterns like "374kCal", "150 kcal", "374.31 Kcal".
  */
-export function findPer100gCalories(html: string): number {
-    // Look for common patterns: tabs/sections with "100g" in id or text
+export function findAllKcalInHtml(html: string): number[] {
+    const regex = /(\d+[\d.,]*)\s*[kK][cC]al/g;
+    const seen = new Set<number>();
+    const results: number[] = [];
+
+    for (const match of html.matchAll(regex)) {
+        const value = extractNumericValue(match[1]);
+        if (value > 0 && !seen.has(value)) {
+            seen.add(value);
+            results.push(value);
+        }
+    }
+
+    return results;
+}
+
+/**
+ * Search HTML for per-100g calorie value using multiple strategies.
+ *
+ * Strategy 1: ID-based lookup (quantity, 100g, per100g tabs).
+ * Strategy 2: "100g" text markers + extractKcalFromSection + math validation.
+ * Strategy 3: Pure math via findAllKcalInHtml - finds per-100g by arithmetic.
+ */
+export function findPer100gCalories(html: string, perPortionKcal?: number): number {
+    // Strategy 1: ID-based lookup
     const tabIds = ['quantity', '100g', 'per100g'];
 
     for (const tabId of tabIds) {
         const idMatch = html.match(new RegExp(`id=["']${tabId}["']`, 'i'));
         if (idMatch && idMatch.index !== undefined) {
-            // Extract a chunk of content after the id (enough to contain nested elements)
             const chunk = html.slice(idMatch.index, idMatch.index + 500);
             const kcal = extractKcalFromSection(chunk);
             if (kcal) return kcal;
         }
     }
 
-    // Look for "100g" markers in text
-    const marker100gMatch = html.match(/100g[\s\S]{0,500}?(\d+[\d.,]*)\s*k?cal/i);
-    if (marker100gMatch) {
-        return extractNumericValue(marker100gMatch[1]);
+    // Strategy 2: "100g" text markers + math validation
+    if (perPortionKcal) {
+        const marker100gRegex = /\b100\s*g\b/gi;
+        for (const markerMatch of html.matchAll(marker100gRegex)) {
+            if (markerMatch.index === undefined) continue;
+            const chunk = html.slice(markerMatch.index, markerMatch.index + 500);
+            const candidate = extractKcalFromSection(chunk);
+            if (candidate && isValidPer100g(candidate, perPortionKcal)) {
+                return candidate;
+            }
+        }
+    }
+
+    // Strategy 3: Pure math via all kcal values on the page
+    if (perPortionKcal) {
+        const allKcal = findAllKcalInHtml(html);
+        for (const candidate of allKcal) {
+            if (isValidPer100g(candidate, perPortionKcal)) {
+                return candidate;
+            }
+        }
     }
 
     return 0;
+}
+
+/**
+ * Validate that a candidate kcal value is a plausible per-100g value
+ * given the known per-portion calories.
+ *
+ * Rejects values that are near-duplicates of perPortion (within 5%),
+ * and checks that the implied serving size is in a reasonable range.
+ */
+function isValidPer100g(candidate: number, perPortionKcal: number): boolean {
+    if (Math.abs(candidate - perPortionKcal) / perPortionKcal < 0.05) {
+        return false;
+    }
+    const impliedServing = (perPortionKcal / candidate) * 100;
+    return impliedServing > 0 && impliedServing <= MAX_INFERRED_SERVING_GRAMS;
 }
 
 /**
@@ -540,9 +624,9 @@ export function extractKcalFromSection(sectionHtml: string): number {
     for (const label of labelPatterns) {
         const labelIndex = sectionHtml.indexOf(label);
         if (labelIndex !== -1) {
-            // Look for a number after the label
-            const afterLabel = sectionHtml.slice(labelIndex + label.length, labelIndex + label.length + 100);
-            const numMatch = afterLabel.match(/(\d+[\d.,]*)/);
+            const afterLabel = sectionHtml.slice(labelIndex + label.length, labelIndex + label.length + 200);
+            const textOnly = afterLabel.replace(/<[^>]*>/g, ' ');
+            const numMatch = textOnly.match(/(\d+[\d.,]*)/);
             if (numMatch) {
                 return extractNumericValue(numMatch[1]);
             }
@@ -657,5 +741,5 @@ function findRecipeInJsonLd(data: JsonValue): JsonObject | null {
  * Strip HTML tags from a string.
  */
 function stripHtml(html: string): string {
-    return html.replace(/<[^>]*>/g, '');
+    return decode(html.replace(/<[^>]*>/g, ''));
 }

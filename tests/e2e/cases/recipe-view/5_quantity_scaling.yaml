@@ -24,7 +24,8 @@ tags:
 
 - pressKey: "ENTER"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - waitForAnimationToEnd
@@ -128,7 +129,8 @@ tags:
 
 - pressKey: "ENTER"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - waitForAnimationToEnd

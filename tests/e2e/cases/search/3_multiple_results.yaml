@@ -11,17 +11,65 @@ tags:
     id: "BottomTabs::Search"
     label: "Action - Navigate to Search screen"
 
+- extendedWaitUntil:
+    visible:
+      id: "SearchScreen::SearchBar"
+    timeout: 3000
+    label: "Wait for searc screen to appear"
+
 - tapOn:
     id: "SearchScreen::SearchBar"
     label: "Action - Focus on search bar"
 
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
 - inputText: "Ca"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to finish typing"
+
+- assertVisible:
+    id: "SearchScreen::SearchBar"
+    text: "Ca"
+    label: "Assert - Verify search bar shows 'Ca'"
+
+- tapOn:
+    id: "SearchScreen::SearchBarResults::Item::0"
+    label: "Action - Tap on first element to close the keyboard"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to close"
 
 - runFlow:
     file: "../../asserts/search/searchbar/searchBarFilteredOnCa.yaml"
     label: "Assert - Verify search bar dropdown shows filtered results for 'Ca'"
 
-- pressKey: "enter"
+- tapOn:
+    id: "SearchScreen::SearchBar"
+    label: "Action - Focus on search bar again"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - pressKey: enter
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Search"
+          label: "Tap Search key to validates the search"
+
+- extendedWaitUntil:
+    visible:
+      id: "SearchScreen::RecipeCards::0::Cover"
+    timeout: 30000
+    label: "Wait for cards to appear"
 
 - runFlow:
     file: "../../asserts/search/en/searchScreenFilteredOnCa.yaml"

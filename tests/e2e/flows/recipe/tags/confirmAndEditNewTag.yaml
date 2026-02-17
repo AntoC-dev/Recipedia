@@ -10,8 +10,12 @@ appId: "com.recipedia"
 
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Tag::ItemDialog::AddModal::Name::CustomTextInput"
-    point: "95%,50%"
+    point: "95%,5%"
     label: "Focus on tag name input field"
+
+- runFlow:
+    file: "../../waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
 - inputText:
     text: "${EDIT_SUFFIX}"
@@ -33,10 +37,16 @@ appId: "com.recipedia"
     commands:
       - tapOn:
           id: "Done"
-          label: "Tap Done key to dismiss keyboard on iOS"
+          label: "Close keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
+
+- assertVisible:
+    id: "RecipeValidation::ValidationQueue::Tag::ItemDialog::AddModal::Name::CustomTextInput"
+    text: ".*${EDIT_SUFFIX}"
+    label: "Check that tag name was edited"
 
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Tag::ItemDialog::AddModal::ConfirmButton"

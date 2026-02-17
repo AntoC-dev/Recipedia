@@ -35,13 +35,20 @@ tags:
 
 - inputText: "i"
 
-- hideKeyboard:
-    label: "Action - Dismiss keyboard"
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to finish typing"
+
+- tapOn:
+    id: "SearchScreen::SearchBarResults::Item::0"
+    label: "Action - Tap on first element to close the keyboard"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to close"
 
 - runFlow:
     file: "../../asserts/search/searchbar/searchBarFilteredOnPi.yaml"
     label: "Assert - Verify dropdown filtered on 'Pi'"
-
 
 - tapOn:
     id: "SearchScreen::SearchBarResults::Item::0"

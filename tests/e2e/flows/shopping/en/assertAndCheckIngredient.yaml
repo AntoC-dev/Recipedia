@@ -1,6 +1,5 @@
 appId: "com.recipedia"
 ---
-
 - waitForAnimationToEnd
 
 - scrollUntilVisible:
@@ -28,7 +27,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "ShoppingScreen::SectionList::${INGREDIENT_NAME}"
-          text: "󰄬 ${INGREDIENT_NAME} (${QUANTITY}${UNIT}) ${RECIPE_COUNT}"
+          text: "󰄬, ${INGREDIENT_NAME} (${QUANTITY}${UNIT}), ${RECIPE_COUNT}"
           label: "${INGREDIENT_NAME} item with checkbox and recipe count on iOS"
 
 - runFlow:

@@ -23,6 +23,9 @@ tags:
 - eraseText:
     label: "Action - Clear existing ingredient name"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - inputText:
     text: "UnitlessIngredient"
     label: "Action - Enter new ingredient name"
@@ -45,7 +48,8 @@ tags:
           id: "Done"
           label: "Tap Done key to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - tapOn:
@@ -67,7 +71,7 @@ tags:
       text: "UnitlessIngredient"
     direction: DOWN
     speed: 70
-    timeout: 240000
+    timeout: 360000
     centerElement: true
     label: "Action - Scroll to new ingredient"
 

@@ -15,15 +15,15 @@ tags:
     id: "SearchScreen::SearchBar"
     label: "Action - Focus on search bar to open dropdown"
 
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - hideKeyboard:
-          label: "Dismiss keyboard on Android"
+# Ensure the keyboard is open
+- inputText: " "
 
 - waitForAnimationToEnd:
     label: "Wait for screen to finish opening"
+
+- tapOn:
+    id: "SearchScreen::SearchBarResults::Item::0"
+    label: "Action - Tap on first element to close the keyboard"
 
 - runFlow:
     file: "../../asserts/search/searchbar/searchBarNotFiltered.yaml"

@@ -12,6 +12,10 @@ appId: "com.recipedia"
     id: "RecipeValidation::ValidationQueue::Ingredient::DatabasePicker::Searchbar"
     label: "Focus on search bar"
 
+- runFlow:
+    file: "../../waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
 - inputText:
     text: "${SEARCH_TERM}"
     label: "Search for ingredient in database"
@@ -31,8 +35,12 @@ appId: "com.recipedia"
       platform: iOS
     commands:
       - tapOn:
-          id: "Done"
-          label: "Tap Done key to dismiss keyboard on iOS"
+          id: "Search"
+          label: "Tap Search key to dismiss keyboard on iOS"
+
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to disappear"
 
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Ingredient::DatabasePicker::Item::0"

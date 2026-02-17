@@ -26,7 +26,6 @@ appId: "com.recipedia"
           text: "Coupez les filets de poulet en lanieres.\nemincez l'oignon.\nPressez ou hachez l'ail.\nDans une poele, faites chauffer un filet d'huile de cuisson a feu moyen a vif."
           label: "Preparation #3 paragraph input text id is displayed with the correct text on iOS"
 
-
 - waitForAnimationToEnd
 
 - scrollUntilVisible:
@@ -102,8 +101,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
-    text:
-      "Dans le bol d'un mixeur, deposez les ingredients suivants :\nepluchez et hachez le gingembre.\nAjoutez les cacahuetes, le sucre et le lait de coco.Salez, poivrez. Mixez jusqu'a obtenir une texture homogene."
+    text: "Dans le bol d'un mixeur, deposez les ingredients suivants :\nepluchez et hachez le gingembre.\nAjoutez les cacahuetes, le sucre et le lait de coco.Salez, poivrez. Mixez jusqu'a obtenir une texture homogene."
     label: "Preparation #2 paragraph input text id is displayed with the correct text"
 
 - waitForAnimationToEnd
@@ -112,7 +110,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::EditableStep::1::Title"
     direction: UP
-    speed: 60
+    speed: 40
     centerElement: true
 
 - waitForAnimationToEnd
@@ -121,6 +119,19 @@ appId: "com.recipedia"
     id: "RecipePreparation::EditableStep::1::Title"
     text: "Title of step 2 : "
     label: "Preparation #2 title text is displayed"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::1::TextInputTitle::CustomTextInput"
+    direction: UP
+    speed: 20
+    centerElement: true
+    label: "Scroll to second preparation title input text"
+
+- waitForAnimationToEnd
+
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::1::TextInputTitle::CustomTextInput"
@@ -160,6 +171,19 @@ appId: "com.recipedia"
     text: "Content of step 1 : "
     label: "Preparation #1 content text is displayed"
 
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
+    direction: UP
+    speed: 20
+    centerElement: true
+    label: "Scroll to first preparation content input text"
+
+- waitForAnimationToEnd
+
+
 - assertVisible:
     id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
     text: "Portez a ebullition une casserole d'eau salee.Faites cuire le riz\
@@ -183,6 +207,18 @@ appId: "com.recipedia"
     text: "Title of step 1 : "
     label: "Preparation #1 title text is displayed"
 
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
+    direction: UP
+    speed: 20
+    centerElement: true
+    label: "Scroll to first preparation title input text"
+
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
     text: "Le riz"
@@ -194,8 +230,9 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::EditableStep::0::Step"
     direction: UP
-    speed: 60
+    speed: 20
     centerElement: true
+    label: "Scroll to first preparation step"
 
 - waitForAnimationToEnd
 
@@ -210,7 +247,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::PrefixText"
     direction: UP
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to preparation prefix text"
 

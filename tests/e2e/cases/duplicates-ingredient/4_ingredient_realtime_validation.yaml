@@ -15,52 +15,19 @@ tags:
     id: "IngredientsSettings::BottomActionButton"
     label: "Action - Open add ingredient dialog"
 
-- tapOn:
-    id: "IngredientsSettings::ItemDialog::AddModal::Unit::CustomTextInput"
-    label: "Action - Focus on unit input"
-
-- inputText:
-    text: "g"
-    label: "Action - Enter a unit"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - hideKeyboard:
-          label: "Dismiss keyboard on Android"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn:
-          id: "Done"
-          label: "Tap Done key to dismiss keyboard on iOS"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
-
-- tapOn:
-    id: "IngredientsSettings::ItemDialog::AddModal::Menu::Button"
-    label: "Action - Open type menu"
-
 - extendedWaitUntil:
     visible:
-      text: "Cereal"
+      id: "IngredientsSettings::ItemDialog::AddModal::Title"
     timeout: 30000
-    label: "Wait for select menu to appear"
-
-- tapOn:
-    text: "Cereal"
-    label: "Action - Select Cereal type"
+    label: "Wait - Modal opened"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::Name::CustomTextInput"
     label: "Action - Focus on ingredient name input"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
 - inputText:
     text: "TestIngredient"
@@ -84,7 +51,8 @@ tags:
           id: "Done"
           label: "Tap Done key to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - assertNotVisible:
@@ -92,15 +60,32 @@ tags:
     label: "Assert - No helper text shown for non-matching input"
 
 - tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::CancelButton"
+    label: "Cleanup - Cancel add ingredient dialog"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "IngredientsSettings::ItemDialog::AddModal::Title"
+    timeout: 30000
+    label: "Wait - Modal dismissed"
+
+- tapOn:
+    id: "IngredientsSettings::BottomActionButton"
+    label: "Action - Open add ingredient dialog again"
+
+- extendedWaitUntil:
+    visible:
+      id: "IngredientsSettings::ItemDialog::AddModal::Title"
+    timeout: 30000
+    label: "Wait - Modal opened"
+
+- tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::Name::CustomTextInput"
-    point: "50%,75%"
     label: "Action - Focus on ingredient name input again"
 
-- eraseText:
-    label: "Action - Clear input"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
 - inputText:
     text: "Butte"
@@ -124,7 +109,8 @@ tags:
           id: "Done"
           label: "Tap Done key to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - extendedWaitUntil:
@@ -138,17 +124,55 @@ tags:
     text: "Similar ingredients found: Butter"
     label: "Assert - Helper text visible for similar match"
 
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::Menu::Button"
+    label: "Action - Open type menu"
+
+- extendedWaitUntil:
+    visible:
+      text: "Cereal"
+    timeout: 30000
+    label: "Wait for select menu to appear"
+
+- tapOn:
+    text: "Cereal"
+    label: "Action - Select Cereal type"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - assertVisible:
     id: "IngredientsSettings::ItemDialog::AddModal::ConfirmButton"
     enabled: true
     label: "Assert - Confirm button disabled (missing type and unit)"
 
 - tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::CancelButton"
+    label: "Cleanup - Cancel add ingredient dialog again"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "IngredientsSettings::ItemDialog::AddModal::Title"
+    timeout: 30000
+    label: "Wait - Modal dismissed again"
+
+- tapOn:
+    id: "IngredientsSettings::BottomActionButton"
+    label: "Action - Open add ingredient dialog again"
+
+- extendedWaitUntil:
+    visible:
+      id: "IngredientsSettings::ItemDialog::AddModal::Title"
+    timeout: 30000
+    label: "Wait - Modal opened again"
+
+- tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::Name::CustomTextInput"
     label: "Action - Focus on ingredient name input"
 
-- eraseText:
-    label: "Action - Clear input"
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
 - inputText:
     text: "Butter"
@@ -172,7 +196,8 @@ tags:
           id: "Done"
           label: "Tap Done key to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - extendedWaitUntil:

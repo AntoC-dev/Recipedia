@@ -13,24 +13,43 @@ appId: "com.recipedia"
     file: "../../en/addRecipeImage.yaml"
     label: "Add an image to this recipe"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeTitle::CustomTextInput"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll down to center title input"
+
+- waitForAnimationToEnd
+
+
 - tapOn:
     id: "RecipeTitle::CustomTextInput"
     label: "Focus on recipe title input"
+
+- runFlow:
+    file: "../../../../waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
 - inputText:
     text: "E2E Test Recipe"
     label: "Enter recipe title"
 
-- hideKeyboard:
-    label: "Dismiss keyboard"
+- tapOn:
+    id: "RecipeImage"
+    point: "50%,90%"
+    label: "Tap on recipe image to dismiss keyboard"
 
-- waitForAnimationToEnd
+- runFlow:
+    file: "../../../../waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to hide"
 
 - scrollUntilVisible:
     element:
       id: "RecipeTags::RoundButton"
     direction: DOWN
-    speed: 60
+    speed: 30
     centerElement: true
     label: "Scroll down to find add tag button"
 
@@ -44,17 +63,21 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeTags::RoundButton"
-    direction: DOWN
-    speed: 40
+      id: "RecipeTags::List::0::CustomTextInput"
+    direction: UP
+    speed: 20
     centerElement: true
-    label: "Scroll to tag button again to ensure dropdown will be visible"
+    label: "Scroll to first tag input to ensure it is visible"
 
 - waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeTags::List::0::CustomTextInput"
     label: "Focus on first tag input"
+
+- runFlow:
+    file: "../../../../waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
 - inputText:
     text: "RecipeT"
@@ -71,11 +94,41 @@ appId: "com.recipedia"
     text: "RecipeTag"
     label: "New tag text is displayed in dropdown"
 
-- tapOn:
-    id: "RecipeTags::List::0::AutocompleteItem::RecipeTag"
-    label: "Select the new tag"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+      - tapOn:
+          id: "RecipeTags::List::0::AutocompleteItem::RecipeTag"
+          label: "Select the new tag"
 
-- waitForAnimationToEnd
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to validate the tag on iOS"
+      - runFlow:
+          file: "../../../../waitForKeyboardDismiss.yaml"
+          label: "Wait for keyboard to hide"
+      - assertVisible:
+          id: "RecipeValidation::ValidationQueue::Tag::SimilarityDialog::Title"
+          label: "Tag validation dialog is visible"
+      - assertVisible:
+          id: "RecipeValidation::ValidationQueue::Tag::SimilarityDialog::Content"
+          text: ".*RecipeTag.*"
+          label: "Tag validation dialog contains the newly created tag"
+      - tapOn:
+          id: "RecipeValidation::ValidationQueue::Tag::SimilarityDialog::UseButton"
+          label: "Tap on use button to dismiss tag validation dialog"
+      - extendedWaitUntil:
+          notVisible:
+            id: "RecipeValidation::ValidationQueue::Tag::SimilarityDialog::Title"
+          timeout: 3000
+          label: "Wait for dialog to disappear"
 
 - scrollUntilVisible:
     element:
@@ -95,6 +148,10 @@ appId: "com.recipedia"
     id: "RecipeIngredients::0::QuantityInput"
     label: "Focus on ingredient quantity"
 
+- runFlow:
+    file: "../../../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
+
 - inputText:
     text: "100"
     label: "Enter ingredient quantity"
@@ -104,8 +161,9 @@ appId: "com.recipedia"
 
 - pressKey: enter
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
+- runFlow:
+    file: "../../../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - tapOn:
     id: "RecipeIngredients::0::NameInput::CustomTextInput"
@@ -120,10 +178,9 @@ appId: "com.recipedia"
 
 - pressKey: enter
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -139,6 +196,10 @@ appId: "com.recipedia"
     id: "RecipeTime::NumericTextInput"
     label: "Focus on time input"
 
+- runFlow:
+    file: "../../../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
+
 - inputText:
     text: "10"
     label: "Enter cooking time"
@@ -148,8 +209,9 @@ appId: "com.recipedia"
 
 - pressKey: enter
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
+- runFlow:
+    file: "../../../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - waitForAnimationToEnd
 
@@ -183,6 +245,10 @@ appId: "com.recipedia"
     id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
     label: "Focus on preparation content"
 
+- runFlow:
+    file: "../../../../waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
 - inputText:
     text: "Test preparation step"
     label: "Enter preparation instructions"
@@ -194,11 +260,17 @@ appId: "com.recipedia"
     id: "RecipePreparation::EditableStep::0::Content"
     label: "Tap on preparation content to dismiss keyboard"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "Recipe::BottomActionButton"
+
+- assertVisible:
+    id: "Recipe::Dialog::Content"
+    text: "Recipe .* has been successfully added to the database"
+    label: "Recipe creation dialog is visible"
 
 - assertVisible:
     id: "Recipe::Dialog::Confirm"

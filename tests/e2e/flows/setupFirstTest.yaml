@@ -8,13 +8,17 @@ appId: "com.recipedia"
 - extendedWaitUntil:
     visible:
       id: "WelcomeScreen::SkipButton"
-    timeout: 5000
+    timeout: 1200000
     optional: true
     label: "Check if onboarding appears"
 
 - runFlow:
     file: "handleAnr.yaml"
     label: "Handle ANR dialog if it appears during initialization"
+
+- assertVisible:
+    id: "WelcomeScreen::SkipButton"
+    label: "Onboarding screen is visible"
 
 - tapOn:
     id: "WelcomeScreen::SkipButton"

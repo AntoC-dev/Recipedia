@@ -36,7 +36,7 @@ tags:
     element:
       id: "IngredientsSettings::15::EditButton"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Action - Scroll to Lettuce edit button"
 
@@ -76,7 +76,8 @@ tags:
           id: "Done"
           label: "Tap Done key to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - tapOn:
@@ -93,6 +94,9 @@ tags:
 
 - eraseText:
     label: "Action - Clear existing unit"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
 
 - inputText:
     text: "kg"
@@ -116,7 +120,8 @@ tags:
           id: "Done"
           label: "Tap Done key to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - tapOn:

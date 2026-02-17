@@ -7,7 +7,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to meat accordion"
 
@@ -32,7 +32,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-          text: "Meat 󰅀"
+          text: "Meat, 󰅀"
           label: "Meat accordion title with chevron on iOS"
 
 - tapOn:
@@ -61,7 +61,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     direction: UP
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll back up to accordion header"
 
@@ -70,5 +70,15 @@ appId: "com.recipedia"
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Collapse Meat accordion"
+
+- waitForAnimationToEnd
+
+- assertNotVisible:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
+    label: "Guard - Beef item should not be visible after collapse"
+
+- assertVisible:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    label: "Guard - Meat accordion header still visible"
 
 - evalScript: ${output.accordionIndex = output.accordionIndex + 1}

@@ -133,8 +133,10 @@ appId: "com.recipedia"
     element:
       id: "RecipePersons::PrefixText"
     direction: DOWN
-    speed: 60
+    speed: 40
+    timeout: 120000
     centerElement: true
+    label: "Scroll to persons section"
 
 - waitForAnimationToEnd
 

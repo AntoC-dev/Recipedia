@@ -14,5 +14,5 @@ appId: "com.recipedia"
       platform: iOS
     commands:
       - assertNotVisible:
-          text: "Oil and Fat 󰅀"
+          text: "Oil and Fat, 󰅀"
           label: "Oil and Fat accordion not displayed on iOS"

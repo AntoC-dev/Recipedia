@@ -7,7 +7,8 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::AddButton::RoundButton"
     direction: DOWN
-    speed: 60
+    speed: 20
+    timeout: 60000
     centerElement: true
     label: "Scroll to ingredients section"
 
@@ -23,7 +24,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::${INDEX}::QuantityInput"
     direction: UP
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll up to ingredient input"
 
@@ -41,6 +42,8 @@ appId: "com.recipedia"
     commands:
       - eraseText:
           label: "Erase the existing ingredient quantity"
+      - waitForAnimationToEnd:
+          label: "Wait for keyboard animation"
 
 - inputText:
     text: "${QUANTITY}"
@@ -49,10 +52,16 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
+- assertVisible:
+    id: "RecipeIngredients::${INDEX}::QuantityInput"
+    text: "${QUANTITY}"
+    label: "Verify ingredient quantity"
+
 - pressKey: enter
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
+- runFlow:
+    file: "../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - tapOn:
     id: "RecipeIngredients::${INDEX}::NameInput::CustomTextInput"
@@ -66,6 +75,8 @@ appId: "com.recipedia"
     commands:
       - eraseText:
           label: "Erase the existing ingredient name"
+      - waitForAnimationToEnd:
+          label: "Wait for keyboard animation"
 
 - inputText:
     text: "${NAME}"
@@ -74,10 +85,13 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
+- assertVisible:
+    id: "RecipeIngredients::${INDEX}::NameInput::CustomTextInput"
+    text: "${NAME}"
+    label: "Verify ingredient name is well edited"
+
 - pressKey: "ENTER"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
-
-- waitForAnimationToEnd:
-    label: "Wait for UI to stabilize"

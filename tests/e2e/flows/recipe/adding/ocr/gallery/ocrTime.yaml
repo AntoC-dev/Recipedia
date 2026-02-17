@@ -22,10 +22,18 @@ appId: "com.recipedia"
       - tapOn:
           id: "RecipeTime::NumericTextInput"
           label: "Tap on text input of the time to prepare"
+      - runFlow:
+          file: "../../../../waitForKeyboardNumeric.yaml"
+          label: "Wait for numeric keyboard to appear"
       - inputText:
           text: "30"
           label: "Enter the time to prepare this recipe"
+      - waitForAnimationToEnd:
+          label: "Wait for keyboard to dismiss"
       - pressKey: "enter"
+      - runFlow:
+          file: "../../../../waitForKeyboardNumericDismiss.yaml"
+          label: "Wait for numeric keyboard to dismiss"
 
 - runFlow:
     when:

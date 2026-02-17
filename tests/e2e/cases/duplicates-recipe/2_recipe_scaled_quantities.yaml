@@ -54,6 +54,9 @@ tags:
 - eraseText:
     label: "Action - Clear Pasta quantity"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - inputText:
     text: "1000"
     label: "Action - Change Pasta to 1000g (far from scaled)"
@@ -63,7 +66,8 @@ tags:
 
 - pressKey: enter
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - tapOn:
@@ -72,6 +76,9 @@ tags:
 
 - eraseText:
     label: "Action - Clear Tomatoes quantity"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
 
 - inputText:
     text: "500"
@@ -82,7 +89,8 @@ tags:
 
 - pressKey: enter
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - tapOn:

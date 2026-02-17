@@ -7,7 +7,7 @@ appId: "com.recipedia"
     element:
       text: "Cereal"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to Cereal accordion"
 
@@ -32,7 +32,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-          text: "Cereal 󰅀"
+          text: "Cereal, 󰅀"
           label: "Cereal accordion title with chevron on iOS"
 
 # Expand the accordion
@@ -46,7 +46,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${1+output.accordionIndex}"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to the next accordion to ensure all elements are displayed"
 
@@ -153,7 +153,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     direction: UP
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll back up to accordion header"
 

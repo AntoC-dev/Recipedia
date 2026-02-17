@@ -16,12 +16,21 @@ tags:
     id: "VerticalBottomButtons::UrlDialog::Input::CustomTextInput"
     label: "Action - Focus on URL input"
 
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
 - inputText:
     text: "not-a-valid-url"
     label: "Action - Enter invalid URL"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
+
+- assertVisible:
+    id: "VerticalBottomButtons::UrlDialog::Input::CustomTextInput"
+    text: "not-a-valid-url"
+    label: "Invalid URL is well presend in the text input"
 
 - runFlow:
     when:
@@ -38,8 +47,10 @@ tags:
           id: "Done"
           label: "Tap Done key to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
+
 - tapOn:
     id: "VerticalBottomButtons::UrlDialog::SubmitButton"
     label: "Try to import the recipe with an invalid URL"

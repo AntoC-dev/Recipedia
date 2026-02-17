@@ -8,14 +8,25 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "IngredientsSettings::15::EditButton"
+      id: "IngredientsSettings::15::IngredientName"
     direction: DOWN
     speed: 70
-    timeout: 240000
+    timeout: 120000
     centerElement: true
     label: "Scroll to Lettuce Edited ingredient"
 
 - waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "IngredientsSettings::15::EditButton"
+    direction: DOWN
+    speed: 4
+    centerElement: true
+    label: "Scroll to Lettuce Edited ingredient edit button"
+
+- waitForAnimationToEnd
+
 
 - tapOn:
     id: "IngredientsSettings::15::EditButton"
@@ -27,6 +38,9 @@ appId: "com.recipedia"
 
 - eraseText:
     label: "Clear existing ingredient name"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
 
 - inputText:
     text: "Lettuce"
@@ -50,7 +64,8 @@ appId: "com.recipedia"
           id: "Done"
           label: "Tap Done key to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - tapOn:
@@ -67,6 +82,9 @@ appId: "com.recipedia"
 
 - eraseText:
     label: "Clear existing unit"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
 
 - inputText:
     text: "g"
@@ -90,7 +108,8 @@ appId: "com.recipedia"
           id: "Done"
           label: "Tap Done key to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - tapOn:

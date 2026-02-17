@@ -19,9 +19,9 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "LanguageSettings::Item::0"
-          text: "󰄬 English"
+          text: "󰄬, English"
           label: "English language option on iOS"
       - assertVisible:
           id: "LanguageSettings::Item::1"
-          text: "󰄬 Français"
+          text: "󰄬, Français"
           label: "French language option on iOS"

@@ -404,5 +404,5 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "TagsSettings::BottomActionButton"
-          text: "󰐕 Add Tag"
+          text: "󰐕, Add Tag"
           label: "Add tag button is visible with correct text"

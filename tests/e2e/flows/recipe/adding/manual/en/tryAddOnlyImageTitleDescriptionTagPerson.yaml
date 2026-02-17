@@ -17,6 +17,10 @@ appId: "com.recipedia"
     id: "RecipePersons::NumericTextInput"
     label: "Press person input"
 
+- runFlow:
+    file: "../../../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
+
 - inputText:
     text: "321"
     label: "Write the number of person in the input text"
@@ -26,5 +30,6 @@ appId: "com.recipedia"
 
 - pressKey: enter
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
+- runFlow:
+    file: "../../../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"

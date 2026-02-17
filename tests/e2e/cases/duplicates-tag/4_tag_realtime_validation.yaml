@@ -15,9 +15,19 @@ tags:
     id: "TagsSettings::BottomActionButton"
     label: "Action - Open add tag dialog"
 
+- extendedWaitUntil:
+    visible:
+      id: "TagsSettings::ItemDialog::AddModal::Title"
+    timeout: 5000
+    label: "Wait for modal to appear"
+
 - tapOn:
     id: "TagsSettings::ItemDialog::AddModal::Name::CustomTextInput"
     label: "Action - Focus on tag name input"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
 - inputText:
     text: "TestTag"
@@ -26,6 +36,11 @@ tags:
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
+- assertVisible:
+    id: "TagsSettings::ItemDialog::AddModal::Name::CustomTextInput"
+    text: "TestTag"
+    label: "Assert - Tag name input is populated with non-existant text"
+
 - runFlow:
     when:
       platform: Android
@@ -41,7 +56,8 @@ tags:
           id: "Done"
           label: "Tap Done key to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - assertNotVisible:
@@ -49,11 +65,32 @@ tags:
     label: "Assert - No helper text shown for non-matching input"
 
 - tapOn:
+    id: "TagsSettings::ItemDialog::AddModal::CancelButton"
+    label: "Cleanup - Cancel add tag dialog"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "TagsSettings::ItemDialog::AddModal::Title"
+    timeout: 5000
+    label: "Wait for modal to disappear"
+
+- tapOn:
+    id: "TagsSettings::BottomActionButton"
+    label: "Action - Open add tag dialog"
+
+- extendedWaitUntil:
+    visible:
+      id: "TagsSettings::ItemDialog::AddModal::Title"
+    timeout: 5000
+    label: "Wait for modal to appear"
+
+- tapOn:
     id: "TagsSettings::ItemDialog::AddModal::Name::CustomTextInput"
     label: "Action - Focus on tag name input again"
 
-- eraseText:
-    label: "Action - Clear input"
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
 - inputText:
     text: "Dessrt"
@@ -62,6 +99,11 @@ tags:
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
+- assertVisible:
+    id: "TagsSettings::ItemDialog::AddModal::Name::CustomTextInput"
+    text: "Dessrt"
+    label: "Assert - Tag name input is populated with fuzzy matching text"
+
 - runFlow:
     when:
       platform: Android
@@ -77,7 +119,8 @@ tags:
           id: "Done"
           label: "Tap Done key to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - extendedWaitUntil:
@@ -97,11 +140,32 @@ tags:
     label: "Assert - Confirm button enabled for similar match"
 
 - tapOn:
+    id: "TagsSettings::ItemDialog::AddModal::CancelButton"
+    label: "Cleanup - Cancel add tag dialog"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "TagsSettings::ItemDialog::AddModal::Title"
+    timeout: 5000
+    label: "Wait for modal to disappear"
+
+- tapOn:
+    id: "TagsSettings::BottomActionButton"
+    label: "Action - Open add tag dialog"
+
+- extendedWaitUntil:
+    visible:
+      id: "TagsSettings::ItemDialog::AddModal::Title"
+    timeout: 5000
+    label: "Wait for modal to appear"
+
+- tapOn:
     id: "TagsSettings::ItemDialog::AddModal::Name::CustomTextInput"
     label: "Action - Focus on tag name input"
 
-- eraseText:
-    label: "Action - Clear input"
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
 - inputText:
     text: "Dessert"
@@ -109,6 +173,11 @@ tags:
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
+
+- assertVisible:
+    id: "TagsSettings::ItemDialog::AddModal::Name::CustomTextInput"
+    text: "Dessert"
+    label: "Assert - Tag name input is populated with exact duplicate"
 
 - runFlow:
     when:
@@ -125,7 +194,8 @@ tags:
           id: "Done"
           label: "Tap Done key to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - extendedWaitUntil:

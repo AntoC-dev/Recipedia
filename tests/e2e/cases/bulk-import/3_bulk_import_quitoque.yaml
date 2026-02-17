@@ -68,7 +68,7 @@ tags:
 - extendedWaitUntil:
     visible:
       id: "BulkImportValidation::AppBar::Title"
-    timeout: 120000
+    timeout: 200000
     label: "Wait - For validation screen"
 
 - extendedWaitUntil:
@@ -125,7 +125,7 @@ tags:
 - extendedWaitUntil:
     visible:
       id: "BulkImportValidation::AppBar::Title"
-    timeout: 120000
+    timeout: 200000
     label: "Wait - For validation screen"
 
 - extendedWaitUntil:

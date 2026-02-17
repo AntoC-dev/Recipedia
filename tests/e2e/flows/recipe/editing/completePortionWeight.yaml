@@ -18,6 +18,10 @@ appId: "com.recipedia"
     id: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightNumericTextInput"
     label: "Tap portion weight input"
 
+- runFlow:
+    file: "../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
+
 - inputText:
     text: "200"
     label: "Enter portion weight value"
@@ -27,5 +31,6 @@ appId: "com.recipedia"
 
 - pressKey: "ENTER"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
+- runFlow:
+    file: "../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"

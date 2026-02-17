@@ -17,6 +17,10 @@ appId: "com.recipedia"
     id: "RecipeIngredients::0::QuantityInput"
     label: "Press on ingredient quantity input"
 
+- runFlow:
+    file: "../../../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
+
 - inputText: "4321"
 
 - waitForAnimationToEnd:
@@ -24,5 +28,6 @@ appId: "com.recipedia"
 
 - pressKey: enter
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
+- runFlow:
+    file: "../../../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"

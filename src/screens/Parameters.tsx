@@ -153,6 +153,7 @@ export function Parameters() {
         <List.Item
           testID={seasonId + '::Item'}
           title={t('default_season_filter')}
+          accessible={false}
           left={props => <List.Icon {...props} icon={Icons.plannerUnselectedIcon} />}
           right={() => (
             <Switch
@@ -175,6 +176,7 @@ export function Parameters() {
           <List.Item
             testID={darkModeId + '::Item'}
             title={t('dark_mode')}
+            accessible={false}
             left={props => <List.Icon {...props} icon={Icons.lightDarkTheme} />}
             right={() => (
               <Switch

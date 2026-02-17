@@ -10,6 +10,7 @@ import {
   extractNumericValue,
   extractStructuredIngredients,
   extractStructuredInstructions,
+  findAllKcalInHtml,
   findPer100gCalories,
   findTagsInDict,
   inferServingSizeFromHtml,
@@ -21,8 +22,11 @@ import type { ScrapedRecipe } from '@app/modules/recipe-scraper/src/types';
 import {
   nextDataHtml,
   nutrition100gTabHtml,
+  nutritionKcalSuffixHtml,
   nutritionNo100gHtml,
   simpleRecipeHtml,
+  ingredientsWithEntitiesHtml,
+  instructionsWithEntitiesHtml,
   structuredIngredientsHtml,
   structuredInstructionsHtml,
   structuredWithKitchenListHtml,
@@ -245,6 +249,26 @@ describe('enhancements module', () => {
     });
   });
 
+  describe('findAllKcalInHtml', () => {
+    it('extracts multiple kcal values from HTML', () => {
+      const result = findAllKcalInHtml(nutritionKcalSuffixHtml);
+      expect(result).toContain(374);
+      expect(result).toContain(150);
+      expect(result).toHaveLength(2);
+    });
+
+    it('returns empty array when no kcal values', () => {
+      const result = findAllKcalInHtml('<div>No calories here</div>');
+      expect(result).toEqual([]);
+    });
+
+    it('deduplicates same values', () => {
+      const html = '<span>200kCal</span><span>200kcal</span><span>100kCal</span>';
+      const result = findAllKcalInHtml(html);
+      expect(result).toEqual([200, 100]);
+    });
+  });
+
   describe('findPer100gCalories', () => {
     it('finds calories in quantity tab', () => {
       const result = findPer100gCalories(nutrition100gTabHtml);
@@ -253,6 +277,29 @@ describe('enhancements module', () => {
 
     it('returns zero when no 100g section', () => {
       const result = findPer100gCalories(nutritionNo100gHtml);
+      expect(result).toBe(0);
+    });
+
+    it('finds per-100g via math validation with kcal suffix HTML', () => {
+      const result = findPer100gCalories(nutritionKcalSuffixHtml, 374);
+      expect(result).toBe(150);
+    });
+
+    it('skips near-duplicates of perPortion', () => {
+      const html = '<span>374.31 Kcal</span><span>374kCal</span>';
+      const result = findPer100gCalories(html, 374);
+      expect(result).toBe(0);
+    });
+
+    it('finds per-100g via pure math when no 100g text marker', () => {
+      const html = '<div><span>500kCal</span><span>200kCal</span></div>';
+      const result = findPer100gCalories(html, 500);
+      expect(result).toBe(200);
+    });
+
+    it('returns 0 when no valid candidate', () => {
+      const html = '<div>no nutrition data</div>';
+      const result = findPer100gCalories(html, 374);
       expect(result).toBe(0);
     });
   });
@@ -289,6 +336,15 @@ describe('enhancements module', () => {
             `;
       const result = extractKcalFromSection(html);
       expect(result).toBe(0);
+    });
+
+    it('ignores digits in HTML class names', () => {
+      const html = `
+            <p class="body-2 bold m-0">Énergie (kCal)</p>
+            <p class="body-2 regular m-0">150kCal</p>
+            `;
+      const result = extractKcalFromSection(html);
+      expect(result).toBe(150);
     });
   });
 
@@ -327,6 +383,19 @@ describe('enhancements module', () => {
       const result = inferServingSizeFromHtml(nutrition100gTabHtml, nutrients);
       const expected = Math.round((594 / 297) * 100);
       expect(result?.servingSize).toBe(`${expected}g`);
+    });
+
+    it('infers from quitoque-like HTML with kcal suffixes', () => {
+      const nutrients = { calories: '374kCal' };
+      const result = inferServingSizeFromHtml(nutritionKcalSuffixHtml, nutrients);
+      expect(result?.servingSize).toBe('249g');
+    });
+
+    it('rejects absurd serving size exceeding 5000g cap', () => {
+      const html = '<span>1kCal</span>';
+      const nutrients = { calories: '50001kCal' };
+      const result = inferServingSizeFromHtml(html, nutrients);
+      expect(result?.servingSize).toBeUndefined();
     });
   });
 
@@ -398,6 +467,21 @@ describe('enhancements module', () => {
       expect(result).toBeNull();
     });
 
+    it('decodes HTML entities in ingredient names', () => {
+      const result = extractStructuredIngredients(ingredientsWithEntitiesHtml);
+
+      expect(result).not.toBeNull();
+      expect(result).toHaveLength(2);
+
+      expect(result![0].quantity).toBe('1');
+      expect(result![0].unit).toBe('x');
+      expect(result![0].name).toBe("gousse d'ail");
+
+      expect(result![1].quantity).toBe('200');
+      expect(result![1].unit).toBe('g');
+      expect(result![1].name).toBe('pâtes fraîches');
+    });
+
     it('extracts kitchen list items', () => {
       const result = extractStructuredIngredients(structuredWithKitchenListHtml);
 
@@ -466,6 +550,17 @@ describe('enhancements module', () => {
       expect(result![0].instructions).toHaveLength(2);
       expect(result![1].title).toBe('Les mouillettes');
       expect(result![1].instructions).toHaveLength(3);
+    });
+
+    it('decodes HTML entities in step titles and instructions', () => {
+      const result = extractStructuredInstructions(instructionsWithEntitiesHtml);
+
+      expect(result).not.toBeNull();
+      expect(result).toHaveLength(1);
+      expect(result![0].title).toBe("Pr'paration d'ail");
+      expect(result![0].instructions).toHaveLength(2);
+      expect(result![0].instructions[0]).toBe("\u00C9mincez l'ail et faites-le revenir.");
+      expect(result![0].instructions[1]).toBe('Ajoutez les p\u00e2tes\u00a0fra\u00eeches.');
     });
 
     it('returns null when no container found', () => {
@@ -676,6 +771,156 @@ describe('enhancements module', () => {
       });
 
       expect(result.title).toBe('Test recipe');
+    });
+
+    it('decodes HTML entities in ingredients', () => {
+      const baseResult: ScrapedRecipe = {
+        title: 'Test',
+        description: null,
+        ingredients: ['200g d&#039;eau', 'sel &amp; poivre'],
+        parsedIngredients: null,
+        ingredientGroups: null,
+        instructions: null,
+        instructionsList: null,
+        parsedInstructions: null,
+        totalTime: null,
+        prepTime: null,
+        cookTime: null,
+        yields: null,
+        image: null,
+        host: null,
+        canonicalUrl: null,
+        siteName: null,
+        author: null,
+        language: null,
+        category: null,
+        cuisine: null,
+        cookingMethod: null,
+        keywords: null,
+        dietaryRestrictions: null,
+        ratings: null,
+        ratingsCount: null,
+        nutrients: null,
+        equipment: null,
+        links: null,
+      };
+
+      const result = applyEnhancements({ html: '<html></html>', baseResult });
+
+      expect(result.ingredients).toEqual(["200g d'eau", 'sel & poivre']);
+    });
+
+    it('decodes HTML entities in title and description', () => {
+      const baseResult: ScrapedRecipe = {
+        title: 'Poulet d&#039;automne &amp; légumes',
+        description: 'Un plat d&#039;hiver',
+        ingredients: [],
+        parsedIngredients: null,
+        ingredientGroups: null,
+        instructions: null,
+        instructionsList: null,
+        parsedInstructions: null,
+        totalTime: null,
+        prepTime: null,
+        cookTime: null,
+        yields: null,
+        image: null,
+        host: null,
+        canonicalUrl: null,
+        siteName: null,
+        author: null,
+        language: null,
+        category: null,
+        cuisine: null,
+        cookingMethod: null,
+        keywords: null,
+        dietaryRestrictions: null,
+        ratings: null,
+        ratingsCount: null,
+        nutrients: null,
+        equipment: null,
+        links: null,
+      };
+
+      const result = applyEnhancements({ html: '<html></html>', baseResult });
+
+      expect(result.title).toBe("Poulet d'automne & légumes");
+      expect(result.description).toBe("Un plat d'hiver");
+    });
+
+    it('decodes &nbsp; in instructions to regular space', () => {
+      const baseResult: ScrapedRecipe = {
+        title: 'Test',
+        description: null,
+        ingredients: [],
+        parsedIngredients: null,
+        ingredientGroups: null,
+        instructions: 'Ajoutez\u00a0le sel',
+        instructionsList: ['Ajoutez&nbsp;le sel', 'Mélangez&nbsp;bien'],
+        parsedInstructions: null,
+        totalTime: null,
+        prepTime: null,
+        cookTime: null,
+        yields: null,
+        image: null,
+        host: null,
+        canonicalUrl: null,
+        siteName: null,
+        author: null,
+        language: null,
+        category: null,
+        cuisine: null,
+        cookingMethod: null,
+        keywords: null,
+        dietaryRestrictions: null,
+        ratings: null,
+        ratingsCount: null,
+        nutrients: null,
+        equipment: null,
+        links: null,
+      };
+
+      const result = applyEnhancements({ html: '<html></html>', baseResult });
+
+      expect(result.instructionsList).toEqual(['Ajoutez\u00a0le sel', 'Mélangez\u00a0bien']);
+    });
+
+    it('passes through clean strings unchanged', () => {
+      const baseResult: ScrapedRecipe = {
+        title: 'test recipe',
+        description: 'A delicious recipe for testing',
+        ingredients: ['200g flour', '100g sugar'],
+        parsedIngredients: null,
+        ingredientGroups: null,
+        instructions: 'Mix and bake',
+        instructionsList: ['Mix ingredients', 'Bake at 180C'],
+        parsedInstructions: null,
+        totalTime: null,
+        prepTime: null,
+        cookTime: null,
+        yields: null,
+        image: null,
+        host: null,
+        canonicalUrl: null,
+        siteName: null,
+        author: null,
+        language: null,
+        category: null,
+        cuisine: null,
+        cookingMethod: null,
+        keywords: null,
+        dietaryRestrictions: null,
+        ratings: null,
+        ratingsCount: null,
+        nutrients: null,
+        equipment: null,
+        links: null,
+      };
+
+      const result = applyEnhancements({ html: simpleRecipeHtml, baseResult });
+
+      expect(result.ingredients).toEqual(['200g flour', '100g sugar']);
+      expect(result.instructionsList).toEqual(['Mix ingredients', 'Bake at 180C']);
     });
 
     it('extracts keywords from __NEXT_DATA__ when base has none', () => {

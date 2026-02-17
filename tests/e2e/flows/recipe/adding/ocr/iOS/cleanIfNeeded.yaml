@@ -4,19 +4,35 @@ appId: "com.recipedia"
     appId: "com.apple.mobileslideshow"
     label: "Open iOS Photos app"
 
-- runFlow:
-    when:
-      visible:
-        text: "What's New.*"
-    commands:
-      - tapOn:
-          text: "Continue"
-          label: "CLose the what's new screen if it appears"
+- waitForAnimationToEnd:
+    label: "Wait for Photos app to finish loading"
+
+- extendedWaitUntil:
+    visible:
+      text: "Continue"
+    timeout: 5000
+    optional: true
+    label: "Wait for what's new screen to appear"
 
 - runFlow:
     when:
       visible:
-        text: "Select"
+        text: "Continue"
+    commands:
+      - tapOn:
+          text: "Continue"
+          label: "Close the what's new screen if it appears"
+
+- extendedWaitUntil:
+    visible:
+      text: "Select"
+    timeout: 10000
+    label: "Wait for select button to appear"
+
+- runFlow:
+    when:
+      visible:
+        text: "\\d+ Photo.*"
     commands:
       - runFlow:
           file: "cleanupPhotos.yaml"

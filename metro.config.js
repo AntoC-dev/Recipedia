@@ -11,6 +11,7 @@ const defaultConfig = getDefaultConfig(__dirname);
 
 // Extend default extensions instead of overriding
 defaultConfig.resolver.assetExts.push('db');
+defaultConfig.resolver.assetExts.push('html');
 
 // Enable persistent filesystem caching for faster builds
 defaultConfig.cacheVersion = '1.0';

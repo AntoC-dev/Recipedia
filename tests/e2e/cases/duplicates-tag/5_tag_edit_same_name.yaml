@@ -48,10 +48,29 @@ tags:
 
 - tapOn:
     id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    point: "95%,50%"
     label: "Action - Focus on tag name input"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
 - eraseText:
     label: "Action - Clear input"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- tapOn:
+    id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    point: "95%,50%"
+    label: "Action - Focus on tag name input again"
+
+- eraseText:
+    label: "Action - Clear input again to ensure it is empty (avoid flaky test)"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
 
 - inputText:
     text: "Sweet"
@@ -75,8 +94,14 @@ tags:
           id: "Done"
           label: "Tap Done key to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
+
+- assertVisible:
+    id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    text: "Sweet"
+    label: "Assert - Name input shows new tag name"
 
 - extendedWaitUntil:
     visible:
@@ -95,10 +120,29 @@ tags:
 
 - tapOn:
     id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    point: "95%,50%"
     label: "Action - Focus on tag name input again"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
 - eraseText:
     label: "Action - Clear input"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- tapOn:
+    id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    point: "95%,50%"
+    label: "Action - Focus on tag name input again"
+
+- eraseText:
+    label: "Action - Clear input again to ensure it is empty (avoid flaky test)"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
 
 - inputText:
     text: "Dessert"
@@ -122,8 +166,14 @@ tags:
           id: "Done"
           label: "Tap Done key to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
+
+- assertVisible:
+    id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    text: "Dessert"
+    label: "Assert - Name input shows new tag name"
 
 - extendedWaitUntil:
     visible:
@@ -142,10 +192,29 @@ tags:
 
 - tapOn:
     id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    point: "95%,50%"
     label: "Action - Focus on tag name input again"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
 - eraseText:
     label: "Action - Clear input"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- tapOn:
+    id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    point: "95%,50%"
+    label: "Action - Focus on tag name input again"
+
+- eraseText:
+    label: "Action - Clear input again to ensure it is empty (avoid flaky test)"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
 
 - inputText:
     text: "Chocolate"
@@ -169,8 +238,14 @@ tags:
           id: "Done"
           label: "Tap Done key to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
+
+- assertVisible:
+    id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    text: "Chocolate"
+    label: "Assert - Name input shows new tag name"
 
 - extendedWaitUntil:
     visible:
@@ -198,7 +273,6 @@ tags:
 - assertNotVisible:
     id: "TagsSettings::ItemDialog::AddModal::CancelButton"
     label: "Check - Dialog is hidden"
-
 
 - runFlow:
     file: "../../flows/parameters/tags/returnToHome.yaml"

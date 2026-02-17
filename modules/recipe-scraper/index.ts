@@ -16,6 +16,6 @@ export type {
 
 export { ScraperErrorTypes } from './src/types';
 
-// Scraper class and instance
-export { RecipeScraper, recipeScraper } from './src/RecipeScraper';
+// Scraper class, instance, and hooks
+export { RecipeScraper, recipeScraper, usePythonReady } from './src/RecipeScraper';
 export type { ScrapeOptions } from './src/RecipeScraper';

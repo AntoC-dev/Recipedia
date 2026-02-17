@@ -1,6 +1,5 @@
 appId: "com.recipedia"
 ---
-
 - waitForAnimationToEnd
 
 - scrollUntilVisible:
@@ -39,8 +38,10 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "Parameters::Section::Appearance::DarkMode::Item"
-          text: "󰔎 Dark Mode"
-          label: "Dark mode item with icon on iOS"
+          label: "Dark mode item is displayed on iOS"
+      - assertVisible:
+          text: "Dark Mode"
+          label: "Dark mode item text is displayed on iOS"
 
 - assertVisible:
     id: "Parameters::Section::Appearance::DarkMode::Switch"
@@ -61,5 +62,5 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "Parameters::Section::Appearance::Language::Item"
-          text: "󰗊 Language English 󰅂"
+          text: "󰗊, Language, English, 󰅂"
           label: "Language item with icon on iOS"

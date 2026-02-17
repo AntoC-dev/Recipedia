@@ -51,7 +51,12 @@ tags:
 
 - tapOn:
     id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    point: "95%,50%"
     label: "Action - Focus on tag name input"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
 - inputText:
     text: " Cuisine"
@@ -59,6 +64,11 @@ tags:
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
+
+- assertVisible:
+    id: "TagsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    text: "Italian Cuisine"
+    label: "Assert - Verify tag name updated to Italian Cuisine"
 
 - runFlow:
     when:
@@ -75,7 +85,8 @@ tags:
           id: "Done"
           label: "Tap Done key to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - tapOn:

@@ -30,16 +30,28 @@ appId: "com.recipedia"
           id: "Done"
           label: "Tap Done key to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::Menu::Button"
     label: "Open type dropdown menu"
 
+- extendedWaitUntil:
+    visible:
+      text: "Legumes"
+    timeout: 30000
+    label: "Wait for legumes type to appear in dropdown menu"
+
 - tapOn:
     text: "Legumes"
     label: "Select legumes type"
+
+- assertVisible:
+    id: "IngredientsSettings::ItemDialog::AddModal::ConfirmButton"
+    enabled: true
+    label: "Confirm button should be enabled"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::ConfirmButton"

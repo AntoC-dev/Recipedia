@@ -38,5 +38,5 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "Parameters::Section::About::Version::Item"
-          text: "󰋼 Version .*\\d+\\.\\d+\\.\\d+"
+          text: "󰋼, Version, .*\\d+\\.\\d+\\.\\d+"
           label: "Version item with icon on iOS"

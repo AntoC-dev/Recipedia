@@ -27,10 +27,20 @@ tags:
 
 - scrollUntilVisible:
     element:
-      id: "IngredientsSettings::34::DeleteButton"
+      id: "IngredientsSettings::34::IngredientName"
     direction: UP
     speed: 50
+    centerElement: true
     label: "Action - Scroll to ingredient to delete"
+
+
+- scrollUntilVisible:
+    element:
+      id: "IngredientsSettings::34::DeleteButton"
+    direction: DOWN
+    speed: 50
+    centerElement: true
+    label: "Action - Scroll to delete button of the ingredient to delete"
 
 - waitForAnimationToEnd
 

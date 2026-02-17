@@ -17,7 +17,8 @@ tags:
     element:
       text: "Butter"
     direction: DOWN
-    speed: 60
+    speed: 40
+    timeout: 60000
     centerElement: true
     label: "Action - Scroll to find Butter ingredient"
 
@@ -90,14 +91,9 @@ tags:
           id: "Done"
           label: "Tap Done key to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
-
-- extendedWaitUntil:
-    visible:
-      id: "IngredientsSettings::ItemDialog::EditModal::ConfirmButton"
-    timeout: 500
-    label: "Wait - Debounce validation"
 
 - assertNotVisible:
     id: "IngredientsSettings::ItemDialog::EditModal::HelperText"
@@ -110,10 +106,22 @@ tags:
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    point: "95%,50%"
     label: "Action - Focus on ingredient name input again"
 
 - eraseText:
     label: "Action - Clear input"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    point: "95%,50%"
+    label: "Action - Focus on ingredient name input again (avoid flaky test)"
+
+- eraseText:
+    label: "Action - Clear input again to avoid flaky test"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
@@ -140,7 +148,8 @@ tags:
           id: "Done"
           label: "Tap Done key to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - extendedWaitUntil:

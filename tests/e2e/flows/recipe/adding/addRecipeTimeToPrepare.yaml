@@ -17,6 +17,10 @@ appId: "com.recipedia"
     id: "RecipeTime::NumericTextInput"
     label: "Focus on time text input"
 
+- runFlow:
+    file: "../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
+
 - inputText:
     text: "${PERSONS_VALUE}"
     label: "Enter the time to prepare to ${PERSONS_VALUE}"
@@ -24,7 +28,13 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
+- assertVisible:
+    id: "RecipeTime::NumericTextInput"
+    text: "${PERSONS_VALUE}"
+    label: "Check that the time to prepare is ${PERSONS_VALUE}"
+
 - pressKey: enter
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
+- runFlow:
+    file: "../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"

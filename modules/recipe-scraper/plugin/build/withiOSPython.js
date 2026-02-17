@@ -1,92 +1,61 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withiOSPython = void 0;
 var config_plugins_1 = require("@expo/config-plugins");
-var path = __importStar(require("path"));
-var fs = __importStar(require("fs"));
+var child_process_1 = require("child_process");
+var fs_1 = require("fs");
+var path_1 = require("path");
+var MODULE_DIR = (0, path_1.join)(__dirname, '..', '..');
+var SCRIPTS_DIR = (0, path_1.join)(MODULE_DIR, 'scripts');
+var ASSETS_DIR = (0, path_1.join)(MODULE_DIR, 'assets');
+var BUNDLE_FILE = (0, path_1.join)(ASSETS_DIR, 'pyodide-bundle.html');
+var SETUP_SCRIPT = (0, path_1.join)(SCRIPTS_DIR, 'setup-pyodide.sh');
+var MIN_BUNDLE_SIZE = 10 * 1024 * 1024; // 10MB minimum
 /**
- * Expo config plugin for iOS Python support in RecipeScraper module.
+ * Expo config plugin for iOS RecipeScraper module.
  *
- * This plugin:
- * 1. Adds a pre-build script phase to download Python framework
- * 2. Updates Podfile to include PythonKit
- * 3. Configures Xcode project settings for Python framework
+ * This plugin runs during `expo prebuild` to:
+ * 1. Download Pyodide WASM runtime and Python packages
+ * 2. Generate a self-contained HTML bundle with all assets embedded
+ * 3. Verify the bundle was created successfully
+ *
+ * The bundle is then loaded by PyodideWebView at runtime without network access.
  */
 var withiOSPython = function (config, _pluginConfig) {
-    // Note: PythonKit is optional and uses #if canImport(PythonKit) in Swift code.
-    // When PythonKit is not available, the module falls back to Swift SchemaRecipeParser.
-    // To enable Python support, manually add PythonKit via Swift Package Manager.
-    config = (0, config_plugins_1.withPodfile)(config, function (podfileConfig) {
-        return podfileConfig;
-    });
-    // Configure Xcode project
-    config = (0, config_plugins_1.withXcodeProject)(config, function (xcodeConfig) {
-        var project = xcodeConfig.modResults;
-        var projectRoot = xcodeConfig.modRequest.projectRoot;
-        // Get the iOS module path
-        var moduleIOSPath = path.join(projectRoot, 'modules', 'recipe-scraper', 'ios');
-        // Run the setup script during prebuild if not already done
-        var setupScriptPath = path.join(moduleIOSPath, 'scripts', 'setup-python.sh');
-        if (fs.existsSync(setupScriptPath)) {
-            // Check if frameworks already exist
-            var frameworksPath = path.join(moduleIOSPath, 'Frameworks', 'Python.xcframework');
-            if (!fs.existsSync(frameworksPath)) {
-                console.log('[RecipeScraper] Setting up Python framework for iOS...');
-                // Note: The actual setup is done by the podspec script phase
-                // This is just for informational purposes during prebuild
+    return (0, config_plugins_1.withDangerousMod)(config, [
+        'ios',
+        function (config) {
+            console.log('[RecipeScraper] Setting up iOS Pyodide bundle...');
+            // Check if setup script exists
+            if (!(0, fs_1.existsSync)(SETUP_SCRIPT)) {
+                throw new Error("[RecipeScraper] Setup script not found: ".concat(SETUP_SCRIPT));
             }
-        }
-        // Add framework search paths to the main target
-        var targetKey = project.getFirstTarget().uuid;
-        if (targetKey) {
-            var configurations_1 = project.pbxXCBuildConfigurationSection();
-            Object.keys(configurations_1).forEach(function (key) {
-                var buildSettings = configurations_1[key].buildSettings;
-                if (buildSettings) {
-                    // Add framework search paths for Python
-                    var existingPaths = buildSettings.FRAMEWORK_SEARCH_PATHS || '$(inherited)';
-                    if (!existingPaths.includes('Python.xcframework')) {
-                        // The paths are handled by the podspec, this is backup
-                    }
-                    // Note: OTHER_LDFLAGS are handled by the podspec, no need to modify here
-                }
-            });
-        }
-        return xcodeConfig;
-    });
-    return config;
+            // Run the setup script
+            try {
+                console.log('[RecipeScraper] Running setup-pyodide.sh...');
+                (0, child_process_1.execSync)("bash \"".concat(SETUP_SCRIPT, "\""), {
+                    cwd: SCRIPTS_DIR,
+                    stdio: 'inherit',
+                    env: Object.assign(Object.assign({}, process.env), { FORCE_COLOR: '1' }),
+                });
+            }
+            catch (error) {
+                var message = error instanceof Error ? error.message : String(error);
+                throw new Error("[RecipeScraper] Failed to run setup script: ".concat(message));
+            }
+            // Verify bundle was created
+            if (!(0, fs_1.existsSync)(BUNDLE_FILE)) {
+                throw new Error("[RecipeScraper] Pyodide bundle not generated: ".concat(BUNDLE_FILE));
+            }
+            // Verify bundle size
+            var stats = (0, fs_1.statSync)(BUNDLE_FILE);
+            if (stats.size < MIN_BUNDLE_SIZE) {
+                throw new Error("[RecipeScraper] Pyodide bundle too small (".concat(stats.size, " bytes), expected at least ").concat(MIN_BUNDLE_SIZE, " bytes"));
+            }
+            var bundleSizeMB = (stats.size / (1024 * 1024)).toFixed(2);
+            console.log("[RecipeScraper] iOS Pyodide bundle ready (".concat(bundleSizeMB, " MB)"));
+            return config;
+        },
+    ]);
 };
 exports.withiOSPython = withiOSPython;

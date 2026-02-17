@@ -32,7 +32,7 @@ tags:
       id: "Recipe::RecipeNutrition::NutritionEmptyState::AddButton::RoundButton"
     direction: DOWN
     speed: 95
-    centerElement: true
+    timeout: 30000
     label: "Action - Scroll to nutrition section"
 
 - waitForAnimationToEnd

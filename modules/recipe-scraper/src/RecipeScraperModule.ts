@@ -63,6 +63,12 @@ declare class RecipeScraperModuleType extends NativeModule {
      * @returns A JSON string containing an array of host domains supporting auth.
      */
     getSupportedAuthHosts(): Promise<string>;
+
+    /**
+     * Checks if the Python runtime is initialized and ready.
+     * @returns true if Python is ready, false otherwise.
+     */
+    isPythonAvailable(): Promise<boolean>;
 }
 
 export default requireNativeModule<RecipeScraperModuleType>('RecipeScraper');

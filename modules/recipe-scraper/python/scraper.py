@@ -10,16 +10,74 @@ are now handled in TypeScript for consistency across all platforms.
 Requires: recipe-scrapers[online]>=15.0.0
 """
 
+import html
 import json
+import sys
+import traceback
 from typing import Any, Optional, List, Dict
 from urllib.parse import urlparse
 
-import requests
-from recipe_scrapers import scrape_html, SCRAPERS
+
+# Debug logging - prints to stdout which is captured by native code
+DEBUG = True
+
+
+def _log(level: str, message: str) -> None:
+    """Log a message with level prefix. Captured by iOS/Android native code."""
+    if DEBUG or level in ('ERROR', 'WARN'):
+        print(f"[PyScraper:{level}] {message}", file=sys.stderr)
+
+
+def _log_debug(message: str) -> None:
+    _log('DEBUG', message)
+
+
+def _log_info(message: str) -> None:
+    _log('INFO', message)
+
+
+def _log_warn(message: str) -> None:
+    _log('WARN', message)
+
+
+def _log_error(message: str, exc: Optional[Exception] = None) -> None:
+    _log('ERROR', message)
+    if exc and DEBUG:
+        _log('ERROR', f"Traceback:\n{traceback.format_exc()}")
+
+
+# Import dependencies with detailed error logging
+try:
+    _log_debug("Importing requests...")
+    import requests
+    _log_debug("requests imported successfully")
+except ImportError as e:
+    _log_error(f"Failed to import requests: {e}", e)
+    raise
+
+try:
+    _log_debug("Importing recipe_scrapers...")
+    from recipe_scrapers import scrape_html, SCRAPERS
+    _log_info(f"recipe_scrapers imported successfully ({len(SCRAPERS)} scrapers available)")
+except ImportError as e:
+    _log_error(f"Failed to import recipe_scrapers: {e}", e)
+    raise
 
 
 AUTH_URL_PATTERNS = ['/login', '/signin', '/sign-in', '/auth', '/connexion', '/account/login', '/user/login']
 AUTH_TITLE_KEYWORDS = ['login', 'sign in', 'connexion', 'se connecter', 'log in', 'anmelden', 'iniciar sesión']
+
+# Patterns indicating schema.org Recipe data is present in HTML
+RECIPE_SCHEMA_INDICATORS = [
+    '"@type":"recipe"',
+    '"@type": "recipe"',
+    "'@type':'recipe'",
+    "'@type': 'recipe'",
+    'itemtype="http://schema.org/recipe"',
+    'itemtype="https://schema.org/recipe"',
+    "itemtype='http://schema.org/recipe'",
+    "itemtype='https://schema.org/recipe'",
+]
 
 
 class AuthenticationRequiredError(Exception):
@@ -28,6 +86,35 @@ class AuthenticationRequiredError(Exception):
         self.host = host
         self.message = message
         super().__init__(message)
+
+
+class NoRecipeFoundError(Exception):
+    """Raised when HTML does not contain recipe schema data."""
+    def __init__(self, message: str = "No recipe found on this page"):
+        self.message = message
+        super().__init__(message)
+
+
+def _has_recipe_schema(html: str) -> bool:
+    """
+    Check if HTML likely contains recipe schema.org data.
+
+    Checks for indicators that suggest a recipe is present,
+    preventing lxml crashes on pages without recipe data.
+
+    Args:
+        html: HTML content to check.
+
+    Returns:
+        True if recipe schema indicators found, False otherwise.
+    """
+    lower_html = html.lower()
+
+    for indicator in RECIPE_SCHEMA_INDICATORS:
+        if indicator in lower_html:
+            return True
+
+    return False
 
 
 def scrape_recipe(url: str, wild_mode: bool = True) -> str:
@@ -44,25 +131,35 @@ def scrape_recipe(url: str, wild_mode: bool = True) -> str:
     Returns:
         JSON string with success/error result containing all recipe data.
     """
+    _log_info(f"scrape_recipe called: url={url}, wild_mode={wild_mode}")
     try:
+        _log_debug("Fetching URL...")
         response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, allow_redirects=True, timeout=30)
         response.raise_for_status()
+        _log_debug(f"Fetched {len(response.text)} bytes, status={response.status_code}")
 
         auth_error = _detect_auth_required(response.text, response.url, url)
         if auth_error:
+            _log_warn(f"Auth required detected for host: {auth_error.host}")
             raise auth_error
 
+        _log_debug("Calling scrape_html...")
         scraper = scrape_html(html=response.text, org_url=url, supported_only=not wild_mode)
+        data = _extract_all_data(scraper)
+        _log_info(f"Scrape successful: title='{data.get('title', 'N/A')}'")
+
         return json.dumps({
             "success": True,
-            "data": _extract_all_data(scraper)
+            "data": data
         }, ensure_ascii=False)
     except AuthenticationRequiredError as e:
+        _log_warn(f"AuthenticationRequiredError: {e.message}")
         return json.dumps({
             "success": False,
             "error": {"type": "AuthenticationRequired", "message": e.message, "host": e.host}
         }, ensure_ascii=False)
     except Exception as e:
+        _log_error(f"scrape_recipe failed: {type(e).__name__}: {e}", e)
         return json.dumps({
             "success": False,
             "error": {"type": type(e).__name__, "message": str(e)}
@@ -82,22 +179,44 @@ def scrape_recipe_from_html(html: str, url: str, wild_mode: bool = True, final_u
     Returns:
         JSON string with success/error result containing all recipe data.
     """
+    _log_info(f"scrape_recipe_from_html called: url={url}, wild_mode={wild_mode}, html_len={len(html)}")
     try:
+        _log_debug("Checking for auth redirect...")
         auth_error = _detect_auth_required(html, final_url or url, url)
         if auth_error:
+            _log_warn(f"Auth required detected for host: {auth_error.host}")
             raise auth_error
 
+        # For wild mode on unknown sites, check for recipe schema first.
+        # This prevents lxml crashes when parsing HTML without recipe data.
+        if wild_mode and not _has_recipe_schema(html):
+            _log_warn(f"No recipe schema found in HTML from {url}")
+            raise NoRecipeFoundError()
+
+        _log_debug(f"Calling scrape_html with supported_only={not wild_mode}...")
         scraper = scrape_html(html=html, org_url=url, supported_only=not wild_mode)
+        _log_debug("scrape_html succeeded, extracting data...")
+
+        data = _extract_all_data(scraper)
+        _log_info(f"Scrape successful: title='{data.get('title', 'N/A')}', ingredients={len(data.get('ingredients', []))}")
+
         return json.dumps({
             "success": True,
-            "data": _extract_all_data(scraper)
+            "data": data
         }, ensure_ascii=False)
     except AuthenticationRequiredError as e:
+        _log_warn(f"AuthenticationRequiredError: {e.message}")
         return json.dumps({
             "success": False,
             "error": {"type": "AuthenticationRequired", "message": e.message, "host": e.host}
         }, ensure_ascii=False)
+    except NoRecipeFoundError as e:
+        return json.dumps({
+            "success": False,
+            "error": {"type": "NoRecipeFoundError", "message": e.message}
+        }, ensure_ascii=False)
     except Exception as e:
+        _log_error(f"scrape_recipe_from_html failed: {type(e).__name__}: {e}", e)
         return json.dumps({
             "success": False,
             "error": {"type": type(e).__name__, "message": str(e)}
@@ -147,6 +266,17 @@ def is_host_supported(host: str) -> str:
         }, ensure_ascii=False)
 
 
+def _unescape(value):
+    """Decode HTML entities in strings, lists, or None."""
+    if value is None:
+        return None
+    if isinstance(value, str):
+        return html.unescape(value)
+    if isinstance(value, list):
+        return [html.unescape(item) if isinstance(item, str) else item for item in value]
+    return value
+
+
 def _extract_all_data(scraper) -> Dict[str, Any]:
     """
     Extract all available data from a scraper instance.
@@ -158,13 +288,13 @@ def _extract_all_data(scraper) -> Dict[str, Any]:
 
     return {
         # Core recipe data (raw, no post-processing)
-        "title": _safe_call(scraper.title),
-        "description": _safe_call(scraper.description),
-        "ingredients": ingredients,
+        "title": _unescape(_safe_call(scraper.title)),
+        "description": _unescape(_safe_call(scraper.description)),
+        "ingredients": _unescape(ingredients),
         "parsedIngredients": None,  # TypeScript applies enhancements
         "ingredientGroups": _safe_call_ingredient_groups(scraper),
-        "instructions": _safe_call(scraper.instructions),
-        "instructionsList": _safe_call(scraper.instructions_list),
+        "instructions": _unescape(_safe_call(scraper.instructions)),
+        "instructionsList": _unescape(_safe_call(scraper.instructions_list)),
         "parsedInstructions": None,  # TypeScript applies enhancements
 
         # Timing (use numeric call to preserve 0 as valid)
@@ -250,8 +380,8 @@ def _safe_call_ingredient_groups(scraper) -> Optional[List[Dict[str, Any]]]:
             return None
         return [
             {
-                "purpose": getattr(group, 'purpose', None),
-                "ingredients": getattr(group, 'ingredients', [])
+                "purpose": _unescape(getattr(group, 'purpose', None)),
+                "ingredients": _unescape(getattr(group, 'ingredients', []))
             }
             for group in groups
         ]

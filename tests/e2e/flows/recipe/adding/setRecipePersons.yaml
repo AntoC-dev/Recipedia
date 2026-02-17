@@ -7,19 +7,20 @@ appId: "com.recipedia"
     element:
       id: "RecipePersons::NumericTextInput"
     direction: DOWN
-    speed: 50
+    speed: 40
     centerElement: true
     label: "Scroll to persons field"
 
-- waitForAnimationToEnd
-
-- assertVisible:
-    id: "RecipePersons::NumericTextInput"
-    label: "Ensure persons field is visible"
+- waitForAnimationToEnd:
+    label: "Wait for UI to stabilize"
 
 - tapOn:
     id: "RecipePersons::NumericTextInput"
     label: "Focus on persons input"
+
+- runFlow:
+    file: "../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
 
 - eraseText:
     label: "Erase the default number of persons"
@@ -45,12 +46,18 @@ appId: "com.recipedia"
     when:
       platform: iOS
     commands:
+      - assertVisible:
+          id: "RecipePersons::PrefixText"
+          label: "Prefix text is displayed on iOS"
       - tapOn:
           id: "RecipePersons::PrefixText"
           label: "Tap on prefix text on iOS to close the keyboard"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
+- runFlow:
+    file: "../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
-- waitForAnimationToEnd:
-    label: "Wait for UI to stabilize"
+- assertVisible:
+    id: "RecipePersons::NumericTextInput"
+    text: "${PERSONS}"
+    label: "Check that the number of persons is displayed correctly"

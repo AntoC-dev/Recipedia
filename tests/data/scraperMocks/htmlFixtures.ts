@@ -144,6 +144,94 @@ export const structuredWithKitchenListHtml = `
 </html>
 `;
 
+export const ingredientsWithEntitiesHtml = `
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+<ul class="ingredient-list">
+    <li>
+        <span class="bold">1 x</span>
+        <span>gousse d&#039;ail&nbsp;</span>
+    </li>
+    <li>
+        <span class="bold">200 g</span>
+        <span>p&acirc;tes fra&icirc;ches</span>
+    </li>
+</ul>
+</body>
+</html>
+`;
+
+export const nutritionKcalSuffixHtml = `
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+<div class="recipe-header">
+    <h1>Tartare de saumon</h1>
+    <p class="body-2 bold">374.31</p>
+    <p class="body-2 regular c-gray-400">Kcal</p>
+</div>
+<ul class="ingredient-list">
+    <li>
+        <span class="bold">100 g</span>
+        <span>salade d'algues</span>
+    </li>
+    <li>
+        <span class="bold">200 g</span>
+        <span>saumon frais</span>
+    </li>
+</ul>
+<ul class="nav nav-tabs tab-menu mb-3" role="tablist">
+    <li class="nav-item" role="portion">
+        <button class="nav-link" id="portion-tab" data-bs-target="#portion" type="button">Par portion</button>
+    </li>
+    <li class="nav-item" role="quantity">
+        <button class="nav-link active" id="quantity-tab" data-bs-target="#quantity" type="button">Pour 100g</button>
+    </li>
+</ul>
+<div class="tab-content nutritional-values">
+    <div class="tab-pane fade" id="portion" role="tabpanel">
+        <ul>
+            <li>
+                <p class="body-2 bold m-0">Énergie (kCal)</p>
+                <p class="body-2 regular m-0">374kCal</p>
+            </li>
+        </ul>
+    </div>
+    <div class="tab-pane fade show active" id="quantity" role="tabpanel">
+        <ul>
+            <li>
+                <p class="body-2 bold m-0">Énergie (kCal)</p>
+                <p class="body-2 regular m-0">150kCal</p>
+            </li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>
+`;
+
+export const instructionsWithEntitiesHtml = `
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+<div id="preparation-steps">
+    <div class="toggle w-100 mb-2">
+        <p class="regular body-3 m-0 c-gray-400">Étape 1</p>
+        <p class="bold mb-2">1. Pr&#039;paration d&#039;ail</p>
+        <ul class="ps-4">
+            <li class="body-2 regular m-0">&#201;mincez l&#039;ail et faites-le revenir.</li>
+            <li class="body-2 regular m-0">Ajoutez les p&acirc;tes&nbsp;fra&icirc;ches.</li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>
+`;
+
 export const structuredInstructionsHtml = `
 <!DOCTYPE html>
 <html>

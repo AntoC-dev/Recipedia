@@ -14,5 +14,5 @@ appId: "com.recipedia"
       platform: iOS
     commands:
       - assertNotVisible:
-          text: "Cheese 󰅀"
+          text: "Cheese, 󰅀"
           label: "Cheese accordion not displayed on iOS"

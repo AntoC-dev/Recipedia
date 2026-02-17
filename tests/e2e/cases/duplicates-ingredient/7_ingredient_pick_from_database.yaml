@@ -42,9 +42,22 @@ tags:
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- pressKey: "ENTER"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - pressKey: "ENTER"
 
-- waitForAnimationToEnd:
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to validate the ingredient on iOS"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - runFlow:

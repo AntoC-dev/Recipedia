@@ -7,8 +7,7 @@ appId: "com.recipedia"
     element:
       id: "Recipe::RecipeNutrition::NutritionEmptyState::Title"
     direction: DOWN
-    speed: 60
-    centerElement: true
+    speed: 20
     label: "Scroll to empty nutrition section"
 
 - waitForAnimationToEnd
@@ -17,6 +16,15 @@ appId: "com.recipedia"
     id: "Recipe::RecipeNutrition::NutritionEmptyState::Title"
     text: "Nutritional values:"
     label: "Nutrition title is displayed (empty state)"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "Recipe::RecipeNutrition::NutritionEmptyState::AddButton::RoundButton"
+    direction: DOWN
+    speed: 20
+    label: "Scroll to add nutrition button"
 
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionEmptyState::AddButton::RoundButton"

@@ -55,6 +55,11 @@ tags:
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
+- assertVisible:
+    id: "RecipeIngredients::0::NameInput::CustomTextInput"
+    text: "AUniqueIngredient"
+    label: "Assert - Verify ingredient name appears in recipe"
+
 - runFlow:
     when:
       platform: Android
@@ -69,7 +74,8 @@ tags:
           id: "Done"
           label: "Tap Done key to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - runFlow:
@@ -105,21 +111,12 @@ tags:
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - pressKey: "ENTER"
+- tapOn:
+    id: "RecipeIngredients::0::Unit"
+    label: "Action - Focus on ingredient unit input to close keyboard"
 
 - runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn:
-          id: "Done"
-          label: "Tap Done key to dismiss keyboard on iOS"
-
-- waitForAnimationToEnd:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - tapOn:
@@ -166,7 +163,8 @@ tags:
           id: "Done"
           label: "Tap Done key to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - tapOn:

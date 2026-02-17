@@ -23,7 +23,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "ShoppingScreen::SectionList::Flour"
-          text: "󰄬 Flour (200g) 1 recipe"
+          text: "󰄬, Flour (200g), 1 recipe"
           label: "Flour item on iOS"
 
 - assertVisible:
@@ -45,7 +45,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "ShoppingScreen::SectionList::Eggs"
-          text: "󰄬 Eggs (2pieces) 1 recipe"
+          text: "󰄬, Eggs (2pieces), 1 recipe"
           label: "Eggs item on iOS"
 
 - assertVisible:
@@ -67,7 +67,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "ShoppingScreen::SectionList::Milk"
-          text: "󰄬 Milk (300ml) 1 recipe"
+          text: "󰄬, Milk (300ml), 1 recipe"
           label: "Milk item on iOS"
 
 - assertVisible:
@@ -89,7 +89,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "ShoppingScreen::SectionList::Butter"
-          text: "󰄬 Butter (50g) 1 recipe"
+          text: "󰄬, Butter (50g), 1 recipe"
           label: "Butter item on iOS"
 
 - runFlow:

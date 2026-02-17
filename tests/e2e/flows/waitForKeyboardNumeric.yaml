@@ -1,0 +1,22 @@
+appId: "com.recipedia"
+---
+# Wait for numeric keyboard to appear - platform specific
+# iOS: Waits for Delete button to be visible (present on all numeric keyboards)
+# Android: Uses waitForAnimationToEnd (numeric keyboards appear fast)
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - extendedWaitUntil:
+          visible:
+            text: "Delete"
+          timeout: 5000
+          label: "Wait for iOS numeric keyboard Delete button"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - waitForAnimationToEnd:
+          label: "Wait for Android keyboard animation"

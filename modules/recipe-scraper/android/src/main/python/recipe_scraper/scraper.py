@@ -218,7 +218,7 @@ def _extract_all_data(scraper) -> Dict[str, Any]:
         "ratingsCount": _safe_call_numeric(scraper.ratings_count),
 
         # Additional data
-        "nutrients": _infer_serving_size_from_html(scraper.soup, _safe_call(scraper.nutrients)),
+        "nutrients": _safe_call(scraper.nutrients),
         "equipment": _safe_call(scraper.equipment),
         "links": _safe_call(scraper.links),
     }
@@ -437,81 +437,6 @@ def _clean_keywords(
 
     return cleaned if cleaned else None
 
-
-def _infer_serving_size_from_html(soup, nutrients: Optional[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
-    """
-    Infer serving size when missing by finding per-100g nutrition in HTML.
-
-    Some sites display both per-portion and per-100g nutrition values.
-    By comparing them, we can calculate the portion weight.
-    """
-    if not nutrients:
-        return nutrients
-
-    if nutrients.get('servingSize'):
-        return nutrients
-
-    per_portion_str = nutrients.get('calories', '')
-    per_portion = _extract_numeric_value(per_portion_str)
-    if not per_portion:
-        return nutrients
-
-    per_100g_kcal = _find_per_100g_calories(soup)
-    if not per_100g_kcal or per_100g_kcal <= 0:
-        return nutrients
-
-    serving_size = round((per_portion / per_100g_kcal) * 100)
-    if serving_size > 0:
-        nutrients['servingSize'] = f"{serving_size}g"
-
-    return nutrients
-
-
-def _find_per_100g_calories(soup) -> float:
-    """
-    Search HTML for per-100g calorie value.
-
-    Looks for common patterns:
-    - Tab/section with "100g" in id or text
-    - Labels like "Énergie", "Calories", "kcal" near "100g"
-    """
-    for tab_id in ['quantity', '100g', 'per100g']:
-        tab = soup.find(id=tab_id)
-        if tab:
-            kcal = _extract_kcal_from_section(tab)
-            if kcal:
-                return kcal
-
-    for marker in soup.find_all(string=lambda t: t and '100g' in t.lower()):
-        parent = marker.find_parent(['div', 'section', 'table', 'ul'])
-        if parent:
-            kcal = _extract_kcal_from_section(parent)
-            if kcal:
-                return kcal
-
-    return 0
-
-
-def _extract_kcal_from_section(section) -> float:
-    """Extract kcal value from a nutrition section."""
-    for label_text in ['Énergie (kCal)', 'Énergie (kcal)', 'Calories', 'kcal', 'kCal']:
-        label = section.find(string=lambda t: t and label_text in t)
-        if label:
-            parent = label.find_parent()
-            if parent:
-                value_elem = parent.find_next_sibling()
-                if value_elem:
-                    return _extract_numeric_value(value_elem.get_text())
-    return 0
-
-
-def _extract_numeric_value(text: str) -> float:
-    """Extract first number from string like '876kCal' -> 876"""
-    if not text:
-        return 0
-    text = text.replace(',', '.').replace(' ', '')
-    match = re.search(r'[\d.]+', text)
-    return float(match.group()) if match else 0
 
 
 def _extract_structured_ingredients(soup) -> Optional[List[Dict[str, str]]]:

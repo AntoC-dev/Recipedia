@@ -22,7 +22,8 @@ tags:
     element:
       id: "RecipeTags::RoundButton"
     direction: DOWN
-    speed: 60
+    speed: 40
+    timeout: 60000
     centerElement: true
     label: "Action - Scroll to tags section"
 
@@ -89,7 +90,6 @@ tags:
 - tapOn:
     id: "Recipe::AppBar::BackButton"
     label: "Cleanup - Exit recipe creation without saving"
-
 
 - runFlow:
     file: "../../flows/parameters/tags/navigateToTagsSettings.yaml"

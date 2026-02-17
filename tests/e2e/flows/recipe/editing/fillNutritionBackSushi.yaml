@@ -1,6 +1,5 @@
 appId: "com.recipedia"
 ---
-
 - waitForAnimationToEnd
 
 - scrollUntilVisible:
@@ -21,6 +20,10 @@ appId: "com.recipedia"
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
     label: "Focus on Kcal input"
 
+- runFlow:
+    file: "../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
+
 - inputText:
     text: "195"
     label: "Enter 195 kcal"
@@ -40,19 +43,19 @@ appId: "com.recipedia"
       platform: iOS
     commands:
       - tapOn:
-          id: "Done"
-          label: "Tap Done key to dismiss keyboard on iOS"
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
+          id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::Text"
+          label: "Tap on energy (kcal) text to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd
+- runFlow:
+    file: "../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKj::NumericTextInput"
     direction: DOWN
     centerElement: true
-    speed: 40
+    speed: 20
     label: "Scroll to KJ input"
 
 - waitForAnimationToEnd
@@ -60,6 +63,10 @@ appId: "com.recipedia"
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKj::NumericTextInput"
     label: "Focus on KJ input"
+
+- runFlow:
+    file: "../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
 
 - inputText:
     text: "816"
@@ -80,11 +87,12 @@ appId: "com.recipedia"
       platform: iOS
     commands:
       - tapOn:
-          id: "Done"
-          label: "Tap Done key to dismiss keyboard on iOS"
+          id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKj::Text"
+          label: "Tap on energy (kj) text to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
+- runFlow:
+    file: "../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - waitForAnimationToEnd
 
@@ -93,7 +101,7 @@ appId: "com.recipedia"
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::NumericTextInput"
     direction: DOWN
     centerElement: true
-    speed: 40
+    speed: 20
     label: "Scroll to fat input"
 
 - waitForAnimationToEnd
@@ -101,6 +109,10 @@ appId: "com.recipedia"
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::NumericTextInput"
     label: "Focus on fat"
+
+- runFlow:
+    file: "../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
 
 - inputText:
     text: "8.2"
@@ -121,20 +133,19 @@ appId: "com.recipedia"
       platform: iOS
     commands:
       - tapOn:
-          id: "Done"
-          label: "Tap Done key to dismiss keyboard on iOS"
+          id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::Text"
+          label: "Tap on fat text to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
-
-- waitForAnimationToEnd
+- runFlow:
+    file: "../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::SaturatedFat::NumericTextInput"
     direction: DOWN
     centerElement: true
-    speed: 40
+    speed: 20
     label: "Scroll to saturated fat input"
 
 - waitForAnimationToEnd
@@ -142,6 +153,10 @@ appId: "com.recipedia"
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::SaturatedFat::NumericTextInput"
     label: "Focus on saturated fat"
+
+- runFlow:
+    file: "../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
 
 - inputText:
     text: "1.8"
@@ -162,20 +177,19 @@ appId: "com.recipedia"
       platform: iOS
     commands:
       - tapOn:
-          id: "Done"
-          label: "Tap Done key to dismiss keyboard on iOS"
+          id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::SaturatedFat::Text"
+          label: "Tap on saturatedfat text to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
-
-- waitForAnimationToEnd
+- runFlow:
+    file: "../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Carbohydrates::NumericTextInput"
     direction: DOWN
     centerElement: true
-    speed: 40
+    speed: 20
     label: "Scroll to carbohydrates input"
 
 - waitForAnimationToEnd
@@ -183,6 +197,10 @@ appId: "com.recipedia"
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Carbohydrates::NumericTextInput"
     label: "Focus on carbohydrates"
+
+- runFlow:
+    file: "../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
 
 - inputText:
     text: "22"
@@ -203,20 +221,19 @@ appId: "com.recipedia"
       platform: iOS
     commands:
       - tapOn:
-          id: "Done"
-          label: "Tap Done key to dismiss keyboard on iOS"
+          id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Carbohydrates::Text"
+          label: "Tap on carbohydrates text to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
-
-- waitForAnimationToEnd
+- runFlow:
+    file: "../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Sugars::NumericTextInput"
     direction: DOWN
     centerElement: true
-    speed: 40
+    speed: 20
     label: "Scroll to sugar input"
 
 - waitForAnimationToEnd
@@ -224,6 +241,10 @@ appId: "com.recipedia"
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Sugars::NumericTextInput"
     label: "Focus on sugar"
+
+- runFlow:
+    file: "../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
 
 - inputText:
     text: "2.5"
@@ -244,20 +265,19 @@ appId: "com.recipedia"
       platform: iOS
     commands:
       - tapOn:
-          id: "Done"
-          label: "Tap Done key to dismiss keyboard on iOS"
+          id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Sugars::Text"
+          label: "Tap on sugars text to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
-
-- waitForAnimationToEnd
+- runFlow:
+    file: "../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fiber::NumericTextInput"
     direction: DOWN
     centerElement: true
-    speed: 40
+    speed: 20
     label: "Scroll to fiber input"
 
 - waitForAnimationToEnd
@@ -265,6 +285,10 @@ appId: "com.recipedia"
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fiber::NumericTextInput"
     label: "Focus on fiber"
+
+- runFlow:
+    file: "../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
 
 - inputText:
     text: "1.2"
@@ -285,20 +309,19 @@ appId: "com.recipedia"
       platform: iOS
     commands:
       - tapOn:
-          id: "Done"
-          label: "Tap Done key to dismiss keyboard on iOS"
+          id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fiber::Text"
+          label: "Tap on fiber text to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
-
-- waitForAnimationToEnd
+- runFlow:
+    file: "../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::NumericTextInput"
     direction: DOWN
     centerElement: true
-    speed: 40
+    speed: 20
     label: "Scroll to protein input"
 
 - waitForAnimationToEnd
@@ -306,6 +329,10 @@ appId: "com.recipedia"
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::NumericTextInput"
     label: "Focus on protein"
+
+- runFlow:
+    file: "../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
 
 - inputText:
     text: "12.5"
@@ -326,20 +353,19 @@ appId: "com.recipedia"
       platform: iOS
     commands:
       - tapOn:
-          id: "Done"
-          label: "Tap Done key to dismiss keyboard on iOS"
+          id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::Text"
+          label: "Tap on protein text to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
-
-- waitForAnimationToEnd
+- runFlow:
+    file: "../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Salt::NumericTextInput"
     direction: DOWN
     centerElement: true
-    speed: 40
+    speed: 20
     label: "Scroll to salt input"
 
 - waitForAnimationToEnd
@@ -347,6 +373,10 @@ appId: "com.recipedia"
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Salt::NumericTextInput"
     label: "Focus on salt"
+
+- runFlow:
+    file: "../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
 
 - inputText:
     text: "1.85"
@@ -367,11 +397,12 @@ appId: "com.recipedia"
       platform: iOS
     commands:
       - tapOn:
-          id: "Done"
-          label: "Tap Done key to dismiss keyboard on iOS"
+          id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Salt::Text"
+          label: "Tap on salt text to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
+- runFlow:
+    file: "../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - waitForAnimationToEnd
 
@@ -379,8 +410,7 @@ appId: "com.recipedia"
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightNumericTextInput"
     direction: DOWN
-    centerElement: true
-    speed: 40
+    speed: 20
     label: "Scroll to portion weight input"
 
 - waitForAnimationToEnd
@@ -388,6 +418,10 @@ appId: "com.recipedia"
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightNumericTextInput"
     label: "Focus on portion weight"
+
+- runFlow:
+    file: "../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
 
 - inputText:
     text: "160"
@@ -400,9 +434,9 @@ appId: "com.recipedia"
     id: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightText"
     label: "Tap on weight text to dismiss keyboard"
 
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
+- runFlow:
+    file: "../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - tapOn:
     id: "Recipe::AppBar::Validate"

@@ -82,39 +82,18 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd
 
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - assertVisible:
-          id: "RecipeTags::0::Chip"
-          text: "Épicé"
-          label: "First tag 'Épicé' is rendered on Android"
-      - assertVisible:
-          id: "RecipeTags::1::Chip"
-          text: "Riche en protéines"
-          label: "Second tag 'Riche en protéines' is rendered on Android"
-      - assertVisible:
-          id: "RecipeTags::2::Chip"
-          text: "Calorie Smart"
-          label: "Third tag 'Calorie Smart' is rendered"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - assertVisible:
-          id: "RecipeTags::0::Chip.*"
-          text: "Épicé Close"
-          label: "First tag 'Épicé' is rendered on iOS"
-      - assertVisible:
-          id: "RecipeTags::1::Chip.*"
-          text: "Riche en protéines Close"
-          label: "Second tag 'Riche en protéines' is rendered on iOS"
-      - assertVisible:
-          id: "RecipeTags::2::Chip.*"
-          text: "Calorie Smart Close"
-          label: "Third tag 'Calorie Smart' is rendered on iOS"
+- assertVisible:
+    id: "RecipeTags::0::Chip"
+    text: "Épicé"
+    label: "First tag 'Épicé' is rendered on Android"
+- assertVisible:
+    id: "RecipeTags::1::Chip"
+    text: "Riche en protéines"
+    label: "Second tag 'Riche en protéines' is rendered on Android"
+- assertVisible:
+    id: "RecipeTags::2::Chip"
+    text: "Calorie Smart"
+    label: "Third tag 'Calorie Smart' is rendered"
 
 - waitForAnimationToEnd
 
@@ -231,7 +210,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeTime::PrefixText"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll down to time part"
 

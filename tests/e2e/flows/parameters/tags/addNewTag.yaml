@@ -30,7 +30,8 @@ appId: "com.recipedia"
           id: "Done"
           label: "Tap Done key to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - tapOn:
@@ -43,8 +44,7 @@ appId: "com.recipedia"
     element:
       text: "RecipeTag"
     direction: DOWN
-    speed: 60
-    centerElement: true
+    speed: 40
     label: "Scroll to find the newly added tag"
 
 - waitForAnimationToEnd

@@ -20,28 +20,38 @@ appId: "com.recipedia"
 
 
 - eraseText
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - inputText: "${NEW_ENERGY_KCAL}"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
 - pressKey: enter
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
+- runFlow:
+    file: "../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::NumericTextInput"
     label: "Tap on fat input"
 
 - eraseText
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - inputText: "${NEW_FAT}"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
 - pressKey: enter
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
+- runFlow:
+    file: "../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"
 
 - waitForAnimationToEnd
 
@@ -60,6 +70,10 @@ appId: "com.recipedia"
     label: "Tap on protein input"
 
 - eraseText
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
 - inputText: "${NEW_PROTEIN}"
 
 - waitForAnimationToEnd:
@@ -67,5 +81,6 @@ appId: "com.recipedia"
 
 - pressKey: enter
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard to dismiss"
+- runFlow:
+    file: "../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"

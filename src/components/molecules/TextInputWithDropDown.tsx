@@ -215,6 +215,8 @@ export function TextInputWithDropDown({
         dense={dense}
         contentStyle={contentStyle}
         right={right}
+        autoCorrect={false}
+        spellCheck={false}
       />
       {shouldShowDropdown && (
         <Portal>

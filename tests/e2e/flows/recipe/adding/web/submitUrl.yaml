@@ -4,6 +4,10 @@ appId: "com.recipedia"
     id: "VerticalBottomButtons::UrlDialog::Input::CustomTextInput"
     label: "Focus on URL input field"
 
+- runFlow:
+    file: "../../../waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
 - inputText: ${RECIPE_URL}
 
 - waitForAnimationToEnd:
@@ -24,7 +28,8 @@ appId: "com.recipedia"
           id: "Done"
           label: "Tap Done key to dismiss keyboard on iOS"
 
-- waitForAnimationToEnd:
+- runFlow:
+    file: "../../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
 - tapOn:
@@ -33,7 +38,7 @@ appId: "com.recipedia"
 
 - extendedWaitUntil:
     visible:
-      id: "RecipeImage::Image"
+      id: "RecipeImage"
     timeout: 30000
     label: "Wait for recipe screen to load after scraping"
 
