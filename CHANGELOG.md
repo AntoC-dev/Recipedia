@@ -1,3 +1,32 @@
+## [2.16.0](https://github.com/AntoC-dev/Recipedia/compare/v2.15.2...v2.16.0) (2026-02-17)
+
+### Features
+
+* **app:** wait for Python scraper during initialization ([c8ddd5d](https://github.com/AntoC-dev/Recipedia/commit/c8ddd5ddf27c18b6e213b9bcb6fbe20146dd47db))
+* **parameters:** set List.Item `accessible` prop to false ([1aa3539](https://github.com/AntoC-dev/Recipedia/commit/1aa35394a8b066beb537868ce1a6ce554dd5b990))
+* **recipe-scraper:** add iOS multi-architecture support ([843d03c](https://github.com/AntoC-dev/Recipedia/commit/843d03cb9a2fe2a94500fad10efcd3f04774a854))
+* **recipe-scraper:** add native module warmup on startup ([b6d284b](https://github.com/AntoC-dev/Recipedia/commit/b6d284b6d753a43fba2146288b2bbc63f3c8b882))
+* **recipe-scraper:** add Python logging for debugging ([021b071](https://github.com/AntoC-dev/Recipedia/commit/021b071fa01ef5954bc7692a3be0ff67812c94b0))
+* **recipe-scraper:** add Python readiness API ([38d1e78](https://github.com/AntoC-dev/Recipedia/commit/38d1e783de4ccde5fddccb65e5fddb00bd3b0090))
+* **recipe-scraper:** enable Python recipe-scrapers on iOS via PythonKit ([8df8407](https://github.com/AntoC-dev/Recipedia/commit/8df840738f5e3d8d90db152ea2de86527bace489))
+
+### Bug Fixes
+
+* **android:** decouple Android CI build from iOS Pyodide assets ([b4ca98b](https://github.com/AntoC-dev/Recipedia/commit/b4ca98b8040a7aa9465148b02863cc213320150c))
+* **ci:** improve iOS log collection script with timeout and diagnostics ([5ff192d](https://github.com/AntoC-dev/Recipedia/commit/5ff192d29e50dba8416c1643dfe62540ac57551e))
+* **hooks:** fix error serialization in useRecipeScraper ([0d6a3f3](https://github.com/AntoC-dev/Recipedia/commit/0d6a3f302d031a2a4085660acfc584317ddc53d0))
+* **input:** disable autocorrect and spellcheck on autocomplete inputs ([f0acc02](https://github.com/AntoC-dev/Recipedia/commit/f0acc026d0e0f57b778ab1ad4ecdfe63c8822314))
+* **ios:** register jstyleson as mock package for micropip in Pyodide init ([c943893](https://github.com/AntoC-dev/Recipedia/commit/c943893f39b5388a759b73fa16ac41f255bb1a17))
+* **recipe-scraper:** add iOS initialization logging ([ba7ee29](https://github.com/AntoC-dev/Recipedia/commit/ba7ee293004f19e2e81dff99ad7c7cd01e09acda))
+* **recipe-scraper:** add schema validation to prevent iOS crashes ([7518622](https://github.com/AntoC-dev/Recipedia/commit/7518622f5a440fb748a2e64f10761373372d3958))
+* **recipe-scraper:** vendor PythonKit source to avoid SPM linking issues ([53090a1](https://github.com/AntoC-dev/Recipedia/commit/53090a1182e953bacb439e56422b9bdfecdb5c04))
+* **scraper:** add entity decoding safety net in enhancements layer ([537eebb](https://github.com/AntoC-dev/Recipedia/commit/537eebbfe4df1c679ef981364c396c63541eef71)), closes [#039](https://github.com/AntoC-dev/Recipedia/issues/039)
+* **scraper:** decode HTML entities at source in Python scrapers ([fd496c4](https://github.com/AntoC-dev/Recipedia/commit/fd496c4c3cc67af12e439c8e0c2c149ddb4e45db))
+* **scraper:** decode HTML entities in stripHtml for structured data ([7408bf3](https://github.com/AntoC-dev/Recipedia/commit/7408bf3767df63fe58401c66a8cab928cc2065f0)), closes [#039](https://github.com/AntoC-dev/Recipedia/issues/039)
+* **scraper:** fix serving size inference with HTML-tag-safe kcal extraction ([4c20f1f](https://github.com/AntoC-dev/Recipedia/commit/4c20f1f9d3744e134b5cfa14d67cd960a5b1db79))
+* **SearchBar:** disable autocorrect in search input field ([bcba3ad](https://github.com/AntoC-dev/Recipedia/commit/bcba3ad05133719339e4324eef4484c779c70dba))
+* **TextInput:** conditionally disable autocorrect for test datasets ([38c2030](https://github.com/AntoC-dev/Recipedia/commit/38c2030dc46c97f8bd1f8cf75d177c85547339a4))
+
 ## [2.15.2](https://github.com/AntoC-dev/Recipedia/compare/v2.15.1...v2.15.2) (2026-02-02)
 
 ### Bug Fixes
