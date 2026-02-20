@@ -92,7 +92,6 @@ class PyodideBridgeImpl {
         if (this.readyResolve) {
             this.readyResolve();
         }
-        console.log('[PyodideBridge] Pyodide is ready');
     }
 
     private handleLog(level: string, message: string): void {
