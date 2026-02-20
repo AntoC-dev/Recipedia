@@ -6,3 +6,5 @@
 
 export {PyodideBridge} from './PyodideBridge';
 export {PyodideWebView} from './PyodideWebView';
+export {AuthBridge} from './AuthBridge';
+export {AuthWebView} from './AuthWebView';

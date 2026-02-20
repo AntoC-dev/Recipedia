@@ -16,6 +16,8 @@ import {appLogger} from '@utils/logger';
 import {isFirstLaunch} from '@utils/firstLaunch';
 import {recipeScraper} from '@app/modules/recipe-scraper';
 import {PyodideWebView} from '@app/modules/recipe-scraper/src/ios/PyodideWebView';
+import {AuthWebView} from '@app/modules/recipe-scraper/src/ios/AuthWebView';
+import {AuthBridge} from '@app/modules/recipe-scraper/src/ios/AuthBridge';
 
 // TODO manage horizontal mode
 
@@ -131,11 +133,18 @@ function AppContent() {
 
 export function App() {
     useFetchFonts();
+    const [authLoginUrl, setAuthLoginUrl] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (Platform.OS !== 'ios') return;
+        return AuthBridge.subscribe(() => setAuthLoginUrl(AuthBridge.currentLoginUrl));
+    }, []);
 
     return (
         <RecipeDatabaseProvider>
             <AppContent/>
             {Platform.OS === 'ios' && <PyodideWebView />}
+            {Platform.OS === 'ios' && authLoginUrl !== null && <AuthWebView loginUrl={authLoginUrl} />}
         </RecipeDatabaseProvider>
     );
 }
