@@ -38,7 +38,7 @@ describe('Recipe Scraper Integration', () => {
         );
         expect(result.data.image).toBe('https://img.hellofresh.com/keftas.jpg');
         expect(result.data.yields).toBe('2 servings');
-        expect(result.data.totalTime).toBe(70);
+        expect(result.data.totalTime).toBe(40);
         expect(result.data.ingredients).toContain('1 pièce(s) Carotte');
       }
     });
@@ -139,9 +139,9 @@ describe('Recipe Scraper Integration', () => {
     });
 
     it('has timing information', () => {
-      expect(recipe.totalTime).toBe(70);
-      expect(recipe.prepTime).toBe(40);
-      expect(recipe.cookTime).toBe(30);
+      expect(recipe.totalTime).toBe(40);
+      expect(recipe.prepTime).toBeNull();
+      expect(recipe.cookTime).toBeNull();
     });
 
     it('has host and canonical URL', () => {

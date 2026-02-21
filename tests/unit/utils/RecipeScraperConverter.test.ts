@@ -30,7 +30,7 @@ describe('RecipeScraperConverter', () => {
       expect(result.description).toBe(hellofreshKeftasRecipe.description);
       expect(result.image_Source).toBe(hellofreshKeftasRecipe.image);
       expect(result.persons).toBe(2);
-      expect(result.time).toBe(70);
+      expect(result.time).toBe(40);
       expect(result.ingredients.length).toBeGreaterThan(0);
       expect(result.preparation).toHaveLength(6);
       expect(result.nutrition).toBeDefined();

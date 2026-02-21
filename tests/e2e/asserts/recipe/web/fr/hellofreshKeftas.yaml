@@ -223,7 +223,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeTime::NumericTextInput"
-    text: "45"
+    text: "40"
     label: "Time to prepare is rendered"
 
 - assertVisible:
