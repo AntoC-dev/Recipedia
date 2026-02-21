@@ -322,7 +322,11 @@ export class RecipeScraper {
                     password,
                     options?.wildMode ?? true
                 );
-                return JSON.parse(json);
+                const {html = '', ...result} = JSON.parse(json);
+                if (result.success) {
+                    result.data = applyEnhancements({html, baseResult: result.data});
+                }
+                return result as ScraperResult;
             } catch (error) {
                 return this.exceptionError(error);
             }

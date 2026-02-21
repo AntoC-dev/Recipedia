@@ -562,7 +562,7 @@ export function findPer100gCalories(html: string, perPortionKcal?: number): numb
     for (const tabId of tabIds) {
         const idMatch = html.match(new RegExp(`id=["']${tabId}["']`, 'i'));
         if (idMatch && idMatch.index !== undefined) {
-            const chunk = html.slice(idMatch.index, idMatch.index + 500);
+            const chunk = html.slice(idMatch.index, idMatch.index + 2000);
             const kcal = extractKcalFromSection(chunk);
             if (kcal) return kcal;
         }
@@ -573,7 +573,7 @@ export function findPer100gCalories(html: string, perPortionKcal?: number): numb
         const marker100gRegex = /\b100\s*g\b/gi;
         for (const markerMatch of html.matchAll(marker100gRegex)) {
             if (markerMatch.index === undefined) continue;
-            const chunk = html.slice(markerMatch.index, markerMatch.index + 500);
+            const chunk = html.slice(markerMatch.index, markerMatch.index + 2000);
             const candidate = extractKcalFromSection(chunk);
             if (candidate && isValidPer100g(candidate, perPortionKcal)) {
                 return candidate;
@@ -581,10 +581,22 @@ export function findPer100gCalories(html: string, perPortionKcal?: number): numb
         }
     }
 
-    // Strategy 3: Pure math via all kcal values on the page
+    // Strategy 3: Pure math via all kcal values on the page (raw HTML)
     if (perPortionKcal) {
         const allKcal = findAllKcalInHtml(html);
         for (const candidate of allKcal) {
+            if (isValidPer100g(candidate, perPortionKcal)) {
+                return candidate;
+            }
+        }
+    }
+
+    // Strategy 4: Tag-stripped HTML — catches cases where number and unit are in
+    // separate sibling elements (e.g. <td>293</td><td>Kcal</td>)
+    if (perPortionKcal) {
+        const strippedHtml = html.replace(/<[^>]*>/g, ' ');
+        const textKcal = findAllKcalInHtml(strippedHtml);
+        for (const candidate of textKcal) {
             if (isValidPer100g(candidate, perPortionKcal)) {
                 return candidate;
             }
