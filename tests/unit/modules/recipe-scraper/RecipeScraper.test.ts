@@ -1,6 +1,7 @@
 import { RecipeScraper, usePythonReady } from '@app/modules/recipe-scraper/src/RecipeScraper';
 import { renderHook, waitFor } from '@testing-library/react-native';
 import { Platform } from 'react-native';
+import { nutritionKcalSuffixHtml } from '@test-data/scraperMocks/htmlFixtures';
 
 const SIMPLE_RECIPE_HTML = `
 <!DOCTYPE html>
@@ -530,6 +531,119 @@ describe('RecipeScraper (Pyodide/iOS path)', () => {
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data).toEqual(['quitoque.fr']);
+      }
+    });
+  });
+});
+
+describe('RecipeScraper (Android native module path)', () => {
+  const originalEnv = process.env.NODE_ENV;
+  const originalOS = Platform.OS;
+
+  beforeEach(() => {
+    jest.resetModules();
+    Object.defineProperty(Platform, 'OS', { value: 'android', configurable: true });
+    process.env.NODE_ENV = 'development';
+  });
+
+  afterEach(() => {
+    Object.defineProperty(Platform, 'OS', { value: originalOS, configurable: true });
+    process.env.NODE_ENV = originalEnv;
+    jest.restoreAllMocks();
+  });
+
+  function loadScraperWithNativeModule(mockNativeModule: Record<string, jest.Mock>) {
+    jest.doMock('../../../../modules/recipe-scraper/src/RecipeScraperModule', () => ({
+      default: mockNativeModule,
+    }));
+
+    const {
+      RecipeScraper: Scraper,
+    } = require('../../../../modules/recipe-scraper/src/RecipeScraper');
+    return new Scraper();
+  }
+
+  describe('scrapeRecipeAuthenticated', () => {
+    it('applies TypeScript enhancements using html returned by Python', async () => {
+      const mockScrapeAuthenticated = jest.fn().mockResolvedValue(
+        JSON.stringify({
+          success: true,
+          html: nutritionKcalSuffixHtml,
+          data: {
+            title: 'Tartare de saumon',
+            ingredients: [],
+            instructions: null,
+            nutrients: { calories: '374kCal' },
+          },
+        })
+      );
+
+      const scraper = loadScraperWithNativeModule({
+        scrapeRecipeAuthenticated: mockScrapeAuthenticated,
+      });
+      const result = await scraper.scrapeRecipeAuthenticated(
+        'https://www.quitoque.fr/products/123',
+        'user@test.com',
+        'pass123'
+      );
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.nutrients?.servingSize).toBe('249g');
+        expect((result as any).html).toBeUndefined();
+      }
+    });
+
+    it('handles missing html field in Python response gracefully', async () => {
+      const mockScrapeAuthenticated = jest.fn().mockResolvedValue(
+        JSON.stringify({
+          success: true,
+          data: {
+            title: 'Test',
+            ingredients: [],
+            instructions: null,
+            nutrients: { calories: '300kCal' },
+          },
+        })
+      );
+
+      const scraper = loadScraperWithNativeModule({
+        scrapeRecipeAuthenticated: mockScrapeAuthenticated,
+      });
+      const result = await scraper.scrapeRecipeAuthenticated(
+        'https://www.quitoque.fr/products/123',
+        'u',
+        'p'
+      );
+
+      expect(result.success).toBe(true);
+      expect((result as any).html).toBeUndefined();
+    });
+
+    it('passes error result through without applying enhancements', async () => {
+      const mockScrapeAuthenticated = jest.fn().mockResolvedValue(
+        JSON.stringify({
+          success: false,
+          error: {
+            type: 'AuthenticationFailed',
+            message: 'Invalid credentials',
+            host: 'quitoque.fr',
+          },
+        })
+      );
+
+      const scraper = loadScraperWithNativeModule({
+        scrapeRecipeAuthenticated: mockScrapeAuthenticated,
+      });
+      const result = await scraper.scrapeRecipeAuthenticated(
+        'https://www.quitoque.fr/products/123',
+        'user@test.com',
+        'wrongpass'
+      );
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.type).toBe('AuthenticationFailed');
       }
     });
   });

@@ -302,6 +302,27 @@ describe('enhancements module', () => {
       const result = findPer100gCalories(html, 374);
       expect(result).toBe(0);
     });
+
+    it('finds per-100g when number and unit are in separate sibling elements', () => {
+      const html = '<tr><td>Énergie</td><td>293</td><td>Kcal</td></tr>';
+      const result = findPer100gCalories(html, 882);
+      expect(result).toBe(293);
+    });
+
+    it('finds per-100g when kcal value is more than 500 chars after the 100g marker', () => {
+      const padding = 'x'.repeat(600);
+      const html = `<span>100g</span>${padding}150kCal`;
+      expect(findPer100gCalories(html, 450)).toBe(150);
+    });
+
+    it('does not return the per-portion value as per-100g via strategy 4', () => {
+      const html = '<td>374</td><td>kCal</td>';
+      expect(findPer100gCalories(html, 374)).toBe(0);
+    });
+
+    it('returns 0 for empty string without throwing', () => {
+      expect(findPer100gCalories('', 374)).toBe(0);
+    });
   });
 
   describe('extractKcalFromSection', () => {
