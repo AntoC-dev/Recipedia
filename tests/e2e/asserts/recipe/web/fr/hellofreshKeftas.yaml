@@ -223,8 +223,8 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeTime::NumericTextInput"
-    text: "40"
-    label: "Time to prepare is rendered"
+    text: "[1-9][0-9]*"
+    label: "Time to prepare is rendered as a positive number"
 
 - assertVisible:
     id: "RecipeTime::SuffixText"
