@@ -151,6 +151,12 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
       });
     }
 
+    uiLogger.info(`${logPrefix} nutrition conversion`, {
+      hasNutrients: !!scraperResult.data.nutrients,
+      servingSize: scraperResult.data.nutrients?.servingSize ?? null,
+      converted: !!recipeData.nutrition,
+    });
+
     let imageUrl: string | null = scraperResult.data.image;
 
     // If the scraper returned a placeholder image, extract real one from HTML
@@ -159,6 +165,7 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
       if (realImage) {
         imageUrl = realImage;
       } else {
+        uiLogger.warn('Placeholder image found but no real image in JSON-LD', { imageUrl });
         imageUrl = null;
       }
     }
@@ -168,6 +175,8 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
       const localImageUri = await downloadImageToCache(imageUrl);
       if (localImageUri) {
         recipeData.image_Source = localImageUri;
+      } else {
+        uiLogger.warn('Failed to download recipe image', { imageUrl });
       }
     }
 
