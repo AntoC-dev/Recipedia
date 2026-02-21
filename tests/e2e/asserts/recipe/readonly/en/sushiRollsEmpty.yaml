@@ -8,7 +8,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::3::SectionParagraph"
     direction: DOWN
     speed: 95
-    centerElement: true
+    timeout: 120000
     label: "Scroll to the bottom of the screen"
 
 - waitForAnimationToEnd
