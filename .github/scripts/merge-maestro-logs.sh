@@ -3,36 +3,34 @@
 set -e
 
 INPUT_DIR="${1:-maestro-logs}"
-OUTPUT_FILE="${2:-maestro-logs-all-suites.zip}"
+OUTPUT_DIR="${2:-maestro-logs-all-suites}"
 
-echo "🔄 Merging Maestro logs..."
+echo "Merging Maestro logs..."
 echo "   Input directory: $INPUT_DIR"
-echo "   Output file: $OUTPUT_FILE"
+echo "   Output directory: $OUTPUT_DIR"
 
-# Create temporary directory for extraction
 TEMP_DIR=$(mktemp -d)
 trap "rm -rf $TEMP_DIR" EXIT
 
-# Extract all zip files
-ZIP_COUNT=0
-for zip_file in "$INPUT_DIR"/*/*.zip; do
-  if [ -f "$zip_file" ]; then
-    echo "   Extracting $(basename "$zip_file")..."
-    unzip -qo "$zip_file" -d "$TEMP_DIR"
-    ZIP_COUNT=$((ZIP_COUNT + 1))
+SUITE_COUNT=0
+for suite_dir in "$INPUT_DIR"/*/; do
+  if [ -d "$suite_dir" ]; then
+    suite_name=$(basename "$suite_dir")
+    echo "   Copying $suite_name..."
+    mkdir -p "$TEMP_DIR/$suite_name"
+    cp -r "$suite_dir/." "$TEMP_DIR/$suite_name/"
+    SUITE_COUNT=$((SUITE_COUNT + 1))
   fi
 done
 
-if [ $ZIP_COUNT -eq 0 ]; then
-  echo "⚠️  No zip files found to merge"
+if [ $SUITE_COUNT -eq 0 ]; then
+  echo "No suite directories found to merge"
   exit 1
 fi
 
-# Create merged archive
-cd "$TEMP_DIR"
-zip -r - . > "$OLDPWD/$OUTPUT_FILE"
-cd "$OLDPWD"
+mkdir -p "$OUTPUT_DIR"
+cp -r "$TEMP_DIR/." "$OUTPUT_DIR/"
 
-FILE_SIZE=$(du -h "$OUTPUT_FILE" | cut -f1)
-echo "✅ Merged $ZIP_COUNT Maestro log archives"
-echo "   Output size: $FILE_SIZE"
+FILE_COUNT=$(find "$OUTPUT_DIR" -type f | wc -l | tr -d ' ')
+echo "Merged $SUITE_COUNT Maestro log suites"
+echo "   Files: $FILE_COUNT"

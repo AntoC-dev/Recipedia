@@ -24,11 +24,8 @@ fi
 
 cd ..
 
-# Create zip archive
-zip -r "${OUTPUT_DIR}.zip" "$OUTPUT_DIR/"
-
 FILE_COUNT=$(find "$OUTPUT_DIR" -type f | wc -l | tr -d ' ')
-ZIP_SIZE=$(du -h "${OUTPUT_DIR}.zip" | cut -f1)
+DIR_SIZE=$(du -sh "$OUTPUT_DIR" | cut -f1)
 
 echo "Prepared $FILE_COUNT files"
-echo "   Archive: ${OUTPUT_DIR}.zip ($ZIP_SIZE)"
+echo "   Directory: $OUTPUT_DIR ($DIR_SIZE)"
