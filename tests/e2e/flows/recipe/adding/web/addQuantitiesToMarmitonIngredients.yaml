@@ -26,7 +26,9 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- pressKey: enter
+- tapOn:
+    id: "RecipeIngredients::0::Unit"
+    label: "Action - Focus on ingredient unit input to close keyboard"
 
 - runFlow:
     file: "../../../waitForKeyboardNumericDismiss.yaml"
@@ -45,7 +47,9 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- pressKey: enter
+- tapOn:
+    id: "RecipeIngredients::1::Unit"
+    label: "Action - Focus on ingredient unit input to close keyboard"
 
 - runFlow:
     file: "../../../waitForKeyboardNumericDismiss.yaml"
@@ -64,7 +68,9 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- pressKey: enter
+- tapOn:
+    id: "RecipeIngredients::2::Unit"
+    label: "Action - Focus on ingredient unit input to close keyboard"
 
 - runFlow:
     file: "../../../waitForKeyboardNumericDismiss.yaml"
@@ -83,7 +89,9 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- pressKey: enter
+- tapOn:
+    id: "RecipeIngredients::3::Unit"
+    label: "Action - Focus on ingredient unit input to close keyboard"
 
 - runFlow:
     file: "../../../waitForKeyboardNumericDismiss.yaml"
@@ -114,7 +122,9 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- pressKey: enter
+- tapOn:
+    id: "RecipeIngredients::4::Unit"
+    label: "Action - Focus on ingredient unit input to close keyboard"
 
 - runFlow:
     file: "../../../waitForKeyboardNumericDismiss.yaml"
@@ -145,7 +155,9 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- pressKey: enter
+- tapOn:
+    id: "RecipeIngredients::5::Unit"
+    label: "Action - Focus on ingredient unit input to close keyboard"
 
 - runFlow:
     file: "../../../waitForKeyboardNumericDismiss.yaml"
@@ -176,7 +188,9 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- pressKey: enter
+- tapOn:
+    id: "RecipeIngredients::6::Unit"
+    label: "Action - Focus on ingredient unit input to close keyboard"
 
 - runFlow:
     file: "../../../waitForKeyboardNumericDismiss.yaml"
@@ -207,7 +221,9 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- pressKey: enter
+- tapOn:
+    id: "RecipeIngredients::7::Unit"
+    label: "Action - Focus on ingredient unit input to close keyboard"
 
 - runFlow:
     file: "../../../waitForKeyboardNumericDismiss.yaml"
@@ -224,4 +240,3 @@ appId: "com.recipedia"
     label: "Scroll back to top"
 
 - waitForAnimationToEnd
-

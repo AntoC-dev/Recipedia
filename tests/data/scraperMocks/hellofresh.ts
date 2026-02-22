@@ -57,7 +57,7 @@ export const hellofreshRecipePageHtml = `
     "description": "Délicieuses keftas de bœuf accompagnées de semoule aux épices",
     "image": "https://img.hellofresh.com/keftas.jpg",
     "recipeYield": "2 servings",
-    "totalTime": "PT70M",
+    "totalTime": "PT40M",
     "recipeIngredient": ["1 pièce(s) Carotte", "150 g Semoule"],
     "recipeInstructions": [
       {"@type": "HowToStep", "text": "Épluchez la carotte"},
@@ -124,9 +124,9 @@ export const hellofreshKeftasRecipe: ScrapedRecipe = {
     'Servez la semoule dans des assiettes creuses. Ajoutez les légumes par-dessus, puis les keftas. Arrosez le tout de sauce. LE SAVIEZ-VOUS ? Votre plat contient de la vitamine A, une vitamine qui contribue au métabolisme normal du fer.',
   ],
   parsedInstructions: null,
-  totalTime: 70,
-  prepTime: 40,
-  cookTime: 30,
+  totalTime: 40,
+  prepTime: null,
+  cookTime: null,
   yields: '2 servings',
   image:
     'https://img.hellofresh.com/f_auto,fl_lossy,h_640,q_auto,w_1200/hellofresh_s3/image/HF_Y24_R232_W49_FR_RFR32965-1_Main_high-3d919a2c.jpg',

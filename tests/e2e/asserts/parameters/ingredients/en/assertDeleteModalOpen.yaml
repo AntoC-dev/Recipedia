@@ -2,8 +2,8 @@ appId: "com.recipedia"
 ---
 - assertVisible:
     id: "IngredientsSettings::ItemDialog::DeleteModal::Title"
-    label: "Delete modal title is displayed"
     text: "Delete"
+    label: "Delete modal title is displayed"
 
 - assertVisible:
     id: "IngredientsSettings::ItemDialog::DeleteModal::Text"

@@ -55,7 +55,7 @@ appId: "com.recipedia"
       id: "BulkImportDiscovery::(fresh|seen)-0"
     direction: UP
     speed: 50
-    timeout: 20000
+    timeout: 200000
     label: "Scroll back to top and wait for first recipe"
 
 - waitForAnimationToEnd

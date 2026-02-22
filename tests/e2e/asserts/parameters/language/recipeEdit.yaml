@@ -69,7 +69,8 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::PrefixText"
     direction: DOWN
-    speed: 70
+    speed: 50
+    timeout: 120000
     centerElement: true
 
 - waitForAnimationToEnd

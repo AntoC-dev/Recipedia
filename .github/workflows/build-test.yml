@@ -247,11 +247,11 @@ jobs:
 
       - name: Package Android Maestro logs
         if: always()
-        run: bash .github/scripts/merge-maestro-logs.sh maestro-logs-android maestro-logs-android.zip
+        run: bash .github/scripts/merge-maestro-logs.sh maestro-logs-android maestro-logs-android-merged
 
       - name: Package iOS Maestro logs
         if: always()
-        run: bash .github/scripts/merge-maestro-logs.sh maestro-logs-ios maestro-logs-ios.zip
+        run: bash .github/scripts/merge-maestro-logs.sh maestro-logs-ios maestro-logs-ios-merged
 
       - name: Delete individual suite artifacts
         if: always()
@@ -275,16 +275,16 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v5
         with:
-          name: maestro-logs-android
-          path: maestro-logs-android.zip
+          name: maestro-logs-android.zip
+          path: maestro-logs-android-merged/
           retention-days: 7
 
       - name: Upload iOS Maestro logs
         if: always()
         uses: actions/upload-artifact@v5
         with:
-          name: maestro-logs-ios
-          path: maestro-logs-ios.zip
+          name: maestro-logs-ios.zip
+          path: maestro-logs-ios-merged/
           retention-days: 7
 
   test-result-summary:

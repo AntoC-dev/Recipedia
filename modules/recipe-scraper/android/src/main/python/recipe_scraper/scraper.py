@@ -698,10 +698,12 @@ def scrape_recipe_authenticated(url: str, username: str, password: str, wild_mod
         response = session.get(url, allow_redirects=True, timeout=30)
         response.raise_for_status()
 
-        scraper = scrape_html(html=response.text, org_url=url, supported_only=not wild_mode)
+        html_content = response.text
+        scraper = scrape_html(html=html_content, org_url=url, supported_only=not wild_mode)
         return json.dumps({
             "success": True,
-            "data": _extract_all_data(scraper)
+            "data": _extract_all_data(scraper),
+            "html": html_content
         }, ensure_ascii=False)
     except Exception as e:
         return json.dumps({

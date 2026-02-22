@@ -31,6 +31,8 @@ import type {
     SupportedHostsResult,
 } from './types';
 import {PyodideBridge} from './ios/PyodideBridge';
+import {AuthBridge} from './ios/AuthBridge';
+import {extractHost} from './urlUtils';
 
 // Auth detection patterns
 const AUTH_URL_PATTERNS = [
@@ -293,7 +295,12 @@ export class RecipeScraper {
      * Scrapes a recipe from an authentication-protected URL.
      *
      * Logs into the site using provided credentials and scrapes the recipe.
-     * Only available on Android. Returns an error on other platforms.
+     * - Android: Uses Python requests.Session via Chaquopy.
+     * - iOS: Navigates a hidden WKWebView to the login page, then injects a
+     *   same-origin JavaScript script that performs the full auth flow using
+     *   WebKit's own cookie jar (WKHTTPCookieStore). The fetched recipe HTML
+     *   is then parsed by Pyodide.
+     * Returns an error on unsupported platforms or unsupported auth hosts.
      *
      * @param url - The recipe page URL to scrape.
      * @param username - Username/email for authentication.
@@ -307,49 +314,81 @@ export class RecipeScraper {
         password: string,
         options?: ScrapeOptions
     ): Promise<ScraperResult> {
-        if (!nativeModule?.scrapeRecipeAuthenticated) {
-            return {
-                success: false,
-                error: {
-                    type: 'UnsupportedPlatform',
-                    message: 'Authenticated scraping is only available on Android',
-                },
-            };
+        if (nativeModule?.scrapeRecipeAuthenticated) {
+            try {
+                const json = await nativeModule.scrapeRecipeAuthenticated(
+                    url,
+                    username,
+                    password,
+                    options?.wildMode ?? true
+                );
+                const {html = '', ...result} = JSON.parse(json);
+                if (result.success) {
+                    result.data = applyEnhancements({html, baseResult: result.data});
+                }
+                return result as ScraperResult;
+            } catch (error) {
+                return this.exceptionError(error);
+            }
         }
-        try {
-            const json = await nativeModule.scrapeRecipeAuthenticated(
-                url,
-                username,
-                password,
-                options?.wildMode ?? true
-            );
-            const baseResult: ScraperResult = JSON.parse(json);
 
-            // Note: For authenticated scraping, we can't easily apply TypeScript enhancements
-            // because we don't have access to the HTML. The Python scraper handles this.
-            return baseResult;
-        } catch (error) {
-            return this.exceptionError(error);
+        if (usePyodide) {
+            const host = extractHost(url);
+
+            if (!AuthBridge.isHostSupported(host)) {
+                return {
+                    success: false,
+                    error: {
+                        type: 'UnsupportedAuthSite',
+                        message: `Authentication not supported for ${host} on iOS`,
+                        host,
+                    },
+                };
+            }
+
+            try {
+                const html = await AuthBridge.fetchAuthenticatedHtml(url, username, password);
+                // Force wildMode=false: auth targets known supported sites that have dedicated
+                // scrapers. wildMode=true would trigger an early schema.org check that these
+                // sites fail (they use custom formats), discarding the dedicated scraper path.
+                return this.scrapeRecipeFromHtml(html, url, {wildMode: false});
+            } catch (error) {
+                return this.exceptionError(error);
+            }
         }
+
+        return {
+            success: false,
+            error: {
+                type: 'UnsupportedPlatform',
+                message: 'Authenticated scraping requires Android or iOS',
+            },
+        };
     }
 
     /**
      * Gets a list of hosts that support authentication.
      *
-     * Only available on Android. Returns an empty array on other platforms.
+     * Available on Android (via Chaquopy) and iOS (via Pyodide WebView).
+     * Returns an empty array on unsupported platforms.
      *
      * @returns A result object with an array of host domains supporting auth.
      */
     async getSupportedAuthHosts(): Promise<SupportedHostsResult> {
-        if (!nativeModule?.getSupportedAuthHosts) {
-            return {success: true, data: []};
+        if (nativeModule?.getSupportedAuthHosts) {
+            try {
+                const json = await nativeModule.getSupportedAuthHosts();
+                return JSON.parse(json);
+            } catch (error) {
+                return this.exceptionError(error);
+            }
         }
-        try {
-            const json = await nativeModule.getSupportedAuthHosts();
-            return JSON.parse(json);
-        } catch (error) {
-            return this.exceptionError(error);
+
+        if (usePyodide) {
+            return {success: true, data: AuthBridge.getAuthHandlerHosts()};
         }
+
+        return {success: true, data: []};
     }
 
     /**
@@ -361,15 +400,7 @@ export class RecipeScraper {
         finalUrl: string,
         originalUrl: string
     ): ScraperErrorResult | null {
-        const getHost = (urlStr: string): string => {
-            try {
-                return new URL(urlStr).hostname.replace('www.', '');
-            } catch {
-                return '';
-            }
-        };
-
-        const host = getHost(originalUrl);
+        const host = extractHost(originalUrl);
 
         try {
             const finalPath = new URL(finalUrl).pathname.toLowerCase();

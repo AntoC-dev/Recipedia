@@ -1,5 +1,7 @@
 import { RecipeScraper, usePythonReady } from '@app/modules/recipe-scraper/src/RecipeScraper';
 import { renderHook, waitFor } from '@testing-library/react-native';
+import { Platform } from 'react-native';
+import { nutritionKcalSuffixHtml } from '@test-data/scraperMocks/htmlFixtures';
 
 const SIMPLE_RECIPE_HTML = `
 <!DOCTYPE html>
@@ -265,7 +267,7 @@ describe('RecipeScraper', () => {
   });
 
   describe('scrapeRecipeAuthenticated', () => {
-    it('returns UnsupportedPlatform error on iOS/Web', async () => {
+    it('returns UnsupportedPlatform error when no native module or Pyodide', async () => {
       const result = await scraper.scrapeRecipeAuthenticated(
         'https://example.com/recipe',
         'user@example.com',
@@ -275,13 +277,13 @@ describe('RecipeScraper', () => {
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error.type).toBe('UnsupportedPlatform');
-        expect(result.error.message).toContain('only available on Android');
+        expect(result.error.message).toContain('requires Android or iOS');
       }
     });
   });
 
   describe('getSupportedAuthHosts', () => {
-    it('returns empty array when no native module (iOS/Web)', async () => {
+    it('returns empty array when no native module or Pyodide', async () => {
       const result = await scraper.getSupportedAuthHosts();
 
       expect(result.success).toBe(true);
@@ -361,6 +363,288 @@ describe('RecipeScraper', () => {
       await waitFor(() => {
         expect(result.current).toBe(true);
       });
+    });
+  });
+});
+
+describe('RecipeScraper (Pyodide/iOS path)', () => {
+  const originalEnv = process.env.NODE_ENV;
+  const originalOS = Platform.OS;
+  const RECIPE_DATA = { title: 'Camembert Roti', ingredients: ['camembert'], description: '' };
+
+  beforeEach(() => {
+    jest.resetModules();
+    Object.defineProperty(Platform, 'OS', { value: 'ios', configurable: true });
+    process.env.NODE_ENV = 'development';
+  });
+
+  afterEach(() => {
+    Object.defineProperty(Platform, 'OS', { value: originalOS, configurable: true });
+    process.env.NODE_ENV = originalEnv;
+    jest.restoreAllMocks();
+  });
+
+  function loadScraperWithMocks(
+    mockAuthBridge: Record<string, jest.Mock>,
+    mockPyodideBridge?: Record<string, jest.Mock>
+  ) {
+    const defaultPyodideMock = {
+      scrapeRecipeFromHtml: jest
+        .fn()
+        .mockResolvedValue(JSON.stringify({ success: true, data: RECIPE_DATA })),
+      isPythonReady: jest.fn().mockReturnValue(true),
+      waitForReady: jest.fn().mockResolvedValue(true),
+    };
+
+    jest.doMock('../../../../modules/recipe-scraper/src/ios/AuthBridge', () => ({
+      AuthBridge: mockAuthBridge,
+    }));
+    jest.doMock('../../../../modules/recipe-scraper/src/ios/PyodideBridge', () => ({
+      PyodideBridge: mockPyodideBridge ?? defaultPyodideMock,
+    }));
+
+    const { RecipeScraper: Scraper } =
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      require('../../../../modules/recipe-scraper/src/RecipeScraper');
+    return new Scraper();
+  }
+
+  describe('scrapeRecipeAuthenticated', () => {
+    it('delegates to AuthBridge then parses returned HTML via Pyodide', async () => {
+      const mockPyodide = {
+        scrapeRecipeFromHtml: jest
+          .fn()
+          .mockResolvedValue(JSON.stringify({ success: true, data: RECIPE_DATA })),
+        isPythonReady: jest.fn().mockReturnValue(true),
+        waitForReady: jest.fn().mockResolvedValue(true),
+      };
+      const mockAuth = {
+        isHostSupported: jest.fn().mockReturnValue(true),
+        fetchAuthenticatedHtml: jest.fn().mockResolvedValue(SIMPLE_RECIPE_HTML),
+      };
+
+      const scraper = loadScraperWithMocks(mockAuth, mockPyodide);
+      const result = await scraper.scrapeRecipeAuthenticated(
+        'https://www.quitoque.fr/products/123',
+        'user@test.com',
+        'pass123'
+      );
+
+      expect(mockAuth.isHostSupported).toHaveBeenCalledWith('quitoque.fr');
+      expect(mockAuth.fetchAuthenticatedHtml).toHaveBeenCalledWith(
+        'https://www.quitoque.fr/products/123',
+        'user@test.com',
+        'pass123'
+      );
+      expect(mockPyodide.scrapeRecipeFromHtml).toHaveBeenCalledWith(
+        SIMPLE_RECIPE_HTML,
+        'https://www.quitoque.fr/products/123',
+        false
+      );
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.title).toBe('Camembert Roti');
+      }
+    });
+
+    it('always passes wildMode=false to Pyodide parser regardless of user options', async () => {
+      const mockPyodide = {
+        scrapeRecipeFromHtml: jest
+          .fn()
+          .mockResolvedValue(JSON.stringify({ success: true, data: RECIPE_DATA })),
+        isPythonReady: jest.fn().mockReturnValue(true),
+        waitForReady: jest.fn().mockResolvedValue(true),
+      };
+      const mockAuth = {
+        isHostSupported: jest.fn().mockReturnValue(true),
+        fetchAuthenticatedHtml: jest.fn().mockResolvedValue(SIMPLE_RECIPE_HTML),
+      };
+
+      const scraper = loadScraperWithMocks(mockAuth, mockPyodide);
+      await scraper.scrapeRecipeAuthenticated(
+        'https://www.quitoque.fr/products/123',
+        'user@test.com',
+        'pass123',
+        { wildMode: true }
+      );
+
+      expect(mockPyodide.scrapeRecipeFromHtml).toHaveBeenCalledWith(
+        SIMPLE_RECIPE_HTML,
+        'https://www.quitoque.fr/products/123',
+        false
+      );
+    });
+
+    it('returns UnsupportedAuthSite for unsupported host', async () => {
+      const mockAuth = {
+        isHostSupported: jest.fn().mockReturnValue(false),
+        fetchAuthenticatedHtml: jest.fn(),
+      };
+
+      const scraper = loadScraperWithMocks(mockAuth);
+      const result = await scraper.scrapeRecipeAuthenticated(
+        'https://www.unknown-site.com/recipe/123',
+        'user@test.com',
+        'pass123'
+      );
+
+      expect(mockAuth.fetchAuthenticatedHtml).not.toHaveBeenCalled();
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.type).toBe('UnsupportedAuthSite');
+      }
+    });
+
+    it('returns EXCEPTION when AuthBridge throws', async () => {
+      const mockAuth = {
+        isHostSupported: jest.fn().mockReturnValue(true),
+        fetchAuthenticatedHtml: jest
+          .fn()
+          .mockRejectedValue(new Error('Login failed - credentials may be incorrect')),
+      };
+
+      const scraper = loadScraperWithMocks(mockAuth);
+      const result = await scraper.scrapeRecipeAuthenticated(
+        'https://www.quitoque.fr/products/123',
+        'user@test.com',
+        'wrongpass'
+      );
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.type).toBe('EXCEPTION');
+        expect(result.error.message).toContain('Login failed');
+      }
+    });
+  });
+
+  describe('getSupportedAuthHosts', () => {
+    it('returns host list from AuthBridge synchronously', async () => {
+      const mockAuth = {
+        getAuthHandlerHosts: jest.fn().mockReturnValue(['quitoque.fr']),
+      };
+
+      const scraper = loadScraperWithMocks(mockAuth);
+      const result = await scraper.getSupportedAuthHosts();
+
+      expect(mockAuth.getAuthHandlerHosts).toHaveBeenCalled();
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data).toEqual(['quitoque.fr']);
+      }
+    });
+  });
+});
+
+describe('RecipeScraper (Android native module path)', () => {
+  const originalEnv = process.env.NODE_ENV;
+  const originalOS = Platform.OS;
+
+  beforeEach(() => {
+    jest.resetModules();
+    Object.defineProperty(Platform, 'OS', { value: 'android', configurable: true });
+    process.env.NODE_ENV = 'development';
+  });
+
+  afterEach(() => {
+    Object.defineProperty(Platform, 'OS', { value: originalOS, configurable: true });
+    process.env.NODE_ENV = originalEnv;
+    jest.restoreAllMocks();
+  });
+
+  function loadScraperWithNativeModule(mockNativeModule: Record<string, jest.Mock>) {
+    jest.doMock('../../../../modules/recipe-scraper/src/RecipeScraperModule', () => ({
+      default: mockNativeModule,
+    }));
+
+    const {
+      RecipeScraper: Scraper,
+    } = require('../../../../modules/recipe-scraper/src/RecipeScraper');
+    return new Scraper();
+  }
+
+  describe('scrapeRecipeAuthenticated', () => {
+    it('applies TypeScript enhancements using html returned by Python', async () => {
+      const mockScrapeAuthenticated = jest.fn().mockResolvedValue(
+        JSON.stringify({
+          success: true,
+          html: nutritionKcalSuffixHtml,
+          data: {
+            title: 'Tartare de saumon',
+            ingredients: [],
+            instructions: null,
+            nutrients: { calories: '374kCal' },
+          },
+        })
+      );
+
+      const scraper = loadScraperWithNativeModule({
+        scrapeRecipeAuthenticated: mockScrapeAuthenticated,
+      });
+      const result = await scraper.scrapeRecipeAuthenticated(
+        'https://www.quitoque.fr/products/123',
+        'user@test.com',
+        'pass123'
+      );
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.nutrients?.servingSize).toBe('249g');
+        expect((result as any).html).toBeUndefined();
+      }
+    });
+
+    it('handles missing html field in Python response gracefully', async () => {
+      const mockScrapeAuthenticated = jest.fn().mockResolvedValue(
+        JSON.stringify({
+          success: true,
+          data: {
+            title: 'Test',
+            ingredients: [],
+            instructions: null,
+            nutrients: { calories: '300kCal' },
+          },
+        })
+      );
+
+      const scraper = loadScraperWithNativeModule({
+        scrapeRecipeAuthenticated: mockScrapeAuthenticated,
+      });
+      const result = await scraper.scrapeRecipeAuthenticated(
+        'https://www.quitoque.fr/products/123',
+        'u',
+        'p'
+      );
+
+      expect(result.success).toBe(true);
+      expect((result as any).html).toBeUndefined();
+    });
+
+    it('passes error result through without applying enhancements', async () => {
+      const mockScrapeAuthenticated = jest.fn().mockResolvedValue(
+        JSON.stringify({
+          success: false,
+          error: {
+            type: 'AuthenticationFailed',
+            message: 'Invalid credentials',
+            host: 'quitoque.fr',
+          },
+        })
+      );
+
+      const scraper = loadScraperWithNativeModule({
+        scrapeRecipeAuthenticated: mockScrapeAuthenticated,
+      });
+      const result = await scraper.scrapeRecipeAuthenticated(
+        'https://www.quitoque.fr/products/123',
+        'user@test.com',
+        'wrongpass'
+      );
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.type).toBe('AuthenticationFailed');
+      }
     });
   });
 });

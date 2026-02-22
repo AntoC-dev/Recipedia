@@ -8,11 +8,12 @@ appId: "com.recipedia"
     when:
       platform: iOS
     commands:
-      - waitForAnimationToEnd:
-          label: "Wait for iOS keyboard dismiss animation"
-      - assertNotVisible:
-          id: "[Dd]one|[Rr]eturn|[Gg]o|[Nn]ext|[Ss]earch|[Ss]end|[Jj]oin"
+      - extendedWaitUntil:
+          notVisible:
+            id: "[Dd]one|[Rr]eturn|[Gg]o|[Nn]ext|[Ss]earch|[Ss]end|[Jj]oin"
+          timeout: 30000
           label: "Verify iOS keyboard is dismissed"
+
 
 - runFlow:
     when:
