@@ -1,3 +1,17 @@
+## [2.17.0](https://github.com/AntoC-dev/Recipedia/compare/v2.16.1...v2.17.0) (2026-02-22)
+
+### Features
+
+* **ios:** add authentication for recipe scraping ([a5ac952](https://github.com/AntoC-dev/Recipedia/commit/a5ac9528b6682417ed5a947a0da724c89e0c470c))
+* **recipe-scraper:** authenticated scraping for iOS and Android  ([#198](https://github.com/AntoC-dev/Recipedia/issues/198)) ([5c49413](https://github.com/AntoC-dev/Recipedia/commit/5c49413399a3ae1d6b1fd698f6fcc49bec5fde3b))
+* **useRecipeScraper:** log nutrition conversion outcome and image failures ([ea0d942](https://github.com/AntoC-dev/Recipedia/commit/ea0d9427e44fcce7cf2d320aeaf249b1e5351e70))
+
+### Bug Fixes
+
+* **ci:** remove zip-of-zip and add .zip extension to artifact names ([b84820e](https://github.com/AntoC-dev/Recipedia/commit/b84820ec02182f88c4ef818cf1d700fb0fe2e3dd))
+* **e2e:** update HelloFresh Keftas time from 45->40 min ([76e5237](https://github.com/AntoC-dev/Recipedia/commit/76e5237b63a00349a832123a9f6851ee04b48ac4))
+* **recipe-scraper:** return html from Python auth scrape and apply TS enhancements ([4ef3a89](https://github.com/AntoC-dev/Recipedia/commit/4ef3a89a3345c2f593a35371817d28478b0f7209))
+
 ## [2.16.1](https://github.com/AntoC-dev/Recipedia/compare/v2.16.0...v2.16.1) (2026-02-22)
 
 ### Bug Fixes
