@@ -341,13 +341,13 @@ appId: "com.recipedia"
 - waitForAnimationToEnd
 
 - scrollUntilVisible:
-    element:
-      id: "TagsSettings::10::EditButton"
-    direction: DOWN
-    speed: 20
-    timeout: 60000
-    centerElement: true
-    label: "Scroll to tag Seafood"
+      element:
+          id: "TagsSettings::10::EditButton"
+      direction: DOWN
+      speed: 20
+      timeout: 60000
+      centerElement: true
+      label: "Scroll to tag Seafood"
 
 - waitForAnimationToEnd
 

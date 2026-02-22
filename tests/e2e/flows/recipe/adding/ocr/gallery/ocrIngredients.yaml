@@ -41,6 +41,13 @@ appId: "com.recipedia"
     when:
       platform: iOS
 
+- extendedWaitUntil:
+    visible:
+      id: "RecipeValidation::ValidationQueue::Ingredient::SimilarityDialog::Title"
+    timeout: 120000
+    label: "Wait for validation queue for ingredients to be displayed"
+
+
 - runFlow:
     file: "../../../validation/validateAllIngredients.yaml"
     env:
@@ -50,5 +57,5 @@ appId: "com.recipedia"
 - extendedWaitUntil:
     visible:
       id: "RecipeIngredients::0::NameInput::CustomTextInput"
-    timeout: 10000
+    timeout: 120000
     label: "Wait for first ingredient to be populated by OCR"

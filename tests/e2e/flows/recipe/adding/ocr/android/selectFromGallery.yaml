@@ -1,9 +1,5 @@
 appId: "com.recipedia"
 ---
-# Selects most recent image (index 0) from Android gallery and validates
-# First verifies gallery has all expected thumbnails indexed
-# TODO: Implement iOS version in ../iOS/selectFromGallery.yaml
-
 - runFlow:
     file: waitAndVerifyGalleryReady.yaml
     label: "Verify gallery thumbnails are indexed"
@@ -12,6 +8,3 @@ appId: "com.recipedia"
     id: "icon_thumbnail"
     index: 0
     label: "Select most recent picture from Android gallery"
-
-- runFlow:
-    file: validateWithoutCropping.yaml

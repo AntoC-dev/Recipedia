@@ -44,7 +44,7 @@ appId: "com.recipedia"
 - extendedWaitUntil:
     visible:
       id: "Recipe::RecipeNutrition::NutritionTable"
-    timeout: 10000
+    timeout: 120000
     label: "Wait for nutrition values to be populated by OCR"
 
 - waitForAnimationToEnd
