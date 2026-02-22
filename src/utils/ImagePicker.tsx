@@ -75,8 +75,10 @@ function createImageOptionsWithTheme(themeColors: MD3Colors) {
 /**
  * Opens the device's image gallery to select a photo
  *
- * Allows users to pick an image from their device's photo gallery with built-in
- * cropping functionality. Returns the file path of the selected and cropped image.
+ * Allows users to pick an image from their device's photo gallery.
+ * Returns the full-resolution file path of the selected image so that
+ * any subsequent crop (e.g. for OCR region selection) operates on the
+ * original data and produces a sharp result.
  *
  * @param themeColors - React Native Paper theme colors for UI consistency
  * @returns Promise resolving to the file path of selected image, or empty string if cancelled
@@ -99,6 +101,7 @@ export async function pickImage(themeColors: MD3Colors): Promise<string> {
     const pickResult = await openPicker({
       ...createImageOptionsWithTheme(themeColors),
       mediaType: 'photo',
+      cropping: false,
     });
     return pickResult.path;
   } catch (error) {
