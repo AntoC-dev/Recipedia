@@ -737,9 +737,28 @@ function detectBlockOrder(lines: string[]): BlockOrderResult | null {
  */
 function tranformOCRInIngredients(ocr: TextRecognitionResult): ingredientObject[] {
   const lines = preprocessIngredientLines(ocr);
+
+  ocrLogger.debug('Ingredient OCR raw blocks', {
+    blockCount: ocr.blocks.length,
+    blocks: ocr.blocks.map((b, i) => ({
+      blockIndex: i,
+      text: b.text,
+      lines: b.lines.map(l => l.text),
+    })),
+  });
+  ocrLogger.debug('Ingredient OCR preprocessed lines', { lines });
+
   const blockOrder = detectBlockOrder(lines);
 
+  ocrLogger.debug('Ingredient OCR block order detection', {
+    hasBlockOrder: !!blockOrder,
+    isReversed: blockOrder?.isReversed,
+    ingredientNames: blockOrder?.ingredientNames,
+    dataTokens: blockOrder?.dataTokens,
+  });
+
   if (!blockOrder) {
+    ocrLogger.debug('Ingredient OCR: using parseIngredientsNoHeader fallback');
     return parseIngredientsNoHeader(lines);
   }
 
@@ -1236,6 +1255,10 @@ export async function extractFieldFromImage(
  * the first half contains ingredient names, the second half contains quantities with units.
  * This handles cases where ingredient tables don't have clear headers or person markers.
  *
+ * On iOS, ML Kit may return quantity blocks before name blocks (opposite of Android).
+ * This is detected by checking if the first "name" line starts with a digit, in which
+ * case the two halves are swapped before pairing.
+ *
  * @param lines - Array of text lines from ingredient OCR
  * @returns Array of ingredient objects with names, quantities, and units
  *
@@ -1255,8 +1278,13 @@ export function parseIngredientsNoHeader(lines: string[]): ingredientObject[] {
 
   const mid = Math.floor(lines.length / 2);
 
-  const nameLines = lines.slice(0, mid);
-  const quantityLines = lines.slice(mid);
+  let nameLines = lines.slice(0, mid);
+  let quantityLines = lines.slice(mid);
+
+  if (nameLines.length > 0 && numberAtFirstIndex.test(nameLines[0])) {
+    [nameLines, quantityLines] = [quantityLines, nameLines];
+  }
+
   const result: ingredientObject[] = [];
 
   for (let i = 0; i < Math.min(nameLines.length, quantityLines.length); i++) {
