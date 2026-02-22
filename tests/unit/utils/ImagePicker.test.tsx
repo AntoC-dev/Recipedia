@@ -1,5 +1,7 @@
-import { pickImage, takePhoto } from '@utils/ImagePicker';
-import { openCamera, openPicker } from 'react-native-image-crop-picker';
+import { cropImage, pickImage, takePhoto } from '@utils/ImagePicker';
+import { openCamera, openCropper, openPicker } from 'react-native-image-crop-picker';
+import { ImageManipulator } from 'expo-image-manipulator';
+import { mockManipulatorContext } from '@mocks/deps/expo-image-manipulator-mock';
 import { lightTheme } from '@styles/theme';
 import { MD3Colors } from 'react-native-paper/lib/typescript/types';
 
@@ -23,6 +25,14 @@ describe('ImagePicker Utility Functions', () => {
     height: 100,
     width: 100,
   };
+  const mockResponseCropOK = {
+    path: 'file://mock-library-image-cropped.jpg',
+    height: 50,
+    width: 50,
+    cropRect: { x: 10, y: 20, width: 100, height: 100 },
+  };
+
+  const cropUri = 'dummy-uri';
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -35,6 +45,7 @@ describe('ImagePicker Utility Functions', () => {
       const result = await pickImage(colors);
 
       expect(openPicker).toHaveBeenCalled();
+      expect(openCropper).not.toHaveBeenCalled();
       expect(result).toEqual(mockResponsePickOK.path);
     });
 
@@ -56,6 +67,52 @@ describe('ImagePicker Utility Functions', () => {
       expect(result).toEqual('');
     });
   });
+
+  describe('cropImage', () => {
+    test(' when permission is granted and user confirms the crop', async () => {
+      (openCropper as jest.Mock).mockResolvedValue(mockResponseCropOK);
+
+      const result = await cropImage(cropUri, colors);
+
+      expect(openCropper).toHaveBeenCalled();
+      expect(ImageManipulator.manipulate).toHaveBeenCalledWith(cropUri);
+      expect(mockManipulatorContext.crop).toHaveBeenCalledWith({
+        originX: 10,
+        originY: 20,
+        width: 100,
+        height: 100,
+      });
+      expect(result).toEqual('file://mock-manipulated-image.jpg');
+    });
+
+    test(' falls back to cropResult.path when cropRect is null', async () => {
+      (openCropper as jest.Mock).mockResolvedValue({ ...mockResponseCropOK, cropRect: null });
+
+      const result = await cropImage(cropUri, colors);
+
+      expect(result).toEqual(mockResponseCropOK.path);
+      expect(ImageManipulator.manipulate).not.toHaveBeenCalled();
+    });
+
+    test(' when permission is not granted', async () => {
+      (openCropper as jest.Mock).mockRejectedValue(permissionError);
+
+      const result = await cropImage(cropUri, colors);
+
+      expect(openCropper).toHaveBeenCalled();
+      expect(result).toEqual('');
+    });
+
+    test(' when user cancels the crop', async () => {
+      (openCropper as jest.Mock).mockRejectedValue(cancelError);
+
+      const result = await cropImage(cropUri, colors);
+
+      expect(openCropper).toHaveBeenCalled();
+      expect(result).toEqual('');
+    });
+  });
+
   describe('takePhoto', () => {
     test(' when permission is granted and user select an image', async () => {
       (openCamera as jest.Mock).mockResolvedValue(mockResponseCameraOK);

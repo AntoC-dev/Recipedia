@@ -2,6 +2,7 @@ import {
   extractFieldFromImage,
   ingredientObject,
   ingredientQuantityPerPersons,
+  parseIngredientsNoHeader,
   personAndTimeObject,
   recognizeText,
   WarningHandler,
@@ -3587,6 +3588,55 @@ describe('OCR Utility Functions', () => {
 
         expect(received).toEqual(expected);
       });
+      const mockIngredientHelloFreshIOS: TextRecognitionResult = {
+        text: '140g\npice\n1pce\nipiéce\nI piece\ngron jaae\nCarome\nPorvau\nChalee\nGeuse dal\nGrgenbre fa\nSauce soja 13)25)\nHle de sesane 3)\nFlet de peet\nComais\n10l\n2pece',
+        blocks: [
+          createBlock('140g'),
+          createBlock('pice'),
+          createBlock('1pce'),
+          createBlock('ipiéce'),
+          createBlock('I piece'),
+          createBlock('gron jaae'),
+          createBlock('Carome'),
+          createBlock('Porvau'),
+          createBlock('Chalee'),
+          createBlock('Geuse dal'),
+          createBlock('Grgenbre fa'),
+          createBlock('Sauce soja 13)25)'),
+          createBlock('Hle de sesane 3)'),
+          createBlock('Flet de peet'),
+          createBlock('Comais'),
+          createBlock('10l'),
+          createBlock('2pece'),
+        ],
+      };
+      const expectedHelloFreshIOS = new Array<ingredientObject>(
+        { name: 'Chalee', unit: '', quantityPerPersons: [{ persons: -1, quantity: '140g' }] },
+        { name: 'Geuse dal', unit: '', quantityPerPersons: [{ persons: -1, quantity: 'pice' }] },
+        { name: 'Grgenbre fa', unit: '', quantityPerPersons: [{ persons: -1, quantity: '1pce' }] },
+        {
+          name: 'Sauce soja 13)25)',
+          unit: '',
+          quantityPerPersons: [{ persons: -1, quantity: 'ipiéce' }],
+        },
+        {
+          name: 'Hle de sesane 3)',
+          unit: 'piece',
+          quantityPerPersons: [{ persons: -1, quantity: 'I' }],
+        },
+        {
+          name: 'Flet de peet',
+          unit: 'jaae',
+          quantityPerPersons: [{ persons: -1, quantity: 'gron' }],
+        },
+        { name: 'Comais', unit: '', quantityPerPersons: [{ persons: -1, quantity: 'Carome' }] },
+        { name: '10l', unit: '', quantityPerPersons: [{ persons: -1, quantity: 'Porvau' }] }
+      );
+      test('(hellofresh iOS) returns correct value when iOS returns quantity blocks before name blocks', async () => {
+        mockRecognize.mockResolvedValue(mockIngredientHelloFreshIOS);
+        const received = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+        expect(received).toEqual(expectedHelloFreshIOS);
+      });
       test('(poulet satay iOS) returns correct value with reversed block order (quantities before names)', async () => {
         mockRecognize.mockResolvedValue(mockResultIngredientPouletSatayIOS);
 
@@ -4838,6 +4888,45 @@ describe('OCR Utility Functions', () => {
         mockRecognize.mockResolvedValue(mockResultNoMarker);
         expect(await recognizeText(uriForOCR, recipeColumnsNames.nutrition)).toEqual({});
       });
+    });
+  });
+
+  describe('parseIngredientsNoHeader', () => {
+    test('Android format: names first half, quantities second half — no swap', () => {
+      const lines = ['Flour', 'Sugar', 'Salt', '200 g', '100 g', '5 g'];
+      const result = parseIngredientsNoHeader(lines);
+
+      expect(result).toHaveLength(3);
+      expect(result[0].name).toBe('Flour');
+      expect(result[0].quantityPerPersons[0].quantity).toBe('200');
+      expect(result[0].unit).toBe('g');
+      expect(result[1].name).toBe('Sugar');
+      expect(result[1].quantityPerPersons[0].quantity).toBe('100');
+      expect(result[2].name).toBe('Salt');
+      expect(result[2].quantityPerPersons[0].quantity).toBe('5');
+    });
+
+    test('iOS format: quantities first half start with digit — halves swapped', () => {
+      const lines = ['200 g', '100 ml', 'Flour', 'Water'];
+      const result = parseIngredientsNoHeader(lines);
+
+      expect(result).toHaveLength(2);
+      expect(result[0].name).toBe('Flour');
+      expect(result[0].quantityPerPersons[0].quantity).toBe('200');
+      expect(result[0].unit).toBe('g');
+      expect(result[1].name).toBe('Water');
+      expect(result[1].quantityPerPersons[0].quantity).toBe('100');
+      expect(result[1].unit).toBe('ml');
+    });
+
+    test('odd number of lines: mid=1 produces 1 paired ingredient without crashing', () => {
+      const lines = ['Butter', '50 g', 'Extra line'];
+      const result = parseIngredientsNoHeader(lines);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].name).toBe('Butter');
+      expect(result[0].quantityPerPersons[0].quantity).toBe('50');
+      expect(result[0].unit).toBe('g');
     });
   });
 });
