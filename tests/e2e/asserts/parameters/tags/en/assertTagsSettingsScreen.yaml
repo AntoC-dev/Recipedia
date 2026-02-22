@@ -357,18 +357,6 @@ appId: "com.recipedia"
     text: "Edit"
     label: "Edit button for Tag with space is displayed"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "TagsSettings::BottomActionButton"
-    direction: DOWN
-    speed: 40
-    centerElement: true
-    label: "Scroll to Add button"
-
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "TagsSettings::14::DeleteButton-text"
     text: "Delete"
