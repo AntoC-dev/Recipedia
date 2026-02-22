@@ -1,3 +1,10 @@
+## [2.16.1](https://github.com/AntoC-dev/Recipedia/compare/v2.16.0...v2.16.1) (2026-02-22)
+
+### Bug Fixes
+
+* **workflows:** update token to `RELEASE_PAT` in release pipeline ([c5fdc1f](https://github.com/AntoC-dev/Recipedia/commit/c5fdc1fd5591e52fa72fce15d897388392c11cd5))
+* **workflows:** update token to `RELEASE_PAT` in release pipeline ([#199](https://github.com/AntoC-dev/Recipedia/issues/199)) ([fac79a9](https://github.com/AntoC-dev/Recipedia/commit/fac79a9eee8656e6b90007de276a4a04a0a0dc6f))
+
 ## [2.16.0](https://github.com/AntoC-dev/Recipedia/compare/v2.15.2...v2.16.0) (2026-02-17)
 
 ### Features
