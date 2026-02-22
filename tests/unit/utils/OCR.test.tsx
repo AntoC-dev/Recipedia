@@ -3587,6 +3587,55 @@ describe('OCR Utility Functions', () => {
 
         expect(received).toEqual(expected);
       });
+      const mockIngredientHelloFreshIOS: TextRecognitionResult = {
+        text: '140g\npice\n1pce\nipiéce\nI piece\ngron jaae\nCarome\nPorvau\nChalee\nGeuse dal\nGrgenbre fa\nSauce soja 13)25)\nHle de sesane 3)\nFlet de peet\nComais\n10l\n2pece',
+        blocks: [
+          createBlock('140g'),
+          createBlock('pice'),
+          createBlock('1pce'),
+          createBlock('ipiéce'),
+          createBlock('I piece'),
+          createBlock('gron jaae'),
+          createBlock('Carome'),
+          createBlock('Porvau'),
+          createBlock('Chalee'),
+          createBlock('Geuse dal'),
+          createBlock('Grgenbre fa'),
+          createBlock('Sauce soja 13)25)'),
+          createBlock('Hle de sesane 3)'),
+          createBlock('Flet de peet'),
+          createBlock('Comais'),
+          createBlock('10l'),
+          createBlock('2pece'),
+        ],
+      };
+      const expectedHelloFreshIOS = new Array<ingredientObject>(
+        { name: 'Chalee', unit: '', quantityPerPersons: [{ persons: -1, quantity: '140g' }] },
+        { name: 'Geuse dal', unit: '', quantityPerPersons: [{ persons: -1, quantity: 'pice' }] },
+        { name: 'Grgenbre fa', unit: '', quantityPerPersons: [{ persons: -1, quantity: '1pce' }] },
+        {
+          name: 'Sauce soja 13)25)',
+          unit: '',
+          quantityPerPersons: [{ persons: -1, quantity: 'ipiéce' }],
+        },
+        {
+          name: 'Hle de sesane 3)',
+          unit: 'piece',
+          quantityPerPersons: [{ persons: -1, quantity: 'I' }],
+        },
+        {
+          name: 'Flet de peet',
+          unit: 'jaae',
+          quantityPerPersons: [{ persons: -1, quantity: 'gron' }],
+        },
+        { name: 'Comais', unit: '', quantityPerPersons: [{ persons: -1, quantity: 'Carome' }] },
+        { name: '10l', unit: '', quantityPerPersons: [{ persons: -1, quantity: 'Porvau' }] }
+      );
+      test('(hellofresh iOS) returns correct value when iOS returns quantity blocks before name blocks', async () => {
+        mockRecognize.mockResolvedValue(mockIngredientHelloFreshIOS);
+        const received = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+        expect(received).toEqual(expectedHelloFreshIOS);
+      });
       test('(poulet satay iOS) returns correct value with reversed block order (quantities before names)', async () => {
         mockRecognize.mockResolvedValue(mockResultIngredientPouletSatayIOS);
 
