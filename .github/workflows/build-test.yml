@@ -233,7 +233,7 @@ jobs:
 
       - name: Download iOS Maestro logs
         if: always()
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           pattern: maestro-logs-ios-*
           path: maestro-logs-ios

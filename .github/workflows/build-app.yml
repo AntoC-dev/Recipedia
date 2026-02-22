@@ -104,7 +104,7 @@ jobs:
           env.CACHED_RUN_ID != ''
         continue-on-error: true
         id: download
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: ${{ inputs.artifact-name }}
           run-id: ${{ env.CACHED_RUN_ID }}
