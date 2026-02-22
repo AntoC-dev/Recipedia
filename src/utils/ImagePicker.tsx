@@ -30,6 +30,7 @@
  * ```
  */
 
+import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import { openCamera, openCropper, openPicker } from 'react-native-image-crop-picker';
 import { MD3Colors } from 'react-native-paper/lib/typescript/types';
 import { uiLogger } from '@utils/logger';
@@ -116,6 +117,12 @@ export async function pickImage(themeColors: MD3Colors): Promise<string> {
  * Allows users to manually crop an existing image file. Useful for editing
  * images that have already been selected or captured.
  *
+ * Uses `openCropper` for the interactive UI, but applies the resulting
+ * `cropRect` (in original image pixel coordinates) directly to the source
+ * file via `expo-image-manipulator`. This bypasses RCTImageLoader's
+ * subsampling so OCR receives full-resolution pixels from the crop region.
+ * Falls back to `cropResult.path` when `cropRect` is unavailable.
+ *
  * @param uri - File path or URI of the image to crop
  * @param themeColors - React Native Paper theme colors for UI consistency
  * @returns Promise resolving to the file path of cropped image, or empty string if cancelled
@@ -141,7 +148,15 @@ export async function cropImage(uri: string, themeColors: MD3Colors): Promise<st
       mediaType: 'photo',
       path: uri,
     });
-    return cropResult.path;
+    if (!cropResult.cropRect) {
+      return cropResult.path;
+    }
+    const { x: originX, y: originY, width, height } = cropResult.cropRect;
+    const context = ImageManipulator.manipulate(uri);
+    context.crop({ originX, originY, width, height });
+    const imageRef = await context.renderAsync();
+    const result = await imageRef.saveAsync({ format: SaveFormat.JPEG, compress: 1 });
+    return result.uri;
   } catch (error) {
     uiLogger.debug(`cropImage: user cancelled ${error}`);
     return '';
