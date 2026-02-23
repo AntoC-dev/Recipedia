@@ -90,6 +90,8 @@ export type StackScreenParamList = {
   BulkImportDiscovery: { providerId: string };
   /** Bulk import validation screen with selected recipes */
   BulkImportValidation: { providerId: string; selectedRecipes: ConvertedImportRecipe[] };
+  /** Bug report screen (no parameters) */
+  BugReport: undefined;
 };
 
 /**
@@ -163,3 +165,6 @@ export type IngredientsSettingProp = NativeStackScreenProps<
 
 /** Props for Tags Settings stack screen component */
 export type TagsSettingsProp = NativeStackScreenProps<StackScreenParamList, 'TagsSettings'>;
+
+/** Props for Bug Report stack screen component */
+export type BugReportScreenProp = NativeStackScreenProps<StackScreenParamList, 'BugReport'>;

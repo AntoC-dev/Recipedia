@@ -111,6 +111,10 @@ export function Parameters() {
     navigate('TagsSettings');
   };
 
+  const handleBugReportPress = () => {
+    navigate('BugReport');
+  };
+
   const screenId = 'Parameters';
   const sectionId = screenId + '::Section';
   const appearanceId = sectionId + '::Appearance';
@@ -257,6 +261,15 @@ export function Parameters() {
             title={t('version')}
             description={AppVersion}
             left={props => <List.Icon {...props} icon={Icons.information} />}
+          />
+          <Divider testID={aboutId + '::BugReport::Divider'} />
+          <List.Item
+            testID={aboutId + '::BugReport::Item'}
+            title={t('bugReport.description')}
+            description={t('bugReport.sectionDescription')}
+            left={props => <List.Icon {...props} icon={Icons.bug} />}
+            right={props => <List.Icon {...props} icon={Icons.chevronRight} />}
+            onPress={handleBugReportPress}
           />
         </List.Section>
       </ScrollView>

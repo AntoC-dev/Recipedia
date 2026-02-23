@@ -11,11 +11,13 @@ import alerts from './alerts';
 import months from './months';
 import onboarding from './onboarding';
 import bulkImport from './bulkImport';
+import bugReport from './bugReport';
 
 export default {
   ...common,
   ...parameters,
   bulkImport,
+  bugReport,
   ...seasons,
   ...months,
   ...recipe,

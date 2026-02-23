@@ -64,6 +64,7 @@ import { TagsSettings } from '@screens/TagsSettings';
 import { BulkImportSettings } from '@screens/BulkImportSettings';
 import { BulkImportDiscovery } from '@screens/BulkImportDiscovery';
 import { BulkImportValidation } from '@screens/BulkImportValidation';
+import { BugReport } from '@screens/BugReport';
 import { Stack } from '@customTypes/ScreenTypes';
 import { BottomTabs } from '@navigation/BottomTabs';
 import { navigationLogger } from '@utils/logger';
@@ -98,6 +99,7 @@ export function RootNavigator() {
       <Stack.Screen name='BulkImportSettings' component={BulkImportSettings} />
       <Stack.Screen name='BulkImportDiscovery' component={BulkImportDiscovery} />
       <Stack.Screen name='BulkImportValidation' component={BulkImportValidation} />
+      <Stack.Screen name='BugReport' component={BugReport} />
     </Stack.Navigator>
   );
 }
