@@ -60,6 +60,8 @@ export type CustomTextInputProps = {
   label?: string;
   /** Current text value */
   value?: string;
+  /** Placeholder text displayed when the input is empty */
+  placeholder?: string;
   /** Whether the input supports multiple lines (default: false) */
   multiline?: boolean;
   /** Type of keyboard to display (default: 'default') */
@@ -106,6 +108,7 @@ export function CustomTextInput({
   editable = true,
   label,
   value,
+  placeholder,
   multiline = false,
   keyboardType = 'default',
   mode = 'outlined',
@@ -172,6 +175,7 @@ export function CustomTextInput({
         ref={inputRef}
         label={label}
         value={value ?? ''}
+        placeholder={placeholder}
         style={inputStyle}
         contentStyle={contentStyle}
         onFocus={handleOnFocus}
