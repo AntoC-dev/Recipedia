@@ -40,14 +40,14 @@
  */
 
 import { palette } from './colors';
-import { padding, remValue } from './spacing';
+import { padding } from './spacing';
 import EStyleSheet from 'react-native-extended-stylesheet';
 
 /** Border width for button shapes */
 const shapeWidth: number = 1;
 
 /** Responsive width for small-sized card buttons */
-export const smallCardWidth = 85 * remValue;
+export const smallCardWidth = 85;
 
 /**
  * Creates responsive square button styles with specified side length

@@ -25,10 +25,11 @@
 
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Card, Checkbox, Icon, Text, useTheme } from 'react-native-paper';
-import { CustomImage } from '@components/atomic/CustomImage';
+import { Card, Checkbox, Text, useTheme } from 'react-native-paper';
+import { ImageThumbnail } from '@components/molecules/ImageThumbnail';
 import { padding } from '@styles/spacing';
 import { DiscoveredRecipe } from '@customTypes/BulkImportTypes';
+import { Icons } from '@assets/Icons';
 
 /**
  * Props for the RecipeSelectionCard component
@@ -101,21 +102,13 @@ export function RecipeSelectionCard({
         />
 
         <View style={styles.thumbnailWrapper}>
-          <CustomImage
+          <ImageThumbnail
             uri={recipe.imageUrl}
             size={60}
             borderRadius={8}
-            backgroundColor={colors.surfaceVariant}
             testID={testId + '::Thumbnail'}
+            icon={isPreviouslySeen ? Icons.history : undefined}
           />
-          {isPreviouslySeen && (
-            <View
-              testID={testId + '::SeenIndicator'}
-              style={[styles.seenBadge, { backgroundColor: colors.surfaceVariant }]}
-            >
-              <Icon source='history' size={14} color={colors.onSurfaceVariant} />
-            </View>
-          )}
         </View>
 
         <View style={styles.textContainer}>
@@ -151,13 +144,6 @@ const styles = StyleSheet.create({
   textContainer: {
     flex: 1,
     paddingRight: padding.small,
-  },
-  seenBadge: {
-    position: 'absolute',
-    bottom: padding.verySmall,
-    right: padding.verySmall,
-    borderRadius: padding.small,
-    padding: padding.verySmall,
   },
   titleRow: {
     flexDirection: 'row',

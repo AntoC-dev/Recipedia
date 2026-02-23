@@ -84,12 +84,12 @@ describe('RecipeSelectionCard', () => {
     const seenRecipe: DiscoveredRecipe = { ...mockRecipe, memoryStatus: 'seen' };
     const { getByTestId } = render(<RecipeSelectionCard {...defaultProps} recipe={seenRecipe} />);
 
-    expect(getByTestId('test-card::SeenIndicator')).toBeTruthy();
+    expect(getByTestId('test-card::Thumbnail::Thumbnail::Icon')).toBeTruthy();
   });
 
   test('does not render seen indicator for fresh recipes', () => {
     const { queryByTestId } = render(<RecipeSelectionCard {...defaultProps} />);
 
-    expect(queryByTestId('test-card::SeenIndicator')).toBeNull();
+    expect(queryByTestId('test-card::Thumbnail::Thumbnail::Icon')).toBeNull();
   });
 });
