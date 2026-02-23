@@ -19,6 +19,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import ImageCropPicker from 'react-native-image-crop-picker';
+import { bugReportLogger } from '@utils/logger';
 
 /** Developer contact email for bug reports */
 const DEVELOPER_EMAIL = 'antonin.coupanec.dev@outlook.com';
@@ -87,16 +88,27 @@ export async function sendBugReport(
   const logInfo = await FileSystem.getInfoAsync(logPath);
   if (logInfo.exists) {
     attachments.push(logPath);
+  } else {
+    bugReportLogger.warn('Log file not found, skipping attachment', { logPath });
   }
 
   attachments.push(...screenshotUris);
 
-  return composeAsync({
+  bugReportLogger.info('Composing bug report email', {
+    screenshotCount: screenshotUris.length,
+    logAttached: logInfo.exists,
+  });
+
+  const result = await composeAsync({
     recipients: [DEVELOPER_EMAIL],
     subject,
     body,
     attachments,
   });
+
+  bugReportLogger.info('Mail composer closed', { status: result.status });
+
+  return result;
 }
 
 /**
@@ -119,5 +131,7 @@ export async function pickScreenshots(): Promise<string[]> {
     cropping: false,
     mediaType: 'photo',
   });
-  return results.map(image => image.path);
+  const paths = results.map(image => image.path);
+  bugReportLogger.info('Screenshots picked', { count: paths.length });
+  return paths;
 }

@@ -1,0 +1,25 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    id: "BugReport::Bar::AppBar::Title-title-text"
+    text: "Report a Bug"
+    label: "Bug Report title is displayed"
+
+- assertVisible:
+    id: "BugReport::Description::Input::CustomTextInput-label-inactive"
+    text: "What happened?"
+    label: "Description input label is displayed"
+
+- assertVisible:
+    id: "BugReport::Description::Input::CustomTextInput"
+    label: "Description input field is displayed"
+
+- assertVisible:
+    id: "BugReport::Screenshots::AddButton"
+    text: "Add screenshot"
+    label: "Add screenshot button is displayed"
+
+- assertVisible:
+    id: "BugReport::Send::Button"
+    text: "Send report"
+    label: "Send button is displayed"

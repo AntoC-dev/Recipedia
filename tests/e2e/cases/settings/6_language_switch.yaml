@@ -1,0 +1,68 @@
+name: "6 - Language Switch Flow"
+appId: "com.recipedia"
+tags:
+  - settings
+---
+- runFlow:
+    file: "../../flows/setupTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- tapOn:
+    id: "BottomTabs::Parameters"
+    label: "Action - Navigate to Parameters screen"
+
+- tapOn:
+    id: "Parameters::Section::Appearance::Language::Item"
+    label: "Action - Open language settings"
+
+- runFlow:
+    file: "../../asserts/parameters/en/assertLanguageScreen.yaml"
+    label: "Assert - Verify language screen in English"
+
+- tapOn:
+    id: "LanguageSettings::Item::1"
+    label: "Action - Select French language"
+
+- runFlow:
+    file: "../../asserts/parameters/fr/assertParametersScreen.yaml"
+    label: "Assert - Verify Parameters screen in French"
+
+- runFlow:
+    file: "../../flows/parameters/language/shoppingIsTranslated.yaml"
+    label: "Verification - Verify Shopping screen translated to French"
+
+- runFlow:
+    file: "../../flows/parameters/language/homeIsTranslated.yaml"
+    label: "Verification - Verify Home screen translated to French"
+
+- runFlow:
+    file: "../../flows/parameters/language/recipeIsTranslated.yaml"
+    label: "Verification - Verify Recipe screen translated to French"
+
+- runFlow:
+    file: "../../flows/parameters/language/searchIsTranslated.yaml"
+    label: "Verification - Verify Search screen translated to French"
+
+- runFlow:
+    file: "../../flows/parameters/language/menuIsTranslated.yaml"
+    label: "Verification - Verify Menu screen translated to French"
+
+- tapOn:
+    text: "Paramètres"
+    label: "Action - Navigate back to Parameters screen"
+
+- tapOn:
+    id: "Parameters::Section::Appearance::Language::Item"
+    label: "Action - Open language settings"
+
+- runFlow:
+    file: "../../asserts/parameters/fr/assertLanguageScreen.yaml"
+    label: "Assert - Verify language screen in French"
+
+- tapOn:
+    id: "LanguageSettings::Item::0"
+    label: "Cleanup - Restore language to English"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Cleanup - Return to Home screen"

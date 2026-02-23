@@ -1,0 +1,82 @@
+name: "5 - Bug Report Flow"
+appId: "com.recipedia"
+tags:
+  - settings
+---
+- runFlow:
+    file: "../../flows/setupTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- tapOn:
+    id: "BottomTabs::Parameters"
+    label: "Action - Navigate to Parameters screen"
+
+- scrollUntilVisible:
+    element:
+      id: "Parameters::Section::About::BugReport::Item"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Action - Scroll to Bug Report item"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "Parameters::Section::About::BugReport::Item"
+    label: "Action - Open Bug Report screen"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "BugReport::Bar"
+    label: "Assert - Bug Report app bar is displayed"
+
+- assertVisible:
+    id: "BugReport::Description::Input"
+    label: "Assert - Description input is displayed"
+
+- assertVisible:
+    id: "BugReport::Send::Button"
+    label: "Assert - Send button is displayed"
+
+- tapOn:
+    id: "BugReport::Description::Input"
+    label: "Action - Focus description input"
+
+- inputText: "This is a test bug report description"
+
+- tapOn:
+    id: "BugReport::Screenshots::AddButton"
+    label: "Action - Open system photo picker"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    point: "25%,25%"
+    label: "Action - Select screenshot from photo picker"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "BugReport::Screenshots"
+    label: "Assert - Screenshots section shows added screenshot"
+
+- tapOn:
+    id: "BugReport::Send::Button"
+    label: "Action - Press send button"
+
+- extendedWaitUntil:
+    visible:
+      id: "BugReport::Snackbar"
+    timeout: 5000
+    label: "Assert - Snackbar appears after send attempt"
+
+- tapOn:
+    id: "BugReport::Bar"
+    label: "Action - Navigate back to Parameters screen"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Cleanup - Return to Home screen"

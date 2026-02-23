@@ -20,12 +20,12 @@ import { ImageThumbnail } from '@components/molecules/ImageThumbnail';
 import { useI18n } from '@utils/i18n';
 import { padding } from '@styles/spacing';
 import { StackScreenNavigation } from '@customTypes/ScreenTypes';
-import { parametersLogger } from '@utils/logger';
+import { bugReportLogger } from '@utils/logger';
 import { isMailAvailable, pickScreenshots, sendBugReport } from '@utils/BugReport';
 import { MailComposerStatus } from 'expo-mail-composer';
 import { smallCardWidth } from '@styles/buttons';
 import { Icons } from '@assets/Icons';
-import CustomTextInput from '@components/atomic/CustomTextInput';
+import { CustomTextInput } from '@components/atomic/CustomTextInput';
 
 const screenTestId = 'BugReport';
 
@@ -50,12 +50,11 @@ export function BugReport() {
   };
 
   const handleAddScreenshots = async () => {
-    parametersLogger.debug('Opening screenshot picker');
     try {
       const uris = await pickScreenshots();
       setScreenshots(prev => [...prev, ...uris]);
     } catch (error) {
-      parametersLogger.warn('Screenshot picker cancelled or failed', { error });
+      bugReportLogger.warn('Screenshot picker cancelled or failed', { error });
     }
   };
 
@@ -64,9 +63,10 @@ export function BugReport() {
   };
 
   const handleSend = async () => {
-    parametersLogger.info('Sending bug report');
+    bugReportLogger.info('User initiated bug report submission');
     const available = await isMailAvailable();
     if (!available) {
+      bugReportLogger.warn('Mail unavailable on this device');
       showSnackbar(t('bugReport.mailUnavailable'));
       return;
     }
@@ -74,13 +74,14 @@ export function BugReport() {
     try {
       const result = await sendBugReport(description, screenshots);
       if (result.status === MailComposerStatus.SENT) {
-        parametersLogger.info('Bug report sent successfully');
+        bugReportLogger.info('Bug report sent successfully');
         goBack();
       } else if (result.status !== MailComposerStatus.CANCELLED) {
+        bugReportLogger.warn('Unexpected mail composer status', { status: result.status });
         showSnackbar(t('bugReport.sendError'));
       }
     } catch (error) {
-      parametersLogger.error('Failed to send bug report', { error });
+      bugReportLogger.error('Failed to open mail composer', { error });
       showSnackbar(t('bugReport.sendError'));
     }
   };
@@ -101,11 +102,11 @@ export function BugReport() {
 
         <View style={styles.screenshotsSection}>
           <View style={styles.screenshotsThumbnails}>
-            {screenshots.map(uri => (
+            {screenshots.map((uri, index) => (
               <View key={uri} style={{ margin: padding.small }}>
                 <ImageThumbnail
                   uri={uri}
-                  testID={screenTestId + '::Screenshots'}
+                  testID={screenTestId + `::${index}::Screenshots`}
                   size={smallCardWidth}
                   icon={Icons.crossIcon}
                   onIconPress={() => handleRemoveScreenshot(uri)}
@@ -139,6 +140,7 @@ export function BugReport() {
         testID={screenTestId + '::Snackbar'}
         visible={snackbarVisible}
         onDismiss={() => setSnackbarVisible(false)}
+        duration={Snackbar.DURATION_LONG}
       >
         {snackbarMessage}
       </Snackbar>

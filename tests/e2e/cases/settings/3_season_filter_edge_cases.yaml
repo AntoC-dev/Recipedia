@@ -1,0 +1,24 @@
+name: "3 - Season Filter Edge Cases Flow"
+appId: "com.recipedia"
+tags:
+  - settings
+---
+- runFlow:
+    file: "../../flows/setupTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- runFlow:
+    file: "../../flows/parameters/seasonFilter/manuallyAddWhileParameterOff.yaml"
+    label: "Action - Test manually adding season filter while parameter OFF"
+
+- runFlow:
+    file: "../../flows/parameters/seasonFilter/manuallyRemoveWhileParameterOn.yaml"
+    label: "Action - Test manually removing season filter while parameter ON"
+
+- runFlow:
+    file: "../../flows/parameters/seasonFilter/removeChipWithOtherFilters.yaml"
+    label: "Action - Test removing season filter chip with other filters"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Cleanup - Return to Home screen"
