@@ -7,6 +7,14 @@ tags:
     file: "../../flows/setupTest.yaml"
     label: "Setup - Launch app and wait for ready"
 
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - addMedia:
+          - "../../../assets/pouletSatay/image.jpg"
+          - "../../../assets/curryPoisChiches/image.jpg"
+
 - tapOn:
     id: "BottomTabs::Parameters"
     label: "Action - Navigate to Parameters screen"
@@ -15,8 +23,8 @@ tags:
     element:
       id: "Parameters::Section::About::BugReport::Item"
     direction: DOWN
-    speed: 60
-    centerElement: true
+    speed: 50
+    timeout: 120000
     label: "Action - Scroll to Bug Report item"
 
 - waitForAnimationToEnd
@@ -25,41 +33,138 @@ tags:
     id: "Parameters::Section::About::BugReport::Item"
     label: "Action - Open Bug Report screen"
 
-- waitForAnimationToEnd
+- extendedWaitUntil:
+    visible:
+      id: "BugReport::Bar::AppBar"
+    timeout: 3000
+    label: "Wait for bug report to be displayed"
 
-- assertVisible:
-    id: "BugReport::Bar"
-    label: "Assert - Bug Report app bar is displayed"
+- runFlow:
+    file: "../../asserts/parameters/bugReport/en/assertBugReportScreen.yaml"
+    label: "Assert - Verify Bug Report screen"
 
-- assertVisible:
-    id: "BugReport::Description::Input"
-    label: "Assert - Description input is displayed"
+- tapOn:
+    id: "BugReport::Description::Input::CustomTextInput"
+    label: "Action - Focus description input"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
+- inputText: "This is a test bug report description"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation to end"
+
+- tapOn:
+    id: "BugReport::Screenshots::AddButton"
+    label: "Tap on screenshot button to close the keyboard"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to dismiss"
 
 - assertVisible:
     id: "BugReport::Send::Button"
-    label: "Assert - Send button is displayed"
-
-- tapOn:
-    id: "BugReport::Description::Input"
-    label: "Action - Focus description input"
-
-- inputText: "This is a test bug report description"
+    enabled: true
+    label: "Send button is enabled"
 
 - tapOn:
     id: "BugReport::Screenshots::AddButton"
     label: "Action - Open system photo picker"
 
-- waitForAnimationToEnd
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - extendedWaitUntil:
+          visible:
+            id: "icon_thumbnail"
+          timeout: 30000
+          label: "Wait for gallery to be opened on Android"
+      - tapOn:
+          id: "icon_thumbnail"
+          index: 0
+          label: "Select first photo of the gallery on Android"
+      - tapOn:
+          id: "icon_thumbnail"
+          index: 1
+          label: "Select second photo of the gallery on Android"
+      - tapOn:
+          id: "button_add"
+          label: "Validate selection on Android"
 
-- tapOn:
-    point: "25%,25%"
-    label: "Action - Select screenshot from photo picker"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - extendedWaitUntil:
+          visible:
+            text: "Recents"
+          timeout: 30000
+          label: "Wait for gallery to be opened on iOS"
+      - tapOn:
+          text: "Recents"
+          label: "Go to recents photos on iOS"
+      - extendedWaitUntil:
+          visible:
+            text: "\\d+ Photo.*"
+          timeout: 3000
+          label: "Wait for gallery to load on iOS"
+      - tapOn:
+          point: "10%,11%"
+          label: "Select first photo of the gallery on iOS"
+      - extendedWaitUntil:
+          visible:
+            text: "1 Item Selected"
+          timeout: 5000
+          label: "Wait for first image to be selected on iOS"
+      - waitForAnimationToEnd:
+          label: "Ensure animations ends before tapping"
+      - tapOn:
+          point: "33%,11%"
+          label: "Select second photo of the gallery on iOS"
+      - extendedWaitUntil:
+          visible:
+            text: "2 Items Selected"
+          timeout: 5000
+          label: "Wait for second image to be selected on iOS"
+      - waitForAnimationToEnd:
+          label: "Ensure animations ends before tapping"
+      - tapOn:
+          text: "Done"
+          label: "Validate selection on iOS"
 
-- waitForAnimationToEnd
+- extendedWaitUntil:
+    visible:
+      id: "BugReport::1::Screenshots"
+    timeout: 30000
+    label: "Wait for screenshots to be displayed on bug report screen"
 
 - assertVisible:
-    id: "BugReport::Screenshots"
-    label: "Assert - Screenshots section shows added screenshot"
+    text: "󰅖"
+    label: "Icon of the thumbnails is displayed"
+
+- assertVisible:
+    id: "BugReport::0::Screenshots"
+    label: "Assert - First screenshot image is displayed"
+
+- assertVisible:
+    id: "BugReport::0::Screenshots::Thumbnail::IconButton"
+    label: "Assert - First thumbnail has the right icon button"
+
+- assertVisible:
+    id: "BugReport::1::Screenshots"
+    label: "Assert - Second screenshot image is displayed"
+
+- assertVisible:
+    id: "BugReport::1::Screenshots::Thumbnail::IconButton"
+    label: "Assert - Second thumbnail has the right icon button"
+
+- tapOn:
+    id: "BugReport::Send::Button"
+    enabled: true
+    label: "Assert - Send button is still enabled"
 
 - tapOn:
     id: "BugReport::Send::Button"
@@ -71,9 +176,45 @@ tags:
     timeout: 5000
     label: "Assert - Snackbar appears after send attempt"
 
+- assertVisible:
+    id: "BugReport::Snackbar"
+    label: "Snackbar component is displayed"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          text: "Failed to open email client."
+          label: "Snack bar text is displayed on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          text: "No email app found. Please configure an email account on your device."
+          label: "Snack bar text is displayed on Android"
+
+
 - tapOn:
-    id: "BugReport::Bar"
+    id: "BugReport::Bar::AppBar::BackButton"
     label: "Action - Navigate back to Parameters screen"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "BugReport::Bar::AppBar"
+    timeout: 3000
+    label: "Wait for bug report to be exited"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "Parameters::Section::Appearance::SubHeader"
+    direction: UP
+    speed: 60
+    label: "Scroll back to top of Parameters screen"
 
 - waitForAnimationToEnd
 

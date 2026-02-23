@@ -6,7 +6,7 @@ appId: "com.recipedia"
     label: "Back button is displayed"
 
 - assertVisible:
-    id: "BugReport::Bar::AppBar::Title"
+    id: "BugReport::Bar::AppBar::Title-title-text"
     text: "Report a Bug"
     label: "Bug Report title is displayed"
 
@@ -28,5 +28,5 @@ appId: "com.recipedia"
 - assertVisible:
     id: "BugReport::Send::Button"
     text: "Send report"
-    enabled: true
+    enabled: false
     label: "Send button is displayed"
