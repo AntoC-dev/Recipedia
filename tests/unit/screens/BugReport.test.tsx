@@ -18,8 +18,8 @@ const {
 } = require('@mocks/utils/BugReport-mock');
 
 const descriptionInputTestID = 'BugReport::Description::Input::CustomTextInput';
-const thumbnailTestID = 'BugReport::Screenshots';
-const removeButtonTestID = 'BugReport::Screenshots::Thumbnail::IconButton';
+const thumbnailTestID = 'BugReport::0::Screenshots';
+const removeButtonTestID = 'BugReport::0::Screenshots::Thumbnail::IconButton';
 
 describe('BugReport Screen', () => {
   const renderBugReport = () => render(<BugReport />);
