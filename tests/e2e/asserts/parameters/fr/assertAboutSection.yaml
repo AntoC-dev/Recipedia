@@ -40,3 +40,35 @@ appId: "com.recipedia"
           id: "Parameters::Section::About::Version::Item"
           text: "󰋼, Version, .*\\d+\\.\\d+\\.\\d+"
           label: "Version item with icon on iOS"
+
+- scrollUntilVisible:
+    element:
+      id: "Parameters::Section::About::BugReport::Item"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Bug Report item"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "Parameters::Section::About::BugReport::Divider"
+    label: "Bug Report divider is displayed"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "Parameters::Section::About::BugReport::Item"
+          text: "Signaler un bug, Décrivez un problème ou envoyez un retour"
+          label: "Bug Report item text on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "Parameters::Section::About::BugReport::Item"
+          text: "󰃤, Signaler un bug, Décrivez un problème ou envoyez un retour, 󰅂"
+          label: "Bug Report item text on iOS"
