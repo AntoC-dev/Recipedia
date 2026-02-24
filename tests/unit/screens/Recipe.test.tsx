@@ -19,6 +19,7 @@ import { listFilter } from '@customTypes/RecipeFiltersTypes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 jest.mock('@utils/ImagePicker', () => require('@mocks/utils/ImagePicker-mock').imagePickerMock());
+jest.mock('@utils/OCR', () => require('@mocks/utils/OCR-mock').ocrMock());
 
 jest.mock('@components/organisms/RecipeTags', () => ({
   RecipeTags: require('@mocks/components/organisms/RecipeTags-mock').recipeTagsMock,
@@ -1880,5 +1881,31 @@ describe('Recipe Component tests', () => {
         expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
       });
     });
+  });
+
+  test('saves new image before clearing cache when editing recipe with no image', async () => {
+    const { clearCache } = require('@utils/FileGestion');
+    const editRecipeSpy = jest.spyOn(dbInstance, 'editRecipe');
+
+    const recipeWithNoImage = {
+      mode: 'edit' as const,
+      recipe: { ...testRecipes[1], image_Source: '' },
+    };
+    const { getByTestId, queryByTestId } = await renderRecipe(createMockRoute(recipeWithNoImage));
+
+    fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+    await waitFor(() => expect(getByTestId('ModalImageSelect')).toBeTruthy());
+    fireEvent.press(getByTestId('ModalImageSelect::Select'));
+    await waitFor(() => expect(queryByTestId('ModalImageSelect')).toBeNull());
+
+    fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+
+    await waitFor(() => expect(editRecipeSpy).toHaveBeenCalled());
+
+    const editCallOrder = editRecipeSpy.mock.invocationCallOrder[0];
+    const clearCacheCallOrder = clearCache.mock.invocationCallOrder[0];
+    expect(editCallOrder).toBeLessThan(clearCacheCallOrder);
+
+    editRecipeSpy.mockRestore();
   });
 });
