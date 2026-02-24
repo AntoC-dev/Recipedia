@@ -26,6 +26,7 @@ import { MailComposerStatus } from 'expo-mail-composer';
 import { smallCardWidth } from '@styles/buttons';
 import { Icons } from '@assets/Icons';
 import { CustomTextInput } from '@components/atomic/CustomTextInput';
+import { getDatasetType } from '@utils/DatasetLoader';
 
 const screenTestId = 'BugReport';
 
@@ -86,6 +87,15 @@ export function BugReport() {
     }
   };
 
+  const handleDismiss = () => {
+    if (getDatasetType() !== 'test') {
+      bugReportLogger.debug('Hiding snack bar');
+      setSnackbarVisible(false);
+    } else {
+      bugReportLogger.debug('Keeping snackbar on screen for testing');
+    }
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['bottom']}>
       <AppBar title={t('bugReport.title')} onGoBack={goBack} testID={screenTestId + '::Bar'} />
@@ -139,7 +149,7 @@ export function BugReport() {
       <Snackbar
         testID={screenTestId + '::Snackbar'}
         visible={snackbarVisible}
-        onDismiss={() => setSnackbarVisible(false)}
+        onDismiss={handleDismiss}
         duration={Snackbar.DURATION_LONG}
       >
         {snackbarMessage}
