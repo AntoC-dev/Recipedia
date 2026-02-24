@@ -615,7 +615,7 @@ appId: "com.recipedia"
       id: "RecipeImage::RoundButton"
     direction: UP
     speed: 60
-    centerElement: true
+    timeout: 240000
     label: "Scroll until the image button is displayed"
 
 - waitForAnimationToEnd

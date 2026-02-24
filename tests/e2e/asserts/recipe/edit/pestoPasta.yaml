@@ -185,9 +185,10 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeIngredients::2::NameInput::CustomTextInput"
+      id: "RecipeIngredients::0::NameInput::CustomTextInput"
     direction: DOWN
-    speed: 60
+    speed: 40
+    timeout: 60000
     centerElement: true
     label: "Scroll to third ingredient's name input"
 
@@ -205,6 +206,20 @@ appId: "com.recipedia"
     id: "RecipeIngredients::0::NameInput::CustomTextInput"
     text: "Pasta"
     label: "Ingredient Pasta is rendered"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::1::NameInput::CustomTextInput"
+    direction: DOWN
+    speed: 40
+    timeout: 60000
+    centerElement: true
+    label: "Scroll to second ingredient's name input"
+
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipeIngredients::1::QuantityInput"
     text: "100"
@@ -217,6 +232,20 @@ appId: "com.recipedia"
     id: "RecipeIngredients::1::NameInput::CustomTextInput"
     text: "Basil Leaves"
     label: "Ingredient Basil Leaves is rendered"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::2::NameInput::CustomTextInput"
+    direction: DOWN
+    speed: 40
+    timeout: 60000
+    centerElement: true
+    label: "Scroll to third ingredient's name input"
+
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipeIngredients::2::QuantityInput"
     text: "60"

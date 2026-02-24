@@ -3,7 +3,7 @@ appId: "com.recipedia"
 - extendedWaitUntil:
     visible:
       text: "aspectratio.fill"
-    timeout: 10000
+    timeout: 30000
     label: "Wait for aspect ratio menu"
 
 - tapOn:

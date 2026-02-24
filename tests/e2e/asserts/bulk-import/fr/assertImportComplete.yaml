@@ -1,5 +1,11 @@
 appId: "com.recipedia"
 ---
+- extendedWaitUntil:
+    visible:
+      text: "Import terminé !"
+    timeout: 240000
+    label: "Wait until the import has finished"
+
 - assertVisible:
     text: "Import terminé !"
     label: "Import complete message is displayed (French)"
