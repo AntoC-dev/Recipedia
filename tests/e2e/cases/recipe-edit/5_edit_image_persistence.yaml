@@ -7,28 +7,15 @@ tags:
     file: "../../flows/setupTest.yaml"
     label: "Setup - Launch app and wait for ready"
 
-- tapOn:
-    id: "BottomTabs::Search"
-    label: "Action - Navigate to Search screen"
+- runFlow:
+    file: "../../flows/search/searchAndOpenRecipe.yaml"
+    env:
+      RECIPE_NAME: "Caesar"
+    label: "Action - Search and open Caesar salad"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      text: "Test Image Recipe"
-    direction: DOWN
-    speed: 40
-    timeout: 120000
-    centerElement: true
-    label: "Action - Scroll to find Test Image Recipe"
-
-- tapOn:
-    text: "Test Image Recipe"
-    label: "Action - Open Test Image Recipe"
-
-- assertNotVisible:
+- assertVisible:
     id: "RecipeImage::Image"
-    label: "Assert - No image in read-only mode (recipe has no image)"
+    label: "Assert - Recipe has an image before editing"
 
 - tapOn:
     id: "Recipe::AppBar::Edit"
@@ -36,22 +23,15 @@ tags:
     retryTapIfNoChange: false
     label: "Action - Enter edit mode"
 
-- scrollUntilVisible:
-    element:
-      id: "RecipeImage"
-    direction: UP
-    speed: 80
-    label: "Action - Scroll to top to reach image area"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipeImage::RoundButton"
-    label: "Action - Open image picker modal"
+- extendedWaitUntil:
+    visible:
+      id: "RecipeImage::RoundButton"
+    timeout: 5000
+    label: "Wait for recipe image button to be displayed"
 
 - runFlow:
-    file: "../../flows/recipe/editing/addImageToRecipe.yaml"
-    label: "Action - Add image from gallery"
+    file: "../../flows/recipe/adding/en/addRecipeImage.yaml"
+    label: "Action - Take a new photo as recipe image"
 
 - tapOn:
     id: "Recipe::AppBar::Validate"
@@ -59,13 +39,31 @@ tags:
 
 - waitForAnimationToEnd
 
+- tapOn:
+    id: "Recipe::AppBar::BackButton"
+    label: "Action - Back to Search screen"
+
+- tapOn:
+    id: "SearchScreen::FiltersSelection::0::Chip"
+    label: "Action - Remove search filter"
+
+- runFlow:
+    file: "../../flows/search/searchAndOpenRecipe.yaml"
+    env:
+      RECIPE_NAME: "Caesar"
+    label: "Action - Re-open recipe to verify image persistence"
+
 - assertVisible:
     id: "RecipeImage::Image"
-    label: "Assert - Image persisted after editing recipe with no prior image"
+    label: "Assert - Image persisted after editing recipe"
 
 - tapOn:
     id: "Recipe::AppBar::BackButton"
-    label: "Cleanup - Navigate back to Search screen"
+    label: "Cleanup - Back to Search screen"
+
+- tapOn:
+    id: "SearchScreen::FiltersSelection::0::Chip"
+    label: "Cleanup - Remove search filter"
 
 - tapOn:
     id: "BottomTabs::Home"
