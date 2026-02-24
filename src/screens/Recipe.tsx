@@ -226,7 +226,6 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
     const scaledRecipe = scaleRecipeForSave(recipeToEdit, defaultPersons);
 
     if (!isRecipeEqual(originalRecipe, scaledRecipe)) {
-      clearCache();
       await editRecipe(scaledRecipe);
     }
 
