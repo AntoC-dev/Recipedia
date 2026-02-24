@@ -170,7 +170,7 @@ jobs:
     with:
       platform: android
       app-artifact: build-apk
-      suites: '["app-init", "bulk-import",  "duplicates-ingredient", "duplicates-recipe","duplicates-tag", "ingredients-db", "menu", "ocr", "recipe-create", "recipe-view", "search", "settings", "shopping", "tags-db", "web", "web-edge-cases"]'
+      suites: '["app-init", "bulk-import",  "duplicates-ingredient", "duplicates-recipe","duplicates-tag", "ingredients-db", "menu", "ocr", "recipe-create", "recipe-readonly", "recipe-edit", "search", "settings", "shopping", "tags-db", "web", "web-edge-cases"]'
     secrets:
       QUITOQUE_USERNAME: ${{ secrets.QUITOQUE_USERNAME }}
       QUITOQUE_PASSWORD: ${{ secrets.QUITOQUE_PASSWORD }}
@@ -191,7 +191,7 @@ jobs:
     with:
       platform: ios
       app-artifact: build-ios-app
-      suites: '["app-init", "bulk-import",  "duplicates-ingredient", "duplicates-recipe","duplicates-tag", "ingredients-db", "menu", "ocr", "recipe-create", "recipe-view", "search", "settings", "shopping", "tags-db", "web", "web-edge-cases"]'
+      suites: '["app-init", "bulk-import",  "duplicates-ingredient", "duplicates-recipe","duplicates-tag", "ingredients-db", "menu", "ocr", "recipe-create", "recipe-readonly", "recipe-edit", "search", "settings", "shopping", "tags-db", "web", "web-edge-cases"]'
     secrets:
       QUITOQUE_USERNAME: ${{ secrets.QUITOQUE_USERNAME }}
       QUITOQUE_PASSWORD: ${{ secrets.QUITOQUE_PASSWORD }}

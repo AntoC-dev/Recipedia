@@ -1,0 +1,72 @@
+name: "5 - Recipe Edit Image Persistence Flow"
+appId: "com.recipedia"
+tags:
+  - recipe-edit
+---
+- runFlow:
+    file: "../../flows/setupTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Action - Navigate to Search screen"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      text: "Test Image Recipe"
+    direction: DOWN
+    speed: 40
+    timeout: 120000
+    centerElement: true
+    label: "Action - Scroll to find Test Image Recipe"
+
+- tapOn:
+    text: "Test Image Recipe"
+    label: "Action - Open Test Image Recipe"
+
+- assertNotVisible:
+    id: "RecipeImage::Image"
+    label: "Assert - No image in read-only mode (recipe has no image)"
+
+- tapOn:
+    id: "Recipe::AppBar::Edit"
+    waitToSettleTimeoutMs: 0
+    retryTapIfNoChange: false
+    label: "Action - Enter edit mode"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeImage"
+    direction: UP
+    speed: 80
+    label: "Action - Scroll to top to reach image area"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "RecipeImage::RoundButton"
+    label: "Action - Open image picker modal"
+
+- runFlow:
+    file: "../../flows/recipe/editing/addImageToRecipe.yaml"
+    label: "Action - Add image from gallery"
+
+- tapOn:
+    id: "Recipe::AppBar::Validate"
+    label: "Action - Save changes"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "RecipeImage::Image"
+    label: "Assert - Image persisted after editing recipe with no prior image"
+
+- tapOn:
+    id: "Recipe::AppBar::BackButton"
+    label: "Cleanup - Navigate back to Search screen"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Cleanup - Return to Home screen"

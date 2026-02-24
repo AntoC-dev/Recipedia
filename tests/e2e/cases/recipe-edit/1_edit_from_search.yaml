@@ -1,11 +1,12 @@
-name: "3 - Recipe Edit From Search Flow"
+name: "1 - Recipe Edit From Search Flow"
 appId: "com.recipedia"
 tags:
-  - recipe-view
+  - recipe-edit
 ---
 - runFlow:
-    file: "../../flows/setupTest.yaml"
+    file: "../../flows/setupFirstTest.yaml"
     label: "Setup - Launch app and wait for ready"
+
 
 - tapOn:
     id: "BottomTabs::Search"

@@ -1,0 +1,40 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Navigate to Search screen"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "SearchScreen::SearchBar"
+    label: "Focus on search bar"
+
+- inputText:
+    text: ${RECIPE_NAME}
+    label: "Type recipe name"
+
+- waitForAnimationToEnd
+
+- pressKey: "ENTER"
+
+- runFlow:
+    file: "../waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to dismiss"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      text: ${RECIPE_NAME}
+    direction: DOWN
+    speed: 40
+    timeout: 120000
+    centerElement: true
+    label: "Scroll to recipe card"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    text: ${RECIPE_NAME}
+    label: "Open recipe"
