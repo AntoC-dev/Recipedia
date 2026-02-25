@@ -17,6 +17,7 @@ import { CommonQueryOptions } from '@testing-library/react-native/build/queries/
 import { defaultValueNumber } from '@utils/Constants';
 import { listFilter } from '@customTypes/RecipeFiltersTypes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as FileGestion from '@utils/FileGestion';
 
 jest.mock('@utils/ImagePicker', () => require('@mocks/utils/ImagePicker-mock').imagePickerMock());
 jest.mock('@utils/OCR', () => require('@mocks/utils/OCR-mock').ocrMock());
@@ -1907,5 +1908,70 @@ describe('Recipe Component tests', () => {
     expect(editCallOrder).toBeLessThan(clearCacheCallOrder);
 
     editRecipeSpy.mockRestore();
+  });
+
+  describe('clearCache ordering', () => {
+    test('calls clearCache after addRecipe in add flow', async () => {
+      const addRecipeSpy = jest.spyOn(dbInstance, 'addRecipe');
+      const clearCacheMock = FileGestion.clearCache as jest.Mock;
+
+      const scrapedRoute = createMockRoute({
+        mode: 'addFromScrape',
+        sourceUrl: 'https://example.com/test',
+        scrapedData: {
+          image_Source: 'ordering-test.jpg',
+          title: 'Unique Ordering Test Recipe XYZ',
+          description: 'A test recipe',
+          persons: 4,
+          time: 30,
+          ingredients: [
+            {
+              ...testIngredients[0],
+              quantity: '100',
+            },
+          ],
+          preparation: [{ title: 'Step 1', description: 'Test step' }],
+          tags: [],
+        },
+      });
+
+      const { getByTestId } = await renderRecipe(scrapedRoute);
+
+      fireEvent.press(getByTestId('Recipe::BottomActionButton'));
+
+      await waitFor(() => {
+        expect(addRecipeSpy).toHaveBeenCalled();
+        expect(clearCacheMock).toHaveBeenCalled();
+      });
+
+      expect(clearCacheMock.mock.invocationCallOrder[0]).toBeGreaterThan(
+        addRecipeSpy.mock.invocationCallOrder[0]
+      );
+
+      addRecipeSpy.mockRestore();
+    });
+
+    test('calls clearCache after editRecipe in edit flow', async () => {
+      const editRecipeSpy = jest.spyOn(dbInstance, 'editRecipe');
+      const clearCacheMock = FileGestion.clearCache as jest.Mock;
+
+      const { getByTestId } = await renderRecipe(
+        createMockRoute({ mode: 'edit', recipe: { ...testRecipes[0] } })
+      );
+
+      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Modified Title For Ordering');
+      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+
+      await waitFor(() => {
+        expect(editRecipeSpy).toHaveBeenCalled();
+        expect(clearCacheMock).toHaveBeenCalled();
+      });
+
+      expect(clearCacheMock.mock.invocationCallOrder[0]).toBeGreaterThan(
+        editRecipeSpy.mock.invocationCallOrder[0]
+      );
+
+      editRecipeSpy.mockRestore();
+    });
   });
 });
