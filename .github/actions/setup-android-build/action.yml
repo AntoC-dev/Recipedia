@@ -23,6 +23,7 @@ runs:
       uses: actions/setup-python@v5
       with:
         python-version-file: '.python-version'
+        cache: 'pip'
 
     - name: Install Python packages for Chaquopy
       shell: bash
@@ -30,6 +31,21 @@ runs:
         pip install pytest "recipe-scrapers[online]>=15.0.0"
         python -c "from recipe_scrapers import scrape_me; print('recipe-scrapers OK')"
         python -c "import pytest; print('pytest OK')"
+
+    - name: Setup ccache
+      shell: bash
+      run: |
+        sudo apt-get install -y ccache
+        ccache --set-config=max_size=2G
+        echo "/usr/lib/ccache" >> $GITHUB_PATH
+
+    - name: Cache ccache
+      uses: actions/cache@v4
+      with:
+        path: ~/.ccache
+        key: ${{ runner.os }}-ccache-${{ hashFiles('package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-ccache-
 
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
