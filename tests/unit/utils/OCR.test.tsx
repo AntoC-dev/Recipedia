@@ -2,6 +2,7 @@ import {
   extractFieldFromImage,
   ingredientObject,
   ingredientQuantityPerPersons,
+  parseIngredientsNoHeader,
   personAndTimeObject,
   recognizeText,
   WarningHandler,
@@ -4887,6 +4888,45 @@ describe('OCR Utility Functions', () => {
         mockRecognize.mockResolvedValue(mockResultNoMarker);
         expect(await recognizeText(uriForOCR, recipeColumnsNames.nutrition)).toEqual({});
       });
+    });
+  });
+
+  describe('parseIngredientsNoHeader', () => {
+    test('Android format: names first half, quantities second half — no swap', () => {
+      const lines = ['Flour', 'Sugar', 'Salt', '200 g', '100 g', '5 g'];
+      const result = parseIngredientsNoHeader(lines);
+
+      expect(result).toHaveLength(3);
+      expect(result[0].name).toBe('Flour');
+      expect(result[0].quantityPerPersons[0].quantity).toBe('200');
+      expect(result[0].unit).toBe('g');
+      expect(result[1].name).toBe('Sugar');
+      expect(result[1].quantityPerPersons[0].quantity).toBe('100');
+      expect(result[2].name).toBe('Salt');
+      expect(result[2].quantityPerPersons[0].quantity).toBe('5');
+    });
+
+    test('iOS format: quantities first half start with digit — halves swapped', () => {
+      const lines = ['200 g', '100 ml', 'Flour', 'Water'];
+      const result = parseIngredientsNoHeader(lines);
+
+      expect(result).toHaveLength(2);
+      expect(result[0].name).toBe('Flour');
+      expect(result[0].quantityPerPersons[0].quantity).toBe('200');
+      expect(result[0].unit).toBe('g');
+      expect(result[1].name).toBe('Water');
+      expect(result[1].quantityPerPersons[0].quantity).toBe('100');
+      expect(result[1].unit).toBe('ml');
+    });
+
+    test('odd number of lines: mid=1 produces 1 paired ingredient without crashing', () => {
+      const lines = ['Butter', '50 g', 'Extra line'];
+      const result = parseIngredientsNoHeader(lines);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].name).toBe('Butter');
+      expect(result[0].quantityPerPersons[0].quantity).toBe('50');
+      expect(result[0].unit).toBe('g');
     });
   });
 });
