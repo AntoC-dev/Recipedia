@@ -20,6 +20,18 @@ appId: "com.recipedia"
     text: "Gestion des données"
     label: "Data Management section header shows French text"
 
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "Parameters::Section::Data::Ingredients::Item"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to Ingredients section"
+
+- waitForAnimationToEnd
+
 - runFlow:
     when:
       platform: Android
@@ -49,6 +61,18 @@ appId: "com.recipedia"
           text: "󰅂"
           index: 1
           label: "Ingredients has a chevron icon on Android"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "Parameters::Section::Data::Tags::Item"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to Tags section"
+
+- waitForAnimationToEnd
 
 - runFlow:
     when:

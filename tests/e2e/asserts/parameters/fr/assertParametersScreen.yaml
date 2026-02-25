@@ -10,17 +10,6 @@ appId: "com.recipedia"
     file: "./assertRecipeDefaultsSection.yaml"
     label: "Check that the recipe defaults section is displayed correctly in French"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "Parameters::Section::About::Version::Item"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-
-- waitForAnimationToEnd
-
 - runFlow:
     file: "./assertDataManagementSection.yaml"
     label: "Check that the data management section is displayed correctly in French"
@@ -39,6 +28,7 @@ appId: "com.recipedia"
     direction: UP
     speed: 60
     centerElement: true
+    timeout: 120000
+    label: "Scroll to the top of the screen"
 
 - waitForAnimationToEnd
-

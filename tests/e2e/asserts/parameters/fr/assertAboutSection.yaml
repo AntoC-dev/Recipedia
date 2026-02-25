@@ -6,8 +6,7 @@ appId: "com.recipedia"
     element:
       id: "Parameters::Section::About::SubHeader"
     direction: DOWN
-    speed: 60
-    centerElement: true
+    speed: 40
     label: "Scroll to About section"
 
 - waitForAnimationToEnd
@@ -19,6 +18,17 @@ appId: "com.recipedia"
 - assertVisible:
     text: "À propos"
     label: "About section header shows French text"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "Parameters::Section::About::Version::Item"
+    direction: DOWN
+    speed: 40
+    label: "Scroll to version item"
+
+- waitForAnimationToEnd
 
 - runFlow:
     when:
