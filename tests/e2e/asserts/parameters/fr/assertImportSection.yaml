@@ -6,7 +6,7 @@ appId: "com.recipedia"
     element:
       id: "Parameters::Section::Import::SubHeader"
     direction: DOWN
-    speed: 60
+    speed: 40
     centerElement: true
     label: "Scroll to Bulk Import section"
 

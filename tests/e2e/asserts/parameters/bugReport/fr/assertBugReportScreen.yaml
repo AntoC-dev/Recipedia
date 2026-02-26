@@ -1,0 +1,32 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    id: "BugReport::Bar::AppBar::BackButton"
+    text: "Back"
+    label: "Back button is displayed"
+
+- assertVisible:
+    id: "BugReport::Bar::AppBar::Title"
+    text: "Signaler un bug"
+    label: "Bug Report title is displayed"
+
+- assertVisible:
+    id: "BugReport::Description::Input::CustomTextInput"
+    text: "Décrivez le problème que vous avez rencontré..."
+    label: "Description input is displayed"
+
+- assertVisible:
+    id: "BugReport::Description::Input::CustomTextInput-label-inactive"
+    text: "Que s'est-il passé ?"
+    label: "Description inactive label is displayed"
+
+- assertVisible:
+    id: "BugReport::Screenshots::AddButton"
+    text: "Ajouter une capture"
+    label: "Add screenshot button is displayed"
+
+- assertVisible:
+    id: "BugReport::Send::Button"
+    text: "Envoyer le rapport"
+    enabled: false
+    label: "Send button is displayed"

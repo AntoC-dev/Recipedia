@@ -75,6 +75,13 @@ describe('CustomTextInput', () => {
     expect(input.props.editable).toBe(true);
   });
 
+  test('renders placeholder text on the input element', () => {
+    const { getByTestId } = render(
+      <CustomTextInput {...baseProps} placeholder='Enter a value...' />
+    );
+    expect(getByTestId('custom-input::CustomTextInput').props.placeholder).toBe('Enter a value...');
+  });
+
   test('allows direct text input without any pre-interaction', () => {
     const handleChange = jest.fn();
     const { getByTestId } = render(

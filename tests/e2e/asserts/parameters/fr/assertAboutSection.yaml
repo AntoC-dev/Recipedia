@@ -6,8 +6,7 @@ appId: "com.recipedia"
     element:
       id: "Parameters::Section::About::SubHeader"
     direction: DOWN
-    speed: 60
-    centerElement: true
+    speed: 40
     label: "Scroll to About section"
 
 - waitForAnimationToEnd
@@ -19,6 +18,17 @@ appId: "com.recipedia"
 - assertVisible:
     text: "À propos"
     label: "About section header shows French text"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "Parameters::Section::About::Version::Item"
+    direction: DOWN
+    speed: 40
+    label: "Scroll to version item"
+
+- waitForAnimationToEnd
 
 - runFlow:
     when:
@@ -40,3 +50,35 @@ appId: "com.recipedia"
           id: "Parameters::Section::About::Version::Item"
           text: "󰋼, Version, .*\\d+\\.\\d+\\.\\d+"
           label: "Version item with icon on iOS"
+
+- scrollUntilVisible:
+    element:
+      id: "Parameters::Section::About::BugReport::Item"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Bug Report item"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "Parameters::Section::About::BugReport::Divider"
+    label: "Bug Report divider is displayed"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "Parameters::Section::About::BugReport::Item"
+          text: "Signaler un bug, Décrivez un problème ou envoyez un retour"
+          label: "Bug Report item text on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "Parameters::Section::About::BugReport::Item"
+          text: "󰃤, Signaler un bug, Décrivez un problème ou envoyez un retour, 󰅂"
+          label: "Bug Report item text on iOS"

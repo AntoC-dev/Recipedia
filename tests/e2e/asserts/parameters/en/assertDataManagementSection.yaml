@@ -7,7 +7,7 @@ appId: "com.recipedia"
     element:
       id: "Parameters::Section::Data::SubHeader"
     direction: DOWN
-    speed: 60
+    speed: 40
     centerElement: true
     label: "Scroll to Data Management section"
 
@@ -20,6 +20,18 @@ appId: "com.recipedia"
 - assertVisible:
     text: "Data Management"
     label: "Data Management section header text is displayed"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "Parameters::Section::Data::Ingredients::Item"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to Ingredients section"
+
+- waitForAnimationToEnd
 
 - runFlow:
     when:
@@ -50,6 +62,18 @@ appId: "com.recipedia"
           text: "󰅂"
           index: 1
           label: "Ingredients has a chevron icon on Android"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "Parameters::Section::Data::Tags::Item"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to Tags section"
+
+- waitForAnimationToEnd
 
 - runFlow:
     when:

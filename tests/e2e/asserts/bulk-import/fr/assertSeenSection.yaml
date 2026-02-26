@@ -9,7 +9,7 @@ appId: "com.recipedia"
     label: "First seen recipe card is displayed"
 
 - assertVisible:
-    id: "BulkImportDiscovery::seen-0::SeenIndicator"
+    id: "BulkImportDiscovery::seen-0::Thumbnail::Thumbnail::Icon"
     label: "Seen indicator icon is displayed on first seen recipe"
 
 - assertVisible:

@@ -67,6 +67,7 @@ const sharedConfig = {
     'App',
     'Tutorial',
     'BulkImport',
+    'BugReport',
   ],
 };
 
@@ -172,6 +173,9 @@ export const tutorialLogger = log.extend('Tutorial');
 /** Logger for bulk recipe import operations */
 export const bulkImportLogger = log.extend('BulkImport');
 
+/** Logger for bug report submission operations */
+export const bugReportLogger = log.extend('BugReport');
+
 /**
  * Default export providing organized access to all loggers
  *
@@ -205,4 +209,5 @@ export default {
   app: appLogger,
   tutorial: tutorialLogger,
   bulkImport: bulkImportLogger,
+  bugReport: bugReportLogger,
 };

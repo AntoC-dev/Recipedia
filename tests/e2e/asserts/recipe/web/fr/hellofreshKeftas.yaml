@@ -386,3 +386,7 @@ appId: "com.recipedia"
       SALT: "0.7"
       PORTION_WEIGHT: "493"
     label: "Assert nutrition values are correctly parsed (French)"
+
+- tapOn:
+    id: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightText"
+    label: "Tap on weight text to dismiss keyboard (avoid flaky tests)"
