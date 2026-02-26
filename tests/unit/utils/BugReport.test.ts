@@ -9,6 +9,7 @@ import {
 import * as FileSystem from 'expo-file-system/legacy';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import { mockComposeAsync, mockIsAvailableAsync } from '@mocks/deps/expo-mail-composer-mock';
+import Constants from 'expo-constants';
 
 jest.mock('expo-file-system/legacy', () => ({
   documentDirectory: 'file:///app/',
@@ -39,6 +40,19 @@ describe('BugReport utils', () => {
       const userDescription = 'App crashed when saving recipe';
       const body = buildEmailBody(userDescription);
       expect(body).toContain(userDescription);
+    });
+  });
+
+  describe('buildEmailBody with null expoConfig', () => {
+    it('falls back to N/A version when expoConfig is null', () => {
+      const mockExpoConstants = jest.requireMock('expo-constants');
+      const originalExpoConfig = mockExpoConstants.expoConfig;
+      mockExpoConstants.expoConfig = null;
+
+      const body = buildEmailBody('some description');
+
+      mockExpoConstants.expoConfig = originalExpoConfig;
+      expect(body).toContain('N/A');
     });
   });
 
@@ -89,6 +103,19 @@ describe('BugReport utils', () => {
       const callArgs = mockComposeAsync.mock.calls[0][0];
       expect(callArgs.attachments).toContain('file:///screenshot1.jpg');
       expect(callArgs.attachments).toContain('file:///screenshot2.jpg');
+    });
+
+    it('falls back to N/A version in subject when expoConfig is null', async () => {
+      const mockExpoConstants = jest.requireMock('expo-constants');
+      const originalExpoConfig = mockExpoConstants.expoConfig;
+      mockExpoConstants.expoConfig = null;
+      mockGetInfoAsync.mockResolvedValue({ exists: false });
+
+      await sendBugReport('Test description', []);
+
+      mockExpoConstants.expoConfig = originalExpoConfig;
+      const callArgs = mockComposeAsync.mock.calls[0][0];
+      expect(callArgs.subject).toContain('N/A');
     });
   });
 

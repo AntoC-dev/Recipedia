@@ -11,6 +11,9 @@ jest.mock('@utils/BugReport', () => require('@mocks/utils/BugReport-mock'));
 
 jest.mock('expo-constants', () => require('@mocks/deps/expo-constants-mock').expoConstantsMock());
 
+jest.mock('@utils/DatasetLoader', () => require('@mocks/utils/DatasetLoader-mock'));
+const { setMockDatasetType } = require('@mocks/utils/DatasetLoader-mock');
+
 const {
   mockSendBugReport,
   mockIsMailAvailable,
@@ -26,6 +29,7 @@ describe('BugReport Screen', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    setMockDatasetType('test');
     mockIsMailAvailable.mockResolvedValue(true);
     mockSendBugReport.mockResolvedValue({ status: 'sent' });
     mockPickScreenshots.mockResolvedValue([]);
@@ -143,5 +147,89 @@ describe('BugReport Screen', () => {
     await waitFor(() => {
       expect(queryByTestId(thumbnailTestID)).toBeNull();
     });
+  });
+
+  test('handles pickScreenshots error silently without crashing', async () => {
+    mockPickScreenshots.mockRejectedValue(new Error('Picker cancelled'));
+    const { getByTestId, queryByTestId } = renderBugReport();
+
+    fireEvent.press(getByTestId('BugReport::Screenshots::AddButton'));
+
+    await waitFor(() => {
+      expect(queryByTestId('BugReport::0::Screenshots')).toBeNull();
+    });
+  });
+
+  test('does nothing when sendBugReport returns cancelled status', async () => {
+    mockSendBugReport.mockResolvedValue({ status: 'cancelled' });
+    const { getByTestId, queryByTestId } = renderBugReport();
+
+    fireEvent.changeText(getByTestId(descriptionInputTestID), 'Test bug');
+    fireEvent.press(getByTestId('BugReport::Send::Button'));
+
+    await waitFor(() => {
+      expect(mockSendBugReport).toHaveBeenCalled();
+    });
+    expect(mockGoBack).not.toHaveBeenCalled();
+    expect(queryByTestId('BugReport::Snackbar')).toBeNull();
+  });
+
+  test('shows snackbar when sendBugReport returns an unexpected status', async () => {
+    mockSendBugReport.mockResolvedValue({ status: 'saved' });
+    const { getByTestId } = renderBugReport();
+
+    fireEvent.changeText(getByTestId(descriptionInputTestID), 'Test bug');
+    fireEvent.press(getByTestId('BugReport::Send::Button'));
+
+    await waitFor(() => {
+      expect(getByTestId('BugReport::Snackbar')).toBeTruthy();
+    });
+    expect(mockGoBack).not.toHaveBeenCalled();
+  });
+
+  test('shows snackbar when sendBugReport throws', async () => {
+    mockSendBugReport.mockRejectedValue(new Error('Mail composer failed'));
+    const { getByTestId } = renderBugReport();
+
+    fireEvent.changeText(getByTestId(descriptionInputTestID), 'Test bug');
+    fireEvent.press(getByTestId('BugReport::Send::Button'));
+
+    await waitFor(() => {
+      expect(getByTestId('BugReport::Snackbar')).toBeTruthy();
+    });
+    expect(mockGoBack).not.toHaveBeenCalled();
+  });
+
+  test('snackbar stays visible on dismiss in test mode', async () => {
+    mockIsMailAvailable.mockResolvedValue(false);
+    const { getByTestId } = renderBugReport();
+
+    fireEvent.changeText(getByTestId(descriptionInputTestID), 'Test bug');
+    fireEvent.press(getByTestId('BugReport::Send::Button'));
+
+    await waitFor(() => {
+      expect(getByTestId('BugReport::Snackbar')).toBeTruthy();
+    });
+
+    fireEvent.press(getByTestId('BugReport::Snackbar::Dismiss'));
+
+    expect(getByTestId('BugReport::Snackbar')).toBeTruthy();
+  });
+
+  test('snackbar is hidden on dismiss in production mode', async () => {
+    setMockDatasetType('production');
+    mockIsMailAvailable.mockResolvedValue(false);
+    const { getByTestId, queryByTestId } = renderBugReport();
+
+    fireEvent.changeText(getByTestId(descriptionInputTestID), 'Test bug');
+    fireEvent.press(getByTestId('BugReport::Send::Button'));
+
+    await waitFor(() => {
+      expect(getByTestId('BugReport::Snackbar')).toBeTruthy();
+    });
+
+    fireEvent.press(getByTestId('BugReport::Snackbar::Dismiss'));
+
+    expect(queryByTestId('BugReport::Snackbar')).toBeNull();
   });
 });
