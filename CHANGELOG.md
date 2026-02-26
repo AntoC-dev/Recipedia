@@ -1,3 +1,12 @@
+## [2.17.1](https://github.com/AntoC-dev/Recipedia/compare/v2.17.0...v2.17.1) (2026-02-26)
+
+### Bug Fixes
+
+* **ci:** strip .zip suffix from suite dir names when merging Maestro logs ([3ab40f3](https://github.com/AntoC-dev/Recipedia/commit/3ab40f3e0ced2db7c595e8a58dad031a479a0af6))
+* **recipe:** image not persisting when added in edit mode ([#202](https://github.com/AntoC-dev/Recipedia/issues/202)) ([4e5616f](https://github.com/AntoC-dev/Recipedia/commit/4e5616f93580ab267d35c82fbaeb25f21665b071))
+* **recipe:** refactor modal field handling for OCR image selection ([29b3506](https://github.com/AntoC-dev/Recipedia/commit/29b3506e182a18400920f9159d6e6c915a38f7c4))
+* **recipe:** save image before clearing cache in edit mode ([e2e68de](https://github.com/AntoC-dev/Recipedia/commit/e2e68decce64372dba73a81fc50c283ad06c1ee2))
+
 ## [2.17.0](https://github.com/AntoC-dev/Recipedia/compare/v2.16.1...v2.17.0) (2026-02-22)
 
 ### Features
