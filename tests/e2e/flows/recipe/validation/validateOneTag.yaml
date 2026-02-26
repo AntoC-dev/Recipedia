@@ -13,3 +13,6 @@ appId: "com.recipedia"
 - tapOn:
     id: "${PREFIX}::ValidationQueue::Tag::ItemDialog::AddModal::ConfirmButton"
     label: "Confirm adding the tag"
+
+- waitForAnimationToEnd:
+    label: "Wait for animation to end"

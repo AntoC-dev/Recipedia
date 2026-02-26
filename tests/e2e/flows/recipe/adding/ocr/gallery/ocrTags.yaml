@@ -7,7 +7,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeTags::OpenModal::RoundButton"
     direction: DOWN
-    speed: 60
+    speed: 40
     centerElement: true
     label: "Scroll to tags section"
 
@@ -40,6 +40,12 @@ appId: "com.recipedia"
     label: "Select tags from modal for OCR"
     when:
       platform: iOS
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipeValidation::ValidationQueue::Tag::SimilarityDialog::Title"
+    timeout: 120000
+    label: "Wait for validation queue for tags to be displayed"
 
 - runFlow:
     file: "../../../validation/validateAllTags.yaml"
