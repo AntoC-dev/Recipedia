@@ -1,3 +1,19 @@
+## [2.18.0](https://github.com/AntoC-dev/Recipedia/compare/v2.17.1...v2.18.0) (2026-02-26)
+
+### Features
+
+* **bug-report:** add Report a Bug screen with E2E test suite ([#201](https://github.com/AntoC-dev/Recipedia/issues/201)) ([76da622](https://github.com/AntoC-dev/Recipedia/commit/76da6229d95395b39253e364fc8d861c7c60ff48)), closes [#6](https://github.com/AntoC-dev/Recipedia/issues/6) [#5](https://github.com/AntoC-dev/Recipedia/issues/5)
+* **bug-report:** add Report a Bug screen with email, logs and screenshots ([8fe1f31](https://github.com/AntoC-dev/Recipedia/commit/8fe1f311bddc4106d864f92584d7fe05c380e678))
+* **ImageThumbnail:** extract thumbnail with proportional overlay ([a1c063e](https://github.com/AntoC-dev/Recipedia/commit/a1c063ec426759478ca00ede03802c09e93e122d))
+
+### Bug Fixes
+
+* **BugReport:** enhance snackbar dismiss with dataset type check ([60619f5](https://github.com/AntoC-dev/Recipedia/commit/60619f5db80cda0e01fddd2cdca19457e5703042))
+* **BugReport:** use dedicated bugReportLogger and fix minor issues ([88104c4](https://github.com/AntoC-dev/Recipedia/commit/88104c47961ec4901723b6efa4cb9638e8315275))
+* **ci:** skip npm ci on node_modules cache hit to fix iOS build ([bd404f8](https://github.com/AntoC-dev/Recipedia/commit/bd404f81b8a44a3e3a5b680cebc79799257426bd))
+* **e2e:** update stale SeenIndicator testIDs after refactor ([1956460](https://github.com/AntoC-dev/Recipedia/commit/1956460c4a32d9dd9ccf10d7a4cd597065b4a362))
+* **test:** expose Snackbar onDismiss prop in react-native-paper mock ([ee5ca23](https://github.com/AntoC-dev/Recipedia/commit/ee5ca23b0c02eb735ad8d98bcaaa0df393d3c287))
+
 ## [2.17.1](https://github.com/AntoC-dev/Recipedia/compare/v2.17.0...v2.17.1) (2026-02-26)
 
 ### Bug Fixes
