@@ -67,7 +67,6 @@ jobs:
           node-version: '22'
 
       - name: Install dependencies (for cache miss)
-        if: inputs.platform == 'ios'
         run: npm ci
 
       - name: Build decision summary
