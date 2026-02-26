@@ -565,6 +565,11 @@ export const Snackbar: React.FC<any> = props => {
   return (
     <View testID={props.testID}>
       <RNText testID={props.testID + '::Text'}>{props.children}</RNText>
+      {props.onDismiss && (
+        <Button testID={props.testID + '::Dismiss'} onPress={props.onDismiss}>
+          Dismiss
+        </Button>
+      )}
     </View>
   );
 };
