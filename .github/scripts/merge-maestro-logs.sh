@@ -16,9 +16,10 @@ SUITE_COUNT=0
 for suite_dir in "$INPUT_DIR"/*/; do
   if [ -d "$suite_dir" ]; then
     suite_name=$(basename "$suite_dir")
-    echo "   Copying $suite_name..."
-    mkdir -p "$TEMP_DIR/$suite_name"
-    cp -r "$suite_dir/." "$TEMP_DIR/$suite_name/"
+    clean_name="${suite_name%.zip}"
+    echo "   Copying $clean_name..."
+    mkdir -p "$TEMP_DIR/$clean_name"
+    cp -r "$suite_dir/." "$TEMP_DIR/$clean_name/"
     SUITE_COUNT=$((SUITE_COUNT + 1))
   fi
 done

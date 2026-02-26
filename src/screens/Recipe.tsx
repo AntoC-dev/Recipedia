@@ -226,7 +226,6 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
     const scaledRecipe = scaleRecipeForSave(recipeToEdit, defaultPersons);
 
     if (!isRecipeEqual(originalRecipe, scaledRecipe)) {
-      clearCache();
       await editRecipe(scaledRecipe);
     }
 
@@ -486,10 +485,11 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
         <ModalImageSelect
           arrImg={state.imgForOCR}
           onSelectFunction={async (imgSelected: string) => {
+            const field = ocr.modalField as recipeColumnsNames;
+            ocr.closeModal();
             const croppedUri = await cropImage(imgSelected, colors);
             if (croppedUri.length > 0) {
-              await ocr.fillOneField(croppedUri, ocr.modalField as recipeColumnsNames);
-              ocr.closeModal();
+              await ocr.fillOneField(croppedUri, field);
             }
           }}
           onDismissFunction={ocr.closeModal}

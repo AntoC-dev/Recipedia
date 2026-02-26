@@ -29,35 +29,11 @@ tags:
       RECIPE_NAME: "Aiguillettes de poulet a la sauce satay"
     label: "Assert - Verify recipe added successfully"
 
-- tapOn:
-    id: "BottomTabs::Search"
-    label: "Action - Navigate to Search screen"
-
-- tapOn:
-    id: "SearchScreen::SearchBar"
-    label: "Action - Focus on search bar"
-
-- inputText:
-    text: "Aig"
-    label: "Action - Search for new recipe"
-
-- pressKey: enter
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::RecipeCards::0::.*"
-    direction: DOWN
-    speed: 40
-    centerElement: true
-    label: "Scroll to recipe card"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "SearchScreen::RecipeCards::0::.*"
-    label: "Action - Open newly created recipe (first result)"
+- runFlow:
+    file: "../../flows/search/searchAndOpenRecipe.yaml"
+    env:
+      RECIPE_NAME: "Aiguillettes"
+    label: "Action - Search and open newly created recipe"
 
 - runFlow:
     file: "../../asserts/recipe/readonly/en/aiguillettesFull.yaml"

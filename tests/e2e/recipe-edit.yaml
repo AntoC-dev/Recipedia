@@ -1,0 +1,16 @@
+platform:
+  ios:
+    disableAnimations: true
+  android:
+    disableAnimations: true
+
+flows:
+  - cases/recipe-edit/*
+
+executionOrder:
+  flowsOrder:
+    - "1 - Recipe Edit From Search Flow"
+    - "2 - Recipe Edit From Home Flow"
+    - "3 - Recipe Quantity Scaling Flow"
+    - "4 - Recipe Edit Cancel Flow"
+    - "5 - Recipe Edit Image Persistence Flow"

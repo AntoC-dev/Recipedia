@@ -5,13 +5,9 @@ platform:
     disableAnimations: true
 
 flows:
-  - cases/recipe-view/*
+  - cases/recipe-readonly/*
 
 executionOrder:
   flowsOrder:
     - "1 - Recipe Read-Only From Search Flow"
     - "2 - Recipe Read-Only From Home Flow"
-    - "3 - Recipe Edit From Search Flow"
-    - "4 - Recipe Edit From Home Flow"
-    - "5 - Recipe Quantity Scaling Flow"
-    - "6 - Recipe Edit Cancel Flow"

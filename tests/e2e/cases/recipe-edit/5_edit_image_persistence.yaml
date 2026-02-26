@@ -1,0 +1,70 @@
+name: "5 - Recipe Edit Image Persistence Flow"
+appId: "com.recipedia"
+tags:
+  - recipe-edit
+---
+- runFlow:
+    file: "../../flows/setupTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- runFlow:
+    file: "../../flows/search/searchAndOpenRecipe.yaml"
+    env:
+      RECIPE_NAME: "Caesar"
+    label: "Action - Search and open Caesar salad"
+
+- assertVisible:
+    id: "RecipeImage::Image"
+    label: "Assert - Recipe has an image before editing"
+
+- tapOn:
+    id: "Recipe::AppBar::Edit"
+    waitToSettleTimeoutMs: 0
+    retryTapIfNoChange: false
+    label: "Action - Enter edit mode"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipeImage::RoundButton"
+    timeout: 5000
+    label: "Wait for recipe image button to be displayed"
+
+- runFlow:
+    file: "../../flows/recipe/adding/en/addRecipeImage.yaml"
+    label: "Action - Take a new photo as recipe image"
+
+- tapOn:
+    id: "Recipe::AppBar::Validate"
+    label: "Action - Save changes"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "Recipe::AppBar::BackButton"
+    label: "Action - Back to Search screen"
+
+- tapOn:
+    id: "SearchScreen::FiltersSelection::0::Chip"
+    label: "Action - Remove search filter"
+
+- runFlow:
+    file: "../../flows/search/searchAndOpenRecipe.yaml"
+    env:
+      RECIPE_NAME: "Caesar"
+    label: "Action - Re-open recipe to verify image persistence"
+
+- assertVisible:
+    id: "RecipeImage::Image"
+    label: "Assert - Image persisted after editing recipe"
+
+- tapOn:
+    id: "Recipe::AppBar::BackButton"
+    label: "Cleanup - Back to Search screen"
+
+- tapOn:
+    id: "SearchScreen::FiltersSelection::0::Chip"
+    label: "Cleanup - Remove search filter"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Cleanup - Return to Home screen"

@@ -1,7 +1,7 @@
 name: "2 - Recipe Read-Only From Home Flow"
 appId: "com.recipedia"
 tags:
-  - recipe-view
+  - recipe-readonly
 env:
   recipeName: "Vegetable Soup"
 ---

@@ -1,0 +1,58 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Navigate to Search screen"
+
+- extendedWaitUntil:
+    visible:
+      id: "SearchScreen::SearchBar"
+    timeout: 15000
+    label: "Wait for search bar to appear"
+
+- tapOn:
+    id: "SearchScreen::SearchBar"
+    label: "Focus on search bar"
+
+- runFlow:
+    file: "../waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
+- inputText:
+    text: "${RECIPE_NAME}"
+    label: "Type recipe name"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "SearchScreen::SearchBar"
+    text: "${RECIPE_NAME}"
+    label: "Check that recipe has been written in search bar"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - pressKey: enter
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Search"
+          label: "Tap Search key to validates the search"
+
+- runFlow:
+    file: "../waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to dismiss"
+
+- tapOn:
+    id: "SearchScreen::RecipeCards::0::.*"
+    label: "Open recipe"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::AppBar"
+    timeout: 10000
+    label: "Wait for recipe screen to be displayed"

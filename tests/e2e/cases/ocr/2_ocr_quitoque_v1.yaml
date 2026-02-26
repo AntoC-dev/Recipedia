@@ -29,42 +29,11 @@ tags:
       RECIPE_NAME: "TAJINE DE MERGUEZ AU CUMIN"
     label: "Assert - Verify recipe added successfully"
 
-- tapOn:
-    id: "BottomTabs::Search"
-    label: "Verification - Navigate to Search screen"
-
-- tapOn:
-    id: "SearchScreen::SearchBar"
-    label: "Verification - Focus on search bar"
-
-- inputText:
-    text: "MERGUEZ"
-    label: "Verification - Search for new recipe"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
-
 - runFlow:
-    file: "../../flows/waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::RecipeCards::0::.*"
-    direction: DOWN
-    speed: 40
-    centerElement: true
-    label: "Scroll to recipe card"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "SearchScreen::RecipeCards::0::.*"
-    label: "Verification - Open newly created recipe"
+    file: "../../flows/search/searchAndOpenRecipe.yaml"
+    env:
+      RECIPE_NAME: "MERGUEZ"
+    label: "Verification - Search and open newly created recipe"
 
 - runFlow:
     file: "../../asserts/recipe/readonly/en/tajineMerguez.yaml"

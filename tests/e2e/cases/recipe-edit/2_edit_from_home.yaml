@@ -1,7 +1,7 @@
-name: "4 - Recipe Edit From Home Flow"
+name: "2 - Recipe Edit From Home Flow"
 appId: "com.recipedia"
 tags:
-  - recipe-view
+  - recipe-edit
 env:
   recipeName: "Sushi Rolls"
 ---

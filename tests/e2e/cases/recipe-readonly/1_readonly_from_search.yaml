@@ -1,7 +1,7 @@
 name: "1 - Recipe Read-Only From Search Flow"
 appId: "com.recipedia"
 tags:
-  - recipe-view
+  - recipe-readonly
 ---
 - runFlow:
     file: "../../flows/setupFirstTest.yaml"
