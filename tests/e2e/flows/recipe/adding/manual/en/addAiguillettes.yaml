@@ -359,13 +359,42 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- tapOn:
-    id: "RecipeIngredients::1::NameInput::AutocompleteItem::Onions"
-    label: "Press the ingredient from the dropdown"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+      - tapOn:
+          id: "RecipeIngredients::1::NameInput::AutocompleteItem::Onions"
+          label: "Press the ingredient from the dropdown"
+      - runFlow:
+          file: "../../../../waitForKeyboardDismiss.yaml"
+          label: "Wait for numeric keyboard to disappear"
 
 - runFlow:
-    file: "../../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for numeric keyboard to disappear"
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+      - runFlow:
+          file: "../../../../waitForKeyboardDismiss.yaml"
+          label: "Wait for numeric keyboard to disappear"
+      - extendedWaitUntil:
+          visible:
+            id: "RecipeValidation::ValidationQueue::Ingredient::SimilarityDialog::Title"
+          timeout: 30000
+          label: "Wait for validation dialog to appear"
+      - tapOn:
+          id: "RecipeValidation::ValidationQueue::Ingredient::SimilarityDialog::UseButton"
+          label: "Tap on the use button of similarity dialog"
+      - extendedWaitUntil:
+          notVisible:
+            id: "RecipeValidation::ValidationQueue::Ingredient::SimilarityDialog::Title"
+          timeout: 30000
+          label: "Wait for validation dialog to disappear"
 
 - tapOn:
     id: "RecipeIngredients::AddButton::RoundButton"
