@@ -1,3 +1,10 @@
+## [2.18.1](https://github.com/AntoC-dev/Recipedia/compare/v2.18.0...v2.18.1) (2026-02-27)
+
+### Bug Fixes
+
+* **bulk-import:** use defaultPersons instead of provider's persons count ([a5f8358](https://github.com/AntoC-dev/Recipedia/commit/a5f835837288cc264179edf214894d5d02c4a45f))
+* **bulk-import:** use defaultPersons instead of provider's persons count ([#205](https://github.com/AntoC-dev/Recipedia/issues/205)) ([514b6b3](https://github.com/AntoC-dev/Recipedia/commit/514b6b38184f146b41a344befc3b6a55f454ad1c))
+
 ## [2.18.0](https://github.com/AntoC-dev/Recipedia/compare/v2.17.1...v2.18.0) (2026-02-26)
 
 ### Features
