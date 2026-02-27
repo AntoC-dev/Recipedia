@@ -63,7 +63,7 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', ['NewTag'], ['Chicken'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true)
+        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true, 4)
       );
 
       await waitFor(
@@ -78,7 +78,7 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', ['Italian'], ['NewIngredient'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true)
+        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true, 4)
       );
 
       await waitFor(() => {
@@ -90,7 +90,7 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', ['Italian'], ['Chicken'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true)
+        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true, 4)
       );
 
       await waitFor(() => {
@@ -104,7 +104,7 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', ['NewTag', 'AnotherTag'], ['Chicken'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true)
+        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true, 4)
       );
 
       await waitFor(() => {
@@ -118,7 +118,7 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', ['NewTag'], ['Chicken'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true)
+        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true, 4)
       );
 
       await waitFor(() => {
@@ -139,7 +139,7 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', ['NewTag'], ['NewIngredient'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true)
+        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true, 4)
       );
 
       await waitFor(() => {
@@ -157,7 +157,7 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', ['NewTag'], ['Chicken'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true)
+        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true, 4)
       );
 
       await waitFor(() => {
@@ -181,7 +181,7 @@ describe('useValidationWorkflow', () => {
       ];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true)
+        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true, 4)
       );
 
       await waitFor(() => {
@@ -195,7 +195,7 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', ['Italian'], ['NewIngredient'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true)
+        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true, 4)
       );
 
       await waitFor(() => {
@@ -222,7 +222,7 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', ['Italian'], ['NewIngredient'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true)
+        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true, 4)
       );
 
       await waitFor(() => {
@@ -257,7 +257,7 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', ['Italian'], ['Chicken'])];
 
       renderHook(() =>
-        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true)
+        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true, 4)
       );
 
       await waitFor(() => {
@@ -269,7 +269,7 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', ['Italian'], ['Chicken'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true)
+        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true, 4)
       );
 
       await waitFor(() => {
@@ -285,7 +285,7 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', ['Italian'], ['Chicken'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true)
+        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true, 4)
       );
 
       await waitFor(() => {
@@ -302,7 +302,7 @@ describe('useValidationWorkflow', () => {
       ];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true)
+        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true, 4)
       );
 
       await waitFor(() => {
@@ -337,6 +337,7 @@ describe('useValidationWorkflow', () => {
           mockTags,
           mockAddMultipleRecipes,
           true,
+          4,
           mockOnImportComplete
         )
       );
@@ -361,6 +362,29 @@ describe('useValidationWorkflow', () => {
       });
     });
 
+    test('saves recipes with defaultPersons instead of recipe persons', async () => {
+      const recipesWithWrongPersons = [
+        { ...createMockRecipe('Test Recipe', ['Italian'], ['Chicken']), persons: 2 },
+      ];
+
+      renderHook(() =>
+        useValidationWorkflow(
+          recipesWithWrongPersons,
+          mockIngredients,
+          mockTags,
+          mockAddMultipleRecipes,
+          true,
+          4
+        )
+      );
+
+      await waitFor(() => {
+        expect(mockAddMultipleRecipes).toHaveBeenCalledWith(
+          expect.arrayContaining([expect.objectContaining({ persons: 4 })])
+        );
+      });
+    });
+
     test('calls onImportComplete with all imported source URLs', async () => {
       const recipes = [
         createMockRecipe('Recipe 1', ['Italian'], ['Chicken']),
@@ -376,6 +400,7 @@ describe('useValidationWorkflow', () => {
           mockTags,
           mockAddMultipleRecipes,
           true,
+          4,
           mockOnImportComplete
         )
       );
@@ -396,7 +421,7 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', ['NewTag', 'AnotherTag'], ['Chicken'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true)
+        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true, 4)
       );
 
       await waitFor(() => {
@@ -413,7 +438,7 @@ describe('useValidationWorkflow', () => {
       ];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true)
+        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true, 4)
       );
 
       await waitFor(() => {
@@ -430,7 +455,7 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', ['NewTag'], ['Chicken'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true)
+        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true, 4)
       );
 
       await waitFor(() => {
@@ -450,7 +475,7 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', ['Italian'], ['NewIngredient'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true)
+        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true, 4)
       );
 
       await waitFor(() => {
@@ -470,7 +495,7 @@ describe('useValidationWorkflow', () => {
   describe('edge cases', () => {
     test('handles empty recipes array with error', async () => {
       const { result } = renderHook(() =>
-        useValidationWorkflow([], mockIngredients, mockTags, mockAddMultipleRecipes, true)
+        useValidationWorkflow([], mockIngredients, mockTags, mockAddMultipleRecipes, true, 4)
       );
 
       await waitFor(() => {
@@ -487,7 +512,7 @@ describe('useValidationWorkflow', () => {
       ];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true)
+        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true, 4)
       );
 
       await waitFor(() => {
@@ -501,7 +526,7 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Recipe', ['UnknownTag1', 'UnknownTag2'], ['Chicken'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true)
+        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true, 4)
       );
 
       await waitFor(() => {
@@ -517,7 +542,7 @@ describe('useValidationWorkflow', () => {
       ];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true)
+        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true, 4)
       );
 
       await waitFor(() => {
@@ -531,7 +556,7 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Recipe', ['Italian'], ['UnknownIngredient'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true)
+        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true, 4)
       );
 
       await waitFor(() => {
@@ -561,7 +586,7 @@ describe('useValidationWorkflow', () => {
       ];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true)
+        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true, 4)
       );
 
       await waitFor(() => {
@@ -589,7 +614,7 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Recipe', ['NewTag1', 'NewTag2'], ['Chicken'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true)
+        useValidationWorkflow(recipes, mockIngredients, mockTags, mockAddMultipleRecipes, true, 4)
       );
 
       await waitFor(() => {

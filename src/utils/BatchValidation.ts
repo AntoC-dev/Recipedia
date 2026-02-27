@@ -228,11 +228,13 @@ export function addTagMapping(
  *
  * @param recipes - Array of converted import recipes
  * @param state - Batch validation state containing mappings
+ * @param defaultPersons - User's default serving count, used instead of the provider's value
  * @returns Array of validated recipes ready for database insertion
  */
 export function applyMappingsToRecipes(
   recipes: ConvertedImportRecipe[],
-  state: BatchValidationState
+  state: BatchValidationState,
+  defaultPersons: number
 ): ValidatedRecipe[] {
   const validatedRecipes: ValidatedRecipe[] = [];
 
@@ -279,7 +281,7 @@ export function applyMappingsToRecipes(
       title: recipe.title,
       description: recipe.description,
       image_Source: recipe.imageUrl,
-      persons: recipe.persons,
+      persons: defaultPersons,
       time: recipe.time,
       ingredients: mappedIngredients,
       tags: mappedTags,

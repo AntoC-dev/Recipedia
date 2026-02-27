@@ -85,6 +85,7 @@ export interface UseValidationWorkflowReturn {
  * @param allTags - All tags from database for fuzzy matching
  * @param addMultipleRecipes - Database function to save recipes
  * @param isDatabaseReady - Whether the database context has loaded data
+ * @param defaultPersons - User's default serving count to apply to all imported recipes
  * @param onImportComplete - Optional async callback called after successful import with source URLs
  * @returns Workflow state and handlers
  */
@@ -94,6 +95,7 @@ export function useValidationWorkflow(
   allTags: tagTableElement[],
   addMultipleRecipes: (recipes: recipeTableElement[]) => Promise<void>,
   isDatabaseReady: boolean,
+  defaultPersons: number,
   onImportComplete?: (importedSourceUrls: string[]) => void | Promise<void>
 ): UseValidationWorkflowReturn {
   const { t } = useI18n();
@@ -118,7 +120,7 @@ export function useValidationWorkflow(
     setPhase('importing');
 
     try {
-      const validatedRecipes = applyMappingsToRecipes(recipesRef.current, state);
+      const validatedRecipes = applyMappingsToRecipes(recipesRef.current, state, defaultPersons);
       const recipesWithIngredients = validatedRecipes.filter(r => r.ingredients.length > 0);
 
       if (recipesWithIngredients.length === 0) {

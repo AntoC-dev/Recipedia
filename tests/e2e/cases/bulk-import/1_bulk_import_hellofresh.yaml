@@ -185,6 +185,24 @@ tags:
     id: "SearchScreen::RecipeCards::10::Cover"
     label: "Cleanup - Open first imported recipe"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipePersons::Text"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    timeout: 120000
+    label: "Assert - Scroll to persons section"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "RecipePersons::Text"
+    text: "Ingrédients (4 personnes)"
+    label: "Assert - Imported recipe uses defaultPersons (4) not provider value"
+
+- waitForAnimationToEnd
+
 - tapOn:
     id: "Recipe::AppBar::Delete"
     label: "Cleanup - Delete recipe"
