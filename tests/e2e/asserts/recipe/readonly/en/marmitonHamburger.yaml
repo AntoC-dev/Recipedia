@@ -92,28 +92,28 @@ appId: "com.recipedia"
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "oignon"
-      INGREDIENT_QUANTITY_AND_UNIT: "1"
+      INGREDIENT_QUANTITY_AND_UNIT: "4"
     label: "Assert Oignon ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "tomate"
-      INGREDIENT_QUANTITY_AND_UNIT: "100"
+      INGREDIENT_QUANTITY_AND_UNIT: "1"
     label: "Assert Tomate ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "salade"
-      INGREDIENT_QUANTITY_AND_UNIT: "1"
+      INGREDIENT_QUANTITY_AND_UNIT: "50"
     label: "Assert Salade ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "moutarde"
-      INGREDIENT_QUANTITY_AND_UNIT: "50"
+      INGREDIENT_QUANTITY_AND_UNIT: "30"
     label: "Assert Moutarde ingredient"
 
 - runFlow:
@@ -127,7 +127,7 @@ appId: "com.recipedia"
     file: "../../common/assertIngredientWithNote.yaml"
     env:
       INGREDIENT_NAME: "cheddar"
-      INGREDIENT_QUANTITY_AND_UNIT: "100"
+      INGREDIENT_QUANTITY_AND_UNIT: "400"
       INGREDIENT_NOTE: "achat sous vide en grande surface"
     label: "Assert Cheddar ingredient with note"
 

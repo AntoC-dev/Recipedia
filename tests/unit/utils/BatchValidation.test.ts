@@ -580,7 +580,7 @@ describe('BatchValidation', () => {
       ];
       const state = initializeBatchValidation(recipes, mockIngredients, mockTags);
 
-      const validatedRecipes = applyMappingsToRecipes(recipes, state);
+      const validatedRecipes = applyMappingsToRecipes(recipes, state, 4);
 
       expect(validatedRecipes).toHaveLength(1);
       expect(validatedRecipes[0].ingredients[0].name).toBe('Chicken');
@@ -593,7 +593,7 @@ describe('BatchValidation', () => {
       ];
       const state = initializeBatchValidation(recipes, mockIngredients, mockTags);
 
-      const validatedRecipes = applyMappingsToRecipes(recipes, state);
+      const validatedRecipes = applyMappingsToRecipes(recipes, state, 4);
 
       expect(validatedRecipes[0].ingredients[0].quantity).toBe('500');
       expect(validatedRecipes[0].ingredients[0].unit).toBe('kg');
@@ -603,7 +603,7 @@ describe('BatchValidation', () => {
       const recipes = [createMockRecipe('Test', [], [{ name: 'Chicken', quantity: '', unit: '' }])];
       const state = initializeBatchValidation(recipes, mockIngredients, mockTags);
 
-      const validatedRecipes = applyMappingsToRecipes(recipes, state);
+      const validatedRecipes = applyMappingsToRecipes(recipes, state, 4);
 
       expect(validatedRecipes[0].ingredients[0].type).toBe(ingredientType.meat);
     });
@@ -612,7 +612,7 @@ describe('BatchValidation', () => {
       const recipes = [createMockRecipe('Test', [], [{ name: 'UnknownIngredient' }])];
       const state = initializeBatchValidation(recipes, mockIngredients, mockTags);
 
-      const validatedRecipes = applyMappingsToRecipes(recipes, state);
+      const validatedRecipes = applyMappingsToRecipes(recipes, state, 4);
 
       expect(validatedRecipes[0].ingredients).toHaveLength(0);
     });
@@ -623,7 +623,7 @@ describe('BatchValidation', () => {
       ];
       const state = initializeBatchValidation(recipes, mockIngredients, mockTags);
 
-      const validatedRecipes = applyMappingsToRecipes(recipes, state);
+      const validatedRecipes = applyMappingsToRecipes(recipes, state, 4);
 
       expect(validatedRecipes[0].tags).toHaveLength(0);
     });
@@ -634,7 +634,7 @@ describe('BatchValidation', () => {
       ];
       const state = initializeBatchValidation(recipes, mockIngredients, mockTags);
 
-      const validatedRecipes = applyMappingsToRecipes(recipes, state);
+      const validatedRecipes = applyMappingsToRecipes(recipes, state, 4);
 
       expect(validatedRecipes[0].title).toBe('Test Recipe');
       expect(validatedRecipes[0].description).toBe('Test Recipe description');
@@ -649,11 +649,25 @@ describe('BatchValidation', () => {
       ];
       const state = initializeBatchValidation(recipes, mockIngredients, mockTags);
 
-      const validatedRecipes = applyMappingsToRecipes(recipes, state);
+      const validatedRecipes = applyMappingsToRecipes(recipes, state, 4);
 
       expect(validatedRecipes).toHaveLength(2);
       expect(validatedRecipes[0].title).toBe('Recipe 1');
       expect(validatedRecipes[1].title).toBe('Recipe 2');
+    });
+
+    it('uses defaultPersons instead of recipe persons', () => {
+      const recipes = [
+        {
+          ...createMockRecipe('Test Recipe', [{ id: 1, name: 'Italian' }], [{ name: 'Chicken' }]),
+          persons: 2,
+        },
+      ];
+      const state = initializeBatchValidation(recipes, mockIngredients, mockTags);
+
+      const validatedRecipes = applyMappingsToRecipes(recipes, state, 4);
+
+      expect(validatedRecipes[0].persons).toBe(4);
     });
   });
 

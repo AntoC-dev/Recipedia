@@ -44,6 +44,7 @@ import { ImportSuccessMessage } from '@components/molecules/ImportSuccessMessage
 import { ValidationProgress } from '@components/molecules/ValidationProgress';
 import { useI18n } from '@utils/i18n';
 import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { useDefaultPersons } from '@context/DefaultPersonsContext';
 import { useValidationWorkflow } from '@hooks/useValidationWorkflow';
 import { padding } from '@styles/spacing';
 
@@ -68,6 +69,7 @@ export function BulkImportValidation() {
   const { providerId, selectedRecipes } = route.params;
   const { ingredients, tags, addMultipleRecipes, removeFromSeenHistory, isDatabaseReady } =
     useRecipeDatabase();
+  const { defaultPersons } = useDefaultPersons();
 
   const handleImportComplete = async (importedUrls: string[]) => {
     await removeFromSeenHistory(providerId, importedUrls);
@@ -80,6 +82,7 @@ export function BulkImportValidation() {
       tags,
       addMultipleRecipes,
       isDatabaseReady,
+      defaultPersons,
       handleImportComplete
     );
 

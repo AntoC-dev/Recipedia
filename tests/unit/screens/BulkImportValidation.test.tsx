@@ -8,6 +8,7 @@ import {
   setMockRouteParams,
 } from '@mocks/deps/react-navigation-mock';
 import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
+import { DefaultPersonsProvider } from '@context/DefaultPersonsContext';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
@@ -59,9 +60,11 @@ describe('BulkImportValidation', () => {
   const renderComponent = (recipes: ConvertedImportRecipe[] = []) => {
     setMockRouteParams({ providerId: 'hellofresh', selectedRecipes: recipes });
     return render(
-      <RecipeDatabaseProvider>
-        <BulkImportValidation />
-      </RecipeDatabaseProvider>
+      <DefaultPersonsProvider>
+        <RecipeDatabaseProvider>
+          <BulkImportValidation />
+        </RecipeDatabaseProvider>
+      </DefaultPersonsProvider>
     );
   };
 
