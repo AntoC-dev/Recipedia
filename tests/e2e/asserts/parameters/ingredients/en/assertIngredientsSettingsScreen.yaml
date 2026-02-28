@@ -8,6 +8,21 @@ env:
     label: "Ingredients Settings title is visible with correct text"
 
 - assertVisible:
+    id: "IngredientsSettings::SearchBar"
+    label: "Search bar is visible"
+
+- assertVisible:
+    id: "IngredientsSettings::SearchBar-icon"
+    text: "search"
+    label: "Search bar icon is visible with correct text"
+
+- assertVisible:
+    id: "IngredientsSettings::SearchBar"
+    text: "Search..."
+    label: "Search bar has correct placeholder text"
+
+
+- assertVisible:
     id: "IngredientsSettings::0::IngredientName"
     text: "Avocado"
     label: "Ingredient Avocado is displayed"

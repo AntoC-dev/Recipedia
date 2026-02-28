@@ -6,6 +6,20 @@ appId: "com.recipedia"
     label: "Tags Settings title is visible with correct text"
 
 - assertVisible:
+    id: "TagsSettings::SearchBar"
+    label: "Search bar is visible"
+
+- assertVisible:
+    id: "TagsSettings::SearchBar-icon"
+    text: "search"
+    label: "Search bar icon is visible with correct text"
+
+- assertVisible:
+    id: "TagsSettings::SearchBar"
+    text: "Search..."
+    label: "Search bar has correct placeholder text"
+
+- assertVisible:
     id: "TagsSettings::0::TagName"
     text: "Breakfast"
     label: "Tag Breakfast is displayed"
