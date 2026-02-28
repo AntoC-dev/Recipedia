@@ -169,29 +169,28 @@ appId: "com.recipedia"
     commands:
       - hideKeyboard:
           label: "Hide keyboard on Android"
-      - swipe:
-          start: "50%,50%"
-          end: "50%,40%"
-          label: "Swipe down to scroll dropdown, first scroll"
-      - waitForAnimationToEnd:
-          label: "Wait for scrolling animation to end"
-      - swipe:
-          start: "50%,50%"
-          end: "50%,40%"
-          label: "Swipe down to scroll dropdown, second scroll"
-      - waitForAnimationToEnd:
-          label: "Wait for scrolling animation to end"
 
 - runFlow:
     when:
       platform: iOS
     commands:
-      - inputText:
-          text: "I"
-          label: "Pre-fill input with some characters of italian tag to avoid flaky tests"
-      - waitForAnimationToEnd:
-          label: "Wait for keyboard animation to end"
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
 
+
+- swipe:
+    start: "50%,50%"
+    end: "50%,40%"
+    label: "Swipe down to scroll dropdown, first scroll"
+- waitForAnimationToEnd:
+    label: "Wait for scrolling animation to end"
+- swipe:
+    start: "50%,50%"
+    end: "50%,40%"
+    label: "Swipe down to scroll dropdown, second scroll"
+- waitForAnimationToEnd:
+    label: "Wait for scrolling animation to end"
 - assertVisible:
     text: "Italian"
     label: "Assert - Italian tag is displayed"
