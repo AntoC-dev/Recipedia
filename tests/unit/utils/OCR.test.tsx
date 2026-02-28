@@ -713,3243 +713,3946 @@ describe('OCR Utility Functions', () => {
   });
 
   describe('on ingredient field', () => {
-    const mockResultIngredientHeaderIsP: TextRecognitionResult = {
-      text: "cacahuètes grillées (g)\nconcentré de tomates (g)\nfilet de poulet\ngingembre (cm)\ngoussed'ail\nlait de coco (mL)\noignon jaune\noignon nouveau\nriz basmati (g) Bio\n2p\n100\n35\n2\n1à3\n1\n200\n1\n0.5\n150\n3p\n150\n35\n3\n1à3\n1\n200\n1\n1\n225\n4p\n200\n70\n4\n1à3\n2\n400\n2\n1\n300\n5p\n250\n70\n5\n1à3\n2\n400\n2\n2\n375",
-      blocks: new Array<TextBlock>(
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
+    describe('Android', () => {
+      const mockResultIngredientHeaderIsP: TextRecognitionResult = {
+        text: "cacahuètes grillées (g)\nconcentré de tomates (g)\nfilet de poulet\ngingembre (cm)\ngoussed'ail\nlait de coco (mL)\noignon jaune\noignon nouveau\nriz basmati (g) Bio\n2p\n100\n35\n2\n1à3\n1\n200\n1\n0.5\n150\n3p\n150\n35\n3\n1à3\n1\n200\n1\n1\n225\n4p\n200\n70\n4\n1à3\n2\n400\n2\n1\n300\n5p\n250\n70\n5\n1à3\n2\n400\n2\n2\n375",
+        blocks: new Array<TextBlock>(
+          {
             recognizedLanguages: [],
-            text: 'cacahuètes grillées (g)',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: 'cacahuètes grillées (g)',
+            }),
+          },
+          {
             recognizedLanguages: [],
-            text: 'concentré de tomates (g)',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: 'concentré de tomates (g)',
+            }),
+          },
+          {
             recognizedLanguages: [],
-            text: 'filet de poulet',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: 'filet de poulet',
+            }),
+          },
+          {
             recognizedLanguages: [],
-            text: 'gingembre (cm)',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: 'gingembre (cm)',
+            }),
+          },
+          {
             recognizedLanguages: [],
-            text: "goussed'ail",
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: "goussed'ail",
+            }),
+          },
+          {
             recognizedLanguages: [],
-            text: 'lait de coco (mL)',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: 'lait de coco (mL)',
+            }),
+          },
+          {
             recognizedLanguages: [],
-            text: 'oignon jaune',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: 'oignon nouveau',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: 'riz basmati (g) Bio',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2p',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '100',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '35',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1à3',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '200',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '0.5',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '150',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '3p',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '150',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '35',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '3',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1à3',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '200',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '225',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '4p',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '200',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '70',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '4',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1à3',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '400',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '300',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '5p',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '250',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '70',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '5',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1à3',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '400',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '375',
-          }),
-        }
-      ),
-    };
-
-    const mockResultIngredientHeaderIsPersonInAnotherLine: TextRecognitionResult = {
-      text: "Dans votre box\ncarotte\ncitronnelle\ncébette\ngousse d'ail\nlait de coco (ml)\noignon jaune\npoireau\npois chiches\nconserve (g égoutté) Bio\npurée de tomates (g)\nriz basmati (g) Bio\népices Cachemire (sachet)\n2 2\npers.\n1\n1\n1\n1\n200\n1\n1\n100\n125\n150\n1 1\n3\npers.\n2\n1\n1\n1\n200\n1\n1\n150\n125\n225\n1\n4\npers.\n2\n2\n2\n2\n400\n2\n2\n200\n250\n300\n2\n5\npers. pers.\n3\n2\n2\n2\n2\n400\n2\n2\n265\n250\n375\n6\n2\n3\n3\n2\n3\n600\n3\n3\n300\n375\n450\n3",
-      blocks: new Array<TextBlock>(
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: "'Dans votre box'",
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: 'carotte',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: 'citronnelle',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: 'cébette',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: "gousse d'ail",
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: 'lait de coco (ml)',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>(
-            {
+            text: '',
+            lines: new Array<TextLine>({
               elements: [],
               recognizedLanguages: [],
               text: 'oignon jaune',
-            },
-            {
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
               elements: [],
               recognizedLanguages: [],
-              text: 'poireau',
-            }
-          ),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
+              text: 'oignon nouveau',
+            }),
+          },
+          {
             recognizedLanguages: [],
-            text: 'pois chiches',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: 'conserve (g égoutté) Bio',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>(
-            {
-              elements: [],
-              recognizedLanguages: [],
-              text: 'purée de tomates (g)',
-            },
-            {
+            text: '',
+            lines: new Array<TextLine>({
               elements: [],
               recognizedLanguages: [],
               text: 'riz basmati (g) Bio',
-            },
-            {
-              elements: [],
-              recognizedLanguages: [],
-              text: 'épices Cachemire (sachet)',
-            }
-          ),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2 2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: 'pers.',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '200',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '100',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '125',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '150',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1 1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '3',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: 'pers.',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '200',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '150',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '125',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '225',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '4',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: 'pers.',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '400',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '200',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '250',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '300',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '5',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: 'pers. pers.',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '3',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '400',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '265',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '250',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '375',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '6',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '3',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '3',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '3',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '600',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '3',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '3',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '300',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '375',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '450',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '3',
-          }),
-        }
-      ),
-    };
-
-    const mockResultIngredientShiftedAndIngredientBadlyRecognized: TextRecognitionResult = {
-      text: "Dans votre box\ncarotte\ncitronnelle\ncébette\ngousse d'ail\nlait de coco (ml)\noignon jaune\npoireau\npois chiches\nconserve (g égoutté) Bio\npurée de tomates (g)\nriz basmati (g) Bio\népices Cachemire (sachet)\n2 2\npers.\n1\n1\n1\n1\n200\n1\n1\n100\n125\n150\n1 1\n3\npers.\n2\n1\n1\n1\n200\n1\n1\n150\n125\n225\n1\n4\npers.\n2\n2\n2\n2\n400\n2\n2\n200\n250\n300\n2\n5\npers. pers.\n3\n2\n2\n2\n2\n400\n2\n2\n265\n250\n375\n6\n2\n3\n3\n2\n3\n600\n3\n3\n300\n375\n450\n3",
-      blocks: new Array<TextBlock>(
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: "'Dans votre box'",
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: 'carotte',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: 'citronnelle',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: 'cébette',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: "gousse d'ail",
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: 'lait de coco (ml)',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>(
-            {
-              elements: [],
-              recognizedLanguages: [],
-              text: 'oignon jaune',
-            },
-            {
-              elements: [],
-              recognizedLanguages: [],
-              text: 'poireau',
-            }
-          ),
-        },
-        // {
-        //     recognizedLanguages: [], text: "", lines: new Array<TextLine>({
-        //         elements: [],
-        //         recognizedLanguages: [],
-        //         text: "pois chiches conserve  Bio"
-        //     })
-        // },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: 'pois chiches',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: 'conserve (g égoutté) Bio',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>(
-            {
-              elements: [],
-              recognizedLanguages: [],
-              text: 'purée de tomates (g)',
-            },
-            {
-              elements: [],
-              recognizedLanguages: [],
-              text: 'riz basmati (g) Bio',
-            },
-            {
-              elements: [],
-              recognizedLanguages: [],
-              text: 'épices Cachemire (sachet)',
-            }
-          ),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2 2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: 'pers.',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '200',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '100',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '125',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '150',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '3',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: 'pers.',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '200',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '150',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '125',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '225',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '4',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: 'pers.',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '400',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '200',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '250',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '300',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '5',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: 'pers. pers.',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '3',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '400',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '265',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '250',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '375',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '6',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '3',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '3',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '3',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '600',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '3',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '3',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '300',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '375',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '450',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '3',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '3',
-          }),
-        }
-      ),
-    };
-
-    const mockIncompleteGroup: TextRecognitionResult = {
-      text: 'ingredient1 (g)\ningredient2 (ml)\n2p\n100',
-      blocks: [
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: [
-            { elements: [], recognizedLanguages: [], text: 'ingredient1 (g)' },
-            { elements: [], recognizedLanguages: [], text: 'ingredient2 (ml)' },
-            { elements: [], recognizedLanguages: [], text: '2p' },
-            { elements: [], recognizedLanguages: [], text: '100' },
-          ],
-        },
-      ],
-    };
-    const mockExtraWhitespace: TextRecognitionResult = {
-      text: '  ingredient1 (g)  \n   ingredient2   \n  2p   \n  100   \n   200  ',
-      blocks: [
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: [
-            { elements: [], recognizedLanguages: [], text: '  ingredient1 (g)  ' },
-            { elements: [], recognizedLanguages: [], text: '   ingredient2   ' },
-            { elements: [], recognizedLanguages: [], text: '  2p   ' },
-            { elements: [], recognizedLanguages: [], text: '  100   ' },
-            { elements: [], recognizedLanguages: [], text: '   200  ' },
-          ],
-        },
-      ],
-    };
-    const mockEmptyOcr: TextRecognitionResult = { text: '', blocks: [] };
-
-    const mockResultIngredientPouletSatayIOS: TextRecognitionResult = {
-      text: "2p\n100\n35\n2\n1à3\n1\n200\n1\n0.5\n150\n3p\n150\n35\n3\n1à3\n1\n200\n1\n1\n225\n4p\n200\n70\n4\n1à3\n2\n400\n2\n1\n300\n5p\n250\n70\n5\n1à3\n2\n400\n2\n2\n375\ncacahuètes grillées (g)\nconcentré de tomates (g)\nfilet de poulet\ngingembre (cm)\ngoussed'ail\nlait de coco (mL)\noignon jaune\noignon nouveau\nriz basmati (g) Bio",
-      blocks: [
-        createBlock('2p'),
-        createBlock('100'),
-        createBlock('35'),
-        createBlock('2'),
-        createBlock('1à3'),
-        createBlock('1'),
-        createBlock('200'),
-        createBlock('1'),
-        createBlock('0.5'),
-        createBlock('150'),
-        createBlock('3p'),
-        createBlock('150'),
-        createBlock('35'),
-        createBlock('3'),
-        createBlock('1à3'),
-        createBlock('1'),
-        createBlock('200'),
-        createBlock('1'),
-        createBlock('1'),
-        createBlock('225'),
-        createBlock('4p'),
-        createBlock('200'),
-        createBlock('70'),
-        createBlock('4'),
-        createBlock('1à3'),
-        createBlock('2'),
-        createBlock('400'),
-        createBlock('2'),
-        createBlock('1'),
-        createBlock('300'),
-        createBlock('5p'),
-        createBlock('250'),
-        createBlock('70'),
-        createBlock('5'),
-        createBlock('1à3'),
-        createBlock('2'),
-        createBlock('400'),
-        createBlock('2'),
-        createBlock('2'),
-        createBlock('375'),
-        createBlock('cacahuètes grillées (g)'),
-        createBlock('concentré de tomates (g)'),
-        createBlock('filet de poulet'),
-        createBlock('gingembre (cm)'),
-        createBlock("goussed'ail"),
-        createBlock('lait de coco (mL)'),
-        createBlock('oignon jaune'),
-        createBlock('oignon nouveau'),
-        createBlock('riz basmati (g) Bio'),
-      ],
-    };
-
-    const mockResultIngredientTajineMerguezIOS: TextRecognitionResult = {
-      text: 'carotte\ncumin (sachet)\nmerguez\nnavet\npommes de terre jaunes (g)\n5p\n3\n1\n8\n2\n800\n3p\n2\n1\n6\n2\n600\n2p\n1\n1\n4\n1\n400\n4p\n3\n2\n10\n2\n1000',
-      blocks: [
-        createBlock('carotte'),
-        createBlock('cumin (sachet)'),
-        createBlock('merguez'),
-        createBlock('navet'),
-        createBlock('pommes de terre jaunes (g)'),
-        createBlock('5p'),
-        createBlock('3'),
-        createBlock('1'),
-        createBlock('8'),
-        createBlock('2'),
-        createBlock('800'),
-        createBlock('3p'),
-        createBlock('2'),
-        createBlock('1'),
-        createBlock('6'),
-        createBlock('2'),
-        createBlock('600'),
-        createBlock('2p'),
-        createBlock('1'),
-        createBlock('1'),
-        createBlock('4'),
-        createBlock('1'),
-        createBlock('400'),
-        createBlock('4p'),
-        createBlock('3'),
-        createBlock('2'),
-        createBlock('10'),
-        createBlock('2'),
-        createBlock('1000'),
-      ],
-    };
-
-    const expectedTajineMerguez = new Array<ingredientObject>(
-      {
-        name: 'carotte',
-        unit: '',
-        quantityPerPersons: [
-          { persons: 2, quantity: '1' },
-          { persons: 3, quantity: '2' },
-          { persons: 4, quantity: '3' },
-          { persons: 5, quantity: '3' },
-        ],
-      },
-      {
-        name: 'cumin',
-        unit: 'sachet',
-        quantityPerPersons: [
-          { persons: 2, quantity: '1' },
-          { persons: 3, quantity: '1' },
-          { persons: 4, quantity: '2' },
-          { persons: 5, quantity: '1' },
-        ],
-      },
-      {
-        name: 'merguez',
-        unit: '',
-        quantityPerPersons: [
-          { persons: 2, quantity: '4' },
-          { persons: 3, quantity: '6' },
-          { persons: 4, quantity: '10' },
-          { persons: 5, quantity: '8' },
-        ],
-      },
-      {
-        name: 'navet',
-        unit: '',
-        quantityPerPersons: [
-          { persons: 2, quantity: '1' },
-          { persons: 3, quantity: '2' },
-          { persons: 4, quantity: '2' },
-          { persons: 5, quantity: '2' },
-        ],
-      },
-      {
-        name: 'pommes de terre jaunes',
-        unit: 'g',
-        quantityPerPersons: [
-          { persons: 2, quantity: '400' },
-          { persons: 3, quantity: '600' },
-          { persons: 4, quantity: '1000' },
-          { persons: 5, quantity: '800' },
-        ],
-      }
-    );
-
-    const expectedPouletSatay = new Array<ingredientObject>(
-      {
-        name: 'cacahuètes grillées',
-        unit: 'g',
-        quantityPerPersons: [
-          { persons: 2, quantity: '100' },
-          { persons: 3, quantity: '150' },
-          { persons: 4, quantity: '200' },
-          { persons: 5, quantity: '250' },
-        ],
-      },
-      {
-        name: 'concentré de tomates',
-        unit: 'g',
-        quantityPerPersons: [
-          { persons: 2, quantity: '35' },
-          { persons: 3, quantity: '35' },
-          { persons: 4, quantity: '70' },
-          { persons: 5, quantity: '70' },
-        ],
-      },
-      {
-        name: 'filet de poulet',
-        unit: '',
-        quantityPerPersons: [
-          { persons: 2, quantity: '2' },
-          { persons: 3, quantity: '3' },
-          { persons: 4, quantity: '4' },
-          { persons: 5, quantity: '5' },
-        ],
-      },
-      {
-        name: 'gingembre',
-        unit: 'cm',
-        quantityPerPersons: [
-          { persons: 2, quantity: '1à3' },
-          { persons: 3, quantity: '1à3' },
-          { persons: 4, quantity: '1à3' },
-          { persons: 5, quantity: '1à3' },
-        ],
-      },
-      {
-        name: "goussed'ail",
-        unit: '',
-        quantityPerPersons: [
-          { persons: 2, quantity: '1' },
-          { persons: 3, quantity: '1' },
-          { persons: 4, quantity: '2' },
-          { persons: 5, quantity: '2' },
-        ],
-      },
-      {
-        name: 'lait de coco',
-        unit: 'mL',
-        quantityPerPersons: [
-          { persons: 2, quantity: '200' },
-          { persons: 3, quantity: '200' },
-          { persons: 4, quantity: '400' },
-          { persons: 5, quantity: '400' },
-        ],
-      },
-      {
-        name: 'oignon jaune',
-        unit: '',
-        quantityPerPersons: [
-          { persons: 2, quantity: '1' },
-          { persons: 3, quantity: '1' },
-          { persons: 4, quantity: '2' },
-          { persons: 5, quantity: '2' },
-        ],
-      },
-      {
-        name: 'oignon nouveau',
-        unit: '',
-        quantityPerPersons: [
-          { persons: 2, quantity: '0.5' },
-          { persons: 3, quantity: '1' },
-          { persons: 4, quantity: '1' },
-          { persons: 5, quantity: '2' },
-        ],
-      },
-      {
-        name: 'riz basmati  Bio',
-        unit: 'g',
-        quantityPerPersons: [
-          { persons: 2, quantity: '150' },
-          { persons: 3, quantity: '225' },
-          { persons: 4, quantity: '300' },
-          { persons: 5, quantity: '375' },
-        ],
-      }
-    );
-
-    const mockIngredientHelloFresh: TextRecognitionResult = {
-      text: 'Riz basmati\nOignon jaune\nCarotte"\nPoireau*\nCiboulette\nGousse d\'ail\nGingembre frais\nSauce soja 11) 13) 15)\nHuile de sésame 3)\nFilet de poulet\nGomasio 3)\n140 g\n1 pièce\n1 pièce\n1 pièce\n3g\n1 pièce\n2 cm\n40 ml\n10 ml\n2 pièce\n2 cC',
-      blocks: new Array<TextBlock>(
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>(
-            {
-              elements: [],
-              recognizedLanguages: [],
-              text: 'Riz basmati',
-            },
-            {
-              elements: [],
-              recognizedLanguages: [],
-              text: 'Oignon jaune',
-            }
-          ),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: 'Carotte"',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: 'Poireau*',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: 'Ciboulette',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: "Gousse d'ail",
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>(
-            {
-              elements: [],
-              recognizedLanguages: [],
-              text: 'Gingembre frais',
-            },
-            {
-              elements: [],
-              recognizedLanguages: [],
-              text: 'Sauce soja 11) 13) 15)',
-            }
-          ),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: 'Huile de sésame 3)',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: 'Filet de poulet',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: 'Gomasio 3)',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '140 g',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1 pièce',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1 pièce',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1 pièce',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '3g',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '1 pièce',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2 cm',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '40 ml',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '10 ml',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2 pièce',
-          }),
-        },
-        {
-          recognizedLanguages: [],
-          text: '',
-          lines: new Array<TextLine>({
-            elements: [],
-            recognizedLanguages: [],
-            text: '2 cC',
-          }),
-        }
-      ),
-    };
-
-    describe('on recognizeText', () => {
-      test('returns the correct value on nominal cases where header is "p"', async () => {
-        mockRecognize.mockResolvedValue(mockResultIngredientHeaderIsP);
-
-        const expected = new Array<ingredientObject>(
-          {
-            name: 'cacahuètes grillées',
-            unit: 'g',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>(
-              { persons: 2, quantity: '100' },
-              {
-                persons: 3,
-                quantity: '150',
-              },
-              { persons: 4, quantity: '200' },
-              { persons: 5, quantity: '250' }
-            ),
-          },
-          {
-            name: 'concentré de tomates',
-            unit: 'g',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>(
-              { persons: 2, quantity: '35' },
-              {
-                persons: 3,
-                quantity: '35',
-              },
-              { persons: 4, quantity: '70' },
-              { persons: 5, quantity: '70' }
-            ),
-          },
-          {
-            name: 'filet de poulet',
-            unit: '',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>(
-              { persons: 2, quantity: '2' },
-              {
-                persons: 3,
-                quantity: '3',
-              },
-              { persons: 4, quantity: '4' },
-              { persons: 5, quantity: '5' }
-            ),
-          },
-          {
-            name: 'gingembre',
-            unit: 'cm',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>(
-              { persons: 2, quantity: '1à3' },
-              {
-                persons: 3,
-                quantity: '1à3',
-              },
-              { persons: 4, quantity: '1à3' },
-              { persons: 5, quantity: '1à3' }
-            ),
-          },
-          {
-            name: "goussed'ail",
-            unit: '',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>(
-              { persons: 2, quantity: '1' },
-              {
-                persons: 3,
-                quantity: '1',
-              },
-              { persons: 4, quantity: '2' },
-              { persons: 5, quantity: '2' }
-            ),
-          },
-          {
-            name: 'lait de coco',
-            unit: 'mL',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>(
-              { persons: 2, quantity: '200' },
-              {
-                persons: 3,
-                quantity: '200',
-              },
-              { persons: 4, quantity: '400' },
-              { persons: 5, quantity: '400' }
-            ),
-          },
-          {
-            name: 'oignon jaune',
-            unit: '',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>(
-              { persons: 2, quantity: '1' },
-              {
-                persons: 3,
-                quantity: '1',
-              },
-              { persons: 4, quantity: '2' },
-              { persons: 5, quantity: '2' }
-            ),
-          },
-          {
-            name: 'oignon nouveau',
-            unit: '',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>(
-              { persons: 2, quantity: '0.5' },
-              {
-                persons: 3,
-                quantity: '1',
-              },
-              { persons: 4, quantity: '1' },
-              { persons: 5, quantity: '2' }
-            ),
-          },
-          {
-            name: 'riz basmati  Bio',
-            unit: 'g',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>(
-              { persons: 2, quantity: '150' },
-              {
-                persons: 3,
-                quantity: '225',
-              },
-              { persons: 4, quantity: '300' },
-              { persons: 5, quantity: '375' }
-            ),
-          }
-        );
-
-        const received = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
-
-        expect(received).toEqual(expected);
-      });
-      test('returns the correct value on nominal cases where header is "persons" in another line', async () => {
-        mockRecognize.mockResolvedValue(mockResultIngredientHeaderIsPersonInAnotherLine);
-
-        const expected = new Array<ingredientObject>(
-          {
-            name: 'carotte',
-            unit: '',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>(
-              { persons: 2, quantity: '1' },
-              {
-                persons: 3,
-                quantity: '2',
-              },
-              { persons: 4, quantity: '2' },
-              { persons: 5, quantity: '3' }
-            ),
-          },
-          {
-            name: 'citronnelle',
-            unit: '',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>(
-              { persons: 2, quantity: '1' },
-              {
-                persons: 3,
-                quantity: '1',
-              },
-              { persons: 4, quantity: '2' },
-              { persons: 5, quantity: '2' }
-            ),
-          },
-          {
-            name: 'cébette',
-            unit: '',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>(
-              { persons: 2, quantity: '1' },
-              {
-                persons: 3,
-                quantity: '1',
-              },
-              { persons: 4, quantity: '2' },
-              { persons: 5, quantity: '2' }
-            ),
-          },
-          {
-            name: "gousse d'ail",
-            unit: '',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>(
-              { persons: 2, quantity: '1' },
-              {
-                persons: 3,
-                quantity: '1',
-              },
-              { persons: 4, quantity: '2' },
-              { persons: 5, quantity: '2' }
-            ),
-          },
-          {
-            name: 'lait de coco',
-            unit: 'ml',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>(
-              { persons: 2, quantity: '200' },
-              {
-                persons: 3,
-                quantity: '200',
-              },
-              { persons: 4, quantity: '400' },
-              { persons: 5, quantity: '400' }
-            ),
-          },
-          {
-            name: 'oignon jaune',
-            unit: '',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>(
-              { persons: 2, quantity: '1' },
-              {
-                persons: 3,
-                quantity: '1',
-              },
-              { persons: 4, quantity: '2' },
-              { persons: 5, quantity: '2' }
-            ),
-          },
-          {
-            name: 'poireau',
-            unit: '',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>(
-              { persons: 2, quantity: '1' },
-              {
-                persons: 3,
-                quantity: '1',
-              },
-              { persons: 4, quantity: '2' },
-              { persons: 5, quantity: '2' }
-            ),
-          },
-          {
-            name: 'pois chiches conserve  Bio',
-            unit: 'g égoutté',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>(
-              { persons: 2, quantity: '100' },
-              {
-                persons: 3,
-                quantity: '150',
-              },
-              { persons: 4, quantity: '200' },
-              { persons: 5, quantity: '265' }
-            ),
-          },
-          {
-            name: 'purée de tomates',
-            unit: 'g',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>(
-              { persons: 2, quantity: '125' },
-              {
-                persons: 3,
-                quantity: '125',
-              },
-              { persons: 4, quantity: '250' },
-              { persons: 5, quantity: '250' }
-            ),
-          },
-          {
-            name: 'riz basmati  Bio',
-            unit: 'g',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>(
-              { persons: 2, quantity: '150' },
-              {
-                persons: 3,
-                quantity: '225',
-              },
-              { persons: 4, quantity: '300' },
-              { persons: 5, quantity: '375' }
-            ),
-          },
-          {
-            name: 'épices Cachemire',
-            unit: 'sachet',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>(
-              { persons: 2, quantity: '1' },
-              {
-                persons: 3,
-                quantity: '1',
-              },
-              { persons: 4, quantity: '2' },
-              { persons: 5, quantity: '2' }
-            ),
-          }
-        );
-
-        const received = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
-
-        expect(expected).toEqual(received);
-      });
-      test('returns the correct value even if there are some shift in OCR result', async () => {
-        mockRecognize.mockResolvedValue(mockResultIngredientShiftedAndIngredientBadlyRecognized);
-
-        const expected = new Array<ingredientObject>(
-          {
-            name: 'carotte',
-            unit: '',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>(
-              {
-                persons: 2,
-                quantity: '1',
-              },
-              { persons: 4, quantity: '2' },
-              { persons: 5, quantity: '3' }
-            ),
-          },
-          {
-            name: 'citronnelle',
-            unit: '',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>(
-              {
-                persons: 2,
-                quantity: '1',
-              },
-              { persons: 4, quantity: '2' },
-              { persons: 5, quantity: '2' }
-            ),
-          },
-          {
-            name: 'cébette',
-            unit: '',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>(
-              {
-                persons: 2,
-                quantity: '1',
-              },
-              { persons: 4, quantity: '2' },
-              { persons: 5, quantity: '2' }
-            ),
-          },
-          {
-            name: "gousse d'ail",
-            unit: '',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>(
-              {
-                persons: 2,
-                quantity: '1',
-              },
-              { persons: 4, quantity: '2' },
-              { persons: 5, quantity: '2' }
-            ),
-          },
-          {
-            name: 'lait de coco',
-            unit: 'ml',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>(
-              {
-                persons: 2,
-                quantity: '200',
-              },
-              { persons: 4, quantity: '400' },
-              { persons: 5, quantity: '400' }
-            ),
-          },
-          {
-            name: 'oignon jaune',
-            unit: '',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>(
-              {
-                persons: 2,
-                quantity: '1',
-              },
-              { persons: 4, quantity: '2' },
-              { persons: 5, quantity: '2' }
-            ),
-          },
-          {
-            name: 'poireau',
-            unit: '',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>(
-              {
-                persons: 2,
-                quantity: '1',
-              },
-              { persons: 4, quantity: '2' },
-              { persons: 5, quantity: '2' }
-            ),
-          },
-          {
-            name: 'pois chiches conserve  Bio',
-            unit: 'g égoutté',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>(
-              {
-                persons: 2,
-                quantity: '100',
-              },
-              { persons: 4, quantity: '200' },
-              { persons: 5, quantity: '265' }
-            ),
-          },
-          {
-            name: 'purée de tomates',
-            unit: 'g',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>(
-              {
-                persons: 2,
-                quantity: '125',
-              },
-              { persons: 4, quantity: '250' },
-              { persons: 5, quantity: '250' }
-            ),
-          },
-          {
-            name: 'riz basmati  Bio',
-            unit: 'g',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>(
-              {
-                persons: 2,
-                quantity: '150',
-              },
-              { persons: 4, quantity: '300' },
-              { persons: 5, quantity: '375' }
-            ),
-          },
-          {
-            name: 'épices Cachemire',
-            unit: 'sachet',
-            // Badly see 6 in OCR but we can't fix it
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>(
-              {
-                persons: 2,
-                quantity: '1',
-              },
-              { persons: 4, quantity: '2' },
-              { persons: 5, quantity: '6' }
-            ),
-          }
-        );
-
-        const result = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
-        expect(result).toEqual(expected);
-      });
-      test('return empty array when OCR result is empty', async () => {
-        mockRecognize.mockResolvedValue(mockEmptyOcr);
-
-        const result = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
-        expect(result).toEqual([]);
-      });
-      test('best effort on incomplete data rows', async () => {
-        // With two ingredients, the group size should be 3 tokens (persons + 2 quantities).
-        // Here we provide an incomplete group (only persons and one quantity).
-        mockRecognize.mockResolvedValue(mockIncompleteGroup);
-
-        // Expect header parsed but no quantities attached because the data group is incomplete.
-        const expected = new Array<ingredientObject>(
-          { name: 'ingredient1', unit: 'g', quantityPerPersons: [{ persons: 2, quantity: '100' }] },
-          { name: 'ingredient2', unit: 'ml', quantityPerPersons: [{ persons: 2, quantity: '' }] }
-        );
-
-        const result = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
-        expect(result).toEqual(expected);
-      });
-      test('trim extra whitespace from lines', async () => {
-        mockRecognize.mockResolvedValue(mockExtraWhitespace);
-
-        const expected = new Array<ingredientObject>(
-          { name: 'ingredient1', unit: 'g', quantityPerPersons: [{ persons: 2, quantity: '100' }] },
-          { name: 'ingredient2', unit: '', quantityPerPersons: [{ persons: 2, quantity: '200' }] }
-        );
-
-        const result = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
-        expect(result).toEqual(expected);
-      });
-      test('returns the correct value on hellofresh recipe', async () => {
-        mockRecognize.mockResolvedValue(mockIngredientHelloFresh);
-
-        const expected = new Array<ingredientObject>(
-          {
-            name: 'Riz basmati',
-            unit: 'g',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>({
-              persons: -1,
-              quantity: '140',
             }),
           },
           {
-            name: 'Oignon jaune',
-            unit: 'pièce',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>({
-              persons: -1,
-              quantity: '1',
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2p',
             }),
           },
           {
-            name: 'Carotte"',
-            unit: 'pièce',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>({
-              persons: -1,
-              quantity: '1',
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '100',
             }),
           },
           {
-            name: 'Poireau*',
-            unit: 'pièce',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>({
-              persons: -1,
-              quantity: '1',
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '35',
             }),
           },
           {
-            name: 'Ciboulette',
-            unit: '',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>({
-              persons: -1,
-              quantity: '3g',
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
             }),
           },
           {
-            name: "Gousse d'ail",
-            unit: 'pièce',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>({
-              persons: -1,
-              quantity: '1',
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1à3',
             }),
           },
           {
-            name: 'Gingembre frais',
-            unit: 'cm',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>({
-              persons: -1,
-              quantity: '2',
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
             }),
           },
           {
-            name: 'Sauce soja 11) 13) 15)',
-            unit: 'ml',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>({
-              persons: -1,
-              quantity: '40',
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '200',
             }),
           },
           {
-            name: 'Huile de sésame 3)',
-            unit: 'ml',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>({
-              persons: -1,
-              quantity: '10',
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
             }),
           },
           {
-            name: 'Filet de poulet',
-            unit: 'pièce',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>({
-              persons: -1,
-              quantity: '2',
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '0.5',
             }),
           },
           {
-            name: 'Gomasio 3)',
-            unit: 'cC',
-            quantityPerPersons: new Array<ingredientQuantityPerPersons>({
-              persons: -1,
-              quantity: '2',
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '150',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '3p',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '150',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '35',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '3',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1à3',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '200',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '225',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '4p',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '200',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '70',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '4',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1à3',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '400',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '300',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '5p',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '250',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '70',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '5',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1à3',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '400',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '375',
             }),
           }
-        );
+        ),
+      };
 
-        const received = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+      const mockResultIngredientHeaderIsPersonInAnotherLine: TextRecognitionResult = {
+        text: "Dans votre box\ncarotte\ncitronnelle\ncébette\ngousse d'ail\nlait de coco (ml)\noignon jaune\npoireau\npois chiches\nconserve (g égoutté) Bio\npurée de tomates (g)\nriz basmati (g) Bio\népices Cachemire (sachet)\n2 2\npers.\n1\n1\n1\n1\n200\n1\n1\n100\n125\n150\n1 1\n3\npers.\n2\n1\n1\n1\n200\n1\n1\n150\n125\n225\n1\n4\npers.\n2\n2\n2\n2\n400\n2\n2\n200\n250\n300\n2\n5\npers. pers.\n3\n2\n2\n2\n2\n400\n2\n2\n265\n250\n375\n6\n2\n3\n3\n2\n3\n600\n3\n3\n300\n375\n450\n3",
+        blocks: new Array<TextBlock>(
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: "'Dans votre box'",
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: 'carotte',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: 'citronnelle',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: 'cébette',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: "gousse d'ail",
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: 'lait de coco (ml)',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>(
+              {
+                elements: [],
+                recognizedLanguages: [],
+                text: 'oignon jaune',
+              },
+              {
+                elements: [],
+                recognizedLanguages: [],
+                text: 'poireau',
+              }
+            ),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: 'pois chiches',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: 'conserve (g égoutté) Bio',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>(
+              {
+                elements: [],
+                recognizedLanguages: [],
+                text: 'purée de tomates (g)',
+              },
+              {
+                elements: [],
+                recognizedLanguages: [],
+                text: 'riz basmati (g) Bio',
+              },
+              {
+                elements: [],
+                recognizedLanguages: [],
+                text: 'épices Cachemire (sachet)',
+              }
+            ),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2 2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: 'pers.',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '200',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '100',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '125',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '150',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1 1',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '3',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: 'pers.',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '200',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '150',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '125',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '225',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '4',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: 'pers.',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '400',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '200',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '250',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '300',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '5',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: 'pers. pers.',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '3',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '400',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '265',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '250',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '375',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '6',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '3',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '3',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '3',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '600',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '3',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '3',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '300',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '375',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '450',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '3',
+            }),
+          }
+        ),
+      };
 
-        expect(received).toEqual(expected);
-      });
-      const mockIngredientHelloFreshIOS: TextRecognitionResult = {
-        text: '140g\npice\n1pce\nipiéce\nI piece\ngron jaae\nCarome\nPorvau\nChalee\nGeuse dal\nGrgenbre fa\nSauce soja 13)25)\nHle de sesane 3)\nFlet de peet\nComais\n10l\n2pece',
+      const mockResultIngredientShiftedAndIngredientBadlyRecognized: TextRecognitionResult = {
+        text: "Dans votre box\ncarotte\ncitronnelle\ncébette\ngousse d'ail\nlait de coco (ml)\noignon jaune\npoireau\npois chiches\nconserve (g égoutté) Bio\npurée de tomates (g)\nriz basmati (g) Bio\népices Cachemire (sachet)\n2 2\npers.\n1\n1\n1\n1\n200\n1\n1\n100\n125\n150\n1 1\n3\npers.\n2\n1\n1\n1\n200\n1\n1\n150\n125\n225\n1\n4\npers.\n2\n2\n2\n2\n400\n2\n2\n200\n250\n300\n2\n5\npers. pers.\n3\n2\n2\n2\n2\n400\n2\n2\n265\n250\n375\n6\n2\n3\n3\n2\n3\n600\n3\n3\n300\n375\n450\n3",
+        blocks: new Array<TextBlock>(
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: "'Dans votre box'",
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: 'carotte',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: 'citronnelle',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: 'cébette',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: "gousse d'ail",
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: 'lait de coco (ml)',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>(
+              {
+                elements: [],
+                recognizedLanguages: [],
+                text: 'oignon jaune',
+              },
+              {
+                elements: [],
+                recognizedLanguages: [],
+                text: 'poireau',
+              }
+            ),
+          },
+          // {
+          //     recognizedLanguages: [], text: "", lines: new Array<TextLine>({
+          //         elements: [],
+          //         recognizedLanguages: [],
+          //         text: "pois chiches conserve  Bio"
+          //     })
+          // },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: 'pois chiches',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: 'conserve (g égoutté) Bio',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>(
+              {
+                elements: [],
+                recognizedLanguages: [],
+                text: 'purée de tomates (g)',
+              },
+              {
+                elements: [],
+                recognizedLanguages: [],
+                text: 'riz basmati (g) Bio',
+              },
+              {
+                elements: [],
+                recognizedLanguages: [],
+                text: 'épices Cachemire (sachet)',
+              }
+            ),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2 2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: 'pers.',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '200',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '100',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '125',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '150',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '3',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: 'pers.',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '200',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '150',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '125',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '225',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '4',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: 'pers.',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '400',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '200',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '250',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '300',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '5',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: 'pers. pers.',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '3',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '400',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '265',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '250',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '375',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '6',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '3',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '3',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '3',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '600',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '3',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '3',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '300',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '375',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '450',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '3',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '3',
+            }),
+          }
+        ),
+      };
+
+      const mockIncompleteGroup: TextRecognitionResult = {
+        text: 'ingredient1 (g)\ningredient2 (ml)\n2p\n100',
         blocks: [
-          createBlock('140g'),
-          createBlock('pice'),
-          createBlock('1pce'),
-          createBlock('ipiéce'),
-          createBlock('I piece'),
-          createBlock('gron jaae'),
-          createBlock('Carome'),
-          createBlock('Porvau'),
-          createBlock('Chalee'),
-          createBlock('Geuse dal'),
-          createBlock('Grgenbre fa'),
-          createBlock('Sauce soja 13)25)'),
-          createBlock('Hle de sesane 3)'),
-          createBlock('Flet de peet'),
-          createBlock('Comais'),
-          createBlock('10l'),
-          createBlock('2pece'),
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: [
+              { elements: [], recognizedLanguages: [], text: 'ingredient1 (g)' },
+              { elements: [], recognizedLanguages: [], text: 'ingredient2 (ml)' },
+              { elements: [], recognizedLanguages: [], text: '2p' },
+              { elements: [], recognizedLanguages: [], text: '100' },
+            ],
+          },
         ],
       };
-      const expectedHelloFreshIOS = new Array<ingredientObject>(
-        { name: 'Chalee', unit: '', quantityPerPersons: [{ persons: -1, quantity: '140g' }] },
-        { name: 'Geuse dal', unit: '', quantityPerPersons: [{ persons: -1, quantity: 'pice' }] },
-        { name: 'Grgenbre fa', unit: '', quantityPerPersons: [{ persons: -1, quantity: '1pce' }] },
+      const mockExtraWhitespace: TextRecognitionResult = {
+        text: '  ingredient1 (g)  \n   ingredient2   \n  2p   \n  100   \n   200  ',
+        blocks: [
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: [
+              { elements: [], recognizedLanguages: [], text: '  ingredient1 (g)  ' },
+              { elements: [], recognizedLanguages: [], text: '   ingredient2   ' },
+              { elements: [], recognizedLanguages: [], text: '  2p   ' },
+              { elements: [], recognizedLanguages: [], text: '  100   ' },
+              { elements: [], recognizedLanguages: [], text: '   200  ' },
+            ],
+          },
+        ],
+      };
+      const mockEmptyOcr: TextRecognitionResult = { text: '', blocks: [] };
+
+      const mockResultIngredientCurryAndroid: TextRecognitionResult = {
+        text: "Dans votre box\ncarotte\ncitronnelle\ncébette\ngOusse d'ail\nlait de coco (ml)\noignon jaune\npoireau\npois chiches\nconserve (g égouttế) Bio\npurée de tomates (g)\nriz basmati (g) Bio\népices Cachemire (sachet)\n2 2\npers.\n1\n1\n1\n1\n200\n1\n1\n100\n125\n150\n1 1\n3 45\npers.\n2\n1\n1\n1\n200\n1\n1\n150\n125\n225\n1\npers.\n2\n2\n2\n2\n400\n2\n2\n200\n250\n300\n2\npers.\n3\n2\n2\n2\n2\n400\n2\n2\n265\n250\n375\n2\n6\npers.\n3\n3\n2\n3\n600\n3\n3\n300\n375\n450\n3",
+        blocks: [
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: [{ elements: [], recognizedLanguages: [], text: 'Dans votre box' }],
+          },
+          createBlock('carotte'),
+          createBlock('citronnelle'),
+          createBlock('cébette'),
+          createBlock("gOusse d'ail"),
+          createBlock('lait de coco (ml)'),
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>(
+              { elements: [], recognizedLanguages: [], text: 'oignon jaune' },
+              { elements: [], recognizedLanguages: [], text: 'poireau' }
+            ),
+          },
+          createBlock('pois chiches'),
+          createBlock('conserve (g égouttế) Bio'),
+          createBlock('purée de tomates (g)'),
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>(
+              { elements: [], recognizedLanguages: [], text: 'riz basmati (g) Bio' },
+              { elements: [], recognizedLanguages: [], text: 'épices Cachemire (sachet)' }
+            ),
+          },
+          createBlock('2 2'),
+          createBlock('pers.'),
+          createBlock('1'),
+          createBlock('1'),
+          createBlock('1'),
+          createBlock('1'),
+          createBlock('200'),
+          createBlock('1'),
+          createBlock('1'),
+          createBlock('100'),
+          createBlock('125'),
+          createBlock('150'),
+          createBlock('1 1'),
+          createBlock('3 45'),
+          createBlock('pers.'),
+          createBlock('2'),
+          createBlock('1'),
+          createBlock('1'),
+          createBlock('1'),
+          createBlock('200'),
+          createBlock('1'),
+          createBlock('1'),
+          createBlock('150'),
+          createBlock('125'),
+          createBlock('225'),
+          createBlock('1'),
+          createBlock('pers.'),
+          createBlock('2'),
+          createBlock('2'),
+          createBlock('2'),
+          createBlock('2'),
+          createBlock('400'),
+          createBlock('2'),
+          createBlock('2'),
+          createBlock('200'),
+          createBlock('250'),
+          createBlock('300'),
+          createBlock('2'),
+          createBlock('pers.'),
+          createBlock('3'),
+          createBlock('2'),
+          createBlock('2'),
+          createBlock('2'),
+          createBlock('2'),
+          createBlock('400'),
+          createBlock('2'),
+          createBlock('2'),
+          createBlock('265'),
+          createBlock('250'),
+          createBlock('375'),
+          createBlock('2'),
+          createBlock('6'),
+          createBlock('pers.'),
+          createBlock('3'),
+          createBlock('3'),
+          createBlock('2'),
+          createBlock('3'),
+          createBlock('600'),
+          createBlock('3'),
+          createBlock('3'),
+          createBlock('300'),
+          createBlock('375'),
+          createBlock('450'),
+          createBlock('3'),
+        ],
+      };
+
+      const expectedCurryAndroid = new Array<ingredientObject>(
         {
-          name: 'Sauce soja 13)25)',
+          name: 'carotte',
           unit: '',
-          quantityPerPersons: [{ persons: -1, quantity: 'ipiéce' }],
+          quantityPerPersons: [
+            { persons: 2, quantity: '1' },
+            { persons: 6, quantity: '3' },
+          ],
         },
         {
-          name: 'Hle de sesane 3)',
-          unit: 'piece',
-          quantityPerPersons: [{ persons: -1, quantity: 'I' }],
+          name: 'citronnelle',
+          unit: '',
+          quantityPerPersons: [
+            { persons: 2, quantity: '1' },
+            { persons: 6, quantity: '3' },
+          ],
         },
         {
-          name: 'Flet de peet',
-          unit: 'jaae',
-          quantityPerPersons: [{ persons: -1, quantity: 'gron' }],
+          name: 'cébette',
+          unit: '',
+          quantityPerPersons: [
+            { persons: 2, quantity: '1' },
+            { persons: 6, quantity: '2' },
+          ],
         },
-        { name: 'Comais', unit: '', quantityPerPersons: [{ persons: -1, quantity: 'Carome' }] },
-        { name: '10l', unit: '', quantityPerPersons: [{ persons: -1, quantity: 'Porvau' }] }
+        {
+          name: "gOusse d'ail",
+          unit: '',
+          quantityPerPersons: [
+            { persons: 2, quantity: '1' },
+            { persons: 6, quantity: '3' },
+          ],
+        },
+        {
+          name: 'lait de coco',
+          unit: 'ml',
+          quantityPerPersons: [
+            { persons: 2, quantity: '200' },
+            { persons: 6, quantity: '600' },
+          ],
+        },
+        {
+          name: 'oignon jaune',
+          unit: '',
+          quantityPerPersons: [
+            { persons: 2, quantity: '1' },
+            { persons: 6, quantity: '3' },
+          ],
+        },
+        {
+          name: 'poireau',
+          unit: '',
+          quantityPerPersons: [
+            { persons: 2, quantity: '1' },
+            { persons: 6, quantity: '3' },
+          ],
+        },
+        {
+          name: 'pois chiches conserve  Bio',
+          unit: 'g égouttế',
+          quantityPerPersons: [
+            { persons: 2, quantity: '100' },
+            { persons: 6, quantity: '300' },
+          ],
+        },
+        {
+          name: 'purée de tomates',
+          unit: 'g',
+          quantityPerPersons: [
+            { persons: 2, quantity: '125' },
+            { persons: 6, quantity: '375' },
+          ],
+        },
+        {
+          name: 'riz basmati  Bio',
+          unit: 'g',
+          quantityPerPersons: [
+            { persons: 2, quantity: '150' },
+            { persons: 6, quantity: '450' },
+          ],
+        },
+        {
+          name: 'épices Cachemire',
+          unit: 'sachet',
+          quantityPerPersons: [
+            { persons: 2, quantity: '1' },
+            { persons: 6, quantity: '3' },
+          ],
+        }
       );
-      test('(hellofresh iOS) returns correct value when iOS returns quantity blocks before name blocks', async () => {
-        mockRecognize.mockResolvedValue(mockIngredientHelloFreshIOS);
-        const received = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
-        expect(received).toEqual(expectedHelloFreshIOS);
+
+      const mockResultIngredientPouletSatayAndroid: TextRecognitionResult = {
+        text: "cacahuètes grillées (g)\nconcentré de tomates (g)\nflet de poulet\ngingembre (cm)\ngOussed'ail\nlait de coco (mL)\noignon jaune\noignon nouveau\nriz basmati (g) Bio\n2p\n100\n35\n2 2\n1à3\n1\n200\n1\n0.5\n150\n3p\n150\n35\n3\n1à3\n1\n200\n1\n1\n225\n4p\n200\n70\n4\n1à3\n2\n400\n2\n1\n300\n5p\n250\n70\n5\n1à3\n2\n400\n2\n2\n375",
+        blocks: [
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>(
+              { elements: [], recognizedLanguages: [], text: 'cacahuètes grillées (g)' },
+              { elements: [], recognizedLanguages: [], text: 'concentré de tomates (g)' }
+            ),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>(
+              { elements: [], recognizedLanguages: [], text: 'flet de poulet' },
+              { elements: [], recognizedLanguages: [], text: 'gingembre (cm)' },
+              { elements: [], recognizedLanguages: [], text: "gOussed'ail" }
+            ),
+          },
+          createBlock('lait de coco (mL)'),
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>(
+              { elements: [], recognizedLanguages: [], text: 'oignon jaune' },
+              { elements: [], recognizedLanguages: [], text: 'oignon nouveau' }
+            ),
+          },
+          createBlock('riz basmati (g) Bio'),
+          createBlock('2p'),
+          createBlock('100'),
+          createBlock('35'),
+          createBlock('2 2'),
+          createBlock('1à3'),
+          createBlock('1'),
+          createBlock('200'),
+          createBlock('1'),
+          createBlock('0.5'),
+          createBlock('150'),
+          createBlock('3p'),
+          createBlock('150'),
+          createBlock('35'),
+          createBlock('3'),
+          createBlock('1à3'),
+          createBlock('1'),
+          createBlock('200'),
+          createBlock('1'),
+          createBlock('1'),
+          createBlock('225'),
+          createBlock('4p'),
+          createBlock('200'),
+          createBlock('70'),
+          createBlock('4'),
+          createBlock('1à3'),
+          createBlock('2'),
+          createBlock('400'),
+          createBlock('2'),
+          createBlock('1'),
+          createBlock('300'),
+          createBlock('5p'),
+          createBlock('250'),
+          createBlock('70'),
+          createBlock('5'),
+          createBlock('1à3'),
+          createBlock('2'),
+          createBlock('400'),
+          createBlock('2'),
+          createBlock('2'),
+          createBlock('375'),
+        ],
+      };
+
+      const expectedPouletSatayAndroid = new Array<ingredientObject>(
+        {
+          name: 'cacahuètes grillées',
+          unit: 'g',
+          quantityPerPersons: [
+            { persons: 3, quantity: '150' },
+            { persons: 4, quantity: '200' },
+            { persons: 5, quantity: '250' },
+          ],
+        },
+        {
+          name: 'concentré de tomates',
+          unit: 'g',
+          quantityPerPersons: [
+            { persons: 3, quantity: '35' },
+            { persons: 4, quantity: '70' },
+            { persons: 5, quantity: '70' },
+          ],
+        },
+        {
+          name: 'flet de poulet',
+          unit: '',
+          quantityPerPersons: [
+            { persons: 3, quantity: '3' },
+            { persons: 4, quantity: '4' },
+            { persons: 5, quantity: '5' },
+          ],
+        },
+        {
+          name: 'gingembre',
+          unit: 'cm',
+          quantityPerPersons: [
+            { persons: 3, quantity: '1à3' },
+            { persons: 4, quantity: '1à3' },
+            { persons: 5, quantity: '1à3' },
+          ],
+        },
+        {
+          name: "gOussed'ail",
+          unit: '',
+          quantityPerPersons: [
+            { persons: 3, quantity: '1' },
+            { persons: 4, quantity: '2' },
+            { persons: 5, quantity: '2' },
+          ],
+        },
+        {
+          name: 'lait de coco',
+          unit: 'mL',
+          quantityPerPersons: [
+            { persons: 3, quantity: '200' },
+            { persons: 4, quantity: '400' },
+            { persons: 5, quantity: '400' },
+          ],
+        },
+        {
+          name: 'oignon jaune',
+          unit: '',
+          quantityPerPersons: [
+            { persons: 3, quantity: '1' },
+            { persons: 4, quantity: '2' },
+            { persons: 5, quantity: '2' },
+          ],
+        },
+        {
+          name: 'oignon nouveau',
+          unit: '',
+          quantityPerPersons: [
+            { persons: 3, quantity: '1' },
+            { persons: 4, quantity: '1' },
+            { persons: 5, quantity: '2' },
+          ],
+        },
+        {
+          name: 'riz basmati  Bio',
+          unit: 'g',
+          quantityPerPersons: [
+            { persons: 3, quantity: '225' },
+            { persons: 4, quantity: '300' },
+            { persons: 5, quantity: '375' },
+          ],
+        }
+      );
+
+      const mockResultIngredientTajineMerguezAndroid: TextRecognitionResult = {
+        text: 'carotte\ncumin (sachet)\nmerguez\nnavet\npommes de terre jaunes (g)\n2p\n1\n1\n1\n400\n3p\n2\n1\n6\n1\n600\n4p\n2\n2\n2\n800\n5p\n3\n2\n10\n2\n1000',
+        blocks: [
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>(
+              { elements: [], recognizedLanguages: [], text: 'carotte' },
+              { elements: [], recognizedLanguages: [], text: 'cumin (sachet)' }
+            ),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>(
+              { elements: [], recognizedLanguages: [], text: 'merguez' },
+              { elements: [], recognizedLanguages: [], text: 'navet' }
+            ),
+          },
+          createBlock('pommes de terre jaunes (g)'),
+          createBlock('2p'),
+          createBlock('1'),
+          createBlock('1'),
+          createBlock('1'),
+          createBlock('400'),
+          createBlock('3p'),
+          createBlock('2'),
+          createBlock('1'),
+          createBlock('6'),
+          createBlock('1'),
+          createBlock('600'),
+          createBlock('4p'),
+          createBlock('2'),
+          createBlock('2'),
+          createBlock('2'),
+          createBlock('800'),
+          createBlock('5p'),
+          createBlock('3'),
+          createBlock('2'),
+          createBlock('10'),
+          createBlock('2'),
+          createBlock('1000'),
+        ],
+      };
+
+      const expectedTajineMerguezAndroid = new Array<ingredientObject>(
+        {
+          name: 'carotte',
+          unit: '',
+          quantityPerPersons: [
+            { persons: 3, quantity: '2' },
+            { persons: 5, quantity: '3' },
+          ],
+        },
+        {
+          name: 'cumin',
+          unit: 'sachet',
+          quantityPerPersons: [
+            { persons: 3, quantity: '1' },
+            { persons: 5, quantity: '2' },
+          ],
+        },
+        {
+          name: 'merguez',
+          unit: '',
+          quantityPerPersons: [
+            { persons: 3, quantity: '6' },
+            { persons: 5, quantity: '10' },
+          ],
+        },
+        {
+          name: 'navet',
+          unit: '',
+          quantityPerPersons: [
+            { persons: 3, quantity: '1' },
+            { persons: 5, quantity: '2' },
+          ],
+        },
+        {
+          name: 'pommes de terre jaunes',
+          unit: 'g',
+          quantityPerPersons: [
+            { persons: 3, quantity: '600' },
+            { persons: 5, quantity: '1000' },
+          ],
+        }
+      );
+
+      const mockIngredientHelloFreshAndroid: TextRecognitionResult = {
+        text: 'Riz basmati\nOignon jaune\nCarotte"\nPoireau*\nCiboulette*\nGousse d\'ail\nGingembre frais\nSauce soja 11) 13) 15)\nHuile de sésame 3)\nFilet de poulet*\nGomasio 3)\n140 g\n1 pièce\n1 pièce\n1 pièce\n3g\n1 pièce\n2 cm\n40 ml\n10 ml\n2 pièce\n2 cc',
+        blocks: new Array<TextBlock>(
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>(
+              {
+                elements: [],
+                recognizedLanguages: [],
+                text: 'Riz basmati',
+              },
+              {
+                elements: [],
+                recognizedLanguages: [],
+                text: 'Oignon jaune',
+              }
+            ),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: 'Carotte"',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: 'Poireau*',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: 'Ciboulette*',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: "Gousse d'ail",
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>(
+              {
+                elements: [],
+                recognizedLanguages: [],
+                text: 'Gingembre frais',
+              },
+              {
+                elements: [],
+                recognizedLanguages: [],
+                text: 'Sauce soja 11) 13) 15)',
+              }
+            ),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: 'Huile de sésame 3)',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: 'Filet de poulet*',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: 'Gomasio 3)',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>(
+              {
+                elements: [],
+                recognizedLanguages: [],
+                text: '140 g',
+              },
+              {
+                elements: [],
+                recognizedLanguages: [],
+                text: '1 pièce',
+              }
+            ),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1 pièce',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1 pièce',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '3g',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '1 pièce',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2 cm',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '40 ml',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '10 ml',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2 pièce',
+            }),
+          },
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>({
+              elements: [],
+              recognizedLanguages: [],
+              text: '2 cc',
+            }),
+          }
+        ),
+      };
+
+      describe('on recognizeText', () => {
+        test('returns the correct value on nominal cases where header is "p"', async () => {
+          mockRecognize.mockResolvedValue(mockResultIngredientHeaderIsP);
+
+          const expected = new Array<ingredientObject>(
+            {
+              name: 'cacahuètes grillées',
+              unit: 'g',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>(
+                { persons: 2, quantity: '100' },
+                {
+                  persons: 3,
+                  quantity: '150',
+                },
+                { persons: 4, quantity: '200' },
+                { persons: 5, quantity: '250' }
+              ),
+            },
+            {
+              name: 'concentré de tomates',
+              unit: 'g',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>(
+                { persons: 2, quantity: '35' },
+                {
+                  persons: 3,
+                  quantity: '35',
+                },
+                { persons: 4, quantity: '70' },
+                { persons: 5, quantity: '70' }
+              ),
+            },
+            {
+              name: 'filet de poulet',
+              unit: '',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>(
+                { persons: 2, quantity: '2' },
+                {
+                  persons: 3,
+                  quantity: '3',
+                },
+                { persons: 4, quantity: '4' },
+                { persons: 5, quantity: '5' }
+              ),
+            },
+            {
+              name: 'gingembre',
+              unit: 'cm',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>(
+                { persons: 2, quantity: '1à3' },
+                {
+                  persons: 3,
+                  quantity: '1à3',
+                },
+                { persons: 4, quantity: '1à3' },
+                { persons: 5, quantity: '1à3' }
+              ),
+            },
+            {
+              name: "goussed'ail",
+              unit: '',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>(
+                { persons: 2, quantity: '1' },
+                {
+                  persons: 3,
+                  quantity: '1',
+                },
+                { persons: 4, quantity: '2' },
+                { persons: 5, quantity: '2' }
+              ),
+            },
+            {
+              name: 'lait de coco',
+              unit: 'mL',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>(
+                { persons: 2, quantity: '200' },
+                {
+                  persons: 3,
+                  quantity: '200',
+                },
+                { persons: 4, quantity: '400' },
+                { persons: 5, quantity: '400' }
+              ),
+            },
+            {
+              name: 'oignon jaune',
+              unit: '',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>(
+                { persons: 2, quantity: '1' },
+                {
+                  persons: 3,
+                  quantity: '1',
+                },
+                { persons: 4, quantity: '2' },
+                { persons: 5, quantity: '2' }
+              ),
+            },
+            {
+              name: 'oignon nouveau',
+              unit: '',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>(
+                { persons: 2, quantity: '0.5' },
+                {
+                  persons: 3,
+                  quantity: '1',
+                },
+                { persons: 4, quantity: '1' },
+                { persons: 5, quantity: '2' }
+              ),
+            },
+            {
+              name: 'riz basmati  Bio',
+              unit: 'g',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>(
+                { persons: 2, quantity: '150' },
+                {
+                  persons: 3,
+                  quantity: '225',
+                },
+                { persons: 4, quantity: '300' },
+                { persons: 5, quantity: '375' }
+              ),
+            }
+          );
+
+          const received = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+
+          expect(received).toEqual(expected);
+        });
+        test('returns the correct value on nominal cases where header is "persons" in another line', async () => {
+          mockRecognize.mockResolvedValue(mockResultIngredientHeaderIsPersonInAnotherLine);
+
+          const expected = new Array<ingredientObject>(
+            {
+              name: 'carotte',
+              unit: '',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>(
+                { persons: 2, quantity: '1' },
+                {
+                  persons: 3,
+                  quantity: '2',
+                },
+                { persons: 4, quantity: '2' },
+                { persons: 5, quantity: '3' }
+              ),
+            },
+            {
+              name: 'citronnelle',
+              unit: '',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>(
+                { persons: 2, quantity: '1' },
+                {
+                  persons: 3,
+                  quantity: '1',
+                },
+                { persons: 4, quantity: '2' },
+                { persons: 5, quantity: '2' }
+              ),
+            },
+            {
+              name: 'cébette',
+              unit: '',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>(
+                { persons: 2, quantity: '1' },
+                {
+                  persons: 3,
+                  quantity: '1',
+                },
+                { persons: 4, quantity: '2' },
+                { persons: 5, quantity: '2' }
+              ),
+            },
+            {
+              name: "gousse d'ail",
+              unit: '',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>(
+                { persons: 2, quantity: '1' },
+                {
+                  persons: 3,
+                  quantity: '1',
+                },
+                { persons: 4, quantity: '2' },
+                { persons: 5, quantity: '2' }
+              ),
+            },
+            {
+              name: 'lait de coco',
+              unit: 'ml',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>(
+                { persons: 2, quantity: '200' },
+                {
+                  persons: 3,
+                  quantity: '200',
+                },
+                { persons: 4, quantity: '400' },
+                { persons: 5, quantity: '400' }
+              ),
+            },
+            {
+              name: 'oignon jaune',
+              unit: '',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>(
+                { persons: 2, quantity: '1' },
+                {
+                  persons: 3,
+                  quantity: '1',
+                },
+                { persons: 4, quantity: '2' },
+                { persons: 5, quantity: '2' }
+              ),
+            },
+            {
+              name: 'poireau',
+              unit: '',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>(
+                { persons: 2, quantity: '1' },
+                {
+                  persons: 3,
+                  quantity: '1',
+                },
+                { persons: 4, quantity: '2' },
+                { persons: 5, quantity: '2' }
+              ),
+            },
+            {
+              name: 'pois chiches conserve  Bio',
+              unit: 'g égoutté',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>(
+                { persons: 2, quantity: '100' },
+                {
+                  persons: 3,
+                  quantity: '150',
+                },
+                { persons: 4, quantity: '200' },
+                { persons: 5, quantity: '265' }
+              ),
+            },
+            {
+              name: 'purée de tomates',
+              unit: 'g',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>(
+                { persons: 2, quantity: '125' },
+                {
+                  persons: 3,
+                  quantity: '125',
+                },
+                { persons: 4, quantity: '250' },
+                { persons: 5, quantity: '250' }
+              ),
+            },
+            {
+              name: 'riz basmati  Bio',
+              unit: 'g',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>(
+                { persons: 2, quantity: '150' },
+                {
+                  persons: 3,
+                  quantity: '225',
+                },
+                { persons: 4, quantity: '300' },
+                { persons: 5, quantity: '375' }
+              ),
+            },
+            {
+              name: 'épices Cachemire',
+              unit: 'sachet',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>(
+                { persons: 2, quantity: '1' },
+                {
+                  persons: 3,
+                  quantity: '1',
+                },
+                { persons: 4, quantity: '2' },
+                { persons: 5, quantity: '2' }
+              ),
+            }
+          );
+
+          const received = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+
+          expect(expected).toEqual(received);
+        });
+        test('returns the correct value even if there are some shift in OCR result', async () => {
+          mockRecognize.mockResolvedValue(mockResultIngredientShiftedAndIngredientBadlyRecognized);
+
+          const expected = new Array<ingredientObject>(
+            {
+              name: 'carotte',
+              unit: '',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>(
+                {
+                  persons: 2,
+                  quantity: '1',
+                },
+                { persons: 4, quantity: '2' },
+                { persons: 5, quantity: '3' }
+              ),
+            },
+            {
+              name: 'citronnelle',
+              unit: '',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>(
+                {
+                  persons: 2,
+                  quantity: '1',
+                },
+                { persons: 4, quantity: '2' },
+                { persons: 5, quantity: '2' }
+              ),
+            },
+            {
+              name: 'cébette',
+              unit: '',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>(
+                {
+                  persons: 2,
+                  quantity: '1',
+                },
+                { persons: 4, quantity: '2' },
+                { persons: 5, quantity: '2' }
+              ),
+            },
+            {
+              name: "gousse d'ail",
+              unit: '',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>(
+                {
+                  persons: 2,
+                  quantity: '1',
+                },
+                { persons: 4, quantity: '2' },
+                { persons: 5, quantity: '2' }
+              ),
+            },
+            {
+              name: 'lait de coco',
+              unit: 'ml',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>(
+                {
+                  persons: 2,
+                  quantity: '200',
+                },
+                { persons: 4, quantity: '400' },
+                { persons: 5, quantity: '400' }
+              ),
+            },
+            {
+              name: 'oignon jaune',
+              unit: '',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>(
+                {
+                  persons: 2,
+                  quantity: '1',
+                },
+                { persons: 4, quantity: '2' },
+                { persons: 5, quantity: '2' }
+              ),
+            },
+            {
+              name: 'poireau',
+              unit: '',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>(
+                {
+                  persons: 2,
+                  quantity: '1',
+                },
+                { persons: 4, quantity: '2' },
+                { persons: 5, quantity: '2' }
+              ),
+            },
+            {
+              name: 'pois chiches conserve  Bio',
+              unit: 'g égoutté',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>(
+                {
+                  persons: 2,
+                  quantity: '100',
+                },
+                { persons: 4, quantity: '200' },
+                { persons: 5, quantity: '265' }
+              ),
+            },
+            {
+              name: 'purée de tomates',
+              unit: 'g',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>(
+                {
+                  persons: 2,
+                  quantity: '125',
+                },
+                { persons: 4, quantity: '250' },
+                { persons: 5, quantity: '250' }
+              ),
+            },
+            {
+              name: 'riz basmati  Bio',
+              unit: 'g',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>(
+                {
+                  persons: 2,
+                  quantity: '150',
+                },
+                { persons: 4, quantity: '300' },
+                { persons: 5, quantity: '375' }
+              ),
+            },
+            {
+              name: 'épices Cachemire',
+              unit: 'sachet',
+              // Badly see 6 in OCR but we can't fix it
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>(
+                {
+                  persons: 2,
+                  quantity: '1',
+                },
+                { persons: 4, quantity: '2' },
+                { persons: 5, quantity: '6' }
+              ),
+            }
+          );
+
+          const result = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+          expect(result).toEqual(expected);
+        });
+        test('return empty array when OCR result is empty', async () => {
+          mockRecognize.mockResolvedValue(mockEmptyOcr);
+
+          const result = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+          expect(result).toEqual([]);
+        });
+        test('best effort on incomplete data rows', async () => {
+          // With two ingredients, the group size should be 3 tokens (persons + 2 quantities).
+          // Here we provide an incomplete group (only persons and one quantity).
+          mockRecognize.mockResolvedValue(mockIncompleteGroup);
+
+          // Expect header parsed but no quantities attached because the data group is incomplete.
+          const expected = new Array<ingredientObject>(
+            {
+              name: 'ingredient1',
+              unit: 'g',
+              quantityPerPersons: [{ persons: 2, quantity: '100' }],
+            },
+            { name: 'ingredient2', unit: 'ml', quantityPerPersons: [{ persons: 2, quantity: '' }] }
+          );
+
+          const result = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+          expect(result).toEqual(expected);
+        });
+        test('trim extra whitespace from lines', async () => {
+          mockRecognize.mockResolvedValue(mockExtraWhitespace);
+
+          const expected = new Array<ingredientObject>(
+            {
+              name: 'ingredient1',
+              unit: 'g',
+              quantityPerPersons: [{ persons: 2, quantity: '100' }],
+            },
+            { name: 'ingredient2', unit: '', quantityPerPersons: [{ persons: 2, quantity: '200' }] }
+          );
+
+          const result = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+          expect(result).toEqual(expected);
+        });
+        test('(hellofresh Android) returns the correct value on hellofresh recipe', async () => {
+          mockRecognize.mockResolvedValue(mockIngredientHelloFreshAndroid);
+
+          const expected = new Array<ingredientObject>(
+            {
+              name: 'Riz basmati',
+              unit: 'g',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>({
+                persons: -1,
+                quantity: '140',
+              }),
+            },
+            {
+              name: 'Oignon jaune',
+              unit: 'pièce',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>({
+                persons: -1,
+                quantity: '1',
+              }),
+            },
+            {
+              name: 'Carotte"',
+              unit: 'pièce',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>({
+                persons: -1,
+                quantity: '1',
+              }),
+            },
+            {
+              name: 'Poireau*',
+              unit: 'pièce',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>({
+                persons: -1,
+                quantity: '1',
+              }),
+            },
+            {
+              name: 'Ciboulette*',
+              unit: '',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>({
+                persons: -1,
+                quantity: '3g',
+              }),
+            },
+            {
+              name: "Gousse d'ail",
+              unit: 'pièce',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>({
+                persons: -1,
+                quantity: '1',
+              }),
+            },
+            {
+              name: 'Gingembre frais',
+              unit: 'cm',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>({
+                persons: -1,
+                quantity: '2',
+              }),
+            },
+            {
+              name: 'Sauce soja 11) 13) 15)',
+              unit: 'ml',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>({
+                persons: -1,
+                quantity: '40',
+              }),
+            },
+            {
+              name: 'Huile de sésame 3)',
+              unit: 'ml',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>({
+                persons: -1,
+                quantity: '10',
+              }),
+            },
+            {
+              name: 'Filet de poulet*',
+              unit: 'pièce',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>({
+                persons: -1,
+                quantity: '2',
+              }),
+            },
+            {
+              name: 'Gomasio 3)',
+              unit: 'cc',
+              quantityPerPersons: new Array<ingredientQuantityPerPersons>({
+                persons: -1,
+                quantity: '2',
+              }),
+            }
+          );
+
+          const received = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+
+          expect(received).toEqual(expected);
+        });
+        test('(poulet satay Android) discards corrupt 2p group and returns persons 3, 4 and 5', async () => {
+          mockRecognize.mockResolvedValue(mockResultIngredientPouletSatayAndroid);
+
+          const received = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+
+          expect(received).toEqual(expectedPouletSatayAndroid);
+        });
+        test('(tajine merguez Android) discards corrupt 2p and 4p groups and returns persons 3 and 5 only', async () => {
+          mockRecognize.mockResolvedValue(mockResultIngredientTajineMerguezAndroid);
+
+          const received = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+
+          expect(received).toEqual(expectedTajineMerguezAndroid);
+        });
+        test('(curry pois chiches Android) merges split ingredient and returns persons 2 and 6 only', async () => {
+          mockRecognize.mockResolvedValue(mockResultIngredientCurryAndroid);
+
+          const received = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+
+          expect(received).toEqual(expectedCurryAndroid);
+        });
       });
-      test('(poulet satay iOS) returns correct value with reversed block order (quantities before names)', async () => {
-        mockRecognize.mockResolvedValue(mockResultIngredientPouletSatayIOS);
 
-        const received = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+      describe('on extractFieldFromImage', () => {
+        test('parse ingredients with exact match for persons', async () => {
+          mockRecognize.mockResolvedValue(mockResultIngredientHeaderIsP);
 
-        expect(received).toEqual(expectedPouletSatay);
-      });
-      test('(tajine merguez iOS) returns correct value with out-of-order markers (5p, 3p, 2p, 4p)', async () => {
-        mockRecognize.mockResolvedValue(mockResultIngredientTajineMerguezIOS);
+          const result = await extractFieldFromImage(
+            'uri',
+            recipeColumnsNames.ingredients,
+            baseState,
+            mockWarn
+          );
+          expect(result).toEqual({
+            recipeIngredients: new Array<FormIngredientElement>(
+              {
+                name: 'cacahuètes grillées',
+                unit: 'g',
+                quantity: '200',
+              },
+              {
+                name: 'concentré de tomates',
+                unit: 'g',
+                quantity: '70',
+              },
+              {
+                name: 'filet de poulet',
+                unit: '',
+                quantity: '4',
+              },
+              {
+                name: 'gingembre',
+                unit: 'cm',
+                quantity: '1à3',
+              },
+              {
+                name: "goussed'ail",
+                unit: '',
+                quantity: '2',
+              },
+              {
+                name: 'lait de coco',
+                unit: 'mL',
+                quantity: '400',
+              },
+              {
+                name: 'oignon jaune',
+                unit: '',
+                quantity: '2',
+              },
+              {
+                name: 'oignon nouveau',
+                unit: '',
+                quantity: '1',
+              },
+              {
+                name: 'riz basmati  Bio',
+                unit: 'g',
+                quantity: '300',
+              }
+            ),
+          });
+        });
 
-        const received = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+        test('parse ingredients with scaling up from 2 persons to 6 persons', async () => {
+          mockRecognize.mockResolvedValue(mockResultIngredientHeaderIsP);
 
-        expect(received).toEqual(expectedTajineMerguez);
+          const result = await extractFieldFromImage(
+            'uri',
+            recipeColumnsNames.ingredients,
+            {
+              ...baseState,
+              recipePersons: 6,
+            },
+            mockWarn
+          );
+
+          expect(mockWarn).toHaveBeenCalledWith(
+            expect.stringContaining('Using 2 and scaling to 6')
+          );
+
+          expect(result).toEqual({
+            recipeIngredients: new Array<FormIngredientElement>(
+              {
+                name: 'cacahuètes grillées',
+                unit: 'g',
+                quantity: '300',
+              },
+              {
+                name: 'concentré de tomates',
+                unit: 'g',
+                quantity: '105',
+              },
+              {
+                name: 'filet de poulet',
+                unit: '',
+                quantity: '6',
+              },
+              {
+                name: 'gingembre',
+                unit: 'cm',
+                quantity: '1à3',
+              },
+              {
+                name: "goussed'ail",
+                unit: '',
+                quantity: '3',
+              },
+              {
+                name: 'lait de coco',
+                unit: 'mL',
+                quantity: '600',
+              },
+              {
+                name: 'oignon jaune',
+                unit: '',
+                quantity: '3',
+              },
+              {
+                name: 'oignon nouveau',
+                unit: '',
+                quantity: '1,5',
+              },
+              {
+                name: 'riz basmati  Bio',
+                unit: 'g',
+                quantity: '450',
+              }
+            ),
+          });
+        });
+
+        test('parse ingredients with scaling down from 2 persons to 1 person', async () => {
+          mockRecognize.mockResolvedValue(mockResultIngredientHeaderIsP);
+
+          const result = await extractFieldFromImage(
+            'uri',
+            recipeColumnsNames.ingredients,
+            {
+              ...baseState,
+              recipePersons: 1,
+            },
+            mockWarn
+          );
+
+          expect(mockWarn).toHaveBeenCalledWith(
+            expect.stringContaining('Using 2 and scaling to 1')
+          );
+
+          expect(result).toEqual({
+            recipeIngredients: new Array<FormIngredientElement>(
+              {
+                name: 'cacahuètes grillées',
+                unit: 'g',
+                quantity: '50',
+              },
+              {
+                name: 'concentré de tomates',
+                unit: 'g',
+                quantity: '17,5',
+              },
+              {
+                name: 'filet de poulet',
+                unit: '',
+                quantity: '1',
+              },
+              {
+                name: 'gingembre',
+                unit: 'cm',
+                quantity: '1à3',
+              },
+              {
+                name: "goussed'ail",
+                unit: '',
+                quantity: '0,5',
+              },
+              {
+                name: 'lait de coco',
+                unit: 'mL',
+                quantity: '100',
+              },
+              {
+                name: 'oignon jaune',
+                unit: '',
+                quantity: '0,5',
+              },
+              {
+                name: 'oignon nouveau',
+                unit: '',
+                quantity: '0,25',
+              },
+              {
+                name: 'riz basmati  Bio',
+                unit: 'g',
+                quantity: '75',
+              }
+            ),
+          });
+        });
+
+        test('extracts note from second parenthetical in ingredient header', async () => {
+          const mockResultWithNotes: TextRecognitionResult = {
+            text: 'Flour (g) (organic)\nSugar (g)\nMilk (mL) (fresh) (cold)\n4p\n200\n100\n250',
+            blocks: [
+              {
+                recognizedLanguages: [],
+                text: '',
+                lines: [
+                  { elements: [], recognizedLanguages: [], text: 'Flour (g) (organic)' },
+                  { elements: [], recognizedLanguages: [], text: 'Sugar (g)' },
+                  { elements: [], recognizedLanguages: [], text: 'Milk (mL) (fresh) (cold)' },
+                  { elements: [], recognizedLanguages: [], text: '4p' },
+                  { elements: [], recognizedLanguages: [], text: '200' },
+                  { elements: [], recognizedLanguages: [], text: '100' },
+                  { elements: [], recognizedLanguages: [], text: '250' },
+                ],
+              },
+            ],
+          };
+
+          mockRecognize.mockResolvedValue(mockResultWithNotes);
+
+          const result = await extractFieldFromImage(
+            'uri',
+            recipeColumnsNames.ingredients,
+            baseState,
+            mockWarn
+          );
+
+          expect(result).toEqual({
+            recipeIngredients: [
+              { name: 'Flour', unit: 'g', quantity: '200', note: 'organic' },
+              { name: 'Sugar', unit: 'g', quantity: '100' },
+              { name: 'Milk', unit: 'mL', quantity: '250', note: 'fresh, cold' },
+            ],
+          });
+        });
+
+        test('does not include note when only one parenthetical exists', async () => {
+          const mockResultNoNotes: TextRecognitionResult = {
+            text: 'Flour (g)\n4p\n200',
+            blocks: [
+              {
+                recognizedLanguages: [],
+                text: '',
+                lines: [
+                  { elements: [], recognizedLanguages: [], text: 'Flour (g)' },
+                  { elements: [], recognizedLanguages: [], text: '4p' },
+                  { elements: [], recognizedLanguages: [], text: '200' },
+                ],
+              },
+            ],
+          };
+
+          mockRecognize.mockResolvedValue(mockResultNoNotes);
+
+          const result = await extractFieldFromImage(
+            'uri',
+            recipeColumnsNames.ingredients,
+            baseState,
+            mockWarn
+          );
+
+          expect(result).toEqual({
+            recipeIngredients: [{ name: 'Flour', unit: 'g', quantity: '200' }],
+          });
+
+          const ingredient = (result as { recipeIngredients: FormIngredientElement[] })
+            .recipeIngredients[0];
+          expect(ingredient.note).toBeUndefined();
+        });
+
+        test('handles empty additional parenthetical', async () => {
+          const mockResultEmptyNote: TextRecognitionResult = {
+            text: 'Flour (g) ()\n4p\n200',
+            blocks: [
+              {
+                recognizedLanguages: [],
+                text: '',
+                lines: [
+                  { elements: [], recognizedLanguages: [], text: 'Flour (g) ()' },
+                  { elements: [], recognizedLanguages: [], text: '4p' },
+                  { elements: [], recognizedLanguages: [], text: '200' },
+                ],
+              },
+            ],
+          };
+
+          mockRecognize.mockResolvedValue(mockResultEmptyNote);
+
+          const result = await extractFieldFromImage(
+            'uri',
+            recipeColumnsNames.ingredients,
+            baseState,
+            mockWarn
+          );
+
+          expect(result).toEqual({
+            recipeIngredients: [{ name: 'Flour', unit: 'g', quantity: '200' }],
+          });
+
+          const ingredient = (result as { recipeIngredients: FormIngredientElement[] })
+            .recipeIngredients[0];
+          expect(ingredient.note).toBeUndefined();
+        });
       });
     });
 
-    describe('on extractFieldFromImage', () => {
-      test('parse ingredients with exact match for persons', async () => {
-        mockRecognize.mockResolvedValue(mockResultIngredientHeaderIsP);
+    describe('iOS', () => {
+      const mockResultIngredientPouletSatayIOS: TextRecognitionResult = {
+        text: "2p\n100\n35\n2\n1à3\n1\n200\n1\n0.5\n150\n3p\n150\n35\n3\n1à3\n1\n200\n1\n1\n225\n4p\n200\n70\n4\n1à3\n2\n400\n2\n1\n300\n5p\n250\n70\n5\n1à3\n2\n400\n2\n2\n375\ncacahuètes grillées (g)\nconcentré de tomates (e)\nfilet de poulet\ngingembre (cm)\ngOusse d'ail\nlait de coco (mL)\noignon jaune\noignon nouveau\nriz basmati (g) Bio",
+        blocks: [
+          createBlock('2p'),
+          createBlock('100'),
+          createBlock('35'),
+          createBlock('2'),
+          createBlock('1à3'),
+          createBlock('1'),
+          createBlock('200'),
+          createBlock('1'),
+          createBlock('0.5'),
+          createBlock('150'),
+          createBlock('3p'),
+          createBlock('150'),
+          createBlock('35'),
+          createBlock('3'),
+          createBlock('1à3'),
+          createBlock('1'),
+          createBlock('200'),
+          createBlock('1'),
+          createBlock('1'),
+          createBlock('225'),
+          createBlock('4p'),
+          createBlock('200'),
+          createBlock('70'),
+          createBlock('4'),
+          createBlock('1à3'),
+          createBlock('2'),
+          createBlock('400'),
+          createBlock('2'),
+          createBlock('1'),
+          createBlock('300'),
+          createBlock('5p'),
+          createBlock('250'),
+          createBlock('70'),
+          createBlock('5'),
+          createBlock('1à3'),
+          createBlock('2'),
+          createBlock('400'),
+          createBlock('2'),
+          createBlock('2'),
+          createBlock('375'),
+          createBlock('cacahuètes grillées (g)'),
+          createBlock('concentré de tomates (e)'),
+          createBlock('filet de poulet'),
+          createBlock('gingembre (cm)'),
+          createBlock("gOusse d'ail"),
+          createBlock('lait de coco (mL)'),
+          createBlock('oignon jaune'),
+          createBlock('oignon nouveau'),
+          createBlock('riz basmati (g) Bio'),
+        ],
+      };
 
-        const result = await extractFieldFromImage(
-          'uri',
-          recipeColumnsNames.ingredients,
-          baseState,
-          mockWarn
-        );
-        expect(result).toEqual({
-          recipeIngredients: new Array<FormIngredientElement>(
-            {
-              name: 'cacahuètes grillées',
-              unit: 'g',
-              quantity: '200',
-            },
-            {
-              name: 'concentré de tomates',
-              unit: 'g',
-              quantity: '70',
-            },
-            {
-              name: 'filet de poulet',
-              unit: '',
-              quantity: '4',
-            },
-            {
-              name: 'gingembre',
-              unit: 'cm',
-              quantity: '1à3',
-            },
-            {
-              name: "goussed'ail",
-              unit: '',
-              quantity: '2',
-            },
-            {
-              name: 'lait de coco',
-              unit: 'mL',
-              quantity: '400',
-            },
-            {
-              name: 'oignon jaune',
-              unit: '',
-              quantity: '2',
-            },
-            {
-              name: 'oignon nouveau',
-              unit: '',
-              quantity: '1',
-            },
-            {
-              name: 'riz basmati  Bio',
-              unit: 'g',
-              quantity: '300',
-            }
-          ),
-        });
-      });
+      const expectedPouletSatayIOS = new Array<ingredientObject>(
+        {
+          name: 'cacahuètes grillées',
+          unit: 'g',
+          quantityPerPersons: [
+            { persons: 2, quantity: '100' },
+            { persons: 3, quantity: '150' },
+            { persons: 4, quantity: '200' },
+            { persons: 5, quantity: '250' },
+          ],
+        },
+        {
+          name: 'concentré de tomates',
+          unit: 'e',
+          quantityPerPersons: [
+            { persons: 2, quantity: '35' },
+            { persons: 3, quantity: '35' },
+            { persons: 4, quantity: '70' },
+            { persons: 5, quantity: '70' },
+          ],
+        },
+        {
+          name: 'filet de poulet',
+          unit: '',
+          quantityPerPersons: [
+            { persons: 2, quantity: '2' },
+            { persons: 3, quantity: '3' },
+            { persons: 4, quantity: '4' },
+            { persons: 5, quantity: '5' },
+          ],
+        },
+        {
+          name: 'gingembre',
+          unit: 'cm',
+          quantityPerPersons: [
+            { persons: 2, quantity: '1à3' },
+            { persons: 3, quantity: '1à3' },
+            { persons: 4, quantity: '1à3' },
+            { persons: 5, quantity: '1à3' },
+          ],
+        },
+        {
+          name: "gOusse d'ail",
+          unit: '',
+          quantityPerPersons: [
+            { persons: 2, quantity: '1' },
+            { persons: 3, quantity: '1' },
+            { persons: 4, quantity: '2' },
+            { persons: 5, quantity: '2' },
+          ],
+        },
+        {
+          name: 'lait de coco',
+          unit: 'mL',
+          quantityPerPersons: [
+            { persons: 2, quantity: '200' },
+            { persons: 3, quantity: '200' },
+            { persons: 4, quantity: '400' },
+            { persons: 5, quantity: '400' },
+          ],
+        },
+        {
+          name: 'oignon jaune',
+          unit: '',
+          quantityPerPersons: [
+            { persons: 2, quantity: '1' },
+            { persons: 3, quantity: '1' },
+            { persons: 4, quantity: '2' },
+            { persons: 5, quantity: '2' },
+          ],
+        },
+        {
+          name: 'oignon nouveau',
+          unit: '',
+          quantityPerPersons: [
+            { persons: 2, quantity: '0.5' },
+            { persons: 3, quantity: '1' },
+            { persons: 4, quantity: '1' },
+            { persons: 5, quantity: '2' },
+          ],
+        },
+        {
+          name: 'riz basmati  Bio',
+          unit: 'g',
+          quantityPerPersons: [
+            { persons: 2, quantity: '150' },
+            { persons: 3, quantity: '225' },
+            { persons: 4, quantity: '300' },
+            { persons: 5, quantity: '375' },
+          ],
+        }
+      );
 
-      test('parse ingredients with scaling up from 2 persons to 6 persons', async () => {
-        mockRecognize.mockResolvedValue(mockResultIngredientHeaderIsP);
-
-        const result = await extractFieldFromImage(
-          'uri',
-          recipeColumnsNames.ingredients,
+      const mockResultIngredientTajineMerguezIOS: TextRecognitionResult = {
+        text: 'carotte\ncumin (sachet)\nmerguez\nnavet\npommes de terre jaunes (g)\n4p\n5p\n3p\n2\n1\n6\n3\n10\n2p\n2\n8\n2\n1\n2\n2\n1000\n400\n600\n800',
+        blocks: [
+          createBlock('carotte'),
+          createBlock('cumin (sachet)'),
+          createBlock('merguez'),
+          createBlock('navet'),
+          createBlock('pommes de terre jaunes (g)'),
+          createBlock('4p'),
+          createBlock('5p'),
           {
-            ...baseState,
-            recipePersons: 6,
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>(
+              { elements: [], recognizedLanguages: [], text: '3p' },
+              { elements: [], recognizedLanguages: [], text: '2' },
+              { elements: [], recognizedLanguages: [], text: '1' },
+              { elements: [], recognizedLanguages: [], text: '6' },
+              { elements: [], recognizedLanguages: [], text: '3' },
+              { elements: [], recognizedLanguages: [], text: '10' },
+              { elements: [], recognizedLanguages: [], text: '2p' },
+              { elements: [], recognizedLanguages: [], text: '2' },
+              { elements: [], recognizedLanguages: [], text: '8' },
+              { elements: [], recognizedLanguages: [], text: '2' },
+              { elements: [], recognizedLanguages: [], text: '1' }
+            ),
           },
-          mockWarn
-        );
+          createBlock('2'),
+          createBlock('2'),
+          createBlock('1000'),
+          createBlock('400'),
+          createBlock('600'),
+          createBlock('800'),
+        ],
+      };
 
-        expect(mockWarn).toHaveBeenCalledWith(expect.stringContaining('Using 2 and scaling to 6'));
-
-        expect(result).toEqual({
-          recipeIngredients: new Array<FormIngredientElement>(
-            {
-              name: 'cacahuètes grillées',
-              unit: 'g',
-              quantity: '300',
-            },
-            {
-              name: 'concentré de tomates',
-              unit: 'g',
-              quantity: '105',
-            },
-            {
-              name: 'filet de poulet',
-              unit: '',
-              quantity: '6',
-            },
-            {
-              name: 'gingembre',
-              unit: 'cm',
-              quantity: '1à3',
-            },
-            {
-              name: "goussed'ail",
-              unit: '',
-              quantity: '3',
-            },
-            {
-              name: 'lait de coco',
-              unit: 'mL',
-              quantity: '600',
-            },
-            {
-              name: 'oignon jaune',
-              unit: '',
-              quantity: '3',
-            },
-            {
-              name: 'oignon nouveau',
-              unit: '',
-              quantity: '1,5',
-            },
-            {
-              name: 'riz basmati  Bio',
-              unit: 'g',
-              quantity: '450',
-            }
-          ),
-        });
-      });
-
-      test('parse ingredients with scaling down from 2 persons to 1 person', async () => {
-        mockRecognize.mockResolvedValue(mockResultIngredientHeaderIsP);
-
-        const result = await extractFieldFromImage(
-          'uri',
-          recipeColumnsNames.ingredients,
+      const mockResultIngredientCurryIOS: TextRecognitionResult = {
+        text: "Dans votre box\ncarotte\ncitronnelle\ncébette\ngousse d'ail\nlait de coco (ml)\noignon jaune\npoireau\npois chiches\nConserve (g égoutté) Bio\npurée de tomates (g)\nriz basmati (g) Bio\népices Cachemire (sachet)\n3\npers. pers.\n2\n1\n1\n1\n1\n200\n1\n1\n100\n125\n150\n1\n2\n1\n1\n1\n200\n1\n1\n150\n125\n225\n1\n4\npers.\n2\n2\n2\n2\n400\n2\n2\n200\n250\n300\n2\n5\n6\npers. pers.\n3\n2\n2\n2\n400\n2\n2\n265\n250\n375\n2\n3\n3\n2\n3\n600\n3\n3\n300\n375\n450\n3",
+        blocks: [
           {
-            ...baseState,
-            recipePersons: 1,
+            recognizedLanguages: [],
+            text: '',
+            lines: [{ elements: [], recognizedLanguages: [], text: 'Dans votre box' }],
           },
-          mockWarn
-        );
+          createBlock('carotte'),
+          createBlock('citronnelle'),
+          createBlock('cébette'),
+          createBlock("gousse d'ail"),
+          createBlock('lait de coco (ml)'),
+          createBlock('oignon jaune'),
+          createBlock('poireau'),
+          createBlock('pois chiches'),
+          createBlock('Conserve (g égoutté) Bio'),
+          createBlock('purée de tomates (g)'),
+          createBlock('riz basmati (g) Bio'),
+          createBlock('épices Cachemire (sachet)'),
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>(
+              { elements: [], recognizedLanguages: [], text: '3' },
+              { elements: [], recognizedLanguages: [], text: 'pers. pers.' }
+            ),
+          },
+          createBlock('2'),
+          createBlock('1'),
+          createBlock('1'),
+          createBlock('1'),
+          createBlock('1'),
+          createBlock('200'),
+          createBlock('1'),
+          createBlock('1'),
+          createBlock('100'),
+          createBlock('125'),
+          createBlock('150'),
+          createBlock('1'),
+          createBlock('2'),
+          createBlock('1'),
+          createBlock('1'),
+          createBlock('1'),
+          createBlock('200'),
+          createBlock('1'),
+          createBlock('1'),
+          createBlock('150'),
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>(
+              { elements: [], recognizedLanguages: [], text: '125' },
+              { elements: [], recognizedLanguages: [], text: '225' }
+            ),
+          },
+          createBlock('1'),
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>(
+              { elements: [], recognizedLanguages: [], text: '4' },
+              { elements: [], recognizedLanguages: [], text: 'pers.' }
+            ),
+          },
+          createBlock('2'),
+          createBlock('2'),
+          createBlock('2'),
+          createBlock('2'),
+          createBlock('400'),
+          createBlock('2'),
+          createBlock('2'),
+          createBlock('200'),
+          createBlock('250'),
+          createBlock('300'),
+          createBlock('2'),
+          createBlock('5'),
+          {
+            recognizedLanguages: [],
+            text: '',
+            lines: new Array<TextLine>(
+              { elements: [], recognizedLanguages: [], text: '6' },
+              { elements: [], recognizedLanguages: [], text: 'pers. pers.' }
+            ),
+          },
+          createBlock('3'),
+          createBlock('2'),
+          createBlock('2'),
+          createBlock('2'),
+          createBlock('400'),
+          createBlock('2'),
+          createBlock('2'),
+          createBlock('265'),
+          createBlock('250'),
+          createBlock('375'),
+          createBlock('2'),
+          createBlock('3'),
+          createBlock('3'),
+          createBlock('2'),
+          createBlock('3'),
+          createBlock('600'),
+          createBlock('3'),
+          createBlock('3'),
+          createBlock('300'),
+          createBlock('375'),
+          createBlock('450'),
+          createBlock('3'),
+        ],
+      };
 
-        expect(mockWarn).toHaveBeenCalledWith(expect.stringContaining('Using 2 and scaling to 1'));
-
-        expect(result).toEqual({
-          recipeIngredients: new Array<FormIngredientElement>(
-            {
-              name: 'cacahuètes grillées',
-              unit: 'g',
-              quantity: '50',
-            },
-            {
-              name: 'concentré de tomates',
-              unit: 'g',
-              quantity: '17,5',
-            },
-            {
-              name: 'filet de poulet',
-              unit: '',
-              quantity: '1',
-            },
-            {
-              name: 'gingembre',
-              unit: 'cm',
-              quantity: '1à3',
-            },
-            {
-              name: "goussed'ail",
-              unit: '',
-              quantity: '0,5',
-            },
-            {
-              name: 'lait de coco',
-              unit: 'mL',
-              quantity: '100',
-            },
-            {
-              name: 'oignon jaune',
-              unit: '',
-              quantity: '0,5',
-            },
-            {
-              name: 'oignon nouveau',
-              unit: '',
-              quantity: '0,25',
-            },
-            {
-              name: 'riz basmati  Bio',
-              unit: 'g',
-              quantity: '75',
-            }
-          ),
-        });
-      });
-
-      test('extracts note from second parenthetical in ingredient header', async () => {
-        const mockResultWithNotes: TextRecognitionResult = {
-          text: 'Flour (g) (organic)\nSugar (g)\nMilk (mL) (fresh) (cold)\n4p\n200\n100\n250',
-          blocks: [
-            {
-              recognizedLanguages: [],
-              text: '',
-              lines: [
-                { elements: [], recognizedLanguages: [], text: 'Flour (g) (organic)' },
-                { elements: [], recognizedLanguages: [], text: 'Sugar (g)' },
-                { elements: [], recognizedLanguages: [], text: 'Milk (mL) (fresh) (cold)' },
-                { elements: [], recognizedLanguages: [], text: '4p' },
-                { elements: [], recognizedLanguages: [], text: '200' },
-                { elements: [], recognizedLanguages: [], text: '100' },
-                { elements: [], recognizedLanguages: [], text: '250' },
-              ],
-            },
+      const expectedCurryIOS = new Array<ingredientObject>(
+        {
+          name: 'carotte',
+          unit: '',
+          quantityPerPersons: [
+            { persons: 4, quantity: '2' },
+            { persons: 6, quantity: '3' },
           ],
-        };
-
-        mockRecognize.mockResolvedValue(mockResultWithNotes);
-
-        const result = await extractFieldFromImage(
-          'uri',
-          recipeColumnsNames.ingredients,
-          baseState,
-          mockWarn
-        );
-
-        expect(result).toEqual({
-          recipeIngredients: [
-            { name: 'Flour', unit: 'g', quantity: '200', note: 'organic' },
-            { name: 'Sugar', unit: 'g', quantity: '100' },
-            { name: 'Milk', unit: 'mL', quantity: '250', note: 'fresh, cold' },
+        },
+        {
+          name: 'citronnelle',
+          unit: '',
+          quantityPerPersons: [
+            { persons: 4, quantity: '2' },
+            { persons: 6, quantity: '3' },
           ],
-        });
-      });
-
-      test('does not include note when only one parenthetical exists', async () => {
-        const mockResultNoNotes: TextRecognitionResult = {
-          text: 'Flour (g)\n4p\n200',
-          blocks: [
-            {
-              recognizedLanguages: [],
-              text: '',
-              lines: [
-                { elements: [], recognizedLanguages: [], text: 'Flour (g)' },
-                { elements: [], recognizedLanguages: [], text: '4p' },
-                { elements: [], recognizedLanguages: [], text: '200' },
-              ],
-            },
+        },
+        {
+          name: 'cébette',
+          unit: '',
+          quantityPerPersons: [
+            { persons: 4, quantity: '2' },
+            { persons: 6, quantity: '2' },
           ],
-        };
-
-        mockRecognize.mockResolvedValue(mockResultNoNotes);
-
-        const result = await extractFieldFromImage(
-          'uri',
-          recipeColumnsNames.ingredients,
-          baseState,
-          mockWarn
-        );
-
-        expect(result).toEqual({
-          recipeIngredients: [{ name: 'Flour', unit: 'g', quantity: '200' }],
-        });
-
-        const ingredient = (result as { recipeIngredients: FormIngredientElement[] })
-          .recipeIngredients[0];
-        expect(ingredient.note).toBeUndefined();
-      });
-
-      test('handles empty additional parenthetical', async () => {
-        const mockResultEmptyNote: TextRecognitionResult = {
-          text: 'Flour (g) ()\n4p\n200',
-          blocks: [
-            {
-              recognizedLanguages: [],
-              text: '',
-              lines: [
-                { elements: [], recognizedLanguages: [], text: 'Flour (g) ()' },
-                { elements: [], recognizedLanguages: [], text: '4p' },
-                { elements: [], recognizedLanguages: [], text: '200' },
-              ],
-            },
+        },
+        {
+          name: "gousse d'ail",
+          unit: '',
+          quantityPerPersons: [
+            { persons: 4, quantity: '2' },
+            { persons: 6, quantity: '3' },
           ],
-        };
+        },
+        {
+          name: 'lait de coco',
+          unit: 'ml',
+          quantityPerPersons: [
+            { persons: 4, quantity: '400' },
+            { persons: 6, quantity: '600' },
+          ],
+        },
+        {
+          name: 'oignon jaune',
+          unit: '',
+          quantityPerPersons: [
+            { persons: 4, quantity: '2' },
+            { persons: 6, quantity: '3' },
+          ],
+        },
+        {
+          name: 'poireau',
+          unit: '',
+          quantityPerPersons: [
+            { persons: 4, quantity: '2' },
+            { persons: 6, quantity: '3' },
+          ],
+        },
+        {
+          name: 'pois chiches Conserve  Bio',
+          unit: 'g égoutté',
+          quantityPerPersons: [
+            { persons: 4, quantity: '200' },
+            { persons: 6, quantity: '300' },
+          ],
+        },
+        {
+          name: 'purée de tomates',
+          unit: 'g',
+          quantityPerPersons: [
+            { persons: 4, quantity: '250' },
+            { persons: 6, quantity: '375' },
+          ],
+        },
+        {
+          name: 'riz basmati  Bio',
+          unit: 'g',
+          quantityPerPersons: [
+            { persons: 4, quantity: '300' },
+            { persons: 6, quantity: '450' },
+          ],
+        },
+        {
+          name: 'épices Cachemire',
+          unit: 'sachet',
+          quantityPerPersons: [
+            { persons: 4, quantity: '2' },
+            { persons: 6, quantity: '3' },
+          ],
+        }
+      );
 
-        mockRecognize.mockResolvedValue(mockResultEmptyNote);
+      const expectedTajineMerguez = new Array<ingredientObject>(
+        {
+          name: 'carotte',
+          unit: '',
+          quantityPerPersons: [
+            { persons: 2, quantity: '1' },
+            { persons: 3, quantity: '2' },
+            { persons: 4, quantity: '3' },
+            { persons: 5, quantity: '3' },
+          ],
+        },
+        {
+          name: 'cumin',
+          unit: 'sachet',
+          quantityPerPersons: [
+            { persons: 2, quantity: '1' },
+            { persons: 3, quantity: '1' },
+            { persons: 4, quantity: '2' },
+            { persons: 5, quantity: '1' },
+          ],
+        },
+        {
+          name: 'merguez',
+          unit: '',
+          quantityPerPersons: [
+            { persons: 2, quantity: '4' },
+            { persons: 3, quantity: '6' },
+            { persons: 4, quantity: '10' },
+            { persons: 5, quantity: '8' },
+          ],
+        },
+        {
+          name: 'navet',
+          unit: '',
+          quantityPerPersons: [
+            { persons: 2, quantity: '1' },
+            { persons: 3, quantity: '2' },
+            { persons: 4, quantity: '2' },
+            { persons: 5, quantity: '2' },
+          ],
+        },
+        {
+          name: 'pommes de terre jaunes',
+          unit: 'g',
+          quantityPerPersons: [
+            { persons: 2, quantity: '400' },
+            { persons: 3, quantity: '600' },
+            { persons: 4, quantity: '1000' },
+            { persons: 5, quantity: '800' },
+          ],
+        }
+      );
 
-        const result = await extractFieldFromImage(
-          'uri',
-          recipeColumnsNames.ingredients,
-          baseState,
-          mockWarn
-        );
+      const mockIngredientHelloFreshIOS: TextRecognitionResult = {
+        text: 'Riz basmati\nOignon jaune\nCarotte\nPoireau\nCiboulette*\nGousse d\'ail\nGingembre frais\nSauce soja 11) 13) 15)\nHuile de sésame 3)\nFilet de poulet"\nGomasio 3)\n140 g\n1 pièce\n1 pièce\n1 pièce\n3g\n1 pièce\n2 cm\n40 ml\n10 ml\n2 pièce\n2 cc',
+        blocks: [
+          createBlock('Riz basmati'),
+          createBlock('Oignon jaune'),
+          createBlock('Carotte'),
+          createBlock('Poireau'),
+          createBlock('Ciboulette*'),
+          createBlock("Gousse d'ail"),
+          createBlock('Gingembre frais'),
+          createBlock('Sauce soja 11) 13) 15)'),
+          createBlock('Huile de sésame 3)'),
+          createBlock('Filet de poulet"'),
+          createBlock('Gomasio 3)'),
+          createBlock('140 g'),
+          createBlock('1 pièce'),
+          createBlock('1 pièce'),
+          createBlock('1 pièce'),
+          createBlock('3g'),
+          createBlock('1 pièce'),
+          createBlock('2 cm'),
+          createBlock('40 ml'),
+          createBlock('10 ml'),
+          createBlock('2 pièce'),
+          createBlock('2 cc'),
+        ],
+      };
+      const expectedHelloFreshIOS = new Array<ingredientObject>(
+        { name: 'Riz basmati', unit: 'g', quantityPerPersons: [{ persons: -1, quantity: '140' }] },
+        {
+          name: 'Oignon jaune',
+          unit: 'pièce',
+          quantityPerPersons: [{ persons: -1, quantity: '1' }],
+        },
+        { name: 'Carotte', unit: 'pièce', quantityPerPersons: [{ persons: -1, quantity: '1' }] },
+        { name: 'Poireau', unit: 'pièce', quantityPerPersons: [{ persons: -1, quantity: '1' }] },
+        { name: 'Ciboulette*', unit: '', quantityPerPersons: [{ persons: -1, quantity: '3g' }] },
+        {
+          name: "Gousse d'ail",
+          unit: 'pièce',
+          quantityPerPersons: [{ persons: -1, quantity: '1' }],
+        },
+        {
+          name: 'Gingembre frais',
+          unit: 'cm',
+          quantityPerPersons: [{ persons: -1, quantity: '2' }],
+        },
+        {
+          name: 'Sauce soja 11) 13) 15)',
+          unit: 'ml',
+          quantityPerPersons: [{ persons: -1, quantity: '40' }],
+        },
+        {
+          name: 'Huile de sésame 3)',
+          unit: 'ml',
+          quantityPerPersons: [{ persons: -1, quantity: '10' }],
+        },
+        {
+          name: 'Filet de poulet"',
+          unit: 'pièce',
+          quantityPerPersons: [{ persons: -1, quantity: '2' }],
+        },
+        { name: 'Gomasio 3)', unit: 'cc', quantityPerPersons: [{ persons: -1, quantity: '2' }] }
+      );
 
-        expect(result).toEqual({
-          recipeIngredients: [{ name: 'Flour', unit: 'g', quantity: '200' }],
+      describe('on recognizeText', () => {
+        test('(hellofresh iOS) returns correct value when iOS returns quantity blocks before name blocks', async () => {
+          mockRecognize.mockResolvedValue(mockIngredientHelloFreshIOS);
+          const received = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+          expect(received).toEqual(expectedHelloFreshIOS);
         });
+        test('(poulet satay iOS) returns correct value with reversed block order and OCR artifacts', async () => {
+          mockRecognize.mockResolvedValue(mockResultIngredientPouletSatayIOS);
 
-        const ingredient = (result as { recipeIngredients: FormIngredientElement[] })
-          .recipeIngredients[0];
-        expect(ingredient.note).toBeUndefined();
+          const received = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+
+          expect(received).toEqual(expectedPouletSatayIOS);
+        });
+        test('(tajine merguez iOS) returns correct value with non-uniform out-of-order markers', async () => {
+          mockRecognize.mockResolvedValue(mockResultIngredientTajineMerguezIOS);
+
+          const received = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+
+          expect(received).toEqual(expectedTajineMerguez);
+        });
+        test('(curry pois chiches iOS) merges split ingredient and returns persons 4 and 6', async () => {
+          mockRecognize.mockResolvedValue(mockResultIngredientCurryIOS);
+
+          const received = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+
+          expect(received).toEqual(expectedCurryIOS);
+        });
       });
     });
   });

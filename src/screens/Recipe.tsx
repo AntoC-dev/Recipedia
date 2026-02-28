@@ -18,11 +18,7 @@
 
 import React, { useState } from 'react';
 import { RecipeScreenProp, recipeStateType } from '@customTypes/ScreenTypes';
-import {
-  isRecipeEqual,
-  recipeColumnsNames,
-  recipeTableElement,
-} from '@customTypes/DatabaseElementTypes';
+import { isRecipeEqual, recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
@@ -494,18 +490,20 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
           arrImg={state.imgForOCR}
           autoSelect={state.stackMode === recipeStateType.edit}
           onSelectFunction={async (imgSelected: string) => {
-            const field = ocr.modalField as recipeColumnsNames;
+            const target = ocr.modalField!;
             ocr.closeModal();
-
-            const isEditMode = state.stackMode === recipeStateType.edit;
-            if (isEditMode) {
+            recipeLogger.debug('OCR image selected', { target, imgSelected });
+            if (state.stackMode === recipeStateType.edit) {
               setters.setRecipeImage(imgSelected);
-            } else {
-              const croppedUri = await cropImage(imgSelected, colors);
-              if (croppedUri.length > 0) {
-                await ocr.fillOneField(croppedUri, field);
-              }
+              return;
             }
+            const croppedUri = await cropImage(imgSelected, colors);
+            recipeLogger.debug('OCR image cropped', { target, croppedUri });
+            if (croppedUri.length === 0) {
+              return;
+            }
+
+            await ocr.fillOneField(croppedUri, target);
           }}
           onDismissFunction={ocr.closeModal}
           onImagesUpdated={ocr.addImageUri}

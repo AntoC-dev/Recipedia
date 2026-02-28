@@ -18,8 +18,9 @@
 
 import React from 'react';
 import { IconName } from '@assets/Icons';
-import { FAB } from 'react-native-paper';
+import { FAB, Text } from 'react-native-paper';
 import { StyleProp, View, ViewStyle } from 'react-native';
+import { padding } from '@styles/spacing';
 
 /**
  * Props for the RoundButton component
@@ -33,6 +34,8 @@ export type RoundButtonProps = {
   onPressFunction: () => void;
   /** Unique identifier for testing and accessibility */
   testID: string;
+  /** Optional text label rendered below the button */
+  label?: string;
   /** Custom styles for the button container */
   style?: StyleProp<ViewStyle>;
 };
@@ -43,12 +46,13 @@ export type RoundButtonProps = {
  * @param props - The component props
  * @returns JSX element representing a circular FAB button
  */
-export function RoundButton({ icon, onPressFunction, testID, style }: RoundButtonProps) {
+export function RoundButton({ icon, onPressFunction, testID, label, style }: RoundButtonProps) {
+  const roundButtonTestId = testID + '::RoundButton';
+
   return (
     <View
       style={[
         {
-          justifyContent: 'center',
           alignItems: 'center',
           alignContent: 'center',
         },
@@ -56,13 +60,25 @@ export function RoundButton({ icon, onPressFunction, testID, style }: RoundButto
       ]}
     >
       <FAB
-        testID={testID + '::RoundButton'}
+        testID={roundButtonTestId}
         icon={icon}
         size={'medium'}
         mode={'elevated'}
         style={{ borderRadius: 999 }}
         onPress={onPressFunction}
       />
+      {label !== undefined && (
+        <Text
+          testID={roundButtonTestId + '::Label'}
+          variant='titleMedium'
+          style={{
+            textAlign: 'center',
+            padding: padding.small,
+          }}
+        >
+          {label}
+        </Text>
+      )}
     </View>
   );
 }
