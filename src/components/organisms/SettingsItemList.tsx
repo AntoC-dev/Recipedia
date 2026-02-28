@@ -38,10 +38,11 @@
  * ```
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { FlatList, View } from 'react-native';
-import { useTheme } from 'react-native-paper';
+import { Searchbar, useTheme } from 'react-native-paper';
 import { padding } from '@styles/spacing';
+import { useI18n } from '@utils/i18n';
 import {
   SettingsItem,
   SettingsItemCard,
@@ -74,11 +75,29 @@ export function SettingsItemList<T extends SettingsItem>({
   items,
 }: SettingsItemListProps<T>) {
   const { colors } = useTheme();
+  const { t } = useI18n();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredItems = items.filter(item =>
+    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <View style={{ height: '100%', backgroundColor: colors.background }}>
+      <Searchbar
+        testID={`${testIdPrefix}::SearchBar`}
+        mode='bar'
+        placeholder={t('search_items')}
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+        style={{
+          margin: padding.small,
+          marginBottom: padding.verySmall,
+          borderRadius: 999,
+        }}
+      />
       <FlatList
-        data={items}
+        data={filteredItems}
         contentContainerStyle={{ padding: padding.small }}
         renderItem={({ item, index }) => (
           <SettingsItemCard

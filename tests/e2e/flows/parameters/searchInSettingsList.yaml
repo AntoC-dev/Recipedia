@@ -1,0 +1,39 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    id: "${SETTINGS_SCREEN}::SearchBar"
+    label: "Assert - Settings screen search bar is visible"
+
+- tapOn:
+    id: "${SETTINGS_SCREEN}::SearchBar"
+    label: "Action - Focus settings search bar"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
+- inputText:
+    text: "${SEARCH_QUERY}"
+    label: "Action - Type search query: ${SEARCH_QUERY}"
+
+- waitForAnimationToEnd:
+    label: "Wait for list to filter"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Search"
+          label: "Tap Search key to validates the search"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to disappear"
