@@ -187,6 +187,97 @@ describe('RecipeIngredients Component', () => {
     });
   });
 
+  describe('onValidate guard', () => {
+    const mockOnIngredientChange = jest.fn();
+    const mockOnAddIngredient = jest.fn();
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('calls onIngredientChange when ingredient name is validated with non-empty string', async () => {
+      const props: RecipeIngredientsProps = {
+        mode: 'editable',
+        testID: 'GuardTest',
+        ingredients: sampleIngredients,
+        prefixText: 'Ingredients',
+        columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
+        onIngredientChange: mockOnIngredientChange,
+        onAddIngredient: mockOnAddIngredient,
+        noteInputPlaceholder: 'Note',
+      };
+
+      const { getByTestId } = await renderRecipeIngredients(props);
+
+      fireEvent.press(getByTestId('GuardTest::0::NameInput::TextInputWithDropdown::OnValidate'));
+
+      expect(mockOnIngredientChange).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('key stability', () => {
+    const mockOnIngredientChange = jest.fn();
+    const mockOnAddIngredient = jest.fn();
+
+    const ingredientA: ingredientTableElement = {
+      id: 1,
+      quantity: '200',
+      unit: 'g',
+      name: 'flour',
+      type: ingredientType.cereal,
+      season: [],
+    };
+
+    const ingredientB: ingredientTableElement = {
+      id: 2,
+      quantity: '5',
+      unit: 'g',
+      name: 'salt',
+      type: ingredientType.condiment,
+      season: [],
+    };
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('shows correct ingredient name after first ingredient is removed', async () => {
+      const props: RecipeIngredientsProps = {
+        mode: 'editable',
+        testID: 'KeyStabilityTest',
+        ingredients: [ingredientA, ingredientB],
+        prefixText: 'Ingredients',
+        columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
+        onIngredientChange: mockOnIngredientChange,
+        onAddIngredient: mockOnAddIngredient,
+        noteInputPlaceholder: 'Note',
+      };
+
+      const { getByTestId, rerender } = await renderRecipeIngredients(props);
+
+      expect(
+        getByTestId('KeyStabilityTest::0::NameInput::TextInputWithDropdown::Value').props.children
+      ).toEqual('flour');
+      expect(
+        getByTestId('KeyStabilityTest::1::NameInput::TextInputWithDropdown::Value').props.children
+      ).toEqual('salt');
+
+      rerender(
+        <RecipeDatabaseProvider>
+          <RecipeIngredients {...props} ingredients={[ingredientB]} />
+        </RecipeDatabaseProvider>
+      );
+
+      await waitFor(() => {
+        expect(
+          getByTestId('KeyStabilityTest::0::NameInput::TextInputWithDropdown::Value').props.children
+        ).toEqual('salt');
+      });
+
+      expect(mockOnIngredientChange).not.toHaveBeenCalled();
+    });
+  });
+
   describe('add mode', () => {
     const mockOnIngredientChange = jest.fn();
     const mockOnAddIngredient = jest.fn();
