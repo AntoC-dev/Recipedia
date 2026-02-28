@@ -94,7 +94,7 @@ export function HorizontalList(props: HorizontalListProps) {
    */
   function renderItem(item: string, index: number) {
     return (
-      <View key={index} style={viewButtonStyles.viewContainingButton}>
+      <View key={item} style={viewButtonStyles.viewContainingButton}>
         {props.propType === 'Tag' ? (
           <TagButton
             testID={props.testID + `::${index}`}

@@ -47,6 +47,22 @@ describe('HorizontalList', () => {
     });
   });
 
+  describe('key stability', () => {
+    test('shows correct tag content after first tag is removed', () => {
+      const { getByTestId, rerender } = render(
+        <HorizontalList propType='Tag' item={['Alpha', 'Beta', 'Gamma']} testID='test-list' />
+      );
+
+      expect(getByTestId('test-list::0::Chip::Children').props.children).toBe('Alpha');
+      expect(getByTestId('test-list::1::Chip::Children').props.children).toBe('Beta');
+
+      rerender(<HorizontalList propType='Tag' item={['Beta', 'Gamma']} testID='test-list' />);
+
+      expect(getByTestId('test-list::0::Chip::Children').props.children).toBe('Beta');
+      expect(getByTestId('test-list::1::Chip::Children').props.children).toBe('Gamma');
+    });
+  });
+
   describe('Image mode', () => {
     const imageProps = {
       propType: 'Image' as const,
