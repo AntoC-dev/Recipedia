@@ -140,6 +140,26 @@ describe('RecipeTags Component', () => {
         expect(getByTestId('RecipeTags::List::0::TextInputWithDropdown::OnValidate')).toBeTruthy();
       });
 
+      it('calls addNewTag exactly once and preserves second input when first is validated', async () => {
+        const { getByTestId } = await renderRecipeTags(defaultProps);
+
+        fireEvent.press(getByTestId('RecipeTags::RoundButton::OnPressFunction'));
+        fireEvent.press(getByTestId('RecipeTags::RoundButton::OnPressFunction'));
+
+        await waitFor(() =>
+          expect(getByTestId('RecipeTags::List::0::TextInputWithDropdown::OnValidate')).toBeTruthy()
+        );
+        await waitFor(() =>
+          expect(getByTestId('RecipeTags::List::1::TextInputWithDropdown::OnValidate')).toBeTruthy()
+        );
+
+        fireEvent.press(getByTestId('RecipeTags::List::0::TextInputWithDropdown::OnValidate'));
+
+        expect(addNewTagMock).toHaveBeenCalledTimes(1);
+        expect(addNewTagMock).toHaveBeenCalledWith('Test string');
+        expect(getByTestId('RecipeTags::List::1::TextInputWithDropdown::OnValidate')).toBeTruthy();
+      });
+
       it('calls addNewTag callback when a new tag is validated and removes the input', async () => {
         const { getByTestId, queryByTestId } = await renderRecipeTags(defaultProps);
 
