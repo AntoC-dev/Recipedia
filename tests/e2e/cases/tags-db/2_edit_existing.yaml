@@ -14,35 +14,20 @@ tags:
 
 - waitForAnimationToEnd
 
-- scrollUntilVisible:
-    element:
-      id: "TagsSettings::6::TagName"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Action - Scroll to Italian tag"
-
-- waitForAnimationToEnd
+- runFlow:
+    file: "../../flows/parameters/searchInSettingsList.yaml"
+    env:
+      SETTINGS_SCREEN: "TagsSettings"
+      SEARCH_QUERY: "Italian"
+    label: "Action - Search for Italian tag"
 
 - assertVisible:
-    id: "TagsSettings::6::TagName"
+    id: "TagsSettings::0::TagName"
     text: "Italian"
     label: "Assert - Verify Italian tag exists"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "TagsSettings::6::EditButton"
-    direction: DOWN
-    speed: 40
-    centerElement: true
-    label: "Action - Scroll to Italian tag edit button"
-
-- waitForAnimationToEnd
-
 - tapOn:
-    id: "TagsSettings::6::EditButton"
+    id: "TagsSettings::0::EditButton"
     label: "Action - Open edit dialog for Italian tag"
 
 - runFlow:
@@ -94,7 +79,7 @@ tags:
     label: "Action - Save edited tag"
 
 - assertVisible:
-    id: "TagsSettings::6::TagName"
+    id: "TagsSettings::0::TagName"
     text: "Italian Cuisine"
     label: "Assert - Verify tag renamed to Italian Cuisine"
 

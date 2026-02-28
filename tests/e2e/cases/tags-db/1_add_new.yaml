@@ -69,18 +69,15 @@ tags:
 
 - waitForAnimationToEnd
 
-- scrollUntilVisible:
-    element:
-      text: "TestTag"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Action - Scroll to new tag"
-
-- waitForAnimationToEnd
+- runFlow:
+    file: "../../flows/parameters/searchInSettingsList.yaml"
+    env:
+      SETTINGS_SCREEN: "TagsSettings"
+      SEARCH_QUERY: "TestTag"
+    label: "Action - Search for new tag"
 
 - assertVisible:
-    id: "TagsSettings::15::TagName"
+    id: "TagsSettings::0::TagName"
     text: "TestTag"
     label: "Assert - Verify new tag displayed in list"
 
