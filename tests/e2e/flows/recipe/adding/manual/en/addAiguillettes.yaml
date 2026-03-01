@@ -162,7 +162,6 @@ appId: "com.recipedia"
     timeout: 30000
     label: "Wait for the autocomplete list to appear"
 
-
 - runFlow:
     when:
       platform: Android
@@ -177,7 +176,6 @@ appId: "com.recipedia"
       - tapOn:
           id: "Done"
           label: "Tap Done key to dismiss keyboard on iOS"
-
 
 - swipe:
     start: "50%,50%"
@@ -319,6 +317,12 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd
 
+- tapOn:
+    id: "RecipeIngredients::AddButton::RoundButton"
+    label: "Press the round button of fourth ingredient"
+
+- waitForAnimationToEnd
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::1::QuantityInput"
@@ -329,8 +333,8 @@ appId: "com.recipedia"
 - waitForAnimationToEnd
 
 - tapOn:
-    id: "RecipeIngredients::1::QuantityInput"
-    label: "Press the TextInput of second ingredient's quantity"
+    id: "RecipeIngredients::2::QuantityInput"
+    label: "Press the TextInput of third ingredient's quantity"
 
 - runFlow:
     file: "../../../../waitForKeyboardNumeric.yaml"
@@ -338,13 +342,13 @@ appId: "com.recipedia"
 
 - inputText:
     text: "2"
-    label: "Enter text for recipe second ingredient quantity"
+    label: "Enter text for recipe third ingredient quantity"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
 - tapOn:
-    id: "RecipeIngredients::1::NameInput::CustomTextInput"
+    id: "RecipeIngredients::2::NameInput::CustomTextInput"
     label: "Press the TextInput of second ingredient's name"
 
 - runFlow:
@@ -353,7 +357,7 @@ appId: "com.recipedia"
 
 - inputText:
     text: "Oni"
-    label: "Enter text for recipe second ingredient name (partial)"
+    label: "Enter text for recipe third ingredient name (partial)"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
@@ -365,7 +369,7 @@ appId: "com.recipedia"
       - hideKeyboard:
           label: "Dismiss keyboard on Android"
       - tapOn:
-          id: "RecipeIngredients::1::NameInput::AutocompleteItem::Onions"
+          id: "RecipeIngredients::2::NameInput::AutocompleteItem::Onions"
           label: "Press the ingredient from the dropdown"
       - runFlow:
           file: "../../../../waitForKeyboardDismiss.yaml"
@@ -396,31 +400,15 @@ appId: "com.recipedia"
           label: "Wait for validation dialog to disappear"
 
 - tapOn:
-    id: "RecipeIngredients::AddButton::RoundButton"
-    label: "Press the round button of third ingredient"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::AddButton::RoundButton"
-    direction: DOWN
-    speed: 20
-    centerElement: true
-    label: "Scroll to ingredient's add a button to ensure second ingredient is visible"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipeIngredients::2::NameInput::CustomTextInput"
-    label: "Press the TextInput of third ingredient's name"
+    id: "RecipeIngredients::3::NameInput::CustomTextInput"
+    label: "Press the TextInput of fourth ingredient's name"
 
 - runFlow:
     file: "../../../../waitForKeyboard.yaml"
     label: "Wait for keyboard to appear"
 
 - tapOn:
-    id: "RecipeIngredients::2::Unit"
+    id: "RecipeIngredients::3::Unit"
     label: "Tap on third ingredient's unit to close the keyboard"
 
 - runFlow:
@@ -428,18 +416,18 @@ appId: "com.recipedia"
     label: "Wait for keyboard to dismiss"
 
 - tapOn:
-    id: "RecipeIngredients::2::NameInput::AutocompleteItem::Avocado"
+    id: "RecipeIngredients::3::NameInput::AutocompleteItem::Avocado"
     label: "Press the ingredient from the dropdown"
 
 - extendedWaitUntil:
     notVisible:
-      id: "RecipeIngredients::2::NameInput::AutocompleteItem::Avocado"
+      id: "RecipeIngredients::3::NameInput::AutocompleteItem::Avocado"
     timeout: 30000
     label: "Wait for autocomplete list to disappear"
 
 - tapOn:
-    id: "RecipeIngredients::2::QuantityInput"
-    label: "Press the TextInput of third ingredient's quantity"
+    id: "RecipeIngredients::3::QuantityInput"
+    label: "Press the TextInput of fourth ingredient's quantity"
 
 - runFlow:
     file: "../../../../waitForKeyboardNumeric.yaml"
@@ -454,6 +442,67 @@ appId: "com.recipedia"
 - runFlow:
     file: "../../../../waitForKeyboardNumericDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::1::QuantityInput"
+    direction: UP
+    speed: 10
+    centerElement: true
+    label: "Scroll up to ensure second ingredient's quantity input is visible"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "RecipeIngredients::1::NameInput::CustomTextInput"
+    label: "Press the TextInput of second ingredient's name"
+
+- runFlow:
+    file: "../../../../waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
+- inputText:
+    text: "Non-existing-ingredient"
+    label: "Enter text for recipe second ingredient name (non-existing)"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - pressKey: "ENTER"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- runFlow:
+    file: "../../../../waitForKeyboardDismiss.yaml"
+    label: "Wait for numeric keyboard to disappear"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "RecipeValidation::ValidationQueue::Ingredient::SimilarityDialog::Title"
+    label: "Assert - Similarity dialog is visible"
+
+- tapOn:
+    id: "RecipeValidation::ValidationQueue::Ingredient::SimilarityDialog::CancelButton"
+    label: "Tap on the cancel button of similarity dialog"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "RecipeIngredients::3::NameInput::CustomTextInput"
+    timeout: 30000
+    label: "Wait for fourth ingredient to disappear (second one has been removed)"
 
 - scrollUntilVisible:
     element:
