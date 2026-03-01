@@ -38,6 +38,7 @@ tags:
     label: "Action - Confirm deleting tag"
 
 - assertNotVisible:
+    id: "TagsSettings::.*::DeleteButton"
     text: "TestTag"
     label: "Assert - Verify tag removed from list"
 

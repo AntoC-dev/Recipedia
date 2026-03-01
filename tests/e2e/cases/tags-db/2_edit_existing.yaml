@@ -78,14 +78,15 @@ tags:
     id: "TagsSettings::ItemDialog::EditModal::ConfirmButton"
     label: "Action - Save edited tag"
 
+- assertNotVisible:
+    id: "TagsSettings::0::TagName"
+    text: "Italian"
+    label: "Assert - Verify old tag name no longer exists"
+
 - assertVisible:
     id: "TagsSettings::0::TagName"
     text: "Italian Cuisine"
     label: "Assert - Verify tag renamed to Italian Cuisine"
-
-- assertNotVisible:
-    text: "Italian"
-    label: "Assert - Verify old tag name no longer exists"
 
 - runFlow:
     file: "../../flows/parameters/tags/returnToHome.yaml"
