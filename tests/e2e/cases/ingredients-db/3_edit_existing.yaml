@@ -118,14 +118,15 @@ tags:
 
 - waitForAnimationToEnd
 
+- assertNotVisible:
+    id: "IngredientsSettings::0::IngredientName"
+    text: "Lettuce"
+    label: "Assert - Verify old ingredient name no longer exists"
+
 - assertVisible:
     id: "IngredientsSettings::0::IngredientName"
     text: "Lettuce Edited"
     label: "Assert - Verify ingredient renamed to Lettuce Edited"
-
-- assertNotVisible:
-    text: "Lettuce"
-    label: "Assert - Verify old ingredient name no longer exists"
 
 - runFlow:
     file: "../../flows/parameters/ingredients/returnToHome.yaml"
