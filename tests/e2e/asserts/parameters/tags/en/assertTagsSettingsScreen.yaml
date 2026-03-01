@@ -34,6 +34,19 @@ appId: "com.recipedia"
     text: "Delete"
     label: "Delete button for Breakfast is displayed"
 
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "TagsSettings::1::TagName"
+    direction: DOWN
+    speed: 40
+    timeout: 3000
+    centerElement: true
+    label: "Scroll to find first tag"
+
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "TagsSettings::1::TagName"
     text: "Chocolate"
@@ -49,6 +62,15 @@ appId: "com.recipedia"
     text: "Delete"
     label: "Delete button for Chocolate is displayed"
 
+- scrollUntilVisible:
+    element:
+      id: "TagsSettings::1::TagName"
+    direction: DOWN
+    speed: 40
+    timeout: 3000
+    centerElement: true
+    label: "Scroll to find second tag"
+
 - assertVisible:
     id: "TagsSettings::2::TagName"
     text: "Dessert"
@@ -63,6 +85,19 @@ appId: "com.recipedia"
     id: "TagsSettings::2::DeleteButton-text"
     text: "Delete"
     label: "Delete button for Dessert is displayed"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "TagsSettings::3::TagName"
+    direction: DOWN
+    speed: 40
+    timeout: 3000
+    centerElement: true
+    label: "Scroll to find third tag"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "TagsSettings::3::TagName"
