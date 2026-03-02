@@ -419,6 +419,29 @@ describe('useRecipeTags', () => {
 
       expect(result.current.form.state.recipeTags).toHaveLength(0);
     });
+
+    test('removes multiple tags when removeTag is called in the same act', async () => {
+      const wrapper = createTagsWrapper(createMockRecipeProp('edit', recipeWithTags));
+
+      const { result } = renderHook(
+        () => ({
+          tags: useRecipeTags(),
+          form: useRecipeForm(),
+        }),
+        { wrapper }
+      );
+
+      await waitFor(() => {
+        expect(result.current.form.state.recipeTags).toHaveLength(2);
+      });
+
+      act(() => {
+        result.current.tags.removeTag('Italian');
+        result.current.tags.removeTag('Dinner');
+      });
+
+      expect(result.current.form.state.recipeTags).toHaveLength(0);
+    });
   });
 
   describe('addTagIfNotDuplicate', () => {

@@ -113,6 +113,7 @@ export function TextInputWithDropDown({
   const [textInput, setTextInput] = useState(value ?? '');
   const [showDropdown, setShowDropdown] = useState(false);
   const [dropdownLayout, setDropdownLayout] = useState({ top: 0, left: 0, width: 0 });
+  const isSelectingRef = useRef(false);
 
   useEffect(() => {
     if (value !== prevValueRef.current) {
@@ -182,11 +183,16 @@ export function TextInputWithDropDown({
   function handleSelect(text: string) {
     setTextInput(text);
     setShowDropdown(false);
+    isSelectingRef.current = true;
     Keyboard.dismiss();
     onValidate?.(text);
   }
 
   function handleEndEditing() {
+    if (isSelectingRef.current) {
+      isSelectingRef.current = false;
+      return;
+    }
     onValidate?.(textInput);
   }
 

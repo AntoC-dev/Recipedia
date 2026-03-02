@@ -186,10 +186,47 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
   };
 
   /**
+   * Replaces the ingredient at the given index in-place, merging with a duplicate
+   * at another index if the new ingredient's name already exists elsewhere.
+   *
+   * Merge rules (same as addOrMergeIngredient):
+   * - Same unit → sum quantities, keep note
+   * - Different unit → overwrite the duplicate slot
+   * The duplicate slot is then removed.
+   *
+   * @param index - Index of the ingredient to replace
+   * @param ingredient - The new ingredient data to place at that index
+   */
+  const replaceIngredientAtIndex = (index: number, ingredient: ingredientTableElement) => {
+    setRecipeIngredients(prev => {
+      const updated = [...prev];
+      const duplicateIndex = updated.findIndex(
+        (ing, i) => i !== index && ing.name?.toLowerCase() === ingredient.name.toLowerCase()
+      );
+      if (duplicateIndex !== -1) {
+        const existing = updated[duplicateIndex];
+        if (existing.unit === ingredient.unit) {
+          updated[index] = {
+            ...ingredient,
+            quantity: String(Number(existing.quantity || 0) + Number(ingredient.quantity || 0)),
+            note: ingredient.note || existing.note,
+          };
+        } else {
+          updated[index] = ingredient;
+        }
+        updated.splice(duplicateIndex, 1);
+      } else {
+        updated[index] = ingredient;
+      }
+      return updated;
+    });
+  };
+
+  /**
    * Edits an existing ingredient at the specified index.
    *
    * Parses the new ingredient string and determines the appropriate action:
-   * - If the name changes, removes the old ingredient and triggers validation
+   * - If the name changes, replaces the slot in-place and triggers validation
    *   workflow to check for similar ingredients in the database
    * - If only quantity/unit/note changes, updates the ingredient in place
    *
@@ -268,8 +305,6 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
       recipeIngredients[oldIngredientId] &&
       recipeIngredients[oldIngredientId].name !== newName
     ) {
-      setRecipeIngredients(prev => prev.filter((_, index) => index !== oldIngredientId));
-
       const { exactMatches, needsValidation } = processIngredientsForValidation(
         [
           {
@@ -284,14 +319,17 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
       );
 
       if (exactMatches.length > 0) {
-        exactMatches.forEach(addOrMergeIngredient);
+        replaceIngredientAtIndex(oldIngredientId, exactMatches[0]);
       }
 
       if (needsValidation.length > 0) {
         setValidationQueue({
           type: 'Ingredient',
           items: needsValidation,
-          onValidated: (_, validatedIngredient) => addOrMergeIngredient(validatedIngredient),
+          onValidated: (_, validatedIngredient) =>
+            replaceIngredientAtIndex(oldIngredientId, validatedIngredient),
+          onDismissed: () =>
+            setRecipeIngredients(prev => prev.filter((_, i) => i !== oldIngredientId)),
         });
       }
     } else {

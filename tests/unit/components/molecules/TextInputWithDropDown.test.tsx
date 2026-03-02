@@ -172,6 +172,30 @@ describe('TextInputWithDropDown Component', () => {
   });
 
   describe('item selection', () => {
+    test('calls onValidate exactly once when endEditing fires after dropdown selection', async () => {
+      const { getByTestId } = render(<TextInputWithDropDown {...defaultProps} />);
+
+      const input = getByTestId('TextInputWithDropDown::CustomTextInput');
+      await act(async () => {
+        fireEvent.changeText(input, 'past');
+      });
+
+      await waitFor(() =>
+        expect(getByTestId('TextInputWithDropDown::AutocompleteItem::Pasta')).toBeTruthy()
+      );
+
+      await act(async () => {
+        fireEvent.press(getByTestId('TextInputWithDropDown::AutocompleteItem::Pasta'));
+      });
+
+      await act(async () => {
+        fireEvent(input, 'endEditing');
+      });
+
+      expect(mockOnValidate).toHaveBeenCalledTimes(1);
+      expect(mockOnValidate).toHaveBeenCalledWith('Pasta');
+    });
+
     test('selects item and calls onValidate when pressing dropdown item', async () => {
       const { getByTestId, queryByTestId } = render(<TextInputWithDropDown {...defaultProps} />);
 

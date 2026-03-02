@@ -134,7 +134,7 @@ export function useRecipeTags(): UseRecipeTagsReturn {
    * @param tagName - The exact name of the tag to remove
    */
   const removeTag = (tagName: string) => {
-    setRecipeTags(recipeTags.filter(tagElement => tagElement.name !== tagName));
+    setRecipeTags(prev => prev.filter(tagElement => tagElement.name !== tagName));
   };
 
   return {

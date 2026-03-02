@@ -348,7 +348,7 @@ function EditableIngredients(props: EditableIngredientsProps) {
 
           return (
             <DataTable.Row
-              key={index}
+              key={item.id ?? index}
               testID={`${testID}::${index}::Row`}
               style={{ borderBottomWidth: 0 }}
               accessible={false}
@@ -418,9 +418,12 @@ function EditableIngredients(props: EditableIngredientsProps) {
                   dense
                   mode='flat'
                   hideDropdown={hideDropdown}
-                  onValidate={newName =>
-                    handleIngredientChange(index, quantity, item.unit ?? '', newName, item.note)
-                  }
+                  onValidate={newName => {
+                    if (!newName || newName.trim().length === 0) {
+                      return;
+                    }
+                    handleIngredientChange(index, quantity, item.unit ?? '', newName, item.note);
+                  }}
                   style={recipeTableStyles.inputContainer}
                   right={
                     <TextInput.Icon

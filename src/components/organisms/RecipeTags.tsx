@@ -147,8 +147,11 @@ export function RecipeTags(tagsProps: RecipeTagProps) {
                   referenceTextArray={allTagsNamesSorted}
                   hideDropdown={tagsProps.hideDropdown}
                   onValidate={(newText: string) => {
+                    if (!newText || newText.trim().length === 0) {
+                      return;
+                    }
                     tagsProps.addNewTag(newText);
-                    setNewTags(newTags.filter(itemToFilter => itemToFilter !== item));
+                    setNewTags(prev => prev.filter(itemToFilter => itemToFilter !== item));
                   }}
                 />
               </View>
@@ -171,8 +174,8 @@ export function RecipeTags(tagsProps: RecipeTagProps) {
                   size={'medium'}
                   icon={Icons.plusIcon}
                   onPressFunction={() => {
-                    setNewTags([...newTags, tagsAddedCounter]);
-                    setTagsAddedCounter(tagsAddedCounter + 1);
+                    setNewTags(prev => [...prev, tagsAddedCounter]);
+                    setTagsAddedCounter(prev => prev + 1);
                   }}
                 />
               </View>
