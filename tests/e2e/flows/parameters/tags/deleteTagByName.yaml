@@ -3,16 +3,12 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd
 
-- scrollUntilVisible:
-    element:
-      text: "${TAG_NAME}"
-    direction: DOWN
-    speed: 60
-    timeout: 120000
-    centerElement: true
-    label: "Scroll to find ${TAG_NAME} tag"
-
-- waitForAnimationToEnd
+- runFlow:
+    file: "../searchInSettingsList.yaml"
+    env:
+      SETTINGS_SCREEN: "IngredientsSettings"
+      SEARCH_QUERY: "${TAG_NAME}"
+    label: "Action - Search for ${TAG_NAME} ingredient"
 
 - assertVisible:
     id: "TagsSettings::${TAG_INDEX}::TagName"
