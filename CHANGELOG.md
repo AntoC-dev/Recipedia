@@ -1,3 +1,14 @@
+## [2.18.2](https://github.com/AntoC-dev/Recipedia/compare/v2.18.1...v2.18.2) (2026-03-02)
+
+### Bug Fixes
+
+* correct tag and ingredient editing bugs in recipe form ([#206](https://github.com/AntoC-dev/Recipedia/issues/206)) ([51490a9](https://github.com/AntoC-dev/Recipedia/commit/51490a98b9251f5fec8dc69096cba99659a86a23))
+* **HorizontalList:** use item content as React key instead of index ([dae5d95](https://github.com/AntoC-dev/Recipedia/commit/dae5d95c1187366d5031ee369da19d69668e6171))
+* **RecipeIngredients:** stable row key and guard empty-name validation ([8d68b4c](https://github.com/AntoC-dev/Recipedia/commit/8d68b4c5b0f436652cd3f614cf2d41a611a108e2))
+* **RecipeTags, useRecipeTags:** guard empty tag and fix stale setState closures ([e873bf5](https://github.com/AntoC-dev/Recipedia/commit/e873bf5003932a83438a4fb43c1be30c90fa1dec))
+* **TextInputWithDropDown:** prevent double onValidate fire on dropdown select ([d128efc](https://github.com/AntoC-dev/Recipedia/commit/d128efc25d986686e078fbdcee52e263b9d7f3dc))
+* **useRecipeIngredients:** preserve slot on edit, remove on validation dismiss ([17810da](https://github.com/AntoC-dev/Recipedia/commit/17810da725930db376578c6e12555858e785d0d9))
+
 ## [2.18.1](https://github.com/AntoC-dev/Recipedia/compare/v2.18.0...v2.18.1) (2026-02-27)
 
 ### Bug Fixes
