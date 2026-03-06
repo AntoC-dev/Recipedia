@@ -19,7 +19,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '22'
+          node-version: '24'
           cache: 'npm'
       - run: npm ci
       - name: Validate commit messages
@@ -34,7 +34,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: '22'
+          node-version: '24'
           cache: 'npm'
       - run: npm ci
       - name: Cache node modules
@@ -56,7 +56,7 @@ jobs:
           key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
       - uses: actions/setup-node@v6
         with:
-          node-version: '22'
+          node-version: '24'
       - name: Run ESLint
         run: npm run lint
       - name: Upload ESLint results
@@ -79,7 +79,7 @@ jobs:
           key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
       - uses: actions/setup-node@v6
         with:
-          node-version: '22'
+          node-version: '24'
       - name: Check Prettier formatting
         run: npm run format:check
 
@@ -96,7 +96,7 @@ jobs:
           key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
       - uses: actions/setup-node@v6
         with:
-          node-version: '22'
+          node-version: '24'
       - name: Run TypeScript check
         run: npm run typecheck
 
@@ -113,7 +113,7 @@ jobs:
           key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
       - uses: actions/setup-node@v6
         with:
-          node-version: '22'
+          node-version: '24'
       - name: Run Expo Doctor
         run: npm run expo:doctor
 
@@ -130,7 +130,7 @@ jobs:
           key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
       - uses: actions/setup-node@v6
         with:
-          node-version: '22'
+          node-version: '24'
       - name: Security audit
         uses: oke-py/npm-audit-action@v3
         with:
@@ -152,7 +152,7 @@ jobs:
           key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
       - uses: actions/setup-node@v6
         with:
-          node-version: '22'
+          node-version: '24'
       - name: Build documentation
         run: npm run docs:build
 
