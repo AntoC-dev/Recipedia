@@ -33,3 +33,7 @@ appId: "com.recipedia"
       id: "RecipeTitle::CustomTextInput"
     timeout: 60000
     label: "Wait for title to be populated by OCR"
+
+- runFlow:
+    file: ../cleanAndResume.yaml
+    label: "Delete title image from gallery and return to Recipedia"

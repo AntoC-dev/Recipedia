@@ -1,6 +1,5 @@
 appId: "com.recipedia"
 ---
-
 - waitForAnimationToEnd
 
 - scrollUntilVisible:
@@ -46,3 +45,7 @@ appId: "com.recipedia"
       id: "RecipeDescription::CustomTextInput"
     timeout: 30000
     label: "Wait for description to be populated by OCR"
+
+- runFlow:
+    file: ../cleanAndResume.yaml
+    label: "Delete description image from gallery and return to Recipedia"

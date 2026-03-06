@@ -31,8 +31,6 @@ appId: "com.recipedia"
     when:
       platform: iOS
 
-- evalScript: ${output.modalImageCounter = 1}
-
 - runFlow:
     file: ../android/selectMostRecentFromModal.yaml
     label: "Select title from modal for OCR"

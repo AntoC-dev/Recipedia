@@ -9,7 +9,7 @@ appId: "com.recipedia"
 # Determine expected thumbnail index to check
 # If modalImageCounter is not set (first image), check index 0
 # If modalImageCounter = N, check index N (means N+1 total images expected)
-- evalScript: ${output.expectedThumbnailIndex = output.modalImageCounter ?? 0}
+- evalScript: ${output.expectedThumbnailIndex = output.modalImageCounter}
 - evalScript: ${output.galleryReady = false}
 - evalScript: ${output.retryCount = 0}
 
@@ -58,6 +58,5 @@ appId: "com.recipedia"
           when:
             visible:
               id: "icon_thumbnail"
-              index: ${output.expectedThumbnailIndex}
           commands:
             - evalScript: ${output.galleryReady = true}

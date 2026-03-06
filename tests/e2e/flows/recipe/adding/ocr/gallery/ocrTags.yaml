@@ -1,6 +1,5 @@
 appId: "com.recipedia"
 ---
-
 - waitForAnimationToEnd
 
 - scrollUntilVisible:
@@ -58,3 +57,7 @@ appId: "com.recipedia"
       id: "RecipeTags::0::Chip"
     timeout: 30000
     label: "Wait for first tag to be populated by OCR"
+
+- runFlow:
+    file: ../cleanAndResume.yaml
+    label: "Delete tags image from gallery and return to Recipedia"

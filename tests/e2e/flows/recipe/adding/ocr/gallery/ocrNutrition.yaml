@@ -1,6 +1,5 @@
 appId: "com.recipedia"
 ---
-
 - waitForAnimationToEnd
 
 - scrollUntilVisible:
@@ -79,3 +78,7 @@ appId: "com.recipedia"
 - runFlow:
     file: "../../../../waitForKeyboardNumericDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"
+
+- runFlow:
+    file: ../cleanAndResume.yaml
+    label: "Delete nutrition image from gallery and return to Recipedia"
