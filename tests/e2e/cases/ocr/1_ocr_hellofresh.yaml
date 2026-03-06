@@ -13,7 +13,6 @@ tags:
 
 - evalScript: ${output.isDescriptionToOCR = true}
 - evalScript: ${output.isTagsToOCR = true}
-- evalScript: ${output.isPersons = false}
 - evalScript: ${output.isTime = false}
 - evalScript: ${output.isNutritionToOCR = false}
 

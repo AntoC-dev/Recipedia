@@ -126,7 +126,7 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeIngredients::OpenModal::RoundButton"
+      id: "RecipeIngredients::OpenModalNames::RoundButton"
     direction: DOWN
     speed: 60
     centerElement: true
@@ -139,7 +139,7 @@ appId: "com.recipedia"
     label: "Section Ingredients is rendered"
 
 - assertVisible:
-    id: "RecipeIngredients::OpenModal::RoundButton"
+    id: "RecipeIngredients::OpenModalNames::RoundButton"
     label: "OCR button for the ingredients is rendered"
 
 - assertVisible:
