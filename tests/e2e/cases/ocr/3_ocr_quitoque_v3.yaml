@@ -32,13 +32,12 @@ tags:
 
 - waitForAnimationToEnd
 
-- scrollUntilVisible:
-    element:
-      id: "RecipeImage::RoundButton"
-    direction: UP
-    speed: 85
-    timeout: 120000
-    label: "Action - Scroll back to top"
+  element:
+    id: "RecipeImage::RoundButton"
+  direction: UP
+  speed: 85
+  timeout: 120000
+  label: "Action - Scroll back to top"
 
 - waitForAnimationToEnd
 
