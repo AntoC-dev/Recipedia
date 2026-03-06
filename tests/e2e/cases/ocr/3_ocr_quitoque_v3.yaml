@@ -32,12 +32,14 @@ tags:
 
 - waitForAnimationToEnd
 
-  element:
-    id: "RecipeImage::RoundButton"
-  direction: UP
-  speed: 85
-  timeout: 120000
-  label: "Action - Scroll back to top"
+- scrollUntilVisible:
+    element:
+      id: "RecipeImage::RoundButton"
+    direction: UP
+    speed: 85
+    timeout: 120000
+    centerElement: true
+    label: "Scroll back to top after OCR"
 
 - waitForAnimationToEnd
 
