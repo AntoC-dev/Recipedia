@@ -1,22 +1,21 @@
 appId: "com.recipedia"
 ---
-
 - waitForAnimationToEnd
 
 - runFlow:
     file: "../searchInSettingsList.yaml"
     env:
-      SETTINGS_SCREEN: "IngredientsSettings"
+      SETTINGS_SCREEN: "TagsSettings"
       SEARCH_QUERY: "${TAG_NAME}"
     label: "Action - Search for ${TAG_NAME} ingredient"
 
 - assertVisible:
-    id: "TagsSettings::${TAG_INDEX}::TagName"
+    id: "TagsSettings::0::TagName"
     text: "${TAG_NAME}"
     label: "Verify ${TAG_NAME} tag exists in database"
 
 - tapOn:
-    id: "TagsSettings::${TAG_INDEX}::DeleteButton"
+    id: "TagsSettings::0::DeleteButton"
     label: "Open delete tag dialog"
 
 - tapOn:
@@ -24,5 +23,6 @@ appId: "com.recipedia"
     label: "Confirm tag deletion"
 
 - assertNotVisible:
+    id: "TagsSettings::.*::TagName"
     text: "${TAG_NAME}"
     label: "Verify ${TAG_NAME} tag removed from list"

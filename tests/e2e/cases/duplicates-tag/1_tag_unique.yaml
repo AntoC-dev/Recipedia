@@ -74,7 +74,6 @@ tags:
     id: "Recipe::AppBar::BackButton"
     label: "Cleanup - Exit recipe creation without saving"
 
-
 - runFlow:
     file: "../../flows/parameters/tags/navigateToTagsSettings.yaml"
     label: "Cleanup - Navigate to Tags Settings"
@@ -83,7 +82,6 @@ tags:
     file: "../../flows/parameters/tags/deleteTagByName.yaml"
     env:
       TAG_NAME: "BreakfastSpecialEdited"
-      TAG_INDEX: "1"
     label: "Cleanup - Delete BreakfastSpecialEdited tag"
 
 - runFlow:
