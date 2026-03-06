@@ -1,5 +1,6 @@
 appId: "com.recipedia"
 ---
+- evalScript: ${output.modalImageCounter = 1}
 
 - waitForAnimationToEnd
 
@@ -58,3 +59,15 @@ appId: "com.recipedia"
       id: "RecipeTags::0::Chip"
     timeout: 30000
     label: "Wait for first tag to be populated by OCR"
+
+- runFlow:
+    file: ../android/deleteLastMedia.yaml
+    when:
+      platform: Android
+    label: "Delete tags image from Android gallery"
+
+- runFlow:
+    file: ../iOS/deleteLastMedia.yaml
+    when:
+      platform: iOS
+    label: "Delete tags image from iOS Photos"
