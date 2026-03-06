@@ -143,8 +143,18 @@ appId: "com.recipedia"
     label: "OCR button for the ingredients is rendered"
 
 - assertVisible:
+    id: "RecipeIngredients::OpenModalNames::RoundButton::Label"
+    text: "Scan names"
+    label: "Scan names button label is rendered"
+
+- assertVisible:
     id: "RecipeIngredients::AddButton::RoundButton"
     label: "OCR button for manually adding the ingredients is rendered"
+
+- assertVisible:
+    id: "RecipeIngredients::AddButton::RoundButton::Label"
+    text: "Add manually"
+    label: "Add manually button label is rendered"
 
 - waitForAnimationToEnd
 
