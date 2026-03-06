@@ -1,6 +1,5 @@
 appId: "com.recipedia"
 ---
-
 - waitForAnimationToEnd
 
 - runFlow:
@@ -11,12 +10,12 @@ appId: "com.recipedia"
     label: "Action - Search for ${INGREDIENT_NAME} ingredient"
 
 - assertVisible:
-    id: "TagsSettings::${INGREDIENT_INDEX}::TagName"
+    id: "IngredientsSettings::0::IngredientName"
     text: "${INGREDIENT_NAME}"
     label: "Verify ${INGREDIENT_NAME} ingredient exists in database"
 
 - tapOn:
-    id: "IngredientsSettings::${INGREDIENT_INDEX}::DeleteButton"
+    id: "IngredientsSettings::0::DeleteButton"
     label: "Open delete ingredient dialog"
 
 - tapOn:
@@ -24,5 +23,6 @@ appId: "com.recipedia"
     label: "Confirm ingredient deletion"
 
 - assertNotVisible:
+    id: "IngredientsSettings::0::IngredientName"
     text: "${INGREDIENT_NAME}"
     label: "Verify ${INGREDIENT_NAME} ingredient removed from list"

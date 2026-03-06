@@ -110,7 +110,6 @@ tags:
     id: "Recipe::AppBar::BackButton"
     label: "Cleanup - Exit recipe creation without saving"
 
-
 - runFlow:
     file: "../../flows/parameters/ingredients/navigateToIngredientsSettings.yaml"
     label: "Cleanup - Navigate to Ingredients Settings"
@@ -119,7 +118,6 @@ tags:
     file: "../../flows/parameters/ingredients/deleteIngredientByName.yaml"
     env:
       INGREDIENT_NAME: "Butte"
-      INGREDIENT_INDEX: "2"
     label: "Cleanup - Delete Butte ingredient"
 
 - runFlow:

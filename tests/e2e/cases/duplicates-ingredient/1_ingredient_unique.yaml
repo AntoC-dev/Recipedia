@@ -133,6 +133,12 @@ tags:
     id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::Menu::Button"
     label: "Action - Open type dropdown"
 
+- extendedWaitUntil:
+    visible:
+      text: "Fish"
+    timeout: 3000
+    label: "Wait for type dropdown to appear"
+
 - tapOn:
     text: "Fish"
     label: "Action - Select Fish type"
@@ -170,6 +176,11 @@ tags:
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::SeasonalityCalendar::2"
     label: "Action - Select february for seasonality"
+
+- assertVisible:
+    id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::ConfirmButton"
+    enabled: true
+    label: "Assert - Verify confirm button is enabled"
 
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::ConfirmButton"
