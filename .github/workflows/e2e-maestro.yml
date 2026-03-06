@@ -147,7 +147,7 @@ jobs:
 
       - name: Upload test suite logs
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: maestro-logs-${{ inputs.platform }}-${{ matrix.suite }}.zip
           path: maestro_logs_${{ matrix.suite }}/
@@ -155,7 +155,7 @@ jobs:
 
       - name: Upload JUnit report for suite
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: junit-e2e-${{ inputs.platform }}-${{ matrix.suite }}
           path: report.xml
