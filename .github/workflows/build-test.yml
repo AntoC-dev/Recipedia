@@ -64,7 +64,7 @@ jobs:
           path: .reassure/output.md
 
       - name: Upload Reassure output
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: reassure-output
           path: .reassure/
@@ -100,14 +100,14 @@ jobs:
         if: always()
 
       - name: Upload unit tests summary
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: unit-test-summary
           path: unit-test-summary.md
         if: always()
 
       - name: Upload coverage reports
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-reports
           path: coverage/
@@ -265,7 +265,7 @@ jobs:
 
       - name: Upload merged JUnit report
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: e2e-junit-merged
           path: merged-reports/report.xml
@@ -273,7 +273,7 @@ jobs:
 
       - name: Upload Android Maestro logs
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: maestro-logs-android.zip
           path: maestro-logs-android-merged/
@@ -281,7 +281,7 @@ jobs:
 
       - name: Upload iOS Maestro logs
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: maestro-logs-ios.zip
           path: maestro-logs-ios-merged/
