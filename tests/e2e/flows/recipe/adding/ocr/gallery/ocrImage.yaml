@@ -1,6 +1,5 @@
 appId: "com.recipedia"
 ---
-# First OCR field - initializes the gallery and modal counter
 - runFlow:
     file: ../android/addMedia.yaml
     env:
@@ -49,4 +48,14 @@ appId: "com.recipedia"
     when:
       platform: iOS
 
-- evalScript: ${output.modalImageCounter = 1}
+- runFlow:
+    file: ../android/deleteLastMedia.yaml
+    when:
+      platform: Android
+    label: "Delete recipe image from Android gallery"
+
+- runFlow:
+    file: ../iOS/deleteLastMedia.yaml
+    when:
+      platform: iOS
+    label: "Delete recipe image from iOS Photos"

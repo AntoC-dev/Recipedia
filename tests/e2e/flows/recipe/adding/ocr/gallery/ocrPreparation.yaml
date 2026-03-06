@@ -1,5 +1,6 @@
 appId: "com.recipedia"
 ---
+- evalScript: ${output.modalImageCounter = 1}
 
 - waitForAnimationToEnd
 
@@ -45,3 +46,15 @@ appId: "com.recipedia"
       id: "RecipePreparation::EditableStep::0::Step"
     timeout: 60000
     label: "Wait for first preparation step to be populated by OCR"
+
+- runFlow:
+    file: ../android/deleteLastMedia.yaml
+    when:
+      platform: Android
+    label: "Delete preparation image from Android gallery"
+
+- runFlow:
+    file: ../iOS/deleteLastMedia.yaml
+    when:
+      platform: iOS
+    label: "Delete preparation image from iOS Photos"
