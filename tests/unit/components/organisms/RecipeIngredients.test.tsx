@@ -281,7 +281,7 @@ describe('RecipeIngredients Component', () => {
   describe('add mode', () => {
     const mockOnIngredientChange = jest.fn();
     const mockOnAddIngredient = jest.fn();
-    const mockOpenModal = jest.fn();
+    const mockOpenModalForField = jest.fn();
 
     const addPropsWithIngredients: RecipeIngredientsProps = {
       mode: 'add',
@@ -295,7 +295,7 @@ describe('RecipeIngredients Component', () => {
       },
       onIngredientChange: mockOnIngredientChange,
       onAddIngredient: mockOnAddIngredient,
-      openModal: mockOpenModal,
+      openModalForField: mockOpenModalForField,
       noteInputPlaceholder: 'Usage note',
     };
 
@@ -311,7 +311,7 @@ describe('RecipeIngredients Component', () => {
       },
       onIngredientChange: mockOnIngredientChange,
       onAddIngredient: mockOnAddIngredient,
-      openModal: mockOpenModal,
+      openModalForField: mockOpenModalForField,
       noteInputPlaceholder: 'Usage note',
     };
 
@@ -325,28 +325,40 @@ describe('RecipeIngredients Component', () => {
       expect(getByTestId('AddIngredients::PrefixText').props.children).toEqual('Ingredients');
       expect(getByTestId('AddIngredients::0::Row')).toBeTruthy();
       expect(getByTestId('AddIngredients::AddButton::RoundButton::Icon').props.children).toEqual(
-        'plus'
+        'pencil'
       );
+      expect(getByTestId('AddIngredients::AddButton::RoundButton::Label').props.children).toBe(
+        'recipe.ingredientsAddManually'
+      );
+      expect(
+        getByTestId('AddIngredients::OpenModalQuantities::RoundButton::Label').props.children
+      ).toBe('recipe.ingredientsScanQuantities');
     });
 
-    it('renders OCR and add buttons when ingredients are empty', async () => {
+    it('renders OCR names and add buttons when ingredients are empty', async () => {
       const { getByTestId } = await renderRecipeIngredients(addPropsEmpty);
 
       expect(getByTestId('AddIngredients::PrefixText').props.children).toEqual('Ingredients');
-      expect(getByTestId('AddIngredients::OpenModal::RoundButton::Icon').props.children).toEqual(
-        'line-scan'
-      );
+      expect(
+        getByTestId('AddIngredients::OpenModalNames::RoundButton::Icon').props.children
+      ).toEqual('line-scan');
       expect(getByTestId('AddIngredients::AddButton::RoundButton::Icon').props.children).toEqual(
         'pencil'
       );
+      expect(getByTestId('AddIngredients::OpenModalNames::RoundButton::Label').props.children).toBe(
+        'recipe.ingredientsScanNames'
+      );
+      expect(getByTestId('AddIngredients::AddButton::RoundButton::Label').props.children).toBe(
+        'recipe.ingredientsAddManually'
+      );
     });
 
-    it('calls openModal when OCR button is pressed in empty state', async () => {
+    it('calls openModalForField with ingredientNames when OCR names button is pressed in empty state', async () => {
       const { getByTestId } = await renderRecipeIngredients(addPropsEmpty);
 
-      fireEvent.press(getByTestId('AddIngredients::OpenModal::RoundButton::OnPressFunction'));
+      fireEvent.press(getByTestId('AddIngredients::OpenModalNames::RoundButton::OnPressFunction'));
 
-      expect(mockOpenModal).toHaveBeenCalledTimes(1);
+      expect(mockOpenModalForField).toHaveBeenCalledWith('ingredientNames');
     });
 
     it('calls onAddIngredient when add button is pressed in empty state', async () => {
@@ -355,6 +367,16 @@ describe('RecipeIngredients Component', () => {
       fireEvent.press(getByTestId('AddIngredients::AddButton::RoundButton::OnPressFunction'));
 
       expect(mockOnAddIngredient).toHaveBeenCalledTimes(1);
+    });
+
+    it('calls openModalForField with ingredientQuantities when scan quantities button is pressed in non-empty state', async () => {
+      const { getByTestId } = await renderRecipeIngredients(addPropsWithIngredients);
+
+      fireEvent.press(
+        getByTestId('AddIngredients::OpenModalQuantities::RoundButton::OnPressFunction')
+      );
+
+      expect(mockOpenModalForField).toHaveBeenCalledWith('ingredientQuantities');
     });
   });
 
@@ -614,12 +636,12 @@ describe('RecipeIngredients Component', () => {
         columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
         onIngredientChange: jest.fn(),
         onAddIngredient: jest.fn(),
-        openModal: jest.fn(),
+        openModalForField: jest.fn(),
         noteInputPlaceholder: 'Note',
       };
 
       expect(addProps.mode).toEqual('add');
-      expect(addProps.openModal).toBeDefined();
+      expect(addProps.openModalForField).toBeDefined();
       expect(addProps.noteInputPlaceholder).toBeDefined();
     });
 
@@ -694,7 +716,7 @@ describe('RecipeIngredients Component', () => {
         columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
         onIngredientChange: mockOnIngredientChange,
         onAddIngredient: mockOnAddIngredient,
-        openModal: jest.fn(),
+        openModalForField: jest.fn(),
         noteInputPlaceholder: 'Note',
         hideDropdown: true,
       };

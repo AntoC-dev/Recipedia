@@ -269,7 +269,7 @@ function checkIngredients(
       });
 
       expect(queryByTestId('RecipeIngredients::PrefixText')).toBeNull();
-      expect(queryByTestId('RecipeIngredients::OpenModal')).toBeNull();
+      expect(queryByTestId('RecipeIngredients::OpenModalNames')).toBeNull();
       expect(queryByTestId('RecipeIngredients::AddButton')).toBeNull();
       break;
     case 'edit':
@@ -277,7 +277,7 @@ function checkIngredients(
       expect(getByTestId('RecipeIngredients::AddButton::RoundButton::Icon').props.children).toEqual(
         'plus'
       );
-      expect(queryByTestId('RecipeIngredients::OpenModal')).toBeNull();
+      expect(queryByTestId('RecipeIngredients::OpenModalNames')).toBeNull();
 
       prop.recipe.ingredients.forEach((ingredient, index) => {
         expect(getByTestId(`RecipeIngredients::${index}::Row`)).toBeTruthy();
@@ -299,23 +299,24 @@ function checkIngredients(
       expect(getByTestId('RecipeIngredients::AddButton::RoundButton::Icon').props.children).toEqual(
         'plus'
       );
-      expect(queryByTestId('RecipeIngredients::OpenModal')).toBeNull();
+      expect(queryByTestId('RecipeIngredients::OpenModalNames')).toBeNull();
       break;
     case 'addFromPic':
       expect(getByTestId('RecipeIngredients::PrefixText').props.children).toEqual('ingredients: ');
       if (prop.imgUri.length === 0) {
-        // Empty state: should have both OCR and manual add buttons
         expect(
-          getByTestId('RecipeIngredients::OpenModal::RoundButton::Icon').props.children
+          getByTestId('RecipeIngredients::OpenModalNames::RoundButton::Icon').props.children
         ).toEqual('line-scan');
         expect(
           getByTestId('RecipeIngredients::AddButton::RoundButton::Icon').props.children
         ).toEqual('pencil');
       } else {
-        // With ingredients: should have add button
         expect(
           getByTestId('RecipeIngredients::AddButton::RoundButton::Icon').props.children
         ).toEqual('plus');
+        expect(
+          getByTestId('RecipeIngredients::OpenModalQuantities::RoundButton::Icon').props.children
+        ).toEqual('line-scan');
       }
       break;
   }
