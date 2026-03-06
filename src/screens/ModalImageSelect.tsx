@@ -63,8 +63,7 @@ import { HorizontalList } from '@components/molecules/HorizontalList';
 import { RoundButton } from '@components/atomic/RoundButton';
 import { Icons } from '@assets/Icons';
 import { Modal, Portal, Text, useTheme } from 'react-native-paper';
-import { padding, viewsSplitScreen } from '@styles/spacing';
-import { VariantProp } from 'react-native-paper/lib/typescript/components/Typography/types';
+import { padding } from '@styles/spacing';
 import { useI18n } from '@utils/i18n';
 
 /**
@@ -104,7 +103,6 @@ export function ModalImageSelect({
   const { t } = useI18n();
 
   const { colors } = useTheme();
-  const textVariant: VariantProp<never> = 'titleMedium';
 
   /**
    * Handles camera photo capture within the modal
@@ -153,7 +151,7 @@ export function ModalImageSelect({
       >
         <Text
           testID={testID + '::ExplanationText'}
-          variant={textVariant}
+          variant={'titleMedium'}
           style={{ marginVertical: padding.medium }}
         >
           {t(ocrTranslationsPrefix + 'explanationText')}
@@ -166,29 +164,32 @@ export function ModalImageSelect({
             onSelectFunction(imgPressed);
           }}
         />
-        <View style={[viewsSplitScreen.viewInRow, { marginVertical: padding.veryLarge }]}>
-          <View style={[viewsSplitScreen.splitIn2View, { marginVertical: padding.medium }]}>
-            <RoundButton
-              testID={modalTestID + '::Camera'}
-              onPressFunction={takePhotoInModal}
-              size={'medium'}
-              icon={Icons.cameraIcon}
-            />
-            <Text testID={modalTestID + '::Camera::Text'} variant={textVariant}>
-              {t(ocrTranslationsPrefix + 'photo')}
-            </Text>
-          </View>
-          <View style={[viewsSplitScreen.splitIn2View, { marginVertical: padding.medium }]}>
-            <RoundButton
-              testID={modalTestID + '::Gallery'}
-              onPressFunction={pickImageInModal}
-              size={'medium'}
-              icon={Icons.galleryIcon}
-            />
-            <Text testID={modalTestID + '::Gallery::Text'} variant={textVariant}>
-              {t(ocrTranslationsPrefix + 'gallery')}
-            </Text>
-          </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            marginVertical: padding.veryLarge,
+          }}
+        >
+          <RoundButton
+            testID={modalTestID + '::Camera'}
+            onPressFunction={takePhotoInModal}
+            size={'medium'}
+            icon={Icons.cameraIcon}
+            label={t(ocrTranslationsPrefix + 'photo')}
+            style={{
+              width: '50%',
+            }}
+          />
+          <RoundButton
+            testID={modalTestID + '::Gallery'}
+            onPressFunction={pickImageInModal}
+            size={'medium'}
+            icon={Icons.galleryIcon}
+            label={t(ocrTranslationsPrefix + 'gallery')}
+            style={{
+              width: '50%',
+            }}
+          />
         </View>
       </Modal>
     </Portal>

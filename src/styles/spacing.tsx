@@ -155,19 +155,3 @@ export const scrollView = (margin: number) =>
       marginBottom: margin * remValue,
     },
   });
-
-/**
- * Split-screen and flex layout utilities for responsive design
- * Provides common layout patterns for two-column and row-based layouts
- */
-export const viewsSplitScreen = StyleSheet.create({
-  splitIn2View: {
-    width: '50%',
-    padding: padding.small,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  viewInRow: {
-    flexDirection: 'row',
-  },
-});

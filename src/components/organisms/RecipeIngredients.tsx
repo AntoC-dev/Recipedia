@@ -58,6 +58,8 @@ import {
   formatQuantityForDisplay,
   parseIngredientQuantity,
 } from '@utils/Quantity';
+import { useI18n } from '@utils/i18n';
+import { OcrModalTarget } from '@utils/OCR';
 
 /**
  * Common props shared across all modes
@@ -107,15 +109,15 @@ export type EditableProps = EditableBaseProps & {
 
 /**
  * Props for add mode (OCR)
- * Same as editable mode but with additional OCR button support for empty state
- * Accepts incomplete ingredients (FormIngredientElement) for new ingredients being added
+ * Same as editable mode but with additional OCR button support for empty and non-empty states.
+ * Accepts incomplete ingredients (FormIngredientElement) for new ingredients being added.
  */
 export type AddProps = Omit<EditableBaseProps, 'ingredients'> & {
   mode: 'add';
   /** Array of ingredients, may include incomplete FormIngredientElement for new ingredients */
   ingredients: (ingredientTableElement | FormIngredientElement)[];
-  /** Callback fired to open OCR modal (for empty state) */
-  openModal: () => void;
+  /** Callback fired to open OCR modal for a given field */
+  openModalForField: (field: OcrModalTarget) => void;
 };
 
 /**
@@ -176,6 +178,8 @@ type EditableIngredientsProps = {
   noteInputPlaceholder: string;
   /** Force hide the dropdown (e.g., during scroll) */
   hideDropdown?: boolean;
+  /** Hide the internal add button (used by add mode which renders its own row) */
+  hideAddButton?: boolean;
 };
 
 /**
@@ -257,6 +261,7 @@ function EditableIngredients(props: EditableIngredientsProps) {
     onAddIngredient,
     noteInputPlaceholder,
     hideDropdown,
+    hideAddButton,
   } = props;
   const { ingredients: dbIngredients } = useRecipeDatabase();
   const { colors, fonts } = useTheme();
@@ -441,13 +446,15 @@ function EditableIngredients(props: EditableIngredientsProps) {
         })}
       </DataTable>
 
-      <RoundButton
-        testID={`${testID}::AddButton`}
-        size='medium'
-        icon={Icons.plusIcon}
-        onPressFunction={onAddIngredient}
-        style={recipeTableStyles.addButton}
-      />
+      {!hideAddButton && (
+        <RoundButton
+          testID={`${testID}::AddButton`}
+          size='medium'
+          icon={Icons.plusIcon}
+          onPressFunction={onAddIngredient}
+          style={recipeTableStyles.addButton}
+        />
+      )}
 
       <NoteEditDialog
         testId={testID}
@@ -466,14 +473,17 @@ function EditableIngredients(props: EditableIngredientsProps) {
  * Add mode ingredients component with OCR support.
  *
  * Displays either an empty state with OCR/manual entry buttons, or delegates
- * to EditableIngredients when ingredients already exist. Used during recipe
- * creation via OCR workflow.
+ * to EditableIngredients (plus a scan-quantities button) when ingredients exist.
+ * Used during recipe creation via OCR workflow.
  *
  * Empty state buttons:
- * - Scan icon: Opens OCR modal for image-based ingredient extraction
+ * - Scan icon: Opens OCR modal for scanning ingredient names and units
  * - Pencil icon: Adds a blank ingredient row for manual entry
  *
- * @param props - AddProps including openModal callback for OCR
+ * Non-empty state adds a scan-quantities button below the table so the user
+ * can fill quantities after names have been scanned.
+ *
+ * @param props - AddProps including openModalForField callback
  * @returns JSX element for add mode ingredient management
  */
 function AddIngredients(props: AddProps) {
@@ -481,24 +491,26 @@ function AddIngredients(props: AddProps) {
     testID,
     ingredients,
     prefixText,
-    openModal,
+    openModalForField,
     onAddIngredient,
     columnTitles,
     onIngredientChange,
     noteInputPlaceholder,
     hideDropdown,
   } = props;
+  const { t } = useI18n();
 
   if (ingredients.length === 0) {
     return (
       <PrefixTextWrapper testID={testID} prefixText={prefixText}>
         <View style={recipeTableStyles.roundButtonsContainer}>
           <RoundButton
-            testID={`${testID}::OpenModal`}
+            testID={`${testID}::OpenModalNames`}
             style={recipeTableStyles.roundButton}
             size='medium'
             icon={Icons.scanImageIcon}
-            onPressFunction={openModal}
+            onPressFunction={() => openModalForField('ingredientNames')}
+            label={t('recipe.ingredientsScanNames')}
           />
           <RoundButton
             testID={`${testID}::AddButton`}
@@ -506,6 +518,7 @@ function AddIngredients(props: AddProps) {
             size='medium'
             icon={Icons.pencilIcon}
             onPressFunction={onAddIngredient}
+            label={t('recipe.ingredientsAddManually')}
           />
         </View>
       </PrefixTextWrapper>
@@ -513,16 +526,37 @@ function AddIngredients(props: AddProps) {
   }
 
   return (
-    <EditableIngredients
-      testID={testID}
-      ingredients={ingredients}
-      prefixText={prefixText}
-      columnTitles={columnTitles}
-      onIngredientChange={onIngredientChange}
-      onAddIngredient={onAddIngredient}
-      noteInputPlaceholder={noteInputPlaceholder}
-      hideDropdown={hideDropdown}
-    />
+    <>
+      <EditableIngredients
+        testID={testID}
+        ingredients={ingredients}
+        prefixText={prefixText}
+        columnTitles={columnTitles}
+        onIngredientChange={onIngredientChange}
+        onAddIngredient={onAddIngredient}
+        noteInputPlaceholder={noteInputPlaceholder}
+        hideDropdown={hideDropdown}
+        hideAddButton
+      />
+      <View style={recipeTableStyles.roundButtonsContainer}>
+        <RoundButton
+          testID={`${testID}::OpenModalQuantities`}
+          style={recipeTableStyles.roundButton}
+          size='medium'
+          icon={Icons.scanImageIcon}
+          onPressFunction={() => openModalForField('ingredientQuantities')}
+          label={t('recipe.ingredientsScanQuantities')}
+        />
+        <RoundButton
+          testID={`${testID}::AddButton`}
+          style={recipeTableStyles.roundButton}
+          size='medium'
+          icon={Icons.pencilIcon}
+          onPressFunction={onAddIngredient}
+          label={t('recipe.ingredientsAddManually')}
+        />
+      </View>
+    </>
   );
 }
 
