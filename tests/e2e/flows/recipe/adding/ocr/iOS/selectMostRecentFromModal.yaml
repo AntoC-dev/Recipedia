@@ -1,7 +1,7 @@
 appId: "com.recipedia"
 ---
 - tapOn:
-    id: "Modal::Gallery::RoundButton"
+    id: "Modal::Gallery::RoundButton::Label"
     label: "Open gallery for OCR"
 
 - runFlow:
