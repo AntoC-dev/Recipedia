@@ -1,3 +1,10 @@
+## [2.19.0](https://github.com/AntoC-dev/Recipedia/compare/v2.18.2...v2.19.0) (2026-03-07)
+
+### Features
+
+* **settings:** add search bar to SettingsItemList ([3da19d2](https://github.com/AntoC-dev/Recipedia/commit/3da19d21f32a37390fd5aa4e1d0209276ebf137d))
+* **settings:** add search bar to SettingsItemList ([#207](https://github.com/AntoC-dev/Recipedia/issues/207)) ([86ee965](https://github.com/AntoC-dev/Recipedia/commit/86ee965d5dcf89649d938c0606ed7f152e762cbb))
+
 ## [2.18.2](https://github.com/AntoC-dev/Recipedia/compare/v2.18.1...v2.18.2) (2026-03-02)
 
 ### Bug Fixes
