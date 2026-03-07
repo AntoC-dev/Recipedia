@@ -66,16 +66,8 @@ appId: "com.recipedia"
     label: "Scan quantities button label is rendered"
 
 - runFlow:
-    file: ../android/deleteLastMedia.yaml
-    when:
-      platform: Android
-    label: "Delete ingredient names image from Android gallery"
-
-- runFlow:
-    file: ../iOS/deleteLastMedia.yaml
-    when:
-      platform: iOS
-    label: "Delete ingredient names image from iOS Photos"
+    file: ../cleanAndResume.yaml
+    label: "Delete ingredient names image from gallery and return to Recipedia"
 
 - evalScript: ${output.modalImageCounter = 1}
 
@@ -124,13 +116,5 @@ appId: "com.recipedia"
     label: "Wait for first ingredient quantity to be populated"
 
 - runFlow:
-    file: ../android/deleteLastMedia.yaml
-    when:
-      platform: Android
-    label: "Delete ingredient quantities image from Android gallery"
-
-- runFlow:
-    file: ../iOS/deleteLastMedia.yaml
-    when:
-      platform: iOS
-    label: "Delete ingredient quantities image from iOS Photos"
+    file: ../cleanAndResume.yaml
+    label: "Delete ingredient quantities image from gallery and return to Recipedia"

@@ -71,12 +71,5 @@ appId: "com.recipedia"
           timeout: 30000
           label: "Wait for time to be populated by OCR"
       - runFlow:
-          file: ../android/deleteLastMedia.yaml
-          when:
-            platform: Android
-          label: "Delete time image from Android gallery"
-      - runFlow:
-          file: ../iOS/deleteLastMedia.yaml
-          when:
-            platform: iOS
-          label: "Delete time image from iOS Photos"
+          file: ../cleanAndResume.yaml
+          label: "Delete time image from gallery and return to Recipedia"

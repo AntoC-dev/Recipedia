@@ -61,13 +61,5 @@ appId: "com.recipedia"
     label: "Wait for first tag to be populated by OCR"
 
 - runFlow:
-    file: ../android/deleteLastMedia.yaml
-    when:
-      platform: Android
-    label: "Delete tags image from Android gallery"
-
-- runFlow:
-    file: ../iOS/deleteLastMedia.yaml
-    when:
-      platform: iOS
-    label: "Delete tags image from iOS Photos"
+    file: ../cleanAndResume.yaml
+    label: "Delete tags image from gallery and return to Recipedia"

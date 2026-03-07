@@ -49,13 +49,5 @@ appId: "com.recipedia"
       platform: iOS
 
 - runFlow:
-    file: ../android/deleteLastMedia.yaml
-    when:
-      platform: Android
-    label: "Delete recipe image from Android gallery"
-
-- runFlow:
-    file: ../iOS/deleteLastMedia.yaml
-    when:
-      platform: iOS
-    label: "Delete recipe image from iOS Photos"
+    file: ../cleanAndResume.yaml
+    label: "Delete recipe image from gallery and return to Recipedia"
