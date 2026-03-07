@@ -37,10 +37,10 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: '22'
+          node-version: '24'
 
       - name: Setup Java 17 for Maestro
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -54,7 +54,7 @@ jobs:
 
       - name: Download APK
         if: inputs.platform == 'android'
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: ${{ inputs.app-artifact }}
 
@@ -90,7 +90,7 @@ jobs:
       # ============================================
       - name: Download iOS app
         if: inputs.platform == 'ios'
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: ${{ inputs.app-artifact }}
 
@@ -147,7 +147,7 @@ jobs:
 
       - name: Upload test suite logs
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: maestro-logs-${{ inputs.platform }}-${{ matrix.suite }}.zip
           path: maestro_logs_${{ matrix.suite }}/
@@ -155,7 +155,7 @@ jobs:
 
       - name: Upload JUnit report for suite
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: junit-e2e-${{ inputs.platform }}-${{ matrix.suite }}
           path: report.xml

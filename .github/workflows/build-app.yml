@@ -65,7 +65,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '22'
+          node-version: '24'
 
       - name: Install dependencies (for cache miss)
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -105,7 +105,7 @@ jobs:
           env.CACHED_RUN_ID != ''
         continue-on-error: true
         id: download
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: ${{ inputs.artifact-name }}
           run-id: ${{ env.CACHED_RUN_ID }}
@@ -220,7 +220,7 @@ jobs:
           fi
 
       - name: Upload app
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ inputs.artifact-name }}
           path: ${{ inputs.platform == 'ios' && format('{0}.zip', inputs.app-filename) || inputs.app-filename }}

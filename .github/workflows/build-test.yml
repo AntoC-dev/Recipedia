@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: '22'
+          node-version: '24'
           cache: 'npm'
       - run: npm ci
       - name: Cache node modules
@@ -50,7 +50,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: '22'
+          node-version: '24'
 
       - name: Run Reassure performance tests
         if: github.event_name == 'pull_request'
@@ -64,7 +64,7 @@ jobs:
           path: .reassure/output.md
 
       - name: Upload Reassure output
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: reassure-output
           path: .reassure/
@@ -87,7 +87,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: '22'
+          node-version: '24'
 
       - name: Run tests with coverage
         run: npm run test:unit:coverage
@@ -100,14 +100,14 @@ jobs:
         if: always()
 
       - name: Upload unit tests summary
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: unit-test-summary
           path: unit-test-summary.md
         if: always()
 
       - name: Upload coverage reports
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-reports
           path: coverage/
@@ -213,7 +213,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: '22'
+          node-version: '24'
 
       - name: Download all E2E JUnit reports
         if: always()
@@ -233,7 +233,7 @@ jobs:
 
       - name: Download iOS Maestro logs
         if: always()
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           pattern: maestro-logs-ios-*
           path: maestro-logs-ios
@@ -265,7 +265,7 @@ jobs:
 
       - name: Upload merged JUnit report
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: e2e-junit-merged
           path: merged-reports/report.xml
@@ -273,7 +273,7 @@ jobs:
 
       - name: Upload Android Maestro logs
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: maestro-logs-android.zip
           path: maestro-logs-android-merged/
@@ -281,7 +281,7 @@ jobs:
 
       - name: Upload iOS Maestro logs
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: maestro-logs-ios.zip
           path: maestro-logs-ios-merged/
