@@ -48,7 +48,7 @@ appId: "com.recipedia"
 - assertNotVisible:
     id: "TagsSettings::.*::TagName"
     text: "Test Cancel Tag"
-      label: "Verify tag was not found"
+    label: "Verify tag was not found"
 
 - tapOn:
     id: "TagsSettings::SearchBar-clear-icon"

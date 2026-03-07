@@ -1,6 +1,5 @@
 appId: "com.recipedia"
 ---
-
 - runFlow:
     file: "../searchInSettingsList.yaml"
     env:
@@ -28,7 +27,7 @@ appId: "com.recipedia"
 - assertVisible:
     id: "TagsSettings::0::TagName"
     text: "Italian"
-      label: "Verify Italian tag is displayed"
+    label: "Verify Italian tag is displayed"
 
 - tapOn:
     id: "TagsSettings::SearchBar-clear-icon"
