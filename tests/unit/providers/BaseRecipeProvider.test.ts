@@ -1,6 +1,7 @@
 import { BaseRecipeProvider } from '@providers/BaseRecipeProvider';
 import { hellofreshRecipePageHtml } from '@test-data/scraperMocks/hellofresh';
 import { mockFetch } from '@mocks/deps/fetch-mock';
+import { mockDownloadImageToCache } from '@mocks/utils/FileGestion-mock';
 
 class TestProvider extends BaseRecipeProvider {
   readonly id = 'test';
@@ -265,6 +266,34 @@ describe('BaseRecipeProvider', () => {
       await expect(
         provider.fetchRecipe('https://example.com/recipe', 4, { prefixes: [], exactMatches: [] })
       ).rejects.toThrow('Failed to parse recipe');
+    });
+  });
+
+  describe('parseSelectedRecipes image handling', () => {
+    it('does not download image when recipe.imageUrl is a placeholder URL', async () => {
+      jest.useRealTimers();
+
+      const PLACEHOLDER_URL =
+        'https://www.quitoque.fr/media/cache/sylius_shop_product_cover/build/quitoque/theme/images/placeholder.4d937d0d.jpg';
+
+      mockFetch.mockResolvedValue({
+        ok: true,
+        text: () => Promise.resolve('<html></html>'),
+      });
+
+      const selectedRecipes = [
+        {
+          url: 'https://www.test-provider.com/recipe1',
+          title: 'Recipe 1',
+          imageUrl: PLACEHOLDER_URL,
+        },
+      ];
+
+      for await (const _ of provider.parseSelectedRecipes(selectedRecipes)) {
+        // consume generator
+      }
+
+      expect(mockDownloadImageToCache).not.toHaveBeenCalled();
     });
   });
 

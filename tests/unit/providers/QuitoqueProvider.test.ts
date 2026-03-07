@@ -150,6 +150,14 @@ describe('QuitoqueProvider', () => {
 
       expect(categories).toEqual([]);
     });
+
+    it('returns empty array when a non-Error value is thrown', async () => {
+      mockFetch.mockRejectedValue('plain string error');
+
+      const categories = await provider.discoverCategoryUrls(baseUrl);
+
+      expect(categories).toEqual([]);
+    });
   });
 
   describe('extractRecipeLinksFromHtml', () => {
