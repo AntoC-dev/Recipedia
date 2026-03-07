@@ -11,25 +11,15 @@ tags:
     file: "../../flows/parameters/tags/navigateToTagsSettings.yaml"
     label: "Action - Navigate to Tags Settings"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      text: "Dessert"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Action - Scroll to find Dessert tag"
-
-- waitForAnimationToEnd
-
-- assertVisible:
-    id: "TagsSettings::2::TagName"
-    text: "Dessert"
-    label: "Assert - Verify Dessert tag exists in database"
+- runFlow:
+    file: "../../flows/parameters/searchInSettingsList.yaml"
+    env:
+      SETTINGS_SCREEN: "TagsSettings"
+      SEARCH_QUERY: "Dessert"
+    label: "Action - Search for dessert tag"
 
 - tapOn:
-    id: "TagsSettings::2::EditButton"
+    id: "TagsSettings::0::EditButton"
     label: "Action - Open edit tag dialog for Dessert"
 
 - assertVisible:

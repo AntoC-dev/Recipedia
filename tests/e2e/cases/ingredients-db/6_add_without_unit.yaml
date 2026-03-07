@@ -66,37 +66,23 @@ tags:
 
 - waitForAnimationToEnd
 
-- scrollUntilVisible:
-    element:
-      text: "UnitlessIngredient"
-    direction: DOWN
-    speed: 70
-    timeout: 360000
-    centerElement: true
-    label: "Action - Scroll to new ingredient"
-
-- waitForAnimationToEnd
+- runFlow:
+    file: "../../flows/parameters/searchInSettingsList.yaml"
+    env:
+      SETTINGS_SCREEN: "IngredientsSettings"
+      SEARCH_QUERY: "UnitlessIngredient"
+    label: "Action - Search for new ingredient"
 
 - runFlow:
     file: "../../flows/parameters/ingredients/verifyIngredientExists.yaml"
     env:
       INGREDIENT_NAME: "UnitlessIngredient"
       INGREDIENT_TYPE: "Cereal"
-      INGREDIENT_INDEX: "36"
+      INGREDIENT_INDEX: "0"
     label: "Assert - Verify ingredient exists with empty unit"
 
-- scrollUntilVisible:
-    element:
-      id: "IngredientsSettings::36::DeleteButton"
-    direction: DOWN
-    speed: 50
-    centerElement: true
-    label: "Cleanup - Scroll to delete button"
-
-- waitForAnimationToEnd
-
 - tapOn:
-    id: "IngredientsSettings::36::DeleteButton"
+    id: "IngredientsSettings::0::DeleteButton"
     label: "Cleanup - Open delete confirmation dialog"
 
 - tapOn:

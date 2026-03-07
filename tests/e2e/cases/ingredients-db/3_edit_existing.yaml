@@ -14,36 +14,20 @@ tags:
 
 - waitForAnimationToEnd
 
-- scrollUntilVisible:
-    element:
-      id: "IngredientsSettings::15::IngredientName"
-    direction: DOWN
-    speed: 70
-    timeout: 120000
-    centerElement: true
-    label: "Action - Scroll to Lettuce ingredient"
-
-- waitForAnimationToEnd
+- runFlow:
+    file: "../../flows/parameters/searchInSettingsList.yaml"
+    env:
+      SETTINGS_SCREEN: "IngredientsSettings"
+      SEARCH_QUERY: "Lettuce"
+    label: "Action - Search for Lettuce ingredient"
 
 - assertVisible:
-    id: "IngredientsSettings::15::IngredientName"
+    id: "IngredientsSettings::0::IngredientName"
     text: "Lettuce"
     label: "Assert - Verify Lettuce ingredient exists"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "IngredientsSettings::15::EditButton"
-    direction: DOWN
-    speed: 20
-    centerElement: true
-    label: "Action - Scroll to Lettuce edit button"
-
-- waitForAnimationToEnd
-
 - tapOn:
-    id: "IngredientsSettings::15::EditButton"
+    id: "IngredientsSettings::0::EditButton"
     label: "Action - Open edit dialog for Lettuce"
 
 - runFlow:
@@ -134,24 +118,15 @@ tags:
 
 - waitForAnimationToEnd
 
-- scrollUntilVisible:
-    element:
-      id: "IngredientsSettings::15::IngredientName"
-    direction: UP
-    speed: 40
-    centerElement: true
-    label: "Action - Scroll to ingredient name to ensure it is visible"
-
-- waitForAnimationToEnd
-
-- assertVisible:
-    id: "IngredientsSettings::15::IngredientName"
-    text: "Lettuce Edited"
-    label: "Assert - Verify ingredient renamed to Lettuce Edited"
-
 - assertNotVisible:
+    id: "IngredientsSettings::0::IngredientName"
     text: "Lettuce"
     label: "Assert - Verify old ingredient name no longer exists"
+
+- assertVisible:
+    id: "IngredientsSettings::0::IngredientName"
+    text: "Lettuce Edited"
+    label: "Assert - Verify ingredient renamed to Lettuce Edited"
 
 - runFlow:
     file: "../../flows/parameters/ingredients/returnToHome.yaml"

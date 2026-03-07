@@ -1,31 +1,21 @@
 appId: "com.recipedia"
 ---
-
 - waitForAnimationToEnd
 
-- scrollUntilVisible:
-    element:
-      id: "IngredientsSettings::${INGREDIENT_INDEX}::IngredientName"
-    direction: DOWN
-    speed: 50
-    timeout: 120000
-    centerElement: true
-    label: "Scroll to find ${INGREDIENT_NAME} ingredient"
+- runFlow:
+    file: "../searchInSettingsList.yaml"
+    env:
+      SETTINGS_SCREEN: "IngredientsSettings"
+      SEARCH_QUERY: "${INGREDIENT_NAME}"
+    label: "Action - Search for ${INGREDIENT_NAME} ingredient"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "IngredientsSettings::${INGREDIENT_INDEX}::DeleteButton"
-    direction: DOWN
-    speed: 20
-    centerElement: true
-    label: "Scroll to ${INGREDIENT_NAME} delete button is visible"
-
-- waitForAnimationToEnd
+- assertVisible:
+    id: "IngredientsSettings::0::IngredientName"
+    text: "${INGREDIENT_NAME}"
+    label: "Verify ${INGREDIENT_NAME} ingredient exists in database"
 
 - tapOn:
-    id: "IngredientsSettings::${INGREDIENT_INDEX}::DeleteButton"
+    id: "IngredientsSettings::0::DeleteButton"
     label: "Open delete ingredient dialog"
 
 - tapOn:
@@ -33,5 +23,6 @@ appId: "com.recipedia"
     label: "Confirm ingredient deletion"
 
 - assertNotVisible:
+    id: "IngredientsSettings::0::IngredientName"
     text: "${INGREDIENT_NAME}"
     label: "Verify ${INGREDIENT_NAME} ingredient removed from list"

@@ -8,10 +8,15 @@ appId: "com.recipedia"
     file: "../../../waitForKeyboard.yaml"
     label: "Wait for keyboard to appear"
 
-- inputText: ${RECIPE_URL}
+- inputText: "${RECIPE_URL}"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
+
+- assertVisible:
+    id: "VerticalBottomButtons::UrlDialog::Input::CustomTextInput"
+    text: "${RECIPE_URL}"
+    label: "Assert - Check that the URL is well entered in the text input"
 
 - runFlow:
     when:

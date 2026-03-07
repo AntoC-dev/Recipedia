@@ -112,19 +112,15 @@ tags:
 
 - waitForAnimationToEnd
 
-- scrollUntilVisible:
-    element:
-      text: "TestIngredient"
-    direction: UP
-    speed: 70
-    timeout: 240000
-    centerElement: true
-    label: "Action - Scroll to new ingredient"
-
-- waitForAnimationToEnd
+- runFlow:
+    file: "../../flows/parameters/searchInSettingsList.yaml"
+    env:
+      SETTINGS_SCREEN: "IngredientsSettings"
+      SEARCH_QUERY: "TestIngredient"
+    label: "Action - Search for new ingredient"
 
 - assertVisible:
-    id: "IngredientsSettings::34::IngredientName"
+    id: "IngredientsSettings::0::IngredientName"
     text: "TestIngredient"
     label: "Assert - Verify new ingredient displayed in list"
 

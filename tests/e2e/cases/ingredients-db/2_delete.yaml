@@ -12,40 +12,15 @@ tags:
     file: "../../flows/parameters/ingredients/navigateToIngredientsSettings.yaml"
     label: "Action - Navigate to Ingredients Settings"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "IngredientsSettings::36::IngredientName"
-    direction: DOWN
-    speed: 80
-    timeout: 1000000
-    centerElement: true
-    label: "Action - Scroll to bottom of the screen"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "IngredientsSettings::34::IngredientName"
-    direction: UP
-    speed: 50
-    centerElement: true
-    label: "Action - Scroll to ingredient to delete"
-
-
-- scrollUntilVisible:
-    element:
-      id: "IngredientsSettings::34::DeleteButton"
-    direction: DOWN
-    speed: 50
-    centerElement: true
-    label: "Action - Scroll to delete button of the ingredient to delete"
-
-- waitForAnimationToEnd
+- runFlow:
+    file: "../../flows/parameters/searchInSettingsList.yaml"
+    env:
+      SETTINGS_SCREEN: "IngredientsSettings"
+      SEARCH_QUERY: "TestIngredient"
+    label: "Action - Search the ingredient to delete"
 
 - tapOn:
-    id: "IngredientsSettings::34::DeleteButton"
+    id: "IngredientsSettings::0::DeleteButton"
     label: "Action - Open delete confirmation dialog"
 
 - runFlow:

@@ -6,6 +6,20 @@ appId: "com.recipedia"
     label: "Tags Settings title is visible with correct text"
 
 - assertVisible:
+    id: "TagsSettings::SearchBar"
+    label: "Search bar is visible"
+
+- assertVisible:
+    id: "TagsSettings::SearchBar-icon"
+    text: "search"
+    label: "Search bar icon is visible with correct text"
+
+- assertVisible:
+    id: "TagsSettings::SearchBar"
+    text: "Search..."
+    label: "Search bar has correct placeholder text"
+
+- assertVisible:
     id: "TagsSettings::0::TagName"
     text: "Breakfast"
     label: "Tag Breakfast is displayed"
@@ -19,6 +33,20 @@ appId: "com.recipedia"
     id: "TagsSettings::0::DeleteButton-text"
     text: "Delete"
     label: "Delete button for Breakfast is displayed"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "TagsSettings::1::TagName"
+    direction: DOWN
+    speed: 20
+    timeout: 60000
+    timeout: 3000
+    centerElement: true
+    label: "Scroll to find first tag"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "TagsSettings::1::TagName"
@@ -35,6 +63,16 @@ appId: "com.recipedia"
     text: "Delete"
     label: "Delete button for Chocolate is displayed"
 
+- scrollUntilVisible:
+    element:
+      id: "TagsSettings::1::TagName"
+    direction: DOWN
+    speed: 20
+    timeout: 60000
+    timeout: 3000
+    centerElement: true
+    label: "Scroll to find second tag"
+
 - assertVisible:
     id: "TagsSettings::2::TagName"
     text: "Dessert"
@@ -49,6 +87,19 @@ appId: "com.recipedia"
     id: "TagsSettings::2::DeleteButton-text"
     text: "Delete"
     label: "Delete button for Dessert is displayed"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "TagsSettings::3::TagName"
+    direction: DOWN
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll to find third tag"
+
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "TagsSettings::3::TagName"
@@ -71,7 +122,8 @@ appId: "com.recipedia"
     element:
       id: "TagsSettings::4::TagName"
     direction: DOWN
-    speed: 40
+    speed: 20
+    timeout: 60000
     centerElement: true
     label: "Scroll to tag Healthy"
 
@@ -98,7 +150,8 @@ appId: "com.recipedia"
     element:
       id: "TagsSettings::5::EditButton"
     direction: DOWN
-    speed: 40
+    speed: 20
+    timeout: 60000
     centerElement: true
     label: "Scroll to tag Indian"
 
@@ -125,7 +178,8 @@ appId: "com.recipedia"
     element:
       id: "TagsSettings::6::EditButton"
     direction: DOWN
-    speed: 40
+    speed: 20
+    timeout: 60000
     centerElement: true
     label: "Scroll to tag Italian"
 
@@ -152,7 +206,8 @@ appId: "com.recipedia"
     element:
       id: "TagsSettings::7::EditButton"
     direction: DOWN
-    speed: 40
+    speed: 20
+    timeout: 60000
     centerElement: true
     label: "Scroll to tag Japanese"
 
@@ -179,7 +234,8 @@ appId: "com.recipedia"
     element:
       id: "TagsSettings::8::EditButton"
     direction: DOWN
-    speed: 40
+    speed: 20
+    timeout: 60000
     centerElement: true
     label: "Scroll to tag Lunch"
 
@@ -206,7 +262,8 @@ appId: "com.recipedia"
     element:
       id: "TagsSettings::9::TagName"
     direction: DOWN
-    speed: 40
+    speed: 20
+    timeout: 60000
     centerElement: true
     label: "Scroll to tag Mexican"
 
@@ -233,7 +290,8 @@ appId: "com.recipedia"
     element:
       id: "TagsSettings::10::EditButton"
     direction: DOWN
-    speed: 40
+    speed: 20
+    timeout: 60000
     centerElement: true
     label: "Scroll to tag Quick Meal"
 
@@ -260,7 +318,8 @@ appId: "com.recipedia"
     element:
       id: "TagsSettings::11::EditButton"
     direction: DOWN
-    speed: 40
+    speed: 20
+    timeout: 60000
     centerElement: true
     label: "Scroll to tag Salad"
 
@@ -287,7 +346,8 @@ appId: "com.recipedia"
     element:
       id: "TagsSettings::12::EditButton"
     direction: DOWN
-    speed: 40
+    speed: 20
+    timeout: 60000
     centerElement: true
     label: "Scroll to tag Seafood"
 
@@ -314,7 +374,8 @@ appId: "com.recipedia"
     element:
       id: "TagsSettings::13::TagName"
     direction: DOWN
-    speed: 40
+    speed: 20
+    timeout: 60000
     centerElement: true
     label: "Scroll to tag Soup"
 
@@ -341,7 +402,8 @@ appId: "com.recipedia"
     element:
       id: "TagsSettings::14::EditButton"
     direction: DOWN
-    speed: 40
+    speed: 20
+    timeout: 60000
     centerElement: true
     label: "Scroll to tag Tag with space"
 
@@ -363,7 +425,8 @@ appId: "com.recipedia"
     element:
       id: "TagsSettings::BottomActionButton"
     direction: DOWN
-    speed: 40
+    speed: 20
+    timeout: 60000
     centerElement: true
     label: "Scroll to Add button"
 

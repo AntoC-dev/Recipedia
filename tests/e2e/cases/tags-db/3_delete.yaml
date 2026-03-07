@@ -14,19 +14,15 @@ tags:
 
 - waitForAnimationToEnd
 
-- scrollUntilVisible:
-    element:
-      text: "TestTag"
-    direction: DOWN
-    speed: 70
-    timeout: 120000
-    centerElement: true
-    label: "Action - Scroll to TestTag"
-
-- waitForAnimationToEnd
+- runFlow:
+    file: "../../flows/parameters/searchInSettingsList.yaml"
+    env:
+      SETTINGS_SCREEN: "TagsSettings"
+      SEARCH_QUERY: "TestTag"
+    label: "Action - Search for TestTag"
 
 - tapOn:
-    id: "TagsSettings::15::DeleteButton"
+    id: "TagsSettings::0::DeleteButton"
     label: "Action - Open delete confirmation dialog"
 
 - runFlow:
@@ -42,6 +38,7 @@ tags:
     label: "Action - Confirm deleting tag"
 
 - assertNotVisible:
+    id: "TagsSettings::.*::DeleteButton"
     text: "TestTag"
     label: "Assert - Verify tag removed from list"
 

@@ -21,16 +21,11 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for animation to end"
 
-- scrollUntilVisible:
-    element:
+- extendedWaitUntil:
+    visible:
       id: "RecipeTags::List::${TAG_INDEX}::CustomTextInput"
-    direction: UP
-    speed: 10
-    timeout: 120000
-    label: "Action - Scroll up to ensure tag input is visible"
-
-- waitForAnimationToEnd:
-    label: "Wait for scroll to end"
+    timeout: 3000
+    label: "Wait for tag input field to appear"
 
 - tapOn:
     id: "RecipeTags::List::${TAG_INDEX}::CustomTextInput"
