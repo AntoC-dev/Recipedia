@@ -8,7 +8,7 @@
  */
 
 import { bulkImportLogger } from '@utils/logger';
-import { extractImageFromJsonLd } from '@utils/UrlHelpers';
+import { extractImageFromJsonLd, isPlaceholderImageUrl } from '@utils/UrlHelpers';
 import { BaseRecipeProvider } from './BaseRecipeProvider';
 
 /** URL to Quitoque's logo (may need updating when anniversary branding changes) */
@@ -173,7 +173,7 @@ export class QuitoqueProvider extends BaseRecipeProvider {
       }
 
       const metadata = await this.extractPreviewMetadata(html, url);
-      if (metadata.imageUrl && !metadata.imageUrl.includes('placeholder')) {
+      if (metadata.imageUrl && !isPlaceholderImageUrl(metadata.imageUrl)) {
         return metadata.imageUrl;
       }
 

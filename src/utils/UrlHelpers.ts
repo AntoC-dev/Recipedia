@@ -8,6 +8,16 @@
 const FETCH_TIMEOUT_MS = 15000;
 
 /**
+ * Returns true if the URL is a lazy-load placeholder image (e.g. Sylius LiipImagine).
+ *
+ * @param url - Image URL to test
+ * @returns true if the URL contains 'placeholder' (case-insensitive)
+ */
+export function isPlaceholderImageUrl(url: string): boolean {
+  return url.toLowerCase().includes('placeholder');
+}
+
+/**
  * Validates URL format.
  *
  * Accepts URLs with or without protocol. URLs without protocol
@@ -126,15 +136,15 @@ export function extractImageFromJsonLd(html: string): string | null {
     }
 
     const image = recipe.image;
-    if (typeof image === 'string' && !image.includes('placeholder')) return image;
+    if (typeof image === 'string' && !isPlaceholderImageUrl(image)) return image;
     if (Array.isArray(image)) {
       const first = image[0];
       const imgUrl = typeof first === 'string' ? first : first?.url;
-      if (imgUrl && !imgUrl.includes('placeholder')) return imgUrl;
+      if (imgUrl && !isPlaceholderImageUrl(imgUrl)) return imgUrl;
     }
     if (typeof image === 'object' && image !== null) {
       const imgUrl = (image as Record<string, unknown>).url as string | undefined;
-      if (imgUrl && !imgUrl.includes('placeholder')) return imgUrl;
+      if (imgUrl && !isPlaceholderImageUrl(imgUrl)) return imgUrl;
     }
 
     return null;
