@@ -17,10 +17,12 @@
     "src/assets/datasets/**/*.ts",
     "src/translations/**/*.ts",
     "src/styles/*.tsx",
-    "modules/recipe-scraper/src/ios/*",
-    "modules/recipe-scraper/src/web/*",
-    "modules/recipe-scraper/src/*"
+    "modules/recipe-scraper/src/ios/*.ts",
+    "modules/recipe-scraper/src/ios/*.tsx",
+    "modules/recipe-scraper/src/web/*.ts",
+    "modules/recipe-scraper/src/*.ts"
   ],
+  "tsconfig": "./tsconfig.typedoc.json",
   "out": "docs",
   "plugin": [
     "varvara-typedoc-theme"
@@ -81,7 +83,7 @@
     "GitHub": "https://github.com/AntoC-dev/Recipedia"
   },
   "validation": {
-    "notExported": true,
+    "notExported": false,
     "invalidLink": true,
     "notDocumented": false
   }
