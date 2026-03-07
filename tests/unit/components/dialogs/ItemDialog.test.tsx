@@ -676,6 +676,90 @@ describe('ItemDialog Component', () => {
   });
 
   describe('state reset', () => {
+    test('preserves user-typed tag name when item.value reference changes while dialog is open', () => {
+      const tag: tagTableElement = { id: 1, name: 'Italian' };
+      const props: ItemDialogProps = {
+        testId: 'TagDialog',
+        mode: 'edit',
+        isVisible: true,
+        onClose: mockOnClose,
+        item: {
+          type: 'Tag',
+          value: tag,
+          onConfirmTag: mockOnConfirmTag,
+        },
+      };
+
+      const { getByTestId, rerender } = render(<ItemDialog {...props} />);
+
+      fireEvent.changeText(
+        getByTestId('TagDialog::EditModal::Name::CustomTextInput'),
+        'New Italian'
+      );
+
+      expect(getByTestId('TagDialog::EditModal::Name::CustomTextInput').props.value).toBe(
+        'New Italian'
+      );
+
+      rerender(
+        <ItemDialog
+          {...props}
+          item={{ type: 'Tag', value: { id: 1, name: 'Italian' }, onConfirmTag: mockOnConfirmTag }}
+        />
+      );
+
+      expect(getByTestId('TagDialog::EditModal::Name::CustomTextInput').props.value).toBe(
+        'New Italian'
+      );
+    });
+
+    test('preserves user-typed ingredient name when item.value reference changes while dialog is open', () => {
+      const ingredient: ingredientTableElement = {
+        id: 1,
+        name: 'Lettuce',
+        type: ingredientType.vegetable,
+        unit: 'pieces',
+        season: [],
+      };
+      const props: ItemDialogProps = {
+        testId: 'IngredientDialog',
+        mode: 'edit',
+        isVisible: true,
+        onClose: mockOnClose,
+        item: {
+          type: 'Ingredient',
+          value: ingredient,
+          onConfirmIngredient: mockOnConfirmIngredient,
+        },
+      };
+
+      const { getByTestId, rerender } = render(<ItemDialog {...props} />);
+
+      fireEvent.changeText(
+        getByTestId('IngredientDialog::EditModal::Name::CustomTextInput'),
+        'Lettuce Romaine'
+      );
+
+      expect(getByTestId('IngredientDialog::EditModal::Name::CustomTextInput').props.value).toBe(
+        'Lettuce Romaine'
+      );
+
+      rerender(
+        <ItemDialog
+          {...props}
+          item={{
+            type: 'Ingredient',
+            value: { ...ingredient },
+            onConfirmIngredient: mockOnConfirmIngredient,
+          }}
+        />
+      );
+
+      expect(getByTestId('IngredientDialog::EditModal::Name::CustomTextInput').props.value).toBe(
+        'Lettuce Romaine'
+      );
+    });
+
     test('updates ingredient state when dialog reopens with different ingredient', () => {
       const firstIngredient: ingredientTableElement = {
         name: 'First Ingredient',
