@@ -1,21 +1,20 @@
 appId: "com.recipedia"
 ---
 
-- waitForAnimationToEnd
+- runFlow:
+    file: "../searchInSettingsList.yaml"
+    env:
+      SETTINGS_SCREEN: "TagsSettings"
+      SEARCH_QUERY: "Italian"
+    label: "Search for Italian tag"
 
-- scrollUntilVisible:
-    element:
-      text: "Italian"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to Italian tag"
-
-- waitForAnimationToEnd
+- assertVisible:
+    id: "TagsSettings::0::TagName"
+    text: "Italian"
+    label: "Verify Italian tag is displayed"
 
 - tapOn:
-    id: "TagsSettings::6::DeleteButton"
-    index: 0
+    id: "TagsSettings::0::DeleteButton"
     label: "Open Delete dialog for Italian tag"
 
 - runFlow:
@@ -26,18 +25,17 @@ appId: "com.recipedia"
     id: "TagsSettings::ItemDialog::DeleteModal::CancelButton"
     label: "Cancel delete operation"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      text: "Italian"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to Italian tag"
-
-- waitForAnimationToEnd
-
 - assertVisible:
+    id: "TagsSettings::0::TagName"
     text: "Italian"
-    label: "Verify tag still exists after cancel delete"
+      label: "Verify Italian tag is displayed"
+
+- tapOn:
+    id: "TagsSettings::SearchBar-clear-icon"
+    label: "Clear the search bar"
+
+- extendedWaitUntil:
+    visible:
+      id: "TagsSettings::1::TagName"
+    timeout: 60000
+    label: "Wait for list to show all items"

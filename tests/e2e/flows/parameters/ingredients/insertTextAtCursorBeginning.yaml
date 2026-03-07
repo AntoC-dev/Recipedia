@@ -67,3 +67,14 @@ appId: "com.recipedia"
       id: "IngredientsSettings::ItemDialog::EditModal::Title"
     timeout: 5000
     label: "Wait for modal to disappear"
+
+
+- tapOn:
+    id: "IngredientsSettings::SearchBar-clear-icon"
+    label: "Clear the search bar"
+
+- extendedWaitUntil:
+    visible:
+      id: "IngredientsSettings::1::IngredientName"
+    timeout: 60000
+    label: "Wait for list to show all items"
