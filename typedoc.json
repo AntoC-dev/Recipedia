@@ -16,7 +16,10 @@
     "src/assets/Icons.tsx",
     "src/assets/datasets/**/*.ts",
     "src/translations/**/*.ts",
-    "src/styles/*.tsx"
+    "src/styles/*.tsx",
+    "modules/recipe-scraper/src/ios/*",
+    "modules/recipe-scraper/src/web/*",
+    "modules/recipe-scraper/src/*"
   ],
   "out": "docs",
   "plugin": [
