@@ -169,10 +169,11 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeIngredients::Header::Quantity"
+      id: "RecipeIngredients::PrefixText"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
+    label: "Scroll down to the ingredients section"
 
 - waitForAnimationToEnd
 
@@ -180,6 +181,20 @@ appId: "com.recipedia"
     id: "RecipeIngredients::PrefixText"
     text: "Ingredients: "
     label: "Section Ingredients is rendered"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::Header::Quantity"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll down to the ingredients header"
+
+- waitForAnimationToEnd
+
+
 - assertVisible:
     id: "RecipeIngredients::Header::Quantity"
     text: "Quantity"
@@ -192,6 +207,19 @@ appId: "com.recipedia"
     id: "RecipeIngredients::Header::IngredientName"
     text: "Name"
     label: "Column Ingredient name is rendered"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::0::QuantityInput"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll down to the first ingredients row"
+
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipeIngredients::0::QuantityInput"
     text: "250"
@@ -209,10 +237,11 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeIngredients::2::NameInput::CustomTextInput"
+      id: "RecipeIngredients::1::NameInput::CustomTextInput"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
+    label: "Scroll down to the second ingredient"
 
 - waitForAnimationToEnd
 
@@ -228,6 +257,20 @@ appId: "com.recipedia"
     id: "RecipeIngredients::1::NameInput::CustomTextInput"
     text: "Nori Sheets"
     label: "Ingredient Nori Sheets is rendered"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::2::QuantityInput"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll down to the third ingredients row"
+
+- waitForAnimationToEnd
+
+
 - assertVisible:
     id: "RecipeIngredients::2::QuantityInput"
     text: "200"
@@ -247,9 +290,9 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::3::QuantityInput"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
-    label: "Scroll down to the third ingredient"
+    label: "Scroll down to the fourth ingredient"
 
 - waitForAnimationToEnd
 
@@ -272,9 +315,9 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::4::NameInput::CustomTextInput"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
-    label: "Scroll down to the end of ingredients section"
+    label: "Scroll down to the last ingredient"
 
 - waitForAnimationToEnd
 
