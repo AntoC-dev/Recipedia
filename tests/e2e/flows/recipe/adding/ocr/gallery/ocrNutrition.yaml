@@ -82,13 +82,5 @@ appId: "com.recipedia"
     label: "Wait for numeric keyboard to dismiss"
 
 - runFlow:
-    file: ../android/deleteLastMedia.yaml
-    when:
-      platform: Android
-    label: "Delete nutrition image from Android gallery"
-
-- runFlow:
-    file: ../iOS/deleteLastMedia.yaml
-    when:
-      platform: iOS
-    label: "Delete nutrition image from iOS Photos"
+    file: ../cleanAndResume.yaml
+    label: "Delete nutrition image from gallery and return to Recipedia"
