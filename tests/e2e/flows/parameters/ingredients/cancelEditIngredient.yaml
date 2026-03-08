@@ -1,26 +1,21 @@
 appId: "com.recipedia"
 ---
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "IngredientsSettings::30::EditButton"
-    direction: UP
-    speed: 70
-    timeout: 120000
-    centerElement: true
-    label: "Scroll up to find Spaghetti ingredient for edit test"
-
-- waitForAnimationToEnd
+- runFlow:
+    file: "../searchInSettingsList.yaml"
+    env:
+      SETTINGS_SCREEN: "IngredientsSettings"
+      SEARCH_QUERY: "Spaghetti"
+    label: "Search for Spaghetti ingredient"
 
 - assertVisible:
     text: "Spaghetti"
     label: "Verify Spaghetti ingredient exists in database"
 
 - tapOn:
-    id: "IngredientsSettings::30::EditButton"
+    id: "IngredientsSettings::0::EditButton"
     label: "Open Edit dialog for Spaghetti ingredient"
+
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::Name::CustomTextInput"
     label: "Focus on ingredient name input"
@@ -62,3 +57,13 @@ appId: "com.recipedia"
 - assertNotVisible:
     text: "Spaghetti Modified"
     label: "Verify modified name was not saved"
+
+- tapOn:
+    id: "IngredientsSettings::SearchBar-clear-icon"
+    label: "Clear the search bar"
+
+- extendedWaitUntil:
+    visible:
+      id: "IngredientsSettings::1::IngredientName"
+    timeout: 60000
+    label: "Wait for list to show all items"

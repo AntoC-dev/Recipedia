@@ -70,7 +70,7 @@
  * ```
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Button, Dialog, HelperText, Menu, Portal, Text } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
@@ -150,16 +150,22 @@ export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialo
     item.type === 'Ingredient' ? (item.value.season ?? []) : []
   );
 
+  // Keep a ref to the latest item so we can read it inside the effect without
+  // making it a reactive dependency. This prevents cursor-position resets that
+  // occur when callers pass new inline object references on every render.
+  const itemRef = useRef(item);
+  itemRef.current = item;
+
   useEffect(() => {
     if (isVisible) {
-      setItemName(item.value.name ?? '');
-      if (item.type === 'Ingredient') {
-        setIngType(item.value.type);
-        setIngUnit(item.value.unit ?? '');
-        setIngSeason(item.value.season ?? []);
+      setItemName(itemRef.current.value.name ?? '');
+      if (itemRef.current.type === 'Ingredient') {
+        setIngType(itemRef.current.value.type);
+        setIngUnit(itemRef.current.value.unit ?? '');
+        setIngSeason(itemRef.current.value.season ?? []);
       }
     }
-  }, [item.value.name, item.type, item.value, isVisible]);
+  }, [isVisible]);
 
   /**
    * Validates item name against database for duplicates and similar items.

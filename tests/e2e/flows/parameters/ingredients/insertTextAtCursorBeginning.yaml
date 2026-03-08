@@ -1,0 +1,80 @@
+appId: "com.recipedia"
+---
+
+- runFlow:
+    file: "../searchInSettingsList.yaml"
+    env:
+      SETTINGS_SCREEN: "IngredientsSettings"
+      SEARCH_QUERY: "Lettuce"
+    label: "Search for Lettuce ingredient"
+
+- tapOn:
+    id: "IngredientsSettings::0::EditButton"
+    label: "Action - Open edit dialog for Lettuce ingredient"
+
+- extendedWaitUntil:
+    visible:
+      id: "IngredientsSettings::ItemDialog::EditModal::Title"
+    timeout: 5000
+    label: "Wait for edit modal to appear"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    point: "2%,50%"
+    label: "Action - Tap at start of input to position cursor at beginning"
+
+- runFlow:
+    file: "../../waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
+- inputText:
+    text: "Baby "
+    label: "Action - Type at cursor position (beginning of text)"
+
+- waitForAnimationToEnd:
+    label: "Wait for validation debounce and re-renders"
+
+- assertVisible:
+    id: "IngredientsSettings::ItemDialog::EditModal::Name::CustomTextInput"
+    text: "Baby Lettuce"
+    label: "Assert - Text inserted at beginning, not lost after re-render"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to dismiss"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::EditModal::CancelButton"
+    label: "Cleanup - Cancel edit (do not save)"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "IngredientsSettings::ItemDialog::EditModal::Title"
+    timeout: 5000
+    label: "Wait for modal to disappear"
+
+
+- tapOn:
+    id: "IngredientsSettings::SearchBar-clear-icon"
+    label: "Clear the search bar"
+
+- extendedWaitUntil:
+    visible:
+      id: "IngredientsSettings::1::IngredientName"
+    timeout: 60000
+    label: "Wait for list to show all items"

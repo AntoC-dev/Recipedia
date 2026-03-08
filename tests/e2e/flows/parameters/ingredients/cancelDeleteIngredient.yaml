@@ -1,30 +1,19 @@
 appId: "com.recipedia"
 ---
+- runFlow:
+    file: "../searchInSettingsList.yaml"
+    env:
+      SETTINGS_SCREEN: "IngredientsSettings"
+      SEARCH_QUERY: "Spaghetti"
+    label: "Search for Spaghetti ingredient"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "IngredientsSettings::30::IngredientName"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to Spaghetti ingredient"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "IngredientsSettings::30::DeleteButton"
-    direction: DOWN
-    speed: 20
-    centerElement: true
-    label: "Scroll to Spaghetti delete button"
-
-- waitForAnimationToEnd
+- assertVisible:
+    id: "IngredientsSettings::0::IngredientName"
+    text: "Spaghetti"
+    label: "Verify Spaghetti ingredient is displayed"
 
 - tapOn:
-    id: "IngredientsSettings::30::DeleteButton"
+    id: "IngredientsSettings::0::DeleteButton"
     label: "Open Delete dialog for Spaghetti ingredient"
 
 - runFlow:
@@ -35,18 +24,17 @@ appId: "com.recipedia"
     id: "IngredientsSettings::ItemDialog::DeleteModal::CancelButton"
     label: "Cancel delete operation"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      text: "Spaghetti"
-    direction: UP
-    speed: 40
-    centerElement: true
-    label: "Scroll to Spaghetti ingredient"
-
-- waitForAnimationToEnd
-
 - assertVisible:
+    id: "IngredientsSettings::0::IngredientName"
     text: "Spaghetti"
     label: "Verify ingredient still exists after cancel delete"
+
+- tapOn:
+    id: "IngredientsSettings::SearchBar-clear-icon"
+    label: "Clear the search bar"
+
+- extendedWaitUntil:
+    visible:
+      id: "IngredientsSettings::1::IngredientName"
+    timeout: 60000
+    label: "Wait for list to show all items"
