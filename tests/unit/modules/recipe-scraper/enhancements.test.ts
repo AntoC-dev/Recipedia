@@ -983,5 +983,92 @@ describe('enhancements module', () => {
 
       expect(result.keywords).toEqual(['Quick', 'Vegetarian']);
     });
+
+    it('replaces placeholder image with JSON-LD fallback', () => {
+      const PLACEHOLDER_URL =
+        'https://www.quitoque.fr/media/cache/sylius_shop_product_cover/build/quitoque/theme/images/placeholder.4d937d0d.jpg';
+      const REAL_IMAGE_URL =
+        'https://www.quitoque.fr/media/cache/resolve/sylius_shop_product_cover_2x/7f/f6/dc2dc10ea10c8ff709b0466b67ab.jpg';
+      const html = `
+        <html>
+          <script type="application/ld+json">
+            {"@type": "Recipe", "image": ["${REAL_IMAGE_URL}"]}
+          </script>
+        </html>
+      `;
+      const baseResult: ScrapedRecipe = {
+        title: 'Accras de carotte',
+        description: null,
+        ingredients: [],
+        parsedIngredients: null,
+        ingredientGroups: null,
+        instructions: null,
+        instructionsList: null,
+        parsedInstructions: null,
+        totalTime: null,
+        prepTime: null,
+        cookTime: null,
+        yields: null,
+        image: PLACEHOLDER_URL,
+        host: 'quitoque.fr',
+        canonicalUrl: null,
+        siteName: null,
+        author: null,
+        language: null,
+        category: null,
+        cuisine: null,
+        cookingMethod: null,
+        keywords: null,
+        dietaryRestrictions: null,
+        ratings: null,
+        ratingsCount: null,
+        nutrients: null,
+        equipment: null,
+        links: null,
+      };
+
+      const result = applyEnhancements({ html, baseResult });
+
+      expect(result.image).toBe(REAL_IMAGE_URL);
+    });
+
+    it('returns null image when placeholder has no JSON-LD fallback', () => {
+      const PLACEHOLDER_URL =
+        'https://www.quitoque.fr/media/cache/sylius_shop_product_cover/build/quitoque/theme/images/placeholder.4d937d0d.jpg';
+      const baseResult: ScrapedRecipe = {
+        title: 'Accras de carotte',
+        description: null,
+        ingredients: [],
+        parsedIngredients: null,
+        ingredientGroups: null,
+        instructions: null,
+        instructionsList: null,
+        parsedInstructions: null,
+        totalTime: null,
+        prepTime: null,
+        cookTime: null,
+        yields: null,
+        image: PLACEHOLDER_URL,
+        host: 'quitoque.fr',
+        canonicalUrl: null,
+        siteName: null,
+        author: null,
+        language: null,
+        category: null,
+        cuisine: null,
+        cookingMethod: null,
+        keywords: null,
+        dietaryRestrictions: null,
+        ratings: null,
+        ratingsCount: null,
+        nutrients: null,
+        equipment: null,
+        links: null,
+      };
+
+      const result = applyEnhancements({ html: '<html></html>', baseResult });
+
+      expect(result.image).toBeNull();
+    });
   });
 });

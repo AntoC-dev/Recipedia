@@ -45,7 +45,7 @@ import {
   getIgnoredPatterns,
   ScrapedRecipeResult,
 } from '@utils/RecipeScraperConverter';
-import { extractImageFromJsonLd, fetchHtml } from '@utils/UrlHelpers';
+import { extractImageFromJsonLd, fetchHtml, isPlaceholderImageUrl } from '@utils/UrlHelpers';
 
 function serializeError(err: unknown): Record<string, unknown> {
   if (err instanceof Error) {
@@ -160,7 +160,7 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
     let imageUrl: string | null = scraperResult.data.image;
 
     // If the scraper returned a placeholder image, extract real one from HTML
-    if (imageUrl?.includes('placeholder') && html) {
+    if (imageUrl && isPlaceholderImageUrl(imageUrl) && html) {
       const realImage = extractImageFromJsonLd(html);
       if (realImage) {
         imageUrl = realImage;

@@ -1,4 +1,10 @@
-import { extractImageFromJsonLd, fetchHtml, isValidUrl, normalizeUrl } from '@utils/UrlHelpers';
+import {
+  extractImageFromJsonLd,
+  fetchHtml,
+  isPlaceholderImageUrl,
+  isValidUrl,
+  normalizeUrl,
+} from '@utils/UrlHelpers';
 import { mockFetch } from '@mocks/deps/fetch-mock';
 
 describe('UrlHelpers', () => {
@@ -60,6 +66,35 @@ describe('UrlHelpers', () => {
 
     test('preserves path and query parameters', () => {
       expect(normalizeUrl('example.com/recipe?id=123')).toBe('https://example.com/recipe?id=123');
+    });
+  });
+
+  describe('isPlaceholderImageUrl', () => {
+    test('returns true for URL with placeholder in path', () => {
+      expect(isPlaceholderImageUrl('https://example.com/images/placeholder.jpg')).toBe(true);
+    });
+
+    test('returns true for Sylius LiipImagine placeholder URL', () => {
+      expect(
+        isPlaceholderImageUrl(
+          'https://www.quitoque.fr/media/cache/sylius_shop_product_cover/build/quitoque/theme/images/placeholder.4d937d0d.jpg'
+        )
+      ).toBe(true);
+    });
+
+    test('is case-insensitive', () => {
+      expect(isPlaceholderImageUrl('https://example.com/PLACEHOLDER.jpg')).toBe(true);
+      expect(isPlaceholderImageUrl('https://example.com/Placeholder.jpg')).toBe(true);
+    });
+
+    test('returns false for a normal image URL', () => {
+      expect(
+        isPlaceholderImageUrl('https://www.quitoque.fr/media/cache/resolve/recipe/real-image.jpg')
+      ).toBe(false);
+    });
+
+    test('returns false for empty string', () => {
+      expect(isPlaceholderImageUrl('')).toBe(false);
     });
   });
 

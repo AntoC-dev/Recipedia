@@ -79,7 +79,7 @@ export function applyEnhancements(context: EnhancementContext): ScrapedRecipe {
         parsedInstructions:
             baseResult.parsedInstructions ?? extractStructuredInstructions(html),
         nutrients: inferServingSizeFromHtml(html, baseResult.nutrients),
-        image: baseResult.image ?? extractImageFromJsonLd(html),
+        image: resolveImage(baseResult.image, html),
     };
 }
 
@@ -662,6 +662,21 @@ export function extractNumericValue(text: string): number {
 // Image Extraction
 // ============================================================================
 
+function isPlaceholderImageUrl(url: string): boolean {
+    return url.toLowerCase().includes('placeholder');
+}
+
+/**
+ * Resolve the final image URL, treating placeholder URLs as absent.
+ * Falls back to JSON-LD extraction when the scraped image is a placeholder.
+ */
+function resolveImage(image: string | null, html: string): string | null {
+    if (!image || isPlaceholderImageUrl(image)) {
+        return extractImageFromJsonLd(html);
+    }
+    return image;
+}
+
 /**
  * Extract recipe image URL from JSON-LD schema data.
  * Falls back to JSON-LD when standard HTML extraction fails.
@@ -682,25 +697,25 @@ export function extractImageFromJsonLd(html: string): string | null {
 
         // Handle string format
         if (typeof image === 'string') {
-            return image.toLowerCase().includes('placeholder') ? null : image;
+            return isPlaceholderImageUrl(image) ? null : image;
         }
 
         // Handle array format
         if (Array.isArray(image) && image.length > 0) {
             const first = image[0];
             if (typeof first === 'string') {
-                return first.toLowerCase().includes('placeholder') ? null : first;
+                return isPlaceholderImageUrl(first) ? null : first;
             }
             if (typeof first === 'object' && first !== null && 'url' in first) {
                 const url = (first as JsonObject)['url'] as string;
-                return url.toLowerCase().includes('placeholder') ? null : url;
+                return isPlaceholderImageUrl(url) ? null : url;
             }
         }
 
         // Handle object format
         if (typeof image === 'object' && image !== null && 'url' in image) {
             const url = (image as JsonObject)['url'] as string;
-            return url.toLowerCase().includes('placeholder') ? null : url;
+            return isPlaceholderImageUrl(url) ? null : url;
         }
 
         return null;

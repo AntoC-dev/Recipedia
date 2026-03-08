@@ -3,6 +3,7 @@ import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { ScrapeResult, useRecipeScraper } from '@hooks/useRecipeScraper';
 import { hellofreshKeftasRecipe } from '@test-data/scraperMocks/hellofresh';
 import {
+  createEmptyScrapedRecipe,
   mockScrapeRecipeAuthenticated,
   mockScrapeRecipeAuthenticatedError,
   mockScrapeRecipeAuthenticatedSuccess,
@@ -190,6 +191,21 @@ describe('useRecipeScraper', () => {
       }
     });
 
+    test('handles non-Error thrown during scraping (serializeError string path)', async () => {
+      mockFetch.mockRejectedValue('plain string thrown');
+
+      const { result } = renderHook(() => useRecipeScraper(), {
+        wrapper: createWrapper(),
+      });
+
+      let scrapeResult: ScrapeResult | undefined;
+      await act(async () => {
+        scrapeResult = await result.current.scrapeAndPrepare('https://example.com');
+      });
+
+      expect(scrapeResult?.success).toBe(false);
+    });
+
     test('clearError resets error state', async () => {
       mockScrapeRecipeFromHtmlError('Some error', 'SomeErrorType');
 
@@ -208,6 +224,51 @@ describe('useRecipeScraper', () => {
       });
 
       expect(result.current.error).toBeUndefined();
+    });
+  });
+
+  describe('placeholder image handling', () => {
+    const PLACEHOLDER_URL =
+      'https://www.quitoque.fr/media/cache/sylius_shop_product_cover/build/quitoque/theme/images/placeholder.4d937d0d.jpg';
+    const REAL_IMAGE_URL =
+      'https://www.quitoque.fr/media/cache/resolve/sylius_shop_product_cover_2x/real-image.jpg';
+
+    test('replaces placeholder image with JSON-LD real image', async () => {
+      const htmlWithJsonLd = `
+        <html>
+          <script type="application/ld+json">
+            {"@type": "Recipe", "image": "${REAL_IMAGE_URL}"}
+          </script>
+        </html>
+      `;
+      mockScrapeRecipeFromHtmlSuccess(createEmptyScrapedRecipe({ image: PLACEHOLDER_URL }));
+      mockFetchHtmlSuccess(htmlWithJsonLd);
+      mockDownloadImageToCacheSuccess('/cached/real-image.jpg');
+
+      const { result } = renderHook(() => useRecipeScraper(), {
+        wrapper: createWrapper(),
+      });
+
+      await act(async () => {
+        await result.current.scrapeAndPrepare('https://www.quitoque.fr/recettes/test');
+      });
+
+      expect(mockDownloadImageToCache).toHaveBeenCalledWith(REAL_IMAGE_URL);
+    });
+
+    test('does not download when placeholder has no JSON-LD fallback', async () => {
+      mockScrapeRecipeFromHtmlSuccess(createEmptyScrapedRecipe({ image: PLACEHOLDER_URL }));
+      mockFetchHtmlSuccess('<html></html>');
+
+      const { result } = renderHook(() => useRecipeScraper(), {
+        wrapper: createWrapper(),
+      });
+
+      await act(async () => {
+        await result.current.scrapeAndPrepare('https://www.quitoque.fr/recettes/test');
+      });
+
+      expect(mockDownloadImageToCache).not.toHaveBeenCalled();
     });
   });
 

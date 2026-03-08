@@ -14,6 +14,7 @@ import {
   IgnoredIngredientPatterns,
 } from '@utils/RecipeScraperConverter';
 import { downloadImageToCache } from '@utils/FileGestion';
+import { isPlaceholderImageUrl } from '@utils/UrlHelpers';
 import {
   ConvertedImportRecipe,
   DiscoveredRecipe,
@@ -234,7 +235,8 @@ export abstract class BaseRecipeProvider implements RecipeProvider {
             const converted = convertScrapedRecipe(result.data, ignoredPatterns, defaultPersons);
 
             let localImageUri: string | undefined;
-            const imageUrl = cleanImageUrl(converted.image_Source || recipe.imageUrl || '');
+            const rawImageUrl = cleanImageUrl(converted.image_Source || recipe.imageUrl || '');
+            const imageUrl = isPlaceholderImageUrl(rawImageUrl) ? '' : rawImageUrl;
             if (imageUrl) {
               const downloadedUri = await downloadImageToCache(imageUrl);
               localImageUri = downloadedUri || undefined;
