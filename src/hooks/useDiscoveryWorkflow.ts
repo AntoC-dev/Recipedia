@@ -124,8 +124,10 @@ export function useDiscoveryWorkflow(
           bulkImportLogger.error('Discovery failed', { error: errorMsg });
         }
       } finally {
-        setPhase('selecting');
-        abortControllerRef.current = null;
+        setPhase(prev => (prev === 'discovering' ? 'selecting' : prev));
+        if (abortControllerRef.current === abortController) {
+          abortControllerRef.current = null;
+        }
       }
     };
 
