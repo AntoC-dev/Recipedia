@@ -133,17 +133,12 @@ tags:
     file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
+- extendedWaitUntil:
+    visible:
       id: "SearchScreen::RecipeCards::0::Persons"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to recipe card"
-
-- waitForAnimationToEnd
+    timeout: 20000
+    optional: true
+    label: "Wait for search results to load"
 
 - assertVisible:
     id: "SearchScreen::RecipeCards::0::Persons"
