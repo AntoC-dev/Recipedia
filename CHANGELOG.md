@@ -1,3 +1,11 @@
+## [2.19.1](https://github.com/AntoC-dev/Recipedia/compare/v2.19.0...v2.19.1) (2026-03-08)
+
+### Bug Fixes
+
+* **bulk-import:** skip image download when recipe.imageUrl is a placeholder ([43820bc](https://github.com/AntoC-dev/Recipedia/commit/43820bcd8ae5062ba6ecd7e745dfcec499d8c13d))
+* prevent placeholder images from being saved in recipe imports ([#211](https://github.com/AntoC-dev/Recipedia/issues/211)) ([49cf517](https://github.com/AntoC-dev/Recipedia/commit/49cf517f38081cc5c1a65dadc1e8bc323f3034ee))
+* **scraper:** treat placeholder images as absent in applyEnhancements ([7672bc0](https://github.com/AntoC-dev/Recipedia/commit/7672bc00d02b698eda43f0c9ad51ac593bb10f72))
+
 ## [2.19.0](https://github.com/AntoC-dev/Recipedia/compare/v2.18.2...v2.19.0) (2026-03-07)
 
 ### Features
