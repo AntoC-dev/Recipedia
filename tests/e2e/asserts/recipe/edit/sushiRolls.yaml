@@ -147,8 +147,9 @@ appId: "com.recipedia"
     element:
       id: "RecipePersons::PrefixText"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
+    label: "Scroll down to the number of persons section"
 
 - waitForAnimationToEnd
 

@@ -123,6 +123,12 @@ tags:
     id: "RecipeValidation::ValidationQueue::Ingredient::SimilarityDialog::AddButton"
     label: "Action - Confirm adding ingredient"
 
+- extendedWaitUntil:
+    visible:
+      id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::Title"
+    timeout: 10000
+    label: "Wait for modal to appear"
+
 - runFlow:
     file: "../../asserts/alerts/en/addingIngredient.yaml"
     env:

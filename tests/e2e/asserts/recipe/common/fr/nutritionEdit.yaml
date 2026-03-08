@@ -7,7 +7,7 @@ appId: "com.recipedia"
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::Title"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to nutrition section"
 
@@ -24,7 +24,7 @@ appId: "com.recipedia"
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::Subtitle"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to subtitle"
 
@@ -41,7 +41,7 @@ appId: "com.recipedia"
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to energy kcal section"
 
@@ -58,7 +58,7 @@ appId: "com.recipedia"
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKj::NumericTextInput"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to energy kj section"
 
@@ -75,7 +75,7 @@ appId: "com.recipedia"
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::NumericTextInput"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to protein section"
 
@@ -92,7 +92,7 @@ appId: "com.recipedia"
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::SaturatedFat::NumericTextInput"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to protein section"
 
@@ -109,7 +109,7 @@ appId: "com.recipedia"
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Carbohydrates::NumericTextInput"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to protein section"
 
@@ -131,7 +131,7 @@ appId: "com.recipedia"
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Sugars::NumericTextInput"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to sugars section"
 
@@ -148,7 +148,7 @@ appId: "com.recipedia"
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::NumericTextInput"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to protein section"
 
