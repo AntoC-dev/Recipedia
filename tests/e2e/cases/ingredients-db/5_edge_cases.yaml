@@ -29,5 +29,9 @@ tags:
     label: "Action - Test canceling delete operation"
 
 - runFlow:
+    file: "../../flows/parameters/ingredients/insertTextAtCursorBeginning.yaml"
+    label: "Action - Test cursor position preservation on re-render"
+
+- runFlow:
     file: "../../flows/parameters/ingredients/returnToHome.yaml"
     label: "Cleanup - Return to Home screen"

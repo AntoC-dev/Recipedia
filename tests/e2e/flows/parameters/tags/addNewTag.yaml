@@ -38,17 +38,24 @@ appId: "com.recipedia"
     id: "TagsSettings::ItemDialog::AddModal::ConfirmButton"
     label: "Confirm adding the new tag"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      text: "RecipeTag"
-    direction: DOWN
-    speed: 40
-    label: "Scroll to find the newly added tag"
-
-- waitForAnimationToEnd
+- runFlow:
+    file: "../searchInSettingsList.yaml"
+    env:
+      SETTINGS_SCREEN: "TagsSettings"
+      SEARCH_QUERY: "RecipeTag"
+    label: "Action - Search for RecipeTag tag"
 
 - assertVisible:
+    id: "TagsSettings::0::TagName"
     text: "RecipeTag"
     label: "Verify new tag appears in the list"
+
+- tapOn:
+    id: "TagsSettings::SearchBar-clear-icon"
+    label: "Clear the search bar"
+
+- extendedWaitUntil:
+    visible:
+      id: "TagsSettings::1::TagName"
+    timeout: 60000
+    label: "Wait for list to show all items"

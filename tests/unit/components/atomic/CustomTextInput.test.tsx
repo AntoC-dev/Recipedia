@@ -57,15 +57,9 @@ describe('CustomTextInput', () => {
     expect(input.props.editable).toBe(false);
   });
 
-  test('handles multiline and dynamic height', () => {
+  test('passes multiline prop to the underlying input', () => {
     const { getByTestId } = render(<CustomTextInput {...baseProps} multiline value={'abc\ndef'} />);
-    const input = getByTestId('custom-input::CustomTextInput');
-    expect(input.props.multiline).toBe(true);
-    // Simulate content size change event
-    fireEvent(input, 'onContentSizeChange', {
-      nativeEvent: { contentSize: { height: 120 } },
-    });
-    // Optionally: re-render and check height if desired, or snapshot
+    expect(getByTestId('custom-input::CustomTextInput').props.multiline).toBe(true);
   });
 
   test('is editable by default when editable prop is true', () => {
@@ -92,5 +86,68 @@ describe('CustomTextInput', () => {
     fireEvent.changeText(input, 'TestTag');
     expect(handleChange).toHaveBeenCalledWith('TestTag');
     expect(input.props.editable).toBe(true);
+  });
+
+  describe('displayValue cursor-fix behavior', () => {
+    test('initialises displayed value from value prop', () => {
+      const { getByTestId } = render(<CustomTextInput testID='custom-input' value='hello' />);
+      expect(getByTestId('custom-input::CustomTextInput').props.value).toBe('hello');
+    });
+
+    test('renders empty string when value prop is undefined', () => {
+      const { getByTestId } = render(<CustomTextInput testID='custom-input' />);
+      expect(getByTestId('custom-input::CustomTextInput').props.value).toBe('');
+    });
+
+    test('updates displayed value immediately when user types', () => {
+      const { getByTestId } = render(<CustomTextInput {...baseProps} value='test' />);
+      const input = getByTestId('custom-input::CustomTextInput');
+
+      fireEvent.changeText(input, 'NewTest');
+
+      expect(input.props.value).toBe('NewTest');
+    });
+
+    test('retains typed text when parent re-renders with stale same value during validation', () => {
+      const onChangeText = jest.fn();
+      const { getByTestId, rerender } = render(
+        <CustomTextInput {...baseProps} value='Italian' onChangeText={onChangeText} />
+      );
+      const input = getByTestId('custom-input::CustomTextInput');
+
+      fireEvent.changeText(input, 'New Italian');
+      rerender(<CustomTextInput {...baseProps} value='Italian' onChangeText={onChangeText} />);
+
+      expect(input.props.value).toBe('New Italian');
+      expect(onChangeText).toHaveBeenCalledWith('New Italian');
+    });
+
+    test('syncs displayed value when parent provides a new external value', () => {
+      const { getByTestId, rerender } = render(<CustomTextInput {...baseProps} value='original' />);
+      const input = getByTestId('custom-input::CustomTextInput');
+
+      rerender(<CustomTextInput {...baseProps} value='updated' />);
+
+      expect(input.props.value).toBe('updated');
+    });
+
+    test('syncs to empty string when parent clears value to undefined', () => {
+      const { getByTestId, rerender } = render(<CustomTextInput {...baseProps} value='text' />);
+      const input = getByTestId('custom-input::CustomTextInput');
+
+      rerender(<CustomTextInput {...baseProps} value={undefined} />);
+
+      expect(input.props.value).toBe('');
+    });
+
+    test('applies a subsequent external change after user has typed', () => {
+      const { getByTestId, rerender } = render(<CustomTextInput {...baseProps} value='original' />);
+      const input = getByTestId('custom-input::CustomTextInput');
+
+      fireEvent.changeText(input, 'typed');
+      rerender(<CustomTextInput {...baseProps} value='server-reset' />);
+
+      expect(input.props.value).toBe('server-reset');
+    });
   });
 });

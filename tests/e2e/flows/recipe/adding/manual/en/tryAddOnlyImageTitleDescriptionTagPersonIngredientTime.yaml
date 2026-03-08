@@ -7,19 +7,9 @@ appId: "com.recipedia"
     element:
       id: "RecipeTime::NumericTextInput"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to time section"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeTime::NumericTextInput"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to time input"
 
 - waitForAnimationToEnd
 

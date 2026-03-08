@@ -38,6 +38,24 @@ appId: "com.recipedia"
     id: "TagsSettings::ItemDialog::AddModal::CancelButton"
     label: "Cancel after entering tag name"
 
+- runFlow:
+    file: "../searchInSettingsList.yaml"
+    env:
+      SETTINGS_SCREEN: "TagsSettings"
+      SEARCH_QUERY: "Test Cancel"
+    label: "Search for canceled tag"
+
 - assertNotVisible:
+    id: "TagsSettings::.*::TagName"
     text: "Test Cancel Tag"
-    label: "Verify tag was not added after cancel"
+    label: "Verify tag was not found"
+
+- tapOn:
+    id: "TagsSettings::SearchBar-clear-icon"
+    label: "Clear the search bar"
+
+- extendedWaitUntil:
+    visible:
+      id: "TagsSettings::1::TagName"
+    timeout: 60000
+    label: "Wait for list to show all items"

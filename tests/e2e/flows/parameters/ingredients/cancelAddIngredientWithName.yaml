@@ -41,3 +41,25 @@ appId: "com.recipedia"
 - assertNotVisible:
     text: "Test Cancel Ingredient"
     label: "Verify ingredient was not added after cancel"
+
+- runFlow:
+    file: "../searchInSettingsList.yaml"
+    env:
+      SETTINGS_SCREEN: "IngredientsSettings"
+      SEARCH_QUERY: "Test Cancel"
+    label: "Search for canceled ingredient"
+
+- assertNotVisible:
+    id: "IngredientsSettings::.*::IngredientName"
+    text: "Test Cancel Ingredient"
+    label: "Verify ingredient was not found"
+
+- tapOn:
+    id: "IngredientsSettings::SearchBar-clear-icon"
+    label: "Clear the search bar"
+
+- extendedWaitUntil:
+    visible:
+      id: "IngredientsSettings::1::IngredientName"
+    timeout: 60000
+    label: "Wait for list to show all items"

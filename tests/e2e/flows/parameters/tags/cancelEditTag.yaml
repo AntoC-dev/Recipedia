@@ -1,20 +1,15 @@
 appId: "com.recipedia"
 ---
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      text: "Italian"
-    direction: UP
-    speed: 60
-    centerElement: true
-    label: "Scroll up to find Italian tag for edit test"
-
-- waitForAnimationToEnd
+- runFlow:
+    file: "../searchInSettingsList.yaml"
+    env:
+      SETTINGS_SCREEN: "TagsSettings"
+      SEARCH_QUERY: "Italian"
+    label: "Search for Italian tag"
 
 - tapOn:
-    id: "TagsSettings::6::EditButton"
+    id: "TagsSettings::0::EditButton"
     label: "Open Edit dialog for Italian tag"
 
 - tapOn:
@@ -58,3 +53,13 @@ appId: "com.recipedia"
 - assertNotVisible:
     text: "Italian Modified"
     label: "Verify modified name was not saved"
+
+- tapOn:
+    id: "TagsSettings::SearchBar-clear-icon"
+    label: "Clear the search bar"
+
+- extendedWaitUntil:
+    visible:
+      id: "TagsSettings::1::TagName"
+    timeout: 60000
+    label: "Wait for list to show all items"

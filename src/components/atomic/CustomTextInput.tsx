@@ -2,14 +2,13 @@
  * CustomTextInput - Enhanced text input component
  *
  * A wrapper around React Native Paper's TextInput that provides enhanced functionality.
- * Features include automatic height adjustment for multiline inputs and proper theme integration.
- * Designed to provide a consistent and accessible input experience throughout the app.
+ * Features include the `displayValue` pattern to decouple the native input's displayed
+ * value from the parent's controlled prop, preventing cursor-reset bugs caused by
+ * validation re-renders interleaving with native text change events.
  *
  * Key Features:
- * - Automatic height adjustment for multiline text
+ * - Cursor-position preservation during controlled re-renders (displayValue pattern)
  * - Full React Native Paper theme integration
- * - Comprehensive keyboard type support
- * - Enhanced accessibility with proper test IDs
  * - Visual feedback for non-editable states
  * - Compatible with accessibility tools like Maestro
  *
@@ -35,18 +34,10 @@
  */
 
 import React, { useRef, useState } from 'react';
-import {
-  LayoutChangeEvent,
-  NativeSyntheticEvent,
-  StyleProp,
-  TextInputContentSizeChangeEventData,
-  TextStyle,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { LayoutChangeEvent, StyleProp, TextStyle, ViewStyle } from 'react-native';
 import { TextInput, useTheme } from 'react-native-paper';
-import { screenHeight } from '@styles/spacing';
 import { getDatasetType } from '@utils/DatasetLoader';
+import { padding } from '@styles/spacing';
 
 /**
  * Props for the CustomTextInput component
@@ -98,7 +89,7 @@ export type CustomTextInputProps = {
 const disableAutoCorrect = getDatasetType() === 'test';
 
 /**
- * CustomTextInput component with enhanced editing behavior
+ * CustomTextInput component with cursor-position-preserving editing behavior
  *
  * @param props - The component props
  * @returns JSX element representing the enhanced text input
@@ -125,77 +116,54 @@ export function CustomTextInput({
   autoCorrect,
   spellCheck,
 }: CustomTextInputProps) {
-  const [inputHeight, setInputHeight] = useState(screenHeight * 0.08);
+  const [displayValue, setDisplayValue] = useState(value ?? '');
+  const prevExternalValueRef = useRef(value);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const inputRef = useRef<any>(null);
-
-  function handleOnFocus() {
-    onFocus?.();
-  }
-
-  function handleOnChangeText(text: string) {
-    onChangeText?.(text);
-  }
-
-  function handleOnEndEditing() {
-    onEndEditing?.();
-  }
-
-  function handleOnBlur() {
-    onBlur?.();
-  }
-
-  function handleOnLayout(event: LayoutChangeEvent) {
-    onLayout?.(event);
-  }
-
-  function handleOnContentSizeChange({
-    nativeEvent: { contentSize },
-  }: NativeSyntheticEvent<TextInputContentSizeChangeEventData>) {
-    if (multiline) {
-      const h = contentSize.height;
-      if (inputHeight !== h) {
-        setInputHeight(h);
-      }
-    }
+  if (value !== prevExternalValueRef.current) {
+    prevExternalValueRef.current = value;
+    setDisplayValue(value ?? '');
   }
 
   const { colors } = useTheme();
 
-  const inputStyle = [
-    style as TextStyle,
-    { height: inputHeight },
-    editable ? {} : { backgroundColor: colors.backdrop },
-  ];
+  function handleOnChangeText(text: string) {
+    setDisplayValue(text);
+    onChangeText?.(text);
+  }
+
   return (
-    <View style={style} pointerEvents={'box-none'} accessible={false}>
-      <TextInput
-        testID={testID + '::CustomTextInput'}
-        ref={inputRef}
-        label={label}
-        value={value ?? ''}
-        placeholder={placeholder}
-        style={inputStyle}
-        contentStyle={contentStyle}
-        onFocus={handleOnFocus}
-        onChangeText={handleOnChangeText}
-        onEndEditing={handleOnEndEditing}
-        mode={mode}
-        dense={dense}
-        multiline={multiline}
-        editable={editable}
-        keyboardType={keyboardType}
-        onBlur={handleOnBlur}
-        onLayout={handleOnLayout}
-        onContentSizeChange={handleOnContentSizeChange}
-        error={error}
-        right={right}
-        returnKeyType={multiline ? 'default' : 'done'}
-        autoCorrect={disableAutoCorrect ? false : autoCorrect}
-        spellCheck={disableAutoCorrect ? false : spellCheck}
-      />
-    </View>
+    <TextInput
+      testID={testID + '::CustomTextInput'}
+      label={label}
+      value={displayValue}
+      placeholder={placeholder}
+      style={[style, editable ? undefined : { backgroundColor: colors.backdrop }]}
+      contentStyle={[
+        contentStyle,
+        multiline
+          ? {
+              paddingTop: padding.medium,
+              paddingBottom: padding.medium,
+            }
+          : undefined,
+      ]}
+      onFocus={onFocus}
+      onChangeText={handleOnChangeText}
+      onEndEditing={onEndEditing}
+      mode={mode}
+      dense={dense}
+      multiline={multiline}
+      editable={editable}
+      keyboardType={keyboardType}
+      onBlur={onBlur}
+      onLayout={onLayout}
+      error={error}
+      right={right}
+      returnKeyType={multiline ? 'default' : 'done'}
+      autoCorrect={disableAutoCorrect ? false : autoCorrect}
+      spellCheck={disableAutoCorrect ? false : spellCheck}
+      accessible={false}
+    />
   );
 }
 
