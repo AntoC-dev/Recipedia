@@ -5,6 +5,7 @@ import { TutorialProvider } from './TutorialController';
 import { isFirstLaunch, markAsLaunched } from '@utils/firstLaunch';
 import { appLogger, tutorialLogger } from '@utils/logger';
 import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { repairMissingRecipeImages } from '@utils/ImageRepair';
 
 enum AppMode {
   Loading = 'loading',
@@ -35,7 +36,8 @@ enum AppMode {
  * @returns JSX element representing the current app mode
  */
 export default function AppWrapper() {
-  const { clearMenu, recipes, addRecipeToMenu, toggleMenuItemCooked } = useRecipeDatabase();
+  const { clearMenu, recipes, addRecipeToMenu, toggleMenuItemCooked, editRecipe } =
+    useRecipeDatabase();
   const [mode, setMode] = useState<AppMode>(AppMode.Loading);
 
   useEffect(() => {
@@ -49,6 +51,15 @@ export default function AppWrapper() {
       }
     });
   }, []);
+
+  useEffect(() => {
+    if (mode !== AppMode.Ready) {
+      return;
+    }
+    repairMissingRecipeImages(recipes, editRecipe).catch(e =>
+      appLogger.warn('Image repair failed unexpectedly', { error: e })
+    );
+  }, [mode]);
 
   /**
    * Handles normal app launch initialization
