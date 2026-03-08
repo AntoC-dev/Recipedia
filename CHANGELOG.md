@@ -1,3 +1,11 @@
+## [2.19.2](https://github.com/AntoC-dev/Recipedia/compare/v2.19.1...v2.19.2) (2026-03-08)
+
+### Bug Fixes
+
+* **CustomTextInput:** prevent cursor reset during controlled re-renders ([93fda82](https://github.com/AntoC-dev/Recipedia/commit/93fda82142a4cfa9ac839c064dce6dceabecf23f))
+* **ItemDialog:** prevent cursor reset from item prop reference changes ([6affc03](https://github.com/AntoC-dev/Recipedia/commit/6affc034ab591bfb9af4d6cccc10687ccff4a326))
+* prevent cursor position reset in ItemDialog text inputs ([#210](https://github.com/AntoC-dev/Recipedia/issues/210)) ([2d401dd](https://github.com/AntoC-dev/Recipedia/commit/2d401ddb24686be8244ce476a11ad99a1bcb73fc))
+
 ## [2.19.1](https://github.com/AntoC-dev/Recipedia/compare/v2.19.0...v2.19.1) (2026-03-08)
 
 ### Bug Fixes
