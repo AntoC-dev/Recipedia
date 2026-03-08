@@ -12,6 +12,7 @@ const mockProvider: RecipeProvider = {
   parseSelectedRecipes: jest.fn(),
   fetchRecipe: jest.fn(),
   fetchImageUrlForRecipe: jest.fn().mockResolvedValue(null),
+  canHandleUrl: jest.fn().mockReturnValue(false),
 };
 
 describe('ProviderListItem', () => {

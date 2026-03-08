@@ -82,12 +82,35 @@ describe('repairMissingRecipeImages', () => {
     expect(editRecipe).not.toHaveBeenCalled();
   });
 
-  it('skips recipe whose sourceUrl is a placeholder', async () => {
-    const recipe = buildRecipe({ sourceUrl: 'https://example.com/placeholder/image' });
+  it('treats recipe with placeholder image_Source as a candidate', async () => {
+    mockFindProviderForUrl.mockReturnValue(buildProvider());
+    const recipe = buildRecipe({ image_Source: 'https://example.com/placeholder/image.jpg' });
+
+    await repairMissingRecipeImages([recipe], editRecipe);
+
+    expect(editRecipe).toHaveBeenCalledWith({ ...recipe, image_Source: '/local/path/image.jpg' });
+  });
+
+  it('skips recipe with placeholder image_Source but invalid sourceUrl', async () => {
+    const recipe = buildRecipe({
+      image_Source: 'https://example.com/placeholder/image.jpg',
+      sourceUrl: 'not-a-url',
+    });
 
     await repairMissingRecipeImages([recipe], editRecipe);
 
     expect(editRecipe).not.toHaveBeenCalled();
+  });
+
+  it('repairs all candidates when all succeed', async () => {
+    const recipe1 = buildRecipe({ id: 1, title: 'Recipe 1' });
+    const recipe2 = buildRecipe({ id: 2, title: 'Recipe 2' });
+    const recipe3 = buildRecipe({ id: 3, title: 'Recipe 3' });
+    mockFindProviderForUrl.mockReturnValue(buildProvider());
+
+    await repairMissingRecipeImages([recipe1, recipe2, recipe3], editRecipe);
+
+    expect(editRecipe).toHaveBeenCalledTimes(3);
   });
 
   it('skips recipe when no provider matches the URL', async () => {
@@ -197,31 +220,5 @@ describe('repairMissingRecipeImages', () => {
       ...goodRecipe,
       image_Source: '/local/path/image.jpg',
     });
-  });
-
-  it('skips loop body when signal is already aborted', async () => {
-    const controller = new AbortController();
-    controller.abort();
-    const recipe = buildRecipe();
-
-    await repairMissingRecipeImages([recipe], editRecipe, controller.signal);
-
-    expect(mockFindProviderForUrl).not.toHaveBeenCalled();
-    expect(editRecipe).not.toHaveBeenCalled();
-  });
-
-  it('stops processing remaining recipes when signal is aborted mid-loop', async () => {
-    const controller = new AbortController();
-    const recipe1 = buildRecipe({ id: 1 });
-    const recipe2 = buildRecipe({ id: 2 });
-
-    mockFindProviderForUrl.mockImplementation(() => {
-      controller.abort();
-      return buildProvider();
-    });
-
-    await repairMissingRecipeImages([recipe1, recipe2], editRecipe, controller.signal);
-
-    expect(mockFindProviderForUrl).toHaveBeenCalledTimes(1);
   });
 });

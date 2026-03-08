@@ -1,4 +1,9 @@
-import { getAvailableProviders, getProvider, hasProvider } from '@providers/ProviderRegistry';
+import {
+  findProviderForUrl,
+  getAvailableProviders,
+  getProvider,
+  hasProvider,
+} from '@providers/ProviderRegistry';
 import { HelloFreshProvider } from '@providers/HelloFreshProvider';
 import { QuitoqueProvider } from '@providers/QuitoqueProvider';
 
@@ -61,6 +66,26 @@ describe('ProviderRegistry', () => {
 
     it('is case sensitive', () => {
       expect(hasProvider('HelloFresh')).toBe(false);
+    });
+  });
+
+  describe('findProviderForUrl', () => {
+    it('returns QuitoqueProvider for a quitoque.fr URL', () => {
+      const provider = findProviderForUrl('https://www.quitoque.fr/recettes/poulet-roti');
+
+      expect(provider).toBeInstanceOf(QuitoqueProvider);
+    });
+
+    it('returns HelloFreshProvider for a hellofresh URL', () => {
+      const provider = findProviderForUrl('https://www.hellofresh.fr/recipes/chicken-soup-abc123');
+
+      expect(provider).toBeInstanceOf(HelloFreshProvider);
+    });
+
+    it('returns undefined for an unknown URL', () => {
+      const provider = findProviderForUrl('https://www.marmiton.org/recettes/some-recipe');
+
+      expect(provider).toBeUndefined();
     });
   });
 });
