@@ -1,3 +1,12 @@
+## [2.20.0](https://github.com/AntoC-dev/Recipedia/compare/v2.19.2...v2.20.0) (2026-03-08)
+
+### Features
+
+* **AppWrapper:** trigger image repair once on app ready ([201cf6e](https://github.com/AntoC-dev/Recipedia/commit/201cf6e60b65abad5817c3de5c1a4d99500dafd3))
+* auto-repair recipes with missing images at app startup ([#212](https://github.com/AntoC-dev/Recipedia/issues/212)) ([b6bf382](https://github.com/AntoC-dev/Recipedia/commit/b6bf3828da356a6cac2d1753d65867b264053a04))
+* **providers:** add canHandleUrl and findProviderForUrl for URL-based dispatch ([dbec170](https://github.com/AntoC-dev/Recipedia/commit/dbec170efb2f07da7248bed377cc48658f57d806))
+* **utils:** add repairMissingRecipeImages utility ([3fd43ba](https://github.com/AntoC-dev/Recipedia/commit/3fd43ba5368f5fa4e8ca97cebce8a283a6be2aed))
+
 ## [2.19.2](https://github.com/AntoC-dev/Recipedia/compare/v2.19.1...v2.19.2) (2026-03-08)
 
 ### Bug Fixes
