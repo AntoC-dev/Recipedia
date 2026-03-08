@@ -51,3 +51,21 @@ export function getAvailableProviders(language: string): RecipeProvider[] {
 export function hasProvider(id: string): boolean {
   return providerRegistry.has(id);
 }
+
+/**
+ * Finds the provider that can handle a given recipe source URL
+ *
+ * Iterates all registered providers and returns the first one whose
+ * `canHandleUrl` method returns true for the given URL.
+ *
+ * @param url - Recipe source URL to look up
+ * @returns The matching provider instance, or undefined if none found
+ */
+export function findProviderForUrl(url: string): RecipeProvider | undefined {
+  for (const provider of providerRegistry.values()) {
+    if (provider.canHandleUrl(url)) {
+      return provider;
+    }
+  }
+  return undefined;
+}

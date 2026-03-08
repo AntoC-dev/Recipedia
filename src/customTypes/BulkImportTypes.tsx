@@ -32,22 +32,55 @@ import { IngredientWithSimilarity, TagWithSimilarity } from '@utils/RecipeValida
  * bulk recipe import from external websites.
  */
 export interface RecipeProvider {
+  /** Unique identifier for this provider (e.g., `'hellofresh'`) */
   readonly id: string;
+
+  /** Human-readable display name shown in the UI */
   readonly name: string;
+
+  /** URL to the provider's logo image */
   readonly logoUrl: string;
 
   /** Languages this provider supports. If undefined, available for all languages. */
   readonly supportedLanguages?: readonly string[];
 
+  /**
+   * Returns the base URL for this provider, resolved from the user's locale
+   *
+   * @returns Promise resolving to the provider's base URL
+   */
   getBaseUrl(): Promise<string>;
 
+  /**
+   * Discovers recipe URLs from the provider with streaming progress updates
+   *
+   * @param options - Discovery options including abort signal and max recipes
+   * @yields Progress updates with discovered recipes as they are found
+   */
   discoverRecipeUrls(options: DiscoveryOptions): AsyncGenerator<DiscoveryProgress>;
 
+  /**
+   * Parses selected recipes to extract full recipe data with streaming progress
+   *
+   * @param selectedRecipes - Recipes selected by the user for import
+   * @param options - Parsing options including abort signal and default persons
+   * @yields Progress updates with parsed and failed recipes
+   */
   parseSelectedRecipes(
     selectedRecipes: DiscoveredRecipe[],
     options: DiscoveryOptions
   ): AsyncGenerator<ParsingProgress>;
 
+  /**
+   * Fetches and parses a single recipe from its URL
+   *
+   * @param url - URL of the recipe page to fetch
+   * @param defaultPersons - Default serving size if not specified in the recipe
+   * @param ignoredPatterns - Patterns for ingredients to skip during parsing
+   * @param signal - Optional abort signal for cancellation
+   * @returns Promise resolving to the fetched and converted recipe
+   * @throws Error if the recipe cannot be fetched or parsed
+   */
   fetchRecipe(
     url: string,
     defaultPersons: number,
@@ -66,6 +99,18 @@ export interface RecipeProvider {
    * @returns Promise resolving to image URL or null
    */
   fetchImageUrlForRecipe(url: string, signal: AbortSignal): Promise<string | null>;
+
+  /**
+   * Returns true if this provider can handle the given recipe source URL
+   *
+   * Used to find the correct provider for a recipe URL without calling
+   * any async methods. Implementations should check URL prefixes against
+   * their known base URL(s).
+   *
+   * @param url - Recipe source URL to test
+   * @returns true if this provider owns the URL
+   */
+  canHandleUrl(url: string): boolean;
 }
 
 /**
