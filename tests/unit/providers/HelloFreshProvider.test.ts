@@ -117,6 +117,34 @@ describe('HelloFreshProvider', () => {
     });
   });
 
+  describe('canHandleUrl', () => {
+    it('returns true for hellofresh.fr URL', () => {
+      expect(provider.canHandleUrl('https://www.hellofresh.fr/recipes/chicken-soup-abc123')).toBe(
+        true
+      );
+    });
+
+    it('returns true for hellofresh.com URL', () => {
+      expect(
+        provider.canHandleUrl('https://www.hellofresh.com/recipes/pasta-primavera-abc123')
+      ).toBe(true);
+    });
+
+    it('returns true for hellofresh.de URL', () => {
+      expect(provider.canHandleUrl('https://www.hellofresh.de/recipes/schnitzel-abc123')).toBe(
+        true
+      );
+    });
+
+    it('returns false for a quitoque.fr URL', () => {
+      expect(provider.canHandleUrl('https://www.quitoque.fr/recettes/poulet-roti')).toBe(false);
+    });
+
+    it('returns false for an empty string', () => {
+      expect(provider.canHandleUrl('')).toBe(false);
+    });
+  });
+
   describe('discoverCategoryUrls', () => {
     beforeEach(async () => {
       mockGetLanguage.mockResolvedValue('fr');

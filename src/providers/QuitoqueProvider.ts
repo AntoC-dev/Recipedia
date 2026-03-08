@@ -154,6 +154,16 @@ export class QuitoqueProvider extends BaseRecipeProvider {
   }
 
   /**
+   * Returns true if this provider can handle the given URL
+   *
+   * @param url - Recipe source URL to test
+   * @returns true if the URL starts with the Quitoque base URL
+   */
+  override canHandleUrl(url: string): boolean {
+    return url.startsWith(QUITOQUE_BASE_URL);
+  }
+
+  /**
    * Fetches the image URL for a Quitoque recipe page
    *
    * The Python recipe-scrapers library returns placeholder images for Quitoque.

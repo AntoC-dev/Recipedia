@@ -130,6 +130,7 @@ const createMockProvider = (options?: {
     converted: {} as ConvertedImportRecipe,
   }),
   fetchImageUrlForRecipe: jest.fn().mockResolvedValue('https://example.com/image.jpg'),
+  canHandleUrl: jest.fn().mockReturnValue(false),
 });
 
 describe('useDiscoveryWorkflow', () => {
@@ -465,6 +466,7 @@ describe('useDiscoveryWorkflow', () => {
         }),
         fetchRecipe: jest.fn(),
         fetchImageUrlForRecipe: jest.fn().mockResolvedValue(null),
+        canHandleUrl: jest.fn().mockReturnValue(false),
       };
 
       const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
@@ -503,6 +505,7 @@ describe('useDiscoveryWorkflow', () => {
         }),
         fetchRecipe: jest.fn(),
         fetchImageUrlForRecipe: jest.fn().mockResolvedValue(null),
+        canHandleUrl: jest.fn().mockReturnValue(false),
       };
 
       const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
@@ -568,6 +571,7 @@ describe('useDiscoveryWorkflow', () => {
         }),
         fetchRecipe: jest.fn(),
         fetchImageUrlForRecipe: jest.fn().mockResolvedValue(null),
+        canHandleUrl: jest.fn().mockReturnValue(false),
       };
 
       const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });
@@ -641,6 +645,7 @@ describe('useDiscoveryWorkflow', () => {
         }),
         fetchRecipe: jest.fn(),
         fetchImageUrlForRecipe: jest.fn().mockResolvedValue(null),
+        canHandleUrl: jest.fn().mockReturnValue(false),
       };
 
       const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'), { wrapper });

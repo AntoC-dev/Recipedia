@@ -62,6 +62,16 @@ export class HelloFreshProvider extends BaseRecipeProvider {
   private currentBaseUrl: string | null = null;
 
   /**
+   * Returns true if this provider can handle the given URL
+   *
+   * @param url - Recipe source URL to test
+   * @returns true if the URL starts with the HelloFresh base URL (any region)
+   */
+  override canHandleUrl(url: string): boolean {
+    return url.startsWith(HELLOFRESH_BASE);
+  }
+
+  /**
    * Gets the base URL for the user's regional HelloFresh site
    *
    * Always fetches the current language setting to ensure the correct

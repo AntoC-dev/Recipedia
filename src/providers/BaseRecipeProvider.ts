@@ -383,6 +383,19 @@ export abstract class BaseRecipeProvider implements RecipeProvider {
   }
 
   /**
+   * Returns true if this provider can handle the given recipe source URL
+   *
+   * Default implementation returns false. Subclasses should override to check
+   * whether the URL belongs to their domain.
+   *
+   * @param _url - Recipe source URL to test
+   * @returns false by default
+   */
+  canHandleUrl(_url: string): boolean {
+    return false;
+  }
+
+  /**
    * Fetches just the image URL for a recipe page on-demand
    *
    * Used for visibility-based lazy loading of images. Fetches the recipe

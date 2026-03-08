@@ -215,6 +215,22 @@ describe('QuitoqueProvider', () => {
     });
   });
 
+  describe('canHandleUrl', () => {
+    it('returns true for a quitoque.fr recipe URL', () => {
+      expect(provider.canHandleUrl('https://www.quitoque.fr/recettes/poulet-roti')).toBe(true);
+    });
+
+    it('returns false for a hellofresh URL', () => {
+      expect(provider.canHandleUrl('https://www.hellofresh.fr/recipes/chicken-soup-abc123')).toBe(
+        false
+      );
+    });
+
+    it('returns false for an empty string', () => {
+      expect(provider.canHandleUrl('')).toBe(false);
+    });
+  });
+
   describe('fetchImageUrlForRecipe', () => {
     const recipeUrl = 'https://www.quitoque.fr/recettes/camembert-roti';
     const abortController = new AbortController();
