@@ -1,5 +1,6 @@
 appId: "com.recipedia"
 ---
+- evalScript: ${output.modalImageCounter = 1}
 
 - waitForAnimationToEnd
 
@@ -7,7 +8,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeTags::OpenModal::RoundButton"
     direction: DOWN
-    speed: 60
+    speed: 40
     centerElement: true
     label: "Scroll to tags section"
 
@@ -41,6 +42,12 @@ appId: "com.recipedia"
     when:
       platform: iOS
 
+- extendedWaitUntil:
+    visible:
+      id: "RecipeValidation::ValidationQueue::Tag::SimilarityDialog::Title"
+    timeout: 120000
+    label: "Wait for validation queue for tags to be displayed"
+
 - runFlow:
     file: "../../../validation/validateAllTags.yaml"
     env:
@@ -50,5 +57,9 @@ appId: "com.recipedia"
 - extendedWaitUntil:
     visible:
       id: "RecipeTags::0::Chip"
-    timeout: 10000
+    timeout: 30000
     label: "Wait for first tag to be populated by OCR"
+
+- runFlow:
+    file: ../cleanAndResume.yaml
+    label: "Delete tags image from gallery and return to Recipedia"

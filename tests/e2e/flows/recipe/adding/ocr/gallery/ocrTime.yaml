@@ -39,6 +39,7 @@ appId: "com.recipedia"
     when:
       true: ${output.isTime == true}
     commands:
+      - evalScript: ${output.modalImageCounter = 1}
       - tapOn:
           id: "RecipeTime::OpenModal::RoundButton"
           label: "Tap on button to OCR time to prepare"
@@ -67,5 +68,8 @@ appId: "com.recipedia"
       - extendedWaitUntil:
           visible:
             id: "RecipeTime::NumericTextInput"
-          timeout: 10000
+          timeout: 30000
           label: "Wait for time to be populated by OCR"
+      - runFlow:
+          file: ../cleanAndResume.yaml
+          label: "Delete time image from gallery and return to Recipedia"

@@ -16,6 +16,8 @@ import {
   scaleRecipeForSave,
   validateRecipeData,
 } from '@utils/RecipeFormHelpers';
+import { AddProps } from '@components/organisms/RecipeIngredients';
+import { OcrModalTarget } from '@utils/OCR';
 import { recipeStateType } from '@customTypes/ScreenTypes';
 import {
   ingredientTableElement,
@@ -484,44 +486,20 @@ describe('RecipeFormHelpers', () => {
     const mockOpenModal = jest.fn();
 
     test('returns read type for readOnly mode', () => {
-      const result = buildRecipePersonsProps(
-        recipeStateType.readOnly,
-        4,
-        mockSetPersons,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipePersonsProps(recipeStateType.readOnly, 4, mockSetPersons, mockT);
       expect(result.numberProps.editType).toBe('read');
     });
 
     test('returns editable type for edit mode', () => {
-      const result = buildRecipePersonsProps(
-        recipeStateType.edit,
-        4,
-        mockSetPersons,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipePersonsProps(recipeStateType.edit, 4, mockSetPersons, mockT);
       expect(result.numberProps.editType).toBe('editable');
     });
 
-    test('returns add type for addOCR mode with default value', () => {
+    test('returns editable type for addOCR mode', () => {
       const result = buildRecipePersonsProps(
         recipeStateType.addOCR,
         defaultValueNumber,
         mockSetPersons,
-        mockOpenModal,
-        mockT
-      );
-      expect(result.numberProps.editType).toBe('add');
-    });
-
-    test('returns editable type for addOCR mode with existing value', () => {
-      const result = buildRecipePersonsProps(
-        recipeStateType.addOCR,
-        4,
-        mockSetPersons,
-        mockOpenModal,
         mockT
       );
       expect(result.numberProps.editType).toBe('editable');
@@ -532,7 +510,7 @@ describe('RecipeFormHelpers', () => {
     const mockT = (key: string) => key;
     const mockEditIngredients = jest.fn();
     const mockAddIngredient = jest.fn();
-    const mockOpenModal = jest.fn();
+    const mockOpenModalForField = jest.fn();
     const mockIngredients: ingredientTableElement[] = [
       { id: 1, name: 'Flour', unit: 'g', quantity: '200', type: ingredientType.cereal, season: [] },
     ];
@@ -543,7 +521,7 @@ describe('RecipeFormHelpers', () => {
         mockIngredients,
         mockEditIngredients,
         mockAddIngredient,
-        mockOpenModal,
+        mockOpenModalForField,
         mockT
       );
       expect(result.mode).toBe('readOnly');
@@ -555,7 +533,7 @@ describe('RecipeFormHelpers', () => {
         mockIngredients,
         mockEditIngredients,
         mockAddIngredient,
-        mockOpenModal,
+        mockOpenModalForField,
         mockT
       );
       expect(result.mode).toBe('editable');
@@ -567,10 +545,38 @@ describe('RecipeFormHelpers', () => {
         mockIngredients,
         mockEditIngredients,
         mockAddIngredient,
-        mockOpenModal,
+        mockOpenModalForField,
         mockT
       );
       expect(result.mode).toBe('add');
+    });
+
+    test('in addOCR mode, openModalForField prop calls callback with ingredientNames', () => {
+      const result = buildRecipeIngredientsProps(
+        recipeStateType.addOCR,
+        mockIngredients,
+        mockEditIngredients,
+        mockAddIngredient,
+        mockOpenModalForField,
+        mockT
+      );
+      const addResult = result as AddProps;
+      addResult.openModalForField('ingredientNames' as OcrModalTarget);
+      expect(mockOpenModalForField).toHaveBeenCalledWith('ingredientNames');
+    });
+
+    test('in addOCR mode, openModalForField prop calls callback with ingredientQuantities', () => {
+      const result = buildRecipeIngredientsProps(
+        recipeStateType.addOCR,
+        mockIngredients,
+        mockEditIngredients,
+        mockAddIngredient,
+        mockOpenModalForField,
+        mockT
+      );
+      const addResult = result as AddProps;
+      addResult.openModalForField('ingredientQuantities' as OcrModalTarget);
+      expect(mockOpenModalForField).toHaveBeenCalledWith('ingredientQuantities');
     });
   });
 

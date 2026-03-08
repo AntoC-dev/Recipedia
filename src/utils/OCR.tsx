@@ -123,6 +123,14 @@ export const keysIngredientObject = Object.keys({
 export type WarningHandler = (message: string) => void;
 
 /**
+ * Union of all valid OCR modal target field identifiers.
+ *
+ * Extends `recipeColumnsNames` with two ingredient-specific targets that bypass
+ * the structured `recognizeText` pipeline and use dedicated extraction functions.
+ */
+export type OcrModalTarget = recipeColumnsNames | 'ingredientNames' | 'ingredientQuantities';
+
+/**
  * Recognizes and extracts text from an image based on the specified recipe field type
  *
  * Uses ML Kit text recognition to extract text from images and processes it according
@@ -737,15 +745,34 @@ function detectBlockOrder(lines: string[]): BlockOrderResult | null {
  */
 function tranformOCRInIngredients(ocr: TextRecognitionResult): ingredientObject[] {
   const lines = preprocessIngredientLines(ocr);
+
+  ocrLogger.debug('Ingredient OCR raw blocks', {
+    blockCount: ocr.blocks.length,
+    blocks: ocr.blocks.map((b, i) => ({
+      blockIndex: i,
+      text: b.text,
+      lines: b.lines.map(l => l.text),
+    })),
+  });
+  ocrLogger.debug('Ingredient OCR preprocessed lines', { lines });
+
   const blockOrder = detectBlockOrder(lines);
 
+  ocrLogger.debug('Ingredient OCR block order detection', {
+    hasBlockOrder: !!blockOrder,
+    isReversed: blockOrder?.isReversed,
+    ingredientNames: blockOrder?.ingredientNames,
+    dataTokens: blockOrder?.dataTokens,
+  });
+
   if (!blockOrder) {
+    ocrLogger.debug('Ingredient OCR: using parseIngredientsNoHeader fallback');
     return parseIngredientsNoHeader(lines);
   }
 
   const { ingredientNames, dataTokens } = blockOrder;
 
-  const ingredientsOCR = parseIngredientsNamesAndUnits(ingredientNames);
+  const ingredientsOCR = parseIngredientLines(ingredientNames);
   const groups = getIngredientsGroups(dataTokens, ingredientsOCR.length);
 
   adjustForSuspiciousData(groups, ingredientsOCR);
@@ -755,21 +782,21 @@ function tranformOCRInIngredients(ocr: TextRecognitionResult): ingredientObject[
 }
 
 /**
- * Parses ingredient names and units from header strings
+ * Parses ingredient name lines into structured ingredient objects.
  *
- * Extracts ingredient names and units from header format like "Flour (cups)".
- * The first parenthetical is used as the unit, additional parentheticals become notes.
+ * Each line may optionally contain a measurement unit in the first parenthetical
+ * and notes in subsequent parentheticals.
  * Example: "Flour (g) (organic)" → name="Flour", unit="g", note="organic"
  *
- * @param namesAndUnits - Array of header strings containing names and units
+ * @param lines - Array of ingredient text lines, one per ingredient
  * @returns Array of ingredient objects with parsed names, units, and optional notes
  */
-function parseIngredientsNamesAndUnits(namesAndUnits: string[]): ingredientObject[] {
-  return namesAndUnits.map(nameAndUnit => {
-    const parentheticals = nameAndUnit.match(/\(([^)]*)\)/g);
+function parseIngredientLines(lines: string[]): ingredientObject[] {
+  return lines.map(line => {
+    const parentheticals = line.match(/\(([^)]*)\)/g);
     if (!parentheticals || parentheticals.length === 0) {
       return {
-        name: nameAndUnit.trim(),
+        name: line.trim(),
         unit: '',
         quantityPerPersons: [],
       };
@@ -783,7 +810,7 @@ function parseIngredientsNamesAndUnits(namesAndUnits: string[]): ingredientObjec
     const note =
       additionalParentheticals.length > 0 ? additionalParentheticals.join(', ') : undefined;
 
-    let name = nameAndUnit;
+    let name = line;
     for (const p of parentheticals) {
       name = name.replace(p, '');
     }
@@ -1067,7 +1094,7 @@ function retrieveNumberInStr(str: string) {
  */
 export async function extractFieldFromImage(
   uri: string,
-  field: recipeColumnsNames,
+  field: OcrModalTarget,
   currentState: {
     recipePreparation: preparationStepElement[];
     recipePersons: number;
@@ -1086,8 +1113,20 @@ export async function extractFieldFromImage(
     recipeTime: number;
     recipeIngredients: FormIngredientElement[];
     recipeNutrition: nutritionObject;
+    ingredientNames: { name: string; unit: string }[];
+    ingredientQuantities: string[];
   }>
 > {
+  if (field === 'ingredientNames') {
+    const names = await recognizeIngredientNames(uri);
+    return { ingredientNames: names };
+  }
+
+  if (field === 'ingredientQuantities') {
+    const quantities = await recognizeIngredientQuantities(uri);
+    return { ingredientQuantities: quantities };
+  }
+
   if (field === recipeColumnsNames.image) {
     return { recipeImage: uri };
   }
@@ -1236,6 +1275,10 @@ export async function extractFieldFromImage(
  * the first half contains ingredient names, the second half contains quantities with units.
  * This handles cases where ingredient tables don't have clear headers or person markers.
  *
+ * On iOS, ML Kit may return quantity blocks before name blocks (opposite of Android).
+ * This is detected by checking if the first "name" line starts with a digit, in which
+ * case the two halves are swapped before pairing.
+ *
  * @param lines - Array of text lines from ingredient OCR
  * @returns Array of ingredient objects with names, quantities, and units
  *
@@ -1255,8 +1298,13 @@ export function parseIngredientsNoHeader(lines: string[]): ingredientObject[] {
 
   const mid = Math.floor(lines.length / 2);
 
-  const nameLines = lines.slice(0, mid);
-  const quantityLines = lines.slice(mid);
+  let nameLines = lines.slice(0, mid);
+  let quantityLines = lines.slice(mid);
+
+  if (nameLines.length > 0 && numberAtFirstIndex.test(nameLines[0])) {
+    [nameLines, quantityLines] = [quantityLines, nameLines];
+  }
+
   const result: ingredientObject[] = [];
 
   for (let i = 0; i < Math.min(nameLines.length, quantityLines.length); i++) {
@@ -1276,6 +1324,81 @@ export function parseIngredientsNoHeader(lines: string[]): ingredientObject[] {
   }
 
   return result;
+}
+
+/**
+ * Recognizes ingredient names and units from an image.
+ *
+ * Runs ML Kit text recognition on the provided image and extracts ingredient
+ * names with their units using the existing header-parsing pipeline.
+ * Returns an empty array when the image yields no text blocks.
+ *
+ * @param imageUri - URI of the image to process
+ * @returns Promise resolving to an array of `{ name, unit }` objects
+ */
+export async function recognizeIngredientNames(
+  imageUri: string
+): Promise<{ name: string; unit: string }[]> {
+  try {
+    const normalizedUri = imageUri.startsWith('file://') ? imageUri : `file://${imageUri}`;
+    const ocr = await TextRecognition.recognize(normalizedUri);
+    ocrLogger.debug('Ingredient names OCR blocks', {
+      blockCount: ocr.blocks.length,
+      blocks: ocr.blocks.map((b, i) => ({
+        index: i,
+        top: b.frame?.top,
+        lines: b.lines.map(l => l.text),
+      })),
+    });
+    if (ocr.blocks.length === 0) {
+      return [];
+    }
+    const lines = preprocessIngredientLines(ocr);
+    const parsed = parseIngredientLines(lines).map(({ name, unit }) => ({ name, unit }));
+    ocrLogger.debug('Ingredient names parsed', {
+      count: parsed.length,
+      names: parsed.map(r => r.name),
+    });
+    return parsed;
+  } catch (error) {
+    ocrLogger.error('recognizeIngredientNames failed', { error });
+    return [];
+  }
+}
+
+/**
+ * Recognizes ingredient quantities from an image.
+ *
+ * Runs ML Kit text recognition on the provided image and extracts each
+ * non-empty text line as a raw quantity string (e.g. "200", "1.5", "100 g").
+ * Returns an empty array when the image yields no text blocks or on error.
+ *
+ * @param imageUri - URI of the image to process
+ * @returns Promise resolving to an array of quantity strings, one per non-empty line
+ */
+export async function recognizeIngredientQuantities(imageUri: string): Promise<string[]> {
+  try {
+    const normalizedUri = imageUri.startsWith('file://') ? imageUri : `file://${imageUri}`;
+    const ocr = await TextRecognition.recognize(normalizedUri);
+    ocrLogger.debug('Ingredient quantities OCR blocks', {
+      blockCount: ocr.blocks.length,
+      blocks: ocr.blocks.map((b, i) => ({
+        index: i,
+        top: b.frame?.top,
+        lines: b.lines.map(l => ({ text: l.text, top: l.frame?.top })),
+      })),
+    });
+    const result = ocr.blocks
+      .flatMap(block => block.lines)
+      .sort((a, b) => (a.frame?.top ?? 0) - (b.frame?.top ?? 0))
+      .map(line => line.text.trim())
+      .filter(text => text.length > 0);
+    ocrLogger.debug('Ingredient quantities parsed', { count: result.length, quantities: result });
+    return result;
+  } catch (error) {
+    ocrLogger.error('recognizeIngredientQuantities failed', { error });
+    return [];
+  }
 }
 
 /**

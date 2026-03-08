@@ -5,7 +5,7 @@ appId: "com.recipedia"
     text: "Choisissez une image:"
     label: "Explanation text of the modal is displayed in French"
 - assertVisible:
-    id: "Modal::Camera::Text"
+    id: "Modal::Camera::RoundButton::Label"
     text: "Prendre une nouvelle photo"
     label: "Camera helper text is displayed in French"
 - assertVisible:

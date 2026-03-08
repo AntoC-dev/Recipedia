@@ -1,5 +1,6 @@
 appId: "com.recipedia"
 ---
+- evalScript: ${output.modalImageCounter = 1}
 
 - waitForAnimationToEnd
 
@@ -43,5 +44,9 @@ appId: "com.recipedia"
 - extendedWaitUntil:
     visible:
       id: "RecipePreparation::EditableStep::0::Step"
-    timeout: 10000
+    timeout: 60000
     label: "Wait for first preparation step to be populated by OCR"
+
+- runFlow:
+    file: ../cleanAndResume.yaml
+    label: "Delete preparation image from gallery and return to Recipedia"

@@ -1,5 +1,7 @@
 appId: "com.recipedia"
 ---
+- evalScript: ${output.modalImageCounter = 1}
+
 - tapOn:
     id: "RecipeTitle::OpenModal::RoundButton"
     label: "Tap on OCR button of recipe title"
@@ -31,5 +33,9 @@ appId: "com.recipedia"
 - extendedWaitUntil:
     visible:
       id: "RecipeTitle::CustomTextInput"
-    timeout: 10000
+    timeout: 60000
     label: "Wait for title to be populated by OCR"
+
+- runFlow:
+    file: ../cleanAndResume.yaml
+    label: "Delete title image from gallery and return to Recipedia"

@@ -49,6 +49,8 @@ module.exports = {
         '^expo-clipboard$': '<rootDir>/tests/mocks/deps/expo-clipboard-mock.tsx',
         '^react-native-webview$': '<rootDir>/tests/mocks/deps/react-native-webview-mock.tsx',
         '^expo-mail-composer$': '<rootDir>/tests/mocks/deps/expo-mail-composer-mock.tsx',
+    '^expo-image-manipulator$': '<rootDir>/tests/mocks/deps/expo-image-manipulator-mock.tsx',
+        '^@react-native-ml-kit/text-recognition$': '<rootDir>/tests/mocks/deps/react-native-ml-kit-text-recognition-mock.ts',
     },
     setupFilesAfterEnv: [
         '<rootDir>/tests/setup-community-mocks.js',

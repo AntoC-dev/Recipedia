@@ -18,6 +18,9 @@ export default {
   unit: 'Unit',
   ingredientName: 'Name',
   ingredientNotePlaceholder: 'Usage note (e.g., for the sauce)',
+  ingredientsScanQuantities: 'Scan quantities',
+  ingredientsScanNames: 'Scan names',
+  ingredientsAddManually: 'Add manually',
 
   ingredientsOcr: {
     boxHeaders: ['box', 'in your box'],
