@@ -1,44 +1,34 @@
 appId: "com.recipedia"
 ---
 
-- waitForAnimationToEnd
+- runFlow:
+    file: "../searchInSettingsList.yaml"
+    env:
+      SETTINGS_SCREEN: "IngredientsSettings"
+      SEARCH_QUERY: "RecipeIngredient"
+    label: "Action - Search for RecipeIngredient ingredient"
 
-- scrollUntilVisible:
-    element:
-      id: "IngredientsSettings::36::IngredientName"
-    direction: DOWN
-    speed: 85
-    timeout: 1000000
-    centerElement: true
-    label: "Scroll to end of the screen"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "IngredientsSettings::26::IngredientName"
-    direction: UP
-    speed: 60
-    timeout: 120000
-    centerElement: true
-    label: "Scroll to find RecipeIngredient"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "IngredientsSettings::26::DeleteButton"
-    direction: DOWN
-    speed: 20
-    centerElement: true
-    label: "Scroll to ensure delete button is visible"
-
-- waitForAnimationToEnd
+- assertVisible:
+    id: "IngredientsSettings::0::IngredientName"
+    text: "RecipeIngredient"
+    label: "Assert that RecipeIngredient ingredient is visible"
 
 - tapOn:
-    id: "IngredientsSettings::26::DeleteButton"
+    id: "IngredientsSettings::0::DeleteButton"
     label: "Tap Delete button for RecipeIngredient"
+
+- extendedWaitUntil:
+    visible:
+      id: "IngredientsSettings::ItemDialog::DeleteModal.*"
+    timeout: 20000
+    label: "Wait for dialog to appear"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::DeleteModal::ConfirmButton"
     label: "Tap Confirm button in confirmation dialog"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "IngredientsSettings::ItemDialog::DeleteModal.*"
+    timeout: 20000
+    label: "Wait for dialog to disappear"
