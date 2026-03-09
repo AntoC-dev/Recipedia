@@ -19,8 +19,6 @@ import {
 } from '@customTypes/BulkImportTypes';
 import { bulkImportLogger } from '@utils/logger';
 import { normalizeKey } from '@utils/NutritionUtils';
-import { cleanIngredientName, FuzzyMatchLevel, fuzzySearch } from '@utils/FuzzySearch';
-import { IngredientWithSimilarity, TagWithSimilarity } from '@utils/RecipeValidationHelpers';
 
 /**
  * Collects unique ingredients and tags from multiple recipes
@@ -69,100 +67,24 @@ export function collectUniqueItems(recipes: ConvertedImportRecipe[]): {
 /**
  * Initializes batch validation state for imported recipes
  *
- * Collects unique items, matches them against the database using fuzzySearch
- * directly (same logic as ItemDialog), and separates items into exact matches
- * and those needing manual validation.
- *
- * Uses cleanIngredientName for ingredients to match ItemDialog behavior:
- * - "Tomato (diced)" will match existing "Tomato"
- * - This ensures consistency between batch validation and manual item dialogs
+ * Collects unique items via deduplication and passes them as raw items
+ * for the ValidationQueue to handle similarity computation and exact-match
+ * detection internally.
  *
  * @param recipes - Array of converted recipes to validate
- * @param allIngredients - All ingredients from database for fuzzy matching
- * @param allTags - All tags from database for fuzzy matching
- * @returns Initial batch validation state with categorized items
+ * @returns Initial batch validation state with deduplicated items
  */
-export function initializeBatchValidation(
-  recipes: ConvertedImportRecipe[],
-  allIngredients: ingredientTableElement[],
-  allTags: tagTableElement[]
-): BatchValidationState {
+export function initializeBatchValidation(recipes: ConvertedImportRecipe[]): BatchValidationState {
   const { uniqueIngredients, uniqueTags } = collectUniqueItems(recipes);
 
-  const ingredientsToProcess = [...uniqueIngredients.entries()];
-  const tagsToProcess = [...uniqueTags.entries()];
-
   const ingredientMappings = new Map<string, ingredientTableElement>();
-  const ingredientsWithoutSimilar: IngredientWithSimilarity[] = [];
-  const ingredientsWithSimilar: IngredientWithSimilarity[] = [];
-  const exactMatchIngredients: ingredientTableElement[] = [];
-
-  for (const [originalKey, ingredient] of ingredientsToProcess) {
-    if (!ingredient.name) {
-      continue;
-    }
-
-    const result = fuzzySearch<ingredientTableElement>(
-      allIngredients,
-      cleanIngredientName(ingredient.name),
-      ing => cleanIngredientName(ing.name),
-      FuzzyMatchLevel.PERMISSIVE
-    );
-
-    if (result.exact) {
-      const mergedIngredient: ingredientTableElement = {
-        ...result.exact,
-        quantity: ingredient.quantity || result.exact.quantity,
-        unit: ingredient.unit || result.exact.unit,
-      };
-      ingredientMappings.set(originalKey, mergedIngredient);
-      exactMatchIngredients.push(mergedIngredient);
-    } else {
-      const ingredientWithSimilarity: IngredientWithSimilarity = {
-        ...ingredient,
-        similarItems: result.similar,
-      };
-      if (result.similar.length > 0) {
-        ingredientsWithSimilar.push(ingredientWithSimilarity);
-      } else {
-        ingredientsWithoutSimilar.push(ingredientWithSimilarity);
-      }
-    }
-  }
-
   const tagMappings = new Map<string, tagTableElement>();
-  const tagsWithoutSimilar: TagWithSimilarity[] = [];
-  const tagsWithSimilar: TagWithSimilarity[] = [];
-  const exactMatchTags: tagTableElement[] = [];
 
-  for (const [originalKey, tag] of tagsToProcess) {
-    const result = fuzzySearch<tagTableElement>(
-      allTags,
-      tag.name,
-      t => t.name,
-      FuzzyMatchLevel.MODERATE
-    );
-
-    if (result.exact) {
-      tagMappings.set(originalKey, result.exact);
-      exactMatchTags.push(result.exact);
-    } else {
-      const tagWithSimilarity: TagWithSimilarity = { ...tag, similarItems: result.similar };
-      if (result.similar.length > 0) {
-        tagsWithSimilar.push(tagWithSimilarity);
-      } else {
-        tagsWithoutSimilar.push(tagWithSimilarity);
-      }
-    }
-  }
-
-  const ingredientsToValidate = [...ingredientsWithoutSimilar, ...ingredientsWithSimilar];
-  const tagsToValidate = [...tagsWithoutSimilar, ...tagsWithSimilar];
+  const ingredientsToValidate = [...uniqueIngredients.values()].filter(ing => !!ing.name);
+  const tagsToValidate = [...uniqueTags.values()];
 
   bulkImportLogger.info('Batch validation initialized', {
-    exactMatchIngredients: exactMatchIngredients.length,
     ingredientsNeedingValidation: ingredientsToValidate.length,
-    exactMatchTags: exactMatchTags.length,
     tagsNeedingValidation: tagsToValidate.length,
   });
 
@@ -173,8 +95,6 @@ export function initializeBatchValidation(
     tagMappings,
     ingredientsToValidate,
     tagsToValidate,
-    exactMatchIngredients,
-    exactMatchTags,
   };
 }
 
