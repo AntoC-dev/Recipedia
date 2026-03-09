@@ -1,3 +1,10 @@
+## [2.20.1](https://github.com/AntoC-dev/Recipedia/compare/v2.20.0...v2.20.1) (2026-03-09)
+
+### Bug Fixes
+
+* **useDiscoveryWorkflow:** prevent discovery finally block from clobbering parsing state ([ac00ac6](https://github.com/AntoC-dev/Recipedia/commit/ac00ac69f218b36eb68538567acfc5327ce4d6af))
+* **useDiscoveryWorkflow:** prevent discovery finally block from clobbering parsing state ([#213](https://github.com/AntoC-dev/Recipedia/issues/213)) ([fedfd17](https://github.com/AntoC-dev/Recipedia/commit/fedfd17458708957b9b30ebba21a05168a008eb0))
+
 ## [2.20.0](https://github.com/AntoC-dev/Recipedia/compare/v2.19.2...v2.20.0) (2026-03-08)
 
 ### Features
