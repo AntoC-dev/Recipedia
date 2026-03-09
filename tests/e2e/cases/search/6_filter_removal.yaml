@@ -27,6 +27,12 @@ tags:
     file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
+- extendedWaitUntil:
+    visible:
+      id: "SearchScreen::RecipeCards::.*"
+    timeout: 30000
+    label: "Wait for recipe cards to appear"
+
 - runFlow:
     file: "../../asserts/search/en/searchScreenFilteredOnLentilCury.yaml"
     label: "Assert - Verify Search screen shows filtered results for Lentil Curry"
