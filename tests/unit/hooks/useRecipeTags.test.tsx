@@ -168,10 +168,13 @@ describe('useRecipeTags', () => {
       });
 
       await waitFor(() => {
-        expect(result.current.form.state.recipeTags).toHaveLength(3);
+        expect(result.current.dialogs.validationQueue).not.toBeNull();
+        expect(result.current.dialogs.validationQueue?.type).toBe('Tag');
       });
 
-      expect(result.current.form.state.recipeTags.some(t => t.name === 'Mexican')).toBe(true);
+      const queueItems = result.current.dialogs.validationQueue?.items;
+      expect(queueItems).toBeDefined();
+      expect(queueItems?.some((item: { name?: string }) => item.name === 'Mexican')).toBe(true);
     });
 
     test('triggers validation queue for fuzzy matches', async () => {
@@ -231,97 +234,6 @@ describe('useRecipeTags', () => {
 
       await waitFor(() => {
         expect(result.current.dialogs.validationQueue).not.toBeNull();
-      });
-    });
-
-    describe('validation queue with similarItems', () => {
-      test('validation queue items include similarItems property', async () => {
-        mockFindSimilarTags.mockImplementation((name: string) => {
-          if (name.toLowerCase() === 'itallian') {
-            return [{ id: 1, name: 'Italian' }];
-          }
-          return [];
-        });
-
-        const wrapper = createTagsWrapper(createMockRecipeProp('edit', recipeWithTags));
-
-        const { result } = renderHook(
-          () => ({
-            tags: useRecipeTags(),
-            dialogs: useRecipeDialogs(),
-          }),
-          { wrapper }
-        );
-
-        act(() => {
-          result.current.tags.addTag('Itallian');
-        });
-
-        await waitFor(() => {
-          expect(result.current.dialogs.validationQueue).not.toBeNull();
-        });
-
-        const queueItems = result.current.dialogs.validationQueue?.items;
-        expect(queueItems).toBeDefined();
-        expect(queueItems?.[0]).toHaveProperty('similarItems');
-      });
-
-      test('validation queue items have empty similarItems when no matches', async () => {
-        mockFindSimilarTags.mockImplementation(() => []);
-
-        const wrapper = createTagsWrapper(createMockRecipeProp('edit', recipeWithTags));
-
-        const { result } = renderHook(
-          () => ({
-            tags: useRecipeTags(),
-            dialogs: useRecipeDialogs(),
-          }),
-          { wrapper }
-        );
-
-        act(() => {
-          result.current.tags.addTag('CompletelyUnknownTag');
-        });
-
-        await waitFor(() => {
-          expect(result.current.dialogs.validationQueue).not.toBeNull();
-        });
-
-        const queueItems = result.current.dialogs.validationQueue?.items;
-        expect(queueItems).toBeDefined();
-        expect(queueItems?.[0].similarItems).toEqual([]);
-      });
-
-      test('validation queue items have similar tags when fuzzy match exists', async () => {
-        const similarTag = { id: 1, name: 'Italian' };
-        mockFindSimilarTags.mockImplementation((name: string) => {
-          if (name.toLowerCase() === 'ital') {
-            return [similarTag];
-          }
-          return [];
-        });
-
-        const wrapper = createTagsWrapper(createMockRecipeProp('edit', recipeWithTags));
-
-        const { result } = renderHook(
-          () => ({
-            tags: useRecipeTags(),
-            dialogs: useRecipeDialogs(),
-          }),
-          { wrapper }
-        );
-
-        act(() => {
-          result.current.tags.addTag('Ital');
-        });
-
-        await waitFor(() => {
-          expect(result.current.dialogs.validationQueue).not.toBeNull();
-        });
-
-        const queueItems = result.current.dialogs.validationQueue?.items;
-        expect(queueItems).toBeDefined();
-        expect(queueItems?.[0].similarItems).toEqual([similarTag]);
       });
     });
   });

@@ -483,7 +483,7 @@ describe('useRecipeIngredients', () => {
         });
       });
 
-      test('name change to exact match adds ingredient directly', async () => {
+      test('name change to exact match goes to validation queue', async () => {
         const wrapper = createIngredientsWrapper(
           createMockRecipeProp('edit', recipeWithIngredients)
         );
@@ -506,124 +506,12 @@ describe('useRecipeIngredients', () => {
         });
 
         await waitFor(() => {
-          const hasSpaghettiIngredient = result.current.form.state.recipeIngredients.some(
-            ing => ing.name === 'Spaghetti'
-          );
-          expect(hasSpaghettiIngredient).toBe(true);
-        });
-      });
-
-      describe('validation queue with similarItems', () => {
-        test('validation queue items include similarItems property', async () => {
-          const similarIngredient = testIngredients.find(i => i.name === 'Spaghetti')!;
-          mockFindSimilarIngredients.mockImplementation((name: string) => {
-            if (name.toLowerCase() === 'spaghettis') {
-              return [similarIngredient];
-            }
-            return [];
-          });
-
-          const wrapper = createIngredientsWrapper(
-            createMockRecipeProp('edit', recipeWithIngredients)
-          );
-
-          const { result } = renderHook(
-            () => ({
-              ingredients: useRecipeIngredients(),
-              form: useRecipeForm(),
-              dialogs: useRecipeDialogs(),
-            }),
-            { wrapper }
-          );
-
-          await waitFor(() => {
-            expect(result.current.form.state.recipeIngredients).toHaveLength(3);
-          });
-
-          act(() => {
-            result.current.ingredients.editIngredients(0, '200@@g--Spaghettis');
-          });
-
-          await waitFor(() => {
-            expect(result.current.dialogs.validationQueue).not.toBeNull();
-          });
-
-          const queueItems = result.current.dialogs.validationQueue?.items;
-          expect(queueItems).toBeDefined();
-          expect(queueItems?.[0]).toHaveProperty('similarItems');
+          expect(result.current.dialogs.validationQueue).not.toBeNull();
+          expect(result.current.dialogs.validationQueue?.type).toBe('Ingredient');
         });
 
-        test('validation queue items have empty similarItems when no matches', async () => {
-          mockFindSimilarIngredients.mockImplementation(() => []);
-
-          const wrapper = createIngredientsWrapper(
-            createMockRecipeProp('edit', recipeWithIngredients)
-          );
-
-          const { result } = renderHook(
-            () => ({
-              ingredients: useRecipeIngredients(),
-              form: useRecipeForm(),
-              dialogs: useRecipeDialogs(),
-            }),
-            { wrapper }
-          );
-
-          await waitFor(() => {
-            expect(result.current.form.state.recipeIngredients).toHaveLength(3);
-          });
-
-          act(() => {
-            result.current.ingredients.editIngredients(0, '200@@g--CompletelyUnknown');
-          });
-
-          await waitFor(() => {
-            expect(result.current.dialogs.validationQueue).not.toBeNull();
-          });
-
-          const queueItems = result.current.dialogs.validationQueue?.items;
-          expect(queueItems).toBeDefined();
-          expect(queueItems?.[0].similarItems).toEqual([]);
-        });
-
-        test('validation queue items have similar ingredients when fuzzy match exists', async () => {
-          const similarIngredient = testIngredients.find(i => i.name === 'Tomatoes')!;
-          mockFindSimilarIngredients.mockImplementation((name: string) => {
-            if (name.toLowerCase() === 'tomatos') {
-              return [similarIngredient];
-            }
-            return [];
-          });
-
-          const wrapper = createIngredientsWrapper(
-            createMockRecipeProp('edit', recipeWithIngredients)
-          );
-
-          const { result } = renderHook(
-            () => ({
-              ingredients: useRecipeIngredients(),
-              form: useRecipeForm(),
-              dialogs: useRecipeDialogs(),
-            }),
-            { wrapper }
-          );
-
-          await waitFor(() => {
-            expect(result.current.form.state.recipeIngredients).toHaveLength(3);
-          });
-
-          act(() => {
-            result.current.ingredients.editIngredients(0, '200@@g--Tomatos');
-          });
-
-          await waitFor(() => {
-            expect(result.current.dialogs.validationQueue).not.toBeNull();
-          });
-
-          const queueItems = result.current.dialogs.validationQueue?.items;
-          expect(queueItems).toBeDefined();
-          expect(queueItems?.[0].similarItems).toEqual([similarIngredient]);
-        });
+        const queueItems = result.current.dialogs.validationQueue?.items;
+        expect(queueItems?.some((item: { name?: string }) => item.name === 'Spaghetti')).toBe(true);
       });
 
       test('preserves ingredient order when name changes to exact match', async () => {
@@ -643,6 +531,7 @@ describe('useRecipeIngredients', () => {
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
+            dialogs: useRecipeDialogs(),
           }),
           { wrapper }
         );
@@ -656,8 +545,16 @@ describe('useRecipeIngredients', () => {
         });
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients[0].name).toBe('Spaghetti');
+          expect(result.current.dialogs.validationQueue).not.toBeNull();
         });
+
+        const queue = result.current.dialogs.validationQueue as IngredientValidationProps;
+
+        act(() => {
+          queue.onValidated(queue.items[0], spaghettiIngredient);
+        });
+
+        expect(result.current.form.state.recipeIngredients[0].name).toBe('Spaghetti');
         expect(result.current.form.state.recipeIngredients).toHaveLength(3);
       });
 
@@ -1507,6 +1404,14 @@ describe('useRecipeIngredients', () => {
       });
 
       test('updates ingredient type from database match', async () => {
+        const spaghettiIngredient = testIngredients.find(i => i.name === 'Spaghetti')!;
+        mockFindSimilarIngredients.mockImplementation((name: string) => {
+          if (name.toLowerCase() === 'spaghetti') {
+            return [spaghettiIngredient];
+          }
+          return [];
+        });
+
         const wrapper = createIngredientsWrapper(
           createMockRecipeProp('edit', recipeWithIngredients)
         );
@@ -1515,6 +1420,7 @@ describe('useRecipeIngredients', () => {
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
+            dialogs: useRecipeDialogs(),
           }),
           { wrapper }
         );
@@ -1528,12 +1434,20 @@ describe('useRecipeIngredients', () => {
         });
 
         await waitFor(() => {
-          const spaghetti = result.current.form.state.recipeIngredients.find(
-            i => i.name === 'Spaghetti'
-          );
-          expect(spaghetti).toBeDefined();
-          expect(spaghetti?.type).toBeDefined();
+          expect(result.current.dialogs.validationQueue).not.toBeNull();
         });
+
+        const queue = result.current.dialogs.validationQueue as IngredientValidationProps;
+
+        act(() => {
+          queue.onValidated(queue.items[0], spaghettiIngredient);
+        });
+
+        const spaghetti = result.current.form.state.recipeIngredients.find(
+          i => i.name === 'Spaghetti'
+        );
+        expect(spaghetti).toBeDefined();
+        expect(spaghetti?.type).toBeDefined();
       });
     });
   });

@@ -196,7 +196,7 @@ describe('RecipeDialogsContext', () => {
       act(() => {
         result.current.setValidationQueue({
           type: 'Tag',
-          items: [{ id: 1, name: 'Italian', similarItems: [] }],
+          items: [{ id: 1, name: 'Italian' }],
           onValidated,
         });
       });
@@ -220,7 +220,6 @@ describe('RecipeDialogsContext', () => {
               quantity: '100',
               unit: 'g',
               season: [],
-              similarItems: [],
             },
           ],
           onValidated,
@@ -238,7 +237,7 @@ describe('RecipeDialogsContext', () => {
       act(() => {
         result.current.setValidationQueue({
           type: 'Tag',
-          items: [{ id: 2, name: 'Test', similarItems: [] }],
+          items: [{ id: 2, name: 'Test' }],
           onValidated: jest.fn(),
         });
       });

@@ -188,9 +188,15 @@ describe('useRecipeScraperValidation', () => {
 
     await waitFor(
       () => {
-        expect(result.current.validationQueue).toBeNull();
+        expect(result.current.validationQueue).not.toBeNull();
+        expect(result.current.validationQueue?.type).toBe('Ingredient');
       },
       { timeout: 1000 }
+    );
+
+    const queueItems = result.current.validationQueue?.items;
+    expect(queueItems?.some((item: { name?: string }) => item.name === knownIngredientName)).toBe(
+      true
     );
   });
 
@@ -208,9 +214,13 @@ describe('useRecipeScraperValidation', () => {
 
     await waitFor(
       () => {
-        expect(result.current.validationQueue).toBeNull();
+        expect(result.current.validationQueue).not.toBeNull();
+        expect(result.current.validationQueue?.type).toBe('Tag');
       },
       { timeout: 1000 }
     );
+
+    const queueItems = result.current.validationQueue?.items;
+    expect(queueItems?.some((item: { name?: string }) => item.name === knownTagName)).toBe(true);
   });
 });
