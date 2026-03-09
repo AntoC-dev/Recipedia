@@ -25,7 +25,7 @@ tags:
     element:
       id: "SearchScreen::RecipeCards::2::Content"
     direction: DOWN
-    speed: 60
+    speed: 40
     centerElement: true
     label: "Action - Scroll to Classic Pancakes recipe"
 
