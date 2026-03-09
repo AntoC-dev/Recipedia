@@ -10,10 +10,8 @@
  */
 
 import { FormIngredientElement, ingredientTableElement } from '@customTypes/DatabaseElementTypes';
-import { processIngredientsForValidation } from '@utils/RecipeValidationHelpers';
 import { recipeLogger } from '@utils/logger';
 import { noteSeparator, textSeparator, unitySeparator } from '@styles/typography';
-import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
 import { useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { useRecipeForm } from '@context/RecipeFormContext';
 
@@ -132,7 +130,6 @@ export interface UseRecipeIngredientsReturn {
  * ```
  */
 export function useRecipeIngredients(): UseRecipeIngredientsReturn {
-  const { findSimilarIngredients } = useRecipeDatabase();
   const { setValidationQueue } = useRecipeDialogs();
   const { state, setters } = useRecipeForm();
   const { recipeIngredients } = state;
@@ -305,33 +302,14 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
       recipeIngredients[oldIngredientId] &&
       recipeIngredients[oldIngredientId].name !== newName
     ) {
-      const { exactMatches, needsValidation } = processIngredientsForValidation(
-        [
-          {
-            name: newName,
-            unit: newUnit,
-            quantity: newQuantity,
-            note: newNote,
-            season: [],
-          },
-        ],
-        findSimilarIngredients
-      );
-
-      if (exactMatches.length > 0) {
-        replaceIngredientAtIndex(oldIngredientId, exactMatches[0]);
-      }
-
-      if (needsValidation.length > 0) {
-        setValidationQueue({
-          type: 'Ingredient',
-          items: needsValidation,
-          onValidated: (_, validatedIngredient) =>
-            replaceIngredientAtIndex(oldIngredientId, validatedIngredient),
-          onDismissed: () =>
-            setRecipeIngredients(prev => prev.filter((_, i) => i !== oldIngredientId)),
-        });
-      }
+      setValidationQueue({
+        type: 'Ingredient',
+        items: [{ name: newName, unit: newUnit, quantity: newQuantity, note: newNote, season: [] }],
+        onValidated: (_, validatedIngredient) =>
+          replaceIngredientAtIndex(oldIngredientId, validatedIngredient),
+        onDismissed: () =>
+          setRecipeIngredients(prev => prev.filter((_, i) => i !== oldIngredientId)),
+      });
     } else {
       updateIngredient({
         name: newName,

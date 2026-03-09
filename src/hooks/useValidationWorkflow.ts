@@ -81,8 +81,6 @@ export interface UseValidationWorkflowReturn {
  * - Final recipe import to database
  *
  * @param selectedRecipes - Recipes to validate and import
- * @param allIngredients - All ingredients from database for fuzzy matching
- * @param allTags - All tags from database for fuzzy matching
  * @param addMultipleRecipes - Database function to save recipes
  * @param isDatabaseReady - Whether the database context has loaded data
  * @param defaultPersons - User's default serving count to apply to all imported recipes
@@ -91,8 +89,6 @@ export interface UseValidationWorkflowReturn {
  */
 export function useValidationWorkflow(
   selectedRecipes: ConvertedImportRecipe[],
-  allIngredients: ingredientTableElement[],
-  allTags: tagTableElement[],
   addMultipleRecipes: (recipes: recipeTableElement[]) => Promise<void>,
   isDatabaseReady: boolean,
   defaultPersons: number,
@@ -174,7 +170,7 @@ export function useValidationWorkflow(
       await new Promise(r => setTimeout(r, 100));
 
       setInitStage('matching-tags');
-      const state = initializeBatchValidation(selectedRecipes, allIngredients, allTags);
+      const state = initializeBatchValidation(selectedRecipes);
       setValidationState(state);
 
       setInitStage('ready');
@@ -190,7 +186,7 @@ export function useValidationWorkflow(
     };
 
     runInit();
-  }, [selectedRecipes, allIngredients, allTags, isDatabaseReady]);
+  }, [selectedRecipes, isDatabaseReady]);
 
   /**
    * Handles tag validation by adding a mapping from original to validated tag

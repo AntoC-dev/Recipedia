@@ -11,90 +11,65 @@ import { useEffect, useRef } from 'react';
 import { recipeStateType } from '@customTypes/ScreenTypes';
 import {
   deduplicateIngredientsByName,
-  IngredientWithSimilarity,
-  processIngredientsForValidation,
-  processTagsForValidation,
   removeIngredientByName,
   removeTagByName,
-  replaceMatchingIngredients,
   replaceMatchingTags,
-  TagWithSimilarity,
 } from '@utils/RecipeValidationHelpers';
-import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
 import { useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { useRecipeForm } from '@context/RecipeFormContext';
-import { useRecipeTags } from '@hooks/useRecipeTags';
 import { useRecipeIngredients } from '@hooks/useRecipeIngredients';
-import { FormIngredientElement, ingredientTableElement } from '@customTypes/DatabaseElementTypes';
+import {
+  FormIngredientElement,
+  ingredientTableElement,
+  tagTableElement,
+} from '@customTypes/DatabaseElementTypes';
 
 /**
  * Hook that triggers ValidationQueue for scraped recipe data.
  *
  * When the Recipe screen loads in 'addScrape' mode, this hook processes
  * all ingredients and tags to determine which ones need user validation.
- * Items found in the database are auto-added, while unknown items are
- * queued for validation.
+ * The ValidationQueue handles exact-match detection and similarity computation
+ * internally, so raw items are passed directly.
  */
 export function useRecipeScraperValidation(): void {
-  const { findSimilarTags, findSimilarIngredients } = useRecipeDatabase();
   const { setValidationQueue, validationQueue } = useRecipeDialogs();
   const { state, setters } = useRecipeForm();
-  const { addTagIfNotDuplicate } = useRecipeTags();
   const { replaceAllMatchingFormIngredients } = useRecipeIngredients();
 
   const { stackMode, recipeIngredients, recipeTags } = state;
   const { setRecipeIngredients, setRecipeTags } = setters;
 
   const hasRunRef = useRef(false);
-  const pendingIngredientsRef = useRef<IngredientWithSimilarity[] | null>(null);
+  const pendingIngredientsRef = useRef<FormIngredientElement[] | null>(null);
 
-  const getIngredientsNeedingValidation = (): IngredientWithSimilarity[] => {
+  const getIngredientItems = (): FormIngredientElement[] => {
     if (recipeIngredients.length === 0) {
       return [];
     }
-    const formIngredients = recipeIngredients as FormIngredientElement[];
-    const { exactMatches, needsValidation } = processIngredientsForValidation(
-      formIngredients,
-      findSimilarIngredients
-    );
-
-    if (exactMatches.length > 0) {
-      setRecipeIngredients(prev => replaceMatchingIngredients(prev, exactMatches));
-    }
-
-    return deduplicateIngredientsByName(needsValidation);
+    return deduplicateIngredientsByName(recipeIngredients as FormIngredientElement[]);
   };
 
-  const startIngredientValidation = (ingredients: IngredientWithSimilarity[]) => {
+  const startIngredientValidation = (ingredients: FormIngredientElement[]) => {
     setValidationQueue({
       type: 'Ingredient',
       items: ingredients,
       onValidated: (_, validatedIngredient: ingredientTableElement) =>
         replaceAllMatchingFormIngredients(validatedIngredient),
-      onDismissed: (item: IngredientWithSimilarity) => {
+      onDismissed: (item: FormIngredientElement) => {
         setRecipeIngredients(prev => removeIngredientByName(prev, item.name));
       },
     });
   };
 
-  const getTagsNeedingValidation = () => {
-    if (recipeTags.length === 0) return [];
-
-    const { exactMatches, needsValidation } = processTagsForValidation(recipeTags, findSimilarTags);
-
-    if (exactMatches.length > 0) {
-      setRecipeTags(prev => replaceMatchingTags(prev, exactMatches));
-    }
-
-    return needsValidation;
-  };
-
-  const startTagValidation = (tags: TagWithSimilarity[]) => {
+  const startTagValidation = (tags: tagTableElement[]) => {
     setValidationQueue({
       type: 'Tag',
       items: tags,
-      onValidated: (_, validatedTag) => addTagIfNotDuplicate(validatedTag),
-      onDismissed: (tag: TagWithSimilarity) => {
+      onValidated: (originalTag: tagTableElement, validatedTag: tagTableElement) => {
+        setRecipeTags(prev => replaceMatchingTags(prev, [validatedTag]));
+      },
+      onDismissed: (tag: tagTableElement) => {
         setRecipeTags(prev => removeTagByName(prev, tag.name));
       },
     });
@@ -114,19 +89,19 @@ export function useRecipeScraperValidation(): void {
     }
     hasRunRef.current = true;
 
-    const ingredientsNeedingValidation = getIngredientsNeedingValidation();
-    const tagsNeedingValidation = getTagsNeedingValidation();
+    const ingredientItems = getIngredientItems();
+    const tagItems = recipeTags.length > 0 ? [...recipeTags] : [];
 
-    if (tagsNeedingValidation.length > 0) {
-      if (ingredientsNeedingValidation.length > 0) {
-        pendingIngredientsRef.current = ingredientsNeedingValidation;
+    if (tagItems.length > 0) {
+      if (ingredientItems.length > 0) {
+        pendingIngredientsRef.current = ingredientItems;
       }
-      startTagValidation(tagsNeedingValidation);
+      startTagValidation(tagItems);
       return;
     }
 
-    if (ingredientsNeedingValidation.length > 0) {
-      startIngredientValidation(ingredientsNeedingValidation);
+    if (ingredientItems.length > 0) {
+      startIngredientValidation(ingredientItems);
     }
   }, [stackMode]);
 }
