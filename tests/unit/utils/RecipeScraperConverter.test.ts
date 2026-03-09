@@ -18,7 +18,17 @@ import { createEmptyScrapedRecipe } from '@mocks/modules/recipe-scraper-mock';
 describe('RecipeScraperConverter', () => {
   const ignoredPatterns: IgnoredIngredientPatterns = {
     prefixes: ['selon le goût', 'to taste', 'optional'],
-    exactMatches: ['sel', 'poivre', 'sel et poivre', 'poivre et sel', 'salt', 'pepper'],
+    exactMatches: [
+      'sel',
+      'poivre',
+      'sel et poivre',
+      'poivre et sel',
+      'huile de cuisson',
+      'salt',
+      'pepper',
+      'cooking oil',
+      'vegetable oil',
+    ],
   };
   const defaultPersons = 4;
 
@@ -293,6 +303,23 @@ describe('RecipeScraperConverter', () => {
       expect(isUnparseableIngredient('SEL ET POIVRE', ignoredPatterns)).toBe(true);
       expect(isUnparseableIngredient('POIVRE', ignoredPatterns)).toBe(true);
     });
+
+    it('returns true for generic cooking oil exact matches', () => {
+      expect(isUnparseableIngredient('huile de cuisson', ignoredPatterns)).toBe(true);
+      expect(isUnparseableIngredient('cooking oil', ignoredPatterns)).toBe(true);
+      expect(isUnparseableIngredient('vegetable oil', ignoredPatterns)).toBe(true);
+    });
+
+    it('is case-insensitive for cooking oil exact matches', () => {
+      expect(isUnparseableIngredient('HUILE DE CUISSON', ignoredPatterns)).toBe(true);
+      expect(isUnparseableIngredient('Cooking Oil', ignoredPatterns)).toBe(true);
+      expect(isUnparseableIngredient('Vegetable Oil', ignoredPatterns)).toBe(true);
+    });
+
+    it('does not match cooking oil when ingredient has a longer name', () => {
+      expect(isUnparseableIngredient('huile de cuisson chauffée', ignoredPatterns)).toBe(false);
+      expect(isUnparseableIngredient('cooking oil spray', ignoredPatterns)).toBe(false);
+    });
   });
 
   describe('parseIngredientString', () => {
@@ -508,11 +535,52 @@ describe('RecipeScraperConverter', () => {
       expect(result.skipped).toContain('to taste Pepper');
     });
 
+    it('skips generic cooking oil exact matches when no quantity', () => {
+      const result = convertIngredients(
+        ['150 g Flour', 'huile de cuisson', 'cooking oil', 'vegetable oil'],
+        null,
+        null,
+        ignoredPatterns
+      );
+
+      expect(result.ingredients).toHaveLength(1);
+      expect(result.ingredients[0].name).toBe('Flour');
+      expect(result.skipped).toContain('huile de cuisson');
+      expect(result.skipped).toContain('cooking oil');
+      expect(result.skipped).toContain('vegetable oil');
+    });
+
     describe('with pre-parsed ingredients', () => {
       const patternsWithOliveOil: IgnoredIngredientPatterns = {
         ...ignoredPatterns,
         exactMatches: [...ignoredPatterns.exactMatches, "huile d'olive", 'olive oil'],
       };
+
+      it('skips "huile de cuisson" when it has no quantity', () => {
+        const result = convertIngredients(
+          ['huile de cuisson'],
+          [{ name: 'huile de cuisson', quantity: '', unit: '' }],
+          null,
+          ignoredPatterns
+        );
+
+        expect(result.ingredients).toHaveLength(0);
+        expect(result.skipped).toContain('huile de cuisson');
+      });
+
+      it('keeps "huile de cuisson" when it has a quantity', () => {
+        const result = convertIngredients(
+          ['2 càs huile de cuisson'],
+          [{ name: 'huile de cuisson', quantity: '2', unit: 'càs' }],
+          null,
+          ignoredPatterns
+        );
+
+        expect(result.ingredients).toHaveLength(1);
+        expect(result.ingredients[0].name).toBe('huile de cuisson');
+        expect(result.ingredients[0].quantity).toBe('2');
+        expect(result.skipped).toHaveLength(0);
+      });
 
       it('skips ignored ingredient when it has no quantity', () => {
         const result = convertIngredients(
