@@ -105,7 +105,7 @@ jobs:
       - name: Boot iOS Simulator
         if: inputs.platform == 'ios'
         id: simulator
-        uses: futureware-tech/simulator-action@v4
+        uses: futureware-tech/simulator-action@v5
         with:
           model: 'iPhone SE (3rd generation)'
           os_version: '18.6'
