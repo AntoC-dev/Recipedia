@@ -8,7 +8,6 @@ appId: "com.recipedia"
       text: "Oil and Fat"
     direction: DOWN
     speed: 20
-    centerElement: true
     label: "Scroll to Oil and Fat accordion"
 
 - waitForAnimationToEnd
