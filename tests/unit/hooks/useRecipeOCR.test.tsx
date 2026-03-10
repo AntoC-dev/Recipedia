@@ -432,7 +432,7 @@ describe('useRecipeOCR', () => {
       });
     });
 
-    test('adds ingredients with exact match directly', async () => {
+    test('sets validation queue for ingredient (exact-match auto-validated by queue)', async () => {
       mockExtractFieldFromImage.mockResolvedValue({
         recipeIngredients: [{ name: 'Spaghetti', quantity: '200', unit: 'g', season: [] }],
       });
@@ -442,7 +442,7 @@ describe('useRecipeOCR', () => {
       const { result } = renderHook(
         () => ({
           ocr: useRecipeOCR(),
-          form: useRecipeForm(),
+          dialogs: useRecipeDialogs(),
         }),
         { wrapper }
       );
@@ -452,12 +452,12 @@ describe('useRecipeOCR', () => {
       });
 
       await waitFor(() => {
-        expect(result.current.form.state.recipeIngredients.length).toBeGreaterThan(0);
+        expect(result.current.dialogs.validationQueue).not.toBeNull();
+        expect(result.current.dialogs.validationQueue?.type).toBe('Ingredient');
       });
 
-      expect(result.current.form.state.recipeIngredients.some(i => i.name === 'Spaghetti')).toBe(
-        true
-      );
+      const queueItems = result.current.dialogs.validationQueue?.items;
+      expect(queueItems?.some((item: { name?: string }) => item.name === 'Spaghetti')).toBe(true);
     });
 
     test('triggers validation queue for fuzzy ingredient matches', async () => {
@@ -578,6 +578,7 @@ describe('useRecipeOCR', () => {
         () => ({
           ocr: useRecipeOCR(),
           form: useRecipeForm(),
+          dialogs: useRecipeDialogs(),
         }),
         { wrapper }
       );
@@ -589,6 +590,25 @@ describe('useRecipeOCR', () => {
 
       await act(async () => {
         await result.current.ocr.fillOneField('image.jpg', recipeColumnsNames.ingredients);
+      });
+
+      await waitFor(() => {
+        expect(result.current.dialogs.validationQueue).not.toBeNull();
+      });
+
+      const ocrItem = { name: 'Flour', quantity: '100', unit: 'g', season: [] as string[] };
+      const dbFlour = {
+        id: 1,
+        name: 'Flour',
+        unit: 'g',
+        quantity: '200',
+        type: ingredientType.cereal,
+        season: [] as string[],
+      };
+      const mergedIngredient = { ...dbFlour, quantity: ocrItem.quantity };
+
+      act(() => {
+        result.current.dialogs.validationQueue?.onValidated(ocrItem, mergedIngredient);
       });
 
       await waitFor(() => {
@@ -622,6 +642,7 @@ describe('useRecipeOCR', () => {
         () => ({
           ocr: useRecipeOCR(),
           form: useRecipeForm(),
+          dialogs: useRecipeDialogs(),
         }),
         { wrapper }
       );
@@ -632,6 +653,25 @@ describe('useRecipeOCR', () => {
 
       await act(async () => {
         await result.current.ocr.fillOneField('image.jpg', recipeColumnsNames.ingredients);
+      });
+
+      await waitFor(() => {
+        expect(result.current.dialogs.validationQueue).not.toBeNull();
+      });
+
+      const ocrItem = { name: 'Flour', quantity: '0.5', unit: 'kg', season: [] as string[] };
+      const dbFlour = {
+        id: 1,
+        name: 'Flour',
+        unit: 'g',
+        quantity: '200',
+        type: ingredientType.cereal,
+        season: [] as string[],
+      };
+      const mergedIngredient = { ...dbFlour, quantity: ocrItem.quantity };
+
+      act(() => {
+        result.current.dialogs.validationQueue?.onValidated(ocrItem, mergedIngredient);
       });
 
       await waitFor(() => {
