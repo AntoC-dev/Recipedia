@@ -1,3 +1,10 @@
+## [2.21.0](https://github.com/AntoC-dev/Recipedia/compare/v2.20.1...v2.21.0) (2026-03-10)
+
+### Features
+
+* **translations:** add generic cooking oil to ignored ingredient matches ([ed3c3b1](https://github.com/AntoC-dev/Recipedia/commit/ed3c3b174b953558994eb84fbd13ee42fc47db7f))
+* **translations:** add generic cooking oil to ignored ingredient matches ([#214](https://github.com/AntoC-dev/Recipedia/issues/214)) ([68a5f5c](https://github.com/AntoC-dev/Recipedia/commit/68a5f5c33da09e719d8a8b22d907af8432c493d5))
+
 ## [2.20.1](https://github.com/AntoC-dev/Recipedia/compare/v2.20.0...v2.20.1) (2026-03-09)
 
 ### Bug Fixes
