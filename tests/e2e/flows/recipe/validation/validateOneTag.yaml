@@ -13,3 +13,9 @@ appId: "com.recipedia"
 - tapOn:
     id: "${PREFIX}::ValidationQueue::Tag::ItemDialog::AddModal::ConfirmButton"
     label: "Confirm adding the tag"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "${PREFIX}::ValidationQueue::Tag::ItemDialog::AddModal::ConfirmButton"
+    timeout: 10000
+    label: "Wait for add tag dialog to close"

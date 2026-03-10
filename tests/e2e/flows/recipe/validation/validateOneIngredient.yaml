@@ -41,3 +41,9 @@ appId: "com.recipedia"
 - tapOn:
     id: "${PREFIX}::ValidationQueue::Ingredient::ItemDialog::AddModal::ConfirmButton"
     label: "Confirm adding the ingredient"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "${PREFIX}::ValidationQueue::Ingredient::ItemDialog::AddModal::ConfirmButton"
+    timeout: 10000
+    label: "Wait for add ingredient dialog to close"
