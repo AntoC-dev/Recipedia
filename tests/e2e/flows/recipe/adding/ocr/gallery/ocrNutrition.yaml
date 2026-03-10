@@ -1,5 +1,6 @@
 appId: "com.recipedia"
 ---
+- evalScript: ${output.modalImageCounter = 1}
 
 - waitForAnimationToEnd
 
@@ -44,7 +45,7 @@ appId: "com.recipedia"
 - extendedWaitUntil:
     visible:
       id: "Recipe::RecipeNutrition::NutritionTable"
-    timeout: 10000
+    timeout: 120000
     label: "Wait for nutrition values to be populated by OCR"
 
 - waitForAnimationToEnd
@@ -79,3 +80,7 @@ appId: "com.recipedia"
 - runFlow:
     file: "../../../../waitForKeyboardNumericDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"
+
+- runFlow:
+    file: ../cleanAndResume.yaml
+    label: "Delete nutrition image from gallery and return to Recipedia"

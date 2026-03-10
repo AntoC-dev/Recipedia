@@ -28,6 +28,7 @@ import { RecipePropType } from '@customTypes/RecipeNavigationTypes';
 import { defaultValueNumber } from '@utils/Constants';
 import { scaleQuantityForPersons } from '@utils/Quantity';
 import { dictionaryIcons, Icons } from '@assets/Icons';
+import { OcrModalTarget } from '@utils/OCR';
 import { RecipeImageProps } from '@components/organisms/RecipeImage';
 import { RecipeTextProps, TextProp } from '@components/organisms/RecipeText';
 import { RecipeTagProps } from '@components/organisms/RecipeTags';
@@ -281,7 +282,7 @@ export function scaleRecipeForSave(
 export function buildRecipeImageProps(
   stackMode: recipeStateType,
   recipeImage: string,
-  openModalForField: (field: recipeColumnsNames) => void
+  openModalForField: (field: OcrModalTarget) => void
 ): RecipeImageProps {
   return {
     imgUri: recipeImage,
@@ -309,7 +310,7 @@ export function buildRecipeTitleProps(
   stackMode: recipeStateType,
   recipeTitle: string,
   setRecipeTitle: Dispatch<SetStateAction<string>>,
-  openModalForField: (field: recipeColumnsNames) => void,
+  openModalForField: (field: OcrModalTarget) => void,
   t: (key: string) => string
 ): RecipeTextProps {
   const titleTestID = 'RecipeTitle';
@@ -368,7 +369,7 @@ export function buildRecipeDescriptionProps(
   stackMode: recipeStateType,
   recipeDescription: string,
   setRecipeDescription: Dispatch<SetStateAction<string>>,
-  openModalForField: (field: recipeColumnsNames) => void,
+  openModalForField: (field: OcrModalTarget) => void,
   t: (key: string) => string
 ): RecipeTextProps {
   const descriptionTestID = 'RecipeDescription';
@@ -430,7 +431,7 @@ export function buildRecipeTagsProps(
   randomTags: string[],
   addTag: (newTag: string) => void,
   removeTag: (tagName: string) => void,
-  openModalForField: (field: recipeColumnsNames) => void,
+  openModalForField: (field: OcrModalTarget) => void,
   hideDropdown?: boolean
 ): RecipeTagProps {
   const tagsExtracted = extractTagsName(recipeTags);
@@ -464,13 +465,11 @@ export function buildRecipeTagsProps(
  *
  * Handles mode-specific behavior:
  * - readOnly: Displays formatted person count
- * - edit/addManual: Editable number input
- * - addOCR with default value: Shows OCR button with manual fill option
+ * - edit/addManual/addOCR: Editable number input (persons is always set manually)
  *
  * @param stackMode - Current recipe screen mode
  * @param recipePersons - Current person count
  * @param setRecipePersons - Setter function for person count
- * @param openModalForField - Callback to open OCR modal
  * @param t - Translation function
  * @returns Props object for RecipeNumber component
  */
@@ -478,7 +477,6 @@ export function buildRecipePersonsProps(
   stackMode: recipeStateType,
   recipePersons: number,
   setRecipePersons: Dispatch<SetStateAction<number>>,
-  openModalForField: (field: recipeColumnsNames) => void,
   t: (key: string) => string
 ): RecipeNumberProps {
   const personTestID = 'RecipePersons';
@@ -490,19 +488,6 @@ export function buildRecipePersonsProps(
         editType: 'read',
         text:
           t('ingredientReadOnlyBeforePerson') + recipePersons + t('ingredientReadOnlyAfterPerson'),
-      },
-    };
-  }
-
-  if (stackMode === recipeStateType.addOCR && recipePersons === defaultValueNumber) {
-    return {
-      testID: personTestID,
-      numberProps: {
-        editType: 'add',
-        testID: personTestID,
-        prefixText: t('personPrefixOCR'),
-        openModal: () => openModalForField(recipeColumnsNames.persons),
-        manuallyFill: () => setRecipePersons(0),
       },
     };
   }
@@ -539,7 +524,7 @@ export function buildRecipeTimeProps(
   stackMode: recipeStateType,
   recipeTime: number,
   setRecipeTime: Dispatch<SetStateAction<number>>,
-  openModalForField: (field: recipeColumnsNames) => void,
+  openModalForField: (field: OcrModalTarget) => void,
   t: (key: string) => string
 ): RecipeNumberProps {
   const timeTestID = 'RecipeTime';
@@ -586,13 +571,13 @@ export function buildRecipeTimeProps(
  * Handles mode-specific behavior:
  * - readOnly: Displays ingredients as read-only list
  * - edit/addManual: Editable ingredients with inline editing
- * - addOCR: Add mode with OCR button option
+ * - addOCR: Add mode with two OCR scan buttons (names photo, quantities photo)
  *
  * @param stackMode - Current recipe screen mode
  * @param recipeIngredients - Current ingredients array
  * @param editIngredients - Callback to edit an ingredient
  * @param addNewIngredient - Callback to add a new ingredient
- * @param openModalForField - Callback to open OCR modal
+ * @param openModalForField - Callback to open OCR modal for a given field
  * @param t - Translation function
  * @returns Props object for RecipeIngredients component
  */
@@ -601,7 +586,7 @@ export function buildRecipeIngredientsProps(
   recipeIngredients: (ingredientTableElement | FormIngredientElement)[],
   editIngredients: (oldIngredientId: number, newIngredient: string) => void,
   addNewIngredient: () => void,
-  openModalForField: (field: recipeColumnsNames) => void,
+  openModalForField: (field: OcrModalTarget) => void,
   t: (key: string) => string,
   hideDropdown?: boolean
 ): RecipeIngredientsProps {
@@ -634,7 +619,7 @@ export function buildRecipeIngredientsProps(
   if (stackMode === recipeStateType.addOCR) {
     return {
       mode: 'add',
-      openModal: () => openModalForField(recipeColumnsNames.ingredients),
+      openModalForField,
       ...baseEditProps,
     };
   }
@@ -668,7 +653,7 @@ export function buildRecipePreparationProps(
   editPreparationTitle: (stepIndex: number, newTitle: string) => void,
   editPreparationDescription: (stepIndex: number, newDescription: string) => void,
   addNewPreparationStep: () => void,
-  openModalForField: (field: recipeColumnsNames) => void,
+  openModalForField: (field: OcrModalTarget) => void,
   t: (key: string) => string
 ): RecipePreparationProps {
   if (stackMode === recipeStateType.readOnly) {
@@ -719,7 +704,7 @@ export function buildRecipeNutritionProps(
   stackMode: recipeStateType,
   recipeNutrition: nutritionTableElement | undefined,
   setRecipeNutrition: Dispatch<SetStateAction<nutritionTableElement | undefined>>,
-  openModalForField: (field: recipeColumnsNames) => void,
+  openModalForField: (field: OcrModalTarget) => void,
   parentTestId: string
 ): RecipeNutritionProps {
   switch (stackMode) {

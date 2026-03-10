@@ -18,11 +18,7 @@
 
 import React, { useState } from 'react';
 import { RecipeScreenProp, recipeStateType } from '@customTypes/ScreenTypes';
-import {
-  isRecipeEqual,
-  recipeColumnsNames,
-  recipeTableElement,
-} from '@customTypes/DatabaseElementTypes';
+import { isRecipeEqual, recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { padding } from '@styles/spacing';
@@ -263,11 +259,11 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
 
     const addRecipeToDatabase = async () => {
       try {
-        clearCache();
         const defaultPersons = await getDefaultPersons();
         const scaledRecipe = scaleRecipeForSave(recipeToAdd, defaultPersons);
         recipeLogger.info('Saving new recipe to database', { recipeTitle: state.recipeTitle });
         await addRecipe(scaledRecipe);
+        clearCache();
         recipeLogger.info('Recipe add completed successfully', { recipeTitle: state.recipeTitle });
 
         dialogs.showValidationDialog({
@@ -416,7 +412,6 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
               state.stackMode,
               state.recipePersons,
               setters.setRecipePersons,
-              ocr.openModalForField,
               t
             )}
           />
@@ -485,12 +480,16 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
         <ModalImageSelect
           arrImg={state.imgForOCR}
           onSelectFunction={async (imgSelected: string) => {
-            const field = ocr.modalField as recipeColumnsNames;
+            const target = ocr.modalField!;
             ocr.closeModal();
+            recipeLogger.debug('OCR image selected', { target, imgSelected });
             const croppedUri = await cropImage(imgSelected, colors);
-            if (croppedUri.length > 0) {
-              await ocr.fillOneField(croppedUri, field);
+            recipeLogger.debug('OCR image cropped', { target, croppedUri });
+            if (croppedUri.length === 0) {
+              return;
             }
+
+            await ocr.fillOneField(croppedUri, target);
           }}
           onDismissFunction={ocr.closeModal}
           onImagesUpdated={ocr.addImageUri}

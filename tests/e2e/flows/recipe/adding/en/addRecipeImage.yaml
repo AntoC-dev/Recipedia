@@ -19,7 +19,7 @@ appId: "com.recipedia"
       platform: iOS
     commands:
       - tapOn:
-          id: "Modal::Gallery::RoundButton"
+          id: "Modal::Gallery::RoundButton::Label"
           label: "Select gallery option on iOS (simulator doesn't support camera)"
 
 - runFlow:

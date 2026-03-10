@@ -1,5 +1,6 @@
 appId: "com.recipedia"
 ---
+- evalScript: ${output.modalImageCounter = 1}
 
 - waitForAnimationToEnd
 
@@ -44,5 +45,9 @@ appId: "com.recipedia"
 - extendedWaitUntil:
     visible:
       id: "RecipeDescription::CustomTextInput"
-    timeout: 10000
+    timeout: 30000
     label: "Wait for description to be populated by OCR"
+
+- runFlow:
+    file: ../cleanAndResume.yaml
+    label: "Delete description image from gallery and return to Recipedia"

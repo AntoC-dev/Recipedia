@@ -1,54 +1,120 @@
 appId: "com.recipedia"
 ---
+- evalScript: ${output.modalImageCounter = 1}
 
 - waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
-      id: "RecipeIngredients::OpenModal::RoundButton"
-    direction: UP
+      id: "RecipeIngredients::OpenModalNames::RoundButton"
+    direction: DOWN
     speed: 40
     centerElement: true
-    label: "Scroll to OCR button"
+    label: "Scroll to ingredient names OCR button"
 
 - waitForAnimationToEnd
 
 - tapOn:
-    id: "RecipeIngredients::OpenModal::RoundButton"
-    label: "Tap on OCR button of recipe ingredients"
+    id: "RecipeIngredients::OpenModalNames::RoundButton"
+    label: "Tap on ingredient names OCR button"
 
 - runFlow:
     file: ../android/addMedia.yaml
     env:
-      FIELD_NAME: ingredients
+      FIELD_NAME: ingredientNames
     when:
       platform: Android
 - runFlow:
     file: ../iOS/addMedia.yaml
     env:
-      FIELD_NAME: ingredients
+      FIELD_NAME: ingredientNames
     when:
       platform: iOS
 
 - runFlow:
     file: ../android/selectMostRecentFromModal.yaml
-    label: "Select ingredients from modal for OCR"
+    label: "Select ingredient names image from modal"
     when:
       platform: Android
 - runFlow:
     file: ../iOS/selectMostRecentFromModal.yaml
-    label: "Select ingredients from modal for OCR"
+    label: "Select ingredient names image from modal"
     when:
       platform: iOS
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipeValidation::ValidationQueue::Ingredient::SimilarityDialog::Title"
+    timeout: 120000
+    label: "Wait for validation queue for ingredient names"
 
 - runFlow:
     file: "../../../validation/validateAllIngredients.yaml"
     env:
       PREFIX: "RecipeValidation"
-    label: "Validate all ingredients from OCR"
+    label: "Validate all ingredients from names OCR"
 
 - extendedWaitUntil:
     visible:
       id: "RecipeIngredients::0::NameInput::CustomTextInput"
-    timeout: 10000
-    label: "Wait for first ingredient to be populated by OCR"
+    timeout: 120000
+    label: "Wait for first ingredient name to be populated"
+
+- assertVisible:
+    id: "RecipeIngredients::OpenModalQuantities::RoundButton::Label"
+    text: "Scan quantities"
+    label: "Scan quantities button label is rendered"
+
+- runFlow:
+    file: ../cleanAndResume.yaml
+    label: "Delete ingredient names image from gallery and return to Recipedia"
+
+- evalScript: ${output.modalImageCounter = 1}
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::OpenModalQuantities::RoundButton"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to ingredient quantities OCR button"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "RecipeIngredients::OpenModalQuantities::RoundButton"
+    label: "Tap on ingredient quantities OCR button"
+
+- runFlow:
+    file: ../android/addMedia.yaml
+    env:
+      FIELD_NAME: ingredientQuantities
+    when:
+      platform: Android
+- runFlow:
+    file: ../iOS/addMedia.yaml
+    env:
+      FIELD_NAME: ingredientQuantities
+    when:
+      platform: iOS
+
+- runFlow:
+    file: ../android/selectMostRecentFromModal.yaml
+    label: "Select ingredient quantities image from modal"
+    when:
+      platform: Android
+- runFlow:
+    file: ../iOS/selectMostRecentFromModal.yaml
+    label: "Select ingredient quantities image from modal"
+    when:
+      platform: iOS
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipeIngredients::0::QuantityInput::CustomTextInput"
+    timeout: 120000
+    label: "Wait for first ingredient quantity to be populated"
+
+- runFlow:
+    file: ../cleanAndResume.yaml
+    label: "Delete ingredient quantities image from gallery and return to Recipedia"

@@ -62,10 +62,12 @@ describe('ModalImageSelect Screen', () => {
     expect(getByTestId(testId + '::Gallery::RoundButton::Size').props.children).toBe('medium');
     expect(getByTestId(testId + '::Gallery::RoundButton::Icon').props.children).toBe('image-area');
 
-    expect(getByTestId(testId + '::Camera::Text').props.children).toBe('alerts.ocrRecipe.photo');
-    expect(getByTestId(testId + '::Camera::Text').props.variant).toBe('titleMedium');
-    expect(getByTestId(testId + '::Gallery::Text').props.children).toBe('alerts.ocrRecipe.gallery');
-    expect(getByTestId(testId + '::Gallery::Text').props.variant).toBe('titleMedium');
+    expect(getByTestId(testId + '::Camera::RoundButton::Label').props.children).toBe(
+      'alerts.ocrRecipe.photo'
+    );
+    expect(getByTestId(testId + '::Gallery::RoundButton::Label').props.children).toBe(
+      'alerts.ocrRecipe.gallery'
+    );
 
     if (!options?.skipImageChecks) {
       expectedProps.arrImg.forEach((imageUri, index) => {
@@ -268,10 +270,10 @@ describe('ModalImageSelect Screen', () => {
       'ModalImageSelect::ExplanationText',
       'Modal::PropType',
       'Modal::ItemCount',
-      'Modal::Camera::Text',
+      'Modal::Camera::RoundButton::Label',
       'Modal::Camera::RoundButton::Size',
       'Modal::Camera::RoundButton::Icon',
-      'Modal::Gallery::Text',
+      'Modal::Gallery::RoundButton::Label',
       'Modal::Gallery::RoundButton::Size',
       'Modal::Gallery::RoundButton::Icon',
     ];

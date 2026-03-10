@@ -14,6 +14,11 @@ export function roundButtonMock(roundButtonProps: RoundButtonProps) {
           title='Click on Text'
         />
       ) : null}
+      {roundButtonProps.label !== undefined && (
+        <Text testID={roundButtonProps.testID + '::RoundButton::Label'}>
+          {roundButtonProps.label}
+        </Text>
+      )}
     </View>
   );
 }
