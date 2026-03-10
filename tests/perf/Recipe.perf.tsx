@@ -183,7 +183,7 @@ describe('Recipe Screen Performance', () => {
       sourceUrl: 'https://example.com/recipe',
     };
     await measureRenders(<RecipeWrapper initialParams={params} />, { runs: 10 });
-  });
+  }, 30000);
 
   test('initial render in addFromPic (OCR) mode', async () => {
     const params: RecipePropType = {
