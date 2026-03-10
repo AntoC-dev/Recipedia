@@ -8,7 +8,6 @@ appId: "com.recipedia"
       text: "Spice"
     direction: DOWN
     speed: 20
-    centerElement: true
     label: "Scroll to Spice accordion"
 
 - waitForAnimationToEnd

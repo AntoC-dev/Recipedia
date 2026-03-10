@@ -125,6 +125,8 @@ export default {
       'salt and pepper',
       'pepper and salt',
       'olive oil',
+      'cooking oil',
+      'vegetable oil',
     ],
     stepTitle: 'Step {{number}}',
   },
