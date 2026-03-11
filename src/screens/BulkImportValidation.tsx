@@ -67,8 +67,7 @@ export function BulkImportValidation() {
   const navigation = useNavigation<StackScreenNavigation>();
   const route = useRoute<BulkImportValidationRouteProp>();
   const { providerId, selectedRecipes } = route.params;
-  const { ingredients, tags, addMultipleRecipes, removeFromSeenHistory, isDatabaseReady } =
-    useRecipeDatabase();
+  const { addMultipleRecipes, removeFromSeenHistory, isDatabaseReady } = useRecipeDatabase();
   const { defaultPersons } = useDefaultPersons();
 
   const handleImportComplete = async (importedUrls: string[]) => {
@@ -78,8 +77,6 @@ export function BulkImportValidation() {
   const { phase, initStage, validationState, progress, importedCount, errorMessage, handlers } =
     useValidationWorkflow(
       selectedRecipes,
-      ingredients,
-      tags,
       addMultipleRecipes,
       isDatabaseReady,
       defaultPersons,

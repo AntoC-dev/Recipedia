@@ -139,6 +139,12 @@ export function SimilarityDialog({ testId, isVisible, onClose, item }: Similarit
     }
   }, [isVisible]);
 
+  useEffect(() => {
+    setShowItemDialog(false);
+    setShowPicker(false);
+    setPickedItem(null);
+  }, [item.newItemName]);
+
   const sortedPickerItems =
     item.type === 'Ingredient'
       ? [...ingredients].sort((a, b) => a.name.localeCompare(b.name))

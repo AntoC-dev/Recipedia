@@ -1638,31 +1638,27 @@ describe('Recipe Component tests', () => {
       });
     });
 
-    test('does not show ValidationQueue for exact match tag (auto-added)', async () => {
+    test('shows ValidationQueue for exact match tag (auto-validated by queue)', async () => {
       await dbInstance.addTag({ name: 'mockTag' });
 
-      const { getByTestId, queryByTestId } = await renderRecipe(
-        createMockRoute(mockRouteAddManually)
-      );
+      const { getByTestId } = await renderRecipe(createMockRoute(mockRouteAddManually));
 
       const initialTagsJson = getByTestId('RecipeTags::TagsList').props.children;
-      const initialTags = JSON.parse(initialTagsJson);
-      const initialCount = initialTags.length;
-
-      expect(queryByTestId('RecipeValidation::ValidationQueue::Mock')).toBeNull();
+      const initialCount = JSON.parse(initialTagsJson).length;
 
       fireEvent.press(getByTestId('RecipeTags::AddNewTag'));
 
-      await waitFor(
-        () => {
-          expect(queryByTestId('RecipeValidation::ValidationQueue::Mock')).toBeNull();
+      await waitFor(() => {
+        expect(getByTestId('RecipeValidation::ValidationQueue::Mock')).toBeTruthy();
+      });
 
-          const finalTagsJson = getByTestId('RecipeTags::TagsList').props.children;
-          const finalTags = JSON.parse(finalTagsJson);
-          expect(finalTags.length).toBeGreaterThan(initialCount);
-        },
-        { timeout: 2000 }
-      );
+      fireEvent.press(getByTestId('RecipeValidation::ValidationQueue::Mock::onValidated'));
+      fireEvent.press(getByTestId('RecipeValidation::ValidationQueue::Mock::onComplete'));
+
+      await waitFor(() => {
+        const finalTags = JSON.parse(getByTestId('RecipeTags::TagsList').props.children);
+        expect(finalTags.length).toBeGreaterThan(initialCount);
+      });
     });
 
     test('ValidationQueue callback preserves previously added tags from state', async () => {

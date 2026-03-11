@@ -4,22 +4,21 @@ appId: "com.recipedia"
     id: "IngredientsSettings::BottomActionButton"
     label: "Open Add ingredient dialog"
 
+- extendedWaitUntil:
+    visible:
+      id: "IngredientsSettings::ItemDialog::AddModal::.*"
+    timeout: 20000
+    label: "Wait for modal to appear"
+
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::CancelButton"
     label: "Cancel adding ingredient without entering name"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "IngredientsSettings::0::EditButton"
-    direction: UP
-    speed: 85
-    timeout: 30000
-    centerElement: true
-    label: "Scroll up to top of Ingredients Settings screen"
-
-- waitForAnimationToEnd
+- extendedWaitUntil:
+    notVisible:
+      id: "IngredientsSettings::ItemDialog::AddModal::.*"
+    timeout: 20000
+    label: "Wait for modal to appear"
 
 - runFlow:
     file: "../../../asserts/parameters/ingredients/en/assertIngredientsSettingsScreen.yaml"

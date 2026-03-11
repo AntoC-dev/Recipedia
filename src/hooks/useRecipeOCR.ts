@@ -9,18 +9,11 @@
  */
 
 import { useState } from 'react';
-import { nutritionTableElement, recipeColumnsNames } from '@customTypes/DatabaseElementTypes';
+import { FormIngredientElement, nutritionTableElement, recipeColumnsNames } from '@customTypes/DatabaseElementTypes';
 import { extractFieldFromImage } from '@utils/OCR';
-import {
-  addNonDuplicateTags,
-  addOrMergeIngredientMatches,
-  filterOutExistingTags,
-  processIngredientsForValidation,
-  processTagsForValidation,
-} from '@utils/RecipeValidationHelpers';
+import { filterOutExistingTags } from '@utils/RecipeValidationHelpers';
 import { defaultValueNumber } from '@utils/Constants';
 import { ocrLogger } from '@utils/logger';
-import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
 import { useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { useRecipeForm } from '@context/RecipeFormContext';
 import { useRecipeTags } from '@hooks/useRecipeTags';
@@ -80,7 +73,6 @@ export interface UseRecipeOCRReturn {
  * ```
  */
 export function useRecipeOCR(): UseRecipeOCRReturn {
-  const { findSimilarTags, findSimilarIngredients } = useRecipeDatabase();
   const { setValidationQueue } = useRecipeDialogs();
   const { state, setters } = useRecipeForm();
   const { addTagIfNotDuplicate } = useRecipeTags();
@@ -91,7 +83,6 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
     setRecipeImage,
     setRecipeTitle,
     setRecipeDescription,
-    setRecipeTags,
     setRecipePreparation,
     setRecipePersons,
     setRecipeTime,
@@ -177,19 +168,10 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
     }
     if (newFieldData.recipeTags && newFieldData.recipeTags.length > 0) {
       const filteredTags = filterOutExistingTags(newFieldData.recipeTags, recipeTags);
-      const { exactMatches, needsValidation } = processTagsForValidation(
-        filteredTags,
-        findSimilarTags
-      );
-
-      if (exactMatches.length > 0) {
-        setRecipeTags(prev => addNonDuplicateTags(prev, exactMatches));
-      }
-
-      if (needsValidation.length > 0) {
+      if (filteredTags.length > 0) {
         setValidationQueue({
           type: 'Tag',
-          items: needsValidation,
+          items: filteredTags,
           onValidated: (_, validatedTag) => addTagIfNotDuplicate(validatedTag),
         });
       }
@@ -204,20 +186,34 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
       setRecipeTime(newFieldData.recipeTime);
     }
     if (newFieldData.recipeIngredients && newFieldData.recipeIngredients.length > 0) {
-      const { exactMatches, needsValidation } = processIngredientsForValidation(
-        newFieldData.recipeIngredients,
-        findSimilarIngredients
+      setValidationQueue({
+        type: 'Ingredient',
+        items: newFieldData.recipeIngredients,
+        onValidated: (_, validatedIngredient) => addOrMergeIngredient(validatedIngredient),
+      });
+    }
+    if (newFieldData.ingredientNames !== undefined) {
+      const ingredientsWithNoQuantity: FormIngredientElement[] = newFieldData.ingredientNames.map(
+        ({ name, unit }) => ({ name, unit, quantity: '' })
       );
-
-      if (exactMatches.length > 0) {
-        setRecipeIngredients(prev => addOrMergeIngredientMatches(prev, exactMatches));
-      }
-
-      if (needsValidation.length > 0) {
+      if (ingredientsWithNoQuantity.length > 0) {
         setValidationQueue({
           type: 'Ingredient',
-          items: needsValidation,
+          items: ingredientsWithNoQuantity,
           onValidated: (_, validatedIngredient) => addOrMergeIngredient(validatedIngredient),
+        });
+      }
+    }
+    if (newFieldData.ingredientQuantities !== undefined) {
+      const quantities = newFieldData.ingredientQuantities;
+      if (quantities.length === recipeIngredients.length) {
+        setRecipeIngredients(prev =>
+          prev.map((ingredient, index) => ({ ...ingredient, quantity: quantities[index] }))
+        );
+      } else {
+        ocrLogger.warn('Quantity count mismatch', {
+          expected: recipeIngredients.length,
+          received: quantities.length,
         });
       }
     }

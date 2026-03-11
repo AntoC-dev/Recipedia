@@ -54,6 +54,7 @@ describe('BulkImportValidation', () => {
   });
 
   afterEach(async () => {
+    jest.restoreAllMocks();
     await database.closeAndReset();
   });
 
@@ -104,17 +105,29 @@ describe('BulkImportValidation', () => {
     });
   });
 
-  test('shows success and finish button when recipes have known items', async () => {
-    const knownIngredient = testIngredients[0];
-    const knownTag = testTags[0];
+  test('shows success and finish button after completing validation queues', async () => {
+    jest.spyOn(database, 'addMultipleRecipes').mockResolvedValue(undefined);
 
     const recipes = [
       createTestRecipe({
-        ingredients: [{ name: knownIngredient.name, quantity: '100', unit: 'g' }],
-        tags: [{ id: 0, name: knownTag.name }],
+        ingredients: [{ name: 'TestIngredient', quantity: '100', unit: 'g' }],
+        tags: [{ id: 0, name: 'TestTag' }],
       }),
     ];
     const { getByTestId, getByText } = renderComponent(recipes);
+
+    await waitFor(() => {
+      expect(getByTestId('BulkImportValidation::TagValidation')).toBeTruthy();
+    });
+
+    fireEvent.press(getByTestId('BulkImportValidation::TagValidation::onComplete'));
+
+    await waitFor(() => {
+      expect(getByTestId('BulkImportValidation::IngredientValidation')).toBeTruthy();
+    });
+
+    fireEvent.press(getByTestId('BulkImportValidation::IngredientValidation::onValidated'));
+    fireEvent.press(getByTestId('BulkImportValidation::IngredientValidation::onComplete'));
 
     await waitFor(
       () => {
@@ -126,16 +139,28 @@ describe('BulkImportValidation', () => {
   });
 
   test('resets navigation on finish', async () => {
-    const knownIngredient = testIngredients[0];
-    const knownTag = testTags[0];
+    jest.spyOn(database, 'addMultipleRecipes').mockResolvedValue(undefined);
 
     const recipes = [
       createTestRecipe({
-        ingredients: [{ name: knownIngredient.name, quantity: '100', unit: 'g' }],
-        tags: [{ id: 0, name: knownTag.name }],
+        ingredients: [{ name: 'TestIngredient', quantity: '100', unit: 'g' }],
+        tags: [{ id: 0, name: 'TestTag' }],
       }),
     ];
     const { getByTestId } = renderComponent(recipes);
+
+    await waitFor(() => {
+      expect(getByTestId('BulkImportValidation::TagValidation')).toBeTruthy();
+    });
+
+    fireEvent.press(getByTestId('BulkImportValidation::TagValidation::onComplete'));
+
+    await waitFor(() => {
+      expect(getByTestId('BulkImportValidation::IngredientValidation')).toBeTruthy();
+    });
+
+    fireEvent.press(getByTestId('BulkImportValidation::IngredientValidation::onValidated'));
+    fireEvent.press(getByTestId('BulkImportValidation::IngredientValidation::onComplete'));
 
     await waitFor(
       () => {

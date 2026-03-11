@@ -11,8 +11,6 @@
  */
 
 import { tagTableElement } from '@customTypes/DatabaseElementTypes';
-import { processTagsForValidation } from '@utils/RecipeValidationHelpers';
-import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
 import { useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { useRecipeForm } from '@context/RecipeFormContext';
 
@@ -60,7 +58,6 @@ export interface UseRecipeTagsReturn {
  * ```
  */
 export function useRecipeTags(): UseRecipeTagsReturn {
-  const { findSimilarTags } = useRecipeDatabase();
   const { setValidationQueue } = useRecipeDialogs();
   const { state, setters } = useRecipeForm();
   const { recipeTags } = state;
@@ -107,22 +104,11 @@ export function useRecipeTags(): UseRecipeTagsReturn {
       return;
     }
 
-    const { exactMatches, needsValidation } = processTagsForValidation(
-      [{ name: newTag }],
-      findSimilarTags
-    );
-
-    if (exactMatches.length > 0) {
-      exactMatches.forEach(addTagIfNotDuplicate);
-    }
-
-    if (needsValidation.length > 0) {
-      setValidationQueue({
-        type: 'Tag',
-        items: needsValidation,
-        onValidated: (_, validatedTag) => addTagIfNotDuplicate(validatedTag),
-      });
-    }
+    setValidationQueue({
+      type: 'Tag',
+      items: [{ id: -1, name: newTag }],
+      onValidated: (_, validatedTag) => addTagIfNotDuplicate(validatedTag),
+    });
   };
 
   /**
