@@ -16,7 +16,6 @@ import {
 } from '@customTypes/DatabaseElementTypes';
 import {
   FiltersAppliedToDatabase,
-  filtersCategories,
   listFilter,
   prepTimeValues,
   RecommendationType,
@@ -32,6 +31,7 @@ import { homeLogger, searchLogger } from '@utils/logger';
  * and returns structured data for filter UI components. Returns raw values (translation
  * keys for translatable filters, user data for others) without translation.
  *
+ * @param categories - Ordered list of filter categories to display
  * @param tagsList - Array of available tag names
  * @param ingredientsList - Array of available ingredients
  * @returns Array of filter categories with their available values (untranslated)
@@ -39,16 +39,18 @@ import { homeLogger, searchLogger } from '@utils/logger';
  * @example
  * ```typescript
  * const filters = selectFilterCategoriesValuesToDisplay(
+ *   filtersCategories,
  *   ["Dessert", "Main Course"],
  *   ingredients
  * );
  * ```
  */
 export function selectFilterCategoriesValuesToDisplay(
+  categories: TListFilter[],
   tagsList: string[],
   ingredientsList: ingredientTableElement[]
 ): FiltersAppliedToDatabase[] {
-  return filtersCategories.map(category => {
+  return categories.map(category => {
     const filterApplyToDatabase: FiltersAppliedToDatabase = {
       title: category as TListFilter,
       data: [],
@@ -83,6 +85,9 @@ export function selectFilterCategoriesValuesToDisplay(
       case listFilter.oilAndFat:
       case listFilter.nutsAndSeeds:
       case listFilter.sweetener:
+      case listFilter.bread:
+      case listFilter.baking:
+      case listFilter.topping:
         filterApplyToDatabase.data = arrayOfType(ingredientsList, category).map(ing => ing.name);
         break;
       default:
@@ -208,6 +213,9 @@ export function filterFromRecipe(
         case listFilter.oilAndFat:
         case listFilter.nutsAndSeeds:
         case listFilter.sweetener:
+        case listFilter.bread:
+        case listFilter.baking:
+        case listFilter.topping:
           elementToKeep =
             elementToKeep &&
             isTheElementContainsTheFilter(

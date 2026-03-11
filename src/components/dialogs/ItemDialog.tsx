@@ -83,7 +83,7 @@ import {
   ingredientType,
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
-import { shoppingCategories } from '@customTypes/RecipeFiltersTypes';
+import { useShoppingCategories } from '@hooks/useCategories';
 import { padding } from '@styles/spacing';
 import { SeasonalityCalendar } from '@components/molecules/SeasonalityCalendar';
 import { uiLogger } from '@utils/logger';
@@ -133,6 +133,7 @@ export type ItemDialogProps = {
  */
 export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialogProps) {
   const { t } = useI18n();
+  const shoppingCategories = useShoppingCategories();
   const { tags, ingredients } = useRecipeDatabase();
 
   type ValidationState = 'none' | 'duplicate' | 'similar';

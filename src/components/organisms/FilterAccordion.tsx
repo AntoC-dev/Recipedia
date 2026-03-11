@@ -55,6 +55,7 @@ import { FiltersAppliedToDatabase, listFilter, TListFilter } from '@customTypes/
 import { useI18n } from '@utils/i18n';
 import { padding } from '@styles/spacing';
 import { selectFilterCategoriesValuesToDisplay } from '@utils/FilterFunctions';
+import { useFiltersCategories } from '@hooks/useCategories';
 
 /**
  * Props for the FilterAccordion component
@@ -90,8 +91,10 @@ export function FilterAccordion({
 }: FilterAccordionProps) {
   const { t } = useI18n();
   const { colors } = useTheme();
+  const filtersCategories = useFiltersCategories();
 
   const ingredientSections = selectFilterCategoriesValuesToDisplay(
+    filtersCategories,
     tagsList,
     ingredientsList
   ).filter(section => section.data.length > 0);
