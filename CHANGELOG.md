@@ -1,3 +1,9 @@
+## [2.21.1](https://github.com/AntoC-dev/Recipedia/compare/v2.21.0...v2.21.1) (2026-03-11)
+
+### Bug Fixes
+
+* **SimilarityDialog:** reset internal state when item name changes ([fdf6616](https://github.com/AntoC-dev/Recipedia/commit/fdf661600297b599c9889b9890edd90f27221591))
+
 ## [2.21.0](https://github.com/AntoC-dev/Recipedia/compare/v2.20.1...v2.21.0) (2026-03-10)
 
 ### Features
