@@ -1,0 +1,18 @@
+appId: "com.recipedia"
+---
+# Assert accordion is NOT displayed
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertNotVisible:
+          text: "Topping"
+          label: "Topping accordion not displayed on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertNotVisible:
+          text: "Topping, 󰅀"
+          label: "Topping accordion not displayed on iOS"

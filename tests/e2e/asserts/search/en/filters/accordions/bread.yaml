@@ -1,0 +1,23 @@
+appId: "com.recipedia"
+---
+# Route to appropriate flow based on STATE
+
+# STATE="filtered": Some items visible (filter applied)
+- runFlow:
+    when:
+      true: ${STATE == "filtered"}
+    file: "bread-filtered.yaml"
+    env:
+      VISIBLE_ITEMS: ${VISIBLE_ITEMS}
+
+# STATE="hidden": Accordion not displayed (no matching items)
+- runFlow:
+    when:
+      true: ${STATE == "hidden"}
+    file: "bread-hidden.yaml"
+
+# STATE="all": All items visible (no filter applied)
+- runFlow:
+    when:
+      true: ${STATE == "all"}
+    file: "bread-all.yaml"

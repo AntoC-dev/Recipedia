@@ -370,19 +370,19 @@ export const englishIngredients: ingredientTableElement[] = [
   {
     name: 'Roasted Peanuts',
     unit: 'g',
-    type: ingredientType.nutsAndSeeds,
+    type: ingredientType.topping,
     season: ['*'],
   },
   {
     name: 'Golden Sesame Seeds',
     unit: 'g',
-    type: ingredientType.nutsAndSeeds,
+    type: ingredientType.topping,
     season: ['*'],
   },
   {
     name: 'Black Sesame Seeds',
     unit: 'g',
-    type: ingredientType.nutsAndSeeds,
+    type: ingredientType.topping,
     season: ['*'],
   },
   {
@@ -394,7 +394,7 @@ export const englishIngredients: ingredientTableElement[] = [
   {
     name: 'Poppy Seeds',
     unit: 'g',
-    type: ingredientType.nutsAndSeeds,
+    type: ingredientType.topping,
     season: ['*'],
   },
   {
@@ -971,13 +971,13 @@ export const englishIngredients: ingredientTableElement[] = [
   {
     name: 'Vanilla Bean',
     unit: '',
-    type: ingredientType.spice,
+    type: ingredientType.baking,
     season: ['*'],
   },
   {
     name: 'Vanilla Extract',
     unit: '',
-    type: ingredientType.spice,
+    type: ingredientType.baking,
     season: ['*'],
   },
   {
@@ -1644,6 +1644,72 @@ export const englishIngredients: ingredientTableElement[] = [
     name: 'Pork Shoulder',
     unit: 'g',
     type: ingredientType.meat,
+    season: ['*'],
+  },
+  {
+    name: 'Burger Buns',
+    unit: '',
+    type: ingredientType.bread,
+    season: ['*'],
+  },
+  {
+    name: 'Sandwich Bread',
+    unit: '',
+    type: ingredientType.bread,
+    season: ['*'],
+  },
+  {
+    name: 'Baguette',
+    unit: '',
+    type: ingredientType.bread,
+    season: ['*'],
+  },
+  {
+    name: 'Pita Bread',
+    unit: '',
+    type: ingredientType.bread,
+    season: ['*'],
+  },
+  {
+    name: 'Naan',
+    unit: '',
+    type: ingredientType.bread,
+    season: ['*'],
+  },
+  {
+    name: 'Flour Tortilla',
+    unit: '',
+    type: ingredientType.bread,
+    season: ['*'],
+  },
+  {
+    name: 'All-Purpose Flour',
+    unit: 'g',
+    type: ingredientType.baking,
+    season: ['*'],
+  },
+  {
+    name: 'Baking Powder',
+    unit: 'g',
+    type: ingredientType.baking,
+    season: ['*'],
+  },
+  {
+    name: 'Baking Soda',
+    unit: 'g',
+    type: ingredientType.baking,
+    season: ['*'],
+  },
+  {
+    name: 'Active Dry Yeast',
+    unit: 'g',
+    type: ingredientType.baking,
+    season: ['*'],
+  },
+  {
+    name: 'Corn Starch',
+    unit: 'g',
+    type: ingredientType.baking,
     season: ['*'],
   },
 ];

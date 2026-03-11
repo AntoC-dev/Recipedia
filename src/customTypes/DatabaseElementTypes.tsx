@@ -520,4 +520,10 @@ export enum ingredientType {
   nutsAndSeeds = 'ingredientTypes.nutsAndSeeds',
   /** Honey, maple syrup, artificial sweeteners */
   sweetener = 'ingredientTypes.sweetener',
+  /** Bread loaves, buns, flatbreads */
+  bread = 'ingredientTypes.bread',
+  /** Baking ingredients: flours, leavening, starch */
+  baking = 'ingredientTypes.baking',
+  /** Toppings and garnishes: seeds, crushed nuts */
+  topping = 'ingredientTypes.topping',
 }

@@ -370,19 +370,19 @@ export const frenchIngredients: ingredientTableElement[] = [
   {
     name: 'Cacahuètes grillées',
     unit: 'g',
-    type: ingredientType.nutsAndSeeds,
+    type: ingredientType.topping,
     season: ['*'],
   },
   {
     name: 'Sésame doré',
     unit: 'g',
-    type: ingredientType.nutsAndSeeds,
+    type: ingredientType.topping,
     season: ['*'],
   },
   {
     name: 'Sésame noir',
     unit: 'g',
-    type: ingredientType.nutsAndSeeds,
+    type: ingredientType.topping,
     season: ['*'],
   },
   {
@@ -394,7 +394,7 @@ export const frenchIngredients: ingredientTableElement[] = [
   {
     name: 'Graines de pavot',
     unit: 'g',
-    type: ingredientType.nutsAndSeeds,
+    type: ingredientType.topping,
     season: ['*'],
   },
   {
@@ -989,13 +989,13 @@ export const frenchIngredients: ingredientTableElement[] = [
   {
     name: 'Gousse de vanille',
     unit: '',
-    type: ingredientType.spice,
+    type: ingredientType.baking,
     season: ['*'],
   },
   {
     name: 'Vanille (pot)',
     unit: '',
-    type: ingredientType.spice,
+    type: ingredientType.baking,
     season: ['*'],
   },
   {
@@ -1674,6 +1674,72 @@ export const frenchIngredients: ingredientTableElement[] = [
     name: 'Échine de porc',
     unit: 'g',
     type: ingredientType.meat,
+    season: ['*'],
+  },
+  {
+    name: 'Pains à burger',
+    unit: '',
+    type: ingredientType.bread,
+    season: ['*'],
+  },
+  {
+    name: 'Pain de mie',
+    unit: '',
+    type: ingredientType.bread,
+    season: ['*'],
+  },
+  {
+    name: 'Baguette',
+    unit: '',
+    type: ingredientType.bread,
+    season: ['*'],
+  },
+  {
+    name: 'Pain pita',
+    unit: '',
+    type: ingredientType.bread,
+    season: ['*'],
+  },
+  {
+    name: 'Naan',
+    unit: '',
+    type: ingredientType.bread,
+    season: ['*'],
+  },
+  {
+    name: 'Tortilla de blé',
+    unit: '',
+    type: ingredientType.bread,
+    season: ['*'],
+  },
+  {
+    name: 'Farine de blé (T55)',
+    unit: 'g',
+    type: ingredientType.baking,
+    season: ['*'],
+  },
+  {
+    name: 'Levure chimique',
+    unit: 'g',
+    type: ingredientType.baking,
+    season: ['*'],
+  },
+  {
+    name: 'Bicarbonate de soude',
+    unit: 'g',
+    type: ingredientType.baking,
+    season: ['*'],
+  },
+  {
+    name: 'Levure de boulanger',
+    unit: 'g',
+    type: ingredientType.baking,
+    season: ['*'],
+  },
+  {
+    name: 'Maïzena',
+    unit: 'g',
+    type: ingredientType.baking,
     season: ['*'],
   },
 ];

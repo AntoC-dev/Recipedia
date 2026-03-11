@@ -17,4 +17,7 @@ export default {
   oilAndFat: 'Huiles et Graisses',
   nutsAndSeeds: 'Noix et Graines',
   sweetener: 'Édulcorants',
+  bread: 'Pain',
+  baking: 'Pâtisserie',
+  topping: 'Topping',
 };
