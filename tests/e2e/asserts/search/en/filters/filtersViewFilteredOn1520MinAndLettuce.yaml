@@ -40,29 +40,49 @@ appId: "com.recipedia"
       VISIBLE_ITEMS: "Healthy,Salad"
 
 - runFlow:
+    file: "accordions/baking.yaml"
+    env:
+      STATE: "hidden"
+
+- runFlow:
+    file: "accordions/bread.yaml"
+    env:
+      STATE: "hidden"
+
+- runFlow:
     file: "accordions/grainOrCereal.yaml"
     env:
       STATE: "filtered"
       VISIBLE_ITEMS: "Croutons"
 
 - runFlow:
-    file: "accordions/legumes.yaml"
-    env:
-      STATE: "hidden"
-
-- runFlow:
-    file: "accordions/vegetable.yaml"
+    file: "accordions/cheese.yaml"
     env:
       STATE: "filtered"
-      VISIBLE_ITEMS: "Romaine Lettuce"
-
-- runFlow:
-    file: "accordions/plantProtein.yaml"
-    env:
-      STATE: "hidden"
+      VISIBLE_ITEMS: "Parmesan"
 
 - runFlow:
     file: "accordions/condiment.yaml"
+    env:
+      STATE: "hidden"
+
+- runFlow:
+    file: "accordions/dairy.yaml"
+    env:
+      STATE: "hidden"
+
+- runFlow:
+    file: "accordions/fish.yaml"
+    env:
+      STATE: "hidden"
+
+- runFlow:
+    file: "accordions/fruit.yaml"
+    env:
+      STATE: "hidden"
+
+- runFlow:
+    file: "accordions/legumes.yaml"
     env:
       STATE: "hidden"
 
@@ -73,15 +93,9 @@ appId: "com.recipedia"
       id: "SearchScreen::FilterAccordion::Accordion::6"
     direction: DOWN
     centerElement: true
-    label: "Scroll to Sauce category"
+    label: "Scroll to Meat category"
 
 - waitForAnimationToEnd
-
-- runFlow:
-    file: "accordions/sauce.yaml"
-    env:
-      STATE: "filtered"
-      VISIBLE_ITEMS: "Caesar Dressing"
 
 - runFlow:
     file: "accordions/meat.yaml"
@@ -89,38 +103,7 @@ appId: "com.recipedia"
       STATE: "hidden"
 
 - runFlow:
-    file: "accordions/poultry.yaml"
-    env:
-      STATE: "hidden"
-
-- runFlow:
-    file: "accordions/fish.yaml"
-    env:
-      STATE: "hidden"
-
-- runFlow:
-    file: "accordions/dairy.yaml"
-    env:
-      STATE: "hidden"
-
-- runFlow:
-    file: "accordions/cheese.yaml"
-    env:
-      STATE: "filtered"
-      VISIBLE_ITEMS: "Parmesan"
-
-- runFlow:
-    file: "accordions/sugar.yaml"
-    env:
-      STATE: "hidden"
-
-- runFlow:
-    file: "accordions/spice.yaml"
-    env:
-      STATE: "hidden"
-
-- runFlow:
-    file: "accordions/fruit.yaml"
+    file: "accordions/nutsAndSeeds.yaml"
     env:
       STATE: "hidden"
 
@@ -130,9 +113,41 @@ appId: "com.recipedia"
       STATE: "hidden"
 
 - runFlow:
-    file: "accordions/nutsAndSeeds.yaml"
+    file: "accordions/plantProtein.yaml"
     env:
       STATE: "hidden"
+
+- runFlow:
+    file: "accordions/poultry.yaml"
+    env:
+      STATE: "hidden"
+
+- runFlow:
+    file: "accordions/sauce.yaml"
+    env:
+      STATE: "filtered"
+      VISIBLE_ITEMS: "Caesar Dressing"
+
+- runFlow:
+    file: "accordions/spice.yaml"
+    env:
+      STATE: "hidden"
+
+- runFlow:
+    file: "accordions/sugar.yaml"
+    env:
+      STATE: "hidden"
+
+- runFlow:
+    file: "accordions/topping.yaml"
+    env:
+      STATE: "hidden"
+
+- runFlow:
+    file: "accordions/vegetable.yaml"
+    env:
+      STATE: "filtered"
+      VISIBLE_ITEMS: "Romaine Lettuce"
 
 - runFlow:
     file: "scrollBackToTop.yaml"

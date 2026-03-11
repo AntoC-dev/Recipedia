@@ -22,85 +22,100 @@ appId: "com.recipedia"
     file: "accordions/tags-all.yaml"
     label: "Assert Tags accordion with all items visible"
 
-# Accordion 3: Cereal
+# Accordion 3: Baking
+- runFlow:
+    file: "accordions/baking-all.yaml"
+    label: "Assert Baking accordion with all items visible"
+
+# Accordion 4: Bread
+- runFlow:
+    file: "accordions/bread-all.yaml"
+    label: "Assert Bread accordion with all items visible"
+
+# Accordion 5: Cereal
 - runFlow:
     file: "accordions/grainOrCereal-all.yaml"
     label: "Assert Cereal accordion with all items visible"
 
-# Accordion 4: Legumes
+# Accordion 6: Cheese
 - runFlow:
-    file: "accordions/legumes-all.yaml"
-    label: "Assert Legumes accordion with all items visible"
-
-# Accordion 5: Vegetable
-- runFlow:
-    file: "accordions/vegetable-all.yaml"
-    label: "Assert Vegetable accordion with all items visible"
-
-# Accordion 6: Plant Protein
-- runFlow:
-    file: "accordions/plantProtein-all.yaml"
-    label: "Assert Plant Protein accordion with all items visible"
+    file: "accordions/cheese-all.yaml"
+    label: "Assert Cheese accordion with all items visible"
 
 # Accordion 7: Condiment
 - runFlow:
     file: "accordions/condiment-all.yaml"
     label: "Assert Condiment accordion with all items visible"
 
-# Accordion 8: Sauce
-- runFlow:
-    file: "accordions/sauce-all.yaml"
-    label: "Assert Sauce accordion with all items visible"
-
-# Accordion 9: Meat
-- runFlow:
-    file: "accordions/meat-all.yaml"
-    label: "Assert Meat accordion with all items visible"
-
-# Accordion 10: Poultry
-- runFlow:
-    file: "accordions/poultry-all.yaml"
-    label: "Assert Poultry accordion with all items visible"
-
-# Accordion 11: Fish
-- runFlow:
-    file: "accordions/fish-all.yaml"
-    label: "Assert Fish accordion with all items visible"
-
-# Accordion 12: Dairy
+# Accordion 8: Dairy
 - runFlow:
     file: "accordions/dairy-all.yaml"
     label: "Assert Dairy accordion with all items visible"
 
-# Accordion 13: Cheese
+# Accordion 9: Fish
 - runFlow:
-    file: "accordions/cheese-all.yaml"
-    label: "Assert Cheese accordion with all items visible"
+    file: "accordions/fish-all.yaml"
+    label: "Assert Fish accordion with all items visible"
 
-# Accordion 14: Sugar
-- runFlow:
-    file: "accordions/sugar-all.yaml"
-    label: "Assert Sugar accordion with all items visible"
-
-# Accordion 15: Spice
-- runFlow:
-    file: "accordions/spice-all.yaml"
-    label: "Assert Spice accordion with all items visible"
-
-# Accordion 16: Fruit
+# Accordion 10: Fruit
 - runFlow:
     file: "accordions/fruit-all.yaml"
     label: "Assert Fruit accordion with all items visible"
 
-# Accordion 17: Oil and Fat
+# Accordion 11: Legumes
+- runFlow:
+    file: "accordions/legumes-all.yaml"
+    label: "Assert Legumes accordion with all items visible"
+
+# Accordion 12: Meat
+- runFlow:
+    file: "accordions/meat-all.yaml"
+    label: "Assert Meat accordion with all items visible"
+
+# Accordion 13: Nuts and Seeds
+- runFlow:
+    file: "accordions/nutsAndSeeds-all.yaml"
+    label: "Assert Nuts and Seeds accordion with all items visible"
+
+# Accordion 14: Oil and Fat
 - runFlow:
     file: "accordions/oilAndFat-all.yaml"
     label: "Assert Oil and Fat accordion with all items visible"
 
-# Accordion 18: Nuts and Seeds
+# Accordion 15: Plant Protein
 - runFlow:
-    file: "accordions/nutsAndSeeds-all.yaml"
-    label: "Assert Nuts and Seeds accordion with all items visible"
+    file: "accordions/plantProtein-all.yaml"
+    label: "Assert Plant Protein accordion with all items visible"
+
+# Accordion 16: Poultry
+- runFlow:
+    file: "accordions/poultry-all.yaml"
+    label: "Assert Poultry accordion with all items visible"
+
+# Accordion 17: Sauce
+- runFlow:
+    file: "accordions/sauce-all.yaml"
+    label: "Assert Sauce accordion with all items visible"
+
+# Accordion 18: Spice
+- runFlow:
+    file: "accordions/spice-all.yaml"
+    label: "Assert Spice accordion with all items visible"
+
+# Accordion 19: Sugar
+- runFlow:
+    file: "accordions/sugar-all.yaml"
+    label: "Assert Sugar accordion with all items visible"
+
+# Accordion 20: Topping
+- runFlow:
+    file: "accordions/topping-all.yaml"
+    label: "Assert Topping accordion with all items visible"
+
+# Accordion 21: Vegetable
+- runFlow:
+    file: "accordions/vegetable-all.yaml"
+    label: "Assert Vegetable accordion with all items visible"
 
 # Scroll back to top
 - runFlow:
