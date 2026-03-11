@@ -149,7 +149,7 @@ describe('IngredientsSettings Screen', () => {
       expect(db.get_ingredients().length).toEqual(sortedDataset.length + 1);
     });
     const expectedIngredient: ingredientTableElement = {
-      id: 38,
+      id: 40,
       name: 'New Value',
       season: ['5', '6', '7', '8', '9', '10'],
       type: ingredientType.fruit,

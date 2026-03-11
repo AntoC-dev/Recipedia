@@ -1,6 +1,6 @@
 import { ingredientType, recipeTableElement } from '@customTypes/DatabaseElementTypes';
 
-export const testRecipes: Array<recipeTableElement> = [
+export const testRecipes: recipeTableElement[] = [
   {
     id: 1,
     image_Source: 'spaghetti_bolognese.png',
@@ -160,7 +160,7 @@ export const testRecipes: Array<recipeTableElement> = [
         id: 9,
         name: 'Flour',
         unit: 'g',
-        type: ingredientType.cereal,
+        type: ingredientType.baking,
         season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
         quantity: '200',
       },
@@ -425,7 +425,7 @@ export const testRecipes: Array<recipeTableElement> = [
         id: 9,
         name: 'Flour',
         unit: 'g',
-        type: ingredientType.cereal,
+        type: ingredientType.baking,
         season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
         quantity: '200',
       },

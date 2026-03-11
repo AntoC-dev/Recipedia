@@ -54,6 +54,45 @@ describe('DatabaseElementTypes Helper Functions', () => {
     expect(result.length).toBe(0);
   });
 
+  test('arrayOfType returns correct items for bread category', () => {
+    const burgerBuns = testIngredients.find(i => i.name === 'Burger Buns');
+    expect(burgerBuns).toBeDefined();
+    expect(burgerBuns?.type).toBe(ingredientType.bread);
+
+    const breadItems = arrayOfType(testIngredients, ingredientType.bread);
+    expect(breadItems).toBeInstanceOf(Array);
+    expect(breadItems.length).toBeGreaterThan(0);
+    expect(breadItems.some(i => i.name === 'Burger Buns')).toBe(true);
+    expect(breadItems.every(i => i.type === ingredientType.bread)).toBe(true);
+  });
+
+  test('arrayOfType returns correct items for baking category', () => {
+    const flour = testIngredients.find(i => i.name === 'Flour');
+    expect(flour).toBeDefined();
+    expect(flour?.type).toBe(ingredientType.baking);
+
+    const bakingItems = arrayOfType(testIngredients, ingredientType.baking);
+    expect(bakingItems).toBeInstanceOf(Array);
+    expect(bakingItems.length).toBeGreaterThan(0);
+    expect(bakingItems.some(i => i.name === 'Flour')).toBe(true);
+    expect(bakingItems.every(i => i.type === ingredientType.baking)).toBe(true);
+
+    const cerealItems = arrayOfType(testIngredients, ingredientType.cereal);
+    expect(cerealItems.some(i => i.name === 'Flour')).toBe(false);
+  });
+
+  test('arrayOfType returns correct items for topping category', () => {
+    const sesameSeeds = testIngredients.find(i => i.name === 'Sesame Seeds');
+    expect(sesameSeeds).toBeDefined();
+    expect(sesameSeeds?.type).toBe(ingredientType.topping);
+
+    const toppingItems = arrayOfType(testIngredients, ingredientType.topping);
+    expect(toppingItems).toBeInstanceOf(Array);
+    expect(toppingItems.length).toBeGreaterThan(0);
+    expect(toppingItems.some(i => i.name === 'Sesame Seeds')).toBe(true);
+    expect(toppingItems.every(i => i.type === ingredientType.topping)).toBe(true);
+  });
+
   test('extractIngredientsNameWithQuantity formats ingredient names correctly', () => {
     const monoIngredient = new Array<ingredientTableElement>({
       name: 'Sugar',

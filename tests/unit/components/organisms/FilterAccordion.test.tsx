@@ -4,13 +4,12 @@ import React from 'react';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
 import { ingredientTableElement } from '@customTypes/DatabaseElementTypes';
-import { nonIngredientFilters, TListFilter } from '@customTypes/RecipeFiltersTypes';
+import { listFilter, nonIngredientFilters, TListFilter } from '@customTypes/RecipeFiltersTypes';
 import { selectFilterCategoriesValuesToDisplay } from '@utils/FilterFunctions';
-import { useI18n } from '@utils/i18n';
 
 jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 
-const { t } = useI18n();
+const { t } = jest.requireMock('@utils/i18n').useI18n();
 
 describe('FilterAccordion Component', () => {
   const defaultTestId = 'test-filter-accordion';
@@ -19,6 +18,7 @@ describe('FilterAccordion Component', () => {
   const emptyFiltersState = new Map<TListFilter, string[]>();
 
   const sampleFilteredIngredients = selectFilterCategoriesValuesToDisplay(
+    (Object.values(listFilter) as TListFilter[]).sort((a, b) => a.localeCompare(b)),
     sampleTags,
     sampleIngredients
   ).filter(section => section.data.length > 0);
