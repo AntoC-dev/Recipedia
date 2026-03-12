@@ -10,7 +10,7 @@ appId: "com.recipedia"
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to Cereal category"
 
@@ -35,26 +35,6 @@ appId: "com.recipedia"
       RECIPE_NAMES: "Spaghetti Bolognese"
     label: "Assert and check Spaghetti ingredient"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "ShoppingScreen::SectionList::ingredientTypes.sauce::SubHeader"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to Sauce category"
-
-- waitForAnimationToEnd
-
-- assertVisible:
-    id: "ShoppingScreen::SectionList::ingredientTypes.sauce::SubHeader"
-    label: "Sauce category header is displayed"
-
-- assertVisible:
-    text: "Sauce"
-    label: "Sauce category text is displayed"
-
 - runFlow:
     file: "../../../flows/shopping/en/assertAndCheckIngredient.yaml"
     env:
@@ -70,9 +50,40 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.cheese::SubHeader"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to Cheese category"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.cheese::SubHeader"
+    label: "Cheese category header is displayed"
+
+- assertVisible:
+    text: "Cheese"
+    label: "Cheese category text is displayed"
+
+- runFlow:
+    file: "../../../flows/shopping/en/assertAndCheckIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "Parmesan"
+      INGREDIENT_NAME_LOWER: "parmesan"
+      QUANTITY: "50"
+      UNIT: "g"
+      RECIPE_COUNT: "1 recipe"
+      RECIPE_NAMES: "Spaghetti Bolognese"
+    label: "Assert and check Parmesan ingredient"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
       id: "ShoppingScreen::SectionList::ingredientTypes.meat::SubHeader"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to Meat category"
 
@@ -101,33 +112,29 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "ShoppingScreen::SectionList::ingredientTypes.cheese::SubHeader"
+      id: "ShoppingScreen::SectionList::ingredientTypes.sauce::SubHeader"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
-    label: "Scroll to Cheese category"
+    label: "Scroll to Sauce category"
 
 - waitForAnimationToEnd
 
 - assertVisible:
-    id: "ShoppingScreen::SectionList::ingredientTypes.cheese::SubHeader"
-    label: "Cheese category header is displayed"
+    id: "ShoppingScreen::SectionList::ingredientTypes.sauce::SubHeader"
+    label: "Sauce category header is displayed"
 
 - assertVisible:
-    text: "Cheese"
-    label: "Cheese category text is displayed"
+    text: "Sauce"
+    label: "Sauce category text is displayed"
 
-- runFlow:
-    file: "../../../flows/shopping/en/assertAndCheckIngredient.yaml"
-    env:
-      INGREDIENT_NAME: "Parmesan"
-      INGREDIENT_NAME_LOWER: "parmesan"
-      QUANTITY: "50"
-      UNIT: "g"
-      RECIPE_COUNT: "1 recipe"
-      RECIPE_NAMES: "Spaghetti Bolognese"
-    label: "Assert and check Parmesan ingredient"
+- waitForAnimationToEnd
 
-- runFlow:
-    file: "../../../flows/shopping/scrollToTop.yaml"
-    label: "Scroll back to top for next tests"
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
+    direction: UP
+    speed: 80
+    label: "Scroll back to top of shopping list"
+
+- waitForAnimationToEnd

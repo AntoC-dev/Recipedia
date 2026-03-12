@@ -66,6 +66,13 @@ appId: "com.recipedia"
       RECIPE_NAMES: "Test Recipe"
     label: "Assert and check Tomatoes ingredient"
 
-- runFlow:
-    file: "../../../flows/shopping/scrollToTop.yaml"
-    label: "Scroll back to top for next tests"
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
+    direction: UP
+    speed: 80
+    label: "Scroll back to top of shopping list"
+
+- waitForAnimationToEnd

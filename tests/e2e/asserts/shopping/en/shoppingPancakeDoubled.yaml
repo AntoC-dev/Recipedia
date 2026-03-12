@@ -1,25 +1,24 @@
 appId: "com.recipedia"
 ---
-
 - waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
-      id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
+      id: "ShoppingScreen::SectionList::ingredientTypes.baking::SubHeader"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
-    label: "Scroll to Cereal category"
+    label: "Scroll to Baking category"
 
 - waitForAnimationToEnd
 
 - assertVisible:
-    id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
-    label: "Cereal category header is displayed"
+    id: "ShoppingScreen::SectionList::ingredientTypes.baking::SubHeader"
+    label: "Baking category header is displayed"
 
 - assertVisible:
-    text: "Cereal"
-    label: "Cereal category text is displayed"
+    text: "Baking"
+    label: "Baking category text is displayed"
 
 - waitForAnimationToEnd
 
@@ -27,7 +26,7 @@ appId: "com.recipedia"
     element:
       id: "ShoppingScreen::SectionList::Flour"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to Flour item"
 
@@ -57,7 +56,7 @@ appId: "com.recipedia"
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.plantProtein::SubHeader"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to Plant Protein category"
 
@@ -77,7 +76,7 @@ appId: "com.recipedia"
     element:
       id: "ShoppingScreen::SectionList::Eggs"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to Eggs item"
 
@@ -107,7 +106,7 @@ appId: "com.recipedia"
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.dairy::SubHeader"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to Dairy category"
 
@@ -127,7 +126,7 @@ appId: "com.recipedia"
     element:
       id: "ShoppingScreen::SectionList::Milk"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to Milk item"
 
@@ -157,7 +156,7 @@ appId: "com.recipedia"
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.oilAndFat::SubHeader"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to Oil and Fat category"
 
@@ -177,7 +176,7 @@ appId: "com.recipedia"
     element:
       id: "ShoppingScreen::SectionList::Butter"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to Butter item"
 

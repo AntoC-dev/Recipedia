@@ -8,21 +8,21 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
+      id: "ShoppingScreen::SectionList::ingredientTypes.baking::SubHeader"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
-    label: "Scroll to Cereal category"
+    label: "Scroll to Baking category"
 
 - waitForAnimationToEnd
 
 - assertVisible:
-    id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
-    label: "Cereal category header is displayed"
+    id: "ShoppingScreen::SectionList::ingredientTypes.baking::SubHeader"
+    label: "Baking category header is displayed"
 
 - assertVisible:
-    text: "Cereal"
-    label: "Cereal category text is displayed"
+    text: "Baking"
+    label: "Baking category text is displayed"
 
 - runFlow:
     file: "../../../flows/shopping/en/assertAndCheckIngredient.yaml"
@@ -39,9 +39,73 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.dairy::SubHeader"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to Dairy category"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.dairy::SubHeader"
+    label: "Dairy category header is displayed"
+
+- assertVisible:
+    text: "Dairy"
+    label: "Dairy category text is displayed"
+
+
+- runFlow:
+    file: "../../../flows/shopping/en/assertAndCheckIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "Milk"
+      INGREDIENT_NAME_LOWER: "milk"
+      QUANTITY: "300"
+      UNIT: "ml"
+      RECIPE_COUNT: "1 recipe"
+      RECIPE_NAMES: "Classic Pancakes"
+    label: "Assert and check Milk ingredient"
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.oilAndFat::SubHeader"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to Oil and Fat category"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.oilAndFat::SubHeader"
+    label: "Oil and Fat category header is displayed"
+
+
+- assertVisible:
+    text: "Oil and Fat"
+    label: "Oil and Fat category text is displayed"
+
+
+- runFlow:
+    file: "../../../flows/shopping/en/assertAndCheckIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "Butter"
+      INGREDIENT_NAME_LOWER: "butter"
+      QUANTITY: "50"
+      UNIT: "g"
+      RECIPE_COUNT: "1 recipe"
+      RECIPE_NAMES: "Classic Pancakes"
+    label: "Assert and check Butter ingredient"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
       id: "ShoppingScreen::SectionList::ingredientTypes.plantProtein::SubHeader"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to Plant Protein category"
 
@@ -65,68 +129,6 @@ appId: "com.recipedia"
       RECIPE_COUNT: "1 recipe"
       RECIPE_NAMES: "Classic Pancakes"
     label: "Assert and check Eggs ingredient"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "ShoppingScreen::SectionList::ingredientTypes.dairy::SubHeader"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to Dairy category"
-
-- waitForAnimationToEnd
-
-- assertVisible:
-    id: "ShoppingScreen::SectionList::ingredientTypes.dairy::SubHeader"
-    label: "Dairy category header is displayed"
-
-- assertVisible:
-    text: "Dairy"
-    label: "Dairy category text is displayed"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "ShoppingScreen::SectionList::ingredientTypes.oilAndFat::SubHeader"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to Oil and Fat category"
-
-- waitForAnimationToEnd
-
-- assertVisible:
-    id: "ShoppingScreen::SectionList::ingredientTypes.oilAndFat::SubHeader"
-    label: "Oil and Fat category header is displayed"
-
-- assertVisible:
-    text: "Oil and Fat"
-    label: "Oil and Fat category text is displayed"
-
-- runFlow:
-    file: "../../../flows/shopping/en/assertAndCheckIngredient.yaml"
-    env:
-      INGREDIENT_NAME: "Milk"
-      INGREDIENT_NAME_LOWER: "milk"
-      QUANTITY: "300"
-      UNIT: "ml"
-      RECIPE_COUNT: "1 recipe"
-      RECIPE_NAMES: "Classic Pancakes"
-    label: "Assert and check Milk ingredient"
-
-- runFlow:
-    file: "../../../flows/shopping/en/assertAndCheckIngredient.yaml"
-    env:
-      INGREDIENT_NAME: "Butter"
-      INGREDIENT_NAME_LOWER: "butter"
-      QUANTITY: "50"
-      UNIT: "g"
-      RECIPE_COUNT: "1 recipe"
-      RECIPE_NAMES: "Classic Pancakes"
-    label: "Assert and check Butter ingredient"
 
 - runFlow:
     file: "../../../flows/shopping/scrollToTop.yaml"

@@ -45,73 +45,17 @@ appId: "com.recipedia"
       RECIPE_NAMES: "Margherita Pizza"
     label: "Assert and check Pizza Dough ingredient"
 
-- assertVisible:
-    id: "ShoppingScreen::SectionList::ingredientTypes.vegetable::SubHeader"
-    label: "Vegetable category header is displayed"
+- waitForAnimationToEnd
 
-- assertVisible:
-    text: "Vegetable"
-    label: "Vegetable category text is displayed"
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.cheese::SubHeader"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to Cheese category"
 
-- runFlow:
-    file: "../../../flows/shopping/en/assertAndCheckIngredient.yaml"
-    env:
-      INGREDIENT_NAME: "Romaine Lettuce"
-      INGREDIENT_NAME_LOWER: "romaine lettuce"
-      QUANTITY: "200"
-      UNIT: "g"
-      RECIPE_COUNT: "1 recipe"
-      RECIPE_NAMES: "Caesar Salad"
-    label: "Assert and check Romaine Lettuce ingredient"
-
-- assertVisible:
-    id: "ShoppingScreen::SectionList::ingredientTypes.sauce::SubHeader"
-    label: "Sauce category header is displayed"
-
-- assertVisible:
-    text: "Sauce"
-    label: "Sauce category text is displayed"
-
-- runFlow:
-    file: "../../../flows/shopping/en/assertAndCheckIngredient.yaml"
-    env:
-      INGREDIENT_NAME: "Tomato Sauce"
-      INGREDIENT_NAME_LOWER: "tomato sauce"
-      QUANTITY: "450"
-      UNIT: "ml"
-      RECIPE_COUNT: "2 recipes"
-      RECIPE_NAMES: "Spaghetti Bolognese\n\t- Margherita Pizza"
-    label: "Assert and check Tomato Sauce ingredient"
-
-- runFlow:
-    file: "../../../flows/shopping/en/assertAndCheckIngredient.yaml"
-    env:
-      INGREDIENT_NAME: "Caesar Dressing"
-      INGREDIENT_NAME_LOWER: "caesar dressing"
-      QUANTITY: "100"
-      UNIT: "ml"
-      RECIPE_COUNT: "1 recipe"
-      RECIPE_NAMES: "Caesar Salad"
-    label: "Assert and check Caesar Dressing ingredient"
-
-- assertVisible:
-    id: "ShoppingScreen::SectionList::ingredientTypes.meat::SubHeader"
-    label: "Meat category header is displayed"
-
-- assertVisible:
-    text: "Meat"
-    label: "Meat category text is displayed"
-
-- runFlow:
-    file: "../../../flows/shopping/en/assertAndCheckIngredient.yaml"
-    env:
-      INGREDIENT_NAME: "Ground Beef"
-      INGREDIENT_NAME_LOWER: "ground beef"
-      QUANTITY: "300"
-      UNIT: "g"
-      RECIPE_COUNT: "1 recipe"
-      RECIPE_NAMES: "Spaghetti Bolognese"
-    label: "Assert and check Ground Beef ingredient"
+- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.cheese::SubHeader"
@@ -143,6 +87,92 @@ appId: "com.recipedia"
       RECIPE_NAMES: "Margherita Pizza"
     label: "Assert and check Mozzarella ingredient"
 
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.meat::SubHeader"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to Meat category"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.meat::SubHeader"
+    label: "Meat category header is displayed"
+
+- assertVisible:
+    text: "Meat"
+    label: "Meat category text is displayed"
+
+- runFlow:
+    file: "../../../flows/shopping/en/assertAndCheckIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "Ground Beef"
+      INGREDIENT_NAME_LOWER: "ground beef"
+      QUANTITY: "300"
+      UNIT: "g"
+      RECIPE_COUNT: "1 recipe"
+      RECIPE_NAMES: "Spaghetti Bolognese"
+    label: "Assert and check Ground Beef ingredient"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.sauce::SubHeader"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to Sauce category"
+
+- waitForAnimationToEnd
+
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.sauce::SubHeader"
+    label: "Sauce category header is displayed"
+
+- assertVisible:
+    text: "Sauce"
+    label: "Sauce category text is displayed"
+
+- runFlow:
+    file: "../../../flows/shopping/en/assertAndCheckIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "Tomato Sauce"
+      INGREDIENT_NAME_LOWER: "tomato sauce"
+      QUANTITY: "450"
+      UNIT: "ml"
+      RECIPE_COUNT: "2 recipes"
+      RECIPE_NAMES: "Spaghetti Bolognese\n\t- Margherita Pizza"
+    label: "Assert and check Tomato Sauce ingredient"
+
+- runFlow:
+    file: "../../../flows/shopping/en/assertAndCheckIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "Caesar Dressing"
+      INGREDIENT_NAME_LOWER: "caesar dressing"
+      QUANTITY: "100"
+      UNIT: "ml"
+      RECIPE_COUNT: "1 recipe"
+      RECIPE_NAMES: "Caesar Salad"
+    label: "Assert and check Caesar Dressing ingredient"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.spice::SubHeader"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to Spice category"
+
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.spice::SubHeader"
     label: "Spice category header is displayed"
@@ -162,6 +192,44 @@ appId: "com.recipedia"
       RECIPE_NAMES: "Margherita Pizza"
     label: "Assert and check Basil Leaves ingredient"
 
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.vegetable::SubHeader"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to Vegetable category"
+
+- waitForAnimationToEnd
+- assertVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.vegetable::SubHeader"
+    label: "Vegetable category header is displayed"
+
+- assertVisible:
+    text: "Vegetable"
+    label: "Vegetable category text is displayed"
+
 - runFlow:
-    file: "../../../flows/shopping/scrollToTop.yaml"
-    label: "Scroll back to top for next tests"
+    file: "../../../flows/shopping/en/assertAndCheckIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "Romaine Lettuce"
+      INGREDIENT_NAME_LOWER: "romaine lettuce"
+      QUANTITY: "200"
+      UNIT: "g"
+      RECIPE_COUNT: "1 recipe"
+      RECIPE_NAMES: "Caesar Salad"
+    label: "Assert and check Romaine Lettuce ingredient"
+
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
+    direction: UP
+    speed: 80
+    label: "Scroll back to top of shopping list"
+
+- waitForAnimationToEnd
