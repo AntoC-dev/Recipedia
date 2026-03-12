@@ -1,5 +1,9 @@
 import { ingredientType } from '@customTypes/DatabaseElementTypes';
-import { listFilter, TIngredientCategories, TListFilter } from '@customTypes/RecipeFiltersTypes';
+import {
+  nonIngredientFilters,
+  TIngredientCategories,
+  TListFilter,
+} from '@customTypes/RecipeFiltersTypes';
 import { useI18n } from '@utils/i18n';
 
 /**
@@ -18,8 +22,7 @@ export function useShoppingCategories(): TIngredientCategories[] {
  * Re-sorts automatically when the language changes.
  */
 export function useFiltersCategories(): TListFilter[] {
-  const { t, getLocale } = useI18n();
-  return (Object.values(listFilter) as TListFilter[]).sort((a, b) =>
-    t(a).localeCompare(t(b), getLocale())
-  );
+  const shoppingCategories = useShoppingCategories();
+
+  return [...Object.values(nonIngredientFilters), ...shoppingCategories];
 }
