@@ -3,12 +3,16 @@ appId: "com.recipedia"
 # Route to appropriate flow based on STATE
 
 # STATE="filtered": Some items visible (filter applied)
+# As there is only 1 item for now, nothing to filter
 - runFlow:
     when:
       true: ${STATE == "filtered"}
-    file: "baking-filtered.yaml"
     env:
       VISIBLE_ITEMS: ${VISIBLE_ITEMS}
+    commands:
+      - assertVisible:
+          text: "Not visible"
+          label: "Asserting a non-existing baking element because we shouldn't go there"
 
 # STATE="hidden": Accordion not displayed (no matching items)
 - runFlow:
