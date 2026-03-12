@@ -21,7 +21,6 @@ env:
     text: "Search..."
     label: "Search bar has correct placeholder text"
 
-
 - assertVisible:
     id: "IngredientsSettings::0::IngredientName"
     text: "Avocado"
@@ -45,247 +44,261 @@ env:
 - runFlow:
     env:
       INGREDIENT_INDEX: 2
-      INGREDIENT_NAME: "Butter"
+      INGREDIENT_NAME: "Burger Buns"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Butter at index 2"
+    label: "Assert ingredient Burger Buns at index 2"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 3
-      INGREDIENT_NAME: "Caesar Dressing"
+      INGREDIENT_NAME: "Butter"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Caesar Dressing at index 3"
+    label: "Assert ingredient Butter at index3"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 4
-      INGREDIENT_NAME: "Carrots"
+      INGREDIENT_NAME: "Caesar Dressing"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Carrots at index 4"
+    label: "Assert ingredient Caesar Dressing at index 4"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 5
-      INGREDIENT_NAME: "Celery"
+      INGREDIENT_NAME: "Carrots"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Celery at index 5"
+    label: "Assert ingredient Carrots at index 5"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 6
-      INGREDIENT_NAME: "Cheddar"
+      INGREDIENT_NAME: "Celery"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Cheddar at index 6"
+    label: "Assert ingredient Celery at index 6"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 7
-      INGREDIENT_NAME: "Chicken Breast"
+      INGREDIENT_NAME: "Cheddar"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Chicken Breast at index 7"
+    label: "Assert ingredient Cheddar at index 7"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 8
-      INGREDIENT_NAME: "Cocoa Powder"
+      INGREDIENT_NAME: "Chicken Breast"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Cocoa Powder at index 8"
+    label: "Assert ingredient Chicken Breast at index 8"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 9
-      INGREDIENT_NAME: "Coconut Milk"
+      INGREDIENT_NAME: "Cocoa Powder"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Coconut Milk at index 9"
+    label: "Assert ingredient Cocoa Powder at index 9"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 10
-      INGREDIENT_NAME: "Croutons"
+      INGREDIENT_NAME: "Coconut Milk"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Croutons at index 10"
+    label: "Assert ingredient Coconut Milk at index 10"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 11
-      INGREDIENT_NAME: "Curry Powder"
+      INGREDIENT_NAME: "Croutons"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Curry Powder at index 11"
+    label: "Assert ingredient Croutons at index 11"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 12
-      INGREDIENT_NAME: "Eggs"
+      INGREDIENT_NAME: "Curry Powder"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Eggs at index 12"
+    label: "Assert ingredient Curry Powder at index 12"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 13
-      INGREDIENT_NAME: "Flour"
+      INGREDIENT_NAME: "Eggs"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Flour at index 13"
+    label: "Assert ingredient Eggs at index 13"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 14
-      INGREDIENT_NAME: "Ground Beef"
+      INGREDIENT_NAME: "Flour"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Ground Beef at index 14"
+    label: "Assert ingredient Flour at index 14"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 15
-      INGREDIENT_NAME: "Lettuce"
+      INGREDIENT_NAME: "Ground Beef"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Lettuce at index 15"
+    label: "Assert ingredient Ground Beef at index 15"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 16
-      INGREDIENT_NAME: "Milk"
+      INGREDIENT_NAME: "Lettuce"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Milk at index 16"
+    label: "Assert ingredient Lettuce at index 16"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 17
-      INGREDIENT_NAME: "Mozzarella"
+      INGREDIENT_NAME: "Milk"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Mozzarella at index 17"
+    label: "Assert ingredient Milk at index 17"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 18
-      INGREDIENT_NAME: "Nori Sheets"
+      INGREDIENT_NAME: "Mozzarella"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Nori Sheets at index 18"
+    label: "Assert ingredient Mozzarella at index 18"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 19
-      INGREDIENT_NAME: "Olive Oil"
+      INGREDIENT_NAME: "Nori Sheets"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Olive Oil at index 19"
+    label: "Assert ingredient Nori Sheets at index 19"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 20
-      INGREDIENT_NAME: "Onions"
+      INGREDIENT_NAME: "Olive Oil"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Onions at index 20"
+    label: "Assert ingredient Olive Oil at index 20"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 21
-      INGREDIENT_NAME: "Parmesan"
+      INGREDIENT_NAME: "Onions"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Parmesan at index 21"
+    label: "Assert ingredient Onions at index 21"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 22
-      INGREDIENT_NAME: "Pasta"
+      INGREDIENT_NAME: "Parmesan"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Pasta at index 22"
+    label: "Assert ingredient Parmesan at index 22"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 23
-      INGREDIENT_NAME: "Pine Nuts"
+      INGREDIENT_NAME: "Pasta"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Pine Nuts at index 23"
+    label: "Assert ingredient Pasta at index 23"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 24
-      INGREDIENT_NAME: "Pizza Dough"
+      INGREDIENT_NAME: "Pine Nuts"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Pizza Dough at index 24"
+    label: "Assert ingredient Pine Nuts at index 24"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 25
-      INGREDIENT_NAME: "Potatoes"
+      INGREDIENT_NAME: "Pizza Dough"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Potatoes at index 25"
+    label: "Assert ingredient Pizza Dough at index 25"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 26
-      INGREDIENT_NAME: "Red Lentils"
+      INGREDIENT_NAME: "Potatoes"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Red Lentils at index 26"
+    label: "Assert ingredient Potatoes at index 26"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 27
-      INGREDIENT_NAME: "Romaine Lettuce"
+      INGREDIENT_NAME: "Red Lentils"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Romaine Lettuce at index 27"
+    label: "Assert ingredient Red Lentils at index 27"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 28
-      INGREDIENT_NAME: "Salmon"
+      INGREDIENT_NAME: "Romaine Lettuce"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Salmon at index 28"
+    label: "Assert ingredient Romaine Lettuce at index 28"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 29
-      INGREDIENT_NAME: "Soy Sauce"
+      INGREDIENT_NAME: "Salmon"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Soy Sauce at index 29"
+    label: "Assert ingredient Salmon at index 29"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 30
-      INGREDIENT_NAME: "Spaghetti"
+      INGREDIENT_NAME: "Sesame Seeds"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Spaghetti at index 30"
+    label: "Assert ingredient Sesame Seeds at index 30"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 31
-      INGREDIENT_NAME: "Sugar"
+      INGREDIENT_NAME: "Soy Sauce"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Sugar at index 31"
+    label: "Assert ingredient Soy Sauce at index 31"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 32
-      INGREDIENT_NAME: "Sushi Rice"
+      INGREDIENT_NAME: "Spaghetti"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Sushi Rice at index 32"
+    label: "Assert ingredient Spaghetti at index 32"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 33
-      INGREDIENT_NAME: "Taco Shells"
+      INGREDIENT_NAME: "Sugar"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Taco Shells at index 33"
+    label: "Assert ingredient Sugar at index 33"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 34
-      INGREDIENT_NAME: "Tomato Sauce"
+      INGREDIENT_NAME: "Sushi Rice"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Tomato Sauce at index 34"
+    label: "Assert ingredient Sushi Rice at index 34"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 35
-      INGREDIENT_NAME: "Tomatoes"
+      INGREDIENT_NAME: "Taco Shells"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Tomatoes at index 35"
+    label: "Assert ingredient Taco Shells at index 35"
 
 - runFlow:
     env:
       INGREDIENT_INDEX: 36
+      INGREDIENT_NAME: "Tomato Sauce"
+    file: "assertSingleIngredient.yaml"
+    label: "Assert ingredient Tomato Sauce at index 36"
+
+- runFlow:
+    env:
+      INGREDIENT_INDEX: 37
+      INGREDIENT_NAME: "Tomatoes"
+    file: "assertSingleIngredient.yaml"
+    label: "Assert ingredient Tomatoes at index 37"
+
+- runFlow:
+    env:
+      INGREDIENT_INDEX: 38
       INGREDIENT_NAME: "Vegetable Broth"
     file: "assertSingleIngredient.yaml"
-    label: "Assert ingredient Vegetable Broth at index 36"
+    label: "Assert ingredient Vegetable Broth at index 38"
 
 - runFlow:
     when:
