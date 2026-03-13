@@ -15,8 +15,19 @@ tags:
     id: "SearchScreen::FiltersToggleButtons"
     label: "Action - Open the filter page"
 
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::5"
+    direction: DOWN
+    centerElement: true
+    label: "Action - Scroll to Cereal accordion"
+
+- waitForAnimationToEnd
+
 - tapOn:
-    id: "SearchScreen::FilterAccordion::Accordion::3"
+    id: "SearchScreen::FilterAccordion::Accordion::5"
     label: "Action - Expand Cereal accordion"
 
 - waitForAnimationToEnd

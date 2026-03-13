@@ -39,7 +39,7 @@ appId: "com.recipedia"
 - runFlow:
     file: "accordions/bread.yaml"
     env:
-      STATE: "hidden"
+      STATE: "all"
 
 - runFlow:
     file: "accordions/grainOrCereal.yaml"
@@ -77,17 +77,6 @@ appId: "com.recipedia"
     file: "accordions/legumes.yaml"
     env:
       STATE: "hidden"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      text: "Meat"
-    direction: DOWN
-    centerElement: true
-    label: "Scroll to Meat category"
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "accordions/meat.yaml"

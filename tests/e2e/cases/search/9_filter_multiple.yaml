@@ -49,19 +49,28 @@ tags:
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::FilterAccordion::Accordion::4"
+      id: "SearchScreen::FilterAccordion::Accordion::11"
     direction: DOWN
-    centerElement: true
     label: "Action - Scroll to Vegetable accordion"
 
 - waitForAnimationToEnd
 
 - tapOn:
-    id: "SearchScreen::FilterAccordion::Accordion::4"
+    id: "SearchScreen::FilterAccordion::Accordion::11"
     label: "Action - Expand Vegetable accordion"
 
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::11::Item::1"
+    direction: DOWN
+    label: "Action - Scroll to first Vegetable item"
+
+- waitForAnimationToEnd
+
 - tapOn:
-    id: "SearchScreen::FilterAccordion::Accordion::4::Item::1"
+    id: "SearchScreen::FilterAccordion::Accordion::11::Item::1"
     label: "Action - Add the Romaine Lettuce in filters"
 
 - runFlow:
