@@ -1,0 +1,41 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    text: "Céréales"
+    label: "Assert - Céréales is visible in type menu"
+
+- assertVisible:
+    text: "Condiments"
+    label: "Assert - Condiments is visible in type menu"
+
+- assertVisible:
+    text: "Édulcorants"
+    label: "Assert - Édulcorants is visible in type menu"
+
+- assertVisible:
+    text: "Épices"
+    label: "Assert - Épices is visible in type menu"
+
+- assertVisible:
+    text: "Fromage"
+    label: "Assert - Fromage is visible in type menu"
+
+- assertVisible:
+    text: "Fruits"
+    label: "Assert - Fruits is visible in type menu"
+
+- assertVisible:
+    text: "Fruits de Mer"
+    label: "Assert - Fruits de Mer is visible in type menu"
+
+- assertVisible:
+    text: "Huiles et Graisses"
+    label: "Assert - Huiles et Graisses is visible in type menu"
+
+- assertNotVisible:
+    text: "Baking"
+    label: "Assert - English category name Baking is absent from the DOM"
+
+- assertNotVisible:
+    text: "Bread"
+    label: "Assert - English category name Bread is absent from the DOM"

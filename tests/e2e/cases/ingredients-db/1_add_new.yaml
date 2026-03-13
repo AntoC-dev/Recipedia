@@ -32,7 +32,6 @@ tags:
     file: "../../flows/waitForKeyboard.yaml"
     label: "Wait for keyboard to appear"
 
-
 - inputText:
     text: "TestIngredient"
     label: "Action - Enter new ingredient name"
@@ -67,6 +66,10 @@ tags:
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::Menu::Button"
     label: "Action - Open type dropdown"
+
+- runFlow:
+    file: "../../asserts/parameters/ingredients/en/assertTypeMenu.yaml"
+    label: "Assert - Verify type menu items are in English alphabetical order"
 
 - tapOn:
     text: "Vegetable"

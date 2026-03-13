@@ -62,6 +62,10 @@ appId: "com.recipedia"
           index: 1
           label: "Ingredients has a chevron icon on Android"
 
+- runFlow:
+    file: "./assertIngredientDialogIsTranslated.yaml"
+    label: "Verification - Verify ingredient type dropdown translated to French"
+
 - waitForAnimationToEnd
 
 - scrollUntilVisible:
