@@ -141,6 +141,28 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
+      id: "RecipeIngredients::4::IngredientName"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to Burger Buns ingredient"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "RecipeIngredients::4::IngredientName"
+    text: "Burger Buns"
+    label: "Ingredient Burger Buns is rendered"
+
+- assertVisible:
+    id: "RecipeIngredients::4::QuantityAndUnit"
+    text: "8 "
+    label: "Quantity of Burger Buns is rendered"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
       id: "RecipeTime::Text"
     direction: DOWN
     speed: 60
@@ -280,4 +302,3 @@ appId: "com.recipedia"
     label: "Scroll back to top"
 
 - waitForAnimationToEnd
-

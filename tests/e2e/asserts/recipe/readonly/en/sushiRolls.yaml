@@ -153,6 +153,28 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
+      id: "RecipeIngredients::5::IngredientName"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to Sesame Seeds ingredient"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "RecipeIngredients::5::IngredientName"
+    text: "Sesame Seeds"
+    label: "Ingredient Sesame Seeds is rendered"
+
+- assertVisible:
+    id: "RecipeIngredients::5::QuantityAndUnit"
+    text: "2 g"
+    label: "Quantity of Sesame Seeds is rendered"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
       id: "RecipeTime::Text"
     direction: DOWN
     speed: 40
@@ -275,4 +297,3 @@ appId: "com.recipedia"
     label: "Scroll back to top"
 
 - waitForAnimationToEnd
-
