@@ -611,6 +611,13 @@ export const englishRecipes: recipeTableElement[] = [
         type: ingredientType.spice,
         season: ['*'],
       },
+      {
+        name: 'Flour Tortilla',
+        quantity: '8',
+        unit: '',
+        type: ingredientType.bread,
+        season: ['*'],
+      },
     ],
     season: ['6', '7', '8', '9'],
     preparation: [
@@ -916,6 +923,13 @@ export const englishRecipes: recipeTableElement[] = [
         quantity: '1',
         unit: 'pinch',
         type: ingredientType.spice,
+        season: ['*'],
+      },
+      {
+        name: 'Golden Sesame Seeds',
+        quantity: '1',
+        unit: 'tbsp',
+        type: ingredientType.topping,
         season: ['*'],
       },
     ],
