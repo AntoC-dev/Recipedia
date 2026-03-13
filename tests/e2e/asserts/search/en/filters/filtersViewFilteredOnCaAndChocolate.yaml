@@ -34,7 +34,7 @@ appId: "com.recipedia"
 - runFlow:
     file: "accordions/baking.yaml"
     env:
-      STATE: "hidden"
+      STATE: "all"
 
 - runFlow:
     file: "accordions/bread.yaml"
@@ -44,8 +44,7 @@ appId: "com.recipedia"
 - runFlow:
     file: "accordions/grainOrCereal.yaml"
     env:
-      STATE: "filtered"
-      VISIBLE_ITEMS: "Flour"
+      STATE: "hidden"
 
 - runFlow:
     file: "accordions/cheese.yaml"
