@@ -1,3 +1,12 @@
+## [2.22.0](https://github.com/AntoC-dev/Recipedia/compare/v2.21.1...v2.22.0) (2026-03-14)
+
+### Features
+
+* **categories:** add bread, baking, and topping ingredient categories ([b648fb8](https://github.com/AntoC-dev/Recipedia/commit/b648fb88230817fe0c84162d3c4b497c4ecddbce))
+* **categories:** add bread, baking, and topping ingredient categories ([#220](https://github.com/AntoC-dev/Recipedia/issues/220)) ([9e08f8b](https://github.com/AntoC-dev/Recipedia/commit/9e08f8ba5625725d1221a28e31bc6899967cabd0))
+* **datasets:** add missing ingredients to Chicken Tacos and Sushi Rolls ([10004d7](https://github.com/AntoC-dev/Recipedia/commit/10004d7220102853c21bdb59228adecb098905dd))
+* **useCategories:** update filters to include non-ingredient categories ([83df483](https://github.com/AntoC-dev/Recipedia/commit/83df4834dd27860a147d576410b9f03b1badb0ca))
+
 ## [2.21.1](https://github.com/AntoC-dev/Recipedia/compare/v2.21.0...v2.21.1) (2026-03-11)
 
 ### Bug Fixes
