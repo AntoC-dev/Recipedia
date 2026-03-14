@@ -105,7 +105,7 @@ tags:
     file: "../../flows/parameters/ingredients/verifyIngredientExists.yaml"
     env:
       INGREDIENT_NAME: "Carotte"
-      INGREDIENT_TYPE: "Cereal"
+      INGREDIENT_TYPE: "Baking"
     label: "Assert - First ingredient from HelloFresh was added to database"
 
 - tapOn:
