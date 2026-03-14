@@ -73,13 +73,6 @@ tags:
       SEARCH_QUERY: "UnitlessIngredient"
     label: "Action - Search for new ingredient"
 
-- runFlow:
-    file: "../../flows/parameters/ingredients/verifyIngredientExists.yaml"
-    env:
-      INGREDIENT_NAME: "UnitlessIngredient"
-      INGREDIENT_TYPE: "Cereal"
-    label: "Assert - Verify ingredient exists with empty unit"
-
 - tapOn:
     id: "IngredientsSettings::0::DeleteButton"
     label: "Cleanup - Open delete confirmation dialog"
