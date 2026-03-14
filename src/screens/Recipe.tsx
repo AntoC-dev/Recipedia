@@ -426,6 +426,7 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
               state.recipeIngredients,
               ingredients.editIngredients,
               ingredients.addNewIngredient,
+              ingredients.removeIngredient,
               ocr.openModalForField,
               t,
               isScrolling
