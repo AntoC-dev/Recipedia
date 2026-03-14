@@ -312,7 +312,7 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
           replaceIngredientAtIndex(oldIngredientId, {
             ...validatedIngredient,
             quantity: originalItem.quantity,
-            unit: originalItem.unit,
+            unit: originalItem.unit ?? newUnit,
             note: originalItem.note,
           }),
         onDismissed: () =>
