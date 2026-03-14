@@ -32,56 +32,34 @@ appId: "com.recipedia"
       VISIBLE_ITEMS: "Dinner,Italian"
 
 - runFlow:
+    file: "accordions/baking.yaml"
+    env:
+      STATE: "hidden"
+
+- runFlow:
+    file: "accordions/bread.yaml"
+    env:
+      STATE: "hidden"
+
+- runFlow:
     file: "accordions/grainOrCereal.yaml"
     env:
       STATE: "filtered"
       VISIBLE_ITEMS: "Spaghetti"
 
 - runFlow:
-    file: "accordions/legumes.yaml"
+    file: "accordions/cheese.yaml"
     env:
-      STATE: "hidden"
-
-- runFlow:
-    file: "accordions/vegetable.yaml"
-    env:
-      STATE: "hidden"
-
-- runFlow:
-    file: "accordions/plantProtein.yaml"
-    env:
-      STATE: "hidden"
+      STATE: "filtered"
+      VISIBLE_ITEMS: "Parmesan"
 
 - runFlow:
     file: "accordions/condiment.yaml"
     env:
       STATE: "hidden"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      text: "Sauce"
-    direction: DOWN
-    centerElement: true
-    label: "Scroll to Sauce category"
-
-- waitForAnimationToEnd
-
 - runFlow:
-    file: "accordions/sauce.yaml"
-    env:
-      STATE: "filtered"
-      VISIBLE_ITEMS: "Tomato Sauce"
-
-- runFlow:
-    file: "accordions/meat.yaml"
-    env:
-      STATE: "filtered"
-      VISIBLE_ITEMS: "Ground Beef"
-
-- runFlow:
-    file: "accordions/poultry.yaml"
+    file: "accordions/dairy.yaml"
     env:
       STATE: "hidden"
 
@@ -91,7 +69,12 @@ appId: "com.recipedia"
       STATE: "hidden"
 
 - runFlow:
-    file: "accordions/dairy.yaml"
+    file: "accordions/fruit.yaml"
+    env:
+      STATE: "hidden"
+
+- runFlow:
+    file: "accordions/legumes.yaml"
     env:
       STATE: "hidden"
 
@@ -99,31 +82,21 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      text: "Cheese"
+      text: "Meat"
     direction: DOWN
     centerElement: true
-    label: "Scroll to Cheese category"
+    label: "Scroll to Meat category"
 
 - waitForAnimationToEnd
 
 - runFlow:
-    file: "accordions/cheese.yaml"
+    file: "accordions/meat.yaml"
     env:
       STATE: "filtered"
-      VISIBLE_ITEMS: "Parmesan"
+      VISIBLE_ITEMS: "Ground Beef"
 
 - runFlow:
-    file: "accordions/sugar.yaml"
-    env:
-      STATE: "hidden"
-
-- runFlow:
-    file: "accordions/spice.yaml"
-    env:
-      STATE: "hidden"
-
-- runFlow:
-    file: "accordions/fruit.yaml"
+    file: "accordions/nutsAndSeeds.yaml"
     env:
       STATE: "hidden"
 
@@ -133,7 +106,38 @@ appId: "com.recipedia"
       STATE: "hidden"
 
 - runFlow:
-    file: "accordions/nutsAndSeeds.yaml"
+    file: "accordions/plantProtein.yaml"
+    env:
+      STATE: "hidden"
+
+- runFlow:
+    file: "accordions/poultry.yaml"
+    env:
+      STATE: "hidden"
+
+- runFlow:
+    file: "accordions/sauce.yaml"
+    env:
+      STATE: "filtered"
+      VISIBLE_ITEMS: "Tomato Sauce"
+
+- runFlow:
+    file: "accordions/spice.yaml"
+    env:
+      STATE: "hidden"
+
+- runFlow:
+    file: "accordions/sugar.yaml"
+    env:
+      STATE: "hidden"
+
+- runFlow:
+    file: "accordions/topping.yaml"
+    env:
+      STATE: "hidden"
+
+- runFlow:
+    file: "accordions/vegetable.yaml"
     env:
       STATE: "hidden"
 

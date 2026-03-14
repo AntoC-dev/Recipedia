@@ -1,0 +1,33 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    text: "Baking"
+    label: "Assert - Baking is visible in type menu"
+
+- assertVisible:
+    text: "Bread"
+    label: "Assert - Bread is visible in type menu"
+
+- assertVisible:
+    text: "Cereal"
+    label: "Assert - Cereal is visible in type menu"
+
+- assertVisible:
+    text: "Cheese"
+    label: "Assert - Cheese is visible in type menu"
+
+- assertVisible:
+    text: "Condiment"
+    label: "Assert - Condiment is visible in type menu"
+
+- assertVisible:
+    text: "Dairy"
+    label: "Assert - Dairy is visible in type menu"
+
+- assertVisible:
+    text: "Fish"
+    label: "Assert - Fish is visible in type menu"
+
+- assertVisible:
+    text: "Fruit"
+    label: "Assert - Fruit is visible in type menu"

@@ -61,7 +61,7 @@ export const testIngredients: ingredientTableElement[] = [
     id: 9,
     name: 'Flour',
     unit: 'g',
-    type: ingredientType.cereal,
+    type: ingredientType.baking,
     season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
   },
   {
@@ -259,6 +259,20 @@ export const testIngredients: ingredientTableElement[] = [
     name: 'Tomatoes',
     unit: 'g',
     type: ingredientType.vegetable,
+    season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+  },
+  {
+    id: 38,
+    name: 'Burger Buns',
+    unit: '',
+    type: ingredientType.bread,
+    season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+  },
+  {
+    id: 39,
+    name: 'Sesame Seeds',
+    unit: 'g',
+    type: ingredientType.topping,
     season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
   },
 ];

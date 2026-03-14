@@ -1,0 +1,79 @@
+appId: "com.recipedia"
+---
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    direction: DOWN
+    speed: 20
+    label: "Scroll to Baking accordion"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    label: "Pâtisserie accordion is displayed"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Pâtisserie"
+          label: "Pâtisserie accordion title on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Pâtisserie, 󰅀"
+          label: "Pâtisserie accordion title with chevron on iOS"
+
+- tapOn:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    label: "Expand Pâtisserie accordion"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
+    direction: DOWN
+    label: "Scroll down to ensure first Pâtisserie item is rendered"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
+    label: "First Pâtisserie filter item is visible"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    direction: UP
+    label: "Scroll back up to Pâtisserie accordion header"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    label: "Collapse Pâtisserie accordion"
+
+- waitForAnimationToEnd
+
+- assertNotVisible:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
+    label: "Guard - First item should not be visible after collapse"
+
+- assertVisible:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    label: "Guard - Pâtisserie accordion header still visible"
+
+- evalScript: ${output.accordionIndex = output.accordionIndex + 1}

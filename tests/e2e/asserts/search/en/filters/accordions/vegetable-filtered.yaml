@@ -1,6 +1,5 @@
 appId: "com.recipedia"
 ---
-
 - waitForAnimationToEnd
 
 - scrollUntilVisible:
@@ -8,7 +7,6 @@ appId: "com.recipedia"
       text: "Vegetable"
     direction: DOWN
     speed: 20
-    centerElement: true
     label: "Scroll to Vegetable accordion"
 
 - waitForAnimationToEnd
@@ -126,7 +124,6 @@ appId: "com.recipedia"
     when:
       true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Tomatoes')=== undefined}
     file: "vegetable-items/tomatoes-hidden.yaml"
-
 
 - waitForAnimationToEnd
 

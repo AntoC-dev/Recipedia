@@ -614,6 +614,13 @@ export const frenchRecipes: recipeTableElement[] = [
         type: ingredientType.spice,
         season: ['*'],
       },
+      {
+        name: 'Tortilla de blé',
+        quantity: '8',
+        unit: '',
+        type: ingredientType.bread,
+        season: ['*'],
+      },
     ],
     season: ['6', '7', '8', '9'],
     preparation: [
@@ -916,6 +923,13 @@ export const frenchRecipes: recipeTableElement[] = [
         quantity: '1',
         unit: 'pincée',
         type: ingredientType.spice,
+        season: ['*'],
+      },
+      {
+        name: 'Sésame doré',
+        quantity: '1',
+        unit: 'c. à soupe',
+        type: ingredientType.topping,
         season: ['*'],
       },
     ],

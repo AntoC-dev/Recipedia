@@ -102,8 +102,8 @@ describe('Shopping Screen', () => {
     expect(getByTestId('ShoppingScreen::SectionList::Croutons::Title').props.children).toBe(
       'Croutons (50g)'
     );
-    expect(getByTestId('ShoppingScreen::SectionList::Romaine Lettuce::Title').props.children).toBe(
-      'Romaine Lettuce (100g)'
+    expect(getByTestId('ShoppingScreen::SectionList::Parmesan::Title').props.children).toBe(
+      'Parmesan (30g)'
     );
   });
 

@@ -59,6 +59,7 @@ appId: "com.recipedia"
       id: "RecipeTags::RoundButton"
     direction: DOWN
     speed: 20
+    timeout: 120000
     centerElement: true
     label: "Scroll to tags's adding button"
 

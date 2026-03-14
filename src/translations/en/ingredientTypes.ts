@@ -17,4 +17,7 @@ export default {
   oilAndFat: 'Oil and Fat',
   nutsAndSeeds: 'Nuts and Seeds',
   sweetener: 'Sweetener',
+  bread: 'Bread',
+  baking: 'Baking',
+  topping: 'Topping',
 };

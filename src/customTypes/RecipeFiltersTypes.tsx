@@ -88,9 +88,6 @@ export const listFilter = { ...nonIngredientFilters, ...ingredientType } as cons
 /** Union type representing all possible filter values */
 export type TListFilter = (typeof listFilter)[keyof typeof listFilter];
 
-/** Array of all available filter categories for UI components */
-export const filtersCategories: TListFilter[] = Object.values(listFilter);
-
 /**
  * Shopping list data structure organized by category
  * Used for sectioned display in shopping list interface
@@ -126,9 +123,6 @@ export type propsForShopping = {
 
 /** Type alias for ingredient category values */
 export type TIngredientCategories = (typeof ingredientType)[keyof typeof ingredientType];
-
-/** Array of all ingredient categories for shopping organization */
-export const shoppingCategories: TIngredientCategories[] = Object.values(ingredientType);
 
 /**
  * Predefined preparation time ranges for recipe filtering

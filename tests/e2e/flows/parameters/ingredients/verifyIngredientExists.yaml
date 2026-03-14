@@ -1,114 +1,47 @@
 appId: "com.recipedia"
 ---
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      text: "${INGREDIENT_NAME}"
-    direction: DOWN
-    speed: 60
-    timeout: 120000
-    centerElement: true
-    label: "Scroll to find ${INGREDIENT_NAME} ingredient"
-
-- waitForAnimationToEnd
+- runFlow:
+    file: "../searchInSettingsList.yaml"
+    env:
+      SETTINGS_SCREEN: "IngredientsSettings"
+      SEARCH_QUERY: "${INGREDIENT_NAME}"
+    label: "Search for Carotte ingredient"
 
 - assertVisible:
     text: "${INGREDIENT_NAME}"
-    id: "IngredientsSettings::${INGREDIENT_INDEX}::IngredientName"
+    id: "IngredientsSettings::0::IngredientName"
     label: "Verify ${INGREDIENT_NAME} ingredient name exists in database"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "IngredientsSettings::${INGREDIENT_INDEX}::IntroType"
-    direction: DOWN
-    speed: 40
-    centerElement: true
-    label: "Scroll to find ingredient type"
-
-- waitForAnimationToEnd
-
 - assertVisible:
-    id: "IngredientsSettings::${INGREDIENT_INDEX}::IntroType"
+    id: "IngredientsSettings::0::IntroType"
     text: "Type:"
     label: "Verify type label is displayed"
 
 - assertVisible:
-    id: "IngredientsSettings::${INGREDIENT_INDEX}::Type"
+    id: "IngredientsSettings::0::Type"
     text: "${INGREDIENT_TYPE}"
     label: "Verify ingredient type ${INGREDIENT_TYPE} is displayed"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "IngredientsSettings::${INGREDIENT_INDEX}::IntroUnit"
-    direction: DOWN
-    speed: 40
-    centerElement: true
-    label: "Scroll to find ingredient unit"
-
-- waitForAnimationToEnd
-
 - assertVisible:
-    id: "IngredientsSettings::${INGREDIENT_INDEX}::IntroUnit"
+    id: "IngredientsSettings::0::IntroUnit"
     text: "Unit:"
     label: "Verify unit label is displayed"
 
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - assertNotVisible:
-          id: "IngredientsSettings::${INGREDIENT_INDEX}::Unit"
-          label: "Verify ingredient unit is not displayed on android"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - assertVisible:
-          id: "IngredientsSettings::${INGREDIENT_INDEX}::Unit"
-          text: ""
-          label: "Verify ingredient unit is not displayed on iOS"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "IngredientsSettings::${INGREDIENT_INDEX}::SeasonalityCalendar::SeasonalityText"
-    direction: DOWN
-    speed: 40
-    centerElement: true
-    label: "Scroll to find ingredient unit"
-
-- waitForAnimationToEnd
+- assertNotVisible:
+    id: "IngredientsSettings::0::Unit"
+    label: "Verify ingredient unit is not displayed"
 
 - assertVisible:
-    id: "IngredientsSettings::${INGREDIENT_INDEX}::SeasonalityCalendar::SeasonalityText"
+    id: "IngredientsSettings::0::SeasonalityCalendar::SeasonalityText"
     text: "Seasonality:"
     label: "Verify seasonality label is displayed"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "IngredientsSettings::${INGREDIENT_INDEX}::EditButton"
-    direction: DOWN
-    speed: 40
-    centerElement: true
-    label: "Scroll to find edit and delete buttons"
-
-- waitForAnimationToEnd
-
 - assertVisible:
-    id: "IngredientsSettings::${INGREDIENT_INDEX}::EditButton-text"
+    id: "IngredientsSettings::0::EditButton-text"
     text: "Edit"
     label: "Verify edit button is displayed"
 
 - assertVisible:
-    id: "IngredientsSettings::${INGREDIENT_INDEX}::DeleteButton-text"
+    id: "IngredientsSettings::0::DeleteButton-text"
     text: "Delete"
     label: "Verify delete button is displayed"

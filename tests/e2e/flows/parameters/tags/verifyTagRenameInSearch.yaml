@@ -37,11 +37,11 @@ appId: "com.recipedia"
 - waitForAnimationToEnd
 
 - assertNotVisible:
-    text: "Italian"
+    text: ".*Italian"
     label: "Old tag name 'Italian' is not visible in filters"
 
 - assertVisible:
-    text: "Italian Cuisine"
+    text: ".*Italian Cuisine"
     label: "New tag name 'Italian Cuisine' is visible in filters"
 
 - tapOn:

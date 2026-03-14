@@ -44,39 +44,34 @@ appId: "com.recipedia"
 
 # Assert all items are visible - reuse item flows from English
 - runFlow:
-    file: "../../../en/filters/accordions/grainOrCereal-items/spaghetti-visible.yaml"
+    file: "../../../en/filters/accordions/grainOrCereal-items/croutons-visible.yaml"
     env:
       ITEM_INDEX: "0"
 
 - runFlow:
-    file: "../../../en/filters/accordions/grainOrCereal-items/tacoShells-visible.yaml"
+    file: "../../../en/filters/accordions/grainOrCereal-items/pasta-visible.yaml"
     env:
       ITEM_INDEX: "1"
 
 - runFlow:
-    file: "../../../en/filters/accordions/grainOrCereal-items/flour-visible.yaml"
+    file: "../../../en/filters/accordions/grainOrCereal-items/pizzaDough-visible.yaml"
     env:
       ITEM_INDEX: "2"
 
 - runFlow:
-    file: "../../../en/filters/accordions/grainOrCereal-items/croutons-visible.yaml"
+    file: "../../../en/filters/accordions/grainOrCereal-items/spaghetti-visible.yaml"
     env:
       ITEM_INDEX: "3"
 
 - runFlow:
-    file: "../../../en/filters/accordions/grainOrCereal-items/pizzaDough-visible.yaml"
+    file: "../../../en/filters/accordions/grainOrCereal-items/sushiRice-visible.yaml"
     env:
       ITEM_INDEX: "4"
 
 - runFlow:
-    file: "../../../en/filters/accordions/grainOrCereal-items/pasta-visible.yaml"
+    file: "../../../en/filters/accordions/grainOrCereal-items/tacoShells-visible.yaml"
     env:
       ITEM_INDEX: "5"
-
-- runFlow:
-    file: "../../../en/filters/accordions/grainOrCereal-items/sushiRice-visible.yaml"
-    env:
-      ITEM_INDEX: "6"
 
 - waitForAnimationToEnd
 

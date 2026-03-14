@@ -32,10 +32,46 @@ appId: "com.recipedia"
       VISIBLE_ITEMS: "Healthy,Italian,Lunch,Mexican,Quick Meal,Salad"
 
 - runFlow:
+    file: "accordions/baking.yaml"
+    env:
+      STATE: "hidden"
+
+- runFlow:
+    file: "accordions/bread.yaml"
+    env:
+      STATE: "all"
+
+- runFlow:
     file: "accordions/grainOrCereal.yaml"
     env:
       STATE: "filtered"
       VISIBLE_ITEMS: "Taco Shells,Croutons,Pizza Dough,Pasta"
+
+- runFlow:
+    file: "accordions/cheese.yaml"
+    env:
+      STATE: "filtered"
+      VISIBLE_ITEMS: "Parmesan,Cheddar,Mozzarella"
+
+- runFlow:
+    file: "accordions/condiment.yaml"
+    env:
+      STATE: "hidden"
+
+- runFlow:
+    file: "accordions/dairy.yaml"
+    env:
+      STATE: "hidden"
+
+- runFlow:
+    file: "accordions/fish.yaml"
+    env:
+      STATE: "hidden"
+
+- runFlow:
+    file: "accordions/fruit.yaml"
+    env:
+      STATE: "hidden"
 
 - runFlow:
     file: "accordions/legumes.yaml"
@@ -43,40 +79,24 @@ appId: "com.recipedia"
       STATE: "hidden"
 
 - runFlow:
-    file: "accordions/vegetable.yaml"
+    file: "accordions/meat.yaml"
+    env:
+      STATE: "hidden"
+
+- runFlow:
+    file: "accordions/nutsAndSeeds.yaml"
     env:
       STATE: "filtered"
-      VISIBLE_ITEMS: "Lettuce,Romaine Lettuce"
+      VISIBLE_ITEMS: "Pine Nuts"
+
+- runFlow:
+    file: "accordions/oilAndFat.yaml"
+    env:
+      STATE: "filtered"
+      VISIBLE_ITEMS: "Olive Oil"
 
 - runFlow:
     file: "accordions/plantProtein.yaml"
-    env:
-      STATE: "hidden"
-
-- runFlow:
-    file: "accordions/condiment.yaml"
-    env:
-      STATE: "hidden"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      text: "Sauce"
-    direction: DOWN
-    centerElement: true
-    label: "Scroll to Sauce category"
-
-- waitForAnimationToEnd
-
-- runFlow:
-    file: "accordions/sauce.yaml"
-    env:
-      STATE: "filtered"
-      VISIBLE_ITEMS: "Tomato Sauce,Caesar Dressing"
-
-- runFlow:
-    file: "accordions/meat.yaml"
     env:
       STATE: "hidden"
 
@@ -87,25 +107,10 @@ appId: "com.recipedia"
       VISIBLE_ITEMS: "Chicken Breast"
 
 - runFlow:
-    file: "accordions/fish.yaml"
-    env:
-      STATE: "hidden"
-
-- runFlow:
-    file: "accordions/dairy.yaml"
-    env:
-      STATE: "hidden"
-
-- runFlow:
-    file: "accordions/cheese.yaml"
+    file: "accordions/sauce.yaml"
     env:
       STATE: "filtered"
-      VISIBLE_ITEMS: "Parmesan,Cheddar,Mozzarella"
-
-- runFlow:
-    file: "accordions/sugar.yaml"
-    env:
-      STATE: "hidden"
+      VISIBLE_ITEMS: "Tomato Sauce,Caesar Dressing"
 
 - runFlow:
     file: "accordions/spice.yaml"
@@ -114,21 +119,20 @@ appId: "com.recipedia"
       VISIBLE_ITEMS: "Basil Leaves"
 
 - runFlow:
-    file: "accordions/fruit.yaml"
+    file: "accordions/sugar.yaml"
     env:
       STATE: "hidden"
 
 - runFlow:
-    file: "accordions/oilAndFat.yaml"
+    file: "accordions/topping.yaml"
     env:
-      STATE: "filtered"
-      VISIBLE_ITEMS: "Olive Oil"
+      STATE: "hidden"
 
 - runFlow:
-    file: "accordions/nutsAndSeeds.yaml"
+    file: "accordions/vegetable.yaml"
     env:
       STATE: "filtered"
-      VISIBLE_ITEMS: "Pine Nuts"
+      VISIBLE_ITEMS: "Lettuce,Romaine Lettuce"
 
 - runFlow:
     file: "scrollBackToTop.yaml"

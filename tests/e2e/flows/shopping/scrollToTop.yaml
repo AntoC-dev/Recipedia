@@ -5,10 +5,9 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
+      id: "ShoppingScreen::SectionList::ingredientTypes.baking::SubHeader"
     direction: UP
     speed: 80
     label: "Scroll back to top of shopping list"
 
 - waitForAnimationToEnd
-

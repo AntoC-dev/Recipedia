@@ -1,6 +1,6 @@
 import { ingredientType, recipeTableElement } from '@customTypes/DatabaseElementTypes';
 
-export const testRecipes: Array<recipeTableElement> = [
+export const testRecipes: recipeTableElement[] = [
   {
     id: 1,
     image_Source: 'spaghetti_bolognese.png',
@@ -118,6 +118,14 @@ export const testRecipes: Array<recipeTableElement> = [
         season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
         quantity: '50',
       },
+      {
+        id: 38,
+        name: 'Burger Buns',
+        unit: '',
+        type: ingredientType.bread,
+        season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        quantity: '4',
+      },
     ],
     season: ['5', '6', '7', '8', '9', '10'],
     preparation: [
@@ -160,7 +168,7 @@ export const testRecipes: Array<recipeTableElement> = [
         id: 9,
         name: 'Flour',
         unit: 'g',
-        type: ingredientType.cereal,
+        type: ingredientType.baking,
         season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
         quantity: '200',
       },
@@ -425,7 +433,7 @@ export const testRecipes: Array<recipeTableElement> = [
         id: 9,
         name: 'Flour',
         unit: 'g',
-        type: ingredientType.cereal,
+        type: ingredientType.baking,
         season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
         quantity: '200',
       },
@@ -610,6 +618,14 @@ export const testRecipes: Array<recipeTableElement> = [
         type: ingredientType.condiment,
         season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
         quantity: '50',
+      },
+      {
+        id: 39,
+        name: 'Sesame Seeds',
+        unit: 'g',
+        type: ingredientType.topping,
+        season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        quantity: '2',
       },
     ],
     season: ['5', '6', '7', '8', '9', '10'],

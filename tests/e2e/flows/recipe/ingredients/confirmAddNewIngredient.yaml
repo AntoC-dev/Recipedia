@@ -18,8 +18,8 @@ appId: "com.recipedia"
     label: "Open the dropdown of the type"
 
 - tapOn:
-    text: "Plant Protein"
-    label: "Select Plant Protein type"
+    text: "Baking"
+    label: "Select Baking type"
 
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::SeasonalityCalendar::5"

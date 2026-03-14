@@ -20,8 +20,8 @@ tags:
     label: "Action - Open type menu"
 
 - tapOn:
-    text: "Vegetable"
-    label: "Action - Select Vegetables type"
+    text: "Condiment"
+    label: "Action - Select Condiment type"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::Unit::CustomTextInput"

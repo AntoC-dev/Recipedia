@@ -1,0 +1,80 @@
+appId: "com.recipedia"
+---
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    direction: DOWN
+    speed: 20
+    label: "Scroll to Bread accordion"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    label: "Bread accordion is displayed"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Bread"
+          label: "Bread accordion title on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+          text: "Bread, 󰅀"
+          label: "Bread accordion title with chevron on iOS"
+
+- tapOn:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    label: "Expand Bread accordion"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
+    direction: DOWN
+    label: "Scroll down to ensure first Bread item is rendered"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
+    label: "First Bread filter item is visible"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    direction: UP
+    speed: 20
+    label: "Scroll back up to Bread accordion header"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    label: "Collapse Bread accordion"
+
+- waitForAnimationToEnd
+
+- assertNotVisible:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
+    label: "Guard - First item should not be visible after collapse"
+
+- assertVisible:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    label: "Guard - Bread accordion header still visible"
+
+- evalScript: ${output.accordionIndex = output.accordionIndex + 1}

@@ -25,64 +25,22 @@ appId: "com.recipedia"
     label: "Assert Tags accordion with all items visible"
 
 - runFlow:
+    file: "accordions/baking.yaml"
+    env:
+      STATE: "all"
+    label: "Assert Baking accordion with all items visible"
+
+- runFlow:
+    file: "accordions/bread.yaml"
+    env:
+      STATE: "all"
+    label: "Assert Bread accordion with all items visible"
+
+- runFlow:
     file: "accordions/grainOrCereal.yaml"
     env:
       STATE: "all"
     label: "Assert Cereal accordion with all items visible"
-
-- runFlow:
-    file: "accordions/legumes.yaml"
-    env:
-      STATE: "all"
-    label: "Assert Legumes accordion with all items visible"
-
-- runFlow:
-    file: "accordions/vegetable.yaml"
-    env:
-      STATE: "all"
-    label: "Assert Vegetable accordion with all items visible"
-
-- runFlow:
-    file: "accordions/plantProtein.yaml"
-    env:
-      STATE: "all"
-    label: "Assert Plant Protein accordion with all items visible"
-
-- runFlow:
-    file: "accordions/condiment.yaml"
-    env:
-      STATE: "all"
-    label: "Assert Condiment accordion with all items visible"
-
-- runFlow:
-    file: "accordions/sauce.yaml"
-    env:
-      STATE: "all"
-    label: "Assert Sauce accordion with all items visible"
-
-- runFlow:
-    file: "accordions/meat.yaml"
-    env:
-      STATE: "all"
-    label: "Assert Meat accordion with all items visible"
-
-- runFlow:
-    file: "accordions/poultry.yaml"
-    env:
-      STATE: "all"
-    label: "Assert Poultry accordion with all items visible"
-
-- runFlow:
-    file: "accordions/fish.yaml"
-    env:
-      STATE: "all"
-    label: "Assert Fish accordion with all items visible"
-
-- runFlow:
-    file: "accordions/dairy.yaml"
-    env:
-      STATE: "all"
-    label: "Assert Dairy accordion with all items visible"
 
 - runFlow:
     file: "accordions/cheese.yaml"
@@ -91,16 +49,22 @@ appId: "com.recipedia"
     label: "Assert Cheese accordion with all items visible"
 
 - runFlow:
-    file: "accordions/sugar.yaml"
+    file: "accordions/condiment.yaml"
     env:
       STATE: "all"
-    label: "Assert Sugar accordion with all items visible"
+    label: "Assert Condiment accordion with all items visible"
 
 - runFlow:
-    file: "accordions/spice.yaml"
+    file: "accordions/dairy.yaml"
     env:
       STATE: "all"
-    label: "Assert Spice accordion with all items visible"
+    label: "Assert Dairy accordion with all items visible"
+
+- runFlow:
+    file: "accordions/fish.yaml"
+    env:
+      STATE: "all"
+    label: "Assert Fish accordion with all items visible"
 
 - runFlow:
     file: "accordions/fruit.yaml"
@@ -109,16 +73,70 @@ appId: "com.recipedia"
     label: "Assert Fruit accordion with all items visible"
 
 - runFlow:
-    file: "accordions/oilAndFat.yaml"
+    file: "accordions/legumes.yaml"
     env:
       STATE: "all"
-    label: "Assert Oil and Fat accordion with all items visible"
+    label: "Assert Legumes accordion with all items visible"
+
+- runFlow:
+    file: "accordions/meat.yaml"
+    env:
+      STATE: "all"
+    label: "Assert Meat accordion with all items visible"
 
 - runFlow:
     file: "accordions/nutsAndSeeds.yaml"
     env:
       STATE: "all"
     label: "Assert Nuts and Seeds accordion with all items visible"
+
+- runFlow:
+    file: "accordions/oilAndFat.yaml"
+    env:
+      STATE: "all"
+    label: "Assert Oil and Fat accordion with all items visible"
+
+- runFlow:
+    file: "accordions/plantProtein.yaml"
+    env:
+      STATE: "all"
+    label: "Assert Plant Protein accordion with all items visible"
+
+- runFlow:
+    file: "accordions/poultry.yaml"
+    env:
+      STATE: "all"
+    label: "Assert Poultry accordion with all items visible"
+
+- runFlow:
+    file: "accordions/sauce.yaml"
+    env:
+      STATE: "all"
+    label: "Assert Sauce accordion with all items visible"
+
+- runFlow:
+    file: "accordions/spice.yaml"
+    env:
+      STATE: "all"
+    label: "Assert Spice accordion with all items visible"
+
+- runFlow:
+    file: "accordions/sugar.yaml"
+    env:
+      STATE: "all"
+    label: "Assert Sugar accordion with all items visible"
+
+- runFlow:
+    file: "accordions/topping.yaml"
+    env:
+      STATE: "all"
+    label: "Assert Topping accordion with all items visible"
+
+- runFlow:
+    file: "accordions/vegetable.yaml"
+    env:
+      STATE: "all"
+    label: "Assert Vegetable accordion with all items visible"
 
 # Scroll back to top
 - runFlow:

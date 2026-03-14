@@ -1,0 +1,71 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "Parameters::Section::Data::Ingredients::Item"
+    label: "Navigate to Ingredients Settings screen"
+
+- extendedWaitUntil:
+    visible:
+      id: "IngredientsSettings::BottomActionButton"
+    timeout: 20000
+    label: "Wait for ingredients settings screen to load"
+
+- tapOn:
+    id: "IngredientsSettings::BottomActionButton"
+    label: "Open add ingredient dialog"
+
+- extendedWaitUntil:
+    visible:
+      id: "IngredientsSettings::ItemDialog::AddModal::Title"
+    timeout: 20000
+    label: "Wait for ingredients settings's add modal to load"
+
+- assertVisible:
+    id: "IngredientsSettings::ItemDialog::AddModal::Title"
+    text: "Ajouter un ingrédient"
+    label: "Add ingredient modal title is displayed in French"
+
+- assertVisible:
+    id: "IngredientsSettings::ItemDialog::AddModal::Menu::Button-text"
+    text: "Sélectionner le type"
+    label: "Type dropdown shows French placeholder text"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::Menu::Button"
+    label: "Open the ingredient type dropdown"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: "../ingredients/fr/assertTypeMenu.yaml"
+    label: "Assert - Verify type menu items are in French alphabetical order"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::Type"
+    label: "Tap on the type text to hide the dialog"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "menu-item-title"
+    timeout: 10000
+    label: "Wait for dialog to hide"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::CancelButton"
+    label: "Dismiss the add ingredient dialog"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "IngredientsSettings::ItemDialog::AddModal.*"
+    timeout: 10000
+    label: "Wait for add dialog to hide"
+
+- tapOn:
+    id: "IngredientsSettings::AppBar::BackButton"
+    label: "Close ingredient data screen"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "IngredientsSettings::SearchBar"
+    timeout: 10000
+    label: "Wait for ingredients data screen to hide"

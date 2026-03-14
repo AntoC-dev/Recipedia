@@ -32,53 +32,17 @@ appId: "com.recipedia"
       VISIBLE_ITEMS: "Chocolate,Dessert"
 
 - runFlow:
+    file: "accordions/baking.yaml"
+    env:
+      STATE: "all"
+
+- runFlow:
+    file: "accordions/bread.yaml"
+    env:
+      STATE: "hidden"
+
+- runFlow:
     file: "accordions/grainOrCereal.yaml"
-    env:
-      STATE: "filtered"
-      VISIBLE_ITEMS: "Flour"
-
-- runFlow:
-    file: "accordions/legumes.yaml"
-    env:
-      STATE: "hidden"
-
-- runFlow:
-    file: "accordions/vegetable.yaml"
-    env:
-      STATE: "hidden"
-
-- runFlow:
-    file: "accordions/plantProtein.yaml"
-    env:
-      STATE: "hidden"
-
-- runFlow:
-    file: "accordions/condiment.yaml"
-    env:
-      STATE: "hidden"
-
-- runFlow:
-    file: "accordions/sauce.yaml"
-    env:
-      STATE: "hidden"
-
-- runFlow:
-    file: "accordions/meat.yaml"
-    env:
-      STATE: "hidden"
-
-- runFlow:
-    file: "accordions/poultry.yaml"
-    env:
-      STATE: "hidden"
-
-- runFlow:
-    file: "accordions/fish.yaml"
-    env:
-      STATE: "hidden"
-
-- runFlow:
-    file: "accordions/dairy.yaml"
     env:
       STATE: "hidden"
 
@@ -88,19 +52,37 @@ appId: "com.recipedia"
       STATE: "hidden"
 
 - runFlow:
-    file: "accordions/sugar.yaml"
+    file: "accordions/condiment.yaml"
     env:
-      STATE: "filtered"
-      VISIBLE_ITEMS: "Sugar"
+      STATE: "hidden"
 
 - runFlow:
-    file: "accordions/spice.yaml"
+    file: "accordions/dairy.yaml"
     env:
-      STATE: "filtered"
-      VISIBLE_ITEMS: "Cocoa Powder"
+      STATE: "hidden"
+
+- runFlow:
+    file: "accordions/fish.yaml"
+    env:
+      STATE: "hidden"
 
 - runFlow:
     file: "accordions/fruit.yaml"
+    env:
+      STATE: "hidden"
+
+- runFlow:
+    file: "accordions/legumes.yaml"
+    env:
+      STATE: "hidden"
+
+- runFlow:
+    file: "accordions/meat.yaml"
+    env:
+      STATE: "hidden"
+
+- runFlow:
+    file: "accordions/nutsAndSeeds.yaml"
     env:
       STATE: "hidden"
 
@@ -111,7 +93,39 @@ appId: "com.recipedia"
       VISIBLE_ITEMS: "Butter"
 
 - runFlow:
-    file: "accordions/nutsAndSeeds.yaml"
+    file: "accordions/plantProtein.yaml"
+    env:
+      STATE: "hidden"
+
+- runFlow:
+    file: "accordions/poultry.yaml"
+    env:
+      STATE: "hidden"
+
+- runFlow:
+    file: "accordions/sauce.yaml"
+    env:
+      STATE: "hidden"
+
+- runFlow:
+    file: "accordions/spice.yaml"
+    env:
+      STATE: "filtered"
+      VISIBLE_ITEMS: "Cocoa Powder"
+
+- runFlow:
+    file: "accordions/sugar.yaml"
+    env:
+      STATE: "filtered"
+      VISIBLE_ITEMS: "Sugar"
+
+- runFlow:
+    file: "accordions/topping.yaml"
+    env:
+      STATE: "hidden"
+
+- runFlow:
+    file: "accordions/vegetable.yaml"
     env:
       STATE: "hidden"
 

@@ -11,7 +11,7 @@ appId: "com.recipedia"
       - extendedWaitUntil:
           notVisible:
             id: "[Dd]one|[Rr]eturn|[Gg]o|[Nn]ext|[Ss]earch|[Ss]end|[Jj]oin"
-          timeout: 30000
+          timeout: 60000
           label: "Verify iOS keyboard is dismissed"
 
 

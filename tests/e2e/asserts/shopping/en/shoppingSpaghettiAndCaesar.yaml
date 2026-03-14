@@ -34,24 +34,70 @@ appId: "com.recipedia"
       RECIPE_NAMES: "Caesar Salad"
     label: "Assert and check Croutons ingredient"
 
-- assertVisible:
-    id: "ShoppingScreen::SectionList::ingredientTypes.vegetable::SubHeader"
-    label: "Vegetable category header is displayed"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.cheese::SubHeader"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to Cheese category"
+
+- waitForAnimationToEnd
 
 - assertVisible:
-    text: "Vegetable"
-    label: "Vegetable category text is displayed"
+    id: "ShoppingScreen::SectionList::ingredientTypes.cheese::SubHeader"
+    label: "Cheese category header is displayed"
+
+- assertVisible:
+    text: "Cheese"
+    label: "Cheese category text is displayed"
 
 - runFlow:
     file: "../../../flows/shopping/en/assertAndCheckIngredient.yaml"
     env:
-      INGREDIENT_NAME: "Romaine Lettuce"
-      INGREDIENT_NAME_LOWER: "romaine lettuce"
-      QUANTITY: "200"
+      INGREDIENT_NAME: "Parmesan"
+      INGREDIENT_NAME_LOWER: "parmesan"
+      QUANTITY: "110"
+      UNIT: "g"
+      RECIPE_COUNT: "2 recipes"
+      RECIPE_NAMES: "Spaghetti Bolognese\n\t- Caesar Salad"
+    label: "Assert and check Parmesan ingredient"
+
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.meat::SubHeader"
+    label: "Meat category header is displayed"
+
+- assertVisible:
+    text: "Meat"
+    label: "Meat category text is displayed"
+
+- runFlow:
+    file: "../../../flows/shopping/en/assertAndCheckIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "Ground Beef"
+      INGREDIENT_NAME_LOWER: "ground beef"
+      QUANTITY: "300"
       UNIT: "g"
       RECIPE_COUNT: "1 recipe"
-      RECIPE_NAMES: "Caesar Salad"
-    label: "Assert and check Romaine Lettuce ingredient"
+      RECIPE_NAMES: "Spaghetti Bolognese"
+    label: "Assert and check Ground Beef ingredient"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.sauce::SubHeader"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Sauce to Vegetable category"
+
+- waitForAnimationToEnd
+
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.sauce::SubHeader"
@@ -83,44 +129,45 @@ appId: "com.recipedia"
       RECIPE_NAMES: "Caesar Salad"
     label: "Assert and check Caesar Dressing ingredient"
 
-- assertVisible:
-    id: "ShoppingScreen::SectionList::ingredientTypes.meat::SubHeader"
-    label: "Meat category header is displayed"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.vegetable::SubHeader"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to Vegetable category"
+
+- waitForAnimationToEnd
 
 - assertVisible:
-    text: "Meat"
-    label: "Meat category text is displayed"
+    id: "ShoppingScreen::SectionList::ingredientTypes.vegetable::SubHeader"
+    label: "Vegetable category header is displayed"
+
+- assertVisible:
+    text: "Vegetable"
+    label: "Vegetable category text is displayed"
 
 - runFlow:
     file: "../../../flows/shopping/en/assertAndCheckIngredient.yaml"
     env:
-      INGREDIENT_NAME: "Ground Beef"
-      INGREDIENT_NAME_LOWER: "ground beef"
-      QUANTITY: "300"
+      INGREDIENT_NAME: "Romaine Lettuce"
+      INGREDIENT_NAME_LOWER: "romaine lettuce"
+      QUANTITY: "200"
       UNIT: "g"
       RECIPE_COUNT: "1 recipe"
-      RECIPE_NAMES: "Spaghetti Bolognese"
-    label: "Assert and check Ground Beef ingredient"
+      RECIPE_NAMES: "Caesar Salad"
+    label: "Assert and check Romaine Lettuce ingredient"
 
-- assertVisible:
-    id: "ShoppingScreen::SectionList::ingredientTypes.cheese::SubHeader"
-    label: "Cheese category header is displayed"
+- waitForAnimationToEnd
 
-- assertVisible:
-    text: "Cheese"
-    label: "Cheese category text is displayed"
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
+    direction: UP
+    speed: 80
+    label: "Scroll back to top of shopping list"
 
-- runFlow:
-    file: "../../../flows/shopping/en/assertAndCheckIngredient.yaml"
-    env:
-      INGREDIENT_NAME: "Parmesan"
-      INGREDIENT_NAME_LOWER: "parmesan"
-      QUANTITY: "110"
-      UNIT: "g"
-      RECIPE_COUNT: "2 recipes"
-      RECIPE_NAMES: "Spaghetti Bolognese\n\t- Caesar Salad"
-    label: "Assert and check Parmesan ingredient"
-
-- runFlow:
-    file: "../../../flows/shopping/scrollToTop.yaml"
-    label: "Scroll back to top for next tests"
+- waitForAnimationToEnd

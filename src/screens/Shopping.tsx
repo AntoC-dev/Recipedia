@@ -57,7 +57,8 @@ import { CopilotStepData } from '@customTypes/TutorialTypes';
 import { Checkbox, Divider, List, Text, useTheme } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
 import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
-import { shoppingCategories, TListFilter } from '@customTypes/RecipeFiltersTypes';
+import { TListFilter } from '@customTypes/RecipeFiltersTypes';
+import { useShoppingCategories } from '@hooks/useCategories';
 import { Icons } from '@assets/Icons';
 import { Alert } from '@components/dialogs/Alert';
 import { RoundButton } from '@components/atomic/RoundButton';
@@ -81,6 +82,7 @@ export function Shopping() {
   const { colors, fonts } = useTheme();
   const insets = useSafeAreaInsets();
   const { shopping: shoppingList, togglePurchased, clearMenu } = useRecipeDatabase();
+  const shoppingCategories = useShoppingCategories();
   const copilotData = useSafeCopilot();
   const copilotEvents = copilotData?.copilotEvents;
   const currentStep = copilotData?.currentStep;

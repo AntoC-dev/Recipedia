@@ -339,6 +339,31 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
+      id: "RecipeIngredients::5::NameInput::CustomTextInput"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll down to the sixth ingredient"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "RecipeIngredients::5::QuantityInput"
+    text: "2"
+    label: "Quantity of sixth ingredient is rendered"
+- assertVisible:
+    id: "RecipeIngredients::5::Unit"
+    text: "g"
+    label: "tbsp unit is rendered"
+- assertVisible:
+    id: "RecipeIngredients::5::NameInput::CustomTextInput"
+    text: "Sesame Seeds"
+    label: "Ingredient Sesame Seeds is rendered"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
       id: "RecipeIngredients::AddButton::RoundButton"
     direction: DOWN
     speed: 60

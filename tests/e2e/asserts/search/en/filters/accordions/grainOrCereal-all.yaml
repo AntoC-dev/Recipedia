@@ -5,7 +5,7 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      text: "Cereal"
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     direction: DOWN
     speed: 20
     centerElement: true
@@ -39,42 +39,36 @@ appId: "com.recipedia"
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Expand Cereal accordion"
 
-
 - runFlow:
-    file: "grainOrCereal-items/spaghetti-visible.yaml"
+    file: "grainOrCereal-items/croutons-visible.yaml"
     env:
       ITEM_INDEX: "0"
 
 - runFlow:
-    file: "grainOrCereal-items/tacoShells-visible.yaml"
+    file: "grainOrCereal-items/pasta-visible.yaml"
     env:
       ITEM_INDEX: "1"
 
 - runFlow:
-    file: "grainOrCereal-items/flour-visible.yaml"
+    file: "grainOrCereal-items/pizzaDough-visible.yaml"
     env:
       ITEM_INDEX: "2"
 
+
 - runFlow:
-    file: "grainOrCereal-items/croutons-visible.yaml"
+    file: "grainOrCereal-items/spaghetti-visible.yaml"
     env:
       ITEM_INDEX: "3"
 
 - runFlow:
-    file: "grainOrCereal-items/pizzaDough-visible.yaml"
+    file: "grainOrCereal-items/sushiRice-visible.yaml"
     env:
       ITEM_INDEX: "4"
 
 - runFlow:
-    file: "grainOrCereal-items/pasta-visible.yaml"
+    file: "grainOrCereal-items/tacoShells-visible.yaml"
     env:
       ITEM_INDEX: "5"
-
-- runFlow:
-    file: "grainOrCereal-items/sushiRice-visible.yaml"
-    env:
-      ITEM_INDEX: "6"
-
 
 - waitForAnimationToEnd
 

@@ -30,6 +30,12 @@ tags:
     id: "TagsSettings::0::EditButton"
     label: "Action - Open edit dialog for Italian tag"
 
+- extendedWaitUntil:
+    visible:
+      id: "TagsSettings::ItemDialog::EditModal::Title"
+    timeout: 3000
+    label: "Wait for element tag edit dialog to be displayed"
+
 - runFlow:
     file: "../../asserts/parameters/tags/en/assertEditModalOpen.yaml"
     label: "Assert - Verify Edit tag modal displayed"

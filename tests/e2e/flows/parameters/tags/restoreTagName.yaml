@@ -1,49 +1,18 @@
 appId: "com.recipedia"
 ---
-- tapOn:
-    text: "Parameters"
-    label: "Navigate to Parameters screen"
+- runFlow:
+    file: "../../../flows/parameters/tags/navigateToTagsSettings.yaml"
+    label: "Action - Navigate to Tags Settings"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "Parameters::Section::Data::Tags::Item"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll down to find Tags option"
-
-- waitForAnimationToEnd
+- runFlow:
+    file: "../searchInSettingsList.yaml"
+    env:
+      SETTINGS_SCREEN: "TagsSettings"
+      SEARCH_QUERY: "Italian"
+    label: "Action - Search for Italian tag"
 
 - tapOn:
-    id: "Parameters::Section::Data::Tags::Item"
-    label: "Navigate to Tags Settings screen"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      text: "Italian Cuisine"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to Italian Cuisine tag"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "TagsSettings::6::DeleteButton"
-    direction: DOWN
-    speed: 40
-    centerElement: true
-    label: "Scroll to delete button for Italian Cuisine tag"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "TagsSettings::6::DeleteButton"
+    id: "TagsSettings::0::DeleteButton"
     label: "Tap Delete button for Italian Cuisine tag"
 
 - extendedWaitUntil:
