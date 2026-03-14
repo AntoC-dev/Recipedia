@@ -1449,6 +1449,103 @@ describe('useRecipeIngredients', () => {
         expect(spaghetti).toBeDefined();
         expect(spaghetti?.type).toBeDefined();
       });
+
+      test('uses validated unit and quantity when original row has none (fresh add from dropdown)', async () => {
+        const spaghettiIngredient = testIngredients.find(i => i.name === 'Spaghetti')!;
+        mockFindSimilarIngredients.mockImplementation((name: string) => {
+          if (name.toLowerCase() === 'spaghetti') {
+            return [spaghettiIngredient];
+          }
+          return [];
+        });
+
+        const recipeWithEmptyRow: recipeTableElement = {
+          ...recipeWithIngredients,
+          ingredients: [
+            { name: '', unit: '', quantity: '', type: ingredientType.cereal, season: [] },
+          ],
+        };
+
+        const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithEmptyRow));
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+            dialogs: useRecipeDialogs(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+        });
+
+        act(() => {
+          result.current.ingredients.editIngredients(0, '@@--Spaghetti');
+        });
+
+        await waitFor(() => {
+          expect(result.current.dialogs.validationQueue).not.toBeNull();
+        });
+
+        const queue = result.current.dialogs.validationQueue as IngredientValidationProps;
+
+        act(() => {
+          queue.onValidated(queue.items[0], spaghettiIngredient);
+        });
+
+        const updated = result.current.form.state.recipeIngredients[0];
+        expect(updated.name).toBe('Spaghetti');
+        expect(updated.unit).toBe(spaghettiIngredient.unit);
+        expect(updated.quantity).toBe(spaghettiIngredient.quantity);
+      });
+
+      test('preserves user-set unit and quantity when renaming an existing ingredient', async () => {
+        const spaghettiIngredient = testIngredients.find(i => i.name === 'Spaghetti')!;
+        mockFindSimilarIngredients.mockImplementation((name: string) => {
+          if (name.toLowerCase() === 'spaghetti') {
+            return [spaghettiIngredient];
+          }
+          return [];
+        });
+
+        const wrapper = createIngredientsWrapper(
+          createMockRecipeProp('edit', recipeWithIngredients)
+        );
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+            dialogs: useRecipeDialogs(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+        });
+
+        act(() => {
+          result.current.ingredients.editIngredients(0, '350@@kg--Spaghetti');
+        });
+
+        await waitFor(() => {
+          expect(result.current.dialogs.validationQueue).not.toBeNull();
+        });
+
+        const queue = result.current.dialogs.validationQueue as IngredientValidationProps;
+
+        act(() => {
+          queue.onValidated(queue.items[0], spaghettiIngredient);
+        });
+
+        const updated = result.current.form.state.recipeIngredients[0];
+        expect(updated.name).toBe('Spaghetti');
+        expect(updated.unit).toBe('kg');
+        expect(updated.quantity).toBe('350');
+      });
     });
 
     describe('replaceIngredientAtIndex - duplicate merging', () => {
