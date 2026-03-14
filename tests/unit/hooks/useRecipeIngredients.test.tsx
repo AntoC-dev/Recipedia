@@ -1450,5 +1450,453 @@ describe('useRecipeIngredients', () => {
         expect(spaghetti?.type).toBeDefined();
       });
     });
+
+    describe('replaceIngredientAtIndex - duplicate merging', () => {
+      test('replaces ingredient at index and removes duplicate when validated name matches another ingredient with different unit', async () => {
+        const spaghettiIngredient = testIngredients.find(i => i.name === 'Spaghetti')!;
+        const spaghettiWithDifferentUnit = { ...spaghettiIngredient, unit: 'piece' };
+
+        mockFindSimilarIngredients.mockImplementation((name: string) => {
+          if (name.toLowerCase() === 'spaghetti') {
+            return [spaghettiWithDifferentUnit];
+          }
+          return [];
+        });
+
+        const recipeWithDuplicate: recipeTableElement = {
+          ...recipeWithIngredients,
+          ingredients: [
+            {
+              id: 1,
+              name: 'Flour',
+              unit: 'g',
+              quantity: '200',
+              type: ingredientType.cereal,
+              season: [],
+            },
+            {
+              id: 2,
+              name: 'Spaghetti',
+              unit: 'g',
+              quantity: '100',
+              type: ingredientType.cereal,
+              season: [],
+            },
+            {
+              id: 3,
+              name: 'Milk',
+              unit: 'ml',
+              quantity: '250',
+              type: ingredientType.dairy,
+              season: [],
+            },
+          ],
+        };
+
+        const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithDuplicate));
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+            dialogs: useRecipeDialogs(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+        });
+
+        act(() => {
+          result.current.ingredients.editIngredients(0, '300@@piece--Spaghetti');
+        });
+
+        await waitFor(() => {
+          expect(result.current.dialogs.validationQueue).not.toBeNull();
+        });
+
+        const queue = result.current.dialogs.validationQueue as IngredientValidationProps;
+
+        act(() => {
+          queue.onValidated(queue.items[0], spaghettiWithDifferentUnit);
+        });
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(2);
+        });
+
+        const spaghetti = result.current.form.state.recipeIngredients.find(
+          i => i.name === 'Spaghetti'
+        );
+        expect(spaghetti).toBeDefined();
+        expect(spaghetti?.unit).toBe('piece');
+      });
+
+      test('merges quantities when validated name matches another ingredient with same unit', async () => {
+        const spaghettiIngredient = testIngredients.find(i => i.name === 'Spaghetti')!;
+        const spaghettiWithSameUnit = { ...spaghettiIngredient, unit: 'g' };
+
+        mockFindSimilarIngredients.mockImplementation((name: string) => {
+          if (name.toLowerCase() === 'spaghetti') {
+            return [spaghettiWithSameUnit];
+          }
+          return [];
+        });
+
+        const recipeWithDuplicateUnit: recipeTableElement = {
+          ...recipeWithIngredients,
+          ingredients: [
+            {
+              id: 1,
+              name: 'Flour',
+              unit: 'g',
+              quantity: '200',
+              type: ingredientType.cereal,
+              season: [],
+            },
+            {
+              id: 2,
+              name: 'Spaghetti',
+              unit: 'g',
+              quantity: '100',
+              type: ingredientType.cereal,
+              season: [],
+            },
+            {
+              id: 3,
+              name: 'Milk',
+              unit: 'ml',
+              quantity: '250',
+              type: ingredientType.dairy,
+              season: [],
+            },
+          ],
+        };
+
+        const wrapper = createIngredientsWrapper(
+          createMockRecipeProp('edit', recipeWithDuplicateUnit)
+        );
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+            dialogs: useRecipeDialogs(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+        });
+
+        act(() => {
+          result.current.ingredients.editIngredients(0, '300@@g--Spaghetti');
+        });
+
+        await waitFor(() => {
+          expect(result.current.dialogs.validationQueue).not.toBeNull();
+        });
+
+        const queue = result.current.dialogs.validationQueue as IngredientValidationProps;
+
+        act(() => {
+          queue.onValidated(queue.items[0], spaghettiWithSameUnit);
+        });
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(2);
+        });
+
+        const spaghetti = result.current.form.state.recipeIngredients.find(
+          i => i.name === 'Spaghetti'
+        );
+        expect(spaghetti).toBeDefined();
+        expect(Number(spaghetti?.quantity)).toBe(400);
+      });
+    });
+
+    describe('updateIngredient - no-op field branches', () => {
+      test('does not update fields when values are identical to existing', async () => {
+        const wrapper = createIngredientsWrapper(
+          createMockRecipeProp('edit', recipeWithIngredients)
+        );
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+        });
+
+        const originalIngredient = result.current.form.state.recipeIngredients[0];
+
+        act(() => {
+          result.current.ingredients.editIngredients(
+            0,
+            `${originalIngredient.quantity}@@${originalIngredient.unit}--${originalIngredient.name}`
+          );
+        });
+
+        await waitFor(() => {
+          const updated = result.current.form.state.recipeIngredients[0];
+          expect(updated.name).toBe(originalIngredient.name);
+          expect(updated.quantity).toBe(originalIngredient.quantity);
+          expect(updated.unit).toBe(originalIngredient.unit);
+        });
+      });
+
+      test('updateIngredient does not update id when new ingredient has no id', async () => {
+        const recipeWithKnownId: recipeTableElement = {
+          ...recipeWithIngredients,
+          ingredients: [
+            {
+              id: 42,
+              name: 'Flour',
+              unit: 'g',
+              quantity: '200',
+              type: ingredientType.cereal,
+              season: [],
+            },
+          ],
+        };
+
+        const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithKnownId));
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+        });
+
+        act(() => {
+          result.current.ingredients.editIngredients(0, '300@@g--Flour');
+        });
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients[0].quantity).toBe('300');
+        });
+
+        expect(result.current.form.state.recipeIngredients[0].id).toBe(42);
+      });
+    });
+
+    describe('removeIngredient', () => {
+      test('removes ingredient at given index', async () => {
+        const wrapper = createIngredientsWrapper(
+          createMockRecipeProp('edit', recipeWithIngredients)
+        );
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+        });
+
+        act(() => {
+          result.current.ingredients.removeIngredient(1);
+        });
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(2);
+        });
+      });
+
+      test('removes first ingredient correctly', async () => {
+        const wrapper = createIngredientsWrapper(
+          createMockRecipeProp('edit', recipeWithIngredients)
+        );
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+        });
+
+        act(() => {
+          result.current.ingredients.removeIngredient(0);
+        });
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients[0].name).toBe('Sugar');
+        });
+      });
+
+      test('removes last ingredient correctly', async () => {
+        const wrapper = createIngredientsWrapper(
+          createMockRecipeProp('edit', recipeWithIngredients)
+        );
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+        });
+
+        act(() => {
+          result.current.ingredients.removeIngredient(2);
+        });
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(2);
+          expect(result.current.form.state.recipeIngredients[1].name).toBe('Sugar');
+        });
+      });
+
+      test('removes a middle ingredient correctly', async () => {
+        const wrapper = createIngredientsWrapper(
+          createMockRecipeProp('edit', recipeWithIngredients)
+        );
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+        });
+
+        act(() => {
+          result.current.ingredients.removeIngredient(1);
+        });
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients[0].name).toBe('Flour');
+          expect(result.current.form.state.recipeIngredients[1].name).toBe('Milk');
+        });
+      });
+
+      test('results in empty list when the only ingredient is removed', async () => {
+        const singleIngredientRecipe: recipeTableElement = {
+          ...recipeWithIngredients,
+          ingredients: [
+            {
+              id: 1,
+              name: 'Flour',
+              unit: 'g',
+              quantity: '200',
+              type: ingredientType.cereal,
+              season: [],
+            },
+          ],
+        };
+        const wrapper = createIngredientsWrapper(
+          createMockRecipeProp('edit', singleIngredientRecipe)
+        );
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+        });
+
+        act(() => {
+          result.current.ingredients.removeIngredient(0);
+        });
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(0);
+        });
+      });
+
+      test('does not remove ingredient when index is out of range', async () => {
+        const wrapper = createIngredientsWrapper(
+          createMockRecipeProp('edit', recipeWithIngredients)
+        );
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+        });
+
+        act(() => {
+          result.current.ingredients.removeIngredient(99);
+        });
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+        });
+      });
+
+      test('does not mutate data of remaining ingredients', async () => {
+        const wrapper = createIngredientsWrapper(
+          createMockRecipeProp('edit', recipeWithIngredients)
+        );
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+        });
+
+        act(() => {
+          result.current.ingredients.removeIngredient(1);
+        });
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(2);
+        });
+
+        expect(result.current.form.state.recipeIngredients[0].name).toBe('Flour');
+        expect(result.current.form.state.recipeIngredients[0].quantity).toBe('200');
+        expect(result.current.form.state.recipeIngredients[0].unit).toBe('g');
+        expect(result.current.form.state.recipeIngredients[1].name).toBe('Milk');
+        expect(result.current.form.state.recipeIngredients[1].quantity).toBe('250');
+        expect(result.current.form.state.recipeIngredients[1].unit).toBe('ml');
+      });
+    });
   });
 });
