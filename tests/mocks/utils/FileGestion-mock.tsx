@@ -13,6 +13,8 @@ export const isTemporaryImageUri = jest.fn().mockImplementation((uri: string): b
 
 export const clearCache = jest.fn().mockResolvedValue(undefined);
 
+export const deleteFile = jest.fn().mockResolvedValue(undefined);
+
 export const moveFile = jest.fn().mockResolvedValue(undefined);
 
 export const copyFile = jest.fn().mockResolvedValue(undefined);
@@ -36,6 +38,7 @@ export function fileGestionMock() {
     getCacheUri,
     isTemporaryImageUri,
     clearCache,
+    deleteFile,
     moveFile,
     copyFile,
     saveRecipeImage,

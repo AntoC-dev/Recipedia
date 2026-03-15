@@ -108,6 +108,7 @@ describe('ModalImageSelect Screen', () => {
 
     expect(mockTakePhoto).not.toHaveBeenCalled();
     expect(props.onImagesUpdated).not.toHaveBeenCalled();
+    expect(props.onSelectFunction).not.toHaveBeenCalled();
 
     fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
     await Promise.resolve();
@@ -116,6 +117,7 @@ describe('ModalImageSelect Screen', () => {
     expect(mockTakePhoto).toHaveBeenCalledWith(expect.any(Object));
     expect(props.onImagesUpdated).toHaveBeenCalledTimes(1);
     expect(props.onImagesUpdated).toHaveBeenCalledWith('file:///new-photo.jpg');
+    expect(props.onSelectFunction).not.toHaveBeenCalled();
   });
 
   test('handles gallery image selection correctly', async () => {
@@ -126,6 +128,7 @@ describe('ModalImageSelect Screen', () => {
 
     expect(mockPickImage).not.toHaveBeenCalled();
     expect(props.onImagesUpdated).not.toHaveBeenCalled();
+    expect(props.onSelectFunction).not.toHaveBeenCalled();
 
     fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
     await Promise.resolve();
@@ -134,6 +137,7 @@ describe('ModalImageSelect Screen', () => {
     expect(mockPickImage).toHaveBeenCalledWith(expect.any(Object));
     expect(props.onImagesUpdated).toHaveBeenCalledTimes(1);
     expect(props.onImagesUpdated).toHaveBeenCalledWith('file:///selected-image.png');
+    expect(props.onSelectFunction).not.toHaveBeenCalled();
   });
 
   test('handles empty image URI responses from ImagePicker', async () => {
@@ -146,6 +150,7 @@ describe('ModalImageSelect Screen', () => {
     await Promise.resolve();
 
     expect(props.onImagesUpdated).not.toHaveBeenCalled();
+    expect(props.onSelectFunction).not.toHaveBeenCalled();
 
     mockPickImage.mockResolvedValue('');
 
@@ -153,6 +158,7 @@ describe('ModalImageSelect Screen', () => {
     await Promise.resolve();
 
     expect(props.onImagesUpdated).not.toHaveBeenCalled();
+    expect(props.onSelectFunction).not.toHaveBeenCalled();
   });
 
   test('handles empty image array correctly', () => {
@@ -199,6 +205,7 @@ describe('ModalImageSelect Screen', () => {
     await Promise.resolve();
 
     expect(props.onImagesUpdated).not.toHaveBeenCalled();
+    expect(props.onSelectFunction).not.toHaveBeenCalled();
 
     mockPickImage.mockResolvedValue('');
 
@@ -206,6 +213,7 @@ describe('ModalImageSelect Screen', () => {
     await Promise.resolve();
 
     expect(props.onImagesUpdated).not.toHaveBeenCalled();
+    expect(props.onSelectFunction).not.toHaveBeenCalled();
   });
 
   test('handles rapid successive button presses correctly', async () => {
@@ -227,6 +235,7 @@ describe('ModalImageSelect Screen', () => {
     expect(mockTakePhoto).toHaveBeenCalledTimes(3);
     expect(mockPickImage).toHaveBeenCalledTimes(2);
     expect(props.onImagesUpdated).toHaveBeenCalledTimes(5);
+    expect(props.onSelectFunction).not.toHaveBeenCalled();
   });
 
   test('preserves modal dismissal functionality', () => {
@@ -297,15 +306,20 @@ describe('ModalImageSelect Screen', () => {
     await Promise.resolve();
 
     expect(props.onImagesUpdated).toHaveBeenCalledWith('file:///camera-success.jpg');
+    expect(props.onSelectFunction).not.toHaveBeenCalled();
 
     fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
     await Promise.resolve();
 
     expect(props.onImagesUpdated).toHaveBeenCalledWith('file:///gallery-success.png');
     expect(props.onImagesUpdated).toHaveBeenCalledTimes(2);
+    expect(props.onSelectFunction).not.toHaveBeenCalled();
   });
 
-  test('maintains component stability during complex interactions', () => {
+  test('maintains component stability during complex interactions', async () => {
+    mockTakePhoto.mockResolvedValue('file:///camera-photo.jpg');
+    mockPickImage.mockResolvedValue('file:///gallery-photo.jpg');
+
     const props = defaultProps;
     const { getByTestId } = renderModalImageSelect(props);
 
@@ -315,10 +329,265 @@ describe('ModalImageSelect Screen', () => {
     fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
     fireEvent.press(getByTestId('Modal::Item::2'));
 
+    await Promise.resolve();
+
     expect(props.onSelectFunction).toHaveBeenCalledTimes(3);
     expect(mockTakePhoto).toHaveBeenCalledTimes(1);
     expect(mockPickImage).toHaveBeenCalledTimes(1);
 
     assertModalImageSelect(getByTestId, props);
+  });
+
+  test('direct item press calls onSelectFunction but never onImagesUpdated', () => {
+    const props = defaultProps;
+    const { getByTestId } = renderModalImageSelect(props);
+
+    fireEvent.press(getByTestId('Modal::Item::0'));
+    expect(props.onSelectFunction).toHaveBeenCalledWith('file:///image1.jpg');
+    expect(props.onImagesUpdated).not.toHaveBeenCalled();
+
+    fireEvent.press(getByTestId('Modal::Item::1'));
+    expect(props.onSelectFunction).toHaveBeenCalledWith('file:///image2.png');
+    expect(props.onImagesUpdated).not.toHaveBeenCalled();
+
+    fireEvent.press(getByTestId('Modal::Item::2'));
+    expect(props.onSelectFunction).toHaveBeenCalledWith('file:///image3.jpeg');
+    expect(props.onImagesUpdated).not.toHaveBeenCalled();
+
+    expect(props.onSelectFunction).toHaveBeenCalledTimes(3);
+  });
+
+  test('camera and gallery captures call onImagesUpdated but never onSelectFunction', async () => {
+    mockTakePhoto.mockResolvedValue('file:///captured.jpg');
+    mockPickImage.mockResolvedValue('file:///picked.jpg');
+
+    const props = defaultProps;
+    const { getByTestId } = renderModalImageSelect(props);
+
+    fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
+    await Promise.resolve();
+
+    fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
+    await Promise.resolve();
+
+    expect(props.onImagesUpdated).toHaveBeenCalledTimes(2);
+    expect(props.onImagesUpdated).toHaveBeenNthCalledWith(1, 'file:///captured.jpg');
+    expect(props.onImagesUpdated).toHaveBeenNthCalledWith(2, 'file:///picked.jpg');
+    expect(props.onSelectFunction).not.toHaveBeenCalled();
+  });
+
+  test('re-renders correctly when arrImg prop changes', () => {
+    const { getByTestId, rerender } = render(<ModalImageSelect {...defaultProps} />);
+
+    expect(getByTestId('Modal::ItemCount').props.children).toBe('3');
+    expect(getByTestId('Modal::Item::0::Uri').props.children).toBe('file:///image1.jpg');
+
+    const updatedImages = ['file:///updated1.jpg', 'file:///updated2.png'];
+    rerender(<ModalImageSelect {...defaultProps} arrImg={updatedImages} />);
+
+    expect(getByTestId('Modal::ItemCount').props.children).toBe('2');
+    expect(getByTestId('Modal::Item::0::Uri').props.children).toBe('file:///updated1.jpg');
+    expect(getByTestId('Modal::Item::1::Uri').props.children).toBe('file:///updated2.png');
+  });
+
+  test('handles mix of item taps and camera captures with correct callback separation', async () => {
+    mockTakePhoto.mockResolvedValue('file:///mixed-camera.jpg');
+
+    const props = defaultProps;
+    const { getByTestId } = renderModalImageSelect(props);
+
+    fireEvent.press(getByTestId('Modal::Item::0'));
+    fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
+    await Promise.resolve();
+    fireEvent.press(getByTestId('Modal::Item::2'));
+
+    expect(props.onSelectFunction).toHaveBeenCalledTimes(2);
+    expect(props.onSelectFunction).toHaveBeenCalledWith('file:///image1.jpg');
+    expect(props.onSelectFunction).toHaveBeenCalledWith('file:///image3.jpeg');
+    expect(props.onImagesUpdated).toHaveBeenCalledTimes(1);
+    expect(props.onImagesUpdated).toHaveBeenCalledWith('file:///mixed-camera.jpg');
+  });
+
+  test('duplicate URIs in array are all selectable independently', () => {
+    const duplicateImages = ['file:///same.jpg', 'file:///same.jpg', 'file:///other.jpg'];
+    const props = { ...defaultProps, arrImg: duplicateImages };
+    const { getByTestId } = renderModalImageSelect(props);
+
+    expect(getByTestId('Modal::ItemCount').props.children).toBe('3');
+
+    fireEvent.press(getByTestId('Modal::Item::0'));
+    expect(props.onSelectFunction).toHaveBeenCalledWith('file:///same.jpg');
+
+    fireEvent.press(getByTestId('Modal::Item::1'));
+    expect(props.onSelectFunction).toHaveBeenCalledTimes(2);
+    expect(props.onSelectFunction).toHaveBeenNthCalledWith(2, 'file:///same.jpg');
+
+    fireEvent.press(getByTestId('Modal::Item::2'));
+    expect(props.onSelectFunction).toHaveBeenCalledWith('file:///other.jpg');
+  });
+
+  describe('autoSelect behavior', () => {
+    test('camera pick with autoSelect=true calls both onImagesUpdated and onSelectFunction', async () => {
+      mockTakePhoto.mockResolvedValue('file:///auto-photo.jpg');
+
+      const props = { ...defaultProps, autoSelect: true };
+      const { getByTestId } = renderModalImageSelect(props);
+
+      fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
+      await Promise.resolve();
+
+      expect(props.onImagesUpdated).toHaveBeenCalledWith('file:///auto-photo.jpg');
+      expect(props.onSelectFunction).toHaveBeenCalledWith('file:///auto-photo.jpg');
+    });
+
+    test('gallery pick with autoSelect=true calls both onImagesUpdated and onSelectFunction', async () => {
+      mockPickImage.mockResolvedValue('file:///auto-gallery.jpg');
+
+      const props = { ...defaultProps, autoSelect: true };
+      const { getByTestId } = renderModalImageSelect(props);
+
+      fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
+      await Promise.resolve();
+
+      expect(props.onImagesUpdated).toHaveBeenCalledWith('file:///auto-gallery.jpg');
+      expect(props.onSelectFunction).toHaveBeenCalledWith('file:///auto-gallery.jpg');
+    });
+
+    test('autoSelect=true: onImagesUpdated is called before onSelectFunction', async () => {
+      mockTakePhoto.mockResolvedValue('file:///order-test.jpg');
+      const callOrder: string[] = [];
+
+      const props = {
+        ...defaultProps,
+        autoSelect: true,
+        onImagesUpdated: jest.fn().mockImplementation(() => callOrder.push('onImagesUpdated')),
+        onSelectFunction: jest.fn().mockImplementation(() => callOrder.push('onSelectFunction')),
+      };
+      const { getByTestId } = renderModalImageSelect(props);
+
+      fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
+      await Promise.resolve();
+
+      expect(callOrder).toEqual(['onImagesUpdated', 'onSelectFunction']);
+    });
+
+    test('camera pick with autoSelect=false (default) calls only onImagesUpdated', async () => {
+      mockTakePhoto.mockResolvedValue('file:///no-auto-photo.jpg');
+
+      const props = { ...defaultProps, autoSelect: false };
+      const { getByTestId } = renderModalImageSelect(props);
+
+      fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
+      await Promise.resolve();
+
+      expect(props.onImagesUpdated).toHaveBeenCalledWith('file:///no-auto-photo.jpg');
+      expect(props.onSelectFunction).not.toHaveBeenCalled();
+    });
+
+    test('autoSelect omitted (undefined) behaves same as false', async () => {
+      mockTakePhoto.mockResolvedValue('file:///omitted-auto.jpg');
+
+      const { getByTestId } = renderModalImageSelect(defaultProps);
+
+      fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
+      await Promise.resolve();
+
+      expect(defaultProps.onImagesUpdated).toHaveBeenCalledWith('file:///omitted-auto.jpg');
+      expect(defaultProps.onSelectFunction).not.toHaveBeenCalled();
+    });
+
+    test('item tap with autoSelect=true still calls only onSelectFunction not onImagesUpdated', () => {
+      const props = { ...defaultProps, autoSelect: true };
+      const { getByTestId } = renderModalImageSelect(props);
+
+      fireEvent.press(getByTestId('Modal::Item::0'));
+
+      expect(props.onSelectFunction).toHaveBeenCalledWith('file:///image1.jpg');
+      expect(props.onImagesUpdated).not.toHaveBeenCalled();
+    });
+
+    test('gallery pick with autoSelect=true calls onSelectFunction with exact picked URI', async () => {
+      mockPickImage.mockResolvedValue('file:///exact-uri.png');
+
+      const props = { ...defaultProps, autoSelect: true };
+      const { getByTestId } = renderModalImageSelect(props);
+
+      fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
+      await Promise.resolve();
+
+      expect(props.onSelectFunction).toHaveBeenCalledTimes(1);
+      expect(props.onSelectFunction).toHaveBeenCalledWith('file:///exact-uri.png');
+    });
+
+    test('empty URI with autoSelect=true triggers neither callback', async () => {
+      mockTakePhoto.mockResolvedValue('');
+
+      const props = { ...defaultProps, autoSelect: true };
+      const { getByTestId } = renderModalImageSelect(props);
+
+      fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
+      await Promise.resolve();
+
+      expect(props.onImagesUpdated).not.toHaveBeenCalled();
+      expect(props.onSelectFunction).not.toHaveBeenCalled();
+    });
+
+    test('gallery empty URI with autoSelect=true triggers neither callback', async () => {
+      mockPickImage.mockResolvedValue('');
+
+      const props = { ...defaultProps, autoSelect: true };
+      const { getByTestId } = renderModalImageSelect(props);
+
+      fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
+      await Promise.resolve();
+
+      expect(props.onImagesUpdated).not.toHaveBeenCalled();
+      expect(props.onSelectFunction).not.toHaveBeenCalled();
+    });
+  });
+
+  test('camera returns valid URI then item tap works correctly afterward', async () => {
+    mockTakePhoto.mockResolvedValue('file:///new-from-camera.jpg');
+
+    const props = defaultProps;
+    const { getByTestId } = renderModalImageSelect(props);
+
+    fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
+    await Promise.resolve();
+
+    expect(props.onImagesUpdated).toHaveBeenCalledWith('file:///new-from-camera.jpg');
+    expect(props.onSelectFunction).not.toHaveBeenCalled();
+
+    fireEvent.press(getByTestId('Modal::Item::0'));
+
+    expect(props.onSelectFunction).toHaveBeenCalledTimes(1);
+    expect(props.onSelectFunction).toHaveBeenCalledWith('file:///image1.jpg');
+    expect(props.onImagesUpdated).toHaveBeenCalledTimes(1);
+  });
+
+  test('gallery returns empty string does not trigger any callbacks', async () => {
+    mockPickImage.mockResolvedValue('');
+
+    const props = defaultProps;
+    const { getByTestId } = renderModalImageSelect(props);
+
+    fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
+    await Promise.resolve();
+
+    expect(props.onImagesUpdated).not.toHaveBeenCalled();
+    expect(props.onSelectFunction).not.toHaveBeenCalled();
+  });
+
+  test('takePhoto returns empty string does not trigger any callbacks', async () => {
+    mockTakePhoto.mockResolvedValue('');
+
+    const props = defaultProps;
+    const { getByTestId } = renderModalImageSelect(props);
+
+    fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
+    await Promise.resolve();
+
+    expect(props.onImagesUpdated).not.toHaveBeenCalled();
+    expect(props.onSelectFunction).not.toHaveBeenCalled();
   });
 });
