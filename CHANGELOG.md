@@ -1,3 +1,11 @@
+## [2.22.1](https://github.com/AntoC-dev/Recipedia/compare/v2.22.0...v2.22.1) (2026-03-15)
+
+### Bug Fixes
+
+* **bulk-import:** scale ingredient quantities to defaultPersons on import ([7852687](https://github.com/AntoC-dev/Recipedia/commit/7852687a766c02d2534450817a0262d4db408bc7))
+* **bulk-import:** scale ingredient quantities to defaultPersons on import ([#222](https://github.com/AntoC-dev/Recipedia/issues/222)) ([ef7336b](https://github.com/AntoC-dev/Recipedia/commit/ef7336b893bb4c799226bdab00187635ba6de554))
+* **types:** add ingredientNames/ingredientQuantities to OCR return type only ([d77b40d](https://github.com/AntoC-dev/Recipedia/commit/d77b40d37f247cb7d1e6ab4222ffd09598f8fb3b))
+
 ## [2.22.0](https://github.com/AntoC-dev/Recipedia/compare/v2.21.1...v2.22.0) (2026-03-14)
 
 ### Features
