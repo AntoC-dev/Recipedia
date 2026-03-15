@@ -33,6 +33,7 @@
  */
 
 import * as FileSystem from 'expo-file-system/legacy';
+import * as Crypto from 'expo-crypto';
 import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
 import pkg from '@app/package.json';
@@ -180,6 +181,28 @@ export async function copyFile(oldUri: string, newUri: string): Promise<void> {
 }
 
 /**
+ * Deletes a file at the given URI
+ *
+ * Silently ignores errors so callers can fire-and-forget cleanup without
+ * affecting the happy path (e.g. old image files after a recipe image update).
+ *
+ * @param uri - URI of the file to delete
+ *
+ * @example
+ * ```typescript
+ * await deleteFile('file:///documents/Recipedia/old_image_abc123.jpg');
+ * ```
+ */
+export async function deleteFile(uri: string): Promise<void> {
+  try {
+    await FileSystem.deleteAsync(uri, { idempotent: true });
+    fileSystemLogger.debug('File deleted', { uri });
+  } catch (error) {
+    fileSystemLogger.warn('Failed to delete file', { uri, error });
+  }
+}
+
+/**
  * Determines if an image URI points to a temporary location
  *
  * Returns true when the URI does not reside inside the app's permanent storage
@@ -269,52 +292,37 @@ export async function downloadImageToCache(remoteUrl: string): Promise<string> {
 /**
  * Saves a recipe image from cache to permanent storage
  *
- * Takes a temporary image file and saves it to the main app directory with
- * a standardized naming convention. The recipe name is sanitized and used
- * as the filename with the original file extension preserved.
+ * Moves a temporary image file to permanent storage with a unique filename.
+ * The recipe name is sanitized and combined with a UUID for the filename,
+ * preserving the original file extension.
  *
- * @param cacheFileUri - URI of the temporary image file
- * @param recName - Recipe name to use for the filename
- * @returns Promise resolving to the saved image URI, or empty string if failed
+ * @param cacheFileUri - URI of the temporary image file to move
+ * @param recName - Recipe name used to generate the filename
+ * @returns Promise resolving to the permanent image URI, or empty string on failure
  *
  * @example
  * ```typescript
  * const tempImageUri = "file:///cache/temp-image.jpg";
  * const savedUri = await saveRecipeImage(tempImageUri, "Chocolate Cake");
- * // Returns something like: "file:///documents/Recipedia/chocolate_cake.jpg"
+ * // Returns: "file:///documents/Recipedia/chocolate_cake_<uuid>.jpg"
  * ```
  */
 export async function saveRecipeImage(cacheFileUri: string, recName: string): Promise<string> {
-  fileSystemLogger.info('Starting image save operation', {
-    sourceUri: cacheFileUri,
-    recipeName: recName,
-    permanentStorageDir: DIRECTORY_URI,
-  });
-
-  const extensionParts = cacheFileUri.split('.');
-  const extension = extensionParts[extensionParts.length - 1].split('?')[0] || 'jpg';
-  const imgName = sanitizeFilename(recName) + '.' + extension;
-  const imgUri: string = DIRECTORY_URI + imgName;
-
-  fileSystemLogger.info('Generated filename and destination', {
-    originalRecipeName: recName,
-    sanitizedFilename: imgName,
-    fullDestinationUri: imgUri,
-    fileExtension: extension,
-  });
-
   try {
-    await copyFile(cacheFileUri, imgUri);
-    fileSystemLogger.info('Image copied successfully to permanent storage', {
-      sourceUri: cacheFileUri,
+    const extensionParts = cacheFileUri.split('.');
+    const extension = extensionParts[extensionParts.length - 1].split('?')[0] || 'jpg';
+    const imgName = sanitizeFilename(recName) + '_' + Crypto.randomUUID() + '.' + extension;
+    const imgUri: string = DIRECTORY_URI + imgName;
+
+    await FileSystem.deleteAsync(imgUri, { idempotent: true });
+    await FileSystem.moveAsync({ from: cacheFileUri, to: imgUri });
+    fileSystemLogger.debug('Image saved to permanent storage', {
       destinationUri: imgUri,
-      filenameStoredInDb: imgName,
     });
     return imgUri;
   } catch (error) {
     fileSystemLogger.error('Failed to save recipe image', {
       sourceUri: cacheFileUri,
-      destinationUri: imgUri,
       recipeName: recName,
       error,
     });

@@ -4,6 +4,7 @@ import RecipeDatabase from '@utils/RecipeDatabase';
 import { testRecipes } from '@test-data/recipesDataset';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
+import { deleteFile, getDirectoryUri } from '@utils/FileGestion';
 
 describe('RecipeDatabaseContext', () => {
   let database: RecipeDatabase;
@@ -486,6 +487,53 @@ describe('RecipeDatabaseContext', () => {
         const item = result.current.shopping.find(i => i.name === ingredientName);
         expect(item?.purchased).toBe(true);
       });
+    });
+  });
+
+  describe('editRecipe image cleanup', () => {
+    test('deletes old permanent image when image URI changes', async () => {
+      const { result } = renderHook(() => useRecipeDatabase(), {
+        wrapper: RecipeDatabaseProvider,
+      });
+
+      await waitFor(() => expect(result.current.isDatabaseReady).toBe(true));
+
+      const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
+      const previousImageUri = recipe.image_Source;
+
+      await result.current.editRecipe({ ...recipe, image_Source: 'file:///documents/new.jpg' });
+
+      expect(deleteFile).toHaveBeenCalledWith(previousImageUri);
+    });
+
+    test('does not delete old image when URI is unchanged', async () => {
+      const { result } = renderHook(() => useRecipeDatabase(), {
+        wrapper: RecipeDatabaseProvider,
+      });
+
+      await waitFor(() => expect(result.current.isDatabaseReady).toBe(true));
+
+      const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
+
+      await result.current.editRecipe({ ...recipe });
+
+      expect(deleteFile).not.toHaveBeenCalled();
+    });
+
+    test('deleteFile is called with the previous URI, not the new one', async () => {
+      const { result } = renderHook(() => useRecipeDatabase(), {
+        wrapper: RecipeDatabaseProvider,
+      });
+
+      await waitFor(() => expect(result.current.isDatabaseReady).toBe(true));
+
+      const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
+      const newImageUri = 'file:///documents/new.jpg';
+
+      await result.current.editRecipe({ ...recipe, image_Source: newImageUri });
+
+      expect(deleteFile).not.toHaveBeenCalledWith(newImageUri);
+      expect(deleteFile).toHaveBeenCalledWith(recipe.image_Source);
     });
   });
 

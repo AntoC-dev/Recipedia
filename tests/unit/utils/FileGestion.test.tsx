@@ -1,6 +1,7 @@
 import {
   clearCache,
   copyDatasetImages,
+  deleteFile,
   getCacheUri,
   getDirectoryUri,
   init,
@@ -29,11 +30,14 @@ jest.mock('@utils/Constants', () => require('@mocks/utils/Constants-mock').const
 
 jest.mock('@utils/DatasetLoader', () => require('@mocks/utils/DatasetLoader-mock'));
 
+jest.mock('expo-crypto', () => ({ randomUUID: jest.fn() }));
+
 describe('FileGestion Utility', () => {
   const mockGetInfoAsync = FileSystem.getInfoAsync as jest.Mock;
   const mockMakeDirectoryAsync = FileSystem.makeDirectoryAsync as jest.Mock;
   const mockReadDirectoryAsync = FileSystem.readDirectoryAsync as jest.Mock;
   const mockCopyAsync = FileSystem.copyAsync as jest.Mock;
+  const mockMoveAsync = FileSystem.moveAsync as jest.Mock;
   const mockDeleteAsync = FileSystem.deleteAsync as jest.Mock;
   const mockWriteAsStringAsync = FileSystem.writeAsStringAsync as jest.Mock;
   const mockReadAsStringAsync = FileSystem.readAsStringAsync as jest.Mock;
@@ -42,6 +46,7 @@ describe('FileGestion Utility', () => {
 
   const defaultDocumentsPath = '/documents/Test Recipedia/';
   const defaultCachePath = '/cache/Test Recipedia/';
+  const mockUUID = '00000000-0000-0000-0000-000000000000';
 
   const mockDirectoryExists = (exists: boolean = false) => {
     mockGetInfoAsync.mockResolvedValue({ exists, isDirectory: exists });
@@ -62,11 +67,14 @@ describe('FileGestion Utility', () => {
     mockMakeDirectoryAsync.mockReset();
     mockReadDirectoryAsync.mockReset();
     mockCopyAsync.mockReset();
+    mockMoveAsync.mockReset();
     mockDeleteAsync.mockReset();
     mockWriteAsStringAsync.mockReset();
     mockReadAsStringAsync.mockReset();
     mockAssetFromModule.mockReset();
     mockAssetLoadAsync.mockReset();
+    const Crypto = require('expo-crypto');
+    Crypto.randomUUID.mockReturnValue(mockUUID);
   };
 
   const setupInitializationMocks = (directoryExists: boolean = false) => {
@@ -75,7 +83,8 @@ describe('FileGestion Utility', () => {
   };
 
   const setupImageSavingMocks = () => {
-    mockCopyAsync.mockResolvedValue(undefined);
+    mockDeleteAsync.mockResolvedValue(undefined);
+    mockMoveAsync.mockResolvedValue(undefined);
   };
 
   beforeEach(() => {
@@ -126,7 +135,7 @@ describe('FileGestion Utility', () => {
   test('saves recipe image with proper naming and file operations', async () => {
     const sourceUri = '/temp/recipe-photo.jpg';
     const recipeName = 'Chocolate Cake';
-    const expectedImageName = 'chocolate_cake.jpg';
+    const expectedImageName = 'chocolate_cake_' + mockUUID + '.jpg';
     const expectedDestination = defaultDocumentsPath + expectedImageName;
 
     setupImageSavingMocks();
@@ -134,28 +143,31 @@ describe('FileGestion Utility', () => {
     const result = await saveRecipeImage(sourceUri, recipeName);
 
     expect(result).toBe(expectedDestination);
-    expect(mockCopyAsync).toHaveBeenCalledWith({ from: sourceUri, to: expectedDestination });
-    expect(mockCopyAsync).toHaveBeenCalledTimes(1);
+    expect(mockMoveAsync).toHaveBeenCalledWith({ from: sourceUri, to: expectedDestination });
+    expect(mockMoveAsync).toHaveBeenCalledTimes(1);
   });
 
   test('sanitizes recipe names correctly for filename generation', async () => {
     const testCases = [
-      { input: 'Simple Recipe', expected: defaultDocumentsPath + 'simple_recipe.jpg' },
+      {
+        input: 'Simple Recipe',
+        expected: defaultDocumentsPath + 'simple_recipe_' + mockUUID + '.jpg',
+      },
       {
         input: 'Recipe with Special@#$%Characters',
-        expected: defaultDocumentsPath + 'recipe_with_special_characters.jpg',
+        expected: defaultDocumentsPath + 'recipe_with_special_characters_' + mockUUID + '.jpg',
       },
       {
         input: '   Spaced   Recipe   ',
-        expected: defaultDocumentsPath + 'spaced_recipe.jpg',
+        expected: defaultDocumentsPath + 'spaced_recipe_' + mockUUID + '.jpg',
       },
       {
         input: 'Recipe/With\\Slashes',
-        expected: defaultDocumentsPath + 'recipe_with_slashes.jpg',
+        expected: defaultDocumentsPath + 'recipe_with_slashes_' + mockUUID + '.jpg',
       },
       {
         input: 'Recipe:With;Colons,And<More>',
-        expected: defaultDocumentsPath + 'recipe_with_colons_and_more.jpg',
+        expected: defaultDocumentsPath + 'recipe_with_colons_and_more_' + mockUUID + '.jpg',
       },
     ];
 
@@ -193,13 +205,14 @@ describe('FileGestion Utility', () => {
     const sourceUri = '/temp/failing-image.jpg';
     const recipeName = 'Test Recipe';
 
-    mockCopyAsync.mockRejectedValue(new Error('Copy operation failed'));
+    mockDeleteAsync.mockResolvedValue(undefined);
+    mockMoveAsync.mockRejectedValue(new Error('Move operation failed'));
 
     const result = await saveRecipeImage(sourceUri, recipeName);
     expect(result).toBe('');
-    expect(mockCopyAsync).toHaveBeenCalledWith({
+    expect(mockMoveAsync).toHaveBeenCalledWith({
       from: sourceUri,
-      to: defaultDocumentsPath + 'test_recipe.jpg',
+      to: defaultDocumentsPath + 'test_recipe_' + mockUUID + '.jpg',
     });
   });
 
@@ -225,9 +238,9 @@ describe('FileGestion Utility', () => {
     expect(mockMakeDirectoryAsync).toHaveBeenCalledWith(defaultDocumentsPath, {
       intermediates: true,
     });
-    expect(mockCopyAsync).toHaveBeenCalledWith({
+    expect(mockMoveAsync).toHaveBeenCalledWith({
       from: '/temp/test.jpg',
-      to: defaultDocumentsPath + 'test_recipe.jpg',
+      to: defaultDocumentsPath + 'test_recipe_' + mockUUID + '.jpg',
     });
     expect(mockDeleteAsync).toHaveBeenCalledWith('/cache/ImageManipulator/');
   });
@@ -243,22 +256,28 @@ describe('FileGestion Utility', () => {
 
     const results = await Promise.all([initPromise, savePromise1, savePromise2]);
 
-    expect(results[1]).toBe(defaultDocumentsPath + 'recipe_1.jpg');
-    expect(results[2]).toBe(defaultDocumentsPath + 'recipe_2.jpg');
-    expect(mockCopyAsync).toHaveBeenCalledTimes(2);
+    expect(results[1]).toBe(defaultDocumentsPath + 'recipe_1_' + mockUUID + '.jpg');
+    expect(results[2]).toBe(defaultDocumentsPath + 'recipe_2_' + mockUUID + '.jpg');
+    expect(mockMoveAsync).toHaveBeenCalledTimes(2);
   });
 
   test('handles edge cases in recipe name sanitization', async () => {
     const edgeCases = [
-      { input: '', expected: defaultDocumentsPath + '.jpg' },
-      { input: '   ', expected: defaultDocumentsPath + '.jpg' },
-      { input: '!@#$%^&*()', expected: defaultDocumentsPath + '.jpg' },
-      { input: 'Recipe.with.dots', expected: defaultDocumentsPath + 'recipe_with_dots.jpg' },
+      { input: '', expected: defaultDocumentsPath + '_' + mockUUID + '.jpg' },
+      { input: '   ', expected: defaultDocumentsPath + '_' + mockUUID + '.jpg' },
+      { input: '!@#$%^&*()', expected: defaultDocumentsPath + '_' + mockUUID + '.jpg' },
+      {
+        input: 'Recipe.with.dots',
+        expected: defaultDocumentsPath + 'recipe_with_dots_' + mockUUID + '.jpg',
+      },
       {
         input: 'Recipe\nwith\nnewlines',
-        expected: defaultDocumentsPath + 'recipe_with_newlines.jpg',
+        expected: defaultDocumentsPath + 'recipe_with_newlines_' + mockUUID + '.jpg',
       },
-      { input: 'Recipe\twith\ttabs', expected: defaultDocumentsPath + 'recipe_with_tabs.jpg' },
+      {
+        input: 'Recipe\twith\ttabs',
+        expected: defaultDocumentsPath + 'recipe_with_tabs_' + mockUUID + '.jpg',
+      },
     ];
 
     setupImageSavingMocks();
@@ -268,6 +287,75 @@ describe('FileGestion Utility', () => {
       expect(result).toBe(expected);
       jest.clearAllMocks();
     }
+  });
+
+  test('deleteFile deletes the file at the given URI', async () => {
+    mockDeleteAsync.mockResolvedValue(undefined);
+
+    await deleteFile('/documents/Test Recipedia/old_image.jpg');
+
+    expect(mockDeleteAsync).toHaveBeenCalledWith('/documents/Test Recipedia/old_image.jpg', {
+      idempotent: true,
+    });
+  });
+
+  test('deleteFile swallows errors gracefully', async () => {
+    mockDeleteAsync.mockRejectedValue(new Error('Permission denied'));
+
+    await expect(deleteFile('/documents/Test Recipedia/old_image.jpg')).resolves.toBeUndefined();
+  });
+
+  test('saveRecipeImage calls Crypto.randomUUID for unique filename', async () => {
+    setupImageSavingMocks();
+    const Crypto = require('expo-crypto');
+
+    await saveRecipeImage('/temp/image.jpg', 'My Recipe');
+
+    expect(Crypto.randomUUID).toHaveBeenCalledTimes(1);
+  });
+
+  test('saveRecipeImage deletes destination before moving to handle overwrites', async () => {
+    setupImageSavingMocks();
+    const destination = defaultDocumentsPath + 'my_recipe_' + mockUUID + '.jpg';
+
+    await saveRecipeImage('/temp/image.jpg', 'My Recipe');
+
+    expect(mockDeleteAsync).toHaveBeenCalledWith(destination, { idempotent: true });
+    const deleteCallOrder = mockDeleteAsync.mock.invocationCallOrder[0];
+    const moveCallOrder = mockMoveAsync.mock.invocationCallOrder[0];
+    expect(deleteCallOrder).toBeLessThan(moveCallOrder);
+  });
+
+  test('saveRecipeImage catches Crypto.randomUUID errors and returns empty string', async () => {
+    const Crypto = require('expo-crypto');
+    Crypto.randomUUID.mockImplementation(() => {
+      throw new Error('crypto not available');
+    });
+
+    const result = await saveRecipeImage('/temp/image.jpg', 'My Recipe');
+
+    expect(result).toBe('');
+    expect(mockMoveAsync).not.toHaveBeenCalled();
+  });
+
+  test('saveRecipeImage preserves original file extension', async () => {
+    setupImageSavingMocks();
+
+    const pngResult = await saveRecipeImage('/temp/photo.png', 'Recipe');
+    expect(pngResult).toMatch(/\.png$/);
+    jest.clearAllMocks();
+    setupImageSavingMocks();
+
+    const webpResult = await saveRecipeImage('/temp/photo.webp', 'Recipe');
+    expect(webpResult).toMatch(/\.webp$/);
+  });
+
+  test('saveRecipeImage strips query string from extension', async () => {
+    setupImageSavingMocks();
+
+    const result = await saveRecipeImage('/temp/photo.jpg?v=123', 'Recipe');
+
+    expect(result).toMatch(/\.jpg$/);
   });
 });
 

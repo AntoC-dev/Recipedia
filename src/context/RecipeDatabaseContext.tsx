@@ -57,8 +57,10 @@ import { InteractionManager } from 'react-native';
 import { RecipeDatabase } from '@utils/RecipeDatabase';
 import {
   copyDatasetImages,
+  deleteFile,
   getDirectoryUri,
   init as initFileSystem,
+  isTemporaryImageUri,
   transformDatasetRecipeImages,
 } from '@utils/FileGestion';
 import {
@@ -386,17 +388,31 @@ export const RecipeDatabaseProvider: React.FC<{
   }, [menu, recipes, purchasedIngredients]);
 
   const addRecipe = async (recipe: recipeTableElement): Promise<void> => {
+    databaseLogger.debug('Context: addRecipe', { recipeTitle: recipe.title });
     await db.addRecipe(recipe);
     refreshRecipes();
   };
 
   const editRecipe = async (recipe: recipeTableElement) => {
+    databaseLogger.debug('Context: editRecipe', { recipeId: recipe.id, recipeTitle: recipe.title });
+    const oldImageUri = recipes.find(r => r.id === recipe.id)?.image_Source ?? '';
     const result = await db.editRecipe(recipe);
+    if (oldImageUri && oldImageUri !== recipe.image_Source && !isTemporaryImageUri(oldImageUri)) {
+      databaseLogger.debug('Deleting old recipe image after replacement', {
+        oldImageUri,
+        newImageUri: recipe.image_Source,
+      });
+      deleteFile(oldImageUri);
+    }
     refreshRecipes();
     return result;
   };
 
   const deleteRecipe = async (recipe: recipeTableElement) => {
+    databaseLogger.debug('Context: deleteRecipe', {
+      recipeId: recipe.id,
+      recipeTitle: recipe.title,
+    });
     const result = await db.deleteRecipe(recipe);
     refreshRecipes();
     refreshMenu();
@@ -404,12 +420,17 @@ export const RecipeDatabaseProvider: React.FC<{
   };
 
   const addIngredient = async (ingredient: ingredientTableElement) => {
+    databaseLogger.debug('Context: addIngredient', { ingredientName: ingredient.name });
     const result = await db.addIngredient(ingredient);
     refreshIngredients();
     return result;
   };
 
   const editIngredient = async (ingredient: ingredientTableElement) => {
+    databaseLogger.debug('Context: editIngredient', {
+      ingredientId: ingredient.id,
+      ingredientName: ingredient.name,
+    });
     const result = await db.editIngredient(ingredient);
     refreshIngredients();
     refreshRecipes();
@@ -417,6 +438,10 @@ export const RecipeDatabaseProvider: React.FC<{
   };
 
   const deleteIngredient = async (ingredient: ingredientTableElement) => {
+    databaseLogger.debug('Context: deleteIngredient', {
+      ingredientId: ingredient.id,
+      ingredientName: ingredient.name,
+    });
     const result = await db.deleteIngredient(ingredient);
     refreshIngredients();
     refreshRecipes();
@@ -424,12 +449,14 @@ export const RecipeDatabaseProvider: React.FC<{
   };
 
   const addTag = async (tag: tagTableElement): Promise<tagTableElement> => {
+    databaseLogger.debug('Context: addTag', { tagName: tag.name });
     const result = await db.addTag(tag);
     refreshTags();
     return result;
   };
 
   const editTag = async (tag: tagTableElement) => {
+    databaseLogger.debug('Context: editTag', { tagId: tag.id, tagName: tag.name });
     const result = await db.editTag(tag);
     refreshTags();
     refreshRecipes();
@@ -437,6 +464,7 @@ export const RecipeDatabaseProvider: React.FC<{
   };
 
   const deleteTag = async (tag: tagTableElement) => {
+    databaseLogger.debug('Context: deleteTag', { tagId: tag.id, tagName: tag.name });
     const result = await db.deleteTag(tag);
     refreshTags();
     refreshRecipes();
@@ -445,33 +473,42 @@ export const RecipeDatabaseProvider: React.FC<{
 
   const togglePurchased = async (ingredientName: string): Promise<void> => {
     const currentValue = purchasedIngredients.get(ingredientName) ?? false;
+    databaseLogger.debug('Context: togglePurchased', { ingredientName, newValue: !currentValue });
     await db.setPurchased(ingredientName, !currentValue);
     refreshPurchasedIngredients();
   };
 
   const clearPurchased = async (): Promise<void> => {
+    databaseLogger.debug('Context: clearPurchased');
     await db.clearPurchasedIngredients();
     refreshPurchasedIngredients();
   };
 
   const addRecipeToMenu = async (recipe: recipeTableElement): Promise<void> => {
+    databaseLogger.debug('Context: addRecipeToMenu', {
+      recipeId: recipe.id,
+      recipeTitle: recipe.title,
+    });
     await db.addRecipeToMenu(recipe);
     refreshMenu();
   };
 
   const toggleMenuItemCooked = async (menuId: number): Promise<boolean> => {
+    databaseLogger.debug('Context: toggleMenuItemCooked', { menuId });
     const result = await db.toggleMenuItemCooked(menuId);
     refreshMenu();
     return result;
   };
 
   const removeFromMenu = async (menuId: number): Promise<boolean> => {
+    databaseLogger.debug('Context: removeFromMenu', { menuId });
     const result = await db.removeFromMenu(menuId);
     refreshMenu();
     return result;
   };
 
   const clearMenu = async (): Promise<void> => {
+    databaseLogger.debug('Context: clearMenu');
     await db.clearMenu();
     await db.clearPurchasedIngredients();
     refreshMenu();
@@ -557,16 +594,19 @@ export const RecipeDatabaseProvider: React.FC<{
   };
 
   const addMultipleIngredients = async (ingredients: ingredientTableElement[]) => {
+    databaseLogger.debug('Context: addMultipleIngredients', { count: ingredients.length });
     await db.addMultipleIngredients(ingredients);
     refreshIngredients();
   };
 
   const addMultipleTags = async (tags: tagTableElement[]) => {
+    databaseLogger.debug('Context: addMultipleTags', { count: tags.length });
     await db.addMultipleTags(tags);
     refreshTags();
   };
 
   const addMultipleRecipes = async (recipes: recipeTableElement[]) => {
+    databaseLogger.debug('Context: addMultipleRecipes', { count: recipes.length });
     await db.addMultipleRecipes(recipes);
     refreshRecipes();
   };
