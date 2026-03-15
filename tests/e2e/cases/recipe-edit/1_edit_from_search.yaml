@@ -7,7 +7,6 @@ tags:
     file: "../../flows/setupFirstTest.yaml"
     label: "Setup - Launch app and wait for ready"
 
-
 - tapOn:
     id: "BottomTabs::Search"
     label: "Action - Navigate to Search screen"

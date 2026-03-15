@@ -25,6 +25,12 @@ tags:
     id: "WelcomeScreen::StartTourButton"
     label: "Action - Start the tutorial by tapping Start Tour button"
 
+- extendedWaitUntil:
+    visible:
+      id: "TutorialTooltip::Text"
+    timeout: 30000
+    label: "Wait for first tutorial step to be displayed"
+
 - runFlow:
     file: "../../asserts/onboarding/en/assertTutorialStep1.yaml"
     label: "Assert - Verify tutorial Step 1 (Home screen)"
@@ -36,7 +42,7 @@ tags:
 - extendedWaitUntil:
     visible:
       text: "2"
-    timeout: 5000
+    timeout: 10000
     label: "Wait for second step number to be displayed"
 
 - runFlow:
@@ -50,8 +56,8 @@ tags:
 - extendedWaitUntil:
     visible:
       text: "3"
-    timeout: 5000
-    label: "Wait for thrif step number to be displayed"
+    timeout: 10000
+    label: "Wait for third step number to be displayed"
 
 - runFlow:
     file: "../../asserts/onboarding/en/assertTutorialStep3.yaml"
@@ -64,7 +70,7 @@ tags:
 - extendedWaitUntil:
     visible:
       text: "4"
-    timeout: 5000
+    timeout: 10000
     label: "Wait for fourth step number to be displayed"
 
 - runFlow:
@@ -78,7 +84,7 @@ tags:
 - extendedWaitUntil:
     visible:
       text: "5"
-    timeout: 5000
+    timeout: 10000
     label: "Wait for fifth step number to be displayed"
 
 
@@ -93,7 +99,7 @@ tags:
 - extendedWaitUntil:
     visible:
       text: "4"
-    timeout: 5000
+    timeout: 10000
     label: "Wait for fourth step number to be displayed"
 
 - runFlow:

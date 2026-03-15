@@ -712,7 +712,7 @@ describe('useRecipeOCR', () => {
       );
 
       await act(async () => {
-        await result.current.ocr.fillOneField('image.jpg', recipeColumnsNames.ingredients);
+        await result.current.ocr.fillOneField('image.jpg', recipeColumnsNames.ingredientNames);
       });
 
       await waitFor(() => {
@@ -747,7 +747,7 @@ describe('useRecipeOCR', () => {
       );
 
       await act(async () => {
-        await result.current.ocr.fillOneField('image.jpg', recipeColumnsNames.ingredients);
+        await result.current.ocr.fillOneField('image.jpg', recipeColumnsNames.ingredientNames);
       });
 
       await waitFor(() => {
@@ -770,7 +770,7 @@ describe('useRecipeOCR', () => {
       );
 
       await act(async () => {
-        await result.current.ocr.fillOneField('image.jpg', recipeColumnsNames.ingredients);
+        await result.current.ocr.fillOneField('image.jpg', recipeColumnsNames.ingredientNames);
       });
 
       expect(result.current.form.state.recipeIngredients).toHaveLength(0);
@@ -794,7 +794,7 @@ describe('useRecipeOCR', () => {
       });
 
       await act(async () => {
-        await result.current.ocr.fillOneField('image.jpg', recipeColumnsNames.ingredients);
+        await result.current.ocr.fillOneField('image.jpg', recipeColumnsNames.ingredientQuantities);
       });
 
       expect(result.current.form.state.recipeIngredients[0].quantity).toBe('350');
@@ -818,7 +818,7 @@ describe('useRecipeOCR', () => {
       });
 
       await act(async () => {
-        await result.current.ocr.fillOneField('image.jpg', recipeColumnsNames.ingredients);
+        await result.current.ocr.fillOneField('image.jpg', recipeColumnsNames.ingredientQuantities);
       });
 
       expect(result.current.form.state.recipeIngredients[0].quantity).toBe('200');

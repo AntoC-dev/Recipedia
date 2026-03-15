@@ -91,6 +91,9 @@ export interface UseRecipeIngredientsReturn {
    * Used by scraper validation when the same ingredient appears multiple times.
    */
   replaceAllMatchingFormIngredients: (validatedIngredient: ingredientTableElement) => void;
+
+  /** Removes the ingredient at the given index from the recipe form */
+  removeIngredient: (index: number) => void;
 }
 
 /**
@@ -305,8 +308,13 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
       setValidationQueue({
         type: 'Ingredient',
         items: [{ name: newName, unit: newUnit, quantity: newQuantity, note: newNote, season: [] }],
-        onValidated: (_, validatedIngredient) =>
-          replaceIngredientAtIndex(oldIngredientId, validatedIngredient),
+        onValidated: (originalItem, validatedIngredient) =>
+          replaceIngredientAtIndex(oldIngredientId, {
+            ...validatedIngredient,
+            quantity: originalItem.quantity || validatedIngredient.quantity,
+            unit: originalItem.unit || validatedIngredient.unit,
+            note: originalItem.note,
+          }),
         onDismissed: () =>
           setRecipeIngredients(prev => prev.filter((_, i) => i !== oldIngredientId)),
       });
@@ -329,6 +337,15 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
    */
   const addNewIngredient = () => {
     setRecipeIngredients(prev => [...prev, { name: '' }]);
+  };
+
+  /**
+   * Removes the ingredient at the given index from the recipe form.
+   *
+   * @param index - Index of the ingredient to remove
+   */
+  const removeIngredient = (index: number) => {
+    setRecipeIngredients(prev => prev.filter((_, i) => i !== index));
   };
 
   /**
@@ -364,5 +381,6 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
     addNewIngredient,
     addOrMergeIngredient,
     replaceAllMatchingFormIngredients,
+    removeIngredient,
   };
 }
