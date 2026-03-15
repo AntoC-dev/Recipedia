@@ -80,6 +80,8 @@ export type ModalImageSelectProps = {
   onDismissFunction: () => void;
   /** Callback function called when a new image is captured/selected and should be added to the array */
   onImagesUpdated: (imageUri: string) => void;
+  /** When true, camera/gallery picks immediately trigger onSelectFunction (edit mode) */
+  autoSelect?: boolean;
 };
 
 /**
@@ -100,6 +102,7 @@ export function ModalImageSelect({
   onSelectFunction,
   onDismissFunction,
   onImagesUpdated,
+  autoSelect,
 }: ModalImageSelectProps) {
   const { t } = useI18n();
 
@@ -131,6 +134,9 @@ export function ModalImageSelect({
   function callSetSelectedImageWithUri(uri: string) {
     if (uri.length > 0) {
       onImagesUpdated(uri);
+      if (autoSelect) {
+        onSelectFunction(uri);
+      }
     }
   }
 
