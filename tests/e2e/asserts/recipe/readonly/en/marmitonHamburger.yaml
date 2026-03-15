@@ -126,7 +126,7 @@ appId: "com.recipedia"
 - runFlow:
     file: "../../common/assertIngredientWithNote.yaml"
     env:
-      INGREDIENT_NAME: "cheddar"
+      INGREDIENT_NAME: "Cheddar"
       INGREDIENT_QUANTITY_AND_UNIT: "400"
       INGREDIENT_NOTE: "achat sous vide en grande surface"
     label: "Assert Cheddar ingredient with note"

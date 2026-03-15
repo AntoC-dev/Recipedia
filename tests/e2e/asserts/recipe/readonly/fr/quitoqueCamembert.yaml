@@ -111,7 +111,7 @@ appId: "com.recipedia"
 - runFlow:
     file: "../../common/assertIngredientWithNote.yaml"
     env:
-      INGREDIENT_NAME: "carotte"
+      INGREDIENT_NAME: "Carotte"
       INGREDIENT_QUANTITY_AND_UNIT: "2"
       INGREDIENT_NOTE: "100g"
     label: "Assert carotte ingredient with note"
