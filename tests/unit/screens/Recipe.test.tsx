@@ -1887,12 +1887,16 @@ describe('Recipe Component tests', () => {
       mode: 'edit' as const,
       recipe: { ...testRecipes[1], image_Source: '' },
     };
-    const { getByTestId, queryByTestId } = await renderRecipe(createMockRoute(recipeWithNoImage));
+    const { getByTestId } = await renderRecipe(createMockRoute(recipeWithNoImage));
 
     fireEvent.press(getByTestId('RecipeImage::OpenModal'));
-    await waitFor(() => expect(getByTestId('ModalImageSelect')).toBeTruthy());
+    await waitFor(() => {
+      expect(getByTestId('ModalImageSelect')).toBeTruthy();
+    });
     fireEvent.press(getByTestId('ModalImageSelect::Select'));
-    await waitFor(() => expect(queryByTestId('ModalImageSelect')).toBeNull());
+    await waitFor(() => {
+      expect(getByTestId('RecipeImage::ImgUri').props.children).toBe('mock-image-uri');
+    });
 
     fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
 
@@ -1903,5 +1907,237 @@ describe('Recipe Component tests', () => {
     expect(editCallOrder).toBeLessThan(clearCacheCallOrder);
 
     editRecipeSpy.mockRestore();
+  });
+
+  describe('edit mode image handling', () => {
+    test('pressing image button in edit mode opens modal', async () => {
+      const { getByTestId, queryByTestId } = await renderRecipe(createMockRoute(mockRouteEdit));
+
+      expect(queryByTestId('ModalImageSelect')).toBeNull();
+
+      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+
+      await waitFor(() => {
+        expect(getByTestId('ModalImageSelect')).toBeTruthy();
+      });
+    });
+
+    test('modal has autoSelect=true in edit mode', async () => {
+      const { getByTestId } = await renderRecipe(createMockRoute(mockRouteEdit));
+
+      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+
+      await waitFor(() => {
+        expect(getByTestId('ModalImageSelect::AutoSelect').props.children).toBe('true');
+      });
+    });
+
+    test('onSelectFunction in edit mode updates recipe image via setRecipeImage', async () => {
+      const { getByTestId } = await renderRecipe(createMockRoute(mockRouteEdit));
+
+      expect(getByTestId('RecipeImage::ImgUri').props.children).toBe(
+        mockRouteEdit.recipe.image_Source
+      );
+
+      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+      await waitFor(() => {
+        expect(getByTestId('ModalImageSelect')).toBeTruthy();
+      });
+      fireEvent.press(getByTestId('ModalImageSelect::Select'));
+
+      await waitFor(() => {
+        expect(getByTestId('RecipeImage::ImgUri').props.children).toBe('mock-image-uri');
+      });
+    });
+
+    test('pressing image button in addOCR mode opens modal instead of picking directly', async () => {
+      const ImagePicker = require('@utils/ImagePicker');
+
+      const { getByTestId, queryByTestId } = await renderRecipe(createMockRoute(mockRouteAddOCR));
+
+      expect(queryByTestId('ModalImageSelect')).toBeNull();
+
+      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+
+      await waitFor(() => {
+        expect(getByTestId('ModalImageSelect')).toBeTruthy();
+      });
+
+      expect(ImagePicker.pickImage).not.toHaveBeenCalled();
+    });
+
+    test('modal has autoSelect=false in addOCR mode', async () => {
+      const { getByTestId } = await renderRecipe(createMockRoute(mockRouteAddOCR));
+
+      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+
+      await waitFor(() => {
+        expect(getByTestId('ModalImageSelect::AutoSelect').props.children).toBe('false');
+      });
+    });
+
+    test('pressing image button in addManually mode opens modal instead of picking directly', async () => {
+      const ImagePicker = require('@utils/ImagePicker');
+
+      const { getByTestId, queryByTestId } = await renderRecipe(
+        createMockRoute(mockRouteAddManually)
+      );
+
+      expect(queryByTestId('ModalImageSelect')).toBeNull();
+
+      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+
+      await waitFor(() => {
+        expect(getByTestId('ModalImageSelect')).toBeTruthy();
+      });
+
+      expect(ImagePicker.pickImage).not.toHaveBeenCalled();
+    });
+
+    test('modal has autoSelect=false in addManually mode', async () => {
+      const { getByTestId } = await renderRecipe(createMockRoute(mockRouteAddManually));
+
+      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+
+      await waitFor(() => {
+        expect(getByTestId('ModalImageSelect::AutoSelect').props.children).toBe('false');
+      });
+    });
+
+    test('modal closes after onSelectFunction is triggered in edit mode', async () => {
+      const { getByTestId, queryByTestId } = await renderRecipe(createMockRoute(mockRouteEdit));
+
+      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+      await waitFor(() => {
+        expect(getByTestId('ModalImageSelect')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('ModalImageSelect::Select'));
+
+      await waitFor(() => {
+        expect(queryByTestId('ModalImageSelect')).toBeNull();
+      });
+    });
+
+    test('dismissing modal closes it without updating image', async () => {
+      const { getByTestId, queryByTestId } = await renderRecipe(createMockRoute(mockRouteEdit));
+
+      const originalImage = mockRouteEdit.recipe.image_Source;
+
+      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+      await waitFor(() => {
+        expect(getByTestId('ModalImageSelect')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('ModalImageSelect::Dismiss'));
+
+      await waitFor(() => {
+        expect(queryByTestId('ModalImageSelect')).toBeNull();
+      });
+      expect(getByTestId('RecipeImage::ImgUri').props.children).toBe(originalImage);
+    });
+
+    test('adding image via onImagesUpdated in edit mode updates the modal images list', async () => {
+      const { getByTestId } = await renderRecipe(createMockRoute(mockRouteEdit));
+
+      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+      await waitFor(() => {
+        expect(getByTestId('ModalImageSelect')).toBeTruthy();
+      });
+
+      const imagesBefore = JSON.parse(getByTestId('ModalImageSelect::Images').props.children);
+      expect(imagesBefore).toHaveLength(0);
+
+      fireEvent.press(getByTestId('ModalImageSelect::AddImage'));
+
+      await waitFor(() => {
+        const imagesAfter = JSON.parse(getByTestId('ModalImageSelect::Images').props.children);
+        expect(imagesAfter).toContain('new-mock-image-uri');
+      });
+    });
+
+    test('entering edit mode from readOnly makes modal have autoSelect=true', async () => {
+      const { getByTestId } = await renderRecipe(createMockRoute(mockRouteReadOnly));
+
+      fireEvent.press(getByTestId('Recipe::AppBar::Edit'));
+
+      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+
+      await waitFor(() => {
+        expect(getByTestId('ModalImageSelect::AutoSelect').props.children).toBe('true');
+      });
+    });
+
+    test('selecting image in edit mode calls setRecipeImage directly without crop step', async () => {
+      const { getByTestId } = await renderRecipe(createMockRoute(mockRouteEdit));
+
+      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+      await waitFor(() => {
+        expect(getByTestId('ModalImageSelect')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('ModalImageSelect::Select'));
+
+      await waitFor(() => {
+        expect(getByTestId('RecipeImage::ImgUri').props.children).toBe('mock-image-uri');
+      });
+    });
+
+    test('editRecipe is called when image changes via readOnly→edit flow', async () => {
+      const editRecipeSpy = jest.spyOn(dbInstance, 'editRecipe');
+      const { getByTestId } = await renderRecipe(createMockRoute(mockRouteReadOnly));
+
+      fireEvent.press(getByTestId('Recipe::AppBar::Edit'));
+      await waitFor(() => expect(getByTestId('Recipe::AppBar::Validate')).toBeTruthy());
+
+      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+      await waitFor(() => expect(getByTestId('ModalImageSelect')).toBeTruthy());
+      fireEvent.press(getByTestId('ModalImageSelect::Select'));
+      await waitFor(() =>
+        expect(getByTestId('RecipeImage::ImgUri').props.children).toBe('mock-image-uri')
+      );
+
+      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+
+      await waitFor(() => expect(editRecipeSpy).toHaveBeenCalled());
+      editRecipeSpy.mockRestore();
+    });
+
+    test('editRecipe is not called when validating unchanged recipe', async () => {
+      const editRecipeSpy = jest.spyOn(dbInstance, 'editRecipe');
+      const routeWithMatchingPersons: RecipePropType = {
+        mode: 'edit',
+        recipe: { ...testRecipes[0] },
+      };
+      const { getByTestId } = await renderRecipe(createMockRoute(routeWithMatchingPersons));
+
+      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+
+      await waitFor(() => expect(getByTestId('Recipe::AppBar::BackButton')).toBeTruthy());
+      expect(editRecipeSpy).not.toHaveBeenCalled();
+      editRecipeSpy.mockRestore();
+    });
+
+    test('editValidation stays in edit mode when editRecipe throws', async () => {
+      const editRecipeSpy = jest
+        .spyOn(dbInstance, 'editRecipe')
+        .mockRejectedValue(new Error('DB error'));
+      const { getByTestId } = await renderRecipe(createMockRoute(mockRouteEdit));
+
+      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+      await waitFor(() => expect(getByTestId('ModalImageSelect')).toBeTruthy());
+      fireEvent.press(getByTestId('ModalImageSelect::Select'));
+      await waitFor(() =>
+        expect(getByTestId('RecipeImage::ImgUri').props.children).toBe('mock-image-uri')
+      );
+
+      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+
+      await waitFor(() => {
+        expect(getByTestId('Recipe::AppBar::Validate')).toBeTruthy();
+        expect(getByTestId('Recipe::AppBar::Cancel')).toBeTruthy();
+      });
+      editRecipeSpy.mockRestore();
+    });
   });
 });
