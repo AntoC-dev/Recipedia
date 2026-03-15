@@ -19,6 +19,7 @@ import {
 } from '@customTypes/BulkImportTypes';
 import { bulkImportLogger } from '@utils/logger';
 import { normalizeKey } from '@utils/NutritionUtils';
+import { scaleQuantityForPersons } from '@utils/Quantity';
 
 /**
  * Collects unique ingredients and tags from multiple recipes
@@ -168,9 +169,15 @@ export function applyMappingsToRecipes(
       const mappedIngredient = state.ingredientMappings.get(key);
 
       if (mappedIngredient) {
+        const originalQuantity = ing.quantity || mappedIngredient.quantity;
+        const scaledQuantity =
+          originalQuantity && recipe.persons > 0 && recipe.persons !== defaultPersons
+            ? scaleQuantityForPersons(originalQuantity, recipe.persons, defaultPersons)
+            : originalQuantity;
+
         mappedIngredients.push({
           ...mappedIngredient,
-          quantity: ing.quantity || mappedIngredient.quantity,
+          quantity: scaledQuantity,
           unit: ing.unit || mappedIngredient.unit,
         });
       } else {

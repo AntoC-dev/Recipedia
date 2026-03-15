@@ -1086,6 +1086,8 @@ export async function extractFieldFromImage(
     recipeTime: number;
     recipeIngredients: FormIngredientElement[];
     recipeNutrition: nutritionObject;
+    ingredientNames: { name: string; unit: string }[];
+    ingredientQuantities: string[];
   }>
 > {
   if (field === recipeColumnsNames.image) {

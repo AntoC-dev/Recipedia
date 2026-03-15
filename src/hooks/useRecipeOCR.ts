@@ -9,7 +9,11 @@
  */
 
 import { useState } from 'react';
-import { FormIngredientElement, nutritionTableElement, recipeColumnsNames } from '@customTypes/DatabaseElementTypes';
+import {
+  FormIngredientElement,
+  nutritionTableElement,
+  recipeColumnsNames,
+} from '@customTypes/DatabaseElementTypes';
 import { extractFieldFromImage } from '@utils/OCR';
 import { filterOutExistingTags } from '@utils/RecipeValidationHelpers';
 import { defaultValueNumber } from '@utils/Constants';
