@@ -1,0 +1,16 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    file: "../shared/openImageModalAndPick.yaml"
+    label: "Open modal and pick a photo"
+
+- runFlow:
+    file: "../adding/ocr/android/validateWithoutCropping.yaml"
+    when:
+      platform: Android
+    label: "Validate without cropping on Android"
+- runFlow:
+    file: "../adding/ocr/iOS/validateWithoutCropping.yaml"
+    when:
+      platform: iOS
+    label: "Validate without cropping on iOS"
