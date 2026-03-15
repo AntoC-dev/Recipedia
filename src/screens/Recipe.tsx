@@ -37,7 +37,6 @@ import { RecipeNumber } from '@components/organisms/RecipeNumber';
 import { Snackbar, useTheme } from 'react-native-paper';
 import { AppBar } from '@components/organisms/AppBar';
 import { ModalImageSelect } from '@screens/ModalImageSelect';
-import { cropImage } from '@utils/ImagePicker';
 import { useI18n } from '@utils/i18n';
 import { Alert } from '@components/dialogs/Alert';
 import { getDefaultPersons } from '@utils/settings';
@@ -119,7 +118,6 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
   const insets = useSafeAreaInsets();
   const [isScrolling, setIsScrolling] = useState(false);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
-
   const { addRecipe, editRecipe, deleteRecipe, addRecipeToMenu, findSimilarRecipes } =
     useRecipeDatabase();
 
@@ -211,27 +209,33 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
    * @throws Will display validation error dialog if required fields are missing
    */
   async function editValidation() {
-    const missingElem = validateRecipeData(state, t);
+    try {
+      const missingElem = validateRecipeData(state, t);
 
-    if (missingElem.length > 0) {
-      recipeLogger.warn('Validation failed, missing elements', { missingElements: missingElem });
-      dialogs.showValidationErrorDialog(missingElem, t);
-      return;
+      if (missingElem.length > 0) {
+        recipeLogger.warn('Validation failed, missing elements', { missingElements: missingElem });
+        dialogs.showValidationErrorDialog(missingElem, t);
+        return;
+      }
+
+      recipeLogger.info('Saving edited recipe to database', { recipeTitle: state.recipeTitle });
+      const recipeToEdit = actions.createRecipeSnapshot();
+      const originalRecipe =
+        props.mode === 'edit' || props.mode === 'readOnly' ? props.recipe : recipeToEdit;
+      const defaultPersons = await getDefaultPersons();
+      const scaledRecipe = scaleRecipeForSave(recipeToEdit, defaultPersons);
+
+      if (!isRecipeEqual(originalRecipe, scaledRecipe)) {
+        await editRecipe(scaledRecipe);
+        setters.setRecipeImage(scaledRecipe.image_Source);
+      }
+
+      setters.setStackMode(recipeStateType.readOnly);
+      recipeLogger.info('Recipe edit completed successfully', { recipeTitle: state.recipeTitle });
+      clearCache();
+    } catch (error) {
+      recipeLogger.error('editValidation failed with unexpected error', { error });
     }
-
-    recipeLogger.info('Saving edited recipe to database', { recipeTitle: state.recipeTitle });
-    const recipeToEdit = actions.createRecipeSnapshot();
-    const originalRecipe = props.mode === 'edit' ? props.recipe : recipeToEdit;
-    const defaultPersons = await getDefaultPersons();
-    const scaledRecipe = scaleRecipeForSave(recipeToEdit, defaultPersons);
-
-    if (!isRecipeEqual(originalRecipe, scaledRecipe)) {
-      await editRecipe(scaledRecipe);
-    }
-
-    setters.setStackMode(recipeStateType.readOnly);
-    recipeLogger.info('Recipe edit completed successfully', { recipeTitle: state.recipeTitle });
-    clearCache();
   }
 
   /**
@@ -484,12 +488,16 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
       {ocr.modalField && (
         <ModalImageSelect
           arrImg={state.imgForOCR}
+          autoSelect={state.stackMode === recipeStateType.edit}
           onSelectFunction={async (imgSelected: string) => {
             const field = ocr.modalField as recipeColumnsNames;
             ocr.closeModal();
-            const croppedUri = await cropImage(imgSelected, colors);
-            if (croppedUri.length > 0) {
-              await ocr.fillOneField(croppedUri, field);
+
+            const isEditMode = state.stackMode === recipeStateType.edit;
+            if (isEditMode) {
+              setters.setRecipeImage(imgSelected);
+            } else {
+              ocr.fillOneField(imgSelected, field);
             }
           }}
           onDismissFunction={ocr.closeModal}
