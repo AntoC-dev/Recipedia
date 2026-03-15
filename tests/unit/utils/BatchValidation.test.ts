@@ -476,6 +476,255 @@ describe('BatchValidation', () => {
 
       expect(validatedRecipes[0].persons).toBe(4);
     });
+
+    it('scales ingredient quantities when recipe.persons differs from defaultPersons (ratio > 1)', () => {
+      const recipes = [
+        {
+          ...createMockRecipe('Test Recipe', [], [{ name: 'Chicken', quantity: '100', unit: 'g' }]),
+          persons: 2,
+        },
+      ];
+      const state = initializeBatchValidation(recipes);
+
+      addIngredientMapping(state, 'Chicken', {
+        id: 1,
+        name: 'Chicken',
+        unit: 'g',
+        quantity: '',
+        type: ingredientType.meat,
+        season: [],
+      });
+
+      const validatedRecipes = applyMappingsToRecipes(recipes, state, 4);
+
+      expect(validatedRecipes[0].ingredients[0].quantity).toBe('200');
+    });
+
+    it('scales ingredient quantities when recipe.persons differs from defaultPersons (ratio < 1)', () => {
+      const recipes = [
+        {
+          ...createMockRecipe('Test Recipe', [], [{ name: 'Chicken', quantity: '100', unit: 'g' }]),
+          persons: 4,
+        },
+      ];
+      const state = initializeBatchValidation(recipes);
+
+      addIngredientMapping(state, 'Chicken', {
+        id: 1,
+        name: 'Chicken',
+        unit: 'g',
+        quantity: '',
+        type: ingredientType.meat,
+        season: [],
+      });
+
+      const validatedRecipes = applyMappingsToRecipes(recipes, state, 2);
+
+      expect(validatedRecipes[0].ingredients[0].quantity).toBe('50');
+    });
+
+    it('does not scale when recipe.persons equals defaultPersons', () => {
+      const recipes = [
+        {
+          ...createMockRecipe('Test Recipe', [], [{ name: 'Chicken', quantity: '100', unit: 'g' }]),
+          persons: 4,
+        },
+      ];
+      const state = initializeBatchValidation(recipes);
+
+      addIngredientMapping(state, 'Chicken', {
+        id: 1,
+        name: 'Chicken',
+        unit: 'g',
+        quantity: '',
+        type: ingredientType.meat,
+        season: [],
+      });
+
+      const validatedRecipes = applyMappingsToRecipes(recipes, state, 4);
+
+      expect(validatedRecipes[0].ingredients[0].quantity).toBe('100');
+    });
+
+    it('does not scale when recipe.persons is 0', () => {
+      const recipes = [
+        {
+          ...createMockRecipe('Test Recipe', [], [{ name: 'Chicken', quantity: '100', unit: 'g' }]),
+          persons: 0,
+        },
+      ];
+      const state = initializeBatchValidation(recipes);
+
+      addIngredientMapping(state, 'Chicken', {
+        id: 1,
+        name: 'Chicken',
+        unit: 'g',
+        quantity: '',
+        type: ingredientType.meat,
+        season: [],
+      });
+
+      const validatedRecipes = applyMappingsToRecipes(recipes, state, 4);
+
+      expect(validatedRecipes[0].ingredients[0].quantity).toBe('100');
+    });
+
+    it('preserves null/empty quantity when scaling', () => {
+      const recipes = [
+        {
+          ...createMockRecipe('Test Recipe', [], [{ name: 'Chicken', quantity: '', unit: 'g' }]),
+          persons: 2,
+        },
+      ];
+      const state = initializeBatchValidation(recipes);
+
+      addIngredientMapping(state, 'Chicken', {
+        id: 1,
+        name: 'Chicken',
+        unit: 'g',
+        quantity: '',
+        type: ingredientType.meat,
+        season: [],
+      });
+
+      const validatedRecipes = applyMappingsToRecipes(recipes, state, 4);
+
+      expect(validatedRecipes[0].ingredients[0].quantity).toBe('');
+    });
+
+    it('scales across multiple ingredients in same recipe', () => {
+      const recipes = [
+        {
+          ...createMockRecipe(
+            'Test Recipe',
+            [],
+            [
+              { name: 'Chicken', quantity: '100', unit: 'g' },
+              { name: 'Tomato', quantity: '200', unit: 'g' },
+            ]
+          ),
+          persons: 2,
+        },
+      ];
+      const state = initializeBatchValidation(recipes);
+
+      addIngredientMapping(state, 'Chicken', {
+        id: 1,
+        name: 'Chicken',
+        unit: 'g',
+        quantity: '',
+        type: ingredientType.meat,
+        season: [],
+      });
+      addIngredientMapping(state, 'Tomato', {
+        id: 2,
+        name: 'Tomato',
+        unit: 'g',
+        quantity: '',
+        type: ingredientType.vegetable,
+        season: [],
+      });
+
+      const validatedRecipes = applyMappingsToRecipes(recipes, state, 4);
+
+      expect(validatedRecipes[0].ingredients[0].quantity).toBe('200');
+      expect(validatedRecipes[0].ingredients[1].quantity).toBe('400');
+    });
+
+    it('scales quantities independently per recipe when multiple recipes have different person counts', () => {
+      const recipe1 = {
+        ...createMockRecipe('Recipe 1', [], [{ name: 'Chicken', quantity: '100', unit: 'g' }]),
+        persons: 2,
+      };
+      const recipe2 = {
+        ...createMockRecipe('Recipe 2', [], [{ name: 'Chicken', quantity: '100', unit: 'g' }]),
+        persons: 4,
+      };
+      const state = initializeBatchValidation([recipe1, recipe2]);
+
+      addIngredientMapping(state, 'Chicken', {
+        id: 1,
+        name: 'Chicken',
+        unit: 'g',
+        quantity: '',
+        type: ingredientType.meat,
+        season: [],
+      });
+
+      const validatedRecipes = applyMappingsToRecipes([recipe1, recipe2], state, 4);
+
+      expect(validatedRecipes[0].ingredients[0].quantity).toBe('200');
+      expect(validatedRecipes[1].ingredients[0].quantity).toBe('100');
+    });
+
+    it('scales with a non-integer ratio (factor 1.5)', () => {
+      const recipes = [
+        {
+          ...createMockRecipe('Test Recipe', [], [{ name: 'Chicken', quantity: '100', unit: 'g' }]),
+          persons: 2,
+        },
+      ];
+      const state = initializeBatchValidation(recipes);
+
+      addIngredientMapping(state, 'Chicken', {
+        id: 1,
+        name: 'Chicken',
+        unit: 'g',
+        quantity: '',
+        type: ingredientType.meat,
+        season: [],
+      });
+
+      const validatedRecipes = applyMappingsToRecipes(recipes, state, 3);
+
+      expect(validatedRecipes[0].ingredients[0].quantity).toBe('150');
+    });
+
+    it('falls back to mappedIngredient.quantity when ing.quantity is empty, and scales that fallback', () => {
+      const recipes = [
+        {
+          ...createMockRecipe('Test Recipe', [], [{ name: 'Chicken', quantity: '', unit: 'g' }]),
+          persons: 2,
+        },
+      ];
+      const state = initializeBatchValidation(recipes);
+
+      addIngredientMapping(state, 'Chicken', {
+        id: 1,
+        name: 'Chicken',
+        unit: 'g',
+        quantity: '80',
+        type: ingredientType.meat,
+        season: [],
+      });
+
+      const validatedRecipes = applyMappingsToRecipes(recipes, state, 4);
+
+      expect(validatedRecipes[0].ingredients[0].quantity).toBe('160');
+    });
+
+    it('preserves quantity as-is when recipe.persons is 0', () => {
+      const recipes = [
+        {
+          ...createMockRecipe('Test Recipe', [], [{ name: 'Chicken', quantity: '100', unit: 'g' }]),
+          persons: 0,
+        },
+      ];
+      const state = initializeBatchValidation(recipes);
+
+      addIngredientMapping(state, 'Chicken', {
+        id: 1,
+        name: 'Chicken',
+        unit: 'g',
+        quantity: '100',
+        type: ingredientType.meat,
+        season: [],
+      });
+
+      const validatedRecipes = applyMappingsToRecipes(recipes, state, 4);
+
+      expect(validatedRecipes[0].ingredients[0].quantity).toBe('100');
+    });
   });
 
   describe('getValidationProgress', () => {
