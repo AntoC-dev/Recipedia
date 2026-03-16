@@ -64,6 +64,7 @@ tags:
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::11::Item::1"
+      text: ".*Romaine Lettuce"
     direction: DOWN
     label: "Action - Scroll to first Vegetable item"
 
