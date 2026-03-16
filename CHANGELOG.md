@@ -1,3 +1,15 @@
+## [2.23.0](https://github.com/AntoC-dev/Recipedia/compare/v2.22.1...v2.23.0) (2026-03-16)
+
+### Features
+
+* **ingredients:** add delete button and move note icon to other column ([946f604](https://github.com/AntoC-dev/Recipedia/commit/946f6047d3eddf2945253ba6f6f915656c3b85bb))
+* **ingredients:** add per-row delete button and dedicated note icon column ([#221](https://github.com/AntoC-dev/Recipedia/issues/221)) ([0114173](https://github.com/AntoC-dev/Recipedia/commit/0114173ba94df7f57b0fc168356ebe57ffb09722))
+
+### Bug Fixes
+
+* **ingredients:** fall back to unit/quantity when original is empty ([cff88eb](https://github.com/AntoC-dev/Recipedia/commit/cff88ebbaa71d2146d97c1b7127093f2e2da085b))
+* **types:** add ingredient names/quantities enum values and fix fallback ([53c142f](https://github.com/AntoC-dev/Recipedia/commit/53c142f3c6046be0c7bc23c1f47533a823f9dd38))
+
 ## [2.22.1](https://github.com/AntoC-dev/Recipedia/compare/v2.22.0...v2.22.1) (2026-03-15)
 
 ### Bug Fixes
