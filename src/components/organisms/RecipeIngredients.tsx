@@ -39,14 +39,9 @@
  */
 
 import React, { useState } from 'react';
-import { View } from 'react-native';
-import { DataTable, Text, TextInput, useTheme } from 'react-native-paper';
+import { StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
+import { DataTable, IconButton, Text, useTheme } from 'react-native-paper';
 import { FormIngredientElement, ingredientTableElement } from '@customTypes/DatabaseElementTypes';
-import {
-  recipeTableFlex,
-  recipeTableReadOnlyFlex,
-  recipeTableStyles,
-} from '@styles/recipeComponents';
 import { RoundButton } from '@components/atomic/RoundButton';
 import { Icons } from '@assets/Icons';
 import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
@@ -58,6 +53,7 @@ import {
   formatQuantityForDisplay,
   parseIngredientQuantity,
 } from '@utils/Quantity';
+import { padding } from '@styles/spacing';
 
 /**
  * Common props shared across all modes
@@ -92,6 +88,8 @@ export type EditableBaseProps = BaseProps & {
   onIngredientChange: (index: number, newValue: string) => void;
   /** Callback fired to add a new ingredient */
   onAddIngredient: () => void;
+  /** Callback fired to remove an ingredient at a given index */
+  onRemoveIngredient: (index: number) => void;
   /** Placeholder text for the ingredient note input */
   noteInputPlaceholder: string;
   /** Force hide the dropdown (e.g., during scroll) */
@@ -144,12 +142,8 @@ function PrefixTextWrapper({
   children: React.ReactNode;
 }) {
   return (
-    <View style={recipeTableStyles.container} accessible={false}>
-      <Text
-        testID={`${testID}::PrefixText`}
-        variant='headlineSmall'
-        style={recipeTableStyles.prefixText}
-      >
+    <View style={cellStyles.container} accessible={false}>
+      <Text testID={`${testID}::PrefixText`} variant='headlineSmall' style={cellStyles.prefixText}>
         {prefixText}
       </Text>
       {children}
@@ -172,6 +166,7 @@ type EditableIngredientsProps = {
   };
   onIngredientChange: (index: number, newValue: string) => void;
   onAddIngredient: () => void;
+  onRemoveIngredient: (index: number) => void;
   /** Placeholder text for the ingredient note input */
   noteInputPlaceholder: string;
   /** Force hide the dropdown (e.g., during scroll) */
@@ -188,54 +183,40 @@ function ReadOnlyIngredients({ testID, ingredients }: ReadOnlyProps) {
   const { colors } = useTheme();
 
   return (
-    <View style={{ paddingHorizontal: 10 }} accessible={false}>
-      <DataTable accessible={false}>
-        {ingredients.map((item, index) => (
-          <DataTable.Row
-            key={index}
-            testID={`${testID}::${index}::Row`}
-            style={{ borderBottomWidth: 0 }}
-            accessible={false}
+    <View style={cellStyles.readOnlyContainer} accessible={false}>
+      {ingredients.map((item, index) => (
+        <View
+          key={index}
+          testID={`${testID}::${index}::Row`}
+          style={cellStyles.readOnlyRow}
+          accessible={false}
+        >
+          <Text
+            testID={`${testID}::${index}::QuantityAndUnit`}
+            variant='bodyLarge'
+            style={{ color: colors.onSurfaceVariant }}
+            accessible={true}
           >
-            <DataTable.Cell
-              style={{ flex: recipeTableReadOnlyFlex.quantityAndUnit }}
-              accessible={false}
-            >
+            {formatQuantityForDisplay(item.quantity ?? '')} {item.unit}
+          </Text>
+          <Text
+            testID={`${testID}::${index}::IngredientName`}
+            variant='bodyLarge'
+            accessible={true}
+          >
+            {item.name}
+            {item.note && (
               <Text
-                variant='titleMedium'
-                accessible={true}
-                testID={`${testID}::${index}::QuantityAndUnit`}
+                testID={`${testID}::${index}::Note`}
+                variant='bodyLarge'
+                style={{ color: colors.outline }}
               >
-                {formatQuantityForDisplay(item.quantity ?? '')} {item.unit}
+                {` (${item.note})`}
               </Text>
-            </DataTable.Cell>
-            <DataTable.Cell style={{ flex: recipeTableReadOnlyFlex.name }} accessible={false}>
-              <View
-                style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'baseline' }}
-                accessible={false}
-              >
-                <Text
-                  testID={`${testID}::${index}::IngredientName`}
-                  accessible={true}
-                  variant='titleMedium'
-                >
-                  {item.name}
-                </Text>
-                {item.note && (
-                  <Text
-                    testID={`${testID}::${index}::Note`}
-                    variant='titleMedium'
-                    style={{ color: colors.outline }}
-                  >
-                    {' '}
-                    ({item.note})
-                  </Text>
-                )}
-              </View>
-            </DataTable.Cell>
-          </DataTable.Row>
-        ))}
-      </DataTable>
+            )}
+          </Text>
+        </View>
+      ))}
     </View>
   );
 }
@@ -255,6 +236,7 @@ function EditableIngredients(props: EditableIngredientsProps) {
     columnTitles,
     onIngredientChange,
     onAddIngredient,
+    onRemoveIngredient,
     noteInputPlaceholder,
     hideDropdown,
   } = props;
@@ -306,40 +288,48 @@ function EditableIngredients(props: EditableIngredientsProps) {
   const headerTestId = testID + '::Header';
   const dialogItem = noteDialogIndex !== null ? ingredients[noteDialogIndex] : null;
 
+  const borderColor = colors.outline;
+  const transparentBg = colors.elevation.level0;
+  const titleFontSize = fonts.titleMedium.fontSize;
+
   return (
     <PrefixTextWrapper testID={testID} prefixText={prefixText}>
-      <DataTable style={recipeTableStyles.table} accessible={false}>
+      <DataTable style={cellStyles.table} accessible={false}>
         <DataTable.Header style={{ borderBottomWidth: 0 }} accessible={false}>
           <DataTable.Title
             testID={headerTestId + '::Quantity'}
-            style={[
-              recipeTableStyles.header,
-              { flex: recipeTableFlex.quantity, borderColor: colors.outline },
-            ]}
-            textStyle={[recipeTableStyles.title, { fontSize: fonts.titleMedium.fontSize }]}
+            style={[cellStyles.header, cellStyles.quantityCell, { borderColor }]}
+            textStyle={[cellStyles.title, { fontSize: titleFontSize }]}
           >
             {columnTitles.column1}
           </DataTable.Title>
           <DataTable.Title
             testID={headerTestId + '::Unit'}
-            style={[
-              recipeTableStyles.header,
-              { flex: recipeTableFlex.unit, borderColor: colors.outline },
-            ]}
-            textStyle={[recipeTableStyles.title, { fontSize: fonts.titleMedium.fontSize }]}
+            style={[cellStyles.header, cellStyles.unitCell, { borderColor }]}
+            textStyle={[cellStyles.title, { fontSize: titleFontSize }]}
           >
             {columnTitles.column2}
           </DataTable.Title>
           <DataTable.Title
+            testID={headerTestId + '::Note'}
+            style={[cellStyles.header, cellStyles.noteCell, { borderColor }]}
+            textStyle={cellStyles.title}
+          >
+            {''}
+          </DataTable.Title>
+          <DataTable.Title
             testID={headerTestId + '::IngredientName'}
-            style={[
-              recipeTableStyles.header,
-              { flex: recipeTableFlex.name, borderColor: colors.outline },
-              recipeTableStyles.rightBorder,
-            ]}
-            textStyle={[recipeTableStyles.title, { fontSize: fonts.titleMedium.fontSize }]}
+            style={[cellStyles.header, cellStyles.nameCell, { borderColor }]}
+            textStyle={[cellStyles.title, { fontSize: titleFontSize }]}
           >
             {columnTitles.column3}
+          </DataTable.Title>
+          <DataTable.Title
+            testID={headerTestId + '::Delete'}
+            style={[cellStyles.header, cellStyles.deleteCell, { borderColor }]}
+            textStyle={cellStyles.title}
+          >
+            {''}
           </DataTable.Title>
         </DataTable.Header>
         {ingredients.map((item, index) => {
@@ -353,13 +343,7 @@ function EditableIngredients(props: EditableIngredientsProps) {
               style={{ borderBottomWidth: 0 }}
               accessible={false}
             >
-              <DataTable.Cell
-                style={[
-                  recipeTableStyles.cellBase,
-                  { flex: recipeTableFlex.quantity, borderColor: colors.outline },
-                ]}
-                accessible={false}
-              >
+              <DataTable.Cell style={cellStyles.quantityCell} accessible={false}>
                 <NumericTextInput
                   testID={`${testID}::${index}::QuantityInput`}
                   value={Math.round(quantity * 100) / 100}
@@ -374,43 +358,35 @@ function EditableIngredients(props: EditableIngredientsProps) {
                   }
                   dense
                   mode='flat'
-                  style={recipeTableStyles.inputContainer}
+                  style={cellStyles.flex1}
+                  textInputStyle={[cellStyles.flex1, { backgroundColor: transparentBg }]}
                 />
               </DataTable.Cell>
               <DataTable.Cell
-                style={[
-                  recipeTableStyles.cellBase,
-                  {
-                    flex: recipeTableFlex.unit,
-                    borderColor: colors.outline,
-                    alignItems: 'stretch',
-                  },
-                ]}
+                style={[cellStyles.unitCell, { borderBottomColor: borderColor }]}
                 accessible={false}
               >
                 <Text
                   testID={`${testID}::${index}::Unit`}
                   variant='bodyLarge'
-                  style={[
-                    recipeTableStyles.inputContainer,
-                    {
-                      backgroundColor: colors.backdrop,
-                      textAlign: 'center',
-                      textAlignVertical: 'center',
-                    },
-                  ]}
+                  style={[cellStyles.flex1, { textAlign: 'center', textAlignVertical: 'center' }]}
                 >
                   {item.unit}
                 </Text>
               </DataTable.Cell>
               <DataTable.Cell
-                style={[
-                  recipeTableStyles.cellBase,
-                  { flex: recipeTableFlex.name, borderColor: colors.outline },
-                  recipeTableStyles.rightBorder,
-                ]}
+                style={[cellStyles.noteCell, { borderBottomColor: borderColor }]}
                 accessible={false}
               >
+                <IconButton
+                  testID={`${testID}::${index}::NoteButton`}
+                  icon={hasNote ? Icons.commentEditOutline : Icons.commentPlusOutline}
+                  iconColor={hasNote ? colors.primary : colors.onSurfaceVariant}
+                  onPress={() => setNoteDialogIndex(index)}
+                  size={20}
+                />
+              </DataTable.Cell>
+              <DataTable.Cell style={cellStyles.nameCell} accessible={false}>
                 <TextInputWithDropDown
                   testID={`${testID}::${index}::NameInput`}
                   value={item.name}
@@ -424,16 +400,20 @@ function EditableIngredients(props: EditableIngredientsProps) {
                     }
                     handleIngredientChange(index, quantity, item.unit ?? '', newName, item.note);
                   }}
-                  style={recipeTableStyles.inputContainer}
-                  right={
-                    <TextInput.Icon
-                      testID={`${testID}::${index}::NoteButton`}
-                      icon={hasNote ? Icons.commentEditOutline : Icons.commentPlusOutline}
-                      color={hasNote ? colors.primary : colors.onSurfaceVariant}
-                      onPress={() => setNoteDialogIndex(index)}
-                      forceTextInputFocus={false}
-                    />
-                  }
+                  style={cellStyles.flex1}
+                  textInputStyle={[cellStyles.flex1, { backgroundColor: transparentBg }]}
+                />
+              </DataTable.Cell>
+              <DataTable.Cell
+                style={[cellStyles.deleteCell, { borderBottomColor: borderColor }]}
+                accessible={false}
+              >
+                <IconButton
+                  testID={`${testID}::${index}::DeleteButton`}
+                  icon={Icons.trashIcon}
+                  iconColor={colors.error}
+                  onPress={() => onRemoveIngredient(index)}
+                  size={20}
                 />
               </DataTable.Cell>
             </DataTable.Row>
@@ -446,7 +426,7 @@ function EditableIngredients(props: EditableIngredientsProps) {
         size='medium'
         icon={Icons.plusIcon}
         onPressFunction={onAddIngredient}
-        style={recipeTableStyles.addButton}
+        style={cellStyles.addButton}
       />
 
       <NoteEditDialog
@@ -483,6 +463,7 @@ function AddIngredients(props: AddProps) {
     prefixText,
     openModal,
     onAddIngredient,
+    onRemoveIngredient,
     columnTitles,
     onIngredientChange,
     noteInputPlaceholder,
@@ -492,17 +473,17 @@ function AddIngredients(props: AddProps) {
   if (ingredients.length === 0) {
     return (
       <PrefixTextWrapper testID={testID} prefixText={prefixText}>
-        <View style={recipeTableStyles.roundButtonsContainer}>
+        <View style={cellStyles.roundButtonsContainer}>
           <RoundButton
             testID={`${testID}::OpenModal`}
-            style={recipeTableStyles.roundButton}
+            style={cellStyles.roundButton}
             size='medium'
             icon={Icons.scanImageIcon}
             onPressFunction={openModal}
           />
           <RoundButton
             testID={`${testID}::AddButton`}
-            style={recipeTableStyles.roundButton}
+            style={cellStyles.roundButton}
             size='medium'
             icon={Icons.pencilIcon}
             onPressFunction={onAddIngredient}
@@ -520,6 +501,7 @@ function AddIngredients(props: AddProps) {
       columnTitles={columnTitles}
       onIngredientChange={onIngredientChange}
       onAddIngredient={onAddIngredient}
+      onRemoveIngredient={onRemoveIngredient}
       noteInputPlaceholder={noteInputPlaceholder}
       hideDropdown={hideDropdown}
     />
@@ -547,11 +529,72 @@ export function RecipeIngredients(props: RecipeIngredientsProps) {
           columnTitles={props.columnTitles}
           onIngredientChange={props.onIngredientChange}
           onAddIngredient={props.onAddIngredient}
+          onRemoveIngredient={props.onRemoveIngredient}
           noteInputPlaceholder={props.noteInputPlaceholder}
           hideDropdown={props.hideDropdown}
         />
       );
   }
 }
+
+const recipeTableBorderWidth = 0.5;
+
+const recipeTableFlex = {
+  quantity: 1,
+  unit: 0.8,
+  note: 0.5,
+  name: 1.8,
+  delete: 0.4,
+};
+
+const cellStyles = StyleSheet.create({
+  container: {
+    paddingHorizontal: padding.medium,
+    paddingVertical: padding.small,
+  },
+  prefixText: { marginVertical: padding.verySmall } as TextStyle,
+  table: { paddingVertical: padding.medium } as ViewStyle,
+  header: {
+    flex: 1,
+    justifyContent: 'center',
+    borderBottomWidth: recipeTableBorderWidth,
+  } as ViewStyle,
+  title: { fontWeight: 'bold' } as TextStyle,
+  flex1: { flex: 1 },
+  addButton: { marginVertical: padding.medium } as ViewStyle,
+  roundButtonsContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    marginVertical: padding.medium,
+  } as ViewStyle,
+  roundButton: { flex: 1, justifyContent: 'center', alignItems: 'center' } as ViewStyle,
+  quantityCell: { flex: recipeTableFlex.quantity, alignItems: 'stretch' } as ViewStyle,
+  unitCell: {
+    flex: recipeTableFlex.unit,
+    justifyContent: 'center',
+    alignItems: 'stretch',
+    borderBottomWidth: recipeTableBorderWidth,
+  } as ViewStyle,
+  noteCell: {
+    flex: recipeTableFlex.note,
+    justifyContent: 'center',
+    borderBottomWidth: recipeTableBorderWidth,
+  } as ViewStyle,
+  nameCell: { flex: recipeTableFlex.name, alignItems: 'stretch' } as ViewStyle,
+  deleteCell: {
+    flex: recipeTableFlex.delete,
+    justifyContent: 'center',
+    borderBottomWidth: recipeTableBorderWidth,
+  } as ViewStyle,
+  readOnlyContainer: { paddingHorizontal: padding.medium } as ViewStyle,
+  readOnlyRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'baseline',
+    gap: padding.small,
+    paddingVertical: padding.verySmall,
+  } as ViewStyle,
+});
 
 export default RecipeIngredients;

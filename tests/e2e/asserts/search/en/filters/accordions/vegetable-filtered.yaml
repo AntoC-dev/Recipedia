@@ -4,7 +4,7 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      text: "Vegetable"
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     direction: DOWN
     speed: 20
     label: "Scroll to Vegetable accordion"

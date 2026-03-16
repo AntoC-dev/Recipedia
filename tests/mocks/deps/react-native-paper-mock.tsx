@@ -241,8 +241,14 @@ export const Icon: React.FC<any> = props => (
 );
 
 export const IconButton: React.FC<any> = props => (
-  <TouchableOpacity testID={props.testID} onPress={props.onPress} style={props.style}>
+  <TouchableOpacity
+    testID={props.testID}
+    onPress={props.onPress}
+    style={props.style}
+    {...{ iconColor: props.iconColor }}
+  >
     <RNText testID={props.testID + '::Icon'}>{props.icon}</RNText>
+    <RNText testID={props.testID + '::Color'}>{props.iconColor}</RNText>
   </TouchableOpacity>
 );
 

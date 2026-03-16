@@ -14,7 +14,7 @@ tags:
 
 - runFlow:
     file: "../../flows/parameters/tags/cancelAddEmptyTag.yaml"
-    label: "Action - Test canceling add without name"
+    label: "Action - Test canceling adding tag without name"
 
 - runFlow:
     file: "../../flows/parameters/tags/cancelAddTagWithName.yaml"

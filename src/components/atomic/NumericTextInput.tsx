@@ -40,6 +40,8 @@ export type NumericTextInputProps = {
   mode?: 'flat' | 'outlined';
   style?: StyleProp<TextStyle>;
   contentStyle?: StyleProp<TextStyle>;
+  textInputStyle?: StyleProp<TextStyle>;
+  underlineColor?: string;
   keyboardType?: 'numeric' | 'number-pad' | 'decimal-pad';
   editable?: boolean;
 };
@@ -62,6 +64,8 @@ export function NumericTextInput({
   mode = 'outlined',
   style,
   contentStyle,
+  textInputStyle,
+  underlineColor,
   keyboardType = 'numeric',
   editable = true,
 }: NumericTextInputProps) {
@@ -117,7 +121,10 @@ export function NumericTextInput({
     setIsFocused(true);
   }
 
-  const inputStyle: StyleProp<TextStyle> = [editable ? {} : { backgroundColor: colors.backdrop }];
+  const inputStyle: StyleProp<TextStyle> = [
+    editable ? {} : { backgroundColor: colors.backdrop },
+    textInputStyle,
+  ];
 
   return (
     <View style={style} pointerEvents={'box-none'} accessible={false}>
@@ -135,6 +142,7 @@ export function NumericTextInput({
         editable={editable}
         style={inputStyle}
         contentStyle={contentStyle}
+        underlineColor={underlineColor}
         right={right}
       />
     </View>

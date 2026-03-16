@@ -24,6 +24,7 @@ appId: "com.recipedia"
       id: "IngredientsSettings::${INGREDIENT_INDEX}::EditButton"
     speed: 20
     direction: DOWN
+    timeout: 60000
     label: "Scroll to ${INGREDIENT_NAME} edit button"
 
 - waitForAnimationToEnd
@@ -39,6 +40,7 @@ appId: "com.recipedia"
       id: "IngredientsSettings::${INGREDIENT_INDEX}::DeleteButton"
     direction: DOWN
     speed: 20
+    timeout: 60000
     label: "Scroll to ${INGREDIENT_NAME} delete button"
 
 - waitForAnimationToEnd

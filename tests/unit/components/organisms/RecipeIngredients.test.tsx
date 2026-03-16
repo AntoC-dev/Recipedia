@@ -72,7 +72,7 @@ describe('RecipeIngredients Component', () => {
         expect(quantityAndUnitText).toEqual([ingredient.quantity, ' ', ingredient.unit]);
 
         const ingredientNameText = getByTestId(`ReadOnlyIngredients::${index}::IngredientName`);
-        expect(ingredientNameText.props.children).toEqual(ingredient.name);
+        expect(ingredientNameText.props.children[0]).toEqual(ingredient.name);
       });
     });
 
@@ -90,6 +90,7 @@ describe('RecipeIngredients Component', () => {
   describe('editable mode', () => {
     const mockOnIngredientChange = jest.fn();
     const mockOnAddIngredient = jest.fn();
+    const mockOnRemoveIngredient = jest.fn();
 
     const editableProps: RecipeIngredientsProps = {
       mode: 'editable',
@@ -103,6 +104,7 @@ describe('RecipeIngredients Component', () => {
       },
       onIngredientChange: mockOnIngredientChange,
       onAddIngredient: mockOnAddIngredient,
+      onRemoveIngredient: mockOnRemoveIngredient,
       noteInputPlaceholder: 'Usage note',
     };
 
@@ -185,6 +187,90 @@ describe('RecipeIngredients Component', () => {
         expect(referenceArray).not.toContain(ingredient.name);
       });
     });
+
+    describe('delete button', () => {
+      const mockOnRemoveIngredient = jest.fn();
+
+      const deleteButtonEditableProps: RecipeIngredientsProps = {
+        mode: 'editable',
+        testID: 'EditableIngredients',
+        ingredients: sampleIngredients,
+        prefixText: 'Ingredients',
+        columnTitles: {
+          column1: 'Quantity',
+          column2: 'Unit',
+          column3: 'Ingredient',
+        },
+        onIngredientChange: jest.fn(),
+        onAddIngredient: jest.fn(),
+        onRemoveIngredient: mockOnRemoveIngredient,
+        noteInputPlaceholder: 'Usage note',
+      };
+
+      beforeEach(() => {
+        jest.clearAllMocks();
+      });
+
+      it('renders a delete button for each row', async () => {
+        const { getByTestId } = await renderRecipeIngredients(deleteButtonEditableProps);
+
+        sampleIngredients.forEach((_, index) => {
+          expect(getByTestId(`EditableIngredients::${index}::DeleteButton`)).toBeTruthy();
+        });
+      });
+
+      it('shows trash icon on each delete button', async () => {
+        const { getByTestId } = await renderRecipeIngredients(deleteButtonEditableProps);
+
+        sampleIngredients.forEach((_, index) => {
+          expect(
+            getByTestId(`EditableIngredients::${index}::DeleteButton::Icon`).props.children
+          ).toBe('delete');
+        });
+      });
+
+      it('calls onRemoveIngredient(0) when first delete button is pressed', async () => {
+        const { getByTestId } = await renderRecipeIngredients(deleteButtonEditableProps);
+
+        fireEvent.press(getByTestId('EditableIngredients::0::DeleteButton'));
+
+        expect(mockOnRemoveIngredient).toHaveBeenCalledWith(0);
+      });
+
+      it('calls onRemoveIngredient(1) when middle delete button is pressed', async () => {
+        const { getByTestId } = await renderRecipeIngredients(deleteButtonEditableProps);
+
+        fireEvent.press(getByTestId('EditableIngredients::1::DeleteButton'));
+
+        expect(mockOnRemoveIngredient).toHaveBeenCalledWith(1);
+      });
+
+      it('calls onRemoveIngredient(2) when last delete button is pressed', async () => {
+        const { getByTestId } = await renderRecipeIngredients(deleteButtonEditableProps);
+
+        fireEvent.press(getByTestId('EditableIngredients::2::DeleteButton'));
+
+        expect(mockOnRemoveIngredient).toHaveBeenCalledWith(2);
+      });
+
+      it('calls onRemoveIngredient exactly once per press', async () => {
+        const { getByTestId } = await renderRecipeIngredients(deleteButtonEditableProps);
+
+        fireEvent.press(getByTestId('EditableIngredients::0::DeleteButton'));
+
+        expect(mockOnRemoveIngredient).toHaveBeenCalledTimes(1);
+      });
+
+      it('does not render delete button in readOnly mode', async () => {
+        const { queryByTestId } = await renderRecipeIngredients({
+          mode: 'readOnly',
+          testID: 'ReadOnlyIngredients',
+          ingredients: sampleIngredients,
+        });
+
+        expect(queryByTestId('ReadOnlyIngredients::0::DeleteButton')).toBeNull();
+      });
+    });
   });
 
   describe('onValidate guard', () => {
@@ -204,6 +290,7 @@ describe('RecipeIngredients Component', () => {
         columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
         onIngredientChange: mockOnIngredientChange,
         onAddIngredient: mockOnAddIngredient,
+        onRemoveIngredient: jest.fn(),
         noteInputPlaceholder: 'Note',
       };
 
@@ -212,6 +299,32 @@ describe('RecipeIngredients Component', () => {
       fireEvent.press(getByTestId('GuardTest::0::NameInput::TextInputWithDropdown::OnValidate'));
 
       expect(mockOnIngredientChange).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not call onIngredientChange when validated name is whitespace only', async () => {
+      const mockOnIngredientChange2 = jest.fn();
+
+      const props: RecipeIngredientsProps = {
+        mode: 'editable',
+        testID: 'GuardWhitespaceTest',
+        ingredients: sampleIngredients,
+        prefixText: 'Ingredients',
+        columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
+        onIngredientChange: mockOnIngredientChange2,
+        onAddIngredient: jest.fn(),
+        onRemoveIngredient: jest.fn(),
+        noteInputPlaceholder: 'Note',
+      };
+
+      const { UNSAFE_getAllByType } = await renderRecipeIngredients(props);
+
+      const {
+        textInputWithDropdownMock,
+      } = require('@mocks/components/molecules/TextInputWithDropDown-mock.tsx');
+      const dropdownInstances = UNSAFE_getAllByType(textInputWithDropdownMock);
+      dropdownInstances[0].props.onValidate('   ');
+
+      expect(mockOnIngredientChange2).not.toHaveBeenCalled();
     });
   });
 
@@ -250,6 +363,7 @@ describe('RecipeIngredients Component', () => {
         columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
         onIngredientChange: mockOnIngredientChange,
         onAddIngredient: mockOnAddIngredient,
+        onRemoveIngredient: jest.fn(),
         noteInputPlaceholder: 'Note',
       };
 
@@ -295,6 +409,7 @@ describe('RecipeIngredients Component', () => {
       },
       onIngredientChange: mockOnIngredientChange,
       onAddIngredient: mockOnAddIngredient,
+      onRemoveIngredient: jest.fn(),
       openModal: mockOpenModal,
       noteInputPlaceholder: 'Usage note',
     };
@@ -311,6 +426,7 @@ describe('RecipeIngredients Component', () => {
       },
       onIngredientChange: mockOnIngredientChange,
       onAddIngredient: mockOnAddIngredient,
+      onRemoveIngredient: jest.fn(),
       openModal: mockOpenModal,
       noteInputPlaceholder: 'Usage note',
     };
@@ -356,6 +472,36 @@ describe('RecipeIngredients Component', () => {
 
       expect(mockOnAddIngredient).toHaveBeenCalledTimes(1);
     });
+
+    describe('delete button in add mode', () => {
+      const mockOnRemoveIngredient = jest.fn();
+
+      beforeEach(() => {
+        jest.clearAllMocks();
+      });
+
+      it('renders delete buttons when ingredients exist', async () => {
+        const { getByTestId } = await renderRecipeIngredients({
+          ...addPropsWithIngredients,
+          onRemoveIngredient: mockOnRemoveIngredient,
+        });
+
+        sampleIngredients.forEach((_, index) => {
+          expect(getByTestId(`AddIngredients::${index}::DeleteButton`)).toBeTruthy();
+        });
+      });
+
+      it('calls onRemoveIngredient correctly in add mode', async () => {
+        const { getByTestId } = await renderRecipeIngredients({
+          ...addPropsWithIngredients,
+          onRemoveIngredient: mockOnRemoveIngredient,
+        });
+
+        fireEvent.press(getByTestId('AddIngredients::0::DeleteButton'));
+
+        expect(mockOnRemoveIngredient).toHaveBeenCalledWith(0);
+      });
+    });
   });
 
   describe('note icon display', () => {
@@ -390,6 +536,7 @@ describe('RecipeIngredients Component', () => {
       columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
       onIngredientChange: mockOnIngredientChange,
       onAddIngredient: mockOnAddIngredient,
+      onRemoveIngredient: jest.fn(),
       noteInputPlaceholder: 'Usage note',
     };
 
@@ -456,6 +603,7 @@ describe('RecipeIngredients Component', () => {
       columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
       onIngredientChange: mockOnIngredientChange,
       onAddIngredient: mockOnAddIngredient,
+      onRemoveIngredient: jest.fn(),
       noteInputPlaceholder: 'Usage note',
     };
 
@@ -545,11 +693,7 @@ describe('RecipeIngredients Component', () => {
 
       const noteElement = getByTestId('ReadOnlyNote::0::Note');
       expect(noteElement).toBeTruthy();
-      const children = noteElement.props.children;
-      expect(children[0]).toBe(' ');
-      expect(children[1]).toBe('(');
-      expect(children[2]).toBe('melted');
-      expect(children[3]).toBe(')');
+      expect(noteElement.props.children).toBe(' (melted)');
     });
 
     it('does not display note element when no note', async () => {
@@ -594,6 +738,7 @@ describe('RecipeIngredients Component', () => {
         columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
         onIngredientChange: jest.fn(),
         onAddIngredient: jest.fn(),
+        onRemoveIngredient: jest.fn(),
         noteInputPlaceholder: 'Note',
       };
 
@@ -614,6 +759,7 @@ describe('RecipeIngredients Component', () => {
         columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
         onIngredientChange: jest.fn(),
         onAddIngredient: jest.fn(),
+        onRemoveIngredient: jest.fn(),
         openModal: jest.fn(),
         noteInputPlaceholder: 'Note',
       };
@@ -653,6 +799,7 @@ describe('RecipeIngredients Component', () => {
         columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
         onIngredientChange: mockOnIngredientChange,
         onAddIngredient: mockOnAddIngredient,
+        onRemoveIngredient: jest.fn(),
         noteInputPlaceholder: 'Note',
       };
 
@@ -673,6 +820,7 @@ describe('RecipeIngredients Component', () => {
         columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
         onIngredientChange: mockOnIngredientChange,
         onAddIngredient: mockOnAddIngredient,
+        onRemoveIngredient: jest.fn(),
         noteInputPlaceholder: 'Note',
         hideDropdown: true,
       };
@@ -694,6 +842,7 @@ describe('RecipeIngredients Component', () => {
         columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
         onIngredientChange: mockOnIngredientChange,
         onAddIngredient: mockOnAddIngredient,
+        onRemoveIngredient: jest.fn(),
         openModal: jest.fn(),
         noteInputPlaceholder: 'Note',
         hideDropdown: true,
@@ -763,6 +912,7 @@ describe('RecipeIngredients Component', () => {
         columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
         onIngredientChange: mockOnIngredientChange,
         onAddIngredient: mockOnAddIngredient,
+        onRemoveIngredient: jest.fn(),
         noteInputPlaceholder: 'Note',
       };
 

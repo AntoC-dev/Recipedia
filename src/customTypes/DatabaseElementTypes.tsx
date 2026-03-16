@@ -96,6 +96,8 @@ export enum recipeColumnsNames {
   nutrition = 'NUTRITION',
   sourceUrl = 'SOURCE_URL',
   sourceProvider = 'SOURCE_PROVIDER',
+  ingredientNames = 'INGREDIENT_NAMES',
+  ingredientQuantities = 'INGREDIENT_QUANTITIES',
 }
 
 /**

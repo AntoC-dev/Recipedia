@@ -321,6 +321,9 @@ appId: "com.recipedia"
 - assertVisible:
     text: "Avocado"
     label: "Ingredient #3 name text is displayed"
+- assertVisible:
+    id: "RecipeIngredients::2::DeleteButton"
+    label: "Delete button for ingredient 2 is visible"
 
 - waitForAnimationToEnd
 
@@ -364,6 +367,9 @@ appId: "com.recipedia"
 - assertVisible:
     text: "Onions"
     label: "Ingredient #1 name text is displayed"
+- assertVisible:
+    id: "RecipeIngredients::1::DeleteButton"
+    label: "Delete button for ingredient 1 is visible"
 
 - assertVisible:
     id: "RecipeIngredients::1::Unit"
@@ -396,6 +402,9 @@ appId: "com.recipedia"
 - assertVisible:
     text: "Chicken Breast"
     label: "Ingredient #0 name text is displayed"
+- assertVisible:
+    id: "RecipeIngredients::0::DeleteButton"
+    label: "Delete button for ingredient 0 is visible"
 
 - assertVisible:
     id: "RecipeIngredients::0::Unit"

@@ -43,6 +43,19 @@ tags:
     label: "Assert - Verify edit mode buttons (Cancel and Validate visible)"
 
 - runFlow:
+    file: "../../flows/recipe/ingredients/deleteIngredientFromRecipe.yaml"
+    env:
+      INDEX: "0"
+    label: "Action - Delete first ingredient (Pasta) in edit mode"
+
+- waitForAnimationToEnd
+
+- assertNotVisible:
+    id: "RecipeIngredients::0::NameInput::CustomTextInput"
+    text: "Pasta"
+    label: "Assert - First ingredient (pasta) is gone after delete in edit mode"
+
+- runFlow:
     file: "../../flows/recipe/editing/editNutrition.yaml"
     env:
       NEW_ENERGY_KCAL: "999"
@@ -75,9 +88,31 @@ tags:
 
 - scrollUntilVisible:
     element:
+      id: "RecipeIngredients::0::IngredientName"
+    direction: DOWN
+    speed: 20
+    timeout: 1200000
+    centerElement: true
+    label: "Action - Scroll to ingredients section"
+
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: "../../asserts/recipe/common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "Pasta"
+      INGREDIENT_QUANTITY_AND_UNIT: "400 g"
+    label: "Assert - Pasta ingredient is still present after cancel (delete was not persisted)"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
       id: "Recipe::RecipeNutrition::NutritionTable::Title"
     direction: DOWN
     speed: 40
+    centerElement: true
     label: "Action - Scroll to nutrition section"
 
 - waitForAnimationToEnd

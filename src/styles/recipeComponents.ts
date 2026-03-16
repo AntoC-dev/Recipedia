@@ -159,65 +159,10 @@ export const recipeNumberStyles = StyleSheet.create({
 });
 
 /**
- * Flex ratios for ingredient table columns in editable mode
- * Defines the relative widths of quantity, unit, and ingredient name columns
- */
-export const recipeTableFlex = {
-  quantity: 1,
-  unit: 1,
-  name: 1.8,
-};
-
-/**
- * Flex ratios for ingredient table columns in read-only mode
- * Two-column layout: quantity+unit combined, and ingredient name
- */
-export const recipeTableReadOnlyFlex = {
-  quantityAndUnit: 1,
-  name: 3,
-};
-
-/**
- * Border width constant for ingredient table
- */
-export const recipeTableBorderWidth = 1;
-
-/**
  * Styling for recipe ingredient table components
- * Used for displaying and editing ingredients in table format
- * Note: borderColor and fontSize should be applied from theme in the component
+ * Used by RecipePreparation for round button layouts
  */
 export const recipeTableStyles = StyleSheet.create({
-  container: recipeMargins.padding,
-  prefixText: {
-    marginVertical: padding.verySmall,
-  } as TextStyle,
-  table: {
-    paddingVertical: padding.medium,
-  } as ViewStyle,
-  cellBase: {
-    borderBottomWidth: recipeTableBorderWidth,
-    borderLeftWidth: recipeTableBorderWidth,
-  } as ViewStyle,
-  header: {
-    flex: 1,
-    justifyContent: 'center',
-    borderBottomWidth: recipeTableBorderWidth,
-    borderLeftWidth: recipeTableBorderWidth,
-    borderTopWidth: recipeTableBorderWidth,
-  } as ViewStyle,
-  title: {
-    fontWeight: 'bold',
-  } as TextStyle,
-  rightBorder: {
-    borderRightWidth: recipeTableBorderWidth,
-  } as ViewStyle,
-  inputContainer: {
-    flex: 1,
-  },
-  addButton: {
-    marginVertical: padding.medium,
-  } as ViewStyle,
   roundButtonsContainer: recipeButtonStyles.roundButtonsContainer,
   roundButton: recipeButtonStyles.roundButton,
 });

@@ -208,6 +208,9 @@ appId: "com.recipedia"
     id: "RecipeIngredients::Header::IngredientName"
     text: "Name"
     label: "Column Ingredient name is rendered"
+- assertVisible:
+    id: "RecipeIngredients::Header::Delete"
+    label: "Column for the delete button is rendered"
 
 - waitForAnimationToEnd
 
@@ -233,6 +236,9 @@ appId: "com.recipedia"
     id: "RecipeIngredients::0::NameInput::CustomTextInput"
     text: "Sushi Rice"
     label: "Ingredient Sushi Rice is rendered"
+- assertVisible:
+    id: "RecipeIngredients::0::DeleteButton"
+    label: "Delete button for ingredient 0 is visible"
 
 - waitForAnimationToEnd
 
@@ -258,6 +264,9 @@ appId: "com.recipedia"
     id: "RecipeIngredients::1::NameInput::CustomTextInput"
     text: "Nori Sheets"
     label: "Ingredient Nori Sheets is rendered"
+- assertVisible:
+    id: "RecipeIngredients::1::DeleteButton"
+    label: "Delete button for ingredient 1 is visible"
 
 - waitForAnimationToEnd
 
@@ -284,6 +293,9 @@ appId: "com.recipedia"
     id: "RecipeIngredients::2::NameInput::CustomTextInput"
     text: "Salmon"
     label: "Ingredient Salmon is rendered"
+- assertVisible:
+    id: "RecipeIngredients::2::DeleteButton"
+    label: "Delete button for ingredient 2 is visible"
 
 - waitForAnimationToEnd
 
@@ -309,6 +321,9 @@ appId: "com.recipedia"
     id: "RecipeIngredients::3::NameInput::CustomTextInput"
     text: "Avocado"
     label: "Ingredient Avocado is rendered"
+- assertVisible:
+    id: "RecipeIngredients::3::DeleteButton"
+    label: "Delete button for ingredient 3 is visible"
 
 - waitForAnimationToEnd
 
@@ -334,6 +349,37 @@ appId: "com.recipedia"
     id: "RecipeIngredients::4::NameInput::CustomTextInput"
     text: "Soy Sauce"
     label: "Ingredient Soy Sauce is rendered"
+- assertVisible:
+    id: "RecipeIngredients::4::DeleteButton"
+    label: "Delete button for ingredient 4 is visible"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::5::NameInput::CustomTextInput"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll down to the sixth ingredient"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "RecipeIngredients::5::QuantityInput"
+    text: "2"
+    label: "Quantity of sixth ingredient is rendered"
+- assertVisible:
+    id: "RecipeIngredients::5::Unit"
+    text: "g"
+    label: "tbsp unit is rendered"
+- assertVisible:
+    id: "RecipeIngredients::5::NameInput::CustomTextInput"
+    text: "Sesame Seeds"
+    label: "Ingredient Sesame Seeds is rendered"
+- assertVisible:
+    id: "RecipeIngredients::5::DeleteButton"
+    label: "Delete button for ingredient 5 is visible"
 
 - waitForAnimationToEnd
 

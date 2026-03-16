@@ -5,7 +5,7 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      text: "Oil and Fat"
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     direction: DOWN
     speed: 20
     label: "Scroll to Oil and Fat accordion"

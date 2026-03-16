@@ -78,6 +78,8 @@ export type TextInputWithDropDownType = {
   style?: StyleProp<ViewStyle>;
   /** Custom styles for the text content */
   contentStyle?: StyleProp<TextStyle>;
+  /** Custom styles applied directly to the inner TextInput surface */
+  textInputStyle?: StyleProp<TextStyle>;
   /** Right element (icon or affix) to display inside the input */
   right?: React.ReactNode;
   /** Force hide the dropdown (e.g., during scroll) */
@@ -102,6 +104,7 @@ export function TextInputWithDropDown({
   dense,
   style,
   contentStyle,
+  textInputStyle,
   referenceTextArray,
   value,
   hideDropdown,
@@ -219,6 +222,7 @@ export function TextInputWithDropDown({
         onEndEditing={handleEndEditing}
         mode={mode}
         dense={dense}
+        style={textInputStyle}
         contentStyle={contentStyle}
         right={right}
         autoCorrect={false}

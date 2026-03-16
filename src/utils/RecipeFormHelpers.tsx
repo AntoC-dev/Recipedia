@@ -601,6 +601,7 @@ export function buildRecipeIngredientsProps(
   recipeIngredients: (ingredientTableElement | FormIngredientElement)[],
   editIngredients: (oldIngredientId: number, newIngredient: string) => void,
   addNewIngredient: () => void,
+  removeIngredient: (index: number) => void,
   openModalForField: (field: recipeColumnsNames) => void,
   t: (key: string) => string,
   hideDropdown?: boolean
@@ -627,6 +628,7 @@ export function buildRecipeIngredientsProps(
     },
     onIngredientChange: editIngredients,
     onAddIngredient: addNewIngredient,
+    onRemoveIngredient: removeIngredient,
     noteInputPlaceholder: t('ingredientNotePlaceholder'),
     hideDropdown,
   };

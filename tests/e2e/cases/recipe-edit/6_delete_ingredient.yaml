@@ -1,0 +1,124 @@
+name: "6 - Recipe Edit Delete Ingredient Flow"
+appId: "com.recipedia"
+tags:
+  - recipe-edit
+---
+- runFlow:
+    file: "../../flows/setupTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- runFlow:
+    file: "../../flows/recipe/adding/createBaseRecipeForDuplicateTests.yaml"
+    label: "Action - Create temporary Test Recipe (Pasta 200g + Tomatoes 100g)"
+
+- runFlow:
+    file: "../../asserts/alerts/en/recipeAddedToDatabase.yaml"
+    env:
+      RECIPE_NAME: ".*"
+    label: "Assert - Verify recipe added to database"
+
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Action - Navigate to Search screen"
+
+- tapOn:
+    id: "SearchScreen::SearchBar"
+    label: "Action - Focus on search bar"
+
+- inputText:
+    text: "Test Recipe"
+    label: "Action - Search for the temporary recipe"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- pressKey: "enter"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to dismiss"
+
+- tapOn:
+    id: "SearchScreen::RecipeCards::0::Cover"
+    label: "Action - Open Test Recipe"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::AppBar.*"
+    timeout: 5000
+    label: "Wait recipe screen to load"
+
+- tapOn:
+    id: "Recipe::AppBar::Edit"
+    waitToSettleTimeoutMs: 0
+    retryTapIfNoChange: false
+    label: "Action - Enter edit mode"
+
+- runFlow:
+    file: "../../flows/recipe/ingredients/deleteIngredientFromRecipe.yaml"
+    env:
+      INDEX: "0"
+    label: "Action - Delete first ingredient (Pasta 200g)"
+
+- waitForAnimationToEnd
+
+- assertNotVisible:
+    id: "RecipeIngredients::1::Row"
+    label: "Assert - Pasta row is gone after deletion"
+
+- tapOn:
+    id: "Recipe::AppBar::Validate"
+    label: "Action - Save changes"
+
+- waitForAnimationToEnd
+
+- assertNotVisible:
+    id: "RecipeIngredients::.*::IngredientName"
+    text: "Pasta"
+    label: "Assert - Pasta is no longer in read-only ingredient list"
+
+- runFlow:
+    file: "../../asserts/recipe/common/assertIngredient.yaml"
+    env:
+      INGREDIENT_NAME: "Tomatoes"
+      INGREDIENT_QUANTITY_AND_UNIT: "200 g"
+    label: "Assert - Tomatoes ingredient is still present after save"
+
+- tapOn:
+    id: "Recipe::AppBar::Delete"
+    label: "Delete the recipe"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::Dialog::Confirm"
+    timeout: 10000
+    label: "Wait for recipe delete dialog to appear"
+
+- tapOn:
+    id: "Recipe::Dialog::Confirm"
+    label: "Confirm the deletion"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::Dialog::Confirm"
+      text: "OK"
+    timeout: 10000
+    label: "Wait for recipe delete confirmation dialog to appear"
+
+- tapOn:
+    id: "Recipe::Dialog::Confirm"
+    label: "Close the delete confirmation"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "Recipe::AppBar.*"
+    timeout: 10000
+    label: "Wait for recipe to close"
+
+- tapOn:
+    id: "SearchScreen::FiltersSelection::0::Chip"
+    label: "Remove the recipe filter"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Cleanup - Return to Home screen"
