@@ -30,7 +30,7 @@ tags:
     label: "Wait for recipe image button to be displayed"
 
 - runFlow:
-    file: "../../flows/recipe/editing/editRecipeImage.yaml"
+    file: "../../flows/recipe/shared/openImageModalAndPick.yaml"
     label: "Action - Select a new photo as recipe image"
 
 - tapOn:
