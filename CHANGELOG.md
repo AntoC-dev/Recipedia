@@ -1,3 +1,10 @@
+## [2.23.1](https://github.com/AntoC-dev/Recipedia/compare/v2.23.0...v2.23.1) (2026-03-17)
+
+### Bug Fixes
+
+* **image-repair:** detect placeholder images via provider MD5 comparison ([1189ac4](https://github.com/AntoC-dev/Recipedia/commit/1189ac4ad895c120612f1b03330f755c8f8ede26))
+* **image-repair:** detect placeholder images via provider MD5 comparison ([#227](https://github.com/AntoC-dev/Recipedia/issues/227)) ([5556570](https://github.com/AntoC-dev/Recipedia/commit/55565707fc1629c6704f65b2210b892f708cd0e2))
+
 ## [2.23.0](https://github.com/AntoC-dev/Recipedia/compare/v2.22.1...v2.23.0) (2026-03-16)
 
 ### Features
