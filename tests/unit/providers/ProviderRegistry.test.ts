@@ -1,4 +1,5 @@
 import {
+  findProviderById,
   findProviderForUrl,
   getAvailableProviders,
   getProvider,
@@ -84,6 +85,34 @@ describe('ProviderRegistry', () => {
 
     it('returns undefined for an unknown URL', () => {
       const provider = findProviderForUrl('https://www.marmiton.org/recettes/some-recipe');
+
+      expect(provider).toBeUndefined();
+    });
+  });
+
+  describe('findProviderById', () => {
+    it('returns QuitoqueProvider for quitoque id', () => {
+      const provider = findProviderById('quitoque');
+
+      expect(provider).toBeInstanceOf(QuitoqueProvider);
+      expect(provider?.id).toBe('quitoque');
+    });
+
+    it('returns HelloFreshProvider for hellofresh id', () => {
+      const provider = findProviderById('hellofresh');
+
+      expect(provider).toBeInstanceOf(HelloFreshProvider);
+      expect(provider?.id).toBe('hellofresh');
+    });
+
+    it('returns undefined for unknown id', () => {
+      const provider = findProviderById('unknown');
+
+      expect(provider).toBeUndefined();
+    });
+
+    it('is case sensitive', () => {
+      const provider = findProviderById('Quitoque');
 
       expect(provider).toBeUndefined();
     });

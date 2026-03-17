@@ -46,6 +46,16 @@ describe('QuitoqueProvider', () => {
     });
   });
 
+  describe('getPlaceholderImageUrl', () => {
+    it('returns the known Quitoque placeholder URL', () => {
+      const result = provider.getPlaceholderImageUrl();
+
+      expect(result).toBe(
+        'https://www.quitoque.fr/media/cache/sylius_shop_product_cover/build/quitoque/theme/images/placeholder.4d937d0d.jpg'
+      );
+    });
+  });
+
   describe('extractMaxPageFromHtml', () => {
     it('extracts max page from pagination links', () => {
       const html = `
