@@ -18,6 +18,10 @@ const QUITOQUE_LOGO_URL =
 /** Base URL for Quitoque (French only) */
 const QUITOQUE_BASE_URL = 'https://www.quitoque.fr';
 
+/** Known placeholder image returned by recipe-scrapers for all Quitoque recipes */
+const QUITOQUE_PLACEHOLDER_URL =
+  'https://www.quitoque.fr/media/cache/sylius_shop_product_cover/build/quitoque/theme/images/placeholder.4d937d0d.jpg';
+
 /** Regex to extract recipe URLs from HTML */
 const RECIPE_URL_REGEX = /href="(\/recettes\/[a-z0-9-]+)"/gi;
 
@@ -39,6 +43,18 @@ export class QuitoqueProvider extends BaseRecipeProvider {
   readonly name = 'Quitoque';
   readonly logoUrl = QUITOQUE_LOGO_URL;
   readonly supportedLanguages = ['fr'] as const;
+
+  /**
+   * Returns the URL of Quitoque's known placeholder image
+   *
+   * The recipe-scrapers library returns this placeholder for all Quitoque recipes.
+   * ImageRepair uses it to detect recipes stored with placeholder content via MD5 comparison.
+   *
+   * @returns The Quitoque placeholder image URL
+   */
+  override getPlaceholderImageUrl(): string {
+    return QUITOQUE_PLACEHOLDER_URL;
+  }
 
   /**
    * Gets the base URL for Quitoque

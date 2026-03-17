@@ -7,6 +7,7 @@
  */
 
 import { RecipeProvider } from '@customTypes/BulkImportTypes';
+import { BaseRecipeProvider } from './BaseRecipeProvider';
 import { HelloFreshProvider } from './HelloFreshProvider';
 import { QuitoqueProvider } from './QuitoqueProvider';
 
@@ -68,4 +69,17 @@ export function findProviderForUrl(url: string): RecipeProvider | undefined {
     }
   }
   return undefined;
+}
+
+/**
+ * Finds a provider by its unique identifier string
+ *
+ * Used by ImageRepair to retrieve the provider from a recipe's `sourceProvider`
+ * field without needing a URL.
+ *
+ * @param providerId - The provider's unique ID (e.g., 'quitoque')
+ * @returns The matching provider instance, or undefined if not found
+ */
+export function findProviderById(providerId: string): BaseRecipeProvider | undefined {
+  return providerRegistry.get(providerId) as BaseRecipeProvider | undefined;
 }

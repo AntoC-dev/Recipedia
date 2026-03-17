@@ -383,6 +383,18 @@ export abstract class BaseRecipeProvider implements RecipeProvider {
   }
 
   /**
+   * Returns the URL of the known placeholder image for this provider, if any
+   *
+   * Used by ImageRepair to detect recipes stored with placeholder content
+   * by comparing MD5 hashes of local files against the placeholder.
+   *
+   * @returns The placeholder image URL, or null if this provider has no known placeholder
+   */
+  getPlaceholderImageUrl(): string | null {
+    return null;
+  }
+
+  /**
    * Returns true if this provider can handle the given recipe source URL
    *
    * Default implementation returns false. Subclasses should override to check
