@@ -70,6 +70,12 @@ tags:
 
 - waitForAnimationToEnd
 
+- swipe:
+    start: "50%,60%"
+    end: "50%,40%"
+    duration: 400
+    label: "Scroll again to ensure the item is visible"
+
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::11::Item::1"
     label: "Action - Add the Romaine Lettuce in filters"
