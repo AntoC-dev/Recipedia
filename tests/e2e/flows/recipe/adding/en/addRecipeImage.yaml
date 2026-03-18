@@ -1,37 +1,8 @@
 appId: "com.recipedia"
 ---
-- tapOn:
-    id: "RecipeImage::RoundButton"
-    label: "Tap on camera button of recipe image"
 - runFlow:
-    file: "../../../../asserts/modal/en/CameraModalNoImages.yaml"
-    label: "Check camera modal is displayed"
-
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - tapOn:
-          id: "Modal::Camera::RoundButton"
-          label: "Select camera option on Android"
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn:
-          id: "Modal::Gallery::RoundButton"
-          label: "Select gallery option on iOS (simulator doesn't support camera)"
-
-- runFlow:
-    file: "../ocr/android/takePhoto.yaml"
-    when:
-      platform: Android
-    label: "Take photo on Android"
-- runFlow:
-    file: "../ocr/iOS/selectFromGallery.yaml"
-    when:
-      platform: iOS
-    label: "Select most recent photo from gallery on iOS"
+    file: "../../shared/openImageModalAndPick.yaml"
+    label: "Open modal and pick a photo"
 
 - assertVisible:
     id: "Modal::List#0::SquareButton::Image"

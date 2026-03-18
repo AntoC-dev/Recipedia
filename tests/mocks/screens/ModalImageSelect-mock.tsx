@@ -7,10 +7,12 @@ export function modalImageSelectMock({
   onSelectFunction,
   onDismissFunction,
   onImagesUpdated,
+  autoSelect,
 }: ModalImageSelectProps) {
   return (
     <View testID='ModalImageSelect'>
       <Text testID='ModalImageSelect::Images'>{JSON.stringify(arrImg)}</Text>
+      <Text testID='ModalImageSelect::AutoSelect'>{String(autoSelect)}</Text>
       <Button
         testID='ModalImageSelect::Select'
         onPress={() => onSelectFunction(arrImg[0] || 'mock-image-uri')}
