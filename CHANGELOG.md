@@ -1,3 +1,15 @@
+## [2.24.0](https://github.com/AntoC-dev/Recipedia/compare/v2.23.1...v2.24.0) (2026-03-18)
+
+### Features
+
+* **modal-image-select:** add autoSelect prop for immediate pick in edit mode ([4752aec](https://github.com/AntoC-dev/Recipedia/commit/4752aecd7b8509593007ffaa93a779dea4a82447))
+
+### Bug Fixes
+
+* **file-gestion:** use UUID filenames and moveAsync to fix image cache stale ([adf699b](https://github.com/AntoC-dev/Recipedia/commit/adf699b685d72bcb2fe7cddb5966c278c01e8f94))
+* **recipe:** fix image not updating after edit ([#223](https://github.com/AntoC-dev/Recipedia/issues/223)) ([cbc7e45](https://github.com/AntoC-dev/Recipedia/commit/cbc7e45f4c90d9f4daf803c7b3b4a7ba0a78388a))
+* **recipe:** fix image not updating in readOnly→edit flow ([1e9c4ea](https://github.com/AntoC-dev/Recipedia/commit/1e9c4ea9e548e380f7ca3a032d8b495d8a7a5705))
+
 ## [2.23.1](https://github.com/AntoC-dev/Recipedia/compare/v2.23.0...v2.23.1) (2026-03-17)
 
 ### Bug Fixes
