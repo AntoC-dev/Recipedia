@@ -303,7 +303,6 @@ appId: "com.recipedia"
       id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.sweetener"
     direction: DOWN
     speed: 20
-    centerElement: true
     label: "Action - Scroll to sweetener ingredient type"
 
 - waitForAnimationToEnd:
@@ -319,7 +318,6 @@ appId: "com.recipedia"
       id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.topping"
     direction: DOWN
     speed: 20
-    centerElement: true
     label: "Action - Scroll to topping ingredient type"
 
 - waitForAnimationToEnd:
@@ -335,7 +333,6 @@ appId: "com.recipedia"
       id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.vegetable"
     direction: DOWN
     speed: 20
-    centerElement: true
     label: "Action - Scroll to vegetable ingredient type"
 
 - waitForAnimationToEnd:

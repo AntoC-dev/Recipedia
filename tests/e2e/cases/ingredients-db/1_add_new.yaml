@@ -67,13 +67,39 @@ tags:
     id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion"
     label: "Action - Expand type accordion"
 
+- scrollUntilVisible:
+    element:
+      id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion::ingredientTypes.vegetable"
+    speed: 20
+    timeout: 120000
+    direction: DOWN
+    label: "Action - Scroll to Vegetable item"
+
+- waitForAnimationToEnd:
+    label: "Wait for scroll animation to end"
+
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion::ingredientTypes.vegetable"
     label: "Action - Select vegetable type"
 
+- scrollUntilVisible:
+    element:
+      id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion"
+    speed: 20
+    timeout: 120000
+    direction: UP
+    centerElement: true
+    label: "Action - Scroll up to ensure type accordion is visible"
+
 - tapOn:
-    id: "IngredientsSettings::ItemDialog::EditModal::TypeAccordion"
+    id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion"
     label: "Action - Collapse type accordion"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion::ingredientTypes.*"
+    timeout: 30000
+    label: "Wait for type accordion to collapse"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::Unit::CustomTextInput"

@@ -68,6 +68,12 @@ tags:
     id: "IngredientsSettings::ItemDialog::EditModal::TypeAccordion"
     label: "Action - Expand type accordion"
 
+- extendedWaitUntil:
+    visible:
+      id: "IngredientsSettings::ItemDialog::EditModal::TypeAccordion::ingredientTypes.*"
+    timeout: 5000
+    label: "Wait for type accordion to expand"
+
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::TypeAccordion::ingredientTypes.bread"
     label: "Action - Change type from vegetable to Bread"
@@ -76,9 +82,19 @@ tags:
     id: "IngredientsSettings::ItemDialog::EditModal::TypeAccordion"
     label: "Action - Collapse type accordion"
 
+- extendedWaitUntil:
+    notVisible:
+      id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion::ingredientTypes.*"
+    timeout: 5000
+    label: "Wait for type accordion to collapse"
+
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::Unit::CustomTextInput"
     label: "Action - Focus on unit input"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
 - eraseText:
     label: "Action - Clear existing unit"

@@ -4,7 +4,6 @@ appId: "com.recipedia"
     file: "navigateToIngredientsSettings.yaml"
     label: "Navigate to Ingredients Settings screen"
 
-
 - runFlow:
     file: "../searchInSettingsList.yaml"
     env:
@@ -63,18 +62,53 @@ appId: "com.recipedia"
     id: "IngredientsSettings::ItemDialog::EditModal::TypeAccordion"
     label: "Expand type accordion"
 
+- extendedWaitUntil:
+    visible:
+      id: "IngredientsSettings::ItemDialog::EditModal::TypeAccordion::ingredientTypes.*"
+    timeout: 5000
+    label: "Wait for type accordion to expand"
+
+- scrollUntilVisible:
+    element:
+      id: "IngredientsSettings::ItemDialog::EditModal::TypeAccordion::ingredientTypes.vegetable"
+    speed: 20
+    timeout: 120000
+    direction: DOWN
+    label: "Action - Scroll to Vegetable item"
+
+- waitForAnimationToEnd:
+    label: "Wait for scroll animation to end"
+
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::TypeAccordion::ingredientTypes.vegetable"
     label: "Restore type to vegetable"
+
+- scrollUntilVisible:
+    element:
+      id: "IngredientsSettings::ItemDialog::EditModal::TypeAccordion"
+    speed: 20
+    timeout: 120000
+    direction: UP
+    centerElement: true
+    label: "Action - Scroll up to ensure type accordion is displayed"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::TypeAccordion"
     label: "Collapse type accordion"
 
+- extendedWaitUntil:
+    notVisible:
+      id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion::ingredientTypes.*"
+    timeout: 5000
+    label: "Wait for type accordion to collapse"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::Unit::CustomTextInput"
     label: "Focus on unit input field"
+
+- runFlow:
+    file: "../../waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
 - eraseText:
     label: "Clear existing unit"
@@ -111,6 +145,14 @@ appId: "com.recipedia"
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::SeasonalityCalendar"
     label: "Expand seasonality accordion"
+
+- scrollUntilVisible:
+    element:
+      id: "IngredientsSettings::ItemDialog::EditModal::SeasonalityCalendar::10"
+    speed: 20
+    timeout: 120000
+    direction: DOWN
+    label: "Action - Scroll to october item"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::SeasonalityCalendar::10"
