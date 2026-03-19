@@ -14,6 +14,11 @@ jest.mock('@components/atomic/CustomTextInput', () => ({
   CustomTextInput: require('@mocks/components/atomic/CustomTextInput-mock').customTextInputMock,
 }));
 
+jest.mock('@components/molecules/SelectableAccordion', () => ({
+  SelectableAccordion: require('@mocks/components/molecules/SelectableAccordion-mock')
+    .selectableAccordionMock,
+}));
+
 jest.mock('@components/molecules/SeasonalityCalendar', () => ({
   SeasonalityCalendar: require('@mocks/components/molecules/SeasonalityCalendar-mock')
     .seasonalityCalendarMock,
@@ -30,7 +35,6 @@ jest.mock('@context/RecipeDatabaseContext', () => ({
 }));
 
 describe('ItemDialog Component', () => {
-  // Test data
   const mockIngredient: ingredientTableElement = {
     id: 1,
     name: 'Test Ingredient',
@@ -51,7 +55,6 @@ describe('ItemDialog Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
-    // Clear mock arrays
     mockTags.length = 0;
     mockIngredients.length = 0;
   });
@@ -75,7 +78,6 @@ describe('ItemDialog Component', () => {
 
     const { queryByTestId } = render(<ItemDialog {...props} />);
 
-    // When isVisible is false, dialog elements should not be present
     expect(queryByTestId('IngredientDialog::AddModal::Title')).toBeNull();
     expect(queryByTestId('IngredientDialog::AddModal::CancelButton')).toBeNull();
     expect(queryByTestId('IngredientDialog::AddModal::ConfirmButton')).toBeNull();
@@ -96,7 +98,6 @@ describe('ItemDialog Component', () => {
 
     const { getByTestId } = render(<ItemDialog {...props} />);
 
-    // When isVisible is true, dialog elements should be present
     expect(getByTestId('IngredientDialog::AddModal::Title')).toBeTruthy();
     expect(getByTestId('IngredientDialog::AddModal::CancelButton')).toBeTruthy();
     expect(getByTestId('IngredientDialog::AddModal::ConfirmButton')).toBeTruthy();
@@ -124,10 +125,9 @@ describe('ItemDialog Component', () => {
         );
         expect(queryByTestId('IngredientDialog::AddModal::Text')).toBeNull();
         expect(getByTestId('IngredientDialog::AddModal::Name::CustomTextInput')).toBeTruthy();
-        expect(getByTestId('IngredientDialog::AddModal::Type').props.children).toEqual([
-          'type',
-          ':',
-        ]);
+        expect(getByTestId('IngredientDialog::AddModal::TypeAccordion::Title').props.children).toBe(
+          'type'
+        );
         expect(getByTestId('IngredientDialog::AddModal::Unit::CustomTextInput')).toBeTruthy();
 
         expect(
@@ -145,10 +145,9 @@ describe('ItemDialog Component', () => {
         expect(getByTestId('IngredientDialog::EditModal::Title')).toBeTruthy();
         expect(queryByTestId('IngredientDialog::EditModal::Text')).toBeNull();
         expect(getByTestId('IngredientDialog::EditModal::Name::CustomTextInput')).toBeTruthy();
-        expect(getByTestId('IngredientDialog::EditModal::Type').props.children).toEqual([
-          'type',
-          ':',
-        ]);
+        expect(
+          getByTestId('IngredientDialog::EditModal::TypeAccordion::Title').props.children
+        ).toBe('type');
         expect(getByTestId('IngredientDialog::EditModal::Unit::CustomTextInput')).toBeTruthy();
 
         expect(
@@ -169,7 +168,7 @@ describe('ItemDialog Component', () => {
           ' Test IngredientinterrogationMark',
         ]);
         expect(queryByTestId('IngredientDialog::DeleteModal::Name::CustomTextInput')).toBeNull();
-        expect(queryByTestId('IngredientDialog::DeleteModal::Type')).toBeNull();
+        expect(queryByTestId('IngredientDialog::DeleteModal::TypeAccordion')).toBeNull();
         expect(queryByTestId('IngredientDialog::DeleteModal::Unit::CustomTextInput')).toBeNull();
 
         expect(
@@ -248,7 +247,7 @@ describe('ItemDialog Component', () => {
         expect(getByTestId('TagDialog::AddModal::Title').props.children).toEqual('add_tag');
         expect(queryByTestId('TagDialog::AddModal::Text')).toBeNull();
         expect(getByTestId('TagDialog::AddModal::Name::CustomTextInput')).toBeTruthy();
-        expect(queryByTestId('TagDialog::AddModal::Menu')).toBeFalsy();
+        expect(queryByTestId('TagDialog::AddModal::TypeAccordion')).toBeFalsy();
         expect(queryByTestId('TagDialog::AddModal::Unit')).toBeFalsy();
 
         expect(
@@ -264,7 +263,7 @@ describe('ItemDialog Component', () => {
         expect(getByTestId('TagDialog::EditModal::Title').props.children).toEqual('edit_tag');
         expect(queryByTestId('TagDialog::EditModal::Text')).toBeNull();
         expect(getByTestId('TagDialog::EditModal::Name::CustomTextInput')).toBeTruthy();
-        expect(queryByTestId('TagDialog::EditModal::Menu')).toBeFalsy();
+        expect(queryByTestId('TagDialog::EditModal::TypeAccordion')).toBeFalsy();
         expect(queryByTestId('TagDialog::EditModal::Unit')).toBeFalsy();
 
         expect(
@@ -281,7 +280,7 @@ describe('ItemDialog Component', () => {
         expect(getByTestId('TagDialog::DeleteModal::Text')).toBeTruthy();
 
         expect(queryByTestId('TagDialog::DeleteModal::Name::CustomTextInput')).toBeNull();
-        expect(queryByTestId('TagDialog::DeleteModal::Menu')).toBeNull();
+        expect(queryByTestId('TagDialog::DeleteModal::TypeAccordion')).toBeNull();
         expect(queryByTestId('TagDialog::DeleteModal::Unit')).toBeNull();
 
         expect(
@@ -297,10 +296,8 @@ describe('ItemDialog Component', () => {
       test('add mode', () => {
         const { getByTestId } = render(<ItemDialog {...props} />);
 
-        // Simulate clicking on the confirm button
         fireEvent.press(getByTestId('TagDialog::AddModal::ConfirmButton'));
 
-        // Check that onConfirmTag was called with the correct mode and values
         expect(mockOnConfirmTag).toHaveBeenCalledWith('add', mockTag);
       });
       test('edit mode', () => {
@@ -359,10 +356,8 @@ describe('ItemDialog Component', () => {
 
     const { getByTestId } = render(<ItemDialog {...props} />);
 
-    // Simulate clicking on the cancel button (which should trigger onClose)
     fireEvent.press(getByTestId('IngredientDialog::AddModal::CancelButton'));
 
-    // Check that onClose was called
     expect(mockOnClose).toHaveBeenCalled();
   });
 
@@ -381,10 +376,8 @@ describe('ItemDialog Component', () => {
 
     const { getByTestId } = render(<ItemDialog {...props} />);
 
-    // Simulate clicking on the confirm button
     fireEvent.press(getByTestId('IngredientDialog::AddModal::ConfirmButton'));
 
-    // Check that onConfirmIngredient was called with the correct mode and values
     expect(mockOnConfirmIngredient).toHaveBeenCalledWith('add', mockIngredient);
   });
 
@@ -403,10 +396,8 @@ describe('ItemDialog Component', () => {
 
     const { getByTestId } = render(<ItemDialog {...props} />);
 
-    // Simulate clicking on the confirm button
     fireEvent.press(getByTestId('IngredientDialog::EditModal::ConfirmButton'));
 
-    // Check that onConfirmIngredient was called with the correct mode and values
     expect(mockOnConfirmIngredient).toHaveBeenCalledWith('edit', mockIngredient);
   });
   test('calls onConfirmIngredient when confirm button is pressed in delete mode', () => {
@@ -424,10 +415,8 @@ describe('ItemDialog Component', () => {
 
     const { getByTestId } = render(<ItemDialog {...props} />);
 
-    // Simulate clicking on the confirm button
     fireEvent.press(getByTestId('IngredientDialog::DeleteModal::ConfirmButton'));
 
-    // Check that onConfirmIngredient was called with the correct mode and values
     expect(mockOnConfirmIngredient).toHaveBeenCalledWith('delete', mockIngredient);
   });
 
@@ -822,8 +811,67 @@ describe('ItemDialog Component', () => {
     });
   });
 
-  describe('dropdown filtering', () => {
-    test('renders ingredient type menu without undefined type', () => {
+  describe('type accordion', () => {
+    const props: ItemDialogProps = {
+      testId: 'IngredientDialog',
+      mode: 'add',
+      isVisible: true,
+      onClose: mockOnClose,
+      item: {
+        type: 'Ingredient',
+        value: mockIngredient,
+        onConfirmIngredient: mockOnConfirmIngredient,
+      },
+    };
+
+    test('renders TypeAccordion in add mode', () => {
+      const { getByTestId } = render(<ItemDialog {...props} />);
+
+      expect(getByTestId('IngredientDialog::AddModal::TypeAccordion')).toBeTruthy();
+    });
+
+    test('renders TypeAccordion in edit mode', () => {
+      const { getByTestId } = render(<ItemDialog {...props} mode={'edit'} />);
+
+      expect(getByTestId('IngredientDialog::EditModal::TypeAccordion')).toBeTruthy();
+    });
+
+    test('pressing a type item and confirming calls onConfirmIngredient with selected type', () => {
+      const ingredientNoType: FormIngredientElement = {
+        name: 'Test Ingredient',
+        type: undefined,
+        unit: 'kg',
+        season: [],
+      };
+
+      const { getByTestId } = render(
+        <ItemDialog
+          {...props}
+          item={{
+            type: 'Ingredient',
+            value: ingredientNoType,
+            onConfirmIngredient: mockOnConfirmIngredient,
+          }}
+        />
+      );
+
+      fireEvent.press(
+        getByTestId('IngredientDialog::AddModal::TypeAccordion::' + ingredientType.fruit)
+      );
+      fireEvent.press(getByTestId('IngredientDialog::AddModal::ConfirmButton'));
+
+      expect(mockOnConfirmIngredient).toHaveBeenCalledWith('add', {
+        id: undefined,
+        name: 'Test Ingredient',
+        type: ingredientType.fruit,
+        unit: 'kg',
+        season: [],
+      });
+    });
+  });
+
+  describe('form hint', () => {
+    test('FormHint is visible for ingredient in add mode', () => {
       const props: ItemDialogProps = {
         testId: 'IngredientDialog',
         mode: 'add',
@@ -838,8 +886,64 @@ describe('ItemDialog Component', () => {
 
       const { getByTestId } = render(<ItemDialog {...props} />);
 
-      const menu = getByTestId('IngredientDialog::AddModal::Menu');
-      expect(menu).toBeTruthy();
+      expect(getByTestId('IngredientDialog::AddModal::FormHint')).toBeTruthy();
+      expect(getByTestId('IngredientDialog::AddModal::FormHint').props.children).toBe(
+        'ingredient_form_hint'
+      );
+    });
+
+    test('FormHint is visible for ingredient in edit mode', () => {
+      const props: ItemDialogProps = {
+        testId: 'IngredientDialog',
+        mode: 'edit',
+        isVisible: true,
+        onClose: mockOnClose,
+        item: {
+          type: 'Ingredient',
+          value: mockIngredient,
+          onConfirmIngredient: mockOnConfirmIngredient,
+        },
+      };
+
+      const { getByTestId } = render(<ItemDialog {...props} />);
+
+      expect(getByTestId('IngredientDialog::EditModal::FormHint')).toBeTruthy();
+    });
+
+    test('FormHint is not visible in delete mode', () => {
+      const props: ItemDialogProps = {
+        testId: 'IngredientDialog',
+        mode: 'delete',
+        isVisible: true,
+        onClose: mockOnClose,
+        item: {
+          type: 'Ingredient',
+          value: mockIngredient,
+          onConfirmIngredient: mockOnConfirmIngredient,
+        },
+      };
+
+      const { queryByTestId } = render(<ItemDialog {...props} />);
+
+      expect(queryByTestId('IngredientDialog::DeleteModal::FormHint')).toBeNull();
+    });
+
+    test('FormHint is not present for tag dialog', () => {
+      const props: ItemDialogProps = {
+        testId: 'TagDialog',
+        mode: 'add',
+        isVisible: true,
+        onClose: mockOnClose,
+        item: {
+          type: 'Tag',
+          value: mockTag,
+          onConfirmTag: mockOnConfirmTag,
+        },
+      };
+
+      const { queryByTestId } = render(<ItemDialog {...props} />);
+
+      expect(queryByTestId('TagDialog::AddModal::FormHint')).toBeNull();
     });
   });
 
@@ -910,8 +1014,6 @@ describe('ItemDialog Component', () => {
     });
 
     test('no error when tag name is unique', async () => {
-      // mockTags is already empty from beforeEach
-
       const props: ItemDialogProps = {
         testId: 'TagDialog',
         mode: 'add',

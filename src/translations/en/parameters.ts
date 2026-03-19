@@ -25,4 +25,6 @@ export default {
   manage_tags_description: 'Manage recipe tags',
   updating_recipes: 'Updating recipes...',
   search_items: 'Search...',
+  ingredient_form_hint:
+    'Name and type are required. The more details you provide, the better your experience.',
 };

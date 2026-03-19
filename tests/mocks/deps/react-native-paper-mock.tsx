@@ -19,7 +19,10 @@ export const Button: React.FC<any> = props => (
   </TouchableOpacity>
 );
 
-export const RadioButton: React.FC<any> & { Group: React.FC<any> } = props => (
+export const RadioButton: React.FC<any> & {
+  Group: React.FC<any>;
+  Item: React.FC<any>;
+} = props => (
   <TouchableOpacity testID={props.testID} onPress={props.onPress}>
     <RNText>RadioButton</RNText>
   </TouchableOpacity>
@@ -33,9 +36,18 @@ const RadioButtonGroup: React.FC<any> = props => (
 RadioButtonGroup.displayName = 'RadioButton.Group';
 RadioButton.Group = RadioButtonGroup;
 
+const RadioButtonItem: React.FC<any> = props => (
+  <TouchableOpacity testID={props.testID} onPress={props.onPress}>
+    <RNText>{props.label}</RNText>
+  </TouchableOpacity>
+);
+RadioButtonItem.displayName = 'RadioButton.Item';
+RadioButton.Item = RadioButtonItem;
+
 export const Dialog: React.FC<any> & {
   Title: React.FC<any>;
   Content: React.FC<any>;
+  ScrollArea: React.FC<any>;
   Actions: React.FC<any>;
   Icon: React.FC<any>;
 } = props => {
@@ -58,6 +70,12 @@ Dialog.Title = DialogTitle;
 const DialogContent: React.FC<any> = props => <View testID={props.testID}>{props.children}</View>;
 DialogContent.displayName = 'Dialog.Content';
 Dialog.Content = DialogContent;
+
+const DialogScrollArea: React.FC<any> = props => (
+  <View testID={props.testID}>{props.children}</View>
+);
+DialogScrollArea.displayName = 'Dialog.ScrollArea';
+Dialog.ScrollArea = DialogScrollArea;
 
 const DialogActions: React.FC<any> = props => <View testID={props.testID}>{props.children}</View>;
 DialogActions.displayName = 'Dialog.Actions';
@@ -86,7 +104,12 @@ const MenuItem: React.FC<any> = props => (
 MenuItem.displayName = 'Menu.Item';
 Menu.Item = MenuItem;
 
-export const Portal: React.FC<any> = props => <View testID={props.testID}>{props.children}</View>;
+export const Portal: React.FC<any> & { Host: React.FC<any> } = props => (
+  <View testID={props.testID}>{props.children}</View>
+);
+const PortalHost: React.FC<any> = props => <View>{props.children}</View>;
+PortalHost.displayName = 'Portal.Host';
+Portal.Host = PortalHost;
 
 export const Modal: React.FC<any> = props => {
   if (!props.visible) {
@@ -163,6 +186,7 @@ export const TextInput = TextInputComponent;
 
 export const Chip: React.FC<any> = props => (
   <TouchableOpacity testID={props.testID} onPress={props.onPress} style={props.style}>
+    <RNText testID={props.testID + '::Selected'}>{String(props.selected)}</RNText>
     <RNText testID={props.testID + '::Children'}>{props.children}</RNText>
   </TouchableOpacity>
 );
@@ -394,8 +418,9 @@ export const List = {
   Icon: (props: any) => <RNText testID='list-icon'>{props.icon}</RNText>,
   Accordion: (props: any) => (
     <View testID={props.testID} style={props.style}>
-      <TouchableOpacity testID={props.testID + '::Header'} onPress={() => {}}>
+      <TouchableOpacity testID={props.testID + '::Header'} onPress={props.onPress ?? (() => {})}>
         <RNText testID={props.testID + '::Title'}>{props.title}</RNText>
+        <RNText testID={props.testID + '::Description'}>{props.description}</RNText>
       </TouchableOpacity>
       <View testID={props.testID + '::Content'}>{props.children}</View>
     </View>
@@ -465,7 +490,7 @@ DataTableCell.displayName = 'DataTable.Cell';
 DataTable.Cell = DataTableCell;
 
 export const HelperText: React.FC<any> = props => {
-  if (!props.visible) {
+  if (props.visible === false) {
     return null;
   }
   return (

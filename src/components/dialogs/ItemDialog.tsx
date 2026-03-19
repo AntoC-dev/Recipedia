@@ -12,17 +12,16 @@
  * - Comprehensive ingredient management (name, type, unit, seasonality)
  * - Simple tag management (name-based)
  * - Real-time validation and user feedback
- * - Seasonality calendar integration for ingredients
- * - Type categorization with dropdown selection
+ * - Inline type and seasonality selection (no Portal conflicts)
  * - Internationalization support throughout
  *
  * Form Fields by Type:
  *
  * **Ingredients:**
  * - Name (required text input)
- * - Type (dropdown: vegetables, proteins, dairy, etc.)
+ * - Type (inline accordion: single-select RadioButton)
  * - Unit (text input: cups, grams, pieces, etc.)
- * - Seasonality (interactive month calendar)
+ * - Seasonality (inline accordion: multi-select Chips)
  *
  * **Tags:**
  * - Name (required text input)
@@ -71,8 +70,8 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Button, Dialog, HelperText, Menu, Portal, Text } from 'react-native-paper';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { Button, Dialog, HelperText, Portal, Text } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
 import { CustomTextInput } from '@components/atomic/CustomTextInput';
 import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
@@ -84,9 +83,10 @@ import {
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
 import { useShoppingCategories } from '@hooks/useCategories';
-import { padding } from '@styles/spacing';
+import { SelectableAccordion } from '@components/molecules/SelectableAccordion';
 import { SeasonalityCalendar } from '@components/molecules/SeasonalityCalendar';
 import { uiLogger } from '@utils/logger';
+import { padding } from '@styles/spacing';
 
 /** Available dialog operation modes */
 export type DialogMode = 'add' | 'edit' | 'delete';
@@ -131,14 +131,13 @@ export type ItemDialogProps = {
  * @param props - The component props with operation configuration
  * @returns JSX element representing a multi-purpose item management dialog
  */
+type ValidationState = 'none' | 'duplicate' | 'similar';
+
 export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialogProps) {
   const { t } = useI18n();
   const shoppingCategories = useShoppingCategories();
   const { tags, ingredients } = useRecipeDatabase();
 
-  type ValidationState = 'none' | 'duplicate' | 'similar';
-
-  const [typeMenuVisible, setTypeMenuVisible] = useState(false);
   const [validationState, setValidationState] = useState<ValidationState>('none');
   const [helperMessage, setHelperMessage] = useState('');
 
@@ -238,10 +237,6 @@ export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialo
     return () => clearTimeout(timeoutId);
   }, [itemName, item.type, item.value.id, isVisible, mode, tags, ingredients, t]);
 
-  const handleDismiss = () => {
-    onClose();
-  };
-
   const handleConfirm = () => {
     callOnConfirmWithNewItem();
     onClose();
@@ -266,160 +261,110 @@ export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialo
     }
   };
 
-  const isConfirmButtonDisabled = () => {
-    if (!itemName.trim()) {
-      return true;
-    }
+  const isConfirmDisabled =
+    !itemName.trim() ||
+    (mode !== 'delete' &&
+      (validationState === 'duplicate' || (item.type === 'Ingredient' && ingType === undefined)));
 
-    if (mode === 'delete') {
-      return false;
-    }
-
-    if (validationState === 'duplicate') {
-      return true;
-    }
-
-    if (item.type === 'Ingredient') {
-      return ingType === undefined;
-    }
-
-    return false;
+  const titleByMode: Record<DialogMode, string> = {
+    add: item.type === 'Ingredient' ? t('add_ingredient') : t('add_tag'),
+    edit: item.type === 'Ingredient' ? t('edit_ingredient') : t('edit_tag'),
+    delete: t('delete'),
   };
 
-  // Get dialog properties based on the current mode
-  const dialogTitle = (() => {
-    switch (mode) {
-      case 'add':
-        return item.type === 'Ingredient' ? t('add_ingredient') : t('add_tag');
-      case 'edit':
-        return item.type === 'Ingredient' ? t('edit_ingredient') : t('edit_tag');
-      case 'delete':
-        return t('delete');
-      default:
-        uiLogger.error('Unreachable code in ItemDialog');
-        return '';
-    }
-  })();
+  const confirmTextByMode: Record<DialogMode, string> = {
+    add: t('add'),
+    edit: t('save'),
+    delete: t('delete'),
+  };
 
-  const confirmButtonText = (() => {
-    switch (mode) {
-      case 'add':
-        return t('add');
-      case 'edit':
-        return t('save');
-      case 'delete':
-        return t('delete');
-      default:
-        uiLogger.error('Unreachable code in ItemDialog');
-        return '';
-    }
-  })();
-  const modalTestId = (() => {
-    switch (mode) {
-      case 'add':
-        return testId + '::AddModal';
-      case 'edit':
-        return testId + '::EditModal';
-      case 'delete':
-        return testId + '::DeleteModal';
-      default:
-        uiLogger.error('Unreachable code in ItemDialog');
-        return '';
-    }
-  })();
+  const testIdSuffixByMode: Record<DialogMode, string> = {
+    add: 'AddModal',
+    edit: 'EditModal',
+    delete: 'DeleteModal',
+  };
+
+  const dialogTitle = titleByMode[mode];
+  const confirmButtonText = confirmTextByMode[mode];
+  const modalTestId = `${testId}::${testIdSuffixByMode[mode]}`;
 
   return (
     <Portal>
-      <Dialog visible={isVisible} onDismiss={handleDismiss}>
+      <Dialog visible={isVisible} onDismiss={onClose}>
         <Dialog.Title testID={modalTestId + '::Title'}>{dialogTitle}</Dialog.Title>
-        <Dialog.Content>
-          {mode === 'delete' ? (
+        {mode === 'delete' ? (
+          <Dialog.Content>
             <Text testID={modalTestId + '::Text'} variant='bodyMedium'>
               {t('confirmDelete')}
               {` ${itemName}${t('interrogationMark')}`}
             </Text>
-          ) : (
-            <View>
+          </Dialog.Content>
+        ) : (
+          <Dialog.ScrollArea>
+            <ScrollView contentContainerStyle={styles.formContainer}>
+              {item.type === 'Ingredient' ? (
+                <Text testID={modalTestId + '::FormHint'} variant='bodySmall'>
+                  {t('ingredient_form_hint')}
+                </Text>
+              ) : null}
               <CustomTextInput
                 label={item.type === 'Ingredient' ? t('ingredient_name') : t('tag_name')}
                 value={itemName}
                 onChangeText={setItemName}
                 testID={modalTestId + '::Name'}
                 error={validationState === 'duplicate'}
+                dense={true}
+                style={styles.nameInput}
               />
-              <HelperText
-                type={validationState === 'duplicate' ? 'error' : 'info'}
-                visible={validationState !== 'none'}
-                testID={modalTestId + '::HelperText'}
-              >
-                {helperMessage}
-              </HelperText>
-              {item.type === 'Ingredient' ? (
-                <View>
-                  <View style={styles.inputRow}>
-                    <Text
-                      testID={modalTestId + '::Type'}
-                      variant='bodyMedium'
-                      style={styles.inputLabel}
-                    >
-                      {t('type')}:
-                    </Text>
-                    <Menu
-                      testID={modalTestId + '::Menu'}
-                      visible={typeMenuVisible}
-                      onDismiss={() => setTypeMenuVisible(false)}
-                      anchor={
-                        <Button
-                          testID={modalTestId + '::Menu::Button'}
-                          onPress={() => setTypeMenuVisible(true)}
-                        >
-                          {ingType ? t(ingType) : t('selectType')}
-                        </Button>
-                      }
-                    >
-                      {/* Using .map() instead of FlatList: FlatList (VirtualizedList) cannot be nested
-                          inside Dialog's ScrollView without breaking windowing. For small fixed arrays
-                          like shoppingCategories, .map() is the correct pattern. */}
-                      {shoppingCategories.map(category => (
-                        <Menu.Item
-                          key={category}
-                          title={t(category)}
-                          onPress={() => {
-                            setIngType(category);
-                            setTypeMenuVisible(false);
-                          }}
-                        />
-                      ))}
-                    </Menu>
-                  </View>
+              {validationState !== 'none' && (
+                <HelperText
+                  type={validationState === 'duplicate' ? 'error' : 'info'}
+                  testID={modalTestId + '::HelperText'}
+                >
+                  {helperMessage}
+                </HelperText>
+              )}
 
+              {item.type === 'Ingredient' ? (
+                <>
                   <CustomTextInput
                     testID={modalTestId + '::Unit'}
                     label={t('unit')}
                     value={ingUnit}
                     onChangeText={setIngUnit}
+                    dense={true}
+                    style={styles.unitInput}
                   />
-
+                  <SelectableAccordion
+                    testID={modalTestId + '::TypeAccordion'}
+                    title={t('type')}
+                    items={shoppingCategories.map(category => ({
+                      value: category,
+                      label: t(category),
+                    }))}
+                    selectedValues={ingType ? [ingType] : []}
+                    onPress={value => setIngType(value as ingredientType)}
+                  />
                   <SeasonalityCalendar
                     testID={modalTestId}
                     selectedMonths={ingSeason}
                     onMonthsChange={setIngSeason}
                   />
-                </View>
+                </>
               ) : null}
-            </View>
-          )}
-        </Dialog.Content>
+            </ScrollView>
+          </Dialog.ScrollArea>
+        )}
         <Dialog.Actions>
           <View style={styles.dialogActions}>
-            <Button testID={modalTestId + '::CancelButton'} mode='outlined' onPress={handleDismiss}>
+            <Button testID={modalTestId + '::CancelButton'} mode='outlined' onPress={onClose}>
               {t('cancel')}
             </Button>
             <Button
               testID={modalTestId + '::ConfirmButton'}
               mode='contained'
               onPress={handleConfirm}
-              disabled={isConfirmButtonDisabled()}
+              disabled={isConfirmDisabled}
             >
               {confirmButtonText}
             </Button>
@@ -431,13 +376,14 @@ export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialo
 }
 
 const styles = StyleSheet.create({
-  inputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: padding.small,
+  formContainer: {
+    gap: padding.small,
   },
-  inputLabel: {
-    marginRight: padding.small,
+  nameInput: {
+    marginBottom: -padding.verySmall,
+  },
+  unitInput: {
+    marginTop: -padding.verySmall,
   },
   dialogActions: {
     flex: 1,
