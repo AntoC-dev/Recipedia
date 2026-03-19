@@ -138,18 +138,22 @@ tags:
     label: "Assert - Verify adding modal appears"
 
 - tapOn:
-    id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::Menu::Button"
-    label: "Action - Open type dropdown"
+    id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion"
+    label: "Action - Expand type accordion"
 
 - extendedWaitUntil:
     visible:
-      text: "Fish"
-    timeout: 3000
-    label: "Wait for type dropdown to appear"
+      id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion::ingredientTypes.fish"
+    timeout: 5000
+    label: "Wait for type accordion to be expanded"
 
 - tapOn:
-    text: "Fish"
+    id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion::ingredientTypes.fish"
     label: "Action - Select Fish type"
+
+- tapOn:
+    id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion"
+    label: "Action - Collapse type accordion"
 
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::Unit::CustomTextInput"
@@ -180,6 +184,10 @@ tags:
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
+
+- tapOn:
+    id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::SeasonalityCalendar"
+    label: "Action - Expand seasonality accordion"
 
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::SeasonalityCalendar::2"

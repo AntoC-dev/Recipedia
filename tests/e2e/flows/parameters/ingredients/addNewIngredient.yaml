@@ -35,17 +35,17 @@ appId: "com.recipedia"
     label: "Wait for keyboard to dismiss"
 
 - tapOn:
-    id: "IngredientsSettings::ItemDialog::AddModal::Menu::Button"
-    label: "Open type dropdown menu"
+    id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion"
+    label: "Expand type accordion"
 
 - extendedWaitUntil:
     visible:
-      text: "Legumes"
+      id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion::ingredientTypes.legumes"
     timeout: 30000
-    label: "Wait for legumes type to appear in dropdown menu"
+    label: "Wait for legumes type to appear in accordion"
 
 - tapOn:
-    text: "Legumes"
+    id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion::ingredientTypes.legumes"
     label: "Select legumes type"
 
 - assertVisible:

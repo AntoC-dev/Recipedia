@@ -60,12 +60,17 @@ appId: "com.recipedia"
     label: "Wait for keyboard to dismiss"
 
 - tapOn:
-    id: "IngredientsSettings::ItemDialog::EditModal::Menu::Button"
-    label: "Open type dropdown menu"
+    id: "IngredientsSettings::ItemDialog::EditModal::TypeAccordion"
+    label: "Expand type accordion"
 
 - tapOn:
-    text: "Vegetable"
+    id: "IngredientsSettings::ItemDialog::EditModal::TypeAccordion::ingredientTypes.vegetable"
     label: "Restore type to vegetable"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::EditModal::TypeAccordion"
+    label: "Collapse type accordion"
+
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::Unit::CustomTextInput"
@@ -102,6 +107,10 @@ appId: "com.recipedia"
 - runFlow:
     file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::EditModal::SeasonalityCalendar"
+    label: "Expand seasonality accordion"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::SeasonalityCalendar::10"

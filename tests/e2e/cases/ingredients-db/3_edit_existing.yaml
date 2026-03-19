@@ -65,12 +65,16 @@ tags:
     label: "Wait for keyboard to dismiss"
 
 - tapOn:
-    id: "IngredientsSettings::ItemDialog::EditModal::Menu::Button"
-    label: "Action - Open type dropdown"
+    id: "IngredientsSettings::ItemDialog::EditModal::TypeAccordion"
+    label: "Action - Expand type accordion"
 
 - tapOn:
-    text: "Bread"
+    id: "IngredientsSettings::ItemDialog::EditModal::TypeAccordion::ingredientTypes.bread"
     label: "Action - Change type from vegetable to Bread"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::EditModal::TypeAccordion"
+    label: "Action - Collapse type accordion"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::Unit::CustomTextInput"
@@ -107,6 +111,10 @@ tags:
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::EditModal::SeasonalityCalendar"
+    label: "Action - Expand seasonality accordion"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::SeasonalityCalendar::10"

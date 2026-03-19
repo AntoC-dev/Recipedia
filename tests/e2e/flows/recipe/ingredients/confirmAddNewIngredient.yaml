@@ -4,7 +4,6 @@ appId: "com.recipedia"
     id: "RecipeValidation::ValidationQueue::Ingredient::SimilarityDialog::AddButton"
     label: "Add ingredient to recipe"
 
-
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::ConfirmButton"
     label: "Try to confirm adding the new ingredient"
@@ -14,16 +13,76 @@ appId: "com.recipedia"
     label: "Button is still there meaning the adding didn't worked"
 
 - tapOn:
-    id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::Menu::Button"
-    label: "Open the dropdown of the type"
+    id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion"
+    label: "Expand the type accordion"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion::ingredientTypes.*"
+    timeout: 5000
+    label: "Wait for type accordion to be expanded"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion::ingredientTypes.baking"
+    direction: DOWN
+    speed: 20
+    timeout: 1200000
+    centerElement: true
+    label: "Action - Scroll to baking ingredient type"
+
+- waitForAnimationToEnd:
+    label: "Wait for scroll animation to end"
 
 - tapOn:
-    text: "Baking"
+    id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion::ingredientTypes.baking"
     label: "Select Baking type"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion"
+    direction: UP
+    speed: 20
+    timeout: 1200000
+    centerElement: true
+    label: "Action - Scroll back to top of the type accordion"
+
+- waitForAnimationToEnd:
+    label: "Wait for scroll animation to end"
+
+- tapOn:
+    id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion"
+    label: "Close the type accordion"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion::ingredientTypes.*"
+    timeout: 5000
+    label: "Wait for type accordion to be closed"
+
+- tapOn:
+    id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::SeasonalityCalendar"
+    label: "Expand seasonality accordion"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::SeasonalityCalendar::.*"
+    timeout: 5000
+    label: "Wait for seasonality accordion to be expanded"
 
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::SeasonalityCalendar::5"
     label: "Select may for seasonality"
+
+- tapOn:
+    id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::SeasonalityCalendar"
+    label: "Collapse seasonality accordion"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::SeasonalityCalendar::.*"
+    timeout: 5000
+    label: "Wait for seasonality accordion to be closed"
 
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::ConfirmButton"

@@ -14,24 +14,33 @@ appId: "com.recipedia"
     visible:
       id: "${PREFIX}::ValidationQueue::Ingredient::ItemDialog::AddModal::Unit::CustomTextInput"
     timeout: 30000
-    label: "Wait for menu button to be visible"
+    label: "Wait for add modal to be visible"
 
 - tapOn:
-    id: "${PREFIX}::ValidationQueue::Ingredient::ItemDialog::AddModal::Menu::Button"
-    label: "Open ingredient type menu"
+    id: "${PREFIX}::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion"
+    label: "Expand ingredient type accordion"
 
 - extendedWaitUntil:
     visible:
-      id: "menu-item"
-    timeout: 10000
-    label: "Wait for menu items to be visible"
+      id: "${PREFIX}::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion::ingredientTypes.*"
+    timeout: 5000
+    label: "Wait for type accordion to be expanded"
 
-- tapOn:
-    id: "menu-item"
-    label: "Select ingredient type"
+- scrollUntilVisible:
+    element:
+      id: "${PREFIX}::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion::ingredientTypes.baking"
+    direction: DOWN
+    speed: 20
+    timeout: 1200000
+    centerElement: true
+    label: "Action - Scroll to baking ingredient type"
 
 - waitForAnimationToEnd:
-    label: "Wait for menu to disappear"
+    label: "Wait for scroll animation to finish"
+
+- tapOn:
+    id: "${PREFIX}::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion::ingredientTypes.baking"
+    label: "Select Baking ingredient type"
 
 - assertVisible:
     id: "${PREFIX}::ValidationQueue::Ingredient::ItemDialog::AddModal::ConfirmButton"

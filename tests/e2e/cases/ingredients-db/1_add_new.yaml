@@ -64,16 +64,16 @@ tags:
     label: "Assert - Verify new ingredient name displayed in input"
 
 - tapOn:
-    id: "IngredientsSettings::ItemDialog::AddModal::Menu::Button"
-    label: "Action - Open type dropdown"
-
-- runFlow:
-    file: "../../asserts/parameters/ingredients/en/assertTypeMenu.yaml"
-    label: "Assert - Verify type menu items are in English alphabetical order"
+    id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion"
+    label: "Action - Expand type accordion"
 
 - tapOn:
-    text: "Vegetable"
+    id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion::ingredientTypes.vegetable"
     label: "Action - Select vegetable type"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::EditModal::TypeAccordion"
+    label: "Action - Collapse type accordion"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::Unit::CustomTextInput"
@@ -104,6 +104,10 @@ tags:
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar"
+    label: "Action - Expand seasonality accordion"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::12"

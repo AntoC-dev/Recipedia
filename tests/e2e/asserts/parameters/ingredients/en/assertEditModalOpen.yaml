@@ -6,36 +6,26 @@ appId: "com.recipedia"
     label: "Edit ingredient modal title is displayed"
 
 - assertVisible:
+    id: "IngredientsSettings::ItemDialog::EditModal::FormHint"
+    text: "Name and type are required. The more details you provide, the better your experience."
+    label: "Form hint text is displayed"
+
+- assertVisible:
     id: "IngredientsSettings::ItemDialog::EditModal::Name::CustomTextInput"
     text: "Lettuce"
     label: "Ingredient name input field shows current value"
 
 - assertVisible:
-    id: "IngredientsSettings::ItemDialog::EditModal::Type"
-    text: "Type:"
-    label: "Type label is visible"
-
-- assertVisible:
-    id: "IngredientsSettings::ItemDialog::EditModal::Menu::Button-text"
-    text: "Vegetable"
-    label: "Type dropdown menu button is visible"
-
-- assertVisible:
-    id: "IngredientsSettings::ItemDialog::EditModal::Menu::Button"
-    label: "Type dropdown menu button is visible"
-
-- assertVisible:
     id: "IngredientsSettings::ItemDialog::EditModal::Unit::CustomTextInput"
     label: "Unit input field is visible"
 
-- assertVisible:
-    id: "IngredientsSettings::ItemDialog::EditModal::SeasonalityCalendar::SeasonalityText"
-    text: "Seasonality:"
-    label: "Seasonality calendar label is visible"
-
 - runFlow:
-    file: "assertSeasonalityCalendarEditModal.yaml"
-    label: "Verify all 12 months are displayed in seasonality calendar"
+    file: "../../../dialogs/en/assertItemDialogAccordions.yaml"
+    env:
+      MODAL_TEST_ID: "IngredientsSettings::ItemDialog::EditModal"
+      TYPE_DESCRIPTION: "Vegetable"
+      SEASONALITY_DESCRIPTION: "May, June, July, August, September, October"
+    label: "Assert - Verify type and seasonality accordions"
 
 - assertVisible:
     id: "IngredientsSettings::ItemDialog::EditModal::CancelButton-text"

@@ -53,12 +53,16 @@ tags:
     label: "Wait for keyboard to dismiss"
 
 - tapOn:
-    id: "IngredientsSettings::ItemDialog::AddModal::Menu::Button"
-    label: "Action - Open type dropdown"
+    id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion"
+    label: "Action - Expand type accordion"
 
 - tapOn:
-    text: "Cereal"
-    label: "Action - Select spice type"
+    id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion::ingredientTypes.cereal"
+    label: "Action - Select cereal type"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion"
+    label: "Action - Collapse type accordion"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::ConfirmButton"

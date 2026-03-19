@@ -125,21 +125,22 @@ tags:
     label: "Assert - Helper text visible for similar match"
 
 - tapOn:
-    id: "IngredientsSettings::ItemDialog::AddModal::Menu::Button"
-    label: "Action - Open type menu"
+    id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion"
+    label: "Action - Expand type accordion"
 
 - extendedWaitUntil:
     visible:
-      text: "Cereal"
-    timeout: 30000
-    label: "Wait for select menu to appear"
+      id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion::ingredientTypes.cereal"
+    timeout: 5000
+    label: "Wait for type accordion to be expanded"
 
 - tapOn:
-    text: "Cereal"
+    id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion::ingredientTypes.cereal"
     label: "Action - Select Cereal type"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion"
+    label: "Action - Collapse type accordion"
 
 - assertVisible:
     id: "IngredientsSettings::ItemDialog::AddModal::ConfirmButton"
