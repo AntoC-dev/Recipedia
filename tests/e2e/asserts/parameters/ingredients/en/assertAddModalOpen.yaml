@@ -34,9 +34,7 @@ appId: "com.recipedia"
     file: "../../../dialogs/en/assertItemDialogAccordions.yaml"
     env:
       MODAL_TEST_ID: "IngredientsSettings::ItemDialog::AddModal"
-      TYPE_DESCRIPTION: ""
-      SEASONALITY_DESCRIPTION: ""
-    label: "Assert - Verify type and seasonality accordions"
+    label: "Assert - Verify type and seasonality accordion headers and items"
 
 - assertVisible:
     id: "IngredientsSettings::ItemDialog::AddModal::CancelButton-text"

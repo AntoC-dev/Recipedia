@@ -34,9 +34,7 @@ appId: "com.recipedia"
     file: "../../dialogs/fr/assertItemDialogAccordions.yaml"
     env:
       MODAL_TEST_ID: "IngredientsSettings::ItemDialog::AddModal"
-      TYPE_DESCRIPTION: ""
-      SEASONALITY_DESCRIPTION: ""
-    label: "Assert - Verify type and seasonality accordions are in French"
+    label: "Assert - Verify type and seasonality accordion headers and items are in French"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::CancelButton"

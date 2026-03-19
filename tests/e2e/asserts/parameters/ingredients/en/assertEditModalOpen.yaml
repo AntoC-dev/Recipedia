@@ -20,12 +20,12 @@ appId: "com.recipedia"
     label: "Unit input field is visible"
 
 - runFlow:
-    file: "../../../dialogs/en/assertItemDialogAccordions.yaml"
+    file: "../../../dialogs/en/assertItemDialogAccordionsWithDescription.yaml"
     env:
       MODAL_TEST_ID: "IngredientsSettings::ItemDialog::EditModal"
       TYPE_DESCRIPTION: "Vegetable"
       SEASONALITY_DESCRIPTION: "May, June, July, August, September, October"
-    label: "Assert - Verify type and seasonality accordions"
+      label: "Assert - Verify type and seasonality accordion headers with descriptions and items"
 
 - assertVisible:
     id: "IngredientsSettings::ItemDialog::EditModal::CancelButton-text"

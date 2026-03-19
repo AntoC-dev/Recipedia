@@ -6,12 +6,12 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "${MODAL_TEST_ID}::TypeAccordion"
-          text: "Type"
-          label: "Type accordion header text is visible on android"
+          text: "Type, ${TYPE_DESCRIPTION}"
+          label: "Type accordion header with description is visible on android"
       - assertVisible:
           id: "${MODAL_TEST_ID}::SeasonalityCalendar"
-          text: "Seasonality"
-          label: "Seasonality accordion header text is visible on android"
+          text: "Seasonality, ${SEASONALITY_DESCRIPTION}"
+          label: "Seasonality accordion header with description is visible on android"
 
 - runFlow:
     when:
@@ -19,12 +19,12 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "${MODAL_TEST_ID}::TypeAccordion"
-          text: "Type, 󰅀"
-          label: "Type accordion header text is visible on ios"
+          text: "Type, ${TYPE_DESCRIPTION}, 󰅀"
+          label: "Type accordion header with description is visible on ios"
       - assertVisible:
           id: "${MODAL_TEST_ID}::SeasonalityCalendar"
-          text: "Seasonality, 󰅀"
-          label: "Seasonality accordion header text is visible on ios"
+          text: "Seasonality, ${SEASONALITY_DESCRIPTION}, 󰅀"
+          label: "Seasonality accordion header with description is visible on ios"
 
 - runFlow:
     file: "assertItemDialogAccordionItems.yaml"
