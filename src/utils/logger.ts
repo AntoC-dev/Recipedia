@@ -34,7 +34,7 @@
  */
 
 import { consoleTransport, fileAsyncTransport, logger } from 'react-native-logs';
-import * as FileSystem from 'expo-file-system/legacy';
+import { File, Paths } from 'expo-file-system';
 
 /**
  * Shared logger configuration
@@ -97,7 +97,8 @@ const log = __DEV__
       severity: 'info',
       transport: fileAsyncTransport,
       transportOptions: {
-        FS: FileSystem,
+        FS: { File, Paths },
+        filePath: Paths.document.uri,
         fileName: 'recipedia-logs.txt',
       },
     });

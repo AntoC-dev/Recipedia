@@ -58,7 +58,6 @@ import { RecipeDatabase } from '@utils/RecipeDatabase';
 import {
   copyDatasetImages,
   deleteFile,
-  getDirectoryUri,
   init as initFileSystem,
   isTemporaryImageUri,
   transformDatasetRecipeImages,
@@ -228,7 +227,7 @@ export const RecipeDatabaseProvider: React.FC<{
     const initializeDatabase = async () => {
       try {
         databaseLogger.debug('Initializing file system');
-        await initFileSystem();
+        initFileSystem();
         databaseLogger.debug('File system initialized');
 
         databaseLogger.info('Initializing database');
@@ -258,10 +257,7 @@ export const RecipeDatabaseProvider: React.FC<{
                 await db.addMultipleIngredients(dataset.ingredients);
                 await db.addMultipleTags(dataset.tags);
 
-                const recipesWithFullImageUris = transformDatasetRecipeImages(
-                  dataset.recipes,
-                  getDirectoryUri()
-                );
+                const recipesWithFullImageUris = transformDatasetRecipeImages(dataset.recipes);
 
                 databaseLogger.info('Pre-scaling recipes to default persons count', {
                   defaultPersons,

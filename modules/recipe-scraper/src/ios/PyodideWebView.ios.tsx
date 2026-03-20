@@ -15,7 +15,7 @@ import type {
     WebViewHttpErrorEvent,
 } from 'react-native-webview/lib/WebViewTypes';
 import {Asset} from 'expo-asset';
-import * as FileSystem from 'expo-file-system/legacy';
+import { File } from 'expo-file-system';
 import {PyodideBridge} from './PyodideBridge';
 
 // The bundled HTML file is generated at build time by setup-pyodide.sh
@@ -44,9 +44,7 @@ export function PyodideWebView(): React.ReactElement | null {
                     throw new Error('Failed to get local URI for Pyodide bundle');
                 }
 
-                const content = await FileSystem.readAsStringAsync(
-                    asset.localUri,
-                );
+                const content = await new File(asset.localUri).text();
 
                 if (!mounted) return;
 
