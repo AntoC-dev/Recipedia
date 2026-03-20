@@ -135,6 +135,20 @@ tags:
     id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar"
     label: "Action - Expand seasonality accordion"
 
+- extendedWaitUntil:
+    visible:
+      id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::.*"
+    timeout: 5000
+    label: "Wait for seasonality accordion to expand"
+
+- scrollUntilVisible:
+    element:
+      id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::12"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to december item"
+
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::12"
     label: "Action - Add december to seasonality"

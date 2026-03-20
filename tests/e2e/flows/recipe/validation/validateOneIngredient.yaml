@@ -41,6 +41,16 @@ appId: "com.recipedia"
     id: "${PREFIX}::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion::ingredientTypes.baking"
     label: "Select Baking ingredient type"
 
+- scrollUntilVisible:
+    element:
+      id: "${PREFIX}::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion"
+    direction: UP
+    speed: 20
+    label: "Action - Scroll up to ensure accordion is visible"
+
+- waitForAnimationToEnd:
+    label: "Wait for scroll animation to finish"
+
 - tapOn:
     id: "${PREFIX}::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion"
     label: "Collapse ingredient type accordion"

@@ -56,6 +56,14 @@ appId: "com.recipedia"
     id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion::ingredientTypes.legumes"
     label: "Select legumes type"
 
+- scrollUntilVisible:
+    element:
+      id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion"
+    direction: UP
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll up to ensure type accordion is visible"
+
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion"
     label: "Collapse type accordion"
