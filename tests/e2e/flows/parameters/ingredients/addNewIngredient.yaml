@@ -48,6 +48,10 @@ appId: "com.recipedia"
     id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion::ingredientTypes.legumes"
     label: "Select legumes type"
 
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion"
+    label: "Collapse type accordion"
+
 - assertVisible:
     id: "IngredientsSettings::ItemDialog::AddModal::ConfirmButton"
     enabled: true

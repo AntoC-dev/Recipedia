@@ -15,7 +15,6 @@ appId: "com.recipedia"
       id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.baking"
     direction: DOWN
     speed: 20
-    centerElement: true
     label: "Action - Scroll to baking ingredient type"
 
 - waitForAnimationToEnd:

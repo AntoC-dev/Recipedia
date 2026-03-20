@@ -32,7 +32,6 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 20
     timeout: 1200000
-    centerElement: true
     label: "Action - Scroll to baking ingredient type"
 
 - waitForAnimationToEnd:
@@ -41,6 +40,10 @@ appId: "com.recipedia"
 - tapOn:
     id: "${PREFIX}::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion::ingredientTypes.baking"
     label: "Select Baking ingredient type"
+
+- tapOn:
+    id: "${PREFIX}::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion"
+    label: "Collapse ingredient type accordion"
 
 - assertVisible:
     id: "${PREFIX}::ValidationQueue::Ingredient::ItemDialog::AddModal::ConfirmButton"
