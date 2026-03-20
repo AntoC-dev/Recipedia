@@ -40,9 +40,17 @@ appId: "com.recipedia"
 
 - extendedWaitUntil:
     visible:
-      id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion::ingredientTypes.legumes"
+      id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion::ingredientTypes.*"
     timeout: 30000
     label: "Wait for legumes type to appear in accordion"
+
+- scrollUntilVisible:
+    element:
+      id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion::ingredientTypes.legumes"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to legumes item"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion::ingredientTypes.legumes"

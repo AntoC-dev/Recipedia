@@ -27,7 +27,6 @@ tags:
     centerElement: true
     label: "Action - Scroll to ingredients section"
 
-
 - waitForAnimationToEnd
 
 - tapOn:
@@ -143,13 +142,29 @@ tags:
 
 - extendedWaitUntil:
     visible:
-      id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion::ingredientTypes.fish"
+      id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion::ingredientTypes.*"
     timeout: 5000
     label: "Wait for type accordion to be expanded"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion::ingredientTypes.fish"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to Fish item"
 
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion::ingredientTypes.fish"
     label: "Action - Select Fish type"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion"
+    direction: UP
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll up to ensure type accordion is visible"
 
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion"
@@ -188,6 +203,14 @@ tags:
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::SeasonalityCalendar"
     label: "Action - Expand seasonality accordion"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::SeasonalityCalendar::2"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to february item"
 
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::SeasonalityCalendar::2"
