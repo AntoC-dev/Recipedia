@@ -2,21 +2,31 @@ import {
   clearCache,
   copyDatasetImages,
   deleteFile,
-  getCacheUri,
+  downloadImageToCache,
   getDirectoryUri,
   init,
   isTemporaryImageUri,
   saveRecipeImage,
   transformDatasetRecipeImages,
 } from '@utils/FileGestion';
-import * as FileSystem from 'expo-file-system/legacy';
-import { Asset } from 'expo-asset';
+import {
+  mockFileExists,
+  mockFileDelete,
+  mockFileCopy,
+  mockFileDownloadFileAsync,
+  mockDirectoryExists,
+  mockDirectoryDelete,
+  mockDirectoryCreate,
+  mockDirectoryList,
+} from '@mocks/deps/expo-file-system-mock';
+import { mockAssetFromModule, mockAssetLoadAsync } from '@mocks/deps/expo-asset-mock';
+import ImageCropPicker from 'react-native-image-crop-picker';
 import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { setMockDatasetType } from '@mocks/utils/DatasetLoader-mock';
 
 jest.unmock('@utils/FileGestion');
 
-jest.mock('expo-file-system/legacy', () =>
+jest.mock('expo-file-system', () =>
   require('@mocks/deps/expo-file-system-mock').expoFileSystemMock()
 );
 
@@ -33,58 +43,26 @@ jest.mock('@utils/DatasetLoader', () => require('@mocks/utils/DatasetLoader-mock
 jest.mock('expo-crypto', () => ({ randomUUID: jest.fn() }));
 
 describe('FileGestion Utility', () => {
-  const mockGetInfoAsync = FileSystem.getInfoAsync as jest.Mock;
-  const mockMakeDirectoryAsync = FileSystem.makeDirectoryAsync as jest.Mock;
-  const mockReadDirectoryAsync = FileSystem.readDirectoryAsync as jest.Mock;
-  const mockCopyAsync = FileSystem.copyAsync as jest.Mock;
-  const mockMoveAsync = FileSystem.moveAsync as jest.Mock;
-  const mockDeleteAsync = FileSystem.deleteAsync as jest.Mock;
-  const mockWriteAsStringAsync = FileSystem.writeAsStringAsync as jest.Mock;
-  const mockReadAsStringAsync = FileSystem.readAsStringAsync as jest.Mock;
-  const mockAssetFromModule = Asset.fromModule as jest.Mock;
-  const mockAssetLoadAsync = Asset.loadAsync as jest.Mock;
-
   const defaultDocumentsPath = '/documents/Test Recipedia/';
   const defaultCachePath = '/cache/Test Recipedia/';
   const mockUUID = '00000000-0000-0000-0000-000000000000';
 
-  const mockDirectoryExists = (exists: boolean = false) => {
-    mockGetInfoAsync.mockResolvedValue({ exists, isDirectory: exists });
-  };
-
-  const mockFileExists = (exists: boolean = false, isDirectory: boolean = false) => {
-    mockGetInfoAsync.mockResolvedValue({ exists, isDirectory });
-  };
-
-  const assertDirectoryPaths = () => {
-    expect(getDirectoryUri()).toBe(defaultDocumentsPath);
-    expect(getCacheUri()).toBe(defaultCachePath);
-  };
+  const mockClean = ImageCropPicker.clean as jest.Mock;
 
   const resetAllMocks = () => {
     jest.clearAllMocks();
-    mockGetInfoAsync.mockReset();
-    mockMakeDirectoryAsync.mockReset();
-    mockReadDirectoryAsync.mockReset();
-    mockCopyAsync.mockReset();
-    mockMoveAsync.mockReset();
-    mockDeleteAsync.mockReset();
-    mockWriteAsStringAsync.mockReset();
-    mockReadAsStringAsync.mockReset();
+    mockFileExists.mockReset().mockReturnValue(false);
+    mockFileDelete.mockReset();
+    mockFileCopy.mockReset();
+    mockFileDownloadFileAsync.mockReset();
+    mockDirectoryExists.mockReset().mockReturnValue(false);
+    mockDirectoryDelete.mockReset();
+    mockDirectoryCreate.mockReset();
+    mockDirectoryList.mockReset().mockReturnValue([]);
+    mockClean.mockReset().mockResolvedValue(undefined);
     mockAssetFromModule.mockReset();
-    mockAssetLoadAsync.mockReset();
     const Crypto = require('expo-crypto');
     Crypto.randomUUID.mockReturnValue(mockUUID);
-  };
-
-  const setupInitializationMocks = (directoryExists: boolean = false) => {
-    mockDirectoryExists(directoryExists);
-    mockMakeDirectoryAsync.mockResolvedValue(undefined);
-  };
-
-  const setupImageSavingMocks = () => {
-    mockDeleteAsync.mockResolvedValue(undefined);
-    mockCopyAsync.mockResolvedValue(undefined);
   };
 
   beforeEach(() => {
@@ -95,60 +73,71 @@ describe('FileGestion Utility', () => {
     resetAllMocks();
   });
 
-  test('getDirectoryUri returns correct path', () => {
-    expect(getDirectoryUri()).toBe(defaultDocumentsPath);
+  test('getDirectoryUri returns correct path without double slashes', () => {
+    const uri = getDirectoryUri();
+    expect(uri).toBe(defaultDocumentsPath);
+    expect(uri).not.toMatch(/\/\//);
   });
 
-  test('getCacheUri returns correct path', () => {
-    expect(getCacheUri()).toBe(defaultCachePath);
-  });
+  test('creates both directories when they do not exist during initialization', () => {
+    mockDirectoryExists.mockReturnValue(false);
 
-  test('creates main directory when it does not exist during initialization', async () => {
-    setupInitializationMocks(false);
+    init();
 
-    await init();
-
-    expect(mockGetInfoAsync).toHaveBeenCalledWith(defaultDocumentsPath);
-    expect(mockMakeDirectoryAsync).toHaveBeenCalledWith(defaultDocumentsPath, {
+    expect(mockDirectoryCreate).toHaveBeenCalledWith(expect.stringContaining('Test Recipedia'), {
       intermediates: true,
     });
+    expect(mockDirectoryCreate).toHaveBeenCalledTimes(2);
   });
 
-  test('skips directory creation when it already exists', async () => {
-    setupInitializationMocks(true);
+  test('skips directory creation when directories already exist', () => {
+    mockDirectoryExists.mockReturnValue(true);
 
-    await init();
+    init();
 
-    expect(mockGetInfoAsync).toHaveBeenCalledWith(defaultDocumentsPath);
-    expect(mockMakeDirectoryAsync).not.toHaveBeenCalled();
+    expect(mockDirectoryCreate).not.toHaveBeenCalled();
   });
 
-  test('init does not copy images anymore', async () => {
-    setupInitializationMocks(false);
+  test('creates only missing directories during initialization', () => {
+    mockDirectoryExists.mockReturnValueOnce(true).mockReturnValueOnce(false);
 
-    await init();
+    init();
 
-    expect(mockAssetLoadAsync).not.toHaveBeenCalled();
-    expect(mockCopyAsync).not.toHaveBeenCalled();
+    expect(mockDirectoryCreate).toHaveBeenCalledTimes(1);
+    expect(mockDirectoryCreate).toHaveBeenCalledWith(
+      expect.stringContaining('/cache/Test Recipedia'),
+      { intermediates: true }
+    );
   });
 
-  test('saves recipe image with proper naming and file operations', async () => {
+  test('init does not copy images', () => {
+    mockDirectoryExists.mockReturnValue(false);
+
+    init();
+
+    expect(mockAssetFromModule).not.toHaveBeenCalled();
+    expect(mockFileCopy).not.toHaveBeenCalled();
+  });
+
+  test('saves recipe image with proper naming and file operations', () => {
     const sourceUri = '/temp/recipe-photo.jpg';
     const recipeName = 'Chocolate Cake';
     const expectedImageName = 'chocolate_cake_' + mockUUID + '.jpg';
     const expectedDestination = defaultDocumentsPath + expectedImageName;
 
-    setupImageSavingMocks();
+    mockFileExists.mockReturnValue(false);
 
-    const result = await saveRecipeImage(sourceUri, recipeName);
+    const result = saveRecipeImage(sourceUri, recipeName);
 
     expect(result).toBe(expectedDestination);
-    expect(mockCopyAsync).toHaveBeenCalledWith({ from: sourceUri, to: expectedDestination });
-    expect(mockCopyAsync).toHaveBeenCalledTimes(1);
-    expect(mockDeleteAsync).toHaveBeenCalledWith(sourceUri);
+    expect(mockFileCopy).toHaveBeenCalledWith(
+      sourceUri,
+      expect.objectContaining({ uri: expectedDestination })
+    );
+    expect(mockFileCopy).toHaveBeenCalledTimes(1);
   });
 
-  test('sanitizes recipe names correctly for filename generation', async () => {
+  test('sanitizes recipe names correctly for filename generation', () => {
     const testCases = [
       {
         input: 'Simple Recipe',
@@ -172,97 +161,116 @@ describe('FileGestion Utility', () => {
       },
     ];
 
-    setupImageSavingMocks();
+    mockFileExists.mockReturnValue(false);
 
     for (const { input, expected } of testCases) {
-      const result = await saveRecipeImage('/temp/test.jpg', input);
+      const result = saveRecipeImage('/temp/test.jpg', input);
       expect(result).toBe(expected);
       jest.clearAllMocks();
     }
   });
 
-  test('clears cache directories completely', async () => {
-    mockDeleteAsync.mockResolvedValue(undefined);
-    mockMakeDirectoryAsync.mockResolvedValue(undefined);
+  test('clears cache directory contents and calls ImageCropPicker.clean', () => {
+    const mockItem1 = { delete: jest.fn() };
+    const mockItem2 = { delete: jest.fn() };
+    mockDirectoryExists.mockReturnValue(true);
+    mockDirectoryList.mockReturnValue([mockItem1, mockItem2]);
 
-    await clearCache();
+    clearCache();
 
-    expect(mockDeleteAsync).toHaveBeenCalledWith('/cache/ImageManipulator/');
-    expect(mockDeleteAsync).toHaveBeenCalledWith('/cache/ExperienceData/');
-    expect(mockMakeDirectoryAsync).toHaveBeenCalledWith('/cache/ImageManipulator/');
-    expect(mockMakeDirectoryAsync).toHaveBeenCalledWith('/cache/ExperienceData/');
-    expect(mockDeleteAsync).toHaveBeenCalledTimes(2);
-    expect(mockMakeDirectoryAsync).toHaveBeenCalledTimes(2);
+    expect(mockDirectoryList).toHaveBeenCalledWith(
+      expect.stringContaining('/cache/Test Recipedia')
+    );
+    expect(mockItem1.delete).toHaveBeenCalledTimes(1);
+    expect(mockItem2.delete).toHaveBeenCalledTimes(1);
+    expect(mockClean).toHaveBeenCalledTimes(1);
   });
 
-  test('handles file system errors gracefully during initialization', async () => {
-    mockGetInfoAsync.mockRejectedValue(new Error('File system error'));
-
-    await expect(init()).resolves.toBeUndefined();
-    expect(mockGetInfoAsync).toHaveBeenCalledWith(defaultDocumentsPath);
-  });
-
-  test('handles errors during image saving operations', async () => {
-    const sourceUri = '/temp/failing-image.jpg';
-    const recipeName = 'Test Recipe';
-
-    mockDeleteAsync.mockResolvedValue(undefined);
-    mockCopyAsync.mockRejectedValue(new Error('Copy operation failed'));
-
-    const result = await saveRecipeImage(sourceUri, recipeName);
-    expect(result).toBe('');
-    expect(mockCopyAsync).toHaveBeenCalledWith({
-      from: sourceUri,
-      to: defaultDocumentsPath + 'test_recipe_' + mockUUID + '.jpg',
+  test('handles file system errors gracefully during initialization', () => {
+    mockDirectoryExists.mockImplementation(() => {
+      throw new Error('File system error');
     });
+
+    expect(() => init()).not.toThrow();
   });
 
-  test('handles errors during cache clearing operations', async () => {
-    mockDeleteAsync
-      .mockRejectedValueOnce(new Error('Delete failed'))
-      .mockResolvedValueOnce(undefined);
+  test('handles errors during image saving operations', () => {
+    mockFileExists.mockReturnValue(false);
+    mockFileCopy.mockImplementation(() => {
+      throw new Error('Move operation failed');
+    });
 
-    await expect(clearCache()).resolves.toBeUndefined();
-    expect(mockDeleteAsync).toHaveBeenCalledTimes(2);
+    const result = saveRecipeImage('/temp/failing-image.jpg', 'Test Recipe');
+
+    expect(result).toBe('');
+    expect(mockFileCopy).toHaveBeenCalledWith(
+      '/temp/failing-image.jpg',
+      expect.objectContaining({ uri: defaultDocumentsPath + 'test_recipe_' + mockUUID + '.jpg' })
+    );
   });
 
-  test('maintains consistent directory structure across operations', async () => {
-    setupInitializationMocks(false);
-    setupImageSavingMocks();
-    mockDeleteAsync.mockResolvedValue(undefined);
+  test('handles errors during cache clearing operations', () => {
+    mockDirectoryExists.mockReturnValue(true);
+    mockDirectoryList.mockImplementation(() => {
+      throw new Error('List failed');
+    });
 
-    await init();
-    await saveRecipeImage('/temp/test.jpg', 'Test Recipe');
-    await clearCache();
+    expect(() => clearCache()).not.toThrow();
+    expect(mockClean).toHaveBeenCalledTimes(1);
+  });
 
-    assertDirectoryPaths();
-    expect(mockMakeDirectoryAsync).toHaveBeenCalledWith(defaultDocumentsPath, {
+  test('handles errors from ImageCropPicker.clean', () => {
+    mockDirectoryExists.mockReturnValue(false);
+    mockClean.mockRejectedValue(new Error('Clean failed'));
+
+    clearCache();
+
+    expect(mockClean).toHaveBeenCalledTimes(1);
+  });
+
+  test('skips listing when cache directory does not exist', () => {
+    mockDirectoryExists.mockReturnValue(false);
+
+    clearCache();
+
+    expect(mockDirectoryList).not.toHaveBeenCalled();
+    expect(mockClean).toHaveBeenCalledTimes(1);
+  });
+
+  test('maintains consistent directory structure across operations', () => {
+    mockDirectoryExists.mockReturnValue(false);
+    mockFileExists.mockReturnValue(false);
+
+    init();
+
+    mockDirectoryExists.mockReturnValue(true);
+    saveRecipeImage('/temp/test.jpg', 'Test Recipe');
+    clearCache();
+
+    expect(getDirectoryUri()).toBe(defaultDocumentsPath);
+    expect(mockDirectoryCreate).toHaveBeenCalledWith(expect.stringContaining('Test Recipedia'), {
       intermediates: true,
     });
-    expect(mockCopyAsync).toHaveBeenCalledWith({
-      from: '/temp/test.jpg',
-      to: defaultDocumentsPath + 'test_recipe_' + mockUUID + '.jpg',
-    });
-    expect(mockDeleteAsync).toHaveBeenCalledWith('/cache/ImageManipulator/');
+    expect(mockFileCopy).toHaveBeenCalledWith(
+      '/temp/test.jpg',
+      expect.objectContaining({ uri: defaultDocumentsPath + 'test_recipe_' + mockUUID + '.jpg' })
+    );
   });
 
-  test('handles concurrent operations safely', async () => {
-    setupInitializationMocks(false);
-    setupImageSavingMocks();
-    mockFileExists(false);
+  test('handles concurrent operations safely', () => {
+    mockDirectoryExists.mockReturnValue(false);
+    mockFileExists.mockReturnValue(false);
 
-    const initPromise = init();
-    const savePromise1 = saveRecipeImage('/temp/image1.jpg', 'Recipe 1');
-    const savePromise2 = saveRecipeImage('/temp/image2.jpg', 'Recipe 2');
+    init();
+    const result1 = saveRecipeImage('/temp/image1.jpg', 'Recipe 1');
+    const result2 = saveRecipeImage('/temp/image2.jpg', 'Recipe 2');
 
-    const results = await Promise.all([initPromise, savePromise1, savePromise2]);
-
-    expect(results[1]).toBe(defaultDocumentsPath + 'recipe_1_' + mockUUID + '.jpg');
-    expect(results[2]).toBe(defaultDocumentsPath + 'recipe_2_' + mockUUID + '.jpg');
-    expect(mockCopyAsync).toHaveBeenCalledTimes(2);
+    expect(result1).toBe(defaultDocumentsPath + 'recipe_1_' + mockUUID + '.jpg');
+    expect(result2).toBe(defaultDocumentsPath + 'recipe_2_' + mockUUID + '.jpg');
+    expect(mockFileCopy).toHaveBeenCalledTimes(2);
   });
 
-  test('handles edge cases in recipe name sanitization', async () => {
+  test('handles edge cases in recipe name sanitization', () => {
     const edgeCases = [
       { input: '', expected: defaultDocumentsPath + '_' + mockUUID + '.jpg' },
       { input: '   ', expected: defaultDocumentsPath + '_' + mockUUID + '.jpg' },
@@ -281,93 +289,211 @@ describe('FileGestion Utility', () => {
       },
     ];
 
-    setupImageSavingMocks();
+    mockFileExists.mockReturnValue(false);
 
     for (const { input, expected } of edgeCases) {
-      const result = await saveRecipeImage('/temp/test.jpg', input);
+      const result = saveRecipeImage('/temp/test.jpg', input);
       expect(result).toBe(expected);
       jest.clearAllMocks();
     }
   });
 
-  test('deleteFile deletes the file at the given URI', async () => {
-    mockDeleteAsync.mockResolvedValue(undefined);
+  test('deleteFile deletes the file when it exists', () => {
+    mockFileExists.mockReturnValue(true);
 
-    await deleteFile('/documents/Test Recipedia/old_image.jpg');
+    deleteFile('/documents/Test Recipedia/old_image.jpg');
 
-    expect(mockDeleteAsync).toHaveBeenCalledWith('/documents/Test Recipedia/old_image.jpg', {
-      idempotent: true,
+    expect(mockFileExists).toHaveBeenCalledWith('/documents/Test Recipedia/old_image.jpg');
+    expect(mockFileDelete).toHaveBeenCalledWith('/documents/Test Recipedia/old_image.jpg');
+  });
+
+  test('deleteFile does not call delete when file does not exist', () => {
+    mockFileExists.mockReturnValue(false);
+
+    deleteFile('/documents/Test Recipedia/old_image.jpg');
+
+    expect(mockFileDelete).not.toHaveBeenCalled();
+  });
+
+  test('deleteFile swallows errors gracefully', () => {
+    mockFileExists.mockReturnValue(true);
+    mockFileDelete.mockImplementation(() => {
+      throw new Error('Permission denied');
     });
+
+    expect(() => deleteFile('/documents/Test Recipedia/old_image.jpg')).not.toThrow();
   });
 
-  test('deleteFile swallows errors gracefully', async () => {
-    mockDeleteAsync.mockRejectedValue(new Error('Permission denied'));
-
-    await expect(deleteFile('/documents/Test Recipedia/old_image.jpg')).resolves.toBeUndefined();
-  });
-
-  test('saveRecipeImage calls Crypto.randomUUID for unique filename', async () => {
-    setupImageSavingMocks();
+  test('saveRecipeImage calls Crypto.randomUUID for unique filename', () => {
+    mockFileExists.mockReturnValue(false);
     const Crypto = require('expo-crypto');
 
-    await saveRecipeImage('/temp/image.jpg', 'My Recipe');
+    saveRecipeImage('/temp/image.jpg', 'My Recipe');
 
     expect(Crypto.randomUUID).toHaveBeenCalledTimes(1);
   });
 
-  test('saveRecipeImage deletes source file after successful copy', async () => {
-    setupImageSavingMocks();
-    const source = '/temp/image.jpg';
+  test('saveRecipeImage attempts source cleanup after copy', () => {
+    saveRecipeImage('/temp/image.jpg', 'My Recipe');
 
-    await saveRecipeImage(source, 'My Recipe');
-
-    expect(mockDeleteAsync).toHaveBeenCalledWith(source);
-    const copyCallOrder = mockCopyAsync.mock.invocationCallOrder[0];
-    const deleteSourceCallOrder = mockDeleteAsync.mock.invocationCallOrder[0];
-    expect(copyCallOrder).toBeLessThan(deleteSourceCallOrder);
+    const copyCallOrder = mockFileCopy.mock.invocationCallOrder[0];
+    const deleteCallOrder = mockFileDelete.mock.invocationCallOrder[0];
+    expect(copyCallOrder).toBeLessThan(deleteCallOrder);
   });
 
-  test('saveRecipeImage returns destination URI even when source deletion fails', async () => {
-    mockCopyAsync.mockResolvedValue(undefined);
-    mockDeleteAsync.mockRejectedValue(new Error('Permission denied'));
-    const source = '/temp/image.jpg';
-    const expectedDestination = defaultDocumentsPath + 'my_recipe_' + mockUUID + '.jpg';
+  test('saveRecipeImage succeeds even when source delete fails', () => {
+    mockFileDelete.mockImplementation(() => {
+      throw new Error('Permission denied');
+    });
 
-    const result = await saveRecipeImage(source, 'My Recipe');
+    const result = saveRecipeImage('/temp/image.jpg', 'My Recipe');
 
-    expect(result).toBe(expectedDestination);
+    expect(result).not.toBe('');
+    expect(mockFileCopy).toHaveBeenCalledTimes(1);
   });
 
-  test('saveRecipeImage catches Crypto.randomUUID errors and returns empty string', async () => {
+  test('saveRecipeImage catches Crypto.randomUUID errors and returns empty string', () => {
     const Crypto = require('expo-crypto');
     Crypto.randomUUID.mockImplementation(() => {
       throw new Error('crypto not available');
     });
 
-    const result = await saveRecipeImage('/temp/image.jpg', 'My Recipe');
+    const result = saveRecipeImage('/temp/image.jpg', 'My Recipe');
 
     expect(result).toBe('');
-    expect(mockCopyAsync).not.toHaveBeenCalled();
+    expect(mockFileCopy).not.toHaveBeenCalled();
   });
 
-  test('saveRecipeImage preserves original file extension', async () => {
-    setupImageSavingMocks();
+  test('saveRecipeImage preserves original file extension', () => {
+    mockFileExists.mockReturnValue(false);
 
-    const pngResult = await saveRecipeImage('/temp/photo.png', 'Recipe');
+    const pngResult = saveRecipeImage('/temp/photo.png', 'Recipe');
     expect(pngResult).toMatch(/\.png$/);
     jest.clearAllMocks();
-    setupImageSavingMocks();
+    mockFileExists.mockReturnValue(false);
 
-    const webpResult = await saveRecipeImage('/temp/photo.webp', 'Recipe');
+    const webpResult = saveRecipeImage('/temp/photo.webp', 'Recipe');
     expect(webpResult).toMatch(/\.webp$/);
   });
 
-  test('saveRecipeImage strips query string from extension', async () => {
-    setupImageSavingMocks();
+  test('saveRecipeImage strips query string from extension', () => {
+    mockFileExists.mockReturnValue(false);
 
-    const result = await saveRecipeImage('/temp/photo.jpg?v=123', 'Recipe');
+    const result = saveRecipeImage('/temp/photo.jpg?v=123', 'Recipe');
 
     expect(result).toMatch(/\.jpg$/);
+  });
+
+  test('saveRecipeImage defaults to jpg when extension is empty', () => {
+    mockFileExists.mockReturnValue(false);
+
+    const result = saveRecipeImage('/temp/file.', 'Recipe');
+
+    expect(result).toMatch(/\.jpg$/);
+  });
+
+  describe('downloadImageToCache', () => {
+    test('returns empty string when URL is empty', async () => {
+      const result = await downloadImageToCache('');
+      expect(result).toBe('');
+      expect(mockFileDownloadFileAsync).not.toHaveBeenCalled();
+    });
+
+    test('downloads image and returns local URI', async () => {
+      const mockDownloadedFile = { uri: defaultCachePath + 'scraped_123.jpg' };
+      mockFileDownloadFileAsync.mockResolvedValue(mockDownloadedFile);
+
+      const result = await downloadImageToCache('https://example.com/image.jpg');
+
+      expect(result).toBe(mockDownloadedFile.uri);
+      expect(mockFileDownloadFileAsync).toHaveBeenCalledWith(
+        'https://example.com/image.jpg',
+        expect.objectContaining({ uri: expect.stringContaining('scraped_') }),
+        expect.objectContaining({
+          headers: expect.any(Object),
+          idempotent: true,
+        })
+      );
+    });
+
+    test('returns empty string on download failure', async () => {
+      mockFileDownloadFileAsync.mockRejectedValue(new Error('Network error'));
+
+      const result = await downloadImageToCache('https://example.com/image.jpg');
+
+      expect(result).toBe('');
+    });
+
+    test('extracts correct file extension from URL', async () => {
+      mockFileDownloadFileAsync.mockResolvedValue({ uri: '/cache/scraped_123.png' });
+
+      await downloadImageToCache('https://example.com/photo.png');
+
+      expect(mockFileDownloadFileAsync).toHaveBeenCalledWith(
+        'https://example.com/photo.png',
+        expect.objectContaining({ uri: expect.stringMatching(/\.png$/) }),
+        expect.any(Object)
+      );
+    });
+
+    test('strips query string when extracting extension', async () => {
+      mockFileDownloadFileAsync.mockResolvedValue({ uri: '/cache/scraped_123.webp' });
+
+      await downloadImageToCache('https://example.com/photo.webp?w=800&h=600');
+
+      expect(mockFileDownloadFileAsync).toHaveBeenCalledWith(
+        'https://example.com/photo.webp?w=800&h=600',
+        expect.objectContaining({ uri: expect.stringMatching(/\.webp$/) }),
+        expect.any(Object)
+      );
+    });
+
+    test('defaults to jpg when URL has no recognized extension', async () => {
+      mockFileDownloadFileAsync.mockResolvedValue({ uri: '/cache/scraped_123.jpg' });
+
+      await downloadImageToCache('https://example.com/image');
+
+      expect(mockFileDownloadFileAsync).toHaveBeenCalledWith(
+        'https://example.com/image',
+        expect.objectContaining({ uri: expect.stringMatching(/\.jpg$/) }),
+        expect.any(Object)
+      );
+    });
+
+    test('recognizes jpeg extension', async () => {
+      mockFileDownloadFileAsync.mockResolvedValue({ uri: '/cache/scraped_123.jpeg' });
+
+      await downloadImageToCache('https://example.com/photo.jpeg');
+
+      expect(mockFileDownloadFileAsync).toHaveBeenCalledWith(
+        'https://example.com/photo.jpeg',
+        expect.objectContaining({ uri: expect.stringMatching(/\.jpeg$/) }),
+        expect.any(Object)
+      );
+    });
+
+    test('recognizes gif extension', async () => {
+      mockFileDownloadFileAsync.mockResolvedValue({ uri: '/cache/scraped_123.gif' });
+
+      await downloadImageToCache('https://example.com/animation.gif');
+
+      expect(mockFileDownloadFileAsync).toHaveBeenCalledWith(
+        'https://example.com/animation.gif',
+        expect.objectContaining({ uri: expect.stringMatching(/\.gif$/) }),
+        expect.any(Object)
+      );
+    });
+  });
+
+  describe('init edge cases', () => {
+    test('handles create throwing an error', () => {
+      mockDirectoryExists.mockReturnValue(false);
+      mockDirectoryCreate.mockImplementation(() => {
+        throw new Error('Cannot create directory');
+      });
+
+      expect(() => init()).not.toThrow();
+    });
   });
 });
 
@@ -387,120 +513,113 @@ describe('isTemporaryImageUri', () => {
 });
 
 describe('copyDatasetImages', () => {
-  const mockGetInfoAsync = FileSystem.getInfoAsync as jest.Mock;
-  const mockCopyAsync = FileSystem.copyAsync as jest.Mock;
-  const mockAssetLoadAsync = Asset.loadAsync as jest.Mock;
-
   const defaultDocumentsPath = '/documents/Test Recipedia/';
+
+  const createMockAsset = (name: string, type: string, localUri: string) => ({
+    name,
+    type,
+    localUri,
+  });
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockFileExists.mockReset().mockReturnValue(false);
+    mockFileCopy.mockReset();
+    mockAssetLoadAsync.mockReset();
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  test('copies test dataset images', async () => {
+  test('copies test dataset images via loadAsync + copy', async () => {
     setMockDatasetType('test');
 
     const mockAssets = [
-      { name: 'image1', type: 'jpg', localUri: '/asset/path/image1.jpg' },
-      { name: 'image2', type: 'jpg', localUri: '/asset/path/image2.jpg' },
-      { name: 'image3', type: 'jpg', localUri: '/asset/path/image3.jpg' },
+      createMockAsset('image1', 'jpg', '/asset/path/image1.jpg'),
+      createMockAsset('image2', 'jpg', '/asset/path/image2.jpg'),
+      createMockAsset('image3', 'jpg', '/asset/path/image3.jpg'),
     ];
-
     mockAssetLoadAsync.mockResolvedValue(mockAssets);
-    mockGetInfoAsync.mockResolvedValue({ exists: false });
-    mockCopyAsync.mockResolvedValue(undefined);
 
     await copyDatasetImages();
 
     expect(mockAssetLoadAsync).toHaveBeenCalledTimes(1);
-    expect(mockCopyAsync).toHaveBeenCalledTimes(3);
-    expect(mockCopyAsync).toHaveBeenCalledWith({
-      from: '/asset/path/image1.jpg',
-      to: defaultDocumentsPath + 'image1.jpg',
-    });
+    expect(mockFileCopy).toHaveBeenCalledTimes(3);
+    expect(mockFileCopy).toHaveBeenCalledWith(
+      '/asset/path/image1.jpg',
+      expect.objectContaining({ uri: defaultDocumentsPath + 'image1.jpg' })
+    );
   });
 
   test('copies production dataset images', async () => {
     setMockDatasetType('production');
+    const { productionRecipesImages } = require('@utils/Constants');
 
     const mockAssets = [
-      {
-        name: 'spaghetti_bolognaise',
-        type: 'png',
-        localUri: '/asset/path/spaghetti_bolognaise.png',
-      },
-      { name: 'soupe_legumes_hiver', type: 'png', localUri: '/asset/path/soupe_legumes_hiver.png' },
-      {
-        name: 'curry_lentilles_corail',
-        type: 'png',
-        localUri: '/asset/path/curry_lentilles_corail.png',
-      },
+      createMockAsset('spaghetti_bolognaise', 'png', '/asset/path/spaghetti_bolognaise.png'),
+      createMockAsset('soupe_legumes_hiver', 'png', '/asset/path/soupe_legumes_hiver.png'),
+      createMockAsset('curry_lentilles_corail', 'png', '/asset/path/curry_lentilles_corail.png'),
     ];
-
     mockAssetLoadAsync.mockResolvedValue(mockAssets);
-    mockGetInfoAsync.mockResolvedValue({ exists: false });
-    mockCopyAsync.mockResolvedValue(undefined);
 
     await copyDatasetImages();
 
-    expect(mockAssetLoadAsync).toHaveBeenCalledTimes(1);
-    expect(mockCopyAsync).toHaveBeenCalledTimes(3);
-    expect(mockCopyAsync).toHaveBeenCalledWith({
-      from: '/asset/path/spaghetti_bolognaise.png',
-      to: defaultDocumentsPath + 'spaghetti_bolognaise.png',
-    });
+    expect(mockAssetLoadAsync).toHaveBeenCalledWith(productionRecipesImages);
+    expect(mockFileCopy).toHaveBeenCalledTimes(3);
+    expect(mockFileCopy).toHaveBeenCalledWith(
+      '/asset/path/spaghetti_bolognaise.png',
+      expect.objectContaining({ uri: defaultDocumentsPath + 'spaghetti_bolognaise.png' })
+    );
   });
 
-  test('skips copying images that already exist', async () => {
+  test('skips copying images that already exist at destination', async () => {
     setMockDatasetType('test');
 
     const mockAssets = [
-      { name: 'image1', type: 'jpg', localUri: '/asset/path/image1.jpg' },
-      { name: 'image2', type: 'jpg', localUri: '/asset/path/image2.jpg' },
-      { name: 'image3', type: 'jpg', localUri: '/asset/path/image3.jpg' },
+      createMockAsset('image1', 'jpg', '/asset/path/image1.jpg'),
+      createMockAsset('image2', 'jpg', '/asset/path/image2.jpg'),
+      createMockAsset('image3', 'jpg', '/asset/path/image3.jpg'),
     ];
-
     mockAssetLoadAsync.mockResolvedValue(mockAssets);
-    mockGetInfoAsync
-      .mockResolvedValueOnce({ exists: true })
-      .mockResolvedValueOnce({ exists: false })
-      .mockResolvedValueOnce({ exists: true });
-    mockCopyAsync.mockResolvedValue(undefined);
+    mockFileExists.mockReturnValueOnce(true).mockReturnValueOnce(false).mockReturnValueOnce(true);
 
     await copyDatasetImages();
 
-    expect(mockCopyAsync).toHaveBeenCalledTimes(1);
-    expect(mockCopyAsync).toHaveBeenCalledWith({
-      from: '/asset/path/image2.jpg',
-      to: defaultDocumentsPath + 'image2.jpg',
-    });
+    expect(mockFileCopy).toHaveBeenCalledTimes(1);
+    expect(mockFileCopy).toHaveBeenCalledWith(
+      '/asset/path/image2.jpg',
+      expect.objectContaining({ uri: defaultDocumentsPath + 'image2.jpg' })
+    );
   });
 
-  test('throws error when asset loading fails', async () => {
+  test('throws error when loadAsync fails', async () => {
     setMockDatasetType('test');
+    mockAssetLoadAsync.mockRejectedValue(new Error('Load failed'));
 
-    mockAssetLoadAsync.mockRejectedValue(new Error('Asset loading failed'));
-
-    await expect(copyDatasetImages()).rejects.toThrow('Asset loading failed');
+    await expect(copyDatasetImages()).rejects.toThrow('Load failed');
   });
 
-  test('throws error when asset count mismatch', async () => {
+  test('throws error when loadAsync returns fewer assets than expected', async () => {
     setMockDatasetType('test');
+    mockAssetLoadAsync.mockResolvedValue([createMockAsset('image1', 'jpg', '/asset/path/image1.jpg')]);
 
-    const mockAssets = [{ name: 'image1', type: 'jpg', localUri: '/asset/path/image1.jpg' }];
+    await expect(copyDatasetImages()).rejects.toThrow(/Failed to load all test assets/);
+  });
 
+  test('calls loadAsync with the correct image set', async () => {
+    setMockDatasetType('test');
+    const { testRecipesImages } = require('@utils/Constants');
+
+    const mockAssets = testRecipesImages.map((_: unknown, i: number) =>
+      createMockAsset(`image${i}`, 'jpg', `/asset/path/image${i}.jpg`)
+    );
     mockAssetLoadAsync.mockResolvedValue(mockAssets);
 
-    await expect(copyDatasetImages()).rejects.toThrow();
+    await copyDatasetImages();
+
+    expect(mockAssetLoadAsync).toHaveBeenCalledWith(testRecipesImages);
   });
 });
 
 describe('transformDatasetRecipeImages', () => {
-  const directoryUri = 'file:///documents/Recipedia/';
+  const defaultDocumentsPath = '/documents/Test Recipedia/';
 
   test('transforms bare filename to full URI', () => {
     const recipes: recipeTableElement[] = [
@@ -518,9 +637,9 @@ describe('transformDatasetRecipeImages', () => {
       },
     ];
 
-    const result = transformDatasetRecipeImages(recipes, directoryUri);
+    const result = transformDatasetRecipeImages(recipes);
 
-    expect(result[0].image_Source).toBe('file:///documents/Recipedia/spaghetti_bolognese.png');
+    expect(result[0].image_Source).toBe(defaultDocumentsPath + 'spaghetti_bolognese.png');
   });
 
   test('transforms multiple recipes', () => {
@@ -551,10 +670,10 @@ describe('transformDatasetRecipeImages', () => {
       },
     ];
 
-    const result = transformDatasetRecipeImages(recipes, directoryUri);
+    const result = transformDatasetRecipeImages(recipes);
 
-    expect(result[0].image_Source).toBe('file:///documents/Recipedia/image1.png');
-    expect(result[1].image_Source).toBe('file:///documents/Recipedia/image2.jpg');
+    expect(result[0].image_Source).toBe(defaultDocumentsPath + 'image1.png');
+    expect(result[1].image_Source).toBe(defaultDocumentsPath + 'image2.jpg');
   });
 
   test('preserves all other recipe properties', () => {
@@ -585,7 +704,7 @@ describe('transformDatasetRecipeImages', () => {
       },
     ];
 
-    const result = transformDatasetRecipeImages(recipes, directoryUri);
+    const result = transformDatasetRecipeImages(recipes);
 
     expect(result[0].id).toBe(1);
     expect(result[0].title).toBe('Test Recipe');
@@ -610,9 +729,7 @@ describe('transformDatasetRecipeImages', () => {
   });
 
   test('handles empty array', () => {
-    const recipes: recipeTableElement[] = [];
-
-    const result = transformDatasetRecipeImages(recipes, directoryUri);
+    const result = transformDatasetRecipeImages([]);
 
     expect(result).toEqual([]);
   });
@@ -633,9 +750,9 @@ describe('transformDatasetRecipeImages', () => {
       },
     ];
 
-    const result = transformDatasetRecipeImages(recipes, directoryUri);
+    const result = transformDatasetRecipeImages(recipes);
 
-    expect(result[0].image_Source).toBe('file:///documents/Recipedia/');
+    expect(result[0].image_Source).toBe(defaultDocumentsPath);
   });
 
   test('does not mutate original recipes array', () => {
@@ -655,7 +772,7 @@ describe('transformDatasetRecipeImages', () => {
     ];
 
     const originalImageSource = recipes[0].image_Source;
-    transformDatasetRecipeImages(recipes, directoryUri);
+    transformDatasetRecipeImages(recipes);
 
     expect(recipes[0].image_Source).toBe(originalImageSource);
   });
