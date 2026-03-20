@@ -86,7 +86,7 @@ import { useShoppingCategories } from '@hooks/useCategories';
 import { SelectableAccordion } from '@components/molecules/SelectableAccordion';
 import { SeasonalityCalendar } from '@components/molecules/SeasonalityCalendar';
 import { uiLogger } from '@utils/logger';
-import { padding } from '@styles/spacing';
+import { dialogMaxHeight, padding } from '@styles/spacing';
 
 /** Available dialog operation modes */
 export type DialogMode = 'add' | 'edit' | 'delete';
@@ -290,7 +290,7 @@ export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialo
 
   return (
     <Portal>
-      <Dialog visible={isVisible} onDismiss={onClose}>
+      <Dialog visible={isVisible} onDismiss={onClose} style={styles.dialog}>
         <Dialog.Title testID={modalTestId + '::Title'}>{dialogTitle}</Dialog.Title>
         {mode === 'delete' ? (
           <Dialog.Content>
@@ -376,6 +376,9 @@ export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialo
 }
 
 const styles = StyleSheet.create({
+  dialog: {
+    maxHeight: dialogMaxHeight,
+  },
   formContainer: {
     gap: padding.small,
   },
