@@ -324,7 +324,19 @@ export async function copyDatasetImages(): Promise<void> {
   });
 
   try {
-    const assetModules = await Asset.loadAsync(imageSet);
+    // Force download of all assets to ensure they exist on local storage.
+    // expo-asset may mark bundled Android images as "downloaded" without
+    // extracting them to the file system — resetting the flag ensures the
+    // native module copies each asset from APK resources to cache.
+    const assetModules = await Promise.all(
+      imageSet.map(async moduleId => {
+        const asset = Asset.fromModule(moduleId);
+        asset.downloaded = false;
+        await asset.downloadAsync();
+        return asset;
+      })
+    );
+
     if (assetModules.length !== imageSet.length) {
       throw new Error(
         `Failed to load all ${datasetType} assets. Expected ${imageSet.length}, loaded ${assetModules.length}`
@@ -342,16 +354,11 @@ export async function copyDatasetImages(): Promise<void> {
       if (destFile.exists) {
         fileSystemLogger.debug('Asset file already exists, skipping', {
           assetName: asset.name,
-          destinationUri: destFile.uri,
         });
         continue;
       }
 
       new File(asset.localUri as string).copy(destFile);
-      fileSystemLogger.debug('Asset file copied successfully', {
-        assetName: asset.name,
-        destinationUri: destFile.uri,
-      });
     }
 
     fileSystemLogger.info('Dataset images copied successfully', {
@@ -359,10 +366,7 @@ export async function copyDatasetImages(): Promise<void> {
       imageCount: imageSet.length,
     });
   } catch (error) {
-    fileSystemLogger.error('Failed to copy dataset images', {
-      datasetType,
-      error,
-    });
+    fileSystemLogger.error('Failed to copy dataset images', { datasetType, error });
     throw error;
   }
 }
