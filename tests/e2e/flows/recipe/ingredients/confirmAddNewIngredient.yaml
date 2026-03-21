@@ -80,6 +80,15 @@ appId: "com.recipedia"
     timeout: 5000
     label: "Wait for seasonality accordion to be expanded"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::SeasonalityCalendar::5"
+    direction: DOWN
+    speed: 20
+    timeout: 1200000
+    centerElement: true
+    label: "Action - Scroll to may seasonality"
+
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::SeasonalityCalendar::5"
     label: "Select may for seasonality"
@@ -90,7 +99,7 @@ appId: "com.recipedia"
     commands:
       - extendedWaitUntil:
           visible:
-            text: "radio button, checked"
+            text: "󰄬, May"
           timeout: 30000
           label: "Wait for item to be checked on iOS"
 

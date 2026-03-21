@@ -162,6 +162,7 @@ appId: "com.recipedia"
     speed: 20
     timeout: 120000
     direction: DOWN
+    centerElement: true
     label: "Action - Scroll to october item"
 
 - tapOn:
@@ -174,7 +175,7 @@ appId: "com.recipedia"
     commands:
       - extendedWaitUntil:
           visible:
-            text: "radio button, checked"
+            text: "󰄬, October"
           timeout: 30000
           label: "Wait for item to be checked on iOS"
 

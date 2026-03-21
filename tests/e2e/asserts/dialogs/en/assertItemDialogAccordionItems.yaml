@@ -376,7 +376,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "${MODAL_TEST_ID}::SeasonalityCalendar::1"
-    text: "January"
+    text: '(󰄬,\s*)?January'
     label: "Assert - January is visible"
 
 - scrollUntilVisible:
@@ -392,7 +392,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "${MODAL_TEST_ID}::SeasonalityCalendar::2"
-    text: "February"
+    text: '(󰄬,\s*)?February'
     label: "Assert - February is visible"
 
 - scrollUntilVisible:
@@ -405,7 +405,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "${MODAL_TEST_ID}::SeasonalityCalendar::3"
-    text: "March"
+    text: '(󰄬,\s*)?March'
     label: "Assert - March is visible"
 
 - scrollUntilVisible:
@@ -418,7 +418,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "${MODAL_TEST_ID}::SeasonalityCalendar::4"
-    text: "April"
+    text: '(󰄬,\s*)?April'
     label: "Assert - April is visible"
 
 - scrollUntilVisible:
@@ -431,7 +431,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "${MODAL_TEST_ID}::SeasonalityCalendar::5"
-    text: "May"
+    text: '(󰄬,\s*)?May'
     label: "Assert - May is visible"
 
 - scrollUntilVisible:
@@ -444,7 +444,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "${MODAL_TEST_ID}::SeasonalityCalendar::6"
-    text: "June"
+    text: '(󰄬,\s*)?June'
     label: "Assert - June is visible"
 
 - scrollUntilVisible:
@@ -456,7 +456,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "${MODAL_TEST_ID}::SeasonalityCalendar::7"
-    text: "July"
+    text: '(󰄬,\s*)?July'
     label: "Assert - July is visible"
 
 - scrollUntilVisible:
@@ -468,7 +468,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "${MODAL_TEST_ID}::SeasonalityCalendar::8"
-    text: "August"
+    text: '(󰄬,\s*)?August'
     label: "Assert - August is visible"
 
 - scrollUntilVisible:
@@ -480,7 +480,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "${MODAL_TEST_ID}::SeasonalityCalendar::9"
-    text: "September"
+    text: '(󰄬,\s*)?September'
     label: "Assert - September is visible"
 
 - scrollUntilVisible:
@@ -492,7 +492,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "${MODAL_TEST_ID}::SeasonalityCalendar::10"
-    text: "October"
+    text: '(󰄬,\s*)?October'
     label: "Assert - October is visible"
 
 - scrollUntilVisible:
@@ -504,7 +504,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "${MODAL_TEST_ID}::SeasonalityCalendar::11"
-    text: "November"
+    text: '(󰄬,\s*)?November'
     label: "Assert - November is visible"
 
 - scrollUntilVisible:
@@ -516,7 +516,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "${MODAL_TEST_ID}::SeasonalityCalendar::12"
-    text: "December"
+    text: '(󰄬,\s*)?December'
     label: "Assert - December is visible"
 
 - scrollUntilVisible:

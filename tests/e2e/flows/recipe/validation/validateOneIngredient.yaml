@@ -32,6 +32,7 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 20
     timeout: 1200000
+    centerElement: true
     label: "Action - Scroll to baking ingredient type"
 
 - waitForAnimationToEnd:

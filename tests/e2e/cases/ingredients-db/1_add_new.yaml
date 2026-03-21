@@ -153,10 +153,11 @@ tags:
 
 - scrollUntilVisible:
     element:
-      id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::12"
+      id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::6"
     direction: DOWN
     speed: 20
-    label: "Action - Scroll to december item"
+    centerElement: true
+    label: "Action - Scroll to june item which will make december visible"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::12"
@@ -168,7 +169,7 @@ tags:
     commands:
       - extendedWaitUntil:
           visible:
-            text: "radio button, checked"
+            text: "󰄬, December"
           timeout: 30000
           label: "Wait for item to be checked on iOS"
 

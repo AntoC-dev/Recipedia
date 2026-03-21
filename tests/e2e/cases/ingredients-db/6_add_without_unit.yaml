@@ -56,6 +56,12 @@ tags:
     id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion"
     label: "Action - Expand type accordion"
 
+- extendedWaitUntil:
+    visible:
+      id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion::ingredientTypes.*"
+    timeout: 5000
+    label: "Wait for type accordion to be expanded"
+
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion::ingredientTypes.cereal"
     label: "Action - Select cereal type"

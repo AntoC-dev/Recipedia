@@ -232,7 +232,7 @@ tags:
     commands:
       - extendedWaitUntil:
           visible:
-            text: "radio button, checked"
+            text: "󰄬, February"
           timeout: 30000
           label: "Wait for item to be checked on iOS"
 

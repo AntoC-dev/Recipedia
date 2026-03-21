@@ -331,7 +331,6 @@ appId: "com.recipedia"
       id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.poultry"
     direction: DOWN
     speed: 20
-    centerElement: true
     label: "Action - Scroll to poultry ingredient type"
 
 - waitForAnimationToEnd:
