@@ -38,6 +38,16 @@ appId: "com.recipedia"
     id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion::ingredientTypes.baking"
     label: "Select Baking type"
 
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - extendedWaitUntil:
+          visible:
+            text: "radio button, checked"
+          timeout: 30000
+          label: "Wait for item to be checked on iOS"
+
 - scrollUntilVisible:
     element:
       id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion"
@@ -73,6 +83,16 @@ appId: "com.recipedia"
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::SeasonalityCalendar::5"
     label: "Select may for seasonality"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - extendedWaitUntil:
+          visible:
+            text: "radio button, checked"
+          timeout: 30000
+          label: "Wait for item to be checked on iOS"
 
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::SeasonalityCalendar"

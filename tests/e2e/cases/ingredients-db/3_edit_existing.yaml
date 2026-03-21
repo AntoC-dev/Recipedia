@@ -78,6 +78,16 @@ tags:
     id: "IngredientsSettings::ItemDialog::EditModal::TypeAccordion::ingredientTypes.bread"
     label: "Action - Change type from vegetable to Bread"
 
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - extendedWaitUntil:
+          visible:
+            text: "radio button, checked"
+          timeout: 30000
+          label: "Wait for item to be checked on iOS"
+
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::TypeAccordion"
     label: "Action - Collapse type accordion"
@@ -149,6 +159,16 @@ tags:
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::SeasonalityCalendar::10"
     label: "Action - Remove october from seasonality"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - extendedWaitUntil:
+          visible:
+            text: "radio button, checked"
+          timeout: 30000
+          label: "Wait for item to be checked on iOS"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::ConfirmButton"

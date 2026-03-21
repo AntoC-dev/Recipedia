@@ -82,6 +82,16 @@ tags:
     id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion::ingredientTypes.vegetable"
     label: "Action - Select vegetable type"
 
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - extendedWaitUntil:
+          visible:
+            text: "radio button, checked"
+          timeout: 30000
+          label: "Wait for item to be checked on iOS"
+
 - scrollUntilVisible:
     element:
       id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion"
@@ -146,12 +156,21 @@ tags:
       id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::12"
     direction: DOWN
     speed: 20
-    centerElement: true
     label: "Action - Scroll to december item"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::12"
     label: "Action - Add december to seasonality"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - extendedWaitUntil:
+          visible:
+            text: "radio button, checked"
+          timeout: 30000
+          label: "Wait for item to be checked on iOS"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::ConfirmButton"

@@ -83,6 +83,16 @@ appId: "com.recipedia"
     id: "IngredientsSettings::ItemDialog::EditModal::TypeAccordion::ingredientTypes.vegetable"
     label: "Restore type to vegetable"
 
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - extendedWaitUntil:
+          visible:
+            text: "radio button, checked"
+          timeout: 30000
+          label: "Wait for item to be checked on iOS"
+
 - scrollUntilVisible:
     element:
       id: "IngredientsSettings::ItemDialog::EditModal::TypeAccordion"
@@ -157,6 +167,16 @@ appId: "com.recipedia"
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::SeasonalityCalendar::10"
     label: "Re-select october"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - extendedWaitUntil:
+          visible:
+            text: "radio button, checked"
+          timeout: 30000
+          label: "Wait for item to be checked on iOS"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::ConfirmButton"
