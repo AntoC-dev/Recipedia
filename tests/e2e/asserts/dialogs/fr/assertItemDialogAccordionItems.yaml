@@ -449,7 +449,6 @@ appId: "com.recipedia"
       id: "${MODAL_TEST_ID}::SeasonalityCalendar::7"
     direction: DOWN
     speed: 20
-    centerElement: true
     label: "Action - Scroll to seventh month"
 
 - assertVisible:
@@ -462,7 +461,6 @@ appId: "com.recipedia"
       id: "${MODAL_TEST_ID}::SeasonalityCalendar::8"
     direction: DOWN
     speed: 20
-    centerElement: true
     label: "Action - Scroll to eigth month"
 
 - assertVisible:
@@ -475,7 +473,6 @@ appId: "com.recipedia"
       id: "${MODAL_TEST_ID}::SeasonalityCalendar::9"
     direction: DOWN
     speed: 20
-    centerElement: true
     label: "Action - Scroll to nineth month"
 
 - assertVisible:
@@ -488,7 +485,6 @@ appId: "com.recipedia"
       id: "${MODAL_TEST_ID}::SeasonalityCalendar::10"
     direction: DOWN
     speed: 20
-    centerElement: true
     label: "Action - Scroll to tenth month"
 
 - assertVisible:
@@ -501,7 +497,6 @@ appId: "com.recipedia"
       id: "${MODAL_TEST_ID}::SeasonalityCalendar::11"
     direction: DOWN
     speed: 20
-    centerElement: true
     label: "Action - Scroll to eleventh month"
 
 - assertVisible:
@@ -514,7 +509,6 @@ appId: "com.recipedia"
       id: "${MODAL_TEST_ID}::SeasonalityCalendar::12"
     direction: DOWN
     speed: 20
-    centerElement: true
     label: "Action - Scroll to twelfth month"
 
 - assertVisible:
