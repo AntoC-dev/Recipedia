@@ -84,7 +84,7 @@ describe('FileGestion Utility', () => {
 
   const setupImageSavingMocks = () => {
     mockDeleteAsync.mockResolvedValue(undefined);
-    mockMoveAsync.mockResolvedValue(undefined);
+    mockCopyAsync.mockResolvedValue(undefined);
   };
 
   beforeEach(() => {
@@ -143,8 +143,9 @@ describe('FileGestion Utility', () => {
     const result = await saveRecipeImage(sourceUri, recipeName);
 
     expect(result).toBe(expectedDestination);
-    expect(mockMoveAsync).toHaveBeenCalledWith({ from: sourceUri, to: expectedDestination });
-    expect(mockMoveAsync).toHaveBeenCalledTimes(1);
+    expect(mockCopyAsync).toHaveBeenCalledWith({ from: sourceUri, to: expectedDestination });
+    expect(mockCopyAsync).toHaveBeenCalledTimes(1);
+    expect(mockDeleteAsync).toHaveBeenCalledWith(sourceUri);
   });
 
   test('sanitizes recipe names correctly for filename generation', async () => {
@@ -206,11 +207,11 @@ describe('FileGestion Utility', () => {
     const recipeName = 'Test Recipe';
 
     mockDeleteAsync.mockResolvedValue(undefined);
-    mockMoveAsync.mockRejectedValue(new Error('Move operation failed'));
+    mockCopyAsync.mockRejectedValue(new Error('Copy operation failed'));
 
     const result = await saveRecipeImage(sourceUri, recipeName);
     expect(result).toBe('');
-    expect(mockMoveAsync).toHaveBeenCalledWith({
+    expect(mockCopyAsync).toHaveBeenCalledWith({
       from: sourceUri,
       to: defaultDocumentsPath + 'test_recipe_' + mockUUID + '.jpg',
     });
@@ -238,7 +239,7 @@ describe('FileGestion Utility', () => {
     expect(mockMakeDirectoryAsync).toHaveBeenCalledWith(defaultDocumentsPath, {
       intermediates: true,
     });
-    expect(mockMoveAsync).toHaveBeenCalledWith({
+    expect(mockCopyAsync).toHaveBeenCalledWith({
       from: '/temp/test.jpg',
       to: defaultDocumentsPath + 'test_recipe_' + mockUUID + '.jpg',
     });
@@ -258,7 +259,7 @@ describe('FileGestion Utility', () => {
 
     expect(results[1]).toBe(defaultDocumentsPath + 'recipe_1_' + mockUUID + '.jpg');
     expect(results[2]).toBe(defaultDocumentsPath + 'recipe_2_' + mockUUID + '.jpg');
-    expect(mockMoveAsync).toHaveBeenCalledTimes(2);
+    expect(mockCopyAsync).toHaveBeenCalledTimes(2);
   });
 
   test('handles edge cases in recipe name sanitization', async () => {
@@ -314,16 +315,27 @@ describe('FileGestion Utility', () => {
     expect(Crypto.randomUUID).toHaveBeenCalledTimes(1);
   });
 
-  test('saveRecipeImage deletes destination before moving to handle overwrites', async () => {
+  test('saveRecipeImage deletes source file after successful copy', async () => {
     setupImageSavingMocks();
-    const destination = defaultDocumentsPath + 'my_recipe_' + mockUUID + '.jpg';
+    const source = '/temp/image.jpg';
 
-    await saveRecipeImage('/temp/image.jpg', 'My Recipe');
+    await saveRecipeImage(source, 'My Recipe');
 
-    expect(mockDeleteAsync).toHaveBeenCalledWith(destination, { idempotent: true });
-    const deleteCallOrder = mockDeleteAsync.mock.invocationCallOrder[0];
-    const moveCallOrder = mockMoveAsync.mock.invocationCallOrder[0];
-    expect(deleteCallOrder).toBeLessThan(moveCallOrder);
+    expect(mockDeleteAsync).toHaveBeenCalledWith(source);
+    const copyCallOrder = mockCopyAsync.mock.invocationCallOrder[0];
+    const deleteSourceCallOrder = mockDeleteAsync.mock.invocationCallOrder[0];
+    expect(copyCallOrder).toBeLessThan(deleteSourceCallOrder);
+  });
+
+  test('saveRecipeImage returns destination URI even when source deletion fails', async () => {
+    mockCopyAsync.mockResolvedValue(undefined);
+    mockDeleteAsync.mockRejectedValue(new Error('Permission denied'));
+    const source = '/temp/image.jpg';
+    const expectedDestination = defaultDocumentsPath + 'my_recipe_' + mockUUID + '.jpg';
+
+    const result = await saveRecipeImage(source, 'My Recipe');
+
+    expect(result).toBe(expectedDestination);
   });
 
   test('saveRecipeImage catches Crypto.randomUUID errors and returns empty string', async () => {
@@ -335,7 +347,7 @@ describe('FileGestion Utility', () => {
     const result = await saveRecipeImage('/temp/image.jpg', 'My Recipe');
 
     expect(result).toBe('');
-    expect(mockMoveAsync).not.toHaveBeenCalled();
+    expect(mockCopyAsync).not.toHaveBeenCalled();
   });
 
   test('saveRecipeImage preserves original file extension', async () => {
