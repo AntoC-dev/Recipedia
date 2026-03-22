@@ -127,6 +127,7 @@ export default {
       'olive oil',
       'cooking oil',
       'vegetable oil',
+      'butter',
     ],
     stepTitle: 'Step {{number}}',
   },
