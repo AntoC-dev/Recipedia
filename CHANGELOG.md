@@ -1,3 +1,14 @@
+## [2.26.0](https://github.com/AntoC-dev/Recipedia/compare/v2.25.1...v2.26.0) (2026-03-22)
+
+### Features
+
+* **scraper:** ignore plain butter/beurre when no quantity is provided ([65326e4](https://github.com/AntoC-dev/Recipedia/commit/65326e42612639c951e81bb88e7b84861abdc92b))
+* **scraper:** ignore plain butter/beurre without quantity + ingredient dataset fixes ([#231](https://github.com/AntoC-dev/Recipedia/issues/231)) ([090f7e4](https://github.com/AntoC-dev/Recipedia/commit/090f7e404bd935b6560f265c429df419db5e3b3c))
+
+### Bug Fixes
+
+* **ingredients:** remove duplicates and correct typo in `ingredients.ts` ([08f995a](https://github.com/AntoC-dev/Recipedia/commit/08f995a0f28615130593600eb28df0d649df242b))
+
 ## [2.25.1](https://github.com/AntoC-dev/Recipedia/compare/v2.25.0...v2.25.1) (2026-03-22)
 
 ### Bug Fixes
