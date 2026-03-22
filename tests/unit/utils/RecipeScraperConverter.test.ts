@@ -28,6 +28,8 @@ describe('RecipeScraperConverter', () => {
       'pepper',
       'cooking oil',
       'vegetable oil',
+      'butter',
+      'beurre',
     ],
   };
   const defaultPersons = 4;
@@ -320,6 +322,21 @@ describe('RecipeScraperConverter', () => {
       expect(isUnparseableIngredient('huile de cuisson chauffée', ignoredPatterns)).toBe(false);
       expect(isUnparseableIngredient('cooking oil spray', ignoredPatterns)).toBe(false);
     });
+
+    it('returns true for butter exact matches', () => {
+      expect(isUnparseableIngredient('butter', ignoredPatterns)).toBe(true);
+      expect(isUnparseableIngredient('beurre', ignoredPatterns)).toBe(true);
+    });
+
+    it('is case-insensitive for butter exact matches', () => {
+      expect(isUnparseableIngredient('Butter', ignoredPatterns)).toBe(true);
+      expect(isUnparseableIngredient('BEURRE', ignoredPatterns)).toBe(true);
+    });
+
+    it('does not match butter when ingredient has a longer name', () => {
+      expect(isUnparseableIngredient('peanut butter', ignoredPatterns)).toBe(false);
+      expect(isUnparseableIngredient('beurre de cacahuète', ignoredPatterns)).toBe(false);
+    });
   });
 
   describe('parseIngredientString', () => {
@@ -550,6 +567,36 @@ describe('RecipeScraperConverter', () => {
       expect(result.skipped).toContain('vegetable oil');
     });
 
+    it('skips bare butter and beurre with no quantity', () => {
+      const result = convertIngredients(
+        ['150 g Flour', 'butter', 'beurre'],
+        null,
+        null,
+        ignoredPatterns
+      );
+
+      expect(result.ingredients).toHaveLength(1);
+      expect(result.ingredients[0].name).toBe('Flour');
+      expect(result.skipped).toContain('butter');
+      expect(result.skipped).toContain('beurre');
+    });
+
+    it('keeps butter when a quantity is present in the raw string', () => {
+      const result = convertIngredients(
+        ['2 tbsp butter', '50 g beurre'],
+        null,
+        null,
+        ignoredPatterns
+      );
+
+      expect(result.ingredients).toHaveLength(2);
+      expect(result.ingredients[0].name).toBe('butter');
+      expect(result.ingredients[0].quantity).toBe('2');
+      expect(result.ingredients[1].name).toBe('beurre');
+      expect(result.ingredients[1].quantity).toBe('50');
+      expect(result.skipped).toHaveLength(0);
+    });
+
     describe('with pre-parsed ingredients', () => {
       const patternsWithOliveOil: IgnoredIngredientPatterns = {
         ...ignoredPatterns,
@@ -636,6 +683,41 @@ describe('RecipeScraperConverter', () => {
 
         expect(result.ingredients).toHaveLength(1);
         expect(result.ingredients[0].name).toBe('tomato');
+        expect(result.skipped).toHaveLength(0);
+      });
+
+      it('skips butter and beurre when pre-parsed with no quantity', () => {
+        const result = convertIngredients(
+          ['butter', 'beurre'],
+          [
+            { name: 'butter', quantity: '', unit: '' },
+            { name: 'beurre', quantity: '', unit: '' },
+          ],
+          null,
+          ignoredPatterns
+        );
+
+        expect(result.ingredients).toHaveLength(0);
+        expect(result.skipped).toContain('butter');
+        expect(result.skipped).toContain('beurre');
+      });
+
+      it('keeps butter and beurre when pre-parsed with a quantity', () => {
+        const result = convertIngredients(
+          ['2 tbsp butter', '50 g beurre'],
+          [
+            { name: 'butter', quantity: '2', unit: 'tbsp' },
+            { name: 'beurre', quantity: '50', unit: 'g' },
+          ],
+          null,
+          ignoredPatterns
+        );
+
+        expect(result.ingredients).toHaveLength(2);
+        expect(result.ingredients[0].name).toBe('butter');
+        expect(result.ingredients[0].quantity).toBe('2');
+        expect(result.ingredients[1].name).toBe('beurre');
+        expect(result.ingredients[1].quantity).toBe('50');
         expect(result.skipped).toHaveLength(0);
       });
     });

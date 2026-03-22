@@ -134,6 +134,7 @@ export default {
       'poivre et sel',
       "huile d'olive",
       'huile de cuisson',
+      'beurre',
     ],
     stepTitle: 'Étape {{number}}',
   },
