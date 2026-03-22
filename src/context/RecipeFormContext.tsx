@@ -257,6 +257,7 @@ export function RecipeFormProvider({ props, children }: RecipeFormProviderProps)
       setRecipeTitle(props.recipe.title);
       setRecipeDescription(props.recipe.description);
       setRecipeTags(props.recipe.tags);
+      previousPersonsRef.current = props.recipe.persons;
       setRecipePersons(props.recipe.persons);
       setRecipeIngredients(props.recipe.ingredients);
       setRecipePreparation(props.recipe.preparation);
