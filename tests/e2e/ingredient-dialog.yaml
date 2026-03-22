@@ -1,0 +1,14 @@
+platform:
+  ios:
+    disableAnimations: true
+  android:
+    disableAnimations: true
+
+flows:
+  - cases/ingredient-dialog/*
+
+executionOrder:
+  flowsOrder:
+    - "1 - Assert Ingredient Dialog Structure"
+    - "2 - Select All Button"
+    - "3 - Edit Ingredient Dialog Assertions"
