@@ -1,0 +1,33 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "${MODAL_TEST_ID}::TypeAccordion"
+          text: "Type"
+          label: "Type accordion header text is visible on android"
+      - assertVisible:
+          id: "${MODAL_TEST_ID}::SeasonalityCalendar"
+          text: "Saisonnalité"
+          label: "Seasonality accordion header text is visible in French on android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "${MODAL_TEST_ID}::TypeAccordion"
+          text: "Type, 󰅀"
+          label: "Type accordion header text is visible on ios"
+      - assertVisible:
+          id: "${MODAL_TEST_ID}::SeasonalityCalendar"
+          text: "Saisonnalité, 󰅀"
+          label: "Seasonality accordion header text is visible in French on ios"
+
+- runFlow:
+    file: "assertItemDialogAccordionItems.yaml"
+    env:
+      MODAL_TEST_ID: "${MODAL_TEST_ID}"
+    label: "Assert - Verify all type and seasonality accordion items in French"

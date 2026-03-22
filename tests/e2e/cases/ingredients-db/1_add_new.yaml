@@ -64,16 +64,52 @@ tags:
     label: "Assert - Verify new ingredient name displayed in input"
 
 - tapOn:
-    id: "IngredientsSettings::ItemDialog::AddModal::Menu::Button"
-    label: "Action - Open type dropdown"
+    id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion"
+    label: "Action - Expand type accordion"
 
-- runFlow:
-    file: "../../asserts/parameters/ingredients/en/assertTypeMenu.yaml"
-    label: "Assert - Verify type menu items are in English alphabetical order"
+- scrollUntilVisible:
+    element:
+      id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion::ingredientTypes.vegetable"
+    speed: 20
+    timeout: 120000
+    direction: DOWN
+    label: "Action - Scroll to Vegetable item"
+
+- waitForAnimationToEnd:
+    label: "Wait for scroll animation to end"
 
 - tapOn:
-    text: "Vegetable"
+    id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion::ingredientTypes.vegetable"
     label: "Action - Select vegetable type"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - extendedWaitUntil:
+          visible:
+            text: "radio button, checked"
+          timeout: 30000
+          label: "Wait for item to be checked on iOS"
+
+- scrollUntilVisible:
+    element:
+      id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion"
+    speed: 20
+    timeout: 120000
+    direction: UP
+    centerElement: true
+    label: "Action - Scroll up to ensure type accordion is visible"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion"
+    label: "Action - Collapse type accordion"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion::ingredientTypes.*"
+    timeout: 30000
+    label: "Wait for type accordion to collapse"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::Unit::CustomTextInput"
@@ -106,8 +142,36 @@ tags:
     label: "Wait for keyboard to dismiss"
 
 - tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar"
+    label: "Action - Expand seasonality accordion"
+
+- extendedWaitUntil:
+    visible:
+      id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::.*"
+    timeout: 5000
+    label: "Wait for seasonality accordion to expand"
+
+- scrollUntilVisible:
+    element:
+      id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::6"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to june item which will make december visible"
+
+- tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::12"
     label: "Action - Add december to seasonality"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - extendedWaitUntil:
+          visible:
+            text: "󰄬, December"
+          timeout: 30000
+          label: "Wait for item to be checked on iOS"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::ConfirmButton"

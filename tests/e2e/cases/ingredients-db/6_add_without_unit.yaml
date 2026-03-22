@@ -53,12 +53,32 @@ tags:
     label: "Wait for keyboard to dismiss"
 
 - tapOn:
-    id: "IngredientsSettings::ItemDialog::AddModal::Menu::Button"
-    label: "Action - Open type dropdown"
+    id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion"
+    label: "Action - Expand type accordion"
+
+- extendedWaitUntil:
+    visible:
+      id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion::ingredientTypes.*"
+    timeout: 5000
+    label: "Wait for type accordion to be expanded"
 
 - tapOn:
-    text: "Cereal"
-    label: "Action - Select spice type"
+    id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion::ingredientTypes.cereal"
+    label: "Action - Select cereal type"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - extendedWaitUntil:
+          visible:
+            text: "radio button, checked"
+          timeout: 30000
+          label: "Wait for item to be checked on iOS"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion"
+    label: "Action - Collapse type accordion"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::ConfirmButton"

@@ -25,4 +25,6 @@ export default {
   manage_tags_description: 'Gérer les tags de recettes',
   updating_recipes: 'Mise à jour des recettes...',
   search_items: 'Rechercher...',
+  ingredient_form_hint:
+    'Le nom et le type sont requis. Plus vous renseignez de détails, meilleure sera votre expérience.',
 };

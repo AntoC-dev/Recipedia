@@ -1,0 +1,543 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "${MODAL_TEST_ID}::TypeAccordion"
+    label: "Expand type accordion to verify items"
+
+- extendedWaitUntil:
+    visible:
+      id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.cereal"
+    timeout: 5000
+    label: "Wait for type accordion to be expanded"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.cereal"
+    text: "Céréales"
+    label: "Assert - Céréales type item is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.condiment"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to condiment ingredient type"
+
+- waitForAnimationToEnd:
+    label: "Wait for scroll animation to end"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.condiment"
+    text: "Condiments"
+    label: "Assert - Condiments type item is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.sweetener"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to sweetener ingredient type"
+
+- waitForAnimationToEnd:
+    label: "Wait for scroll animation to end"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.sweetener"
+    text: "Édulcorants"
+    label: "Assert - Édulcorants type item is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.spice"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to spice ingredient type"
+
+- waitForAnimationToEnd:
+    label: "Wait for scroll animation to end"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.spice"
+    text: "Épices"
+    label: "Assert - Épices type item is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.cheese"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to cheese ingredient type"
+
+- waitForAnimationToEnd:
+    label: "Wait for scroll animation to end"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.cheese"
+    text: "Fromage"
+    label: "Assert - Fromage type item is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.fruit"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to fruit ingredient type"
+
+- waitForAnimationToEnd:
+    label: "Wait for scroll animation to end"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.fruit"
+    text: "Fruits"
+    label: "Assert - Fruits type item is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.seafood"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to seafood ingredient type"
+
+- waitForAnimationToEnd:
+    label: "Wait for scroll animation to end"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.seafood"
+    text: "Fruits de Mer"
+    label: "Assert - Fruits de Mer type item is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.oilAndFat"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to oilAndFat ingredient type"
+
+- waitForAnimationToEnd:
+    label: "Wait for scroll animation to end"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.oilAndFat"
+    text: "Huiles et Graisses"
+    label: "Assert - Huiles et Graisses type item is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.vegetable"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to vegetable ingredient type"
+
+- waitForAnimationToEnd:
+    label: "Wait for scroll animation to end"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.vegetable"
+    text: "Légumes"
+    label: "Assert - Légumes type item is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.legumes"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to legumes ingredient type"
+
+- waitForAnimationToEnd:
+    label: "Wait for scroll animation to end"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.legumes"
+    text: "Légumineuses"
+    label: "Assert - Légumineuses type item is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.nutsAndSeeds"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to nutsAndSeeds ingredient type"
+
+- waitForAnimationToEnd:
+    label: "Wait for scroll animation to end"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.nutsAndSeeds"
+    text: "Noix et Graines"
+    label: "Assert - Noix et Graines type item is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.bread"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to bread ingredient type"
+
+- waitForAnimationToEnd:
+    label: "Wait for scroll animation to end"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.bread"
+    text: "Pain"
+    label: "Assert - Pain type item is visible"
+
+- assertNotVisible:
+    text: "Bread"
+    label: "Assert - English category name Bread is absent"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.baking"
+    direction: DOWN
+    speed: 20
+    label: "Action - Scroll to baking ingredient type"
+
+- waitForAnimationToEnd:
+    label: "Wait for scroll animation to end"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.baking"
+    text: "Pâtisserie"
+    label: "Assert - Pâtisserie type item is visible"
+
+- assertNotVisible:
+    text: "Baking"
+    label: "Assert - English category name Baking is absent"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.fish"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to fish ingredient type"
+
+- waitForAnimationToEnd:
+    label: "Wait for scroll animation to end"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.fish"
+    text: "Poisson"
+    label: "Assert - Poisson type item is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.dairy"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to dairy ingredient type"
+
+- waitForAnimationToEnd:
+    label: "Wait for scroll animation to end"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.dairy"
+    text: "Produits Laitiers"
+    label: "Assert - Produits Laitiers type item is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.plantProtein"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to plantProtein ingredient type"
+
+- waitForAnimationToEnd:
+    label: "Wait for scroll animation to end"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.plantProtein"
+    text: "Protéines Végétales"
+    label: "Assert - Protéines Végétales type item is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.sauce"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to sauce ingredient type"
+
+- waitForAnimationToEnd:
+    label: "Wait for scroll animation to end"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.sauce"
+    text: "Sauces"
+    label: "Assert - Sauces type item is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.sugar"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to sugar ingredient type"
+
+- waitForAnimationToEnd:
+    label: "Wait for scroll animation to end"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.sugar"
+    text: "Sucre"
+    label: "Assert - Sucre type item is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.topping"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to topping ingredient type"
+
+- waitForAnimationToEnd:
+    label: "Wait for scroll animation to end"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.topping"
+    text: "Topping"
+    label: "Assert - Topping type item is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.meat"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to meat ingredient type"
+
+- waitForAnimationToEnd:
+    label: "Wait for scroll animation to end"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.meat"
+    text: "Viande"
+    label: "Assert - Viande type item is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.poultry"
+    direction: DOWN
+    speed: 20
+    label: "Action - Scroll to poultry ingredient type"
+
+- waitForAnimationToEnd:
+    label: "Wait for scroll animation to end"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.poultry"
+    text: "Volaille"
+    label: "Assert - Volaille type item is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::TypeAccordion"
+    direction: UP
+    speed: 20
+    timeout: 120000
+    centerElement: true
+    label: "Action - Scroll back to top of type accordion"
+
+- waitForAnimationToEnd:
+    label: "Wait for scroll animation to end"
+
+- tapOn:
+    id: "${MODAL_TEST_ID}::TypeAccordion"
+    label: "Collapse type accordion"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "${MODAL_TEST_ID}::TypeAccordion::ingredientTypes.*"
+    timeout: 5000
+    label: "Wait for type accordion to be reduced"
+
+- tapOn:
+    id: "${MODAL_TEST_ID}::SeasonalityCalendar"
+    label: "Expand seasonality accordion to verify months"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::SeasonalityCalendar::1"
+    text: "Janvier"
+    label: "Assert - Janvier is visible"
+
+- assertNotVisible:
+    text: "January"
+    label: "Assert - English month name January is absent"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::SeasonalityCalendar::2"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to second month"
+
+- waitForAnimationToEnd:
+    label: "Wait for scroll animation to end"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::SeasonalityCalendar::2"
+    text: "Février"
+    label: "Assert - Février is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::SeasonalityCalendar::3"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to third month"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::SeasonalityCalendar::3"
+    text: "Mars"
+    label: "Assert - Mars is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::SeasonalityCalendar::4"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to fourth month"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::SeasonalityCalendar::4"
+    text: "Avril"
+    label: "Assert - Avril is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::SeasonalityCalendar::5"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to fifth month"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::SeasonalityCalendar::5"
+    text: "Mai"
+    label: "Assert - Mai is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::SeasonalityCalendar::6"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to sixth month"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::SeasonalityCalendar::6"
+    text: "Juin"
+    label: "Assert - Juin is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::SeasonalityCalendar::7"
+    direction: DOWN
+    speed: 20
+    label: "Action - Scroll to seventh month"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::SeasonalityCalendar::7"
+    text: "Juillet"
+    label: "Assert - Juillet is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::SeasonalityCalendar::8"
+    direction: DOWN
+    speed: 20
+    label: "Action - Scroll to eigth month"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::SeasonalityCalendar::8"
+    text: "Août"
+    label: "Assert - Août is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::SeasonalityCalendar::9"
+    direction: DOWN
+    speed: 20
+    label: "Action - Scroll to nineth month"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::SeasonalityCalendar::9"
+    text: "Septembre"
+    label: "Assert - Septembre is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::SeasonalityCalendar::10"
+    direction: DOWN
+    speed: 20
+    label: "Action - Scroll to tenth month"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::SeasonalityCalendar::10"
+    text: "Octobre"
+    label: "Assert - Octobre is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::SeasonalityCalendar::11"
+    direction: DOWN
+    speed: 20
+    label: "Action - Scroll to eleventh month"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::SeasonalityCalendar::11"
+    text: "Novembre"
+    label: "Assert - Novembre is visible"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::SeasonalityCalendar::12"
+    direction: DOWN
+    speed: 20
+    label: "Action - Scroll to twelfth month"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::SeasonalityCalendar::12"
+    text: "Décembre"
+    label: "Assert - Décembre is visible"
+
+- assertNotVisible:
+    text: "December"
+    label: "Assert - English month name December is absent"
+
+- scrollUntilVisible:
+    element:
+      id: "${MODAL_TEST_ID}::SeasonalityCalendar"
+    direction: UP
+    speed: 20
+    timeout: 120000
+    centerElement: true
+    label: "Action - Scroll back to top of seasonality accordion"
+
+- waitForAnimationToEnd:
+    label: "Wait for scroll animation to end"
+
+- tapOn:
+    id: "${MODAL_TEST_ID}::SeasonalityCalendar"
+    label: "Collapse seasonality accordion"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "${MODAL_TEST_ID}::SeasonalityCalendar::.*"
+    timeout: 5000
+    label: "Wait for seasonality accordion to be reduced"

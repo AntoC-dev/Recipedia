@@ -27,7 +27,6 @@ tags:
     centerElement: true
     label: "Action - Scroll to ingredients section"
 
-
 - waitForAnimationToEnd
 
 - tapOn:
@@ -138,18 +137,48 @@ tags:
     label: "Assert - Verify adding modal appears"
 
 - tapOn:
-    id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::Menu::Button"
-    label: "Action - Open type dropdown"
+    id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion"
+    label: "Action - Expand type accordion"
 
 - extendedWaitUntil:
     visible:
-      text: "Fish"
-    timeout: 3000
-    label: "Wait for type dropdown to appear"
+      id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion::ingredientTypes.*"
+    timeout: 5000
+    label: "Wait for type accordion to be expanded"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion::ingredientTypes.fish"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to Fish item"
 
 - tapOn:
-    text: "Fish"
+    id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion::ingredientTypes.fish"
     label: "Action - Select Fish type"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - extendedWaitUntil:
+          visible:
+            text: "radio button, checked"
+          timeout: 30000
+          label: "Wait for item to be checked on iOS"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion"
+    direction: UP
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll up to ensure type accordion is visible"
+
+- tapOn:
+    id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion"
+    label: "Action - Collapse type accordion"
 
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::Unit::CustomTextInput"
@@ -182,8 +211,30 @@ tags:
     label: "Wait for keyboard to dismiss"
 
 - tapOn:
+    id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::SeasonalityCalendar"
+    label: "Action - Expand seasonality accordion"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::SeasonalityCalendar::2"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to february item"
+
+- tapOn:
     id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::SeasonalityCalendar::2"
     label: "Action - Select february for seasonality"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - extendedWaitUntil:
+          visible:
+            text: "󰄬, February"
+          timeout: 30000
+          label: "Wait for item to be checked on iOS"
 
 - assertVisible:
     id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::ConfirmButton"

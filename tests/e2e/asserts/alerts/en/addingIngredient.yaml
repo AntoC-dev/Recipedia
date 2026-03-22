@@ -6,6 +6,11 @@ appId: "com.recipedia"
     label: "Alert title is rendered"
 
 - assertVisible:
+    id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::FormHint"
+    text: "Name and type are required. The more details you provide, the better your experience."
+    label: "Form hint text is displayed"
+
+- assertVisible:
     id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::Name::CustomTextInput-label-inactive"
     text: "Ingredient Name"
     label: "Alert text input label is rendered"
@@ -16,28 +21,15 @@ appId: "com.recipedia"
     label: "Alert text input is rendered"
 
 - assertVisible:
-    id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::Type"
-    text: "Type:"
-    label: "Type label is visible"
-
-- assertVisible:
-    id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::Menu::Button-text"
-    text: "Select type"
-    label: "Type dropdown menu button is visible"
-
-- assertVisible:
     id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::Unit::CustomTextInput-label-inactive"
     text: "Unit"
     label: "Unit input field is visible"
 
-- assertVisible:
-    id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::SeasonalityCalendar::SeasonalityText"
-    text: "Seasonality:"
-    label: "Seasonality calendar label is visible"
-
 - runFlow:
-    file: "alertSeasonalityCalendar.yaml"
-    label: "Verify all 12 months are displayed in seasonality calendar"
+    file: "../../dialogs/en/assertItemDialogAccordions.yaml"
+    env:
+      MODAL_TEST_ID: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal"
+    label: "Assert - Verify type and seasonality accordion headers and items"
 
 - assertVisible:
     id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::CancelButton-text"

@@ -26,29 +26,15 @@ appId: "com.recipedia"
     label: "Add ingredient modal title is displayed in French"
 
 - assertVisible:
-    id: "IngredientsSettings::ItemDialog::AddModal::Menu::Button-text"
-    text: "Sélectionner le type"
-    label: "Type dropdown shows French placeholder text"
-
-- tapOn:
-    id: "IngredientsSettings::ItemDialog::AddModal::Menu::Button"
-    label: "Open the ingredient type dropdown"
-
-- waitForAnimationToEnd
+    id: "IngredientsSettings::ItemDialog::AddModal::FormHint"
+    text: "Le nom et le type sont requis. Plus vous renseignez de détails, meilleure sera votre expérience."
+    label: "Form hint text is displayed in French"
 
 - runFlow:
-    file: "../ingredients/fr/assertTypeMenu.yaml"
-    label: "Assert - Verify type menu items are in French alphabetical order"
-
-- tapOn:
-    id: "IngredientsSettings::ItemDialog::AddModal::Type"
-    label: "Tap on the type text to hide the dialog"
-
-- extendedWaitUntil:
-    notVisible:
-      id: "menu-item-title"
-    timeout: 10000
-    label: "Wait for dialog to hide"
+    file: "../../dialogs/fr/assertItemDialogAccordions.yaml"
+    env:
+      MODAL_TEST_ID: "IngredientsSettings::ItemDialog::AddModal"
+    label: "Assert - Verify type and seasonality accordion headers and items are in French"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::CancelButton"

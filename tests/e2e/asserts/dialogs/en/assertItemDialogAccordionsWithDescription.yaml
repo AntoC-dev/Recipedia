@@ -1,0 +1,33 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "${MODAL_TEST_ID}::TypeAccordion"
+          text: "Type, ${TYPE_DESCRIPTION}"
+          label: "Type accordion header with description is visible on android"
+      - assertVisible:
+          id: "${MODAL_TEST_ID}::SeasonalityCalendar"
+          text: "Seasonality, ${SEASONALITY_DESCRIPTION}"
+          label: "Seasonality accordion header with description is visible on android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "${MODAL_TEST_ID}::TypeAccordion"
+          text: "Type, ${TYPE_DESCRIPTION}, 󰅀"
+          label: "Type accordion header with description is visible on ios"
+      - assertVisible:
+          id: "${MODAL_TEST_ID}::SeasonalityCalendar"
+          text: "Seasonality, ${SEASONALITY_DESCRIPTION}, 󰅀"
+          label: "Seasonality accordion header with description is visible on ios"
+
+- runFlow:
+    file: "assertItemDialogAccordionItems.yaml"
+    env:
+      MODAL_TEST_ID: "${MODAL_TEST_ID}"
+    label: "Assert - Verify all type and seasonality accordion items"
