@@ -125,7 +125,7 @@ async function collectPlaceholderCandidates(
  */
 export async function repairMissingRecipeImages(
   recipes: recipeTableElement[],
-  editRecipe: (recipe: recipeTableElement) => Promise<boolean>
+  editRecipe: (recipe: recipeTableElement) => Promise<recipeTableElement>
 ): Promise<void> {
   const validRecipes = recipes.filter(r => r.sourceUrl && isValidUrl(r.sourceUrl));
 

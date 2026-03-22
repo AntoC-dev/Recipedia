@@ -90,7 +90,7 @@ export interface RecipeDatabaseContextType {
   /** Adds recipe to database and refreshes recipes state */
   addRecipe: (recipe: recipeTableElement) => Promise<void>;
   /** Edits recipe in database and refreshes recipes state */
-  editRecipe: (recipe: recipeTableElement) => Promise<boolean>;
+  editRecipe: (recipe: recipeTableElement) => Promise<recipeTableElement>;
   /** Deletes recipe from database and refreshes recipes state */
   deleteRecipe: (recipe: recipeTableElement) => Promise<boolean>;
 

@@ -600,8 +600,7 @@ export class RecipeDatabase {
 
   public async editRecipe(recipe: recipeTableElement) {
     if (recipe.id === undefined) {
-      databaseLogger.warn('Cannot edit recipe - missing ID', { recipeTitle: recipe.title });
-      return false;
+      throw new Error(`Cannot edit recipe without ID: ${recipe.title}`);
     }
 
     recipe.image_Source = await this.prepareRecipeImage(recipe.image_Source, recipe.title);
@@ -609,7 +608,7 @@ export class RecipeDatabase {
     const updateMap = this.constructUpdateRecipeStructure(this.encodeRecipe(recipe));
     databaseLogger.debug('Editing recipe', { recipeId: recipe.id, recipeTitle: recipe.title });
     const success = await this._recipesTable.editElementById(
-      recipe.id!,
+      recipe.id,
       updateMap,
       this._dbConnection
     );
@@ -622,7 +621,7 @@ export class RecipeDatabase {
         recipeTitle: recipe.title,
       });
     }
-    return success;
+    return recipe;
   }
 
   public async editIngredient(ingredient: ingredientTableElement) {
