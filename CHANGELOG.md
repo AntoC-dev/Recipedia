@@ -1,3 +1,10 @@
+## [2.25.1](https://github.com/AntoC-dev/Recipedia/compare/v2.25.0...v2.25.1) (2026-03-22)
+
+### Bug Fixes
+
+* **file-system:** use copy+delete instead of move for recipe images ([6608c7a](https://github.com/AntoC-dev/Recipedia/commit/6608c7a41a592b32a6459375c0222d93b255ee5f))
+* **file-system:** use copy+delete instead of move for recipe images ([#230](https://github.com/AntoC-dev/Recipedia/issues/230)) ([f4250ae](https://github.com/AntoC-dev/Recipedia/commit/f4250aeb7be489644e8e87c9894bf4227c483eda))
+
 ## [2.25.0](https://github.com/AntoC-dev/Recipedia/compare/v2.24.0...v2.25.0) (2026-03-22)
 
 ### Features
