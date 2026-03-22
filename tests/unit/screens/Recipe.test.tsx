@@ -2118,6 +2118,35 @@ describe('Recipe Component tests', () => {
       editRecipeSpy.mockRestore();
     });
 
+    test('displays permanent image URI after editing recipe with temporary image', async () => {
+      const { isTemporaryImageUri } = require('@utils/FileGestion');
+      (isTemporaryImageUri as jest.Mock).mockImplementation(
+        (uri: string) => uri === 'mock-image-uri'
+      );
+      const permanentUri = '/mock/directory/saved_image.jpg';
+
+      const recipeWithNoImage = {
+        mode: 'edit' as const,
+        recipe: { ...testRecipes[1], image_Source: '' },
+      };
+      const { getByTestId } = await renderRecipe(createMockRoute(recipeWithNoImage));
+
+      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+      await waitFor(() => expect(getByTestId('ModalImageSelect')).toBeTruthy());
+      fireEvent.press(getByTestId('ModalImageSelect::Select'));
+      await waitFor(() =>
+        expect(getByTestId('RecipeImage::ImgUri').props.children).toBe('mock-image-uri')
+      );
+
+      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+
+      await waitFor(() => {
+        expect(getByTestId('RecipeImage::ImgUri').props.children).toBe(permanentUri);
+      });
+
+      (isTemporaryImageUri as jest.Mock).mockReturnValue(false);
+    });
+
     test('editValidation stays in edit mode when editRecipe throws', async () => {
       const editRecipeSpy = jest
         .spyOn(dbInstance, 'editRecipe')
