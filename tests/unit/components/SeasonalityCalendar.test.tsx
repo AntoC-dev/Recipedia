@@ -85,6 +85,12 @@ describe('SeasonalityCalendar', () => {
       expect(queryByTestId(calendarTestId + '::1')).toBeNull();
       expect(queryByTestId(calendarTestId + '::AllYear')).toBeNull();
     });
+
+    test('does not render ToggleAllButton in read-only mode', () => {
+      const { queryByTestId } = render(<SeasonalityCalendar {...readOnlyProps} />);
+
+      expect(queryByTestId(calendarTestId + '::ToggleAllButton')).toBeNull();
+    });
   });
 
   describe('edit mode', () => {
@@ -175,6 +181,72 @@ describe('SeasonalityCalendar', () => {
       const { getByTestId } = render(<SeasonalityCalendar {...editProps} selectedMonths={[]} />);
 
       expect(getByTestId(calendarTestId + '::Description').props.children).toBe('');
+    });
+
+    test('renders ToggleAllButton when onMonthsChange is provided', () => {
+      const { getByTestId } = render(<SeasonalityCalendar {...editProps} />);
+
+      expect(getByTestId(calendarTestId + '::ToggleAllButton')).toBeTruthy();
+    });
+
+    test('does not render ToggleAllButton when onMonthsChange is undefined', () => {
+      const { queryByTestId } = render(
+        <SeasonalityCalendar testID={testIDProp} selectedMonths={selectedMonthProp} />
+      );
+
+      expect(queryByTestId(calendarTestId + '::ToggleAllButton')).toBeNull();
+    });
+
+    test('pressing ToggleAllButton with no months selected calls onMonthsChange with all 12 months', () => {
+      const { getByTestId } = render(<SeasonalityCalendar {...editProps} selectedMonths={[]} />);
+
+      fireEvent.press(getByTestId(calendarTestId + '::ToggleAllButton'));
+
+      expect(mockOnMonthsChange).toHaveBeenCalledWith([
+        '1',
+        '2',
+        '3',
+        '4',
+        '5',
+        '6',
+        '7',
+        '8',
+        '9',
+        '10',
+        '11',
+        '12',
+      ]);
+    });
+
+    test('pressing ToggleAllButton with all months selected calls onMonthsChange with empty array', () => {
+      const { getByTestId } = render(
+        <SeasonalityCalendar {...editProps} selectedMonths={allYearProp} />
+      );
+
+      fireEvent.press(getByTestId(calendarTestId + '::ToggleAllButton'));
+
+      expect(mockOnMonthsChange).toHaveBeenCalledWith([]);
+    });
+
+    test('pressing ToggleAllButton with some months selected calls onMonthsChange with all 12 months', () => {
+      const { getByTestId } = render(<SeasonalityCalendar {...editProps} />);
+
+      fireEvent.press(getByTestId(calendarTestId + '::ToggleAllButton'));
+
+      expect(mockOnMonthsChange).toHaveBeenCalledWith([
+        '1',
+        '2',
+        '3',
+        '4',
+        '5',
+        '6',
+        '7',
+        '8',
+        '9',
+        '10',
+        '11',
+        '12',
+      ]);
     });
   });
 });
