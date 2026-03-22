@@ -1,0 +1,110 @@
+name: "1 - Ingredient Dialog Accordion Items and Select All"
+appId: "com.recipedia"
+tags:
+  - dialog
+  - ingredients-db
+---
+- runFlow:
+    file: "../../flows/setupFirstTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- runFlow:
+    file: "../../flows/parameters/ingredients/navigateToIngredientsSettings.yaml"
+    label: "Action - Navigate to Ingredients Settings"
+
+- tapOn:
+    id: "IngredientsSettings::BottomActionButton"
+    label: "Action - Open add ingredient dialog"
+
+- runFlow:
+    file: "../../asserts/parameters/ingredients/en/assertAddModalOpen.yaml"
+    label: "Assert - Verify add ingredient modal is displayed"
+
+- runFlow:
+    file: "../../asserts/dialogs/en/assertItemDialogAccordionItems.yaml"
+    env:
+      MODAL_TEST_ID: "IngredientsSettings::ItemDialog::AddModal"
+    label: "Assert - Verify all type and seasonality accordion items are present"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar"
+    label: "Action - Expand seasonality accordion"
+
+- extendedWaitUntil:
+    visible:
+      id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::ToggleAllButton"
+    timeout: 5000
+    label: "Wait for seasonality accordion to expand"
+
+- assertVisible:
+    id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::ToggleAllButton"
+    text: "Select All"
+    label: "Assert - Select All button is visible with correct label"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::ToggleAllButton"
+    label: "Action - Tap Select All button"
+
+- waitForAnimationToEnd:
+    label: "Wait for selection animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar"
+          text: "Seasonality, All Year"
+          label: "Assert - Seasonality description shows All Year on Android after select all"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar"
+          text: "Seasonality, All Year, 󰅀"
+          label: "Assert - Seasonality description shows All Year on iOS after select all"
+
+- assertVisible:
+    id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::ToggleAllButton"
+    text: "Deselect All"
+    label: "Assert - Button label changes to Deselect All when all months selected"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::ToggleAllButton"
+    label: "Action - Tap Deselect All button"
+
+- waitForAnimationToEnd:
+    label: "Wait for deselection animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar"
+          text: "Seasonality"
+          label: "Assert - Seasonality description is empty after deselect all on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar"
+          text: "Seasonality, 󰅀"
+          label: "Assert - Seasonality description is empty after deselect all on iOS"
+
+- assertVisible:
+    id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::ToggleAllButton"
+    text: "Select All"
+    label: "Assert - Button label returns to Select All after deselect all"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::CancelButton"
+    label: "Action - Cancel dialog"
+
+- runFlow:
+    file: "../../flows/parameters/ingredients/returnToHome.yaml"
+    label: "Cleanup - Return to Home screen"
