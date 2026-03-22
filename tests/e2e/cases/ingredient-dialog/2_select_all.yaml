@@ -1,0 +1,187 @@
+name: "2 - Select All Button"
+appId: "com.recipedia"
+tags:
+  - dialog
+  - ingredients-db
+---
+- runFlow:
+    file: "../../flows/setupTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- runFlow:
+    file: "../../flows/parameters/ingredients/navigateToIngredientsSettings.yaml"
+    label: "Action - Navigate to Ingredients Settings"
+
+- tapOn:
+    id: "IngredientsSettings::BottomActionButton"
+    label: "Action - Open add ingredient dialog"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar"
+    label: "Action - Expand seasonality accordion"
+
+- extendedWaitUntil:
+    visible:
+      id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::ToggleAllButton"
+    timeout: 5000
+    label: "Wait for seasonality accordion to expand"
+
+- assertVisible:
+    id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::ToggleAllButton"
+    text: "Select All"
+    label: "Assert - Button shows Select All on empty selection"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::ToggleAllButton"
+    label: "Action - Tap Select All"
+
+- waitForAnimationToEnd:
+    label: "Wait for selection animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar"
+          text: "Seasonality, All Year"
+          label: "Assert - Description shows All Year on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar"
+          text: "Seasonality, All Year, 󰅃"
+          label: "Assert - Description shows All Year on iOS"
+
+- assertVisible:
+    id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::ToggleAllButton"
+    text: "Deselect All"
+    label: "Assert - Button label changes to Deselect All when all months selected"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::ToggleAllButton"
+    label: "Action - Tap Deselect All"
+
+- waitForAnimationToEnd:
+    label: "Wait for deselection animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar"
+          text: "Seasonality"
+          label: "Assert - Description is empty after deselect all on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar"
+          text: "Seasonality, 󰅃"
+          label: "Assert - Description is empty after deselect all on iOS"
+
+- assertVisible:
+    id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::ToggleAllButton"
+    text: "Select All"
+    label: "Assert - Button returns to Select All after deselect all"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::1"
+    label: "Action - Tap January chip"
+
+- waitForAnimationToEnd:
+    label: "Wait for chip selection animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar"
+          text: "Seasonality, January"
+          label: "Assert - Description shows January on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar"
+          text: "Seasonality, January, 󰅃"
+          label: "Assert - Description shows January on iOS"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::2"
+    label: "Action - Tap February chip"
+
+- waitForAnimationToEnd:
+    label: "Wait for chip selection animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar"
+          text: "Seasonality, January, February"
+          label: "Assert - Description shows January and February on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar"
+          text: "Seasonality, January, February, 󰅃"
+          label: "Assert - Description shows January and February on iOS"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::ToggleAllButton"
+    label: "Action - Tap Select All from partial selection"
+
+- waitForAnimationToEnd:
+    label: "Wait for selection animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar"
+          text: "Seasonality, All Year"
+          label: "Assert - Description shows All Year on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar"
+          text: "Seasonality, All Year, 󰅃"
+          label: "Assert - Description shows All Year on iOS"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::1"
+    label: "Action - Deselect January to break out of All Year state"
+
+- waitForAnimationToEnd:
+    label: "Wait for chip deselection animation"
+
+- assertVisible:
+    id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::ToggleAllButton"
+    text: "Select All"
+    label: "Assert - Button returns to Select All when not all months are selected"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::CancelButton"
+    label: "Action - Cancel dialog"
+
+- runFlow:
+    file: "../../flows/parameters/ingredients/returnToHome.yaml"
+    label: "Cleanup - Return to Home screen"

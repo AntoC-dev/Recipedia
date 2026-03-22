@@ -30,10 +30,6 @@ tags:
     id: "IngredientsSettings::0::EditButton"
     label: "Action - Open edit dialog for Lettuce"
 
-- runFlow:
-    file: "../../asserts/parameters/ingredients/en/assertEditModalOpen.yaml"
-    label: "Assert - Verify Edit ingredient modal displayed"
-
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::Name::CustomTextInput"
     label: "Action - Focus on ingredient name input"
@@ -153,7 +149,6 @@ tags:
       id: "IngredientsSettings::ItemDialog::EditModal::SeasonalityCalendar::10"
     direction: DOWN
     speed: 20
-    centerElement: true
     label: "Action - Scroll to october item"
 
 - tapOn:

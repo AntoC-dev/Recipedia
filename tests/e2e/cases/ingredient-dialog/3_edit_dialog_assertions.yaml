@@ -1,0 +1,38 @@
+name: "3 - Edit Ingredient Dialog Assertions"
+appId: "com.recipedia"
+tags:
+  - dialog
+  - ingredients-db
+---
+- runFlow:
+    file: "../../flows/setupTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- runFlow:
+    file: "../../flows/parameters/ingredients/navigateToIngredientsSettings.yaml"
+    label: "Action - Navigate to Ingredients Settings"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: "../../flows/parameters/searchInSettingsList.yaml"
+    env:
+      SETTINGS_SCREEN: "IngredientsSettings"
+      SEARCH_QUERY: "Lettuce"
+    label: "Action - Search for Lettuce ingredient"
+
+- tapOn:
+    id: "IngredientsSettings::0::EditButton"
+    label: "Action - Open edit dialog for Lettuce"
+
+- runFlow:
+    file: "../../asserts/parameters/ingredients/en/assertEditModalOpen.yaml"
+    label: "Assert - Verify edit ingredient modal structure and accordion headers with descriptions"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::EditModal::CancelButton"
+    label: "Action - Cancel dialog"
+
+- runFlow:
+    file: "../../flows/parameters/ingredients/returnToHome.yaml"
+    label: "Cleanup - Return to Home screen"

@@ -1,0 +1,35 @@
+name: "1 - Assert Ingredient Dialog Structure"
+appId: "com.recipedia"
+tags:
+  - dialog
+  - ingredients-db
+---
+- runFlow:
+    file: "../../flows/setupFirstTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- runFlow:
+    file: "../../flows/parameters/ingredients/navigateToIngredientsSettings.yaml"
+    label: "Action - Navigate to Ingredients Settings"
+
+- tapOn:
+    id: "IngredientsSettings::BottomActionButton"
+    label: "Action - Open add ingredient dialog"
+
+- runFlow:
+    file: "../../asserts/parameters/ingredients/en/assertAddModalOpen.yaml"
+    label: "Assert - Verify add ingredient modal structure and accordion headers"
+
+- runFlow:
+    file: "../../asserts/dialogs/en/assertItemDialogAccordionItems.yaml"
+    env:
+      MODAL_TEST_ID: "IngredientsSettings::ItemDialog::AddModal"
+    label: "Assert - Verify all type and seasonality accordion items are present"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::CancelButton"
+    label: "Action - Cancel dialog"
+
+- runFlow:
+    file: "../../flows/parameters/ingredients/returnToHome.yaml"
+    label: "Cleanup - Return to Home screen"
