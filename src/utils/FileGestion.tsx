@@ -314,8 +314,8 @@ export async function saveRecipeImage(cacheFileUri: string, recName: string): Pr
     const imgName = sanitizeFilename(recName) + '_' + Crypto.randomUUID() + '.' + extension;
     const imgUri: string = DIRECTORY_URI + imgName;
 
-    await FileSystem.deleteAsync(imgUri, { idempotent: true });
-    await FileSystem.moveAsync({ from: cacheFileUri, to: imgUri });
+    await FileSystem.copyAsync({ from: cacheFileUri, to: imgUri });
+    await FileSystem.deleteAsync(cacheFileUri).catch(() => {});
     fileSystemLogger.debug('Image saved to permanent storage', {
       destinationUri: imgUri,
     });
