@@ -1,3 +1,10 @@
+## [2.25.0](https://github.com/AntoC-dev/Recipedia/compare/v2.24.0...v2.25.0) (2026-03-22)
+
+### Features
+
+* **components:** add SelectableAccordion component ([33da51e](https://github.com/AntoC-dev/Recipedia/commit/33da51e80ee6ab54c6a2c43b074accb1ed67dc12))
+* **dialog:** add maxHeight to prevent overflow on small screens ([2e28523](https://github.com/AntoC-dev/Recipedia/commit/2e285239882aeb75400e6d65b8f98293533ab129))
+
 ## [2.24.0](https://github.com/AntoC-dev/Recipedia/compare/v2.23.1...v2.24.0) (2026-03-18)
 
 ### Features
