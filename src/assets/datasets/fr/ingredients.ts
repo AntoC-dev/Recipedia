@@ -1059,12 +1059,6 @@ export const frenchIngredients: ingredientTableElement[] = [
     season: ['*'],
   },
   {
-    name: 'Cumin',
-    unit: 'pincée',
-    type: ingredientType.spice,
-    season: ['*'],
-  },
-  {
     name: 'Curcuma',
     unit: 'pincée',
     type: ingredientType.spice,
@@ -1164,12 +1158,6 @@ export const frenchIngredients: ingredientTableElement[] = [
     name: 'Bouillon de poisson',
     unit: 'pincée',
     type: ingredientType.condiment,
-    season: ['*'],
-  },
-  {
-    name: 'Parmesan',
-    unit: 'g',
-    type: ingredientType.cheese,
     season: ['*'],
   },
   {
@@ -1503,7 +1491,7 @@ export const frenchIngredients: ingredientTableElement[] = [
     season: ['*'],
   },
   {
-    name: 'Filter de dinde',
+    name: 'Filet de dinde',
     unit: 'g',
     type: ingredientType.poultry,
     season: ['*'],
