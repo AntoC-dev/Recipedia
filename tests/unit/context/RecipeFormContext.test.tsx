@@ -213,6 +213,35 @@ describe('RecipeFormContext', () => {
       });
     });
 
+    test('restores original ingredient quantities without double-scaling after persons change', async () => {
+      const wrapper = createFormWrapper(createMockRecipeProp('edit', defaultTestRecipe));
+      const { result } = renderHook(() => useRecipeForm(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.state.recipePersons).toBe(defaultTestRecipe.persons);
+      });
+
+      act(() => {
+        result.current.setters.setRecipePersons(8);
+      });
+
+      await waitFor(() => {
+        expect(result.current.state.recipePersons).toBe(8);
+      });
+
+      act(() => {
+        result.current.actions.resetToOriginal();
+      });
+
+      await waitFor(() => {
+        expect(result.current.state.recipePersons).toBe(defaultTestRecipe.persons);
+      });
+
+      expect(result.current.state.recipeIngredients[0].quantity).toBe(
+        defaultTestRecipe.ingredients[0].quantity
+      );
+    });
+
     test('switches to readOnly mode after reset', async () => {
       const wrapper = createFormWrapper(createMockRecipeProp('edit', defaultTestRecipe));
       const { result } = renderHook(() => useRecipeForm(), { wrapper });

@@ -227,7 +227,8 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
       const scaledRecipe = scaleRecipeForSave(recipeToEdit, defaultPersons);
 
       if (!isRecipeEqual(originalRecipe, scaledRecipe)) {
-        await editRecipe(scaledRecipe);
+        const savedRecipe = await editRecipe(scaledRecipe);
+        setters.setRecipeImage(savedRecipe.image_Source);
       }
 
       setters.setStackMode(recipeStateType.readOnly);
@@ -267,11 +268,11 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
 
     const addRecipeToDatabase = async () => {
       try {
-        clearCache();
         const defaultPersons = await getDefaultPersons();
         const scaledRecipe = scaleRecipeForSave(recipeToAdd, defaultPersons);
         recipeLogger.info('Saving new recipe to database', { recipeTitle: state.recipeTitle });
         await addRecipe(scaledRecipe);
+        clearCache();
         recipeLogger.info('Recipe add completed successfully', { recipeTitle: state.recipeTitle });
 
         dialogs.showValidationDialog({

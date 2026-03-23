@@ -4,7 +4,7 @@ import RecipeDatabase from '@utils/RecipeDatabase';
 import { testRecipes } from '@test-data/recipesDataset';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
-import { deleteFile, getDirectoryUri } from '@utils/FileGestion';
+import { deleteFile, getDirectoryUri, isTemporaryImageUri } from '@utils/FileGestion';
 
 describe('RecipeDatabaseContext', () => {
   let database: RecipeDatabase;
@@ -518,6 +518,53 @@ describe('RecipeDatabaseContext', () => {
       await result.current.editRecipe({ ...recipe });
 
       expect(deleteFile).not.toHaveBeenCalled();
+    });
+
+    test('returns the edited recipe with updated image URI', async () => {
+      const { result } = renderHook(() => useRecipeDatabase(), {
+        wrapper: RecipeDatabaseProvider,
+      });
+
+      await waitFor(() => expect(result.current.isDatabaseReady).toBe(true));
+
+      const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
+      const newImageUri = 'file:///documents/new.jpg';
+
+      const savedRecipe = await result.current.editRecipe({ ...recipe, image_Source: newImageUri });
+
+      expect(savedRecipe).toMatchObject({ id: recipe.id, image_Source: newImageUri });
+    });
+
+    test('does not delete old image when it is a temporary URI', async () => {
+      const { result } = renderHook(() => useRecipeDatabase(), {
+        wrapper: RecipeDatabaseProvider,
+      });
+
+      await waitFor(() => expect(result.current.isDatabaseReady).toBe(true));
+
+      const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
+      (isTemporaryImageUri as jest.Mock).mockImplementation(
+        (uri: string) => uri === recipe.image_Source
+      );
+
+      await result.current.editRecipe({ ...recipe, image_Source: 'file:///documents/new.jpg' });
+
+      expect(deleteFile).not.toHaveBeenCalled();
+      (isTemporaryImageUri as jest.Mock).mockImplementation(
+        (uri: string) => !uri.includes(getDirectoryUri())
+      );
+    });
+
+    test('propagates error thrown by db when recipe has no ID', async () => {
+      const { result } = renderHook(() => useRecipeDatabase(), {
+        wrapper: RecipeDatabaseProvider,
+      });
+
+      await waitFor(() => expect(result.current.isDatabaseReady).toBe(true));
+
+      const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
+
+      await expect(result.current.editRecipe({ ...recipe, id: undefined })).rejects.toThrow();
     });
 
     test('deleteFile is called with the previous URI, not the new one', async () => {

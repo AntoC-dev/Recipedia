@@ -520,16 +520,16 @@ describe('RecipeDatabase', () => {
     test('editRecipe should update recipe', async () => {
       const recipeToEdit = { ...testRecipes[0], title: 'UpdatedRecipe' };
 
-      expect(await db.editRecipe(recipeToEdit)).toBe(true);
+      expect(await db.editRecipe(recipeToEdit)).toMatchObject(recipeToEdit);
 
       const updated = db.get_recipes().find(r => r.id === recipeToEdit.id);
       expect(updated).toEqual(recipeToEdit);
     });
 
-    test('editRecipe with missing ID should return false and not update', async () => {
+    test('editRecipe with missing ID throws and does not update', async () => {
       const recipeToEdit = { ...testRecipes[0], id: undefined, title: 'ShouldNotUpdate' };
 
-      expect(await db.editRecipe(recipeToEdit)).toBe(false);
+      await expect(db.editRecipe(recipeToEdit)).rejects.toThrow();
 
       const notUpdated = db.get_recipes().find(r => r.title === 'ShouldNotUpdate');
       expect(notUpdated).toBeUndefined();
@@ -1382,7 +1382,7 @@ describe('RecipeDatabase', () => {
         };
 
         const updateSuccess = await db.editRecipe(updatedRecipe);
-        expect(updateSuccess).toBe(true);
+        expect(updateSuccess).toMatchObject({ nutrition: testNutrition });
 
         const finalRecipe = db.get_recipes().find(r => r.title === updatedRecipe.title);
         expect(finalRecipe?.nutrition).toEqual(testNutrition);
@@ -1404,7 +1404,7 @@ describe('RecipeDatabase', () => {
         };
 
         const updateSuccess = await db.editRecipe(updatedRecipe);
-        expect(updateSuccess).toBe(true);
+        expect(updateSuccess).toMatchObject({ id: addedRecipe!.id });
 
         const finalRecipe = db.get_recipes().find(r => r.title === recipeWithNutrition.title);
         expect(finalRecipe?.nutrition).toBeUndefined();
@@ -1531,6 +1531,22 @@ describe('RecipeDatabase', () => {
           'file:///cache/ImageManipulator/new-image.jpg',
           editedRecipe.title
         );
+      });
+
+      it('returns recipe with image_Source set to the permanent URI from saveRecipeImage', async () => {
+        await db.addRecipe({ ...testRecipes[0], id: undefined });
+        const addedRecipe = db.get_recipes()[0];
+
+        jest.clearAllMocks();
+        const permanentUri = 'file:///documents/Recipedia/saved.jpg';
+        FileGestionMock.saveRecipeImage.mockResolvedValue(permanentUri);
+
+        const result = await db.editRecipe({
+          ...addedRecipe,
+          image_Source: 'file:///cache/ImageManipulator/temp.jpg',
+        });
+
+        expect(result.image_Source).toBe(permanentUri);
       });
 
       it('does not save permanent URI image when editing recipe', async () => {
