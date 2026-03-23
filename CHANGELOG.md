@@ -1,3 +1,11 @@
+## [2.26.1](https://github.com/AntoC-dev/Recipedia/compare/v2.26.0...v2.26.1) (2026-03-23)
+
+### Bug Fixes
+
+* **recipe-edit:** sync all form fields from saved recipe after editing ([#232](https://github.com/AntoC-dev/Recipedia/issues/232)) ([aa7690f](https://github.com/AntoC-dev/Recipedia/commit/aa7690f380b13f219d16e450c76ebfa9de860478))
+* **recipe-edit:** sync image URI from saved recipe after editing ([2ca69e4](https://github.com/AntoC-dev/Recipedia/commit/2ca69e4db49d0ba6736920725878a69a190d0d73))
+* **recipe-form:** prevent ingredient double-scaling in resetToOriginal ([7e4e7c1](https://github.com/AntoC-dev/Recipedia/commit/7e4e7c13c029026aaa6a4ba29f05b38940144a72))
+
 ## [2.26.0](https://github.com/AntoC-dev/Recipedia/compare/v2.25.1...v2.26.0) (2026-03-22)
 
 ### Features
