@@ -1,3 +1,14 @@
+## [2.27.0](https://github.com/AntoC-dev/Recipedia/compare/v2.26.1...v2.27.0) (2026-03-24)
+
+### Features
+
+* **seasonality:** add select all / deselect all button to SeasonalityCalendar ([26be503](https://github.com/AntoC-dev/Recipedia/commit/26be503ff617889faa64b1114c54a594d5f19def))
+* **seasonality:** add select all / deselect all button to SeasonalityCalendar ([#233](https://github.com/AntoC-dev/Recipedia/issues/233)) ([3e95eb8](https://github.com/AntoC-dev/Recipedia/commit/3e95eb8a5158219b4e25fa38ee93fb83b8451683))
+
+### Bug Fixes
+
+* **mocks:** expose ::Children testID on Button in react-native-paper mock ([8a736eb](https://github.com/AntoC-dev/Recipedia/commit/8a736eb403a823761297bfb50895d634b96255d4))
+
 ## [2.26.1](https://github.com/AntoC-dev/Recipedia/compare/v2.26.0...v2.26.1) (2026-03-23)
 
 ### Bug Fixes
