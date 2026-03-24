@@ -92,6 +92,8 @@ export function SeasonalityCalendar({
       onMonthsChange?.(newMonths);
     };
 
+    const allSelected = selectedMonths.length === MONTH_VALUES.length;
+
     return (
       <SelectableAccordion
         testID={calendarTestId}
@@ -102,6 +104,9 @@ export function SeasonalityCalendar({
         multiSelect
         numColumns={2}
         allSelectedLabel={t('all_year')}
+        onToggleAll={
+          onMonthsChange ? () => onMonthsChange(allSelected ? [] : [...MONTH_VALUES]) : undefined
+        }
       />
     );
   }

@@ -31,7 +31,8 @@
 
 import React, { useState } from 'react';
 import { FlatList, ListRenderItemInfo, StyleSheet, View } from 'react-native';
-import { Chip, List, RadioButton, useTheme } from 'react-native-paper';
+import { Button, Chip, List, RadioButton, useTheme } from 'react-native-paper';
+import { useI18n } from '@utils/i18n';
 import { padding } from '@styles/spacing';
 
 /** A value/label pair for use in selectable lists */
@@ -110,6 +111,8 @@ export type SelectableAccordionProps = {
   numColumns?: number;
   /** Label to display in description when all items are selected */
   allSelectedLabel?: string;
+  /** Callback fired when the toggle-all button is pressed (multi-select only). Renders a Button when provided. */
+  onToggleAll?: () => void;
 };
 
 /**
@@ -134,10 +137,13 @@ export function SelectableAccordion({
   multiSelect = false,
   numColumns = 2,
   allSelectedLabel,
+  onToggleAll,
 }: SelectableAccordionProps) {
   const { colors } = useTheme();
+  const { t } = useI18n();
   const [expanded, setExpanded] = useState(false);
 
+  const allItemsSelected: boolean = items.length > 0 && selectedValues.length === items.length;
   const allSelected: boolean = !!allSelectedLabel && selectedValues.length === items.length;
   const description = allSelected
     ? allSelectedLabel
@@ -156,24 +162,39 @@ export function SelectableAccordion({
       style={[styles.accordion, { backgroundColor: colors.elevation.level1 }]}
     >
       {multiSelect ? (
-        <FlatList
-          testID={testID + '::List'}
-          data={items}
-          numColumns={numColumns}
-          scrollEnabled={false}
-          keyExtractor={selectableItemKeyExtractor}
-          contentContainerStyle={styles.itemContainer}
-          columnWrapperStyle={styles.itemRow}
-          renderItem={({ item }: ListRenderItemInfo<SelectableItem>) => (
-            <SelectableChip
-              testID={testID}
-              item={item}
-              isSelected={selectedValues.includes(item.value)}
-              selectedColor={colors.primary}
-              onPress={onPress}
-            />
+        <>
+          {onToggleAll && (
+            <View style={styles.toggleAllRow}>
+              <Button
+                testID={testID + '::ToggleAllButton'}
+                mode='text'
+                onPress={onToggleAll}
+                compact={true}
+                style={styles.toggleAllButton}
+              >
+                {allItemsSelected ? t('deselect_all') : t('select_all')}
+              </Button>
+            </View>
           )}
-        />
+          <FlatList
+            testID={testID + '::List'}
+            data={items}
+            numColumns={numColumns}
+            scrollEnabled={false}
+            keyExtractor={selectableItemKeyExtractor}
+            contentContainerStyle={styles.itemContainer}
+            columnWrapperStyle={styles.itemRow}
+            renderItem={({ item }: ListRenderItemInfo<SelectableItem>) => (
+              <SelectableChip
+                testID={testID}
+                item={item}
+                isSelected={selectedValues.includes(item.value)}
+                selectedColor={colors.primary}
+                onPress={onPress}
+              />
+            )}
+          />
+        </>
       ) : (
         <View testID={testID + '::RadioGroup'} {...{ value: selectedValues[0] ?? '' }}>
           <RadioButton.Group value={selectedValues[0] ?? ''} onValueChange={onPress}>
@@ -218,5 +239,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: padding.verySmall,
     paddingVertical: padding.verySmall,
     justifyContent: 'flex-start',
+  },
+  toggleAllRow: {
+    alignItems: 'flex-end',
+    paddingHorizontal: padding.small,
+    paddingTop: padding.small,
+  },
+  toggleAllButton: {
+    alignSelf: 'flex-end',
   },
 });

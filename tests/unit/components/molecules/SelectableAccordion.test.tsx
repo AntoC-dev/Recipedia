@@ -5,7 +5,10 @@ import {
   SelectableAccordionProps,
 } from '@components/molecules/SelectableAccordion';
 
+jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
+
 const mockOnPress = jest.fn();
+const mockOnToggleAll = jest.fn();
 
 const singleSelectItems = [
   { value: 'apple', label: 'Apple' },
@@ -419,6 +422,126 @@ describe('SelectableAccordion', () => {
           'true'
         );
       }
+    });
+  });
+
+  describe('toggle all button', () => {
+    test('does not render button when onToggleAll is not provided', () => {
+      const props: SelectableAccordionProps = {
+        testID: 'TestAccordion',
+        title: 'Months',
+        items: multiSelectItems,
+        selectedValues: [],
+        onPress: mockOnPress,
+        multiSelect: true,
+      };
+
+      const { queryByTestId } = render(<SelectableAccordion {...props} />);
+
+      expect(queryByTestId('TestAccordion::ToggleAllButton')).toBeNull();
+    });
+
+    test('does not render button in single-select mode even with onToggleAll', () => {
+      const props: SelectableAccordionProps = {
+        testID: 'TestAccordion',
+        title: 'Fruit',
+        items: singleSelectItems,
+        selectedValues: [],
+        onPress: mockOnPress,
+        onToggleAll: mockOnToggleAll,
+      };
+
+      const { queryByTestId } = render(<SelectableAccordion {...props} />);
+
+      expect(queryByTestId('TestAccordion::ToggleAllButton')).toBeNull();
+    });
+
+    test('renders button in multi-select mode when onToggleAll is provided', () => {
+      const props: SelectableAccordionProps = {
+        testID: 'TestAccordion',
+        title: 'Months',
+        items: multiSelectItems,
+        selectedValues: [],
+        onPress: mockOnPress,
+        multiSelect: true,
+        onToggleAll: mockOnToggleAll,
+      };
+
+      const { getByTestId } = render(<SelectableAccordion {...props} />);
+
+      expect(getByTestId('TestAccordion::ToggleAllButton')).toBeTruthy();
+    });
+
+    test('shows select_all label when not all items are selected', () => {
+      const props: SelectableAccordionProps = {
+        testID: 'TestAccordion',
+        title: 'Months',
+        items: multiSelectItems,
+        selectedValues: ['1'],
+        onPress: mockOnPress,
+        multiSelect: true,
+        onToggleAll: mockOnToggleAll,
+      };
+
+      const { getByTestId } = render(<SelectableAccordion {...props} />);
+
+      expect(getByTestId('TestAccordion::ToggleAllButton::Children').props.children).toBe(
+        'select_all'
+      );
+    });
+
+    test('shows deselect_all label when all items are selected', () => {
+      const props: SelectableAccordionProps = {
+        testID: 'TestAccordion',
+        title: 'Months',
+        items: multiSelectItems,
+        selectedValues: ['1', '2', '3'],
+        onPress: mockOnPress,
+        multiSelect: true,
+        onToggleAll: mockOnToggleAll,
+      };
+
+      const { getByTestId } = render(<SelectableAccordion {...props} />);
+
+      expect(getByTestId('TestAccordion::ToggleAllButton::Children').props.children).toBe(
+        'deselect_all'
+      );
+    });
+
+    test('shows select_all label when no items are selected', () => {
+      const props: SelectableAccordionProps = {
+        testID: 'TestAccordion',
+        title: 'Months',
+        items: multiSelectItems,
+        selectedValues: [],
+        onPress: mockOnPress,
+        multiSelect: true,
+        onToggleAll: mockOnToggleAll,
+      };
+
+      const { getByTestId } = render(<SelectableAccordion {...props} />);
+
+      expect(getByTestId('TestAccordion::ToggleAllButton::Children').props.children).toBe(
+        'select_all'
+      );
+    });
+
+    test('pressing button calls onToggleAll', () => {
+      const props: SelectableAccordionProps = {
+        testID: 'TestAccordion',
+        title: 'Months',
+        items: multiSelectItems,
+        selectedValues: [],
+        onPress: mockOnPress,
+        multiSelect: true,
+        onToggleAll: mockOnToggleAll,
+      };
+
+      const { getByTestId } = render(<SelectableAccordion {...props} />);
+
+      fireEvent.press(getByTestId('TestAccordion::ToggleAllButton'));
+
+      expect(mockOnToggleAll).toHaveBeenCalledTimes(1);
     });
   });
 

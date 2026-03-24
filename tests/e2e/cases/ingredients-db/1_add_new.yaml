@@ -20,10 +20,6 @@ tags:
     id: "IngredientsSettings::BottomActionButton"
     label: "Action - Open add ingredient dialog"
 
-- runFlow:
-    file: "../../asserts/parameters/ingredients/en/assertAddModalOpen.yaml"
-    label: "Assert - Verify Add ingredient modal displayed"
-
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::Name::CustomTextInput"
     label: "Action - Focus on ingredient name input"

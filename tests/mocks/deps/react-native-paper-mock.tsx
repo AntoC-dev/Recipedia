@@ -15,7 +15,7 @@ export const Button: React.FC<any> = props => (
     style={props.style}
     {...{ disabled: props.disabled }}
   >
-    <RNText>{props.children}</RNText>
+    <RNText testID={props.testID + '::Children'}>{props.children}</RNText>
   </TouchableOpacity>
 );
 

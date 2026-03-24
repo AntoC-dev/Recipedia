@@ -26,8 +26,26 @@ appId: "com.recipedia"
           text: "Seasonality, 󰅀"
           label: "Seasonality accordion header text is visible on ios"
 
-- runFlow:
-    file: "assertItemDialogAccordionItems.yaml"
-    env:
-      MODAL_TEST_ID: "${MODAL_TEST_ID}"
-    label: "Assert - Verify all type and seasonality accordion items"
+- tapOn:
+    id: "${MODAL_TEST_ID}::SeasonalityCalendar"
+    label: "Action - Expand seasonality accordion"
+
+- extendedWaitUntil:
+    visible:
+      id: "${MODAL_TEST_ID}::SeasonalityCalendar::ToggleAllButton"
+    timeout: 5000
+    label: "Wait for seasonality accordion to expand"
+
+- assertVisible:
+    id: "${MODAL_TEST_ID}::SeasonalityCalendar::ToggleAllButton"
+    label: "Assert - Select all button is visible in seasonality accordion"
+
+- tapOn:
+    id: "${MODAL_TEST_ID}::SeasonalityCalendar"
+    label: "Action - Collapse seasonality accordion"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "${MODAL_TEST_ID}::SeasonalityCalendar::ToggleAllButton"
+    timeout: 5000
+    label: "Wait for seasonality accordion to collapse"

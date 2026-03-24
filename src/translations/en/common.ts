@@ -27,6 +27,8 @@ export default {
 
   // Selection prompts
   selectType: 'Select type',
+  select_all: 'Select All',
+  deselect_all: 'Deselect All',
 
   // Error messages
   error: 'Error',
