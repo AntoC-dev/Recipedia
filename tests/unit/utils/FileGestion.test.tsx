@@ -1,9 +1,10 @@
 import {
   clearCache,
+  constructImageUri,
   copyDatasetImages,
   deleteFile,
   downloadImageToCache,
-  getDirectoryUri,
+  extractFilenameFromUri,
   init,
   isTemporaryImageUri,
   saveRecipeImage,
@@ -73,10 +74,27 @@ describe('FileGestion Utility', () => {
     resetAllMocks();
   });
 
-  test('getDirectoryUri returns correct path without double slashes', () => {
-    const uri = getDirectoryUri();
-    expect(uri).toBe(defaultDocumentsPath);
+  test('constructImageUri prepends app directory to filename', () => {
+    expect(constructImageUri('recipe.jpg')).toBe(defaultDocumentsPath + 'recipe.jpg');
+  });
+
+  test('constructImageUri does not produce double slashes', () => {
+    const uri = constructImageUri('recipe.jpg');
     expect(uri).not.toMatch(/\/\//);
+  });
+
+  test('extractFilenameFromUri strips app directory prefix', () => {
+    expect(extractFilenameFromUri(defaultDocumentsPath + 'recipe.jpg')).toBe('recipe.jpg');
+  });
+
+  test('extractFilenameFromUri returns input unchanged when prefix does not match', () => {
+    expect(extractFilenameFromUri('/other/path/recipe.jpg')).toBe('/other/path/recipe.jpg');
+  });
+
+  test('extractFilenameFromUri and constructImageUri are inverses', () => {
+    const filename = 'pasta_abc123.jpg';
+    const uri = constructImageUri(filename);
+    expect(extractFilenameFromUri(uri)).toBe(filename);
   });
 
   test('creates both directories when they do not exist during initialization', () => {
@@ -247,7 +265,7 @@ describe('FileGestion Utility', () => {
     saveRecipeImage('/temp/test.jpg', 'Test Recipe');
     clearCache();
 
-    expect(getDirectoryUri()).toBe(defaultDocumentsPath);
+    expect(constructImageUri('test.jpg')).toBe(defaultDocumentsPath + 'test.jpg');
     expect(mockDirectoryCreate).toHaveBeenCalledWith(expect.stringContaining('Test Recipedia'), {
       intermediates: true,
     });

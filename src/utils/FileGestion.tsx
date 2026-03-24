@@ -78,12 +78,29 @@ function sanitizeFilename(name: string): string {
 }
 
 /**
- * Gets the main app directory URI for permanent storage
+ * Extracts the filename from a full image URI by stripping the app directory prefix.
  *
- * @returns URI path to the main app directory
+ * If the URI doesn't contain the directory prefix, returns it unchanged
+ * (assumes it's already a filename).
+ *
+ * @param imageUri - Full image URI (e.g., "file:///documents/Recipedia/pasta.jpg")
+ * @returns Just the filename (e.g., "pasta.jpg")
  */
-export function getDirectoryUri(): string {
-  return APP_DIR.uri + '/';
+export function extractFilenameFromUri(imageUri: string): string {
+  if (imageUri.startsWith(APP_DIR.uri)) {
+    return imageUri.substring(APP_DIR.uri.length);
+  }
+  return imageUri;
+}
+
+/**
+ * Constructs a full image URI from a filename by prepending the app directory path.
+ *
+ * @param imageFilename - The image filename (e.g., "pasta.jpg")
+ * @returns Full image URI (e.g., "file:///documents/Recipedia/pasta.jpg")
+ */
+export function constructImageUri(imageFilename: string): string {
+  return APP_DIR.uri + imageFilename;
 }
 
 /**
@@ -159,7 +176,7 @@ export function deleteFile(uri: string): void {
  * ```
  */
 export function isTemporaryImageUri(uri: string): boolean {
-  const isTemporary = !uri.startsWith(APP_DIR.uri + '/');
+  const isTemporary = !uri.startsWith(APP_DIR.uri);
 
   fileSystemLogger.debug('Checking if image URI is temporary', {
     imageUri: uri,
@@ -390,9 +407,8 @@ export async function copyDatasetImages(): Promise<void> {
  * ```
  */
 export function transformDatasetRecipeImages(recipes: recipeTableElement[]): recipeTableElement[] {
-  const dirUri = getDirectoryUri();
   return recipes.map(recipe => ({
     ...recipe,
-    image_Source: dirUri + recipe.image_Source,
+    image_Source: APP_DIR.uri + recipe.image_Source,
   }));
 }

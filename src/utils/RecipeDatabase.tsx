@@ -39,7 +39,12 @@ import {
 } from '@customTypes/DatabaseElementTypes';
 import { TableManipulation } from './TableManipulation';
 import { EncodingSeparator, noteSeparator, textSeparator } from '@styles/typography';
-import { getDirectoryUri, isTemporaryImageUri, saveRecipeImage } from '@utils/FileGestion';
+import {
+  constructImageUri,
+  extractFilenameFromUri,
+  isTemporaryImageUri,
+  saveRecipeImage,
+} from '@utils/FileGestion';
 import { cleanIngredientName, FuzzyMatchLevel, fuzzySearch } from '@utils/FuzzySearch';
 import { scaleQuantityForPersons } from '@utils/Quantity';
 import { databaseLogger } from '@utils/logger';
@@ -1786,7 +1791,7 @@ export class RecipeDatabase {
     return new Map<string, string | number>([
       [recipeColumnsNames.title, recipe.title],
       [recipeColumnsNames.description, recipe.description],
-      [recipeColumnsNames.image, this.extractFilenameFromUri(recipe.image_Source)],
+      [recipeColumnsNames.image, extractFilenameFromUri(recipe.image_Source)],
     ]);
   }
 
@@ -1838,7 +1843,7 @@ export class RecipeDatabase {
   private encodeRecipe(recToEncode: recipeTableElement): encodedRecipeElement {
     return {
       ID: recToEncode.id ? recToEncode.id : 0,
-      IMAGE_SOURCE: this.extractFilenameFromUri(recToEncode.image_Source),
+      IMAGE_SOURCE: extractFilenameFromUri(recToEncode.image_Source),
       TITLE: recToEncode.title,
       DESCRIPTION: recToEncode.description,
       TAGS: recToEncode.tags.map(tag => this.encodeTagForRecipe(tag)).join(EncodingSeparator),
@@ -1854,38 +1859,6 @@ export class RecipeDatabase {
       SOURCE_URL: recToEncode.sourceUrl || '',
       SOURCE_PROVIDER: recToEncode.sourceProvider || '',
     };
-  }
-
-  /**
-   * Extracts filename from a full image URI
-   *
-   * Takes a full image URI and extracts just the filename by removing the directory prefix.
-   * If the URI doesn't contain the directory prefix, returns it unchanged (assumes it's already a filename).
-   *
-   * @private
-   * @param imageUri - The full image URI (e.g., "file:///documents/Recipedia/pasta.jpg")
-   * @returns Just the filename (e.g., "pasta.jpg")
-   */
-  private extractFilenameFromUri(imageUri: string): string {
-    const directoryPath = getDirectoryUri();
-    if (imageUri.startsWith(directoryPath)) {
-      return imageUri.substring(directoryPath.length);
-    }
-    return imageUri;
-  }
-
-  /**
-   * Constructs full image URI from filename
-   *
-   * Takes a filename (e.g., "pasta.jpg") and combines it with the FileGestion
-   * directory URI to create a full file:// URI that can be used by image components.
-   *
-   * @private
-   * @param imageFilename - The image filename (e.g., "pasta.jpg")
-   * @returns Full image URI (e.g., "file:///documents/Recipedia/pasta.jpg")
-   */
-  private constructImageUri(imageFilename: string): string {
-    return getDirectoryUri() + imageFilename;
   }
 
   /**
@@ -1941,7 +1914,7 @@ export class RecipeDatabase {
     );
     return {
       id: encodedRecipe.ID,
-      image_Source: this.constructImageUri(encodedRecipe.IMAGE_SOURCE),
+      image_Source: constructImageUri(encodedRecipe.IMAGE_SOURCE),
       title: encodedRecipe.TITLE,
       description: encodedRecipe.DESCRIPTION,
       tags: await this.decodeTagFromRecipe(encodedRecipe.TAGS),

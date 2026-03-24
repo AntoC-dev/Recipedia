@@ -4,7 +4,7 @@ import RecipeDatabase from '@utils/RecipeDatabase';
 import { testRecipes } from '@test-data/recipesDataset';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
-import { deleteFile, getDirectoryUri, isTemporaryImageUri } from '@utils/FileGestion';
+import { constructImageUri, deleteFile, isTemporaryImageUri } from '@utils/FileGestion';
 
 describe('RecipeDatabaseContext', () => {
   let database: RecipeDatabase;
@@ -551,7 +551,7 @@ describe('RecipeDatabaseContext', () => {
 
       expect(deleteFile).not.toHaveBeenCalled();
       (isTemporaryImageUri as jest.Mock).mockImplementation(
-        (uri: string) => !uri.includes(getDirectoryUri())
+        (uri: string) => !uri.includes(constructImageUri(''))
       );
     });
 

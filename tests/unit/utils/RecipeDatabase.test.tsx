@@ -1467,7 +1467,14 @@ describe('RecipeDatabase', () => {
       await db.addMultipleIngredients(testIngredients);
       await db.addMultipleTags(testTags);
       jest.clearAllMocks();
-      FileGestionMock.getDirectoryUri.mockReturnValue('file:///documents/Recipedia/');
+      const prefix = 'file:///documents/Recipedia/';
+      FileGestionMock.constructImageUri.mockImplementation((filename: string) => prefix + filename);
+      FileGestionMock.extractFilenameFromUri.mockImplementation((uri: string) =>
+        uri.startsWith(prefix) ? uri.substring(prefix.length) : uri
+      );
+      FileGestionMock.isTemporaryImageUri.mockImplementation(
+        (uri: string) => !uri.startsWith(prefix)
+      );
     });
 
     afterEach(async () => {

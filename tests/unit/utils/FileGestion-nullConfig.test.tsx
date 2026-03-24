@@ -1,4 +1,4 @@
-import { getDirectoryUri } from '@utils/FileGestion';
+import { constructImageUri } from '@utils/FileGestion';
 
 jest.unmock('@utils/FileGestion');
 jest.mock('expo-constants', () => ({ expoConfig: null }));
@@ -12,7 +12,7 @@ jest.mock('@utils/DatasetLoader', () => require('@mocks/utils/DatasetLoader-mock
 jest.mock('expo-crypto', () => ({ randomUUID: jest.fn() }));
 
 describe('FileGestion with null expoConfig', () => {
-  test('falls back to package.json name for directory URI', () => {
-    expect(getDirectoryUri()).toBe('/documents/recipedia/');
+  test('falls back to package.json name for directory path', () => {
+    expect(constructImageUri('test.jpg')).toBe('/documents/recipedia/test.jpg');
   });
 });

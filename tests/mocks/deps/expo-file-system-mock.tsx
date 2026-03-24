@@ -66,8 +66,10 @@ class MockDirectory {
     this.uri = uris
       .map(u => (typeof u === 'string' ? u : u.uri))
       .join('/')
-      .replace(/\/+/g, '/')
-      .replace(/\/$/, '');
+      .replace(/\/+/g, '/');
+    if (!this.uri.endsWith('/')) {
+      this.uri += '/';
+    }
   }
   get exists() {
     return mockDirectoryExists(this.uri);

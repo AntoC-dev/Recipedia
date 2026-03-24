@@ -1,13 +1,10 @@
-const mockDirectoryUri = '';
+export const extractFilenameFromUri = jest.fn((imageUri: string): string => imageUri);
 
-export const getDirectoryUri = jest.fn().mockReturnValue(mockDirectoryUri);
+export const constructImageUri = jest.fn((imageFilename: string): string => imageFilename);
 
 export const mockDownloadImageToCache = jest.fn();
 
-export const isTemporaryImageUri = jest.fn().mockImplementation((uri: string): boolean => {
-  const directoryUri = getDirectoryUri();
-  return !uri.includes(directoryUri);
-});
+export const isTemporaryImageUri = jest.fn((): boolean => false);
 
 export const clearCache = jest.fn().mockResolvedValue(undefined);
 
@@ -22,13 +19,13 @@ export const copyDatasetImages = jest.fn().mockResolvedValue(undefined);
 export const transformDatasetRecipeImages = jest.fn((recipes: any[]) =>
   recipes.map(recipe => ({
     ...recipe,
-    image_Source: getDirectoryUri() + recipe.image_Source,
   }))
 );
 
 export function fileGestionMock() {
   return {
-    getDirectoryUri,
+    extractFilenameFromUri,
+    constructImageUri,
     isTemporaryImageUri,
     clearCache,
     deleteFile,
