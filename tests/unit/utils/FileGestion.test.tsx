@@ -1,4 +1,5 @@
 import {
+  cleanupOrphanedImages,
   clearCache,
   constructImageUri,
   copyDatasetImages,
@@ -11,16 +12,16 @@ import {
   transformDatasetRecipeImages,
 } from '@utils/FileGestion';
 import {
-  mockFileExists,
-  mockFileDelete,
-  mockFileCopy,
-  mockFileDownloadFileAsync,
-  mockDirectoryExists,
-  mockDirectoryDelete,
   mockDirectoryCreate,
+  mockDirectoryDelete,
+  mockDirectoryExists,
   mockDirectoryList,
+  mockFileCopy,
+  mockFileDelete,
+  mockFileDownloadFileAsync,
+  mockFileExists,
 } from '@mocks/deps/expo-file-system-mock';
-import { mockAssetFromModule, mockAssetLoadAsync } from '@mocks/deps/expo-asset-mock';
+import { mockAssetFromModule } from '@mocks/deps/expo-asset-mock';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { setMockDatasetType } from '@mocks/utils/DatasetLoader-mock';
@@ -537,16 +538,22 @@ describe('copyDatasetImages', () => {
     name,
     type,
     localUri,
+    downloaded: true,
+    downloadAsync: jest.fn().mockResolvedValue(undefined),
   });
+
+  const setupFromModuleSequence = (assets: ReturnType<typeof createMockAsset>[]) => {
+    assets.forEach(asset => mockAssetFromModule.mockReturnValueOnce(asset));
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
     mockFileExists.mockReset().mockReturnValue(false);
     mockFileCopy.mockReset();
-    mockAssetLoadAsync.mockReset();
+    mockAssetFromModule.mockReset();
   });
 
-  test('copies test dataset images via loadAsync + copy', async () => {
+  test('copies test dataset images via fromModule + copy', async () => {
     setMockDatasetType('test');
 
     const mockAssets = [
@@ -554,11 +561,11 @@ describe('copyDatasetImages', () => {
       createMockAsset('image2', 'jpg', '/asset/path/image2.jpg'),
       createMockAsset('image3', 'jpg', '/asset/path/image3.jpg'),
     ];
-    mockAssetLoadAsync.mockResolvedValue(mockAssets);
+    setupFromModuleSequence(mockAssets);
 
     await copyDatasetImages();
 
-    expect(mockAssetLoadAsync).toHaveBeenCalledTimes(1);
+    expect(mockAssetFromModule).toHaveBeenCalledTimes(3);
     expect(mockFileCopy).toHaveBeenCalledTimes(3);
     expect(mockFileCopy).toHaveBeenCalledWith(
       '/asset/path/image1.jpg',
@@ -575,11 +582,11 @@ describe('copyDatasetImages', () => {
       createMockAsset('soupe_legumes_hiver', 'png', '/asset/path/soupe_legumes_hiver.png'),
       createMockAsset('curry_lentilles_corail', 'png', '/asset/path/curry_lentilles_corail.png'),
     ];
-    mockAssetLoadAsync.mockResolvedValue(mockAssets);
+    setupFromModuleSequence(mockAssets);
 
     await copyDatasetImages();
 
-    expect(mockAssetLoadAsync).toHaveBeenCalledWith(productionRecipesImages);
+    expect(mockAssetFromModule).toHaveBeenCalledTimes(productionRecipesImages.length);
     expect(mockFileCopy).toHaveBeenCalledTimes(3);
     expect(mockFileCopy).toHaveBeenCalledWith(
       '/asset/path/spaghetti_bolognaise.png',
@@ -595,7 +602,7 @@ describe('copyDatasetImages', () => {
       createMockAsset('image2', 'jpg', '/asset/path/image2.jpg'),
       createMockAsset('image3', 'jpg', '/asset/path/image3.jpg'),
     ];
-    mockAssetLoadAsync.mockResolvedValue(mockAssets);
+    setupFromModuleSequence(mockAssets);
     mockFileExists.mockReturnValueOnce(true).mockReturnValueOnce(false).mockReturnValueOnce(true);
 
     await copyDatasetImages();
@@ -607,32 +614,225 @@ describe('copyDatasetImages', () => {
     );
   });
 
-  test('throws error when loadAsync fails', async () => {
+  test('throws error when downloadAsync fails', async () => {
     setMockDatasetType('test');
-    mockAssetLoadAsync.mockRejectedValue(new Error('Load failed'));
+    const failingAsset = createMockAsset('image1', 'jpg', '/asset/path/image1.jpg');
+    failingAsset.downloadAsync.mockRejectedValue(new Error('Download failed'));
+    mockAssetFromModule.mockReturnValue(failingAsset);
 
-    await expect(copyDatasetImages()).rejects.toThrow('Load failed');
+    await expect(copyDatasetImages()).rejects.toThrow('Download failed');
   });
 
-  test('throws error when loadAsync returns fewer assets than expected', async () => {
+  test('resets downloaded flag before calling downloadAsync', async () => {
     setMockDatasetType('test');
-    mockAssetLoadAsync.mockResolvedValue([createMockAsset('image1', 'jpg', '/asset/path/image1.jpg')]);
 
-    await expect(copyDatasetImages()).rejects.toThrow(/Failed to load all test assets/);
+    const mockAssets = [
+      createMockAsset('image1', 'jpg', '/asset/path/image1.jpg'),
+      createMockAsset('image2', 'jpg', '/asset/path/image2.jpg'),
+      createMockAsset('image3', 'jpg', '/asset/path/image3.jpg'),
+    ];
+    setupFromModuleSequence(mockAssets);
+
+    await copyDatasetImages();
+
+    mockAssets.forEach(asset => {
+      expect(asset.downloaded).toBe(false);
+      expect(asset.downloadAsync).toHaveBeenCalledTimes(1);
+    });
   });
 
-  test('calls loadAsync with the correct image set', async () => {
+  test('calls fromModule with each module ID from the image set', async () => {
     setMockDatasetType('test');
     const { testRecipesImages } = require('@utils/Constants');
 
     const mockAssets = testRecipesImages.map((_: unknown, i: number) =>
       createMockAsset(`image${i}`, 'jpg', `/asset/path/image${i}.jpg`)
     );
-    mockAssetLoadAsync.mockResolvedValue(mockAssets);
+    setupFromModuleSequence(mockAssets);
 
     await copyDatasetImages();
 
-    expect(mockAssetLoadAsync).toHaveBeenCalledWith(testRecipesImages);
+    testRecipesImages.forEach((moduleId: string) => {
+      expect(mockAssetFromModule).toHaveBeenCalledWith(moduleId);
+    });
+  });
+});
+
+describe('cleanupOrphanedImages', () => {
+  const defaultDocumentsPath = '/documents/Test Recipedia/';
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockFileExists.mockReturnValue(false);
+    mockDirectoryList.mockReturnValue([]);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test('returns 0 and skips deletion when all directory files are active', async () => {
+    const fileUri = defaultDocumentsPath + 'active.jpg';
+    mockDirectoryList.mockReturnValue([{ uri: fileUri }]);
+
+    const result = await cleanupOrphanedImages([fileUri]);
+
+    expect(result).toBe(0);
+    expect(mockFileDelete).not.toHaveBeenCalled();
+  });
+
+  test('deletes orphan and returns 1 when one file is not in active set', async () => {
+    const orphanUri = defaultDocumentsPath + 'orphan.jpg';
+    const activeUri = defaultDocumentsPath + 'active.jpg';
+    mockDirectoryList.mockReturnValue([{ uri: orphanUri }, { uri: activeUri }]);
+    mockFileExists.mockReturnValue(true);
+
+    const result = await cleanupOrphanedImages([activeUri]);
+
+    expect(result).toBe(1);
+    expect(mockFileDelete).toHaveBeenCalledWith(orphanUri);
+    expect(mockFileDelete).not.toHaveBeenCalledWith(activeUri);
+  });
+
+  test('deletes all files and returns count when active URIs is empty', async () => {
+    const file1Uri = defaultDocumentsPath + 'file1.jpg';
+    const file2Uri = defaultDocumentsPath + 'file2.jpg';
+    const file3Uri = defaultDocumentsPath + 'file3.jpg';
+    mockDirectoryList.mockReturnValue([{ uri: file1Uri }, { uri: file2Uri }, { uri: file3Uri }]);
+    mockFileExists.mockReturnValue(true);
+
+    const result = await cleanupOrphanedImages([]);
+
+    expect(result).toBe(3);
+    expect(mockFileDelete).toHaveBeenCalledTimes(3);
+  });
+
+  test('returns 0 when directory is empty', async () => {
+    const result = await cleanupOrphanedImages([defaultDocumentsPath + 'file.jpg']);
+
+    expect(result).toBe(0);
+    expect(mockFileDelete).not.toHaveBeenCalled();
+  });
+
+  test('returns 0 and does not crash when directory listing throws', async () => {
+    mockDirectoryList.mockImplementation(() => {
+      throw new Error('Permission denied');
+    });
+
+    const result = await cleanupOrphanedImages([]);
+
+    expect(result).toBe(0);
+    expect(mockFileDelete).not.toHaveBeenCalled();
+  });
+
+  test('strips query params from active URI when matching directory file', async () => {
+    const filename = 'image.jpg';
+    const fileUri = defaultDocumentsPath + filename;
+    const activeUriWithQuery = defaultDocumentsPath + filename + '?v=123';
+    mockDirectoryList.mockReturnValue([{ uri: fileUri }]);
+
+    const result = await cleanupOrphanedImages([activeUriWithQuery]);
+
+    expect(result).toBe(0);
+    expect(mockFileDelete).not.toHaveBeenCalled();
+  });
+
+  test('ignores empty strings in active URIs and treats corresponding files as orphans', async () => {
+    const orphanUri = defaultDocumentsPath + 'orphan.jpg';
+    mockDirectoryList.mockReturnValue([{ uri: orphanUri }]);
+    mockFileExists.mockReturnValue(true);
+
+    const result = await cleanupOrphanedImages(['']);
+
+    expect(result).toBe(1);
+    expect(mockFileDelete).toHaveBeenCalledWith(orphanUri);
+  });
+
+  test('ignores temporary active URIs and treats files with the same name as orphans', async () => {
+    const filename = 'image.jpg';
+    const permanentFileUri = defaultDocumentsPath + filename;
+    const temporaryActiveUri = '/cache/ImageManipulator/' + filename;
+    mockDirectoryList.mockReturnValue([{ uri: permanentFileUri }]);
+    mockFileExists.mockReturnValue(true);
+
+    const result = await cleanupOrphanedImages([temporaryActiveUri]);
+
+    expect(result).toBe(1);
+    expect(mockFileDelete).toHaveBeenCalledWith(permanentFileUri);
+  });
+
+  test('returns correct count for multiple orphans among mixed files', async () => {
+    mockDirectoryList.mockReturnValue([
+      { uri: defaultDocumentsPath + 'orphan1.jpg' },
+      { uri: defaultDocumentsPath + 'orphan2.jpg' },
+      { uri: defaultDocumentsPath + 'active.jpg' },
+      { uri: defaultDocumentsPath + 'orphan3.jpg' },
+    ]);
+    mockFileExists.mockReturnValue(true);
+
+    const result = await cleanupOrphanedImages([defaultDocumentsPath + 'active.jpg']);
+
+    expect(result).toBe(3);
+  });
+
+  test('does not protect files when active URI has only a directory path with no filename', async () => {
+    const fileUri = defaultDocumentsPath + 'image.jpg';
+    const directoryUri = defaultDocumentsPath;
+    mockDirectoryList.mockReturnValue([{ uri: fileUri }]);
+    mockFileExists.mockReturnValue(true);
+
+    const result = await cleanupOrphanedImages([directoryUri]);
+
+    expect(result).toBe(1);
+  });
+
+  test('counts orphan even when file does not physically exist on disk', async () => {
+    const orphanUri = defaultDocumentsPath + 'ghost.jpg';
+    mockDirectoryList.mockReturnValue([{ uri: orphanUri }]);
+    mockFileExists.mockReturnValue(false);
+
+    const result = await cleanupOrphanedImages([]);
+
+    expect(result).toBe(1);
+    expect(mockFileDelete).not.toHaveBeenCalled();
+  });
+
+  test('deduplicates active URIs so the same URI listed twice still protects the file', async () => {
+    const activeUri = defaultDocumentsPath + 'active.jpg';
+    mockDirectoryList.mockReturnValue([{ uri: activeUri }]);
+
+    const result = await cleanupOrphanedImages([activeUri, activeUri]);
+
+    expect(result).toBe(0);
+    expect(mockFileDelete).not.toHaveBeenCalled();
+  });
+
+  test('continues cleanup when one file deletion throws', async () => {
+    const orphan1 = defaultDocumentsPath + 'orphan1.jpg';
+    const orphan2 = defaultDocumentsPath + 'orphan2.jpg';
+    mockDirectoryList.mockReturnValue([{ uri: orphan1 }, { uri: orphan2 }]);
+    mockFileExists.mockReturnValue(true);
+    mockFileDelete
+      .mockImplementationOnce(() => {
+        throw new Error('Disk full');
+      })
+      .mockImplementationOnce(() => {});
+
+    const result = await cleanupOrphanedImages([]);
+
+    expect(result).toBe(2);
+    expect(mockFileDelete).toHaveBeenCalledTimes(2);
+  });
+
+  test('strips multiple query params from active URI', async () => {
+    const fileUri = defaultDocumentsPath + 'photo.jpg';
+    const activeWithMultipleParams = defaultDocumentsPath + 'photo.jpg?v=2&w=100&h=200';
+    mockDirectoryList.mockReturnValue([{ uri: fileUri }]);
+
+    const result = await cleanupOrphanedImages([activeWithMultipleParams]);
+
+    expect(result).toBe(0);
+    expect(mockFileDelete).not.toHaveBeenCalled();
   });
 });
 

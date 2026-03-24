@@ -4,7 +4,13 @@ import RecipeDatabase from '@utils/RecipeDatabase';
 import { testRecipes } from '@test-data/recipesDataset';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
-import { constructImageUri, deleteFile, isTemporaryImageUri } from '@utils/FileGestion';
+import {
+  cleanupOrphanedImages,
+  constructImageUri,
+  deleteFile,
+  isTemporaryImageUri,
+} from '@utils/FileGestion';
+import { mockIsFirstLaunch } from '@mocks/utils/firstLaunch-mock';
 
 describe('RecipeDatabaseContext', () => {
   let database: RecipeDatabase;
@@ -581,6 +587,129 @@ describe('RecipeDatabaseContext', () => {
 
       expect(deleteFile).not.toHaveBeenCalledWith(newImageUri);
       expect(deleteFile).toHaveBeenCalledWith(recipe.image_Source);
+    });
+  });
+
+  describe('deleteRecipe image cleanup', () => {
+    test('deletes image file when recipe has a permanent image', async () => {
+      const { result } = renderHook(() => useRecipeDatabase(), {
+        wrapper: RecipeDatabaseProvider,
+      });
+
+      await waitFor(() => expect(result.current.isDatabaseReady).toBe(true));
+
+      const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
+      await result.current.deleteRecipe(recipe);
+
+      expect(deleteFile).toHaveBeenCalledWith(recipe.image_Source);
+    });
+
+    test('does not call deleteFile when image_Source is empty', async () => {
+      const { result } = renderHook(() => useRecipeDatabase(), {
+        wrapper: RecipeDatabaseProvider,
+      });
+
+      await waitFor(() => expect(result.current.isDatabaseReady).toBe(true));
+
+      const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
+      await result.current.deleteRecipe({ ...recipe, image_Source: '' });
+
+      expect(deleteFile).not.toHaveBeenCalled();
+    });
+
+    test('does not call deleteFile when image_Source is a temporary URI', async () => {
+      const { result } = renderHook(() => useRecipeDatabase(), {
+        wrapper: RecipeDatabaseProvider,
+      });
+
+      await waitFor(() => expect(result.current.isDatabaseReady).toBe(true));
+
+      const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
+      const { isTemporaryImageUri } = require('@utils/FileGestion');
+      isTemporaryImageUri.mockReturnValueOnce(true);
+      await result.current.deleteRecipe({ ...recipe, image_Source: '/cache/temp.jpg' });
+
+      expect(deleteFile).not.toHaveBeenCalled();
+    });
+
+    test('removes recipe from state after deletion', async () => {
+      const { result } = renderHook(() => useRecipeDatabase(), {
+        wrapper: RecipeDatabaseProvider,
+      });
+
+      await waitFor(() => expect(result.current.isDatabaseReady).toBe(true));
+
+      const initialCount = result.current.recipes.length;
+      const recipe = result.current.recipes[0];
+      await result.current.deleteRecipe(recipe);
+
+      await waitFor(() => {
+        expect(result.current.recipes.length).toBe(initialCount - 1);
+      });
+    });
+
+    test('returns the database deletion result', async () => {
+      const { result } = renderHook(() => useRecipeDatabase(), {
+        wrapper: RecipeDatabaseProvider,
+      });
+
+      await waitFor(() => expect(result.current.isDatabaseReady).toBe(true));
+
+      const recipe = result.current.recipes[0];
+      const deleteResult = await result.current.deleteRecipe(recipe);
+
+      expect(deleteResult).toBeDefined();
+    });
+  });
+
+  describe('startup orphan image cleanup', () => {
+    test('calls cleanupOrphanedImages once on non-first-launch startup', async () => {
+      const { result } = renderHook(() => useRecipeDatabase(), {
+        wrapper: RecipeDatabaseProvider,
+      });
+
+      await waitFor(() => expect(result.current.isDatabaseReady).toBe(true));
+      await waitFor(() => expect(cleanupOrphanedImages).toHaveBeenCalledTimes(1));
+    });
+
+    test('passes all recipe image URIs to cleanupOrphanedImages', async () => {
+      const { result } = renderHook(() => useRecipeDatabase(), {
+        wrapper: RecipeDatabaseProvider,
+      });
+
+      await waitFor(() => expect(result.current.isDatabaseReady).toBe(true));
+      await waitFor(() =>
+        expect(cleanupOrphanedImages).toHaveBeenCalledWith(
+          expect.arrayContaining(testRecipes.map(r => r.image_Source))
+        )
+      );
+    });
+
+    test('provider remains functional when cleanupOrphanedImages rejects', async () => {
+      (cleanupOrphanedImages as jest.Mock).mockRejectedValueOnce(new Error('cleanup failed'));
+
+      const { result } = renderHook(() => useRecipeDatabase(), {
+        wrapper: RecipeDatabaseProvider,
+      });
+
+      await waitFor(() => expect(result.current.isDatabaseReady).toBe(true));
+      expect(result.current.recipes.length).toBeGreaterThan(0);
+    });
+
+    test('does not call cleanupOrphanedImages on first launch with empty database', async () => {
+      await database.closeAndReset();
+      database = RecipeDatabase.getInstance();
+      await database.init();
+
+      mockIsFirstLaunch.mockResolvedValueOnce(true);
+
+      const { result } = renderHook(() => useRecipeDatabase(), {
+        wrapper: RecipeDatabaseProvider,
+      });
+
+      await waitFor(() => expect(result.current.isDatabaseReady).toBe(true));
+
+      expect(cleanupOrphanedImages).not.toHaveBeenCalled();
     });
   });
 
