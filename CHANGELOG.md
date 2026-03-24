@@ -1,3 +1,10 @@
+## [2.27.1](https://github.com/AntoC-dev/Recipedia/compare/v2.27.0...v2.27.1) (2026-03-24)
+
+### Bug Fixes
+
+* **file-system:** fix double-slash in image URI causing images not to load ([1058e6c](https://github.com/AntoC-dev/Recipedia/commit/1058e6c9bf1034446a328df791ba22fd71a760cc))
+* **file-system:** use copy instead of move for dataset images ([d1db2aa](https://github.com/AntoC-dev/Recipedia/commit/d1db2aaa50b657a89c44a99f004769fac0982dca))
+
 ## [2.27.0](https://github.com/AntoC-dev/Recipedia/compare/v2.26.1...v2.27.0) (2026-03-24)
 
 ### Features
