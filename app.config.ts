@@ -64,11 +64,12 @@ export default ({config}: ConfigContext): ExpoConfig => {
             },
             package: appId,
             permissions: ['android.permission.CAMERA'],
-            edgeToEdgeEnabled: true,
         },
         plugins: [
             'expo-localization',
             'expo-sqlite',
+            'expo-image',
+            'expo-mail-composer',
             [
                 'expo-asset',
                 {
