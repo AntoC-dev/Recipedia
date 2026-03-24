@@ -56,6 +56,7 @@ import React, { createContext, ReactNode, useContext, useEffect, useMemo, useSta
 import { InteractionManager } from 'react-native';
 import { RecipeDatabase } from '@utils/RecipeDatabase';
 import {
+  cleanupOrphanedImages,
   copyDatasetImages,
   deleteFile,
   init as initFileSystem,
@@ -317,6 +318,11 @@ export const RecipeDatabaseProvider: React.FC<{
         setPurchasedIngredients(new Map(db.get_purchasedIngredients()));
         setIsDatabaseReady(true);
         databaseLogger.info('Database initialization phase completed');
+        InteractionManager.runAfterInteractions(() => {
+          cleanupOrphanedImages(db.get_recipes().map(r => r.image_Source)).catch(error =>
+            databaseLogger.warn('Orphan image cleanup failed', { error })
+          );
+        });
       } catch (error) {
         databaseLogger.error('Database initialization failed', { error });
       }
@@ -410,6 +416,9 @@ export const RecipeDatabaseProvider: React.FC<{
       recipeTitle: recipe.title,
     });
     const result = await db.deleteRecipe(recipe);
+    if (recipe.image_Source && !isTemporaryImageUri(recipe.image_Source)) {
+      deleteFile(recipe.image_Source);
+    }
     refreshRecipes();
     refreshMenu();
     return result;

@@ -1,5 +1,5 @@
 export function interactionManagerMock() {
-  return {
+  const mock = {
     runAfterInteractions: jest.fn(callback => {
       callback();
       return { cancel: jest.fn() };
@@ -7,4 +7,5 @@ export function interactionManagerMock() {
     createInteractionHandle: jest.fn(() => 1),
     clearInteractionHandle: jest.fn(),
   };
+  return { ...mock, default: mock };
 }
