@@ -1,30 +1,34 @@
 import {
   buildEmailBody,
   buildEmailSubject,
-  getLogFilePath,
   isMailAvailable,
+  LOG_FILE,
   pickScreenshots,
   sendBugReport,
 } from '@utils/BugReport';
-import * as FileSystem from 'expo-file-system/legacy';
+import { mockFileExists } from '@mocks/deps/expo-file-system-mock';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import { mockComposeAsync, mockIsAvailableAsync } from '@mocks/deps/expo-mail-composer-mock';
-import Constants from 'expo-constants';
 
-jest.mock('expo-file-system/legacy', () => ({
-  documentDirectory: 'file:///app/',
-  getInfoAsync: jest.fn(),
-}));
+jest.mock('expo-file-system', () =>
+  require('@mocks/deps/expo-file-system-mock').expoFileSystemMock()
+);
 jest.mock('expo-constants', () => require('@mocks/deps/expo-constants-mock').expoConstantsMock());
 
 describe('BugReport utils', () => {
-  const mockGetInfoAsync = FileSystem.getInfoAsync as jest.Mock;
   const mockOpenPicker = ImageCropPicker.openPicker as jest.Mock;
 
-  describe('getLogFilePath', () => {
-    it('returns a path ending with recipedia-logs.txt', () => {
-      const path = getLogFilePath();
-      expect(path).toMatch(/recipedia-logs\.txt$/);
+  beforeEach(() => {
+    mockFileExists.mockReset().mockReturnValue(false);
+  });
+
+  describe('LOG_FILE', () => {
+    it('has a URI ending with recipedia-logs.txt', () => {
+      expect(LOG_FILE.uri).toMatch(/recipedia-logs\.txt$/);
+    });
+
+    it('does not contain double slashes', () => {
+      expect(LOG_FILE.uri).not.toMatch(/\/\//);
     });
   });
 
@@ -62,7 +66,7 @@ describe('BugReport utils', () => {
     });
 
     it('calls MailComposer.composeAsync with to, subject and body', async () => {
-      mockGetInfoAsync.mockResolvedValue({ exists: false });
+      mockFileExists.mockReturnValue(false);
       await sendBugReport('Test description', []);
 
       expect(mockComposeAsync).toHaveBeenCalledWith(
@@ -75,27 +79,25 @@ describe('BugReport utils', () => {
     });
 
     it('includes log file in attachments when the log file exists', async () => {
-      mockGetInfoAsync.mockResolvedValue({ exists: true });
+      mockFileExists.mockReturnValue(true);
 
       await sendBugReport('Test description', []);
 
       const callArgs = mockComposeAsync.mock.calls[0][0];
-      const logPath = getLogFilePath();
-      expect(callArgs.attachments).toContain(logPath);
+      expect(callArgs.attachments).toContain(LOG_FILE.uri);
     });
 
     it('excludes log file from attachments when the log file does not exist', async () => {
-      mockGetInfoAsync.mockResolvedValue({ exists: false });
+      mockFileExists.mockReturnValue(false);
 
       await sendBugReport('Test description', []);
 
       const callArgs = mockComposeAsync.mock.calls[0][0];
-      const logPath = getLogFilePath();
-      expect(callArgs.attachments).not.toContain(logPath);
+      expect(callArgs.attachments).not.toContain(LOG_FILE.uri);
     });
 
     it('includes screenshot URIs in attachments', async () => {
-      mockGetInfoAsync.mockResolvedValue({ exists: false });
+      mockFileExists.mockReturnValue(false);
       const screenshotUris = ['file:///screenshot1.jpg', 'file:///screenshot2.jpg'];
 
       await sendBugReport('Test description', screenshotUris);
@@ -109,7 +111,7 @@ describe('BugReport utils', () => {
       const mockExpoConstants = jest.requireMock('expo-constants');
       const originalExpoConfig = mockExpoConstants.expoConfig;
       mockExpoConstants.expoConfig = null;
-      mockGetInfoAsync.mockResolvedValue({ exists: false });
+      mockFileExists.mockReturnValue(false);
 
       await sendBugReport('Test description', []);
 

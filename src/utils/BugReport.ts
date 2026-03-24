@@ -15,7 +15,7 @@
  */
 
 import { composeAsync, isAvailableAsync, MailComposerResult } from 'expo-mail-composer';
-import * as FileSystem from 'expo-file-system/legacy';
+import { File, Paths } from 'expo-file-system';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import ImageCropPicker from 'react-native-image-crop-picker';
@@ -24,14 +24,8 @@ import { bugReportLogger } from '@utils/logger';
 /** Developer contact email for bug reports */
 const DEVELOPER_EMAIL = 'antonin.coupanec.dev@outlook.com';
 
-/**
- * Returns the path to the app's log file in the document directory.
- *
- * @returns Absolute path to the log file
- */
-export function getLogFilePath(): string {
-  return FileSystem.documentDirectory + 'recipedia-logs.txt';
-}
+/** Log file stored in the document directory */
+export const LOG_FILE = new File(Paths.document, 'recipedia-logs.txt');
 
 /**
  * Builds the email subject line for a bug report.
@@ -84,19 +78,17 @@ export async function sendBugReport(
 
   const attachments: string[] = [];
 
-  const logPath = getLogFilePath();
-  const logInfo = await FileSystem.getInfoAsync(logPath);
-  if (logInfo.exists) {
-    attachments.push(logPath);
+  if (LOG_FILE.exists) {
+    attachments.push(LOG_FILE.uri);
   } else {
-    bugReportLogger.warn('Log file not found, skipping attachment', { logPath });
+    bugReportLogger.warn('Log file not found, skipping attachment', { logPath: LOG_FILE.uri });
   }
 
   attachments.push(...screenshotUris);
 
   bugReportLogger.info('Composing bug report email', {
     screenshotCount: screenshotUris.length,
-    logAttached: logInfo.exists,
+    logAttached: LOG_FILE.exists,
   });
 
   const result = await composeAsync({

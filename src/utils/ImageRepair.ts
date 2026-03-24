@@ -10,7 +10,7 @@
  * @module utils/ImageRepair
  */
 
-import * as FileSystem from 'expo-file-system';
+import { File } from 'expo-file-system';
 import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { findProviderById, findProviderForUrl } from '@providers/ProviderRegistry';
 import { downloadImageToCache } from '@utils/FileGestion';
@@ -29,11 +29,12 @@ async function downloadPlaceholderMd5(url: string): Promise<string | null> {
     if (!localUri) {
       return null;
     }
-    const info = await FileSystem.getInfoAsync(localUri, { md5: true });
-    if (!info.exists || !info.md5) {
+    const file = new File(localUri);
+    if (!file.exists) {
       return null;
     }
-    return info.md5;
+    const info = file.info({ md5: true });
+    return info.md5 ?? null;
   } catch (e) {
     appLogger.warn('ImageRepair: failed to download placeholder for MD5', { url, error: e });
     return null;
@@ -48,11 +49,12 @@ async function downloadPlaceholderMd5(url: string): Promise<string | null> {
  */
 async function getLocalFileMd5(localUri: string): Promise<string | null> {
   try {
-    const info = await FileSystem.getInfoAsync(localUri, { md5: true });
-    if (!info.exists || !info.md5) {
+    const file = new File(localUri);
+    if (!file.exists) {
       return null;
     }
-    return info.md5;
+    const info = file.info({ md5: true });
+    return info.md5 ?? null;
   } catch {
     return null;
   }

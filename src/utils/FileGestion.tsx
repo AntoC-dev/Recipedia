@@ -15,27 +15,26 @@
  * Directory Structure:
  * - Documents: `/documents/Recipedia/` - Permanent app data
  * - Cache: `/cache/Recipedia/` - Temporary app cache
- * - Image Manipulator Cache: `/cache/ImageManipulator/` - Image processing temp files
- * - Camera Cache: `/cache/ExperienceData/` - Camera temp files
  *
  * @example
  * ```typescript
  * import { init, saveRecipeImage, clearCache } from '@utils/FileGestion';
  *
- * await init();
+ * init();
  *
  * // Save a recipe image
- * const imageName = await saveRecipeImage(tempUri, "Chocolate Cake");
+ * const imageName = saveRecipeImage(tempUri, "Chocolate Cake");
  *
  * // Clear cache
- * await clearCache();
+ * clearCache();
  * ```
  */
 
-import * as FileSystem from 'expo-file-system/legacy';
+import { Directory, File, Paths } from 'expo-file-system';
 import * as Crypto from 'expo-crypto';
 import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
+import ImageCropPicker from 'react-native-image-crop-picker';
 import pkg from '@app/package.json';
 import { productionRecipesImages, testRecipesImages } from '@utils/Constants';
 import { getDatasetType } from '@utils/DatasetLoader';
@@ -43,10 +42,8 @@ import { fileSystemLogger } from '@utils/logger';
 import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
 
 const DIRECTORY_NAME = Constants.expoConfig?.name || pkg.name;
-const DIRECTORY_URI = FileSystem.documentDirectory + DIRECTORY_NAME + '/';
-const CACHE_URI = FileSystem.cacheDirectory + DIRECTORY_NAME + '/';
-const IMANGE_MANIPULATOR_CACHE_URI = FileSystem.cacheDirectory + 'ImageManipulator/';
-const CAMERA_CACHE_URI = FileSystem.cacheDirectory + 'ExperienceData/';
+const APP_DIR = new Directory(Paths.document, DIRECTORY_NAME);
+const APP_CACHE = new Directory(Paths.cache, DIRECTORY_NAME);
 
 /**
  * Sanitizes a string for use as a safe filename
@@ -81,103 +78,61 @@ function sanitizeFilename(name: string): string {
 }
 
 /**
- * Gets the main app directory URI for permanent storage
+ * Extracts the filename from a full image URI by stripping the app directory prefix.
  *
- * @returns URI path to the main app directory
+ * If the URI doesn't contain the directory prefix, returns it unchanged
+ * (assumes it's already a filename).
+ *
+ * @param imageUri - Full image URI (e.g., "file:///documents/Recipedia/pasta.jpg")
+ * @returns Just the filename (e.g., "pasta.jpg")
  */
-export function getDirectoryUri(): string {
-  return DIRECTORY_URI;
+export function extractFilenameFromUri(imageUri: string): string {
+  if (imageUri.startsWith(APP_DIR.uri)) {
+    return imageUri.substring(APP_DIR.uri.length);
+  }
+  return imageUri;
 }
 
 /**
- * Gets the app cache directory URI for temporary storage
+ * Constructs a full image URI from a filename by prepending the app directory path.
  *
- * @returns URI path to the app cache directory
+ * @param imageFilename - The image filename (e.g., "pasta.jpg")
+ * @returns Full image URI (e.g., "file:///documents/Recipedia/pasta.jpg")
  */
-export function getCacheUri(): string {
-  return CACHE_URI;
+export function constructImageUri(imageFilename: string): string {
+  return APP_DIR.uri + imageFilename;
 }
 
 /**
- * Clears all cache directories
+ * Clears the app cache directory and camera picker temporary files
  *
- * Removes and recreates the image manipulator cache and camera cache directories.
- * Used for freeing up storage space and clearing temporary files.
+ * Removes all files from the app-specific cache directory and calls
+ * ImageCropPicker.clean() to remove camera picker temporary files.
  *
  * @example
  * ```typescript
- * await clearCache();
+ * clearCache();
  * console.log('Cache cleared successfully');
  * ```
  */
-export async function clearCache(): Promise<void> {
+export function clearCache(): void {
   fileSystemLogger.info('Clearing cache directories');
   try {
-    await FileSystem.deleteAsync(IMANGE_MANIPULATOR_CACHE_URI);
-    await FileSystem.makeDirectoryAsync(IMANGE_MANIPULATOR_CACHE_URI);
+    if (APP_CACHE.exists) {
+      const items = APP_CACHE.list();
+      for (const item of items) {
+        item.delete();
+      }
+    }
   } catch (error) {
-    fileSystemLogger.warn('Failed to clear image manipulator cache', {
-      cacheUri: IMANGE_MANIPULATOR_CACHE_URI,
+    fileSystemLogger.warn('Failed to clear app cache', {
+      cacheUri: APP_CACHE.uri,
       error,
     });
   }
-  try {
-    await FileSystem.deleteAsync(CAMERA_CACHE_URI);
-    await FileSystem.makeDirectoryAsync(CAMERA_CACHE_URI);
-  } catch (error) {
-    fileSystemLogger.warn('Failed to clear camera cache', {
-      cacheUri: CAMERA_CACHE_URI,
-      error,
-    });
-  }
-}
-
-/**
- * Moves a file from one location to another
- *
- * Deletes the destination file if it exists, then moves the source file.
- * Useful for relocating files from cache to permanent storage.
- *
- * @param oldUri - Source file URI
- * @param newUri - Destination file URI
- *
- * @example
- * ```typescript
- * await moveFile(
- *   'file:///cache/temp-image.jpg',
- *   'file:///documents/recipe-image.jpg'
- * );
- * ```
- */
-export async function moveFile(oldUri: string, newUri: string): Promise<void> {
-  try {
-    // If needed, remove existing file
-    await FileSystem.deleteAsync(newUri, { idempotent: true });
-    await FileSystem.moveAsync({ from: oldUri, to: newUri });
-  } catch (error) {
-    fileSystemLogger.warn('Failed to move file', { from: oldUri, to: newUri, error });
-  }
-}
-
-/**
- * Copies a file from one location to another
- *
- * Creates a copy of the source file at the destination location.
- * Does not modify or remove the original file.
- *
- * @param oldUri - Source file URI
- * @param newUri - Destination file URI
- *
- * @example
- * ```typescript
- * await copyFile(
- *   'file:///cache/temp-image.jpg',
- *   'file:///documents/recipe-image.jpg'
- * );
- * ```
- */
-export async function copyFile(oldUri: string, newUri: string): Promise<void> {
-  await FileSystem.copyAsync({ from: oldUri, to: newUri });
+  ImageCropPicker.clean().catch((error: unknown) => {
+    fileSystemLogger.warn('Failed to clean camera picker cache', { error });
+  });
 }
 
 /**
@@ -190,13 +145,16 @@ export async function copyFile(oldUri: string, newUri: string): Promise<void> {
  *
  * @example
  * ```typescript
- * await deleteFile('file:///documents/Recipedia/old_image_abc123.jpg');
+ * deleteFile('file:///documents/Recipedia/old_image_abc123.jpg');
  * ```
  */
-export async function deleteFile(uri: string): Promise<void> {
+export function deleteFile(uri: string): void {
   try {
-    await FileSystem.deleteAsync(uri, { idempotent: true });
-    fileSystemLogger.debug('File deleted', { uri });
+    const file = new File(uri);
+    if (file.exists) {
+      file.delete();
+      fileSystemLogger.debug('File deleted', { uri });
+    }
   } catch (error) {
     fileSystemLogger.warn('Failed to delete file', { uri, error });
   }
@@ -218,14 +176,11 @@ export async function deleteFile(uri: string): Promise<void> {
  * ```
  */
 export function isTemporaryImageUri(uri: string): boolean {
-  const isTemporary = !uri.includes(DIRECTORY_URI);
+  const isTemporary = !uri.startsWith(APP_DIR.uri);
 
   fileSystemLogger.debug('Checking if image URI is temporary', {
     imageUri: uri,
-    permanentStorageUri: DIRECTORY_URI,
     isTemporary,
-    containsCache: uri.includes('cache'),
-    containsImageManipulator: uri.includes('ImageManipulator'),
   });
 
   return isTemporary;
@@ -261,28 +216,21 @@ export async function downloadImageToCache(remoteUrl: string): Promise<string> {
     const extensionMatch = urlWithoutQuery.match(/\.(jpe?g|png|webp|gif)$/i);
     const extension = extensionMatch ? extensionMatch[1].toLowerCase() : 'jpg';
     const filename = `scraped_${Date.now()}.${extension}`;
-    const localUri = CACHE_URI + filename;
+    const localFile = new File(APP_CACHE, filename);
 
-    const downloadResult = await FileSystem.downloadAsync(remoteUrl, localUri, {
+    const downloaded = await File.downloadFileAsync(remoteUrl, localFile, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; RecipediaApp/1.0; +https://github.com/recipedia)',
       },
+      idempotent: true,
     });
-
-    if (downloadResult.status !== 200) {
-      fileSystemLogger.warn('Image download failed with status', {
-        status: downloadResult.status,
-        remoteUrl,
-      });
-      return '';
-    }
 
     fileSystemLogger.info('Image downloaded successfully', {
       remoteUrl,
-      localUri,
+      localUri: downloaded.uri,
     });
 
-    return downloadResult.uri;
+    return downloaded.uri;
   } catch (error) {
     fileSystemLogger.error('Failed to download image', { remoteUrl, error });
     return '';
@@ -307,19 +255,24 @@ export async function downloadImageToCache(remoteUrl: string): Promise<string> {
  * // Returns: "file:///documents/Recipedia/chocolate_cake_<uuid>.jpg"
  * ```
  */
-export async function saveRecipeImage(cacheFileUri: string, recName: string): Promise<string> {
+export function saveRecipeImage(cacheFileUri: string, recName: string): string {
   try {
     const extensionParts = cacheFileUri.split('.');
     const extension = extensionParts[extensionParts.length - 1].split('?')[0] || 'jpg';
     const imgName = sanitizeFilename(recName) + '_' + Crypto.randomUUID() + '.' + extension;
-    const imgUri: string = DIRECTORY_URI + imgName;
+    const imgFile = new File(APP_DIR, imgName);
 
-    await FileSystem.copyAsync({ from: cacheFileUri, to: imgUri });
-    await FileSystem.deleteAsync(cacheFileUri).catch(() => {});
+    const sourceFile = new File(cacheFileUri);
+    sourceFile.copy(imgFile);
+    try {
+      sourceFile.delete();
+    } catch {
+      // Best-effort cleanup — source is in cache, will be cleaned up eventually
+    }
     fileSystemLogger.debug('Image saved to permanent storage', {
-      destinationUri: imgUri,
+      destinationUri: imgFile.uri,
     });
-    return imgUri;
+    return imgFile.uri;
   } catch (error) {
     fileSystemLogger.error('Failed to save recipe image', {
       sourceUri: cacheFileUri,
@@ -338,18 +291,24 @@ export async function saveRecipeImage(cacheFileUri: string, recName: string): Pr
  *
  * @example
  * ```typescript
- * await init();
+ * init();
  * console.log('File system initialized');
  * ```
  */
-export async function init(): Promise<void> {
+export function init(): void {
   fileSystemLogger.info('Initializing file system', {
-    directoryUri: DIRECTORY_URI,
-    cacheUri: CACHE_URI,
+    directoryUri: APP_DIR.uri,
+    cacheUri: APP_CACHE.uri,
   });
   try {
-    await ensureDirExists(DIRECTORY_URI);
-    await ensureDirExists(CACHE_URI);
+    if (!APP_DIR.exists) {
+      APP_DIR.create({ intermediates: true });
+      fileSystemLogger.info('App directory created', { directory: APP_DIR.uri });
+    }
+    if (!APP_CACHE.exists) {
+      APP_CACHE.create({ intermediates: true });
+      fileSystemLogger.info('Cache directory created', { directory: APP_CACHE.uri });
+    }
     fileSystemLogger.info('File system initialized successfully');
   } catch (error) {
     fileSystemLogger.error('FileGestion initialization failed', { error });
@@ -370,7 +329,7 @@ export async function init(): Promise<void> {
  */
 export async function copyDatasetImages(): Promise<void> {
   fileSystemLogger.info('Starting dataset image copy operation', {
-    directoryUri: DIRECTORY_URI,
+    directoryUri: APP_DIR.uri,
   });
 
   const datasetType = getDatasetType();
@@ -382,7 +341,19 @@ export async function copyDatasetImages(): Promise<void> {
   });
 
   try {
-    const assetModules = await Asset.loadAsync(imageSet);
+    // Force download of all assets to ensure they exist on local storage.
+    // expo-asset may mark bundled Android images as "downloaded" without
+    // extracting them to the file system — resetting the flag ensures the
+    // native module copies each asset from APK resources to cache.
+    const assetModules = await Promise.all(
+      imageSet.map(async moduleId => {
+        const asset = Asset.fromModule(moduleId);
+        asset.downloaded = false;
+        await asset.downloadAsync();
+        return asset;
+      })
+    );
+
     if (assetModules.length !== imageSet.length) {
       throw new Error(
         `Failed to load all ${datasetType} assets. Expected ${imageSet.length}, loaded ${assetModules.length}`
@@ -395,22 +366,16 @@ export async function copyDatasetImages(): Promise<void> {
     });
 
     for (const asset of assetModules) {
-      const destinationUri = DIRECTORY_URI + asset.name + '.' + asset.type;
-      const fileInfo = await FileSystem.getInfoAsync(destinationUri);
+      const destFile = new File(APP_DIR, asset.name + '.' + asset.type);
 
-      if (fileInfo.exists) {
+      if (destFile.exists) {
         fileSystemLogger.debug('Asset file already exists, skipping', {
           assetName: asset.name,
-          destinationUri,
         });
         continue;
       }
 
-      await FileSystem.copyAsync({ from: asset.localUri as string, to: destinationUri });
-      fileSystemLogger.debug('Asset file copied successfully', {
-        assetName: asset.name,
-        destinationUri,
-      });
+      new File(asset.localUri as string).copy(destFile);
     }
 
     fileSystemLogger.info('Dataset images copied successfully', {
@@ -418,33 +383,8 @@ export async function copyDatasetImages(): Promise<void> {
       imageCount: imageSet.length,
     });
   } catch (error) {
-    fileSystemLogger.error('Failed to copy dataset images', {
-      datasetType,
-      error,
-    });
+    fileSystemLogger.error('Failed to copy dataset images', { datasetType, error });
     throw error;
-  }
-}
-
-/**
- * Ensures a directory exists, creating it if necessary
- *
- * Checks if a directory exists and creates it (including intermediate directories)
- * if it doesn't. Throws an error if the path exists but is not a directory.
- *
- * @param dirUri - URI of the directory to ensure exists
- * @throws Error if the path exists but is not a directory
- */
-async function ensureDirExists(dirUri: string): Promise<void> {
-  const dirInfo = await FileSystem.getInfoAsync(dirUri);
-
-  if (!dirInfo.exists) {
-    await FileSystem.makeDirectoryAsync(dirUri, { intermediates: true });
-    fileSystemLogger.info('Directory created', { directory: dirUri });
-  } else if (!dirInfo.isDirectory) {
-    throw new Error(`${dirUri} exists but is not a directory`);
-  } else {
-    fileSystemLogger.debug('Directory already exists', { directory: dirUri });
   }
 }
 
@@ -457,25 +397,18 @@ async function ensureDirExists(dirUri: string): Promise<void> {
  * URI format as user-created recipes.
  *
  * @param recipes - Array of recipes with bare filename image sources
- * @param directoryUri - Base directory URI to prepend to filenames
  * @returns New array of recipes with transformed image URIs
  *
  * @example
  * ```typescript
  * const dataset = getDataset('en');
- * const transformed = transformDatasetRecipeImages(
- *   dataset.recipes,
- *   getDirectoryUri()
- * );
+ * const transformed = transformDatasetRecipeImages(dataset.recipes);
  * // Recipe with image_Source: 'pasta.png' becomes 'file:///documents/Recipedia/pasta.png'
  * ```
  */
-export function transformDatasetRecipeImages(
-  recipes: recipeTableElement[],
-  directoryUri: string
-): recipeTableElement[] {
+export function transformDatasetRecipeImages(recipes: recipeTableElement[]): recipeTableElement[] {
   return recipes.map(recipe => ({
     ...recipe,
-    image_Source: directoryUri + recipe.image_Source,
+    image_Source: APP_DIR.uri + recipe.image_Source,
   }));
 }

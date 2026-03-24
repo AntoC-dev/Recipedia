@@ -5,7 +5,7 @@ import {
   mockDownloadImageToCacheSuccess,
 } from '@mocks/utils/FileGestion-mock';
 import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
-import * as FileSystem from 'expo-file-system';
+import { mockFileExists, mockFileInfo } from '@mocks/deps/expo-file-system-mock';
 
 jest.mock('@providers/ProviderRegistry', () => ({
   findProviderForUrl: jest.fn(),
@@ -18,7 +18,6 @@ jest.mock('expo-file-system', () =>
 
 const mockFindProviderForUrl = findProviderForUrl as jest.Mock;
 const mockFindProviderById = findProviderById as jest.Mock;
-const mockGetInfoAsync = FileSystem.getInfoAsync as jest.Mock;
 
 function buildRecipe(overrides: Partial<recipeTableElement> = {}): recipeTableElement {
   return {
@@ -57,6 +56,8 @@ describe('repairMissingRecipeImages', () => {
   beforeEach(() => {
     editRecipe = jest.fn().mockResolvedValue(true);
     mockDownloadImageToCacheSuccess('/local/path/image.jpg');
+    mockFileExists.mockReset().mockReturnValue(false);
+    mockFileInfo.mockReset().mockReturnValue({ exists: true, md5: null });
   });
 
   it('does not call editRecipe when recipe list is empty', async () => {
@@ -254,9 +255,10 @@ describe('repairMissingRecipeImages', () => {
         .mockResolvedValueOnce('/cache/temp_placeholder.jpg')
         .mockResolvedValueOnce('/local/path/image.jpg');
 
-      mockGetInfoAsync
-        .mockResolvedValueOnce({ exists: true, md5: 'abc123' })
-        .mockResolvedValueOnce({ exists: true, md5: 'abc123' });
+      mockFileExists.mockReturnValue(true);
+      mockFileInfo
+        .mockReturnValueOnce({ exists: true, md5: 'abc123' })
+        .mockReturnValueOnce({ exists: true, md5: 'abc123' });
 
       const recipe = buildRecipe({ image_Source: '/local/placeholder_copy.jpg' });
 
@@ -272,9 +274,10 @@ describe('repairMissingRecipeImages', () => {
 
       mockDownloadImageToCache.mockResolvedValueOnce('/cache/temp_placeholder.jpg');
 
-      mockGetInfoAsync
-        .mockResolvedValueOnce({ exists: true, md5: 'abc123' })
-        .mockResolvedValueOnce({ exists: true, md5: 'different_hash' });
+      mockFileExists.mockReturnValue(true);
+      mockFileInfo
+        .mockReturnValueOnce({ exists: true, md5: 'abc123' })
+        .mockReturnValueOnce({ exists: true, md5: 'different_hash' });
 
       const recipe = buildRecipe({ image_Source: '/local/real_image.jpg' });
 
@@ -297,16 +300,15 @@ describe('repairMissingRecipeImages', () => {
       expect(editRecipe).not.toHaveBeenCalled();
     });
 
-    it('skips recipe when its local file MD5 cannot be read', async () => {
+    it('skips recipe when its local file does not exist', async () => {
       const quitoqueProvider = buildProvider('https://cdn.example.com/real.jpg', PLACEHOLDER_URL);
       mockFindProviderById.mockReturnValue(quitoqueProvider);
       mockFindProviderForUrl.mockReturnValue(quitoqueProvider);
 
       mockDownloadImageToCache.mockResolvedValueOnce('/cache/temp_placeholder.jpg');
 
-      mockGetInfoAsync
-        .mockResolvedValueOnce({ exists: true, md5: 'abc123' })
-        .mockResolvedValueOnce({ exists: false });
+      mockFileExists.mockReturnValueOnce(true).mockReturnValueOnce(false);
+      mockFileInfo.mockReturnValueOnce({ exists: true, md5: 'abc123' });
 
       const recipe = buildRecipe({ image_Source: '/local/missing_file.jpg' });
 
@@ -324,11 +326,12 @@ describe('repairMissingRecipeImages', () => {
         .mockResolvedValueOnce('/cache/temp_placeholder.jpg')
         .mockResolvedValue('/local/path/image.jpg');
 
-      mockGetInfoAsync
-        .mockResolvedValueOnce({ exists: true, md5: 'placeholder_hash' })
-        .mockResolvedValueOnce({ exists: true, md5: 'placeholder_hash' })
-        .mockResolvedValueOnce({ exists: true, md5: 'placeholder_hash' })
-        .mockResolvedValueOnce({ exists: true, md5: 'placeholder_hash' });
+      mockFileExists.mockReturnValue(true);
+      mockFileInfo
+        .mockReturnValueOnce({ exists: true, md5: 'placeholder_hash' })
+        .mockReturnValueOnce({ exists: true, md5: 'placeholder_hash' })
+        .mockReturnValueOnce({ exists: true, md5: 'placeholder_hash' })
+        .mockReturnValueOnce({ exists: true, md5: 'placeholder_hash' });
 
       const recipe1 = buildRecipe({ id: 1, image_Source: '/local/file1.jpg' });
       const recipe2 = buildRecipe({ id: 2, image_Source: '/local/file2.jpg' });
@@ -359,15 +362,111 @@ describe('repairMissingRecipeImages', () => {
 
       mockDownloadImageToCache.mockResolvedValueOnce('/cache/temp_placeholder.jpg');
 
-      mockGetInfoAsync
-        .mockResolvedValueOnce({ exists: true, md5: 'placeholder_hash' })
-        .mockResolvedValueOnce({ exists: true, md5: 'different_hash' });
+      mockFileExists.mockReturnValue(true);
+      mockFileInfo
+        .mockReturnValueOnce({ exists: true, md5: 'placeholder_hash' })
+        .mockReturnValueOnce({ exists: true, md5: 'different_hash' });
 
       const recipe = buildRecipe({ image_Source: '/local/real_image.jpg' });
 
       await repairMissingRecipeImages([recipe], editRecipe);
 
       expect(editRecipe).not.toHaveBeenCalled();
+    });
+
+    it('skips provider group when placeholder file does not exist after download', async () => {
+      const provider = buildProvider('https://cdn.example.com/real.jpg', PLACEHOLDER_URL);
+      mockFindProviderById.mockReturnValue(provider);
+
+      mockDownloadImageToCache.mockResolvedValueOnce('/cache/temp_placeholder.jpg');
+
+      mockFileExists.mockReturnValue(false);
+
+      const recipe = buildRecipe({ image_Source: '/local/file.jpg' });
+      await repairMissingRecipeImages([recipe], editRecipe);
+
+      expect(editRecipe).not.toHaveBeenCalled();
+    });
+
+    it('skips provider group when placeholder file exists but md5 is undefined', async () => {
+      const provider = buildProvider('https://cdn.example.com/real.jpg', PLACEHOLDER_URL);
+      mockFindProviderById.mockReturnValue(provider);
+
+      mockDownloadImageToCache.mockResolvedValueOnce('/cache/temp_placeholder.jpg');
+
+      mockFileExists.mockReturnValue(true);
+      mockFileInfo.mockReturnValueOnce({ exists: true });
+
+      const recipe = buildRecipe({ image_Source: '/local/file.jpg' });
+      await repairMissingRecipeImages([recipe], editRecipe);
+
+      expect(editRecipe).not.toHaveBeenCalled();
+    });
+
+    it('skips provider group when file.info throws during placeholder MD5 download', async () => {
+      const provider = buildProvider('https://cdn.example.com/real.jpg', PLACEHOLDER_URL);
+      mockFindProviderById.mockReturnValue(provider);
+
+      mockDownloadImageToCache.mockResolvedValueOnce('/cache/temp_placeholder.jpg');
+
+      mockFileExists.mockReturnValue(true);
+      mockFileInfo.mockImplementationOnce(() => {
+        throw new Error('info failed');
+      });
+
+      const recipe = buildRecipe({ image_Source: '/local/file.jpg' });
+      await repairMissingRecipeImages([recipe], editRecipe);
+
+      expect(editRecipe).not.toHaveBeenCalled();
+    });
+
+    it('skips recipe when file.info throws during local file MD5 read', async () => {
+      const provider = buildProvider('https://cdn.example.com/real.jpg', PLACEHOLDER_URL);
+      mockFindProviderById.mockReturnValue(provider);
+      mockFindProviderForUrl.mockReturnValue(provider);
+
+      mockDownloadImageToCache.mockResolvedValueOnce('/cache/temp_placeholder.jpg');
+
+      mockFileExists.mockReturnValue(true);
+      mockFileInfo
+        .mockReturnValueOnce({ exists: true, md5: 'abc123' })
+        .mockImplementationOnce(() => {
+          throw new Error('read error');
+        });
+
+      const recipe = buildRecipe({ image_Source: '/local/file.jpg' });
+      await repairMissingRecipeImages([recipe], editRecipe);
+
+      expect(editRecipe).not.toHaveBeenCalled();
+    });
+
+    it('skips recipe when local file has no md5 field', async () => {
+      const provider = buildProvider('https://cdn.example.com/real.jpg', PLACEHOLDER_URL);
+      mockFindProviderById.mockReturnValue(provider);
+
+      mockDownloadImageToCache.mockResolvedValueOnce('/cache/temp_placeholder.jpg');
+
+      mockFileExists.mockReturnValue(true);
+      mockFileInfo
+        .mockReturnValueOnce({ exists: true, md5: 'abc123' })
+        .mockReturnValueOnce({ exists: true });
+
+      const recipe = buildRecipe({ image_Source: '/local/file.jpg' });
+      await repairMissingRecipeImages([recipe], editRecipe);
+
+      expect(editRecipe).not.toHaveBeenCalled();
+    });
+
+    it('skips recipe without sourceProvider when grouping candidates', async () => {
+      const recipe = buildRecipe({
+        image_Source: '/local/some-image.jpg',
+        sourceProvider: undefined,
+      });
+
+      await repairMissingRecipeImages([recipe], editRecipe);
+
+      expect(editRecipe).not.toHaveBeenCalled();
+      expect(mockDownloadImageToCache).not.toHaveBeenCalled();
     });
   });
 });

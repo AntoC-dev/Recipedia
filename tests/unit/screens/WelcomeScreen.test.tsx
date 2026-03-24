@@ -44,7 +44,7 @@ describe('WelcomeScreen Component', () => {
       expect(getByTestId('WelcomeScreen::AppIcon')).toBeTruthy();
     });
 
-    expect(getByTestId('WelcomeScreen::AppIcon::Uri')).toHaveTextContent('mocked-app-icon-uri');
+    expect(getByTestId('WelcomeScreen::AppIcon::Uri')).toHaveTextContent('mocked-asset-uri');
     expect(getByTestId('WelcomeScreen::Title')).toHaveTextContent('Test Recipedia');
     expect(getByTestId('WelcomeScreen::Subtitle')).toHaveTextContent('welcome.subtitle');
   });
@@ -117,7 +117,7 @@ describe('WelcomeScreen Component', () => {
       expect(getByTestId('WelcomeScreen::AppIcon')).toBeTruthy();
     });
 
-    expect(getByTestId('WelcomeScreen::AppIcon::Uri')).toHaveTextContent('mocked-app-icon-uri');
+    expect(getByTestId('WelcomeScreen::AppIcon::Uri')).toHaveTextContent('mocked-asset-uri');
     expect(getByTestId('WelcomeScreen::Title')).toHaveTextContent('Test Recipedia');
     expect(getByTestId('WelcomeScreen::Subtitle')).toHaveTextContent('welcome.subtitle');
     expect(getByTestId('WelcomeScreen::Card')).toBeTruthy();

@@ -19,8 +19,11 @@ export const openCropper = jest.fn().mockResolvedValue({
   mime: 'image/jpeg',
 });
 
+export const clean = jest.fn().mockResolvedValue(undefined);
+
 export default {
   openCamera,
   openPicker,
   openCropper,
+  clean,
 };
