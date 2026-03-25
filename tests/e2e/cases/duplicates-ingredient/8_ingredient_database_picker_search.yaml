@@ -1,0 +1,134 @@
+name: "8 - Ingredient Database Picker Search Filtering"
+appId: "com.recipedia"
+tags:
+  - duplicates
+---
+- runFlow:
+    file: "../../flows/setupTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- runFlow:
+    file: "../../flows/fab/expand.yaml"
+    label: "Action - Expand FAB menu"
+
+- tapOn:
+    id: "RecipeEdit.*"
+    label: "Action - Open manual recipe creation"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::AddButton::RoundButton"
+    direction: DOWN
+    speed: 20
+    timeout: 1200000
+    centerElement: true
+    label: "Action - Scroll to ingredients section"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "RecipeIngredients::AddButton::RoundButton"
+    label: "Action - Add ingredient to recipe"
+
+- tapOn:
+    id: "RecipeIngredients::0::NameInput::CustomTextInput"
+    label: "Action - Focus on ingredient name input"
+
+- inputText:
+    text: "Butte"
+    label: "Action - Enter fuzzy ingredient name to trigger similarity dialog"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - pressKey: "ENTER"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to validate the ingredient on iOS"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to dismiss"
+
+- tapOn:
+    id: "RecipeValidation::ValidationQueue::Ingredient::SimilarityDialog::PickButton"
+    label: "Action - Tap Choose another to open DatabasePicker"
+
+- assertVisible:
+    id: "RecipeValidation::ValidationQueue::Ingredient::DatabasePicker"
+    label: "Assert - Database picker is visible"
+
+- tapOn:
+    id: "RecipeValidation::ValidationQueue::Ingredient::DatabasePicker::Searchbar"
+    label: "Action - Focus on search bar"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
+- inputText:
+    text: "Coconut"
+    label: "Action - Type search term in picker search bar"
+
+- waitForAnimationToEnd:
+    label: "Wait for list to filter after debounce"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Search"
+          label: "Tap Search key to dismiss keyboard on iOS"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to disappear"
+
+- assertVisible:
+    id: "RecipeValidation::ValidationQueue::Ingredient::DatabasePicker::Searchbar"
+    text: "Coconut"
+    label: "Assert - Search bar text is exactly 'Coconut' (not duplicated)"
+
+- assertVisible:
+    id: "RecipeValidation::ValidationQueue::Ingredient::DatabasePicker::Item::0"
+    label: "Assert - At least one filtered result is visible"
+
+- assertNotVisible:
+    id: "RecipeValidation::ValidationQueue::Ingredient::DatabasePicker::Item::.*"
+    text: "Butter"
+    label: "Assert - Non-matching item 'Butter' is filtered out"
+
+- tapOn:
+    id: "RecipeValidation::ValidationQueue::Ingredient::DatabasePicker::Item::0"
+    label: "Action - Select first matching ingredient from filtered list"
+
+- assertVisible:
+    id: "RecipeValidation::ValidationQueue::Ingredient::PickConfirmation"
+    label: "Assert - Confirmation dialog is visible"
+
+- tapOn:
+    id: "RecipeValidation::ValidationQueue::Ingredient::PickConfirmation::ConfirmButton"
+    label: "Action - Confirm ingredient selection"
+
+- tapOn:
+    id: "Recipe::AppBar::BackButton"
+    label: "Cleanup - Exit recipe creation without saving"
