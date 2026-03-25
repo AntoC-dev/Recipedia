@@ -240,6 +240,29 @@ describe('DatabasePickerDialog', () => {
 
       expect(getByTestId(`${testId}::Item::0::Title`).props.children).toBe('Apple');
     });
+
+    test('shows all items again after clearing search input', () => {
+      const { getByTestId, queryByTestId } = render(
+        <DatabasePickerDialog
+          testId={testId}
+          isVisible={true}
+          title='Select an item'
+          items={mockItems}
+          onSelect={mockOnSelect}
+          onDismiss={mockOnDismiss}
+        />
+      );
+
+      const searchbar = getByTestId(`${testId}::Searchbar`);
+      fireEvent.changeText(searchbar, 'tom');
+      expect(queryByTestId(`${testId}::Item::1`)).toBeNull();
+
+      fireEvent.changeText(searchbar, '');
+
+      mockItems.forEach((_, index) => {
+        expect(getByTestId(`${testId}::Item::${index}`)).toBeTruthy();
+      });
+    });
   });
 
   describe('empty state', () => {
@@ -276,6 +299,25 @@ describe('DatabasePickerDialog', () => {
 
       expect(mockOnSelect).toHaveBeenCalledWith(mockItems[1]);
       expect(mockOnSelect).toHaveBeenCalledTimes(1);
+    });
+
+    test('calls onSelect with correct item when selecting from filtered list', () => {
+      const { getByTestId } = render(
+        <DatabasePickerDialog
+          testId={testId}
+          isVisible={true}
+          title='Select an item'
+          items={mockItems}
+          onSelect={mockOnSelect}
+          onDismiss={mockOnDismiss}
+        />
+      );
+
+      const searchbar = getByTestId(`${testId}::Searchbar`);
+      fireEvent.changeText(searchbar, 'app');
+      fireEvent.press(getByTestId(`${testId}::Item::0`));
+
+      expect(mockOnSelect).toHaveBeenCalledWith(mockItems[1]);
     });
 
     test('clears search query when item is selected', () => {
@@ -344,6 +386,63 @@ describe('DatabasePickerDialog', () => {
   });
 
   describe('edge cases', () => {
+    test('updates displayed items when items prop changes', () => {
+      const newItems: ingredientTableElement[] = [
+        {
+          id: 10,
+          name: 'Mango',
+          type: ingredientType.fruit,
+          unit: 'pieces',
+          season: [],
+        },
+      ];
+
+      const { getByTestId, queryByTestId, rerender } = render(
+        <DatabasePickerDialog
+          testId={testId}
+          isVisible={true}
+          title='Select an item'
+          items={mockItems}
+          onSelect={mockOnSelect}
+          onDismiss={mockOnDismiss}
+        />
+      );
+
+      expect(getByTestId(`${testId}::Item::3`)).toBeTruthy();
+
+      rerender(
+        <DatabasePickerDialog
+          testId={testId}
+          isVisible={true}
+          title='Select an item'
+          items={newItems}
+          onSelect={mockOnSelect}
+          onDismiss={mockOnDismiss}
+        />
+      );
+
+      expect(getByTestId(`${testId}::Item::0::Title`).props.children).toBe('Mango');
+      expect(queryByTestId(`${testId}::Item::1`)).toBeNull();
+    });
+
+    test('treats whitespace-only search as non-empty', () => {
+      const { getByTestId, getByText } = render(
+        <DatabasePickerDialog
+          testId={testId}
+          isVisible={true}
+          title='Select an item'
+          items={mockItems}
+          onSelect={mockOnSelect}
+          onDismiss={mockOnDismiss}
+        />
+      );
+
+      const searchbar = getByTestId(`${testId}::Searchbar`);
+      fireEvent.changeText(searchbar, '   ');
+
+      expect(getByText('alerts.databasePicker.noResults')).toBeTruthy();
+    });
+
     test('handles items with very long names', () => {
       const longNameItem = {
         id: 99,
