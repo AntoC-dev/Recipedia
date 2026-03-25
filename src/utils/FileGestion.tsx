@@ -187,6 +187,58 @@ export function isTemporaryImageUri(uri: string): boolean {
 }
 
 /**
+ * Removes image files from the app directory that are no longer referenced by any recipe
+ *
+ * Compares the files present on disk in the permanent storage directory against
+ * the set of active image URIs supplied by the caller (typically all `image_Source`
+ * values from the recipe table). Any file not in the active set is deleted.
+ *
+ * Active URIs are normalised before comparison:
+ * - Empty strings and temporary (cache) URIs are ignored
+ * - Query parameters (e.g. `?v=123`) are stripped
+ *
+ * @param activeImageUris - Image URIs currently referenced by recipes
+ * @returns Number of orphaned files that were identified and cleaned up
+ *
+ * @example
+ * ```typescript
+ * const deleted = await cleanupOrphanedImages(recipes.map(r => r.image_Source));
+ * console.log(`Cleaned up ${deleted} orphaned images`);
+ * ```
+ */
+export async function cleanupOrphanedImages(activeImageUris: string[]): Promise<number> {
+  try {
+    const activeSet = new Set(
+      activeImageUris
+        .filter(uri => uri && uri.startsWith(APP_DIR.uri))
+        .map(uri => uri.split('?')[0])
+    );
+
+    const files = APP_DIR.list();
+    let deletedCount = 0;
+
+    for (const file of files) {
+      if (!activeSet.has(file.uri)) {
+        deleteFile(file.uri);
+        deletedCount++;
+      }
+    }
+
+    if (deletedCount > 0) {
+      fileSystemLogger.info('Orphaned images cleaned up', {
+        deletedCount,
+        totalFiles: files.length,
+      });
+    }
+
+    return deletedCount;
+  } catch (error) {
+    fileSystemLogger.warn('Failed to cleanup orphaned images', { error });
+    return 0;
+  }
+}
+
+/**
  * Downloads an image from a remote URL to the app cache directory.
  *
  * Used for downloading recipe images from scraped websites. The image is
