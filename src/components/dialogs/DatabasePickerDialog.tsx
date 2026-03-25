@@ -18,7 +18,7 @@
  * ```
  */
 
-import React, { useState } from 'react';
+import React, { useDeferredValue, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Button, Dialog, List, Portal, Searchbar, Text, useTheme } from 'react-native-paper';
 import { FlashList } from '@shopify/flash-list';
@@ -70,19 +70,20 @@ export function DatabasePickerDialog<T extends { name: string }>({
   const { t } = useI18n();
   const { colors } = useTheme();
 
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+  const debouncedQuery = useDeferredValue(searchInput);
 
   const filteredItems = items.filter(item =>
-    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+    item.name.toLowerCase().includes(debouncedQuery.toLowerCase())
   );
 
   const handleDismiss = () => {
-    setSearchQuery('');
+    setSearchInput('');
     onDismiss();
   };
 
   const handleSelect = (item: T) => {
-    setSearchQuery('');
+    setSearchInput('');
     onSelect(item);
   };
 
@@ -94,8 +95,8 @@ export function DatabasePickerDialog<T extends { name: string }>({
           <Searchbar
             testID={`${testId}::Searchbar`}
             placeholder={t('alerts.databasePicker.searchPlaceholder')}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
+            value={searchInput}
+            onChangeText={setSearchInput}
             style={[styles.searchbar, { backgroundColor: colors.background }]}
           />
           <View style={styles.searchResults}>
