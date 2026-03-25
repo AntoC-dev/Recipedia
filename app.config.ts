@@ -68,7 +68,6 @@ export default ({config}: ConfigContext): ExpoConfig => {
         plugins: [
             'expo-localization',
             'expo-sqlite',
-            'expo-image',
             'expo-mail-composer',
             [
                 'expo-asset',
