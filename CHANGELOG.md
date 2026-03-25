@@ -1,3 +1,10 @@
+## [2.28.0](https://github.com/AntoC-dev/Recipedia/compare/v2.27.1...v2.28.0) (2026-03-25)
+
+### Features
+
+* **file-gestion:** implement orphan image cleanup ([9051d57](https://github.com/AntoC-dev/Recipedia/commit/9051d57f9610fcacd948f88a4624a522cc3a60c0))
+* remove orphans file ([#234](https://github.com/AntoC-dev/Recipedia/issues/234)) ([f78e85c](https://github.com/AntoC-dev/Recipedia/commit/f78e85c33014815e6592a5d35fd261ee945780fe))
+
 ## [2.27.1](https://github.com/AntoC-dev/Recipedia/compare/v2.27.0...v2.27.1) (2026-03-24)
 
 ### Bug Fixes
