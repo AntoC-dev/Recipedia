@@ -25,7 +25,7 @@ on:
 jobs:
   e2e-tests:
     name: E2E ${{ inputs.platform }} (${{ matrix.suite }})
-    runs-on: ${{ inputs.platform == 'ios' && 'macos-15-intel' || 'ubuntu-latest' }}
+    runs-on: ${{ inputs.platform == 'ios' && 'macos-15' || 'ubuntu-latest' }}
     timeout-minutes: 180
     strategy:
       fail-fast: false
