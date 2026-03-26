@@ -1,3 +1,10 @@
+## [2.28.1](https://github.com/AntoC-dev/Recipedia/compare/v2.28.0...v2.28.1) (2026-03-26)
+
+### Bug Fixes
+
+* **dialog:** defer search filtering to prevent input duplication ([4e78766](https://github.com/AntoC-dev/Recipedia/commit/4e787660cb05102a1a70309da320f2b3b11ce9a5))
+* **dialog:** defer search filtering to prevent input duplication ([#236](https://github.com/AntoC-dev/Recipedia/issues/236)) ([59cbc5e](https://github.com/AntoC-dev/Recipedia/commit/59cbc5e3890060565cefdff8f3923f15ec9651b2))
+
 ## [2.28.0](https://github.com/AntoC-dev/Recipedia/compare/v2.27.1...v2.28.0) (2026-03-25)
 
 ### Features
