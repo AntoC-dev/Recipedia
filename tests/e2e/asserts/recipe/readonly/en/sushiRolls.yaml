@@ -31,6 +31,19 @@ appId: "com.recipedia"
     id: "RecipeDescription::Text"
     text: "Classic sushi rolls with nori, rice, and fillings."
     label: "Description is rendered"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTags::0::Chip"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to Tags part"
+
+- waitForAnimationToEnd
+
 - assertVisible:
     id: "RecipeTags::0::Chip"
     label: "First tag is rendered"
