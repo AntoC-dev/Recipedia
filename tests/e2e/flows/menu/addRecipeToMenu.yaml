@@ -8,9 +8,10 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::RecipeCards::3::Classic Pancakes-outline"
+      id: "SearchScreen::RecipeCards::3::Classic Pancakes"
     direction: DOWN
-    speed: 60
+    speed: 20
+    timeout: 60000
     centerElement: true
     label: "Scroll to Classic Pancakes recipe"
 

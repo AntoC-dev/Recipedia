@@ -132,7 +132,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::RecipeCards::5::Cover"
     direction: DOWN
-    speed: 50
+    speed: 20
     centerElement: true
     label: "Scroll to fifth recipe card cover"
 
