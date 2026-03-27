@@ -8,6 +8,7 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 20
     timeout: 60000
+    visibilityPercentage: 50
     label: "Scroll to ${INGREDIENT_NAME} ingredient name"
 
 - waitForAnimationToEnd
@@ -23,6 +24,7 @@ appId: "com.recipedia"
     element:
       id: "IngredientsSettings::${INGREDIENT_INDEX}::EditButton"
     speed: 20
+    visibilityPercentage: 50
     direction: DOWN
     timeout: 60000
     label: "Scroll to ${INGREDIENT_NAME} edit button"
@@ -36,12 +38,12 @@ appId: "com.recipedia"
 - waitForAnimationToEnd
 
 - scrollUntilVisible:
-    element:
-      id: "IngredientsSettings::${INGREDIENT_INDEX}::DeleteButton"
-    direction: DOWN
-    speed: 20
-    timeout: 60000
-    label: "Scroll to ${INGREDIENT_NAME} delete button"
+      element:
+          id: "IngredientsSettings::${INGREDIENT_INDEX}::DeleteButton"
+      direction: DOWN
+      speed: 20
+      timeout: 60000
+      label: "Scroll to ${INGREDIENT_NAME} delete button"
 
 - waitForAnimationToEnd
 

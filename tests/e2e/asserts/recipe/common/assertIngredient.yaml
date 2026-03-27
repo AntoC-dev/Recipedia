@@ -34,4 +34,3 @@ appId: "com.recipedia"
     label: "Scroll to up to ingredients section"
 
 - waitForAnimationToEnd
-

@@ -520,23 +520,23 @@ appId: "com.recipedia"
     label: "Assert - December is visible"
 
 - scrollUntilVisible:
-    element:
-      id: "${MODAL_TEST_ID}::SeasonalityCalendar"
-    direction: UP
-    speed: 20
-    timeout: 120000
-    centerElement: true
-    label: "Action - Scroll back to top of seasonality accordion"
+      element:
+          id: "${MODAL_TEST_ID}::SeasonalityCalendar"
+      direction: UP
+      speed: 20
+      timeout: 120000
+      centerElement: true
+      label: "Action - Scroll back to top of seasonality accordion"
 
 - waitForAnimationToEnd:
-    label: "Wait for scroll animation to end"
+      label: "Wait for scroll animation to end"
 
 - tapOn:
-    id: "${MODAL_TEST_ID}::SeasonalityCalendar"
-    label: "Collapse seasonality accordion"
+      id: "${MODAL_TEST_ID}::SeasonalityCalendar"
+      label: "Collapse seasonality accordion"
 
 - extendedWaitUntil:
-    notVisible:
-      id: "${MODAL_TEST_ID}::SeasonalityCalendar::.*"
-    timeout: 5000
-    label: "Wait for seasonality accordion to be reduced"
+      notVisible:
+          id: "${MODAL_TEST_ID}::SeasonalityCalendar::.*"
+      timeout: 5000
+      label: "Wait for seasonality accordion to be reduced"

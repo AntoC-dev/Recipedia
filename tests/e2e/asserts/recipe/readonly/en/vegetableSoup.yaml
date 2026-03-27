@@ -29,6 +29,14 @@ appId: "com.recipedia"
     text: "VEGETABLE SOUP"
     label: "Title is rendered"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeDescription::Text"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to Description section"
+
 - assertVisible:
     id: "RecipeDescription::Text"
     text: "A warm and hearty vegetable soup."
@@ -247,4 +255,3 @@ appId: "com.recipedia"
     label: "Scroll back to top"
 
 - waitForAnimationToEnd
-

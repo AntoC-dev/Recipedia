@@ -65,7 +65,7 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 50
     centerElement: true
-    label: "Scroll to thirh recipe card content"
+    label: "Scroll to third recipe card content"
 
 - waitForAnimationToEnd
 

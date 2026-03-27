@@ -1,6 +1,4 @@
 appId: "com.recipedia"
-env:
-  INGREDIENT_INDEX: 0
 ---
 - assertVisible:
     id: "IngredientsSettings::AppBar::Title-title-text"

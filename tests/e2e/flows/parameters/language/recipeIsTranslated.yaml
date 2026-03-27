@@ -18,6 +18,13 @@ appId: "com.recipedia"
 - tapOn:
     id: "SearchScreen::RecipeCards::2::.*"
     label: "Open a recipe"
+
+- extendedWaitUntil:
+      visible:
+          id: "Recipe::AppBar"
+      timeout: 30000
+      label: "Wait for recipe screen to load"
+
 - runFlow:
     file: "../../../asserts/parameters/language/recipeReadOnly.yaml"
     label: "Check that the fixed text of a read only recipe screen are displayed in French"

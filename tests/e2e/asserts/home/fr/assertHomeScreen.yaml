@@ -167,4 +167,3 @@ appId: "com.recipedia"
     label: "Scroll back to top of Home screen"
 
 - waitForAnimationToEnd
-

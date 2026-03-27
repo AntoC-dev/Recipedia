@@ -3,7 +3,7 @@
  *
  * Displays pre-computed validation items one at a time via SimilarityDialog.
  * Items arrive pre-sorted and pre-filtered by callers (new items first, similar
- * items last, exact matches already handled).
+ * items last, exnpm -vact matches already handled).
  *
  * After "Add New": checks remaining queue items for name matches with the newly
  * added element and auto-validates them (O(n) name comparison, no Fuse.js).
