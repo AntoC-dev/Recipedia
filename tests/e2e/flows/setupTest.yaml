@@ -54,3 +54,7 @@ appId: "com.recipedia"
 - runFlow:
     file: "warmupScreens.yaml"
     label: "Warmup screens to exhaust ANR issues"
+
+- runFlow:
+    file: "warmupKeyboard.yaml"
+    label: "Warmup keyboard on iOS to prevent cold keyboard input drops"
