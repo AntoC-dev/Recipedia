@@ -574,7 +574,7 @@ appId: "com.recipedia"
     label: "Enter text for recipe first preparation title"
 
 - tapOn:
-    id: "RecipePreparation::EditableStep::0::Title"
+    id: "RecipePreparation::EditableStep::.*::Title"
     label: "Tap on the title text to close the keyboard"
 
 - runFlow:
@@ -652,7 +652,7 @@ appId: "com.recipedia"
     label: "Enter text for recipe second preparation title"
 
 - tapOn:
-    id: "RecipePreparation::EditableStep::1::Title"
+    id: "RecipePreparation::EditableStep::.*::Title"
     label: "Tap on the title text to close the keyboard"
 
 - runFlow:
@@ -791,7 +791,7 @@ appId: "com.recipedia"
     label: "Enter text for recipe third preparation title"
 
 - tapOn:
-    id: "RecipePreparation::EditableStep::2::Title"
+    id: "RecipePreparation::EditableStep::2.*:Title"
     label: "Tap on the title text to close the keyboard"
 
 - runFlow:
