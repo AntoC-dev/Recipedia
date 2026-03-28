@@ -115,9 +115,14 @@ jobs:
 
       - name: Disable hardware keyboard
         if: inputs.platform == 'ios'
+        env:
+          UDID: ${{ steps.simulator.outputs.udid }}
         run: |
-          echo "⌨️ Disabling hardware keyboard for device ${{ steps.simulator.outputs.udid }}..."
-          defaults write com.apple.iphonesimulator "DevicePair${{ steps.simulator.outputs.udid }}" ConnectHardwareKeyboard -bool NO
+          echo "⌨️ Disabling hardware keyboard for device $UDID..."
+          PLIST=~/Library/Preferences/com.apple.iphonesimulator.plist
+          defaults write com.apple.iphonesimulator ConnectHardwareKeyboard -bool false
+          /usr/libexec/PlistBuddy -c "Add :DevicePreferences:$UDID:ConnectHardwareKeyboard bool false" "$PLIST" 2>/dev/null || \
+          /usr/libexec/PlistBuddy -c "Set :DevicePreferences:$UDID:ConnectHardwareKeyboard false" "$PLIST"
           echo "✅ Hardware keyboard disabled"
 
       - name: Setup Maestro CLI (iOS)
