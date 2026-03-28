@@ -7,7 +7,6 @@ import { createMockRecipeProp } from '@test-helpers/recipeHookTestWrapper';
 import { ingredientType, recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { RecipePropType } from '@customTypes/RecipeNavigationTypes';
 import { testTags } from '@data/tagsDataset';
-import { testIngredients } from '@data/ingredientsDataset';
 
 const mockFindSimilarTags = jest.fn();
 const mockAddTag = jest.fn();
@@ -167,14 +166,9 @@ describe('useRecipeTags', () => {
         result.current.tags.addTag('Mexican');
       });
 
-      await waitFor(() => {
-        expect(result.current.dialogs.validationQueue).not.toBeNull();
-        expect(result.current.dialogs.validationQueue?.type).toBe('Tag');
-      });
-
-      const queueItems = result.current.dialogs.validationQueue?.items;
-      expect(queueItems).toBeDefined();
-      expect(queueItems?.some((item: { name?: string }) => item.name === 'Mexican')).toBe(true);
+      expect(result.current.form.state.recipeTags).toHaveLength(3);
+      expect(result.current.form.state.recipeTags.some(t => t.name === 'Mexican')).toBe(true);
+      expect(result.current.dialogs.validationQueue).toBeNull();
     });
 
     test('triggers validation queue for fuzzy matches', async () => {

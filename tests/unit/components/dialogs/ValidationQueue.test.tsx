@@ -1,78 +1,54 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { ValidationQueue } from '@components/dialogs/ValidationQueue';
-import RecipeDatabase from '@utils/RecipeDatabase';
-import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
-import { testTags } from '@test-data/tagsDataset';
-import { testIngredients } from '@test-data/ingredientsDataset';
-import { testRecipes } from '@test-data/recipesDataset';
-import {
-  FormIngredientElement,
-  ingredientTableElement,
-  ingredientType,
-  tagTableElement,
-} from '@customTypes/DatabaseElementTypes';
+import { ingredientTableElement, ingredientType } from '@customTypes/DatabaseElementTypes';
+import { IngredientWithSimilarity, TagWithSimilarity } from '@utils/RecipeValidationHelpers';
 
 jest.mock('@components/dialogs/SimilarityDialog', () =>
   require('@mocks/components/dialogs/SimilarityDialog-mock')
 );
 
 describe('ValidationQueue', () => {
-  const database = RecipeDatabase.getInstance();
-
   const mockOnValidated = jest.fn();
   const mockOnComplete = jest.fn();
 
-  const sampleTags: tagTableElement[] = [
-    { id: 1, name: 'BrandNewTag1' },
-    { id: 2, name: 'BrandNewTag2' },
-    { id: 3, name: 'BrandNewTag3' },
+  const sampleTags: TagWithSimilarity[] = [
+    { id: 1, name: 'BrandNewTag1', similarItems: [] },
+    { id: 2, name: 'BrandNewTag2', similarItems: [] },
+    { id: 3, name: 'BrandNewTag3', similarItems: [] },
   ];
 
-  const sampleIngredients: FormIngredientElement[] = [
-    { name: 'UniqueIngredient1', unit: 'g', quantity: '100', season: [] },
-    { name: 'UniqueIngredient2', unit: 'g', quantity: '50', season: [] },
-    { name: 'UniqueIngredient3', unit: 'clove', quantity: '2', season: [] },
+  const sampleIngredients: IngredientWithSimilarity[] = [
+    { name: 'UniqueIngredient1', unit: 'g', quantity: '100', season: [], similarItems: [] },
+    { name: 'UniqueIngredient2', unit: 'g', quantity: '50', season: [], similarItems: [] },
+    { name: 'UniqueIngredient3', unit: 'clove', quantity: '2', season: [], similarItems: [] },
   ];
 
-  beforeEach(async () => {
-    await database.init();
-    await database.addMultipleIngredients(testIngredients);
-    await database.addMultipleTags(testTags);
-    await database.addMultipleRecipes(testRecipes);
-  });
-
-  afterEach(async () => {
+  afterEach(() => {
     jest.clearAllMocks();
-    jest.restoreAllMocks();
-    await database.closeAndReset();
   });
 
-  const renderQueueTags = (items: tagTableElement[], testID = 'test-validation') => {
+  const renderQueueTags = (items: TagWithSimilarity[], testID = 'test-validation') => {
     return render(
-      <RecipeDatabaseProvider>
-        <ValidationQueue
-          type={'Tag'}
-          items={items}
-          onValidated={mockOnValidated}
-          onComplete={mockOnComplete}
-          testId={testID}
-        />
-      </RecipeDatabaseProvider>
+      <ValidationQueue
+        type={'Tag'}
+        items={items}
+        onValidated={mockOnValidated}
+        onComplete={mockOnComplete}
+        testId={testID}
+      />
     );
   };
 
-  const renderQueueIngredients = (items: FormIngredientElement[]) => {
+  const renderQueueIngredients = (items: IngredientWithSimilarity[]) => {
     return render(
-      <RecipeDatabaseProvider>
-        <ValidationQueue
-          type={'Ingredient'}
-          items={items}
-          onValidated={mockOnValidated}
-          onComplete={mockOnComplete}
-          testId='test-validation'
-        />
-      </RecipeDatabaseProvider>
+      <ValidationQueue
+        type={'Ingredient'}
+        items={items}
+        onValidated={mockOnValidated}
+        onComplete={mockOnComplete}
+        testId='test-validation'
+      />
     );
   };
 
@@ -322,10 +298,10 @@ describe('ValidationQueue', () => {
     });
 
     test('handles onUseExisting callback for tags', () => {
-      const dbTag: tagTableElement = { id: 100, name: 'ExistingTag' };
-      const tagWithSimilar: tagTableElement[] = [{ id: 1, name: 'NewTag' }];
-
-      jest.spyOn(RecipeDatabase.getInstance(), 'findSimilarTags').mockReturnValue([dbTag]);
+      const dbTag = { id: 100, name: 'ExistingTag' };
+      const tagWithSimilar: TagWithSimilarity[] = [
+        { id: 1, name: 'NewTag', similarItems: [dbTag] },
+      ];
 
       const { getByTestId } = renderQueueTags(tagWithSimilar);
 
@@ -347,13 +323,9 @@ describe('ValidationQueue', () => {
         quantity: '200',
         season: [],
       };
-      const ingredientWithSimilar: FormIngredientElement[] = [
-        { name: 'NewIngredient', quantity: '100', unit: 'g' },
+      const ingredientWithSimilar: IngredientWithSimilarity[] = [
+        { name: 'NewIngredient', quantity: '100', unit: 'g', similarItems: [dbIngredient] },
       ];
-
-      jest
-        .spyOn(RecipeDatabase.getInstance(), 'findSimilarIngredients')
-        .mockReturnValue([dbIngredient]);
 
       const { getByTestId } = renderQueueIngredients(ingredientWithSimilar);
 
@@ -367,184 +339,8 @@ describe('ValidationQueue', () => {
     });
   });
 
-  describe('Edge Cases', () => {
-    test('skips items with empty name', async () => {
-      const tagsWithEmpty: tagTableElement[] = [
-        { id: 1, name: '' },
-        { id: 2, name: 'ValidTag' },
-      ];
-      const { getByTestId } = renderQueueTags(tagsWithEmpty);
-
-      await waitFor(() => {
-        expect(
-          getByTestId(
-            'test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.newItemName'
-          ).props.children
-        ).toBe('ValidTag');
-      });
-    });
-
-    test('skips items with whitespace-only name', async () => {
-      const tagsWithWhitespace: tagTableElement[] = [
-        { id: 1, name: '   ' },
-        { id: 2, name: 'ValidTag' },
-      ];
-      const { getByTestId } = renderQueueTags(tagsWithWhitespace);
-
-      await waitFor(() => {
-        expect(
-          getByTestId(
-            'test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.newItemName'
-          ).props.children
-        ).toBe('ValidTag');
-      });
-    });
-
-    test('updates queue when items prop changes', async () => {
-      const { getByTestId, rerender } = renderQueueTags([sampleTags[0]]);
-
-      expect(
-        getByTestId(
-          'test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.newItemName'
-        ).props.children
-      ).toBe('BrandNewTag1');
-
-      rerender(
-        <RecipeDatabaseProvider>
-          <ValidationQueue
-            type='Tag'
-            items={[sampleTags[1]]}
-            onValidated={mockOnValidated}
-            onComplete={mockOnComplete}
-            testId='test-validation'
-          />
-        </RecipeDatabaseProvider>
-      );
-
-      await waitFor(() => {
-        expect(
-          getByTestId(
-            'test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.newItemName'
-          ).props.children
-        ).toBe('BrandNewTag2');
-      });
-    });
-
-    test('handles multiple consecutive empty items', async () => {
-      const tagsWithMultipleEmpty: tagTableElement[] = [
-        { id: 1, name: '' },
-        { id: 2, name: '   ' },
-        { id: 3, name: '' },
-        { id: 4, name: 'ValidTag' },
-      ];
-
-      const { getByTestId } = renderQueueTags(tagsWithMultipleEmpty);
-
-      await waitFor(() => {
-        expect(
-          getByTestId(
-            'test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.newItemName'
-          ).props.children
-        ).toBe('ValidTag');
-      });
-    });
-
-    test('calls onComplete when all items have empty names', async () => {
-      const allEmptyTags: tagTableElement[] = [
-        { id: 1, name: '' },
-        { id: 2, name: '   ' },
-      ];
-
-      renderQueueTags(allEmptyTags);
-
-      await waitFor(() => {
-        expect(mockOnComplete).toHaveBeenCalledTimes(1);
-        expect(mockOnValidated).not.toHaveBeenCalled();
-      });
-    });
-  });
-
-  describe('Exact Match Auto-Validation', () => {
-    test('auto-validates tag that exactly matches a DB entry without showing dialog', async () => {
-      const italianInDB: tagTableElement = { id: 1, name: 'Italian' };
-      jest.spyOn(RecipeDatabase.getInstance(), 'findSimilarTags').mockReturnValue([italianInDB]);
-
-      const exactMatchTag: tagTableElement[] = [{ id: -1, name: 'Italian' }];
-
-      renderQueueTags(exactMatchTag);
-
-      await waitFor(() => {
-        expect(mockOnValidated).toHaveBeenCalledTimes(1);
-        expect(mockOnComplete).toHaveBeenCalledTimes(1);
-      });
-
-      expect(mockOnValidated.mock.calls[0][0].name).toBe('Italian');
-      expect(mockOnValidated.mock.calls[0][1].name).toBe('Italian');
-    });
-
-    test('auto-validates ingredient that exactly matches a DB entry without showing dialog', async () => {
-      const spaghettiInDB: ingredientTableElement = {
-        id: 1,
-        name: 'Spaghetti',
-        type: ingredientType.vegetable,
-        unit: 'g',
-        quantity: '100',
-        season: [],
-      };
-      jest
-        .spyOn(RecipeDatabase.getInstance(), 'findSimilarIngredients')
-        .mockReturnValue([spaghettiInDB]);
-
-      const exactMatchIngredient: FormIngredientElement[] = [
-        { name: 'Spaghetti', quantity: '200', unit: 'g', season: [] },
-      ];
-
-      renderQueueIngredients(exactMatchIngredient);
-
-      await waitFor(() => {
-        expect(mockOnValidated).toHaveBeenCalledTimes(1);
-        expect(mockOnComplete).toHaveBeenCalledTimes(1);
-      });
-
-      expect(mockOnValidated.mock.calls[0][1].name).toBe('Spaghetti');
-      expect(mockOnValidated.mock.calls[0][1].quantity).toBe('200');
-    });
-
-    test('auto-validates exact matches and shows dialog for non-matches', async () => {
-      const italianInDB: tagTableElement = { id: 1, name: 'Italian' };
-      jest.spyOn(RecipeDatabase.getInstance(), 'findSimilarTags').mockImplementation(name => {
-        if (name.toLowerCase() === 'italian') return [italianInDB];
-        return [];
-      });
-
-      const mixedTags: tagTableElement[] = [
-        { id: -1, name: 'Italian' },
-        { id: -1, name: 'BrandNewUniqueTag' },
-      ];
-
-      const { getByTestId } = renderQueueTags(mixedTags);
-
-      // With sorting: BrandNewUniqueTag (no similar) shows first, Italian (has similar) second
-      expect(
-        getByTestId(
-          'test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.newItemName'
-        ).props.children
-      ).toBe('BrandNewUniqueTag');
-
-      fireEvent.press(
-        getByTestId('test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.onConfirm')
-      );
-
-      // After confirming BrandNewUniqueTag, Italian auto-validates (exact match)
-      await waitFor(() => {
-        expect(mockOnValidated).toHaveBeenCalledTimes(2);
-        expect(mockOnComplete).toHaveBeenCalledTimes(1);
-      });
-    });
-  });
-
-  describe('Similarity Computation', () => {
-    test('passes similarItem to SimilarityDialog when DB has similar entry', () => {
+  describe('Similarity Display', () => {
+    test('passes similarItem to SimilarityDialog when item has pre-computed similar entry', () => {
       const dbIngredient: ingredientTableElement = {
         id: 100,
         name: 'ExistingIngredient',
@@ -554,12 +350,8 @@ describe('ValidationQueue', () => {
         season: [],
       };
 
-      jest
-        .spyOn(RecipeDatabase.getInstance(), 'findSimilarIngredients')
-        .mockReturnValue([dbIngredient]);
-
       const { getByTestId } = renderQueueIngredients([
-        { name: 'NewIngredient', quantity: '100', unit: 'g' },
+        { name: 'NewIngredient', quantity: '100', unit: 'g', similarItems: [dbIngredient] },
       ]);
 
       const similarItemText = getByTestId(
@@ -570,7 +362,7 @@ describe('ValidationQueue', () => {
       expect(JSON.parse(similarItemText).name).toBe('ExistingIngredient');
     });
 
-    test('passes no similarItem when DB has no similar entry', () => {
+    test('passes no similarItem when item has empty similarItems', () => {
       const { getByTestId } = renderQueueIngredients([sampleIngredients[0]]);
 
       const similarItemText = getByTestId(
@@ -580,7 +372,7 @@ describe('ValidationQueue', () => {
       expect(similarItemText).toBe('undefined');
     });
 
-    test('passes no similarItem for tags with no DB match', () => {
+    test('passes no similarItem for tags with no pre-computed match', () => {
       const { getByTestId } = renderQueueTags([sampleTags[0]]);
 
       const similarItemText = getByTestId(
@@ -591,75 +383,74 @@ describe('ValidationQueue', () => {
     });
   });
 
-  describe('Re-compute After Add New', () => {
-    test('does not re-compute similarity after Use Existing', async () => {
-      const findSimilarIngredientsSpy = jest.spyOn(
-        RecipeDatabase.getInstance(),
-        'findSimilarIngredients'
-      );
-      const dbIngredient: ingredientTableElement = {
-        id: 100,
-        name: 'ExistingIngredient',
-        type: ingredientType.vegetable,
-        unit: 'g',
-        quantity: '200',
-        season: [],
-      };
-      findSimilarIngredientsSpy.mockReturnValue([dbIngredient]);
-
-      const twoIngredients: FormIngredientElement[] = [
-        { name: 'FirstIngredient', quantity: '100', unit: 'g' },
-        { name: 'SecondIngredient', quantity: '50', unit: 'ml' },
+  describe('Add New Auto-Validation', () => {
+    test('auto-validates remaining items with same name after Add New', async () => {
+      const tags: TagWithSimilarity[] = [
+        { id: 1, name: 'Italian', similarItems: [] },
+        { id: 2, name: 'Italian', similarItems: [] },
+        { id: 3, name: 'French', similarItems: [] },
       ];
 
-      const { getByTestId } = renderQueueIngredients(twoIngredients);
+      const { getByTestId } = renderQueueTags(tags);
 
-      const callCountAfterInit = findSimilarIngredientsSpy.mock.calls.length;
+      expect(
+        getByTestId(
+          'test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.newItemName'
+        ).props.children
+      ).toBe('Italian');
+
+      fireEvent.press(
+        getByTestId('test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.onConfirm')
+      );
+
+      await waitFor(() => {
+        expect(
+          getByTestId(
+            'test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.newItemName'
+          ).props.children
+        ).toBe('French');
+      });
+
+      expect(mockOnValidated).toHaveBeenCalledTimes(2);
+    });
+
+    test('does not auto-validate remaining items after Use Existing', async () => {
+      const dbTag = { id: 100, name: 'Italiano' };
+      const tags: TagWithSimilarity[] = [
+        { id: 1, name: 'Italian', similarItems: [dbTag] },
+        { id: 2, name: 'Italian', similarItems: [dbTag] },
+        { id: 3, name: 'French', similarItems: [] },
+      ];
+
+      const { getByTestId } = renderQueueTags(tags);
 
       fireEvent.press(
         getByTestId(
-          'test-validation::ValidationQueue::Ingredient::SimilarityDialog::Mock::item.onUseExisting'
+          'test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.onUseExisting'
         )
       );
 
       await waitFor(() => {
         expect(
           getByTestId(
-            'test-validation::ValidationQueue::Ingredient::SimilarityDialog::Mock::item.newItemName'
+            'test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.newItemName'
           ).props.children
-        ).toBe('SecondIngredient');
+        ).toBe('Italian');
       });
 
-      expect(findSimilarIngredientsSpy.mock.calls.length).toBe(callCountAfterInit);
+      expect(mockOnValidated).toHaveBeenCalledTimes(1);
     });
-  });
 
-  describe('Sorted Items Order', () => {
-    test('processes items without similar matches before items with similar matches', async () => {
-      const dbTag: tagTableElement = { id: 100, name: 'ExistingTag' };
-      const findSimilarTagsSpy = jest.spyOn(RecipeDatabase.getInstance(), 'findSimilarTags');
-
-      findSimilarTagsSpy.mockImplementation(name => {
-        if (name === 'HasMatch') return [dbTag];
-        return [];
-      });
-
-      const unsortedTags: tagTableElement[] = [
-        { id: 1, name: 'HasMatch' },
-        { id: 2, name: 'NoMatch1' },
-        { id: 3, name: 'NoMatch2' },
+    test('does not auto-validate remaining items after Dismiss', async () => {
+      const tags: TagWithSimilarity[] = [
+        { id: 1, name: 'Italian', similarItems: [] },
+        { id: 2, name: 'Italian', similarItems: [] },
       ];
 
-      const { getByTestId } = renderQueueTags(unsortedTags);
-
-      expect(
-        getByTestId(
-          'test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.newItemName'
-        ).props.children
-      ).toBe('NoMatch1');
+      const { getByTestId } = renderQueueTags(tags);
 
       fireEvent.press(
-        getByTestId('test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.onConfirm')
+        getByTestId('test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.onDismiss')
       );
 
       await waitFor(() => {
@@ -667,38 +458,26 @@ describe('ValidationQueue', () => {
           getByTestId(
             'test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.newItemName'
           ).props.children
-        ).toBe('NoMatch2');
+        ).toBe('Italian');
       });
 
-      fireEvent.press(
-        getByTestId('test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.onConfirm')
-      );
-
-      await waitFor(() => {
-        expect(
-          getByTestId(
-            'test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.newItemName'
-          ).props.children
-        ).toBe('HasMatch');
-      });
+      expect(mockOnValidated).not.toHaveBeenCalled();
     });
   });
 
   describe('Ingredient Validation Bug Fixes', () => {
     const mockOnDismissed = jest.fn();
 
-    const renderQueueIngredientsWithDismissed = (items: FormIngredientElement[]) => {
+    const renderQueueIngredientsWithDismissed = (items: IngredientWithSimilarity[]) => {
       return render(
-        <RecipeDatabaseProvider>
-          <ValidationQueue
-            type={'Ingredient'}
-            items={items}
-            onValidated={mockOnValidated}
-            onDismissed={mockOnDismissed}
-            onComplete={mockOnComplete}
-            testId='test-validation'
-          />
-        </RecipeDatabaseProvider>
+        <ValidationQueue
+          type={'Ingredient'}
+          items={items}
+          onValidated={mockOnValidated}
+          onDismissed={mockOnDismissed}
+          onComplete={mockOnComplete}
+          testId='test-validation'
+        />
       );
     };
 
@@ -707,8 +486,8 @@ describe('ValidationQueue', () => {
     });
 
     test('calls onDismissed with original ingredient when dismissed', async () => {
-      const formIngredients: FormIngredientElement[] = [
-        { name: 'Oignon', quantity: '100', unit: 'g' },
+      const formIngredients: IngredientWithSimilarity[] = [
+        { name: 'Oignon', quantity: '100', unit: 'g', similarItems: [] },
       ];
 
       const { getByTestId } = renderQueueIngredientsWithDismissed(formIngredients);
@@ -728,8 +507,8 @@ describe('ValidationQueue', () => {
     });
 
     test('uses original quantity when available', () => {
-      const formIngredients: FormIngredientElement[] = [
-        { name: 'UniqueTestIngredient', quantity: '250', unit: 'g' },
+      const formIngredients: IngredientWithSimilarity[] = [
+        { name: 'UniqueTestIngredient', quantity: '250', unit: 'g', similarItems: [] },
       ];
 
       const { getByTestId } = renderQueueIngredientsWithDismissed(formIngredients);
@@ -745,8 +524,8 @@ describe('ValidationQueue', () => {
     });
 
     test('uses validated quantity when original quantity is undefined', () => {
-      const formIngredients: FormIngredientElement[] = [
-        { name: 'UniqueTestIngredient', unit: 'g' },
+      const formIngredients: IngredientWithSimilarity[] = [
+        { name: 'UniqueTestIngredient', unit: 'g', similarItems: [] },
       ];
 
       const { getByTestId } = renderQueueIngredientsWithDismissed(formIngredients);
@@ -762,8 +541,8 @@ describe('ValidationQueue', () => {
     });
 
     test('uses validated quantity when original quantity is empty string', () => {
-      const formIngredients: FormIngredientElement[] = [
-        { name: 'UniqueTestIngredient', quantity: '', unit: 'g' },
+      const formIngredients: IngredientWithSimilarity[] = [
+        { name: 'UniqueTestIngredient', quantity: '', unit: 'g', similarItems: [] },
       ];
 
       const { getByTestId } = renderQueueIngredientsWithDismissed(formIngredients);
@@ -779,8 +558,8 @@ describe('ValidationQueue', () => {
     });
 
     test('preserves database ingredient metadata in validated result', () => {
-      const formIngredients: FormIngredientElement[] = [
-        { name: 'UniqueTestIngredient', quantity: '100', unit: 'pieces' },
+      const formIngredients: IngredientWithSimilarity[] = [
+        { name: 'UniqueTestIngredient', quantity: '100', unit: 'pieces', similarItems: [] },
       ];
 
       const { getByTestId } = renderQueueIngredientsWithDismissed(formIngredients);
@@ -806,12 +585,13 @@ describe('ValidationQueue', () => {
         season: [],
       };
 
-      jest
-        .spyOn(RecipeDatabase.getInstance(), 'findSimilarIngredients')
-        .mockReturnValue([existingIngredient]);
-
-      const formIngredients: FormIngredientElement[] = [
-        { name: 'UniqueTestIngredient', quantity: '50', unit: 'g' },
+      const formIngredients: IngredientWithSimilarity[] = [
+        {
+          name: 'UniqueTestIngredient',
+          quantity: '50',
+          unit: 'g',
+          similarItems: [existingIngredient],
+        },
       ];
 
       const { getByTestId } = renderQueueIngredientsWithDismissed(formIngredients);
