@@ -13,6 +13,8 @@
 import { tagTableElement } from '@customTypes/DatabaseElementTypes';
 import { useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { useRecipeForm } from '@context/RecipeFormContext';
+import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { validateAndQueueTags } from '@utils/RecipeValidationHelpers';
 
 /**
  * Return value of the useRecipeTags hook containing tag management operations.
@@ -60,6 +62,7 @@ export interface UseRecipeTagsReturn {
 export function useRecipeTags(): UseRecipeTagsReturn {
   const { setValidationQueue } = useRecipeDialogs();
   const { state, setters } = useRecipeForm();
+  const { findSimilarTags } = useRecipeDatabase();
   const { recipeTags } = state;
   const { setRecipeTags } = setters;
 
@@ -104,11 +107,12 @@ export function useRecipeTags(): UseRecipeTagsReturn {
       return;
     }
 
-    setValidationQueue({
-      type: 'Tag',
-      items: [{ id: -1, name: newTag }],
-      onValidated: (_, validatedTag) => addTagIfNotDuplicate(validatedTag),
-    });
+    validateAndQueueTags(
+      [{ id: -1, name: newTag }],
+      findSimilarTags,
+      addTagIfNotDuplicate,
+      setValidationQueue
+    );
   };
 
   /**

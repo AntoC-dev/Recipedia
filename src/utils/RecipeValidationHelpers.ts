@@ -24,6 +24,28 @@ export type IngredientWithSimilarity = FormIngredientElement & {
 };
 
 /**
+ * Merges a form ingredient with a validated database ingredient.
+ *
+ * Preserves the original quantity and note from the form, while using
+ * the validated ingredient's database metadata (id, name, unit, type, season).
+ *
+ * @param original - The form ingredient with user-entered quantity/note
+ * @param validated - The database ingredient with canonical metadata
+ * @returns A merged ingredient combining form data with database metadata
+ */
+export function mergeIngredient(
+  original: FormIngredientElement,
+  validated: ingredientTableElement
+): ingredientTableElement {
+  return {
+    ...validated,
+    quantity: original.quantity || validated.quantity,
+    unit: validated.unit,
+    note: original.note,
+  };
+}
+
+/**
  * Filters out tags that already exist in the current list.
  * Used before validation to avoid processing duplicates.
  */
@@ -286,4 +308,100 @@ export function deduplicateIngredientsByName<T extends FormIngredientElement>(
   }
 
   return Array.from(seen.values());
+}
+
+interface TagQueueConfig {
+  type: 'Tag';
+  items: TagWithSimilarity[];
+  onValidated: (original: TagWithSimilarity, validated: tagTableElement) => void;
+  onDismissed?: (tag: TagWithSimilarity) => void;
+}
+
+interface IngredientQueueConfig {
+  type: 'Ingredient';
+  items: IngredientWithSimilarity[];
+  onValidated: (original: IngredientWithSimilarity, validated: ingredientTableElement) => void;
+  onDismissed?: (ingredient: IngredientWithSimilarity) => void;
+}
+
+/**
+ * Pre-computes tag similarity, handles exact matches immediately, and queues fuzzy matches.
+ *
+ * Orchestrates the full tag validation flow:
+ * 1. Runs `processTagsForValidation` to separate exact vs fuzzy matches
+ * 2. Calls `onMatch` for each exact match (adds them directly)
+ * 3. Queues remaining fuzzy matches for user validation via `setQueue`
+ *
+ * The `onMatch` callback is reused as `onValidated` in the queue — when a user
+ * confirms a fuzzy match, it's treated the same as an exact match.
+ *
+ * @param tags - Tags to validate against the database
+ * @param findSimilarTags - Database lookup function for fuzzy tag matching
+ * @param onMatch - Callback for exact matches and validated fuzzy matches
+ * @param setQueue - Setter for the validation queue (from RecipeDialogsContext)
+ * @param onDismissed - Optional callback when user dismisses a tag from the queue
+ */
+export function validateAndQueueTags(
+  tags: tagTableElement[],
+  findSimilarTags: (name: string) => tagTableElement[],
+  onMatch: (tag: tagTableElement) => void,
+  setQueue: (config: TagQueueConfig) => void,
+  onDismissed?: (tag: TagWithSimilarity) => void
+): void {
+  const { exactMatches, needsValidation } = processTagsForValidation(tags, findSimilarTags);
+  for (const match of exactMatches) {
+    onMatch(match);
+  }
+  if (needsValidation.length > 0) {
+    setQueue({
+      type: 'Tag',
+      items: needsValidation,
+      onValidated: (_, validatedTag) => onMatch(validatedTag),
+      onDismissed,
+    });
+  }
+}
+
+/**
+ * Pre-computes ingredient similarity, handles exact matches immediately, and queues fuzzy matches.
+ *
+ * Orchestrates the full ingredient validation flow:
+ * 1. Runs `processIngredientsForValidation` to separate exact vs fuzzy matches
+ * 2. Calls `onExactMatch` for each exact match (adds/merges them directly)
+ * 3. Queues remaining fuzzy matches for user validation via `setQueue`
+ *
+ * If `options.onValidated` is not provided, defaults to calling `onExactMatch`
+ * with the validated ingredient — suitable when exact and fuzzy matches are handled identically.
+ *
+ * @param ingredients - Ingredients to validate against the database
+ * @param findSimilarIngredients - Database lookup function for fuzzy ingredient matching
+ * @param onExactMatch - Callback for exact database matches
+ * @param setQueue - Setter for the validation queue (from RecipeDialogsContext)
+ * @param options - Optional callbacks for validated and dismissed items
+ */
+export function validateAndQueueIngredients(
+  ingredients: FormIngredientElement[],
+  findSimilarIngredients: (name: string) => ingredientTableElement[],
+  onExactMatch: (ingredient: ingredientTableElement) => void,
+  setQueue: (config: IngredientQueueConfig) => void,
+  options?: {
+    onValidated?: IngredientQueueConfig['onValidated'];
+    onDismissed?: IngredientQueueConfig['onDismissed'];
+  }
+): void {
+  const { exactMatches, needsValidation } = processIngredientsForValidation(
+    ingredients,
+    findSimilarIngredients
+  );
+  for (const match of exactMatches) {
+    onExactMatch(match);
+  }
+  if (needsValidation.length > 0) {
+    setQueue({
+      type: 'Ingredient',
+      items: needsValidation,
+      onValidated: options?.onValidated ?? ((_, validated) => onExactMatch(validated)),
+      onDismissed: options?.onDismissed,
+    });
+  }
 }

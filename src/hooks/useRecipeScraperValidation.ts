@@ -2,7 +2,8 @@
  * Hook for validating scraped recipe data on screen load.
  *
  * Triggers ValidationQueue for ingredients and tags from scraped recipes
- * that need user validation (not found in database).
+ * that need user validation (not found in database). Pre-computes similarity
+ * and handles exact matches before passing sorted items to the queue.
  *
  * @module useRecipeScraperValidation
  */
@@ -14,28 +15,27 @@ import {
   removeIngredientByName,
   removeTagByName,
   replaceMatchingTags,
+  validateAndQueueIngredients,
+  validateAndQueueTags,
 } from '@utils/RecipeValidationHelpers';
 import { useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { useRecipeForm } from '@context/RecipeFormContext';
 import { useRecipeIngredients } from '@hooks/useRecipeIngredients';
-import {
-  FormIngredientElement,
-  ingredientTableElement,
-  tagTableElement,
-} from '@customTypes/DatabaseElementTypes';
+import { FormIngredientElement, tagTableElement } from '@customTypes/DatabaseElementTypes';
+import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
 
 /**
  * Hook that triggers ValidationQueue for scraped recipe data.
  *
  * When the Recipe screen loads in 'addScrape' mode, this hook processes
- * all ingredients and tags to determine which ones need user validation.
- * The ValidationQueue handles exact-match detection and similarity computation
- * internally, so raw items are passed directly.
+ * all ingredients and tags, pre-computes similarity, handles exact matches,
+ * and passes sorted items to the ValidationQueue.
  */
 export function useRecipeScraperValidation(): void {
   const { setValidationQueue, validationQueue } = useRecipeDialogs();
   const { state, setters } = useRecipeForm();
   const { replaceAllMatchingFormIngredients } = useRecipeIngredients();
+  const { findSimilarTags, findSimilarIngredients } = useRecipeDatabase();
 
   const { stackMode, recipeIngredients, recipeTags } = state;
   const { setRecipeIngredients, setRecipeTags } = setters;
@@ -51,28 +51,23 @@ export function useRecipeScraperValidation(): void {
   };
 
   const startIngredientValidation = (ingredients: FormIngredientElement[]) => {
-    setValidationQueue({
-      type: 'Ingredient',
-      items: ingredients,
-      onValidated: (_, validatedIngredient: ingredientTableElement) =>
-        replaceAllMatchingFormIngredients(validatedIngredient),
-      onDismissed: (item: FormIngredientElement) => {
-        setRecipeIngredients(prev => removeIngredientByName(prev, item.name));
-      },
-    });
+    validateAndQueueIngredients(
+      ingredients,
+      findSimilarIngredients,
+      replaceAllMatchingFormIngredients,
+      setValidationQueue,
+      { onDismissed: item => setRecipeIngredients(prev => removeIngredientByName(prev, item.name)) }
+    );
   };
 
   const startTagValidation = (tags: tagTableElement[]) => {
-    setValidationQueue({
-      type: 'Tag',
-      items: tags,
-      onValidated: (originalTag: tagTableElement, validatedTag: tagTableElement) => {
-        setRecipeTags(prev => replaceMatchingTags(prev, [validatedTag]));
-      },
-      onDismissed: (tag: tagTableElement) => {
-        setRecipeTags(prev => removeTagByName(prev, tag.name));
-      },
-    });
+    validateAndQueueTags(
+      tags,
+      findSimilarTags,
+      tag => setRecipeTags(prev => replaceMatchingTags(prev, [tag])),
+      setValidationQueue,
+      tag => setRecipeTags(prev => removeTagByName(prev, tag.name))
+    );
   };
 
   useEffect(() => {
