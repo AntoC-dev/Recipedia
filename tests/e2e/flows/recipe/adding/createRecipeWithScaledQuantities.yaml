@@ -9,6 +9,12 @@ appId: "com.recipedia"
     id: "RecipeEdit.*"
     label: "Open manual recipe adding"
 
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::AppBar"
+    timeout: 30000
+    label: "Wait for recipe screen to load"
+
 - runFlow:
     file: "en/addRecipeImage.yaml"
     label: "Add recipe image"

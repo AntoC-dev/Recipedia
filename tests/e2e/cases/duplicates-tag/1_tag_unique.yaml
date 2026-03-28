@@ -18,6 +18,12 @@ tags:
 
 - extendedWaitUntil:
     visible:
+      id: "Recipe::AppBar"
+    timeout: 30000
+    label: "Wait for recipe screen to load"
+
+- extendedWaitUntil:
+    visible:
       id: "RecipeImage"
     timeout: 30000
     label: "Wait for recipe screen to load"

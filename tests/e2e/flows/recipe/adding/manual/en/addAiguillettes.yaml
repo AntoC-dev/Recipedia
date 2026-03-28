@@ -139,7 +139,7 @@ appId: "com.recipedia"
 
 - swipe:
     start: "50%,60%"
-    end: "50%,20%"
+    end: "50%,40%"
     label: "Swipe down to ensure dropdown will be visible"
 
 - waitForAnimationToEnd
