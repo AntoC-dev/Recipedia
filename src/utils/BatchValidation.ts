@@ -17,6 +17,7 @@ import {
   ConvertedImportRecipe,
   ValidatedRecipe,
 } from '@customTypes/BulkImportTypes';
+import { IngredientWithSimilarity, TagWithSimilarity } from '@utils/RecipeValidationHelpers';
 import { bulkImportLogger } from '@utils/logger';
 import { normalizeKey } from '@utils/NutritionUtils';
 import { scaleQuantityForPersons } from '@utils/Quantity';
@@ -68,9 +69,11 @@ export function collectUniqueItems(recipes: ConvertedImportRecipe[]): {
 /**
  * Initializes batch validation state for imported recipes
  *
- * Collects unique items via deduplication and passes them as raw items
- * for the ValidationQueue to handle similarity computation and exact-match
- * detection internally.
+ * Collects unique items via deduplication and returns them with empty
+ * similarItems arrays. The caller is responsible for running
+ * processTagsForValidation / processIngredientsForValidation to compute
+ * similarity, handle exact matches, and sort items before passing to
+ * ValidationQueue.
  *
  * @param recipes - Array of converted recipes to validate
  * @returns Initial batch validation state with deduplicated items
@@ -81,8 +84,13 @@ export function initializeBatchValidation(recipes: ConvertedImportRecipe[]): Bat
   const ingredientMappings = new Map<string, ingredientTableElement>();
   const tagMappings = new Map<string, tagTableElement>();
 
-  const ingredientsToValidate = [...uniqueIngredients.values()].filter(ing => !!ing.name);
-  const tagsToValidate = [...uniqueTags.values()];
+  const ingredientsToValidate: IngredientWithSimilarity[] = [...uniqueIngredients.values()]
+    .filter(ing => !!ing.name)
+    .map(ing => ({ ...ing, similarItems: [] }));
+  const tagsToValidate: TagWithSimilarity[] = [...uniqueTags.values()].map(tag => ({
+    ...tag,
+    similarItems: [],
+  }));
 
   bulkImportLogger.info('Batch validation initialized', {
     ingredientsNeedingValidation: ingredientsToValidate.length,

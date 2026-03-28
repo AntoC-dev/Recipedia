@@ -1,6 +1,6 @@
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { useValidationWorkflow } from '@hooks/useValidationWorkflow';
-import { ingredientType } from '@customTypes/DatabaseElementTypes';
+import { ingredientTableElement, ingredientType } from '@customTypes/DatabaseElementTypes';
 import { ConvertedImportRecipe } from '@customTypes/BulkImportTypes';
 
 const createMockRecipe = (
@@ -28,6 +28,8 @@ const createMockRecipe = (
 });
 
 const mockAddMultipleRecipes = jest.fn();
+const mockFindSimilarTags = jest.fn().mockReturnValue([]);
+const mockFindSimilarIngredients = jest.fn().mockReturnValue([]);
 
 describe('useValidationWorkflow', () => {
   beforeEach(() => {
@@ -40,7 +42,14 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', ['NewTag'], ['Chicken'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockAddMultipleRecipes, true, 4)
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
       );
 
       await waitFor(
@@ -55,7 +64,14 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockAddMultipleRecipes, true, 4)
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
       );
 
       await waitFor(() => {
@@ -67,7 +83,14 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockAddMultipleRecipes, true, 4)
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
       );
 
       await waitFor(() => {
@@ -76,7 +99,7 @@ describe('useValidationWorkflow', () => {
 
       act(() => {
         result.current.handlers.onIngredientValidated(
-          { name: 'NewIngredient', quantity: '100' },
+          { name: 'NewIngredient', quantity: '100', similarItems: [] },
           { id: 10, name: 'Validated', unit: 'g', type: ingredientType.vegetable, season: [] }
         );
       });
@@ -94,7 +117,14 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', ['NewTag', 'AnotherTag'], ['Chicken'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockAddMultipleRecipes, true, 4)
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
       );
 
       await waitFor(() => {
@@ -108,7 +138,14 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', ['NewTag'], ['Chicken'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockAddMultipleRecipes, true, 4)
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
       );
 
       await waitFor(() => {
@@ -117,7 +154,7 @@ describe('useValidationWorkflow', () => {
 
       act(() => {
         result.current.handlers.onTagValidated(
-          { id: 1, name: 'NewTag' },
+          { id: 1, name: 'NewTag', similarItems: [] },
           { id: 10, name: 'Validated Tag' }
         );
       });
@@ -129,7 +166,14 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', ['NewTag'], ['NewIngredient'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockAddMultipleRecipes, true, 4)
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
       );
 
       await waitFor(() => {
@@ -147,7 +191,14 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', ['NewTag'], [])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockAddMultipleRecipes, true, 4)
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
       );
 
       await waitFor(() => {
@@ -169,7 +220,14 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient', 'AnotherIngredient'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockAddMultipleRecipes, true, 4)
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
       );
 
       await waitFor(() => {
@@ -183,7 +241,14 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockAddMultipleRecipes, true, 4)
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
       );
 
       await waitFor(() => {
@@ -192,7 +257,7 @@ describe('useValidationWorkflow', () => {
 
       act(() => {
         result.current.handlers.onIngredientValidated(
-          { name: 'NewIngredient', quantity: '100' },
+          { name: 'NewIngredient', quantity: '100', similarItems: [] },
           {
             id: 10,
             name: 'Validated Ingredient',
@@ -210,7 +275,14 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockAddMultipleRecipes, true, 4)
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
       );
 
       await waitFor(() => {
@@ -219,7 +291,7 @@ describe('useValidationWorkflow', () => {
 
       act(() => {
         result.current.handlers.onIngredientValidated(
-          { name: 'NewIngredient', quantity: '100' },
+          { name: 'NewIngredient', quantity: '100', similarItems: [] },
           {
             id: 10,
             name: 'Validated Ingredient',
@@ -245,14 +317,21 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockAddMultipleRecipes, true, 4)
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
       );
 
       await waitFor(() => expect(result.current.phase).toBe('ingredients'));
 
       act(() => {
         result.current.handlers.onIngredientValidated(
-          { name: 'NewIngredient', quantity: '100' },
+          { name: 'NewIngredient', quantity: '100', similarItems: [] },
           { id: 10, name: 'Validated', unit: 'g', type: ingredientType.vegetable, season: [] }
         );
       });
@@ -268,14 +347,21 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockAddMultipleRecipes, true, 4)
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
       );
 
       await waitFor(() => expect(result.current.phase).toBe('ingredients'));
 
       act(() => {
         result.current.handlers.onIngredientValidated(
-          { name: 'NewIngredient', quantity: '100' },
+          { name: 'NewIngredient', quantity: '100', similarItems: [] },
           { id: 10, name: 'Validated', unit: 'g', type: ingredientType.vegetable, season: [] }
         );
       });
@@ -295,14 +381,21 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockAddMultipleRecipes, true, 4)
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
       );
 
       await waitFor(() => expect(result.current.phase).toBe('ingredients'));
 
       act(() => {
         result.current.handlers.onIngredientValidated(
-          { name: 'NewIngredient', quantity: '100' },
+          { name: 'NewIngredient', quantity: '100', similarItems: [] },
           { id: 10, name: 'Validated', unit: 'g', type: ingredientType.vegetable, season: [] }
         );
       });
@@ -323,7 +416,14 @@ describe('useValidationWorkflow', () => {
       ];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockAddMultipleRecipes, true, 4)
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
       );
 
       await waitFor(() => {
@@ -332,7 +432,7 @@ describe('useValidationWorkflow', () => {
 
       act(() => {
         result.current.handlers.onIngredientValidated(
-          { name: 'NewIngredient', quantity: '100' },
+          { name: 'NewIngredient', quantity: '100', similarItems: [] },
           { id: 10, name: 'Validated', unit: 'g', type: ingredientType.vegetable, season: [] }
         );
       });
@@ -359,14 +459,22 @@ describe('useValidationWorkflow', () => {
       const mockOnImportComplete = jest.fn().mockReturnValue(callbackPromise);
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockAddMultipleRecipes, true, 4, mockOnImportComplete)
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients,
+          mockOnImportComplete
+        )
       );
 
       await waitFor(() => expect(result.current.phase).toBe('ingredients'));
 
       act(() => {
         result.current.handlers.onIngredientValidated(
-          { name: 'NewIngredient', quantity: '100' },
+          { name: 'NewIngredient', quantity: '100', similarItems: [] },
           { id: 10, name: 'Validated', unit: 'g', type: ingredientType.vegetable, season: [] }
         );
       });
@@ -399,14 +507,21 @@ describe('useValidationWorkflow', () => {
       ];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipesWithWrongPersons, mockAddMultipleRecipes, true, 4)
+        useValidationWorkflow(
+          recipesWithWrongPersons,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
       );
 
       await waitFor(() => expect(result.current.phase).toBe('ingredients'));
 
       act(() => {
         result.current.handlers.onIngredientValidated(
-          { name: 'NewIngredient', quantity: '100' },
+          { name: 'NewIngredient', quantity: '100', similarItems: [] },
           { id: 10, name: 'Validated', unit: 'g', type: ingredientType.vegetable, season: [] }
         );
       });
@@ -429,18 +544,26 @@ describe('useValidationWorkflow', () => {
       const mockOnImportComplete = jest.fn().mockResolvedValue(undefined);
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockAddMultipleRecipes, true, 4, mockOnImportComplete)
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients,
+          mockOnImportComplete
+        )
       );
 
       await waitFor(() => expect(result.current.phase).toBe('ingredients'));
 
       act(() => {
         result.current.handlers.onIngredientValidated(
-          { name: 'Ingredient1', quantity: '100' },
+          { name: 'Ingredient1', quantity: '100', similarItems: [] },
           { id: 10, name: 'Validated1', unit: 'g', type: ingredientType.vegetable, season: [] }
         );
         result.current.handlers.onIngredientValidated(
-          { name: 'Ingredient2', quantity: '100' },
+          { name: 'Ingredient2', quantity: '100', similarItems: [] },
           { id: 11, name: 'Validated2', unit: 'g', type: ingredientType.vegetable, season: [] }
         );
       });
@@ -463,7 +586,14 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', ['NewTag', 'AnotherTag'], ['Chicken'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockAddMultipleRecipes, true, 4)
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
       );
 
       await waitFor(() => {
@@ -478,7 +608,14 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient', 'AnotherIngredient'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockAddMultipleRecipes, true, 4)
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
       );
 
       await waitFor(() => {
@@ -495,7 +632,14 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', ['NewTag'], ['Chicken'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockAddMultipleRecipes, true, 4)
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
       );
 
       await waitFor(() => {
@@ -515,7 +659,14 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockAddMultipleRecipes, true, 4)
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
       );
 
       await waitFor(() => {
@@ -532,10 +683,122 @@ describe('useValidationWorkflow', () => {
     });
   });
 
+  describe('exact match processing during initialization', () => {
+    test('tags with exact database matches bypass validation queue', async () => {
+      const knownTag = { id: 1, name: 'Italian' };
+      const localFindSimilarTags = jest.fn().mockReturnValue([knownTag]);
+
+      const recipes = [createMockRecipe('Test Recipe', ['Italian'], ['NewIngredient'])];
+
+      const { result } = renderHook(() =>
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          localFindSimilarTags,
+          mockFindSimilarIngredients
+        )
+      );
+
+      await waitFor(() => {
+        expect(result.current.phase).toBe('ingredients');
+      });
+
+      expect(result.current.validationState?.tagsToValidate).toHaveLength(0);
+      expect(result.current.validationState?.tagMappings.get('italian')).toEqual(knownTag);
+    });
+
+    test('ingredients with exact database matches bypass validation queue', async () => {
+      const knownIngredient: ingredientTableElement = {
+        id: 1,
+        name: 'Chicken',
+        unit: 'g',
+        type: ingredientType.meat,
+        season: [],
+      };
+      const localFindSimilarIngredients = jest.fn().mockReturnValue([knownIngredient]);
+
+      const recipes = [createMockRecipe('Test Recipe', [], ['Chicken'])];
+
+      const { result } = renderHook(() =>
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          localFindSimilarIngredients
+        )
+      );
+
+      await waitFor(() => {
+        expect(['importing', 'complete']).toContain(result.current.phase);
+      });
+
+      expect(result.current.validationState?.ingredientsToValidate).toHaveLength(0);
+      expect(result.current.validationState?.ingredientMappings.size).toBeGreaterThan(0);
+    });
+  });
+
+  describe('early return when database not ready', () => {
+    test('stays in initializing phase when isDatabaseReady is false', async () => {
+      const recipes = [createMockRecipe('Test Recipe', ['NewTag'], ['NewIngredient'])];
+
+      const { result } = renderHook(() =>
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          false,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
+      );
+
+      await new Promise(resolve => setTimeout(resolve, 200));
+
+      expect(result.current.phase).toBe('initializing');
+      expect(mockFindSimilarTags).not.toHaveBeenCalled();
+      expect(mockFindSimilarIngredients).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('handleTagQueueComplete null state guard', () => {
+    test('onTagQueueComplete does nothing when called before state is initialized', () => {
+      const recipes = [createMockRecipe('Test Recipe', ['NewTag'], ['NewIngredient'])];
+
+      const { result } = renderHook(() =>
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          false,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
+      );
+
+      act(() => {
+        result.current.handlers.onTagQueueComplete();
+      });
+
+      expect(result.current.phase).toBe('initializing');
+      expect(mockAddMultipleRecipes).not.toHaveBeenCalled();
+    });
+  });
+
   describe('edge cases', () => {
     test('handles empty recipes array with error', async () => {
       const { result } = renderHook(() =>
-        useValidationWorkflow([], mockAddMultipleRecipes, true, 4)
+        useValidationWorkflow(
+          [],
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
       );
 
       await waitFor(() => {
@@ -552,7 +815,14 @@ describe('useValidationWorkflow', () => {
       ];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockAddMultipleRecipes, true, 4)
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
       );
 
       await waitFor(() => {
@@ -561,14 +831,20 @@ describe('useValidationWorkflow', () => {
 
       act(() => {
         result.current.handlers.onTagValidated(
-          { id: 0, name: 'Italian' },
+          { id: 0, name: 'Italian', similarItems: [] },
           { id: 1, name: 'Italian' }
         );
         result.current.handlers.onTagValidated(
-          { id: 1, name: 'Dinner' },
+          { id: 1, name: 'Dinner', similarItems: [] },
           { id: 2, name: 'Dinner' }
         );
-        result.current.handlers.onTagValidated({ id: 2, name: 'Quick' }, { id: 3, name: 'Quick' });
+        result.current.handlers.onTagValidated(
+          { id: 2, name: 'Quick', similarItems: [] },
+          {
+            id: 3,
+            name: 'Quick',
+          }
+        );
       });
 
       act(() => result.current.handlers.onTagQueueComplete());
@@ -579,15 +855,15 @@ describe('useValidationWorkflow', () => {
 
       act(() => {
         result.current.handlers.onIngredientValidated(
-          { name: 'Chicken', quantity: '100' },
+          { name: 'Chicken', quantity: '100', similarItems: [] },
           { id: 1, name: 'Chicken', unit: 'g', type: ingredientType.meat, season: [] }
         );
         result.current.handlers.onIngredientValidated(
-          { name: 'Tomato', quantity: '100' },
+          { name: 'Tomato', quantity: '100', similarItems: [] },
           { id: 2, name: 'Tomato', unit: 'piece', type: ingredientType.vegetable, season: [] }
         );
         result.current.handlers.onIngredientValidated(
-          { name: 'Onion', quantity: '100' },
+          { name: 'Onion', quantity: '100', similarItems: [] },
           { id: 3, name: 'Onion', unit: 'piece', type: ingredientType.vegetable, season: [] }
         );
       });
@@ -605,7 +881,14 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Recipe', ['UnknownTag1', 'UnknownTag2'], ['Chicken'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockAddMultipleRecipes, true, 4)
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
       );
 
       await waitFor(() => {
@@ -621,7 +904,14 @@ describe('useValidationWorkflow', () => {
       ];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockAddMultipleRecipes, true, 4)
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
       );
 
       await waitFor(() => {
@@ -635,7 +925,14 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Recipe', [], ['UnknownIngredient'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockAddMultipleRecipes, true, 4)
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
       );
 
       await waitFor(() => {
@@ -661,7 +958,14 @@ describe('useValidationWorkflow', () => {
       ];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockAddMultipleRecipes, true, 4)
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
       );
 
       await waitFor(() => {
@@ -678,15 +982,15 @@ describe('useValidationWorkflow', () => {
 
       act(() => {
         result.current.handlers.onIngredientValidated(
-          { name: 'Chicken', quantity: '100' },
+          { name: 'Chicken', quantity: '100', similarItems: [] },
           { id: 1, name: 'Chicken', unit: 'g', type: ingredientType.meat, season: [] }
         );
         result.current.handlers.onIngredientValidated(
-          { name: 'Tomato', quantity: '100' },
+          { name: 'Tomato', quantity: '100', similarItems: [] },
           { id: 2, name: 'Tomato', unit: 'piece', type: ingredientType.vegetable, season: [] }
         );
         result.current.handlers.onIngredientValidated(
-          { name: 'NewIngredient', quantity: '100' },
+          { name: 'NewIngredient', quantity: '100', similarItems: [] },
           { id: 3, name: 'NewIngredient', unit: 'g', type: ingredientType.vegetable, season: [] }
         );
       });
@@ -704,7 +1008,14 @@ describe('useValidationWorkflow', () => {
       const recipes = [createMockRecipe('Recipe', ['NewTag1', 'NewTag2'], ['Chicken'])];
 
       const { result } = renderHook(() =>
-        useValidationWorkflow(recipes, mockAddMultipleRecipes, true, 4)
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
       );
 
       await waitFor(() => {
@@ -713,14 +1024,14 @@ describe('useValidationWorkflow', () => {
 
       act(() => {
         result.current.handlers.onTagValidated(
-          { id: 1, name: 'NewTag1' },
+          { id: 1, name: 'NewTag1', similarItems: [] },
           { id: 10, name: 'Validated Tag 1' }
         );
       });
 
       act(() => {
         result.current.handlers.onTagValidated(
-          { id: 2, name: 'NewTag2' },
+          { id: 2, name: 'NewTag2', similarItems: [] },
           { id: 11, name: 'Validated Tag 2' }
         );
       });

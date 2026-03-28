@@ -3,14 +3,18 @@ import {
   addOrMergeIngredientMatches,
   deduplicateIngredientsByName,
   filterOutExistingTags,
+  mergeIngredient,
   processIngredientsForValidation,
   processTagsForValidation,
   removeIngredientByName,
   removeTagByName,
   replaceMatchingIngredients,
   replaceMatchingTags,
+  validateAndQueueIngredients,
+  validateAndQueueTags,
 } from '@utils/RecipeValidationHelpers';
 import {
+  FormIngredientElement,
   ingredientTableElement,
   ingredientType,
   tagTableElement,
@@ -1665,6 +1669,453 @@ describe('RecipeValidationHelpers', () => {
         expect(sugar?.similarItems).toBeUndefined();
         expect(salt?.similarItems).toEqual([]);
       });
+    });
+
+    test('skips summing quantity when duplicate has different unit', () => {
+      const ingredients = [
+        { name: 'Water', quantity: '500', unit: 'ml' },
+        { name: 'Water', quantity: '2', unit: 'cups' },
+        { name: 'Water', quantity: '100', unit: 'ml' },
+      ];
+
+      const result = deduplicateIngredientsByName(ingredients);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].unit).toBe('ml');
+      expect(result[0].quantity).toBe('600');
+    });
+
+    test('converts summed quantity to string when duplicate quantity is undefined', () => {
+      const ingredients = [
+        { name: 'Basil', quantity: '5', unit: 'g' },
+        { name: 'Basil', unit: 'g' },
+      ];
+
+      const result = deduplicateIngredientsByName(ingredients);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].quantity).toBe('5');
+    });
+  });
+
+  describe('mergeIngredient', () => {
+    const validated: ingredientTableElement = {
+      id: 5,
+      name: 'Butter',
+      unit: 'g',
+      quantity: '50',
+      type: ingredientType.oilAndFat,
+      season: ['1', '2'],
+    };
+
+    test('uses validated ingredient metadata with original quantity when provided', () => {
+      const original: FormIngredientElement = { name: 'butter', quantity: '200', note: 'softened' };
+
+      const result = mergeIngredient(original, validated);
+
+      expect(result.id).toBe(5);
+      expect(result.name).toBe('Butter');
+      expect(result.type).toBe(ingredientType.oilAndFat);
+      expect(result.season).toEqual(['1', '2']);
+      expect(result.quantity).toBe('200');
+      expect(result.unit).toBe('g');
+      expect(result.note).toBe('softened');
+    });
+
+    test('falls back to validated quantity when original quantity is undefined', () => {
+      const original: FormIngredientElement = { name: 'butter' };
+
+      const result = mergeIngredient(original, validated);
+
+      expect(result.quantity).toBe('50');
+    });
+
+    test('falls back to validated quantity when original quantity is empty string', () => {
+      const original: FormIngredientElement = { name: 'butter', quantity: '' };
+
+      const result = mergeIngredient(original, validated);
+
+      expect(result.quantity).toBe('50');
+    });
+
+    test('preserves note as undefined when original has no note', () => {
+      const original: FormIngredientElement = { name: 'butter', quantity: '100' };
+
+      const result = mergeIngredient(original, validated);
+
+      expect(result.note).toBeUndefined();
+    });
+
+    test('always uses validated unit regardless of original unit', () => {
+      const original: FormIngredientElement = { name: 'butter', quantity: '4', unit: 'tbsp' };
+
+      const result = mergeIngredient(original, validated);
+
+      expect(result.unit).toBe('g');
+    });
+  });
+
+  describe('replaceMatchingIngredients — no match found branch', () => {
+    test('leaves current array unchanged when exactMatch has no matching ingredient in current', () => {
+      const current: ingredientTableElement[] = [
+        {
+          id: 1,
+          name: 'Flour',
+          quantity: '200',
+          unit: 'g',
+          type: ingredientType.cereal,
+          season: [],
+        },
+      ];
+      const exactMatches: ingredientTableElement[] = [
+        {
+          id: 10,
+          name: 'Sugar',
+          quantity: '50',
+          unit: 'g',
+          type: ingredientType.sugar,
+          season: [],
+        },
+      ];
+
+      const result = replaceMatchingIngredients(current, exactMatches);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].name).toBe('Flour');
+      expect(result[0].id).toBe(1);
+    });
+  });
+
+  describe('replaceMatchingTags — no match found branch', () => {
+    test('leaves current array unchanged when exactMatch has no matching tag in current', () => {
+      const current: tagTableElement[] = [{ id: 1, name: 'Italian' }];
+      const exactMatches: tagTableElement[] = [{ id: 10, name: 'Vegan' }];
+
+      const result = replaceMatchingTags(current, exactMatches);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].name).toBe('Italian');
+      expect(result[0].id).toBe(1);
+    });
+  });
+
+  describe('addOrMergeIngredientMatches — string conversion when quantities are undefined', () => {
+    test('converts summed quantity to string when existing quantity is undefined', () => {
+      const current: ingredientTableElement[] = [
+        { name: 'Salt', unit: 'tsp', type: ingredientType.spice, season: [] },
+      ];
+      const incoming: ingredientTableElement[] = [
+        { name: 'Salt', quantity: '2', unit: 'tsp', type: ingredientType.spice, season: [] },
+      ];
+
+      const result = addOrMergeIngredientMatches(current, incoming);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].quantity).toBe('2');
+    });
+
+    test('converts summed quantity to string when incoming quantity is undefined', () => {
+      const current: ingredientTableElement[] = [
+        { name: 'Pepper', quantity: '3', unit: 'tsp', type: ingredientType.spice, season: [] },
+      ];
+      const incoming: ingredientTableElement[] = [
+        { name: 'Pepper', unit: 'tsp', type: ingredientType.spice, season: [] },
+      ];
+
+      const result = addOrMergeIngredientMatches(current, incoming);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].quantity).toBe('3');
+    });
+  });
+
+  describe('validateAndQueueTags', () => {
+    const dbTags: tagTableElement[] = [
+      { id: 1, name: 'Vegetarian' },
+      { id: 2, name: 'Italian' },
+    ];
+
+    const mockFindSimilarTags = jest.fn();
+    const mockOnMatch = jest.fn();
+    const mockSetQueue = jest.fn();
+    const mockOnDismissed = jest.fn();
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    test('calls onMatch for each exact match', () => {
+      mockFindSimilarTags.mockReturnValue([dbTags[0]]);
+
+      const tags: tagTableElement[] = [{ name: 'Vegetarian' }];
+      validateAndQueueTags(tags, mockFindSimilarTags, mockOnMatch, mockSetQueue);
+
+      expect(mockOnMatch).toHaveBeenCalledTimes(1);
+      expect(mockOnMatch).toHaveBeenCalledWith(dbTags[0]);
+    });
+
+    test('does not call setQueue when all items are exact matches', () => {
+      mockFindSimilarTags.mockReturnValue([dbTags[0]]);
+
+      const tags: tagTableElement[] = [{ name: 'Vegetarian' }];
+      validateAndQueueTags(tags, mockFindSimilarTags, mockOnMatch, mockSetQueue);
+
+      expect(mockSetQueue).not.toHaveBeenCalled();
+    });
+
+    test('calls setQueue with fuzzy matches when findSimilarTags returns similar but not exact', () => {
+      mockFindSimilarTags.mockReturnValue([dbTags[0]]);
+
+      const tags: tagTableElement[] = [{ name: 'Vegan' }];
+      validateAndQueueTags(tags, mockFindSimilarTags, mockOnMatch, mockSetQueue);
+
+      expect(mockSetQueue).toHaveBeenCalledTimes(1);
+      const queueConfig = mockSetQueue.mock.calls[0][0];
+      expect(queueConfig.type).toBe('Tag');
+      expect(queueConfig.items).toHaveLength(1);
+      expect(queueConfig.items[0].name).toBe('Vegan');
+    });
+
+    test('does not call setQueue when no items need validation', () => {
+      mockFindSimilarTags.mockReturnValueOnce([dbTags[0]]).mockReturnValueOnce([dbTags[1]]);
+
+      const tags: tagTableElement[] = [{ name: 'Vegetarian' }, { name: 'Italian' }];
+      validateAndQueueTags(tags, mockFindSimilarTags, mockOnMatch, mockSetQueue);
+
+      expect(mockSetQueue).not.toHaveBeenCalled();
+      expect(mockOnMatch).toHaveBeenCalledTimes(2);
+    });
+
+    test('passes onDismissed to queue config when provided', () => {
+      mockFindSimilarTags.mockReturnValue([dbTags[0]]);
+
+      const tags: tagTableElement[] = [{ name: 'Vegan' }];
+      validateAndQueueTags(tags, mockFindSimilarTags, mockOnMatch, mockSetQueue, mockOnDismissed);
+
+      const queueConfig = mockSetQueue.mock.calls[0][0];
+      expect(queueConfig.onDismissed).toBe(mockOnDismissed);
+    });
+
+    test('does not include onDismissed in queue config when not provided', () => {
+      mockFindSimilarTags.mockReturnValue([dbTags[0]]);
+
+      const tags: tagTableElement[] = [{ name: 'Vegan' }];
+      validateAndQueueTags(tags, mockFindSimilarTags, mockOnMatch, mockSetQueue);
+
+      const queueConfig = mockSetQueue.mock.calls[0][0];
+      expect(queueConfig.onDismissed).toBeUndefined();
+    });
+
+    test('queue onValidated callback calls onMatch with the validated tag', () => {
+      mockFindSimilarTags.mockReturnValue([dbTags[0]]);
+
+      const tags: tagTableElement[] = [{ name: 'Vegan' }];
+      validateAndQueueTags(tags, mockFindSimilarTags, mockOnMatch, mockSetQueue);
+
+      const queueConfig = mockSetQueue.mock.calls[0][0];
+      const fakeOriginal = { name: 'Vegan', similarItems: [] };
+      queueConfig.onValidated(fakeOriginal, dbTags[1]);
+
+      expect(mockOnMatch).toHaveBeenCalledWith(dbTags[1]);
+    });
+
+    test('makes no calls when tags array is empty', () => {
+      validateAndQueueTags([], mockFindSimilarTags, mockOnMatch, mockSetQueue);
+
+      expect(mockFindSimilarTags).not.toHaveBeenCalled();
+      expect(mockOnMatch).not.toHaveBeenCalled();
+      expect(mockSetQueue).not.toHaveBeenCalled();
+    });
+
+    test('calls onMatch for exact matches and queues fuzzy matches', () => {
+      mockFindSimilarTags.mockReturnValueOnce([dbTags[0]]).mockReturnValueOnce([dbTags[1]]);
+
+      const tags: tagTableElement[] = [{ name: 'Vegetarian' }, { name: 'Vegan' }];
+      validateAndQueueTags(tags, mockFindSimilarTags, mockOnMatch, mockSetQueue);
+
+      expect(mockOnMatch).toHaveBeenCalledTimes(1);
+      expect(mockOnMatch).toHaveBeenCalledWith(dbTags[0]);
+      expect(mockSetQueue).toHaveBeenCalledTimes(1);
+      const queueConfig = mockSetQueue.mock.calls[0][0];
+      expect(queueConfig.items).toHaveLength(1);
+      expect(queueConfig.items[0].name).toBe('Vegan');
+    });
+  });
+
+  describe('validateAndQueueIngredients', () => {
+    const dbIngredients: ingredientTableElement[] = [
+      {
+        id: 1,
+        name: 'Tomato',
+        type: ingredientType.vegetable,
+        unit: 'g',
+        quantity: '100',
+        season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+      },
+      {
+        id: 2,
+        name: 'Basil',
+        type: ingredientType.condiment,
+        unit: 'g',
+        quantity: '10',
+        season: ['6', '7', '8', '9'],
+      },
+    ];
+
+    const mockFindSimilarIngredients = jest.fn();
+    const mockOnExactMatch = jest.fn();
+    const mockSetQueue = jest.fn();
+    const mockOnValidated = jest.fn();
+    const mockOnDismissed = jest.fn();
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    test('calls onExactMatch for each exact match', () => {
+      mockFindSimilarIngredients.mockReturnValue([dbIngredients[0]]);
+
+      const ingredients: FormIngredientElement[] = [{ name: 'Tomato', quantity: '200', unit: 'g' }];
+      validateAndQueueIngredients(
+        ingredients,
+        mockFindSimilarIngredients,
+        mockOnExactMatch,
+        mockSetQueue
+      );
+
+      expect(mockOnExactMatch).toHaveBeenCalledTimes(1);
+      expect(mockOnExactMatch.mock.calls[0][0].name).toBe('Tomato');
+      expect(mockOnExactMatch.mock.calls[0][0].id).toBe(dbIngredients[0].id);
+    });
+
+    test('does not call setQueue when all items are exact matches', () => {
+      mockFindSimilarIngredients.mockReturnValue([dbIngredients[0]]);
+
+      const ingredients: FormIngredientElement[] = [{ name: 'Tomato', quantity: '200', unit: 'g' }];
+      validateAndQueueIngredients(
+        ingredients,
+        mockFindSimilarIngredients,
+        mockOnExactMatch,
+        mockSetQueue
+      );
+
+      expect(mockSetQueue).not.toHaveBeenCalled();
+    });
+
+    test('calls setQueue with fuzzy matches when findSimilarIngredients returns similar but not exact', () => {
+      mockFindSimilarIngredients.mockReturnValue([dbIngredients[0]]);
+
+      const ingredients: FormIngredientElement[] = [
+        { name: 'Cherry Tomato', quantity: '50', unit: 'g' },
+      ];
+      validateAndQueueIngredients(
+        ingredients,
+        mockFindSimilarIngredients,
+        mockOnExactMatch,
+        mockSetQueue
+      );
+
+      expect(mockSetQueue).toHaveBeenCalledTimes(1);
+      const queueConfig = mockSetQueue.mock.calls[0][0];
+      expect(queueConfig.type).toBe('Ingredient');
+      expect(queueConfig.items).toHaveLength(1);
+      expect(queueConfig.items[0].name).toBe('Cherry Tomato');
+    });
+
+    test('default onValidated calls onExactMatch when no custom onValidated provided', () => {
+      mockFindSimilarIngredients.mockReturnValue([dbIngredients[0]]);
+
+      const ingredients: FormIngredientElement[] = [
+        { name: 'Cherry Tomato', quantity: '50', unit: 'g' },
+      ];
+      validateAndQueueIngredients(
+        ingredients,
+        mockFindSimilarIngredients,
+        mockOnExactMatch,
+        mockSetQueue
+      );
+
+      const queueConfig = mockSetQueue.mock.calls[0][0];
+      const fakeOriginal = { name: 'Cherry Tomato', similarItems: [] };
+      queueConfig.onValidated(fakeOriginal, dbIngredients[0]);
+
+      expect(mockOnExactMatch).toHaveBeenCalledWith(dbIngredients[0]);
+    });
+
+    test('uses custom onValidated when provided in options', () => {
+      mockFindSimilarIngredients.mockReturnValue([dbIngredients[0]]);
+
+      const ingredients: FormIngredientElement[] = [
+        { name: 'Cherry Tomato', quantity: '50', unit: 'g' },
+      ];
+      validateAndQueueIngredients(
+        ingredients,
+        mockFindSimilarIngredients,
+        mockOnExactMatch,
+        mockSetQueue,
+        {
+          onValidated: mockOnValidated,
+        }
+      );
+
+      const queueConfig = mockSetQueue.mock.calls[0][0];
+      const fakeOriginal = { name: 'Cherry Tomato', similarItems: [] };
+      queueConfig.onValidated(fakeOriginal, dbIngredients[0]);
+
+      expect(mockOnValidated).toHaveBeenCalledWith(fakeOriginal, dbIngredients[0]);
+      expect(mockOnExactMatch).not.toHaveBeenCalled();
+    });
+
+    test('passes onDismissed from options to queue config', () => {
+      mockFindSimilarIngredients.mockReturnValue([dbIngredients[0]]);
+
+      const ingredients: FormIngredientElement[] = [
+        { name: 'Cherry Tomato', quantity: '50', unit: 'g' },
+      ];
+      validateAndQueueIngredients(
+        ingredients,
+        mockFindSimilarIngredients,
+        mockOnExactMatch,
+        mockSetQueue,
+        {
+          onDismissed: mockOnDismissed,
+        }
+      );
+
+      const queueConfig = mockSetQueue.mock.calls[0][0];
+      expect(queueConfig.onDismissed).toBe(mockOnDismissed);
+    });
+
+    test('makes no calls when ingredients array is empty', () => {
+      validateAndQueueIngredients([], mockFindSimilarIngredients, mockOnExactMatch, mockSetQueue);
+
+      expect(mockFindSimilarIngredients).not.toHaveBeenCalled();
+      expect(mockOnExactMatch).not.toHaveBeenCalled();
+      expect(mockSetQueue).not.toHaveBeenCalled();
+    });
+
+    test('calls onExactMatch for exact matches and queues fuzzy matches', () => {
+      mockFindSimilarIngredients
+        .mockReturnValueOnce([dbIngredients[0]])
+        .mockReturnValueOnce([dbIngredients[1]]);
+
+      const ingredients: FormIngredientElement[] = [
+        { name: 'Tomato', quantity: '200', unit: 'g' },
+        { name: 'Fresh Basil', quantity: '5', unit: 'g' },
+      ];
+      validateAndQueueIngredients(
+        ingredients,
+        mockFindSimilarIngredients,
+        mockOnExactMatch,
+        mockSetQueue
+      );
+
+      expect(mockOnExactMatch).toHaveBeenCalledTimes(1);
+      expect(mockOnExactMatch.mock.calls[0][0].name).toBe('Tomato');
+      expect(mockSetQueue).toHaveBeenCalledTimes(1);
+      const queueConfig = mockSetQueue.mock.calls[0][0];
+      expect(queueConfig.items).toHaveLength(1);
+      expect(queueConfig.items[0].name).toBe('Fresh Basil');
     });
   });
 });

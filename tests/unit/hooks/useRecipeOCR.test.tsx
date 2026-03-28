@@ -12,6 +12,7 @@ import {
 import { RecipePropType } from '@customTypes/RecipeNavigationTypes';
 import { testTags } from '@data/tagsDataset';
 import { testIngredients } from '@data/ingredientsDataset';
+import { IngredientValidationProps, TagValidationProps } from '@components/dialogs/ValidationQueue';
 
 const mockExtractFieldFromImage = jest.fn();
 
@@ -370,7 +371,7 @@ describe('useRecipeOCR', () => {
       expect(result.current.form.state.recipeNutrition?.protein).toBe(10);
     });
 
-    test('adds tags with exact match goes to validation queue', async () => {
+    test('adds tag directly when exact match found in database', async () => {
       mockExtractFieldFromImage.mockResolvedValue({
         recipeTags: [{ name: 'Italian' }],
       });
@@ -391,12 +392,9 @@ describe('useRecipeOCR', () => {
       });
 
       await waitFor(() => {
-        expect(result.current.dialogs.validationQueue).not.toBeNull();
-        expect(result.current.dialogs.validationQueue?.type).toBe('Tag');
+        expect(result.current.dialogs.validationQueue).toBeNull();
+        expect(result.current.form.state.recipeTags.some(tag => tag.name === 'Italian')).toBe(true);
       });
-
-      const queueItems = result.current.dialogs.validationQueue?.items;
-      expect(queueItems?.some((item: { name?: string }) => item.name === 'Italian')).toBe(true);
     });
 
     test('triggers validation queue for fuzzy tag matches', async () => {
@@ -432,7 +430,7 @@ describe('useRecipeOCR', () => {
       });
     });
 
-    test('sets validation queue for ingredient (exact-match auto-validated by queue)', async () => {
+    test('adds ingredient directly when exact match found in database', async () => {
       mockExtractFieldFromImage.mockResolvedValue({
         recipeIngredients: [{ name: 'Spaghetti', quantity: '200', unit: 'g', season: [] }],
       });
@@ -442,6 +440,7 @@ describe('useRecipeOCR', () => {
       const { result } = renderHook(
         () => ({
           ocr: useRecipeOCR(),
+          form: useRecipeForm(),
           dialogs: useRecipeDialogs(),
         }),
         { wrapper }
@@ -452,12 +451,11 @@ describe('useRecipeOCR', () => {
       });
 
       await waitFor(() => {
-        expect(result.current.dialogs.validationQueue).not.toBeNull();
-        expect(result.current.dialogs.validationQueue?.type).toBe('Ingredient');
+        expect(result.current.dialogs.validationQueue).toBeNull();
+        expect(
+          result.current.form.state.recipeIngredients.some(ing => ing.name === 'Spaghetti')
+        ).toBe(true);
       });
-
-      const queueItems = result.current.dialogs.validationQueue?.items;
-      expect(queueItems?.some((item: { name?: string }) => item.name === 'Spaghetti')).toBe(true);
     });
 
     test('triggers validation queue for fuzzy ingredient matches', async () => {
@@ -593,25 +591,6 @@ describe('useRecipeOCR', () => {
       });
 
       await waitFor(() => {
-        expect(result.current.dialogs.validationQueue).not.toBeNull();
-      });
-
-      const ocrItem = { name: 'Flour', quantity: '100', unit: 'g', season: [] as string[] };
-      const dbFlour = {
-        id: 1,
-        name: 'Flour',
-        unit: 'g',
-        quantity: '200',
-        type: ingredientType.cereal,
-        season: [] as string[],
-      };
-      const mergedIngredient = { ...dbFlour, quantity: ocrItem.quantity };
-
-      act(() => {
-        result.current.dialogs.validationQueue?.onValidated(ocrItem, mergedIngredient);
-      });
-
-      await waitFor(() => {
         expect(result.current.form.state.recipeIngredients).toHaveLength(1);
         expect(result.current.form.state.recipeIngredients[0].quantity).toBe('300');
       });
@@ -656,25 +635,6 @@ describe('useRecipeOCR', () => {
       });
 
       await waitFor(() => {
-        expect(result.current.dialogs.validationQueue).not.toBeNull();
-      });
-
-      const ocrItem = { name: 'Flour', quantity: '0.5', unit: 'kg', season: [] as string[] };
-      const dbFlour = {
-        id: 1,
-        name: 'Flour',
-        unit: 'g',
-        quantity: '200',
-        type: ingredientType.cereal,
-        season: [] as string[],
-      };
-      const mergedIngredient = { ...dbFlour, quantity: ocrItem.quantity };
-
-      act(() => {
-        result.current.dialogs.validationQueue?.onValidated(ocrItem, mergedIngredient);
-      });
-
-      await waitFor(() => {
         expect(result.current.form.state.recipeIngredients).toHaveLength(1);
         expect(result.current.form.state.recipeIngredients[0].unit).toBe('g');
         expect(result.current.form.state.recipeIngredients[0].quantity).toBe('200.5');
@@ -696,7 +656,7 @@ describe('useRecipeOCR', () => {
       expect(typeof warningCallback).toBe('function');
     });
 
-    test('ingredientNames exact match goes to validation queue', async () => {
+    test('ingredientNames exact match adds ingredient directly', async () => {
       mockExtractFieldFromImage.mockResolvedValue({
         ingredientNames: [{ name: 'Flour', unit: 'g' }],
       });
@@ -706,6 +666,7 @@ describe('useRecipeOCR', () => {
       const { result } = renderHook(
         () => ({
           ocr: useRecipeOCR(),
+          form: useRecipeForm(),
           dialogs: useRecipeDialogs(),
         }),
         { wrapper }
@@ -716,12 +677,11 @@ describe('useRecipeOCR', () => {
       });
 
       await waitFor(() => {
-        expect(result.current.dialogs.validationQueue).not.toBeNull();
-        expect(result.current.dialogs.validationQueue?.type).toBe('Ingredient');
+        expect(result.current.dialogs.validationQueue).toBeNull();
+        expect(result.current.form.state.recipeIngredients.some(ing => ing.name === 'Flour')).toBe(
+          true
+        );
       });
-
-      const queueItems = result.current.dialogs.validationQueue?.items;
-      expect(queueItems?.some((item: { name?: string }) => item.name === 'Flour')).toBe(true);
     });
 
     test('ingredientNames fuzzy match goes to validation queue', async () => {
@@ -822,6 +782,155 @@ describe('useRecipeOCR', () => {
       });
 
       expect(result.current.form.state.recipeIngredients[0].quantity).toBe('200');
+    });
+
+    test('warning callback invokes ocrLogger warn', async () => {
+      mockExtractFieldFromImage.mockImplementation(
+        (_uri: string, _field: unknown, _context: unknown, onWarning: (msg: string) => void) => {
+          onWarning('test warning message');
+          return Promise.resolve({ recipeTitle: 'Test' });
+        }
+      );
+
+      const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
+
+      const { result } = renderHook(() => useRecipeOCR(), { wrapper });
+
+      await act(async () => {
+        await result.current.fillOneField('image.jpg', recipeColumnsNames.title);
+      });
+
+      expect(mockExtractFieldFromImage).toHaveBeenCalledTimes(1);
+    });
+
+    test('tag onValidated callback adds validated tag to recipe', async () => {
+      const italianTag = testTags.find(t => t.name === 'Italian')!;
+
+      mockFindSimilarTags.mockImplementation((name: string) => {
+        if (name.toLowerCase() === 'itallian') {
+          return [italianTag];
+        }
+        return [];
+      });
+
+      mockExtractFieldFromImage.mockResolvedValue({
+        recipeTags: [{ name: 'Itallian' }],
+      });
+
+      const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
+
+      const { result } = renderHook(
+        () => ({
+          ocr: useRecipeOCR(),
+          form: useRecipeForm(),
+          dialogs: useRecipeDialogs(),
+        }),
+        { wrapper }
+      );
+
+      await act(async () => {
+        await result.current.ocr.fillOneField('image.jpg', recipeColumnsNames.tags);
+      });
+
+      await waitFor(() => {
+        expect(result.current.dialogs.validationQueue).not.toBeNull();
+      });
+
+      const queue = result.current.dialogs.validationQueue as TagValidationProps;
+
+      act(() => {
+        queue.onValidated(queue.items[0], italianTag);
+      });
+
+      expect(result.current.form.state.recipeTags.some(t => t.name === 'Italian')).toBe(true);
+    });
+
+    test('recipeIngredients onValidated callback adds validated ingredient to recipe', async () => {
+      const spaghettiIngredient = testIngredients.find(i => i.name === 'Spaghetti')!;
+
+      mockFindSimilarIngredients.mockImplementation((name: string) => {
+        if (name.toLowerCase() === 'spaghettis') {
+          return [spaghettiIngredient];
+        }
+        return [];
+      });
+
+      mockExtractFieldFromImage.mockResolvedValue({
+        recipeIngredients: [{ name: 'Spaghettis', quantity: '200', unit: 'g', season: [] }],
+      });
+
+      const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
+
+      const { result } = renderHook(
+        () => ({
+          ocr: useRecipeOCR(),
+          form: useRecipeForm(),
+          dialogs: useRecipeDialogs(),
+        }),
+        { wrapper }
+      );
+
+      await act(async () => {
+        await result.current.ocr.fillOneField('image.jpg', recipeColumnsNames.ingredients);
+      });
+
+      await waitFor(() => {
+        expect(result.current.dialogs.validationQueue).not.toBeNull();
+      });
+
+      const queue = result.current.dialogs.validationQueue as IngredientValidationProps;
+
+      act(() => {
+        queue.onValidated(queue.items[0], spaghettiIngredient);
+      });
+
+      expect(result.current.form.state.recipeIngredients.some(i => i.name === 'Spaghetti')).toBe(
+        true
+      );
+    });
+
+    test('ingredientNames onValidated callback adds validated ingredient to recipe', async () => {
+      const spaghettiIngredient = testIngredients.find(i => i.name === 'Spaghetti')!;
+
+      mockFindSimilarIngredients.mockImplementation((name: string) => {
+        if (name.toLowerCase() === 'spaghettis') {
+          return [spaghettiIngredient];
+        }
+        return [];
+      });
+
+      mockExtractFieldFromImage.mockResolvedValue({
+        ingredientNames: [{ name: 'Spaghettis', unit: 'g' }],
+      });
+
+      const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
+
+      const { result } = renderHook(
+        () => ({
+          ocr: useRecipeOCR(),
+          form: useRecipeForm(),
+          dialogs: useRecipeDialogs(),
+        }),
+        { wrapper }
+      );
+
+      await act(async () => {
+        await result.current.ocr.fillOneField('image.jpg', recipeColumnsNames.ingredientNames);
+      });
+
+      await waitFor(() => {
+        expect(result.current.dialogs.validationQueue).not.toBeNull();
+      });
+
+      const queue = result.current.dialogs.validationQueue as IngredientValidationProps;
+
+      act(() => {
+        queue.onValidated(queue.items[0], spaghettiIngredient);
+      });
+
+      expect(result.current.form.state.recipeIngredients.some(i => i.name === 'Spaghetti')).toBe(
+        true
+      );
     });
   });
 });

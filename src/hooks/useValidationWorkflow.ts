@@ -9,7 +9,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import {
-  FormIngredientElement,
   ingredientTableElement,
   recipeTableElement,
   tagTableElement,
@@ -22,6 +21,12 @@ import {
   getValidationProgress,
   initializeBatchValidation,
 } from '@utils/BatchValidation';
+import {
+  IngredientWithSimilarity,
+  processIngredientsForValidation,
+  processTagsForValidation,
+  TagWithSimilarity,
+} from '@utils/RecipeValidationHelpers';
 import { bulkImportLogger } from '@utils/logger';
 import { useI18n } from '@utils/i18n';
 
@@ -39,11 +44,11 @@ export type InitializationStage = 'analyzing' | 'matching-ingredients' | 'matchi
 
 /** Handler functions returned by the hook */
 export interface ValidationHandlers {
-  onTagValidated: (originalTag: tagTableElement, validatedTag: tagTableElement) => void;
+  onTagValidated: (originalTag: TagWithSimilarity, validatedTag: tagTableElement) => void;
   onTagDismissed: () => void;
   onTagQueueComplete: () => void;
   onIngredientValidated: (
-    originalIngredient: FormIngredientElement,
+    originalIngredient: IngredientWithSimilarity,
     validatedIngredient: ingredientTableElement
   ) => void;
   onIngredientDismissed: () => void;
@@ -84,6 +89,8 @@ export interface UseValidationWorkflowReturn {
  * @param addMultipleRecipes - Database function to save recipes
  * @param isDatabaseReady - Whether the database context has loaded data
  * @param defaultPersons - User's default serving count to apply to all imported recipes
+ * @param findSimilarTags - Function to find similar tags by name (from RecipeDatabase)
+ * @param findSimilarIngredients - Function to find similar ingredients by name (from RecipeDatabase)
  * @param onImportComplete - Optional async callback called after successful import with source URLs
  * @returns Workflow state and handlers
  */
@@ -92,6 +99,8 @@ export function useValidationWorkflow(
   addMultipleRecipes: (recipes: recipeTableElement[]) => Promise<void>,
   isDatabaseReady: boolean,
   defaultPersons: number,
+  findSimilarTags: (name: string) => tagTableElement[],
+  findSimilarIngredients: (name: string) => ingredientTableElement[],
   onImportComplete?: (importedSourceUrls: string[]) => void | Promise<void>
 ): UseValidationWorkflowReturn {
   const { t } = useI18n();
@@ -106,6 +115,11 @@ export function useValidationWorkflow(
   const hasInitializedRef = useRef(false);
   const validationStateRef = useRef<BatchValidationState | null>(null);
   validationStateRef.current = validationState;
+
+  const findSimilarTagsRef = useRef(findSimilarTags);
+  findSimilarTagsRef.current = findSimilarTags;
+  const findSimilarIngredientsRef = useRef(findSimilarIngredients);
+  findSimilarIngredientsRef.current = findSimilarIngredients;
 
   /**
    * Saves validated recipes to the database
@@ -164,15 +178,28 @@ export function useValidationWorkflow(
 
     const runInit = async () => {
       setInitStage('analyzing');
-      await new Promise(r => setTimeout(r, 100));
-
-      setInitStage('matching-ingredients');
+      const state = initializeBatchValidation(selectedRecipes);
       await new Promise(r => setTimeout(r, 100));
 
       setInitStage('matching-tags');
-      const state = initializeBatchValidation(selectedRecipes);
-      setValidationState(state);
+      const tagResult = processTagsForValidation(state.tagsToValidate, findSimilarTagsRef.current);
+      for (const tag of tagResult.exactMatches) {
+        addTagMapping(state, tag.name, tag);
+      }
+      state.tagsToValidate = tagResult.needsValidation;
+      await new Promise(r => setTimeout(r, 100));
 
+      setInitStage('matching-ingredients');
+      const ingResult = processIngredientsForValidation(
+        state.ingredientsToValidate,
+        findSimilarIngredientsRef.current
+      );
+      for (const ing of ingResult.exactMatches) {
+        addIngredientMapping(state, ing.name, ing);
+      }
+      state.ingredientsToValidate = ingResult.needsValidation;
+
+      setValidationState(state);
       setInitStage('ready');
       await new Promise(r => setTimeout(r, 100));
 
@@ -194,7 +221,7 @@ export function useValidationWorkflow(
    * @param originalTag - The original tag from import
    * @param validatedTag - The validated/mapped tag
    */
-  const handleTagValidated = (originalTag: tagTableElement, validatedTag: tagTableElement) => {
+  const handleTagValidated = (originalTag: TagWithSimilarity, validatedTag: tagTableElement) => {
     const state = validationStateRef.current;
     if (!state) return;
 
@@ -240,7 +267,7 @@ export function useValidationWorkflow(
    * @param validatedIngredient - The validated/mapped ingredient
    */
   const handleIngredientValidated = (
-    originalIngredient: FormIngredientElement,
+    originalIngredient: IngredientWithSimilarity,
     validatedIngredient: ingredientTableElement
   ) => {
     const state = validationStateRef.current;

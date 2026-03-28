@@ -483,7 +483,7 @@ describe('useRecipeIngredients', () => {
         });
       });
 
-      test('name change to exact match goes to validation queue', async () => {
+      test('exact match replaces ingredient directly without queue', async () => {
         const wrapper = createIngredientsWrapper(
           createMockRecipeProp('edit', recipeWithIngredients)
         );
@@ -506,12 +506,10 @@ describe('useRecipeIngredients', () => {
         });
 
         await waitFor(() => {
-          expect(result.current.dialogs.validationQueue).not.toBeNull();
-          expect(result.current.dialogs.validationQueue?.type).toBe('Ingredient');
+          expect(result.current.form.state.recipeIngredients[0].name).toBe('Spaghetti');
         });
 
-        const queueItems = result.current.dialogs.validationQueue?.items;
-        expect(queueItems?.some((item: { name?: string }) => item.name === 'Spaghetti')).toBe(true);
+        expect(result.current.dialogs.validationQueue).toBeNull();
       });
 
       test('preserves ingredient order when name changes to exact match', async () => {
@@ -545,16 +543,9 @@ describe('useRecipeIngredients', () => {
         });
 
         await waitFor(() => {
-          expect(result.current.dialogs.validationQueue).not.toBeNull();
+          expect(result.current.form.state.recipeIngredients[0].name).toBe('Spaghetti');
         });
 
-        const queue = result.current.dialogs.validationQueue as IngredientValidationProps;
-
-        act(() => {
-          queue.onValidated(queue.items[0], spaghettiIngredient);
-        });
-
-        expect(result.current.form.state.recipeIngredients[0].name).toBe('Spaghetti');
         expect(result.current.form.state.recipeIngredients).toHaveLength(3);
       });
 
@@ -1434,23 +1425,15 @@ describe('useRecipeIngredients', () => {
         });
 
         await waitFor(() => {
-          expect(result.current.dialogs.validationQueue).not.toBeNull();
+          const spaghetti = result.current.form.state.recipeIngredients.find(
+            i => i.name === 'Spaghetti'
+          );
+          expect(spaghetti).toBeDefined();
+          expect(spaghetti?.type).toBeDefined();
         });
-
-        const queue = result.current.dialogs.validationQueue as IngredientValidationProps;
-
-        act(() => {
-          queue.onValidated(queue.items[0], spaghettiIngredient);
-        });
-
-        const spaghetti = result.current.form.state.recipeIngredients.find(
-          i => i.name === 'Spaghetti'
-        );
-        expect(spaghetti).toBeDefined();
-        expect(spaghetti?.type).toBeDefined();
       });
 
-      test('uses validated unit and quantity when original row has none (fresh add from dropdown)', async () => {
+      test('uses database unit and quantity when original row has none (fresh add from dropdown)', async () => {
         const spaghettiIngredient = testIngredients.find(i => i.name === 'Spaghetti')!;
         mockFindSimilarIngredients.mockImplementation((name: string) => {
           if (name.toLowerCase() === 'spaghetti') {
@@ -1486,19 +1469,11 @@ describe('useRecipeIngredients', () => {
         });
 
         await waitFor(() => {
-          expect(result.current.dialogs.validationQueue).not.toBeNull();
+          const updated = result.current.form.state.recipeIngredients[0];
+          expect(updated.name).toBe('Spaghetti');
+          expect(updated.unit).toBe(spaghettiIngredient.unit);
+          expect(updated.quantity).toBe(spaghettiIngredient.quantity);
         });
-
-        const queue = result.current.dialogs.validationQueue as IngredientValidationProps;
-
-        act(() => {
-          queue.onValidated(queue.items[0], spaghettiIngredient);
-        });
-
-        const updated = result.current.form.state.recipeIngredients[0];
-        expect(updated.name).toBe('Spaghetti');
-        expect(updated.unit).toBe(spaghettiIngredient.unit);
-        expect(updated.quantity).toBe(spaghettiIngredient.quantity);
       });
 
       test('preserves user-set unit and quantity when renaming an existing ingredient', async () => {
@@ -1532,24 +1507,16 @@ describe('useRecipeIngredients', () => {
         });
 
         await waitFor(() => {
-          expect(result.current.dialogs.validationQueue).not.toBeNull();
+          const updated = result.current.form.state.recipeIngredients[0];
+          expect(updated.name).toBe('Spaghetti');
+          expect(updated.unit).toBe('kg');
+          expect(updated.quantity).toBe('350');
         });
-
-        const queue = result.current.dialogs.validationQueue as IngredientValidationProps;
-
-        act(() => {
-          queue.onValidated(queue.items[0], spaghettiIngredient);
-        });
-
-        const updated = result.current.form.state.recipeIngredients[0];
-        expect(updated.name).toBe('Spaghetti');
-        expect(updated.unit).toBe('kg');
-        expect(updated.quantity).toBe('350');
       });
     });
 
     describe('replaceIngredientAtIndex - duplicate merging', () => {
-      test('replaces ingredient at index and removes duplicate when validated name matches another ingredient with different unit', async () => {
+      test('replaces ingredient at index and removes duplicate when exact match has different unit', async () => {
         const spaghettiIngredient = testIngredients.find(i => i.name === 'Spaghetti')!;
         const spaghettiWithDifferentUnit = { ...spaghettiIngredient, unit: 'piece' };
 
@@ -1610,16 +1577,6 @@ describe('useRecipeIngredients', () => {
         });
 
         await waitFor(() => {
-          expect(result.current.dialogs.validationQueue).not.toBeNull();
-        });
-
-        const queue = result.current.dialogs.validationQueue as IngredientValidationProps;
-
-        act(() => {
-          queue.onValidated(queue.items[0], spaghettiWithDifferentUnit);
-        });
-
-        await waitFor(() => {
           expect(result.current.form.state.recipeIngredients).toHaveLength(2);
         });
 
@@ -1630,7 +1587,7 @@ describe('useRecipeIngredients', () => {
         expect(spaghetti?.unit).toBe('piece');
       });
 
-      test('merges quantities when validated name matches another ingredient with same unit', async () => {
+      test('merges quantities when exact match name matches another ingredient with same unit', async () => {
         const spaghettiIngredient = testIngredients.find(i => i.name === 'Spaghetti')!;
         const spaghettiWithSameUnit = { ...spaghettiIngredient, unit: 'g' };
 
@@ -1690,16 +1647,6 @@ describe('useRecipeIngredients', () => {
 
         act(() => {
           result.current.ingredients.editIngredients(0, '300@@g--Spaghetti');
-        });
-
-        await waitFor(() => {
-          expect(result.current.dialogs.validationQueue).not.toBeNull();
-        });
-
-        const queue = result.current.dialogs.validationQueue as IngredientValidationProps;
-
-        act(() => {
-          queue.onValidated(queue.items[0], spaghettiWithSameUnit);
         });
 
         await waitFor(() => {

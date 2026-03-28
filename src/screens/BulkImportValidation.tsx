@@ -67,7 +67,13 @@ export function BulkImportValidation() {
   const navigation = useNavigation<StackScreenNavigation>();
   const route = useRoute<BulkImportValidationRouteProp>();
   const { providerId, selectedRecipes } = route.params;
-  const { addMultipleRecipes, removeFromSeenHistory, isDatabaseReady } = useRecipeDatabase();
+  const {
+    addMultipleRecipes,
+    removeFromSeenHistory,
+    isDatabaseReady,
+    findSimilarTags,
+    findSimilarIngredients,
+  } = useRecipeDatabase();
   const { defaultPersons } = useDefaultPersons();
 
   const handleImportComplete = async (importedUrls: string[]) => {
@@ -80,6 +86,8 @@ export function BulkImportValidation() {
       addMultipleRecipes,
       isDatabaseReady,
       defaultPersons,
+      findSimilarTags,
+      findSimilarIngredients,
       handleImportComplete
     );
 

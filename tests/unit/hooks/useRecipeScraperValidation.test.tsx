@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from '@testing-library/react-native';
+import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { useRecipeScraperValidation } from '@hooks/useRecipeScraperValidation';
 import React, { ReactNode } from 'react';
 import {
@@ -8,13 +8,14 @@ import {
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
 import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
-import { RecipeFormProvider } from '@context/RecipeFormContext';
+import { RecipeFormProvider, useRecipeForm } from '@context/RecipeFormContext';
 import { RecipeDialogsProvider, useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { createMockRecipeProp } from '@test-helpers/recipeHookTestWrapper';
 import { testTags } from '@test-data/tagsDataset';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testRecipes } from '@test-data/recipesDataset';
 import RecipeDatabase from '@utils/RecipeDatabase';
+import { IngredientValidationProps, TagValidationProps } from '@components/dialogs/ValidationQueue';
 
 const createMockIngredient = (name: string): FormIngredientElement => ({
   name,
@@ -186,18 +187,9 @@ describe('useRecipeScraperValidation', () => {
       { wrapper }
     );
 
-    await waitFor(
-      () => {
-        expect(result.current.validationQueue).not.toBeNull();
-        expect(result.current.validationQueue?.type).toBe('Ingredient');
-      },
-      { timeout: 1000 }
-    );
-
-    const queueItems = result.current.validationQueue?.items;
-    expect(queueItems?.some((item: { name?: string }) => item.name === knownIngredientName)).toBe(
-      true
-    );
+    await waitFor(() => {
+      expect(result.current.validationQueue).toBeNull();
+    });
   });
 
   test('does not trigger validation for known tags', async () => {
@@ -212,15 +204,187 @@ describe('useRecipeScraperValidation', () => {
       { wrapper }
     );
 
-    await waitFor(
+    await waitFor(() => {
+      expect(result.current.validationQueue).toBeNull();
+    });
+  });
+
+  test('ingredient onValidated callback replaces matching form ingredients', async () => {
+    const unknownIngredientName = 'UnknownIngredient';
+    const wrapper = createWrapper([createMockIngredient(unknownIngredientName)], []);
+
+    const { result } = renderHook(
       () => {
-        expect(result.current.validationQueue).not.toBeNull();
-        expect(result.current.validationQueue?.type).toBe('Tag');
+        useRecipeScraperValidation();
+        return {
+          dialogs: useRecipeDialogs(),
+          form: useRecipeForm(),
+        };
       },
-      { timeout: 1000 }
+      { wrapper }
     );
 
-    const queueItems = result.current.validationQueue?.items;
-    expect(queueItems?.some((item: { name?: string }) => item.name === knownTagName)).toBe(true);
+    await waitFor(() => {
+      expect(result.current.dialogs.validationQueue).not.toBeNull();
+    });
+
+    const queue = result.current.dialogs.validationQueue as IngredientValidationProps;
+    const validatedIngredient = {
+      id: 99,
+      name: unknownIngredientName,
+      type: ingredientType.vegetable,
+      unit: 'g',
+      quantity: '100',
+      season: [],
+    };
+
+    act(() => {
+      queue.onValidated(
+        { name: unknownIngredientName, quantity: '100', similarItems: [] },
+        validatedIngredient
+      );
+    });
+
+    await waitFor(() => {
+      const updatedIngredient = result.current.form.state.recipeIngredients.find(
+        ing => ing.name === unknownIngredientName
+      );
+      expect(updatedIngredient).toBeDefined();
+      expect((updatedIngredient as typeof validatedIngredient).id).toBe(99);
+      expect((updatedIngredient as typeof validatedIngredient).type).toBe(ingredientType.vegetable);
+    });
+  });
+
+  test('ingredient onDismissed callback removes the ingredient from recipe', async () => {
+    const unknownIngredientName = 'UnknownIngredient';
+    const wrapper = createWrapper([createMockIngredient(unknownIngredientName)], []);
+
+    const { result } = renderHook(
+      () => {
+        useRecipeScraperValidation();
+        return {
+          dialogs: useRecipeDialogs(),
+          form: useRecipeForm(),
+        };
+      },
+      { wrapper }
+    );
+
+    await waitFor(() => {
+      expect(result.current.dialogs.validationQueue).not.toBeNull();
+    });
+
+    const queue = result.current.dialogs.validationQueue as IngredientValidationProps;
+
+    act(() => {
+      queue.onDismissed?.({
+        name: unknownIngredientName,
+        quantity: '100',
+        unit: 'g',
+        season: [],
+        similarItems: [],
+      });
+    });
+
+    await waitFor(() => {
+      const remainingIngredient = result.current.form.state.recipeIngredients.find(
+        ing => ing.name === unknownIngredientName
+      );
+      expect(remainingIngredient).toBeUndefined();
+    });
+  });
+
+  test('tag onValidated callback replaces matching tags in recipe', async () => {
+    const unknownTagName = 'UnknownTag';
+    const wrapper = createWrapper([], [createMockTag(unknownTagName)]);
+
+    const { result } = renderHook(
+      () => {
+        useRecipeScraperValidation();
+        return {
+          dialogs: useRecipeDialogs(),
+          form: useRecipeForm(),
+        };
+      },
+      { wrapper }
+    );
+
+    await waitFor(() => {
+      expect(result.current.dialogs.validationQueue).not.toBeNull();
+    });
+
+    const queue = result.current.dialogs.validationQueue as TagValidationProps;
+    const validatedTag = { id: 42, name: unknownTagName };
+
+    act(() => {
+      queue.onValidated({ id: 0, name: unknownTagName, similarItems: [] }, validatedTag);
+    });
+
+    await waitFor(() => {
+      const tags = result.current.form.state.recipeTags;
+      const replacedTag = tags.find(tag => tag.name === unknownTagName);
+      expect(replacedTag).toBeDefined();
+      expect(replacedTag?.id).toBe(42);
+    });
+  });
+
+  test('tag onDismissed callback removes the tag from recipe', async () => {
+    const unknownTagName = 'UnknownTag';
+    const wrapper = createWrapper([], [createMockTag(unknownTagName)]);
+
+    const { result } = renderHook(
+      () => {
+        useRecipeScraperValidation();
+        return {
+          dialogs: useRecipeDialogs(),
+          form: useRecipeForm(),
+        };
+      },
+      { wrapper }
+    );
+
+    await waitFor(() => {
+      expect(result.current.dialogs.validationQueue).not.toBeNull();
+    });
+
+    const queue = result.current.dialogs.validationQueue as TagValidationProps;
+
+    act(() => {
+      queue.onDismissed?.({ id: 0, name: unknownTagName, similarItems: [] });
+    });
+
+    await waitFor(() => {
+      const tags = result.current.form.state.recipeTags;
+      expect(tags.some(tag => tag.name === unknownTagName)).toBe(false);
+    });
+  });
+
+  test('starts ingredient validation after tag queue completes when both need validation', async () => {
+    const unknownIngredientName = 'UnknownIngredient';
+    const unknownTagName = 'UnknownTag';
+    const wrapper = createWrapper(
+      [createMockIngredient(unknownIngredientName)],
+      [createMockTag(unknownTagName)]
+    );
+
+    const { result } = renderHook(
+      () => {
+        useRecipeScraperValidation();
+        return useRecipeDialogs();
+      },
+      { wrapper }
+    );
+
+    await waitFor(() => {
+      expect(result.current.validationQueue?.type).toBe('Tag');
+    });
+
+    act(() => {
+      result.current.clearValidationQueue();
+    });
+
+    await waitFor(() => {
+      expect(result.current.validationQueue?.type).toBe('Ingredient');
+    });
   });
 });

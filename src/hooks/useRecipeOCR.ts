@@ -15,7 +15,12 @@ import {
   recipeColumnsNames,
 } from '@customTypes/DatabaseElementTypes';
 import { extractFieldFromImage } from '@utils/OCR';
-import { filterOutExistingTags } from '@utils/RecipeValidationHelpers';
+import {
+  filterOutExistingTags,
+  validateAndQueueIngredients,
+  validateAndQueueTags,
+} from '@utils/RecipeValidationHelpers';
+import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
 import { defaultValueNumber } from '@utils/Constants';
 import { ocrLogger } from '@utils/logger';
 import { useRecipeDialogs } from '@context/RecipeDialogsContext';
@@ -81,6 +86,7 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
   const { state, setters } = useRecipeForm();
   const { addTagIfNotDuplicate } = useRecipeTags();
   const { addOrMergeIngredient } = useRecipeIngredients();
+  const { findSimilarTags, findSimilarIngredients } = useRecipeDatabase();
 
   const { recipePreparation, recipePersons, recipeTags, recipeIngredients } = state;
   const {
@@ -173,11 +179,12 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
     if (newFieldData.recipeTags && newFieldData.recipeTags.length > 0) {
       const filteredTags = filterOutExistingTags(newFieldData.recipeTags, recipeTags);
       if (filteredTags.length > 0) {
-        setValidationQueue({
-          type: 'Tag',
-          items: filteredTags,
-          onValidated: (_, validatedTag) => addTagIfNotDuplicate(validatedTag),
-        });
+        validateAndQueueTags(
+          filteredTags,
+          findSimilarTags,
+          addTagIfNotDuplicate,
+          setValidationQueue
+        );
       }
     }
     if (newFieldData.recipePreparation) {
@@ -190,22 +197,31 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
       setRecipeTime(newFieldData.recipeTime);
     }
     if (newFieldData.recipeIngredients && newFieldData.recipeIngredients.length > 0) {
-      setValidationQueue({
-        type: 'Ingredient',
-        items: newFieldData.recipeIngredients,
-        onValidated: (_, validatedIngredient) => addOrMergeIngredient(validatedIngredient),
-      });
+      const ocrIngredients = newFieldData.recipeIngredients;
+      validateAndQueueIngredients(
+        ocrIngredients,
+        findSimilarIngredients,
+        match => {
+          const original = ocrIngredients.find(
+            ing => ing.name?.toLowerCase() === match.name.toLowerCase()
+          );
+          addOrMergeIngredient({ ...match, quantity: original?.quantity || match.quantity });
+        },
+        setValidationQueue,
+        { onValidated: (_, validatedIngredient) => addOrMergeIngredient(validatedIngredient) }
+      );
     }
     if (newFieldData.ingredientNames !== undefined) {
       const ingredientsWithNoQuantity: FormIngredientElement[] = newFieldData.ingredientNames.map(
         ({ name, unit }) => ({ name, unit, quantity: '' })
       );
       if (ingredientsWithNoQuantity.length > 0) {
-        setValidationQueue({
-          type: 'Ingredient',
-          items: ingredientsWithNoQuantity,
-          onValidated: (_, validatedIngredient) => addOrMergeIngredient(validatedIngredient),
-        });
+        validateAndQueueIngredients(
+          ingredientsWithNoQuantity,
+          findSimilarIngredients,
+          addOrMergeIngredient,
+          setValidationQueue
+        );
       }
     }
     if (newFieldData.ingredientQuantities !== undefined) {
