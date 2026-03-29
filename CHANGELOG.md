@@ -1,3 +1,9 @@
+## [2.28.3](https://github.com/AntoC-dev/Recipedia/compare/v2.28.2...v2.28.3) (2026-03-29)
+
+### Bug Fixes
+
+* **build:** fix babel path alias resolution for tsconfig paths ([a50ba0b](https://github.com/AntoC-dev/Recipedia/commit/a50ba0bff4761eec843752183f1cbd3b95ab1e23))
+
 ## [2.28.2](https://github.com/AntoC-dev/Recipedia/compare/v2.28.1...v2.28.2) (2026-03-29)
 
 ### Bug Fixes
