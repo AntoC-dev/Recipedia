@@ -38,7 +38,13 @@ import {
   tagTableName,
 } from '@customTypes/DatabaseElementTypes';
 import { TableManipulation } from './TableManipulation';
-import { EncodingSeparator, noteSeparator, textSeparator } from '@styles/typography';
+import {
+  ALL_MONTHS,
+  ALL_MONTHS_ENCODED,
+  EncodingSeparator,
+  noteSeparator,
+  textSeparator,
+} from '@styles/typography';
 import {
   constructImageUri,
   extractFilenameFromUri,
@@ -243,6 +249,7 @@ export class RecipeDatabase {
     await this._purchasedIngredientsTable.createTable(this._dbConnection);
 
     await this.migrateAddSourceColumns();
+    await this.migrateWildcardSeasons();
 
     this._ingredients = await this.getAllIngredients();
     this._tags = await this.getAllTags();
@@ -2019,7 +2026,7 @@ export class RecipeDatabase {
     encodedIngredient: string
   ): Promise<[ingredientTableElement[], string[]]> {
     const arrDecoded = [];
-    let recipeSeason: string[] = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
+    let recipeSeason: string[] = [...ALL_MONTHS];
     let firstSeasonFound = true;
 
     const ingSplit = encodedIngredient.includes(EncodingSeparator)
@@ -2051,13 +2058,11 @@ export class RecipeDatabase {
         }
         arrDecoded.push(decodedIngredient);
 
-        if (!decodedIngredient.season.includes('*')) {
-          if (firstSeasonFound) {
-            recipeSeason = decodedIngredient.season;
-            firstSeasonFound = false;
-          } else {
-            recipeSeason = this.decodeSeason(recipeSeason, decodedIngredient.season);
-          }
+        if (firstSeasonFound) {
+          recipeSeason = decodedIngredient.season;
+          firstSeasonFound = false;
+        } else {
+          recipeSeason = this.decodeSeason(recipeSeason, decodedIngredient.season);
         }
       }
     }
@@ -2567,6 +2572,30 @@ export class RecipeDatabase {
       databaseLogger.info('Added SOURCE_PROVIDER column to recipes table');
     } catch {
       databaseLogger.debug('SOURCE_PROVIDER column migration skipped (likely already exists)');
+    }
+  }
+
+  /**
+   * Migrates wildcard '*' season values to explicit month lists in the ingredients table.
+   *
+   * Converts SEASON = '*' to '1__2__3__4__5__6__7__8__9__10__11__12'.
+   * Idempotent — safe to run on every startup.
+   *
+   * TODO: Remove this migration once all users have updated past this version.
+   *
+   * @private
+   */
+  private async migrateWildcardSeasons(): Promise<void> {
+    const result = await this._dbConnection.runAsync(
+      `UPDATE "${ingredientsTableName}" SET "${ingredientsColumnsNames.season}" = ? WHERE "${ingredientsColumnsNames.season}" = '*'`,
+      [ALL_MONTHS_ENCODED]
+    );
+    if (result.changes > 0) {
+      databaseLogger.info('Migrated wildcard seasons to explicit months', {
+        ingredientsUpdated: result.changes,
+      });
+    } else {
+      databaseLogger.debug('Wildcard season migration: no wildcards found');
     }
   }
 

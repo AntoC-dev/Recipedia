@@ -35,6 +35,7 @@ import { StyleSheet, View } from 'react-native';
 import { Chip, Text, useTheme } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
 import { padding } from '@styles/spacing';
+import { ALL_MONTHS } from '@styles/typography';
 import { SelectableAccordion, SelectableItem } from '@components/molecules/SelectableAccordion';
 
 /**
@@ -51,7 +52,7 @@ export type SeasonalityCalendarProps = {
   readOnly?: boolean;
 };
 
-const MONTH_VALUES = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'] as const;
+const MONTH_VALUES = ALL_MONTHS;
 
 type MonthInfo = {
   num: string;

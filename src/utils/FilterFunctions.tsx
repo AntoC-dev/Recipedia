@@ -512,8 +512,7 @@ export function isRecipeInCurrentSeason(recipe: recipeTableElement): boolean {
   const currentMonth = new Date().getMonth() + 1;
   const monthString = currentMonth.toString();
 
-  // Check if recipe season contains current month or wildcard
-  return recipe.season.includes(monthString) || recipe.season.includes('*');
+  return recipe.season.includes(monthString);
 }
 
 /**
