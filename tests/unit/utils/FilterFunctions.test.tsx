@@ -30,9 +30,8 @@ import { testIngredients } from '@test-data/ingredientsDataset';
 import { useI18n } from '@utils/i18n';
 import RecipeDatabase from '@utils/RecipeDatabase';
 
-const { t } = useI18n();
-
 describe('FilterFunctions', () => {
+  const { t } = useI18n();
   test('extractFilteredRecipeDatas extracts and sorts data', () => {
     let [resTitles, resIngredients, resTags] = extractFilteredRecipeDatas(
       Array<recipeTableElement>(testRecipes[0])
@@ -564,7 +563,7 @@ describe('FilterFunctions', () => {
     test('isRecipeInCurrentSeason returns true for year-round recipes', () => {
       const yearRoundRecipe: recipeTableElement = {
         ...testRecipes[1],
-        season: ['*'],
+        season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
       };
       expect(isRecipeInCurrentSeason(yearRoundRecipe)).toBe(true);
     });
@@ -601,7 +600,7 @@ describe('FilterFunctions', () => {
     test('filterRecipesByCurrentSeason filters correctly', () => {
       const wildCardRecipe: recipeTableElement = {
         ...testRecipes[0],
-        season: ['*'],
+        season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
       };
       const offSeasonRecipe: recipeTableElement = {
         ...testRecipes[1],
@@ -816,7 +815,7 @@ describe('FilterFunctions', () => {
         name: 'NonExistentGrainCandidate',
         unit: 'g',
         type: ingredientType.cereal,
-        season: ['*'],
+        season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
       };
 
       const nonExistingTag = { name: 'NonExistentTagCandidate' };

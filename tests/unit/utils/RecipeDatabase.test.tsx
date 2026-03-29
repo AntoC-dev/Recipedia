@@ -957,7 +957,7 @@ describe('RecipeDatabase', () => {
           ingredients: new Array(),
           persons: 2,
           preparation: new Array(),
-          season: ['*'],
+          season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
           tags: new Array(testTags[3]),
           time: 20,
           title: 'A real title',

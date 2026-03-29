@@ -20,20 +20,26 @@ import { testTags } from '@test-data/tagsDataset';
 describe('DatabaseElementTypes Helper Functions', () => {
   test('arrayOfType filters ingredients by type', () => {
     const ingredients: ingredientTableElement[] = [
-      { name: 'Sugar', unit: 'g', quantity: '100', type: ingredientType.sugar, season: ['*'] },
+      {
+        name: 'Sugar',
+        unit: 'g',
+        quantity: '100',
+        type: ingredientType.sugar,
+        season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+      },
       {
         name: 'Flour',
         unit: 'g',
         quantity: '200',
         type: ingredientType.cereal,
-        season: ['*'],
+        season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
       },
       {
         name: 'Spaghetti',
         unit: 'g',
         quantity: '200',
         type: ingredientType.cereal,
-        season: ['*'],
+        season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
       },
     ];
     let filter = ingredientType.sugar;
@@ -99,26 +105,32 @@ describe('DatabaseElementTypes Helper Functions', () => {
       unit: 'g',
       quantity: '100',
       type: ingredientType.sugar,
-      season: ['*'],
+      season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
     });
 
     expect(extractIngredientsNameWithQuantity(monoIngredient)).toEqual(['100@@g--Sugar']);
 
     const multiIngredient = new Array<ingredientTableElement>(
-      { name: 'Sugar', unit: 'g', quantity: '100', type: ingredientType.sugar, season: ['*'] },
+      {
+        name: 'Sugar',
+        unit: 'g',
+        quantity: '100',
+        type: ingredientType.sugar,
+        season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+      },
       {
         name: 'Flour',
         unit: 'g',
         quantity: '200',
         type: ingredientType.cereal,
-        season: ['*'],
+        season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
       },
       {
         name: 'Spaghetti',
         unit: 'g',
         quantity: '200',
         type: ingredientType.cereal,
-        season: ['*'],
+        season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
       }
     );
     expect(extractIngredientsNameWithQuantity(multiIngredient)).toEqual([
@@ -336,7 +348,7 @@ describe('DatabaseElementTypes Helper Functions', () => {
         unit: 'g',
         quantity: '100',
         type: ingredientType.sugar,
-        season: ['*'],
+        season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
       };
 
       expect(() => assertIngredientType(validIngredient)).not.toThrow();
@@ -347,7 +359,7 @@ describe('DatabaseElementTypes Helper Functions', () => {
         name: 'Sugar',
         unit: 'g',
         quantity: '100',
-        season: ['*'],
+        season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
       };
 
       expect(() => assertIngredientType(invalidIngredient)).toThrow(
