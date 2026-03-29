@@ -7,9 +7,17 @@ import { testRecipes } from '@test-data/recipesDataset';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
-import { SeasonFilterProvider } from '@context/SeasonFilterContext';
+import { Button } from 'react-native';
+import { SeasonFilterProvider, useSeasonFilter } from '@context/SeasonFilterContext';
 import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 import { resetFiltersSelection } from '@mocks/components/organisms/FiltersSelection-mock';
+
+function SeasonFilterToggler() {
+  const { setSeasonFilter } = useSeasonFilter();
+  return (
+    <Button testID='ToggleSeasonFilter' onPress={setSeasonFilter} title='Toggle Season Filter' />
+  );
+}
 
 jest.mock('@components/organisms/FiltersSelection', () => ({
   FiltersSelection: require('@mocks/components/organisms/FiltersSelection-mock')
@@ -89,12 +97,9 @@ describe('Search Screen', () => {
     expect(() => getByTestId('SearchScreen::FilterAccordion')).toThrow();
   };
 
-  // Helper function to assert component state after database is populated
   const assertDatabasePopulatedState = (getByTestId: any) => {
-    // Assert that "no recipes found" text is NOT displayed when recipes are loaded
     expect(() => getByTestId('SearchScreen::TextWhenEmpty')).toThrow();
-
-    // Note: SearchBarResults is only visible when searchBar is clicked, so we can't test FilteredTitles here
+    expect(getByTestId('SearchScreen::RecipeCards::0')).toBeTruthy();
   };
 
   beforeEach(async () => {
@@ -404,5 +409,150 @@ describe('Search Screen', () => {
 
     // Assert FilterAccordion is still hidden (addingFilterMode is false)
     expect(() => getByTestId('SearchScreen::FilterAccordion')).toThrow();
+  });
+
+  test('FilterAccordion addFilter callback updates filtersState', async () => {
+    const { getByTestId: emptyGetByTestId, rerender } = await renderSearchComponent();
+    assertInitialComponentState(emptyGetByTestId);
+    const { getByTestId } = await waitAndRerender(rerender, emptyGetByTestId);
+    assertDatabasePopulatedState(getByTestId);
+
+    fireEvent.press(getByTestId('SearchScreen::ToggleAddingFilterMode'));
+
+    expect(getByTestId('SearchScreen::FilterAccordion::FiltersState').props.children).toEqual(
+      '{"filterTypes.inSeason":["filterTypes.inSeason"]}'
+    );
+
+    fireEvent.press(getByTestId('SearchScreen::FilterAccordion::AddFilter'));
+
+    expect(getByTestId('SearchScreen::FilterAccordion::FiltersState').props.children).toEqual(
+      '{"filterTypes.inSeason":["filterTypes.inSeason"],"filterTypes.tags":["New filter"]}'
+    );
+  });
+
+  test('SearchBarResults UpdateSearchString updates search phrase', async () => {
+    const { getByTestId: emptyGetByTestId, rerender } = await renderSearchComponent();
+    assertInitialComponentState(emptyGetByTestId);
+    const { getByTestId } = await waitAndRerender(rerender, emptyGetByTestId);
+
+    fireEvent.press(getByTestId('SearchScreen::SearchBar::ToggleClicked'));
+    expect(getByTestId('SearchScreen::SearchBarResults')).toBeTruthy();
+
+    fireEvent.press(getByTestId('SearchScreen::SearchBarResults::UpdateSearchString'));
+
+    expect(getByTestId('SearchScreen::SearchBar::SearchPhrase').props.children).toEqual(
+      'New string'
+    );
+  });
+
+  test('removeAFilterToTheState with recipeTitleInclude clears searchPhrase', async () => {
+    const { getByTestId: emptyGetByTestId, rerender } = await renderSearchComponent();
+    assertInitialComponentState(emptyGetByTestId);
+    const { getByTestId } = await waitAndRerender(rerender, emptyGetByTestId);
+
+    fireEvent.press(getByTestId('SearchScreen::SearchBar::UpdateSearchPhrase'));
+    expect(getByTestId('SearchScreen::SearchBar::SearchPhrase').props.children).toEqual('S');
+
+    fireEvent.press(getByTestId('SearchScreen::ToggleAddingFilterMode'));
+
+    expect(getByTestId('SearchScreen::FilterAccordion::FiltersState').props.children).toContain(
+      '"filterTypes.recipeTitleInclude":["S"]'
+    );
+
+    fireEvent.press(getByTestId('SearchScreen::FilterAccordion::RemoveFilterByTitle'));
+
+    expect(getByTestId('SearchScreen::FilterAccordion::FiltersState').props.children).not.toContain(
+      '"filterTypes.recipeTitleInclude"'
+    );
+  });
+
+  test('Season filter toggle covers all useEffect branches', async () => {
+    const componentWithToggler = (
+      <RecipeDatabaseProvider>
+        <SeasonFilterProvider>
+          <NavigationContainer>
+            <Stack.Navigator>
+              <Stack.Screen name={'Search'} component={Search} />
+            </Stack.Navigator>
+          </NavigationContainer>
+          <SeasonFilterToggler />
+        </SeasonFilterProvider>
+      </RecipeDatabaseProvider>
+    );
+
+    const { getByTestId, rerender } = render(componentWithToggler);
+    await waitFor(() => expect(getByTestId('SearchScreen')).toBeTruthy());
+
+    await new Promise(resolve => setTimeout(resolve, 100));
+    rerender(componentWithToggler);
+    await waitFor(() => expect(getByTestId('SearchScreen')).toBeTruthy());
+
+    fireEvent.press(getByTestId('SearchScreen::ToggleAddingFilterMode'));
+
+    await waitFor(() => {
+      expect(getByTestId('SearchScreen::FilterAccordion::FiltersState').props.children).toEqual(
+        '{"filterTypes.inSeason":["filterTypes.inSeason"]}'
+      );
+    });
+
+    fireEvent.press(getByTestId('ToggleSeasonFilter'));
+    await waitFor(() => {
+      expect(getByTestId('SearchScreen::FilterAccordion::FiltersState').props.children).toEqual(
+        '{}'
+      );
+    });
+
+    fireEvent.press(getByTestId('SearchScreen::FilterAccordion::AddFilter'));
+    await waitFor(() => {
+      expect(getByTestId('SearchScreen::FilterAccordion::FiltersState').props.children).toEqual(
+        '{"filterTypes.tags":["New filter"]}'
+      );
+    });
+
+    fireEvent.press(getByTestId('ToggleSeasonFilter'));
+    await waitFor(() => {
+      expect(getByTestId('SearchScreen::FilterAccordion::FiltersState').props.children).toEqual(
+        '{"filterTypes.tags":["New filter"]}'
+      );
+    });
+  });
+});
+
+describe('Search Screen - empty state', () => {
+  const database: RecipeDatabase = RecipeDatabase.getInstance();
+
+  const emptyStateComponent = (
+    <RecipeDatabaseProvider>
+      <SeasonFilterProvider>
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen name={'Search'} component={Search} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SeasonFilterProvider>
+    </RecipeDatabaseProvider>
+  );
+
+  beforeEach(async () => {
+    resetFiltersSelection();
+    await database.init();
+    await database.addMultipleIngredients(testIngredients);
+    await database.addMultipleTags(testTags);
+  });
+
+  afterEach(async () => {
+    await database.closeAndReset();
+  });
+
+  test('shows TextWhenEmpty when no recipes exist', async () => {
+    const { getByTestId, rerender } = render(emptyStateComponent);
+    await waitFor(() => expect(getByTestId('SearchScreen')).toBeTruthy());
+
+    await new Promise(resolve => setTimeout(resolve, 100));
+    rerender(emptyStateComponent);
+    await waitFor(() => expect(getByTestId('SearchScreen')).toBeTruthy());
+
+    expect(getByTestId('SearchScreen::TextWhenEmpty')).toBeTruthy();
+    expect(() => getByTestId('SearchScreen::RecipeCards::0')).toThrow();
   });
 });
