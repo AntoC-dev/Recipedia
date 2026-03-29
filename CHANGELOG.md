@@ -1,3 +1,11 @@
+## [2.28.2](https://github.com/AntoC-dev/Recipedia/compare/v2.28.1...v2.28.2) (2026-03-29)
+
+### Bug Fixes
+
+* **season:** remove wildcard '*' from ingredient seasonality ([#239](https://github.com/AntoC-dev/Recipedia/issues/239)) ([ade47d1](https://github.com/AntoC-dev/Recipedia/commit/ade47d12fcab4294de7da81e662edda107017440))
+* **season:** remove wildcard '*' from seasonality and add startup migration ([33b48d9](https://github.com/AntoC-dev/Recipedia/commit/33b48d93cf8e0732a0e60383636aa4541422e049))
+* **test:** correct exact-match tag test to match actual behavior ([a9068d1](https://github.com/AntoC-dev/Recipedia/commit/a9068d141f5835e8b3df6ee866c0cbda4452cf72))
+
 ## [2.28.1](https://github.com/AntoC-dev/Recipedia/compare/v2.28.0...v2.28.1) (2026-03-26)
 
 ### Bug Fixes
