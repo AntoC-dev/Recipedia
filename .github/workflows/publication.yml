@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   eas-release:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
     environment: production
     if: |
       github.event_name == 'workflow_dispatch' ||
@@ -24,9 +24,9 @@ jobs:
         platform: [ android, ios ]
         include:
           - platform: android
-            enabled: true
+            runner: ubuntu-latest
           - platform: ios
-            enabled: false
+            runner: macos-26
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -46,21 +46,18 @@ jobs:
         with:
           expo-token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Setup EAS (iOS)
+      - name: Setup iOS build environment
         if: matrix.platform == 'ios'
-        uses: expo/expo-github-action@v8
+        uses: ./.github/actions/setup-ios-build
         with:
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
+          expo-token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install Fastlane
+        if: matrix.platform == 'ios'
+        run: gem install fastlane
 
       - name: Build for ${{ matrix.platform }}
-        if: matrix.enabled
         run: npm run build:prod:${{ matrix.platform }}
 
       - name: Submit to store (${{ matrix.platform }})
-        if: matrix.enabled && matrix.platform == 'android'
         run: npm run submit:${{ matrix.platform }}
-
-      - name: Skip ${{ matrix.platform }} publication
-        if: matrix.enabled == false
-        run: echo "Skipping ${{ matrix.platform }} publication (not yet ready)"

@@ -9,7 +9,7 @@ const {baseUrl, paths} = tsconfig.compilerOptions;
 const getAliases = () => {
     return Object.entries(paths).reduce((aliases, [key, value]) => {
         key = key.replace('/*', '');
-        value = path.resolve(__dirname, baseUrl, value[0].replace('*', ''));
+        value = './' + path.join(baseUrl, value[0].replace('/*', '').replace('*', ''));
         return {...aliases, [key]: value};
     }, {});
 };
