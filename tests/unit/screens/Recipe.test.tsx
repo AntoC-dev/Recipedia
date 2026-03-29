@@ -1638,10 +1638,12 @@ describe('Recipe Component tests', () => {
       });
     });
 
-    test('shows ValidationQueue for exact match tag (auto-validated by queue)', async () => {
+    test('exact match tag is added directly without ValidationQueue', async () => {
       await dbInstance.addTag({ name: 'mockTag' });
 
-      const { getByTestId } = await renderRecipe(createMockRoute(mockRouteAddManually));
+      const { getByTestId, queryByTestId } = await renderRecipe(
+        createMockRoute(mockRouteAddManually)
+      );
 
       const initialTagsJson = getByTestId('RecipeTags::TagsList').props.children;
       const initialCount = JSON.parse(initialTagsJson).length;
@@ -1649,16 +1651,11 @@ describe('Recipe Component tests', () => {
       fireEvent.press(getByTestId('RecipeTags::AddNewTag'));
 
       await waitFor(() => {
-        expect(getByTestId('RecipeValidation::ValidationQueue::Mock')).toBeTruthy();
-      });
-
-      fireEvent.press(getByTestId('RecipeValidation::ValidationQueue::Mock::onValidated'));
-      fireEvent.press(getByTestId('RecipeValidation::ValidationQueue::Mock::onComplete'));
-
-      await waitFor(() => {
         const finalTags = JSON.parse(getByTestId('RecipeTags::TagsList').props.children);
         expect(finalTags.length).toBeGreaterThan(initialCount);
       });
+
+      expect(queryByTestId('RecipeValidation::ValidationQueue::Mock')).toBeNull();
     });
 
     test('ValidationQueue callback preserves previously added tags from state', async () => {
