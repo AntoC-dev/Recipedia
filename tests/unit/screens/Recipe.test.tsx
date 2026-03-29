@@ -1008,7 +1008,7 @@ describe('Recipe Component tests', () => {
         ingredients: mockRouteEdit.recipe.ingredients.map(ingredient => ({ ...ingredient })),
         time: 71,
         preparation: [...mockRouteEdit.recipe.preparation],
-        season: ['*'],
+        season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
       },
     };
 
