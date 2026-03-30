@@ -1,3 +1,10 @@
+## [2.28.4](https://github.com/AntoC-dev/Recipedia/compare/v2.28.3...v2.28.4) (2026-03-30)
+
+### Bug Fixes
+
+* **search:** fix TextWhenEmpty layout collapse on iOS and improve test coverage ([#241](https://github.com/AntoC-dev/Recipedia/issues/241)) ([a702a81](https://github.com/AntoC-dev/Recipedia/commit/a702a810908266f9b77dbabe4d47d79db3ecf9fb))
+* **search:** use flexGrow instead of flex on ScrollView contentContainerStyle ([4b31bc1](https://github.com/AntoC-dev/Recipedia/commit/4b31bc150289524b01ea531e124452a152dfa41c))
+
 ## [2.28.3](https://github.com/AntoC-dev/Recipedia/compare/v2.28.2...v2.28.3) (2026-03-29)
 
 ### Bug Fixes
