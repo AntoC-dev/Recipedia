@@ -1,13 +1,18 @@
-import React, { useState } from 'react';
+import React, { useImperativeHandle, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
-function MockSearchBar({ testId, searchPhrase, setSearchBarClicked, updateSearchString }: any) {
+function MockSearchBar({ testId, setSearchBarClicked, updateSearchString, clearRef }: any) {
   const [clicked, setClicked] = useState(false);
-  const [currentPhrase, setCurrentPhrase] = useState(searchPhrase || '');
+  const [currentPhrase, setCurrentPhrase] = useState('');
+
+  useImperativeHandle(clearRef, () => ({
+    clear: () => setCurrentPhrase(''),
+    setText: (text: string) => setCurrentPhrase(text),
+  }));
 
   return (
     <View testID={testId}>
-      <Text testID={testId + '::SearchPhrase'}>{searchPhrase || currentPhrase}</Text>
+      <Text testID={testId + '::SearchPhrase'}>{currentPhrase}</Text>
       <Text testID={testId + '::Clicked'}>{clicked.toString()}</Text>
       <TouchableOpacity
         testID={testId + '::ToggleClicked'}
@@ -21,7 +26,6 @@ function MockSearchBar({ testId, searchPhrase, setSearchBarClicked, updateSearch
       <TouchableOpacity
         testID={testId + '::UpdateSearchPhrase'}
         onPress={() => {
-          // Build incrementally: '', 'S', 'Su', 'Sus', 'Sush', 'Sushi'
           const searchSteps = ['', 'S', 'Su', 'Sus', 'Sush', 'Sushi'];
           const currentIndex = searchSteps.indexOf(currentPhrase);
           const nextIndex = (currentIndex + 1) % searchSteps.length;
@@ -32,7 +36,7 @@ function MockSearchBar({ testId, searchPhrase, setSearchBarClicked, updateSearch
       >
         <Text>Update Search</Text>
       </TouchableOpacity>
-      {(searchPhrase || currentPhrase) && (searchPhrase || currentPhrase).length > 0 && (
+      {currentPhrase.length > 0 && (
         <TouchableOpacity testID={testId + '::RightIcon'}>
           <Text>Clear</Text>
         </TouchableOpacity>

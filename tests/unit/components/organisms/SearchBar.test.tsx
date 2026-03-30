@@ -1,6 +1,6 @@
-import { fireEvent, render } from '@testing-library/react-native';
-import { SearchBar, SearchBarProps } from '@components/organisms/SearchBar';
-import React from 'react';
+import { act, fireEvent, render } from '@testing-library/react-native';
+import { SearchBar, SearchBarHandle, SearchBarProps } from '@components/organisms/SearchBar';
+import React, { createRef } from 'react';
 
 jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 
@@ -13,7 +13,6 @@ describe('SearchBar Component', () => {
 
   const defaultProps: SearchBarProps = {
     testId: defaultTestId,
-    searchPhrase: '',
     searchBarClicked: false,
     setSearchBarClicked: mockSetSearchBarClicked,
     updateSearchString: mockUpdateSearchString,
@@ -26,24 +25,23 @@ describe('SearchBar Component', () => {
   const assertSearchBar = (
     getByTestId: any,
     queryByTestId: any,
-    expectedProps: SearchBarProps = defaultProps
+    expectedValue: string = '',
+    searchBarClicked: boolean = false
   ) => {
-    expect(getByTestId(expectedProps.testId + '::Mode').props.children).toBe('bar');
-    expect(getByTestId(expectedProps.testId + '::Placeholder').props.children).toBe(
-      'searchRecipeTitle'
-    );
-    expect(getByTestId(expectedProps.testId + '::RightContainer')).toBeTruthy();
+    expect(getByTestId(defaultTestId + '::Mode').props.children).toBe('bar');
+    expect(getByTestId(defaultTestId + '::Placeholder').props.children).toBe('searchRecipeTitle');
+    expect(getByTestId(defaultTestId + '::RightContainer')).toBeTruthy();
 
-    const textInput = getByTestId(expectedProps.testId + '::TextInput');
-    expect(textInput.props.value).toBe(expectedProps.searchPhrase);
+    const textInput = getByTestId(defaultTestId + '::TextInput');
+    expect(textInput.props.value).toBe(expectedValue);
     expect(textInput.props.placeholder).toBe(defaultPlaceholder);
     expect(textInput.props.onChangeText).toBeDefined();
 
-    if (expectedProps.searchPhrase.length > 0 || expectedProps.searchBarClicked) {
-      expect(getByTestId(expectedProps.testId + '::RightIcon')).toBeTruthy();
-      expect(getByTestId(expectedProps.testId + '::RightIcon::Icon').props.children).toBe('close');
+    if (expectedValue.length > 0 || searchBarClicked) {
+      expect(getByTestId(defaultTestId + '::RightIcon')).toBeTruthy();
+      expect(getByTestId(defaultTestId + '::RightIcon::Icon').props.children).toBe('close');
     } else {
-      expect(queryByTestId(expectedProps.testId + '::RightIcon')).toBeNull();
+      expect(queryByTestId(defaultTestId + '::RightIcon')).toBeNull();
     }
   };
 
@@ -57,11 +55,12 @@ describe('SearchBar Component', () => {
     assertSearchBar(getByTestId, queryByTestId);
   });
 
-  test('displays right icon when search phrase has content', () => {
-    const prop: SearchBarProps = { ...defaultProps, searchPhrase: 'pasta' };
-    const { getByTestId, queryByTestId } = renderSearchBar(prop);
+  test('displays right icon when text is typed', () => {
+    const { getByTestId, queryByTestId } = renderSearchBar();
 
-    assertSearchBar(getByTestId, queryByTestId, prop);
+    fireEvent.changeText(getByTestId(defaultTestId), 'pasta');
+
+    assertSearchBar(getByTestId, queryByTestId, 'pasta');
   });
 
   test('handles text input changes correctly', () => {
@@ -78,6 +77,18 @@ describe('SearchBar Component', () => {
 
     fireEvent.changeText(textInput, 'café & créme');
     expect(mockUpdateSearchString).toHaveBeenCalledWith('café & créme');
+  });
+
+  test('updates local value and calls parent callback on text change', () => {
+    const { getByTestId } = renderSearchBar();
+
+    const textInput = getByTestId(defaultTestId + '::TextInput');
+    expect(textInput.props.value).toBe('');
+
+    fireEvent.changeText(getByTestId(defaultTestId), 'risotto');
+
+    expect(textInput.props.value).toBe('risotto');
+    expect(mockUpdateSearchString).toHaveBeenCalledWith('risotto');
   });
 
   test('handles focus events correctly', () => {
@@ -102,29 +113,27 @@ describe('SearchBar Component', () => {
     expect(mockSetSearchBarClicked).toHaveBeenCalledWith(false);
   });
 
-  test('renders clear button when search phrase has content', () => {
-    const prop: SearchBarProps = { ...defaultProps, searchPhrase: 'test search' };
-    const { getByTestId, queryByTestId } = renderSearchBar(prop);
+  test('renders clear button when text has been typed', () => {
+    const { getByTestId, queryByTestId } = renderSearchBar();
 
-    assertSearchBar(getByTestId, queryByTestId, prop);
+    fireEvent.changeText(getByTestId(defaultTestId), 'test search');
+
+    assertSearchBar(getByTestId, queryByTestId, 'test search');
   });
 
-  test('toggles right icon visibility based on search phrase length', () => {
-    const props: SearchBarProps = { ...defaultProps };
-    const { getByTestId, queryByTestId, rerender } = renderSearchBar(props);
+  test('toggles right icon visibility based on typed text length', () => {
+    const { getByTestId, queryByTestId } = renderSearchBar();
+    const textInput = getByTestId(defaultTestId);
 
     expect(queryByTestId(defaultTestId + '::RightIcon')).toBeNull();
 
-    props.searchPhrase = 'a';
-    rerender(<SearchBar {...props} />);
+    fireEvent.changeText(textInput, 'a');
     expect(getByTestId(defaultTestId + '::RightIcon')).toBeTruthy();
 
-    props.searchPhrase = 'pasta recipe';
-    rerender(<SearchBar {...props} />);
+    fireEvent.changeText(textInput, 'pasta recipe');
     expect(getByTestId(defaultTestId + '::RightIcon')).toBeTruthy();
 
-    props.searchPhrase = '';
-    rerender(<SearchBar {...props} />);
+    fireEvent.changeText(textInput, '');
     expect(queryByTestId(defaultTestId + '::RightIcon')).toBeNull();
   });
 
@@ -132,14 +141,13 @@ describe('SearchBar Component', () => {
     const prop: SearchBarProps = { ...defaultProps, testId: 'custom-search-bar' };
     const { getByTestId, queryByTestId } = renderSearchBar(prop);
 
-    assertSearchBar(getByTestId, queryByTestId, prop);
-
+    expect(getByTestId('custom-search-bar::Mode').props.children).toBe('bar');
+    expect(getByTestId('custom-search-bar::TextInput').props.value).toBe('');
     expect(queryByTestId(defaultTestId)).toBeNull();
   });
 
   test('maintains functionality across rapid interactions', () => {
-    const prop: SearchBarProps = { ...defaultProps, searchPhrase: 'test' };
-    const { getByTestId } = renderSearchBar(prop);
+    const { getByTestId } = renderSearchBar();
 
     const textInput = getByTestId(defaultTestId);
 
@@ -154,7 +162,7 @@ describe('SearchBar Component', () => {
     expect(mockUpdateSearchString).toHaveBeenCalledWith('new text');
   });
 
-  test('handles edge cases with search phrase content', () => {
+  test('handles edge cases with typed text content', () => {
     const edgeCases = [
       ' ',
       '   ',
@@ -166,11 +174,12 @@ describe('SearchBar Component', () => {
       '@#$%^&*()',
     ];
 
-    edgeCases.forEach(searchPhrase => {
-      const prop: SearchBarProps = { ...defaultProps, searchPhrase };
-      const { getByTestId, queryByTestId, unmount } = renderSearchBar(prop);
+    edgeCases.forEach(text => {
+      const { getByTestId, queryByTestId, unmount } = renderSearchBar();
 
-      assertSearchBar(getByTestId, queryByTestId, prop);
+      fireEvent.changeText(getByTestId(defaultTestId), text);
+
+      assertSearchBar(getByTestId, queryByTestId, text);
 
       unmount();
       jest.clearAllMocks();
@@ -188,10 +197,13 @@ describe('SearchBar Component', () => {
     const newMockSetSearchBarClicked = jest.fn();
     const newMockUpdateSearchString = jest.fn();
 
-    props.searchPhrase = 'test';
-    props.setSearchBarClicked = newMockSetSearchBarClicked;
-    props.updateSearchString = newMockUpdateSearchString;
-    rerender(<SearchBar {...props} />);
+    rerender(
+      <SearchBar
+        {...props}
+        setSearchBarClicked={newMockSetSearchBarClicked}
+        updateSearchString={newMockUpdateSearchString}
+      />
+    );
 
     fireEvent.changeText(textInput, 'updated');
     fireEvent(textInput, 'onFocus');
@@ -219,20 +231,19 @@ describe('SearchBar Component', () => {
     expect(mockUpdateSearchString).toHaveBeenCalledTimes(1);
   });
 
-  test('maintains component stability during complex state changes', () => {
-    const { getByTestId, queryByTestId, rerender } = renderSearchBar();
+  test('maintains component stability during progressive typing', () => {
+    const { getByTestId, queryByTestId } = renderSearchBar();
 
     assertSearchBar(getByTestId, queryByTestId);
 
     const textProgression = ['a', 'ap', 'app', 'apple', 'apple pie', ''];
+    const textInput = getByTestId(defaultTestId);
 
     textProgression.forEach(text => {
-      rerender(<SearchBar {...defaultProps} searchPhrase={text} />);
+      fireEvent.changeText(textInput, text);
 
-      const expectedProp: SearchBarProps = { ...defaultProps, searchPhrase: text };
-      assertSearchBar(getByTestId, queryByTestId, expectedProp);
+      assertSearchBar(getByTestId, queryByTestId, text);
 
-      const textInput = getByTestId(defaultTestId);
       fireEvent(textInput, 'onFocus');
       expect(mockSetSearchBarClicked).toHaveBeenCalledWith(true);
 
@@ -244,21 +255,25 @@ describe('SearchBar Component', () => {
     const { Keyboard } = require('react-native');
     jest.spyOn(Keyboard, 'dismiss').mockImplementation(() => {});
 
-    const prop: SearchBarProps = { ...defaultProps, searchPhrase: 'test search' };
-    const { getByTestId } = renderSearchBar(prop);
+    const { getByTestId } = renderSearchBar();
+
+    fireEvent.changeText(getByTestId(defaultTestId), 'test search');
+
+    const textInput = getByTestId(defaultTestId + '::TextInput');
+    expect(textInput.props.value).toBe('test search');
 
     fireEvent.press(getByTestId(defaultTestId + '::RightIcon'));
 
+    expect(textInput.props.value).toBe('');
     expect(Keyboard.dismiss).toHaveBeenCalled();
     expect(mockSetSearchBarClicked).toHaveBeenCalledWith(false);
     expect(mockUpdateSearchString).toHaveBeenCalledWith('');
   });
 
   describe('Right icon visibility with searchBarClicked state', () => {
-    test('shows icon when searchBarClicked is true with empty searchPhrase', () => {
+    test('shows icon when searchBarClicked is true with empty text', () => {
       const prop: SearchBarProps = {
         ...defaultProps,
-        searchPhrase: '',
         searchBarClicked: true,
       };
       const { getByTestId } = renderSearchBar(prop);
@@ -266,10 +281,9 @@ describe('SearchBar Component', () => {
       expect(getByTestId(defaultTestId + '::RightIcon')).toBeTruthy();
     });
 
-    test('does not show icon when searchBarClicked is false with empty searchPhrase', () => {
+    test('does not show icon when searchBarClicked is false with empty text', () => {
       const prop: SearchBarProps = {
         ...defaultProps,
-        searchPhrase: '',
         searchBarClicked: false,
       };
       const { queryByTestId } = renderSearchBar(prop);
@@ -277,22 +291,17 @@ describe('SearchBar Component', () => {
       expect(queryByTestId(defaultTestId + '::RightIcon')).toBeNull();
     });
 
-    test('shows icon when searchPhrase has text regardless of searchBarClicked', () => {
-      const propWithClickedFalse: SearchBarProps = {
+    test('shows icon when text is typed regardless of searchBarClicked', () => {
+      const { getByTestId, rerender } = renderSearchBar({
         ...defaultProps,
-        searchPhrase: 'test',
         searchBarClicked: false,
-      };
-      const { getByTestId, rerender } = renderSearchBar(propWithClickedFalse);
+      });
+
+      fireEvent.changeText(getByTestId(defaultTestId), 'test');
 
       expect(getByTestId(defaultTestId + '::RightIcon')).toBeTruthy();
 
-      const propWithClickedTrue: SearchBarProps = {
-        ...defaultProps,
-        searchPhrase: 'test',
-        searchBarClicked: true,
-      };
-      rerender(<SearchBar {...propWithClickedTrue} />);
+      rerender(<SearchBar {...defaultProps} searchBarClicked={true} />);
 
       expect(getByTestId(defaultTestId + '::RightIcon')).toBeTruthy();
     });
@@ -300,20 +309,48 @@ describe('SearchBar Component', () => {
     test('toggles icon visibility based on searchBarClicked state changes', () => {
       const props: SearchBarProps = {
         ...defaultProps,
-        searchPhrase: '',
         searchBarClicked: false,
       };
       const { queryByTestId, rerender } = renderSearchBar(props);
 
       expect(queryByTestId(defaultTestId + '::RightIcon')).toBeNull();
 
-      props.searchBarClicked = true;
-      rerender(<SearchBar {...props} />);
+      rerender(<SearchBar {...props} searchBarClicked={true} />);
       expect(queryByTestId(defaultTestId + '::RightIcon')).toBeTruthy();
 
-      props.searchBarClicked = false;
-      rerender(<SearchBar {...props} />);
+      rerender(<SearchBar {...props} searchBarClicked={false} />);
       expect(queryByTestId(defaultTestId + '::RightIcon')).toBeNull();
+    });
+  });
+
+  describe('clearRef functionality', () => {
+    test('clears text when clear() is called via ref', () => {
+      const clearRef = createRef<SearchBarHandle>();
+      const { getByTestId, queryByTestId } = renderSearchBar({
+        ...defaultProps,
+        clearRef,
+      });
+
+      fireEvent.changeText(getByTestId(defaultTestId), 'some text');
+
+      const textInput = getByTestId(defaultTestId + '::TextInput');
+      expect(textInput.props.value).toBe('some text');
+      expect(getByTestId(defaultTestId + '::RightIcon')).toBeTruthy();
+
+      act(() => {
+        clearRef.current?.clear();
+      });
+
+      expect(textInput.props.value).toBe('');
+      expect(queryByTestId(defaultTestId + '::RightIcon')).toBeNull();
+    });
+
+    test('works without clearRef provided', () => {
+      const { getByTestId } = renderSearchBar();
+
+      fireEvent.changeText(getByTestId(defaultTestId), 'no ref');
+
+      expect(getByTestId(defaultTestId + '::TextInput').props.value).toBe('no ref');
     });
   });
 });
