@@ -200,7 +200,7 @@ export function Search() {
       {/* When there are no recipes, put flex on scrollView to child view to take the whole screen*/}
       <ScrollView
         ref={scrollViewRef}
-        contentContainerStyle={filteredRecipes.length === 0 ? { flex: 1 } : {}}
+        contentContainerStyle={filteredRecipes.length === 0 ? { flexGrow: 1 } : {}}
         showsVerticalScrollIndicator={true}
       >
         <SearchBar

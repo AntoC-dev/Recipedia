@@ -32,6 +32,11 @@ export function filterAccordionMock({
         onPress={() => removeFilter(listFilter.tags, 'New filter')}
         title='Click on Remove Filter'
       />
+      <Button
+        testID={accordionId + '::RemoveFilterByTitle'}
+        onPress={() => removeFilter(listFilter.recipeTitleInclude, 'S')}
+        title='Click on Remove Filter By Title'
+      />
     </View>
   );
 }
