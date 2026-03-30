@@ -1,3 +1,10 @@
+## [2.28.5](https://github.com/AntoC-dev/Recipedia/compare/v2.28.4...v2.28.5) (2026-03-30)
+
+### Bug Fixes
+
+* **SearchBar:** use local state to prevent iOS 26 character drop ([ed32f9c](https://github.com/AntoC-dev/Recipedia/commit/ed32f9cf44df4e896631a17e48da8aaa5f0d7d9f))
+* **SearchBar:** use local state to prevent iOS 26 character drop ([#243](https://github.com/AntoC-dev/Recipedia/issues/243)) ([df4f07f](https://github.com/AntoC-dev/Recipedia/commit/df4f07fc4dd0c2cadbcd6f3e21c077c1ea791384))
+
 ## [2.28.4](https://github.com/AntoC-dev/Recipedia/compare/v2.28.3...v2.28.4) (2026-03-30)
 
 ### Bug Fixes
