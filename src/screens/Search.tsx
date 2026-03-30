@@ -69,7 +69,7 @@ import {
 } from '@utils/FilterFunctions';
 import { useI18n } from '@utils/i18n';
 import { Divider, Text, useTheme } from 'react-native-paper';
-import { SearchBar } from '@components/organisms/SearchBar';
+import { SearchBar, SearchBarHandle } from '@components/organisms/SearchBar';
 import { SearchBarResults } from '@components/organisms/SearchBarResults';
 import { FiltersSelection } from '@components/organisms/FiltersSelection';
 import { padding } from '@styles/spacing';
@@ -92,10 +92,10 @@ export function Search() {
 
   // Refs
   const scrollViewRef = useRef<ScrollView>(null);
+  const searchBarClearRef = useRef<SearchBarHandle>(null);
 
   // Core state
   const [filtersState, setFiltersState] = useState(new Map<TListFilter, string[]>());
-  const [searchPhrase, setSearchPhrase] = useState('');
   const [searchBarClicked, setSearchBarClicked] = useState(false);
   const [addingFilterMode, setAddingFilterMode] = useState(false);
 
@@ -144,8 +144,6 @@ export function Search() {
 
   // Update search string and filter state
   const updateSearchString = (newSearchString: string) => {
-    setSearchPhrase(newSearchString);
-
     setFiltersState(prevState => {
       const newState = new Map(prevState);
 
@@ -157,6 +155,12 @@ export function Search() {
 
       return newState;
     });
+  };
+
+  // Select a search result: update both the search bar text and the filter state
+  const selectSearchResult = (title: string) => {
+    searchBarClearRef.current?.setText(title);
+    updateSearchString(title);
   };
 
   // Add filter to state
@@ -176,9 +180,9 @@ export function Search() {
       return newState;
     });
 
-    // Clear search phrase if removing title filter
+    // Clear search bar if removing title filter
     if (filterTitle === listFilter.recipeTitleInclude) {
-      setSearchPhrase('');
+      searchBarClearRef.current?.clear();
     }
   };
 
@@ -205,10 +209,10 @@ export function Search() {
       >
         <SearchBar
           testId={screenId + '::SearchBar'}
-          searchPhrase={searchPhrase}
           searchBarClicked={searchBarClicked}
           setSearchBarClicked={setSearchBarClicked}
           updateSearchString={updateSearchString}
+          clearRef={searchBarClearRef}
         />
 
         {searchBarClicked ? (
@@ -216,7 +220,7 @@ export function Search() {
             testId={screenId + '::SearchBarResults'}
             filteredTitles={filteredTitles}
             setSearchBarClicked={setSearchBarClicked}
-            updateSearchString={updateSearchString}
+            updateSearchString={selectSearchResult}
           />
         ) : (
           <View>

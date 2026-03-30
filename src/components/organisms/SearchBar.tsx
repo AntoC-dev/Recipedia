@@ -19,31 +19,30 @@
  * @example
  * ```typescript
  * // Basic search implementation
- * const [searchText, setSearchText] = useState('');
  * const [searchFocused, setSearchFocused] = useState(false);
  *
  * <SearchBar
  *   testId="recipe-search"
- *   searchPhrase={searchText}
+ *   searchBarClicked={searchFocused}
  *   setSearchBarClicked={setSearchFocused}
- *   updateSearchString={(text) => {
- *     setSearchText(text);
- *     performSearch(text);
- *   }}
+ *   updateSearchString={performSearch}
  * />
  *
- * // Integration with search results
+ * // With programmatic clear from parent
+ * const clearRef = useRef<SearchBarHandle>(null);
+ *
  * <SearchBar
  *   testId="main-search"
- *   searchPhrase={query}
+ *   searchBarClicked={searchActive}
  *   setSearchBarClicked={setSearchActive}
  *   updateSearchString={handleSearchUpdate}
+ *   clearRef={clearRef}
  * />
- * {searchActive && <SearchResults query={query} />}
+ * // Later: clearRef.current?.clear();
  * ```
  */
 
-import React from 'react';
+import React, { useImperativeHandle, useState } from 'react';
 import { padding, screenWidth } from '@styles/spacing';
 import { Icons } from '@assets/Icons';
 import { useI18n } from '@utils/i18n';
@@ -51,19 +50,29 @@ import { IconButton, Searchbar } from 'react-native-paper';
 import { Keyboard } from 'react-native';
 
 /**
+ * Handle exposed by SearchBar via clearRef for programmatic control
+ */
+export type SearchBarHandle = {
+  /** Clears the search bar text */
+  clear: () => void;
+  /** Sets the search bar text programmatically */
+  setText: (text: string) => void;
+};
+
+/**
  * Props for the SearchBar component
  */
 export type SearchBarProps = {
   /** Unique identifier for testing and accessibility */
   testId: string;
-  /** Current search text value */
-  searchPhrase: string;
   /** Current search bar active/focused state */
   searchBarClicked: boolean;
   /** State setter for tracking search bar focus/active state */
   setSearchBarClicked: React.Dispatch<React.SetStateAction<boolean>>;
   /** Callback fired when search text changes */
   updateSearchString: (newSearchString: string) => void;
+  /** Ref for programmatic control (e.g., clearing text from parent) */
+  clearRef?: React.RefObject<SearchBarHandle | null>;
 };
 
 /**
@@ -74,19 +83,30 @@ export type SearchBarProps = {
  */
 export function SearchBar({
   testId,
-  searchPhrase,
   searchBarClicked,
   setSearchBarClicked,
   updateSearchString,
+  clearRef,
 }: SearchBarProps) {
   const { t } = useI18n();
+  const [searchPhrase, setSearchPhrase] = useState('');
+
+  useImperativeHandle(clearRef, () => ({
+    clear: () => setSearchPhrase(''),
+    setText: (text: string) => setSearchPhrase(text),
+  }));
+
+  const handleChangeText = (text: string) => {
+    setSearchPhrase(text);
+    updateSearchString(text);
+  };
 
   return (
     <Searchbar
       testID={testId}
       mode={'bar'}
       placeholder={t('searchRecipeTitle')}
-      onChangeText={updateSearchString}
+      onChangeText={handleChangeText}
       value={searchPhrase}
       autoCorrect={false}
       style={{
@@ -103,6 +123,7 @@ export function SearchBar({
             testID={testId + '::RightIcon'}
             icon={Icons.crossIcon}
             onPress={() => {
+              setSearchPhrase('');
               Keyboard.dismiss();
               setSearchBarClicked(false);
               updateSearchString('');
