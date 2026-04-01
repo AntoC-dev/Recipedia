@@ -244,7 +244,16 @@ export const RecipeDatabaseProvider: React.FC<{
             InteractionManager.runAfterInteractions(async () => {
               try {
                 databaseLogger.info('Starting background dataset loading after UI render');
-                await copyDatasetImages();
+                try {
+                  await copyDatasetImages();
+                } catch (imageError) {
+                  databaseLogger.warn(
+                    'Some or all dataset images failed to copy, continuing anyway',
+                    {
+                      error: imageError,
+                    }
+                  );
+                }
                 const currentLanguage = i18n.language as SupportedLanguage;
                 const dataset = getDataset(currentLanguage);
                 const defaultPersons = await getDefaultPersons();
@@ -283,17 +292,20 @@ export const RecipeDatabaseProvider: React.FC<{
                   recipesCount: scaledRecipes.length,
                 });
               } catch (error) {
+                const errorMessage =
+                  error instanceof Error
+                    ? `${error.message}${error.stack ? `\n${error.stack}` : ''}`
+                    : typeof error === 'object'
+                      ? JSON.stringify(error, null, 2)
+                      : String(error);
+
                 databaseLogger.error(
                   'Dataset loading failed - app will work without initial data',
                   {
-                    error,
+                    error: errorMessage,
                   }
                 );
-                setDatasetLoadError(
-                  error instanceof Error
-                    ? error.message
-                    : 'Unknown error occurred during dataset loading'
-                );
+                setDatasetLoadError(errorMessage);
               }
             });
             return;
