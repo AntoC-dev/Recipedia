@@ -93,7 +93,6 @@ export function Search() {
   const updateSearchString = (newSearchString: string) => {
     setFiltersState(prevState => {
       const newState = new Map(prevState);
-
       if (newSearchString === '') {
         removeTitleInMultimap(newState);
       } else {
@@ -153,6 +152,7 @@ export function Search() {
         data={addingFilterMode || searchBarClicked ? [] : filteredRecipes}
         keyExtractor={(item: recipeTableElement) => item.id?.toString() || item.title}
         numColumns={2}
+        maintainVisibleContentPosition={{ disabled: true }}
         contentContainerStyle={{ padding: padding.small }}
         ListHeaderComponent={
           <View>
