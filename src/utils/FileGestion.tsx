@@ -397,27 +397,41 @@ export async function copyDatasetImages(): Promise<void> {
     // expo-asset may mark bundled Android images as "downloaded" without
     // extracting them to the file system — resetting the flag ensures the
     // native module copies each asset from APK resources to cache.
-    const assetModules = await Promise.all(
-      imageSet.map(async moduleId => {
-        const asset = Asset.fromModule(moduleId);
-        asset.downloaded = false;
-        await asset.downloadAsync();
-        return asset;
-      })
-    );
+    const assetModules = (
+      await Promise.all(
+        imageSet.map(async moduleId => {
+          try {
+            const asset = Asset.fromModule(moduleId);
+            asset.downloaded = false;
 
-    if (assetModules.length !== imageSet.length) {
+            await asset.downloadAsync();
+            return asset;
+          } catch (err) {
+            fileSystemLogger.warn('Failed to load individual asset', { moduleId, error: err });
+            return null;
+          }
+        })
+      )
+    ).filter((asset): asset is Asset => asset !== null);
+
+    if (assetModules.length === 0 && imageSet.length > 0) {
       throw new Error(
-        `Failed to load all ${datasetType} assets. Expected ${imageSet.length}, loaded ${assetModules.length}`
+        `Failed to load any ${datasetType} assets out of ${imageSet.length}. Check if assets are bundled correctly.`
       );
     }
 
-    fileSystemLogger.info('Assets loaded successfully', {
+    fileSystemLogger.info('Assets loaded', {
       datasetType,
-      assetCount: assetModules.length,
+      requestedCount: imageSet.length,
+      loadedCount: assetModules.length,
     });
 
     for (const asset of assetModules) {
+      if (!asset.localUri) {
+        fileSystemLogger.warn('Asset missing localUri, skipping', { assetName: asset.name });
+        continue;
+      }
+
       const destFile = new File(APP_DIR, asset.name + '.' + asset.type);
 
       if (destFile.exists) {
@@ -427,12 +441,20 @@ export async function copyDatasetImages(): Promise<void> {
         continue;
       }
 
-      new File(asset.localUri as string).copy(destFile);
+      try {
+        const sourceFile = new File(asset.localUri);
+        sourceFile.copy(destFile);
+      } catch (copyError) {
+        fileSystemLogger.warn('Failed to copy individual asset file', {
+          assetName: asset.name,
+          error: copyError,
+        });
+      }
     }
 
-    fileSystemLogger.info('Dataset images copied successfully', {
+    fileSystemLogger.info('Dataset images operation completed', {
       datasetType,
-      imageCount: imageSet.length,
+      successCount: assetModules.length,
     });
   } catch (error) {
     fileSystemLogger.error('Failed to copy dataset images', { datasetType, error });
