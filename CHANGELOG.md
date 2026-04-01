@@ -1,3 +1,12 @@
+## [2.28.6](https://github.com/AntoC-dev/Recipedia/compare/v2.28.5...v2.28.6) (2026-04-01)
+
+### Bug Fixes
+
+* **FileGestion:** improve error handling ([b43131b](https://github.com/AntoC-dev/Recipedia/commit/b43131b28578b455dca92e9f14ad6951c74d09bc))
+* production init ([#245](https://github.com/AntoC-dev/Recipedia/issues/245)) ([bb0f7bb](https://github.com/AntoC-dev/Recipedia/commit/bb0f7bbd385de90816f7690531627589a5e0ca27))
+* **RecipeDatabaseContext:** enhance error handling for dataset loading ([d57f373](https://github.com/AntoC-dev/Recipedia/commit/d57f3732417f9056a25598db170add0d4e52db04))
+* **recipes:** correct unit for golden sesame seeds from tbsp to g ([4659077](https://github.com/AntoC-dev/Recipedia/commit/46590770ea36d57f5f30407021cf9692db9b6bc6))
+
 ## [2.28.5](https://github.com/AntoC-dev/Recipedia/compare/v2.28.4...v2.28.5) (2026-03-30)
 
 ### Bug Fixes
