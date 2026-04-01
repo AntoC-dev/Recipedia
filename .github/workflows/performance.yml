@@ -155,12 +155,16 @@ jobs:
             adb install "${{ steps.find-apk.outputs.apk_path }}"
             ~/.flashlight/bin/flashlight test --bundleId "com.recipedia" --testCommand "maestro test tests/e2e/cases/performance/1_full_flow.yaml --debug-output=maestro_logs_performance" --resultsFilePath "./performance-results.json" --duration 120000 --iterationCount 5
 
+            # Generate HTML report
+            ~/.flashlight/bin/flashlight report --resultsFilePath "./performance-results.json" --outputFilePath "./performance-report.html"
+
       - name: Upload Performance Report
         uses: actions/upload-artifact@v7
         if: always()
         with:
           name: performance-report
-          path: ./performance-results.json
+          path:
+            ./performance-report.html
           retention-days: 30
 
       - name: Prepare Maestro logs
