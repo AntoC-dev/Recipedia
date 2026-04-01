@@ -1,60 +1,7 @@
-/**
- * Search - Advanced recipe search screen with filtering and real-time results
- *
- * A comprehensive search interface featuring real-time text search, advanced filtering
- * by ingredients/tags/categories, seasonal filtering, and responsive results display.
- * Integrates multiple search modes and maintains state efficiently for optimal UX.
- *
- * Key Features:
- * - Real-time recipe search with autocomplete suggestions
- * - Advanced multi-category filtering (ingredients, tags, types, seasonality)
- * - Dynamic filter management with state persistence
- * - Seasonal filter integration from global context
- * - Responsive grid layout for search results
- * - Smart state management preventing unnecessary re-renders
- * - Automatic cleanup of deleted recipes
- * - Performance logging for search analytics
- *
- * Search Modes:
- * - Text search: Real-time filtering by recipe title
- * - Filter mode: Advanced filtering with accordion interface
- * - Combined mode: Text search + applied filters
- * - Seasonal mode: Automatic filtering by ingredient seasonality
- *
- * Performance Optimizations:
- * - Efficient filter state management with Maps
- * - Smart re-rendering based on state changes
- * - Focus-based data synchronization
- * - Debounced search operations
- *
- * @example
- * ```typescript
- * // Navigation integration (typically in tab navigator)
- * <Tab.Screen
- *   name="Search"
- *   component={Search}
- *   options={{
- *     tabBarIcon: ({ color }) => <Icon name="search" color={color} />
- *   }}
- * />
- *
- * // The Search screen automatically handles:
- * // - Real-time recipe searching and filtering
- * // - Filter state management and persistence
- * // - Results display with responsive layout
- * // - Integration with seasonal filtering context
- * ```
- */
-
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  BackHandler,
-  FlatList,
-  Keyboard,
-  ListRenderItemInfo,
-  ScrollView,
-  View,
-} from 'react-native';
+import { BackHandler, Keyboard, View } from 'react-native';
+import type { FlashListRef, ListRenderItemInfo } from '@shopify/flash-list';
+import { FlashList } from '@shopify/flash-list';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { listFilter, TListFilter } from '@customTypes/RecipeFiltersTypes';
@@ -91,7 +38,7 @@ export function Search() {
   const { recipes } = useRecipeDatabase();
 
   // Refs
-  const scrollViewRef = useRef<ScrollView>(null);
+  const flashListRef = useRef<FlashListRef<recipeTableElement>>(null);
   const searchBarClearRef = useRef<SearchBarHandle>(null);
 
   // Core state
@@ -133,7 +80,7 @@ export function Search() {
       if (searchBarClicked) {
         Keyboard.dismiss();
         setSearchBarClicked(false);
-        scrollViewRef.current?.scrollTo({ y: 0, animated: false });
+        flashListRef.current?.scrollToOffset({ offset: 0, animated: false });
         return true;
       }
       return false;
@@ -201,73 +148,78 @@ export function Search() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} testID={screenId}>
-      {/* When there are no recipes, put flex on scrollView to child view to take the whole screen*/}
-      <ScrollView
-        ref={scrollViewRef}
-        contentContainerStyle={filteredRecipes.length === 0 ? { flexGrow: 1 } : {}}
-        showsVerticalScrollIndicator={true}
-      >
-        <SearchBar
-          testId={screenId + '::SearchBar'}
-          searchBarClicked={searchBarClicked}
-          setSearchBarClicked={setSearchBarClicked}
-          updateSearchString={updateSearchString}
-          clearRef={searchBarClearRef}
-        />
-
-        {searchBarClicked ? (
-          <SearchBarResults
-            testId={screenId + '::SearchBarResults'}
-            filteredTitles={filteredTitles}
-            setSearchBarClicked={setSearchBarClicked}
-            updateSearchString={selectSearchResult}
-          />
-        ) : (
+      <FlashList
+        ref={flashListRef}
+        data={addingFilterMode || searchBarClicked ? [] : filteredRecipes}
+        keyExtractor={(item: recipeTableElement) => item.id?.toString() || item.title}
+        numColumns={2}
+        contentContainerStyle={{ padding: padding.small }}
+        ListHeaderComponent={
           <View>
-            <FiltersSelection
-              testId={screenId}
-              filters={retrieveAllFilters(filtersState)}
-              addingFilterMode={addingFilterMode}
-              setAddingAFilter={setAddingFilterMode}
-              onRemoveFilter={findFilterStringAndRemove}
+            <SearchBar
+              testId={screenId + '::SearchBar'}
+              searchBarClicked={searchBarClicked}
+              setSearchBarClicked={setSearchBarClicked}
+              updateSearchString={updateSearchString}
+              clearRef={searchBarClearRef}
             />
 
-            <Divider testID={screenId + '::Divider'} />
-
-            {addingFilterMode && (
-              <FilterAccordion
-                testId={screenId}
-                tagsList={filteredTags}
-                ingredientsList={filteredIngredients}
-                filtersState={filtersState}
-                addFilter={addAFilterToTheState}
-                removeFilter={removeAFilterToTheState}
+            {searchBarClicked ? (
+              <SearchBarResults
+                testId={screenId + '::SearchBarResults'}
+                filteredTitles={filteredTitles}
+                setSearchBarClicked={setSearchBarClicked}
+                updateSearchString={selectSearchResult}
               />
+            ) : (
+              <View>
+                <FiltersSelection
+                  testId={screenId}
+                  filters={retrieveAllFilters(filtersState)}
+                  addingFilterMode={addingFilterMode}
+                  setAddingAFilter={setAddingFilterMode}
+                  onRemoveFilter={findFilterStringAndRemove}
+                />
+
+                <Divider testID={screenId + '::Divider'} />
+
+                {addingFilterMode && (
+                  <FilterAccordion
+                    testId={screenId}
+                    tagsList={filteredTags}
+                    ingredientsList={filteredIngredients}
+                    filtersState={filtersState}
+                    addFilter={addAFilterToTheState}
+                    removeFilter={removeAFilterToTheState}
+                  />
+                )}
+              </View>
             )}
           </View>
-        )}
-
-        {!addingFilterMode &&
-          !searchBarClicked &&
-          (filteredRecipes.length > 0 ? (
-            <FlatList
-              data={filteredRecipes}
-              keyExtractor={item => item.id?.toString() || item.title}
-              numColumns={2}
-              scrollEnabled={false}
-              contentContainerStyle={{ padding: padding.small }}
-              renderItem={({ item, index }: ListRenderItemInfo<recipeTableElement>) => (
-                <RecipeCard testId={recipeCardsId + `::${index}`} size={'medium'} recipe={item} />
-              )}
-            />
-          ) : (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        }
+        ListEmptyComponent={() => {
+          if (addingFilterMode || searchBarClicked) {
+            return null;
+          }
+          return (
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginTop: padding.large,
+              }}
+            >
               <Text testID={screenId + '::TextWhenEmpty'} variant={'titleMedium'}>
                 {t('noRecipesFound')}
               </Text>
             </View>
-          ))}
-      </ScrollView>
+          );
+        }}
+        renderItem={({ item, index }: ListRenderItemInfo<recipeTableElement>) => (
+          <RecipeCard testId={recipeCardsId + `::${index}`} size={'medium'} recipe={item} />
+        )}
+      />
     </SafeAreaView>
   );
 }
