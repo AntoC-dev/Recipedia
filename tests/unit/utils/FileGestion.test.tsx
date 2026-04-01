@@ -614,13 +614,37 @@ describe('copyDatasetImages', () => {
     );
   });
 
-  test('throws error when downloadAsync fails', async () => {
+  test('throws error when all assets fail to download', async () => {
     setMockDatasetType('test');
     const failingAsset = createMockAsset('image1', 'jpg', '/asset/path/image1.jpg');
     failingAsset.downloadAsync.mockRejectedValue(new Error('Download failed'));
     mockAssetFromModule.mockReturnValue(failingAsset);
 
-    await expect(copyDatasetImages()).rejects.toThrow('Download failed');
+    await expect(copyDatasetImages()).rejects.toThrow('Failed to load any test assets');
+  });
+
+  test('continues when some assets fail to download', async () => {
+    setMockDatasetType('test');
+
+    const mockAssets = [
+      createMockAsset('image1', 'jpg', '/asset/path/image1.jpg'),
+      createMockAsset('image2', 'jpg', '/asset/path/image2.jpg'),
+    ];
+    // Make first one fail
+    mockAssets[0].downloadAsync.mockRejectedValue(new Error('Download failed'));
+
+    mockAssetFromModule
+      .mockReturnValueOnce(mockAssets[0])
+      .mockReturnValueOnce(mockAssets[1])
+      .mockReturnValueOnce(mockAssets[1]); // imageSet has 3 items in test constants
+
+    await copyDatasetImages();
+
+    expect(mockFileCopy).toHaveBeenCalledTimes(2);
+    expect(mockFileCopy).toHaveBeenCalledWith(
+      '/asset/path/image2.jpg',
+      expect.objectContaining({ uri: expect.stringContaining('image2.jpg') })
+    );
   });
 
   test('resets downloaded flag before calling downloadAsync', async () => {

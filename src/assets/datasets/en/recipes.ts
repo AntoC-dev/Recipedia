@@ -928,7 +928,7 @@ export const englishRecipes: recipeTableElement[] = [
       {
         name: 'Golden Sesame Seeds',
         quantity: '1',
-        unit: 'tbsp',
+        unit: 'g',
         type: ingredientType.topping,
         season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
       },
