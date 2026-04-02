@@ -1,3 +1,10 @@
+## [2.28.7](https://github.com/AntoC-dev/Recipedia/compare/v2.28.6...v2.28.7) (2026-04-02)
+
+### Bug Fixes
+
+* **app.config:** update iOS usage descriptions for camera and photo ([17db460](https://github.com/AntoC-dev/Recipedia/commit/17db46086267678049486c399ac8143c454ebc88))
+* **app.config:** update iOS usage descriptions for camera and photo ([#247](https://github.com/AntoC-dev/Recipedia/issues/247)) ([bd9d69c](https://github.com/AntoC-dev/Recipedia/commit/bd9d69cdd344441ccd1c6345d4039b36c16f16eb))
+
 ## [2.28.6](https://github.com/AntoC-dev/Recipedia/compare/v2.28.5...v2.28.6) (2026-04-01)
 
 ### Bug Fixes
