@@ -15,7 +15,7 @@ tags:
     visible:
       id: "SearchScreen::SearchBar"
     timeout: 3000
-    label: "Wait for searc screen to appear"
+    label: "Wait for search screen to appear"
 
 - tapOn:
     id: "SearchScreen::SearchBar"
