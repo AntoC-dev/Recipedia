@@ -52,8 +52,8 @@ export default ({config}: ConfigContext): ExpoConfig => {
             buildNumber: pkg.version,
             infoPlist: {
                 "ITSAppUsesNonExemptEncryption": false,
-                "NSCameraUsageDescription": "This app needs camera access to take photos of recipes",
-                "NSPhotoLibraryUsageDescription": "This app needs photo library access to select recipe images"
+                "NSCameraUsageDescription": "Recipedia uses the camera so you can take a photo of a dish and attach it to a recipe (for example, when creating or editing a recipe).",
+                "NSPhotoLibraryUsageDescription": "Recipedia uses your photo library so you can choose an existing photo and set it as a recipe image (for example, selecting a picture for a new recipe)."
             }
         },
         android: {
