@@ -8,7 +8,7 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::RecipeCards::1::.*"
+      id: "SearchScreen::RecipeCards::2::.*"
     direction: DOWN
     speed: 50
     centerElement: true
@@ -17,7 +17,7 @@ appId: "com.recipedia"
 - waitForAnimationToEnd
 
 - tapOn:
-    id: "SearchScreen::RecipeCards::1::.*"
+    id: "SearchScreen::RecipeCards::2::.*"
     label: "Open a recipe"
 
 - tapOn:

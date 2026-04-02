@@ -48,7 +48,7 @@ appId: "com.recipedia"
     label: "Wait for keyboard to dismiss"
 
 - tapOn:
-    id: "SearchScreen::RecipeCards::0::.*"
+    id: "SearchScreen::RecipeCards::.*"
     label: "Open recipe"
 
 - extendedWaitUntil:

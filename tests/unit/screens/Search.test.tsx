@@ -99,7 +99,7 @@ describe('Search Screen', () => {
 
   const assertDatabasePopulatedState = (getByTestId: any) => {
     expect(() => getByTestId('SearchScreen::TextWhenEmpty')).toThrow();
-    expect(getByTestId('SearchScreen::RecipeCards::0')).toBeTruthy();
+    expect(getByTestId('SearchScreen::RecipeCards::1')).toBeTruthy();
   };
 
   beforeEach(async () => {
@@ -553,6 +553,6 @@ describe('Search Screen - empty state', () => {
     await waitFor(() => expect(getByTestId('SearchScreen')).toBeTruthy());
 
     expect(getByTestId('SearchScreen::TextWhenEmpty')).toBeTruthy();
-    expect(() => getByTestId('SearchScreen::RecipeCards::0')).toThrow();
+    expect(() => getByTestId('SearchScreen::RecipeCards::1')).toThrow();
   });
 });

@@ -100,7 +100,7 @@ tags:
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::RecipeCards::12::Cover"
+      id: "SearchScreen::RecipeCards::13::Cover"
     direction: DOWN
     speed: 60
     timeout: 60000
@@ -110,16 +110,48 @@ tags:
 - waitForAnimationToEnd
 
 - assertVisible:
-    id: "SearchScreen::RecipeCards::12::Cover"
+    id: "SearchScreen::RecipeCards::13::Cover"
     label: "Verification - Third imported recipe exists"
 
 - assertNotVisible:
-    id: "SearchScreen::RecipeCards::13::Cover"
+    id: "SearchScreen::RecipeCards::24::Cover"
     label: "Verification - No extra recipes imported"
 
 - tapOn:
-    id: "SearchScreen::RecipeCards::12::Cover"
+    id: "SearchScreen::RecipeCards::13::Cover"
     label: "Cleanup - Open third imported recipe"
+
+- tapOn:
+    id: "Recipe::AppBar::Delete"
+    label: "Cleanup - Delete recipe"
+
+- tapOn:
+    id: "Recipe::Dialog::Confirm"
+    label: "Cleanup - Confirm deletion"
+
+- tapOn:
+    id: "Recipe::Dialog::Confirm"
+    label: "Cleanup - Close confirmation"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::RecipeCards::12::Cover"
+    direction: UP
+    speed: 40
+    centerElement: true
+    label: "Verification - Scroll to second imported recipe"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "SearchScreen::RecipeCards::12::Cover"
+    label: "Verification - Second imported recipe exists"
+
+- tapOn:
+    id: "SearchScreen::RecipeCards::12::Cover"
+    label: "Cleanup - Open second imported recipe"
 
 - tapOn:
     id: "Recipe::AppBar::Delete"
@@ -141,48 +173,16 @@ tags:
     direction: UP
     speed: 40
     centerElement: true
-    label: "Verification - Scroll to second imported recipe"
-
-- waitForAnimationToEnd
-
-- assertVisible:
-    id: "SearchScreen::RecipeCards::11::Cover"
-    label: "Verification - Second imported recipe exists"
-
-- tapOn:
-    id: "SearchScreen::RecipeCards::11::Cover"
-    label: "Cleanup - Open second imported recipe"
-
-- tapOn:
-    id: "Recipe::AppBar::Delete"
-    label: "Cleanup - Delete recipe"
-
-- tapOn:
-    id: "Recipe::Dialog::Confirm"
-    label: "Cleanup - Confirm deletion"
-
-- tapOn:
-    id: "Recipe::Dialog::Confirm"
-    label: "Cleanup - Close confirmation"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::RecipeCards::10::Cover"
-    direction: UP
-    speed: 40
-    centerElement: true
     label: "Verification - Scroll to first imported recipe"
 
 - waitForAnimationToEnd
 
 - assertVisible:
-    id: "SearchScreen::RecipeCards::10::Cover"
+    id: "SearchScreen::RecipeCards::11::Cover"
     label: "Verification - First imported recipe exists"
 
 - tapOn:
-    id: "SearchScreen::RecipeCards::10::Cover"
+    id: "SearchScreen::RecipeCards::11::Cover"
     label: "Cleanup - Open first imported recipe"
 
 - scrollUntilVisible:

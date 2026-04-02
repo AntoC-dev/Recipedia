@@ -28,21 +28,24 @@ tags:
     file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::RecipeCards::0::Cover"
-    direction: DOWN
-    speed: 40
-    centerElement: true
-    label: "Scroll to recipe card"
-
-- waitForAnimationToEnd
+- extendedWaitUntil:
+    visible:
+      id: "SearchScreen::RecipeCards::.*::Cover"
+    timeout: 30000
+    optional: true
+    label: "Wait for chocolate cake recipe to appear in search results"
 
 - tapOn:
-    id: "SearchScreen::RecipeCards::0::Cover"
+    id: "SearchScreen::RecipeCards::.*::Cover"
     label: "Action - Open Chocolate Cake recipe"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::AppBar"
+    timeout: 30000
+    optional: true
+    label: "Wait for recipe screen to be displayed"
+
 
 - runFlow:
     file: "../../asserts/recipe/readonly/en/chocolateCakeFor4Persons.yaml"
@@ -135,30 +138,19 @@ tags:
 
 - extendedWaitUntil:
     visible:
-      id: "SearchScreen::RecipeCards::0::Persons"
+      id: "SearchScreen::RecipeCards::7::Persons"
     timeout: 20000
     optional: true
-    label: "Wait for search results to load"
+    label: "Wait for chocolate cake card to load"
 
 - assertVisible:
-    id: "SearchScreen::RecipeCards::0::Persons"
+    id: "SearchScreen::RecipeCards::7::Persons"
     text: "4 persons"
     label: "Assert - Card is showing a 4 persons (default value) recipe"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::RecipeCards::0::Cover"
-    direction: DOWN
-    speed: 40
-    centerElement: true
-    label: "Scroll to recipe card"
-
-- waitForAnimationToEnd
 
 - tapOn:
-    id: "SearchScreen::RecipeCards::0::Cover"
+    id: "SearchScreen::RecipeCards::.*::Cover"
     label: "Action - Open Chocolate Cake recipe from search"
 
 - runFlow:

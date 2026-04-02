@@ -5,7 +5,7 @@ appId: "com.recipedia"
     label: "Navigate to and open E2E Test Recipe"
 
 - tapOn:
-    id: "SearchScreen::RecipeCards::0::Cover"
+    id: "SearchScreen::RecipeCards::.*::Cover"
     label: "Open recipe from the card"
 
 - waitForAnimationToEnd

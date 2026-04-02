@@ -67,7 +67,7 @@ tags:
 
 - extendedWaitUntil:
     visible:
-      id: "SearchScreen::RecipeCards::0::Cover"
+      id: "SearchScreen::RecipeCards::.*::Cover"
     timeout: 30000
     label: "Wait for cards to appear"
 

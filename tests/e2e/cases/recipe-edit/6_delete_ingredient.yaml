@@ -39,7 +39,7 @@ tags:
     label: "Wait for keyboard to dismiss"
 
 - tapOn:
-    id: "SearchScreen::RecipeCards::0::Cover"
+    id: "SearchScreen::RecipeCards::.*::Cover"
     label: "Action - Open Test Recipe"
 
 - extendedWaitUntil:

@@ -8,7 +8,7 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::RecipeCards::10::Cover"
+      id: "SearchScreen::RecipeCards::11::Cover"
     direction: DOWN
     speed: 60
     timeout: 60000
@@ -26,10 +26,10 @@ appId: "com.recipedia"
       - runFlow:
           when:
             visible:
-              id: "SearchScreen::RecipeCards::10::Cover"
+              id: "SearchScreen::RecipeCards::11::Cover"
           commands:
             - tapOn:
-                id: "SearchScreen::RecipeCards::10::Cover"
+                id: "SearchScreen::RecipeCards::11::Cover"
             - tapOn:
                 id: "Recipe::AppBar::Delete"
             - extendedWaitUntil:

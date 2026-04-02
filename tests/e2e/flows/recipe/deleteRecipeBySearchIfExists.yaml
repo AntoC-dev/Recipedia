@@ -24,10 +24,10 @@ appId: "com.recipedia"
 - runFlow:
     when:
       visible:
-        id: "SearchScreen::RecipeCards::0::Cover"
+        id: "SearchScreen::RecipeCards::.*::Cover"
     commands:
       - tapOn:
-          id: "SearchScreen::RecipeCards::0::Cover"
+          id: "SearchScreen::RecipeCards::.*::Cover"
           label: "Open recipe from results"
 
       - tapOn:

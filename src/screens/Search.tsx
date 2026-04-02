@@ -145,13 +145,14 @@ export function Search() {
 
   const screenId = 'SearchScreen';
   const recipeCardsId = screenId + '::RecipeCards';
+  const getRecipeKey = (item: recipeTableElement) => item.id?.toString() || item.title;
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} testID={screenId}>
       <FlashList
         ref={flashListRef}
         data={addingFilterMode || searchBarClicked ? [] : filteredRecipes}
-        keyExtractor={(item: recipeTableElement) => item.id?.toString() || item.title}
+        keyExtractor={getRecipeKey}
         numColumns={2}
         maintainVisibleContentPosition={{ disabled: true }}
         contentContainerStyle={{ padding: padding.small }}
@@ -218,7 +219,11 @@ export function Search() {
           );
         }}
         renderItem={({ item, index }: ListRenderItemInfo<recipeTableElement>) => (
-          <RecipeCard testId={recipeCardsId + `::${index}`} size={'medium'} recipe={item} />
+          <RecipeCard
+            testId={recipeCardsId + `::${getRecipeKey(item)}`}
+            size={'medium'}
+            recipe={item}
+          />
         )}
       />
     </SafeAreaView>

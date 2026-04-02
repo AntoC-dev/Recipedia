@@ -2,7 +2,7 @@ appId: "com.recipedia"
 ---
 
 - assertNotVisible:
-    id: "SearchScreen::RecipeCards::0::Content"
+    id: "SearchScreen::RecipeCards::1::Content"
     text: "Italian, Dinner"
     label: "Spaghetti Bolognese tags are displayed"
 - assertNotVisible:
@@ -10,7 +10,7 @@ appId: "com.recipedia"
     label: "Spaghetti Bolognese title is visible"
 
 - assertNotVisible:
-    id: "SearchScreen::RecipeCards::1::Content"
+    id: "SearchScreen::RecipeCards::2::Content"
     text: "Mexican, Lunch"
     label: "Chicken Tacos tags are not displayed"
 - assertNotVisible:
@@ -18,7 +18,7 @@ appId: "com.recipedia"
     label: "Chicken Tacos title is not visible"
 
 - assertNotVisible:
-    id: "SearchScreen::RecipeCards::2::Content"
+    id: "SearchScreen::RecipeCards::3::Content"
     text: "Breakfast, Dessert"
     label: "Classic Pancakes tags are displayed"
 - assertNotVisible:
@@ -26,7 +26,7 @@ appId: "com.recipedia"
     label: "Classic Pancakes title is visible"
 
 - assertNotVisible:
-    id: "SearchScreen::RecipeCards::3::Content"
+    id: "SearchScreen::RecipeCards::4::Content"
     text: "Salad, Healthy"
     label: "Caesar Salad tags are not displayed"
 - assertNotVisible:
@@ -34,7 +34,7 @@ appId: "com.recipedia"
     label: "Caesar Salad title is not visible"
 
 - assertNotVisible:
-    id: "SearchScreen::RecipeCards::4::Content"
+    id: "SearchScreen::RecipeCards::5::Content"
     text: "Italian, Lunch"
     label: "Margherita Pizza tags are not displayed"
 - assertNotVisible:
@@ -42,7 +42,7 @@ appId: "com.recipedia"
     label: "Margherita Pizza title is not visible"
 
 - assertNotVisible:
-    id: "SearchScreen::RecipeCards::5::Content"
+    id: "SearchScreen::RecipeCards::6::Content"
     text: "Healthy, Soup"
     label: "Vegetable Soup tags are displayed"
 - assertNotVisible:
@@ -51,7 +51,7 @@ appId: "com.recipedia"
 
 
 - assertVisible:
-    id: "SearchScreen::RecipeCards::0::Content"
+    id: "SearchScreen::RecipeCards::7::Content"
     text: "Dessert, Chocolate"
     label: "Chocolate Cake tags are displayed"
 - assertVisible:
@@ -59,7 +59,7 @@ appId: "com.recipedia"
     label: "Chocolate Cake title is visible"
 
 - assertNotVisible:
-    id: "SearchScreen::RecipeCards::7::Content"
+    id: "SearchScreen::RecipeCards::8::Content"
     text: "Italian, Quick Meal"
     label: "Pesto Pasta tags are not displayed"
 - assertNotVisible:
@@ -68,7 +68,7 @@ appId: "com.recipedia"
 
 
 - assertNotVisible:
-    id: "SearchScreen::RecipeCards::8::Content"
+    id: "SearchScreen::RecipeCards::9::Content"
     text: "Japanese, Seafood"
     label: "Sushi Rolls tags are displayed"
 - assertNotVisible:
@@ -76,7 +76,7 @@ appId: "com.recipedia"
     label: "Sushi Rolls title is visible"
 
 - assertNotVisible:
-    id: "SearchScreen::RecipeCards::9::Content"
+    id: "SearchScreen::RecipeCards::10::Content"
     text: "Indian, Vegetarian"
     label: "Lentil Curry tags are displayed"
 - assertNotVisible:
@@ -94,4 +94,3 @@ appId: "com.recipedia"
     label: "Scroll back to top of Search screen"
 
 - waitForAnimationToEnd
-

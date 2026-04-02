@@ -15,7 +15,7 @@ tags:
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::RecipeCards::1::Chicken Tacos"
+      id: "SearchScreen::RecipeCards::2::Chicken Tacos"
     direction: DOWN
     speed: 40
     centerElement: true
@@ -24,7 +24,7 @@ tags:
 - waitForAnimationToEnd
 
 - tapOn:
-    id: "SearchScreen::RecipeCards::1::Chicken Tacos"
+    id: "SearchScreen::RecipeCards::2::Chicken Tacos"
     label: "Action - Open Chicken Tacos recipe"
 
 - runFlow:

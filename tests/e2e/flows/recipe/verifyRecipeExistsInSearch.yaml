@@ -25,7 +25,7 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::RecipeCards::0::Cover"
+      id: "SearchScreen::RecipeCards::.*::Cover"
     direction: DOWN
     speed: 60
     centerElement: true
@@ -34,7 +34,7 @@ appId: "com.recipedia"
 - waitForAnimationToEnd
 
 - assertVisible:
-    id: "SearchScreen::RecipeCards::0::.*"
+    id: "SearchScreen::RecipeCards::.*::.*"
     label: "Verify recipe is found in search results"
 
 - tapOn:
