@@ -94,6 +94,7 @@ export function Search() {
     setFiltersState(prevState => {
       const newState = new Map(prevState);
       if (newSearchString === '') {
+        flashListRef.current?.scrollToOffset({ offset: 0, animated: false });
         removeTitleInMultimap(newState);
       } else {
         editTitleInMultimap(newState, newSearchString);
