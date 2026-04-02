@@ -73,5 +73,12 @@
         "EXPO_PUBLIC_DATASET_TYPE": "production"
       }
     }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "ascAppId": "6761325557"
+      }
+    }
   }
 }
