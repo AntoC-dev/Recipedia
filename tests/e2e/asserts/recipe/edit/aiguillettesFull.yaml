@@ -634,7 +634,6 @@ appId: "com.recipedia"
       text: "󰄀"
     direction: UP
     speed: 60
-    centerElement: true
     label: "Scroll until icon of the image button is displayed"
 
 - waitForAnimationToEnd
