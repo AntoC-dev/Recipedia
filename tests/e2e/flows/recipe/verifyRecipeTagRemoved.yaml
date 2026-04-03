@@ -6,7 +6,7 @@ appId: "com.recipedia"
 
 - extendedWaitUntil:
     visible:
-    id: "SearchScreen::RecipeCards::.*::Cover"
+      id: "SearchScreen::RecipeCards::.*::Cover"
     timeout: 30000
     label: "Wait for recipe card to be displayed"
 
