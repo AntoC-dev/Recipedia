@@ -138,7 +138,7 @@ export function BulkImportDiscovery() {
 
   /**
    * Handles cancel action by aborting any in-progress operations
-   * and navigating back to the previous screen.
+   * and navigating back to the parameters screen.
    */
   const handleCancel = () => {
     abort();

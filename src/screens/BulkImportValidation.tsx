@@ -8,17 +8,10 @@
  *
  * Screen Phases:
  * 1. **Initializing**: Analyzes recipes to find items needing validation
- * 2. **Tags**: User validates/maps unknown tags
- * 3. **Ingredients**: User validates/maps unknown ingredients
- * 4. **Importing**: Saves validated recipes to the database
- * 5. **Complete**: Shows import success message
- * 6. **Error**: Shows error message if import failed
- *
- * Key Features:
- * - Batch validation to reduce duplicate prompts
- * - Progress tracking during validation
- * - Automatic exact-match handling for known items
- * - Error handling with user feedback
+ * 2. **Reviewing**: User validates all unknown tags and ingredients inline
+ * 3. **Importing**: Saves validated recipes to the database
+ * 4. **Complete**: Shows import success message
+ * 5. **Error**: Shows error message if import failed
  *
  * Navigation Flow:
  * BulkImportDiscovery -> BulkImportValidation -> Home (on complete)
@@ -41,11 +34,12 @@ import { StackScreenNavigation, StackScreenParamList } from '@customTypes/Screen
 import { AppBar } from '@components/organisms/AppBar';
 import { ImportErrorMessage } from '@components/molecules/ImportErrorMessage';
 import { ImportSuccessMessage } from '@components/molecules/ImportSuccessMessage';
-import { ValidationProgress } from '@components/molecules/ValidationProgress';
+import { ValidationReviewList } from '@components/organisms/ValidationReviewList';
 import { useI18n } from '@utils/i18n';
 import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
 import { useDefaultPersons } from '@context/DefaultPersonsContext';
 import { useValidationWorkflow } from '@hooks/useValidationWorkflow';
+import { ResolutionMappings } from '@customTypes/ValidationTypes';
 import { padding } from '@styles/spacing';
 
 type BulkImportValidationRouteProp = RouteProp<StackScreenParamList, 'BulkImportValidation'>;
@@ -56,7 +50,7 @@ const screenId = 'BulkImportValidation';
  * BulkImportValidation screen component
  *
  * Manages the validation and import workflow for bulk recipe import.
- * Presents validation dialogs for unknown tags and ingredients,
+ * Presents an inline review list for unknown tags and ingredients,
  * then imports validated recipes to the database.
  *
  * @returns JSX element representing the validation screen
@@ -80,7 +74,7 @@ export function BulkImportValidation() {
     await removeFromSeenHistory(providerId, importedUrls);
   };
 
-  const { phase, initStage, validationState, progress, importedCount, errorMessage, handlers } =
+  const { phase, initStage, validationState, importedCount, errorMessage, handlers } =
     useValidationWorkflow(
       selectedRecipes,
       addMultipleRecipes,
@@ -90,6 +84,16 @@ export function BulkImportValidation() {
       findSimilarIngredients,
       handleImportComplete
     );
+
+  const handleImport = ({ tagMappings, ingredientMappings }: ResolutionMappings) => {
+    for (const [, validatedTag] of tagMappings) {
+      handlers.onTagValidated({ id: -1, name: validatedTag.name }, validatedTag);
+    }
+    for (const [originalName, validatedIngredient] of ingredientMappings) {
+      handlers.onIngredientValidated(originalName, validatedIngredient);
+    }
+    handlers.startImport();
+  };
 
   const getInitStageText = () => {
     switch (initStage) {
@@ -141,31 +145,14 @@ export function BulkImportValidation() {
           </View>
         );
 
-      case 'tags':
+      case 'reviewing':
         return (
-          <ValidationProgress
-            key='tags'
-            type='Tag'
-            progress={progress}
-            items={validationState?.tagsToValidate ?? []}
-            onValidated={handlers.onTagValidated}
-            onDismissed={handlers.onTagDismissed}
-            onComplete={handlers.onTagQueueComplete}
+          <ValidationReviewList
             testID={screenId}
-          />
-        );
-
-      case 'ingredients':
-        return (
-          <ValidationProgress
-            key='ingredients'
-            type='Ingredient'
-            progress={progress}
-            items={validationState?.ingredientsToValidate ?? []}
-            onValidated={handlers.onIngredientValidated}
-            onDismissed={handlers.onIngredientDismissed}
-            onComplete={handlers.onIngredientQueueComplete}
-            testID={screenId}
+            rawTags={validationState?.tagsToValidate ?? []}
+            rawIngredients={validationState?.ingredientsToValidate ?? []}
+            onImport={handleImport}
+            recipeCount={selectedRecipes.length}
           />
         );
 

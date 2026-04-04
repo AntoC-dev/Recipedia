@@ -13,11 +13,8 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { ingredientTableElement, tagTableElement } from '@customTypes/DatabaseElementTypes';
-import {
-  IngredientWithSimilarity,
-  mergeIngredient,
-  TagWithSimilarity,
-} from '@utils/RecipeValidationHelpers';
+import { IngredientWithSimilarity, TagWithSimilarity } from '@customTypes/ValidationTypes';
+import { mergeIngredient } from '@utils/RecipeValidationHelpers';
 import { SimilarityDialog } from './SimilarityDialog';
 import { uiLogger } from '@utils/logger';
 import { namesMatch } from '@utils/NutritionUtils';
