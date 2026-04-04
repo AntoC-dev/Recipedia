@@ -1,0 +1,78 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    id: "BulkImportValidation::ListHeader"
+    text: "Certains éléments des recettes doivent être validés avant de les ajouter.\nAssociez chaque élément à un existant, ajoutez-le comme nouveau ou ignorez-le."
+    label: "Assert - Review list header is visible"
+
+- assertVisible:
+    id: "BulkImportValidation::TagSectionHeader"
+    text: "Tags \\(\\d+/\\d+\\)"
+    label: "Assert - Tags section header is visible"
+
+- assertVisible:
+    id: "BulkImportValidation::Tag::.*"
+    label: "Assert - Bulk tag card is displayed"
+
+- assertVisible:
+    id: "BulkImportValidation::Tag::.*::Name"
+    label: Assert - Tag name is displayed in the card
+
+- assertVisible:
+    id: "BulkImportValidation::Tag::.*::AddNewChip"
+    label: "Assert - Tag adding chip is displayed in the card"
+
+- assertVisible:
+    id: "BulkImportValidation::Tag::.*::PickChip"
+    label: "Assert - Tag picking chip is displayed in the card"
+
+- assertVisible:
+    id: "BulkImportValidation::Tag::.*::SkipChip"
+    label: "Assert - Tag skip chip is displayed in the card"
+
+- scrollUntilVisible:
+    element:
+      id: "BulkImportValidation::IngredientSectionHeader"
+    direction: DOWN
+    speed: 20
+    timeout: 120000
+    centerElement: true
+    label: "Action - Scroll to ingredients section in bulk validation"
+
+- assertVisible:
+    id: "BulkImportValidation::IngredientSectionHeader"
+    text: "Ingrédients \\(\\d+/\\d+\\)"
+    label: "Assert - Ingredients section header is visible"
+
+- tapOn:
+    id: "BulkImportValidation::Ingredient::.*::SkipChip"
+    label: "Action - Ignore one of the ingredients"
+
+- assertVisible:
+    id: "BulkImportValidation::Ingredient::.*::Name"
+    label: Assert - Ingredient name is not displayed in the card
+
+- assertVisible:
+    id: "BulkImportValidation::Ingredient::.*::StatusText"
+    label: "Assert - Ignored text is displayed"
+
+- assertVisible:
+    id: "BulkImportValidation::Ingredient::.*::UndoButton"
+    label: "Assert - Undo ingredient button is displayed"
+
+- tapOn:
+    id: "BulkImportValidation::Ingredient::.*::UndoButton"
+    label: "Action - Undo the ingredient selection"
+
+- assertVisible:
+    id: "BulkImportValidation::BottomActionButton"
+    label: "Assert - Import button is visible (disabled until all items resolved)"
+
+- scrollUntilVisible:
+    element:
+      id: "BulkImportValidation::ListHeader"
+    direction: UP
+    speed: 20
+    timeout: 120000
+    centerElement: true
+    label: "Action - Scroll to the top of the screen"
