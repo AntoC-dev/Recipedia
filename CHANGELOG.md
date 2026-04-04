@@ -1,3 +1,10 @@
+## [2.28.8](https://github.com/AntoC-dev/Recipedia/compare/v2.28.7...v2.28.8) (2026-04-04)
+
+### Bug Fixes
+
+* **DatabasePickerDialog:** replace useDeferredValue with manual debounce ([a442846](https://github.com/AntoC-dev/Recipedia/commit/a442846cf2d8d319bccdb37d6dea84c4d360678c))
+* **DatabasePickerDialog:** replace useDeferredValue with manual debounce ([#249](https://github.com/AntoC-dev/Recipedia/issues/249)) ([b4a3b16](https://github.com/AntoC-dev/Recipedia/commit/b4a3b1673b3ba393cd97496ca9aed0895a79945c))
+
 ## [2.28.7](https://github.com/AntoC-dev/Recipedia/compare/v2.28.6...v2.28.7) (2026-04-02)
 
 ### Bug Fixes
