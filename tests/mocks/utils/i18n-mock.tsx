@@ -78,6 +78,8 @@ export function i18nMock() {
 
     delete: 'delete',
     cancel: 'cancel',
+    'bulkImport.validation.pickTagFor': 'Pick a tag for: {{name}}',
+    'bulkImport.validation.pickIngredientFor': 'Pick an ingredient for: {{name}}',
     'emptyState.noRecommendations.title': 'No Recommendations Available',
     'emptyState.noRecommendations.description':
       'Add some recipes to your collection to see personalized recommendations.',

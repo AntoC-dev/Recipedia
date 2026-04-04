@@ -34,15 +34,28 @@ export function SimilarityDialog({ testId, isVisible, onClose, item }: Similarit
           onClose();
         }}
       />
-      {item.onUseExisting && item.similarItem && (
+      {item.onUseExisting && (
         <Button
           testID={`${mockTestId}::item.onUseExisting`}
           title='item.onUseExisting'
           onPress={() => {
-            if (item.type === 'Tag' && item.similarItem) {
-              item.onUseExisting?.(item.similarItem);
-            } else if (item.type === 'Ingredient' && item.similarItem) {
-              item.onUseExisting?.(item.similarItem);
+            if (item.type === 'Tag') {
+              item.onUseExisting?.(
+                (item.similarItem as typeof item.similarItem & { id: number; name: string }) ?? {
+                  id: 99,
+                  name: item.newItemName,
+                }
+              );
+            } else {
+              item.onUseExisting?.(
+                item.similarItem ?? {
+                  id: 99,
+                  name: item.newItemName,
+                  type: ingredientType.vegetable,
+                  unit: 'g',
+                  season: [],
+                }
+              );
             }
             onClose();
           }}

@@ -20,9 +20,10 @@ jest.mock('@react-navigation/native', () => {
   return reactNavigationMock();
 });
 
-jest.mock('@components/molecules/ValidationProgress', () =>
-  require('@mocks/components/molecules/ValidationProgress-mock')
-);
+jest.mock('@components/organisms/ValidationReviewList', () => ({
+  ValidationReviewList: require('@mocks/components/organisms/ValidationReviewList-mock')
+    .validationReviewListMock,
+}));
 
 const createTestRecipe = (
   overrides: Partial<ConvertedImportRecipe> = {}
@@ -83,16 +84,16 @@ describe('BulkImportValidation', () => {
     });
   });
 
-  test('shows tag validation when recipes have unknown tags', async () => {
+  test('shows review list when recipes have unknown tags', async () => {
     const recipes = [createTestRecipe({ tags: [{ id: 0, name: 'UnknownTag' }] })];
     const { getByTestId } = renderComponent(recipes);
 
     await waitFor(() => {
-      expect(getByTestId('BulkImportValidation::TagValidation')).toBeTruthy();
+      expect(getByTestId('BulkImportValidation::ValidationReviewList')).toBeTruthy();
     });
   });
 
-  test('shows ingredient validation when recipes have unknown ingredients', async () => {
+  test('shows review list when recipes have unknown ingredients', async () => {
     const recipes = [
       createTestRecipe({
         ingredients: [{ name: 'UnknownIngredient', quantity: '100', unit: 'g' }],
@@ -101,11 +102,19 @@ describe('BulkImportValidation', () => {
     const { getByTestId } = renderComponent(recipes);
 
     await waitFor(() => {
-      expect(getByTestId('BulkImportValidation::IngredientValidation')).toBeTruthy();
+      expect(getByTestId('BulkImportValidation::ValidationReviewList')).toBeTruthy();
     });
   });
 
-  test('shows success and finish button after completing validation queues', async () => {
+  test('goes back when cancel pressed', () => {
+    const { getByTestId } = renderComponent();
+
+    fireEvent.press(getByTestId('BulkImportValidation::AppBar::BackButton'));
+
+    expect(mockGoBack).toHaveBeenCalledTimes(1);
+  });
+
+  test('shows success after import completes', async () => {
     jest.spyOn(database, 'addMultipleRecipes').mockResolvedValue(undefined);
 
     const recipes = [
@@ -117,17 +126,10 @@ describe('BulkImportValidation', () => {
     const { getByTestId, getByText } = renderComponent(recipes);
 
     await waitFor(() => {
-      expect(getByTestId('BulkImportValidation::TagValidation')).toBeTruthy();
+      expect(getByTestId('BulkImportValidation::ValidationReviewList')).toBeTruthy();
     });
 
-    fireEvent.press(getByTestId('BulkImportValidation::TagValidation::onComplete'));
-
-    await waitFor(() => {
-      expect(getByTestId('BulkImportValidation::IngredientValidation')).toBeTruthy();
-    });
-
-    fireEvent.press(getByTestId('BulkImportValidation::IngredientValidation::onValidated'));
-    fireEvent.press(getByTestId('BulkImportValidation::IngredientValidation::onComplete'));
+    fireEvent.press(getByTestId('BulkImportValidation::ValidationReviewList::onImport'));
 
     await waitFor(
       () => {
@@ -150,17 +152,10 @@ describe('BulkImportValidation', () => {
     const { getByTestId } = renderComponent(recipes);
 
     await waitFor(() => {
-      expect(getByTestId('BulkImportValidation::TagValidation')).toBeTruthy();
+      expect(getByTestId('BulkImportValidation::ValidationReviewList')).toBeTruthy();
     });
 
-    fireEvent.press(getByTestId('BulkImportValidation::TagValidation::onComplete'));
-
-    await waitFor(() => {
-      expect(getByTestId('BulkImportValidation::IngredientValidation')).toBeTruthy();
-    });
-
-    fireEvent.press(getByTestId('BulkImportValidation::IngredientValidation::onValidated'));
-    fireEvent.press(getByTestId('BulkImportValidation::IngredientValidation::onComplete'));
+    fireEvent.press(getByTestId('BulkImportValidation::ValidationReviewList::onImport'));
 
     await waitFor(
       () => {
@@ -178,13 +173,5 @@ describe('BulkImportValidation', () => {
         routes: [{ name: 'Tabs' }],
       })
     );
-  });
-
-  test('goes back when cancel pressed', () => {
-    const { getByTestId } = renderComponent();
-
-    fireEvent.press(getByTestId('BulkImportValidation::AppBar::BackButton'));
-
-    expect(mockGoBack).toHaveBeenCalledTimes(1);
   });
 });

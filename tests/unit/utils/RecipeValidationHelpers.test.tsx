@@ -1,6 +1,8 @@
 import {
   addNonDuplicateTags,
   addOrMergeIngredientMatches,
+  computeIngredientSimilarity,
+  computeTagSimilarity,
   deduplicateIngredientsByName,
   filterOutExistingTags,
   mergeIngredient,
@@ -10,6 +12,7 @@ import {
   removeTagByName,
   replaceMatchingIngredients,
   replaceMatchingTags,
+  sortAlphabetically,
   validateAndQueueIngredients,
   validateAndQueueTags,
 } from '@utils/RecipeValidationHelpers';
@@ -2116,6 +2119,174 @@ describe('RecipeValidationHelpers', () => {
       const queueConfig = mockSetQueue.mock.calls[0][0];
       expect(queueConfig.items).toHaveLength(1);
       expect(queueConfig.items[0].name).toBe('Fresh Basil');
+    });
+  });
+
+  describe('sortAlphabetically', () => {
+    test('sorts items by name in ascending order', () => {
+      const items = [{ name: 'Zucchini' }, { name: 'Apple' }, { name: 'Mango' }];
+
+      expect(sortAlphabetically(items).map(i => i.name)).toEqual(['Apple', 'Mango', 'Zucchini']);
+    });
+
+    test('returns a new array and does not mutate the original', () => {
+      const items = [{ name: 'B' }, { name: 'A' }];
+      const sorted = sortAlphabetically(items);
+
+      expect(sorted).not.toBe(items);
+      expect(items[0].name).toBe('B');
+    });
+
+    test('treats undefined name as empty string for sorting', () => {
+      const items = [{ name: 'Banana' }, { name: undefined }, { name: 'Apple' }];
+      const sorted = sortAlphabetically(items);
+
+      expect(sorted[0].name).toBeUndefined();
+      expect(sorted[1].name).toBe('Apple');
+      expect(sorted[2].name).toBe('Banana');
+    });
+
+    test('returns empty array for empty input', () => {
+      expect(sortAlphabetically([])).toEqual([]);
+    });
+  });
+
+  describe('computeTagSimilarity', () => {
+    const findSimilarTags = jest.fn();
+
+    beforeEach(() => {
+      findSimilarTags.mockReset();
+    });
+
+    test('attaches similar items to each tag', () => {
+      const similar = { id: 10, name: 'Italian Cuisine' };
+      findSimilarTags.mockReturnValue([similar]);
+
+      const result = computeTagSimilarity([{ id: 1, name: 'Italian' }], findSimilarTags);
+
+      expect(result[0].similarItems).toEqual([similar]);
+    });
+
+    test('filters out exact-name matches from similarItems', () => {
+      const exactMatch = { id: 1, name: 'Italian' };
+      const otherMatch = { id: 2, name: 'Italians' };
+      findSimilarTags.mockReturnValue([exactMatch, otherMatch]);
+
+      const result = computeTagSimilarity([{ id: 1, name: 'Italian' }], findSimilarTags);
+
+      expect(result[0].similarItems).toEqual([otherMatch]);
+    });
+
+    test('returns empty similarItems when no similar tags found', () => {
+      findSimilarTags.mockReturnValue([]);
+
+      const result = computeTagSimilarity([{ id: 1, name: 'Italian' }], findSimilarTags);
+
+      expect(result[0].similarItems).toEqual([]);
+    });
+
+    test('preserves original tag fields alongside similarItems', () => {
+      findSimilarTags.mockReturnValue([]);
+      const tag = { id: 5, name: 'Dinner' };
+
+      const result = computeTagSimilarity([tag], findSimilarTags);
+
+      expect(result[0].id).toBe(5);
+      expect(result[0].name).toBe('Dinner');
+    });
+
+    test('calls findSimilarTags once per tag', () => {
+      findSimilarTags.mockReturnValue([]);
+      const tags = [
+        { id: 1, name: 'A' },
+        { id: 2, name: 'B' },
+        { id: 3, name: 'C' },
+      ];
+
+      computeTagSimilarity(tags, findSimilarTags);
+
+      expect(findSimilarTags).toHaveBeenCalledTimes(3);
+    });
+  });
+
+  describe('computeIngredientSimilarity', () => {
+    const findSimilarIngredients = jest.fn();
+
+    beforeEach(() => {
+      findSimilarIngredients.mockReset();
+    });
+
+    test('attaches similar items to each ingredient', () => {
+      const similar: ingredientTableElement = {
+        id: 10,
+        name: 'Tomato Sauce',
+        unit: 'ml',
+        type: ingredientType.sauce,
+        season: [],
+      };
+      findSimilarIngredients.mockReturnValue([similar]);
+
+      const result = computeIngredientSimilarity(
+        [{ name: 'Tomato', quantity: '100', unit: 'g' }],
+        findSimilarIngredients
+      );
+
+      expect(result[0].similarItems).toEqual([similar]);
+    });
+
+    test('filters out exact-name matches from similarItems', () => {
+      const exactMatch: ingredientTableElement = {
+        id: 1,
+        name: 'Butter',
+        unit: 'g',
+        type: ingredientType.oilAndFat,
+        season: [],
+      };
+      const otherMatch: ingredientTableElement = { ...exactMatch, id: 2, name: 'Butter Salted' };
+      findSimilarIngredients.mockReturnValue([exactMatch, otherMatch]);
+
+      const result = computeIngredientSimilarity(
+        [{ name: 'Butter', quantity: '50', unit: 'g' }],
+        findSimilarIngredients
+      );
+
+      expect(result[0].similarItems).toEqual([otherMatch]);
+    });
+
+    test('skips ingredients without a name', () => {
+      findSimilarIngredients.mockReturnValue([]);
+      const ingredients = [
+        { name: 'Flour', quantity: '200', unit: 'g' },
+        { quantity: '1', unit: 'piece' },
+        { name: 'Sugar', quantity: '50', unit: 'g' },
+      ];
+
+      const result = computeIngredientSimilarity(ingredients, findSimilarIngredients);
+
+      expect(result).toHaveLength(2);
+      expect(result.map(r => r.name)).toEqual(['Flour', 'Sugar']);
+    });
+
+    test('returns empty similarItems when no similar ingredients found', () => {
+      findSimilarIngredients.mockReturnValue([]);
+
+      const result = computeIngredientSimilarity(
+        [{ name: 'Quinoa', quantity: '80', unit: 'g' }],
+        findSimilarIngredients
+      );
+
+      expect(result[0].similarItems).toEqual([]);
+    });
+
+    test('preserves original ingredient fields alongside similarItems', () => {
+      findSimilarIngredients.mockReturnValue([]);
+      const ingredient = { name: 'Olive Oil', quantity: '2', unit: 'tbsp' };
+
+      const result = computeIngredientSimilarity([ingredient], findSimilarIngredients);
+
+      expect(result[0].name).toBe('Olive Oil');
+      expect(result[0].quantity).toBe('2');
+      expect(result[0].unit).toBe('tbsp');
     });
   });
 });

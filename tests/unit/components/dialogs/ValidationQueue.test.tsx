@@ -2,7 +2,7 @@ import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { ValidationQueue } from '@components/dialogs/ValidationQueue';
 import { ingredientTableElement, ingredientType } from '@customTypes/DatabaseElementTypes';
-import { IngredientWithSimilarity, TagWithSimilarity } from '@utils/RecipeValidationHelpers';
+import { IngredientWithSimilarity, TagWithSimilarity } from '@customTypes/ValidationTypes';
 
 jest.mock('@components/dialogs/SimilarityDialog', () =>
   require('@mocks/components/dialogs/SimilarityDialog-mock')
