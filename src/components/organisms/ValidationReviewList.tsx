@@ -143,6 +143,8 @@ export function ValidationReviewList({
   const {
     tags: dbTags,
     ingredients: dbIngredients,
+    addIngredient,
+    addTag,
     findSimilarTags,
     findSimilarIngredients,
   } = useRecipeDatabase();
@@ -293,16 +295,21 @@ export function ValidationReviewList({
               ? {
                   type: 'Tag',
                   value: { id: -1, name: addNewItem.itemName },
-                  onConfirmTag: (_, tag) => {
-                    resolveTag(addNewItem.itemName, { type: 'add-new', resolvedItem: tag });
+                  onConfirmTag: async (_, tag) => {
+                    const savedTag = await addTag(tag);
+                    resolveTag(addNewItem.itemName, { type: 'add-new', resolvedItem: savedTag });
                     setAddNewItem(null);
                   },
                 }
               : {
                   type: 'Ingredient',
                   value: { name: addNewItem.itemName },
-                  onConfirmIngredient: (_, ing) => {
-                    resolveIngredient(addNewItem.itemName, { type: 'add-new', resolvedItem: ing });
+                  onConfirmIngredient: async (_, ing) => {
+                    const savedIng = await addIngredient(ing);
+                    resolveIngredient(addNewItem.itemName, {
+                      type: 'add-new',
+                      resolvedItem: savedIng,
+                    });
                     setAddNewItem(null);
                   },
                 }

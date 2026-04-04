@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import {
   ValidationReviewList,
   ValidationReviewListProps,
@@ -30,6 +30,7 @@ jest.mock('@components/atomic/BottomActionButton', () => ({
 const rawTag = { id: 1, name: 'Italian' };
 const rawTagWithSimilar = { id: 99, name: 'Italians' };
 const rawIngredient = { name: 'Tomato', unit: 'g', quantity: '100' };
+const rawIngredientWithSimilar = { name: 'Spaghettis', unit: 'kg', quantity: '2' };
 
 const testID = 'TestReview';
 
@@ -196,6 +197,20 @@ describe('ValidationReviewList', () => {
 
       expect(getByTestId(`${testID}::Tag::Italians::Status`).props.children).toBe('resolved');
     });
+
+    test('using a suggestion resolves the ingredient', () => {
+      const { getByTestId } = renderValidationReviewList({
+        ...baseProps,
+        rawTags: [],
+        rawIngredients: [rawIngredientWithSimilar],
+      });
+
+      fireEvent.press(getByTestId(`${testID}::Ingredient::Spaghettis::onUseSuggested`));
+
+      expect(getByTestId(`${testID}::Ingredient::Spaghettis::Status`).props.children).toBe(
+        'resolved'
+      );
+    });
   });
 
   describe('ItemDialog integration (add new)', () => {
@@ -221,16 +236,18 @@ describe('ValidationReviewList', () => {
       expect(getByTestId(`${testID}::AddNewDialog::Item::Type`).props.children).toBe('Ingredient');
     });
 
-    test('resolves tag via add-new when ItemDialog confirms', () => {
+    test('resolves tag via add-new when ItemDialog confirms', async () => {
       const { getByTestId } = renderValidationReviewList({ ...baseProps, rawIngredients: [] });
 
       fireEvent.press(getByTestId(`${testID}::Tag::Italian::onAddNew`));
       fireEvent.press(getByTestId(`${testID}::AddNewDialog::Item::OnConfirm`));
 
-      expect(getByTestId(`${testID}::Tag::Italian::Status`).props.children).toBe('resolved');
+      await waitFor(() => {
+        expect(getByTestId(`${testID}::Tag::Italian::Status`).props.children).toBe('resolved');
+      });
     });
 
-    test('closes ItemDialog after confirming', () => {
+    test('closes ItemDialog after confirming', async () => {
       const { getByTestId, queryByTestId } = renderValidationReviewList({
         ...baseProps,
         rawIngredients: [],
@@ -239,7 +256,9 @@ describe('ValidationReviewList', () => {
       fireEvent.press(getByTestId(`${testID}::Tag::Italian::onAddNew`));
       fireEvent.press(getByTestId(`${testID}::AddNewDialog::Item::OnConfirm`));
 
-      expect(queryByTestId(`${testID}::AddNewDialog::Item::Type`)).toBeNull();
+      await waitFor(() => {
+        expect(queryByTestId(`${testID}::AddNewDialog::Item::Type`)).toBeNull();
+      });
     });
 
     test('closes ItemDialog when onClose is called', () => {
@@ -252,6 +271,32 @@ describe('ValidationReviewList', () => {
       fireEvent.press(getByTestId(`${testID}::AddNewDialog::OnClose`));
 
       expect(queryByTestId(`${testID}::AddNewDialog::Item::Type`)).toBeNull();
+    });
+  });
+
+  describe('add-new persists to database', () => {
+    test('adding a new ingredient saves it to the database', async () => {
+      const { getByTestId } = renderValidationReviewList({ ...baseProps, rawTags: [] });
+
+      fireEvent.press(getByTestId(`${testID}::Ingredient::Tomato::onAddNew`));
+      fireEvent.press(getByTestId(`${testID}::AddNewDialog::Item::OnConfirm`));
+
+      await waitFor(() => {
+        const added = database.get_ingredients().find(i => i.name === 'New Value');
+        expect(added).toBeDefined();
+      });
+    });
+
+    test('adding a new tag saves it to the database', async () => {
+      const { getByTestId } = renderValidationReviewList({ ...baseProps, rawIngredients: [] });
+
+      fireEvent.press(getByTestId(`${testID}::Tag::Italian::onAddNew`));
+      fireEvent.press(getByTestId(`${testID}::AddNewDialog::Item::OnConfirm`));
+
+      await waitFor(() => {
+        const added = database.get_tags().find(t => t.name === 'New Value');
+        expect(added).toBeDefined();
+      });
     });
   });
 
@@ -286,6 +331,40 @@ describe('ValidationReviewList', () => {
       fireEvent.press(getByTestId(`${testID}::Ingredient::Tomato::onPickFromDatabase`));
 
       expect(getByTestId(`${testID}::PickDialog::DatabasePickerDialog::Mock`)).toBeTruthy();
+    });
+
+    test('picking a tag resolves the item and closes the dialog', async () => {
+      const { getByTestId, queryByTestId } = renderValidationReviewList({
+        ...baseProps,
+        rawIngredients: [],
+      });
+
+      fireEvent.press(getByTestId(`${testID}::Tag::Italian::onPickFromDatabase`));
+
+      const pickTagButton = await waitFor(() =>
+        getByTestId(`${testID}::PickDialog::DatabasePickerDialog::Mock::item::Italian`)
+      );
+      fireEvent.press(pickTagButton);
+
+      expect(getByTestId(`${testID}::Tag::Italian::Status`).props.children).toBe('resolved');
+      expect(queryByTestId(`${testID}::PickDialog::DatabasePickerDialog::Mock`)).toBeNull();
+    });
+
+    test('picking an ingredient resolves the item and closes the dialog', async () => {
+      const { getByTestId, queryByTestId } = renderValidationReviewList({
+        ...baseProps,
+        rawTags: [],
+      });
+
+      fireEvent.press(getByTestId(`${testID}::Ingredient::Tomato::onPickFromDatabase`));
+
+      const pickIngButton = await waitFor(() =>
+        getByTestId(`${testID}::PickDialog::DatabasePickerDialog::Mock::item::Tomato Sauce`)
+      );
+      fireEvent.press(pickIngButton);
+
+      expect(getByTestId(`${testID}::Ingredient::Tomato::Status`).props.children).toBe('resolved');
+      expect(queryByTestId(`${testID}::PickDialog::DatabasePickerDialog::Mock`)).toBeNull();
     });
 
     test('closes PickDialog when dismissed', () => {
