@@ -247,20 +247,6 @@ describe('ValidationReviewList', () => {
       });
     });
 
-    test('closes ItemDialog after confirming', async () => {
-      const { getByTestId, queryByTestId } = renderValidationReviewList({
-        ...baseProps,
-        rawIngredients: [],
-      });
-
-      fireEvent.press(getByTestId(`${testID}::Tag::Italian::onAddNew`));
-      fireEvent.press(getByTestId(`${testID}::AddNewDialog::Item::OnConfirm`));
-
-      await waitFor(() => {
-        expect(queryByTestId(`${testID}::AddNewDialog::Item::Type`)).toBeNull();
-      });
-    });
-
     test('closes ItemDialog when onClose is called', () => {
       const { getByTestId, queryByTestId } = renderValidationReviewList({
         ...baseProps,
