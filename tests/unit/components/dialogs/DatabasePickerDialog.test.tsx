@@ -1,11 +1,17 @@
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react-native';
+import { act, fireEvent, render } from '@testing-library/react-native';
 import { DatabasePickerDialog } from '@components/dialogs/DatabasePickerDialog';
 import { ingredientTableElement, ingredientType } from '@customTypes/DatabaseElementTypes';
 
 jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
-
 describe('DatabasePickerDialog', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
   const testId = 'test-picker';
   const mockOnSelect = jest.fn();
   const mockOnDismiss = jest.fn();
@@ -165,6 +171,7 @@ describe('DatabasePickerDialog', () => {
 
       const searchbar = getByTestId(`${testId}::Searchbar`);
       fireEvent.changeText(searchbar, 'tom');
+      act(() => jest.advanceTimersByTime(300));
 
       expect(getByTestId(`${testId}::Item::0::Title`).props.children).toBe('Tomato');
       expect(queryByTestId(`${testId}::Item::1`)).toBeNull();
@@ -201,6 +208,7 @@ describe('DatabasePickerDialog', () => {
 
       const searchbar = getByTestId(`${testId}::Searchbar`);
       fireEvent.changeText(searchbar, 'xyz123notfound');
+      act(() => jest.advanceTimersByTime(300));
 
       expect(getByText('alerts.databasePicker.noResults')).toBeTruthy();
     });
@@ -219,6 +227,7 @@ describe('DatabasePickerDialog', () => {
 
       const searchbar = getByTestId(`${testId}::Searchbar`);
       fireEvent.changeText(searchbar, 'an');
+      act(() => jest.advanceTimersByTime(300));
 
       expect(getByTestId(`${testId}::Item::0::Title`).props.children).toBe('Banana');
     });
@@ -237,6 +246,7 @@ describe('DatabasePickerDialog', () => {
 
       const searchbar = getByTestId(`${testId}::Searchbar`);
       fireEvent.changeText(searchbar, 'APPLE');
+      act(() => jest.advanceTimersByTime(300));
 
       expect(getByTestId(`${testId}::Item::0::Title`).props.children).toBe('Apple');
     });
@@ -255,13 +265,68 @@ describe('DatabasePickerDialog', () => {
 
       const searchbar = getByTestId(`${testId}::Searchbar`);
       fireEvent.changeText(searchbar, 'tom');
+      act(() => jest.advanceTimersByTime(300));
       expect(queryByTestId(`${testId}::Item::1`)).toBeNull();
 
       fireEvent.changeText(searchbar, '');
+      act(() => jest.advanceTimersByTime(300));
 
       mockItems.forEach((_, index) => {
         expect(getByTestId(`${testId}::Item::${index}`)).toBeTruthy();
       });
+    });
+
+    test('debounces filtering - does not filter immediately on typing', () => {
+      const { getByTestId } = render(
+        <DatabasePickerDialog
+          testId={testId}
+          isVisible={true}
+          title='Select an item'
+          items={mockItems}
+          onSelect={mockOnSelect}
+          onDismiss={mockOnDismiss}
+        />
+      );
+
+      const searchbar = getByTestId(`${testId}::Searchbar`);
+      fireEvent.changeText(searchbar, 'tom');
+
+      expect(getByTestId(`${testId}::Item::0`)).toBeTruthy();
+      expect(getByTestId(`${testId}::Item::1`)).toBeTruthy();
+      expect(getByTestId(`${testId}::Item::2`)).toBeTruthy();
+      expect(getByTestId(`${testId}::Item::3`)).toBeTruthy();
+
+      act(() => jest.advanceTimersByTime(300));
+
+      expect(getByTestId(`${testId}::Item::0::Title`).props.children).toBe('Tomato');
+    });
+
+    test('resets debounce timer on each keystroke', () => {
+      const { getByTestId, queryByTestId } = render(
+        <DatabasePickerDialog
+          testId={testId}
+          isVisible={true}
+          title='Select an item'
+          items={mockItems}
+          onSelect={mockOnSelect}
+          onDismiss={mockOnDismiss}
+        />
+      );
+
+      const searchbar = getByTestId(`${testId}::Searchbar`);
+
+      fireEvent.changeText(searchbar, 't');
+      act(() => jest.advanceTimersByTime(200));
+      fireEvent.changeText(searchbar, 'to');
+      act(() => jest.advanceTimersByTime(200));
+      fireEvent.changeText(searchbar, 'tom');
+
+      expect(getByTestId(`${testId}::Item::3`)).toBeTruthy();
+
+      act(() => jest.advanceTimersByTime(300));
+
+      expect(getByTestId(`${testId}::Item::0::Title`).props.children).toBe('Tomato');
+      expect(queryByTestId(`${testId}::Item::1`)).toBeNull();
     });
   });
 
@@ -315,6 +380,7 @@ describe('DatabasePickerDialog', () => {
 
       const searchbar = getByTestId(`${testId}::Searchbar`);
       fireEvent.changeText(searchbar, 'app');
+      act(() => jest.advanceTimersByTime(300));
       fireEvent.press(getByTestId(`${testId}::Item::0`));
 
       expect(mockOnSelect).toHaveBeenCalledWith(mockItems[1]);
@@ -334,6 +400,7 @@ describe('DatabasePickerDialog', () => {
 
       const searchbar = getByTestId(`${testId}::Searchbar`);
       fireEvent.changeText(searchbar, 'tom');
+      act(() => jest.advanceTimersByTime(300));
 
       const textInput = getByTestId(`${testId}::Searchbar::TextInput`);
       expect(textInput.props.value).toBe('tom');
@@ -376,6 +443,7 @@ describe('DatabasePickerDialog', () => {
 
       const searchbarInput = getByTestId(`${testId}::Searchbar::TextInput`);
       fireEvent.changeText(searchbarInput, 'search text');
+      act(() => jest.advanceTimersByTime(300));
 
       expect(searchbarInput.props.value).toBe('search text');
 
@@ -439,6 +507,7 @@ describe('DatabasePickerDialog', () => {
 
       const searchbar = getByTestId(`${testId}::Searchbar`);
       fireEvent.changeText(searchbar, '   ');
+      act(() => jest.advanceTimersByTime(300));
 
       expect(getByText('alerts.databasePicker.noResults')).toBeTruthy();
     });
@@ -490,6 +559,7 @@ describe('DatabasePickerDialog', () => {
 
       const searchbar = getByTestId(`${testId}::Searchbar`);
       fireEvent.changeText(searchbar, 'special_chars');
+      act(() => jest.advanceTimersByTime(300));
 
       expect(getByTestId(`${testId}::Item::0::Title`).props.children).toBe(specialItem.name);
     });
@@ -516,6 +586,7 @@ describe('DatabasePickerDialog', () => {
 
       const searchbar = getByTestId(`${testId}::Searchbar`);
       fireEvent.changeText(searchbar, 'café');
+      act(() => jest.advanceTimersByTime(300));
 
       expect(getByTestId(`${testId}::Item::0::Title`).props.children).toBe(accentedItem.name);
     });

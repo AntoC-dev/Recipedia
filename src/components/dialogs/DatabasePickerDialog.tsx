@@ -18,7 +18,7 @@
  * ```
  */
 
-import React, { useDeferredValue, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Button, Dialog, List, Portal, Searchbar, Text, useTheme } from 'react-native-paper';
 import { FlashList } from '@shopify/flash-list';
@@ -71,7 +71,15 @@ export function DatabasePickerDialog<T extends { name: string }>({
   const { colors } = useTheme();
 
   const [searchInput, setSearchInput] = useState('');
-  const debouncedQuery = useDeferredValue(searchInput);
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    debounceTimerRef.current = setTimeout(() => setDebouncedQuery(searchInput), 300);
+    return () => {
+      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+    };
+  }, [searchInput]);
 
   const filteredItems = items.filter(item =>
     item.name.toLowerCase().includes(debouncedQuery.toLowerCase())
@@ -79,11 +87,13 @@ export function DatabasePickerDialog<T extends { name: string }>({
 
   const handleDismiss = () => {
     setSearchInput('');
+    setDebouncedQuery('');
     onDismiss();
   };
 
   const handleSelect = (item: T) => {
     setSearchInput('');
+    setDebouncedQuery('');
     onSelect(item);
   };
 
