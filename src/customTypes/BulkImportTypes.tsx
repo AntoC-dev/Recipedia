@@ -23,7 +23,7 @@ import {
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
 import { IgnoredIngredientPatterns } from '@utils/RecipeScraperConverter';
-import { IngredientWithSimilarity, TagWithSimilarity } from '@utils/RecipeValidationHelpers';
+import { IngredientWithSimilarity, TagWithSimilarity } from '@customTypes/ValidationTypes';
 
 /**
  * Interface for recipe source providers
