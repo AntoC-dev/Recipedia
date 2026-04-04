@@ -76,10 +76,11 @@ tags:
     label: "Wait - For initialization to complete"
 
 - runFlow:
-    file: "../../flows/recipe/validation/validateAllDialogs.yaml"
-    env:
-      TAG_PREFIX: "BulkImportValidation::TagQueue"
-      INGREDIENT_PREFIX: "BulkImportValidation::IngredientQueue"
+    file: "../../asserts/bulk-import/fr/assertValidationReviewScreen.yaml"
+    label: "Assert - Verify validation review screen"
+
+- runFlow:
+    file: "../../flows/recipe/validation/validateAllReviewItems.yaml"
     label: "Action - Validate all tags and ingredients"
 
 - runFlow:

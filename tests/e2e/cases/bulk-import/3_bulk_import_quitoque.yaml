@@ -77,11 +77,9 @@ tags:
     timeout: 120000
     label: "Wait - For initialization to complete"
 
+
 - runFlow:
-    file: "../../flows/recipe/validation/validateAllDialogs.yaml"
-    env:
-      TAG_PREFIX: "BulkImportValidation::TagQueue"
-      INGREDIENT_PREFIX: "BulkImportValidation::IngredientQueue"
+    file: "../../flows/recipe/validation/validateAllReviewItems.yaml"
     label: "Action - Validate all tags and ingredients (first import)"
 
 - runFlow:
@@ -135,12 +133,8 @@ tags:
     label: "Wait - For initialization to complete"
 
 - assertNotVisible:
-    id: "BulkImportValidation::TagQueue::ValidationQueue::Tag::SimilarityDialog::Title"
-    label: "Assert - No tag validation dialog (tags already in database)"
-
-- assertNotVisible:
-    id: "BulkImportValidation::IngredientQueue::ValidationQueue::Ingredient::SimilarityDialog::Title"
-    label: "Assert - No ingredient validation dialog (ingredients already in database)"
+    id: "BulkImportValidation::List"
+    label: "Assert - No review list (all items already in database)"
 
 - runFlow:
     file: "../../asserts/bulk-import/fr/assertImportComplete.yaml"
