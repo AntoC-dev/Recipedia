@@ -2,7 +2,7 @@
  * useValidationWorkflow - Hook for managing bulk import validation workflow
  *
  * Encapsulates all state management and handler logic for the BulkImportValidation
- * screen, including tag/ingredient validation phases and recipe import.
+ * screen, including the review phase and recipe import.
  *
  * @module hooks/useValidationWorkflow
  */
@@ -22,37 +22,26 @@ import {
   initializeBatchValidation,
 } from '@utils/BatchValidation';
 import {
-  IngredientWithSimilarity,
   processIngredientsForValidation,
   processTagsForValidation,
-  TagWithSimilarity,
 } from '@utils/RecipeValidationHelpers';
 import { bulkImportLogger } from '@utils/logger';
 import { useI18n } from '@utils/i18n';
 
 /** Current phase of the validation workflow */
-export type ValidationPhase =
-  | 'initializing'
-  | 'tags'
-  | 'ingredients'
-  | 'importing'
-  | 'complete'
-  | 'error';
+export type ValidationPhase = 'initializing' | 'reviewing' | 'importing' | 'complete' | 'error';
 
 /** Sub-phase during initialization for more granular progress */
 export type InitializationStage = 'analyzing' | 'matching-ingredients' | 'matching-tags' | 'ready';
 
 /** Handler functions returned by the hook */
 export interface ValidationHandlers {
-  onTagValidated: (originalTag: TagWithSimilarity, validatedTag: tagTableElement) => void;
-  onTagDismissed: () => void;
-  onTagQueueComplete: () => void;
+  onTagValidated: (originalTag: tagTableElement, validatedTag: tagTableElement) => void;
   onIngredientValidated: (
-    originalIngredient: IngredientWithSimilarity,
+    originalName: string,
     validatedIngredient: ingredientTableElement
   ) => void;
-  onIngredientDismissed: () => void;
-  onIngredientQueueComplete: () => void;
+  startImport: () => void;
 }
 
 /** Progress information for validation */
@@ -81,8 +70,7 @@ export interface UseValidationWorkflowReturn {
  *
  * Handles the complete validation lifecycle including:
  * - Initialization and analysis of imported recipes
- * - Tag validation queue management
- * - Ingredient validation queue management
+ * - Review phase where user validates all items inline
  * - Final recipe import to database
  *
  * @param selectedRecipes - Recipes to validate and import
@@ -203,10 +191,11 @@ export function useValidationWorkflow(
       setInitStage('ready');
       await new Promise(r => setTimeout(r, 100));
 
-      if (state.tagsToValidate.length > 0) {
-        setPhase('tags');
-      } else if (state.ingredientsToValidate.length > 0) {
-        setPhase('ingredients');
+      const hasItemsToReview =
+        state.tagsToValidate.length > 0 || state.ingredientsToValidate.length > 0;
+
+      if (hasItemsToReview) {
+        setPhase('reviewing');
       } else {
         saveRecipesRef.current(state);
       }
@@ -221,7 +210,7 @@ export function useValidationWorkflow(
    * @param originalTag - The original tag from import
    * @param validatedTag - The validated/mapped tag
    */
-  const handleTagValidated = (originalTag: TagWithSimilarity, validatedTag: tagTableElement) => {
+  const handleTagValidated = (originalTag: tagTableElement, validatedTag: tagTableElement) => {
     const state = validationStateRef.current;
     if (!state) return;
 
@@ -229,67 +218,30 @@ export function useValidationWorkflow(
   };
 
   /**
-   * Handles tag dismissal (user skipped validation for this tag)
-   */
-  const handleTagDismissed = () => {
-    bulkImportLogger.debug('Tag dismissed');
-  };
-
-  /**
-   * Handles tag queue completion, transitions to ingredients phase or saves recipes
-   */
-  const handleTagQueueComplete = () => {
-    const state = validationStateRef.current;
-    if (!state) {
-      bulkImportLogger.error('Tag queue complete but validation state is null');
-      return;
-    }
-
-    bulkImportLogger.debug('Tag queue complete, checking ingredients', {
-      ingredientsToValidate: state.ingredientsToValidate.length,
-    });
-
-    if (state.ingredientsToValidate.length > 0) {
-      bulkImportLogger.debug('Switching to ingredients phase', {
-        ingredientsCount: state.ingredientsToValidate.length,
-        firstIngredientName: state.ingredientsToValidate[0]?.name,
-      });
-      setPhase('ingredients');
-    } else {
-      saveRecipesRef.current(state);
-    }
-  };
-
-  /**
    * Handles ingredient validation by adding a mapping from original to validated ingredient
    *
-   * @param originalIngredient - The original ingredient from import
+   * @param originalName - The original ingredient name from import
    * @param validatedIngredient - The validated/mapped ingredient
    */
   const handleIngredientValidated = (
-    originalIngredient: IngredientWithSimilarity,
+    originalName: string,
     validatedIngredient: ingredientTableElement
   ) => {
     const state = validationStateRef.current;
-    if (!state || !originalIngredient.name) return;
-
-    addIngredientMapping(state, originalIngredient.name, validatedIngredient);
-  };
-
-  /**
-   * Handles ingredient dismissal (user skipped validation for this ingredient)
-   */
-  const handleIngredientDismissed = () => {
-    bulkImportLogger.debug('Ingredient dismissed');
-  };
-
-  /**
-   * Handles ingredient queue completion, saves validated recipes to database
-   */
-  const handleIngredientQueueComplete = () => {
-    bulkImportLogger.debug('Ingredient queue complete, saving recipes');
-    const state = validationStateRef.current;
     if (!state) return;
+
+    addIngredientMapping(state, originalName, validatedIngredient);
+  };
+
+  /**
+   * Triggers the import phase after all items have been reviewed
+   */
+  const handleStartImport = () => {
+    const state = validationStateRef.current;
+    if (!state) {
+      bulkImportLogger.error('Start import called but validation state is null');
+      return;
+    }
     saveRecipesRef.current(state);
   };
 
@@ -304,11 +256,8 @@ export function useValidationWorkflow(
     errorMessage,
     handlers: {
       onTagValidated: handleTagValidated,
-      onTagDismissed: handleTagDismissed,
-      onTagQueueComplete: handleTagQueueComplete,
       onIngredientValidated: handleIngredientValidated,
-      onIngredientDismissed: handleIngredientDismissed,
-      onIngredientQueueComplete: handleIngredientQueueComplete,
+      startImport: handleStartImport,
     },
   };
 }
