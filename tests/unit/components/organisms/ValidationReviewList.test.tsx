@@ -72,27 +72,27 @@ describe('ValidationReviewList', () => {
 
   describe('section headers', () => {
     test('renders tag section header when tags exist', () => {
-      const { getByTestId } = renderValidationReviewList(baseProps);
+      const { getAllByTestId } = renderValidationReviewList(baseProps);
 
-      expect(getByTestId(`${testID}::TagSectionHeader`)).toBeTruthy();
+      expect(getAllByTestId(`${testID}::TagSectionHeader`).length).toBeGreaterThanOrEqual(1);
     });
 
     test('renders ingredient section header when ingredients exist', () => {
-      const { getByTestId } = renderValidationReviewList(baseProps);
+      const { getAllByTestId } = renderValidationReviewList(baseProps);
 
-      expect(getByTestId(`${testID}::IngredientSectionHeader`)).toBeTruthy();
+      expect(getAllByTestId(`${testID}::IngredientSectionHeader`).length).toBeGreaterThanOrEqual(1);
     });
 
     test('does not render tag section when no tags', () => {
-      const { queryByTestId } = renderValidationReviewList({ ...baseProps, rawTags: [] });
+      const { queryAllByTestId } = renderValidationReviewList({ ...baseProps, rawTags: [] });
 
-      expect(queryByTestId(`${testID}::TagSectionHeader`)).toBeNull();
+      expect(queryAllByTestId(`${testID}::TagSectionHeader`)).toHaveLength(0);
     });
 
     test('does not render ingredient section when no ingredients', () => {
-      const { queryByTestId } = renderValidationReviewList({ ...baseProps, rawIngredients: [] });
+      const { queryAllByTestId } = renderValidationReviewList({ ...baseProps, rawIngredients: [] });
 
-      expect(queryByTestId(`${testID}::IngredientSectionHeader`)).toBeNull();
+      expect(queryAllByTestId(`${testID}::IngredientSectionHeader`)).toHaveLength(0);
     });
   });
 

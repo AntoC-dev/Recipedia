@@ -10,7 +10,7 @@
 
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Text, useTheme } from 'react-native-paper';
+import { Divider, Text, useTheme } from 'react-native-paper';
 import { FlashList } from '@shopify/flash-list';
 import {
   FormIngredientElement,
@@ -56,7 +56,6 @@ type FlatItem =
 type ReviewRowProps = {
   flatItem: FlatItem;
   listTestID: string;
-  ingredients: IngredientReviewItem[];
   onUseSuggested: (
     type: 'Tag' | 'Ingredient',
     itemName: string,
@@ -78,15 +77,16 @@ function ReviewRow({
   onSkip,
   onUndo,
 }: ReviewRowProps) {
+  const { colors } = useTheme();
+
   if (flatItem.kind === 'header') {
     return (
-      <Text
-        variant='titleMedium'
-        style={styles.sectionHeader}
-        testID={`${listTestID}::${flatItem.sectionType}SectionHeader`}
-      >
-        {flatItem.title}
-      </Text>
+      <View style={[styles.sectionHeader, { backgroundColor: colors.background }]}>
+        <Text variant='titleMedium' testID={`${listTestID}::${flatItem.sectionType}SectionHeader`}>
+          {flatItem.title}
+        </Text>
+        <Divider style={{ marginTop: padding.small }} />
+      </View>
     );
   }
 
@@ -140,12 +140,16 @@ export function ValidationReviewList({
 }: ValidationReviewListProps) {
   const { t } = useI18n();
   const { colors } = useTheme();
-  const { tags: dbTags, ingredients: dbIngredients } = useRecipeDatabase();
+  const {
+    tags: dbTags,
+    ingredients: dbIngredients,
+    findSimilarTags,
+    findSimilarIngredients,
+  } = useRecipeDatabase();
 
   const [addNewItem, setAddNewItem] = useState<DialogTarget | null>(null);
   const [pickItem, setPickItem] = useState<DialogTarget | null>(null);
 
-  const { findSimilarTags, findSimilarIngredients } = useRecipeDatabase();
   const {
     tags,
     ingredients,
@@ -165,8 +169,10 @@ export function ValidationReviewList({
   ).length;
 
   const listData: FlatItem[] = [];
+  const stickyHeaderIndices: number[] = [];
 
   if (tags.length > 0) {
+    stickyHeaderIndices.push(listData.length);
     listData.push({
       kind: 'header',
       sectionType: 'Tag',
@@ -178,6 +184,7 @@ export function ValidationReviewList({
     tags.forEach(item => listData.push({ kind: 'item', sectionType: 'Tag', item }));
   }
   if (ingredients.length > 0) {
+    stickyHeaderIndices.push(listData.length);
     listData.push({
       kind: 'header',
       sectionType: 'Ingredient',
@@ -239,7 +246,6 @@ export function ValidationReviewList({
           <ReviewRow
             flatItem={item}
             listTestID={testID}
-            ingredients={ingredients}
             onUseSuggested={handleUseSuggested}
             onAddNew={(type, itemName) => setAddNewItem({ type, itemName })}
             onPickFromDatabase={(type, itemName) => setPickItem({ type, itemName })}
@@ -252,6 +258,7 @@ export function ValidationReviewList({
           />
         )}
         getItemType={item => item.kind}
+        stickyHeaderIndices={stickyHeaderIndices}
         ListHeaderComponent={
           <View style={styles.listHeader}>
             <Text
@@ -334,8 +341,7 @@ const styles = StyleSheet.create({
     paddingVertical: padding.medium,
   },
   sectionHeader: {
-    paddingHorizontal: padding.small,
-    paddingVertical: padding.small,
+    padding: padding.small,
   },
 });
 
