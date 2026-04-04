@@ -114,7 +114,7 @@ tags:
     label: "Verification - Third imported recipe exists"
 
 - assertNotVisible:
-    id: "SearchScreen::RecipeCards::24::Cover"
+    id: "SearchScreen::RecipeCards::14::Cover"
     label: "Verification - No extra recipes imported"
 
 - tapOn:
@@ -214,10 +214,6 @@ tags:
 - tapOn:
     id: "Recipe::Dialog::Confirm"
     label: "Cleanup - Close confirmation"
-
-- runFlow:
-    file: "../../flows/bulk-import/deleteAllImportedRecipes.yaml"
-    label: "Safety - Delete any remaining imported recipes"
 
 - runFlow:
     file: "../../flows/parameters/language/switchToEnglish.yaml"

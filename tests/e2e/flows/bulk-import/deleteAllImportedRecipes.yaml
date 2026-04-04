@@ -17,18 +17,17 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd
 
-# Delete recipes at index 10 until none remain (up to 4 times)
-# After each deletion, the next recipe shifts to index 10
+# Delete all imported recipes (ID >= 11) until none remain (up to 10 times)
 - repeat:
     times: 10
     commands:
       - runFlow:
           when:
             visible:
-              id: "SearchScreen::RecipeCards::11::Cover"
+              id: "SearchScreen::RecipeCards::(1[1-9]|[2-9]\\d|\\d{3,})::Cover"
           commands:
             - tapOn:
-                id: "SearchScreen::RecipeCards::11::Cover"
+                id: "SearchScreen::RecipeCards::(1[1-9]|[2-9]\\d|\\d{3,})::Cover"
             - tapOn:
                 id: "Recipe::AppBar::Delete"
             - extendedWaitUntil:
@@ -44,7 +43,7 @@ appId: "com.recipedia"
             - tapOn:
                 id: "Recipe::Dialog::Confirm"
             - waitForAnimationToEnd
-    label: "Delete imported recipes at index 11"
+    label: "Delete imported recipes"
 
 - scrollUntilVisible:
     element:
