@@ -168,6 +168,7 @@ const styles = StyleSheet.create({
   },
   suggestionChip: {
     width: '100%',
+    marginBottom: padding.small,
   },
   secondaryRow: {
     flexDirection: 'row',
