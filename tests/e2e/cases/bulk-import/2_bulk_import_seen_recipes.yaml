@@ -65,21 +65,25 @@ tags:
     file: "../../asserts/bulk-import/fr/assertSeenSection.yaml"
     label: "Assert - Verify seen recipes section is displayed"
 
-- waitForAnimationToEnd
+- extendedWaitUntil:
+    notVisible:
+      id: "BulkImportDiscovery::DiscoveryProgress"
+    timeout: 900000
+    label: "Wait for recipe discovery to complete"
 
 - scrollUntilVisible:
     element:
-      id: "BulkImportDiscovery::seen-3"
+      id: "BulkImportDiscovery::seen-([3-9]|[0-9][0-9]+)"
     direction: DOWN
-    speed: 5
+    speed: 60
     centerElement: true
-    label: "Action - Scroll to fourth seen recipe (fourth to avoid conflict with first test)"
+    label: "Action - Scroll past first three seen recipes"
 
 - waitForAnimationToEnd
 
 - tapOn:
-    id: "BulkImportDiscovery::seen-3"
-    label: "Action - Select fourth seen recipe"
+    id: "BulkImportDiscovery::seen-([3-9]|[0-9][0-9]+)"
+    label: "Action - Select a seen recipe beyond the first three"
 
 - assertVisible:
     id: "BulkImportDiscovery::ContinueButton"
