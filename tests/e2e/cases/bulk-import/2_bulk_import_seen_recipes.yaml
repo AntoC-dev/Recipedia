@@ -69,21 +69,21 @@ tags:
 
 - scrollUntilVisible:
     element:
-      id: "BulkImportDiscovery::seen-0"
+      id: "BulkImportDiscovery::seen-3"
     direction: DOWN
-    speed: 40
-    timeout: 30000
+    speed: 5
     centerElement: true
-    label: "Action - Scroll to first seen recipe"
+    label: "Action - Scroll to fourth seen recipe (fourth to avoid conflict with first test)"
 
 - waitForAnimationToEnd
 
 - tapOn:
-    id: "BulkImportDiscovery::seen-0"
-    label: "Action - Select first seen recipe"
+    id: "BulkImportDiscovery::seen-3"
+    label: "Action - Select fourth seen recipe"
 
 - assertVisible:
     id: "BulkImportDiscovery::ContinueButton"
+    enabled: true
     label: "Verify - Continue button is available"
 
 - tapOn:
