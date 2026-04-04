@@ -3,35 +3,18 @@ import {
   ingredientTableElement,
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
+import { IngredientWithSimilarity, TagWithSimilarity } from '@customTypes/ValidationTypes';
 import { namesMatch } from '@utils/NutritionUtils';
 
 export type IngredientState = (ingredientTableElement | FormIngredientElement)[];
 
 /**
- * A tag that needs validation, with pre-computed similar items from the database.
- * Used by ValidationQueue to display appropriate dialog without re-querying.
- */
-export type TagWithSimilarity = tagTableElement & {
-  similarItems: tagTableElement[];
-};
-
-/**
- * An ingredient that needs validation, with pre-computed similar items from the database.
- * Used by ValidationQueue to display appropriate dialog without re-querying.
- */
-export type IngredientWithSimilarity = FormIngredientElement & {
-  similarItems: ingredientTableElement[];
-};
-
-/**
- * Merges a form ingredient with a validated database ingredient.
+ * Merges an original ingredient from import with a validated database ingredient.
+ * Preserves the original quantity and note while using the validated ingredient's metadata.
  *
- * Preserves the original quantity and note from the form, while using
- * the validated ingredient's database metadata (id, name, unit, type, season).
- *
- * @param original - The form ingredient with user-entered quantity/note
- * @param validated - The database ingredient with canonical metadata
- * @returns A merged ingredient combining form data with database metadata
+ * @param original - The ingredient from the import source
+ * @param validated - The matched ingredient from the database
+ * @returns A merged ingredient element
  */
 export function mergeIngredient(
   original: FormIngredientElement,
@@ -404,4 +387,50 @@ export function validateAndQueueIngredients(
       onDismissed: options?.onDismissed,
     });
   }
+}
+
+/**
+ * Sorts items alphabetically by name using locale-aware comparison
+ *
+ * @param items - Array of items with optional name field
+ * @returns New sorted array
+ */
+export function sortAlphabetically<T extends { name?: string }>(items: T[]): T[] {
+  return [...items].sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
+}
+
+/**
+ * Computes initial similarity for raw tags, excluding exact-name matches
+ *
+ * @param tags - Raw tags to enrich with similarity info
+ * @param findSimilarTags - Database lookup function
+ * @returns Tags with pre-computed similar items
+ */
+export function computeTagSimilarity(
+  tags: tagTableElement[],
+  findSimilarTags: (name: string) => tagTableElement[]
+): TagWithSimilarity[] {
+  return tags.map(tag => ({
+    ...tag,
+    similarItems: findSimilarTags(tag.name).filter(s => !namesMatch(s.name, tag.name)),
+  }));
+}
+
+/**
+ * Computes initial similarity for raw ingredients, excluding exact-name matches
+ *
+ * @param ingredients - Raw form ingredients to enrich with similarity info
+ * @param findSimilarIngredients - Database lookup function
+ * @returns Ingredients with pre-computed similar items (unnamed ingredients skipped)
+ */
+export function computeIngredientSimilarity(
+  ingredients: FormIngredientElement[],
+  findSimilarIngredients: (name: string) => ingredientTableElement[]
+): IngredientWithSimilarity[] {
+  return ingredients
+    .filter(ing => !!ing.name)
+    .map(ing => ({
+      ...ing,
+      similarItems: findSimilarIngredients(ing.name!).filter(s => !namesMatch(s.name, ing.name!)),
+    }));
 }

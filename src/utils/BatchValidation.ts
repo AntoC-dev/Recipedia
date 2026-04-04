@@ -17,7 +17,7 @@ import {
   ConvertedImportRecipe,
   ValidatedRecipe,
 } from '@customTypes/BulkImportTypes';
-import { IngredientWithSimilarity, TagWithSimilarity } from '@utils/RecipeValidationHelpers';
+import { IngredientWithSimilarity, TagWithSimilarity } from '@customTypes/ValidationTypes';
 import { bulkImportLogger } from '@utils/logger';
 import { normalizeKey } from '@utils/NutritionUtils';
 import { scaleQuantityForPersons } from '@utils/Quantity';
