@@ -1,3 +1,19 @@
+## [2.28.9](https://github.com/AntoC-dev/Recipedia/compare/v2.28.8...v2.28.9) (2026-04-05)
+
+### Bug Fixes
+
+* **bulk-import:** enhance and correct e2e test flows ([c5f372f](https://github.com/AntoC-dev/Recipedia/commit/c5f372fb8b79c8f74c4b7990e26193d9e2827fec))
+* **recipe/edit:** remove redundant centerElement property in test YAML ([c02846d](https://github.com/AntoC-dev/Recipedia/commit/c02846d30a1166b08e1a070b3497a8c240134858))
+* **Search:** ensure FlashList maintains scroll position on updates ([aea0543](https://github.com/AntoC-dev/Recipedia/commit/aea05438af2d0ff58aecb3db28d7a8b165e264a5))
+* **Search:** reset scroll position when search string is cleared ([5e48e28](https://github.com/AntoC-dev/Recipedia/commit/5e48e28001189c8d45b21cfa1560658f73a09456))
+* **tests/e2e:** update ID targeting for bulk import discovery ([6a51fc1](https://github.com/AntoC-dev/Recipedia/commit/6a51fc1cc24bdaa2c991a561f3d3dfda2717a7b0))
+* **tests/e2e:** update recipe card ID matching in bulk-import tests ([4f27d88](https://github.com/AntoC-dev/Recipedia/commit/4f27d8880fe8628156734da740fd64e4fba6112a))
+* **tests/e2e:** update recipe card IDs in e2e tests for consistency ([9979c5f](https://github.com/AntoC-dev/Recipedia/commit/9979c5f4f09032170b5ce6ff39ba3caaafb16db5))
+
+### Performance Improvements
+
+* search screen ([#244](https://github.com/AntoC-dev/Recipedia/issues/244)) ([ba73578](https://github.com/AntoC-dev/Recipedia/commit/ba735789407b55616ea35a16975d0ec0ff66fc15))
+
 ## [2.28.8](https://github.com/AntoC-dev/Recipedia/compare/v2.28.7...v2.28.8) (2026-04-04)
 
 ### Bug Fixes
