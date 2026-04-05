@@ -1,3 +1,17 @@
+## [2.29.0](https://github.com/AntoC-dev/Recipedia/compare/v2.28.9...v2.29.0) (2026-04-05)
+
+### Features
+
+* **bulk-import:** replace ValidationQueue with inline ValidationReviewList ([#248](https://github.com/AntoC-dev/Recipedia/issues/248)) ([029820e](https://github.com/AntoC-dev/Recipedia/commit/029820e8088ba3a33ae151ed65ecf77cc24ba3ed))
+* **components:** add ValidationReviewList with FlashList ([b15f439](https://github.com/AntoC-dev/Recipedia/commit/b15f4390f4fb7ac47d1c2dbd3a5ce46a295b55bd))
+* **customTypes:** introduce ValidationTypes for bulk import review ([47d271d](https://github.com/AntoC-dev/Recipedia/commit/47d271de208a0045c01a4846592c938fe7784f8d))
+* **i18n:** add translation strings for validation review ([7f11f96](https://github.com/AntoC-dev/Recipedia/commit/7f11f965ad91fd83cc7a74a8469ba1da9c9542a7))
+
+### Bug Fixes
+
+* **ValidationReviewItem:** add marginBottom to action row ([f91bafd](https://github.com/AntoC-dev/Recipedia/commit/f91bafd303dcba3576a10cd83544daa00d90cd63))
+* **ValidationReviewList:** persist add-new items to database on confirm ([56b3148](https://github.com/AntoC-dev/Recipedia/commit/56b3148fb02710daa823dfbeb01a36bfb83c67ab))
+
 ## [2.28.9](https://github.com/AntoC-dev/Recipedia/compare/v2.28.8...v2.28.9) (2026-04-05)
 
 ### Bug Fixes
