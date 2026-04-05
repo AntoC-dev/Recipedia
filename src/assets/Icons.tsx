@@ -60,5 +60,7 @@ export const Icons: Record<string, dictionaryIcons> = {
   commentEditOutline: 'comment-edit-outline',
   bug: 'bug',
   history: 'history',
+  undo: 'undo',
+  import: 'import',
 } as const;
 export type IconName = keyof typeof Icons;

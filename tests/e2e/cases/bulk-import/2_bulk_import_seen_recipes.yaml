@@ -65,25 +65,29 @@ tags:
     file: "../../asserts/bulk-import/fr/assertSeenSection.yaml"
     label: "Assert - Verify seen recipes section is displayed"
 
-- waitForAnimationToEnd
+- extendedWaitUntil:
+    notVisible:
+      id: "BulkImportDiscovery::DiscoveryProgress"
+    timeout: 900000
+    label: "Wait for recipe discovery to complete"
 
 - scrollUntilVisible:
     element:
-      id: "BulkImportDiscovery::seen-0"
+      id: "BulkImportDiscovery::seen-([3-9]|[0-9][0-9]+)"
     direction: DOWN
-    speed: 40
-    timeout: 30000
+    speed: 60
     centerElement: true
-    label: "Action - Scroll to first seen recipe"
+    label: "Action - Scroll past first three seen recipes"
 
 - waitForAnimationToEnd
 
 - tapOn:
-    id: "BulkImportDiscovery::seen-0"
-    label: "Action - Select first seen recipe"
+    id: "BulkImportDiscovery::seen-([3-9]|[0-9][0-9]+)"
+    label: "Action - Select a seen recipe beyond the first three"
 
 - assertVisible:
     id: "BulkImportDiscovery::ContinueButton"
+    enabled: true
     label: "Verify - Continue button is available"
 
 - tapOn:
@@ -103,10 +107,7 @@ tags:
     label: "Wait - For initialization to complete"
 
 - runFlow:
-    file: "../../flows/recipe/validation/validateAllDialogs.yaml"
-    env:
-      TAG_PREFIX: "BulkImportValidation::TagQueue"
-      INGREDIENT_PREFIX: "BulkImportValidation::IngredientQueue"
+    file: "../../flows/recipe/validation/validateAllReviewItems.yaml"
     label: "Action - Validate all tags and ingredients"
 
 - runFlow:

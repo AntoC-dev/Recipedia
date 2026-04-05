@@ -1,0 +1,10 @@
+appId: "com.recipedia"
+---
+- repeat:
+    while:
+      visible:
+        id: "BulkImportValidation::Tag::.*::AddNewChip"
+    commands:
+      - runFlow:
+          file: "validateOneTagReviewItem.yaml"
+          label: "Validate one tag"

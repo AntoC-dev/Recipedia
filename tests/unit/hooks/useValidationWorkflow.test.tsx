@@ -38,7 +38,7 @@ describe('useValidationWorkflow', () => {
   });
 
   describe('initialization', () => {
-    test('transitions to tags phase when unknown tags exist', async () => {
+    test('transitions to reviewing phase when unknown tags exist', async () => {
       const recipes = [createMockRecipe('Test Recipe', ['NewTag'], ['Chicken'])];
 
       const { result } = renderHook(() =>
@@ -54,13 +54,13 @@ describe('useValidationWorkflow', () => {
 
       await waitFor(
         () => {
-          expect(result.current.phase).toBe('tags');
+          expect(result.current.phase).toBe('reviewing');
         },
         { timeout: 3000 }
       );
     });
 
-    test('transitions to ingredients phase when no unknown tags but unknown ingredients exist', async () => {
+    test('transitions to reviewing phase when unknown ingredients exist', async () => {
       const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient'])];
 
       const { result } = renderHook(() =>
@@ -75,12 +75,12 @@ describe('useValidationWorkflow', () => {
       );
 
       await waitFor(() => {
-        expect(result.current.phase).toBe('ingredients');
+        expect(result.current.phase).toBe('reviewing');
       });
     });
 
-    test('transitions directly to importing when all items match', async () => {
-      const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient'])];
+    test('transitions to reviewing when both tags and ingredients need validation', async () => {
+      const recipes = [createMockRecipe('Test Recipe', ['NewTag'], ['NewIngredient'])];
 
       const { result } = renderHook(() =>
         useValidationWorkflow(
@@ -94,21 +94,11 @@ describe('useValidationWorkflow', () => {
       );
 
       await waitFor(() => {
-        expect(result.current.phase).toBe('ingredients');
+        expect(result.current.phase).toBe('reviewing');
       });
 
-      act(() => {
-        result.current.handlers.onIngredientValidated(
-          { name: 'NewIngredient', quantity: '100', similarItems: [] },
-          { id: 10, name: 'Validated', unit: 'g', type: ingredientType.vegetable, season: [] }
-        );
-      });
-
-      act(() => result.current.handlers.onIngredientQueueComplete());
-
-      await waitFor(() => {
-        expect(['importing', 'complete']).toContain(result.current.phase);
-      });
+      expect(result.current.validationState?.tagsToValidate).toHaveLength(1);
+      expect(result.current.validationState?.ingredientsToValidate).toHaveLength(1);
     });
   });
 
@@ -128,7 +118,7 @@ describe('useValidationWorkflow', () => {
       );
 
       await waitFor(() => {
-        expect(result.current.phase).toBe('tags');
+        expect(result.current.phase).toBe('reviewing');
       });
 
       expect(result.current.validationState?.tagsToValidate).toHaveLength(2);
@@ -149,69 +139,17 @@ describe('useValidationWorkflow', () => {
       );
 
       await waitFor(() => {
-        expect(result.current.phase).toBe('tags');
+        expect(result.current.phase).toBe('reviewing');
       });
 
       act(() => {
         result.current.handlers.onTagValidated(
-          { id: 1, name: 'NewTag', similarItems: [] },
+          { id: 1, name: 'NewTag' },
           { id: 10, name: 'Validated Tag' }
         );
       });
 
       expect(result.current.validationState?.tagMappings.size).toBe(1);
-    });
-
-    test('onTagQueueComplete transitions to ingredients phase', async () => {
-      const recipes = [createMockRecipe('Test Recipe', ['NewTag'], ['NewIngredient'])];
-
-      const { result } = renderHook(() =>
-        useValidationWorkflow(
-          recipes,
-          mockAddMultipleRecipes,
-          true,
-          4,
-          mockFindSimilarTags,
-          mockFindSimilarIngredients
-        )
-      );
-
-      await waitFor(() => {
-        expect(result.current.phase).toBe('tags');
-      });
-
-      act(() => {
-        result.current.handlers.onTagQueueComplete();
-      });
-
-      expect(result.current.phase).toBe('ingredients');
-    });
-
-    test('onTagQueueComplete transitions to importing when no ingredients to validate', async () => {
-      const recipes = [createMockRecipe('Test Recipe', ['NewTag'], [])];
-
-      const { result } = renderHook(() =>
-        useValidationWorkflow(
-          recipes,
-          mockAddMultipleRecipes,
-          true,
-          4,
-          mockFindSimilarTags,
-          mockFindSimilarIngredients
-        )
-      );
-
-      await waitFor(() => {
-        expect(result.current.phase).toBe('tags');
-      });
-
-      act(() => {
-        result.current.handlers.onTagQueueComplete();
-      });
-
-      await waitFor(() => {
-        expect(['importing', 'error']).toContain(result.current.phase);
-      });
     });
   });
 
@@ -231,7 +169,7 @@ describe('useValidationWorkflow', () => {
       );
 
       await waitFor(() => {
-        expect(result.current.phase).toBe('ingredients');
+        expect(result.current.phase).toBe('reviewing');
       });
 
       expect(result.current.validationState?.ingredientsToValidate).toHaveLength(2);
@@ -252,26 +190,25 @@ describe('useValidationWorkflow', () => {
       );
 
       await waitFor(() => {
-        expect(result.current.phase).toBe('ingredients');
+        expect(result.current.phase).toBe('reviewing');
       });
 
       act(() => {
-        result.current.handlers.onIngredientValidated(
-          { name: 'NewIngredient', quantity: '100', similarItems: [] },
-          {
-            id: 10,
-            name: 'Validated Ingredient',
-            unit: 'g',
-            type: ingredientType.vegetable,
-            season: [],
-          }
-        );
+        result.current.handlers.onIngredientValidated('NewIngredient', {
+          id: 10,
+          name: 'Validated Ingredient',
+          unit: 'g',
+          type: ingredientType.vegetable,
+          season: [],
+        });
       });
 
       expect(result.current.validationState?.ingredientMappings.size).toBeGreaterThan(0);
     });
+  });
 
-    test('onIngredientQueueComplete triggers import', async () => {
+  describe('startImport', () => {
+    test('transitions to importing and then complete on success', async () => {
       const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient'])];
 
       const { result } = renderHook(() =>
@@ -285,34 +222,27 @@ describe('useValidationWorkflow', () => {
         )
       );
 
-      await waitFor(() => {
-        expect(result.current.phase).toBe('ingredients');
-      });
+      await waitFor(() => expect(result.current.phase).toBe('reviewing'));
 
       act(() => {
-        result.current.handlers.onIngredientValidated(
-          { name: 'NewIngredient', quantity: '100', similarItems: [] },
-          {
-            id: 10,
-            name: 'Validated Ingredient',
-            unit: 'g',
-            type: ingredientType.vegetable,
-            season: [],
-          }
-        );
+        result.current.handlers.onIngredientValidated('NewIngredient', {
+          id: 10,
+          name: 'Validated',
+          unit: 'g',
+          type: ingredientType.vegetable,
+          season: [],
+        });
       });
 
-      act(() => {
-        result.current.handlers.onIngredientQueueComplete();
-      });
+      act(() => result.current.handlers.startImport());
 
       await waitFor(() => {
-        expect(result.current.phase).toBe('importing');
+        expect(result.current.phase).toBe('complete');
       });
+
+      expect(result.current.importedCount).toBe(1);
     });
-  });
 
-  describe('importing', () => {
     test('calls addMultipleRecipes with validated recipes', async () => {
       const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient'])];
 
@@ -327,52 +257,23 @@ describe('useValidationWorkflow', () => {
         )
       );
 
-      await waitFor(() => expect(result.current.phase).toBe('ingredients'));
+      await waitFor(() => expect(result.current.phase).toBe('reviewing'));
 
       act(() => {
-        result.current.handlers.onIngredientValidated(
-          { name: 'NewIngredient', quantity: '100', similarItems: [] },
-          { id: 10, name: 'Validated', unit: 'g', type: ingredientType.vegetable, season: [] }
-        );
+        result.current.handlers.onIngredientValidated('NewIngredient', {
+          id: 10,
+          name: 'Validated',
+          unit: 'g',
+          type: ingredientType.vegetable,
+          season: [],
+        });
       });
 
-      act(() => result.current.handlers.onIngredientQueueComplete());
+      act(() => result.current.handlers.startImport());
 
       await waitFor(() => {
         expect(mockAddMultipleRecipes).toHaveBeenCalled();
       });
-    });
-
-    test('transitions to complete phase on success', async () => {
-      const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient'])];
-
-      const { result } = renderHook(() =>
-        useValidationWorkflow(
-          recipes,
-          mockAddMultipleRecipes,
-          true,
-          4,
-          mockFindSimilarTags,
-          mockFindSimilarIngredients
-        )
-      );
-
-      await waitFor(() => expect(result.current.phase).toBe('ingredients'));
-
-      act(() => {
-        result.current.handlers.onIngredientValidated(
-          { name: 'NewIngredient', quantity: '100', similarItems: [] },
-          { id: 10, name: 'Validated', unit: 'g', type: ingredientType.vegetable, season: [] }
-        );
-      });
-
-      act(() => result.current.handlers.onIngredientQueueComplete());
-
-      await waitFor(() => {
-        expect(result.current.phase).toBe('complete');
-      });
-
-      expect(result.current.importedCount).toBe(1);
     });
 
     test('transitions to error phase on failure', async () => {
@@ -391,16 +292,19 @@ describe('useValidationWorkflow', () => {
         )
       );
 
-      await waitFor(() => expect(result.current.phase).toBe('ingredients'));
+      await waitFor(() => expect(result.current.phase).toBe('reviewing'));
 
       act(() => {
-        result.current.handlers.onIngredientValidated(
-          { name: 'NewIngredient', quantity: '100', similarItems: [] },
-          { id: 10, name: 'Validated', unit: 'g', type: ingredientType.vegetable, season: [] }
-        );
+        result.current.handlers.onIngredientValidated('NewIngredient', {
+          id: 10,
+          name: 'Validated',
+          unit: 'g',
+          type: ingredientType.vegetable,
+          season: [],
+        });
       });
 
-      act(() => result.current.handlers.onIngredientQueueComplete());
+      act(() => result.current.handlers.startImport());
 
       await waitFor(() => {
         expect(result.current.phase).toBe('error');
@@ -427,25 +331,63 @@ describe('useValidationWorkflow', () => {
       );
 
       await waitFor(() => {
-        expect(result.current.phase).toBe('ingredients');
+        expect(result.current.phase).toBe('reviewing');
       });
 
       act(() => {
-        result.current.handlers.onIngredientValidated(
-          { name: 'NewIngredient', quantity: '100', similarItems: [] },
-          { id: 10, name: 'Validated', unit: 'g', type: ingredientType.vegetable, season: [] }
-        );
+        result.current.handlers.onIngredientValidated('NewIngredient', {
+          id: 10,
+          name: 'Validated',
+          unit: 'g',
+          type: ingredientType.vegetable,
+          season: [],
+        });
       });
 
-      act(() => {
-        result.current.handlers.onIngredientQueueComplete();
-      });
+      act(() => result.current.handlers.startImport());
 
       await waitFor(() => {
         expect(result.current.phase).toBe('complete');
       });
 
       expect(result.current.importedCount).toBe(1);
+    });
+
+    test('saves recipes with defaultPersons instead of recipe persons', async () => {
+      const recipesWithWrongPersons = [
+        { ...createMockRecipe('Test Recipe', [], ['NewIngredient']), persons: 2 },
+      ];
+
+      const { result } = renderHook(() =>
+        useValidationWorkflow(
+          recipesWithWrongPersons,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
+      );
+
+      await waitFor(() => expect(result.current.phase).toBe('reviewing'));
+
+      act(() => {
+        result.current.handlers.onIngredientValidated('NewIngredient', {
+          id: 10,
+          name: 'Validated',
+          unit: 'g',
+          type: ingredientType.vegetable,
+          season: [],
+        });
+      });
+
+      act(() => result.current.handlers.startImport());
+
+      await waitFor(() => {
+        expect(mockAddMultipleRecipes).toHaveBeenCalledWith(
+          expect.arrayContaining([expect.objectContaining({ persons: 4 })])
+        );
+      });
     });
 
     test('awaits async onImportComplete callback before completing', async () => {
@@ -470,16 +412,19 @@ describe('useValidationWorkflow', () => {
         )
       );
 
-      await waitFor(() => expect(result.current.phase).toBe('ingredients'));
+      await waitFor(() => expect(result.current.phase).toBe('reviewing'));
 
       act(() => {
-        result.current.handlers.onIngredientValidated(
-          { name: 'NewIngredient', quantity: '100', similarItems: [] },
-          { id: 10, name: 'Validated', unit: 'g', type: ingredientType.vegetable, season: [] }
-        );
+        result.current.handlers.onIngredientValidated('NewIngredient', {
+          id: 10,
+          name: 'Validated',
+          unit: 'g',
+          type: ingredientType.vegetable,
+          season: [],
+        });
       });
 
-      act(() => result.current.handlers.onIngredientQueueComplete());
+      act(() => result.current.handlers.startImport());
 
       await waitFor(() => {
         expect(mockAddMultipleRecipes).toHaveBeenCalled();
@@ -498,40 +443,6 @@ describe('useValidationWorkflow', () => {
 
       await waitFor(() => {
         expect(result.current.phase).toBe('complete');
-      });
-    });
-
-    test('saves recipes with defaultPersons instead of recipe persons', async () => {
-      const recipesWithWrongPersons = [
-        { ...createMockRecipe('Test Recipe', [], ['NewIngredient']), persons: 2 },
-      ];
-
-      const { result } = renderHook(() =>
-        useValidationWorkflow(
-          recipesWithWrongPersons,
-          mockAddMultipleRecipes,
-          true,
-          4,
-          mockFindSimilarTags,
-          mockFindSimilarIngredients
-        )
-      );
-
-      await waitFor(() => expect(result.current.phase).toBe('ingredients'));
-
-      act(() => {
-        result.current.handlers.onIngredientValidated(
-          { name: 'NewIngredient', quantity: '100', similarItems: [] },
-          { id: 10, name: 'Validated', unit: 'g', type: ingredientType.vegetable, season: [] }
-        );
-      });
-
-      act(() => result.current.handlers.onIngredientQueueComplete());
-
-      await waitFor(() => {
-        expect(mockAddMultipleRecipes).toHaveBeenCalledWith(
-          expect.arrayContaining([expect.objectContaining({ persons: 4 })])
-        );
       });
     });
 
@@ -555,20 +466,26 @@ describe('useValidationWorkflow', () => {
         )
       );
 
-      await waitFor(() => expect(result.current.phase).toBe('ingredients'));
+      await waitFor(() => expect(result.current.phase).toBe('reviewing'));
 
       act(() => {
-        result.current.handlers.onIngredientValidated(
-          { name: 'Ingredient1', quantity: '100', similarItems: [] },
-          { id: 10, name: 'Validated1', unit: 'g', type: ingredientType.vegetable, season: [] }
-        );
-        result.current.handlers.onIngredientValidated(
-          { name: 'Ingredient2', quantity: '100', similarItems: [] },
-          { id: 11, name: 'Validated2', unit: 'g', type: ingredientType.vegetable, season: [] }
-        );
+        result.current.handlers.onIngredientValidated('Ingredient1', {
+          id: 10,
+          name: 'Validated1',
+          unit: 'g',
+          type: ingredientType.vegetable,
+          season: [],
+        });
+        result.current.handlers.onIngredientValidated('Ingredient2', {
+          id: 11,
+          name: 'Validated2',
+          unit: 'g',
+          type: ingredientType.vegetable,
+          season: [],
+        });
       });
 
-      act(() => result.current.handlers.onIngredientQueueComplete());
+      act(() => result.current.handlers.startImport());
 
       await waitFor(() => {
         expect(result.current.phase).toBe('complete');
@@ -582,7 +499,7 @@ describe('useValidationWorkflow', () => {
   });
 
   describe('progress tracking', () => {
-    test('provides progress during tag validation', async () => {
+    test('provides progress during reviewing phase', async () => {
       const recipes = [createMockRecipe('Test Recipe', ['NewTag', 'AnotherTag'], ['Chicken'])];
 
       const { result } = renderHook(() =>
@@ -597,89 +514,11 @@ describe('useValidationWorkflow', () => {
       );
 
       await waitFor(() => {
-        expect(result.current.phase).toBe('tags');
+        expect(result.current.phase).toBe('reviewing');
       });
 
       expect(result.current.progress).not.toBeNull();
       expect(result.current.progress?.totalTags).toBe(2);
-    });
-
-    test('provides progress during ingredient validation', async () => {
-      const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient', 'AnotherIngredient'])];
-
-      const { result } = renderHook(() =>
-        useValidationWorkflow(
-          recipes,
-          mockAddMultipleRecipes,
-          true,
-          4,
-          mockFindSimilarTags,
-          mockFindSimilarIngredients
-        )
-      );
-
-      await waitFor(() => {
-        expect(result.current.phase).toBe('ingredients');
-      });
-
-      expect(result.current.progress).not.toBeNull();
-      expect(result.current.progress?.totalIngredients).toBe(2);
-    });
-  });
-
-  describe('handlers', () => {
-    test('onTagDismissed does not add mapping', async () => {
-      const recipes = [createMockRecipe('Test Recipe', ['NewTag'], ['Chicken'])];
-
-      const { result } = renderHook(() =>
-        useValidationWorkflow(
-          recipes,
-          mockAddMultipleRecipes,
-          true,
-          4,
-          mockFindSimilarTags,
-          mockFindSimilarIngredients
-        )
-      );
-
-      await waitFor(() => {
-        expect(result.current.phase).toBe('tags');
-      });
-
-      const mappingsSizeBefore = result.current.validationState?.tagMappings.size ?? 0;
-
-      act(() => {
-        result.current.handlers.onTagDismissed();
-      });
-
-      expect(result.current.validationState?.tagMappings.size).toBe(mappingsSizeBefore);
-    });
-
-    test('onIngredientDismissed does not add mapping', async () => {
-      const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient'])];
-
-      const { result } = renderHook(() =>
-        useValidationWorkflow(
-          recipes,
-          mockAddMultipleRecipes,
-          true,
-          4,
-          mockFindSimilarTags,
-          mockFindSimilarIngredients
-        )
-      );
-
-      await waitFor(() => {
-        expect(result.current.phase).toBe('ingredients');
-      });
-
-      const mappingsSizeBefore = result.current.validationState?.ingredientMappings.size ?? 0;
-
-      act(() => {
-        result.current.handlers.onIngredientDismissed();
-      });
-
-      expect(result.current.validationState?.ingredientMappings.size).toBe(mappingsSizeBefore);
     });
   });
 
@@ -702,7 +541,7 @@ describe('useValidationWorkflow', () => {
       );
 
       await waitFor(() => {
-        expect(result.current.phase).toBe('ingredients');
+        expect(result.current.phase).toBe('reviewing');
       });
 
       expect(result.current.validationState?.tagsToValidate).toHaveLength(0);
@@ -764,8 +603,8 @@ describe('useValidationWorkflow', () => {
     });
   });
 
-  describe('handleTagQueueComplete null state guard', () => {
-    test('onTagQueueComplete does nothing when called before state is initialized', () => {
+  describe('startImport null state guard', () => {
+    test('startImport does nothing when called before state is initialized', () => {
       const recipes = [createMockRecipe('Test Recipe', ['NewTag'], ['NewIngredient'])];
 
       const { result } = renderHook(() =>
@@ -780,7 +619,7 @@ describe('useValidationWorkflow', () => {
       );
 
       act(() => {
-        result.current.handlers.onTagQueueComplete();
+        result.current.handlers.startImport();
       });
 
       expect(result.current.phase).toBe('initializing');
@@ -826,49 +665,46 @@ describe('useValidationWorkflow', () => {
       );
 
       await waitFor(() => {
-        expect(result.current.phase).toBe('tags');
+        expect(result.current.phase).toBe('reviewing');
       });
 
       act(() => {
         result.current.handlers.onTagValidated(
-          { id: 0, name: 'Italian', similarItems: [] },
+          { id: 0, name: 'Italian' },
           { id: 1, name: 'Italian' }
         );
         result.current.handlers.onTagValidated(
-          { id: 1, name: 'Dinner', similarItems: [] },
+          { id: 1, name: 'Dinner' },
           { id: 2, name: 'Dinner' }
         );
-        result.current.handlers.onTagValidated(
-          { id: 2, name: 'Quick', similarItems: [] },
-          {
-            id: 3,
-            name: 'Quick',
-          }
-        );
-      });
-
-      act(() => result.current.handlers.onTagQueueComplete());
-
-      await waitFor(() => {
-        expect(result.current.phase).toBe('ingredients');
+        result.current.handlers.onTagValidated({ id: 2, name: 'Quick' }, { id: 3, name: 'Quick' });
       });
 
       act(() => {
-        result.current.handlers.onIngredientValidated(
-          { name: 'Chicken', quantity: '100', similarItems: [] },
-          { id: 1, name: 'Chicken', unit: 'g', type: ingredientType.meat, season: [] }
-        );
-        result.current.handlers.onIngredientValidated(
-          { name: 'Tomato', quantity: '100', similarItems: [] },
-          { id: 2, name: 'Tomato', unit: 'piece', type: ingredientType.vegetable, season: [] }
-        );
-        result.current.handlers.onIngredientValidated(
-          { name: 'Onion', quantity: '100', similarItems: [] },
-          { id: 3, name: 'Onion', unit: 'piece', type: ingredientType.vegetable, season: [] }
-        );
+        result.current.handlers.onIngredientValidated('Chicken', {
+          id: 1,
+          name: 'Chicken',
+          unit: 'g',
+          type: ingredientType.meat,
+          season: [],
+        });
+        result.current.handlers.onIngredientValidated('Tomato', {
+          id: 2,
+          name: 'Tomato',
+          unit: 'piece',
+          type: ingredientType.vegetable,
+          season: [],
+        });
+        result.current.handlers.onIngredientValidated('Onion', {
+          id: 3,
+          name: 'Onion',
+          unit: 'piece',
+          type: ingredientType.vegetable,
+          season: [],
+        });
       });
 
-      act(() => result.current.handlers.onIngredientQueueComplete());
+      act(() => result.current.handlers.startImport());
 
       await waitFor(() => {
         expect(result.current.phase).toBe('complete');
@@ -892,7 +728,7 @@ describe('useValidationWorkflow', () => {
       );
 
       await waitFor(() => {
-        expect(result.current.phase).toBe('tags');
+        expect(result.current.phase).toBe('reviewing');
       });
 
       expect(result.current.validationState?.tagsToValidate).toHaveLength(2);
@@ -915,7 +751,7 @@ describe('useValidationWorkflow', () => {
       );
 
       await waitFor(() => {
-        expect(result.current.phase).toBe('ingredients');
+        expect(result.current.phase).toBe('reviewing');
       });
 
       expect(result.current.validationState?.ingredientsToValidate).toHaveLength(2);
@@ -936,72 +772,16 @@ describe('useValidationWorkflow', () => {
       );
 
       await waitFor(() => {
-        expect(result.current.phase).toBe('ingredients');
+        expect(result.current.phase).toBe('reviewing');
       });
 
-      act(() => {
-        result.current.handlers.onIngredientQueueComplete();
-      });
+      act(() => result.current.handlers.startImport());
 
       await waitFor(() => {
         expect(result.current.phase).toBe('error');
       });
 
       expect(result.current.errorMessage).toBeTruthy();
-    });
-
-    test('multiple recipes with mixed validation states', async () => {
-      const recipes = [
-        createMockRecipe('Full Match', [], ['Chicken']),
-        createMockRecipe('Unknown Tags', ['NewTag'], ['Tomato']),
-        createMockRecipe('Unknown Ingredients', [], ['NewIngredient']),
-      ];
-
-      const { result } = renderHook(() =>
-        useValidationWorkflow(
-          recipes,
-          mockAddMultipleRecipes,
-          true,
-          4,
-          mockFindSimilarTags,
-          mockFindSimilarIngredients
-        )
-      );
-
-      await waitFor(() => {
-        expect(result.current.phase).toBe('tags');
-      });
-
-      act(() => {
-        result.current.handlers.onTagQueueComplete();
-      });
-
-      await waitFor(() => {
-        expect(result.current.phase).toBe('ingredients');
-      });
-
-      act(() => {
-        result.current.handlers.onIngredientValidated(
-          { name: 'Chicken', quantity: '100', similarItems: [] },
-          { id: 1, name: 'Chicken', unit: 'g', type: ingredientType.meat, season: [] }
-        );
-        result.current.handlers.onIngredientValidated(
-          { name: 'Tomato', quantity: '100', similarItems: [] },
-          { id: 2, name: 'Tomato', unit: 'piece', type: ingredientType.vegetable, season: [] }
-        );
-        result.current.handlers.onIngredientValidated(
-          { name: 'NewIngredient', quantity: '100', similarItems: [] },
-          { id: 3, name: 'NewIngredient', unit: 'g', type: ingredientType.vegetable, season: [] }
-        );
-      });
-
-      act(() => {
-        result.current.handlers.onIngredientQueueComplete();
-      });
-
-      await waitFor(() => {
-        expect(result.current.phase).toBe('complete');
-      });
     });
 
     test('preserves existing mappings when adding new ones', async () => {
@@ -1019,24 +799,44 @@ describe('useValidationWorkflow', () => {
       );
 
       await waitFor(() => {
-        expect(result.current.phase).toBe('tags');
+        expect(result.current.phase).toBe('reviewing');
       });
 
       act(() => {
         result.current.handlers.onTagValidated(
-          { id: 1, name: 'NewTag1', similarItems: [] },
+          { id: 1, name: 'NewTag1' },
           { id: 10, name: 'Validated Tag 1' }
         );
       });
 
       act(() => {
         result.current.handlers.onTagValidated(
-          { id: 2, name: 'NewTag2', similarItems: [] },
+          { id: 2, name: 'NewTag2' },
           { id: 11, name: 'Validated Tag 2' }
         );
       });
 
       expect(result.current.validationState?.tagMappings.size).toBe(2);
+    });
+
+    test('startImport does nothing when validation state is null', () => {
+      const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient'])];
+
+      const { result } = renderHook(() =>
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          false,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
+      );
+
+      act(() => result.current.handlers.startImport());
+
+      expect(result.current.phase).toBe('initializing');
+      expect(mockAddMultipleRecipes).not.toHaveBeenCalled();
     });
   });
 });

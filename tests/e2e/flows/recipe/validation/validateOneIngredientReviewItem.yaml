@@ -1,0 +1,83 @@
+appId: "com.recipedia"
+---
+- scrollUntilVisible:
+    element:
+      id: "BulkImportValidation::Ingredient::.*::AddNewChip"
+    direction: DOWN
+    speed: 20
+    timeout: 30000
+    centerElement: true
+    label: "Scroll to first pending ingredient"
+
+- tapOn:
+    id: "BulkImportValidation::Ingredient::.*::AddNewChip"
+    label: "Tap Add New on pending ingredient"
+
+- extendedWaitUntil:
+    visible:
+      id: "BulkImportValidation::AddNewDialog::AddModal::Unit::CustomTextInput"
+    timeout: 30000
+    label: "Wait for ingredient add dialog"
+
+- tapOn:
+    id: "BulkImportValidation::AddNewDialog::AddModal::TypeAccordion"
+    label: "Expand ingredient type accordion"
+
+- extendedWaitUntil:
+    visible:
+      id: "BulkImportValidation::AddNewDialog::AddModal::TypeAccordion::ingredientTypes.*"
+    timeout: 5000
+    label: "Wait for type list"
+
+- scrollUntilVisible:
+    element:
+      id: "BulkImportValidation::AddNewDialog::AddModal::TypeAccordion::ingredientTypes.cheese"
+    direction: DOWN
+    speed: 20
+    timeout: 1200000
+    centerElement: true
+    label: "Scroll to cheese type"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "BulkImportValidation::AddNewDialog::AddModal::TypeAccordion::ingredientTypes.cheese"
+    label: "Select Cheese type"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - extendedWaitUntil:
+          visible:
+            text: "radio button, checked"
+          timeout: 30000
+          label: "Wait for checked state (iOS)"
+
+- scrollUntilVisible:
+    element:
+      id: "BulkImportValidation::AddNewDialog::AddModal::TypeAccordion"
+    direction: UP
+    speed: 20
+    label: "Scroll back to accordion"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "BulkImportValidation::AddNewDialog::AddModal::TypeAccordion"
+    label: "Collapse type accordion"
+
+- assertVisible:
+    id: "BulkImportValidation::AddNewDialog::AddModal::ConfirmButton"
+    enabled: true
+    label: "Confirm button is enabled"
+
+- tapOn:
+    id: "BulkImportValidation::AddNewDialog::AddModal::ConfirmButton"
+    label: "Confirm adding the ingredient"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "BulkImportValidation::AddNewDialog::AddModal::ConfirmButton"
+    timeout: 10000
+    label: "Wait for dialog to close"

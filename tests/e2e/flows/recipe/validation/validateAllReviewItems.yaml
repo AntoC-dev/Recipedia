@@ -1,0 +1,19 @@
+appId: "com.recipedia"
+---
+- extendedWaitUntil:
+    visible:
+      id: "BulkImportValidation::ListHeader"
+    timeout: 10000
+    label: "Wait for review list to be ready"
+
+- runFlow:
+    file: "validateAllTagReviewItems.yaml"
+    label: "Validate all tag items"
+
+- runFlow:
+    file: "validateAllIngredientReviewItems.yaml"
+    label: "Validate all ingredient items"
+
+- tapOn:
+    id: "BulkImportValidation::BottomActionButton"
+    label: "Tap import button"

@@ -10,7 +10,7 @@ import {
   useRecipeDatabase,
 } from '@context/RecipeDatabaseContext';
 import { ingredientTableElement, tagTableElement } from '@customTypes/DatabaseElementTypes';
-import { IngredientWithSimilarity, TagWithSimilarity } from '@utils/RecipeValidationHelpers';
+import { IngredientWithSimilarity, TagWithSimilarity } from '@customTypes/ValidationTypes';
 
 jest.mock('@react-navigation/native', () =>
   require('@mocks/deps/react-navigation-mock').reactNavigationMock()

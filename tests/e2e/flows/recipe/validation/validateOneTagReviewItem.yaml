@@ -1,0 +1,29 @@
+appId: "com.recipedia"
+---
+- scrollUntilVisible:
+    element:
+      id: "BulkImportValidation::Tag::.*::AddNewChip"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to first pending tag"
+
+- tapOn:
+    id: "BulkImportValidation::Tag::.*::AddNewChip"
+    label: "Tap Add New on pending tag"
+
+- extendedWaitUntil:
+    visible:
+      id: "BulkImportValidation::AddNewDialog::AddModal::ConfirmButton"
+    timeout: 10000
+    label: "Wait for tag add dialog"
+
+- tapOn:
+    id: "BulkImportValidation::AddNewDialog::AddModal::ConfirmButton"
+    label: "Confirm adding the tag"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "BulkImportValidation::AddNewDialog::AddModal::ConfirmButton"
+    timeout: 10000
+    label: "Wait for dialog to close"

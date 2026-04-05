@@ -1,0 +1,10 @@
+appId: "com.recipedia"
+---
+- repeat:
+    while:
+      visible:
+        id: "BulkImportValidation::Ingredient::.*::AddNewChip"
+    commands:
+      - runFlow:
+          file: "validateOneIngredientReviewItem.yaml"
+          label: "Validate one ingredient"
