@@ -8,7 +8,7 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::RecipeCards::0::Cover"
+      id: "SearchScreen::RecipeCards::.*::Cover"
     direction: DOWN
     speed: 50
     centerElement: true
@@ -17,7 +17,7 @@ appId: "com.recipedia"
 - waitForAnimationToEnd
 
 - tapOn:
-    id: "SearchScreen::RecipeCards::0::Cover"
+    id: "SearchScreen::RecipeCards::.*::Cover"
     label: "Open the E2E Test Recipe"
 
 - waitForAnimationToEnd

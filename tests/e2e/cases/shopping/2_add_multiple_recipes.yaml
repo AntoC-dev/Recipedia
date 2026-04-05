@@ -15,7 +15,7 @@ tags:
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::RecipeCards::0::.*"
+      id: "SearchScreen::RecipeCards::1::.*"
     direction: DOWN
     speed: 40
     centerElement: true
@@ -24,7 +24,7 @@ tags:
 - waitForAnimationToEnd
 
 - tapOn:
-    id: "SearchScreen::RecipeCards::0::.*"
+    id: "SearchScreen::RecipeCards::1::.*"
     label: "Action - Open Spaghetti Bolognese recipe"
 
 - tapOn:
@@ -53,7 +53,7 @@ tags:
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::RecipeCards::3::Content"
+      id: "SearchScreen::RecipeCards::4::Content"
     direction: DOWN
     speed: 60
     centerElement: true
@@ -62,7 +62,7 @@ tags:
 - waitForAnimationToEnd
 
 - tapOn:
-    id: "SearchScreen::RecipeCards::3::.*"
+    id: "SearchScreen::RecipeCards::4::.*"
     label: "Action - Open Caesar Salad recipe"
 
 - tapOn:
@@ -95,7 +95,7 @@ tags:
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::RecipeCards::4::Content"
+      id: "SearchScreen::RecipeCards::5::Content"
     direction: DOWN
     speed: 60
     centerElement: true
@@ -104,7 +104,7 @@ tags:
 - waitForAnimationToEnd
 
 - tapOn:
-    id: "SearchScreen::RecipeCards::4::Content"
+    id: "SearchScreen::RecipeCards::5::Content"
     label: "Action - Open Margherita Pizza recipe"
 
 - tapOn:

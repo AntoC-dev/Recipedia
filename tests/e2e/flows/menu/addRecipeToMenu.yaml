@@ -8,7 +8,7 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::RecipeCards::2::Classic Pancakes-outline"
+      id: "SearchScreen::RecipeCards::3::Classic Pancakes-outline"
     direction: DOWN
     speed: 60
     centerElement: true
@@ -17,7 +17,7 @@ appId: "com.recipedia"
 - waitForAnimationToEnd
 
 - tapOn:
-    id: "SearchScreen::RecipeCards::2::Classic Pancakes"
+    id: "SearchScreen::RecipeCards::3::Classic Pancakes"
     label: "Open Classic Pancakes recipe"
 
 - tapOn:

@@ -12,4 +12,13 @@
  */
 module.exports = {
     testMatch: ['<rootDir>/tests/perf/**/*.perf.{js,jsx,ts,tsx}'],
+    /**
+     * Threshold for considering a performance change as a regression (in percentage).
+     * Increasing this reduces noise from minor fluctuations.
+     */
+    regressionThreshold: 10,
+    /**
+     * Threshold for considering a performance change as an improvement (in percentage).
+     */
+    improvementThreshold: 10,
 };

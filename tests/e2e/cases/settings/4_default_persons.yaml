@@ -50,7 +50,7 @@ tags:
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::RecipeCards::7::.*"
+      id: "SearchScreen::RecipeCards::8::.*"
     direction: DOWN
     speed: 60
     centerElement: true
@@ -59,7 +59,7 @@ tags:
 - waitForAnimationToEnd
 
 - tapOn:
-    id: "SearchScreen::RecipeCards::7::.*"
+    id: "SearchScreen::RecipeCards::8::.*"
     label: "Action - Open Pesto Pasta recipe"
 
 - runFlow:
@@ -92,7 +92,7 @@ tags:
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::RecipeCards::7::.*"
+      id: "SearchScreen::RecipeCards::8::.*"
     direction: DOWN
     speed: 60
     centerElement: true
@@ -101,7 +101,7 @@ tags:
 - waitForAnimationToEnd
 
 - tapOn:
-    id: "SearchScreen::RecipeCards::7::.*"
+    id: "SearchScreen::RecipeCards::8::.*"
     label: "Verification - Open Pesto Pasta recipe"
 
 - runFlow:

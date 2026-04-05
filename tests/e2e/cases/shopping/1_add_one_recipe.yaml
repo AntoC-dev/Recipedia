@@ -23,7 +23,7 @@ tags:
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::RecipeCards::2::Content"
+      id: "SearchScreen::RecipeCards::3::Content"
     direction: DOWN
     speed: 20
     timeout: 90000
@@ -33,7 +33,7 @@ tags:
 - waitForAnimationToEnd
 
 - tapOn:
-    id: "SearchScreen::RecipeCards::2::.*"
+    id: "SearchScreen::RecipeCards::3::.*"
     label: "Action - Open Classic Pancakes recipe"
 
 - tapOn:

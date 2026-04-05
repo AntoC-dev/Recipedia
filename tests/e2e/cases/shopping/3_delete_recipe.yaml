@@ -38,21 +38,28 @@ tags:
     file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::RecipeCards::0::Cover"
-    direction: DOWN
-    speed: 40
-    centerElement: true
-    label: "Scroll to recipe card"
-
-- waitForAnimationToEnd
+- extendedWaitUntil:
+    visible:
+      id: "SearchScreen::RecipeCards::.*::Cover"
+    timeout: 30000
+    optional: true
+    label: "Wait for test recipe to appear in search results"
 
 - tapOn:
-    id: "SearchScreen::RecipeCards::0::Cover"
+    id: "SearchScreen::RecipeCards::.*::Cover"
     label: "Action - Open Test Recipe"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::AppBar"
+    timeout: 30000
+    optional: true
+    label: "Wait for recipe screen to be displayed"
+
+- assertVisible:
+    id: "RecipeTitle::Text"
+    text: "Test Recipe"
+    label: "Assert - Verify recipe name is the test recipe"
 
 - tapOn:
     id: "Recipe::BottomActionButton"

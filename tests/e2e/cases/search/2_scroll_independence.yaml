@@ -67,7 +67,7 @@ tags:
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::RecipeCards::0::Spaghetti Bolognese"
+      id: "SearchScreen::RecipeCards::1::Spaghetti Bolognese"
     direction: UP
     speed: 60
     timeout: 120000
@@ -77,11 +77,11 @@ tags:
 - waitForAnimationToEnd
 
 - assertVisible:
-    id: "SearchScreen::RecipeCards::0::Spaghetti Bolognese"
+    id: "SearchScreen::RecipeCards::1::Spaghetti Bolognese"
     label: "Assert - Verify first recipe card is visible (scroll independence verified)"
 
 - assertVisible:
-    id: "SearchScreen::RecipeCards::1::Chicken Tacos"
+    id: "SearchScreen::RecipeCards::2::Chicken Tacos"
     label: "Assert - Verify second recipe card is visible"
 
 - tapOn:

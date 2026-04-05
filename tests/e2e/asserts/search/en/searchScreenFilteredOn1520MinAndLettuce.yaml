@@ -12,7 +12,6 @@ appId: "com.recipedia"
     id: "SearchScreen::FiltersSelection::1::Chip"
     label: "Lettuce chip is displayed"
 
-
 - runFlow:
     file: "../assertSearchScreenRecipeCardsFilteredOn1520MinAndLettuce.yaml"
     label: "Assert Search screen recipe cards filtered on 15-20 minutes and Lettuce"

@@ -5,7 +5,7 @@ appId: "com.recipedia"
     label: "Navigate to Search screen"
 
 - tapOn:
-    id: "SearchScreen::RecipeCards::0::Spaghetti Bolognese"
+    id: "SearchScreen::RecipeCards::1::Spaghetti Bolognese"
     label: "Open Spaghetti Bolognese recipe"
 
 - tapOn:

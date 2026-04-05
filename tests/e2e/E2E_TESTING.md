@@ -260,7 +260,7 @@ easy to locate in tests.
 ```yaml
 # Screen-level elements
 id: "SearchScreen::SearchBar"
-id: "SearchScreen::RecipeCards::0"
+id: "SearchScreen::RecipeCards::1"
 id: "BottomTabs::Home"
 
 # Component-level elements
@@ -480,7 +480,7 @@ appId: 'com.recipedia'
     label: 'Navigate to Search'
 
 - tapOn:
-    id: 'SearchScreen::RecipeCards::0'
+    id: 'SearchScreen::RecipeCards::1'
     label: 'Open first recipe'
 
 # Perform action
@@ -1291,7 +1291,7 @@ The icon replaces platform-specific approaches:
 
 # Or specific index
 - tapOn:
-    id: 'RecipeCards::0'
+    id: 'RecipeCards::1'
     label: 'Select first recipe card'
 ```
 
