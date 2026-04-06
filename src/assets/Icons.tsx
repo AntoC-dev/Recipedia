@@ -62,5 +62,8 @@ export const Icons: Record<string, dictionaryIcons> = {
   history: 'history',
   undo: 'undo',
   import: 'import',
+  copy: 'content-copy',
+  checkWithCircle: 'check-circle-outline',
+  alertWithCircle: 'alert-circle-outline',
 } as const;
 export type IconName = keyof typeof Icons;

@@ -19,6 +19,7 @@ import { IconButton, Surface, Text, useTheme } from 'react-native-paper';
 import * as Clipboard from 'expo-clipboard';
 import { useI18n } from '@utils/i18n';
 import { padding } from '@styles/spacing';
+import { Icons } from '@assets/Icons';
 
 export interface RecipeSourceUrlProps {
   /** The URL to display and copy */
@@ -60,7 +61,7 @@ export function RecipeSourceUrl({
           {sourceUrl}
         </Text>
         <IconButton
-          icon='content-copy'
+          icon={Icons.copy}
           size={20}
           onPress={handleCopy}
           testID={`${testID}::CopyButton`}
