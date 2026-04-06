@@ -15,6 +15,12 @@ tags:
     id: "BottomTabs::Shopping"
     label: "Verification - Navigate to Shopping screen"
 
+- extendedWaitUntil:
+    visible:
+      id: "ShoppingScreen::ClearShoppingListButton::RoundButton"
+    timeout: 30000
+    label: "Wait for Shopping screen to be visible"
+
 - runFlow:
     file: "../../asserts/shopping/en/shoppingPancakeSimple.yaml"
     label: "Assert - Verify Pancake ingredients in shopping list"
