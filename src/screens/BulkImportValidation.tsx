@@ -33,6 +33,7 @@ import { CommonActions, RouteProp, useNavigation, useRoute } from '@react-naviga
 import { StackScreenNavigation, StackScreenParamList } from '@customTypes/ScreenTypes';
 import { AppBar } from '@components/organisms/AppBar';
 import { ImportErrorMessage } from '@components/molecules/ImportErrorMessage';
+import { ImportSkippedWarning } from '@components/molecules/ImportSkippedWarning';
 import { ImportSuccessMessage } from '@components/molecules/ImportSuccessMessage';
 import { ValidationReviewList } from '@components/organisms/ValidationReviewList';
 import { useI18n } from '@utils/i18n';
@@ -74,16 +75,23 @@ export function BulkImportValidation() {
     await removeFromSeenHistory(providerId, importedUrls);
   };
 
-  const { phase, initStage, validationState, importedCount, errorMessage, handlers } =
-    useValidationWorkflow(
-      selectedRecipes,
-      addMultipleRecipes,
-      isDatabaseReady,
-      defaultPersons,
-      findSimilarTags,
-      findSimilarIngredients,
-      handleImportComplete
-    );
+  const {
+    phase,
+    initStage,
+    validationState,
+    importedCount,
+    skippedRecipes,
+    errorMessage,
+    handlers,
+  } = useValidationWorkflow(
+    selectedRecipes,
+    addMultipleRecipes,
+    isDatabaseReady,
+    defaultPersons,
+    findSimilarTags,
+    findSimilarIngredients,
+    handleImportComplete
+  );
 
   const handleImport = ({ tagMappings, ingredientMappings }: ResolutionMappings) => {
     for (const [, validatedTag] of tagMappings) {
@@ -123,26 +131,33 @@ export function BulkImportValidation() {
     navigation.goBack();
   };
 
+  const renderLoadingPhase = (testID: string, text: string) => (
+    <View style={styles.centered}>
+      <ActivityIndicator size='large' testID={testID} />
+      <Text variant='bodyLarge' style={styles.loadingText}>
+        {text}
+      </Text>
+    </View>
+  );
+
   const renderPhaseContent = () => {
     switch (phase) {
       case 'initializing':
-        return (
-          <View style={styles.centered}>
-            <ActivityIndicator size='large' testID={screenId + '::InitializingIndicator'} />
-            <Text variant='bodyLarge' style={styles.loadingText}>
-              {getInitStageText()}
-            </Text>
-          </View>
-        );
+        return renderLoadingPhase(screenId + '::InitializingIndicator', getInitStageText());
 
       case 'importing':
+        return renderLoadingPhase(
+          screenId + '::ImportingIndicator',
+          t('bulkImport.validation.importingRecipes')
+        );
+
+      case 'warning':
         return (
-          <View style={styles.centered}>
-            <ActivityIndicator size='large' testID={screenId + '::ImportingIndicator'} />
-            <Text variant='bodyLarge' style={styles.loadingText}>
-              {t('bulkImport.validation.importingRecipes')}
-            </Text>
-          </View>
+          <ImportSkippedWarning
+            skippedRecipes={skippedRecipes}
+            onContinue={handlers.acknowledgeWarning}
+            testID={screenId}
+          />
         );
 
       case 'reviewing':
@@ -160,6 +175,7 @@ export function BulkImportValidation() {
         return (
           <ImportSuccessMessage
             importedCount={importedCount}
+            skippedRecipes={skippedRecipes}
             onFinish={handleFinish}
             testID={screenId}
           />

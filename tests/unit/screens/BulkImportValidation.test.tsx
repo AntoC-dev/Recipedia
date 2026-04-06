@@ -25,6 +25,16 @@ jest.mock('@components/organisms/ValidationReviewList', () => ({
     .validationReviewListMock,
 }));
 
+jest.mock('@components/molecules/ImportSkippedWarning', () => ({
+  ImportSkippedWarning: require('@mocks/components/molecules/ImportSkippedWarning-mock')
+    .ImportSkippedWarningMock,
+}));
+
+jest.mock('@components/molecules/SkippedRecipesList', () => ({
+  SkippedRecipesList: require('@mocks/components/molecules/SkippedRecipesList-mock')
+    .SkippedRecipesListMock,
+}));
+
 const createTestRecipe = (
   overrides: Partial<ConvertedImportRecipe> = {}
 ): ConvertedImportRecipe => ({
@@ -85,7 +95,12 @@ describe('BulkImportValidation', () => {
   });
 
   test('shows review list when recipes have unknown tags', async () => {
-    const recipes = [createTestRecipe({ tags: [{ id: 0, name: 'UnknownTag' }] })];
+    const recipes = [
+      createTestRecipe({
+        tags: [{ id: 0, name: 'UnknownTag' }],
+        ingredients: [{ name: 'TestIngredient', quantity: '100', unit: 'g' }],
+      }),
+    ];
     const { getByTestId } = renderComponent(recipes);
 
     await waitFor(() => {
