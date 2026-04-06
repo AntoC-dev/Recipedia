@@ -1,4 +1,5 @@
 import React from 'react';
+import { View } from 'react-native';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { SkippedRecipesList } from '@components/molecules/SkippedRecipesList';
 import * as Clipboard from 'expo-clipboard';
@@ -79,6 +80,18 @@ describe('SkippedRecipesList', () => {
     await waitFor(() => {
       expect(getByTestId('SkippedList::Snackbar')).toBeTruthy();
     });
+  });
+
+  test('renders ListHeaderComponent when provided', () => {
+    const { getByTestId } = render(
+      <SkippedRecipesList
+        skippedRecipes={[recipe1]}
+        testID='SkippedList'
+        ListHeaderComponent={<View testID='custom-header' />}
+      />
+    );
+
+    expect(getByTestId('custom-header')).toBeTruthy();
   });
 
   test('renders the FlatList container with testID', () => {

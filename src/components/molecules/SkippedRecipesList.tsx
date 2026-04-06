@@ -9,7 +9,7 @@
  */
 
 import React, { useState } from 'react';
-import { FlatList, StyleSheet } from 'react-native';
+import { FlatList, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import { IconButton, List, Snackbar, Surface, useTheme } from 'react-native-paper';
 import * as Clipboard from 'expo-clipboard';
 import { SkippedRecipeInfo } from '@customTypes/BulkImportTypes';
@@ -26,6 +26,8 @@ export interface SkippedRecipesListProps {
   ListHeaderComponent?: React.ReactElement;
   /** Whether the FlatList scrolls independently (default: false) */
   scrollEnabled?: boolean;
+  /** Style applied to the FlatList content container */
+  contentContainerStyle?: StyleProp<ViewStyle>;
 }
 
 /**
@@ -38,6 +40,7 @@ export function SkippedRecipesList({
   testID,
   ListHeaderComponent,
   scrollEnabled = false,
+  contentContainerStyle,
 }: SkippedRecipesListProps) {
   const { t } = useI18n();
   const { colors } = useTheme();
@@ -55,6 +58,7 @@ export function SkippedRecipesList({
         keyExtractor={item => item.sourceUrl}
         ListHeaderComponent={ListHeaderComponent}
         scrollEnabled={scrollEnabled}
+        contentContainerStyle={contentContainerStyle}
         testID={testID}
         renderItem={({ item, index }) => (
           <Surface
