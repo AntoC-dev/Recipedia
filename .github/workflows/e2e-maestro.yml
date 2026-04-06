@@ -69,7 +69,7 @@ jobs:
         if: inputs.platform == 'android'
         uses: dniHze/maestro-test-action@v1
         with:
-          version: '2.0.10'
+          version: '2.4.0'
 
       - name: Run E2E tests (Android)
         if: inputs.platform == 'android'
@@ -129,7 +129,7 @@ jobs:
         if: inputs.platform == 'ios'
         uses: dniHze/maestro-test-action@v1
         with:
-          version: '2.0.10'
+          version: '2.4.0'
 
       - name: Run E2E tests (iOS)
         if: inputs.platform == 'ios'
