@@ -280,6 +280,16 @@ export interface ConvertedImportRecipe {
 }
 
 /**
+ * A recipe that was skipped during bulk import due to missing valid ingredients
+ */
+export interface SkippedRecipeInfo {
+  /** Recipe title */
+  title: string;
+  /** Original source URL */
+  sourceUrl: string;
+}
+
+/**
  * Mapping between an imported ingredient name and its validated database entry
  */
 export interface IngredientMapping {

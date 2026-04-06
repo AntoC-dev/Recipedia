@@ -5,6 +5,7 @@
  * - Provider selection screen
  * - Recipe discovery and selection
  * - Validation and import progress
+ * - Skipped-recipes warning shown before validation when recipes have no ingredients
  */
 export default {
   title: 'Bulk Import Recipes',
@@ -56,7 +57,8 @@ export default {
     progress: '{{current}} of {{total}} validated',
     importingRecipes: 'Importing recipes...',
     importComplete: 'Import Complete!',
-    recipesImported: '{{count}} recipes imported successfully',
+    recipesImported: '{{count}} recipe imported successfully',
+    recipesImportedPlural: '{{count}} recipes imported successfully',
     importError: 'Import Failed',
     noValidRecipes:
       'No recipes have valid ingredients. Please validate at least one ingredient per recipe.',
@@ -76,5 +78,11 @@ export default {
     useSuggested: 'Use "{{name}}"',
     pick: 'Pick',
     skip: 'Skip',
+    skippedWarningTitle: 'Some recipes will be skipped',
+    skippedWarningBody:
+      'The following recipes have no ingredients and will be skipped. You can add them manually from their source URL.',
+    continueToImport: 'Continue',
+    skippedSectionTitle: '{{count}} recipe skipped',
+    skippedSectionTitlePlural: '{{count}} recipes skipped',
   },
 };

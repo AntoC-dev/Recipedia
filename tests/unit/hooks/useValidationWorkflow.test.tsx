@@ -839,4 +839,249 @@ describe('useValidationWorkflow', () => {
       expect(mockAddMultipleRecipes).not.toHaveBeenCalled();
     });
   });
+
+  describe('warning phase (pre-validation skips)', () => {
+    const createRecipeWithNoIngredientNames = (title: string): ConvertedImportRecipe => ({
+      title,
+      description: `${title} description`,
+      imageUrl: 'https://example.com/image.jpg',
+      persons: 4,
+      time: 30,
+      tags: [],
+      ingredients: [
+        { id: 0, name: '', unit: 'g', quantity: '100', type: ingredientType.vegetable, season: [] },
+      ],
+      preparation: [],
+      sourceUrl: `https://example.com/${title.toLowerCase().replace(' ', '-')}`,
+      sourceProvider: 'mock',
+    });
+
+    test('transitions to warning phase when a recipe has all-empty ingredient names', async () => {
+      const recipes = [
+        createRecipeWithNoIngredientNames('Skipped Recipe'),
+        createMockRecipe('Normal Recipe', [], ['NewIngredient']),
+      ];
+
+      const { result } = renderHook(() =>
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
+      );
+
+      await waitFor(
+        () => {
+          expect(result.current.phase).toBe('warning');
+        },
+        { timeout: 3000 }
+      );
+    });
+
+    test('populates skippedRecipes with pre-validation skips', async () => {
+      const skippedRecipe = createRecipeWithNoIngredientNames('Skipped Recipe');
+      const recipes = [skippedRecipe, createMockRecipe('Normal Recipe', [], ['NewIngredient'])];
+
+      const { result } = renderHook(() =>
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
+      );
+
+      await waitFor(
+        () => {
+          expect(result.current.phase).toBe('warning');
+        },
+        { timeout: 3000 }
+      );
+
+      expect(result.current.skippedRecipes).toHaveLength(1);
+      expect(result.current.skippedRecipes[0].title).toBe('Skipped Recipe');
+      expect(result.current.skippedRecipes[0].sourceUrl).toBe(skippedRecipe.sourceUrl);
+    });
+
+    test('acknowledgeWarning transitions to reviewing when items need validation', async () => {
+      const recipes = [
+        createRecipeWithNoIngredientNames('Skipped Recipe'),
+        createMockRecipe('Normal Recipe', [], ['NewIngredient']),
+      ];
+
+      const { result } = renderHook(() =>
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
+      );
+
+      await waitFor(
+        () => {
+          expect(result.current.phase).toBe('warning');
+        },
+        { timeout: 3000 }
+      );
+
+      act(() => {
+        result.current.handlers.acknowledgeWarning();
+      });
+
+      await waitFor(() => {
+        expect(result.current.phase).toBe('reviewing');
+      });
+    });
+
+    test('acknowledgeWarning triggers import when all items were auto-resolved', async () => {
+      const knownIngredient: ingredientTableElement = {
+        id: 1,
+        name: 'Chicken',
+        unit: 'g',
+        type: ingredientType.meat,
+        season: [],
+      };
+      const localFindSimilarIngredients = jest.fn().mockReturnValue([knownIngredient]);
+
+      const recipes = [
+        createRecipeWithNoIngredientNames('Skipped Recipe'),
+        createMockRecipe('Normal Recipe', [], ['Chicken']),
+      ];
+
+      const { result } = renderHook(() =>
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          localFindSimilarIngredients
+        )
+      );
+
+      await waitFor(
+        () => {
+          expect(result.current.phase).toBe('warning');
+        },
+        { timeout: 3000 }
+      );
+
+      act(() => {
+        result.current.handlers.acknowledgeWarning();
+      });
+
+      await waitFor(() => {
+        expect(result.current.phase).toBe('complete');
+      });
+    });
+
+    test('skippedRecipes is empty for a clean import', async () => {
+      const recipes = [createMockRecipe('Normal Recipe', [], ['NewIngredient'])];
+
+      const { result } = renderHook(() =>
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
+      );
+
+      await waitFor(() => {
+        expect(result.current.phase).toBe('reviewing');
+      });
+
+      expect(result.current.skippedRecipes).toHaveLength(0);
+    });
+  });
+
+  describe('skippedRecipes at save time', () => {
+    test('skippedRecipes is updated after import with post-save skips', async () => {
+      const recipes = [
+        createMockRecipe('Recipe With Ingredient', [], ['NewIngredient']),
+        createMockRecipe('Recipe Without Match', [], ['AnotherIngredient']),
+      ];
+
+      const { result } = renderHook(() =>
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
+      );
+
+      await waitFor(() => {
+        expect(result.current.phase).toBe('reviewing');
+      });
+
+      act(() => {
+        result.current.handlers.onIngredientValidated('NewIngredient', {
+          id: 10,
+          name: 'Validated',
+          unit: 'g',
+          type: ingredientType.vegetable,
+          season: [],
+        });
+      });
+
+      act(() => result.current.handlers.startImport());
+
+      await waitFor(() => {
+        expect(result.current.phase).toBe('complete');
+      });
+
+      expect(result.current.skippedRecipes).toHaveLength(1);
+      expect(result.current.skippedRecipes[0].title).toBe('Recipe Without Match');
+    });
+
+    test('skippedRecipes is empty when all recipes have valid ingredients', async () => {
+      const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient'])];
+
+      const { result } = renderHook(() =>
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          true,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
+      );
+
+      await waitFor(() => {
+        expect(result.current.phase).toBe('reviewing');
+      });
+
+      act(() => {
+        result.current.handlers.onIngredientValidated('NewIngredient', {
+          id: 10,
+          name: 'Validated',
+          unit: 'g',
+          type: ingredientType.vegetable,
+          season: [],
+        });
+      });
+
+      act(() => result.current.handlers.startImport());
+
+      await waitFor(() => {
+        expect(result.current.phase).toBe('complete');
+      });
+
+      expect(result.current.skippedRecipes).toHaveLength(0);
+    });
+  });
 });
