@@ -8,10 +8,6 @@ tags:
     label: "Setup - Launch app and wait for ready"
 
 - runFlow:
-    file: "../../flows/parameters/language/switchToEnglish.yaml"
-    label: "Setup - Ensure app is in English (in case previous test failed)"
-
-- runFlow:
     file: "../../flows/parameters/language/switchToFrench.yaml"
     label: "Setup - Switch to French language"
 
@@ -51,10 +47,6 @@ tags:
     timeout: 120000
     label: "Wait - For initialization to complete"
 
-- runFlow:
-    file: "../../flows/bulk-import/dismissWarningPhase.yaml"
-    label: "Safety - Dismiss warning phase if present"
-
 - extendedWaitUntil:
     visible:
       id: "BulkImportValidation::ListHeader"
@@ -62,30 +54,40 @@ tags:
     label: "Wait for review list to be ready"
 
 - runFlow:
-    file: "../../flows/recipe/validation/validateAllTagReviewItems.yaml"
-    label: "Action - Validate all tag items normally"
-
-- runFlow:
-    file: "../../flows/recipe/validation/skipAllIngredientReviewItems.yaml"
-    label: "Action - Skip all ingredient items to trigger post-save skip"
+    file: "../../flows/recipe/validation/skipAllReviewItems.yaml"
+    label: "Action - Skip all items and trigger import"
 
 - tapOn:
     id: "BulkImportValidation::BottomActionButton"
     label: "Action - Trigger import"
 
 - runFlow:
-    file: "../../asserts/bulk-import/fr/assertImportCompleteWithSkipped.yaml"
-    label: "Assert - Verify import success with skipped recipe section"
+    file: "../../asserts/bulk-import/fr/assertImportError.yaml"
+    label: "Assert - Verify import error screen is shown"
 
 - tapOn:
-    id: "BulkImportValidation::FinishButton"
-    label: "Action - Finish import"
+    id: "BulkImportValidation::AppBar::BackButton"
+    label: "Cleanup - Go back from error screen"
 
 - waitForAnimationToEnd
 
-- runFlow:
-    file: "../../flows/bulk-import/deleteAllImportedRecipes.yaml"
-    label: "Cleanup - Delete all imported recipes"
+- tapOn:
+    id: "BulkImportDiscovery::AppBar::BackButton"
+    label: "Cleanup - Go back from bulk discovery screen"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "BulkImportSettings::AppBar::BackButton"
+    label: "Cleanup - Go back from bulk import providers screen"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "Parameters::Section::Appearance::SubHeader"
+    direction: UP
+    label: "Scroll up to reset the parameters screen"
 
 - runFlow:
     file: "../../flows/parameters/language/switchToEnglish.yaml"
