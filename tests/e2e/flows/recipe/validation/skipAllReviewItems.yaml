@@ -1,0 +1,19 @@
+appId: "com.recipedia"
+---
+- repeat:
+    while:
+      visible:
+        id: "BulkImportValidation::Ingredient::.*::AddNewChip"
+    commands:
+      - scrollUntilVisible:
+          element:
+            id: "BulkImportValidation::Ingredient::.*::SkipChip"
+          direction: DOWN
+          speed: 20
+          timeout: 30000
+          centerElement: true
+          label: "Scroll to first pending ingredient"
+
+      - tapOn:
+          id: "BulkImportValidation::Ingredient::.*::SkipChip"
+          label: "Skip pending ingredient"

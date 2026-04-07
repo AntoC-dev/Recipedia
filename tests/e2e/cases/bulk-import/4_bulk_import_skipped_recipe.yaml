@@ -1,0 +1,96 @@
+name: "4 - Bulk Import with Skipped Recipe (all ingredients rejected)"
+appId: "com.recipedia"
+tags:
+  - bulk-import
+---
+- runFlow:
+    file: "../../flows/setupTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- runFlow:
+    file: "../../flows/parameters/language/switchToEnglish.yaml"
+    label: "Setup - Ensure app is in English (in case previous test failed)"
+
+- runFlow:
+    file: "../../flows/parameters/language/switchToFrench.yaml"
+    label: "Setup - Switch to French language"
+
+- runFlow:
+    file: "../../flows/bulk-import/navigateToBulkImport.yaml"
+    label: "Phase 1 - Navigate to Bulk Import"
+
+- runFlow:
+    file: "../../flows/bulk-import/selectProvider.yaml"
+    env:
+      PROVIDER_ID: "quitoque"
+    label: "Action - Select Quitoque provider"
+
+- extendedWaitUntil:
+    visible:
+      id: "BulkImportDiscovery::(fresh|seen)-1"
+    timeout: 120000
+    label: "Wait - For second recipe to appear"
+
+- tapOn:
+    id: "BulkImportDiscovery::(fresh|seen)-1"
+    label: "Action - Select second recipe"
+
+- tapOn:
+    id: "BulkImportDiscovery::ContinueButton"
+    label: "Action - Continue to validation"
+
+- extendedWaitUntil:
+    visible:
+      id: "BulkImportValidation::AppBar::Title"
+    timeout: 200000
+    label: "Wait - For validation screen"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "BulkImportValidation::InitializingIndicator"
+    timeout: 120000
+    label: "Wait - For initialization to complete"
+
+- runFlow:
+    file: "../../flows/bulk-import/dismissWarningPhase.yaml"
+    label: "Safety - Dismiss warning phase if present"
+
+- extendedWaitUntil:
+    visible:
+      id: "BulkImportValidation::ListHeader"
+    timeout: 10000
+    label: "Wait for review list to be ready"
+
+- runFlow:
+    file: "../../flows/recipe/validation/validateAllTagReviewItems.yaml"
+    label: "Action - Validate all tag items normally"
+
+- runFlow:
+    file: "../../flows/recipe/validation/skipAllIngredientReviewItems.yaml"
+    label: "Action - Skip all ingredient items to trigger post-save skip"
+
+- tapOn:
+    id: "BulkImportValidation::BottomActionButton"
+    label: "Action - Trigger import"
+
+- runFlow:
+    file: "../../asserts/bulk-import/fr/assertImportCompleteWithSkipped.yaml"
+    label: "Assert - Verify import success with skipped recipe section"
+
+- tapOn:
+    id: "BulkImportValidation::FinishButton"
+    label: "Action - Finish import"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: "../../flows/bulk-import/deleteAllImportedRecipes.yaml"
+    label: "Cleanup - Delete all imported recipes"
+
+- runFlow:
+    file: "../../flows/parameters/language/switchToEnglish.yaml"
+    label: "Cleanup - Switch back to English"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Cleanup - Return to home"

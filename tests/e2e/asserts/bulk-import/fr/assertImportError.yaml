@@ -1,0 +1,15 @@
+appId: "com.recipedia"
+---
+- extendedWaitUntil:
+    visible:
+      id: "BulkImportValidation::Title"
+    timeout: 240000
+    label: "Wait until the import error screen is shown"
+
+- assertVisible:
+    id: "BulkImportValidation::Title"
+    label: "Import error title is displayed"
+
+- assertVisible:
+    id: "BulkImportValidation::Message"
+    label: "Import error message is displayed"

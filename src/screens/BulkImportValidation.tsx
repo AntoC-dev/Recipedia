@@ -182,7 +182,7 @@ export function BulkImportValidation() {
         );
 
       case 'error':
-        return <ImportErrorMessage errorMessage={errorMessage} />;
+        return <ImportErrorMessage errorMessage={errorMessage} testID={screenId} />;
     }
   };
 

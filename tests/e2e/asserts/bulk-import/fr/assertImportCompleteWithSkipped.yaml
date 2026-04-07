@@ -1,0 +1,24 @@
+appId: "com.recipedia"
+---
+- extendedWaitUntil:
+    visible:
+      text: "Import terminé !"
+    timeout: 240000
+    label: "Wait until the import has finished"
+
+- assertVisible:
+    text: "Import terminé !"
+    label: "Import complete message is displayed (French)"
+
+- assertVisible:
+    id: "BulkImportValidation::SkippedHeader"
+    label: "Skipped section header is visible"
+
+- assertVisible:
+    id: "BulkImportValidation::SkippedList"
+    label: "Skipped recipes list is visible"
+
+- assertVisible:
+    id: "BulkImportValidation::FinishButton"
+    text: "Terminer"
+    label: "Finish button displays correct text (French)"
