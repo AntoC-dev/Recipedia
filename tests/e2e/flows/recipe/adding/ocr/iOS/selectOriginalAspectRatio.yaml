@@ -16,9 +16,18 @@ appId: "com.recipedia"
     timeout: 1000
     label: "Wait for original aspect ratio"
 
+- waitForAnimationToEnd:
+    label: "Wait for aspect ratio animation to end"
+
 - tapOn:
     text: "Original"
     label: "Select original aspect ratio to show full image"
 
+- extendedWaitUntil:
+    notVisible:
+      text: "Original"
+    timeout: 10000
+    label: "Wait for original aspect ratio to be hidden"
+
 - waitForAnimationToEnd:
-    label: "Wait for animation to end"
+    label: "Wait for aspect ratio animation to end"
