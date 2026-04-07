@@ -75,9 +75,11 @@ import { navigationLogger } from '@utils/logger';
  * @returns JSX element representing the complete app navigation structure
  */
 export function RootNavigator() {
+  const animationsDisabled = process.env.EXPO_PUBLIC_DISABLE_ANIMATIONS === 'true';
+
   const screenOptions = {
     headerShown: false,
-    // Add navigation logging
+    animation: animationsDisabled ? ('none' as const) : ('default' as const),
     listeners: {
       focus: (e: { target?: string }) => {
         navigationLogger.debug('Screen focused', { screenName: e.target?.split('-')[0] });
