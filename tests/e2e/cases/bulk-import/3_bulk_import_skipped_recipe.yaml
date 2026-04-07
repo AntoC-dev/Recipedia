@@ -1,4 +1,4 @@
-name: "4 - Bulk Import with Skipped Recipe (all ingredients rejected)"
+name: "3 - Bulk Import with Skipped Recipe (all ingredients rejected)"
 appId: "com.recipedia"
 tags:
   - bulk-import
@@ -23,13 +23,13 @@ tags:
 
 - extendedWaitUntil:
     visible:
-      id: "BulkImportDiscovery::(fresh|seen)-1"
+      id: "BulkImportDiscovery::(fresh|seen)-0"
     timeout: 120000
-    label: "Wait - For second recipe to appear"
+    label: "Wait - For first recipe to appear"
 
 - tapOn:
-    id: "BulkImportDiscovery::(fresh|seen)-1"
-    label: "Action - Select second recipe"
+    id: "BulkImportDiscovery::(fresh|seen)-0"
+    label: "Action - Select first recipe"
 
 - tapOn:
     id: "BulkImportDiscovery::ContinueButton"
