@@ -41,6 +41,9 @@ tags:
     id: "Recipe::RecipeNutrition::NutritionEmptyState::AddButton::RoundButton"
     label: "Action - Tap add nutrition button"
 
+- waitForAnimationToEnd:
+    label: "Action - Wait for nutrition to be added"
+
 - runFlow:
     file: "../../flows/recipe/adding/manual/en/tryAddEmpty.yaml"
     label: "Action - Try to validate with incomplete nutrition"
