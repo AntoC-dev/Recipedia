@@ -1,3 +1,12 @@
+## [2.30.0](https://github.com/AntoC-dev/Recipedia/compare/v2.29.0...v2.30.0) (2026-04-08)
+
+### Features
+
+* **bulk-import:** add warning phase for pre-validation skipped recipes ([76853ca](https://github.com/AntoC-dev/Recipedia/commit/76853cab16c13e5fd6e8640abe3ed8fbbc6a938a))
+* **bulk-import:** show skipped recipes in success screen ([717313c](https://github.com/AntoC-dev/Recipedia/commit/717313c8681602b9c8c13a293baf02867f8f4be2))
+* **bulk-import:** surface skipped recipes with actionable feedback ([#250](https://github.com/AntoC-dev/Recipedia/issues/250)) ([fc59a04](https://github.com/AntoC-dev/Recipedia/commit/fc59a04b2f9230709470539d842a7d678c4d49e8))
+* **molecules:** add testID prop to ImportErrorMessage ([ea09abd](https://github.com/AntoC-dev/Recipedia/commit/ea09abd7f5f6ede3ab3a6d885471a3b445e10d51))
+
 ## [2.29.0](https://github.com/AntoC-dev/Recipedia/compare/v2.28.9...v2.29.0) (2026-04-05)
 
 ### Features
