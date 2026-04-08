@@ -1,0 +1,98 @@
+name: "3 - Bulk Import with Skipped Recipe (all ingredients rejected)"
+appId: "com.recipedia"
+tags:
+  - bulk-import
+---
+- runFlow:
+    file: "../../flows/setupTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- runFlow:
+    file: "../../flows/parameters/language/switchToFrench.yaml"
+    label: "Setup - Switch to French language"
+
+- runFlow:
+    file: "../../flows/bulk-import/navigateToBulkImport.yaml"
+    label: "Phase 1 - Navigate to Bulk Import"
+
+- runFlow:
+    file: "../../flows/bulk-import/selectProvider.yaml"
+    env:
+      PROVIDER_ID: "quitoque"
+    label: "Action - Select Quitoque provider"
+
+- extendedWaitUntil:
+    visible:
+      id: "BulkImportDiscovery::(fresh|seen)-0"
+    timeout: 120000
+    label: "Wait - For first recipe to appear"
+
+- tapOn:
+    id: "BulkImportDiscovery::(fresh|seen)-0"
+    label: "Action - Select first recipe"
+
+- tapOn:
+    id: "BulkImportDiscovery::ContinueButton"
+    label: "Action - Continue to validation"
+
+- extendedWaitUntil:
+    visible:
+      id: "BulkImportValidation::AppBar::Title"
+    timeout: 200000
+    label: "Wait - For validation screen"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "BulkImportValidation::InitializingIndicator"
+    timeout: 120000
+    label: "Wait - For initialization to complete"
+
+- extendedWaitUntil:
+    visible:
+      id: "BulkImportValidation::ListHeader"
+    timeout: 10000
+    label: "Wait for review list to be ready"
+
+- runFlow:
+    file: "../../flows/recipe/validation/skipAllReviewItems.yaml"
+    label: "Action - Skip all items and trigger import"
+
+- tapOn:
+    id: "BulkImportValidation::BottomActionButton"
+    label: "Action - Trigger import"
+
+- runFlow:
+    file: "../../asserts/bulk-import/fr/assertImportError.yaml"
+    label: "Assert - Verify import error screen is shown"
+
+- tapOn:
+    id: "BulkImportValidation::AppBar::BackButton"
+    label: "Cleanup - Go back from error screen"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "BulkImportDiscovery::AppBar::BackButton"
+    label: "Cleanup - Go back from bulk discovery screen"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "BulkImportSettings::AppBar::BackButton"
+    label: "Cleanup - Go back from bulk import providers screen"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "Parameters::Section::Appearance::SubHeader"
+    direction: UP
+    label: "Scroll up to reset the parameters screen"
+
+- runFlow:
+    file: "../../flows/parameters/language/switchToEnglish.yaml"
+    label: "Cleanup - Switch back to English"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Cleanup - Return to home"

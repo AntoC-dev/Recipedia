@@ -5,6 +5,7 @@
  * - Provider selection screen
  * - Recipe discovery and selection
  * - Validation and import progress
+ * - Skipped-recipes warning shown before validation when recipes have no ingredients
  */
 export default {
   title: 'Import en masse',
@@ -56,7 +57,8 @@ export default {
     progress: '{{current}} sur {{total}} validés',
     importingRecipes: 'Import des recettes...',
     importComplete: 'Import terminé !',
-    recipesImported: '{{count}} recettes importées avec succès',
+    recipesImported: '{{count}} recette importée avec succès',
+    recipesImportedPlural: '{{count}} recettes importées avec succès',
     importError: "Échec de l'import",
     noValidRecipes:
       "Aucune recette n'a d'ingrédients valides. Veuillez valider au moins un ingrédient par recette.",
@@ -76,5 +78,11 @@ export default {
     useSuggested: 'Utiliser « {{name}} »',
     pick: 'Choisir',
     skip: 'Ignorer',
+    skippedWarningTitle: 'Certaines recettes seront ignorées',
+    skippedWarningBody:
+      "Les recettes suivantes n'ont pas d'ingrédients et seront ignorées. Vous pouvez les ajouter manuellement depuis leur URL source.",
+    continueToImport: 'Continuer',
+    skippedSectionTitle: '{{count}} recette ignorée',
+    skippedSectionTitlePlural: '{{count}} recettes ignorées',
   },
 };

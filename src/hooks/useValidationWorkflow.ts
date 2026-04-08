@@ -13,7 +13,11 @@ import {
   recipeTableElement,
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
-import { BatchValidationState, ConvertedImportRecipe } from '@customTypes/BulkImportTypes';
+import {
+  BatchValidationState,
+  ConvertedImportRecipe,
+  SkippedRecipeInfo,
+} from '@customTypes/BulkImportTypes';
 import {
   addIngredientMapping,
   addTagMapping,
@@ -29,39 +33,69 @@ import { bulkImportLogger } from '@utils/logger';
 import { useI18n } from '@utils/i18n';
 
 /** Current phase of the validation workflow */
-export type ValidationPhase = 'initializing' | 'reviewing' | 'importing' | 'complete' | 'error';
+export type ValidationPhase =
+  | 'initializing'
+  | 'warning'
+  | 'reviewing'
+  | 'importing'
+  | 'complete'
+  | 'error';
 
 /** Sub-phase during initialization for more granular progress */
 export type InitializationStage = 'analyzing' | 'matching-ingredients' | 'matching-tags' | 'ready';
 
 /** Handler functions returned by the hook */
 export interface ValidationHandlers {
+  /** Called when the user maps or skips a tag during the review phase */
   onTagValidated: (originalTag: tagTableElement, validatedTag: tagTableElement) => void;
+  /** Called when the user maps or skips an ingredient during the review phase */
   onIngredientValidated: (
     originalName: string,
     validatedIngredient: ingredientTableElement
   ) => void;
+  /** Triggers the final import after all items have been reviewed */
   startImport: () => void;
+  /** Dismisses the pre-validation skipped-recipes warning and advances to the next phase */
+  acknowledgeWarning: () => void;
 }
 
 /** Progress information for validation */
 export interface ValidationProgress {
+  /** Total number of unique ingredients requiring user review */
   totalIngredients: number;
+  /** Number of ingredients already validated or auto-resolved */
   validatedIngredients: number;
+  /** Total number of unique tags requiring user review */
   totalTags: number;
+  /** Number of tags already validated or auto-resolved */
   validatedTags: number;
+  /** Number of ingredients still awaiting review */
   remainingIngredients: number;
+  /** Number of tags still awaiting review */
   remainingTags: number;
 }
 
 /** Return value of the useValidationWorkflow hook */
 export interface UseValidationWorkflowReturn {
+  /** Current high-level phase of the workflow */
   phase: ValidationPhase;
+  /** Granular stage within the 'initializing' phase */
   initStage: InitializationStage;
+  /** Current batch validation state, or null while initializing */
   validationState: BatchValidationState | null;
+  /** Validation progress counters, or null while initializing */
   progress: ValidationProgress | null;
+  /** Number of recipes successfully saved to the database */
   importedCount: number;
+  /**
+   * Recipes omitted from the import because they had no valid ingredient names.
+   * Populated at two points: before validation (pre-validation skips) and after
+   * import (post-mapping skips where all ingredients were mapped away).
+   */
+  skippedRecipes: SkippedRecipeInfo[];
+  /** Error message when phase is 'error', otherwise null */
   errorMessage: string | null;
+  /** Stable handler callbacks to pass to child components */
   handlers: ValidationHandlers;
 }
 
@@ -97,10 +131,12 @@ export function useValidationWorkflow(
   const [initStage, setInitStage] = useState<InitializationStage>('analyzing');
   const [validationState, setValidationState] = useState<BatchValidationState | null>(null);
   const [importedCount, setImportedCount] = useState(0);
+  const [skippedRecipes, setSkippedRecipes] = useState<SkippedRecipeInfo[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const recipesRef = useRef<ConvertedImportRecipe[]>(selectedRecipes);
   const hasInitializedRef = useRef(false);
+  const hasItemsToReviewRef = useRef(false);
   const validationStateRef = useRef<BatchValidationState | null>(null);
   validationStateRef.current = validationState;
 
@@ -121,13 +157,19 @@ export function useValidationWorkflow(
       const validatedRecipes = applyMappingsToRecipes(recipesRef.current, state, defaultPersons);
       const recipesWithIngredients = validatedRecipes.filter(r => r.ingredients.length > 0);
 
+      const allSkipped = recipesRef.current
+        .filter((_, i) => validatedRecipes[i].ingredients.length === 0)
+        .map(r => ({ title: r.title, sourceUrl: r.sourceUrl }));
+
+      setSkippedRecipes(allSkipped);
+
       if (recipesWithIngredients.length === 0) {
         throw new Error(t('bulkImport.validation.noValidRecipes'));
       }
 
       bulkImportLogger.info('Saving recipes to database', {
         count: recipesWithIngredients.length,
-        skippedWithoutIngredients: validatedRecipes.length - recipesWithIngredients.length,
+        skippedWithoutIngredients: allSkipped.length,
       });
 
       await addMultipleRecipes(recipesWithIngredients);
@@ -191,10 +233,25 @@ export function useValidationWorkflow(
       setInitStage('ready');
       await new Promise(r => setTimeout(r, 100));
 
+      const preValidationSkips = selectedRecipes
+        .filter(r => r.ingredients.filter(i => !!i.name).length === 0)
+        .map(r => ({ title: r.title, sourceUrl: r.sourceUrl }));
+
+      if (preValidationSkips.length > 0) {
+        bulkImportLogger.warn('Recipes with no valid ingredient names detected before validation', {
+          count: preValidationSkips.length,
+          titles: preValidationSkips.map(r => r.title),
+        });
+        setSkippedRecipes(preValidationSkips);
+      }
+
       const hasItemsToReview =
         state.tagsToValidate.length > 0 || state.ingredientsToValidate.length > 0;
+      hasItemsToReviewRef.current = hasItemsToReview;
 
-      if (hasItemsToReview) {
+      if (preValidationSkips.length > 0) {
+        setPhase('warning');
+      } else if (hasItemsToReview) {
         setPhase('reviewing');
       } else {
         saveRecipesRef.current(state);
@@ -234,6 +291,21 @@ export function useValidationWorkflow(
   };
 
   /**
+   * Acknowledges the pre-validation warning and proceeds to the next phase
+   *
+   * Transitions to 'reviewing' if there are items to validate, or directly
+   * triggers the import if all items were auto-resolved.
+   */
+  const handleAcknowledgeWarning = () => {
+    if (hasItemsToReviewRef.current) {
+      setPhase('reviewing');
+    } else {
+      const state = validationStateRef.current;
+      if (state) saveRecipesRef.current(state);
+    }
+  };
+
+  /**
    * Triggers the import phase after all items have been reviewed
    */
   const handleStartImport = () => {
@@ -253,11 +325,13 @@ export function useValidationWorkflow(
     validationState,
     progress,
     importedCount,
+    skippedRecipes,
     errorMessage,
     handlers: {
       onTagValidated: handleTagValidated,
       onIngredientValidated: handleIngredientValidated,
       startImport: handleStartImport,
+      acknowledgeWarning: handleAcknowledgeWarning,
     },
   };
 }

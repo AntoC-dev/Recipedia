@@ -12,18 +12,23 @@ import { padding } from '@styles/spacing';
 
 export type ImportErrorMessageProps = {
   errorMessage: string | null;
+  testID: string;
 };
 
-export function ImportErrorMessage({ errorMessage }: ImportErrorMessageProps) {
+export function ImportErrorMessage({ errorMessage, testID }: ImportErrorMessageProps) {
   const { t } = useI18n();
   const { colors } = useTheme();
 
   return (
-    <View style={styles.centerContent}>
-      <Text variant='headlineSmall' style={[styles.statusText, { color: colors.error }]}>
+    <View style={styles.centerContent} testID={testID}>
+      <Text
+        variant='headlineSmall'
+        style={[styles.statusText, { color: colors.error }]}
+        testID={`${testID}::Title`}
+      >
         {t('bulkImport.validation.importError')}
       </Text>
-      <Text variant='bodyMedium' style={styles.statusText}>
+      <Text variant='bodyMedium' style={styles.statusText} testID={`${testID}::Message`}>
         {errorMessage}
       </Text>
     </View>

@@ -14,3 +14,7 @@ appId: "com.recipedia"
     id: "BulkImportValidation::FinishButton"
     text: "Terminer"
     label: "Finish button displays correct text (French)"
+
+- assertNotVisible:
+    id: "BulkImportValidation::SkippedHeader"
+    label: "No skipped section when all recipes imported successfully"
