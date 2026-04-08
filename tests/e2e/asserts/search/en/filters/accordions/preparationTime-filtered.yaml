@@ -37,7 +37,7 @@ appId: "com.recipedia"
 
 # Expand the accordion
 - tapOn:
-    text: "Preparation Time"
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Expand Preparation Time accordion"
 
 # Initialize counter for visible items

@@ -37,7 +37,7 @@ appId: "com.recipedia"
 
 # Expand the accordion
 - tapOn:
-    text: "Meat"
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Expand Meat accordion"
 
 # Initialize counter for visible items
