@@ -11,8 +11,6 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Baking accordion"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Pâtisserie accordion is displayed"
@@ -60,6 +58,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     direction: UP
+    speed: 5
     label: "Scroll back up to Pâtisserie accordion header"
 
 - waitForAnimationToEnd
