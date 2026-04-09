@@ -1,3 +1,11 @@
+## [2.30.1](https://github.com/AntoC-dev/Recipedia/compare/v2.30.0...v2.30.1) (2026-04-09)
+
+### Bug Fixes
+
+* **recipe-scraper:** fix PyodideBridge unhandled rejection on Android ([#251](https://github.com/AntoC-dev/Recipedia/issues/251)) ([2a63777](https://github.com/AntoC-dev/Recipedia/commit/2a637778152891c73cd9789749b0664d60b2dd50))
+* **recipe-scraper:** lazy-load PyodideBridge to prevent Android init ([39ac571](https://github.com/AntoC-dev/Recipedia/commit/39ac571b369129fa3c041026a355382eb6a7f79f))
+* **recipe-scraper:** suppress unhandled rejection in PyodideBridge ([279d5e2](https://github.com/AntoC-dev/Recipedia/commit/279d5e2bf0ee60edd26a06101cd2167650afaca7))
+
 ## [2.30.0](https://github.com/AntoC-dev/Recipedia/compare/v2.29.0...v2.30.0) (2026-04-08)
 
 ### Features
