@@ -30,8 +30,15 @@ import type {
     ScraperResult,
     SupportedHostsResult,
 } from './types';
-import {PyodideBridge} from './ios/PyodideBridge';
 import {AuthBridge} from './ios/AuthBridge';
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+type PyodideBridgeInstance = typeof import('./ios/PyodideBridge').PyodideBridge;
+
+function getPyodideBridge(): PyodideBridgeInstance {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    return require('./ios/PyodideBridge').PyodideBridge;
+}
 import {extractHost} from './urlUtils';
 
 // Auth detection patterns
@@ -189,7 +196,7 @@ export class RecipeScraper {
             } else if (usePyodide) {
                 // iOS: Use Python recipe-scrapers via Pyodide WebView
                 try {
-                    const json = await PyodideBridge.scrapeRecipeFromHtml(
+                    const json = await getPyodideBridge().scrapeRecipeFromHtml(
                         html,
                         url,
                         options?.wildMode ?? true
@@ -197,6 +204,10 @@ export class RecipeScraper {
                     baseResult = JSON.parse(json);
                 } catch (pyodideError) {
                     // Fallback to TypeScript schema.org parser if Pyodide fails
+                    const initError = getPyodideBridge().getInitializationError();
+                    if (initError) {
+                        console.warn('[RecipeScraper] Pyodide never initialized:', initError.message);
+                    }
                     console.warn(
                         '[RecipeScraper] Pyodide failed, falling back to schema.org:',
                         pyodideError
@@ -249,7 +260,7 @@ export class RecipeScraper {
 
         if (usePyodide) {
             try {
-                const json = await PyodideBridge.getSupportedHosts();
+                const json = await getPyodideBridge().getSupportedHosts();
                 return JSON.parse(json);
             } catch (error) {
                 return this.exceptionError(error);
@@ -281,7 +292,7 @@ export class RecipeScraper {
 
         if (usePyodide) {
             try {
-                const json = await PyodideBridge.isHostSupported(host);
+                const json = await getPyodideBridge().isHostSupported(host);
                 return JSON.parse(json);
             } catch (error) {
                 return this.exceptionError(error);
@@ -473,7 +484,7 @@ export class RecipeScraper {
         }
 
         if (usePyodide) {
-            return PyodideBridge.isPythonReady();
+            return getPyodideBridge().isPythonReady();
         }
 
         // Web platform - always ready (no Python)
@@ -492,7 +503,7 @@ export class RecipeScraper {
      */
     async waitForReady(timeoutMs = 30000, pollIntervalMs = 100): Promise<boolean> {
         if (usePyodide) {
-            return PyodideBridge.waitForReady(timeoutMs);
+            return getPyodideBridge().waitForReady(timeoutMs);
         }
 
         if (!nativeModule?.isPythonAvailable) {

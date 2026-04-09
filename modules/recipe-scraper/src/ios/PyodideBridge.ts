@@ -24,6 +24,7 @@ const INIT_TIMEOUT_MS = 60000;
 
 class PyodideBridgeImpl {
     private isReady = false;
+    private initializationError: Error | null = null;
     private pendingCalls = new Map<number, RpcCallback>();
     private nextCallId = 1;
     private readyPromise: Promise<void> | null = null;
@@ -37,12 +38,19 @@ class PyodideBridgeImpl {
             this.readyResolve = resolve;
             this.readyReject = reject;
         });
+        // Handles all rejection paths (timeout + WebView errors) in one place.
+        // Prevents unhandled rejection warning; waitForReady() handles the error for callers.
+        this.readyPromise.catch((error: Error) => {
+            console.warn('[PyodideBridge] Initialization failed:', error.message);
+        });
+
+        console.debug('[PyodideBridge] Initializing...');
 
         this.initTimeout = setTimeout(() => {
             if (!this.isReady && this.readyReject) {
-                this.readyReject(
-                    new Error('Pyodide initialization timed out after 60 seconds')
-                );
+                const error = new Error('Pyodide initialization timed out after 60 seconds');
+                this.initializationError = error;
+                this.readyReject(error);
             }
         }, INIT_TIMEOUT_MS);
     }
@@ -85,6 +93,7 @@ class PyodideBridgeImpl {
 
     private handleReady(): void {
         this.isReady = true;
+        console.info('[PyodideBridge] Ready');
         if (this.initTimeout) {
             clearTimeout(this.initTimeout);
             this.initTimeout = null;
@@ -117,7 +126,9 @@ class PyodideBridgeImpl {
     private handleError(error: {type: string; message: string}): void {
         console.error('[PyodideBridge] Error:', error.type, error.message);
         if (!this.isReady && this.readyReject) {
-            this.readyReject(new Error(`${error.type}: ${error.message}`));
+            const err = new Error(`${error.type}: ${error.message}`);
+            this.initializationError = err;
+            this.readyReject(err);
         }
     }
 
@@ -167,6 +178,10 @@ class PyodideBridgeImpl {
 
     isPythonReady(): boolean {
         return this.isReady;
+    }
+
+    getInitializationError(): Error | null {
+        return this.initializationError;
     }
 
     async call(
@@ -229,6 +244,7 @@ class PyodideBridgeImpl {
         }
         this.pendingCalls.clear();
         this.isReady = false;
+        this.initializationError = null;
     }
 }
 
