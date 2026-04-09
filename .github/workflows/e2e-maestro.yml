@@ -102,6 +102,12 @@ jobs:
           echo "📱 iOS app bundle extracted"
           ls -la *.app || echo "No .app found at root level"
 
+      - name: Disable macOS background services
+        if: inputs.platform == 'ios'
+        run: |
+          sudo mdutil -a -i off
+          sudo tmutil disable
+
       - name: Boot iOS Simulator
         if: inputs.platform == 'ios'
         id: simulator
@@ -124,6 +130,17 @@ jobs:
           /usr/libexec/PlistBuddy -c "Add :DevicePreferences:$UDID:ConnectHardwareKeyboard bool false" "$PLIST" 2>/dev/null || \
           /usr/libexec/PlistBuddy -c "Set :DevicePreferences:$UDID:ConnectHardwareKeyboard false" "$PLIST"
           echo "✅ Hardware keyboard disabled"
+
+      - name: Configure simulator for testing
+        if: inputs.platform == 'ios'
+        run: |
+          xcrun simctl spawn booted defaults write -g UIAnimationDragCoefficient 0.001
+          xcrun simctl spawn booted defaults write -g NSAutomaticWindowAnimationsEnabled -bool false
+          xcrun simctl spawn booted defaults write com.apple.Accessibility ReduceMotion -bool YES
+          xcrun simctl spawn booted defaults write -g KeyboardAutocapitalization -bool NO
+          xcrun simctl spawn booted defaults write -g KeyboardAutocorrection -bool NO
+          xcrun simctl spawn booted defaults write -g KeyboardSpellChecking -bool NO
+          xcrun simctl spawn booted defaults write com.apple.assistant.support "Assistant Enabled" -bool NO
 
       - name: Setup Maestro CLI (iOS)
         if: inputs.platform == 'ios'
