@@ -66,6 +66,7 @@ export default ({config}: ConfigContext): ExpoConfig => {
             permissions: ['android.permission.CAMERA'],
         },
         plugins: [
+            'expo-image',
             'expo-localization',
             'expo-sqlite',
             'expo-mail-composer',
