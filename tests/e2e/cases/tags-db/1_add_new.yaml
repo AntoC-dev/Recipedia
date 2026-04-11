@@ -5,7 +5,7 @@ tags:
   - tags-db
 ---
 - runFlow:
-    file: "../../flows/setupFirstTest.yaml"
+    file: "../../flows/setupTest.yaml"
     label: "Setup - Launch app and wait for ready"
 
 - runFlow:
@@ -16,58 +16,9 @@ tags:
     file: "../../asserts/parameters/tags/en/assertTagsSettingsScreen.yaml"
     label: "Assert - Verify Tags Settings screen displays correctly"
 
-- tapOn:
-    id: "TagsSettings::BottomActionButton"
-    label: "Action - Open add tag dialog"
-
 - runFlow:
-    file: "../../asserts/parameters/tags/en/assertAddModalOpen.yaml"
-    label: "Assert - Verify Add tag modal displayed"
-
-- tapOn:
-    id: "TagsSettings::ItemDialog::AddModal::Name::CustomTextInput"
-    label: "Action - Focus on tag name input"
-
-- runFlow:
-    file: "../../flows/waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
-
-- inputText:
-    text: "TestTag"
-    label: "Action - Enter new tag name"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - hideKeyboard:
-          label: "Dismiss keyboard on Android"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn:
-          id: "Done"
-          label: "Tap Done key to dismiss keyboard on iOS"
-
-- runFlow:
-    file: "../../flows/waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
-
-- assertVisible:
-    id: "TagsSettings::ItemDialog::AddModal::Name::CustomTextInput"
-    text: "TestTag"
-    label: "Assert - Verify new tag name entered"
-
-- tapOn:
-    id: "TagsSettings::ItemDialog::AddModal::ConfirmButton"
-    label: "Action - Confirm adding new tag"
-
-- waitForAnimationToEnd
+    file: "../../flows/parameters/tags/createTestTag.yaml"
+    label: "Action - Create TestTag"
 
 - runFlow:
     file: "../../flows/parameters/searchInSettingsList.yaml"
@@ -80,7 +31,3 @@ tags:
     id: "TagsSettings::0::TagName"
     text: "TestTag"
     label: "Assert - Verify new tag displayed in list"
-
-- runFlow:
-    file: "../../flows/parameters/tags/returnToHome.yaml"
-    label: "Cleanup - Return to Home screen"

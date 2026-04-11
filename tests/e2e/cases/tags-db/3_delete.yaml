@@ -15,6 +15,10 @@ tags:
 - waitForAnimationToEnd
 
 - runFlow:
+    file: "../../flows/parameters/tags/createTestTag.yaml"
+    label: "Action - Create TestTag to delete"
+
+- runFlow:
     file: "../../flows/parameters/searchInSettingsList.yaml"
     env:
       SETTINGS_SCREEN: "TagsSettings"
@@ -41,7 +45,3 @@ tags:
     id: "TagsSettings::.*::DeleteButton"
     text: "TestTag"
     label: "Assert - Verify tag removed from list"
-
-- runFlow:
-    file: "../../flows/parameters/tags/returnToHome.yaml"
-    label: "Cleanup - Return to Home screen"

@@ -47,23 +47,3 @@ tags:
 - tapOn:
     id: "SearchScreen::FiltersSelection::0::Chip"
     label: "Action - Remove on-season filter"
-
-- runFlow:
-    file: "../../flows/parameters/ingredients/navigateToIngredientsSettings.yaml"
-    label: "Action - Navigate to Ingredients Settings"
-
-- runFlow:
-    file: "../../flows/parameters/ingredients/deleteRecipeIngredient.yaml"
-    label: "Cleanup - Delete RecipeIngredient from database"
-
-- runFlow:
-    file: "../../flows/parameters/ingredients/returnToHome.yaml"
-    label: "Action - Return to Home screen"
-
-- runFlow:
-    file: "../../flows/recipe/verifyIngredientRemovedFromRecipe.yaml"
-    label: "Verification - Verify ingredient removed from recipe"
-
-- runFlow:
-    file: "../../flows/recipe/deleteRecipe.yaml"
-    label: "Cleanup - Delete test recipe"

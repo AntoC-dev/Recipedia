@@ -92,15 +92,3 @@ tags:
       SETTINGS_SCREEN: "IngredientsSettings"
       SEARCH_QUERY: "UnitlessIngredient"
     label: "Action - Search for new ingredient"
-
-- tapOn:
-    id: "IngredientsSettings::0::DeleteButton"
-    label: "Cleanup - Open delete confirmation dialog"
-
-- tapOn:
-    id: "IngredientsSettings::ItemDialog::DeleteModal::ConfirmButton"
-    label: "Cleanup - Confirm deleting ingredient"
-
-- runFlow:
-    file: "../../flows/parameters/ingredients/returnToHome.yaml"
-    label: "Cleanup - Return to Home screen"
