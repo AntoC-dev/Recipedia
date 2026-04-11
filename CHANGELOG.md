@@ -1,3 +1,15 @@
+## [2.30.2](https://github.com/AntoC-dev/Recipedia/compare/v2.30.1...v2.30.2) (2026-04-11)
+
+### Bug Fixes
+
+* **ci:** fix security audit permissions and audit level ([9a9c638](https://github.com/AntoC-dev/Recipedia/commit/9a9c6384b025e03090ea7fbb629849e8d08931a5))
+* **ci:** scope hardware keyboard disable to simulator device UDID ([ec6b6c7](https://github.com/AntoC-dev/Recipedia/commit/ec6b6c7400ced599650dd5a2872c66b039c1b04d))
+* **ci:** use PlistBuddy for per-device hardware keyboard setting ([efc2184](https://github.com/AntoC-dev/Recipedia/commit/efc2184604ed2f1584d5bbb4a123a7f961fd25b0))
+* **config:** remove expo-image plugin and exclude webview from doctor check ([a8f9cdf](https://github.com/AntoC-dev/Recipedia/commit/a8f9cdf6929d27eadcc4b3f8f9caceb20a2a1427))
+* **config:** restore expo-image config plugin ([d99d878](https://github.com/AntoC-dev/Recipedia/commit/d99d87821dfc585ed09f40ab366361ae867bd47e))
+* **deps:** update Expo SDK 55 packages to latest patch versions ([f9b9c73](https://github.com/AntoC-dev/Recipedia/commit/f9b9c7397fc03cf06bb6278ec6d7f00153918ecd))
+* **security:** force undici ^6.24.1 to resolve high/moderate CVEs ([4b97161](https://github.com/AntoC-dev/Recipedia/commit/4b97161b7a1ad7506f5761378340da8c9062ee89))
+
 ## [2.30.1](https://github.com/AntoC-dev/Recipedia/compare/v2.30.0...v2.30.1) (2026-04-09)
 
 ### Bug Fixes
