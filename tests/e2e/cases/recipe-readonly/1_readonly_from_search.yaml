@@ -4,7 +4,7 @@ tags:
   - recipe-readonly
 ---
 - runFlow:
-    file: "../../flows/setupFirstTest.yaml"
+    file: "../../flows/setupTest.yaml"
     label: "Setup - Launch app and wait for ready"
 
 - tapOn:
@@ -38,7 +38,3 @@ tags:
 - runFlow:
     file: "../../asserts/search/en/assertSearchScreen.yaml"
     label: "Assert - Verify Search screen is displayed"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Navigate back to Home screen"

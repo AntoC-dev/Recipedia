@@ -46,11 +46,3 @@ tags:
 - assertNotVisible:
     id: "MenuScreen::SectionHeader::Cooked"
     label: "Assert - Verify 'Cooked' section no longer visible"
-
-- runFlow:
-    file: "../../flows/menu/en/clearMenu.yaml"
-    label: "Cleanup - Clear menu"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Navigate to Home screen"

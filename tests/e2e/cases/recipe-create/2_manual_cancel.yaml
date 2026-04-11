@@ -64,11 +64,3 @@ tags:
 - assertNotVisible:
     text: "Title, Japanese, Prep. 56789 min, 2 p."
     label: "Assert - Verify recipe should not exist"
-
-- tapOn:
-    id: "SearchScreen::SearchBar::RightIcon"
-    label: "Cleanup - Tap clear icon to remove search filter"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Return to home screen"

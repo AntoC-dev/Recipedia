@@ -68,7 +68,3 @@ tags:
 - assertNotVisible:
     id: "VerticalBottomButtons::UrlDialog::Title"
     label: "Assert - Dialog is closed"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Return to home screen"

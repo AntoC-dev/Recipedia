@@ -71,11 +71,3 @@ tags:
 - runFlow:
     file: "../../asserts/shopping/en/shoppingPancakeSimple.yaml"
     label: "Assert - Verify normal Pancake ingredients (not doubled)"
-
-- runFlow:
-    file: "../../flows/shopping/en/clearShoppingList.yaml"
-    label: "Cleanup - Clear shopping list"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Navigate to Home screen"

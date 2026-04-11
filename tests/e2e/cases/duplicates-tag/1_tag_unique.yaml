@@ -4,7 +4,7 @@ tags:
   - duplicates
 ---
 - runFlow:
-    file: "../../flows/setupFirstTest.yaml"
+    file: "../../flows/setupTest.yaml"
     label: "Setup - Launch app and wait for ready"
 
 - runFlow:
@@ -75,21 +75,3 @@ tags:
 - assertVisible:
     text: "BreakfastSpecialEdited"
     label: "Assert - Verify edited tag name appears"
-
-- tapOn:
-    id: "Recipe::AppBar::BackButton"
-    label: "Cleanup - Exit recipe creation without saving"
-
-- runFlow:
-    file: "../../flows/parameters/tags/navigateToTagsSettings.yaml"
-    label: "Cleanup - Navigate to Tags Settings"
-
-- runFlow:
-    file: "../../flows/parameters/tags/deleteTagByName.yaml"
-    env:
-      TAG_NAME: "BreakfastSpecialEdited"
-    label: "Cleanup - Delete BreakfastSpecialEdited tag"
-
-- runFlow:
-    file: "../../flows/parameters/tags/returnToHome.yaml"
-    label: "Cleanup - Return to Home screen"

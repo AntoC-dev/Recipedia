@@ -4,7 +4,7 @@ tags:
   - shopping
 ---
 - runFlow:
-    file: "../../flows/setupFirstTest.yaml"
+    file: "../../flows/setupTest.yaml"
     label: "Setup - Launch app and wait for ready"
 
 - tapOn:
@@ -69,11 +69,3 @@ tags:
 - runFlow:
     file: "../../asserts/shopping/en/shoppingPancake.yaml"
     label: "Assert - Verify shopping list persisted"
-
-- runFlow:
-    file: "../../flows/shopping/en/clearShoppingList.yaml"
-    label: "Cleanup - Clear shopping list"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Navigate to Home screen"

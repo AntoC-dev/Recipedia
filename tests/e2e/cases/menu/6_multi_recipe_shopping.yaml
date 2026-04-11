@@ -124,11 +124,3 @@ tags:
 - assertNotVisible:
     id: "ShoppingScreen::SectionList::Ground Beef"
     label: "Assert - Ground Beef ingredient not visible (recipe removed)"
-
-- runFlow:
-    file: "../../flows/shopping/en/clearShoppingList.yaml"
-    label: "Cleanup - Clear shopping list"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Navigate to Home screen"

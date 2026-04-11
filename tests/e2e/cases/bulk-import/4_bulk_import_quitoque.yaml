@@ -145,15 +145,3 @@ tags:
     label: "Action - Finish second import"
 
 - waitForAnimationToEnd
-
-- runFlow:
-    file: "../../flows/bulk-import/deleteAllImportedRecipes.yaml"
-    label: "Cleanup - Delete all imported recipes"
-
-- runFlow:
-    file: "../../flows/parameters/language/switchToEnglish.yaml"
-    label: "Cleanup - Switch back to English"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Return to home"

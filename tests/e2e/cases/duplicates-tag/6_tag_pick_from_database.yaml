@@ -70,7 +70,3 @@ tags:
 - assertVisible:
     text: "Salad"
     label: "Assert - Verify Salad tag was picked"
-
-- tapOn:
-    id: "Recipe::AppBar::BackButton"
-    label: "Cleanup - Exit recipe creation without saving"

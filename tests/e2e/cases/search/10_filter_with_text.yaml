@@ -63,7 +63,3 @@ tags:
 - tapOn:
     id: "SearchScreen::FiltersSelection::0::Chip"
     label: "Action - Remove 'Ca' text filter"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Navigate back to Home screen"

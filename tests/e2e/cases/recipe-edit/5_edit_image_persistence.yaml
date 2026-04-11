@@ -56,15 +56,3 @@ tags:
 - assertVisible:
     id: "RecipeImage::Image"
     label: "Assert - Image persisted after editing recipe"
-
-- tapOn:
-    id: "Recipe::AppBar::BackButton"
-    label: "Cleanup - Back to Search screen"
-
-- tapOn:
-    id: "SearchScreen::FiltersSelection::0::Chip"
-    label: "Cleanup - Remove search filter"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Return to Home screen"

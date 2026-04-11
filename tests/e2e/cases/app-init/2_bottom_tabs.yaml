@@ -48,7 +48,3 @@ tags:
 - runFlow:
     file: "../../asserts/parameters/en/assertParametersScreen.yaml"
     label: "Assert - Verify Parameters screen is displayed correctly"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Navigate back to Home screen"

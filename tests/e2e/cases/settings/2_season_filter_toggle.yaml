@@ -46,7 +46,3 @@ tags:
 - runFlow:
     file: "../../asserts/search/en/assertSeasonFilterNotApplied.yaml"
     label: "Assert - Verify season filter is NOT applied"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Return to Home screen"

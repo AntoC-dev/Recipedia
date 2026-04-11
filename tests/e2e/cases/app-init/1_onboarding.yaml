@@ -118,7 +118,3 @@ tags:
 - runFlow:
     file: "../../asserts/onboarding/en/assertWelcomeScreen.yaml"
     label: "Assert - Verify Welcome Screen reappears after incomplete tutorial"
-
-- tapOn:
-    id: "WelcomeScreen::SkipButton"
-    label: "Action - Skip the tutorial to proceed with tests"

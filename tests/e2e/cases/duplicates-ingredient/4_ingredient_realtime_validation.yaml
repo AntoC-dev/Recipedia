@@ -226,11 +226,3 @@ tags:
     id: "IngredientsSettings::ItemDialog::AddModal::ConfirmButton"
     enabled: false
     label: "Assert - Confirm button disabled for exact duplicate"
-
-- tapOn:
-    id: "IngredientsSettings::ItemDialog::AddModal::CancelButton"
-    label: "Cleanup - Cancel add ingredient dialog"
-
-- runFlow:
-    file: "../../flows/parameters/ingredients/returnToHome.yaml"
-    label: "Cleanup - Return to Home screen"

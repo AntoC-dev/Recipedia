@@ -91,7 +91,3 @@ tags:
 - assertNotVisible:
     id: "RecipeIngredients::1::NameInput::CustomTextInput"
     label: "Assert - Verify duplicate ingredient row was not added"
-
-- tapOn:
-    id: "Recipe::AppBar::BackButton"
-    label: "Cleanup - Exit recipe creation without saving"

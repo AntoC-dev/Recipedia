@@ -129,12 +129,3 @@ tags:
     id: "IngredientsSettings::ItemDialog::AddModal::ConfirmButton"
     enabled: false
     label: "Assert - Confirm button disabled (missing type and unit)"
-
-- tapOn:
-    id: "IngredientsSettings::ItemDialog::AddModal::CancelButton"
-    label: "Cleanup - Cancel add ingredient dialog"
-
-
-- runFlow:
-    file: "../../flows/parameters/ingredients/returnToHome.yaml"
-    label: "Cleanup - Return to Home screen"

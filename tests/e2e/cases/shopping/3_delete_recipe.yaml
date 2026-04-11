@@ -96,7 +96,3 @@ tags:
 - runFlow:
     file: "../../asserts/shopping/en/shoppingEmpty.yaml"
     label: "Assert - Verify shopping list is empty after recipe deletion"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Navigate to Home screen"

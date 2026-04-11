@@ -128,11 +128,3 @@ tags:
 - runFlow:
     file: "../../asserts/shopping/en/shoppingSpaghettiCaesarAndPizza.yaml"
     label: "Assert - Verify all three recipes' ingredients in shopping list"
-
-- runFlow:
-    file: "../../flows/shopping/en/clearShoppingList.yaml"
-    label: "Cleanup - Clear shopping list"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Navigate to Home screen"

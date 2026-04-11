@@ -48,7 +48,3 @@ tags:
 - runFlow:
     file: "../../flows/search/scrollBackToTop.yaml"
     label: "Scroll back to top of search screen"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Navigate back to Home screen"

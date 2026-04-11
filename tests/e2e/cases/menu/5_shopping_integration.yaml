@@ -61,11 +61,3 @@ tags:
 - runFlow:
     file: "../../asserts/shopping/en/shoppingPancakeSimple.yaml"
     label: "Assert - Pancake ingredients back in shopping list"
-
-- runFlow:
-    file: "../../flows/shopping/en/clearShoppingList.yaml"
-    label: "Cleanup - Clear shopping list"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Navigate to Home screen"

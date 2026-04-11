@@ -119,7 +119,3 @@ tags:
 - assertVisible:
     text: "Dessert"
     label: "Assert - Verify original Dessert tag still present"
-
-- tapOn:
-    id: "Recipe::AppBar::BackButton"
-    label: "Cleanup - Exit recipe creation without saving"

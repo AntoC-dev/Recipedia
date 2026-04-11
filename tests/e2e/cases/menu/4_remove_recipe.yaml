@@ -28,7 +28,3 @@ tags:
 - runFlow:
     file: "../../asserts/menu/en/assertMenuEmpty.yaml"
     label: "Assert - Verify menu is now empty"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Navigate to Home screen"

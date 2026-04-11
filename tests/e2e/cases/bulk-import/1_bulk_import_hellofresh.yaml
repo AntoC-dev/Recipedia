@@ -4,7 +4,7 @@ tags:
   - bulk-import
 ---
 - runFlow:
-    file: "../../flows/setupFirstTest.yaml"
+    file: "../../flows/setupTest.yaml"
     label: "Setup - Launch app and wait for ready"
 
 - runFlow:
@@ -201,25 +201,3 @@ tags:
     id: "RecipePersons::Text"
     text: "Ingrédients (4 personnes)"
     label: "Assert - Imported recipe uses defaultPersons (4) not provider value"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "Recipe::AppBar::Delete"
-    label: "Cleanup - Delete recipe"
-
-- tapOn:
-    id: "Recipe::Dialog::Confirm"
-    label: "Cleanup - Confirm deletion"
-
-- tapOn:
-    id: "Recipe::Dialog::Confirm"
-    label: "Cleanup - Close confirmation"
-
-- runFlow:
-    file: "../../flows/parameters/language/switchToEnglish.yaml"
-    label: "Cleanup - Switch back to English"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Return to home"

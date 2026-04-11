@@ -119,11 +119,3 @@ tags:
       INGREDIENT_NAME: "Carotte"
       INGREDIENT_TYPE: "Baking"
     label: "Assert - First ingredient from HelloFresh was added to database"
-
-- tapOn:
-    id: "IngredientsSettings::AppBar::BackButton"
-    label: "Cleanup - Return to Parameters"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Return to home screen"

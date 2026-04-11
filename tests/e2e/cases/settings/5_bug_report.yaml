@@ -195,29 +195,3 @@ tags:
       - assertVisible:
           text: "No email app found. Please configure an email account on your device."
           label: "Snack bar text is displayed on Android"
-
-
-- tapOn:
-    id: "BugReport::Bar::AppBar::BackButton"
-    label: "Action - Navigate back to Parameters screen"
-
-- extendedWaitUntil:
-    notVisible:
-      id: "BugReport::Bar::AppBar"
-    timeout: 3000
-    label: "Wait for bug report to be exited"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "Parameters::Section::Appearance::SubHeader"
-    direction: UP
-    speed: 60
-    label: "Scroll back to top of Parameters screen"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Return to Home screen"

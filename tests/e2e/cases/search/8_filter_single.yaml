@@ -68,7 +68,3 @@ tags:
 - tapOn:
     id: "SearchScreen::FiltersToggleButtons"
     label: "Action - Close the filter page"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Navigate back to Home screen"

@@ -146,19 +146,3 @@ tags:
 - tapOn:
     id: "Recipe::AppBar::BackButton"
     label: "Action - Back to the Search Screen"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::SearchBar"
-    direction: UP
-    speed: 85
-    timeout: 120000
-    label: "Cleanup - Scroll back to top of Search screen"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Back to the Home Screen"

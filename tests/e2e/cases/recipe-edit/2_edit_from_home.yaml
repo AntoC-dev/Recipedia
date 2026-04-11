@@ -153,27 +153,3 @@ env:
       INGREDIENT_QUANTITY_AND_UNIT: "5 pieces"
       INGREDIENT_NOTE: "wrap the sushi"
     label: "Assert - Verify updated note is displayed on Nori Sheets ingredient"
-
-- tapOn:
-    id: "Recipe::AppBar::Edit"
-    waitToSettleTimeoutMs: 0
-    retryTapIfNoChange: false
-    label: "Cleanup - Enter edit mode to clear note"
-
-- runFlow:
-    file: "../../flows/recipe/ingredients/clearNoteOnIngredient.yaml"
-    env:
-      INDEX: "1"
-    label: "Cleanup - Clear note from Nori Sheets ingredient"
-
-- runFlow:
-    file: "../../flows/recipe/editing/fillNutritionBackSushi.yaml"
-    label: "Cleanup - Restore nutrition table"
-
-- tapOn:
-    id: "Recipe::AppBar::BackButton"
-    label: "Cleanup - Back to the read only mode"
-
-- runFlow:
-    file: "../../flows/home/swipeBackToFirstCard.yaml"
-    label: "Cleanup - Replace the cards to theirs original position"

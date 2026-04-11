@@ -134,7 +134,3 @@ tags:
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Ingredient::PickConfirmation::ConfirmButton"
     label: "Action - Confirm ingredient selection"
-
-- tapOn:
-    id: "Recipe::AppBar::BackButton"
-    label: "Cleanup - Exit recipe creation without saving"

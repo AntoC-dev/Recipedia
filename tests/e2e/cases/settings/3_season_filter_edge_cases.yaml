@@ -18,7 +18,3 @@ tags:
 - runFlow:
     file: "../../flows/parameters/seasonFilter/removeChipWithOtherFilters.yaml"
     label: "Action - Test removing season filter chip with other filters"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Return to Home screen"
