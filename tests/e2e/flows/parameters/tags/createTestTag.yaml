@@ -1,0 +1,45 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "TagsSettings::BottomActionButton"
+    label: "Action - Open add tag dialog"
+
+- tapOn:
+    id: "TagsSettings::ItemDialog::AddModal::Name::CustomTextInput"
+    label: "Action - Focus on tag name input"
+
+- runFlow:
+    file: "../../waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
+- inputText:
+    text: "TestTag"
+    label: "Action - Enter new tag name"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to dismiss"
+
+- tapOn:
+    id: "TagsSettings::ItemDialog::AddModal::ConfirmButton"
+    label: "Action - Confirm adding new tag"
+
+- waitForAnimationToEnd

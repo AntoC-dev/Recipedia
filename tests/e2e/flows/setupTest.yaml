@@ -1,14 +1,35 @@
 appId: "com.recipedia"
 ---
 - launchApp:
-    label: "Setup - Launch app"
+    clearState: true
+    label: "Setup - Launch app with clean state"
 
+- runFlow:
+    file: "handleAnr.yaml"
+    label: "Handle ANR during initialization"
+
+# clearState triggers onboarding on every launch — skip it
 - extendedWaitUntil:
     visible:
       id: "Home::RecipeRecommendation::random::Carousel::Card::0::Cover"
     timeout: 60000
     optional: true
-    label: "Wait for app to be ready"
+    label: "Wait for onboarding screen"
+
+- runFlow:
+    file: "handleAnr.yaml"
+    label: "Handle ANR during initialization"
+
+- tapOn:
+    id: "WelcomeScreen::SkipButton"
+    retryTapIfNoChange: true
+    label: "Skip onboarding"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "WelcomeScreen::LoadingOverlay"
+    timeout: 30000
+    label: "Wait for data to load"
 
 - extendedWaitUntil:
     visible:
@@ -19,7 +40,7 @@ appId: "com.recipedia"
 
 - runFlow:
     file: "handleAnr.yaml"
-    label: "Handle ANR dialog if it appears during initialization"
+    label: "Handle ANR after data load"
 
 - extendedWaitUntil:
     visible:
@@ -29,7 +50,7 @@ appId: "com.recipedia"
 
 - runFlow:
     file: "handleAnr.yaml"
-    label: "Handle ANR dialog if it appears after home render"
+    label: "Handle ANR after home render"
 
 # FAB IDs use regex pattern because React Native Paper adds "-container-outer-layer" suffix on iOS
 - extendedWaitUntil:
@@ -44,7 +65,7 @@ appId: "com.recipedia"
 
 - runFlow:
     file: "handleAnr.yaml"
-    label: "Handle ANR dialog if it appears after loading"
+    label: "Handle ANR after loading"
 
 - runFlow:
     file: "warmupScreens.yaml"
