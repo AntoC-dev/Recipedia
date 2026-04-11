@@ -28,6 +28,10 @@ jobs:
     name: Build ${{ inputs.platform == 'ios' && 'iOS App' || 'APK' }} (${{ inputs.build-profile }})
     runs-on: ${{ inputs.platform == 'ios' && 'macos-15' || 'ubuntu-latest' }}
     steps:
+      - name: Select Xcode 26
+        if: inputs.platform == 'ios'
+        run: sudo xcode-select -s /Applications/Xcode_26.2.app
+
       - name: Checkout repository
         uses: actions/checkout@v6
         with:

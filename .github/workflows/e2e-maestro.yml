@@ -32,6 +32,10 @@ jobs:
       matrix:
         suite: ${{ fromJson(inputs.suites) }}
     steps:
+      - name: Select Xcode 26
+        if: inputs.platform == 'ios'
+        run: sudo xcode-select -s /Applications/Xcode_26.2.app
+
       - name: Checkout repository
         uses: actions/checkout@v6
 
