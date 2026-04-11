@@ -4,6 +4,13 @@ appId: "com.recipedia"
     clearState: true
     label: "Setup - Launch app with clean state"
 
+- extendedWaitUntil:
+    visible:
+      id: "WelcomeScreen::SkipButton"
+    timeout: 60000
+    optional: true
+    label: "Wait for welcome to be visible"
+
 - runFlow:
     file: "handleAnr.yaml"
     label: "Handle ANR during initialization"
@@ -11,10 +18,9 @@ appId: "com.recipedia"
 # clearState triggers onboarding on every launch — skip it
 - extendedWaitUntil:
     visible:
-      id: "Home::RecipeRecommendation::random::Carousel::Card::0::Cover"
+      id: "WelcomeScreen::SkipButton"
     timeout: 60000
-    optional: true
-    label: "Wait for onboarding screen"
+    label: "Wait for Welcome screen to be visible"
 
 - runFlow:
     file: "handleAnr.yaml"
@@ -22,7 +28,6 @@ appId: "com.recipedia"
 
 - tapOn:
     id: "WelcomeScreen::SkipButton"
-    retryTapIfNoChange: true
     label: "Skip onboarding"
 
 - extendedWaitUntil:

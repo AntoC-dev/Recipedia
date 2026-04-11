@@ -106,7 +106,6 @@ tags:
     file: "../../asserts/onboarding/en/assertTutorialStep4.yaml"
     label: "Assert - Verify tutorial Step 4 (Shopping screen) again"
 
-- stopApp
 - launchApp
 
 - extendedWaitUntil:
