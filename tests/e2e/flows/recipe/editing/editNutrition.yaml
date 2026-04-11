@@ -7,8 +7,8 @@ appId: "com.recipedia"
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
     direction: DOWN
-    speed: 60
-    timeout: 120000
+    speed: 30
+    timeout: 240000
     centerElement: true
     label: "Scroll to nutrition section"
 
@@ -18,6 +18,9 @@ appId: "com.recipedia"
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
     label: "Tap on energy kcal input"
 
+- runFlow:
+    file: "../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard to appear"
 
 - eraseText
 
@@ -25,6 +28,7 @@ appId: "com.recipedia"
     label: "Wait for keyboard animation"
 
 - inputText: "${NEW_ENERGY_KCAL}"
+
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 

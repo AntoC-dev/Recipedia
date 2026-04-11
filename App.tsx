@@ -85,7 +85,11 @@ function AppContent() {
         }
     };
 
-    const theme = darkMode ? darkTheme : lightTheme;
+    const animationsDisabled = process.env.EXPO_PUBLIC_DISABLE_ANIMATIONS === 'true';
+    const theme = {
+        ...(darkMode ? darkTheme : lightTheme),
+        animation: { scale: animationsDisabled ? 0 : 1 },
+    };
 
     const shouldHideSplash = isAppInitialized && (isFirstLaunchFlag === true || isDatabaseReady);
 

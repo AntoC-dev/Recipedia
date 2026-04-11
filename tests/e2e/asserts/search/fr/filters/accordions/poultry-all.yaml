@@ -10,6 +10,10 @@ appId: "com.recipedia"
     speed: 20
     label: "Scroll to Poultry accordion"
 
+- swipe:
+    direction: DOWN
+    label: "Scroll down to ensure poultry accordion is visible"
+
 - waitForAnimationToEnd
 
 - assertVisible:

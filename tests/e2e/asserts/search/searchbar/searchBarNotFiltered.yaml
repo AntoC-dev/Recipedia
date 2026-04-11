@@ -105,4 +105,3 @@ appId: "com.recipedia"
     label: "Scroll back to top of dropdown"
 
 - waitForAnimationToEnd
-

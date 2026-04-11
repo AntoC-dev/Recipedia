@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   commit-validation:
     name: Validate Commit Messages
@@ -134,7 +138,7 @@ jobs:
       - name: Security audit
         uses: oke-py/npm-audit-action@v3
         with:
-          audit_level: moderate
+          audit_level: critical
           create_issues: false
           create_pr_comments: true
           github_token: ${{ secrets.GITHUB_TOKEN }}

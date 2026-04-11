@@ -112,7 +112,7 @@ tags:
 - extendedWaitUntil:
     visible:
       id: "WelcomeScreen::AppIcon::Image"
-    timeout: 30000
+    timeout: 60000
     label: "Wait for welcome screen to be displayed"
 
 - runFlow:

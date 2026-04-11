@@ -3,11 +3,10 @@
 
 import 'react-native-gesture-handler/jestSetup';
 
-// @shopify/flash-list (official jest setup - fixed in v2.0.3+)
-import '@shopify/flash-list/jestSetup';
-
 // react-native-safe-area-context
 import mockSafeAreaContext from 'react-native-safe-area-context/jest/mock';
+
+jest.mock('@shopify/flash-list', () => require('@mocks/deps/flash-list-mock').flashListMock());
 
 jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);
 

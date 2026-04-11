@@ -42,7 +42,6 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 20
     timeout: 60000
-    timeout: 3000
     centerElement: true
     label: "Scroll to find first tag"
 
@@ -65,11 +64,10 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "TagsSettings::1::TagName"
+        id: "TagsSettings::1::TagName"
     direction: DOWN
     speed: 20
     timeout: 60000
-    timeout: 3000
     centerElement: true
     label: "Scroll to find second tag"
 

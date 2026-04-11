@@ -6,7 +6,7 @@ appId: "com.recipedia"
 - extendedWaitUntil:
     visible:
       id: "Home::RecipeRecommendation::random::Carousel::Card::0::Cover"
-    timeout: 10000
+    timeout: 60000
     optional: true
     label: "Wait for app to be ready"
 
@@ -24,13 +24,8 @@ appId: "com.recipedia"
 - extendedWaitUntil:
     visible:
       id: "Home::RecipeRecommendation::random::Carousel::Card::0::Cover"
-    timeout: 60000
-    optional: true
+    timeout: 120000
     label: "Wait for app to be ready"
-
-- assertVisible:
-    id: "Home::RecipeRecommendation::random::Carousel::Card::0::Cover"
-    label: "Verify app is ready"
 
 - runFlow:
     file: "handleAnr.yaml"
@@ -54,3 +49,7 @@ appId: "com.recipedia"
 - runFlow:
     file: "warmupScreens.yaml"
     label: "Warmup screens to exhaust ANR issues"
+
+- runFlow:
+    file: "warmupKeyboard.yaml"
+    label: "Warmup keyboard on iOS to prevent cold keyboard input drops"

@@ -6,13 +6,15 @@ appId: "com.recipedia"
     timeout: 10000
     label: "Wait until the Choose button is visible"
 
-- assertVisible:
-    text: "Choose"
-    label: "Validate the Choose button is visible"
-
 - tapOn:
     text: "Choose"
     label: "Validate the picture without crop (Choose button)"
+
+- extendedWaitUntil:
+    notVisible:
+      text: "Choose"
+    timeout: 10000
+    label: "Wait until the Choose button is no more visible"
 
 - waitForAnimationToEnd:
     label: "Wait for the animation to end"

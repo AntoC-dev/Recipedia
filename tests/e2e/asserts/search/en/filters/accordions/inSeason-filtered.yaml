@@ -37,7 +37,7 @@ appId: "com.recipedia"
 
 # Expand the accordion
 - tapOn:
-    text: "Only in-season ingredients"
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Expand Only in-season ingredients accordion"
 
 # Initialize counter for visible items

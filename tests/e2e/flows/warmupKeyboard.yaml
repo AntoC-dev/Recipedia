@@ -1,0 +1,48 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - runFlow:
+          file: "fab/expand.yaml"
+          label: "Expand FAB menu"
+
+      - tapOn:
+          id: "UrlButton.*"
+          label: "Open URL input dialog"
+
+      - extendedWaitUntil:
+          visible:
+            id: "VerticalBottomButtons::UrlDialog::Input::CustomTextInput"
+          timeout: 5000
+          label: "Wait for URL input to be visible"
+
+      - tapOn:
+          id: "VerticalBottomButtons::UrlDialog::Input::CustomTextInput"
+          label: "Focus URL input"
+
+      - runFlow:
+          file: "waitForKeyboard.yaml"
+          label: "Wait for keyboard to appear"
+
+      - inputText:
+          text: "x"
+          label: "Type dummy character to prime keyboard"
+
+      - waitForAnimationToEnd:
+          label: "Wait for keyboard animation to end"
+
+      - pressKey: enter
+
+      - runFlow:
+          file: "waitForKeyboardDismiss.yaml"
+          label: "Wait for keyboard to dismiss"
+
+      - tapOn:
+          id: "VerticalBottomButtons::UrlDialog::CancelButton"
+          label: "Close URL dialog"
+
+      - waitForAnimationToEnd:
+          timeout: 3000
+          label: "Wait for dialog dismiss animation"

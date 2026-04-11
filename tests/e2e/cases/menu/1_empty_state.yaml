@@ -11,6 +11,12 @@ tags:
     id: "BottomTabs::Menu"
     label: "Action - Navigate to Menu screen"
 
+- extendedWaitUntil:
+    visible:
+      id: "MenuScreen::.*"
+    timeout: 30000
+    label: "Wait for Menu screen to be visible"
+
 - runFlow:
     file: "../../asserts/menu/en/assertMenuEmpty.yaml"
     label: "Assert - Verify empty menu state"

@@ -14,12 +14,13 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for scroll to end"
 
+- assertVisible:
+    id: "RecipeTags::RoundButton"
+    label: "Verify tags section is visible"
+
 - tapOn:
     id: "RecipeTags::RoundButton"
     label: "Add tag to recipe"
-
-- waitForAnimationToEnd:
-    label: "Wait for animation to end"
 
 - extendedWaitUntil:
     visible:

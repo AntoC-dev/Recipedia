@@ -3,24 +3,36 @@ appId: "com.recipedia"
 - runFlow:
     file: "../../fab/expand.yaml"
     label: "Expand the FAB buttons"
+
 # FAB ID uses regex pattern because React Native Paper adds suffix on iOS
 - tapOn:
     id: "RecipeEdit.*"
     label: "Go to adding manually a recipe screen"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::AppBar"
+    timeout: 30000
+    label: "Wait for recipe screen to load"
+
 - tapOn:
     id: "Recipe::BottomActionButton"
     label: "Try to validate the adding when empty"
+
 - runFlow:
     file: "../../../asserts/alerts/fr/recipeValidationError.yaml"
     label: "Check that alert for empty recipe is translated in French"
     env:
       MISSING_ELEMENTS: "\n\t- une image\n\t- un titre\n\t- des ingrédients\n\t- des instructions pour la préparation\n\t- un temps de préparation"
+
 - runFlow:
     file: "./fillRecipe.yaml"
     label: "Fill the mandatory fields of the recipe adding screen"
+
 - tapOn:
     id: "Recipe::BottomActionButton"
     label: "Validate the recipe adding"
+
 - runFlow:
     file: "../../../asserts/alerts/fr/recipeAddedToDatabase.yaml"
     label: "Check that alert for added recipe is translated in French"

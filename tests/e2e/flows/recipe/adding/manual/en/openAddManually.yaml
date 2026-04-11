@@ -8,3 +8,9 @@ appId: "com.recipedia"
 - tapOn:
     id: "RecipeEdit.*"
     label: "Open manual recipe adding"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::AppBar"
+    timeout: 30000
+    label: "Wait for recipe screen to load"

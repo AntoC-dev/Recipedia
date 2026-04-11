@@ -36,7 +36,7 @@ appId: "com.recipedia"
 
 # Expand the accordion
 - tapOn:
-    text: "Spice"
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Expand Spice accordion"
 
 # Initialize counter for visible items

@@ -37,3 +37,8 @@ appId: "com.recipedia"
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to disappear"
+
+- assertVisible:
+    id: "${SETTINGS_SCREEN}::SearchBar"
+    text: "${SEARCH_QUERY}"
+    label: "Ensure query is input correctly"

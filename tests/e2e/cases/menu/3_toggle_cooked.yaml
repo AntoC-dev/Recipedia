@@ -15,6 +15,12 @@ tags:
     id: "BottomTabs::Menu"
     label: "Action - Navigate to Menu screen"
 
+- extendedWaitUntil:
+    visible:
+      id: "MenuScreen::.*"
+    timeout: 30000
+    label: "Wait for Menu screen to be visible"
+
 - tapOn:
     id: "MenuScreen::MenuItem::1::Checkbox"
     label: "Action - Mark recipe as cooked"

@@ -25,13 +25,17 @@ on:
 jobs:
   e2e-tests:
     name: E2E ${{ inputs.platform }} (${{ matrix.suite }})
-    runs-on: ${{ inputs.platform == 'ios' && 'macos-15-intel' || 'ubuntu-latest' }}
+    runs-on: ${{ inputs.platform == 'ios' && 'macos-15' || 'ubuntu-latest' }}
     timeout-minutes: 180
     strategy:
       fail-fast: false
       matrix:
         suite: ${{ fromJson(inputs.suites) }}
     steps:
+      - name: Select Xcode 26
+        if: inputs.platform == 'ios'
+        run: sudo xcode-select -s /Applications/Xcode_26.2.app
+
       - name: Checkout repository
         uses: actions/checkout@v6
 
@@ -69,7 +73,7 @@ jobs:
         if: inputs.platform == 'android'
         uses: dniHze/maestro-test-action@v1
         with:
-          version: '2.0.10'
+          version: '2.4.0'
 
       - name: Run E2E tests (Android)
         if: inputs.platform == 'android'
@@ -102,6 +106,12 @@ jobs:
           echo "📱 iOS app bundle extracted"
           ls -la *.app || echo "No .app found at root level"
 
+      - name: Disable macOS background services
+        if: inputs.platform == 'ios'
+        run: |
+          sudo mdutil -a -i off
+          sudo tmutil disable
+
       - name: Boot iOS Simulator
         if: inputs.platform == 'ios'
         id: simulator
@@ -115,16 +125,32 @@ jobs:
 
       - name: Disable hardware keyboard
         if: inputs.platform == 'ios'
+        env:
+          UDID: ${{ steps.simulator.outputs.udid }}
         run: |
-          echo "⌨️ Disabling hardware keyboard for software keyboard to appear..."
-          defaults write com.apple.iphonesimulator ConnectHardwareKeyboard -bool NO
+          echo "⌨️ Disabling hardware keyboard for device $UDID..."
+          PLIST=~/Library/Preferences/com.apple.iphonesimulator.plist
+          defaults write com.apple.iphonesimulator ConnectHardwareKeyboard -bool false
+          /usr/libexec/PlistBuddy -c "Add :DevicePreferences:$UDID:ConnectHardwareKeyboard bool false" "$PLIST" 2>/dev/null || \
+          /usr/libexec/PlistBuddy -c "Set :DevicePreferences:$UDID:ConnectHardwareKeyboard false" "$PLIST"
           echo "✅ Hardware keyboard disabled"
+
+      - name: Configure simulator for testing
+        if: inputs.platform == 'ios'
+        run: |
+          xcrun simctl spawn booted defaults write -g UIAnimationDragCoefficient 0.001
+          xcrun simctl spawn booted defaults write -g NSAutomaticWindowAnimationsEnabled -bool false
+          xcrun simctl spawn booted defaults write com.apple.Accessibility ReduceMotion -bool YES
+          xcrun simctl spawn booted defaults write -g KeyboardAutocapitalization -bool NO
+          xcrun simctl spawn booted defaults write -g KeyboardAutocorrection -bool NO
+          xcrun simctl spawn booted defaults write -g KeyboardSpellChecking -bool NO
+          xcrun simctl spawn booted defaults write com.apple.assistant.support "Assistant Enabled" -bool NO
 
       - name: Setup Maestro CLI (iOS)
         if: inputs.platform == 'ios'
         uses: dniHze/maestro-test-action@v1
         with:
-          version: '2.0.10'
+          version: '2.4.0'
 
       - name: Run E2E tests (iOS)
         if: inputs.platform == 'ios'

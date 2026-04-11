@@ -10,6 +10,7 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 60
     centerElement: true
+    label: "Scroll to the persons text"
 
 - waitForAnimationToEnd
 
@@ -26,6 +27,7 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 60
     centerElement: true
+    label: "Scroll to the time text"
 
 - waitForAnimationToEnd
 
@@ -46,6 +48,7 @@ appId: "com.recipedia"
     direction: UP
     speed: 60
     centerElement: true
+    label: "Scroll up to the image"
 
 - waitForAnimationToEnd
 

@@ -35,7 +35,8 @@
       },
       "env": {
         "NODE_OPTIONS": "--max-old-space-size=4096",
-        "EXPO_PUBLIC_DATASET_TYPE": "test"
+        "EXPO_PUBLIC_DATASET_TYPE": "test",
+        "EXPO_PUBLIC_DISABLE_ANIMATIONS": "true"
       }
     },
     "performance": {
