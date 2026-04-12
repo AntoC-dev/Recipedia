@@ -26,6 +26,7 @@ appId: "com.recipedia"
       id: "Parameters::Section::About::Version::Item"
     direction: DOWN
     speed: 40
+    centerElement: true
     label: "Scroll to version item"
 
 - waitForAnimationToEnd

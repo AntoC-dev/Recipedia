@@ -23,14 +23,19 @@ tags:
     element:
       id: "Parameters::Section::About::BugReport::Item"
     direction: DOWN
-    speed: 50
-    timeout: 120000
-    label: "Action - Scroll to Bug Report item"
+    speed: 95
+    label: "Action - Scroll to Bug report section"
+
+- swipe:
+    direction: UP
+    duration: 1000
+    label: "Action - Scroll down to ensure the bug report section is not behind the bottom bar"
 
 - waitForAnimationToEnd
 
 - tapOn:
     id: "Parameters::Section::About::BugReport::Item"
+    point: "50%,20%"
     label: "Action - Open Bug Report screen"
 
 - extendedWaitUntil:

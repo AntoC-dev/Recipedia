@@ -53,9 +53,9 @@ tags:
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::RecipeCards::4::Content"
+      id: "SearchScreen::RecipeCards::4::.*"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Action - Scroll to Caesar Salad recipe"
 
@@ -95,16 +95,16 @@ tags:
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::RecipeCards::5::Content"
+      id: "SearchScreen::RecipeCards::5::.*"
     direction: DOWN
-    speed: 60
+    speed: 10
     centerElement: true
     label: "Action - Scroll to Margherita Pizza recipe"
 
 - waitForAnimationToEnd
 
 - tapOn:
-    id: "SearchScreen::RecipeCards::5::Content"
+    id: "SearchScreen::RecipeCards::5::.*"
     label: "Action - Open Margherita Pizza recipe"
 
 - tapOn:

@@ -137,7 +137,7 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeTags::HeaderText"
+      id: "RecipeTags::0::Chip"
     direction: UP
     speed: 20
     label: "Scroll up to ensure second tag's text input is visible"

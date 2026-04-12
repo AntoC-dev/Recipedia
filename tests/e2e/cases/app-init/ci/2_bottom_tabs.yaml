@@ -1,0 +1,8 @@
+name: "2 - Bottom Tabs Navigation Flow"
+appId: "com.recipedia"
+tags:
+  - app-init
+---
+- retry:
+    maxRetries: 1
+    file: "../2_bottom_tabs.yaml"

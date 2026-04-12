@@ -1,0 +1,8 @@
+name: "3 - FAB Menu Toggle Flow"
+appId: "com.recipedia"
+tags:
+  - app-init
+---
+- retry:
+    maxRetries: 1
+    file: "../3_fab_menu.yaml"

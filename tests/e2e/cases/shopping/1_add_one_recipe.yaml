@@ -23,10 +23,10 @@ tags:
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::RecipeCards::3::Content"
+      id: "SearchScreen::RecipeCards::3::.*"
     direction: DOWN
     speed: 20
-    timeout: 90000
+    timeout: 60000
     centerElement: true
     label: "Action - Scroll to Classic Pancakes recipe"
 

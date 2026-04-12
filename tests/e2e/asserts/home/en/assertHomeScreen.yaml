@@ -43,7 +43,7 @@ appId: "com.recipedia"
     element:
       id: "Home::RecipeRecommendation::grain-1::SubHeader"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to first grain-based recommendations"
 

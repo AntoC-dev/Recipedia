@@ -1,0 +1,8 @@
+name: "1 - Onboarding Tutorial Flow"
+appId: "com.recipedia"
+tags:
+  - app-init
+---
+- retry:
+    maxRetries: 1
+    file: "../1_onboarding.yaml"

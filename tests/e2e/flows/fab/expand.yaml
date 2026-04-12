@@ -9,6 +9,7 @@ appId: "com.recipedia"
     commands:
       - tapOn:
           id: "ExpandButton.*"
+          point: "50%, 20%"
           label: "Tap FAB expand button"
       - extendedWaitUntil:
           visible:
