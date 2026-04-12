@@ -11,7 +11,7 @@ appId: "com.recipedia"
     label: "Scroll to Poultry accordion"
 
 - swipe:
-    direction: DOWN
+    direction: UP
     label: "Scroll down to ensure poultry accordion is visible"
 
 - waitForAnimationToEnd
