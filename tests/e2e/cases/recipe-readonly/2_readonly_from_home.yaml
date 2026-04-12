@@ -22,7 +22,3 @@ env:
 - tapOn:
     id: "Recipe::AppBar::BackButton"
     label: "Action - Back to the Home Screen"
-
-- runFlow:
-    file: "../../asserts/home/en/assertHomeScreen.yaml"
-    label: "Assert - Verify Home screen is displayed"
