@@ -30,25 +30,15 @@ updates:
       - "automated"
     # Group React Native related packages together
     groups:
-      react-native:
-        patterns:
-          - "react-native*"
-          - "@react-native*"
-          - "react-native-*"
       expo:
         patterns:
           - "expo*"
           - "@expo*"
-      react:
-        patterns:
-          - "react"
-          - "react-*"
-          - "@types/react*"
       testing:
         patterns:
           - "*jest*"
-          - "@testing-library/*"
-          - "maestro*"
+          - "babel-jest"
+          - "reassure"
       linting:
         patterns:
           - "eslint*"
@@ -71,9 +61,18 @@ updates:
       # All Expo related packages should be updated manually
       - dependency-name: "expo*"
       - dependency-name: "@expo*"
+      # React versions must track Expo SDK — update manually
+      - dependency-name: "react"
+      - dependency-name: "react-dom"
+      - dependency-name: "react-compiler-runtime"
+      - dependency-name: "@types/react*"
+      # React Navigation is tightly coupled to React Native version
+      - dependency-name: "@react-navigation/*"
+      # React Native Testing Library must match React Native version
+      - dependency-name: "@testing-library/react-native"
       # Node.js types often have issues with automatic updates
       - dependency-name: "@types/node"
-        update-types: [ "version-update:semver-major" ]
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
