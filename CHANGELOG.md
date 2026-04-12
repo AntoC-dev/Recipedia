@@ -1,3 +1,10 @@
+## [2.30.3](https://github.com/AntoC-dev/Recipedia/compare/v2.30.2...v2.30.3) (2026-04-12)
+
+### Bug Fixes
+
+* **ci:** remove invalid security-update from dependabot allow rules ([561e34d](https://github.com/AntoC-dev/Recipedia/commit/561e34d095d8a127bbfa6ca192f455733f278c44))
+* **ci:** remove invalid security-update from dependabot allow rules ([#256](https://github.com/AntoC-dev/Recipedia/issues/256)) ([bbd5bf8](https://github.com/AntoC-dev/Recipedia/commit/bbd5bf87d884b38c82c496b52824218383caa9a8))
+
 ## [2.30.2](https://github.com/AntoC-dev/Recipedia/compare/v2.30.1...v2.30.2) (2026-04-11)
 
 ### Bug Fixes
