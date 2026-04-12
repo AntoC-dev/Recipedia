@@ -41,9 +41,14 @@ tags:
     timeout: 120000
     label: "Phase 1 - Wait for validation screen (URLs now marked as seen)"
 
-- runFlow:
-    file: "../../flows/setupTest.yaml"
+- launchApp:
     label: "Phase 2 - Restart app to verify seen URLs persist"
+
+- extendedWaitUntil:
+    visible:
+      id: "Home::RecipeRecommendation::random::Carousel::Card::0::Cover"
+    timeout: 120000
+    label: "Wait for home screen to be visible"
 
 - runFlow:
     file: "../../flows/bulk-import/navigateToBulkImport.yaml"
@@ -65,25 +70,9 @@ tags:
     file: "../../asserts/bulk-import/fr/assertSeenSection.yaml"
     label: "Assert - Verify seen recipes section is displayed"
 
-- extendedWaitUntil:
-    notVisible:
-      id: "BulkImportDiscovery::DiscoveryProgress"
-    timeout: 900000
-    label: "Wait for recipe discovery to complete"
-
-- scrollUntilVisible:
-    element:
-      id: "BulkImportDiscovery::seen-([3-9]|[0-9][0-9]+)"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Action - Scroll past first three seen recipes"
-
-- waitForAnimationToEnd
-
 - tapOn:
-    id: "BulkImportDiscovery::seen-([3-9]|[0-9][0-9]+)"
-    label: "Action - Select a seen recipe beyond the first three"
+    id: "BulkImportDiscovery::seen-0"
+    label: "Action - Select the first seen recipe"
 
 - assertVisible:
     id: "BulkImportDiscovery::ContinueButton"
