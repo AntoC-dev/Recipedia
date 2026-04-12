@@ -18,9 +18,7 @@ updates:
       separator: "/"
     allow:
       - dependency-type: "direct"
-        update-types: ["version-update:semver-major", "version-update:semver-minor", "security-update"]
-      - dependency-type: "indirect"
-        update-types: ["security-update"]
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
     commit-message:
       prefix: "chore"
       prefix-development: "chore"
