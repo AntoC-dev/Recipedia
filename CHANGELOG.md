@@ -1,3 +1,10 @@
+## [2.30.4](https://github.com/AntoC-dev/Recipedia/compare/v2.30.3...v2.30.4) (2026-04-13)
+
+### Bug Fixes
+
+* **input:** commit-on-blur architecture to prevent E2E dropped characters ([95503d1](https://github.com/AntoC-dev/Recipedia/commit/95503d15858165ded2f82c98f6c8659f2db7e019))
+* **input:** commit-on-blur architecture to prevent E2E dropped characters ([#264](https://github.com/AntoC-dev/Recipedia/issues/264)) ([713736d](https://github.com/AntoC-dev/Recipedia/commit/713736d3117f2c3f02f6f2cba00381b9d3adf260))
+
 ## [2.30.3](https://github.com/AntoC-dev/Recipedia/compare/v2.30.2...v2.30.3) (2026-04-12)
 
 ### Bug Fixes
