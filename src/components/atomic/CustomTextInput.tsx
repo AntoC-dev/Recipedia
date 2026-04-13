@@ -71,8 +71,8 @@ export type CustomTextInputProps = {
   onFocus?: () => void;
   /** Callback fired when text changes */
   onChangeText?: (text: string) => void;
-  /** Callback fired when editing ends */
-  onEndEditing?: () => void;
+  /** Callback fired when editing ends, with the current displayed text */
+  onEndEditing?: (text: string) => void;
   /** Callback fired when input loses focus */
   onBlur?: () => void;
   /** Callback fired when component layout changes */
@@ -118,6 +118,7 @@ export function CustomTextInput({
 }: CustomTextInputProps) {
   const [displayValue, setDisplayValue] = useState(value ?? '');
   const prevExternalValueRef = useRef(value);
+  const lastCommittedValueRef = useRef<string | null>(null);
 
   if (value !== prevExternalValueRef.current) {
     prevExternalValueRef.current = value;
@@ -126,9 +127,25 @@ export function CustomTextInput({
 
   const { colors } = useTheme();
 
+  function commitChange() {
+    if (lastCommittedValueRef.current !== displayValue) {
+      lastCommittedValueRef.current = displayValue;
+      onEndEditing?.(displayValue);
+    }
+  }
+
   function handleOnChangeText(text: string) {
     setDisplayValue(text);
     onChangeText?.(text);
+  }
+
+  function handleEndEditing() {
+    commitChange();
+  }
+
+  function handleBlur() {
+    commitChange();
+    onBlur?.();
   }
 
   return (
@@ -149,13 +166,13 @@ export function CustomTextInput({
       ]}
       onFocus={onFocus}
       onChangeText={handleOnChangeText}
-      onEndEditing={onEndEditing}
+      onEndEditing={handleEndEditing}
       mode={mode}
       dense={dense}
       multiline={multiline}
       editable={editable}
       keyboardType={keyboardType}
-      onBlur={onBlur}
+      onBlur={handleBlur}
       onLayout={onLayout}
       error={error}
       right={right}
