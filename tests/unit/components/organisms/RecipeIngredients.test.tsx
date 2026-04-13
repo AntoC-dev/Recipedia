@@ -15,7 +15,7 @@ jest.mock('@components/atomic/NumericTextInput', () => ({
   NumericTextInput: require('@mocks/components/atomic/NumericTextInput-mock').numericTextInputMock,
 }));
 jest.mock('@components/atomic/CustomTextInput', () => ({
-  CustomTextInput: require('@mocks/components/atomic/CustomTextInput-mock').customTextInputMock,
+  CustomTextInput: require('@mocks/components/atomic/CustomTextInput-mock').CustomTextInputMock,
 }));
 jest.mock('@components/molecules/TextInputWithDropDown', () => ({
   TextInputWithDropDown: require('@mocks/components/molecules/TextInputWithDropDown-mock.tsx')

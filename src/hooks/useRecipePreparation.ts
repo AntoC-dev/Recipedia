@@ -28,10 +28,10 @@ import { useRecipeForm } from '@context/RecipeFormContext';
  * Return value from the useRecipePreparation hook
  */
 export interface UseRecipePreparationReturn {
-  /** Updates the title of a preparation step at the specified index */
-  editPreparationTitle: (stepIndex: number, newTitle: string) => void;
-  /** Updates the description of a preparation step at the specified index */
-  editPreparationDescription: (stepIndex: number, newDescription: string) => void;
+  /** Commits the title of a preparation step at the specified index */
+  commitPreparationTitle: (stepIndex: number, title: string) => void;
+  /** Commits the description of a preparation step at the specified index */
+  commitPreparationDescription: (stepIndex: number, description: string) => void;
   /** Adds a new empty preparation step to the end of the list */
   addNewPreparationStep: () => void;
 }
@@ -51,49 +51,46 @@ export function useRecipePreparation(): UseRecipePreparationReturn {
   const { setRecipePreparation } = setters;
 
   /**
-   * Updates the title of a preparation step at the specified index.
+   * Commits the title of a preparation step at the specified index.
    *
    * Validates the index before updating. If the index is out of bounds,
    * logs a warning and returns without making changes.
    *
    * @param stepIndex - Zero-based index of the step to update
-   * @param newTitle - The new title text for the step
+   * @param title - The committed title text for the step
    */
-  const editPreparationTitle = (stepIndex: number, newTitle: string) => {
+  const commitPreparationTitle = (stepIndex: number, title: string) => {
     if (stepIndex < 0 || stepIndex >= recipePreparation.length) {
-      recipeLogger.warn('Cannot edit preparation step title - invalid index', {
+      recipeLogger.warn('Cannot commit preparation step title - invalid index', {
         stepIndex,
         preparationCount: recipePreparation.length,
       });
       return;
     }
     const updatedPreparation = [...recipePreparation];
-    updatedPreparation[stepIndex] = { ...updatedPreparation[stepIndex], title: newTitle };
+    updatedPreparation[stepIndex] = { ...updatedPreparation[stepIndex], title };
     setRecipePreparation(updatedPreparation);
   };
 
   /**
-   * Updates the description of a preparation step at the specified index.
+   * Commits the description of a preparation step at the specified index.
    *
    * Validates the index before updating. If the index is out of bounds,
    * logs a warning and returns without making changes.
    *
    * @param stepIndex - Zero-based index of the step to update
-   * @param newDescription - The new description text for the step
+   * @param description - The committed description text for the step
    */
-  const editPreparationDescription = (stepIndex: number, newDescription: string) => {
+  const commitPreparationDescription = (stepIndex: number, description: string) => {
     if (stepIndex < 0 || stepIndex >= recipePreparation.length) {
-      recipeLogger.warn('Cannot edit preparation step description - invalid index', {
+      recipeLogger.warn('Cannot commit preparation step description - invalid index', {
         stepIndex,
         preparationCount: recipePreparation.length,
       });
       return;
     }
     const updatedPreparation = [...recipePreparation];
-    updatedPreparation[stepIndex] = {
-      ...updatedPreparation[stepIndex],
-      description: newDescription,
-    };
+    updatedPreparation[stepIndex] = { ...updatedPreparation[stepIndex], description };
     setRecipePreparation(updatedPreparation);
   };
 
@@ -108,8 +105,8 @@ export function useRecipePreparation(): UseRecipePreparationReturn {
   };
 
   return {
-    editPreparationTitle,
-    editPreparationDescription,
+    commitPreparationTitle,
+    commitPreparationDescription,
     addNewPreparationStep,
   };
 }

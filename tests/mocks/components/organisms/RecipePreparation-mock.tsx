@@ -9,27 +9,15 @@ function EditableStepMock({
   step,
   index,
   mode,
-  onTitleChange,
-  onDescriptionChange,
+  onTitleEditingEnded,
+  onDescriptionEditingEnded,
 }: {
   step: preparationStepElement;
   index: number;
   mode: 'readOnly' | 'editable' | 'add';
-  onTitleChange?: (index: number, title: string) => void;
-  onDescriptionChange?: (index: number, description: string) => void;
+  onTitleEditingEnded?: (index: number, title: string) => void;
+  onDescriptionEditingEnded?: (index: number, description: string) => void;
 }) {
-  const handleTitleChange = (newTitle: string) => {
-    if (onTitleChange) {
-      onTitleChange(index, newTitle);
-    }
-  };
-
-  const handleDescriptionChange = (newDescription: string) => {
-    if (onDescriptionChange) {
-      onDescriptionChange(index, newDescription);
-    }
-  };
-
   return (
     <View key={index}>
       {mode === 'readOnly' ? (
@@ -50,7 +38,7 @@ function EditableStepMock({
           <TextInput
             testID={`${testID}::EditableStep::${index}::TextInputTitle::CustomTextInput`}
             value={step.title}
-            onChangeText={handleTitleChange}
+            onEndEditing={e => onTitleEditingEnded?.(index, e?.nativeEvent?.text ?? step.title)}
           />
           <Text testID={`${testID}::EditableStep::${index}::Content`}>
             Content of step {index + 1} :{' '}
@@ -58,7 +46,9 @@ function EditableStepMock({
           <TextInput
             testID={`${testID}::EditableStep::${index}::TextInputContent::CustomTextInput`}
             value={step.description}
-            onChangeText={handleDescriptionChange}
+            onEndEditing={e =>
+              onDescriptionEditingEnded?.(index, e?.nativeEvent?.text ?? step.description)
+            }
           />
         </>
       )}
@@ -80,9 +70,11 @@ export function recipePreparationMock(props: RecipePreparationProps) {
           step={step}
           index={index}
           mode={mode}
-          onTitleChange={'onTitleChange' in props ? props.onTitleChange : undefined}
-          onDescriptionChange={
-            'onDescriptionChange' in props ? props.onDescriptionChange : undefined
+          onTitleEditingEnded={
+            'onTitleEditingEnded' in props ? props.onTitleEditingEnded : undefined
+          }
+          onDescriptionEditingEnded={
+            'onDescriptionEditingEnded' in props ? props.onDescriptionEditingEnded : undefined
           }
         />
       ))}

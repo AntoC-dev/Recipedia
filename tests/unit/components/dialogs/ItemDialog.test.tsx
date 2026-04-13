@@ -11,7 +11,7 @@ import {
 jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 
 jest.mock('@components/atomic/CustomTextInput', () => ({
-  CustomTextInput: require('@mocks/components/atomic/CustomTextInput-mock').customTextInputMock,
+  CustomTextInput: require('@mocks/components/atomic/CustomTextInput-mock').CustomTextInputMock,
 }));
 
 jest.mock('@components/molecules/SelectableAccordion', () => ({

@@ -22,7 +22,7 @@ MockNativeMethods.measureInWindow.mockImplementation(
 );
 
 jest.mock('@components/atomic/CustomTextInput', () => ({
-  CustomTextInput: require('@mocks/components/atomic/CustomTextInput-mock').customTextInputMock,
+  CustomTextInput: require('@mocks/components/atomic/CustomTextInput-mock').CustomTextInputMock,
 }));
 
 describe('TextInputWithDropDown Component', () => {

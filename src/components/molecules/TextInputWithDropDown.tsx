@@ -191,12 +191,12 @@ export function TextInputWithDropDown({
     onValidate?.(text);
   }
 
-  function handleEndEditing() {
+  function handleEndEditing(text: string) {
     if (isSelectingRef.current) {
       isSelectingRef.current = false;
       return;
     }
-    onValidate?.(textInput);
+    onValidate?.(text);
   }
 
   function handleLayout() {

@@ -150,4 +150,75 @@ describe('CustomTextInput', () => {
       expect(input.props.value).toBe('server-reset');
     });
   });
+
+  describe('commit-on-blur behavior', () => {
+    test('fires onEndEditing with current displayed text on endEditing', () => {
+      const onEndEditing = jest.fn();
+      const { getByTestId } = render(
+        <CustomTextInput {...baseProps} value='hello' onEndEditing={onEndEditing} />
+      );
+      const input = getByTestId('custom-input::CustomTextInput');
+
+      fireEvent.changeText(input, 'hello world');
+      fireEvent(input, 'endEditing');
+
+      expect(onEndEditing).toHaveBeenCalledWith('hello world');
+    });
+
+    test('fires onEndEditing with current text on blur', () => {
+      const onEndEditing = jest.fn();
+      const { getByTestId } = render(
+        <CustomTextInput {...baseProps} value='initial' onEndEditing={onEndEditing} />
+      );
+      const input = getByTestId('custom-input::CustomTextInput');
+
+      fireEvent.changeText(input, 'typed text');
+      fireEvent(input, 'blur');
+
+      expect(onEndEditing).toHaveBeenCalledWith('typed text');
+    });
+
+    test('does not fire onEndEditing twice when Done key fires both endEditing and blur', () => {
+      const onEndEditing = jest.fn();
+      const { getByTestId } = render(
+        <CustomTextInput {...baseProps} value='initial' onEndEditing={onEndEditing} />
+      );
+      const input = getByTestId('custom-input::CustomTextInput');
+
+      fireEvent.changeText(input, 'committed');
+      fireEvent(input, 'endEditing');
+      fireEvent(input, 'blur');
+
+      expect(onEndEditing).toHaveBeenCalledTimes(1);
+      expect(onEndEditing).toHaveBeenCalledWith('committed');
+    });
+
+    test('onChangeText still fires per-keystroke when provided', () => {
+      const onChangeText = jest.fn();
+      const { getByTestId } = render(
+        <CustomTextInput {...baseProps} onChangeText={onChangeText} />
+      );
+      const input = getByTestId('custom-input::CustomTextInput');
+
+      fireEvent.changeText(input, 'a');
+      fireEvent.changeText(input, 'ab');
+
+      expect(onChangeText).toHaveBeenCalledTimes(2);
+      expect(onChangeText).toHaveBeenNthCalledWith(1, 'a');
+      expect(onChangeText).toHaveBeenNthCalledWith(2, 'ab');
+    });
+
+    test('displayValue updates immediately regardless of onEndEditing usage', () => {
+      const onEndEditing = jest.fn();
+      const { getByTestId } = render(
+        <CustomTextInput {...baseProps} value='start' onEndEditing={onEndEditing} />
+      );
+      const input = getByTestId('custom-input::CustomTextInput');
+
+      fireEvent.changeText(input, 'typing...');
+
+      expect(input.props.value).toBe('typing...');
+      expect(onEndEditing).not.toHaveBeenCalled();
+    });
+  });
 });

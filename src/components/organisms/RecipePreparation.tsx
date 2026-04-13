@@ -76,10 +76,10 @@ export type ReadOnlyProps = BaseProps & {
 export type EditableBaseProps = BaseProps & {
   /** Prefix text displayed above the steps */
   prefixText: string;
-  /** Callback fired when a step title changes */
-  onTitleChange: (index: number, title: string) => void;
-  /** Callback fired when a step description changes */
-  onDescriptionChange: (index: number, description: string) => void;
+  /** Callback fired when a step title is committed (on blur) */
+  onTitleEditingEnded: (index: number, title: string) => void;
+  /** Callback fired when a step description is committed (on blur) */
+  onDescriptionEditingEnded: (index: number, description: string) => void;
   /** Callback fired to add a new step */
   onAddStep: () => void;
 };
@@ -172,29 +172,25 @@ function EditableStep({
   testID,
   index,
   item,
-  onTitleChange,
-  onDescriptionChange,
+  onTitleEditingEnded,
+  onDescriptionEditingEnded,
 }: {
   testID: string;
   index: number;
   item: preparationStepElement;
-  onTitleChange: (index: number, title: string) => void;
-  onDescriptionChange: (index: number, description: string) => void;
+  onTitleEditingEnded: (index: number, title: string) => void;
+  onDescriptionEditingEnded: (index: number, description: string) => void;
 }) {
   const testId = testID + `::EditableStep::${index}`;
 
   const { t } = useI18n();
 
   const handleTitleChange = (newTitle: string) => {
-    if (newTitle !== item.title) {
-      onTitleChange(index, newTitle);
-    }
+    onTitleEditingEnded(index, newTitle);
   };
 
   const handleDescriptionChange = (newDescription: string) => {
-    if (newDescription !== item.description) {
-      onDescriptionChange(index, newDescription);
-    }
+    onDescriptionEditingEnded(index, newDescription);
   };
 
   return (
@@ -219,7 +215,7 @@ function EditableStep({
           testID={testId + `::TextInputTitle`}
           value={item.title}
           style={recipeTextRenderStyles.containerElement}
-          onChangeText={handleTitleChange}
+          onEndEditing={handleTitleChange}
           multiline={true}
         />
         <Text
@@ -233,7 +229,7 @@ function EditableStep({
           testID={testId + `::TextInputContent`}
           style={recipeTextRenderStyles.containerElement}
           value={item.description}
-          onChangeText={handleDescriptionChange}
+          onEndEditing={handleDescriptionChange}
           multiline={true}
         />
       </View>
@@ -247,8 +243,8 @@ function EditableStep({
 function EditablePreparation({
   steps,
   prefixText,
-  onTitleChange,
-  onDescriptionChange,
+  onTitleEditingEnded,
+  onDescriptionEditingEnded,
   onAddStep,
 }: EditableProps) {
   return (
@@ -259,8 +255,8 @@ function EditablePreparation({
           testID={testID}
           index={index}
           item={item}
-          onTitleChange={onTitleChange}
-          onDescriptionChange={onDescriptionChange}
+          onTitleEditingEnded={onTitleEditingEnded}
+          onDescriptionEditingEnded={onDescriptionEditingEnded}
         />
       ))}
 
