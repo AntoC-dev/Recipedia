@@ -66,8 +66,8 @@ describe('useRecipePreparation', () => {
     loggerWarnSpy.mockRestore();
   });
 
-  describe('editPreparationTitle', () => {
-    test('updates title at valid index', async () => {
+  describe('commitPreparationTitle', () => {
+    test('updates title at valid index, preserving description', async () => {
       const wrapper = createPreparationWrapper(createMockRecipeProp('edit', recipeWithPreparation));
 
       const { result } = renderHook(
@@ -83,7 +83,7 @@ describe('useRecipePreparation', () => {
       });
 
       act(() => {
-        result.current.preparation.editPreparationTitle(1, 'Updated Step 2');
+        result.current.preparation.commitPreparationTitle(1, 'Updated Step 2');
       });
 
       expect(result.current.form.state.recipePreparation[1].title).toBe('Updated Step 2');
@@ -108,7 +108,7 @@ describe('useRecipePreparation', () => {
       });
 
       act(() => {
-        result.current.preparation.editPreparationTitle(0, 'New First Step');
+        result.current.preparation.commitPreparationTitle(0, 'New First Step');
       });
 
       expect(result.current.form.state.recipePreparation[0].title).toBe('New First Step');
@@ -120,15 +120,15 @@ describe('useRecipePreparation', () => {
       const { result } = renderHook(() => useRecipePreparation(), { wrapper });
 
       await waitFor(() => {
-        expect(result.current.editPreparationTitle).toBeDefined();
+        expect(result.current.commitPreparationTitle).toBeDefined();
       });
 
       act(() => {
-        result.current.editPreparationTitle(-1, 'Invalid');
+        result.current.commitPreparationTitle(-1, 'Invalid');
       });
 
       expect(loggerWarnSpy).toHaveBeenCalledWith(
-        'Cannot edit preparation step title - invalid index',
+        'Cannot commit preparation step title - invalid index',
         expect.objectContaining({ stepIndex: -1 })
       );
     });
@@ -139,22 +139,22 @@ describe('useRecipePreparation', () => {
       const { result } = renderHook(() => useRecipePreparation(), { wrapper });
 
       await waitFor(() => {
-        expect(result.current.editPreparationTitle).toBeDefined();
+        expect(result.current.commitPreparationTitle).toBeDefined();
       });
 
       act(() => {
-        result.current.editPreparationTitle(10, 'Invalid');
+        result.current.commitPreparationTitle(10, 'Invalid');
       });
 
       expect(loggerWarnSpy).toHaveBeenCalledWith(
-        'Cannot edit preparation step title - invalid index',
+        'Cannot commit preparation step title - invalid index',
         expect.objectContaining({ stepIndex: 10 })
       );
     });
   });
 
-  describe('editPreparationDescription', () => {
-    test('updates description at valid index', async () => {
+  describe('commitPreparationDescription', () => {
+    test('updates description at valid index, preserving title', async () => {
       const wrapper = createPreparationWrapper(createMockRecipeProp('edit', recipeWithPreparation));
 
       const { result } = renderHook(
@@ -170,7 +170,10 @@ describe('useRecipePreparation', () => {
       });
 
       act(() => {
-        result.current.preparation.editPreparationDescription(1, 'Updated description for step 2');
+        result.current.preparation.commitPreparationDescription(
+          1,
+          'Updated description for step 2'
+        );
       });
 
       expect(result.current.form.state.recipePreparation[1].description).toBe(
@@ -195,7 +198,7 @@ describe('useRecipePreparation', () => {
       });
 
       act(() => {
-        result.current.preparation.editPreparationDescription(2, 'Final step updated');
+        result.current.preparation.commitPreparationDescription(2, 'Final step updated');
       });
 
       expect(result.current.form.state.recipePreparation[2].description).toBe('Final step updated');
@@ -207,15 +210,15 @@ describe('useRecipePreparation', () => {
       const { result } = renderHook(() => useRecipePreparation(), { wrapper });
 
       await waitFor(() => {
-        expect(result.current.editPreparationDescription).toBeDefined();
+        expect(result.current.commitPreparationDescription).toBeDefined();
       });
 
       act(() => {
-        result.current.editPreparationDescription(-5, 'Invalid');
+        result.current.commitPreparationDescription(-5, 'Invalid');
       });
 
       expect(loggerWarnSpy).toHaveBeenCalledWith(
-        'Cannot edit preparation step description - invalid index',
+        'Cannot commit preparation step description - invalid index',
         expect.objectContaining({ stepIndex: -5 })
       );
     });
@@ -226,15 +229,15 @@ describe('useRecipePreparation', () => {
       const { result } = renderHook(() => useRecipePreparation(), { wrapper });
 
       await waitFor(() => {
-        expect(result.current.editPreparationDescription).toBeDefined();
+        expect(result.current.commitPreparationDescription).toBeDefined();
       });
 
       act(() => {
-        result.current.editPreparationDescription(100, 'Invalid');
+        result.current.commitPreparationDescription(100, 'Invalid');
       });
 
       expect(loggerWarnSpy).toHaveBeenCalledWith(
-        'Cannot edit preparation step description - invalid index',
+        'Cannot commit preparation step description - invalid index',
         expect.objectContaining({ stepIndex: 100 })
       );
     });

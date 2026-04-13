@@ -963,7 +963,9 @@ describe('Recipe Component tests', () => {
     const descriptionInput = getByTestId(
       'RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput'
     );
-    fireEvent.changeText(descriptionInput, newEditProp.recipe.preparation[0].description);
+    fireEvent(descriptionInput, 'endEditing', {
+      nativeEvent: { text: newEditProp.recipe.preparation[0].description },
+    });
 
     await waitFor(() => {
       checkPreparation(newEditProp, getByTestId, queryByTestId);
@@ -1041,8 +1043,9 @@ describe('Recipe Component tests', () => {
     const descriptionInput = getByTestId(
       'RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput'
     );
-    fireEvent.changeText(descriptionInput, newPropEdit.recipe.preparation[0].description);
-    fireEvent(descriptionInput, 'endEditing');
+    fireEvent(descriptionInput, 'endEditing', {
+      nativeEvent: { text: newPropEdit.recipe.preparation[0].description },
+    });
 
     await waitFor(() => {
       checkPreparation(newPropEdit, getByTestId, queryByTestId);

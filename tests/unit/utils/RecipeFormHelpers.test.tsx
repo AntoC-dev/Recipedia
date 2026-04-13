@@ -1090,8 +1090,8 @@ describe('RecipeFormHelpers', () => {
 
   describe('buildRecipePreparationProps', () => {
     const mockT = (key: string) => key;
-    const mockEditTitle = jest.fn();
-    const mockEditDescription = jest.fn();
+    const mockCommitTitle = jest.fn();
+    const mockCommitDescription = jest.fn();
     const mockAddStep = jest.fn();
     const mockOpenModal = jest.fn();
     const mockSteps: preparationStepElement[] = [{ title: 'Step 1', description: 'Do something' }];
@@ -1100,8 +1100,8 @@ describe('RecipeFormHelpers', () => {
       const result = buildRecipePreparationProps(
         recipeStateType.readOnly,
         mockSteps,
-        mockEditTitle,
-        mockEditDescription,
+        mockCommitTitle,
+        mockCommitDescription,
         mockAddStep,
         mockOpenModal,
         mockT
@@ -1113,8 +1113,8 @@ describe('RecipeFormHelpers', () => {
       const result = buildRecipePreparationProps(
         recipeStateType.edit,
         mockSteps,
-        mockEditTitle,
-        mockEditDescription,
+        mockCommitTitle,
+        mockCommitDescription,
         mockAddStep,
         mockOpenModal,
         mockT
@@ -1126,8 +1126,8 @@ describe('RecipeFormHelpers', () => {
       const result = buildRecipePreparationProps(
         recipeStateType.addOCR,
         [],
-        mockEditTitle,
-        mockEditDescription,
+        mockCommitTitle,
+        mockCommitDescription,
         mockAddStep,
         mockOpenModal,
         mockT
@@ -1139,8 +1139,8 @@ describe('RecipeFormHelpers', () => {
       const result = buildRecipePreparationProps(
         recipeStateType.addOCR,
         [],
-        mockEditTitle,
-        mockEditDescription,
+        mockCommitTitle,
+        mockCommitDescription,
         mockAddStep,
         mockOpenModal,
         mockT
@@ -1155,8 +1155,8 @@ describe('RecipeFormHelpers', () => {
       const result = buildRecipePreparationProps(
         recipeStateType.addOCR,
         mockSteps,
-        mockEditTitle,
-        mockEditDescription,
+        mockCommitTitle,
+        mockCommitDescription,
         mockAddStep,
         mockOpenModal,
         mockT
@@ -1168,8 +1168,8 @@ describe('RecipeFormHelpers', () => {
       const result = buildRecipePreparationProps(
         recipeStateType.addManual,
         mockSteps,
-        mockEditTitle,
-        mockEditDescription,
+        mockCommitTitle,
+        mockCommitDescription,
         mockAddStep,
         mockOpenModal,
         mockT
@@ -1181,8 +1181,8 @@ describe('RecipeFormHelpers', () => {
       const result = buildRecipePreparationProps(
         recipeStateType.addScrape,
         mockSteps,
-        mockEditTitle,
-        mockEditDescription,
+        mockCommitTitle,
+        mockCommitDescription,
         mockAddStep,
         mockOpenModal,
         mockT

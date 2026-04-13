@@ -657,8 +657,8 @@ export function buildRecipeIngredientsProps(
  *
  * @param stackMode - Current recipe screen mode
  * @param recipePreparation - Current preparation steps array
- * @param editPreparationTitle - Callback to edit step title
- * @param editPreparationDescription - Callback to edit step description
+ * @param commitPreparationTitle - Callback to commit a step title on blur
+ * @param commitPreparationDescription - Callback to commit a step description on blur
  * @param addNewPreparationStep - Callback to add a new step
  * @param openModalForField - Callback to open OCR modal
  * @param t - Translation function
