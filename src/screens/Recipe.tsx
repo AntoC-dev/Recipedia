@@ -450,8 +450,8 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
             {...buildRecipePreparationProps(
               state.stackMode,
               state.recipePreparation,
-              preparation.editPreparationTitle,
-              preparation.editPreparationDescription,
+              preparation.commitPreparationTitle,
+              preparation.commitPreparationDescription,
               preparation.addNewPreparationStep,
               ocr.openModalForField,
               t
