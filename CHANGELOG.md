@@ -1,3 +1,9 @@
+## [2.30.5](https://github.com/AntoC-dev/Recipedia/compare/v2.30.4...v2.30.5) (2026-04-14)
+
+### Performance Improvements
+
+* **reassure:** enable JSON output format ([cc2268c](https://github.com/AntoC-dev/Recipedia/commit/cc2268cf2f5c29eb08b48587830d6d7065ea2e7a))
+
 ## [2.30.4](https://github.com/AntoC-dev/Recipedia/compare/v2.30.3...v2.30.4) (2026-04-13)
 
 ### Bug Fixes
