@@ -54,7 +54,11 @@ jobs:
 
       - name: Run Reassure performance tests
         if: github.event_name == 'pull_request'
-        run: npm run test:perf
+        run: |
+          git checkout ${{ github.event.pull_request.base.sha }}
+          npm run test:perf:baseline
+          git checkout ${{ github.sha }}
+          npm run test:perf
 
       - name: Generate compact Reassure summary
         if: github.event_name == 'pull_request'
