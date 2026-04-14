@@ -21,4 +21,5 @@ module.exports = {
      * Threshold for considering a performance change as an improvement (in percentage).
      */
     improvementThreshold: 10,
+    outputFormat: 'all',
 };
