@@ -5,7 +5,7 @@ platform:
     disableAnimations: true
 
 flows:
-  - cases/web-edge-cases/*
+  - cases/web-edge-cases/ci/*
 
 executionOrder:
   flowsOrder:

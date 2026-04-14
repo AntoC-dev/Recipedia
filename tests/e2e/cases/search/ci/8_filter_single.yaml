@@ -1,0 +1,14 @@
+name: "8 - Single Filter Application Flow"
+appId: "com.recipedia"
+tags:
+  - search
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../8_filter_single.yaml"
+          label: "Run 8 - Single Filter Application Flow"

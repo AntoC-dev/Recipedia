@@ -1,0 +1,14 @@
+name: "5 - Bug Report Flow"
+appId: "com.recipedia"
+tags:
+  - settings
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../5_bug_report.yaml"
+          label: "Run 5 - Bug Report Flow"

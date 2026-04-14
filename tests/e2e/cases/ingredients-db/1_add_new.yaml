@@ -5,10 +5,6 @@ tags:
   - ingredients-db
 ---
 - runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
-- runFlow:
     file: "../../flows/parameters/ingredients/navigateToIngredientsSettings.yaml"
     label: "Action - Navigate to Ingredients Settings"
 

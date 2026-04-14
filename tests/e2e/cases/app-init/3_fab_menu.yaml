@@ -4,10 +4,6 @@ tags:
   - app-init
 ---
 - runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
-- runFlow:
     file: "../../asserts/home/assertCollapsedButtons.yaml"
     label: "Assert - Verify FAB menu is collapsed initially"
 

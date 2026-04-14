@@ -6,10 +6,6 @@ env:
   recipeName: "Vegetable Soup"
 ---
 - runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
-- runFlow:
     file: "../../flows/home/swipelToRecipeAndOpenIt.yaml"
     env:
       recipeName: ${recipeName}

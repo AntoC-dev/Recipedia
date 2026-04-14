@@ -4,10 +4,6 @@ tags:
   - duplicates
 ---
 - runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
-- runFlow:
     file: "../../flows/recipe/deleteRecipeBySearchIfExists.yaml"
     env:
       SEARCH_TEXT: "Test Recipe"
@@ -53,8 +49,6 @@ tags:
     label: "Action - Scroll up to ingredient section"
 
 - waitForAnimationToEnd
-
-
 - runFlow:
     file: "../../flows/recipe/adding/addIngredientToRecipe.yaml"
     env:

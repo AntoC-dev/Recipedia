@@ -1,0 +1,14 @@
+name: "3 - Manual Recipe Quantity Scaling Flow"
+appId: "com.recipedia"
+tags:
+  - recipe-create
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../3_manual_quantity_scaling.yaml"
+          label: "Run 3 - Manual Recipe Quantity Scaling Flow"

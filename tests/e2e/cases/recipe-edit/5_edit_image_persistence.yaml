@@ -4,10 +4,6 @@ tags:
   - recipe-edit
 ---
 - runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
-- runFlow:
     file: "../../flows/search/searchAndOpenRecipe.yaml"
     env:
       RECIPE_NAME: "Caesar"

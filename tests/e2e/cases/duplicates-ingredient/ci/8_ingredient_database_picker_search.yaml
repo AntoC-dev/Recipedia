@@ -1,0 +1,14 @@
+name: "8 - Ingredient Database Picker Search Filtering"
+appId: "com.recipedia"
+tags:
+  - duplicates
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../8_ingredient_database_picker_search.yaml"
+          label: "Run 8 - Ingredient Database Picker Search Filtering"

@@ -3,14 +3,6 @@ appId: "com.recipedia"
 tags:
   - ocr
 ---
-- runFlow:
-    file: "../../flows/recipe/adding/ocr/checkIfCleanIsNeeded.yaml"
-    label: "Setup - Check if clean is needed"
-
-- runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
 - evalScript: ${output.isDescriptionToOCR = false}
 - evalScript: ${output.isTagsToOCR = false}
 - evalScript: ${output.isPersons = true}

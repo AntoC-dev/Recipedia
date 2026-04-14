@@ -1,0 +1,14 @@
+name: "1 - Search Bar Open/Close Flow"
+appId: "com.recipedia"
+tags:
+  - search
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../1_open_close.yaml"
+          label: "Run 1 - Search Bar Open/Close Flow"

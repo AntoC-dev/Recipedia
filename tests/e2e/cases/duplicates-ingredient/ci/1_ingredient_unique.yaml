@@ -1,0 +1,14 @@
+name: "1 - Duplicate Ingredient Unique Detection Flow"
+appId: "com.recipedia"
+tags:
+  - duplicates
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../1_ingredient_unique.yaml"
+          label: "Run 1 - Duplicate Ingredient Unique Detection Flow"

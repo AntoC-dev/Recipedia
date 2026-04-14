@@ -1,0 +1,14 @@
+name: "2 - Add Multiple Recipes To Shopping Flow"
+appId: "com.recipedia"
+tags:
+  - shopping
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../2_add_multiple_recipes.yaml"
+          label: "Run 2 - Add Multiple Recipes To Shopping Flow"

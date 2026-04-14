@@ -1,0 +1,16 @@
+name: "2 - Recipe Read-Only From Home Flow"
+appId: "com.recipedia"
+tags:
+  - recipe-readonly
+env:
+  recipeName: "Vegetable Soup"
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../2_readonly_from_home.yaml"
+          label: "Run 2 - Recipe Read-Only From Home Flow"

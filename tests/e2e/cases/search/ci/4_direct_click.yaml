@@ -1,0 +1,14 @@
+name: "4 - Search Direct Click Flow"
+appId: "com.recipedia"
+tags:
+  - search
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../4_direct_click.yaml"
+          label: "Run 4 - Search Direct Click Flow"

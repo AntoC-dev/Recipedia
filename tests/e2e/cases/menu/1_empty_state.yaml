@@ -3,10 +3,6 @@ appId: "com.recipedia"
 tags:
   - menu
 ---
-- runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
 - tapOn:
     id: "BottomTabs::Menu"
     label: "Action - Navigate to Menu screen"

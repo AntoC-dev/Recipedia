@@ -3,10 +3,6 @@ appId: "com.recipedia"
 tags:
   - settings
 ---
-- runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
 - tapOn:
     id: "BottomTabs::Parameters"
     label: "Action - Navigate to Parameters screen"

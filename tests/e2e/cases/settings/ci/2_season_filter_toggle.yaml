@@ -1,0 +1,14 @@
+name: "2 - Season Filter Toggle Flow"
+appId: "com.recipedia"
+tags:
+  - settings
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../2_season_filter_toggle.yaml"
+          label: "Run 2 - Season Filter Toggle Flow"

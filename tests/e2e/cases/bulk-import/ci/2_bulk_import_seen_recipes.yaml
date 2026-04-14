@@ -1,0 +1,14 @@
+name: "2 - Bulk Import Seen Recipes (French)"
+appId: "com.recipedia"
+tags:
+  - bulk-import
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../2_bulk_import_seen_recipes.yaml"
+          label: "Run 2 - Bulk Import Seen Recipes (French)"

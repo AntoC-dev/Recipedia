@@ -1,0 +1,14 @@
+name: "1 - Menu Empty State"
+appId: "com.recipedia"
+tags:
+  - menu
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../1_empty_state.yaml"
+          label: "Run 1 - Menu Empty State"

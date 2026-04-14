@@ -5,7 +5,7 @@ platform:
     disableAnimations: true
 
 flows:
-  - cases/app-init/*
+  - cases/app-init/ci/*
 
 executionOrder:
   flowsOrder:

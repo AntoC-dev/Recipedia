@@ -5,7 +5,7 @@ platform:
     disableAnimations: true
 
 flows:
-  - cases/recipe-readonly/*
+  - cases/recipe-readonly/ci/*
 
 executionOrder:
   flowsOrder:

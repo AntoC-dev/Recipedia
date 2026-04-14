@@ -3,10 +3,6 @@ appId: "com.recipedia"
 tags:
   - search
 ---
-- runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
 - tapOn:
     id: "BottomTabs::Search"
     label: "Action - Navigate to Search screen"
@@ -28,8 +24,6 @@ tags:
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to close"
-
-
 - extendedWaitUntil:
     visible:
       id: "SearchScreen::SearchBarResults::Item::4"

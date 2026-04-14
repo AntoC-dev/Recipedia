@@ -1,0 +1,14 @@
+name: "2 - Search Scroll Independence Flow"
+appId: "com.recipedia"
+tags:
+  - search
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../2_scroll_independence.yaml"
+          label: "Run 2 - Search Scroll Independence Flow"

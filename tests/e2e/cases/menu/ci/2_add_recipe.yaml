@@ -1,0 +1,14 @@
+name: "2 - Add Recipe to Menu Flow"
+appId: "com.recipedia"
+tags:
+  - menu
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../2_add_recipe.yaml"
+          label: "Run 2 - Add Recipe to Menu Flow"

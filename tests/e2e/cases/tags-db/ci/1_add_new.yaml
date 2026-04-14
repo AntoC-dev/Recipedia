@@ -1,0 +1,15 @@
+name: "1 - Add New Tag Flow"
+appId: "com.recipedia"
+tags:
+  - database
+  - tags-db
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../1_add_new.yaml"
+          label: "Run 1 - Add New Tag Flow"

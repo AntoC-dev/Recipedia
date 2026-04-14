@@ -5,7 +5,7 @@ platform:
     disableAnimations: true
 
 flows:
-  - cases/recipe-create/*
+  - cases/recipe-create/ci/*
 
 executionOrder:
   flowsOrder:

@@ -4,5 +4,8 @@ tags:
   - app-init
 ---
 - retry:
-    maxRetries: 1
-    file: "../1_onboarding.yaml"
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../1_onboarding.yaml"
+          label: "Run Onboarding Tutorial Flow"

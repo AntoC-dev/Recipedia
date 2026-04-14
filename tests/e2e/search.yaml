@@ -5,7 +5,7 @@ platform:
     disableAnimations: true
 
 flows:
-  - cases/search/*
+  - cases/search/ci/*
 
 executionOrder:
   flowsOrder:

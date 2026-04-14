@@ -4,10 +4,6 @@ tags:
   - shopping
 ---
 - runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
-- runFlow:
     file: "../../flows/recipe/adding/createBaseRecipeForDuplicateTests.yaml"
     label: "Setup - Create Test Recipe (Pasta 200g, Tomatoes 100g)"
 

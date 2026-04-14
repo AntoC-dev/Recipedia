@@ -5,10 +5,6 @@ tags:
 env:
   recipeName: "Sushi Rolls"
 ---
-- runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
 - tapOn:
     id: "BottomTabs::Home"
     label: "Action - Navigate to Home screen"

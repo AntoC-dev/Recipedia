@@ -1,0 +1,14 @@
+name: "6 - Ingredient Parenthetical Matching Flow"
+appId: "com.recipedia"
+tags:
+  - duplicates
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../6_ingredient_parenthetical_matching.yaml"
+          label: "Run 6 - Ingredient Parenthetical Matching Flow"

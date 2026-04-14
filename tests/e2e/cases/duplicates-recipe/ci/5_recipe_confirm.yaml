@@ -1,0 +1,14 @@
+name: "5 - Duplicate Recipe Confirm Flow"
+appId: "com.recipedia"
+tags:
+  - duplicates
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../5_recipe_confirm.yaml"
+          label: "Run 5 - Duplicate Recipe Confirm Flow"

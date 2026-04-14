@@ -1,0 +1,15 @@
+name: "4 - Add Ingredient And Use In Recipe Flow"
+appId: "com.recipedia"
+tags:
+  - database
+  - ingredients-db
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../4_add_and_use_in_recipe.yaml"
+          label: "Run 4 - Add Ingredient And Use In Recipe Flow"

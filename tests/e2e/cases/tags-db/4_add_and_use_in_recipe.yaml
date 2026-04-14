@@ -5,10 +5,6 @@ tags:
   - tags-db
 ---
 - runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
-- runFlow:
     file: "../../flows/parameters/tags/navigateToTagsSettings.yaml"
     label: "Action - Navigate to Tags Settings"
 

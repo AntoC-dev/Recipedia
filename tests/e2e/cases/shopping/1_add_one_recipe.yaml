@@ -3,10 +3,6 @@ appId: "com.recipedia"
 tags:
   - shopping
 ---
-- runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
 - tapOn:
     id: "BottomTabs::Shopping"
     label: "Assert - Navigate to Shopping screen"

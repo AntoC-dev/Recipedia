@@ -3,10 +3,6 @@ appId: "com.recipedia"
 tags:
   - app-init
 ---
-- runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
 # Check Home Screen
 - runFlow:
     file: "../../asserts/home/en/assertHomeScreen.yaml"

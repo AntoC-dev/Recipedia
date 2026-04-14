@@ -5,7 +5,7 @@ platform:
     disableAnimations: true
 
 flows:
-  - cases/ingredient-dialog/*
+  - cases/ingredient-dialog/ci/*
 
 executionOrder:
   flowsOrder:

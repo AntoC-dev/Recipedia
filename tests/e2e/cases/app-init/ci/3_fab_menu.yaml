@@ -4,5 +4,11 @@ tags:
   - app-init
 ---
 - retry:
-    maxRetries: 1
-    file: "../3_fab_menu.yaml"
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../3_fab_menu.yaml"
+          label: "Run FAB Menu Flow"

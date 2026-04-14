@@ -1,0 +1,14 @@
+name: "1 - Bulk Import HelloFresh Flow (French)"
+appId: "com.recipedia"
+tags:
+  - bulk-import
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../1_bulk_import_hellofresh.yaml"
+          label: "Run 1 - Bulk Import HelloFresh Flow (French)"

@@ -1,0 +1,15 @@
+name: "3 - Web Quitoque Auth Flow (French)"
+appId: "com.recipedia"
+tags:
+  - web
+  - auth
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../3_web_quitoque_auth.yaml"
+          label: "Run 3 - Web Quitoque Auth Flow (French)"
