@@ -42,7 +42,7 @@ jest-results.json
 maestro_logs
 
 # Reassure
-.reassure/current*
+.reassure/
 
 # Documentation build
 docs/
