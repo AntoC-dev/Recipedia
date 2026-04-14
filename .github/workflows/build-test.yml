@@ -217,7 +217,7 @@ jobs:
 
       - name: Download all E2E JUnit reports
         if: always()
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           pattern: junit-e2e-*
           path: junit-reports
@@ -225,7 +225,7 @@ jobs:
 
       - name: Download Android Maestro logs
         if: always()
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           pattern: maestro-logs-android-*
           path: maestro-logs-android
@@ -233,7 +233,7 @@ jobs:
 
       - name: Download iOS Maestro logs
         if: always()
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           pattern: maestro-logs-ios-*
           path: maestro-logs-ios
@@ -295,14 +295,14 @@ jobs:
     steps:
       - name: Download unit test results
         if: always()
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: unit-test-summary
 
       - name: Download merged E2E JUnit report
         if: always()
         continue-on-error: true
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: e2e-junit-merged
           path: e2e-reports
