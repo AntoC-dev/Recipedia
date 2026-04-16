@@ -27,8 +27,8 @@
 
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { ActivityIndicator, Text, useTheme } from 'react-native-paper';
+import { ScreenWrapper } from '@components/templates/ScreenWrapper';
+import { ActivityIndicator, Text } from 'react-native-paper';
 import { CommonActions, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { StackScreenNavigation, StackScreenParamList } from '@customTypes/ScreenTypes';
 import { AppBar } from '@components/organisms/AppBar';
@@ -58,7 +58,6 @@ const screenId = 'BulkImportValidation';
  */
 export function BulkImportValidation() {
   const { t } = useI18n();
-  const { colors } = useTheme();
   const navigation = useNavigation<StackScreenNavigation>();
   const route = useRoute<BulkImportValidationRouteProp>();
   const { providerId, selectedRecipes } = route.params;
@@ -187,10 +186,10 @@ export function BulkImportValidation() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['bottom']}>
+    <ScreenWrapper>
       <AppBar title={t('bulkImport.validation.title')} onGoBack={handleCancel} testID={screenId} />
       <View style={styles.container}>{renderPhaseContent()}</View>
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 }
 

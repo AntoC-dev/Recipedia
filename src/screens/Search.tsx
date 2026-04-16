@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { BackHandler, Keyboard, View } from 'react-native';
 import type { FlashListRef, ListRenderItemInfo } from '@shopify/flash-list';
 import { FlashList } from '@shopify/flash-list';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { listFilter, TListFilter } from '@customTypes/RecipeFiltersTypes';
 import {
@@ -15,7 +15,7 @@ import {
   retrieveAllFilters,
 } from '@utils/FilterFunctions';
 import { useI18n } from '@utils/i18n';
-import { Divider, Text, useTheme } from 'react-native-paper';
+import { Divider, Text } from 'react-native-paper';
 import { SearchBar, SearchBarHandle } from '@components/organisms/SearchBar';
 import { SearchBarResults } from '@components/organisms/SearchBarResults';
 import { FiltersSelection } from '@components/organisms/FiltersSelection';
@@ -32,7 +32,6 @@ import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
  */
 export function Search() {
   const { t } = useI18n();
-  const { colors } = useTheme();
 
   const { seasonFilter } = useSeasonFilter();
   const { recipes } = useRecipeDatabase();
@@ -148,7 +147,7 @@ export function Search() {
   const getRecipeKey = (item: recipeTableElement) => item.id?.toString() || item.title;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} testID={screenId}>
+    <ScreenWrapper testID={screenId} edges={['top', 'left', 'right']}>
       <FlashList
         ref={flashListRef}
         data={addingFilterMode || searchBarClicked ? [] : filteredRecipes}
@@ -226,7 +225,7 @@ export function Search() {
           />
         )}
       />
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 }
 

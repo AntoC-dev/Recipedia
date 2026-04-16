@@ -32,7 +32,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, ViewabilityConfig, ViewToken } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { Text, useTheme } from 'react-native-paper';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { StackScreenNavigation, StackScreenParamList } from '@customTypes/ScreenTypes';
@@ -194,7 +194,7 @@ export function BulkImportDiscovery() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['bottom']}>
+    <ScreenWrapper>
       <AppBar title={t('bulkImport.selection.title')} onGoBack={handleCancel} testID={screenId} />
 
       {showSelectionUI && (
@@ -257,7 +257,7 @@ export function BulkImportDiscovery() {
           testID={screenId}
         />
       )}
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 }
 

@@ -45,10 +45,9 @@
  * ```
  */
 
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FlatList, View } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { Button, Card, Dialog, IconButton, Portal, Text, useTheme } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
 import { tutorialLogger } from '@utils/logger';
@@ -59,7 +58,6 @@ import { IconName, Icons } from '@assets/Icons';
 import Constants from 'expo-constants';
 import { LoadingOverlay } from '@components/dialogs/LoadingOverlay';
 import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
-import { DarkModeContext } from '@context/DarkModeContext';
 
 /**
  * Props for the WelcomeScreen component
@@ -81,7 +79,6 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
   const { colors, fonts } = useTheme();
   const { t } = useI18n();
   const { recipes, datasetLoadError, dismissDatasetLoadError } = useRecipeDatabase();
-  const { isDarkMode } = useContext(DarkModeContext);
 
   const [pendingAction, setPendingAction] = useState<'tutorial' | 'skip' | null>(null);
 
@@ -135,8 +132,7 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
   const cardTestId = testId + '::Card';
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.primary }}>
-      <StatusBar style={isDarkMode ? 'light' : 'dark'} animated={true} />
+    <ScreenWrapper backgroundColor={colors.primary}>
       <View style={{ flex: 1 }}>
         <View
           style={{
@@ -276,6 +272,6 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
           </Dialog.Actions>
         </Dialog>
       </Portal>
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { Button, Text, useTheme } from 'react-native-paper';
 import Slider from '@react-native-community/slider';
 import { useI18n } from '@utils/i18n';
@@ -50,7 +50,7 @@ export function DefaultPersonsSettings({ navigation }: DefaultPersonsSettingsPro
 
   const screenTestId = 'DefaultPersonSettings';
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['bottom']}>
+    <ScreenWrapper>
       <AppBar
         title={t('default_persons')}
         onGoBack={() => navigation.goBack()}
@@ -116,7 +116,7 @@ export function DefaultPersonsSettings({ navigation }: DefaultPersonsSettingsPro
         progress={scalingProgress}
         testID={screenTestId + '::LoadingOverlay'}
       />
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 }
 

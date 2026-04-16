@@ -14,7 +14,7 @@
 
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { CopilotStep, walkthroughable } from 'react-native-copilot';
 import { List, Text, useTheme } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
@@ -47,7 +47,7 @@ export function Menu() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <ScreenWrapper edges={['top', 'left', 'right']}>
       {menu.length === 0 ? (
         <View style={styles.emptyState}>
           <Text testID={`${screenId}::TextNoItem`} variant='titleMedium' style={styles.emptyText}>
@@ -118,14 +118,11 @@ export function Menu() {
           />
         </CopilotStep>
       )}
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   emptyState: {
     flex: 1,
     justifyContent: 'center',

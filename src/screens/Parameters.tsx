@@ -58,8 +58,8 @@
 
 import React, { useContext } from 'react';
 import { ScrollView, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Divider, List, Switch, useTheme } from 'react-native-paper';
+import { ScreenWrapper } from '@components/templates/ScreenWrapper';
+import { Divider, List, Switch } from 'react-native-paper';
 import { CopilotStep, walkthroughable } from 'react-native-copilot';
 import { useSafeCopilot } from '@hooks/useSafeCopilot';
 import { useI18n } from '@utils/i18n';
@@ -84,7 +84,6 @@ export function Parameters() {
   const { isDarkMode, toggleDarkMode } = useContext(DarkModeContext);
   const { defaultPersons } = useDefaultPersons();
   const { seasonFilter, setSeasonFilter } = useSeasonFilter();
-  const { colors } = useTheme();
   const currentLocale = getLocale();
   const AppVersion = Constants.expoConfig?.version ?? 'N/A';
   const copilotData = useSafeCopilot();
@@ -172,7 +171,7 @@ export function Parameters() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+    <ScreenWrapper edges={['top', 'left', 'right']}>
       <ScrollView>
         {/* Appearance Section */}
         <List.Section>
@@ -273,7 +272,7 @@ export function Parameters() {
           />
         </List.Section>
       </ScrollView>
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 }
 

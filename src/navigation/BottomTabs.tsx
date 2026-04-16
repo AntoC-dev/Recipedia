@@ -46,9 +46,8 @@
 
 import { Icon, useTheme } from 'react-native-paper';
 import { Icons, iconsSize } from '@assets/Icons';
-import React, { useContext } from 'react';
+import React from 'react';
 import { View } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Home } from '@screens/Home';
 import { Menu } from '@screens/Menu';
@@ -58,7 +57,6 @@ import { padding, screenHeight } from '@styles/spacing';
 import { useI18n } from '@utils/i18n';
 import { Search } from '@screens/Search';
 import { Tab } from '@customTypes/ScreenTypes';
-import { DarkModeContext } from '@context/DarkModeContext';
 import { useSafeCopilot } from '@hooks/useSafeCopilot';
 
 const testId = 'BottomTabs';
@@ -70,7 +68,6 @@ const testId = 'BottomTabs';
  */
 export function BottomTabs() {
   const { colors, fonts } = useTheme();
-  const { isDarkMode } = useContext(DarkModeContext);
   const { t } = useI18n();
   const insets = useSafeAreaInsets();
 
@@ -138,7 +135,6 @@ export function BottomTabs() {
 
   return (
     <>
-      <StatusBar style={isDarkMode ? 'light' : 'dark'} animated={true} />
       <Tab.Navigator
         initialRouteName='Home'
         screenOptions={({ route }) => ({

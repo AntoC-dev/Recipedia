@@ -12,8 +12,8 @@
 
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button, Snackbar, useTheme } from 'react-native-paper';
+import { ScreenWrapper } from '@components/templates/ScreenWrapper';
+import { Button, Snackbar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { AppBar } from '@components/organisms/AppBar';
 import { ImageThumbnail } from '@components/molecules/ImageThumbnail';
@@ -37,7 +37,6 @@ const screenTestId = 'BugReport';
  */
 export function BugReport() {
   const { t } = useI18n();
-  const { colors } = useTheme();
   const { goBack } = useNavigation<StackScreenNavigation>();
 
   const [description, setDescription] = useState('');
@@ -97,7 +96,7 @@ export function BugReport() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['bottom']}>
+    <ScreenWrapper>
       <AppBar title={t('bugReport.title')} onGoBack={goBack} testID={screenTestId + '::Bar'} />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -154,7 +153,7 @@ export function BugReport() {
       >
         {snackbarMessage}
       </Snackbar>
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 }
 

@@ -24,7 +24,8 @@ import {
   recipeTableElement,
 } from '@customTypes/DatabaseElementTypes';
 import { KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { padding } from '@styles/spacing';
 import { RecipeImage } from '@components/organisms/RecipeImage';
 import { RecipeText } from '@components/organisms/RecipeText';
@@ -353,7 +354,7 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+    <ScreenWrapper>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
@@ -541,7 +542,7 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
       >
         {t('sourceUrl.copied')}
       </Snackbar>
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 }
 

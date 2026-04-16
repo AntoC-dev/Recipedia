@@ -24,8 +24,8 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Divider, List, useTheme } from 'react-native-paper';
+import { ScreenWrapper } from '@components/templates/ScreenWrapper';
+import { Divider, List } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenNavigation } from '@customTypes/ScreenTypes';
 import { AppBar } from '@components/organisms/AppBar';
@@ -46,7 +46,6 @@ const screenId = 'BulkImportSettings';
 
 export function BulkImportSettings() {
   const { t, getLocale } = useI18n();
-  const { colors } = useTheme();
   const navigation = useNavigation<StackScreenNavigation>();
 
   const providers = getAvailableProviders(getLocale());
@@ -61,7 +60,7 @@ export function BulkImportSettings() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['bottom']}>
+    <ScreenWrapper>
       <AppBar
         title={t('bulkImport.fromService')}
         onGoBack={() => navigation.goBack()}
@@ -85,7 +84,7 @@ export function BulkImportSettings() {
           )}
         />
       </View>
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 }
 
