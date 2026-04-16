@@ -1,3 +1,13 @@
+## [2.31.0](https://github.com/AntoC-dev/Recipedia/compare/v2.30.5...v2.31.0) (2026-04-16)
+
+### Features
+
+* **components:** add AppStatusBar and ScreenWrapper components ([7d35600](https://github.com/AntoC-dev/Recipedia/commit/7d3560084d9e7f3f0c10b7a850ba8b0056b58982))
+
+### Bug Fixes
+
+* **app-bar:** set zero statusBarHeight to prevent visual overlap ([2a02db3](https://github.com/AntoC-dev/Recipedia/commit/2a02db37727eb004762bba799d782849f712560a))
+
 ## [2.30.5](https://github.com/AntoC-dev/Recipedia/compare/v2.30.4...v2.30.5) (2026-04-14)
 
 ### Performance Improvements
