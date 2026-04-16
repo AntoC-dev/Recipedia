@@ -124,6 +124,22 @@ describe('SettingsItemList Component', () => {
       ).toEqual(JSON.stringify(mockIngredients[1]));
       expect(queryByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::1::Item`)).toBeNull();
     });
+
+    test('uses item name as key when id is missing', () => {
+      const noIdIngredients: ingredientTableElement[] = [
+        { ...mockIngredients[0], id: undefined as any },
+        { ...mockIngredients[1], id: undefined as any },
+      ];
+      const props: SettingsItemListProps<ingredientTableElement> = {
+        ...defaultProps,
+        items: noIdIngredients,
+      };
+
+      const { getByTestId } = render(<SettingsItemList {...props} />);
+
+      expect(getByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::0::Item`)).toBeTruthy();
+      expect(getByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::1::Item`)).toBeTruthy();
+    });
   });
 
   describe('tag', () => {

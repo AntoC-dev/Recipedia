@@ -38,8 +38,9 @@
  * ```
  */
 
-import React, { useState } from 'react';
-import { FlatList, View } from 'react-native';
+import React, { useDeferredValue, useState } from 'react';
+import { View } from 'react-native';
+import { FlashList } from '@shopify/flash-list';
 import { Searchbar, useTheme } from 'react-native-paper';
 import { padding } from '@styles/spacing';
 import { useI18n } from '@utils/i18n';
@@ -77,31 +78,34 @@ export function SettingsItemList<T extends SettingsItem>({
   const { colors } = useTheme();
   const { t } = useI18n();
   const [searchQuery, setSearchQuery] = useState('');
+  const deferredQuery = useDeferredValue(searchQuery);
 
   const filteredItems = items.filter(item =>
-    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+    item.name.toLowerCase().includes(deferredQuery.toLowerCase())
   );
 
   return (
     <View style={{ height: '100%', backgroundColor: colors.background }}>
-      <Searchbar
-        testID={`${testIdPrefix}::SearchBar`}
-        mode='bar'
-        placeholder={t('search_items')}
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-        style={{
-          margin: padding.small,
-          marginBottom: padding.verySmall,
-          borderRadius: 999,
-        }}
-      />
-      <FlatList
+      <FlashList
         data={filteredItems}
+        keyExtractor={item => item.id?.toString() ?? item.name}
         contentContainerStyle={{ padding: padding.small }}
+        ListHeaderComponent={
+          <Searchbar
+            testID={`${testIdPrefix}::SearchBar`}
+            mode='bar'
+            placeholder={t('search_items')}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            style={{
+              margin: padding.small,
+              marginBottom: padding.verySmall,
+              borderRadius: 999,
+            }}
+          />
+        }
         renderItem={({ item, index }) => (
           <SettingsItemCard
-            key={index}
             item={item}
             index={index}
             testIdPrefix={testIdPrefix}
