@@ -32,8 +32,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { FlatList, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Divider, List, RadioButton, useTheme } from 'react-native-paper';
+import { ScreenWrapper } from '@components/templates/ScreenWrapper';
+import { Divider, List, RadioButton } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
 import { getLanguage, setLanguage } from '@utils/settings';
 import { LanguageSettingsProp } from '@customTypes/ScreenTypes';
@@ -48,7 +48,6 @@ import { AppBar } from '@components/organisms/AppBar';
 export function LanguageSettings({ navigation }: LanguageSettingsProp) {
   const { t, getLocale, getAvailableLocales, getLocaleName } = useI18n();
   const [currentLocale, setCurrentLocale] = useState<string>(getLocale());
-  const { colors } = useTheme();
   const availableLocales = getAvailableLocales();
 
   // Load saved language on component mount
@@ -70,7 +69,7 @@ export function LanguageSettings({ navigation }: LanguageSettingsProp) {
 
   const languageTestId = 'LanguageSettings';
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['bottom']}>
+    <ScreenWrapper>
       <AppBar title={t('language')} onGoBack={() => navigation.goBack()} testID={languageTestId} />
 
       <RadioButton.Group onValueChange={handleLanguageChange} value={currentLocale}>
@@ -92,7 +91,7 @@ export function LanguageSettings({ navigation }: LanguageSettingsProp) {
           />
         </List.Section>
       </RadioButton.Group>
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 }
 

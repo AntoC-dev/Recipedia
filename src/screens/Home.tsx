@@ -48,8 +48,8 @@ import { RecipeRecommendation } from '@components/organisms/RecipeRecommendation
 
 import React, { useEffect, useState } from 'react';
 import { FlatList, RefreshControl, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, useTheme } from 'react-native-paper';
+import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { generateHomeRecommendations } from '@utils/FilterFunctions';
 import { RecommendationType } from '@customTypes/RecipeFiltersTypes';
 import VerticalBottomButtons from '@components/organisms/VerticalBottomButtons';
@@ -134,7 +134,7 @@ export function Home() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+    <ScreenWrapper edges={['top', 'left', 'right']}>
       <FlatList
         data={recommendations}
         renderItem={({ item }) => (
@@ -153,7 +153,7 @@ export function Home() {
         showsVerticalScrollIndicator={false}
       />
       <VerticalBottomButtons />
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 }
 

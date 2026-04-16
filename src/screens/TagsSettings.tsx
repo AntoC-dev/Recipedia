@@ -32,8 +32,7 @@
 
 import React, { useState } from 'react';
 import { View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useTheme } from 'react-native-paper';
+import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { useNavigation } from '@react-navigation/native';
 import { tagTableElement } from '@customTypes/DatabaseElementTypes';
 import { SettingsItemList } from '@components/organisms/SettingsItemList';
@@ -58,7 +57,6 @@ export function TagsSettings() {
   const { tags, addTag, editTag, deleteTag } = useRecipeDatabase();
   const navigation = useNavigation();
   const { t } = useI18n();
-  const { colors } = useTheme();
 
   const tagsSortedAlphabetically = [...tags].sort((a, b) => a.name.localeCompare(b.name));
 
@@ -128,7 +126,7 @@ export function TagsSettings() {
 
   // TODO add a counter of how many recipes use this element before deleting it
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['bottom']}>
+    <ScreenWrapper>
       <AppBar title={t('tags')} onGoBack={() => navigation.goBack()} testID={testId} />
       <View style={{ flex: 1, paddingBottom: BUTTON_CONTAINER_HEIGHT }}>
         <SettingsItemList
@@ -159,7 +157,7 @@ export function TagsSettings() {
           onConfirmTag: handleDialogConfirm,
         }}
       />
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 }
 

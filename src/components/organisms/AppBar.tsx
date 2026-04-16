@@ -27,7 +27,12 @@ export function AppBar({
 
   const testId = testID + '::AppBar';
   return (
-    <Appbar.Header testID={testId} style={{ backgroundColor: colors.primaryContainer }} elevated>
+    <Appbar.Header
+      testID={testId}
+      style={{ backgroundColor: colors.primaryContainer }}
+      statusBarHeight={0}
+      elevated={true}
+    >
       {isEditing ? (
         <Appbar.Action
           icon={Icons.crossIcon}

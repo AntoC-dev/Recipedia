@@ -50,7 +50,8 @@
 import { ComputedShoppingItem } from '@customTypes/DatabaseElementTypes';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { SectionList, StyleProp, TextStyle, View } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { CopilotStep, walkthroughable } from 'react-native-copilot';
 import { useSafeCopilot } from '@hooks/useSafeCopilot';
 import { CopilotStepData } from '@customTypes/TutorialTypes';
@@ -277,7 +278,7 @@ export function Shopping() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+    <ScreenWrapper edges={['top', 'left', 'right']}>
       {shoppingList.length === 0 ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <Text testID={screenId + '::TextNoItem'} variant='titleMedium'>
@@ -345,7 +346,7 @@ export function Shopping() {
           }}
         />
       )}
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 }
 

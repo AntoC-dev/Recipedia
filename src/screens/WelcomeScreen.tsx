@@ -46,8 +46,8 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { FlatList, StatusBar, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { FlatList, View } from 'react-native';
+import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { Button, Card, Dialog, IconButton, Portal, Text, useTheme } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
 import { tutorialLogger } from '@utils/logger';
@@ -79,6 +79,7 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
   const { colors, fonts } = useTheme();
   const { t } = useI18n();
   const { recipes, datasetLoadError, dismissDatasetLoadError } = useRecipeDatabase();
+
   const [pendingAction, setPendingAction] = useState<'tutorial' | 'skip' | null>(null);
 
   const isDataLoaded = recipes.length > 0;
@@ -131,8 +132,7 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
   const cardTestId = testId + '::Card';
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.primary }}>
-      <StatusBar />
+    <ScreenWrapper backgroundColor={colors.primary}>
       <View style={{ flex: 1 }}>
         <View
           style={{
@@ -272,6 +272,6 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
           </Dialog.Actions>
         </Dialog>
       </Portal>
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 }
