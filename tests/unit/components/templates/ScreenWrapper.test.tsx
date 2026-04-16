@@ -4,28 +4,9 @@ import { render } from '@testing-library/react-native';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { useTheme } from 'react-native-paper';
 
-// Mock react-native-paper
-jest.mock('react-native-paper', () => ({
-  useTheme: jest.fn(),
-}));
-
-// Mock AppStatusBar
-jest.mock('@components/atomic/AppStatusBar', () => ({
-  AppStatusBar: () => null,
-}));
-
-// Mock SafeAreaView from react-native-safe-area-context
-jest.mock('react-native-safe-area-context', () => {
-  const React = require('react');
-  const { View } = require('react-native');
-  return {
-    SafeAreaView: ({ children, style, edges, testID }: any) => (
-      <View style={style} edges={edges} testID={testID}>
-        {children}
-      </View>
-    ),
-  };
-});
+jest.mock('@components/atomic/AppStatusBar', () =>
+  require('@mocks/components/atomic/AppStatusBar-mock')
+);
 
 describe('ScreenWrapper component', () => {
   const mockTheme = {
@@ -91,7 +72,12 @@ describe('ScreenWrapper component', () => {
     );
 
     const safeAreaView = getByTestId('screen-wrapper');
-    expect(safeAreaView.props.edges).toEqual(['bottom', 'top', 'left', 'right']);
+    expect(safeAreaView.props.edges).toEqual({
+      top: 'additive',
+      bottom: 'additive',
+      left: 'additive',
+      right: 'additive',
+    });
   });
 
   it('applies custom edges when provided', () => {
@@ -103,7 +89,12 @@ describe('ScreenWrapper component', () => {
     );
 
     const safeAreaView = getByTestId('screen-wrapper');
-    expect(safeAreaView.props.edges).toEqual(customEdges);
+    expect(safeAreaView.props.edges).toEqual({
+      top: 'additive',
+      bottom: 'off',
+      left: 'additive',
+      right: 'additive',
+    });
   });
 
   it('has flex: 1 by default', () => {

@@ -3,15 +3,6 @@ import { render } from '@testing-library/react-native';
 import { AppStatusBar } from '@components/atomic/AppStatusBar';
 import { DarkModeContext } from '@context/DarkModeContext';
 
-// Mock expo-status-bar
-jest.mock('expo-status-bar', () => {
-  const React = require('react');
-  const { View } = require('react-native');
-  return {
-    StatusBar: (props: any) => React.createElement(View, { testID: 'StatusBar', ...props }),
-  };
-});
-
 describe('AppStatusBar component', () => {
   const renderWithDarkMode = (isDarkMode: boolean) => {
     return render(

@@ -49,6 +49,7 @@ module.exports = {
         '^expo-clipboard$': '<rootDir>/tests/mocks/deps/expo-clipboard-mock.tsx',
         '^react-native-webview$': '<rootDir>/tests/mocks/deps/react-native-webview-mock.tsx',
         '^expo-mail-composer$': '<rootDir>/tests/mocks/deps/expo-mail-composer-mock.tsx',
+        '^expo-status-bar$': '<rootDir>/tests/mocks/deps/expo-status-bar-mock.tsx',
     },
     setupFilesAfterEnv: [
         '<rootDir>/tests/setup-community-mocks.js',
