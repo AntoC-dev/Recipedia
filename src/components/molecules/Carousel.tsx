@@ -63,7 +63,7 @@ export function Carousel(props: CarouselItemProps) {
         data={props.items}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
-        keyExtractor={(item, idx) => item.title + idx}
+        keyExtractor={(item, idx) => item.id?.toString() ?? item.title + idx}
         contentContainerStyle={{ paddingHorizontal: padding.small }}
         renderItem={({ item, index }: ListRenderItemInfo<recipeTableElement>) => (
           <RecipeCard testId={props.testID + `::Card::${index}`} size={'small'} recipe={item} />
