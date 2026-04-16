@@ -45,8 +45,9 @@
  * ```
  */
 
-import React, { useEffect, useState } from 'react';
-import { FlatList, StatusBar, View } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import { FlatList, View } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, Card, Dialog, IconButton, Portal, Text, useTheme } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
@@ -58,6 +59,7 @@ import { IconName, Icons } from '@assets/Icons';
 import Constants from 'expo-constants';
 import { LoadingOverlay } from '@components/dialogs/LoadingOverlay';
 import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { DarkModeContext } from '@context/DarkModeContext';
 
 /**
  * Props for the WelcomeScreen component
@@ -79,6 +81,8 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
   const { colors, fonts } = useTheme();
   const { t } = useI18n();
   const { recipes, datasetLoadError, dismissDatasetLoadError } = useRecipeDatabase();
+  const { isDarkMode } = useContext(DarkModeContext);
+
   const [pendingAction, setPendingAction] = useState<'tutorial' | 'skip' | null>(null);
 
   const isDataLoaded = recipes.length > 0;
@@ -132,7 +136,7 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.primary }}>
-      <StatusBar />
+      <StatusBar style={isDarkMode ? 'light' : 'dark'} animated={true} />
       <View style={{ flex: 1 }}>
         <View
           style={{

@@ -47,7 +47,8 @@
 import { Icon, useTheme } from 'react-native-paper';
 import { Icons, iconsSize } from '@assets/Icons';
 import React, { useContext } from 'react';
-import { StatusBar, View } from 'react-native';
+import { View } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Home } from '@screens/Home';
 import { Menu } from '@screens/Menu';
@@ -137,10 +138,7 @@ export function BottomTabs() {
 
   return (
     <>
-      <StatusBar
-        backgroundColor={colors.primaryContainer}
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-      />
+      <StatusBar style={isDarkMode ? 'light' : 'dark'} animated={true} />
       <Tab.Navigator
         initialRouteName='Home'
         screenOptions={({ route }) => ({
