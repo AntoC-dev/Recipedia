@@ -3,6 +3,7 @@ import { fireEvent, screen } from '@testing-library/react-native';
 import { measureRenders } from 'reassure';
 import Home from '@screens/Home';
 import { RefreshControl } from 'react-native';
+import { ingredientType, recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { performanceRecipes } from '@assets/datasets/performance/recipes';
 import { performanceIngredients } from '@assets/datasets/performance/ingredients';
@@ -20,7 +21,6 @@ import {
   useRecipeDatabase,
 } from '@context/RecipeDatabaseContext';
 import { DefaultPersonsProvider } from '@context/DefaultPersonsContext';
-import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
 
 jest.mock('@react-navigation/native', () =>
   require('@mocks/deps/react-navigation-mock').reactNavigationMock()
@@ -179,5 +179,66 @@ describe('Home Screen Performance', () => {
     };
 
     await measureRenders(<HomeWrapper />, { runs: 10, scenario });
+  });
+});
+
+const largeIngredients = Array.from({ length: 1200 }, (_, i) => ({
+  id: i + 1,
+  name: `LargeIngredient${i + 1}`,
+  unit: 'g',
+  type: ingredientType.vegetable,
+  season: [] as string[],
+}));
+
+const largeRecipes: recipeTableElement[] = Array.from({ length: 1000 }, (_, i) => ({
+  id: i + 1,
+  title: `LargeDatasetRecipe${i + 1}`,
+  description: 'Generated for large-scale performance testing',
+  ingredients: largeIngredients.slice(i % 10, (i % 10) + 5),
+  tags: [],
+  preparation: [],
+  time: 30,
+  persons: 4,
+  season: [],
+  image_Source: '',
+}));
+
+describe('Home Screen Performance - Large Dataset', () => {
+  const database = RecipeDatabase.getInstance();
+
+  beforeEach(async () => {
+    contextRef = null;
+    seasonContextRef = null;
+    await database.init();
+    await database.addMultipleIngredients(largeIngredients);
+    await database.addMultipleRecipes(largeRecipes);
+  });
+
+  afterEach(async () => {
+    await database.closeAndReset();
+  });
+
+  test('initial render with 1000 recipes', async () => {
+    await measureRenders(<HomeWrapper />, { runs: 5 });
+  });
+
+  test('re-render after adding recipe with 1000 recipes', async () => {
+    const scenario = async () => {
+      if (contextRef) {
+        await contextRef.addRecipe({ ...testRecipe, title: `ExtraRecipe${Date.now()}` });
+      }
+    };
+
+    await measureRenders(<HomeWrapper />, { runs: 5, scenario });
+  });
+
+  test('re-render after toggling season filter with 1000 recipes', async () => {
+    const scenario = async () => {
+      if (seasonContextRef) {
+        seasonContextRef.setSeasonFilter();
+      }
+    };
+
+    await measureRenders(<HomeWrapper />, { runs: 5, scenario });
   });
 });
