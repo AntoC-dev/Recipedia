@@ -44,6 +44,7 @@ import { FlashList } from '@shopify/flash-list';
 import { Searchbar, useTheme } from 'react-native-paper';
 import { padding } from '@styles/spacing';
 import { useI18n } from '@utils/i18n';
+import { getSettingsItemKey } from '@utils/listUtils';
 import {
   SettingsItem,
   SettingsItemCard,
@@ -88,7 +89,8 @@ export function SettingsItemList<T extends SettingsItem>({
     <View style={{ height: '100%', backgroundColor: colors.background }}>
       <FlashList
         data={filteredItems}
-        keyExtractor={item => item.id?.toString() ?? item.name}
+        keyExtractor={getSettingsItemKey}
+        maintainVisibleContentPosition={{ disabled: true }}
         contentContainerStyle={{ padding: padding.small }}
         ListHeaderComponent={
           <Searchbar
