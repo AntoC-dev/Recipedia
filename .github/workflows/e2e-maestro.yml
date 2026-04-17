@@ -83,6 +83,8 @@ jobs:
           target: google_apis
           arch: x86_64
           profile: Nexus 5
+          disable-animations: true
+          disable-spellchecker: true
           emulator-options: -no-snapshot -no-window -noaudio -no-boot-anim -wipe-data -memory 4096 -cores 4
           script: bash .github/scripts/run-e2e-android.sh ${{ matrix.suite }}
         env:
