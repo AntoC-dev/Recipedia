@@ -6,6 +6,8 @@ appId: "com.recipedia"
 - tapOn:
     id: ${TAB_ID}
     label: "Navigate to tab"
+- waitForAnimationToEnd:
+    label: "Wait for tab to load"
 - extendedWaitUntil:
     visible:
       text: ".*isn't responding.*"

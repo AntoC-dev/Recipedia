@@ -3,10 +3,6 @@ appId: "com.recipedia"
 tags:
   - shopping
 ---
-- runFlow:
-    file: "../../flows/setupFirstTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
 - tapOn:
     id: "BottomTabs::Shopping"
     label: "Assert - Navigate to Shopping screen"
@@ -23,10 +19,10 @@ tags:
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::RecipeCards::3::Content"
+      id: "SearchScreen::RecipeCards::3::.*"
     direction: DOWN
     speed: 20
-    timeout: 90000
+    timeout: 60000
     centerElement: true
     label: "Action - Scroll to Classic Pancakes recipe"
 
@@ -69,11 +65,3 @@ tags:
 - runFlow:
     file: "../../asserts/shopping/en/shoppingPancake.yaml"
     label: "Assert - Verify shopping list persisted"
-
-- runFlow:
-    file: "../../flows/shopping/en/clearShoppingList.yaml"
-    label: "Cleanup - Clear shopping list"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Navigate to Home screen"

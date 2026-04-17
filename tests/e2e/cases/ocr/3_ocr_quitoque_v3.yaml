@@ -3,14 +3,6 @@ appId: "com.recipedia"
 tags:
   - ocr
 ---
-- runFlow:
-    file: "../../flows/recipe/adding/ocr/checkIfCleanIsNeeded.yaml"
-    label: "Setup - Check if clean is needed"
-
-- runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
 - evalScript: ${output.isDescriptionToOCR = true}
 - evalScript: ${output.isTagsToOCR = false}
 - evalScript: ${output.isTime = true}
@@ -65,15 +57,3 @@ tags:
 - runFlow:
     file: "../../asserts/recipe/readonly/en/curryPoisChiche.yaml"
     label: "Assert - Verify recipe content in read-only mode"
-
-- tapOn:
-    id: "Recipe::AppBar::BackButton"
-    label: "Cleanup - Return to search results"
-
-- tapOn:
-    id: "SearchScreen::SearchBar::RightIcon"
-    label: "Cleanup - Clear search filter"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Return to home screen"

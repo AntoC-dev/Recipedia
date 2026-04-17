@@ -5,7 +5,7 @@ platform:
     disableAnimations: true
 
 flows:
-  - cases/shopping/*
+  - cases/shopping/ci/*
 
 executionOrder:
   flowsOrder:

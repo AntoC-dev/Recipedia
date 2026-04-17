@@ -5,10 +5,6 @@ tags:
   - tags-db
 ---
 - runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
-- runFlow:
     file: "../../flows/parameters/tags/navigateToTagsSettings.yaml"
     label: "Action - Navigate to Tags Settings"
 
@@ -101,11 +97,3 @@ tags:
 - runFlow:
     file: "../../flows/parameters/tags/verifyTagRenameInSearch.yaml"
     label: "Verification - Verify tag renamed in Search and recipes"
-
-- runFlow:
-    file: "../../flows/parameters/tags/restoreTagName.yaml"
-    label: "Cleanup - Restore tag name to Italian"
-
-- runFlow:
-    file: "../../flows/parameters/tags/returnToHome.yaml"
-    label: "Cleanup - Return to Home screen"

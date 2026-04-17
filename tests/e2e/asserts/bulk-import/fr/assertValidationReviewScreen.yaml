@@ -44,6 +44,14 @@ appId: "com.recipedia"
     text: "Ingrédients \\(\\d+/\\d+\\)"
     label: "Assert - Ingredients section header is visible"
 
+- scrollUntilVisible:
+    element:
+      id: "BulkImportValidation::Ingredient::.*::SkipChip"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to ingredients skip chip"
+
 - tapOn:
     id: "BulkImportValidation::Ingredient::.*::SkipChip"
     label: "Action - Ignore one of the ingredients"
@@ -74,5 +82,4 @@ appId: "com.recipedia"
     direction: UP
     speed: 20
     timeout: 120000
-    centerElement: true
     label: "Action - Scroll to the top of the screen"

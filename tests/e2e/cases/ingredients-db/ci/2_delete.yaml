@@ -1,0 +1,15 @@
+name: "2 - Delete Ingredient Flow"
+appId: "com.recipedia"
+tags:
+  - database
+  - ingredients-db
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../2_delete.yaml"
+          label: "Run 2 - Delete Ingredient Flow"

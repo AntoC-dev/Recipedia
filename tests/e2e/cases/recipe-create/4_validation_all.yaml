@@ -4,10 +4,6 @@ tags:
   - recipe-create
 ---
 - runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
-- runFlow:
     file: "../../flows/recipe/adding/manual/en/openAddManually.yaml"
     label: "Action - Open manual recipe adding screen"
 
@@ -35,7 +31,15 @@ tags:
     timeout: 30000
     label: "Action - Scroll to nutrition section"
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    label: "Wait for scroll animation to end"
+
+- swipe:
+    direction: UP
+    label: "Action - Scroll again to ensure nutrition section is visible"
+
+- waitForAnimationToEnd:
+    label: "Wait for scroll animation to end"
 
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionEmptyState::AddButton::RoundButton"

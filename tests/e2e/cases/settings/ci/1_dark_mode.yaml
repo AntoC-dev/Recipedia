@@ -1,0 +1,14 @@
+name: "1 - Dark Mode Toggle Flow"
+appId: "com.recipedia"
+tags:
+  - settings
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../1_dark_mode.yaml"
+          label: "Run 1 - Dark Mode Toggle Flow"

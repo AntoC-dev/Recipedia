@@ -3,10 +3,6 @@ appId: "com.recipedia"
 tags:
   - search
 ---
-- runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
 - tapOn:
     id: "BottomTabs::Search"
     label: "Action - Navigate to Search screen"
@@ -68,7 +64,3 @@ tags:
 - tapOn:
     id: "SearchScreen::FiltersToggleButtons"
     label: "Action - Close the filter page"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Navigate back to Home screen"

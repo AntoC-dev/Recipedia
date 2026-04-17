@@ -4,10 +4,6 @@ tags:
   - performance
 ---
 - runFlow:
-    file: "../../flows/setupPerformanceTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
-- runFlow:
     file: "../../flows/performance/homeScreen.yaml"
     label: "Home screen interactions"
 

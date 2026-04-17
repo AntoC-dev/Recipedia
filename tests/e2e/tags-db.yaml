@@ -5,7 +5,7 @@ platform:
     disableAnimations: true
 
 flows:
-  - cases/tags-db/*
+  - cases/tags-db/ci/*
 
 executionOrder:
   flowsOrder:

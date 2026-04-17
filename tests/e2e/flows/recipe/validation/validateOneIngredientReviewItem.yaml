@@ -6,8 +6,10 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 20
     timeout: 30000
-    centerElement: true
     label: "Scroll to first pending ingredient"
+
+- waitForAnimationToEnd:
+    label: "Wait for animation to end"
 
 - tapOn:
     id: "BulkImportValidation::Ingredient::.*::AddNewChip"

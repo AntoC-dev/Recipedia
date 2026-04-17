@@ -5,7 +5,7 @@ platform:
     disableAnimations: true
 
 flows:
-  - cases/menu/*
+  - cases/menu/ci/*
 
 executionOrder:
   flowsOrder:

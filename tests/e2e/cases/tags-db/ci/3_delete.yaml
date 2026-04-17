@@ -1,0 +1,15 @@
+name: "3 - Delete Tag Flow"
+appId: "com.recipedia"
+tags:
+  - database
+  - tags-db
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../3_delete.yaml"
+          label: "Run 3 - Delete Tag Flow"

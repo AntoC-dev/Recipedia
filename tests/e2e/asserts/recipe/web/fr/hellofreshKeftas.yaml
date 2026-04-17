@@ -20,7 +20,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeDescription::Text"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll down to description label"
 

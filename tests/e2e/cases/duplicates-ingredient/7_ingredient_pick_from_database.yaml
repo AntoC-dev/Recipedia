@@ -4,10 +4,6 @@ tags:
   - duplicates
 ---
 - runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
-- runFlow:
     file: "../../flows/fab/expand.yaml"
     label: "Action - Expand FAB menu"
 
@@ -81,7 +77,3 @@ tags:
     id: "RecipeIngredients::0::NameInput::CustomTextInput"
     text: "Coconut Milk"
     label: "Assert - Verify Coconut Milk ingredient was picked"
-
-- tapOn:
-    id: "Recipe::AppBar::BackButton"
-    label: "Cleanup - Exit recipe creation without saving"

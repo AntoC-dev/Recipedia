@@ -4,10 +4,6 @@ tags:
   - duplicates
 ---
 - runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
-- runFlow:
     file: "../../flows/fab/expand.yaml"
     label: "Action - Expand FAB menu"
 
@@ -119,7 +115,3 @@ tags:
 - assertVisible:
     text: "Dessert"
     label: "Assert - Verify original Dessert tag still present"
-
-- tapOn:
-    id: "Recipe::AppBar::BackButton"
-    label: "Cleanup - Exit recipe creation without saving"

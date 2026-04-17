@@ -3,9 +3,6 @@ appId: "com.recipedia"
 tags:
   - app-init
 ---
-- launchApp:
-    label: "Setup - Launch app for first time"
-
 - extendedWaitUntil:
     visible:
       id: "WelcomeScreen::SkipButton"
@@ -106,7 +103,6 @@ tags:
     file: "../../asserts/onboarding/en/assertTutorialStep4.yaml"
     label: "Assert - Verify tutorial Step 4 (Shopping screen) again"
 
-- stopApp
 - launchApp
 
 - extendedWaitUntil:
@@ -118,7 +114,3 @@ tags:
 - runFlow:
     file: "../../asserts/onboarding/en/assertWelcomeScreen.yaml"
     label: "Assert - Verify Welcome Screen reappears after incomplete tutorial"
-
-- tapOn:
-    id: "WelcomeScreen::SkipButton"
-    label: "Action - Skip the tutorial to proceed with tests"

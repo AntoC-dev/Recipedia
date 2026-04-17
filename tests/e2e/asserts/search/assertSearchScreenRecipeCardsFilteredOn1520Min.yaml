@@ -37,9 +37,9 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-        id: "SearchScreen::RecipeCards::5::Content"
+      id: "SearchScreen::RecipeCards::5::Content"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to fourth recipe card"
 

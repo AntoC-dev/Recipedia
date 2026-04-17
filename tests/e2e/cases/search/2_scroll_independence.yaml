@@ -3,10 +3,6 @@ appId: "com.recipedia"
 tags:
   - search
 ---
-- runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
 - tapOn:
     id: "BottomTabs::Search"
     label: "Action - Navigate to Search screen"
@@ -83,7 +79,3 @@ tags:
 - assertVisible:
     id: "SearchScreen::RecipeCards::2::Chicken Tacos"
     label: "Assert - Verify second recipe card is visible"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Navigate back to Home screen"

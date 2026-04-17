@@ -4,10 +4,6 @@ tags:
   - duplicates
 ---
 - runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
-- runFlow:
     file: "../../flows/parameters/ingredients/navigateToIngredientsSettings.yaml"
     label: "Action - Navigate to Ingredients Settings"
 
@@ -151,11 +147,3 @@ tags:
     id: "IngredientsSettings::ItemDialog::EditModal::ConfirmButton"
     enabled: false
     label: "Assert - Confirm button enabled with original name"
-
-- tapOn:
-    id: "IngredientsSettings::ItemDialog::EditModal::CancelButton"
-    label: "Cleanup - Cancel edit ingredient dialog"
-
-- runFlow:
-    file: "../../flows/parameters/ingredients/returnToHome.yaml"
-    label: "Cleanup - Return to Home screen"

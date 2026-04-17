@@ -1,0 +1,14 @@
+name: "3 - Bulk Import with Skipped Recipe (all ingredients rejected)"
+appId: "com.recipedia"
+tags:
+  - bulk-import
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../3_bulk_import_skipped_recipe.yaml"
+          label: "Run 3 - Bulk Import with Skipped Recipe (all ingredients rejected)"

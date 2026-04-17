@@ -74,7 +74,9 @@ tests/e2e/
 ├── {suite}.yaml                   # Test suite configuration (app-init, search, ocr, etc.)
 ├── cases/                         # Test case implementations
 │   ├── {feature}/                # Feature-specific test cases
-│   │   └── {test_name}.yaml      # Individual test case (e.g., 26_dark_mode.yaml)
+│   │   ├── {test_name}.yaml      # Individual test case (run locally)
+│   │   └── ci/                   # CI wrappers with retry (used by suite configs)
+│   │       └── {test_name}.yaml  # Wraps the parent flow in a retry block
 ├── flows/                         # Reusable action sequences
 │   ├── {feature}/                # Feature-specific flows
 │   │   └── {action}.yaml         # Reusable flow
@@ -98,10 +100,12 @@ tests/e2e/
    execution order
 5. **Separation of Concerns**: Test cases orchestrate reusable flows and
    assertions
-6. **Reusability**: Common actions and assertions are extracted into separate
+6. **CI Retry Isolation**: CI uses wrapper flows in `ci/` subdirectories to add
+   retry behaviour without affecting local runs
+7. **Reusability**: Common actions and assertions are extracted into separate
    files
-7. **Language Independence**: Language-specific assertions are separated
-8. **Platform Awareness**: Android and iOS implementations are conditionally
+8. **Language Independence**: Language-specific assertions are separated
+9. **Platform Awareness**: Android and iOS implementations are conditionally
    executed
 
 ## Directory Structure
@@ -115,16 +119,20 @@ defines which test cases to run and their execution order.
 
 ```yaml
 flows:
-  - cases/settings/*
+  - cases/settings/ci/*
 
 executionOrder:
   flowsOrder:
-    - '26 - Dark Mode Toggle Flow'
-    - '27 - Language Switch Flow'
-    - '28 - Season Filter Toggle Flow'
-    - '29 - Season Filter Edge Cases Flow'
-    - '30 - Default Persons Setting Flow'
+    - '1 - Dark Mode Toggle Flow'
+    - '2 - Season Filter Toggle Flow'
+    - '3 - Season Filter Edge Cases Flow'
+    - '4 - Default Persons Setting Flow'
+    - '5 - Bug Report Flow'
+    - '6 - Language Switch Flow'
 ```
+
+Suite configs point to `ci/*` so that CI runs the retry wrappers. The original
+flow files in the parent directory are used for local runs.
 
 **Available Suite Configurations**:
 
@@ -443,8 +451,9 @@ strategy:
 
 1. **Choose appropriate feature directory** in `cases/` or create a new one
 2. **Create test case file** with numbered name: `{number}_{test_name}.yaml`
-3. **Add test name** to the suite's `executionOrder.flowsOrder` list
-4. **Structure the test**: Setup → Action → Cleanup
+3. **Create the CI wrapper** at `cases/{feature}/ci/{number}_{test_name}.yaml`
+4. **Add test name** to the suite's `executionOrder.flowsOrder` list
+5. **Structure the test**: Setup → Action → Cleanup
 
 **Example**: Creating `cases/favorites/40_add_to_favorites.yaml`
 
@@ -1329,6 +1338,65 @@ The icon replaces platform-specific approaches:
 - pressKey: 'BACK'
 ```
 
+## CI Retry Mechanism
+
+E2E tests can fail on CI due to infrastructure flakiness — ANR dialogs, scroll
+timing variance, or simulator load. To handle this without hiding genuine app
+bugs, each test case has a CI wrapper in `cases/{feature}/ci/` that wraps the
+original flow in a `retry` block.
+
+### How It Works
+
+Suite configs point to `cases/{feature}/ci/*`. Each CI wrapper carries the flow
+`name`, `appId`, and `tags` from the original, then delegates to it via `retry`:
+
+```yaml
+# cases/settings/ci/1_dark_mode.yaml
+name: '1 - Dark Mode Toggle Flow'
+appId: 'com.recipedia'
+tags:
+  - settings
+---
+- retry:
+    maxRetries: 2
+    file: '../1_dark_mode.yaml'
+```
+
+The original flow at `cases/settings/1_dark_mode.yaml` is unchanged and used for
+local runs.
+
+### Running Locally
+
+Run original flows directly — no retry overhead:
+
+```bash
+# Run a single flow (no retry)
+maestro test cases/settings/1_dark_mode.yaml
+
+# Run the CI wrapper explicitly (with retry)
+maestro test cases/settings/ci/1_dark_mode.yaml
+```
+
+### Adding CI Wrappers for New Flows
+
+When adding a new test case `cases/{feature}/{N}_{name}.yaml`, create the
+corresponding wrapper:
+
+```yaml
+# cases/{feature}/ci/{N}_{name}.yaml
+name: '<same name as original>'
+appId: 'com.recipedia'
+tags:
+  - { same-tags-as-original }
+---
+- retry:
+    maxRetries: 2
+    file: '../{N}_{name}.yaml'
+```
+
+If the original flow has an `env:` section with default variables, copy it into
+the wrapper as well so values are available at the retry level.
+
 ## Troubleshooting
 
 ### Common Issues and Solutions
@@ -1442,6 +1510,7 @@ file: "../../flows/feature/flow.yaml"  # Relative from current location
 2. **Animation interference**: Wait for animations to complete
 3. **State from previous test**: Ensure proper cleanup
 4. **Gallery ordering**: For OCR tests, verify media addition timing
+5. **CI infrastructure**: ANR dialogs, scroll variance, simulator load
 
 **Solutions**:
 
@@ -1454,6 +1523,9 @@ file: "../../flows/feature/flow.yaml"  # Relative from current location
 # Reset app state between tests
 - launchApp # In test suite file
 ```
+
+For CI-only flakiness (infrastructure causes), the CI retry mechanism handles it
+automatically — see the [CI Retry Mechanism](#ci-retry-mechanism) section.
 
 ### Debugging Tips
 
@@ -1505,12 +1577,20 @@ file: "../../flows/feature/flow.yaml"  # Relative from current location
 15. ✅ **Use platform conditionals** for platform-specific code
 16. ✅ **For OCR: add media on-demand**, always select index 0
 17. ✅ **Update suite config** when adding new test cases
+18. ✅ **Create a CI wrapper** in `ci/` for every new test case
+19. ✅ **Run original flows locally**, CI wrappers are for CI only
 
 ---
 
-**Last Updated**: 2026-01-09
+**Last Updated**: 2026-04-13
 
 **Key Changes**:
+
+- **CI retry mechanism**: Each test case now has a CI wrapper in
+  `cases/{feature}/ci/` that wraps the original flow in `retry: maxRetries: 2`.
+  Suite configs updated to point to `ci/*`. Original flows unchanged — run
+  locally as before. Handles infrastructure flakiness (ANR dialogs, scroll
+  variance, simulator load) without affecting local development.
 
 - **SearchBar close icon (Material Design pattern)**: SearchBar now shows close
   icon when search is active (even without text), providing consistent

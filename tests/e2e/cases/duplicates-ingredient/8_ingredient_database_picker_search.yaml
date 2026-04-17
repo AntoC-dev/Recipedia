@@ -4,10 +4,6 @@ tags:
   - duplicates
 ---
 - runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
-- runFlow:
     file: "../../flows/fab/expand.yaml"
     label: "Action - Expand FAB menu"
 
@@ -134,7 +130,3 @@ tags:
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Ingredient::PickConfirmation::ConfirmButton"
     label: "Action - Confirm ingredient selection"
-
-- tapOn:
-    id: "Recipe::AppBar::BackButton"
-    label: "Cleanup - Exit recipe creation without saving"

@@ -3,10 +3,6 @@ appId: "com.recipedia"
 tags:
   - app-init
 ---
-- runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
 # Check Home Screen
 - runFlow:
     file: "../../asserts/home/en/assertHomeScreen.yaml"
@@ -48,7 +44,3 @@ tags:
 - runFlow:
     file: "../../asserts/parameters/en/assertParametersScreen.yaml"
     label: "Assert - Verify Parameters screen is displayed correctly"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Navigate back to Home screen"

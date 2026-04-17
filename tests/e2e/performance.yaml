@@ -5,7 +5,7 @@ platform:
     disableAnimations: true
 
 flows:
-  - cases/performance/*
+  - cases/performance/ci/*
 
 executionOrder:
   flowsOrder:

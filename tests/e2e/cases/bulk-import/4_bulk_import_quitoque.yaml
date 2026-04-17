@@ -4,10 +4,6 @@ tags:
   - bulk-import
 ---
 - runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
-- runFlow:
     file: "../../flows/parameters/language/switchToEnglish.yaml"
     label: "Setup - Ensure app is in English (in case previous test failed)"
 
@@ -76,8 +72,6 @@ tags:
       id: "BulkImportValidation::InitializingIndicator"
     timeout: 120000
     label: "Wait - For initialization to complete"
-
-
 - runFlow:
     file: "../../flows/recipe/validation/validateAllReviewItems.yaml"
     label: "Action - Validate all tags and ingredients (first import)"
@@ -145,15 +139,3 @@ tags:
     label: "Action - Finish second import"
 
 - waitForAnimationToEnd
-
-- runFlow:
-    file: "../../flows/bulk-import/deleteAllImportedRecipes.yaml"
-    label: "Cleanup - Delete all imported recipes"
-
-- runFlow:
-    file: "../../flows/parameters/language/switchToEnglish.yaml"
-    label: "Cleanup - Switch back to English"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Return to home"

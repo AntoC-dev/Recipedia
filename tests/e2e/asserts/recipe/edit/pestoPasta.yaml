@@ -27,7 +27,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeDescription::Text"
     direction: DOWN
-    speed: 60
+    speed: 30
     centerElement: true
 
 - waitForAnimationToEnd
@@ -47,8 +47,9 @@ appId: "com.recipedia"
     element:
       id: "RecipeTags::HeaderText"
     direction: DOWN
-    speed: 60
+    speed: 40
     centerElement: true
+    label: "Scroll to tags section"
 
 - waitForAnimationToEnd
 
@@ -115,8 +116,9 @@ appId: "com.recipedia"
     element:
       id: "RecipeTags::RoundButton"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
+    label: "Scroll to tag's add tag button"
 
 - waitForAnimationToEnd
 
@@ -159,7 +161,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::PrefixText"
     direction: DOWN
-    speed: 60
+    speed: 30
     centerElement: true
 
 - waitForAnimationToEnd
@@ -265,7 +267,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::3::QuantityInput"
     direction: DOWN
-    speed: 60
+    speed: 30
     centerElement: true
     label: "Scroll to fourth ingredient"
 
@@ -290,7 +292,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::4::QuantityInput"
     direction: DOWN
-    speed: 60
+    speed: 30
     centerElement: true
     label: "Scroll to last ingredient"
 
@@ -358,7 +360,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::EditableStep::0::Step"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll down to see the preparation section"
 
@@ -379,7 +381,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll down to see the title of the first step"
 
@@ -400,7 +402,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::EditableStep::0::Content"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll down to see the content label of step 1"
 
@@ -417,7 +419,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll down to see the content input of step 1"
 
@@ -433,7 +435,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::EditableStep::1::TextInputTitle::CustomTextInput"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
 
 - waitForAnimationToEnd
@@ -457,7 +459,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::EditableStep::1::Content"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll down to see the content label of step 2"
 
@@ -474,7 +476,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll down to see the content input of step 2"
 
@@ -491,7 +493,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::EditableStep::2::Title"
     direction: DOWN
     centerElement: true
-    speed: 40
+    speed: 20
     label: "Scroll down to see the title of the third step"
 
 - waitForAnimationToEnd
@@ -512,7 +514,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::EditableStep::2::TextInputTitle::CustomTextInput"
     direction: DOWN
     centerElement: true
-    speed: 60
+    speed: 20
     label: "Scroll down to see the content of the step 3"
 
 - waitForAnimationToEnd
@@ -529,7 +531,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::EditableStep::2::Content"
     direction: DOWN
     centerElement: true
-    speed: 60
+    speed: 20
     label: "Scroll down to see the content label of step 3"
 
 - waitForAnimationToEnd
@@ -546,7 +548,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::EditableStep::2::TextInputContent::CustomTextInput"
     direction: DOWN
     centerElement: true
-    speed: 60
+    speed: 20
     label: "Scroll down to see the content input of step 3"
 
 - waitForAnimationToEnd
@@ -561,7 +563,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::AddButton::RoundButton"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll down to see the add button of the preparation"
 

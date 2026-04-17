@@ -5,10 +5,6 @@ tags:
   - tags-db
 ---
 - runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
-- runFlow:
     file: "../../flows/parameters/tags/navigateToTagsSettings.yaml"
     label: "Action - Navigate to Tags Settings"
 
@@ -27,23 +23,3 @@ tags:
 - runFlow:
     file: "../../flows/recipe/verifyRecipeTag.yaml"
     label: "Assert - Verify tag appears in recipe"
-
-- runFlow:
-    file: "../../flows/parameters/tags/navigateToTagsSettings.yaml"
-    label: "Action - Navigate to Tags Settings"
-
-- runFlow:
-    file: "../../flows/parameters/tags/deleteRecipeTag.yaml"
-    label: "Cleanup - Delete RecipeTag from database"
-
-- runFlow:
-    file: "../../flows/parameters/tags/returnToHome.yaml"
-    label: "Action - Return to Home screen"
-
-- runFlow:
-    file: "../../flows/recipe/verifyRecipeTagRemoved.yaml"
-    label: "Verification - Verify tag removed from recipe"
-
-- runFlow:
-    file: "../../flows/recipe/deleteRecipe.yaml"
-    label: "Cleanup - Delete test recipe"

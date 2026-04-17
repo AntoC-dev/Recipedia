@@ -6,10 +6,6 @@ env:
   recipeName: "Vegetable Soup"
 ---
 - runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
-- runFlow:
     file: "../../flows/home/swipelToRecipeAndOpenIt.yaml"
     env:
       recipeName: ${recipeName}
@@ -22,11 +18,3 @@ env:
 - tapOn:
     id: "Recipe::AppBar::BackButton"
     label: "Action - Back to the Home Screen"
-
-- runFlow:
-    file: "../../flows/home/swipeBackToFirstCard.yaml"
-    label: "Cleanup - Replace the cards to theirs original position"
-
-- runFlow:
-    file: "../../asserts/home/en/assertHomeScreen.yaml"
-    label: "Assert - Verify Home screen is displayed"

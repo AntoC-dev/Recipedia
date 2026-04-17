@@ -5,14 +5,14 @@ tags:
   - tags-db
 ---
 - runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
-- runFlow:
     file: "../../flows/parameters/tags/navigateToTagsSettings.yaml"
     label: "Action - Navigate to Tags Settings"
 
 - waitForAnimationToEnd
+
+- runFlow:
+    file: "../../flows/parameters/tags/createTestTag.yaml"
+    label: "Action - Create TestTag to delete"
 
 - runFlow:
     file: "../../flows/parameters/searchInSettingsList.yaml"
@@ -41,7 +41,3 @@ tags:
     id: "TagsSettings::.*::DeleteButton"
     text: "TestTag"
     label: "Assert - Verify tag removed from list"
-
-- runFlow:
-    file: "../../flows/parameters/tags/returnToHome.yaml"
-    label: "Cleanup - Return to Home screen"

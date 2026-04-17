@@ -4,10 +4,6 @@ tags:
   - settings
 ---
 - runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
-- runFlow:
     file: "../../flows/parameters/seasonFilter/manuallyAddWhileParameterOff.yaml"
     label: "Action - Test manually adding season filter while parameter OFF"
 
@@ -18,7 +14,3 @@ tags:
 - runFlow:
     file: "../../flows/parameters/seasonFilter/removeChipWithOtherFilters.yaml"
     label: "Action - Test removing season filter chip with other filters"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Return to Home screen"

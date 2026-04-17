@@ -1,0 +1,14 @@
+name: "4 - Recipe Edit Cancel Flow"
+appId: "com.recipedia"
+tags:
+  - recipe-edit
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../4_edit_cancel.yaml"
+          label: "Run 4 - Recipe Edit Cancel Flow"

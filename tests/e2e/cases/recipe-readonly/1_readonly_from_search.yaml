@@ -3,10 +3,6 @@ appId: "com.recipedia"
 tags:
   - recipe-readonly
 ---
-- runFlow:
-    file: "../../flows/setupFirstTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
 - tapOn:
     id: "BottomTabs::Search"
     label: "Action - Navigate to Search screen"
@@ -27,6 +23,11 @@ tags:
     id: "SearchScreen::RecipeCards::2::Chicken Tacos"
     label: "Action - Open Chicken Tacos recipe"
 
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::AppBar"
+    timeout: 30000
+    label: "Wait for recipe screen to load"
 - runFlow:
     file: "../../asserts/recipe/readonly/en/chickenTacos.yaml"
     label: "Assert - Verify Chicken Tacos recipe is displayed correctly"
@@ -38,7 +39,3 @@ tags:
 - runFlow:
     file: "../../asserts/search/en/assertSearchScreen.yaml"
     label: "Assert - Verify Search screen is displayed"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Navigate back to Home screen"

@@ -135,20 +135,11 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to ingredient's add button"
 
-- waitForAnimationToEnd
-
-- swipe:
-    start: "50%,60%"
-    end: "50%,40%"
-    label: "Swipe down to ensure dropdown will be visible"
-
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
-      id: "RecipeTags::List::1::CustomTextInput"
+      id: "RecipeTags::0::Chip"
     direction: UP
-    speed: 10
+    speed: 20
     label: "Scroll up to ensure second tag's text input is visible"
 
 - waitForAnimationToEnd
@@ -631,11 +622,11 @@ appId: "com.recipedia"
 - waitForAnimationToEnd
 
 - scrollUntilVisible:
-      element:
-          id: "RecipePreparation::EditableStep::1::Title"
-      direction: UP
-      speed: 20
-      label: "Scroll up in case the step title is not visible"
+    element:
+      id: "RecipePreparation::EditableStep::1::Title"
+    direction: UP
+    speed: 20
+    label: "Scroll up in case the step title is not visible"
 
 - waitForAnimationToEnd
 

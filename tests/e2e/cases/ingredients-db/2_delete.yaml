@@ -5,12 +5,12 @@ tags:
   - ingredients-db
 ---
 - runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
-- runFlow:
     file: "../../flows/parameters/ingredients/navigateToIngredientsSettings.yaml"
     label: "Action - Navigate to Ingredients Settings"
+
+- runFlow:
+    file: "../../flows/parameters/ingredients/createTestIngredient.yaml"
+    label: "Action - Create TestIngredient to delete"
 
 - runFlow:
     file: "../../flows/parameters/searchInSettingsList.yaml"
@@ -34,7 +34,3 @@ tags:
 - tapOn:
     id: "IngredientsSettings::ItemDialog::DeleteModal::ConfirmButton"
     label: "Action - Confirm deleting ingredient"
-
-- runFlow:
-    file: "../../flows/parameters/ingredients/returnToHome.yaml"
-    label: "Cleanup - Return to Home screen"

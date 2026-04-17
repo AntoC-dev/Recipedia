@@ -1,0 +1,15 @@
+name: "2 - Select All Button"
+appId: "com.recipedia"
+tags:
+  - dialog
+  - ingredients-db
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../2_select_all.yaml"
+          label: "Run 2 - Select All Button"

@@ -5,10 +5,6 @@ tags:
   - edge-case
 ---
 - runFlow:
-    file: "../../flows/setupFirstTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
-- runFlow:
     file: "../../flows/recipe/adding/web/openUrlDialog.yaml"
     label: "Action - Open URL dialog"
 

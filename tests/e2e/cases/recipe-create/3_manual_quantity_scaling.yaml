@@ -4,10 +4,6 @@ tags:
   - recipe-create
 ---
 - runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
-- runFlow:
     file: "../../flows/recipe/adding/fillTestRecipeFor2Persons.yaml"
     label: "Action - Fill Test Recipe (2 persons, Pasta 200g, Tomatoes 100g)"
 
@@ -85,23 +81,3 @@ tags:
 - runFlow:
     file: "../../asserts/recipe/readonly/en/testRecipeFor4Persons.yaml"
     label: "Assert - Verify recipe scaled to 4 persons (400g, 200g)"
-
-- tapOn:
-    id: "Recipe::AppBar::Delete"
-    label: "Cleanup - Delete the recipe"
-
-- tapOn:
-    id: "Recipe::Dialog::Confirm"
-    label: "Cleanup - Confirm recipe deletion"
-
-- tapOn:
-    id: "Recipe::Dialog::Confirm"
-    label: "Cleanup - Close deletion validation modal"
-
-- tapOn:
-    id: "SearchScreen::FiltersSelection::0::Chip"
-    label: "Cleanup - Remove filter"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Return to Home screen"

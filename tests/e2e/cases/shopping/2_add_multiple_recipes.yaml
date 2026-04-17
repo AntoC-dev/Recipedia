@@ -3,10 +3,6 @@ appId: "com.recipedia"
 tags:
   - shopping
 ---
-- runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
 - tapOn:
     id: "BottomTabs::Search"
     label: "Action - Navigate to Search screen"
@@ -53,9 +49,9 @@ tags:
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::RecipeCards::4::Content"
+      id: "SearchScreen::RecipeCards::4::.*"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Action - Scroll to Caesar Salad recipe"
 
@@ -95,16 +91,16 @@ tags:
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::RecipeCards::5::Content"
+      id: "SearchScreen::RecipeCards::5::.*"
     direction: DOWN
-    speed: 60
+    speed: 10
     centerElement: true
     label: "Action - Scroll to Margherita Pizza recipe"
 
 - waitForAnimationToEnd
 
 - tapOn:
-    id: "SearchScreen::RecipeCards::5::Content"
+    id: "SearchScreen::RecipeCards::5::.*"
     label: "Action - Open Margherita Pizza recipe"
 
 - tapOn:
@@ -128,11 +124,3 @@ tags:
 - runFlow:
     file: "../../asserts/shopping/en/shoppingSpaghettiCaesarAndPizza.yaml"
     label: "Assert - Verify all three recipes' ingredients in shopping list"
-
-- runFlow:
-    file: "../../flows/shopping/en/clearShoppingList.yaml"
-    label: "Cleanup - Clear shopping list"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Navigate to Home screen"

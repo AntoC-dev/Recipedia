@@ -4,10 +4,6 @@ tags:
   - duplicates
 ---
 - runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
-- runFlow:
     file: "../../flows/recipe/deleteRecipeBySearchIfExists.yaml"
     env:
       SEARCH_TEXT: "Test Recipe"
@@ -101,19 +97,3 @@ tags:
     env:
       RECIPE_NAME: ".*"
     label: "Assert - Verify recipe added successfully (no duplicate)"
-
-- runFlow:
-    file: "../../flows/recipe/deleteRecipeBySearch.yaml"
-    env:
-      SEARCH_TEXT: "Test Recipe"
-    label: "Cleanup - Delete first Test Recipe"
-
-- runFlow:
-    file: "../../flows/recipe/deleteRecipeBySearch.yaml"
-    env:
-      SEARCH_TEXT: "Test Recipe"
-    label: "Cleanup - Delete second Test Recipe"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Cleanup - Return to Home screen"

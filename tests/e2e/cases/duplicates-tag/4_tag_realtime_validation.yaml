@@ -4,10 +4,6 @@ tags:
   - duplicates
 ---
 - runFlow:
-    file: "../../flows/setupTest.yaml"
-    label: "Setup - Launch app and wait for ready"
-
-- runFlow:
     file: "../../flows/parameters/tags/navigateToTagsSettings.yaml"
     label: "Action - Navigate to Tags Settings"
 
@@ -224,7 +220,3 @@ tags:
 - assertNotVisible:
     id: "TagsSettings::ItemDialog::AddModal::CancelButton"
     label: "Check - Dialog is hidden"
-
-- runFlow:
-    file: "../../flows/parameters/tags/returnToHome.yaml"
-    label: "Cleanup - Return to Home screen"
