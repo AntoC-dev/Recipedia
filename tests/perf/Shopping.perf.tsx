@@ -9,12 +9,11 @@ import { performanceTags } from '@assets/datasets/performance/tags';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { SeasonFilterProvider } from '@context/SeasonFilterContext';
-import {
-  RecipeDatabaseContextType,
-  RecipeDatabaseProvider,
-  useRecipeDatabase,
-} from '@context/RecipeDatabaseContext';
 import { DefaultPersonsProvider } from '@context/DefaultPersonsContext';
+import { useRecipes } from '@hooks/useRecipes';
+import { useMenu } from '@hooks/useMenu';
+import { useShopping } from '@hooks/useShopping';
+import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
 
 jest.mock('@react-navigation/native', () =>
   require('@mocks/deps/react-navigation-mock').reactNavigationMock()
@@ -23,30 +22,45 @@ jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 
 const Stack = createStackNavigator();
 
-let contextRef: RecipeDatabaseContextType | null = null;
+type ShoppingPerfContext = {
+  recipes: recipeTableElement[];
+  shopping: { name: string; purchased: boolean }[];
+  addRecipeToMenu: (r: recipeTableElement) => Promise<void>;
+  togglePurchased: (name: string) => Promise<void>;
+  clearPurchased: () => Promise<void>;
+  deleteRecipe: (r: recipeTableElement) => Promise<unknown>;
+};
+let contextRef: ShoppingPerfContext | null = null;
 
 function ContextCapture() {
-  const context = useRecipeDatabase();
+  const { recipes, deleteRecipe } = useRecipes();
+  const { addRecipeToMenu, togglePurchased, clearPurchased } = useMenu();
+  const { shopping } = useShopping();
   useEffect(() => {
-    contextRef = context;
-  }, [context]);
+    contextRef = {
+      recipes,
+      shopping,
+      addRecipeToMenu,
+      togglePurchased,
+      clearPurchased,
+      deleteRecipe,
+    };
+  }, [recipes, shopping, addRecipeToMenu, togglePurchased, clearPurchased, deleteRecipe]);
   return null;
 }
 
 function ShoppingWrapper() {
   return (
-    <RecipeDatabaseProvider>
-      <DefaultPersonsProvider>
-        <SeasonFilterProvider>
-          <ContextCapture />
-          <NavigationContainer>
-            <Stack.Navigator>
-              <Stack.Screen name='Shopping' component={Shopping} />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </SeasonFilterProvider>
-      </DefaultPersonsProvider>
-    </RecipeDatabaseProvider>
+    <DefaultPersonsProvider>
+      <SeasonFilterProvider>
+        <ContextCapture />
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen name='Shopping' component={Shopping} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SeasonFilterProvider>
+    </DefaultPersonsProvider>
   );
 }
 

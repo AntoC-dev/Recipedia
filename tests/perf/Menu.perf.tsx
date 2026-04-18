@@ -16,12 +16,10 @@ import { performanceTags } from '@assets/datasets/performance/tags';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { SeasonFilterProvider } from '@context/SeasonFilterContext';
-import {
-  RecipeDatabaseContextType,
-  RecipeDatabaseProvider,
-  useRecipeDatabase,
-} from '@context/RecipeDatabaseContext';
 import { DefaultPersonsProvider } from '@context/DefaultPersonsContext';
+import { useMenu } from '@hooks/useMenu';
+import { useRecipes } from '@hooks/useRecipes';
+import { recipeTableElement, menuTableElement } from '@customTypes/DatabaseElementTypes';
 
 jest.mock('@react-navigation/native', () =>
   require('@mocks/deps/react-navigation-mock').reactNavigationMock()
@@ -33,30 +31,44 @@ jest.mock('@hooks/useSafeCopilot', () =>
 
 const Stack = createStackNavigator();
 
-let contextRef: RecipeDatabaseContextType | null = null;
+type MenuPerfContext = {
+  recipes: recipeTableElement[];
+  menu: menuTableElement[];
+  addRecipeToMenu: (r: recipeTableElement) => Promise<void>;
+  toggleMenuItemCooked: (id: number) => Promise<boolean>;
+  removeFromMenu: (id: number) => Promise<boolean>;
+  clearMenu: () => Promise<void>;
+};
+let contextRef: MenuPerfContext | null = null;
 
 function ContextCapture() {
-  const context = useRecipeDatabase();
+  const { recipes } = useRecipes();
+  const { menu, addRecipeToMenu, toggleMenuItemCooked, removeFromMenu, clearMenu } = useMenu();
   useEffect(() => {
-    contextRef = context;
-  }, [context]);
+    contextRef = {
+      recipes,
+      menu,
+      addRecipeToMenu,
+      toggleMenuItemCooked,
+      removeFromMenu,
+      clearMenu,
+    };
+  }, [recipes, menu, addRecipeToMenu, toggleMenuItemCooked, removeFromMenu, clearMenu]);
   return null;
 }
 
 function MenuWrapper() {
   return (
-    <RecipeDatabaseProvider>
-      <DefaultPersonsProvider>
-        <SeasonFilterProvider>
-          <ContextCapture />
-          <NavigationContainer>
-            <Stack.Navigator>
-              <Stack.Screen name='Menu' component={Menu} />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </SeasonFilterProvider>
-      </DefaultPersonsProvider>
-    </RecipeDatabaseProvider>
+    <DefaultPersonsProvider>
+      <SeasonFilterProvider>
+        <ContextCapture />
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen name='Menu' component={Menu} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SeasonFilterProvider>
+    </DefaultPersonsProvider>
   );
 }
 

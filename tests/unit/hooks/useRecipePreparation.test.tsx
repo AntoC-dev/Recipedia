@@ -9,23 +9,15 @@ import { testTags } from '@data/tagsDataset';
 import { testIngredients } from '@data/ingredientsDataset';
 import * as logger from '@utils/logger';
 
-jest.mock('@context/RecipeDatabaseContext', () => {
+jest.mock('@hooks/useTags', () => {
   const { testTags: mockTags } = require('@data/tagsDataset');
-  const { testIngredients: mockIngredients } = require('@data/ingredientsDataset');
   return {
-    useRecipeDatabase: () => ({
-      ingredients: mockIngredients,
+    useTags: () => ({
       tags: mockTags,
-      recipes: [],
-      findSimilarIngredients: jest.fn(() => []),
       findSimilarTags: jest.fn(() => []),
-      addIngredient: jest.fn(async (ing: unknown) => ing),
       addTag: jest.fn(async (tag: unknown) => tag),
-      isDatabaseReady: true,
       searchRandomlyTags: jest.fn(() => []),
-      getRandomTags: jest.fn(() => []),
     }),
-    RecipeDatabaseProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   };
 });
 

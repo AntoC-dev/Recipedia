@@ -8,7 +8,6 @@ import {
   RecipeProvider,
 } from '@customTypes/BulkImportTypes';
 import { ingredientType } from '@customTypes/DatabaseElementTypes';
-import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
@@ -148,9 +147,7 @@ describe('useDiscoveryWorkflow', () => {
     await database.closeAndReset();
   });
 
-  const wrapper = ({ children }: { children: ReactNode }) => (
-    <RecipeDatabaseProvider>{children}</RecipeDatabaseProvider>
-  );
+  const wrapper = ({ children }: { children: ReactNode }) => <>{children}</>;
 
   describe('initialization', () => {
     it('starts in discovering phase with provider', async () => {

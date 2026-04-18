@@ -6,7 +6,6 @@ import { testRecipes } from '@test-data/recipesDataset';
 import React from 'react';
 import { mockNavigationFunctions } from '@mocks/deps/react-navigation-mock';
 import Menu from '@screens/Menu';
-import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 
 const { mockUseSafeCopilot } = require('@mocks/hooks/useSafeCopilot-mock');
 
@@ -36,11 +35,7 @@ const defaultProps = {
 const screenId = 'MenuScreen';
 
 async function renderMenuAndWait() {
-  const result = render(
-    <RecipeDatabaseProvider>
-      <Menu {...defaultProps} />
-    </RecipeDatabaseProvider>
-  );
+  const result = render(<Menu {...defaultProps} />);
 
   const hasMenuItems = RecipeDatabase.getInstance().get_menu().length > 0;
 

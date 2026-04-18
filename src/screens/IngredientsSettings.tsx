@@ -35,7 +35,7 @@ import { AppBar } from '@components/organisms/AppBar';
 import { BottomActionButton } from '@components/atomic/BottomActionButton';
 import { DialogMode, ItemDialog } from '@components/dialogs/ItemDialog';
 import { ingredientsSettingsLogger } from '@utils/logger';
-import { useIngredients } from '@context/IngredientDataContext';
+import { useIngredients } from '@hooks/useIngredients';
 import { useI18n } from '@utils/i18n';
 import { Icons } from '@assets/Icons';
 import { padding } from '@styles/spacing';

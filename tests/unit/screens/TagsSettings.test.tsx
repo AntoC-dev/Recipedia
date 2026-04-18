@@ -14,7 +14,6 @@ import {
 } from '@testing-library/react-native/build/queries/options';
 import { TextMatch } from '@testing-library/react-native/build/matches';
 import { DialogMode } from '@components/dialogs/ItemDialog';
-import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 
 jest.mock('@react-navigation/native', () =>
   require('@mocks/deps/react-navigation-mock').reactNavigationMock()
@@ -39,11 +38,7 @@ const defaultProps = {
 } as any;
 
 const renderTagsSettings = async () => {
-  const result = render(
-    <RecipeDatabaseProvider>
-      <TagsSettings {...defaultProps} />
-    </RecipeDatabaseProvider>
-  );
+  const result = render(<TagsSettings {...defaultProps} />);
 
   await waitFor(() => {
     expect(result.getByTestId('TagsSettings::SettingsItemList::Type')).toBeTruthy();

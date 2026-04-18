@@ -7,7 +7,6 @@ import {
   recipeTableElement,
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
-import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 import { RecipeFormProvider, useRecipeForm } from '@context/RecipeFormContext';
 import { RecipeDialogsProvider, useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { createMockRecipeProp } from '@test-helpers/recipeHookTestWrapper';
@@ -56,11 +55,9 @@ function createWrapper(ingredients: FormIngredientElement[], tags: tagTableEleme
   const props = createMockRecipeProp('addFromScrape', recipe);
   return function Wrapper({ children }: { children: ReactNode }) {
     return (
-      <RecipeDatabaseProvider>
-        <RecipeFormProvider props={props}>
-          <RecipeDialogsProvider>{children}</RecipeDialogsProvider>
-        </RecipeFormProvider>
-      </RecipeDatabaseProvider>
+      <RecipeFormProvider props={props}>
+        <RecipeDialogsProvider>{children}</RecipeDialogsProvider>
+      </RecipeFormProvider>
     );
   };
 }
@@ -69,11 +66,9 @@ function createReadOnlyWrapper() {
   const props = createMockRecipeProp('readOnly');
   return function Wrapper({ children }: { children: ReactNode }) {
     return (
-      <RecipeDatabaseProvider>
-        <RecipeFormProvider props={props}>
-          <RecipeDialogsProvider>{children}</RecipeDialogsProvider>
-        </RecipeFormProvider>
-      </RecipeDatabaseProvider>
+      <RecipeFormProvider props={props}>
+        <RecipeDialogsProvider>{children}</RecipeDialogsProvider>
+      </RecipeFormProvider>
     );
   };
 }

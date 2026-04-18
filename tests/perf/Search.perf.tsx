@@ -10,11 +10,7 @@ import { performanceTags } from '@assets/datasets/performance/tags';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { SeasonFilterProvider } from '@context/SeasonFilterContext';
-import {
-  RecipeDatabaseContextType,
-  RecipeDatabaseProvider,
-  useRecipeDatabase,
-} from '@context/RecipeDatabaseContext';
+import { useRecipes } from '@hooks/useRecipes';
 
 jest.mock('@react-navigation/native', () =>
   require('@mocks/deps/react-navigation-mock').reactNavigationMock()
@@ -23,28 +19,32 @@ jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 
 const Stack = createStackNavigator();
 
-let contextRef: RecipeDatabaseContextType | null = null;
+type SearchPerfContext = {
+  recipes: recipeTableElement[];
+  addRecipe: (r: recipeTableElement) => Promise<void>;
+  editRecipe: (r: recipeTableElement) => Promise<recipeTableElement>;
+  deleteRecipe: (r: recipeTableElement) => Promise<boolean>;
+};
+let contextRef: SearchPerfContext | null = null;
 
 function ContextCapture() {
-  const context = useRecipeDatabase();
+  const { recipes, addRecipe, editRecipe, deleteRecipe } = useRecipes();
   useEffect(() => {
-    contextRef = context;
-  }, [context]);
+    contextRef = { recipes, addRecipe, editRecipe, deleteRecipe };
+  }, [recipes, addRecipe, editRecipe, deleteRecipe]);
   return null;
 }
 
 function SearchWrapper() {
   return (
-    <RecipeDatabaseProvider>
-      <SeasonFilterProvider>
-        <ContextCapture />
-        <NavigationContainer>
-          <Stack.Navigator>
-            <Stack.Screen name='Search' component={Search} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </SeasonFilterProvider>
-    </RecipeDatabaseProvider>
+    <SeasonFilterProvider>
+      <ContextCapture />
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name='Search' component={Search} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </SeasonFilterProvider>
   );
 }
 

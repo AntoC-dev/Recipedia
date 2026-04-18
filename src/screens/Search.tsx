@@ -23,7 +23,7 @@ import { padding } from '@styles/spacing';
 import { RecipeCard } from '@components/molecules/RecipeCard';
 import { FilterAccordion } from '@components/organisms/FilterAccordion';
 import { useSeasonFilter } from '@context/SeasonFilterContext';
-import { useRecipes } from '@context/RecipeDataContext';
+import { useRecipes } from '@hooks/useRecipes';
 import { getRecipeKey } from '@utils/listUtils';
 
 /**

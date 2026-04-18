@@ -15,12 +15,8 @@ import {
   SeasonFilterProvider,
   useSeasonFilter,
 } from '@context/SeasonFilterContext';
-import {
-  RecipeDatabaseContextType,
-  RecipeDatabaseProvider,
-  useRecipeDatabase,
-} from '@context/RecipeDatabaseContext';
 import { DefaultPersonsProvider } from '@context/DefaultPersonsContext';
+import { useRecipes } from '@hooks/useRecipes';
 
 jest.mock('@react-navigation/native', () =>
   require('@mocks/deps/react-navigation-mock').reactNavigationMock()
@@ -29,33 +25,36 @@ jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 
 const Stack = createStackNavigator();
 
-let contextRef: RecipeDatabaseContextType | null = null;
+type HomePerfContext = {
+  recipes: recipeTableElement[];
+  addRecipe: (r: recipeTableElement) => Promise<void>;
+  deleteRecipe: (r: recipeTableElement) => Promise<boolean>;
+};
+let contextRef: HomePerfContext | null = null;
 let seasonContextRef: SeasonFilterContextType | null = null;
 
 function ContextCapture() {
-  const context = useRecipeDatabase();
+  const { recipes, addRecipe, deleteRecipe } = useRecipes();
   const seasonContext = useSeasonFilter();
   useEffect(() => {
-    contextRef = context;
+    contextRef = { recipes, addRecipe, deleteRecipe };
     seasonContextRef = seasonContext;
-  }, [context, seasonContext]);
+  }, [recipes, addRecipe, deleteRecipe, seasonContext]);
   return null;
 }
 
 function HomeWrapper() {
   return (
-    <RecipeDatabaseProvider>
-      <DefaultPersonsProvider>
-        <SeasonFilterProvider>
-          <ContextCapture />
-          <NavigationContainer>
-            <Stack.Navigator>
-              <Stack.Screen name='Home' component={Home} />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </SeasonFilterProvider>
-      </DefaultPersonsProvider>
-    </RecipeDatabaseProvider>
+    <DefaultPersonsProvider>
+      <SeasonFilterProvider>
+        <ContextCapture />
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen name='Home' component={Home} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SeasonFilterProvider>
+    </DefaultPersonsProvider>
   );
 }
 

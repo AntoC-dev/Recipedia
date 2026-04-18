@@ -5,7 +5,6 @@ import RecipeDatabase from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
 import { testRecipes } from '@test-data/recipesDataset';
-import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 
 jest.mock('@navigation/RootNavigator', () =>
   require('@mocks/navigation/RootNavigator-mock').rootNavigatorMock()
@@ -37,11 +36,7 @@ describe('AppWrapper Component', () => {
   test('shows loading state initially', () => {
     isFirstLaunch.mockImplementation(() => new Promise(() => {}));
 
-    const { queryByTestId } = render(
-      <RecipeDatabaseProvider>
-        <AppWrapper />
-      </RecipeDatabaseProvider>
-    );
+    const { queryByTestId } = render(<AppWrapper />);
 
     expect(queryByTestId('WelcomeScreen')).toBeNull();
     expect(queryByTestId('TutorialProvider')).toBeNull();
@@ -51,11 +46,7 @@ describe('AppWrapper Component', () => {
   test('shows welcome screen on first launch', async () => {
     isFirstLaunch.mockResolvedValue(true);
 
-    const { getByTestId, queryByTestId } = render(
-      <RecipeDatabaseProvider>
-        <AppWrapper />
-      </RecipeDatabaseProvider>
-    );
+    const { getByTestId, queryByTestId } = render(<AppWrapper />);
 
     await waitFor(() => {
       expect(getByTestId('WelcomeScreen')).toBeTruthy();
@@ -67,11 +58,7 @@ describe('AppWrapper Component', () => {
   test('shows main app when not first launch', async () => {
     isFirstLaunch.mockResolvedValue(false);
 
-    const { getByTestId, queryByTestId } = render(
-      <RecipeDatabaseProvider>
-        <AppWrapper />
-      </RecipeDatabaseProvider>
-    );
+    const { getByTestId, queryByTestId } = render(<AppWrapper />);
 
     await waitFor(() => {
       expect(getByTestId('RootNavigator')).toBeTruthy();
@@ -87,11 +74,7 @@ describe('AppWrapper Component', () => {
     await database.addMultipleTags(testTags);
     await database.addMultipleRecipes(testRecipes);
 
-    const { getByTestId, queryByTestId } = render(
-      <RecipeDatabaseProvider>
-        <AppWrapper />
-      </RecipeDatabaseProvider>
-    );
+    const { getByTestId, queryByTestId } = render(<AppWrapper />);
 
     await waitFor(() => {
       expect(getByTestId('WelcomeScreen')).toBeTruthy();
@@ -108,11 +91,7 @@ describe('AppWrapper Component', () => {
   test('skips to main app from welcome screen', async () => {
     isFirstLaunch.mockResolvedValue(true);
 
-    const { getByTestId, queryByTestId } = render(
-      <RecipeDatabaseProvider>
-        <AppWrapper />
-      </RecipeDatabaseProvider>
-    );
+    const { getByTestId, queryByTestId } = render(<AppWrapper />);
 
     await waitFor(() => {
       expect(getByTestId('WelcomeScreen')).toBeTruthy();
@@ -137,11 +116,7 @@ describe('AppWrapper Component', () => {
     await database.addMultipleTags(testTags);
     await database.addMultipleRecipes(testRecipes);
 
-    const { getByTestId, queryByTestId } = render(
-      <RecipeDatabaseProvider>
-        <AppWrapper />
-      </RecipeDatabaseProvider>
-    );
+    const { getByTestId, queryByTestId } = render(<AppWrapper />);
 
     await waitFor(() => {
       expect(getByTestId('WelcomeScreen')).toBeTruthy();
@@ -179,11 +154,7 @@ describe('AppWrapper Component', () => {
     await database.addMultipleTags(testTags);
     await database.addMultipleRecipes(testRecipes);
 
-    const { getByTestId, queryByTestId } = render(
-      <RecipeDatabaseProvider>
-        <AppWrapper />
-      </RecipeDatabaseProvider>
-    );
+    const { getByTestId, queryByTestId } = render(<AppWrapper />);
 
     await waitFor(() => {
       expect(getByTestId('WelcomeScreen')).toBeTruthy();
@@ -212,11 +183,7 @@ describe('AppWrapper Component', () => {
     await database.addRecipeToMenu(testRecipes[1]);
     expect(database.get_menu().length).toBeGreaterThan(0);
 
-    const { getByTestId, queryByTestId } = render(
-      <RecipeDatabaseProvider>
-        <AppWrapper />
-      </RecipeDatabaseProvider>
-    );
+    const { getByTestId, queryByTestId } = render(<AppWrapper />);
 
     await waitFor(() => {
       expect(getByTestId('WelcomeScreen')).toBeTruthy();

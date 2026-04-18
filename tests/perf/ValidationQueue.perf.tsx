@@ -1,14 +1,9 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { measureRenders } from 'reassure';
 import { ValidationQueue } from '@components/dialogs/ValidationQueue';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { performanceIngredients } from '@assets/datasets/performance/ingredients';
 import { performanceTags } from '@assets/datasets/performance/tags';
-import {
-  RecipeDatabaseContextType,
-  RecipeDatabaseProvider,
-  useRecipeDatabase,
-} from '@context/RecipeDatabaseContext';
 import { ingredientTableElement, tagTableElement } from '@customTypes/DatabaseElementTypes';
 import { IngredientWithSimilarity, TagWithSimilarity } from '@customTypes/ValidationTypes';
 
@@ -17,30 +12,17 @@ jest.mock('@react-navigation/native', () =>
 );
 jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 
-let contextRef: RecipeDatabaseContextType | null = null;
-
-function ContextCapture() {
-  const context = useRecipeDatabase();
-  useEffect(() => {
-    contextRef = context;
-  }, [context]);
-  return null;
-}
-
 function TagValidationWrapper({ items }: { items: TagWithSimilarity[] }) {
   const [validatedTags, setValidatedTags] = React.useState<tagTableElement[]>([]);
 
   return (
-    <RecipeDatabaseProvider>
-      <ContextCapture />
-      <ValidationQueue
-        testId='TagValidation'
-        type='Tag'
-        items={items}
-        onValidated={(_, tag: tagTableElement) => setValidatedTags(prev => [...prev, tag])}
-        onComplete={() => {}}
-      />
-    </RecipeDatabaseProvider>
+    <ValidationQueue
+      testId='TagValidation'
+      type='Tag'
+      items={items}
+      onValidated={(_, tag: tagTableElement) => setValidatedTags(prev => [...prev, tag])}
+      onComplete={() => {}}
+    />
   );
 }
 
@@ -50,18 +32,15 @@ function IngredientValidationWrapper({ items }: { items: IngredientWithSimilarit
   );
 
   return (
-    <RecipeDatabaseProvider>
-      <ContextCapture />
-      <ValidationQueue
-        testId='IngredientValidation'
-        type='Ingredient'
-        items={items}
-        onValidated={(_, validatedIng: ingredientTableElement) =>
-          setValidatedIngredients(prev => [...prev, validatedIng])
-        }
-        onComplete={() => {}}
-      />
-    </RecipeDatabaseProvider>
+    <ValidationQueue
+      testId='IngredientValidation'
+      type='Ingredient'
+      items={items}
+      onValidated={(_, validatedIng: ingredientTableElement) =>
+        setValidatedIngredients(prev => [...prev, validatedIng])
+      }
+      onComplete={() => {}}
+    />
   );
 }
 
@@ -69,7 +48,6 @@ describe('ValidationQueue Performance', () => {
   const database = RecipeDatabase.getInstance();
 
   beforeEach(async () => {
-    contextRef = null;
     await database.init();
     await database.addMultipleIngredients(performanceIngredients);
     await database.addMultipleTags(performanceTags);

@@ -6,7 +6,6 @@ import { testRecipes } from '@test-data/recipesDataset';
 import React from 'react';
 import { mockNavigationFunctions } from '@mocks/deps/react-navigation-mock';
 import Shopping from '@screens/Shopping';
-import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 import {
   getMockCopilotEvents,
   resetMockCopilot,
@@ -46,11 +45,7 @@ const defaultProps = {
 } as any;
 
 async function renderShoppingAndWaitForButtons() {
-  const result = render(
-    <RecipeDatabaseProvider>
-      <Shopping {...defaultProps} />
-    </RecipeDatabaseProvider>
-  );
+  const result = render(<Shopping {...defaultProps} />);
 
   const hasMenuItems = RecipeDatabase.getInstance().get_menu().length > 0;
 

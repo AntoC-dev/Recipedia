@@ -4,7 +4,6 @@ import {
   ValidationReviewList,
   ValidationReviewListProps,
 } from '@components/organisms/ValidationReviewList';
-import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { testTags } from '@test-data/tagsDataset';
 import { testIngredients } from '@test-data/ingredientsDataset';
@@ -43,11 +42,7 @@ const baseProps = {
 };
 
 function renderValidationReviewList(props: ValidationReviewListProps) {
-  return render(
-    <RecipeDatabaseProvider>
-      <ValidationReviewList {...props} />
-    </RecipeDatabaseProvider>
-  );
+  return render(<ValidationReviewList {...props} />);
 }
 
 describe('ValidationReviewList', () => {

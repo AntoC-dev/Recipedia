@@ -46,18 +46,21 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { FlatList, View } from 'react-native';
+import { FlatList, InteractionManager, View } from 'react-native';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { Button, Card, Dialog, IconButton, Portal, Text, useTheme } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
-import { tutorialLogger } from '@utils/logger';
+import { tutorialLogger, appLogger } from '@utils/logger';
 import { CustomImage } from '@components/atomic/CustomImage';
 import { Asset } from 'expo-asset';
 import { padding, screenWidth } from '@styles/spacing';
 import { IconName, Icons } from '@assets/Icons';
 import Constants from 'expo-constants';
 import { LoadingOverlay } from '@components/dialogs/LoadingOverlay';
-import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { useRecipes } from '@hooks/useRecipes';
+import { useDatabaseReady } from '@hooks/useDatabaseReady';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
+import { loadFirstLaunchDataset } from '@utils/datasetInitializer';
 
 /**
  * Props for the WelcomeScreen component
@@ -78,9 +81,36 @@ export type WelcomeScreenProps = {
 export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
   const { colors, fonts } = useTheme();
   const { t } = useI18n();
-  const { recipes, datasetLoadError, dismissDatasetLoadError } = useRecipeDatabase();
+  const { recipes } = useRecipes();
+  const isDatabaseReady = useDatabaseReady();
+  const db = RecipeDatabase.getInstance();
+  const [datasetLoadError, setDatasetLoadError] = useState<string | undefined>(undefined);
+  const dismissDatasetLoadError = () => setDatasetLoadError(undefined);
 
   const [pendingAction, setPendingAction] = useState<'tutorial' | 'skip' | null>(null);
+
+  useEffect(() => {
+    if (!isDatabaseReady) return;
+    if (!db.isDatabaseEmpty()) return;
+
+    const task = InteractionManager.runAfterInteractions(async () => {
+      try {
+        await loadFirstLaunchDataset(db);
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error
+            ? `${error.message}${error.stack ? `\n${error.stack}` : ''}`
+            : typeof error === 'object'
+              ? JSON.stringify(error, null, 2)
+              : String(error);
+        appLogger.error('Dataset loading failed - app will work without initial data', {
+          error: errorMessage,
+        });
+        setDatasetLoadError(errorMessage);
+      }
+    });
+    return () => task.cancel();
+  }, [isDatabaseReady]);
 
   const isDataLoaded = recipes.length > 0;
 

@@ -58,9 +58,9 @@ import { useI18n } from '@utils/i18n';
 import { padding, screenWidth } from '@styles/spacing';
 import { homeLogger } from '@utils/logger';
 import { useSeasonFilter } from '@context/SeasonFilterContext';
-import { useRecipes } from '@context/RecipeDataContext';
-import { useIngredients } from '@context/IngredientDataContext';
-import { useTags } from '@context/TagDataContext';
+import { useRecipes } from '@hooks/useRecipes';
+import { useIngredients } from '@hooks/useIngredients';
+import { useTags } from '@hooks/useTags';
 
 const homeId = 'Home';
 const recommandationId = homeId + '::RecipeRecommendation';

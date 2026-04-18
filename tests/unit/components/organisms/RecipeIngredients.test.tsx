@@ -5,7 +5,6 @@ import { testIngredients } from '@test-data/ingredientsDataset';
 import { testRecipes } from '@test-data/recipesDataset';
 import { testTags } from '@test-data/tagsDataset';
 import RecipeDatabase from '@utils/RecipeDatabase';
-import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 import { ingredientTableElement, ingredientType } from '@customTypes/DatabaseElementTypes';
 
 jest.mock('@components/atomic/RoundButton', () => ({
@@ -31,11 +30,7 @@ describe('RecipeIngredients Component', () => {
   ];
 
   const renderRecipeIngredients = async (props: RecipeIngredientsProps) => {
-    const result = render(
-      <RecipeDatabaseProvider>
-        <RecipeIngredients {...props} />
-      </RecipeDatabaseProvider>
-    );
+    const result = render(<RecipeIngredients {...props} />);
 
     await waitFor(() => {
       expect(result.root).toBeTruthy();
@@ -376,11 +371,7 @@ describe('RecipeIngredients Component', () => {
         getByTestId('KeyStabilityTest::1::NameInput::TextInputWithDropdown::Value').props.children
       ).toEqual('salt');
 
-      rerender(
-        <RecipeDatabaseProvider>
-          <RecipeIngredients {...props} ingredients={[ingredientB]} />
-        </RecipeDatabaseProvider>
-      );
+      rerender(<RecipeIngredients {...props} ingredients={[ingredientB]} />);
 
       await waitFor(() => {
         expect(

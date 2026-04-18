@@ -6,7 +6,6 @@ import RecipeDatabase from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
 import { testRecipes } from '@test-data/recipesDataset';
-import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 
 jest.mock('@context/DefaultPersonsContext', () =>
   require('@mocks/context/DefaultPersonsContext-mock')
@@ -28,11 +27,7 @@ const defaultProps = {
 };
 
 const renderDefaultPersonsSettings = async () => {
-  const result = render(
-    <RecipeDatabaseProvider>
-      <DefaultPersonsSettings {...(defaultProps as any)} />
-    </RecipeDatabaseProvider>
-  );
+  const result = render(<DefaultPersonsSettings {...(defaultProps as any)} />);
 
   await waitFor(() => {
     expect(result.getByTestId('DefaultPersonSettings::Slider')).toBeTruthy();

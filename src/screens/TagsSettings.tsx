@@ -40,7 +40,7 @@ import { AppBar } from '@components/organisms/AppBar';
 import { BottomActionButton } from '@components/atomic/BottomActionButton';
 import { DialogMode, ItemDialog } from '@components/dialogs/ItemDialog';
 import { tagsSettingsLogger } from '@utils/logger';
-import { useTags } from '@context/TagDataContext';
+import { useTags } from '@hooks/useTags';
 import { useI18n } from '@utils/i18n';
 import { Icons } from '@assets/Icons';
 import { padding } from '@styles/spacing';

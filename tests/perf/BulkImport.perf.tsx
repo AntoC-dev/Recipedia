@@ -6,7 +6,6 @@ import { BulkImportSettings } from '@screens/BulkImportSettings';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { performanceIngredients } from '@assets/datasets/performance/ingredients';
 import { performanceTags } from '@assets/datasets/performance/tags';
-import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 import { resetMockRouteParams, setMockRouteParams } from '@mocks/deps/react-navigation-mock';
 import {
   resetMockDiscoveryState,
@@ -71,27 +70,15 @@ function generateConvertedRecipes(count: number): ConvertedImportRecipe[] {
 }
 
 function BulkImportSettingsWrapper() {
-  return (
-    <RecipeDatabaseProvider>
-      <BulkImportSettings />
-    </RecipeDatabaseProvider>
-  );
+  return <BulkImportSettings />;
 }
 
 function BulkImportDiscoveryWrapper() {
-  return (
-    <RecipeDatabaseProvider>
-      <BulkImportDiscovery />
-    </RecipeDatabaseProvider>
-  );
+  return <BulkImportDiscovery />;
 }
 
 function BulkImportValidationWrapper() {
-  return (
-    <RecipeDatabaseProvider>
-      <BulkImportValidation />
-    </RecipeDatabaseProvider>
-  );
+  return <BulkImportValidation />;
 }
 
 describe('BulkImportSettings Performance', () => {

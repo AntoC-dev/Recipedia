@@ -6,7 +6,6 @@ import { testRecipes } from '@test-data/recipesDataset';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { testTags } from '@test-data/tagsDataset';
 import { testIngredients } from '@test-data/ingredientsDataset';
-import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 import { ingredientType, tagTableElement } from '@customTypes/DatabaseElementTypes';
 import { StackScreenParamList } from '@customTypes/ScreenTypes';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -631,11 +630,7 @@ describe('Recipe Component tests', () => {
   });
 
   const renderRecipe = async (route: RouteProp<StackScreenParamList, 'Recipe'>) => {
-    const result = render(
-      <RecipeDatabaseProvider>
-        <Recipe route={route} navigation={mockNavigation} />
-      </RecipeDatabaseProvider>
-    );
+    const result = render(<Recipe route={route} navigation={mockNavigation} />);
 
     await waitFor(() => {
       if (route.params.mode === 'edit') {

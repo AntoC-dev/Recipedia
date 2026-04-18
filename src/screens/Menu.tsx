@@ -18,7 +18,7 @@ import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { CopilotStep, walkthroughable } from 'react-native-copilot';
 import { List, Text, useTheme } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
-import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { useMenu } from '@hooks/useMenu';
 import { useSafeCopilot } from '@hooks/useSafeCopilot';
 import { MenuRecipeCard } from '@components/molecules/MenuRecipeCard';
 import { TUTORIAL_STEPS } from '@utils/Constants';
@@ -31,7 +31,7 @@ const screenId = 'MenuScreen';
 export function Menu() {
   const { t } = useI18n();
   const { colors } = useTheme();
-  const { menu, toggleMenuItemCooked, removeFromMenu } = useRecipeDatabase();
+  const { menu, toggleMenuItemCooked, removeFromMenu } = useMenu();
   const copilotData = useSafeCopilot();
   const stepOrder = TUTORIAL_STEPS.Menu.order;
 

@@ -6,12 +6,8 @@ import { performanceRecipes } from '@assets/datasets/performance/recipes';
 import { performanceIngredients } from '@assets/datasets/performance/ingredients';
 import { performanceTags } from '@assets/datasets/performance/tags';
 import { SeasonFilterProvider } from '@context/SeasonFilterContext';
-import {
-  RecipeDatabaseContextType,
-  RecipeDatabaseProvider,
-  useRecipeDatabase,
-} from '@context/RecipeDatabaseContext';
 import { DefaultPersonsProvider } from '@context/DefaultPersonsContext';
+import { useMenu } from '@hooks/useMenu';
 import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { RecipePropType, ScrapedRecipeData } from '@customTypes/RecipeNavigationTypes';
 import { RecipeScreenProp } from '@customTypes/ScreenTypes';
@@ -21,13 +17,14 @@ jest.mock('@react-navigation/native', () =>
 );
 jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 
-let contextRef: RecipeDatabaseContextType | null = null;
+type RecipePerfContext = { addRecipeToMenu: (r: recipeTableElement) => Promise<void> };
+let contextRef: RecipePerfContext | null = null;
 
 function ContextCapture() {
-  const context = useRecipeDatabase();
+  const { addRecipeToMenu } = useMenu();
   useEffect(() => {
-    contextRef = context;
-  }, [context]);
+    contextRef = { addRecipeToMenu };
+  }, [addRecipeToMenu]);
   return null;
 }
 
@@ -48,14 +45,12 @@ function createMockRoute(params: RecipePropType) {
 function RecipeWrapper({ initialParams }: { initialParams: RecipePropType }) {
   const route = createMockRoute(initialParams);
   return (
-    <RecipeDatabaseProvider>
-      <DefaultPersonsProvider>
-        <SeasonFilterProvider>
-          <ContextCapture />
-          <Recipe route={route} navigation={mockNavigation} />
-        </SeasonFilterProvider>
-      </DefaultPersonsProvider>
-    </RecipeDatabaseProvider>
+    <DefaultPersonsProvider>
+      <SeasonFilterProvider>
+        <ContextCapture />
+        <Recipe route={route} navigation={mockNavigation} />
+      </SeasonFilterProvider>
+    </DefaultPersonsProvider>
   );
 }
 

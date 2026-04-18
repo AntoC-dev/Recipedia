@@ -7,7 +7,6 @@ import {
   resetMockRouteParams,
   setMockRouteParams,
 } from '@mocks/deps/react-navigation-mock';
-import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 import { DefaultPersonsProvider } from '@context/DefaultPersonsContext';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
@@ -73,9 +72,7 @@ describe('BulkImportValidation', () => {
     setMockRouteParams({ providerId: 'hellofresh', selectedRecipes: recipes });
     return render(
       <DefaultPersonsProvider>
-        <RecipeDatabaseProvider>
-          <BulkImportValidation />
-        </RecipeDatabaseProvider>
+        <BulkImportValidation />
       </DefaultPersonsProvider>
     );
   };

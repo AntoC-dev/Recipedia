@@ -14,11 +14,13 @@ import { SeasonFilterProvider } from '@context/SeasonFilterContext';
 import { DefaultPersonsProvider, useDefaultPersons } from '@context/DefaultPersonsContext';
 import { DarkModeContext } from '@context/DarkModeContext';
 import {
-  RecipeDatabaseContextType,
-  RecipeDatabaseProvider,
-  useRecipeDatabase,
-} from '@context/RecipeDatabaseContext';
-import { ingredientType } from '@customTypes/DatabaseElementTypes';
+  ingredientType,
+  ingredientTableElement,
+  tagTableElement,
+} from '@customTypes/DatabaseElementTypes';
+import { useRecipes } from '@hooks/useRecipes';
+import { useIngredients } from '@hooks/useIngredients';
+import { useTags } from '@hooks/useTags';
 
 jest.mock('@react-navigation/native', () =>
   require('@mocks/deps/react-navigation-mock').reactNavigationMock()
@@ -27,16 +29,50 @@ jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 
 const Stack = createStackNavigator();
 
-let dbContextRef: RecipeDatabaseContextType | null = null;
+type ParametersPerfContext = {
+  ingredients: ingredientTableElement[];
+  tags: tagTableElement[];
+  addIngredient: (i: ingredientTableElement) => Promise<ingredientTableElement>;
+  editIngredient: (i: ingredientTableElement) => Promise<boolean>;
+  deleteIngredient: (i: ingredientTableElement) => Promise<boolean>;
+  addTag: (t: tagTableElement) => Promise<tagTableElement>;
+  editTag: (t: tagTableElement) => Promise<boolean>;
+  deleteTag: (t: tagTableElement) => Promise<boolean>;
+  scaleAllRecipesForNewDefaultPersons: (n: number) => Promise<void>;
+};
+let dbContextRef: ParametersPerfContext | null = null;
 let personsContextRef: ReturnType<typeof useDefaultPersons> | null = null;
 
 function ContextCapture() {
-  const dbContext = useRecipeDatabase();
+  const { scaleAllRecipesForNewDefaultPersons } = useRecipes();
+  const { ingredients, addIngredient, editIngredient, deleteIngredient } = useIngredients();
+  const { tags, addTag, editTag, deleteTag } = useTags();
   const personsContext = useDefaultPersons();
   useEffect(() => {
-    dbContextRef = dbContext;
+    dbContextRef = {
+      ingredients,
+      tags,
+      addIngredient,
+      editIngredient,
+      deleteIngredient,
+      addTag,
+      editTag,
+      deleteTag,
+      scaleAllRecipesForNewDefaultPersons,
+    };
     personsContextRef = personsContext;
-  }, [dbContext, personsContext]);
+  }, [
+    ingredients,
+    tags,
+    addIngredient,
+    editIngredient,
+    deleteIngredient,
+    addTag,
+    editTag,
+    deleteTag,
+    scaleAllRecipesForNewDefaultPersons,
+    personsContext,
+  ]);
   return null;
 }
 
@@ -45,54 +81,48 @@ function ParametersWrapper() {
   const toggleDarkMode = () => setIsDarkMode(prev => !prev);
 
   return (
-    <RecipeDatabaseProvider>
-      <DefaultPersonsProvider>
-        <SeasonFilterProvider>
-          <DarkModeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
-            <ContextCapture />
-            <NavigationContainer>
-              <Stack.Navigator>
-                <Stack.Screen name='Parameters' component={Parameters} />
-              </Stack.Navigator>
-            </NavigationContainer>
-          </DarkModeContext.Provider>
-        </SeasonFilterProvider>
-      </DefaultPersonsProvider>
-    </RecipeDatabaseProvider>
+    <DefaultPersonsProvider>
+      <SeasonFilterProvider>
+        <DarkModeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
+          <ContextCapture />
+          <NavigationContainer>
+            <Stack.Navigator>
+              <Stack.Screen name='Parameters' component={Parameters} />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </DarkModeContext.Provider>
+      </SeasonFilterProvider>
+    </DefaultPersonsProvider>
   );
 }
 
 function IngredientsSettingsWrapper() {
   return (
-    <RecipeDatabaseProvider>
-      <DefaultPersonsProvider>
-        <SeasonFilterProvider>
-          <ContextCapture />
-          <NavigationContainer>
-            <Stack.Navigator>
-              <Stack.Screen name='IngredientsSettings' component={IngredientsSettings} />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </SeasonFilterProvider>
-      </DefaultPersonsProvider>
-    </RecipeDatabaseProvider>
+    <DefaultPersonsProvider>
+      <SeasonFilterProvider>
+        <ContextCapture />
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen name='IngredientsSettings' component={IngredientsSettings} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SeasonFilterProvider>
+    </DefaultPersonsProvider>
   );
 }
 
 function TagsSettingsWrapper() {
   return (
-    <RecipeDatabaseProvider>
-      <DefaultPersonsProvider>
-        <SeasonFilterProvider>
-          <ContextCapture />
-          <NavigationContainer>
-            <Stack.Navigator>
-              <Stack.Screen name='TagsSettings' component={TagsSettings} />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </SeasonFilterProvider>
-      </DefaultPersonsProvider>
-    </RecipeDatabaseProvider>
+    <DefaultPersonsProvider>
+      <SeasonFilterProvider>
+        <ContextCapture />
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen name='TagsSettings' component={TagsSettings} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SeasonFilterProvider>
+    </DefaultPersonsProvider>
   );
 }
 
