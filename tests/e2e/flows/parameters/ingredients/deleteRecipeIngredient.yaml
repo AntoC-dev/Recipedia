@@ -9,7 +9,7 @@ appId: "com.recipedia"
     label: "Action - Search for RecipeIngredient ingredient"
 
 - assertVisible:
-    id: "IngredientsSettings::0::IngredientName"
+    id: "IngredientsSettings::28::IngredientName"
     text: "RecipeIngredient"
     label: "Assert that RecipeIngredient ingredient is visible"
 

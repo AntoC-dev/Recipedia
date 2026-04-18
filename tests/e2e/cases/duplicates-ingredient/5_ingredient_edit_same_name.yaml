@@ -14,15 +14,8 @@ tags:
       SEARCH_QUERY: "Butter"
     label: "Action - Search for butter ingredient"
 
-- waitForAnimationToEnd
-
-- assertVisible:
-    id: "IngredientsSettings::0::IngredientName"
-    text: "Butter"
-    label: "Assert - Verify Butter ingredient exists in database"
-
 - tapOn:
-    id: "IngredientsSettings::0::EditButton"
+    id: "IngredientsSettings::3::EditButton"
     label: "Action - Open edit ingredient dialog for Butter"
 
 - assertVisible:

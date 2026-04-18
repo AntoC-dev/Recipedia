@@ -24,6 +24,6 @@ tags:
     label: "Action - Search for new ingredient"
 
 - assertVisible:
-    id: "IngredientsSettings::0::IngredientName"
+    id: "IngredientsSettings::36::IngredientName"
     text: "TestIngredient"
     label: "Assert - Verify new ingredient displayed in list"

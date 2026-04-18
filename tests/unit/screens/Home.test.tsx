@@ -263,8 +263,14 @@ describe('Home Screen', () => {
     });
 
     jest.spyOn(InteractionManager, 'runAfterInteractions').mockImplementationOnce(callback => {
-      interactionPromise.then(() => callback());
-      return { cancel: jest.fn() };
+      interactionPromise.then(() => {
+        if (typeof callback === 'function') callback();
+      });
+      return {
+        then: (fn?: () => any) => Promise.resolve(fn?.()),
+        done: jest.fn(),
+        cancel: jest.fn(),
+      };
     });
 
     const { UNSAFE_getAllByType, queryByTestId } = render(

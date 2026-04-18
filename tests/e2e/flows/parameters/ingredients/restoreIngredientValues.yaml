@@ -13,7 +13,7 @@ appId: "com.recipedia"
 
 - extendedWaitUntil:
     visible:
-      id: "IngredientsSettings::0::IngredientName"
+      id: "IngredientsSettings::16::IngredientName"
       text: "Lettuce Edited"
     timeout: 5000
     label: "Wait for the ingredient to appear in the list"

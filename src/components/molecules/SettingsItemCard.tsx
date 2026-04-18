@@ -55,8 +55,6 @@ export type SettingsItem = ingredientTableElement | tagTableElement;
 export type SettingsItemCardProps<T extends SettingsItem> = {
   /** Type of item being displayed (affects rendering logic) */
   type: 'ingredient' | 'tag';
-  /** Index of the item in the list (used for test ID generation) */
-  index: number;
   /** Prefix for test ID construction */
   testIdPrefix: string;
   /** The data item to display */
@@ -75,7 +73,6 @@ export type SettingsItemCardProps<T extends SettingsItem> = {
  */
 export function SettingsItemCard<T extends SettingsItem>({
   item,
-  index,
   testIdPrefix,
   onEdit,
   onDelete,
@@ -83,14 +80,12 @@ export function SettingsItemCard<T extends SettingsItem>({
 }: SettingsItemCardProps<T>) {
   const { t } = useI18n();
 
-  const itemCardTestId = testIdPrefix + `::${index}`;
-
   return (
     <Card style={{ marginBottom: padding.medium }}>
       <Card.Content>
         {type === 'tag' && 'name' in item ? (
           <Text
-            testID={itemCardTestId + `::TagName`}
+            testID={testIdPrefix + `::TagName`}
             variant='titleLarge'
             style={{ fontWeight: 'bold' }}
           >
@@ -99,39 +94,39 @@ export function SettingsItemCard<T extends SettingsItem>({
         ) : type === 'ingredient' && 'unit' in item ? (
           <View>
             <Text
-              testID={itemCardTestId + `::IngredientName`}
+              testID={testIdPrefix + `::IngredientName`}
               variant={'titleLarge'}
               style={{ fontWeight: 'bold', marginBottom: padding.small }}
             >
               {item.name}
             </Text>
             <View style={styles.infoRow}>
-              <Text testID={itemCardTestId + '::IntroType'} style={styles.infoLabel}>
+              <Text testID={testIdPrefix + '::IntroType'} style={styles.infoLabel}>
                 {t('type')}:
               </Text>
-              <Text testID={itemCardTestId + '::Type'}>{t(item.type)}</Text>
+              <Text testID={testIdPrefix + '::Type'}>{t(item.type)}</Text>
             </View>
             <View style={styles.infoRow}>
-              <Text testID={itemCardTestId + '::IntroUnit'} style={styles.infoLabel}>
+              <Text testID={testIdPrefix + '::IntroUnit'} style={styles.infoLabel}>
                 {t('unit')}:
               </Text>
-              <Text testID={itemCardTestId + '::Unit'}>{item.unit}</Text>
+              <Text testID={testIdPrefix + '::Unit'}>{item.unit}</Text>
             </View>
             <SeasonalityCalendar
-              testID={itemCardTestId}
+              testID={testIdPrefix}
               selectedMonths={item.season}
               readOnly={true}
             />
           </View>
         ) : (
-          <Text testID={itemCardTestId + '::Unsupported'}>Unsupported item type:{type}</Text>
+          <Text testID={testIdPrefix + '::Unsupported'}>Unsupported item type:{type}</Text>
         )}
       </Card.Content>
       <Card.Actions>
-        <Button testID={itemCardTestId + `::EditButton`} onPress={() => onEdit(item)}>
+        <Button testID={testIdPrefix + `::EditButton`} onPress={() => onEdit(item)}>
           {t('edit')}
         </Button>
-        <Button testID={itemCardTestId + `::DeleteButton`} onPress={() => onDelete(item)}>
+        <Button testID={testIdPrefix + `::DeleteButton`} onPress={() => onDelete(item)}>
           {t('delete')}
         </Button>
       </Card.Actions>

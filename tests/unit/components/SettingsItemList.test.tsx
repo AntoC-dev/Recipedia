@@ -36,30 +36,23 @@ describe('SettingsItemList Component', () => {
     test('renders', () => {
       const { getByTestId } = render(<SettingsItemList {...defaultProps} />);
 
-      let index = 0;
       for (const ingredient of defaultProps.items) {
-        expect(
-          getByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::${index}::Type`).props
-            .children
-        ).toEqual('ingredient');
-        expect(
-          getByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::${index}::Item`).props
-            .children
-        ).toEqual(JSON.stringify(ingredient));
-        expect(
-          getByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::${index}::OnEdit`)
-        ).toBeTruthy();
-        expect(
-          getByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::${index}::OnDelete`)
-        ).toBeTruthy();
-        ++index;
+        const prefix = `${defaultProps.testIdPrefix}::${ingredient.id}::SettingsItemCard`;
+        expect(getByTestId(`${prefix}::Type`).props.children).toEqual('ingredient');
+        expect(getByTestId(`${prefix}::Item`).props.children).toEqual(JSON.stringify(ingredient));
+        expect(getByTestId(`${prefix}::OnEdit`)).toBeTruthy();
+        expect(getByTestId(`${prefix}::OnDelete`)).toBeTruthy();
       }
     });
 
     test('calls onEditPress when edit button is pressed', () => {
       const { getByTestId } = render(<SettingsItemList {...defaultProps} />);
 
-      fireEvent.press(getByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::0::OnEdit`));
+      fireEvent.press(
+        getByTestId(
+          `${defaultProps.testIdPrefix}::${mockIngredients[0].id}::SettingsItemCard::OnEdit`
+        )
+      );
 
       expect(mockOnEdit).toHaveBeenCalledWith(defaultProps.items[0]);
     });
@@ -67,7 +60,11 @@ describe('SettingsItemList Component', () => {
     test('calls onDeletePress when delete button is pressed', () => {
       const { getByTestId } = render(<SettingsItemList {...defaultProps} />);
 
-      fireEvent.press(getByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::0::OnDelete`));
+      fireEvent.press(
+        getByTestId(
+          `${defaultProps.testIdPrefix}::${mockIngredients[0].id}::SettingsItemCard::OnDelete`
+        )
+      );
 
       expect(mockOnDelete).toHaveBeenCalledWith(defaultProps.items[0]);
     });
@@ -81,8 +78,16 @@ describe('SettingsItemList Component', () => {
     test('shows all items when search query is empty', () => {
       const { getByTestId } = render(<SettingsItemList {...defaultProps} />);
 
-      expect(getByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::0::Item`)).toBeTruthy();
-      expect(getByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::1::Item`)).toBeTruthy();
+      expect(
+        getByTestId(
+          `${defaultProps.testIdPrefix}::${mockIngredients[0].id}::SettingsItemCard::Item`
+        )
+      ).toBeTruthy();
+      expect(
+        getByTestId(
+          `${defaultProps.testIdPrefix}::${mockIngredients[1].id}::SettingsItemCard::Item`
+        )
+      ).toBeTruthy();
     });
 
     test('filters items by name (case-insensitive)', () => {
@@ -91,9 +96,15 @@ describe('SettingsItemList Component', () => {
       fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), 'ground');
 
       expect(
-        getByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::0::Item`).props.children
+        getByTestId(
+          `${defaultProps.testIdPrefix}::${mockIngredients[0].id}::SettingsItemCard::Item`
+        ).props.children
       ).toEqual(JSON.stringify(mockIngredients[0]));
-      expect(queryByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::1::Item`)).toBeNull();
+      expect(
+        queryByTestId(
+          `${defaultProps.testIdPrefix}::${mockIngredients[1].id}::SettingsItemCard::Item`
+        )
+      ).toBeNull();
     });
 
     test('shows no items when no match', () => {
@@ -101,7 +112,11 @@ describe('SettingsItemList Component', () => {
 
       fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), 'xyz');
 
-      expect(queryByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::0::Item`)).toBeNull();
+      expect(
+        queryByTestId(
+          `${defaultProps.testIdPrefix}::${mockIngredients[0].id}::SettingsItemCard::Item`
+        )
+      ).toBeNull();
     });
 
     test('clears filter when search is cleared', () => {
@@ -110,8 +125,16 @@ describe('SettingsItemList Component', () => {
       fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), 'ground');
       fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), '');
 
-      expect(getByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::0::Item`)).toBeTruthy();
-      expect(getByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::1::Item`)).toBeTruthy();
+      expect(
+        getByTestId(
+          `${defaultProps.testIdPrefix}::${mockIngredients[0].id}::SettingsItemCard::Item`
+        )
+      ).toBeTruthy();
+      expect(
+        getByTestId(
+          `${defaultProps.testIdPrefix}::${mockIngredients[1].id}::SettingsItemCard::Item`
+        )
+      ).toBeTruthy();
     });
 
     test('filters are applied per character', () => {
@@ -120,9 +143,15 @@ describe('SettingsItemList Component', () => {
       fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), 'tac');
 
       expect(
-        getByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::0::Item`).props.children
+        getByTestId(
+          `${defaultProps.testIdPrefix}::${mockIngredients[1].id}::SettingsItemCard::Item`
+        ).props.children
       ).toEqual(JSON.stringify(mockIngredients[1]));
-      expect(queryByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::1::Item`)).toBeNull();
+      expect(
+        queryByTestId(
+          `${defaultProps.testIdPrefix}::${mockIngredients[0].id}::SettingsItemCard::Item`
+        )
+      ).toBeNull();
     });
 
     test('uses item name as key when id is missing', () => {
@@ -137,8 +166,16 @@ describe('SettingsItemList Component', () => {
 
       const { getByTestId } = render(<SettingsItemList {...props} />);
 
-      expect(getByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::0::Item`)).toBeTruthy();
-      expect(getByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::1::Item`)).toBeTruthy();
+      expect(
+        getByTestId(
+          `${defaultProps.testIdPrefix}::${noIdIngredients[0].name}::SettingsItemCard::Item`
+        )
+      ).toBeTruthy();
+      expect(
+        getByTestId(
+          `${defaultProps.testIdPrefix}::${noIdIngredients[1].name}::SettingsItemCard::Item`
+        )
+      ).toBeTruthy();
     });
   });
 
@@ -154,30 +191,21 @@ describe('SettingsItemList Component', () => {
     test('renders', () => {
       const { getByTestId } = render(<SettingsItemList {...defaultProps} />);
 
-      let index = 0;
       for (const tag of defaultProps.items) {
-        expect(
-          getByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::${index}::Type`).props
-            .children
-        ).toEqual('tag');
-        expect(
-          getByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::${index}::Item`).props
-            .children
-        ).toEqual(JSON.stringify(tag));
-        expect(
-          getByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::${index}::OnEdit`)
-        ).toBeTruthy();
-        expect(
-          getByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::${index}::OnDelete`)
-        ).toBeTruthy();
-        ++index;
+        const prefix = `${defaultProps.testIdPrefix}::${tag.id}::SettingsItemCard`;
+        expect(getByTestId(`${prefix}::Type`).props.children).toEqual('tag');
+        expect(getByTestId(`${prefix}::Item`).props.children).toEqual(JSON.stringify(tag));
+        expect(getByTestId(`${prefix}::OnEdit`)).toBeTruthy();
+        expect(getByTestId(`${prefix}::OnDelete`)).toBeTruthy();
       }
     });
 
     test('calls onEditPress when edit button is pressed', () => {
       const { getByTestId } = render(<SettingsItemList {...defaultProps} />);
 
-      fireEvent.press(getByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::0::OnEdit`));
+      fireEvent.press(
+        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[0].id}::SettingsItemCard::OnEdit`)
+      );
 
       expect(mockOnEdit).toHaveBeenCalledWith(defaultProps.items[0]);
     });
@@ -185,7 +213,9 @@ describe('SettingsItemList Component', () => {
     test('calls onDeletePress when delete button is pressed', () => {
       const { getByTestId } = render(<SettingsItemList {...defaultProps} />);
 
-      fireEvent.press(getByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::0::OnDelete`));
+      fireEvent.press(
+        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[0].id}::SettingsItemCard::OnDelete`)
+      );
 
       expect(mockOnDelete).toHaveBeenCalledWith(defaultProps.items[0]);
     });
@@ -199,9 +229,15 @@ describe('SettingsItemList Component', () => {
     test('shows all items when search query is empty', () => {
       const { getByTestId } = render(<SettingsItemList {...defaultProps} />);
 
-      expect(getByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::0::Item`)).toBeTruthy();
-      expect(getByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::1::Item`)).toBeTruthy();
-      expect(getByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::2::Item`)).toBeTruthy();
+      expect(
+        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[0].id}::SettingsItemCard::Item`)
+      ).toBeTruthy();
+      expect(
+        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[1].id}::SettingsItemCard::Item`)
+      ).toBeTruthy();
+      expect(
+        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[2].id}::SettingsItemCard::Item`)
+      ).toBeTruthy();
     });
 
     test('filters items by name (case-insensitive)', () => {
@@ -210,9 +246,12 @@ describe('SettingsItemList Component', () => {
       fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), 'soup');
 
       expect(
-        getByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::0::Item`).props.children
+        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[0].id}::SettingsItemCard::Item`).props
+          .children
       ).toEqual(JSON.stringify(mockTags[0]));
-      expect(queryByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::1::Item`)).toBeNull();
+      expect(
+        queryByTestId(`${defaultProps.testIdPrefix}::${mockTags[1].id}::SettingsItemCard::Item`)
+      ).toBeNull();
     });
 
     test('shows no items when no match', () => {
@@ -220,7 +259,9 @@ describe('SettingsItemList Component', () => {
 
       fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), 'xyz');
 
-      expect(queryByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::0::Item`)).toBeNull();
+      expect(
+        queryByTestId(`${defaultProps.testIdPrefix}::${mockTags[0].id}::SettingsItemCard::Item`)
+      ).toBeNull();
     });
 
     test('clears filter when search is cleared', () => {
@@ -229,9 +270,15 @@ describe('SettingsItemList Component', () => {
       fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), 'soup');
       fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), '');
 
-      expect(getByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::0::Item`)).toBeTruthy();
-      expect(getByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::1::Item`)).toBeTruthy();
-      expect(getByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::2::Item`)).toBeTruthy();
+      expect(
+        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[0].id}::SettingsItemCard::Item`)
+      ).toBeTruthy();
+      expect(
+        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[1].id}::SettingsItemCard::Item`)
+      ).toBeTruthy();
+      expect(
+        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[2].id}::SettingsItemCard::Item`)
+      ).toBeTruthy();
     });
 
     test('filters are applied per character', () => {
@@ -240,7 +287,8 @@ describe('SettingsItemList Component', () => {
       fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), 'ital');
 
       expect(
-        getByTestId(`${defaultProps.testIdPrefix}::SettingsItemCard::0::Item`).props.children
+        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[1].id}::SettingsItemCard::Item`).props
+          .children
       ).toEqual(JSON.stringify(mockTags[1]));
     });
   });

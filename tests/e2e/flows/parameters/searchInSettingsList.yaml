@@ -42,3 +42,10 @@ appId: "com.recipedia"
     id: "${SETTINGS_SCREEN}::SearchBar"
     text: "${SEARCH_QUERY}"
     label: "Ensure query is input correctly"
+
+- extendedWaitUntil:
+    visible:
+      id: "${SETTINGS_SCREEN}::.*"
+      text: ".*${SEARCH_QUERY}.*"
+    timeout: 10000
+    label: "Wait for searched item to be visible"

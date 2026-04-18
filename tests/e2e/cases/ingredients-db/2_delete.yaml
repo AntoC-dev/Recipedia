@@ -20,7 +20,7 @@ tags:
     label: "Action - Search the ingredient to delete"
 
 - tapOn:
-    id: "IngredientsSettings::0::DeleteButton"
+    id: "IngredientsSettings::36::DeleteButton"
     label: "Action - Open delete confirmation dialog"
 
 - runFlow:

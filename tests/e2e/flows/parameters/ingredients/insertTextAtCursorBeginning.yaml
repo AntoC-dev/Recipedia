@@ -9,7 +9,7 @@ appId: "com.recipedia"
     label: "Search for Lettuce ingredient"
 
 - tapOn:
-    id: "IngredientsSettings::0::EditButton"
+    id: "IngredientsSettings::16::EditButton"
     label: "Action - Open edit dialog for Lettuce ingredient"
 
 - extendedWaitUntil:

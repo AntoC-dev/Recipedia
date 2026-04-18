@@ -15,7 +15,7 @@ tags:
     label: "Action - Search for dessert tag"
 
 - tapOn:
-    id: "TagsSettings::0::EditButton"
+    id: "TagsSettings::2::EditButton"
     label: "Action - Open edit tag dialog for Dessert"
 
 - assertVisible:

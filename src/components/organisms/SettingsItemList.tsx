@@ -87,30 +87,27 @@ export function SettingsItemList<T extends SettingsItem>({
 
   return (
     <View style={{ height: '100%', backgroundColor: colors.background }}>
+      <Searchbar
+        testID={`${testIdPrefix}::SearchBar`}
+        mode='bar'
+        placeholder={t('search_items')}
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+        style={{
+          margin: padding.small,
+          marginBottom: padding.verySmall,
+          borderRadius: 999,
+        }}
+      />
       <FlashList
         data={filteredItems}
         keyExtractor={getSettingsItemKey}
         maintainVisibleContentPosition={{ disabled: true }}
         contentContainerStyle={{ padding: padding.small }}
-        ListHeaderComponent={
-          <Searchbar
-            testID={`${testIdPrefix}::SearchBar`}
-            mode='bar'
-            placeholder={t('search_items')}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            style={{
-              margin: padding.small,
-              marginBottom: padding.verySmall,
-              borderRadius: 999,
-            }}
-          />
-        }
-        renderItem={({ item, index }) => (
+        renderItem={({ item }) => (
           <SettingsItemCard
             item={item}
-            index={index}
-            testIdPrefix={testIdPrefix}
+            testIdPrefix={`${testIdPrefix}::${getSettingsItemKey(item)}`}
             type={type}
             onEdit={onEdit}
             onDelete={onDelete}

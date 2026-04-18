@@ -46,7 +46,7 @@ appId: "com.recipedia"
     label: "Action - Search for RecipeTag tag"
 
 - assertVisible:
-    id: "TagsSettings::0::TagName"
+    id: "TagsSettings::11::TagName"
     text: "RecipeTag"
     label: "Verify new tag appears in the list"
 

@@ -8,7 +8,7 @@ appId: "com.recipedia"
     label: "Search for Spaghetti ingredient"
 
 - assertVisible:
-    id: "IngredientsSettings::0::IngredientName"
+    id: "IngredientsSettings::32::IngredientName"
     text: "Spaghetti"
     label: "Verify Spaghetti ingredient is displayed"
 

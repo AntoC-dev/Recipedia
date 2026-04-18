@@ -25,8 +25,7 @@ describe('SettingsItemCard Component', () => {
   describe('ingredient', () => {
     const defaultProps: SettingsItemCardProps<ingredientTableElement> = {
       type: 'ingredient',
-      index: 0,
-      testIdPrefix: testIDProp,
+      testIdPrefix: `${testIDProp}::10`,
       item: testIngredients[9],
       onEdit: mockOnEdit,
       onDelete: mockOnDelete,
@@ -34,33 +33,33 @@ describe('SettingsItemCard Component', () => {
     test('renders without crashing', () => {
       const { getByTestId, queryByTestId } = render(<SettingsItemCard {...defaultProps} />);
 
-      expect(queryByTestId(`${testIDProp}::0::TagName`)).toBeNull();
-      expect(queryByTestId(`${testIDProp}::0::Unsupported`)).toBeNull();
+      expect(queryByTestId(`${testIDProp}::10::TagName`)).toBeNull();
+      expect(queryByTestId(`${testIDProp}::10::Unsupported`)).toBeNull();
 
-      expect(getByTestId(`${testIDProp}::0::IngredientName`).props.children).toEqual(
+      expect(getByTestId(`${testIDProp}::10::IngredientName`).props.children).toEqual(
         defaultProps.item.name
       );
-      expect(getByTestId(`${testIDProp}::0::IntroType`).props.children).toEqual(['type', ':']);
-      expect(getByTestId(`${testIDProp}::0::Type`).props.children).toEqual(defaultProps.item.type);
-      expect(getByTestId(`${testIDProp}::0::IntroUnit`).props.children).toEqual(['unit', ':']);
-      expect(getByTestId(`${testIDProp}::0::Unit`).props.children).toEqual(defaultProps.item.unit);
+      expect(getByTestId(`${testIDProp}::10::IntroType`).props.children).toEqual(['type', ':']);
+      expect(getByTestId(`${testIDProp}::10::Type`).props.children).toEqual(defaultProps.item.type);
+      expect(getByTestId(`${testIDProp}::10::IntroUnit`).props.children).toEqual(['unit', ':']);
+      expect(getByTestId(`${testIDProp}::10::Unit`).props.children).toEqual(defaultProps.item.unit);
 
       expect(
-        getByTestId(`${testIDProp}::0::SeasonalityCalendar::SelectedMonths`).props.children
+        getByTestId(`${testIDProp}::10::SeasonalityCalendar::SelectedMonths`).props.children
       ).toEqual(JSON.stringify(defaultProps.item.season));
-      expect(getByTestId(`${testIDProp}::0::SeasonalityCalendar::ReadOnly`).props.children).toEqual(
-        true
-      );
-      expect(getByTestId(`${testIDProp}::0::SeasonalityCalendar::OnMonthsChange`)).toBeTruthy();
+      expect(
+        getByTestId(`${testIDProp}::10::SeasonalityCalendar::ReadOnly`).props.children
+      ).toEqual(true);
+      expect(getByTestId(`${testIDProp}::10::SeasonalityCalendar::OnMonthsChange`)).toBeTruthy();
 
-      expect(getByTestId(`${testIDProp}::0::EditButton`)).toBeTruthy();
-      expect(getByTestId(`${testIDProp}::0::DeleteButton`)).toBeTruthy();
+      expect(getByTestId(`${testIDProp}::10::EditButton`)).toBeTruthy();
+      expect(getByTestId(`${testIDProp}::10::DeleteButton`)).toBeTruthy();
     });
 
     test('edit button', () => {
       const { getByTestId } = render(<SettingsItemCard {...defaultProps} />);
 
-      fireEvent.press(getByTestId(`${testIDProp}::0::EditButton`));
+      fireEvent.press(getByTestId(`${testIDProp}::10::EditButton`));
 
       expect(mockOnEdit).toHaveBeenCalledTimes(1);
       expect(mockOnEdit).toHaveBeenCalledWith(defaultProps.item);
@@ -69,7 +68,7 @@ describe('SettingsItemCard Component', () => {
     test('delete button', () => {
       const { getByTestId } = render(<SettingsItemCard {...defaultProps} />);
 
-      fireEvent.press(getByTestId(`${testIDProp}::0::DeleteButton`));
+      fireEvent.press(getByTestId(`${testIDProp}::10::DeleteButton`));
 
       expect(mockOnDelete).toHaveBeenCalledTimes(1);
       expect(mockOnDelete).toHaveBeenCalledWith(defaultProps.item);
@@ -79,8 +78,7 @@ describe('SettingsItemCard Component', () => {
   describe('tag', () => {
     const defaultProps: SettingsItemCardProps<tagTableElement> = {
       type: 'tag',
-      index: 0,
-      testIdPrefix: testIDProp,
+      testIdPrefix: `${testIDProp}::14`,
       item: testTags[13],
       onEdit: mockOnEdit,
       onDelete: mockOnDelete,
@@ -89,29 +87,29 @@ describe('SettingsItemCard Component', () => {
     test('renders', () => {
       const { getByTestId, queryByTestId } = render(<SettingsItemCard {...defaultProps} />);
 
-      expect(getByTestId(`${testIDProp}::0::TagName`).props.children).toEqual(
+      expect(getByTestId(`${testIDProp}::14::TagName`).props.children).toEqual(
         defaultProps.item.name
       );
-      expect(queryByTestId(`${testIDProp}::0::Unsupported`)).toBeNull();
+      expect(queryByTestId(`${testIDProp}::14::Unsupported`)).toBeNull();
 
-      expect(queryByTestId(`${testIDProp}::0::IngredientName`)).toBeNull();
-      expect(queryByTestId(`${testIDProp}::0::IntroType`)).toBeNull();
-      expect(queryByTestId(`${testIDProp}::0::Type`)).toBeNull();
-      expect(queryByTestId(`${testIDProp}::0::IntroUnit`)).toBeNull();
-      expect(queryByTestId(`${testIDProp}::0::Unit`)).toBeNull();
+      expect(queryByTestId(`${testIDProp}::14::IngredientName`)).toBeNull();
+      expect(queryByTestId(`${testIDProp}::14::IntroType`)).toBeNull();
+      expect(queryByTestId(`${testIDProp}::14::Type`)).toBeNull();
+      expect(queryByTestId(`${testIDProp}::14::IntroUnit`)).toBeNull();
+      expect(queryByTestId(`${testIDProp}::14::Unit`)).toBeNull();
 
-      expect(queryByTestId(`${testIDProp}::0::SeasonalityCalendar::SelectedMonths`)).toBeNull();
-      expect(queryByTestId(`${testIDProp}::0::SeasonalityCalendar::ReadOnly`)).toBeNull();
-      expect(queryByTestId(`${testIDProp}::0::SeasonalityCalendar::OnMonthsChange`)).toBeNull();
+      expect(queryByTestId(`${testIDProp}::14::SeasonalityCalendar::SelectedMonths`)).toBeNull();
+      expect(queryByTestId(`${testIDProp}::14::SeasonalityCalendar::ReadOnly`)).toBeNull();
+      expect(queryByTestId(`${testIDProp}::14::SeasonalityCalendar::OnMonthsChange`)).toBeNull();
 
-      expect(queryByTestId(`${testIDProp}::0::EditButton`)).toBeTruthy();
-      expect(queryByTestId(`${testIDProp}::0::DeleteButton`)).toBeTruthy();
+      expect(queryByTestId(`${testIDProp}::14::EditButton`)).toBeTruthy();
+      expect(queryByTestId(`${testIDProp}::14::DeleteButton`)).toBeTruthy();
     });
 
     test('edit button', () => {
       const { getByTestId } = render(<SettingsItemCard {...defaultProps} />);
 
-      fireEvent.press(getByTestId(`${testIDProp}::0::EditButton`));
+      fireEvent.press(getByTestId(`${testIDProp}::14::EditButton`));
 
       expect(mockOnEdit).toHaveBeenCalledTimes(1);
       expect(mockOnEdit).toHaveBeenCalledWith(defaultProps.item);
@@ -120,7 +118,7 @@ describe('SettingsItemCard Component', () => {
     test('delete button', () => {
       const { getByTestId } = render(<SettingsItemCard {...defaultProps} />);
 
-      fireEvent.press(getByTestId(`${testIDProp}::0::DeleteButton`));
+      fireEvent.press(getByTestId(`${testIDProp}::14::DeleteButton`));
 
       expect(mockOnDelete).toHaveBeenCalledTimes(1);
       expect(mockOnDelete).toHaveBeenCalledWith(defaultProps.item);

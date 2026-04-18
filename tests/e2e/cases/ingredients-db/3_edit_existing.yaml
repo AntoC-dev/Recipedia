@@ -17,13 +17,8 @@ tags:
       SEARCH_QUERY: "Lettuce"
     label: "Action - Search for Lettuce ingredient"
 
-- assertVisible:
-    id: "IngredientsSettings::0::IngredientName"
-    text: "Lettuce"
-    label: "Assert - Verify Lettuce ingredient exists"
-
 - tapOn:
-    id: "IngredientsSettings::0::EditButton"
+    id: "IngredientsSettings::16::EditButton"
     label: "Action - Open edit dialog for Lettuce"
 
 - tapOn:
