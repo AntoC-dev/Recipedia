@@ -1,58 +1,50 @@
 /**
- * RecipeDatabaseContext - React Context for reactive database operations
+ * RecipeDatabaseContext - Outer orchestrator for all focused database sub-contexts
  *
- * Provides a reactive wrapper around the RecipeDatabase singleton, enabling
- * automatic component re-renders when database state changes. Eliminates the
- * need for manual useFocusEffect workarounds and direct getInstance() calls.
- * Also handles database initialization and first-launch dataset loading.
+ * Owns the RecipeDatabase singleton, runs database initialization, and nests five
+ * focused sub-context providers. Each sub-context covers an isolated slice of state
+ * so that mutations only trigger re-renders in components that consume that slice.
  *
- * Key Features:
- * - Reactive state management for recipes, ingredients, tags, and shopping
- * - Automatic re-renders when database changes occur
- * - Smart update logic: edits/deletes on ingredients/tags trigger recipe refresh
- * - Database initialization and first-launch dataset loading
- * - Exposes all essential RecipeDatabase methods through hook interface
- * - Type-safe with full TypeScript support
- * - Testable with thin mock that uses real database operations
+ * Sub-contexts provided:
+ * - DatabaseMetaContext  — isDatabaseReady, scalingProgress, import history
+ * - RecipeDataContext    — recipes and recipe CRUD
+ * - IngredientDataContext — ingredients and ingredient CRUD
+ * - TagDataContext        — tags and tag CRUD
+ * - MenuDataContext       — menu, shopping list, purchase state
  *
- * Architecture:
- * - Provider wraps the app and maintains reactive state
- * - Initializes database and loads dataset on first launch
- * - Hook provides access to state and database operations
- * - All operations automatically trigger appropriate state refreshes
- * - No manual refresh functions needed
+ * Backward-compatible facade:
+ * - useRecipeDatabase() aggregates all five sub-contexts into the original flat
+ *   interface, so existing consumers continue to work without changes.
  *
- * Smart Update Logic:
- * - Add ingredient/tag: Refreshes only that collection (new items don't affect existing recipes)
- * - Edit ingredient/tag: Refreshes both collection AND recipes (existing recipes reference them)
- * - Delete ingredient/tag: Refreshes both collection AND recipes (recipes might reference them)
- * - Recipe operations: Always refresh recipes
- * - Shopping operations: Always refresh shopping list
+ * Focused hooks for new consumers:
+ * - useRecipes()      from @context/RecipeDataContext
+ * - useIngredients()  from @context/IngredientDataContext
+ * - useTags()         from @context/TagDataContext
+ * - useMenu()         from @context/MenuDataContext
+ * - useDatabaseMeta() from @context/DatabaseMetaContext
  *
- * Initialization Logic:
- * - On mount: Initialize database and load state
- * - On first launch: Load complete dataset (ingredients, tags, recipes)
- * - Scale all recipes to default persons count
- * - Create new array references for React to detect changes
+ * Cross-context update rules:
+ * - editIngredient / deleteIngredient: refreshes ingredients AND recipes
+ * - editTag / deleteTag:               refreshes tags AND recipes
+ * - deleteRecipe:                      refreshes recipes AND menu
+ * - All other mutations refresh only their own collection
  *
  * @example
  * ```typescript
- * // In App.tsx - wrap the entire app
+ * // Wrap the app (App.tsx)
  * <RecipeDatabaseProvider>
- *   <YourApp />
+ *   <AppContent />
  * </RecipeDatabaseProvider>
  *
- * // In any component - use the hook
- * function MyComponent() {
- *   const { recipes, addRecipe, editRecipe } = useRecipeDatabase();
+ * // Legacy consumers — unchanged
+ * const { recipes, addRecipe } = useRecipeDatabase();
  *
- *   // State automatically updates when database changes
- *   return <RecipeList recipes={recipes} />;
- * }
+ * // Focused consumers — only re-render on ingredient changes
+ * const { ingredients, editIngredient } = useIngredients();
  * ```
  */
 
-import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import { RecipeDatabase } from '@utils/RecipeDatabase';
 import {
@@ -77,137 +69,42 @@ import i18n, { SupportedLanguage } from '@utils/i18n';
 import { getDefaultPersons } from '@utils/settings';
 import { databaseLogger } from '@utils/logger';
 import { sumNumberInString } from '@utils/TypeCheckingFunctions';
+import {
+  DatabaseMetaContext,
+  DatabaseMetaContextType,
+  useDatabaseMeta,
+} from '@context/DatabaseMetaContext';
+import { RecipeDataContext, RecipeDataContextType, useRecipes } from '@context/RecipeDataContext';
+import {
+  IngredientDataContext,
+  IngredientDataContextType,
+  useIngredients,
+} from '@context/IngredientDataContext';
+import { TagDataContext, TagDataContextType, useTags } from '@context/TagDataContext';
+import { MenuDataContext, MenuDataContextType, useMenu } from '@context/MenuDataContext';
 
 /**
- * Type definition for the RecipeDatabase context value
+ * Backward-compatible aggregate type for the useRecipeDatabase facade.
  *
- * Provides access to reactive database state and all database operations.
- * All mutation methods automatically trigger appropriate state refreshes.
+ * Extends all five focused sub-context types. Existing consumers that destructure
+ * from useRecipeDatabase() continue to compile without changes.
  */
-export interface RecipeDatabaseContextType {
-  /** Current recipes state - reactive, triggers re-renders when changed */
-  recipes: recipeTableElement[];
-  /** Adds recipe to database and refreshes recipes state */
-  addRecipe: (recipe: recipeTableElement) => Promise<void>;
-  /** Edits recipe in database and refreshes recipes state */
-  editRecipe: (recipe: recipeTableElement) => Promise<recipeTableElement>;
-  /** Deletes recipe from database and refreshes recipes state */
-  deleteRecipe: (recipe: recipeTableElement) => Promise<boolean>;
-
-  /** Current ingredients state - reactive, triggers re-renders when changed */
-  ingredients: ingredientTableElement[];
-  /** Adds ingredient to database and refreshes ingredients state (not recipes) */
-  addIngredient: (ingredient: ingredientTableElement) => Promise<ingredientTableElement>;
-  /** Edits ingredient in database and refreshes both ingredients AND recipes state */
-  editIngredient: (ingredient: ingredientTableElement) => Promise<boolean>;
-  /** Deletes ingredient from database and refreshes both ingredients AND recipes state */
-  deleteIngredient: (ingredient: ingredientTableElement) => Promise<boolean>;
-
-  /** Current tags state - reactive, triggers re-renders when changed */
-  tags: tagTableElement[];
-  /** Adds tag to database and refreshes tags state (not recipes) */
-  addTag: (tag: tagTableElement) => Promise<tagTableElement>;
-  /** Edits tag in database and refreshes both tags AND recipes state */
-  editTag: (tag: tagTableElement) => Promise<boolean>;
-  /** Deletes tag from database and refreshes both tags AND recipes state */
-  deleteTag: (tag: tagTableElement) => Promise<boolean>;
-
-  /** Computed shopping list from menu - reactive, triggers re-renders when changed */
-  shopping: ComputedShoppingItem[];
-  /** Toggles purchase status of ingredient by name */
-  togglePurchased: (ingredientName: string) => Promise<void>;
-  /** Clears all purchased ingredient states (called when menu is cleared) */
-  clearPurchased: () => Promise<void>;
-
-  /** Current menu state - reactive, triggers re-renders when changed */
-  menu: menuTableElement[];
-  /** Adds recipe to menu (shopping list auto-computed) */
-  addRecipeToMenu: (recipe: recipeTableElement) => Promise<void>;
-  /** Toggles cooked status of menu item (shopping list auto-computed) */
-  toggleMenuItemCooked: (menuId: number) => Promise<boolean>;
-  /** Removes item from menu (shopping list auto-computed) */
-  removeFromMenu: (menuId: number) => Promise<boolean>;
-  /** Clears entire menu and purchased states */
-  clearMenu: () => Promise<void>;
-  /** Checks if recipe is in menu */
-  isRecipeInMenu: (recipeId: number) => boolean;
-
-  /** Finds recipes similar to the given recipe using fuzzy matching */
-  findSimilarRecipes: (recipe: recipeTableElement) => recipeTableElement[];
-  /** Finds ingredients similar to the given name using fuzzy matching */
-  findSimilarIngredients: (ingredientName: string) => ingredientTableElement[];
-  /** Finds tags similar to the given name using fuzzy matching */
-  findSimilarTags: (tagName: string) => tagTableElement[];
-
-  /** Returns random ingredients of specified type */
-  getRandomIngredients: (type: ingredientType, count: number) => ingredientTableElement[];
-  /** Returns random tags */
-  getRandomTags: (count: number) => tagTableElement[];
-  /** Returns random tags (legacy method) */
-  searchRandomlyTags: (count: number) => tagTableElement[];
-
-  /** Scales all recipes to new default persons count and refreshes recipes state */
-  scaleAllRecipesForNewDefaultPersons: (newDefaultPersons: number) => Promise<void>;
-
-  /** Checks if database is empty (for first launch detection) */
-  isDatabaseEmpty: () => boolean;
-  /** Adds multiple ingredients to database and refreshes ingredients state */
-  addMultipleIngredients: (ingredients: ingredientTableElement[]) => Promise<void>;
-  /** Adds multiple tags to database and refreshes tags state */
-  addMultipleTags: (tags: tagTableElement[]) => Promise<void>;
-  /** Adds multiple recipes to database and refreshes recipes state */
-  addMultipleRecipes: (recipes: recipeTableElement[]) => Promise<void>;
-
-  /** Indicates whether database data is loaded and ready to use */
-  isDatabaseReady: boolean;
-  /** Current progress of recipe scaling operation (0-100), undefined if not scaling */
-  scalingProgress: number | undefined;
-  /** Dataset loading error - app is usable but initial recipes won't be loaded */
-  datasetLoadError: string | undefined;
-  /** Dismisses the dataset load error notification */
-  dismissDatasetLoadError: () => void;
-
-  /** Gets URLs that have been imported from a specific provider */
-  getImportedSourceUrls: (providerId: string) => Set<string>;
-  /** Gets URLs that have been seen (but not imported) from a specific provider */
-  getSeenUrls: (providerId: string) => Set<string>;
-  /** Marks URLs as seen for a specific provider */
-  markUrlsAsSeen: (providerId: string, urls: string[]) => Promise<void>;
-  /** Removes URLs from seen history for a specific provider */
-  removeFromSeenHistory: (providerId: string, urls: string[]) => Promise<void>;
-}
-
-const RecipeDatabaseContext = createContext<RecipeDatabaseContextType | undefined>(undefined);
+export interface RecipeDatabaseContextType
+  extends
+    DatabaseMetaContextType,
+    RecipeDataContextType,
+    IngredientDataContextType,
+    TagDataContextType,
+    MenuDataContextType {}
 
 /**
- * RecipeDatabaseProvider - Context provider for reactive database access
+ * RecipeDatabaseProvider - Outer orchestrator that owns state and nests focused sub-contexts
  *
- * Wraps the application (or part of it) to provide reactive database state
- * and operations to all child components. Should be placed near the root of
- * the component tree, after DarkModeProvider but before NavigationContainer.
+ * Must be placed near the root of the component tree, before any component that
+ * calls useRecipeDatabase(), useRecipes(), useIngredients(), useTags(), useMenu(),
+ * or useDatabaseMeta().
  *
- * Responsibilities:
- * - Initializes reactive state from RecipeDatabase singleton
- * - Wraps all database methods with state refresh logic
- * - Provides context value to all child components via useRecipeDatabase hook
- *
- * @param children - Child components that will have access to the database context
- *
- * @example
- * ```typescript
- * // In App.tsx
- * <RecipeDatabaseProvider>
- *   <DefaultPersonsProvider>
- *     <SeasonFilterProvider>
- *       <DarkModeContext.Provider value={{...}}>
- *         <NavigationContainer>
- *           <AppWrapper />
- *         </NavigationContainer>
- *       </DarkModeContext.Provider>
- *     </SeasonFilterProvider>
- *   </DefaultPersonsProvider>
- * </RecipeDatabaseProvider>
- * ```
+ * @param children - Child components with access to all database sub-contexts
  */
 export const RecipeDatabaseProvider: React.FC<{
   children: ReactNode;
@@ -220,7 +117,6 @@ export const RecipeDatabaseProvider: React.FC<{
   const [menu, setMenu] = useState<menuTableElement[]>([]);
   const [purchasedIngredients, setPurchasedIngredients] = useState<Map<string, boolean>>(new Map());
   const [isDatabaseReady, setIsDatabaseReady] = useState(false);
-
   const [scalingProgress, setScalingProgress] = useState<number | undefined>(undefined);
   const [datasetLoadError, setDatasetLoadError] = useState<string | undefined>(undefined);
 
@@ -400,7 +296,7 @@ export const RecipeDatabaseProvider: React.FC<{
     }
   }
 
-  const shopping: ComputedShoppingItem[] = Array.from(shoppingIngredientMap.values());
+  const shopping = Array.from(shoppingIngredientMap.values());
 
   const addRecipe = async (recipe: recipeTableElement): Promise<void> => {
     databaseLogger.debug('Context: addRecipe', { recipeTitle: recipe.title });
@@ -649,103 +545,101 @@ export const RecipeDatabaseProvider: React.FC<{
     await db.removeFromSeenHistory(providerId, urls);
   };
 
-  const contextValue: RecipeDatabaseContextType = {
-    recipes,
-    addRecipe,
-    editRecipe,
-    deleteRecipe,
-    ingredients,
-    addIngredient,
-    editIngredient,
-    deleteIngredient,
-    tags,
-    addTag,
-    editTag,
-    deleteTag,
-    shopping,
-    togglePurchased,
-    clearPurchased,
-    menu,
-    addRecipeToMenu,
-    toggleMenuItemCooked,
-    removeFromMenu,
-    clearMenu,
-    isRecipeInMenu,
-    findSimilarRecipes,
-    findSimilarIngredients,
-    findSimilarTags,
-    getRandomIngredients,
-    getRandomTags,
-    searchRandomlyTags,
-    scaleAllRecipesForNewDefaultPersons,
-    isDatabaseEmpty,
-    addMultipleIngredients,
-    addMultipleTags,
-    addMultipleRecipes,
+  const metaContextValue: DatabaseMetaContextType = {
     isDatabaseReady,
     scalingProgress,
     datasetLoadError,
     dismissDatasetLoadError,
+    isDatabaseEmpty,
     getImportedSourceUrls,
     getSeenUrls,
     markUrlsAsSeen,
     removeFromSeenHistory,
   };
 
+  const recipeContextValue: RecipeDataContextType = {
+    recipes,
+    addRecipe,
+    editRecipe,
+    deleteRecipe,
+    findSimilarRecipes,
+    scaleAllRecipesForNewDefaultPersons,
+    addMultipleRecipes,
+  };
+
+  const ingredientContextValue: IngredientDataContextType = {
+    ingredients,
+    addIngredient,
+    editIngredient,
+    deleteIngredient,
+    findSimilarIngredients,
+    getRandomIngredients,
+    addMultipleIngredients,
+  };
+
+  const tagContextValue: TagDataContextType = {
+    tags,
+    addTag,
+    editTag,
+    deleteTag,
+    findSimilarTags,
+    getRandomTags,
+    searchRandomlyTags,
+    addMultipleTags,
+  };
+
+  const menuContextValue: MenuDataContextType = {
+    menu,
+    shopping,
+    addRecipeToMenu,
+    toggleMenuItemCooked,
+    removeFromMenu,
+    clearMenu,
+    isRecipeInMenu,
+    togglePurchased,
+    clearPurchased,
+  };
+
   return (
-    <RecipeDatabaseContext.Provider value={contextValue}>{children}</RecipeDatabaseContext.Provider>
+    <DatabaseMetaContext.Provider value={metaContextValue}>
+      <RecipeDataContext.Provider value={recipeContextValue}>
+        <IngredientDataContext.Provider value={ingredientContextValue}>
+          <TagDataContext.Provider value={tagContextValue}>
+            <MenuDataContext.Provider value={menuContextValue}>{children}</MenuDataContext.Provider>
+          </TagDataContext.Provider>
+        </IngredientDataContext.Provider>
+      </RecipeDataContext.Provider>
+    </DatabaseMetaContext.Provider>
   );
 };
 
 /**
- * useRecipeDatabase - React hook for accessing reactive database state and operations
+ * useRecipeDatabase - Backward-compatible facade aggregating all database sub-contexts
  *
- * Provides access to reactive database state and all database operations.
- * Components using this hook will automatically re-render when database state changes.
+ * Returns the full RecipeDatabaseContextType by merging all five focused sub-contexts.
+ * Existing consumers can continue to use this hook without changes. For new consumers
+ * that only need a single slice, prefer the focused hooks to minimize re-renders:
+ * - useRecipes()      from @context/RecipeDataContext
+ * - useIngredients()  from @context/IngredientDataContext
+ * - useTags()         from @context/TagDataContext
+ * - useMenu()         from @context/MenuDataContext
+ * - useDatabaseMeta() from @context/DatabaseMetaContext
  *
- * Must be used within a RecipeDatabaseProvider component tree.
- *
- * @returns RecipeDatabaseContextType object containing:
- *   - Reactive state: recipes, ingredients, tags, shopping (direct state access)
- *   - CRUD operations: add*, edit*, delete* for recipes/ingredients/tags
- *   - Shopping operations: addRecipeToShopping, purchaseIngredientInShoppingList, clearShoppingList
- *   - Utility functions: findSimilar*, getRandom*, scaleAllRecipesForNewDefaultPersons
- *
+ * @returns RecipeDatabaseContextType — the aggregate of all sub-contexts
  * @throws Error if used outside RecipeDatabaseProvider
- *
- * @example
- * ```typescript
- * function RecipeList() {
- *   const { recipes, addRecipe, deleteRecipe } = useRecipeDatabase();
- *
- *   // Component automatically re-renders when recipes state changes
- *   return (
- *     <FlatList
- *       data={recipes}
- *       renderItem={({item}) => <RecipeCard recipe={item} />}
- *     />
- *   );
- * }
- * ```
- *
- * @example
- * ```typescript
- * function AddRecipeButton() {
- *   const { addRecipe } = useRecipeDatabase();
- *
- *   const handleAdd = async () => {
- *     await addRecipe(newRecipe);
- *     // All components using useRecipeDatabase will automatically update
- *   };
- *
- *   return <Button onPress={handleAdd}>Add Recipe</Button>;
- * }
- * ```
  */
 export const useRecipeDatabase = (): RecipeDatabaseContextType => {
-  const context = useContext(RecipeDatabaseContext);
-  if (context === undefined) {
-    throw new Error('useRecipeDatabase must be used within a RecipeDatabaseProvider');
-  }
-  return context;
+  const metaCtx = useDatabaseMeta();
+  const recipeCtx = useRecipes();
+  const ingredientCtx = useIngredients();
+  const tagCtx = useTags();
+  const menuCtx = useMenu();
+
+  return {
+    ...metaCtx,
+    ...recipeCtx,
+    ...ingredientCtx,
+    ...tagCtx,
+    ...menuCtx,
+  };
 };
