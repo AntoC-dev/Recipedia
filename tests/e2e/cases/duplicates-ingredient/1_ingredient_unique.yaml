@@ -269,7 +269,7 @@ tags:
     file: "../../asserts/parameters/ingredients/ingredientInSettings.yaml"
     env:
       INGREDIENT_NAME: "AUniqueIngredient"
-      INGREDIENT_INDEX: "0"
+      INGREDIENT_INDEX: "40"
       INGREDIENT_TYPE: "Fish"
       INGREDIENT_UNIT: "MyUnit"
       INGREDIENT_MONTH_NUMBER: "2"

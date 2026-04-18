@@ -46,7 +46,7 @@ appId: "com.recipedia"
     label: "Action - Search for RecipeTag tag"
 
 - assertVisible:
-    id: "TagsSettings::11::TagName"
+    id: "TagsSettings::.*::TagName"
     text: "RecipeTag"
     label: "Verify new tag appears in the list"
 
@@ -56,6 +56,6 @@ appId: "com.recipedia"
 
 - extendedWaitUntil:
     visible:
-      id: "TagsSettings::1::TagName"
+      id: "TagsSettings::5::TagName"
     timeout: 60000
     label: "Wait for list to show all items"

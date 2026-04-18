@@ -15,7 +15,7 @@ tags:
     label: "Action - Search for butter ingredient"
 
 - tapOn:
-    id: "IngredientsSettings::3::EditButton"
+    id: "IngredientsSettings::12::EditButton"
     label: "Action - Open edit ingredient dialog for Butter"
 
 - assertVisible:

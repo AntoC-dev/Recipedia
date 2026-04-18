@@ -9,7 +9,7 @@ appId: "com.recipedia"
     label: "Search for Italian tag"
 
 - tapOn:
-    id: "TagsSettings::6::EditButton"
+    id: "TagsSettings::1::EditButton"
     label: "Action - Open edit dialog for Italian tag"
 
 - extendedWaitUntil:

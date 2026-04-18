@@ -60,6 +60,6 @@ appId: "com.recipedia"
 
 - extendedWaitUntil:
     visible:
-      id: "IngredientsSettings::1::IngredientName"
+      id: "IngredientsSettings::27::IngredientName"
     timeout: 60000
     label: "Wait for list to show all items"

@@ -18,12 +18,12 @@ tags:
     label: "Action - Search for Italian tag"
 
 - assertVisible:
-    id: "TagsSettings::6::TagName"
+    id: "TagsSettings::1::TagName"
     text: "Italian"
     label: "Assert - Verify Italian tag exists"
 
 - tapOn:
-    id: "TagsSettings::0::EditButton"
+    id: "TagsSettings::1::EditButton"
     label: "Action - Open edit dialog for Italian tag"
 
 - extendedWaitUntil:
@@ -81,12 +81,12 @@ tags:
     label: "Action - Save edited tag"
 
 - assertNotVisible:
-    id: "TagsSettings::0::TagName"
+    id: "TagsSettings::1::TagName"
     text: "Italian"
     label: "Assert - Verify old tag name no longer exists"
 
 - assertVisible:
-    id: "TagsSettings::0::TagName"
+    id: "TagsSettings::1::TagName"
     text: "Italian Cuisine"
     label: "Assert - Verify tag renamed to Italian Cuisine"
 

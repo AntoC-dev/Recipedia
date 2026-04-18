@@ -8,12 +8,12 @@ appId: "com.recipedia"
     label: "Search for Spaghetti ingredient"
 
 - assertVisible:
-    id: "IngredientsSettings::32::IngredientName"
+    id: "IngredientsSettings::1::IngredientName"
     text: "Spaghetti"
     label: "Verify Spaghetti ingredient is displayed"
 
 - tapOn:
-    id: "IngredientsSettings::0::DeleteButton"
+    id: "IngredientsSettings::1::DeleteButton"
     label: "Open Delete dialog for Spaghetti ingredient"
 
 - runFlow:
@@ -25,7 +25,7 @@ appId: "com.recipedia"
     label: "Cancel delete operation"
 
 - assertVisible:
-    id: "IngredientsSettings::0::IngredientName"
+    id: "IngredientsSettings::1::IngredientName"
     text: "Spaghetti"
     label: "Verify ingredient still exists after cancel delete"
 
@@ -35,6 +35,6 @@ appId: "com.recipedia"
 
 - extendedWaitUntil:
     visible:
-      id: "IngredientsSettings::1::IngredientName"
+      id: "IngredientsSettings::27::IngredientName"
     timeout: 60000
     label: "Wait for list to show all items"

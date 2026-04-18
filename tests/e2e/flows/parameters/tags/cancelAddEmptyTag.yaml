@@ -16,11 +16,10 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "TagsSettings::0::EditButton"
+        id: "TagsSettings::5::TagName"
     direction: UP
     speed: 80
     timeout: 120000
-    centerElement: true
     label: "Scroll up to top of Tags Settings screen"
 
 - waitForAnimationToEnd

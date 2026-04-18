@@ -9,7 +9,7 @@ appId: "com.recipedia"
     label: "Search for Spaghetti ingredient"
 
 - tapOn:
-    id: "IngredientsSettings::32::EditButton"
+    id: "IngredientsSettings::1::EditButton"
     label: "Open Edit dialog for Spaghetti ingredient"
 
 - tapOn:
@@ -60,6 +60,6 @@ appId: "com.recipedia"
 
 - extendedWaitUntil:
     visible:
-      id: "IngredientsSettings::1::IngredientName"
+      id: "IngredientsSettings::27::IngredientName"
     timeout: 60000
     label: "Wait for list to show all items"

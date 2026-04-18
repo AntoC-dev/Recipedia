@@ -97,7 +97,7 @@ appId: "com.recipedia"
 
 - extendedWaitUntil:
     visible:
-      id: "IngredientsSettings::0::.*"
+      id: "IngredientsSettings::1::.*"
     timeout: 5000
     label: "Wait for Ingredients list"
     optional: true
@@ -120,7 +120,7 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "IngredientsSettings::0::IngredientName"
+      id: "IngredientsSettings::1::IngredientName"
     direction: UP
     speed: 95
     label: "Scroll back to top"
@@ -146,7 +146,7 @@ appId: "com.recipedia"
 
 - extendedWaitUntil:
     visible:
-      id: "TagsSettings::0::.*"
+      id: "TagsSettings::1::.*"
     timeout: 5000
     label: "Wait for Tags list"
     optional: true
@@ -169,7 +169,7 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "TagsSettings::0::TagName"
+      id: "TagsSettings::1::TagName"
     direction: UP
     speed: 95
     label: "Scroll back to top"

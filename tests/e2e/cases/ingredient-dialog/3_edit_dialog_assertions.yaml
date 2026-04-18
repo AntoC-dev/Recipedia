@@ -18,7 +18,7 @@ tags:
     label: "Action - Search for Lettuce ingredient"
 
 - tapOn:
-    id: "IngredientsSettings::28::EditButton"
+    id: "IngredientsSettings::7::EditButton"
     label: "Action - Open edit dialog for Lettuce"
 
 - runFlow:

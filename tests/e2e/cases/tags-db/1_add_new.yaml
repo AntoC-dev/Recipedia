@@ -24,6 +24,6 @@ tags:
     label: "Action - Search for new tag"
 
 - assertVisible:
-    id: "TagsSettings::15::TagName"
+    id: "TagsSettings::.*::TagName"
     text: "TestTag"
     label: "Assert - Verify new tag displayed in list"

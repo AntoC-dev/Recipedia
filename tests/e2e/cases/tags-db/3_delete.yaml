@@ -22,7 +22,7 @@ tags:
     label: "Action - Search for TestTag"
 
 - tapOn:
-    id: "TagsSettings::15::DeleteButton"
+    id: "TagsSettings::.*::DeleteButton"
     label: "Action - Open delete confirmation dialog"
 
 - runFlow:
