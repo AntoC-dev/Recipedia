@@ -10,6 +10,11 @@ import {
 import { mockInitSettings, mockGetDarkMode } from '@mocks/utils/settings-mock';
 import { mockIsFirstLaunch } from '@mocks/utils/firstLaunch-mock';
 import { mockHideAsync } from '@mocks/deps/expo-splash-screen-mock';
+import { cleanupOrphanedImages } from '@utils/FileGestion';
+import RecipeDatabase from '@utils/RecipeDatabase';
+import { testRecipes } from '@test-data/recipesDataset';
+import { testIngredients } from '@test-data/ingredientsDataset';
+import { testTags } from '@test-data/tagsDataset';
 
 import App from '../../App';
 
@@ -33,13 +38,24 @@ jest.mock('@components/organisms/AppWrapper', () =>
 jest.mock('@styles/typography', () => require('@mocks/styles/typography-mock').typographyMock());
 
 describe('App', () => {
-  beforeEach(() => {
+  let database: RecipeDatabase;
+
+  beforeEach(async () => {
     jest.clearAllMocks();
     resetRecipeScraperMocks();
     mockInitSettings.mockResolvedValue(undefined);
     mockGetDarkMode.mockResolvedValue(false);
     mockIsFirstLaunch.mockResolvedValue(false);
     mockHideAsync.mockResolvedValue(undefined);
+    database = RecipeDatabase.getInstance();
+    await database.init();
+    await database.addMultipleIngredients(testIngredients);
+    await database.addMultipleTags(testTags);
+    await database.addMultipleRecipes(testRecipes);
+  });
+
+  afterEach(async () => {
+    await database.closeAndReset();
   });
 
   describe('initialization', () => {
@@ -93,6 +109,34 @@ describe('App', () => {
 
     it('shows app content after settings are loaded', async () => {
       mockWaitForReadySuccess(true);
+
+      const { getByTestId } = render(<App />);
+
+      await waitFor(() => {
+        expect(getByTestId('app-wrapper')).toBeTruthy();
+      });
+    });
+  });
+
+  describe('startup orphan image cleanup', () => {
+    it('calls cleanupOrphanedImages once on startup', async () => {
+      render(<App />);
+
+      await waitFor(() => expect(cleanupOrphanedImages).toHaveBeenCalledTimes(1));
+    });
+
+    it('passes all recipe image URIs to cleanupOrphanedImages', async () => {
+      render(<App />);
+
+      await waitFor(() =>
+        expect(cleanupOrphanedImages).toHaveBeenCalledWith(
+          expect.arrayContaining(testRecipes.map(r => r.image_Source))
+        )
+      );
+    });
+
+    it('app remains functional when cleanupOrphanedImages rejects', async () => {
+      (cleanupOrphanedImages as jest.Mock).mockRejectedValueOnce(new Error('cleanup failed'));
 
       const { getByTestId } = render(<App />);
 
