@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import {Platform} from 'react-native';
+import {InteractionManager, Platform} from 'react-native';
 import {PaperProvider} from 'react-native-paper';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {darkTheme, lightTheme} from '@styles/theme';
@@ -11,13 +11,16 @@ import {useFetchFonts} from '@styles/typography';
 import {DarkModeContext} from '@context/DarkModeContext';
 import {SeasonFilterProvider} from '@context/SeasonFilterContext';
 import {DefaultPersonsProvider} from '@context/DefaultPersonsContext';
-import {RecipeDatabaseProvider, useRecipeDatabase} from '@context/RecipeDatabaseContext';
 import {appLogger} from '@utils/logger';
 import {isFirstLaunch} from '@utils/firstLaunch';
 import {recipeScraper} from '@app/modules/recipe-scraper';
 import {PyodideWebView} from '@app/modules/recipe-scraper/src/ios/PyodideWebView';
 import {AuthWebView} from '@app/modules/recipe-scraper/src/ios/AuthWebView';
 import {AuthBridge} from '@app/modules/recipe-scraper/src/ios/AuthBridge';
+import {useDatabaseReady} from '@hooks/useDatabaseReady';
+import {RecipeDatabase} from '@utils/RecipeDatabase';
+import {cleanupOrphanedImages, init as initFileSystem} from '@utils/FileGestion';
+import {loadFirstLaunchDataset} from '@utils/datasetInitializer';
 
 // TODO manage horizontal mode
 
@@ -37,7 +40,45 @@ function AppContent() {
     const [isAppInitialized, setIsAppInitialized] = useState(false);
     const [darkMode, setDarkMode] = useState(false);
     const [isFirstLaunchFlag, setIsFirstLaunchFlag] = useState<boolean | null>(null);
-    const {isDatabaseReady} = useRecipeDatabase();
+    const isDatabaseReady = useDatabaseReady();
+
+    useEffect(() => {
+        const initDatabase = async () => {
+            try {
+                initFileSystem();
+                const db = RecipeDatabase.getInstance();
+                await db.init();
+                const isFirst = await isFirstLaunch();
+                if (isFirst && db.isDatabaseEmpty()) {
+                    appLogger.info('First launch detected - loading complete dataset');
+                    InteractionManager.runAfterInteractions(async () => {
+                        try {
+                            await loadFirstLaunchDataset(db);
+                        } catch (error) {
+                            const errorMessage =
+                                error instanceof Error
+                                    ? `${error.message}${error.stack ? `\n${error.stack}` : ''}`
+                                    : typeof error === 'object'
+                                        ? JSON.stringify(error, null, 2)
+                                        : String(error);
+                            appLogger.error('Dataset loading failed - app will work without initial data', {
+                                error: errorMessage,
+                            });
+                        }
+                    });
+                } else {
+                    InteractionManager.runAfterInteractions(() => {
+                        cleanupOrphanedImages(db.get_recipes().map(r => r.image_Source)).catch(
+                            error => appLogger.warn('Orphan image cleanup failed', {error})
+                        );
+                    });
+                }
+            } catch (error) {
+                appLogger.error('Database initialization failed', {error});
+            }
+        };
+        initDatabase();
+    }, []);
 
     useEffect(() => {
         const initialize = async () => {
@@ -136,11 +177,11 @@ export function App() {
     }, []);
 
     return (
-        <RecipeDatabaseProvider>
+        <>
             <AppContent/>
             {Platform.OS === 'ios' && <PyodideWebView />}
             {Platform.OS === 'ios' && authLoginUrl !== null && <AuthWebView loginUrl={authLoginUrl} />}
-        </RecipeDatabaseProvider>
+        </>
     );
 }
 
