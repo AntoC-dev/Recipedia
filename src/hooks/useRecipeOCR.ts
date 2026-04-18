@@ -20,7 +20,8 @@ import {
   validateAndQueueIngredients,
   validateAndQueueTags,
 } from '@utils/RecipeValidationHelpers';
-import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { useTags } from '@hooks/useTags';
+import { useIngredients } from '@hooks/useIngredients';
 import { defaultValueNumber } from '@utils/Constants';
 import { ocrLogger } from '@utils/logger';
 import { useRecipeDialogs } from '@context/RecipeDialogsContext';
@@ -86,7 +87,8 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
   const { state, setters } = useRecipeForm();
   const { addTagIfNotDuplicate } = useRecipeTags();
   const { addOrMergeIngredient } = useRecipeIngredients();
-  const { findSimilarTags, findSimilarIngredients } = useRecipeDatabase();
+  const { findSimilarTags } = useTags();
+  const { findSimilarIngredients } = useIngredients();
 
   const { recipePreparation, recipePersons, recipeTags, recipeIngredients } = state;
   const {

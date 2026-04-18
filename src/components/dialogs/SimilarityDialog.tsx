@@ -62,7 +62,8 @@ import { ingredientTableElement, tagTableElement } from '@customTypes/DatabaseEl
 import { DialogMode, ItemDialog } from './ItemDialog';
 import { DatabasePickerDialog } from './DatabasePickerDialog';
 import { ConfirmationDialog } from './ConfirmationDialog';
-import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { useTags } from '@hooks/useTags';
+import { useIngredients } from '@hooks/useIngredients';
 import { padding } from '@styles/spacing';
 
 /** Configuration for tag similarity resolution */
@@ -125,7 +126,8 @@ const styles = StyleSheet.create({
  */
 export function SimilarityDialog({ testId, isVisible, onClose, item }: SimilarityDialogProps) {
   const { t } = useI18n();
-  const { addIngredient, addTag, ingredients, tags } = useRecipeDatabase();
+  const { addTag, tags } = useTags();
+  const { addIngredient, ingredients } = useIngredients();
   const [showItemDialog, setShowItemDialog] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
   const [pickedItem, setPickedItem] = useState<ingredientTableElement | tagTableElement | null>(

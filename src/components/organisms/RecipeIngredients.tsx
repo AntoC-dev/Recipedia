@@ -44,7 +44,7 @@ import { DataTable, IconButton, Text, useTheme } from 'react-native-paper';
 import { FormIngredientElement, ingredientTableElement } from '@customTypes/DatabaseElementTypes';
 import { RoundButton } from '@components/atomic/RoundButton';
 import { Icons } from '@assets/Icons';
-import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { useIngredients } from '@hooks/useIngredients';
 import { NumericTextInput } from '@components/atomic/NumericTextInput';
 import { TextInputWithDropDown } from '@components/molecules/TextInputWithDropDown';
 import { NoteEditDialog } from '@components/dialogs/NoteEditDialog';
@@ -240,7 +240,7 @@ function EditableIngredients(props: EditableIngredientsProps) {
     noteInputPlaceholder,
     hideDropdown,
   } = props;
-  const { ingredients: dbIngredients } = useRecipeDatabase();
+  const { ingredients: dbIngredients } = useIngredients();
   const { colors, fonts } = useTheme();
   const [noteDialogIndex, setNoteDialogIndex] = useState<number | null>(null);
 

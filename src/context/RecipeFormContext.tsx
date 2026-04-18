@@ -36,7 +36,7 @@ import {
   hasRecipeFromProps,
   hasScrapedDataFromProps,
 } from '@utils/RecipeFormHelpers';
-import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { useTags } from '@hooks/useTags';
 
 /**
  * Recipe form state containing all recipe field values
@@ -110,7 +110,7 @@ export interface RecipeFormProviderProps {
  * across all hooks within the screen.
  */
 export function RecipeFormProvider({ props, children }: RecipeFormProviderProps) {
-  const { searchRandomlyTags } = useRecipeDatabase();
+  const { searchRandomlyTags } = useTags();
   const initStateFromProp = hasRecipeFromProps(props);
   const initStateFromScrape = hasScrapedDataFromProps(props);
 

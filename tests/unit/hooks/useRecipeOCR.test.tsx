@@ -25,23 +25,26 @@ const mockFindSimilarTags = jest.fn();
 const mockAddIngredient = jest.fn();
 const mockAddTag = jest.fn();
 
-jest.mock('@context/RecipeDatabaseContext', () => {
+jest.mock('@hooks/useTags', () => {
   const { testTags: mockTags } = require('@data/tagsDataset');
+  return {
+    useTags: () => ({
+      tags: mockTags,
+      findSimilarTags: mockFindSimilarTags,
+      addTag: mockAddTag,
+      searchRandomlyTags: jest.fn(() => []),
+    }),
+  };
+});
+
+jest.mock('@hooks/useIngredients', () => {
   const { testIngredients: mockIngredients } = require('@data/ingredientsDataset');
   return {
-    useRecipeDatabase: () => ({
+    useIngredients: () => ({
       ingredients: mockIngredients,
-      tags: mockTags,
-      recipes: [],
       findSimilarIngredients: mockFindSimilarIngredients,
-      findSimilarTags: mockFindSimilarTags,
       addIngredient: mockAddIngredient,
-      addTag: mockAddTag,
-      isDatabaseReady: true,
-      searchRandomlyTags: jest.fn(() => []),
-      getRandomTags: jest.fn(() => []),
     }),
-    RecipeDatabaseProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   };
 });
 

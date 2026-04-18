@@ -52,7 +52,7 @@ import { RoundButton } from '@components/atomic/RoundButton';
 import { Icons } from '@assets/Icons';
 import { HorizontalList } from '@components/molecules/HorizontalList';
 import { TextInputWithDropDown } from '@components/molecules/TextInputWithDropDown';
-import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { useTags } from '@hooks/useTags';
 import { recipeTagsStyles } from '@styles/recipeComponents';
 import { Text, useTheme } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
@@ -94,7 +94,7 @@ export type RecipeTagProps = {
  * @returns JSX element representing a tag management interface
  */
 export function RecipeTags(tagsProps: RecipeTagProps) {
-  const { tags } = useRecipeDatabase();
+  const { tags } = useTags();
   const [newTags, setNewTags] = useState<number[]>([]);
   const [tagsAddedCounter, setTagsAddedCounter] = useState(0);
 

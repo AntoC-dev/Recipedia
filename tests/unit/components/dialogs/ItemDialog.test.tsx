@@ -27,9 +27,14 @@ jest.mock('@components/molecules/SeasonalityCalendar', () => ({
 const mockTags: any[] = [];
 const mockIngredients: any[] = [];
 
-jest.mock('@context/RecipeDatabaseContext', () => ({
-  useRecipeDatabase: () => ({
+jest.mock('@hooks/useTags', () => ({
+  useTags: () => ({
     tags: mockTags,
+  }),
+}));
+
+jest.mock('@hooks/useIngredients', () => ({
+  useIngredients: () => ({
     ingredients: mockIngredients,
   }),
 }));

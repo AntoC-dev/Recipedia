@@ -13,7 +13,7 @@ import { menuTableElement } from '@customTypes/DatabaseElementTypes';
 import { StackScreenNavigation } from '@customTypes/ScreenTypes';
 import { useNavigation } from '@react-navigation/native';
 import { Icons } from '@assets/Icons';
-import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { useRecipes } from '@hooks/useRecipes';
 
 export type MenuRecipeCardProps = {
   testId: string;
@@ -30,7 +30,7 @@ export function MenuRecipeCard({
 }: MenuRecipeCardProps) {
   const { navigate } = useNavigation<StackScreenNavigation>();
   const { colors } = useTheme();
-  const { recipes } = useRecipeDatabase();
+  const { recipes } = useRecipes();
 
   const handlePress = () => {
     const recipe = recipes.find(r => r.id === menuItem.recipeId);
