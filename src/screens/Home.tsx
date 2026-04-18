@@ -58,7 +58,9 @@ import { useI18n } from '@utils/i18n';
 import { padding, screenWidth } from '@styles/spacing';
 import { homeLogger } from '@utils/logger';
 import { useSeasonFilter } from '@context/SeasonFilterContext';
-import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { useRecipes } from '@context/RecipeDataContext';
+import { useIngredients } from '@context/IngredientDataContext';
+import { useTags } from '@context/TagDataContext';
 
 const homeId = 'Home';
 const recommandationId = homeId + '::RecipeRecommendation';
@@ -89,7 +91,9 @@ export function Home() {
   const { t } = useI18n();
   const { colors } = useTheme();
   const { seasonFilter } = useSeasonFilter();
-  const { recipes, ingredients, tags } = useRecipeDatabase();
+  const { recipes } = useRecipes();
+  const { ingredients } = useIngredients();
+  const { tags } = useTags();
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [recommendations, setRecommendations] = useState<RecommendationType[]>([]);

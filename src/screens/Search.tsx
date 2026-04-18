@@ -23,7 +23,7 @@ import { padding } from '@styles/spacing';
 import { RecipeCard } from '@components/molecules/RecipeCard';
 import { FilterAccordion } from '@components/organisms/FilterAccordion';
 import { useSeasonFilter } from '@context/SeasonFilterContext';
-import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { useRecipes } from '@context/RecipeDataContext';
 import { getRecipeKey } from '@utils/listUtils';
 
 /**
@@ -35,7 +35,7 @@ export function Search() {
   const { t } = useI18n();
 
   const { seasonFilter } = useSeasonFilter();
-  const { recipes } = useRecipeDatabase();
+  const { recipes } = useRecipes();
 
   // Refs
   const flashListRef = useRef<FlashListRef<recipeTableElement>>(null);
