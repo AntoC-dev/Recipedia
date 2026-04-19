@@ -1,3 +1,20 @@
+## [2.31.1](https://github.com/AntoC-dev/Recipedia/compare/v2.31.0...v2.31.1) (2026-04-19)
+
+### Bug Fixes
+
+* **carousel:** resolve key extractor collision for recipes with same title ([4bc4828](https://github.com/AntoC-dev/Recipedia/commit/4bc48281ad1e21de12775a55849de709d2b548f5))
+* **carousel:** resolve key extractor collision for recipes with same title ([76e9073](https://github.com/AntoC-dev/Recipedia/commit/76e907326755762728d7fc97a26c20f217eb4362))
+* **home:** defer recommendations behind InteractionManager with skeleton UI ([ab2c35c](https://github.com/AntoC-dev/Recipedia/commit/ab2c35c64520bb6a409da996435433aa62dc0142))
+* **scraper:** guard web parsing until Python scraper is ready ([ce484a4](https://github.com/AntoC-dev/Recipedia/commit/ce484a48b19a4223d6ae1416b7c0131bf94e17b2))
+* **settings:** FlashList, keyExtractor, useDeferredValue search debounce ([eb72539](https://github.com/AntoC-dev/Recipedia/commit/eb7253992e2bf0b7af811df39b0dce3871199a9d))
+* **startup:** parallelize AsyncStorage reads and decouple scraper ([238334d](https://github.com/AntoC-dev/Recipedia/commit/238334dea0221462455da9020ea694f99a1dc61c))
+* **startup:** parallelize db.init() table creation and data loading ([07f5dfe](https://github.com/AntoC-dev/Recipedia/commit/07f5dfee9bf823371aa5bb055bec9a891cf06806))
+
+### Performance Improvements
+
+* **context:** Map lookup for shopping list computation ([dc535e2](https://github.com/AntoC-dev/Recipedia/commit/dc535e2ac482e7f8342d15c687095a02626090ac))
+* startup, home, and settings performance optimizations ([#266](https://github.com/AntoC-dev/Recipedia/issues/266)) ([b016e81](https://github.com/AntoC-dev/Recipedia/commit/b016e81cd1eb4f9945f31e4103fcae272faf504e))
+
 ## [2.31.0](https://github.com/AntoC-dev/Recipedia/compare/v2.30.5...v2.31.0) (2026-04-16)
 
 ### Features
