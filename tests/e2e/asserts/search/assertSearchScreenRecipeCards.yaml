@@ -44,7 +44,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::RecipeCards::3::Cover"
     direction: DOWN
-    speed: 10
+    speed: 5
     label: "Scroll to third recipe card cover"
 
 - waitForAnimationToEnd
@@ -62,7 +62,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::RecipeCards::3::Content"
     direction: DOWN
-    speed: 10
+    speed: 5
     label: "Scroll to third recipe card content"
 
 - waitForAnimationToEnd
@@ -88,7 +88,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::RecipeCards::3::PrepTime"
     direction: DOWN
-    speed: 10
+    speed: 5
     label: "Scroll to third recipe card preparation time"
 
 - waitForAnimationToEnd
@@ -108,7 +108,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::RecipeCards::3::Persons"
     direction: DOWN
-    speed: 10
+    speed: 5
     label: "Scroll to third recipe card persons"
 
 - waitForAnimationToEnd
@@ -128,7 +128,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::RecipeCards::5::Cover"
     direction: DOWN
-    speed: 10
+    speed: 5
     label: "Scroll to fifth recipe card cover"
 
 - waitForAnimationToEnd
@@ -147,7 +147,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::RecipeCards::5::Content"
     direction: DOWN
-    speed: 10
+    speed: 5
     label: "Scroll to fifth recipe card content"
 
 - waitForAnimationToEnd
@@ -174,7 +174,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::RecipeCards::5::PrepTime"
     direction: DOWN
-    speed: 10
+    speed: 5
     label: "Scroll to fifth recipe card preparation time"
 
 - waitForAnimationToEnd
@@ -194,7 +194,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::RecipeCards::5::Persons"
     direction: DOWN
-    speed: 10
+    speed: 5
     label: "Scroll to fifth recipe card persons"
 
 - waitForAnimationToEnd
@@ -214,7 +214,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::RecipeCards::7::Cover"
     direction: DOWN
-    speed: 10
+    speed: 5
     label: "Scroll to sixth recipe card cover"
 
 - waitForAnimationToEnd
@@ -232,7 +232,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::RecipeCards::7::Content"
     direction: DOWN
-    speed: 10
+    speed: 5
     label: "Scroll to sixth recipe card content"
 
 - waitForAnimationToEnd
@@ -258,7 +258,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::RecipeCards::7::PrepTime"
     direction: DOWN
-    speed: 10
+    speed: 5
     label: "Scroll to seventh recipe card PrepTime"
 
 - waitForAnimationToEnd
@@ -278,7 +278,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::RecipeCards::7::Persons"
     direction: DOWN
-    speed: 10
+    speed: 5
     label: "Scroll to seventh recipe card persons"
 
 - waitForAnimationToEnd
@@ -298,7 +298,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::RecipeCards::9::Cover"
     direction: DOWN
-    speed: 10
+    speed: 5
     label: "Scroll to ninth recipe card cover"
 
 - waitForAnimationToEnd
@@ -316,7 +316,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::RecipeCards::9::Content"
     direction: DOWN
-    speed: 10
+    speed: 5
     label: "Scroll to ninth recipe card content"
 
 - waitForAnimationToEnd
@@ -342,7 +342,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::RecipeCards::9::PrepTime"
     direction: DOWN
-    speed: 10
+    speed: 5
     label: "Scroll to ninth recipe card PrepTime"
 
 - waitForAnimationToEnd
@@ -360,7 +360,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::RecipeCards::9::Persons"
     direction: DOWN
-    speed: 10
+    speed: 5
     label: "Scroll to ninth recipe card persons"
 
 - waitForAnimationToEnd
