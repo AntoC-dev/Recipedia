@@ -1,5 +1,9 @@
 appId: "com.recipedia"
 ---
+- runFlow:
+    file: "handleAnr.yaml"
+    label: "Handle ANR in case a previous test triggered it"
+
 - launchApp:
     clearState: true
     label: "Setup - Launch app with clean state"
