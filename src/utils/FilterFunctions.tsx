@@ -117,15 +117,14 @@ export function selectFilterCategoriesValuesToDisplay(
 export function extractFilteredRecipeDatas(
   recipeArray: recipeTableElement[]
 ): [string[], ingredientTableElement[], string[]] {
-  // TODO is set really faster in this case ? To profile
+  const seenIngredientNames = new Set<string>();
   const ingredientsUniqueCollection: ingredientTableElement[] = [];
   const tagsUniqueCollection = new Set<string>();
 
   for (const element of recipeArray) {
     for (const ing of element.ingredients) {
-      if (
-        ingredientsUniqueCollection.find(ingredient => ingredient.name === ing.name) === undefined
-      ) {
+      if (!seenIngredientNames.has(ing.name)) {
+        seenIngredientNames.add(ing.name);
         ingredientsUniqueCollection.push(ing);
       }
     }
@@ -632,6 +631,21 @@ export function generateHomeRecommendations(
     });
   }
 
+  const ingredientIndex = new Map<string, recipeTableElement[]>();
+  const tagIndex = new Map<string, recipeTableElement[]>();
+  for (const recipe of recipesForFiltering) {
+    for (const ing of recipe.ingredients) {
+      const list = ingredientIndex.get(ing.name) ?? [];
+      list.push(recipe);
+      ingredientIndex.set(ing.name, list);
+    }
+    for (const tag of recipe.tags) {
+      const list = tagIndex.get(tag.name) ?? [];
+      list.push(recipe);
+      tagIndex.set(tag.name, list);
+    }
+  }
+
   const grainIngredients = ingredients.filter(ing => ing.type === ingredientType.cereal);
   const shuffledGrainIngredients = fisherYatesShuffle(grainIngredients);
   let grainCount = 0;
@@ -639,12 +653,7 @@ export function generateHomeRecommendations(
     if (grainCount >= 2) {
       break;
     }
-    const ingredientRecipes = recipesForFiltering.filter(recipe =>
-      isTheElementContainsTheFilter(
-        recipe.ingredients.map(ing => ing.name),
-        ingredient.name
-      )
-    );
+    const ingredientRecipes = ingredientIndex.get(ingredient.name) ?? [];
     if (ingredientRecipes.length === 0) {
       continue;
     }
@@ -668,12 +677,7 @@ export function generateHomeRecommendations(
     if (tagCount >= 3) {
       break;
     }
-    const tagRecipes = recipesForFiltering.filter(recipe =>
-      isTheElementContainsTheFilter(
-        recipe.tags.map(t => t.name),
-        tag.name
-      )
-    );
+    const tagRecipes = tagIndex.get(tag.name) ?? [];
     if (tagRecipes.length === 0) {
       continue;
     }

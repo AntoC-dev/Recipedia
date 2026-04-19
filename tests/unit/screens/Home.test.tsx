@@ -10,6 +10,7 @@ import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
 import { SeasonFilterProvider } from '@context/SeasonFilterContext';
 import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
+import { InteractionManager } from 'react-native';
 
 jest.mock(
   '@components/organisms/VerticalBottomButtons',
@@ -233,5 +234,65 @@ describe('Home Screen', () => {
     randomReco.forEach((recipe: recipeTableElement) => {
       expect(testRecipeIds).toContain(recipe.id);
     });
+  });
+
+  test('pull-to-refresh regenerates recommendations', async () => {
+    const { UNSAFE_getByType, getByTestId } = await renderHomeAndWaitForRecommendations();
+
+    const initialReco = JSON.parse(
+      getByTestId('recommendations.randomSelection::CarouselProps').props.children
+    );
+    expect(initialReco.length).toBeGreaterThan(0);
+
+    const { FlatList } = require('react-native');
+    const flatList = UNSAFE_getByType(FlatList);
+    flatList.props.refreshControl.props.onRefresh();
+
+    await waitFor(() => {
+      const updatedReco = JSON.parse(
+        getByTestId('recommendations.randomSelection::CarouselProps').props.children
+      );
+      expect(updatedReco.length).toBeGreaterThan(0);
+    });
+  });
+
+  test('shows skeleton loading state before recommendations are ready', async () => {
+    let resolveInteraction: () => void;
+    const interactionPromise = new Promise<void>(resolve => {
+      resolveInteraction = resolve;
+    });
+
+    jest.spyOn(InteractionManager, 'runAfterInteractions').mockImplementationOnce(callback => {
+      interactionPromise.then(() => {
+        if (typeof callback === 'function') callback();
+      });
+      return {
+        then: (fn?: () => any) => Promise.resolve(fn?.()),
+        done: jest.fn(),
+        cancel: jest.fn(),
+      };
+    });
+
+    const { UNSAFE_getAllByType, queryByTestId } = render(
+      <RecipeDatabaseProvider>
+        <SeasonFilterProvider>
+          <NavigationContainer>
+            <Stack.Navigator>
+              <Stack.Screen name={'Home'} component={Home} />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </SeasonFilterProvider>
+      </RecipeDatabaseProvider>
+    );
+
+    const { Animated } = require('react-native');
+    const animatedViews = UNSAFE_getAllByType(Animated.View);
+    expect(animatedViews.length).toBeGreaterThanOrEqual(3);
+    expect(queryByTestId('recommendations.randomSelection::CarouselProps')).toBeNull();
+
+    resolveInteraction!();
+    await waitFor(() =>
+      expect(queryByTestId('recommendations.randomSelection::CarouselProps')).not.toBeNull()
+    );
   });
 });

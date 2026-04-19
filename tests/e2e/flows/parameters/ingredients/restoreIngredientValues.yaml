@@ -13,13 +13,13 @@ appId: "com.recipedia"
 
 - extendedWaitUntil:
     visible:
-      id: "IngredientsSettings::0::IngredientName"
+      id: "IngredientsSettings::7::IngredientName"
       text: "Lettuce Edited"
     timeout: 5000
     label: "Wait for the ingredient to appear in the list"
 
 - tapOn:
-    id: "IngredientsSettings::0::EditButton"
+    id: "IngredientsSettings::17::EditButton"
     label: "Tap Edit button for Lettuce Edited"
 
 - tapOn:

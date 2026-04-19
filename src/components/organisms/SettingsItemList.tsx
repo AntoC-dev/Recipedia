@@ -38,11 +38,13 @@
  * ```
  */
 
-import React, { useState } from 'react';
-import { FlatList, View } from 'react-native';
+import React, { useDeferredValue, useState } from 'react';
+import { View } from 'react-native';
+import { FlashList } from '@shopify/flash-list';
 import { Searchbar, useTheme } from 'react-native-paper';
 import { padding } from '@styles/spacing';
 import { useI18n } from '@utils/i18n';
+import { getSettingsItemKey } from '@utils/listUtils';
 import {
   SettingsItem,
   SettingsItemCard,
@@ -77,9 +79,10 @@ export function SettingsItemList<T extends SettingsItem>({
   const { colors } = useTheme();
   const { t } = useI18n();
   const [searchQuery, setSearchQuery] = useState('');
+  const deferredQuery = useDeferredValue(searchQuery);
 
   const filteredItems = items.filter(item =>
-    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+    item.name.toLowerCase().includes(deferredQuery.toLowerCase())
   );
 
   return (
@@ -96,15 +99,15 @@ export function SettingsItemList<T extends SettingsItem>({
           borderRadius: 999,
         }}
       />
-      <FlatList
+      <FlashList
         data={filteredItems}
+        keyExtractor={getSettingsItemKey}
+        maintainVisibleContentPosition={{ disabled: true }}
         contentContainerStyle={{ padding: padding.small }}
-        renderItem={({ item, index }) => (
+        renderItem={({ item }) => (
           <SettingsItemCard
-            key={index}
             item={item}
-            index={index}
-            testIdPrefix={testIdPrefix}
+            testIdPrefix={`${testIdPrefix}::${getSettingsItemKey(item)}`}
             type={type}
             onEdit={onEdit}
             onDelete={onDelete}

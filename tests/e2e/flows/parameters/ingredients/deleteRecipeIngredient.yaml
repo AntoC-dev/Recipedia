@@ -9,12 +9,12 @@ appId: "com.recipedia"
     label: "Action - Search for RecipeIngredient ingredient"
 
 - assertVisible:
-    id: "IngredientsSettings::0::IngredientName"
+    id: "IngredientsSettings::.*::IngredientName"
     text: "RecipeIngredient"
     label: "Assert that RecipeIngredient ingredient is visible"
 
 - tapOn:
-    id: "IngredientsSettings::0::DeleteButton"
+    id: "IngredientsSettings::.*::DeleteButton"
     label: "Tap Delete button for RecipeIngredient"
 
 - extendedWaitUntil:

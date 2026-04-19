@@ -304,3 +304,55 @@ describe('TagsSettings Screen Performance', () => {
     await measureRenders(<TagsSettingsWrapper />, { runs: 10, scenario });
   });
 });
+
+const largeIngredients = Array.from({ length: 1200 }, (_, i) => ({
+  id: i + 1,
+  name: `LargeIngredient${i + 1}`,
+  unit: 'g',
+  type: ingredientType.vegetable,
+  season: [] as string[],
+}));
+
+describe('IngredientsSettings Screen Performance - Large Dataset', () => {
+  const database = RecipeDatabase.getInstance();
+
+  beforeEach(async () => {
+    dbContextRef = null;
+    personsContextRef = null;
+    await database.init();
+    await database.addMultipleIngredients(largeIngredients);
+  });
+
+  afterEach(async () => {
+    await database.closeAndReset();
+  });
+
+  test('initial render with 1200 ingredients', async () => {
+    await measureRenders(<IngredientsSettingsWrapper />, { runs: 5 });
+  });
+
+  test('re-render after adding ingredient with 1200 ingredients', async () => {
+    const scenario = async () => {
+      if (dbContextRef) {
+        await dbContextRef.addIngredient({
+          name: `ExtraIngredient${Date.now()}`,
+          type: ingredientType.vegetable,
+          unit: 'g',
+          season: [],
+        });
+      }
+    };
+
+    await measureRenders(<IngredientsSettingsWrapper />, { runs: 5, scenario });
+  });
+
+  test('re-render after deleting ingredient with 1200 ingredients', async () => {
+    const scenario = async () => {
+      if (dbContextRef && dbContextRef.ingredients.length > 0) {
+        await dbContextRef.deleteIngredient(dbContextRef.ingredients[0]);
+      }
+    };
+
+    await measureRenders(<IngredientsSettingsWrapper />, { runs: 5, scenario });
+  });
+});

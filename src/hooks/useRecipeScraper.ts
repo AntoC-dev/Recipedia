@@ -190,6 +190,15 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
 
     uiLogger.info('Starting recipe scrape', { url });
 
+    const scraperReady = await recipeScraper.waitForReady(10000);
+    if (!scraperReady) {
+      const errorMessage = t(SCRAPER_ERROR_I18N_KEYS[ScraperErrorTypes.Timeout]);
+      uiLogger.warn('Python scraper not ready for web parsing', { url });
+      setError(errorMessage);
+      setIsLoading(false);
+      return { success: false, error: errorMessage };
+    }
+
     try {
       // Fetch HTML once - used for both scraping and image extraction
       const html = await fetchHtml(url);

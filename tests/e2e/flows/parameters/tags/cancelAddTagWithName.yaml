@@ -56,6 +56,6 @@ appId: "com.recipedia"
 
 - extendedWaitUntil:
     visible:
-      id: "TagsSettings::1::TagName"
+        id: "TagsSettings::5::TagName"
     timeout: 60000
     label: "Wait for list to show all items"

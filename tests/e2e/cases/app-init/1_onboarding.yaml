@@ -3,6 +3,10 @@ appId: "com.recipedia"
 tags:
   - app-init
 ---
+- launchApp:
+    clearState: true
+    label: "Setup - Launch app for first time"
+
 - extendedWaitUntil:
     visible:
       id: "WelcomeScreen::SkipButton"

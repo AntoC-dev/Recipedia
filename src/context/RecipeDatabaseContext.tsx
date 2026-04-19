@@ -52,7 +52,7 @@
  * ```
  */
 
-import React, { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import { RecipeDatabase } from '@utils/RecipeDatabase';
 import {
@@ -362,44 +362,45 @@ export const RecipeDatabaseProvider: React.FC<{
     setPurchasedIngredients(new Map(db.get_purchasedIngredients()));
   };
 
-  const shopping = useMemo((): ComputedShoppingItem[] => {
-    const toCookItems = menu.filter(item => !item.isCooked);
-    const ingredientMap = new Map<string, ComputedShoppingItem>();
+  const toCookItems = menu.filter(item => !item.isCooked);
+  const shoppingIngredientMap = new Map<string, ComputedShoppingItem>();
+  const recipeById = new Map(recipes.map(r => [r.id, r]));
 
-    for (const menuItem of toCookItems) {
-      const recipe = recipes.find(r => r.id === menuItem.recipeId);
-      if (!recipe) continue;
-
-      const count = menuItem.count ?? 1;
-      for (const ingredient of recipe.ingredients) {
-        const existing = ingredientMap.get(ingredient.name);
-        const ingredientQuantity = ingredient.quantity ?? '';
-
-        let quantityToAdd = ingredientQuantity;
-        for (let i = 1; i < count; i++) {
-          quantityToAdd = sumNumberInString(quantityToAdd, ingredientQuantity);
-        }
-
-        if (existing) {
-          existing.quantity = sumNumberInString(existing.quantity, quantityToAdd);
-          if (!existing.recipeTitles.includes(recipe.title)) {
-            existing.recipeTitles.push(recipe.title);
-          }
-        } else {
-          ingredientMap.set(ingredient.name, {
-            name: ingredient.name,
-            type: ingredient.type,
-            quantity: quantityToAdd,
-            unit: ingredient.unit ?? '',
-            recipeTitles: [recipe.title],
-            purchased: purchasedIngredients.get(ingredient.name) ?? false,
-          });
-        }
-      }
+  for (const menuItem of toCookItems) {
+    const recipe = recipeById.get(menuItem.recipeId);
+    if (!recipe) {
+      continue;
     }
 
-    return Array.from(ingredientMap.values());
-  }, [menu, recipes, purchasedIngredients]);
+    const count = menuItem.count ?? 1;
+    for (const ingredient of recipe.ingredients) {
+      const existing = shoppingIngredientMap.get(ingredient.name);
+      const ingredientQuantity = ingredient.quantity ?? '';
+
+      let quantityToAdd = ingredientQuantity;
+      for (let i = 1; i < count; i++) {
+        quantityToAdd = sumNumberInString(quantityToAdd, ingredientQuantity);
+      }
+
+      if (existing) {
+        existing.quantity = sumNumberInString(existing.quantity, quantityToAdd);
+        if (!existing.recipeTitles.includes(recipe.title)) {
+          existing.recipeTitles.push(recipe.title);
+        }
+      } else {
+        shoppingIngredientMap.set(ingredient.name, {
+          name: ingredient.name,
+          type: ingredient.type,
+          quantity: quantityToAdd,
+          unit: ingredient.unit ?? '',
+          recipeTitles: [recipe.title],
+          purchased: purchasedIngredients.get(ingredient.name) ?? false,
+        });
+      }
+    }
+  }
+
+  const shopping: ComputedShoppingItem[] = Array.from(shoppingIngredientMap.values());
 
   const addRecipe = async (recipe: recipeTableElement): Promise<void> => {
     databaseLogger.debug('Context: addRecipe', { recipeTitle: recipe.title });

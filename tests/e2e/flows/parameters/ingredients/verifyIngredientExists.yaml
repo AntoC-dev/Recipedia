@@ -9,21 +9,21 @@ appId: "com.recipedia"
 
 - assertVisible:
     text: "${INGREDIENT_NAME}"
-    id: "IngredientsSettings::0::IngredientName"
+    id: "IngredientsSettings::.*::IngredientName"
     label: "Verify ${INGREDIENT_NAME} ingredient name exists in database"
 
 - assertVisible:
-    id: "IngredientsSettings::0::IntroType"
+    id: "IngredientsSettings::.*::IntroType"
     text: "Type:"
     label: "Verify type label is displayed"
 
 - assertVisible:
-    id: "IngredientsSettings::0::Type"
+    id: "IngredientsSettings::.*::Type"
     text: "${INGREDIENT_TYPE}"
     label: "Verify ingredient type ${INGREDIENT_TYPE} is displayed"
 
 - assertVisible:
-    id: "IngredientsSettings::0::IntroUnit"
+    id: "IngredientsSettings::.*::IntroUnit"
     text: "Unit:"
     label: "Verify unit label is displayed"
 
@@ -32,28 +32,28 @@ appId: "com.recipedia"
       platform: Android
     commands:
       - assertNotVisible:
-          id: "IngredientsSettings::0::Unit"
+          id: "IngredientsSettings::.*::Unit"
           label: "Verify ingredient unit is not displayed on Android"
 - runFlow:
     when:
       platform: iOS
     commands:
       - assertVisible:
-          id: "IngredientsSettings::0::Unit"
+          id: "IngredientsSettings::.*::Unit"
           text: ""
           label: "Verify ingredient unit is empty on ios"
 
 - assertVisible:
-    id: "IngredientsSettings::0::SeasonalityCalendar::SeasonalityText"
+    id: "IngredientsSettings::.*::SeasonalityCalendar::SeasonalityText"
     text: "Seasonality:"
     label: "Verify seasonality label is displayed"
 
 - assertVisible:
-    id: "IngredientsSettings::0::EditButton-text"
+    id: "IngredientsSettings::.*::EditButton-text"
     text: "Edit"
     label: "Verify edit button is displayed"
 
 - assertVisible:
-    id: "IngredientsSettings::0::DeleteButton-text"
+    id: "IngredientsSettings::.*::DeleteButton-text"
     text: "Delete"
     label: "Verify delete button is displayed"

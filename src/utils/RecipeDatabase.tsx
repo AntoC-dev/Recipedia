@@ -240,23 +240,33 @@ export class RecipeDatabase {
 
     await this.openDatabase();
 
-    // TODO can we create multiple table in a single query ?
-    await this._recipesTable.createTable(this._dbConnection);
-    await this._ingredientsTable.createTable(this._dbConnection);
-    await this._tagsTable.createTable(this._dbConnection);
-    await this._importHistoryTable.createTable(this._dbConnection);
-    await this._menuTable.createTable(this._dbConnection);
-    await this._purchasedIngredientsTable.createTable(this._dbConnection);
+    await Promise.all([
+      this._recipesTable.createTable(this._dbConnection),
+      this._ingredientsTable.createTable(this._dbConnection),
+      this._tagsTable.createTable(this._dbConnection),
+      this._importHistoryTable.createTable(this._dbConnection),
+      this._menuTable.createTable(this._dbConnection),
+      this._purchasedIngredientsTable.createTable(this._dbConnection),
+    ]);
 
     await this.migrateAddSourceColumns();
     await this.migrateWildcardSeasons();
 
-    this._ingredients = await this.getAllIngredients();
-    this._tags = await this.getAllTags();
-    this._recipes = await this.getAllRecipes();
-    this._importHistory = await this.getAllImportHistory();
-    this._menu = await this.getAllMenu();
-    this._purchasedIngredients = await this.getAllPurchasedIngredients();
+    const [ingredients, tags, recipes, importHistory, menu, purchasedIngredients] =
+      await Promise.all([
+        this.getAllIngredients(),
+        this.getAllTags(),
+        this.getAllRecipes(),
+        this.getAllImportHistory(),
+        this.getAllMenu(),
+        this.getAllPurchasedIngredients(),
+      ]);
+    this._ingredients = ingredients;
+    this._tags = tags;
+    this._recipes = recipes;
+    this._importHistory = importHistory;
+    this._menu = menu;
+    this._purchasedIngredients = purchasedIngredients;
 
     databaseLogger.info('Database initialization completed', {
       recipesCount: this._recipes.length,

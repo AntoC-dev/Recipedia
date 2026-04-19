@@ -3,6 +3,7 @@ import { fireEvent, screen } from '@testing-library/react-native';
 import { measureRenders } from 'reassure';
 import Search from '@screens/Search';
 import RecipeDatabase from '@utils/RecipeDatabase';
+import { ingredientType, recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { performanceRecipes } from '@assets/datasets/performance/recipes';
 import { performanceIngredients } from '@assets/datasets/performance/ingredients';
 import { performanceTags } from '@assets/datasets/performance/tags';
@@ -14,7 +15,6 @@ import {
   RecipeDatabaseProvider,
   useRecipeDatabase,
 } from '@context/RecipeDatabaseContext';
-import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
 
 jest.mock('@react-navigation/native', () =>
   require('@mocks/deps/react-navigation-mock').reactNavigationMock()
@@ -234,5 +234,74 @@ describe('Search Screen Performance', () => {
     };
 
     await measureRenders(<SearchWrapper />, { runs: 10, scenario });
+  });
+});
+
+const largeIngredients = Array.from({ length: 1200 }, (_, i) => ({
+  id: i + 1,
+  name: `LargeIngredient${i + 1}`,
+  unit: 'g',
+  type: ingredientType.vegetable,
+  season: [] as string[],
+}));
+
+const largeRecipes: recipeTableElement[] = Array.from({ length: 1000 }, (_, i) => ({
+  id: i + 1,
+  title: `LargeDatasetRecipe${i + 1}`,
+  description: 'Generated for large-scale performance testing',
+  ingredients: largeIngredients.slice(i % 10, (i % 10) + 5),
+  tags: [],
+  preparation: [],
+  time: 30,
+  persons: 4,
+  season: [],
+  image_Source: '',
+}));
+
+describe('Search Screen Performance - Large Dataset', () => {
+  const database = RecipeDatabase.getInstance();
+
+  beforeEach(async () => {
+    contextRef = null;
+    await database.init();
+    await database.addMultipleIngredients(largeIngredients);
+    await database.addMultipleRecipes(largeRecipes);
+  });
+
+  afterEach(async () => {
+    await database.closeAndReset();
+  });
+
+  test('initial render with 1000 recipes', async () => {
+    await measureRenders(<SearchWrapper />, { runs: 5 });
+  });
+
+  test('re-render after search text change with 1000 recipes', async () => {
+    const scenario = async () => {
+      const searchBar = screen.getByTestId('SearchScreen::SearchBar');
+      fireEvent.changeText(searchBar, 'large');
+    };
+
+    await measureRenders(<SearchWrapper />, { runs: 5, scenario });
+  });
+
+  test('re-render after adding recipe with 1000 recipes', async () => {
+    const scenario = async () => {
+      if (contextRef) {
+        await contextRef.addRecipe({
+          title: `ExtraRecipe${Date.now()}`,
+          description: '',
+          ingredients: [],
+          tags: [],
+          preparation: [],
+          time: 30,
+          persons: 4,
+          season: [],
+          image_Source: '',
+        });
+      }
+    };
+
+    await measureRenders(<SearchWrapper />, { runs: 5, scenario });
   });
 });

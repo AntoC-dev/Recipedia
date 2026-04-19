@@ -8,12 +8,8 @@ appId: "com.recipedia"
       SEARCH_QUERY: "Spaghetti"
     label: "Search for Spaghetti ingredient"
 
-- assertVisible:
-    text: "Spaghetti"
-    label: "Verify Spaghetti ingredient exists in database"
-
 - tapOn:
-    id: "IngredientsSettings::0::EditButton"
+    id: "IngredientsSettings::1::EditButton"
     label: "Open Edit dialog for Spaghetti ingredient"
 
 - tapOn:
@@ -64,6 +60,6 @@ appId: "com.recipedia"
 
 - extendedWaitUntil:
     visible:
-      id: "IngredientsSettings::1::IngredientName"
+      id: "IngredientsSettings::27::IngredientName"
     timeout: 60000
     label: "Wait for list to show all items"

@@ -10,12 +10,12 @@ appId: "com.recipedia"
     label: "Action - Search for ${TAG_NAME} ingredient"
 
 - assertVisible:
-    id: "TagsSettings::0::TagName"
+    id: "TagsSettings::.*::TagName"
     text: "${TAG_NAME}"
     label: "Verify ${TAG_NAME} tag exists in database"
 
 - tapOn:
-    id: "TagsSettings::0::DeleteButton"
+    id: "TagsSettings::.*::DeleteButton"
     label: "Open delete tag dialog"
 
 - tapOn:

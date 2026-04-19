@@ -130,7 +130,6 @@ describe('Carousel Component', () => {
   });
 
   test('handles edge cases with minimal recipe data', () => {
-    // Create minimal recipe objects
     const minimalRecipes: recipeTableElement[] = [
       {
         id: 999,
@@ -149,5 +148,30 @@ describe('Carousel Component', () => {
     const { getByTestId } = renderCarousel({ items: minimalRecipes });
 
     assertRecipeCardRendering(getByTestId, 1, minimalRecipes);
+  });
+
+  test('generates unique keys for recipes with same title but different ids', () => {
+    const duplicateTitleRecipes: recipeTableElement[] = [
+      { ...testRecipes[0], id: 1, title: 'Duplicate Title' },
+      { ...testRecipes[1], id: 2, title: 'Duplicate Title' },
+      { ...testRecipes[2], id: 3, title: 'Duplicate Title' },
+    ];
+
+    expect(() => renderCarousel({ items: duplicateTitleRecipes })).not.toThrow();
+
+    const { getByTestId } = renderCarousel({ items: duplicateTitleRecipes });
+    assertRecipeCardRendering(getByTestId, 3, duplicateTitleRecipes);
+  });
+
+  test('generates unique keys for recipes without id using title and index', () => {
+    const noIdRecipes: recipeTableElement[] = [
+      { ...testRecipes[0], id: undefined as any, title: 'Same Title' },
+      { ...testRecipes[1], id: undefined as any, title: 'Same Title' },
+    ];
+
+    expect(() => renderCarousel({ items: noIdRecipes })).not.toThrow();
+
+    const { getByTestId } = renderCarousel({ items: noIdRecipes });
+    assertRecipeCardRendering(getByTestId, 2, noIdRecipes);
   });
 });

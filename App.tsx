@@ -44,27 +44,18 @@ function AppContent() {
             try {
                 appLogger.info('Starting app initialization');
 
-                appLogger.debug('Initializing settings');
-                await initSettings();
-
-                const isFirst = await isFirstLaunch();
+                const [, isFirst, isDarkMode] = await Promise.all([
+                    initSettings(),
+                    isFirstLaunch(),
+                    getDarkMode(),
+                ]);
                 setIsFirstLaunchFlag(isFirst);
-                appLogger.debug('First launch check completed', {isFirst});
-
-                const isDarkMode = await getDarkMode();
                 setDarkMode(isDarkMode);
-                appLogger.debug('Dark mode setting loaded', {isDarkMode});
+                appLogger.debug('App settings loaded', {isFirst, isDarkMode});
 
-                // Wait for Python scraper to be ready (iOS/Android only)
-                // This runs in parallel with OnCreate warmup started by native module
-                // Non-critical: app continues even if Python fails (web parsing degraded)
-                try {
-                    appLogger.debug('Waiting for Python scraper...');
-                    const pythonReady = await recipeScraper.waitForReady(10000);
-                    appLogger.debug('Python scraper ready', {pythonReady});
-                } catch (pythonError) {
-                    appLogger.warn('Python scraper initialization failed', {error: pythonError});
-                }
+                recipeScraper.waitForReady(10000).catch(err =>
+                    appLogger.warn('Python scraper initialization failed', {error: err})
+                );
 
                 appLogger.info('App initialization completed successfully');
                 setIsAppInitialized(true);

@@ -43,17 +43,17 @@ describe('App', () => {
   });
 
   describe('initialization', () => {
-    it('waits for Python scraper to be ready during initialization', async () => {
-      mockWaitForReadySuccess(true);
-
+    it('calls settings, firstLaunch, and darkMode during initialization', async () => {
       render(<App />);
 
       await waitFor(() => {
-        expect(mockWaitForReady).toHaveBeenCalled();
+        expect(mockInitSettings).toHaveBeenCalled();
+        expect(mockIsFirstLaunch).toHaveBeenCalled();
+        expect(mockGetDarkMode).toHaveBeenCalled();
       });
     });
 
-    it('calls waitForReady with 10 second timeout', async () => {
+    it('starts Python scraper warmup without blocking app initialization', async () => {
       mockWaitForReadySuccess(true);
 
       render(<App />);
@@ -73,45 +73,31 @@ describe('App', () => {
       });
     });
 
-    it('shows app content after Python is ready', async () => {
-      mockWaitForReadySuccess(true);
+    it('shows app content independently of Python readiness', async () => {
+      let resolveReady!: (value: boolean) => void;
+      mockWaitForReady.mockImplementation(
+        () =>
+          new Promise<boolean>(resolve => {
+            resolveReady = resolve;
+          })
+      );
 
       const { getByTestId } = render(<App />);
 
       await waitFor(() => {
         expect(getByTestId('app-wrapper')).toBeTruthy();
       });
+
+      resolveReady(true);
     });
 
-    it('initialization order: settings, firstLaunch, darkMode, Python', async () => {
-      const callOrder: string[] = [];
+    it('shows app content after settings are loaded', async () => {
+      mockWaitForReadySuccess(true);
 
-      mockInitSettings.mockImplementation(async () => {
-        callOrder.push('initSettings');
-      });
-      mockIsFirstLaunch.mockImplementation(async () => {
-        callOrder.push('isFirstLaunch');
-        return false;
-      });
-      mockGetDarkMode.mockImplementation(async () => {
-        callOrder.push('getDarkMode');
-        return false;
-      });
-      mockWaitForReady.mockImplementation(async () => {
-        callOrder.push('waitForReady');
-        return true;
-      });
-
-      render(<App />);
+      const { getByTestId } = render(<App />);
 
       await waitFor(() => {
-        const appInitOrder = callOrder.slice(0, 4);
-        expect(appInitOrder).toEqual([
-          'initSettings',
-          'isFirstLaunch',
-          'getDarkMode',
-          'waitForReady',
-        ]);
+        expect(getByTestId('app-wrapper')).toBeTruthy();
       });
     });
   });

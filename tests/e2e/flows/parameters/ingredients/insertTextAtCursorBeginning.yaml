@@ -9,7 +9,7 @@ appId: "com.recipedia"
     label: "Search for Lettuce ingredient"
 
 - tapOn:
-    id: "IngredientsSettings::0::EditButton"
+    id: "IngredientsSettings::7::EditButton"
     label: "Action - Open edit dialog for Lettuce ingredient"
 
 - extendedWaitUntil:
@@ -75,6 +75,6 @@ appId: "com.recipedia"
 
 - extendedWaitUntil:
     visible:
-      id: "IngredientsSettings::1::IngredientName"
+        id: "IngredientsSettings::27::IngredientName"
     timeout: 60000
     label: "Wait for list to show all items"

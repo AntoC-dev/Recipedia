@@ -12,7 +12,7 @@ appId: "com.recipedia"
     label: "Action - Search for Italian tag"
 
 - tapOn:
-    id: "TagsSettings::0::DeleteButton"
+    id: "TagsSettings::1::DeleteButton"
     label: "Tap Delete button for Italian Cuisine tag"
 
 - extendedWaitUntil:

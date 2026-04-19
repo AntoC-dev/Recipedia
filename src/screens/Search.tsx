@@ -24,6 +24,7 @@ import { RecipeCard } from '@components/molecules/RecipeCard';
 import { FilterAccordion } from '@components/organisms/FilterAccordion';
 import { useSeasonFilter } from '@context/SeasonFilterContext';
 import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { getRecipeKey } from '@utils/listUtils';
 
 /**
  * Search screen component - Advanced recipe search with filtering
@@ -144,7 +145,6 @@ export function Search() {
 
   const screenId = 'SearchScreen';
   const recipeCardsId = screenId + '::RecipeCards';
-  const getRecipeKey = (item: recipeTableElement) => item.id?.toString() || item.title;
 
   return (
     <ScreenWrapper testID={screenId} edges={['top', 'left', 'right']}>
@@ -217,7 +217,7 @@ export function Search() {
             </View>
           );
         }}
-        renderItem={({ item, index }: ListRenderItemInfo<recipeTableElement>) => (
+        renderItem={({ item }: ListRenderItemInfo<recipeTableElement>) => (
           <RecipeCard
             testId={recipeCardsId + `::${getRecipeKey(item)}`}
             size={'medium'}

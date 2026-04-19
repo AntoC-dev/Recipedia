@@ -45,9 +45,10 @@
  */
 
 import { RecipeRecommendation } from '@components/organisms/RecipeRecommendation';
+import { RecommendationSkeletonRow } from '@components/molecules/RecommendationSkeletonRow';
 
 import React, { useEffect, useState } from 'react';
-import { FlatList, RefreshControl, View } from 'react-native';
+import { FlatList, InteractionManager, RefreshControl, View } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { generateHomeRecommendations } from '@utils/FilterFunctions';
@@ -74,6 +75,16 @@ export const howManyItemInCarousel = 20;
  * Home screen component - Main dashboard with recipe recommendations
  */
 
+export function RecommendationsSkeleton() {
+  return (
+    <>
+      {[0, 1, 2].map(i => (
+        <RecommendationSkeletonRow key={i} />
+      ))}
+    </>
+  );
+}
+
 export function Home() {
   const { t } = useI18n();
   const { colors } = useTheme();
@@ -82,17 +93,22 @@ export function Home() {
 
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [recommendations, setRecommendations] = useState<RecommendationType[]>([]);
+  const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(true);
 
   useEffect(() => {
     homeLogger.debug('Loading smart recipe recommendations', {
       carouselSize: howManyItemInCarousel,
       seasonFilterEnabled: seasonFilter,
     });
-
-    setRecommendations(
-      generateHomeRecommendations(recipes, ingredients, tags, seasonFilter, howManyItemInCarousel)
-    );
-    homeLogger.debug('Smart recipe recommendations loaded successfully');
+    setIsLoadingRecommendations(true);
+    const task = InteractionManager.runAfterInteractions(() => {
+      setRecommendations(
+        generateHomeRecommendations(recipes, ingredients, tags, seasonFilter, howManyItemInCarousel)
+      );
+      setIsLoadingRecommendations(false);
+      homeLogger.debug('Smart recipe recommendations loaded successfully');
+    });
+    return () => task.cancel();
   }, [recipes, ingredients, tags, seasonFilter]);
 
   const onRefresh = () => {
@@ -135,23 +151,31 @@ export function Home() {
 
   return (
     <ScreenWrapper edges={['top', 'left', 'right']}>
-      <FlatList
-        data={recommendations}
-        renderItem={({ item }) => (
-          <RecipeRecommendation
-            testId={`${recommandationId}::${item.id}`}
-            carouselProps={item.recipes}
-            titleRecommendation={t(item.titleKey, item.titleParams)}
-          />
-        )}
-        keyExtractor={item => item.id}
-        ListEmptyComponent={renderEmptyState}
-        refreshControl={
-          <RefreshControl colors={[colors.primary]} refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        contentContainerStyle={{ paddingBottom: screenWidth / 6, flexGrow: 1 }}
-        showsVerticalScrollIndicator={false}
-      />
+      {isLoadingRecommendations ? (
+        <RecommendationsSkeleton />
+      ) : (
+        <FlatList
+          data={recommendations}
+          renderItem={({ item }) => (
+            <RecipeRecommendation
+              testId={`${recommandationId}::${item.id}`}
+              carouselProps={item.recipes}
+              titleRecommendation={t(item.titleKey, item.titleParams)}
+            />
+          )}
+          keyExtractor={item => item.id}
+          ListEmptyComponent={renderEmptyState}
+          refreshControl={
+            <RefreshControl
+              colors={[colors.primary]}
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+            />
+          }
+          contentContainerStyle={{ paddingBottom: screenWidth / 6, flexGrow: 1 }}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
       <VerticalBottomButtons />
     </ScreenWrapper>
   );

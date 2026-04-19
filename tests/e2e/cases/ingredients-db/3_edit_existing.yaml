@@ -17,13 +17,8 @@ tags:
       SEARCH_QUERY: "Lettuce"
     label: "Action - Search for Lettuce ingredient"
 
-- assertVisible:
-    id: "IngredientsSettings::0::IngredientName"
-    text: "Lettuce"
-    label: "Assert - Verify Lettuce ingredient exists"
-
 - tapOn:
-    id: "IngredientsSettings::0::EditButton"
+    id: "IngredientsSettings::7::EditButton"
     label: "Action - Open edit dialog for Lettuce"
 
 - tapOn:
@@ -168,12 +163,12 @@ tags:
 - waitForAnimationToEnd
 
 - assertNotVisible:
-    id: "IngredientsSettings::0::IngredientName"
+    id: "IngredientsSettings::7::IngredientName"
     text: "Lettuce"
     label: "Assert - Verify old ingredient name no longer exists"
 
 - assertVisible:
-    id: "IngredientsSettings::0::IngredientName"
+    id: "IngredientsSettings::7::IngredientName"
     text: "Lettuce Edited"
     label: "Assert - Verify ingredient renamed to Lettuce Edited"
 

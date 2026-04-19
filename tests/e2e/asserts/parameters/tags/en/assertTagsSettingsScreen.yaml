@@ -20,351 +20,19 @@ appId: "com.recipedia"
     label: "Search bar has correct placeholder text"
 
 - assertVisible:
-    id: "TagsSettings::0::TagName"
+    id: "TagsSettings::5::TagName"
     text: "Breakfast"
     label: "Tag Breakfast is displayed"
 
 - assertVisible:
-    id: "TagsSettings::0::EditButton-text"
+    id: "TagsSettings::5::EditButton-text"
     text: "Edit"
     label: "Edit button for Breakfast is displayed"
 
 - assertVisible:
-    id: "TagsSettings::0::DeleteButton-text"
-    text: "Delete"
-    label: "Delete button for Breakfast is displayed"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "TagsSettings::1::TagName"
-    direction: DOWN
-    speed: 20
-    timeout: 60000
-    centerElement: true
-    label: "Scroll to find first tag"
-
-- waitForAnimationToEnd
-
-- assertVisible:
-    id: "TagsSettings::1::TagName"
-    text: "Chocolate"
-    label: "Tag Chocolate is displayed"
-
-- assertVisible:
-    id: "TagsSettings::1::EditButton-text"
-    text: "Edit"
-    label: "Edit button for Chocolate is displayed"
-
-- assertVisible:
-    id: "TagsSettings::1::DeleteButton-text"
-    text: "Delete"
-    label: "Delete button for Chocolate is displayed"
-
-- scrollUntilVisible:
-    element:
-        id: "TagsSettings::1::TagName"
-    direction: DOWN
-    speed: 20
-    timeout: 60000
-    centerElement: true
-    label: "Scroll to find second tag"
-
-- assertVisible:
-    id: "TagsSettings::2::TagName"
-    text: "Dessert"
-    label: "Tag Dessert is displayed"
-
-- assertVisible:
-    id: "TagsSettings::2::EditButton-text"
-    text: "Edit"
-    label: "Edit button for Dessert is displayed"
-
-- assertVisible:
-    id: "TagsSettings::2::DeleteButton-text"
-    text: "Delete"
-    label: "Delete button for Dessert is displayed"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "TagsSettings::3::TagName"
-    direction: DOWN
-    speed: 20
-    timeout: 60000
-    centerElement: true
-    label: "Scroll to find third tag"
-
-- waitForAnimationToEnd
-
-- assertVisible:
-    id: "TagsSettings::3::TagName"
-    text: "Dinner"
-    label: "Tag Dinner is displayed"
-
-- assertVisible:
-    id: "TagsSettings::3::EditButton-text"
-    text: "Edit"
-    label: "Edit button for Dinner is displayed"
-
-- assertVisible:
-    id: "TagsSettings::3::DeleteButton-text"
-    text: "Delete"
-    label: "Delete button for Dinner is displayed"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "TagsSettings::4::TagName"
-    direction: DOWN
-    speed: 20
-    timeout: 60000
-    centerElement: true
-    label: "Scroll to tag Healthy"
-
-- waitForAnimationToEnd
-
-- assertVisible:
-    id: "TagsSettings::4::TagName"
-    text: "Healthy"
-    label: "Tag Healthy is displayed"
-
-- assertVisible:
-    id: "TagsSettings::4::EditButton-text"
-    text: "Edit"
-    label: "Edit button for Healthy is displayed"
-
-- assertVisible:
-    id: "TagsSettings::4::DeleteButton-text"
-    text: "Delete"
-    label: "Delete button for Healthy is displayed"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "TagsSettings::5::EditButton"
-    direction: DOWN
-    speed: 20
-    timeout: 60000
-    centerElement: true
-    label: "Scroll to tag Indian"
-
-- waitForAnimationToEnd
-
-- assertVisible:
-    id: "TagsSettings::5::TagName"
-    text: "Indian"
-    label: "Tag Indian is displayed"
-
-- assertVisible:
-    id: "TagsSettings::5::EditButton-text"
-    text: "Edit"
-    label: "Edit button for Indian is displayed"
-
-- assertVisible:
     id: "TagsSettings::5::DeleteButton-text"
     text: "Delete"
-    label: "Delete button for Indian is displayed"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "TagsSettings::6::EditButton"
-    direction: DOWN
-    speed: 20
-    timeout: 60000
-    centerElement: true
-    label: "Scroll to tag Italian"
-
-- waitForAnimationToEnd
-
-- assertVisible:
-    id: "TagsSettings::6::TagName"
-    text: "Italian"
-    label: "Tag Italian is displayed"
-
-- assertVisible:
-    id: "TagsSettings::6::EditButton-text"
-    text: "Edit"
-    label: "Edit button for Italian is displayed"
-
-- assertVisible:
-    id: "TagsSettings::6::DeleteButton-text"
-    text: "Delete"
-    label: "Delete button for Italian is displayed"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "TagsSettings::7::EditButton"
-    direction: DOWN
-    speed: 20
-    timeout: 60000
-    centerElement: true
-    label: "Scroll to tag Japanese"
-
-- waitForAnimationToEnd
-
-- assertVisible:
-    id: "TagsSettings::7::TagName"
-    text: "Japanese"
-    label: "Tag Japanese is displayed"
-
-- assertVisible:
-    id: "TagsSettings::7::EditButton-text"
-    text: "Edit"
-    label: "Edit button for Japanese is displayed"
-
-- assertVisible:
-    id: "TagsSettings::7::DeleteButton-text"
-    text: "Delete"
-    label: "Delete button for Japanese is displayed"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "TagsSettings::8::EditButton"
-    direction: DOWN
-    speed: 20
-    timeout: 60000
-    centerElement: true
-    label: "Scroll to tag Lunch"
-
-- waitForAnimationToEnd
-
-- assertVisible:
-    id: "TagsSettings::8::TagName"
-    text: "Lunch"
-    label: "Tag Lunch is displayed"
-
-- assertVisible:
-    id: "TagsSettings::8::EditButton-text"
-    text: "Edit"
-    label: "Edit button for Lunch is displayed"
-
-- assertVisible:
-    id: "TagsSettings::8::DeleteButton-text"
-    text: "Delete"
-    label: "Delete button for Lunch is displayed"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "TagsSettings::9::TagName"
-    direction: DOWN
-    speed: 20
-    timeout: 60000
-    centerElement: true
-    label: "Scroll to tag Mexican"
-
-- waitForAnimationToEnd
-
-- assertVisible:
-    id: "TagsSettings::9::TagName"
-    text: "Mexican"
-    label: "Tag Mexican is displayed"
-
-- assertVisible:
-    id: "TagsSettings::9::EditButton-text"
-    text: "Edit"
-    label: "Edit button for Mexican is displayed"
-
-- assertVisible:
-    id: "TagsSettings::9::DeleteButton-text"
-    text: "Delete"
-    label: "Delete button for Mexican is displayed"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "TagsSettings::10::EditButton"
-    direction: DOWN
-    speed: 20
-    timeout: 60000
-    centerElement: true
-    label: "Scroll to tag Quick Meal"
-
-- waitForAnimationToEnd
-
-- assertVisible:
-    id: "TagsSettings::10::TagName"
-    text: "Quick Meal"
-    label: "Tag Quick Meal is displayed"
-
-- assertVisible:
-    id: "TagsSettings::10::EditButton-text"
-    text: "Edit"
-    label: "Edit button for Quick Meal is displayed"
-
-- assertVisible:
-    id: "TagsSettings::10::DeleteButton-text"
-    text: "Delete"
-    label: "Delete button for Quick Meal is displayed"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "TagsSettings::11::EditButton"
-    direction: DOWN
-    speed: 20
-    timeout: 60000
-    centerElement: true
-    label: "Scroll to tag Salad"
-
-- waitForAnimationToEnd
-
-- assertVisible:
-    id: "TagsSettings::11::TagName"
-    text: "Salad"
-    label: "Tag Salad is displayed"
-
-- assertVisible:
-    id: "TagsSettings::11::EditButton-text"
-    text: "Edit"
-    label: "Edit button for Salad is displayed"
-
-- assertVisible:
-    id: "TagsSettings::11::DeleteButton-text"
-    text: "Delete"
-    label: "Delete button for Salad is displayed"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "TagsSettings::12::EditButton"
-    direction: DOWN
-    speed: 20
-    timeout: 60000
-    centerElement: true
-    label: "Scroll to tag Seafood"
-
-- waitForAnimationToEnd
-
-- assertVisible:
-    id: "TagsSettings::12::TagName"
-    text: "Seafood"
-    label: "Tag Seafood is displayed"
-
-- assertVisible:
-    id: "TagsSettings::12::EditButton-text"
-    text: "Edit"
-    label: "Edit button for Seafood is displayed"
-
-- assertVisible:
-    id: "TagsSettings::12::DeleteButton-text"
-    text: "Delete"
-    label: "Delete button for Seafood is displayed"
+    label: "Delete button for Breakfast is displayed"
 
 - waitForAnimationToEnd
 
@@ -375,24 +43,272 @@ appId: "com.recipedia"
     speed: 20
     timeout: 60000
     centerElement: true
-    label: "Scroll to tag Soup"
+    label: "Scroll to find first tag"
 
 - waitForAnimationToEnd
 
 - assertVisible:
     id: "TagsSettings::13::TagName"
-    text: "Soup"
-    label: "Tag Soup is displayed"
+    text: "Chocolate"
+    label: "Tag Chocolate is displayed"
 
 - assertVisible:
     id: "TagsSettings::13::EditButton-text"
     text: "Edit"
-    label: "Edit button for Soup is displayed"
+    label: "Edit button for Chocolate is displayed"
 
 - assertVisible:
     id: "TagsSettings::13::DeleteButton-text"
     text: "Delete"
-    label: "Delete button for Soup is displayed"
+    label: "Delete button for Chocolate is displayed"
+
+- scrollUntilVisible:
+    element:
+      id: "TagsSettings::13::TagName"
+    direction: DOWN
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll to find second tag"
+
+- assertVisible:
+    id: "TagsSettings::6::TagName"
+    text: "Dessert"
+    label: "Tag Dessert is displayed"
+
+- assertVisible:
+    id: "TagsSettings::6::EditButton-text"
+    text: "Edit"
+    label: "Edit button for Dessert is displayed"
+
+- assertVisible:
+    id: "TagsSettings::6::DeleteButton-text"
+    text: "Delete"
+    label: "Delete button for Dessert is displayed"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "TagsSettings::2::TagName"
+    direction: DOWN
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll to find third tag"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "TagsSettings::2::TagName"
+    text: "Dinner"
+    label: "Tag Dinner is displayed"
+
+- assertVisible:
+    id: "TagsSettings::2::EditButton-text"
+    text: "Edit"
+    label: "Edit button for Dinner is displayed"
+
+- assertVisible:
+    id: "TagsSettings::2::DeleteButton-text"
+    text: "Delete"
+    label: "Delete button for Dinner is displayed"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "TagsSettings::7::TagName"
+    direction: DOWN
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll to tag Healthy"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "TagsSettings::7::TagName"
+    text: "Healthy"
+    label: "Tag Healthy is displayed"
+
+- assertVisible:
+    id: "TagsSettings::7::EditButton-text"
+    text: "Edit"
+    label: "Edit button for Healthy is displayed"
+
+- assertVisible:
+    id: "TagsSettings::7::DeleteButton-text"
+    text: "Delete"
+    label: "Delete button for Healthy is displayed"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "TagsSettings::15::EditButton"
+    direction: DOWN
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll to tag Indian"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "TagsSettings::15::TagName"
+    text: "Indian"
+    label: "Tag Indian is displayed"
+
+- assertVisible:
+    id: "TagsSettings::15::EditButton-text"
+    text: "Edit"
+    label: "Edit button for Indian is displayed"
+
+- assertVisible:
+    id: "TagsSettings::15::DeleteButton-text"
+    text: "Delete"
+    label: "Delete button for Indian is displayed"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "TagsSettings::1::EditButton"
+    direction: DOWN
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll to tag Italian"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "TagsSettings::1::TagName"
+    text: "Italian"
+    label: "Tag Italian is displayed"
+
+- assertVisible:
+    id: "TagsSettings::1::EditButton-text"
+    text: "Edit"
+    label: "Edit button for Italian is displayed"
+
+- assertVisible:
+    id: "TagsSettings::1::DeleteButton-text"
+    text: "Delete"
+    label: "Delete button for Italian is displayed"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "TagsSettings::11::EditButton"
+    direction: DOWN
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll to tag Japanese"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "TagsSettings::11::TagName"
+    text: "Japanese"
+    label: "Tag Japanese is displayed"
+
+- assertVisible:
+    id: "TagsSettings::11::EditButton-text"
+    text: "Edit"
+    label: "Edit button for Japanese is displayed"
+
+- assertVisible:
+    id: "TagsSettings::11::DeleteButton-text"
+    text: "Delete"
+    label: "Delete button for Japanese is displayed"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "TagsSettings::4::EditButton"
+    direction: DOWN
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll to tag Lunch"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "TagsSettings::4::TagName"
+    text: "Lunch"
+    label: "Tag Lunch is displayed"
+
+- assertVisible:
+    id: "TagsSettings::4::EditButton-text"
+    text: "Edit"
+    label: "Edit button for Lunch is displayed"
+
+- assertVisible:
+    id: "TagsSettings::4::DeleteButton-text"
+    text: "Delete"
+    label: "Delete button for Lunch is displayed"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "TagsSettings::3::TagName"
+    direction: DOWN
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll to tag Mexican"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "TagsSettings::3::TagName"
+    text: "Mexican"
+    label: "Tag Mexican is displayed"
+
+- assertVisible:
+    id: "TagsSettings::3::EditButton-text"
+    text: "Edit"
+    label: "Edit button for Mexican is displayed"
+
+- assertVisible:
+    id: "TagsSettings::3::DeleteButton-text"
+    text: "Delete"
+    label: "Delete button for Mexican is displayed"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "TagsSettings::9::EditButton"
+    direction: DOWN
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll to tag Quick Meal"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "TagsSettings::9::TagName"
+    text: "Quick Meal"
+    label: "Tag Quick Meal is displayed"
+
+- assertVisible:
+    id: "TagsSettings::9::EditButton-text"
+    text: "Edit"
+    label: "Edit button for Quick Meal is displayed"
+
+- assertVisible:
+    id: "TagsSettings::9::DeleteButton-text"
+    text: "Delete"
+    label: "Delete button for Quick Meal is displayed"
 
 - waitForAnimationToEnd
 
@@ -403,50 +319,134 @@ appId: "com.recipedia"
     speed: 20
     timeout: 60000
     centerElement: true
-    label: "Scroll to tag Tag with space"
+    label: "Scroll to tag Salad"
 
 - waitForAnimationToEnd
 
 - assertVisible:
     id: "TagsSettings::14::TagName"
-    text: "Tag with space"
-    label: "Tag with space is displayed"
+    text: "Salad"
+    label: "Tag Salad is displayed"
 
 - assertVisible:
     id: "TagsSettings::14::EditButton-text"
     text: "Edit"
-    label: "Edit button for Tag with space is displayed"
+    label: "Edit button for Salad is displayed"
+
+- assertVisible:
+    id: "TagsSettings::14::DeleteButton-text"
+    text: "Delete"
+    label: "Delete button for Salad is displayed"
 
 - waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
-      id: "TagsSettings::BottomActionButton"
+      id: "TagsSettings::10::EditButton"
     direction: DOWN
     speed: 20
     timeout: 60000
     centerElement: true
-    label: "Scroll to Add button"
+    label: "Scroll to tag Seafood"
 
 - waitForAnimationToEnd
 
 - assertVisible:
-    id: "TagsSettings::14::DeleteButton-text"
+    id: "TagsSettings::10::TagName"
+    text: "Seafood"
+    label: "Tag Seafood is displayed"
+
+- assertVisible:
+    id: "TagsSettings::10::EditButton-text"
+    text: "Edit"
+    label: "Edit button for Seafood is displayed"
+
+- assertVisible:
+    id: "TagsSettings::10::DeleteButton-text"
+    text: "Delete"
+    label: "Delete button for Seafood is displayed"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "TagsSettings::8::TagName"
+    direction: DOWN
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll to tag Soup"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "TagsSettings::8::TagName"
+    text: "Soup"
+    label: "Tag Soup is displayed"
+
+- assertVisible:
+    id: "TagsSettings::8::EditButton-text"
+    text: "Edit"
+    label: "Edit button for Soup is displayed"
+
+- assertVisible:
+    id: "TagsSettings::8::DeleteButton-text"
+    text: "Delete"
+    label: "Delete button for Soup is displayed"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "TagsSettings::16::EditButton"
+    direction: DOWN
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll to tag Tag with space"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "TagsSettings::16::TagName"
+    text: "Tag with space"
+    label: "Tag with space is displayed"
+
+- assertVisible:
+    id: "TagsSettings::16::EditButton-text"
+    text: "Edit"
+    label: "Edit button for Tag with space is displayed"
+
+- assertVisible:
+    id: "TagsSettings::16::DeleteButton-text"
     text: "Delete"
     label: "Delete button for Tag with space is displayed"
 
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "TagsSettings::16::EditButton"
+    direction: DOWN
+    speed: 20
+    timeout: 60000
+    label: "Scroll to vegetarian tag"
+
+- waitForAnimationToEnd
+
 - assertVisible:
-    id: "TagsSettings::15::TagName"
+    id: "TagsSettings::12::TagName"
     text: "Vegetarian"
     label: "Tag Vegetarian is displayed"
 
 - assertVisible:
-    id: "TagsSettings::15::EditButton-text"
+    id: "TagsSettings::12::EditButton-text"
     text: "Edit"
     label: "Edit button for Vegetarian is displayed"
 
 - assertVisible:
-    id: "TagsSettings::15::DeleteButton-text"
+    id: "TagsSettings::12::DeleteButton-text"
     text: "Delete"
     label: "Delete button for Vegetarian is displayed"
 
