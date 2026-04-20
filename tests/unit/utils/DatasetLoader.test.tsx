@@ -12,6 +12,7 @@ import { frenchRecipes } from '@assets/datasets/fr/recipes';
 import { performanceIngredients } from '@assets/datasets/performance/ingredients';
 import { performanceTags } from '@assets/datasets/performance/tags';
 import { performanceRecipes } from '@assets/datasets/performance/recipes';
+import { isIngredientEqual } from '@customTypes/DatabaseElementTypes';
 
 describe('DatasetLoader Utility', () => {
   const originalEnv = process.env.NODE_ENV;
@@ -203,6 +204,33 @@ describe('DatasetLoader Utility', () => {
       expect(frResult.ingredients).toEqual(performanceIngredients);
       expect(enResult).toEqual(frResult);
     });
+  });
+
+  describe('dataset ingredient integrity', () => {
+    beforeEach(() => {
+      (process.env as any).NODE_ENV = 'production';
+    });
+
+    test.each(Object.keys(SUPPORTED_LANGUAGES) as SupportedLanguage[])(
+      'every recipe ingredient in %s dataset matches an ingredient in the ingredient list',
+      (lang: SupportedLanguage) => {
+        const dataset = getDataset(lang);
+        const mismatches: string[] = [];
+
+        for (const recipe of dataset.recipes) {
+          for (const recipeIng of recipe.ingredients) {
+            const found = dataset.ingredients.some(dbIng => isIngredientEqual(dbIng, recipeIng));
+            if (!found) {
+              mismatches.push(
+                `Recipe "${recipe.title}": ingredient "${recipeIng.name}" (unit: "${recipeIng.unit}") not found in ingredients list`
+              );
+            }
+          }
+        }
+
+        expect(mismatches).toEqual([]);
+      }
+    );
   });
 
   describe('regression tests', () => {
