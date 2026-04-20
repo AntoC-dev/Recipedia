@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { measureRenders } from 'reassure';
 import { Recipe } from '@screens/Recipe';
 import RecipeDatabase from '@utils/RecipeDatabase';
@@ -7,7 +7,6 @@ import { performanceIngredients } from '@assets/datasets/performance/ingredients
 import { performanceTags } from '@assets/datasets/performance/tags';
 import { SeasonFilterProvider } from '@context/SeasonFilterContext';
 import { DefaultPersonsProvider } from '@context/DefaultPersonsContext';
-import { useMenu } from '@hooks/useMenu';
 import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { RecipePropType, ScrapedRecipeData } from '@customTypes/RecipeNavigationTypes';
 import { RecipeScreenProp } from '@customTypes/ScreenTypes';
@@ -16,17 +15,6 @@ jest.mock('@react-navigation/native', () =>
   require('@mocks/deps/react-navigation-mock').reactNavigationMock()
 );
 jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
-
-type RecipePerfContext = { addRecipeToMenu: (r: recipeTableElement) => Promise<void> };
-let contextRef: RecipePerfContext | null = null;
-
-function ContextCapture() {
-  const { addRecipeToMenu } = useMenu();
-  useEffect(() => {
-    contextRef = { addRecipeToMenu };
-  }, [addRecipeToMenu]);
-  return null;
-}
 
 const mockNavigation = {
   goBack: jest.fn(),
@@ -47,7 +35,6 @@ function RecipeWrapper({ initialParams }: { initialParams: RecipePropType }) {
   return (
     <DefaultPersonsProvider>
       <SeasonFilterProvider>
-        <ContextCapture />
         <Recipe route={route} navigation={mockNavigation} />
       </SeasonFilterProvider>
     </DefaultPersonsProvider>
@@ -79,7 +66,6 @@ describe('Recipe Screen Performance', () => {
   const database = RecipeDatabase.getInstance();
 
   beforeEach(async () => {
-    contextRef = null;
     await database.init();
     await database.addMultipleIngredients(performanceIngredients);
     await database.addMultipleTags(performanceTags);
@@ -109,9 +95,7 @@ describe('Recipe Screen Performance', () => {
     const params: RecipePropType = { mode: 'readOnly', recipe: testRecipe };
 
     const scenario = async () => {
-      if (contextRef) {
-        await contextRef.addRecipeToMenu(testRecipe);
-      }
+      await database.addRecipeToMenu(testRecipe);
     };
 
     await measureRenders(<RecipeWrapper initialParams={params} />, { runs: 10, scenario });

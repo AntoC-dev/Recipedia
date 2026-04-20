@@ -16,7 +16,6 @@ import {
   useSeasonFilter,
 } from '@context/SeasonFilterContext';
 import { DefaultPersonsProvider } from '@context/DefaultPersonsContext';
-import { useRecipes } from '@hooks/useRecipes';
 
 jest.mock('@react-navigation/native', () =>
   require('@mocks/deps/react-navigation-mock').reactNavigationMock()
@@ -25,21 +24,13 @@ jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 
 const Stack = createStackNavigator();
 
-type HomePerfContext = {
-  recipes: recipeTableElement[];
-  addRecipe: (r: recipeTableElement) => Promise<void>;
-  deleteRecipe: (r: recipeTableElement) => Promise<boolean>;
-};
-let contextRef: HomePerfContext | null = null;
 let seasonContextRef: SeasonFilterContextType | null = null;
 
 function ContextCapture() {
-  const { recipes, addRecipe, deleteRecipe } = useRecipes();
   const seasonContext = useSeasonFilter();
   useEffect(() => {
-    contextRef = { recipes, addRecipe, deleteRecipe };
     seasonContextRef = seasonContext;
-  }, [recipes, addRecipe, deleteRecipe, seasonContext]);
+  }, [seasonContext]);
   return null;
 }
 
@@ -74,7 +65,6 @@ describe('Home Screen Performance', () => {
   const database = RecipeDatabase.getInstance();
 
   beforeEach(async () => {
-    contextRef = null;
     seasonContextRef = null;
     await database.init();
     await database.addMultipleIngredients(performanceIngredients);
@@ -92,9 +82,7 @@ describe('Home Screen Performance', () => {
 
   test('re-render after adding recipe via hook', async () => {
     const scenario = async () => {
-      if (contextRef) {
-        await contextRef.addRecipe({ ...testRecipe, title: `New Recipe ${Date.now()}` });
-      }
+      await database.addRecipe({ ...testRecipe, title: `New Recipe ${Date.now()}` });
     };
 
     await measureRenders(<HomeWrapper />, { runs: 10, scenario });
@@ -102,8 +90,9 @@ describe('Home Screen Performance', () => {
 
   test('re-render after deleting recipe via hook', async () => {
     const scenario = async () => {
-      if (contextRef && contextRef.recipes.length > 0) {
-        await contextRef.deleteRecipe(contextRef.recipes[0]);
+      const recipes = database.get_recipes();
+      if (recipes.length > 0) {
+        await database.deleteRecipe(recipes[0]);
       }
     };
 
@@ -145,11 +134,9 @@ describe('Home Screen Performance', () => {
 
   test('re-render after adding multiple recipes rapidly', async () => {
     const scenario = async () => {
-      if (contextRef) {
-        await contextRef.addRecipe({ ...testRecipe, title: `Rapid Recipe 1` });
-        await contextRef.addRecipe({ ...testRecipe, title: `Rapid Recipe 2` });
-        await contextRef.addRecipe({ ...testRecipe, title: `Rapid Recipe 3` });
-      }
+      await database.addRecipe({ ...testRecipe, title: `Rapid Recipe 1` });
+      await database.addRecipe({ ...testRecipe, title: `Rapid Recipe 2` });
+      await database.addRecipe({ ...testRecipe, title: `Rapid Recipe 3` });
     };
 
     await measureRenders(<HomeWrapper />, { runs: 10, scenario });
@@ -169,9 +156,7 @@ describe('Home Screen Performance', () => {
     };
 
     const scenario = async () => {
-      if (contextRef) {
-        await contextRef.addRecipe(seasonalRecipe);
-      }
+      await database.addRecipe(seasonalRecipe);
       if (seasonContextRef) {
         seasonContextRef.setSeasonFilter();
       }
@@ -206,7 +191,6 @@ describe('Home Screen Performance - Large Dataset', () => {
   const database = RecipeDatabase.getInstance();
 
   beforeEach(async () => {
-    contextRef = null;
     seasonContextRef = null;
     await database.init();
     await database.addMultipleIngredients(largeIngredients);
@@ -223,9 +207,7 @@ describe('Home Screen Performance - Large Dataset', () => {
 
   test('re-render after adding recipe with 1000 recipes', async () => {
     const scenario = async () => {
-      if (contextRef) {
-        await contextRef.addRecipe({ ...testRecipe, title: `ExtraRecipe${Date.now()}` });
-      }
+      await database.addRecipe({ ...testRecipe, title: `ExtraRecipe${Date.now()}` });
     };
 
     await measureRenders(<HomeWrapper />, { runs: 5, scenario });
