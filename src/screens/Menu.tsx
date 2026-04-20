@@ -104,7 +104,7 @@ export function Menu() {
         </ScrollView>
       )}
 
-      {copilotData && menu.length > 0 && (
+      {copilotData && (
         <CopilotStep text={t('tutorial.menu.description')} order={stepOrder} name={'Menu'}>
           <CopilotView
             style={{

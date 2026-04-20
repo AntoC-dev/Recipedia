@@ -108,7 +108,7 @@ export function Shopping() {
       setIsDialogOpen(false);
       setIngredientDataForDialog({ name: '', recipeTitles: [] });
       isDialogOpenRef.current = false;
-    } else {
+    } else if (shoppingList.length > 2) {
       setIngredientDataForDialog(shoppingList[2]);
       setIsDialogOpen(true);
       isDialogOpenRef.current = true;

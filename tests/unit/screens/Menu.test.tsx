@@ -87,16 +87,16 @@ describe('Menu Screen', () => {
       expect(queryByTestId(`${screenId}::ScrollView`)).toBeNull();
     });
 
-    test('does not render tutorial overlay when menu is empty', async () => {
+    test('renders tutorial overlay even when menu is empty', async () => {
       mockUseSafeCopilot.mockReturnValue({
         copilotEvents: {},
         currentStep: { order: 1, name: 'Menu', text: 'Menu step' },
         isActive: true,
       });
 
-      const { queryByTestId } = await renderMenuAndWait();
+      const { getByTestId } = await renderMenuAndWait();
 
-      expect(queryByTestId('CopilotStep::Menu')).toBeNull();
+      expect(getByTestId('CopilotStep::Menu')).toBeTruthy();
     });
   });
 
@@ -278,16 +278,16 @@ describe('Menu Screen', () => {
       expect(queryByTestId('CopilotStep::Menu')).toBeNull();
     });
 
-    test('does not render CopilotStep when menu is empty', async () => {
+    test('renders CopilotStep even when menu has no items', async () => {
       mockUseSafeCopilot.mockReturnValue({
         copilotEvents: {},
         currentStep: { order: 1, name: 'Menu', text: 'Menu step' },
         isActive: true,
       });
 
-      const { queryByTestId } = await renderMenuAndWait();
+      const { getByTestId } = await renderMenuAndWait();
 
-      expect(queryByTestId('CopilotStep::Menu')).toBeNull();
+      expect(getByTestId('CopilotStep::Menu')).toBeTruthy();
     });
   });
 });
