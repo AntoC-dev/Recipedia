@@ -6,17 +6,9 @@ import { recipeStateType } from '@customTypes/ScreenTypes';
 import { ingredientType, recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { RecipePropType } from '@customTypes/RecipeNavigationTypes';
 
-jest.mock('@hooks/useTags', () => {
-  const { testTags: mockTags } = require('@data/tagsDataset');
-  return {
-    useTags: () => ({
-      tags: mockTags,
-      findSimilarTags: jest.fn(() => []),
-      addTag: jest.fn(async (tag: unknown) => tag),
-      searchRandomlyTags: jest.fn(() => []),
-    }),
-  };
-});
+jest.mock('@hooks/useTags', () => ({
+  useTags: require('@mocks/hooks/useTags-mock').useTagsMock,
+}));
 
 function createFormWrapper(props: RecipePropType) {
   return function Wrapper({ children }: { children: React.ReactNode }) {

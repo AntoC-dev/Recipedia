@@ -1,15 +1,48 @@
 import { renderHook, waitFor } from '@testing-library/react-native';
+import { useRecipes } from '@hooks/useRecipes';
+import { useMenu } from '@hooks/useMenu';
+import { useShopping } from '@hooks/useShopping';
+import { useImportHistory } from '@hooks/useImportHistory';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { testRecipes } from '@test-data/recipesDataset';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
-import { constructImageUri, deleteFile, isTemporaryImageUri } from '@utils/FileGestion';
-import { useRecipes } from '@hooks/useRecipes';
-import { useDatabaseMeta } from '@hooks/useDatabaseMeta';
-import { useMenu } from '@hooks/useMenu';
-import { useShopping } from '@hooks/useShopping';
+import { deleteFile, constructImageUri, isTemporaryImageUri } from '@utils/FileGestion';
 
-describe('focused hooks (replacing RecipeDatabaseContext)', () => {
+function useAllHooks() {
+  const {
+    recipes,
+    scalingProgress,
+    addRecipe,
+    editRecipe,
+    deleteRecipe,
+    scaleAllRecipesForNewDefaultPersons,
+  } = useRecipes();
+  const { menu, addRecipeToMenu, toggleMenuItemCooked, clearMenu, togglePurchased } = useMenu();
+  const { shopping } = useShopping();
+  const { getImportedSourceUrls, getSeenUrls, markUrlsAsSeen, removeFromSeenHistory } =
+    useImportHistory();
+  return {
+    recipes,
+    scalingProgress,
+    addRecipe,
+    editRecipe,
+    deleteRecipe,
+    scaleAllRecipesForNewDefaultPersons,
+    menu,
+    addRecipeToMenu,
+    toggleMenuItemCooked,
+    clearMenu,
+    togglePurchased,
+    shopping,
+    getImportedSourceUrls,
+    getSeenUrls,
+    markUrlsAsSeen,
+    removeFromSeenHistory,
+  };
+}
+
+describe('focused database hooks', () => {
   let database: RecipeDatabase;
 
   beforeEach(async () => {
@@ -27,7 +60,11 @@ describe('focused hooks (replacing RecipeDatabaseContext)', () => {
 
   describe('scaleAllRecipesForNewDefaultPersons', () => {
     test('scales all recipes to new default persons count', async () => {
-      const { result } = renderHook(() => useRecipes());
+      const { result } = renderHook(() => useAllHooks());
+
+      await waitFor(() => {
+        expect(result.current.recipes.length).toBeGreaterThan(0);
+      });
 
       const originalRecipes = result.current.recipes;
       expect(originalRecipes.length).toBeGreaterThan(0);
@@ -35,7 +72,8 @@ describe('focused hooks (replacing RecipeDatabaseContext)', () => {
       await result.current.scaleAllRecipesForNewDefaultPersons(6);
 
       await waitFor(() => {
-        result.current.recipes.forEach(recipe => {
+        const scaledRecipes = result.current.recipes;
+        scaledRecipes.forEach(recipe => {
           if (recipe.persons && recipe.persons > 0) {
             expect(recipe.persons).toBe(6);
           }
@@ -44,7 +82,11 @@ describe('focused hooks (replacing RecipeDatabaseContext)', () => {
     });
 
     test('progress starts undefined and returns to undefined after scaling', async () => {
-      const { result } = renderHook(() => useRecipes());
+      const { result } = renderHook(() => useAllHooks());
+
+      await waitFor(() => {
+        expect(result.current.recipes.length).toBeGreaterThan(0);
+      });
 
       expect(result.current.scalingProgress).toBeUndefined();
 
@@ -56,7 +98,11 @@ describe('focused hooks (replacing RecipeDatabaseContext)', () => {
     });
 
     test('clears progress after scaling completes', async () => {
-      const { result } = renderHook(() => useRecipes());
+      const { result } = renderHook(() => useAllHooks());
+
+      await waitFor(() => {
+        expect(result.current.recipes.length).toBeGreaterThan(0);
+      });
 
       await result.current.scaleAllRecipesForNewDefaultPersons(7);
 
@@ -66,7 +112,11 @@ describe('focused hooks (replacing RecipeDatabaseContext)', () => {
     });
 
     test('does nothing when no recipes need scaling', async () => {
-      const { result } = renderHook(() => useRecipes());
+      const { result } = renderHook(() => useAllHooks());
+
+      await waitFor(() => {
+        expect(result.current.recipes.length).toBeGreaterThan(0);
+      });
 
       await result.current.scaleAllRecipesForNewDefaultPersons(6);
 
@@ -87,7 +137,11 @@ describe('focused hooks (replacing RecipeDatabaseContext)', () => {
     });
 
     test('skips recipes with invalid persons count', async () => {
-      const { result } = renderHook(() => useRecipes());
+      const { result } = renderHook(() => useAllHooks());
+
+      await waitFor(() => {
+        expect(result.current.recipes.length).toBeGreaterThan(0);
+      });
 
       const invalidRecipe = {
         ...testRecipes[0],
@@ -117,7 +171,11 @@ describe('focused hooks (replacing RecipeDatabaseContext)', () => {
     });
 
     test('correctly scales recipe ingredient quantities', async () => {
-      const { result } = renderHook(() => useRecipes());
+      const { result } = renderHook(() => useAllHooks());
+
+      await waitFor(() => {
+        expect(result.current.recipes.length).toBeGreaterThan(0);
+      });
 
       const recipeBefore = result.current.recipes[0];
       const ingredientBefore = recipeBefore.ingredients[0];
@@ -147,8 +205,12 @@ describe('focused hooks (replacing RecipeDatabaseContext)', () => {
   });
 
   describe('import memory methods', () => {
-    test('getImportedSourceUrls returns empty set when no recipes imported', () => {
-      const { result } = renderHook(() => useDatabaseMeta());
+    test('getImportedSourceUrls returns empty set when no recipes imported', async () => {
+      const { result } = renderHook(() => useAllHooks());
+
+      await waitFor(() => {
+        expect(result.current.recipes.length).toBeGreaterThan(0);
+      });
 
       const importedUrls = result.current.getImportedSourceUrls('hellofresh');
 
@@ -157,10 +219,11 @@ describe('focused hooks (replacing RecipeDatabaseContext)', () => {
     });
 
     test('getImportedSourceUrls returns URLs of imported recipes for provider', async () => {
-      const { result } = renderHook(() => ({
-        meta: useDatabaseMeta(),
-        recipes: useRecipes(),
-      }));
+      const { result } = renderHook(() => useAllHooks());
+
+      await waitFor(() => {
+        expect(result.current.recipes.length).toBeGreaterThan(0);
+      });
 
       const importedRecipe = {
         ...testRecipes[0],
@@ -169,19 +232,20 @@ describe('focused hooks (replacing RecipeDatabaseContext)', () => {
         sourceUrl: 'https://hellofresh.com/recipe-123',
         sourceProvider: 'hellofresh',
       };
-      await result.current.recipes.addRecipe(importedRecipe);
+      await result.current.addRecipe(importedRecipe);
 
       await waitFor(() => {
-        const importedUrls = result.current.meta.getImportedSourceUrls('hellofresh');
+        const importedUrls = result.current.getImportedSourceUrls('hellofresh');
         expect(importedUrls.has('https://hellofresh.com/recipe-123')).toBe(true);
       });
     });
 
     test('getImportedSourceUrls filters by provider', async () => {
-      const { result } = renderHook(() => ({
-        meta: useDatabaseMeta(),
-        recipes: useRecipes(),
-      }));
+      const { result } = renderHook(() => useAllHooks());
+
+      await waitFor(() => {
+        expect(result.current.recipes.length).toBeGreaterThan(0);
+      });
 
       const hellofreshRecipe = {
         ...testRecipes[0],
@@ -197,12 +261,12 @@ describe('focused hooks (replacing RecipeDatabaseContext)', () => {
         sourceUrl: 'https://marmiton.org/recipe-1',
         sourceProvider: 'marmiton',
       };
-      await result.current.recipes.addRecipe(hellofreshRecipe);
-      await result.current.recipes.addRecipe(marmitonRecipe);
+      await result.current.addRecipe(hellofreshRecipe);
+      await result.current.addRecipe(marmitonRecipe);
 
       await waitFor(() => {
-        const hellofreshUrls = result.current.meta.getImportedSourceUrls('hellofresh');
-        const marmitonUrls = result.current.meta.getImportedSourceUrls('marmiton');
+        const hellofreshUrls = result.current.getImportedSourceUrls('hellofresh');
+        const marmitonUrls = result.current.getImportedSourceUrls('marmiton');
 
         expect(hellofreshUrls.size).toBe(1);
         expect(hellofreshUrls.has('https://hellofresh.com/recipe-1')).toBe(true);
@@ -211,8 +275,12 @@ describe('focused hooks (replacing RecipeDatabaseContext)', () => {
       });
     });
 
-    test('getSeenUrls returns empty set when no URLs marked as seen', () => {
-      const { result } = renderHook(() => useDatabaseMeta());
+    test('getSeenUrls returns empty set when no URLs marked as seen', async () => {
+      const { result } = renderHook(() => useAllHooks());
+
+      await waitFor(() => {
+        expect(result.current.recipes.length).toBeGreaterThan(0);
+      });
 
       const seenUrls = result.current.getSeenUrls('hellofresh');
 
@@ -221,7 +289,11 @@ describe('focused hooks (replacing RecipeDatabaseContext)', () => {
     });
 
     test('markUrlsAsSeen adds URLs to seen history', async () => {
-      const { result } = renderHook(() => useDatabaseMeta());
+      const { result } = renderHook(() => useAllHooks());
+
+      await waitFor(() => {
+        expect(result.current.recipes.length).toBeGreaterThan(0);
+      });
 
       const urls = ['https://hellofresh.com/recipe-1', 'https://hellofresh.com/recipe-2'];
       await result.current.markUrlsAsSeen('hellofresh', urls);
@@ -233,7 +305,11 @@ describe('focused hooks (replacing RecipeDatabaseContext)', () => {
     });
 
     test('markUrlsAsSeen is provider-specific', async () => {
-      const { result } = renderHook(() => useDatabaseMeta());
+      const { result } = renderHook(() => useAllHooks());
+
+      await waitFor(() => {
+        expect(result.current.recipes.length).toBeGreaterThan(0);
+      });
 
       await result.current.markUrlsAsSeen('hellofresh', ['https://hellofresh.com/recipe-1']);
       await result.current.markUrlsAsSeen('marmiton', ['https://marmiton.org/recipe-1']);
@@ -248,7 +324,11 @@ describe('focused hooks (replacing RecipeDatabaseContext)', () => {
     });
 
     test('removeFromSeenHistory removes URLs from seen history', async () => {
-      const { result } = renderHook(() => useDatabaseMeta());
+      const { result } = renderHook(() => useAllHooks());
+
+      await waitFor(() => {
+        expect(result.current.recipes.length).toBeGreaterThan(0);
+      });
 
       const urls = ['https://hellofresh.com/recipe-1', 'https://hellofresh.com/recipe-2'];
       await result.current.markUrlsAsSeen('hellofresh', urls);
@@ -265,7 +345,11 @@ describe('focused hooks (replacing RecipeDatabaseContext)', () => {
     });
 
     test('removeFromSeenHistory only affects specified provider', async () => {
-      const { result } = renderHook(() => useDatabaseMeta());
+      const { result } = renderHook(() => useAllHooks());
+
+      await waitFor(() => {
+        expect(result.current.recipes.length).toBeGreaterThan(0);
+      });
 
       await result.current.markUrlsAsSeen('hellofresh', ['https://example.com/recipe-1']);
       await result.current.markUrlsAsSeen('marmiton', ['https://example.com/recipe-1']);
@@ -281,90 +365,94 @@ describe('focused hooks (replacing RecipeDatabaseContext)', () => {
   });
 
   describe('Menu and Shopping List', () => {
-    test('shopping is empty when menu is empty', () => {
-      const { result } = renderHook(() => useShopping());
+    test('shopping is empty when menu is empty', async () => {
+      const { result } = renderHook(() => useAllHooks());
+
+      await waitFor(() => {
+        expect(result.current.recipes.length).toBeGreaterThan(0);
+      });
 
       expect(result.current.shopping).toEqual([]);
     });
 
     test('shopping is computed from menu items', async () => {
-      const { result } = renderHook(() => ({
-        menu: useMenu(),
-        shopping: useShopping(),
-        recipes: useRecipes(),
-      }));
-
-      const recipe = result.current.recipes.recipes[0];
-      await result.current.menu.addRecipeToMenu(recipe);
+      const { result } = renderHook(() => useAllHooks());
 
       await waitFor(() => {
-        expect(result.current.menu.menu.length).toBe(1);
+        expect(result.current.recipes.length).toBeGreaterThan(0);
+      });
+
+      const recipe = result.current.recipes[0];
+      await result.current.addRecipeToMenu(recipe);
+
+      await waitFor(() => {
+        expect(result.current.menu.length).toBe(1);
       });
 
       await waitFor(() => {
-        expect(result.current.shopping.shopping.length).toBeGreaterThan(0);
+        expect(result.current.shopping.length).toBeGreaterThan(0);
       });
 
-      const ingredientNames = result.current.shopping.shopping.map(item => item.name);
+      const ingredientNames = result.current.shopping.map(item => item.name);
       recipe.ingredients.forEach(ingredient => {
         expect(ingredientNames).toContain(ingredient.name);
       });
     });
 
     test('shopping excludes ingredients from cooked menu items', async () => {
-      const { result } = renderHook(() => ({
-        menu: useMenu(),
-        shopping: useShopping(),
-        recipes: useRecipes(),
-      }));
-
-      const recipe = result.current.recipes.recipes[0];
-      await result.current.menu.addRecipeToMenu(recipe);
+      const { result } = renderHook(() => useAllHooks());
 
       await waitFor(() => {
-        expect(result.current.menu.menu.length).toBe(1);
+        expect(result.current.recipes.length).toBeGreaterThan(0);
+      });
+
+      const recipe = result.current.recipes[0];
+      await result.current.addRecipeToMenu(recipe);
+
+      await waitFor(() => {
+        expect(result.current.menu.length).toBe(1);
       });
 
       await waitFor(() => {
-        expect(result.current.shopping.shopping.length).toBeGreaterThan(0);
+        expect(result.current.shopping.length).toBeGreaterThan(0);
       });
 
-      const menuItem = result.current.menu.menu[0];
-      await result.current.menu.toggleMenuItemCooked(menuItem.id!);
+      const menuItem = result.current.menu[0];
+      await result.current.toggleMenuItemCooked(menuItem.id!);
 
       await waitFor(() => {
-        expect(result.current.menu.menu[0].isCooked).toBe(true);
+        expect(result.current.menu[0].isCooked).toBe(true);
       });
 
       await waitFor(() => {
-        expect(result.current.shopping.shopping.length).toBe(0);
+        expect(result.current.shopping.length).toBe(0);
       });
     });
 
     test('shopping aggregates same ingredients from different recipes', async () => {
-      const { result } = renderHook(() => ({
-        menu: useMenu(),
-        shopping: useShopping(),
-        recipes: useRecipes(),
-      }));
-
-      await result.current.menu.addRecipeToMenu(result.current.recipes.recipes[0]);
+      const { result } = renderHook(() => useAllHooks());
 
       await waitFor(() => {
-        expect(result.current.menu.menu.length).toBe(1);
+        expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
-      await result.current.menu.addRecipeToMenu(result.current.recipes.recipes[1]);
+      await result.current.addRecipeToMenu(result.current.recipes[0]);
 
       await waitFor(() => {
-        expect(result.current.menu.menu.length).toBe(2);
+        expect(result.current.menu.length).toBe(1);
+      });
+
+      await result.current.addRecipeToMenu(result.current.recipes[1]);
+
+      await waitFor(() => {
+        expect(result.current.menu.length).toBe(2);
       });
 
       await waitFor(() => {
-        expect(result.current.shopping.shopping.length).toBeGreaterThan(0);
+        expect(result.current.shopping.length).toBeGreaterThan(0);
       });
 
-      const shoppingItemNames = result.current.shopping.shopping.map(item => item.name);
+      const shoppingItemNames = result.current.shopping.map(item => item.name);
       const uniqueNames = [...new Set(shoppingItemNames)];
       expect(shoppingItemNames.length).toBe(uniqueNames.length);
     });
@@ -372,29 +460,29 @@ describe('focused hooks (replacing RecipeDatabaseContext)', () => {
 
   describe('togglePurchased', () => {
     test('toggles purchased state for ingredient', async () => {
-      const { result } = renderHook(() => ({
-        menu: useMenu(),
-        shopping: useShopping(),
-        recipes: useRecipes(),
-      }));
-
-      await result.current.menu.addRecipeToMenu(result.current.recipes.recipes[0]);
+      const { result } = renderHook(() => useAllHooks());
 
       await waitFor(() => {
-        expect(result.current.menu.menu.length).toBe(1);
+        expect(result.current.recipes.length).toBeGreaterThan(0);
+      });
+
+      await result.current.addRecipeToMenu(result.current.recipes[0]);
+
+      await waitFor(() => {
+        expect(result.current.menu.length).toBe(1);
       });
 
       await waitFor(() => {
-        expect(result.current.shopping.shopping.length).toBeGreaterThan(0);
+        expect(result.current.shopping.length).toBeGreaterThan(0);
       });
 
-      const ingredientName = result.current.shopping.shopping[0].name;
-      expect(result.current.shopping.shopping[0].purchased).toBe(false);
+      const ingredientName = result.current.shopping[0].name;
+      expect(result.current.shopping[0].purchased).toBe(false);
 
-      await result.current.menu.togglePurchased(ingredientName);
+      await result.current.togglePurchased(ingredientName);
 
       await waitFor(() => {
-        const item = result.current.shopping.shopping.find(i => i.name === ingredientName);
+        const item = result.current.shopping.find(i => i.name === ingredientName);
         expect(item?.purchased).toBe(true);
       });
     });
@@ -402,7 +490,9 @@ describe('focused hooks (replacing RecipeDatabaseContext)', () => {
 
   describe('editRecipe image cleanup', () => {
     test('deletes old permanent image when image URI changes', async () => {
-      const { result } = renderHook(() => useRecipes());
+      const { result } = renderHook(() => useAllHooks());
+
+      await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
       const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
       const previousImageUri = recipe.image_Source;
@@ -413,7 +503,9 @@ describe('focused hooks (replacing RecipeDatabaseContext)', () => {
     });
 
     test('does not delete old image when URI is unchanged', async () => {
-      const { result } = renderHook(() => useRecipes());
+      const { result } = renderHook(() => useAllHooks());
+
+      await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
       const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
 
@@ -423,7 +515,9 @@ describe('focused hooks (replacing RecipeDatabaseContext)', () => {
     });
 
     test('returns the edited recipe with updated image URI', async () => {
-      const { result } = renderHook(() => useRecipes());
+      const { result } = renderHook(() => useAllHooks());
+
+      await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
       const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
       const newImageUri = 'file:///documents/new.jpg';
@@ -434,7 +528,9 @@ describe('focused hooks (replacing RecipeDatabaseContext)', () => {
     });
 
     test('does not delete old image when it is a temporary URI', async () => {
-      const { result } = renderHook(() => useRecipes());
+      const { result } = renderHook(() => useAllHooks());
+
+      await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
       const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
       (isTemporaryImageUri as jest.Mock).mockImplementation(
@@ -450,7 +546,9 @@ describe('focused hooks (replacing RecipeDatabaseContext)', () => {
     });
 
     test('propagates error thrown by db when recipe has no ID', async () => {
-      const { result } = renderHook(() => useRecipes());
+      const { result } = renderHook(() => useAllHooks());
+
+      await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
       const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
 
@@ -458,7 +556,9 @@ describe('focused hooks (replacing RecipeDatabaseContext)', () => {
     });
 
     test('deleteFile is called with the previous URI, not the new one', async () => {
-      const { result } = renderHook(() => useRecipes());
+      const { result } = renderHook(() => useAllHooks());
+
+      await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
       const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
       const newImageUri = 'file:///documents/new.jpg';
@@ -472,7 +572,9 @@ describe('focused hooks (replacing RecipeDatabaseContext)', () => {
 
   describe('deleteRecipe image cleanup', () => {
     test('deletes image file when recipe has a permanent image', async () => {
-      const { result } = renderHook(() => useRecipes());
+      const { result } = renderHook(() => useAllHooks());
+
+      await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
       const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
       await result.current.deleteRecipe(recipe);
@@ -481,7 +583,9 @@ describe('focused hooks (replacing RecipeDatabaseContext)', () => {
     });
 
     test('does not call deleteFile when image_Source is empty', async () => {
-      const { result } = renderHook(() => useRecipes());
+      const { result } = renderHook(() => useAllHooks());
+
+      await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
       const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
       await result.current.deleteRecipe({ ...recipe, image_Source: '' });
@@ -490,18 +594,22 @@ describe('focused hooks (replacing RecipeDatabaseContext)', () => {
     });
 
     test('does not call deleteFile when image_Source is a temporary URI', async () => {
-      const { result } = renderHook(() => useRecipes());
+      const { result } = renderHook(() => useAllHooks());
+
+      await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
       const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
-      const { isTemporaryImageUri: isTempUri } = require('@utils/FileGestion');
-      isTempUri.mockReturnValueOnce(true);
+      const { isTemporaryImageUri } = require('@utils/FileGestion');
+      isTemporaryImageUri.mockReturnValueOnce(true);
       await result.current.deleteRecipe({ ...recipe, image_Source: '/cache/temp.jpg' });
 
       expect(deleteFile).not.toHaveBeenCalled();
     });
 
     test('removes recipe from state after deletion', async () => {
-      const { result } = renderHook(() => useRecipes());
+      const { result } = renderHook(() => useAllHooks());
+
+      await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
       const initialCount = result.current.recipes.length;
       const recipe = result.current.recipes[0];
@@ -513,7 +621,9 @@ describe('focused hooks (replacing RecipeDatabaseContext)', () => {
     });
 
     test('returns the database deletion result', async () => {
-      const { result } = renderHook(() => useRecipes());
+      const { result } = renderHook(() => useAllHooks());
+
+      await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
       const recipe = result.current.recipes[0];
       const deleteResult = await result.current.deleteRecipe(recipe);
@@ -524,21 +634,22 @@ describe('focused hooks (replacing RecipeDatabaseContext)', () => {
 
   describe('clearMenu', () => {
     test('clears all menu items', async () => {
-      const { result } = renderHook(() => ({
-        menu: useMenu(),
-        recipes: useRecipes(),
-      }));
-
-      await result.current.menu.addRecipeToMenu(result.current.recipes.recipes[0]);
+      const { result } = renderHook(() => useAllHooks());
 
       await waitFor(() => {
-        expect(result.current.menu.menu.length).toBe(1);
+        expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
-      await result.current.menu.clearMenu();
+      await result.current.addRecipeToMenu(result.current.recipes[0]);
 
       await waitFor(() => {
-        expect(result.current.menu.menu.length).toBe(0);
+        expect(result.current.menu.length).toBe(1);
+      });
+
+      await result.current.clearMenu();
+
+      await waitFor(() => {
+        expect(result.current.menu.length).toBe(0);
       });
     });
   });

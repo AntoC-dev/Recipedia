@@ -6,11 +6,6 @@ import { testRecipes } from '@test-data/recipesDataset';
 import { testTags } from '@test-data/tagsDataset';
 import { testIngredients } from '@test-data/ingredientsDataset';
 
-const mockLoadFirstLaunchDataset = jest.fn();
-jest.mock('@utils/datasetInitializer', () => ({
-  loadFirstLaunchDataset: (...args: unknown[]) => mockLoadFirstLaunchDataset(...args),
-}));
-
 jest.mock('@components/atomic/CustomImage', () =>
   require('@mocks/components/atomic/CustomImage-mock').customImageMock()
 );
@@ -18,6 +13,10 @@ jest.mock('@components/atomic/CustomImage', () =>
 jest.mock('expo-asset', () => require('@mocks/deps/expo-asset-mock').expoAssetMock());
 
 jest.mock('expo-constants', () => require('@mocks/deps/expo-constants-mock').expoConstantsMock());
+
+jest.mock('@utils/datasetInitializer', () => ({
+  loadFirstLaunchDataset: jest.fn().mockResolvedValue(undefined),
+}));
 
 describe('WelcomeScreen Component', () => {
   const mockOnStartTutorial = jest.fn();
@@ -29,7 +28,6 @@ describe('WelcomeScreen Component', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
-    mockLoadFirstLaunchDataset.mockResolvedValue(undefined);
     database = RecipeDatabase.getInstance();
     await database.init();
   });
@@ -156,7 +154,8 @@ describe('WelcomeScreen Component', () => {
     });
 
     test('shows dataset error dialog when dataset loading fails', async () => {
-      mockLoadFirstLaunchDataset.mockRejectedValue(new Error('Network error'));
+      const { loadFirstLaunchDataset } = require('@utils/datasetInitializer');
+      loadFirstLaunchDataset.mockRejectedValueOnce(new Error('Network error'));
 
       const { getByTestId } = renderWelcomeScreen();
 
@@ -167,19 +166,21 @@ describe('WelcomeScreen Component', () => {
       expect(getByTestId('WelcomeScreen::DatasetErrorDialog::OK')).toBeTruthy();
     });
 
-    test('dataset error dialog shows correct error message', async () => {
+    test('dataset error dialog shows the error message', async () => {
       const errorMessage = 'Failed to load dataset: Network error';
-      mockLoadFirstLaunchDataset.mockRejectedValue(new Error(errorMessage));
+      const { loadFirstLaunchDataset } = require('@utils/datasetInitializer');
+      loadFirstLaunchDataset.mockRejectedValueOnce(new Error(errorMessage));
 
       const { getByText } = renderWelcomeScreen();
 
       await waitFor(() => {
-        expect(getByText(new RegExp('Failed to load dataset'))).toBeTruthy();
+        expect(getByText(new RegExp(errorMessage))).toBeTruthy();
       });
     });
 
-    test('dismissing dataset error dialog hides the dialog', async () => {
-      mockLoadFirstLaunchDataset.mockRejectedValue(new Error('Test error'));
+    test('dismissing dataset error dialog hides it', async () => {
+      const { loadFirstLaunchDataset } = require('@utils/datasetInitializer');
+      loadFirstLaunchDataset.mockRejectedValueOnce(new Error('Test error'));
 
       const { getByTestId, queryByTestId } = renderWelcomeScreen();
 
@@ -191,6 +192,41 @@ describe('WelcomeScreen Component', () => {
 
       await waitFor(() => {
         expect(queryByTestId('WelcomeScreen::DatasetErrorDialog')).toBeNull();
+      });
+    });
+
+    test('formats error message without stack when Error has no stack', async () => {
+      const { loadFirstLaunchDataset } = require('@utils/datasetInitializer');
+      const error = new Error('no stack error');
+      error.stack = undefined;
+      loadFirstLaunchDataset.mockRejectedValueOnce(error);
+
+      const { getByText } = renderWelcomeScreen();
+
+      await waitFor(() => {
+        expect(getByText(new RegExp('no stack error'))).toBeTruthy();
+      });
+    });
+
+    test('formats error message using JSON.stringify when error is a plain object', async () => {
+      const { loadFirstLaunchDataset } = require('@utils/datasetInitializer');
+      loadFirstLaunchDataset.mockRejectedValueOnce({ code: 404 });
+
+      const { getByText } = renderWelcomeScreen();
+
+      await waitFor(() => {
+        expect(getByText(new RegExp('"code"'))).toBeTruthy();
+      });
+    });
+
+    test('formats error message using String when error is a primitive', async () => {
+      const { loadFirstLaunchDataset } = require('@utils/datasetInitializer');
+      loadFirstLaunchDataset.mockRejectedValueOnce('some error');
+
+      const { getByText } = renderWelcomeScreen();
+
+      await waitFor(() => {
+        expect(getByText(new RegExp('some error'))).toBeTruthy();
       });
     });
   });

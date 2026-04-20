@@ -7,21 +7,16 @@ import { createMockRecipeProp } from '@test-helpers/recipeHookTestWrapper';
 import { ingredientType, recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { RecipePropType } from '@customTypes/RecipeNavigationTypes';
 import { testTags } from '@data/tagsDataset';
+import {
+  mockFindSimilarTags,
+  mockAddTag,
+  setMockTags,
+  useTagsMock,
+} from '@mocks/hooks/useTags-mock';
 
-const mockFindSimilarTags = jest.fn();
-const mockAddTag = jest.fn();
-
-jest.mock('@hooks/useTags', () => {
-  const { testTags: mockTags } = require('@data/tagsDataset');
-  return {
-    useTags: () => ({
-      tags: mockTags,
-      findSimilarTags: mockFindSimilarTags,
-      addTag: mockAddTag,
-      searchRandomlyTags: jest.fn(() => []),
-    }),
-  };
-});
+jest.mock('@hooks/useTags', () => ({
+  useTags: require('@mocks/hooks/useTags-mock').useTagsMock,
+}));
 
 function createTagsWrapper(props: RecipePropType) {
   return function Wrapper({ children }: { children: React.ReactNode }) {
@@ -54,6 +49,7 @@ const recipeWithTags: recipeTableElement = {
 describe('useRecipeTags', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    setMockTags(testTags);
     mockFindSimilarTags.mockImplementation((name: string) => {
       const exactMatch = testTags.find(t => t.name.toLowerCase() === name.toLowerCase());
       if (exactMatch) return [exactMatch];
@@ -68,7 +64,7 @@ describe('useRecipeTags', () => {
       });
       return fuzzyMatches;
     });
-    mockAddTag.mockImplementation(async tag => ({ ...tag, id: 100 }));
+    mockAddTag.mockImplementation(async tag => ({ ...(tag as object), id: 100 }));
   });
 
   describe('addTag', () => {

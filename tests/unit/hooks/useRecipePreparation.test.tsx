@@ -5,21 +5,11 @@ import { RecipeFormProvider, useRecipeForm } from '@context/RecipeFormContext';
 import { createMockRecipeProp } from '@test-helpers/recipeHookTestWrapper';
 import { ingredientType, recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { RecipePropType } from '@customTypes/RecipeNavigationTypes';
-import { testTags } from '@data/tagsDataset';
-import { testIngredients } from '@data/ingredientsDataset';
 import * as logger from '@utils/logger';
 
-jest.mock('@hooks/useTags', () => {
-  const { testTags: mockTags } = require('@data/tagsDataset');
-  return {
-    useTags: () => ({
-      tags: mockTags,
-      findSimilarTags: jest.fn(() => []),
-      addTag: jest.fn(async (tag: unknown) => tag),
-      searchRandomlyTags: jest.fn(() => []),
-    }),
-  };
-});
+jest.mock('@hooks/useTags', () => ({
+  useTags: require('@mocks/hooks/useTags-mock').useTagsMock,
+}));
 
 function createPreparationWrapper(props: RecipePropType) {
   return function Wrapper({ children }: { children: React.ReactNode }) {

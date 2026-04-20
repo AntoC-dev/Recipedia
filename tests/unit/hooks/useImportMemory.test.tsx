@@ -5,8 +5,6 @@ import RecipeDatabase from '@utils/RecipeDatabase';
 import { testRecipes } from '@test-data/recipesDataset';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
-import { useRecipes } from '@hooks/useRecipes';
-import { useDatabaseMeta } from '@hooks/useDatabaseMeta';
 
 const createRecipe = (url: string, title: string): DiscoveredRecipe => ({
   url,
@@ -36,8 +34,6 @@ describe('useImportMemory', () => {
     });
 
     test('returns imported for URLs of imported recipes', async () => {
-      const { result: recipesResult } = renderHook(() => useRecipes());
-
       const importedRecipe = {
         ...testRecipes[0],
         id: undefined,
@@ -45,21 +41,17 @@ describe('useImportMemory', () => {
         sourceUrl: 'https://hellofresh.com/recipe-imported',
         sourceProvider: 'hellofresh',
       };
-      await recipesResult.current.addRecipe(importedRecipe);
+      await database.addRecipe(importedRecipe);
 
       const { result } = renderHook(() => useImportMemory('hellofresh'));
 
-      await waitFor(() => {
-        expect(result.current.getMemoryStatus('https://hellofresh.com/recipe-imported')).toBe(
-          'imported'
-        );
-      });
+      expect(result.current.getMemoryStatus('https://hellofresh.com/recipe-imported')).toBe(
+        'imported'
+      );
     });
 
     test('returns seen for URLs marked as seen', async () => {
-      const { result: metaResult } = renderHook(() => useDatabaseMeta());
-
-      await metaResult.current.markUrlsAsSeen('hellofresh', ['https://hellofresh.com/seen-recipe']);
+      await database.markUrlsAsSeen('hellofresh', ['https://hellofresh.com/seen-recipe']);
 
       const { result } = renderHook(() => useImportMemory('hellofresh'));
 
@@ -67,12 +59,8 @@ describe('useImportMemory', () => {
     });
 
     test('imported takes precedence over seen', async () => {
-      const { result: metaResult } = renderHook(() => useDatabaseMeta());
-      const { result: recipesResult } = renderHook(() => useRecipes());
-
       const url = 'https://hellofresh.com/recipe-both';
-
-      await metaResult.current.markUrlsAsSeen('hellofresh', [url]);
+      await database.markUrlsAsSeen('hellofresh', [url]);
 
       const importedRecipe = {
         ...testRecipes[0],
@@ -81,13 +69,11 @@ describe('useImportMemory', () => {
         sourceUrl: url,
         sourceProvider: 'hellofresh',
       };
-      await recipesResult.current.addRecipe(importedRecipe);
+      await database.addRecipe(importedRecipe);
 
       const { result } = renderHook(() => useImportMemory('hellofresh'));
 
-      await waitFor(() => {
-        expect(result.current.getMemoryStatus(url)).toBe('imported');
-      });
+      expect(result.current.getMemoryStatus(url)).toBe('imported');
     });
   });
 
@@ -106,8 +92,6 @@ describe('useImportMemory', () => {
     });
 
     test('marks imported recipes correctly', async () => {
-      const { result: recipesResult } = renderHook(() => useRecipes());
-
       const importedRecipe = {
         ...testRecipes[0],
         id: undefined,
@@ -115,7 +99,7 @@ describe('useImportMemory', () => {
         sourceUrl: 'https://hellofresh.com/recipe-1',
         sourceProvider: 'hellofresh',
       };
-      await recipesResult.current.addRecipe(importedRecipe);
+      await database.addRecipe(importedRecipe);
 
       const recipes = [
         createRecipe('https://hellofresh.com/recipe-1', 'Imported Recipe'),
@@ -123,18 +107,14 @@ describe('useImportMemory', () => {
       ];
 
       const { result } = renderHook(() => useImportMemory('hellofresh'));
+      const processed = result.current.processDiscoveredRecipes(recipes, false);
 
-      await waitFor(() => {
-        const processed = result.current.processDiscoveredRecipes(recipes, false);
-        expect(processed[0].memoryStatus).toBe('imported');
-        expect(processed[1].memoryStatus).toBe('fresh');
-      });
+      expect(processed[0].memoryStatus).toBe('imported');
+      expect(processed[1].memoryStatus).toBe('fresh');
     });
 
     test('marks seen recipes correctly', async () => {
-      const { result: metaResult } = renderHook(() => useDatabaseMeta());
-
-      await metaResult.current.markUrlsAsSeen('hellofresh', ['https://hellofresh.com/recipe-1']);
+      await database.markUrlsAsSeen('hellofresh', ['https://hellofresh.com/recipe-1']);
 
       const recipes = [
         createRecipe('https://hellofresh.com/recipe-1', 'Seen Recipe'),
@@ -149,8 +129,6 @@ describe('useImportMemory', () => {
     });
 
     test('filters out imported recipes when hideImported is true', async () => {
-      const { result: recipesResult } = renderHook(() => useRecipes());
-
       const importedRecipe = {
         ...testRecipes[0],
         id: undefined,
@@ -158,7 +136,7 @@ describe('useImportMemory', () => {
         sourceUrl: 'https://hellofresh.com/recipe-1',
         sourceProvider: 'hellofresh',
       };
-      await recipesResult.current.addRecipe(importedRecipe);
+      await database.addRecipe(importedRecipe);
 
       const recipes = [
         createRecipe('https://hellofresh.com/recipe-1', 'Imported Recipe'),
@@ -166,17 +144,13 @@ describe('useImportMemory', () => {
       ];
 
       const { result } = renderHook(() => useImportMemory('hellofresh'));
+      const processed = result.current.processDiscoveredRecipes(recipes, true);
 
-      await waitFor(() => {
-        const processed = result.current.processDiscoveredRecipes(recipes, true);
-        expect(processed).toHaveLength(1);
-        expect(processed[0].title).toBe('Fresh Recipe');
-      });
+      expect(processed).toHaveLength(1);
+      expect(processed[0].title).toBe('Fresh Recipe');
     });
 
     test('keeps imported recipes when hideImported is false', async () => {
-      const { result: recipesResult } = renderHook(() => useRecipes());
-
       const importedRecipe = {
         ...testRecipes[0],
         id: undefined,
@@ -184,7 +158,7 @@ describe('useImportMemory', () => {
         sourceUrl: 'https://hellofresh.com/recipe-1',
         sourceProvider: 'hellofresh',
       };
-      await recipesResult.current.addRecipe(importedRecipe);
+      await database.addRecipe(importedRecipe);
 
       const recipes = [
         createRecipe('https://hellofresh.com/recipe-1', 'Imported Recipe'),
@@ -192,17 +166,13 @@ describe('useImportMemory', () => {
       ];
 
       const { result } = renderHook(() => useImportMemory('hellofresh'));
+      const processed = result.current.processDiscoveredRecipes(recipes, false);
 
-      await waitFor(() => {
-        const processed = result.current.processDiscoveredRecipes(recipes, false);
-        expect(processed).toHaveLength(2);
-      });
+      expect(processed).toHaveLength(2);
     });
 
     test('keeps seen recipes regardless of hideImported', async () => {
-      const { result: metaResult } = renderHook(() => useDatabaseMeta());
-
-      await metaResult.current.markUrlsAsSeen('hellofresh', ['https://hellofresh.com/recipe-1']);
+      await database.markUrlsAsSeen('hellofresh', ['https://hellofresh.com/recipe-1']);
 
       const recipes = [
         createRecipe('https://hellofresh.com/recipe-1', 'Seen Recipe'),
@@ -225,8 +195,6 @@ describe('useImportMemory', () => {
 
   describe('counts', () => {
     test('importedCount reflects number of imported recipes', async () => {
-      const { result: recipesResult } = renderHook(() => useRecipes());
-
       for (let i = 0; i < 3; i++) {
         const importedRecipe = {
           ...testRecipes[0],
@@ -235,20 +203,16 @@ describe('useImportMemory', () => {
           sourceUrl: `https://hellofresh.com/recipe-${i}`,
           sourceProvider: 'hellofresh',
         };
-        await recipesResult.current.addRecipe(importedRecipe);
+        await database.addRecipe(importedRecipe);
       }
 
       const { result } = renderHook(() => useImportMemory('hellofresh'));
 
-      await waitFor(() => {
-        expect(result.current.importedCount).toBe(3);
-      });
+      expect(result.current.importedCount).toBe(3);
     });
 
     test('seenCount reflects number of seen URLs', async () => {
-      const { result: metaResult } = renderHook(() => useDatabaseMeta());
-
-      await metaResult.current.markUrlsAsSeen('hellofresh', ['url1', 'url2']);
+      await database.markUrlsAsSeen('hellofresh', ['url1', 'url2']);
 
       const { result } = renderHook(() => useImportMemory('hellofresh'));
 
@@ -265,8 +229,6 @@ describe('useImportMemory', () => {
 
   describe('provider filtering', () => {
     test('only returns imported recipes for the specified provider', async () => {
-      const { result: recipesResult } = renderHook(() => useRecipes());
-
       const hellofreshRecipe = {
         ...testRecipes[0],
         id: undefined,
@@ -281,23 +243,19 @@ describe('useImportMemory', () => {
         sourceUrl: 'https://marmiton.org/recipe-1',
         sourceProvider: 'marmiton',
       };
-      await recipesResult.current.addRecipe(hellofreshRecipe);
-      await recipesResult.current.addRecipe(marmitonRecipe);
+      await database.addRecipe(hellofreshRecipe);
+      await database.addRecipe(marmitonRecipe);
 
       const { result: hellofreshResult } = renderHook(() => useImportMemory('hellofresh'));
       const { result: marmitonResult } = renderHook(() => useImportMemory('marmiton'));
 
-      await waitFor(() => {
-        expect(hellofreshResult.current.importedCount).toBe(1);
-        expect(marmitonResult.current.importedCount).toBe(1);
-      });
+      expect(hellofreshResult.current.importedCount).toBe(1);
+      expect(marmitonResult.current.importedCount).toBe(1);
     });
 
     test('only returns seen URLs for the specified provider', async () => {
-      const { result: metaResult } = renderHook(() => useDatabaseMeta());
-
-      await metaResult.current.markUrlsAsSeen('hellofresh', ['https://hellofresh.com/recipe-1']);
-      await metaResult.current.markUrlsAsSeen('marmiton', ['https://marmiton.org/recipe-1']);
+      await database.markUrlsAsSeen('hellofresh', ['https://hellofresh.com/recipe-1']);
+      await database.markUrlsAsSeen('marmiton', ['https://marmiton.org/recipe-1']);
 
       const { result: hellofreshResult } = renderHook(() => useImportMemory('hellofresh'));
       const { result: marmitonResult } = renderHook(() => useImportMemory('marmiton'));
