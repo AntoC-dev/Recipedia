@@ -2,7 +2,7 @@
  * datasetInitializer - First-launch dataset loading for Recipedia
  *
  * Provides a single async function that copies dataset images and inserts
- * the full ingredient, tag and recipe dataset into a RecipeDatabase instance.
+ * the full ingredient, tag and recipe dataset into the RecipeDatabase singleton.
  * Designed to be called once on first launch, inside
  * `InteractionManager.runAfterInteractions`, so the UI renders before the
  * heavy data load begins.
@@ -25,17 +25,18 @@ import { databaseLogger } from '@utils/logger';
  * Loads the full first-launch dataset into the database.
  *
  * Copies bundled dataset images into the app's document directory, then
- * inserts all ingredients, tags and pre-scaled recipes into `db`. Each
- * `addMultiple*` call notifies `useSyncExternalStore` subscribers so the UI
- * updates incrementally as data arrives.
+ * inserts all ingredients, tags and pre-scaled recipes into the RecipeDatabase
+ * singleton. Each `addMultiple*` call notifies `useSyncExternalStore` subscribers
+ * so the UI updates incrementally as data arrives.
  *
  * Image copy failures are swallowed with a warning so the rest of the dataset
  * still loads. All other errors propagate to the caller.
  *
- * @param db - The RecipeDatabase singleton to load data into
  * @returns Promise that resolves when all data has been inserted
  */
-export async function loadFirstLaunchDataset(db: RecipeDatabase): Promise<void> {
+export async function loadFirstLaunchDataset(): Promise<void> {
+  const db = RecipeDatabase.getInstance();
+
   try {
     await copyDatasetImages();
   } catch (imageError) {

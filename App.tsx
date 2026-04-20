@@ -17,9 +17,7 @@ import {recipeScraper} from '@app/modules/recipe-scraper';
 import {PyodideWebView} from '@app/modules/recipe-scraper/src/ios/PyodideWebView';
 import {AuthWebView} from '@app/modules/recipe-scraper/src/ios/AuthWebView';
 import {AuthBridge} from '@app/modules/recipe-scraper/src/ios/AuthBridge';
-import {useDatabaseReady} from '@hooks/useDatabaseReady';
 import {RecipeDatabase} from '@utils/RecipeDatabase';
-import {cleanupOrphanedImages, init as initFileSystem} from '@utils/FileGestion';
 
 // TODO manage horizontal mode
 
@@ -37,32 +35,19 @@ SplashScreen.preventAutoHideAsync();
 
 function AppContent() {
     const [isAppInitialized, setIsAppInitialized] = useState(false);
+    const [isDatabaseReady, setIsDatabaseReady] = useState(false);
     const [darkMode, setDarkMode] = useState(false);
     const [isFirstLaunchFlag, setIsFirstLaunchFlag] = useState<boolean | null>(null);
-    const isDatabaseReady = useDatabaseReady();
-
-    useEffect(() => {
-        const initDatabase = async () => {
-            try {
-                initFileSystem();
-                const db = RecipeDatabase.getInstance();
-                await db.init();
-                InteractionManager.runAfterInteractions(() => {
-                    cleanupOrphanedImages(db.get_recipes().map(r => r.image_Source)).catch(
-                        error => appLogger.warn('Orphan image cleanup failed', {error})
-                    );
-                });
-            } catch (error) {
-                appLogger.error('Database initialization failed', {error});
-            }
-        };
-        initDatabase();
-    }, []);
 
     useEffect(() => {
         const initialize = async () => {
             try {
                 appLogger.info('Starting app initialization');
+
+                const db = RecipeDatabase.getInstance();
+                await db.init();
+                setIsDatabaseReady(true);
+                appLogger.debug('Database initialized');
 
                 const [, isFirst, isDarkMode] = await Promise.all([
                     initSettings(),
@@ -102,7 +87,7 @@ function AppContent() {
         animation: { scale: animationsDisabled ? 0 : 1 },
     };
 
-    const shouldHideSplash = isAppInitialized && (isFirstLaunchFlag === true || isDatabaseReady);
+    const shouldHideSplash = isAppInitialized && isDatabaseReady;
 
     const onLayoutRootView = async () => {
         if (shouldHideSplash) {

@@ -1,34 +1,27 @@
 /**
- * useDatabaseMeta - Hook for imperative database metadata operations
+ * useImportHistory - Hook for bulk import URL history operations
  *
- * Thin wrapper around the RecipeDatabase singleton for operations that are
- * not reactive (import history, emptiness check). These methods are called
- * imperatively at specific points in workflows rather than being subscribed
- * to continuously.
+ * Thin wrapper around the RecipeDatabase singleton for import history queries.
+ * These methods are called imperatively at specific points in bulk import
+ * workflows rather than being subscribed to continuously.
  *
- * For the reactive database readiness boolean use `useDatabaseReady`.
- *
- * @module useDatabaseMeta
+ * @module useImportHistory
  */
 
 import { RecipeDatabase } from '@utils/RecipeDatabase';
 
 /**
- * Provides imperative database metadata operations.
+ * Provides imperative access to bulk import URL history.
  *
  * All returned functions call through to the RecipeDatabase singleton directly.
  * No reactive subscriptions — consuming components do not re-render when import
  * history changes.
  *
- * @returns Object containing `isDatabaseEmpty`, `getImportedSourceUrls`,
- *   `getSeenUrls`, `markUrlsAsSeen` and `removeFromSeenHistory`
+ * @returns Object containing `getImportedSourceUrls`, `getSeenUrls`,
+ *   `markUrlsAsSeen` and `removeFromSeenHistory`
  */
-export function useDatabaseMeta() {
+export function useImportHistory() {
   const db = RecipeDatabase.getInstance();
-
-  const isDatabaseEmpty = (): boolean => {
-    return db.isDatabaseEmpty();
-  };
 
   const getImportedSourceUrls = (providerId: string): Set<string> => {
     return db.getImportedSourceUrls(providerId);
@@ -47,7 +40,6 @@ export function useDatabaseMeta() {
   };
 
   return {
-    isDatabaseEmpty,
     getImportedSourceUrls,
     getSeenUrls,
     markUrlsAsSeen,

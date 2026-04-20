@@ -109,7 +109,6 @@ export interface UseValidationWorkflowReturn {
  *
  * @param selectedRecipes - Recipes to validate and import
  * @param addMultipleRecipes - Database function to save recipes
- * @param isDatabaseReady - Whether the database context has loaded data
  * @param defaultPersons - User's default serving count to apply to all imported recipes
  * @param findSimilarTags - Function to find similar tags by name (from RecipeDatabase)
  * @param findSimilarIngredients - Function to find similar ingredients by name (from RecipeDatabase)
@@ -119,7 +118,6 @@ export interface UseValidationWorkflowReturn {
 export function useValidationWorkflow(
   selectedRecipes: ConvertedImportRecipe[],
   addMultipleRecipes: (recipes: recipeTableElement[]) => Promise<void>,
-  isDatabaseReady: boolean,
   defaultPersons: number,
   findSimilarTags: (name: string) => tagTableElement[],
   findSimilarIngredients: (name: string) => ingredientTableElement[],
@@ -201,9 +199,6 @@ export function useValidationWorkflow(
     if (hasInitializedRef.current) {
       return;
     }
-    if (!isDatabaseReady) {
-      return;
-    }
     hasInitializedRef.current = true;
 
     const runInit = async () => {
@@ -259,7 +254,7 @@ export function useValidationWorkflow(
     };
 
     runInit();
-  }, [selectedRecipes, isDatabaseReady]);
+  }, [selectedRecipes]);
 
   /**
    * Handles tag validation by adding a mapping from original to validated tag

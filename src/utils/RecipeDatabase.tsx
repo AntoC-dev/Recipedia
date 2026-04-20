@@ -63,7 +63,7 @@ import { fisherYatesShuffle } from './FilterFunctions';
  * exact slice a hook cares about, so only relevant `useSyncExternalStore`
  * callbacks are triggered on each mutation.
  */
-export type StoreSlice = 'recipes' | 'ingredients' | 'tags' | 'menu' | 'purchased' | 'ready';
+export type StoreSlice = 'recipes' | 'ingredients' | 'tags' | 'menu' | 'purchased';
 
 /**
  * RecipeDatabase - Singleton class for managing recipe data storage and operations
@@ -181,17 +181,6 @@ export class RecipeDatabase {
     return () => {
       this._listeners.get(slice)?.delete(callback);
     };
-  }
-
-  /**
-   * Returns whether the database has finished initializing.
-   *
-   * Used as the snapshot getter for `useSyncExternalStore('ready', ...)`.
-   *
-   * @returns True after `init()` completes, false before or after `closeAndReset()`
-   */
-  public isReady(): boolean {
-    return this._isReady;
   }
 
   /**
@@ -323,7 +312,6 @@ export class RecipeDatabase {
     });
 
     this._isReady = true;
-    this.notify('ready');
   }
 
   /**

@@ -56,10 +56,13 @@ export function computeShoppingList(
       }
 
       if (existing) {
-        existing.quantity = sumNumberInString(existing.quantity, quantityToAdd);
-        if (!existing.recipeTitles.includes(recipe.title)) {
-          existing.recipeTitles.push(recipe.title);
-        }
+        shoppingIngredientMap.set(ingredient.name, {
+          ...existing,
+          quantity: sumNumberInString(existing.quantity, quantityToAdd),
+          recipeTitles: existing.recipeTitles.includes(recipe.title)
+            ? existing.recipeTitles
+            : [...existing.recipeTitles, recipe.title],
+        });
       } else {
         shoppingIngredientMap.set(ingredient.name, {
           name: ingredient.name,

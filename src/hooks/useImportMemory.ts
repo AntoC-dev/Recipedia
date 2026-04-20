@@ -8,7 +8,7 @@
  * @module hooks/useImportMemory
  */
 
-import { useDatabaseMeta } from '@hooks/useDatabaseMeta';
+import { useImportHistory } from '@hooks/useImportHistory';
 import { DiscoveredRecipe, ImportMemoryStatus } from '@customTypes/BulkImportTypes';
 
 export interface UseImportMemoryReturn {
@@ -32,7 +32,7 @@ export interface UseImportMemoryReturn {
  * @returns Import memory state and management functions
  */
 export function useImportMemory(providerId: string): UseImportMemoryReturn {
-  const { getImportedSourceUrls, getSeenUrls } = useDatabaseMeta();
+  const { getImportedSourceUrls, getSeenUrls } = useImportHistory();
 
   const importedUrls = getImportedSourceUrls(providerId);
   const seenUrls = getSeenUrls(providerId);

@@ -50,7 +50,7 @@ import { FlatList, InteractionManager, View } from 'react-native';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { Button, Card, Dialog, IconButton, Portal, Text, useTheme } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
-import { tutorialLogger, appLogger } from '@utils/logger';
+import { appLogger, tutorialLogger } from '@utils/logger';
 import { CustomImage } from '@components/atomic/CustomImage';
 import { Asset } from 'expo-asset';
 import { padding, screenWidth } from '@styles/spacing';
@@ -58,8 +58,6 @@ import { IconName, Icons } from '@assets/Icons';
 import Constants from 'expo-constants';
 import { LoadingOverlay } from '@components/dialogs/LoadingOverlay';
 import { useRecipes } from '@hooks/useRecipes';
-import { useDatabaseReady } from '@hooks/useDatabaseReady';
-import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { loadFirstLaunchDataset } from '@utils/datasetInitializer';
 
 /**
@@ -82,20 +80,20 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
   const { colors, fonts } = useTheme();
   const { t } = useI18n();
   const { recipes } = useRecipes();
-  const isDatabaseReady = useDatabaseReady();
-  const db = RecipeDatabase.getInstance();
+  const isDataLoaded = recipes.length > 0;
   const [datasetLoadError, setDatasetLoadError] = useState<string | undefined>(undefined);
   const dismissDatasetLoadError = () => setDatasetLoadError(undefined);
 
   const [pendingAction, setPendingAction] = useState<'tutorial' | 'skip' | null>(null);
 
   useEffect(() => {
-    if (!isDatabaseReady) return;
-    if (!db.isDatabaseEmpty()) return;
+    if (isDataLoaded) {
+      return;
+    }
 
     const task = InteractionManager.runAfterInteractions(async () => {
       try {
-        await loadFirstLaunchDataset(db);
+        await loadFirstLaunchDataset();
       } catch (error) {
         const errorMessage =
           error instanceof Error
@@ -110,9 +108,7 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
       }
     });
     return () => task.cancel();
-  }, [isDatabaseReady]);
-
-  const isDataLoaded = recipes.length > 0;
+  }, [isDataLoaded]);
 
   useEffect(() => {
     if (isDataLoaded && pendingAction) {

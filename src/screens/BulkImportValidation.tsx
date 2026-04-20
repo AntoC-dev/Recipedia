@@ -38,8 +38,7 @@ import { ImportSuccessMessage } from '@components/molecules/ImportSuccessMessage
 import { ValidationReviewList } from '@components/organisms/ValidationReviewList';
 import { useI18n } from '@utils/i18n';
 import { useRecipes } from '@hooks/useRecipes';
-import { useDatabaseMeta } from '@hooks/useDatabaseMeta';
-import { useDatabaseReady } from '@hooks/useDatabaseReady';
+import { useImportHistory } from '@hooks/useImportHistory';
 import { useTags } from '@hooks/useTags';
 import { useIngredients } from '@hooks/useIngredients';
 import { useDefaultPersons } from '@context/DefaultPersonsContext';
@@ -66,8 +65,7 @@ export function BulkImportValidation() {
   const route = useRoute<BulkImportValidationRouteProp>();
   const { providerId, selectedRecipes } = route.params;
   const { addMultipleRecipes } = useRecipes();
-  const { removeFromSeenHistory } = useDatabaseMeta();
-  const isDatabaseReady = useDatabaseReady();
+  const { removeFromSeenHistory } = useImportHistory();
   const { findSimilarTags } = useTags();
   const { findSimilarIngredients } = useIngredients();
   const { defaultPersons } = useDefaultPersons();
@@ -87,7 +85,6 @@ export function BulkImportValidation() {
   } = useValidationWorkflow(
     selectedRecipes,
     addMultipleRecipes,
-    isDatabaseReady,
     defaultPersons,
     findSimilarTags,
     findSimilarIngredients,
