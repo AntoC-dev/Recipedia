@@ -82,7 +82,9 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
   const { recipes } = useRecipes();
   const isDataLoaded = recipes.length > 0;
   const [datasetLoadError, setDatasetLoadError] = useState<string | undefined>(undefined);
+  const [datasetFailed, setDatasetFailed] = useState(false);
   const dismissDatasetLoadError = () => setDatasetLoadError(undefined);
+  const canProceed = isDataLoaded || datasetFailed;
 
   const [pendingAction, setPendingAction] = useState<'tutorial' | 'skip' | null>(null);
 
@@ -95,37 +97,46 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
       try {
         await loadFirstLaunchDataset();
       } catch (error) {
-        const errorMessage =
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        const fullDetails =
           error instanceof Error
             ? `${error.message}${error.stack ? `\n${error.stack}` : ''}`
             : typeof error === 'object'
               ? JSON.stringify(error, null, 2)
               : String(error);
         appLogger.error('Dataset loading failed - app will work without initial data', {
-          error: errorMessage,
+          error: fullDetails,
         });
         setDatasetLoadError(errorMessage);
+        setDatasetFailed(true);
       }
     });
     return () => task.cancel();
   }, [isDataLoaded]);
 
   useEffect(() => {
-    if (isDataLoaded && pendingAction) {
+    if (canProceed && pendingAction) {
       if (pendingAction === 'tutorial') {
-        tutorialLogger.info('Data loaded - proceeding with tutorial');
+        tutorialLogger.info(
+          datasetFailed
+            ? 'Dataset failed - starting tutorial without initial data'
+            : 'Data loaded - proceeding with tutorial'
+        );
         onStartTutorial();
-        setPendingAction(null);
-      } else if (pendingAction === 'skip') {
-        tutorialLogger.info('Data loaded - proceeding to main app');
+      } else {
+        tutorialLogger.info(
+          datasetFailed
+            ? 'Dataset failed - skipping to main app'
+            : 'Data loaded - proceeding to main app'
+        );
         onSkip();
-        setPendingAction(null);
       }
+      setPendingAction(null);
     }
-  }, [isDataLoaded, pendingAction, onStartTutorial, onSkip]);
+  }, [canProceed, datasetFailed, pendingAction, onStartTutorial, onSkip]);
 
   const handleStartTutorial = () => {
-    if (isDataLoaded) {
+    if (canProceed) {
       tutorialLogger.info('User started tutorial from welcome screen');
       onStartTutorial();
     } else {
@@ -135,7 +146,7 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
   };
 
   const handleSkip = () => {
-    if (isDataLoaded) {
+    if (canProceed) {
       tutorialLogger.info('User skipped tutorial from welcome screen');
       onSkip();
     } else {
@@ -273,7 +284,7 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
         </View>
       </View>
       <LoadingOverlay
-        visible={pendingAction !== null}
+        visible={pendingAction !== null && !canProceed}
         message={t('welcome.loadingData')}
         testID={testId + '::LoadingOverlay'}
       />
@@ -288,7 +299,7 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
           <Dialog.Content>
             <Text variant='bodyMedium'>{t('welcome.datasetError.message')}</Text>
             <Text variant='bodySmall' style={{ marginTop: padding.small, opacity: 0.7 }}>
-              {t('welcome.datasetError.technicalDetails')}: {datasetLoadError}
+              {t('welcome.datasetError.reportHint')}
             </Text>
           </Dialog.Content>
           <Dialog.Actions>

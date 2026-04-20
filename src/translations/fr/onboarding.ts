@@ -15,7 +15,7 @@ export default {
       title: 'Problème de Chargement',
       message:
         "L'application a rencontré un problème lors du chargement de la collection initiale de recettes. Vous pouvez toujours utiliser l'application normalement en ajoutant vos propres recettes.",
-      technicalDetails: 'Détails techniques',
+      reportHint: 'Vous pouvez signaler ce problème depuis Paramètres > Signaler un bug.',
       understood: 'OK',
     },
   },

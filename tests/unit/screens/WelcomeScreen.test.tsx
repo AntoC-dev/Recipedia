@@ -166,16 +166,17 @@ describe('WelcomeScreen Component', () => {
       expect(getByTestId('WelcomeScreen::DatasetErrorDialog::OK')).toBeTruthy();
     });
 
-    test('dataset error dialog shows the error message', async () => {
-      const errorMessage = 'Failed to load dataset: Network error';
+    test('dataset error dialog shows user-friendly message and report hint', async () => {
       const { loadFirstLaunchDataset } = require('@utils/datasetInitializer');
-      loadFirstLaunchDataset.mockRejectedValueOnce(new Error(errorMessage));
+      loadFirstLaunchDataset.mockRejectedValueOnce(new Error('Some DB error'));
 
       const { getByText } = renderWelcomeScreen();
 
       await waitFor(() => {
-        expect(getByText(new RegExp(errorMessage))).toBeTruthy();
+        expect(getByText('welcome.datasetError.message')).toBeTruthy();
       });
+
+      expect(getByText('welcome.datasetError.reportHint')).toBeTruthy();
     });
 
     test('dismissing dataset error dialog hides it', async () => {
@@ -195,39 +196,22 @@ describe('WelcomeScreen Component', () => {
       });
     });
 
-    test('formats error message without stack when Error has no stack', async () => {
+    test('does not show technical error details to user', async () => {
       const { loadFirstLaunchDataset } = require('@utils/datasetInitializer');
-      const error = new Error('no stack error');
-      error.stack = undefined;
+      const error = new Error('Ingredients not found in database: Sésame doré');
+      error.stack =
+        'Error: Ingredients not found\n    at verifyIngredientsExist (RecipeDatabase.tsx:42)';
       loadFirstLaunchDataset.mockRejectedValueOnce(error);
 
-      const { getByText } = renderWelcomeScreen();
+      const { queryByText, getByText } = renderWelcomeScreen();
 
       await waitFor(() => {
-        expect(getByText(new RegExp('no stack error'))).toBeTruthy();
+        expect(getByText('welcome.datasetError.message')).toBeTruthy();
       });
-    });
 
-    test('formats error message using JSON.stringify when error is a plain object', async () => {
-      const { loadFirstLaunchDataset } = require('@utils/datasetInitializer');
-      loadFirstLaunchDataset.mockRejectedValueOnce({ code: 404 });
-
-      const { getByText } = renderWelcomeScreen();
-
-      await waitFor(() => {
-        expect(getByText(new RegExp('"code"'))).toBeTruthy();
-      });
-    });
-
-    test('formats error message using String when error is a primitive', async () => {
-      const { loadFirstLaunchDataset } = require('@utils/datasetInitializer');
-      loadFirstLaunchDataset.mockRejectedValueOnce('some error');
-
-      const { getByText } = renderWelcomeScreen();
-
-      await waitFor(() => {
-        expect(getByText(new RegExp('some error'))).toBeTruthy();
-      });
+      expect(queryByText(/verifyIngredientsExist/)).toBeNull();
+      expect(queryByText(/RecipeDatabase\.tsx/)).toBeNull();
+      expect(queryByText(/Sésame doré/)).toBeNull();
     });
   });
 
@@ -300,6 +284,84 @@ describe('WelcomeScreen Component', () => {
       await waitFor(() => {
         expect(mockOnSkip).toHaveBeenCalledTimes(1);
       });
+    });
+  });
+
+  describe('Dataset failure recovery', () => {
+    test('calls onSkip when start tour clicked after dataset fails', async () => {
+      const { loadFirstLaunchDataset } = require('@utils/datasetInitializer');
+      loadFirstLaunchDataset.mockRejectedValueOnce(new Error('DB error'));
+
+      const { getByTestId } = renderWelcomeScreen();
+
+      await waitFor(() => {
+        expect(getByTestId('WelcomeScreen::DatasetErrorDialog')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('WelcomeScreen::DatasetErrorDialog::OK'));
+      fireEvent.press(getByTestId('WelcomeScreen::StartTourButton'));
+
+      expect(mockOnStartTutorial).toHaveBeenCalledTimes(1);
+      expect(mockOnSkip).not.toHaveBeenCalled();
+    });
+
+    test('calls onSkip when skip clicked after dataset fails', async () => {
+      const { loadFirstLaunchDataset } = require('@utils/datasetInitializer');
+      loadFirstLaunchDataset.mockRejectedValueOnce(new Error('DB error'));
+
+      const { getByTestId } = renderWelcomeScreen();
+
+      await waitFor(() => {
+        expect(getByTestId('WelcomeScreen::DatasetErrorDialog')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('WelcomeScreen::DatasetErrorDialog::OK'));
+      fireEvent.press(getByTestId('WelcomeScreen::SkipButton'));
+
+      expect(mockOnSkip).toHaveBeenCalledTimes(1);
+    });
+
+    test('proceeds with onStartTutorial when pending tutorial and dataset fails', async () => {
+      const { loadFirstLaunchDataset } = require('@utils/datasetInitializer');
+      let rejectFn: (err: Error) => void;
+      loadFirstLaunchDataset.mockReturnValueOnce(
+        new Promise((_resolve, reject) => {
+          rejectFn = reject;
+        })
+      );
+
+      const { getByTestId } = renderWelcomeScreen();
+
+      await waitFor(() => {
+        expect(getByTestId('WelcomeScreen::StartTourButton')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('WelcomeScreen::StartTourButton'));
+      expect(mockOnStartTutorial).not.toHaveBeenCalled();
+
+      rejectFn!(new Error('Late failure'));
+
+      await waitFor(() => {
+        expect(mockOnStartTutorial).toHaveBeenCalledTimes(1);
+      });
+
+      expect(mockOnSkip).not.toHaveBeenCalled();
+    });
+
+    test('does not show loading overlay after dataset fails', async () => {
+      const { loadFirstLaunchDataset } = require('@utils/datasetInitializer');
+      loadFirstLaunchDataset.mockRejectedValueOnce(new Error('DB error'));
+
+      const { getByTestId, queryByTestId } = renderWelcomeScreen();
+
+      await waitFor(() => {
+        expect(getByTestId('WelcomeScreen::DatasetErrorDialog')).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId('WelcomeScreen::DatasetErrorDialog::OK'));
+      fireEvent.press(getByTestId('WelcomeScreen::SkipButton'));
+
+      expect(queryByTestId('WelcomeScreen::LoadingOverlay::Overlay')).toBeNull();
     });
   });
 });
