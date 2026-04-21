@@ -1,3 +1,13 @@
+## [2.32.0](https://github.com/AntoC-dev/Recipedia/compare/v2.31.1...v2.32.0) (2026-04-21)
+
+### Features
+
+* **database:** add subscribe/notify with immutable snapshots ([3199b3b](https://github.com/AntoC-dev/Recipedia/commit/3199b3b12da74d2a0cedc3deb076e11977937b11))
+
+### Bug Fixes
+
+* **app:** call initFileSystem before db.init on startup ([9c88a34](https://github.com/AntoC-dev/Recipedia/commit/9c88a34aac23948754648e28a1a7ec8a5c5e69a1))
+
 ## [2.31.1](https://github.com/AntoC-dev/Recipedia/compare/v2.31.0...v2.31.1) (2026-04-19)
 
 ### Bug Fixes
