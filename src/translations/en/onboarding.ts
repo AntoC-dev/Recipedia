@@ -15,7 +15,7 @@ export default {
       title: 'Dataset Loading Issue',
       message:
         'The app encountered an issue while loading the initial recipe collection. You can still use the app normally by adding your own recipes.',
-      technicalDetails: 'Technical details',
+      reportHint: 'You can report this issue from Parameters > Bug Report.',
       understood: 'OK',
     },
   },

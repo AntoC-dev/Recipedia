@@ -927,8 +927,8 @@ export const frenchRecipes: recipeTableElement[] = [
       },
       {
         name: 'Sésame doré',
-        quantity: '1',
-        unit: 'c. à soupe',
+        quantity: '10',
+        unit: 'g',
         type: ingredientType.topping,
         season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
       },

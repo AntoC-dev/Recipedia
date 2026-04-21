@@ -366,6 +366,23 @@ describe('Shopping Screen', () => {
       expect(mockEvents.on).not.toHaveBeenCalled();
     });
 
+    test('does not crash demo when shopping list has fewer than 3 items', async () => {
+      await database.clearMenu();
+      mockUseSafeCopilot.mockReturnValue(defaultMockValue);
+
+      const { getByTestId } = await renderShoppingAndWaitForButtons();
+
+      expect(getByTestId('CopilotStep::Shopping')).toBeTruthy();
+
+      await waitFor(() => {
+        expect(mockEvents.on).toHaveBeenCalledWith('stepChange', expect.any(Function));
+      });
+
+      expect(() => jest.advanceTimersByTime(TUTORIAL_DEMO_INTERVAL)).not.toThrow();
+
+      expect(getByTestId('ShoppingScreen::Alert::IsVisible').props.children).toBe(false);
+    });
+
     test('demo toggles dialog state correctly', async () => {
       mockUseSafeCopilot.mockReturnValue(defaultMockValue);
 

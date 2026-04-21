@@ -164,26 +164,6 @@ export class RecipeDatabase {
   }
 
   /**
-   * Subscribes a callback to notifications for a specific data slice.
-   *
-   * Called by `useSyncExternalStore` to register a re-render callback. Returns
-   * an unsubscribe function that removes the callback from the listener set.
-   *
-   * @param slice - The data slice to subscribe to
-   * @param callback - Function to call when the slice changes
-   * @returns Unsubscribe function
-   */
-  public subscribe(slice: StoreSlice, callback: () => void): () => void {
-    if (!this._listeners.has(slice)) {
-      this._listeners.set(slice, new Set());
-    }
-    this._listeners.get(slice)!.add(callback);
-    return () => {
-      this._listeners.get(slice)?.delete(callback);
-    };
-  }
-
-  /**
    * Scales a recipe's ingredient quantities to a different number of persons
    *
    * Creates a new recipe object with ingredient quantities adjusted proportionally
@@ -227,6 +207,26 @@ export class RecipeDatabase {
       ...recipe,
       persons: targetPersons,
       ingredients: scaledIngredients,
+    };
+  }
+
+  /**
+   * Subscribes a callback to notifications for a specific data slice.
+   *
+   * Called by `useSyncExternalStore` to register a re-render callback. Returns
+   * an unsubscribe function that removes the callback from the listener set.
+   *
+   * @param slice - The data slice to subscribe to
+   * @param callback - Function to call when the slice changes
+   * @returns Unsubscribe function
+   */
+  public subscribe(slice: StoreSlice, callback: () => void): () => void {
+    if (!this._listeners.has(slice)) {
+      this._listeners.set(slice, new Set());
+    }
+    this._listeners.get(slice)!.add(callback);
+    return () => {
+      this._listeners.get(slice)?.delete(callback);
     };
   }
 
@@ -573,11 +573,7 @@ export class RecipeDatabase {
    * ```
    */
   public async addRecipe(rec: recipeTableElement) {
-    const recipe = { ...rec };
-    recipe.tags = this.verifyTagsExist(rec.tags);
-    recipe.ingredients = this.verifyIngredientsExist(rec.ingredients);
-
-    recipe.image_Source = await this.prepareRecipeImage(recipe.image_Source, recipe.title);
+    const recipe = await this.prepareRecipe(rec);
 
     const recipeConverted = this.encodeRecipe(recipe);
 
@@ -617,55 +613,42 @@ export class RecipeDatabase {
     }
   }
 
-  public async addMultipleRecipes(recs: recipeTableElement[]) {
+  /**
+   * Adds multiple recipes to the database, skipping any that fail validation.
+   *
+   * Prepares all recipes in parallel via `Promise.allSettled`, logs a warning
+   * for each rejected one, then batch-inserts the valid ones.
+   *
+   * @param recs - Array of recipes to add
+   */
+  public async addMultipleRecipes(recs: recipeTableElement[]): Promise<void> {
     if (recs.length === 0) return;
 
-    const processedRecipes = await Promise.all(
-      recs.map(async rec => {
-        const recipe = { ...rec };
-        recipe.tags = this.verifyTagsExist(rec.tags);
-        recipe.ingredients = this.verifyIngredientsExist(rec.ingredients);
-        recipe.image_Source = await this.prepareRecipeImage(recipe.image_Source, recipe.title);
-        return recipe;
-      })
-    );
+    const prepareRecipeResult = await Promise.allSettled(recs.map(rec => this.prepareRecipe(rec)));
 
-    const encodedRecipes = processedRecipes.map(recipe => this.encodeRecipe(recipe));
-    databaseLogger.debug('Batch adding recipes to database', {
-      count: recs.length,
+    prepareRecipeResult.forEach((result, i) => {
+      if (result.status === 'rejected') {
+        const reason =
+          result.reason instanceof Error ? result.reason.message : String(result.reason);
+        databaseLogger.warn('Skipping recipe due to validation error', {
+          recipeTitle: recs[i].title,
+          reason,
+        });
+      }
     });
 
-    const success = await this._recipesTable.insertArrayOfElement(
-      encodedRecipes,
-      this._dbConnection
-    );
+    const prepared = prepareRecipeResult
+      .filter((r): r is PromiseFulfilledResult<recipeTableElement> => r.status === 'fulfilled')
+      .map(r => r.value);
 
-    if (!success) {
-      databaseLogger.error('Failed to batch insert recipes');
-      throw new Error('Failed to insert recipes into database');
-    }
-
-    const titles = processedRecipes.map(r => r.title);
-    const searchCriteria = new Map<string, string[]>([['TITLE', titles]]);
-    const insertedRecipes = await this._recipesTable.searchElement<encodedRecipeElement>(
-      this._dbConnection,
-      searchCriteria
-    );
-
-    if (!insertedRecipes || !Array.isArray(insertedRecipes)) {
-      databaseLogger.error('Failed to retrieve inserted recipes');
+    if (prepared.length === 0) {
+      databaseLogger.warn('No valid recipes to insert after validation', {
+        totalRecipes: recs.length,
+      });
       return;
     }
 
-    const decodedRecipes = await Promise.all(
-      insertedRecipes.map(encoded => this.decodeRecipe(encoded))
-    );
-
-    for (const recipe of decodedRecipes) {
-      this.add_recipes(recipe);
-    }
-    this._recipes = [...this._recipes];
-    this.notify('recipes');
+    await this.insertAndCacheRecipes(prepared);
   }
 
   public async editRecipe(recipe: recipeTableElement) {
@@ -1225,8 +1208,6 @@ export class RecipeDatabase {
     databaseLogger.debug('Menu cleared');
   }
 
-  /* PURCHASED INGREDIENTS METHODS */
-
   /**
    * Returns the map of purchased ingredient states
    * Key is ingredient name, value is whether it's purchased
@@ -1262,6 +1243,8 @@ export class RecipeDatabase {
     this.notify('purchased');
     databaseLogger.debug('Purchase state updated', { ingredientName, purchased });
   }
+
+  /* PURCHASED INGREDIENTS METHODS */
 
   /**
    * Clears all purchased ingredient states
@@ -1646,6 +1629,67 @@ export class RecipeDatabase {
     this._importHistory = this._importHistory.filter(
       h => !(h.providerId === providerId && urls.includes(h.recipeUrl))
     );
+  }
+
+  /**
+   * Validates and prepares a single recipe for insertion.
+   *
+   * Verifies that all referenced tags and ingredients exist in the database,
+   * then resolves the image source. Throws if any references are missing.
+   *
+   * @param rec - The recipe to prepare
+   * @returns Prepared recipe ready for encoding and insertion
+   * @throws Error if any tags or ingredients are not found in the database
+   */
+  private async prepareRecipe(rec: recipeTableElement): Promise<recipeTableElement> {
+    const recipe = { ...rec };
+    recipe.tags = this.verifyTagsExist(rec.tags);
+    recipe.ingredients = this.verifyIngredientsExist(rec.ingredients);
+    recipe.image_Source = await this.prepareRecipeImage(recipe.image_Source, recipe.title);
+    return recipe;
+  }
+
+  /**
+   * Batch-inserts prepared recipes into the database and updates the in-memory cache.
+   *
+   * @param recipes - Already-validated and prepared recipes to insert
+   * @throws Error if the batch database insertion fails
+   */
+  private async insertAndCacheRecipes(recipes: recipeTableElement[]): Promise<void> {
+    const encodedRecipes = recipes.map(recipe => this.encodeRecipe(recipe));
+    databaseLogger.debug('Batch adding recipes to database', { count: recipes.length });
+
+    const success = await this._recipesTable.insertArrayOfElement(
+      encodedRecipes,
+      this._dbConnection
+    );
+
+    if (!success) {
+      databaseLogger.error('Failed to batch insert recipes');
+      throw new Error('Failed to insert recipes into database');
+    }
+
+    const titles = recipes.map(r => r.title);
+    const searchCriteria = new Map<string, string[]>([['TITLE', titles]]);
+    const insertedRecipes = await this._recipesTable.searchElement<encodedRecipeElement>(
+      this._dbConnection,
+      searchCriteria
+    );
+
+    if (!insertedRecipes || !Array.isArray(insertedRecipes)) {
+      databaseLogger.error('Failed to retrieve inserted recipes');
+      return;
+    }
+
+    const decodedRecipes = await Promise.all(
+      insertedRecipes.map(encoded => this.decodeRecipe(encoded))
+    );
+
+    for (const recipe of decodedRecipes) {
+      this.add_recipes(recipe);
+    }
+    this._recipes = [...this._recipes];
+    this.notify('recipes');
   }
 
   /**
@@ -2683,7 +2727,9 @@ export class RecipeDatabase {
    */
   private async migrateWildcardSeasons(): Promise<void> {
     const result = await this._dbConnection.runAsync(
-      `UPDATE "${ingredientsTableName}" SET "${ingredientsColumnsNames.season}" = ? WHERE "${ingredientsColumnsNames.season}" = '*'`,
+      `UPDATE "${ingredientsTableName}"
+             SET "${ingredientsColumnsNames.season}" = ?
+             WHERE "${ingredientsColumnsNames.season}" = '*'`,
       [ALL_MONTHS_ENCODED]
     );
     if (result.changes > 0) {
