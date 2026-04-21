@@ -1,3 +1,12 @@
+## [2.32.1](https://github.com/AntoC-dev/Recipedia/compare/v2.32.0...v2.32.1) (2026-04-21)
+
+### Bug Fixes
+
+* **dataset:** correct unit mismatch for Sésame doré in FR recipes ([ed85062](https://github.com/AntoC-dev/Recipedia/commit/ed85062eed64924429f496ac5b3883959217bec8))
+* first-launch crash and infinite loading for French users ([#271](https://github.com/AntoC-dev/Recipedia/issues/271)) ([c5dac96](https://github.com/AntoC-dev/Recipedia/commit/c5dac9625dab16a1017aa482ba7126953f1cec8c))
+* **tutorial:** prevent step skip and crash when initial data is empty ([0f09927](https://github.com/AntoC-dev/Recipedia/commit/0f0992719bcbe2ab732abd34ccaeecbc9bad3b82))
+* **welcome:** unblock app when first-launch dataset fails to load ([b645bb7](https://github.com/AntoC-dev/Recipedia/commit/b645bb74f02863b21dc87f9d98141c5266950949))
+
 ## [2.32.0](https://github.com/AntoC-dev/Recipedia/compare/v2.31.1...v2.32.0) (2026-04-21)
 
 ### Features
