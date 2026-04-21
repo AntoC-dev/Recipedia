@@ -5,29 +5,11 @@ import { RecipeFormProvider, useRecipeForm } from '@context/RecipeFormContext';
 import { createMockRecipeProp } from '@test-helpers/recipeHookTestWrapper';
 import { ingredientType, recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { RecipePropType } from '@customTypes/RecipeNavigationTypes';
-import { testTags } from '@data/tagsDataset';
-import { testIngredients } from '@data/ingredientsDataset';
 import * as logger from '@utils/logger';
 
-jest.mock('@context/RecipeDatabaseContext', () => {
-  const { testTags: mockTags } = require('@data/tagsDataset');
-  const { testIngredients: mockIngredients } = require('@data/ingredientsDataset');
-  return {
-    useRecipeDatabase: () => ({
-      ingredients: mockIngredients,
-      tags: mockTags,
-      recipes: [],
-      findSimilarIngredients: jest.fn(() => []),
-      findSimilarTags: jest.fn(() => []),
-      addIngredient: jest.fn(async (ing: unknown) => ing),
-      addTag: jest.fn(async (tag: unknown) => tag),
-      isDatabaseReady: true,
-      searchRandomlyTags: jest.fn(() => []),
-      getRandomTags: jest.fn(() => []),
-    }),
-    RecipeDatabaseProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  };
-});
+jest.mock('@hooks/useTags', () => ({
+  useTags: require('@mocks/hooks/useTags-mock').useTagsMock,
+}));
 
 function createPreparationWrapper(props: RecipePropType) {
   return function Wrapper({ children }: { children: React.ReactNode }) {

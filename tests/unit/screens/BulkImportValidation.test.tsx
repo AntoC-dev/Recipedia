@@ -7,13 +7,13 @@ import {
   resetMockRouteParams,
   setMockRouteParams,
 } from '@mocks/deps/react-navigation-mock';
-import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 import { DefaultPersonsProvider } from '@context/DefaultPersonsContext';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
 import { testRecipes } from '@test-data/recipesDataset';
 import { ConvertedImportRecipe } from '@customTypes/BulkImportTypes';
+import * as useValidationWorkflowModule from '@hooks/useValidationWorkflow';
 
 jest.mock('@react-navigation/native', () => {
   const { reactNavigationMock } = require('@mocks/deps/react-navigation-mock');
@@ -73,12 +73,88 @@ describe('BulkImportValidation', () => {
     setMockRouteParams({ providerId: 'hellofresh', selectedRecipes: recipes });
     return render(
       <DefaultPersonsProvider>
-        <RecipeDatabaseProvider>
-          <BulkImportValidation />
-        </RecipeDatabaseProvider>
+        <BulkImportValidation />
       </DefaultPersonsProvider>
     );
   };
+
+  describe('getInitStageText switch branches', () => {
+    const noOpHandlers = {
+      onTagValidated: jest.fn(),
+      onIngredientValidated: jest.fn(),
+      startImport: jest.fn(),
+      acknowledgeWarning: jest.fn(),
+    };
+
+    test('shows matching-tags text during matching-tags init stage', () => {
+      jest.spyOn(useValidationWorkflowModule, 'useValidationWorkflow').mockReturnValue({
+        phase: 'initializing',
+        initStage: 'matching-tags',
+        validationState: null,
+        progress: null,
+        importedCount: 0,
+        skippedRecipes: [],
+        errorMessage: null,
+        handlers: noOpHandlers,
+      });
+
+      const { getByText } = renderComponent();
+
+      expect(getByText('bulkImport.validation.matchingTags')).toBeTruthy();
+    });
+
+    test('shows matching-ingredients text during matching-ingredients init stage', () => {
+      jest.spyOn(useValidationWorkflowModule, 'useValidationWorkflow').mockReturnValue({
+        phase: 'initializing',
+        initStage: 'matching-ingredients',
+        validationState: null,
+        progress: null,
+        importedCount: 0,
+        skippedRecipes: [],
+        errorMessage: null,
+        handlers: noOpHandlers,
+      });
+
+      const { getByText } = renderComponent();
+
+      expect(getByText('bulkImport.validation.matchingIngredients')).toBeTruthy();
+    });
+
+    test('shows initializing text for unknown init stage', () => {
+      jest.spyOn(useValidationWorkflowModule, 'useValidationWorkflow').mockReturnValue({
+        phase: 'initializing',
+        initStage: 'unknown-stage' as any,
+        validationState: null,
+        progress: null,
+        importedCount: 0,
+        skippedRecipes: [],
+        errorMessage: null,
+        handlers: noOpHandlers,
+      });
+
+      const { getByText } = renderComponent();
+
+      expect(getByText('bulkImport.validation.initializing')).toBeTruthy();
+    });
+  });
+
+  test('shows warning phase when recipe has no valid ingredient names', async () => {
+    const recipeWithEmptyIngredients = createTestRecipe({
+      ingredients: [{ name: '', quantity: '100', unit: 'g' }],
+    });
+    const normalRecipe = createTestRecipe({
+      title: 'Normal Recipe',
+      ingredients: [{ name: 'UnknownIngredient', quantity: '100', unit: 'g' }],
+    });
+    const { getByTestId } = renderComponent([recipeWithEmptyIngredients, normalRecipe]);
+
+    await waitFor(
+      () => {
+        expect(getByTestId('BulkImportValidation::ContinueButton')).toBeTruthy();
+      },
+      { timeout: 3000 }
+    );
+  });
 
   test('renders app bar with title', () => {
     const { getByTestId } = renderComponent();

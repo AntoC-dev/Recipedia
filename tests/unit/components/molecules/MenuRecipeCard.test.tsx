@@ -22,7 +22,6 @@ import { menuTableElement } from '@customTypes/DatabaseElementTypes';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { mockNavigate } from '@mocks/deps/react-navigation-mock';
-import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { testRecipes } from '@test-data/recipesDataset';
 import { testTags } from '@test-data/tagsDataset';
@@ -56,13 +55,11 @@ describe('MenuRecipeCard', () => {
     const props = { ...defaultProps, ...overrideProps };
 
     return render(
-      <RecipeDatabaseProvider>
-        <NavigationContainer>
-          <Stack.Navigator>
-            <Stack.Screen name='Test' component={() => <MenuRecipeCard {...props} />} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </RecipeDatabaseProvider>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name='Test' component={() => <MenuRecipeCard {...props} />} />
+        </Stack.Navigator>
+      </NavigationContainer>
     );
   };
 
@@ -367,16 +364,14 @@ describe('MenuRecipeCard', () => {
 
       const cookedMenuItem: menuTableElement = { ...testMenuItemUncooked, isCooked: true };
       rerender(
-        <RecipeDatabaseProvider>
-          <NavigationContainer>
-            <Stack.Navigator>
-              <Stack.Screen
-                name='Test'
-                component={() => <MenuRecipeCard {...defaultProps} menuItem={cookedMenuItem} />}
-              />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </RecipeDatabaseProvider>
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen
+              name='Test'
+              component={() => <MenuRecipeCard {...defaultProps} menuItem={cookedMenuItem} />}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
       );
 
       expect(getByTestId(`${testId}::Checkbox::Status`).props.children).toBe('checked');
@@ -389,16 +384,14 @@ describe('MenuRecipeCard', () => {
 
       const multipleMenuItem: menuTableElement = { ...testMenuItemUncooked, count: 2 };
       rerender(
-        <RecipeDatabaseProvider>
-          <NavigationContainer>
-            <Stack.Navigator>
-              <Stack.Screen
-                name='Test'
-                component={() => <MenuRecipeCard {...defaultProps} menuItem={multipleMenuItem} />}
-              />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </RecipeDatabaseProvider>
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen
+              name='Test'
+              component={() => <MenuRecipeCard {...defaultProps} menuItem={multipleMenuItem} />}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
       );
 
       expect(getByTestId(`${testId}::CountBadge`).props.children.props.children).toBe(2);

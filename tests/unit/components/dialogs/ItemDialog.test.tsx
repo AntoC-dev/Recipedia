@@ -8,6 +8,9 @@ import {
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
 
+import { setMockIngredients } from '@mocks/hooks/useIngredients-mock';
+import { setMockTags } from '@mocks/hooks/useTags-mock';
+
 jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 
 jest.mock('@components/atomic/CustomTextInput', () => ({
@@ -24,14 +27,12 @@ jest.mock('@components/molecules/SeasonalityCalendar', () => ({
     .seasonalityCalendarMock,
 }));
 
-const mockTags: any[] = [];
-const mockIngredients: any[] = [];
+jest.mock('@hooks/useIngredients', () => ({
+  useIngredients: require('@mocks/hooks/useIngredients-mock').useIngredientsMock,
+}));
 
-jest.mock('@context/RecipeDatabaseContext', () => ({
-  useRecipeDatabase: () => ({
-    tags: mockTags,
-    ingredients: mockIngredients,
-  }),
+jest.mock('@hooks/useTags', () => ({
+  useTags: require('@mocks/hooks/useTags-mock').useTagsMock,
 }));
 
 describe('ItemDialog Component', () => {
@@ -55,8 +56,8 @@ describe('ItemDialog Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
-    mockTags.length = 0;
-    mockIngredients.length = 0;
+    setMockTags([]);
+    setMockIngredients([]);
   });
 
   afterEach(() => {
@@ -949,7 +950,7 @@ describe('ItemDialog Component', () => {
 
   describe('duplicate detection for tags', () => {
     beforeEach(() => {
-      mockTags.length = 0;
+      setMockTags([]);
     });
 
     test('shows error when tag name matches existing database tag', async () => {
@@ -957,7 +958,7 @@ describe('ItemDialog Component', () => {
         id: 99,
         name: 'Existing Tag',
       };
-      mockTags.push(existingTag);
+      setMockTags([existingTag]);
 
       const props: ItemDialogProps = {
         testId: 'TagDialog',
@@ -988,7 +989,7 @@ describe('ItemDialog Component', () => {
         id: 5,
         name: 'My Tag',
       };
-      mockTags.push(existingTag);
+      setMockTags([existingTag]);
 
       const props: ItemDialogProps = {
         testId: 'TagDialog',
@@ -1040,7 +1041,7 @@ describe('ItemDialog Component', () => {
 
   describe('duplicate detection for ingredients', () => {
     beforeEach(() => {
-      mockIngredients.length = 0;
+      setMockIngredients([]);
     });
 
     test('shows error when ingredient name exactly matches existing database ingredient', async () => {
@@ -1051,7 +1052,7 @@ describe('ItemDialog Component', () => {
         unit: 'cups',
         season: [],
       };
-      mockIngredients.push(existingIngredient);
+      setMockIngredients([existingIngredient]);
 
       const props: ItemDialogProps = {
         testId: 'IngredientDialog',
@@ -1090,7 +1091,7 @@ describe('ItemDialog Component', () => {
         unit: 'pieces',
         season: [],
       };
-      mockIngredients.push(similarIngredient);
+      setMockIngredients([similarIngredient]);
 
       const props: ItemDialogProps = {
         testId: 'IngredientDialog',
@@ -1129,7 +1130,7 @@ describe('ItemDialog Component', () => {
         unit: 'cups',
         season: [],
       };
-      mockIngredients.push(existingIngredient);
+      setMockIngredients([existingIngredient]);
 
       const props: ItemDialogProps = {
         testId: 'IngredientDialog',

@@ -33,7 +33,8 @@ import { RecipeIngredients } from '@components/organisms/RecipeIngredients';
 import { RecipePreparation } from '@components/organisms/RecipePreparation';
 import { RecipeTags } from '@components/organisms/RecipeTags';
 import { clearCache } from '@utils/FileGestion';
-import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { useRecipes } from '@hooks/useRecipes';
+import { useMenu } from '@hooks/useMenu';
 import { RecipeNumber } from '@components/organisms/RecipeNumber';
 import { Snackbar, useTheme } from 'react-native-paper';
 import { AppBar } from '@components/organisms/AppBar';
@@ -120,8 +121,8 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
   const insets = useSafeAreaInsets();
   const [isScrolling, setIsScrolling] = useState(false);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
-  const { addRecipe, editRecipe, deleteRecipe, addRecipeToMenu, findSimilarRecipes } =
-    useRecipeDatabase();
+  const { addRecipe, editRecipe, deleteRecipe, findSimilarRecipes } = useRecipes();
+  const { addRecipeToMenu } = useMenu();
 
   const recipeTestId = 'Recipe';
   const props: RecipePropType = route.params;

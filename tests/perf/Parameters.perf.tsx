@@ -13,11 +13,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { SeasonFilterProvider } from '@context/SeasonFilterContext';
 import { DefaultPersonsProvider, useDefaultPersons } from '@context/DefaultPersonsContext';
 import { DarkModeContext } from '@context/DarkModeContext';
-import {
-  RecipeDatabaseContextType,
-  RecipeDatabaseProvider,
-  useRecipeDatabase,
-} from '@context/RecipeDatabaseContext';
 import { ingredientType } from '@customTypes/DatabaseElementTypes';
 
 jest.mock('@react-navigation/native', () =>
@@ -27,16 +22,13 @@ jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 
 const Stack = createStackNavigator();
 
-let dbContextRef: RecipeDatabaseContextType | null = null;
 let personsContextRef: ReturnType<typeof useDefaultPersons> | null = null;
 
 function ContextCapture() {
-  const dbContext = useRecipeDatabase();
   const personsContext = useDefaultPersons();
   useEffect(() => {
-    dbContextRef = dbContext;
     personsContextRef = personsContext;
-  }, [dbContext, personsContext]);
+  }, [personsContext]);
   return null;
 }
 
@@ -45,54 +37,46 @@ function ParametersWrapper() {
   const toggleDarkMode = () => setIsDarkMode(prev => !prev);
 
   return (
-    <RecipeDatabaseProvider>
-      <DefaultPersonsProvider>
-        <SeasonFilterProvider>
-          <DarkModeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
-            <ContextCapture />
-            <NavigationContainer>
-              <Stack.Navigator>
-                <Stack.Screen name='Parameters' component={Parameters} />
-              </Stack.Navigator>
-            </NavigationContainer>
-          </DarkModeContext.Provider>
-        </SeasonFilterProvider>
-      </DefaultPersonsProvider>
-    </RecipeDatabaseProvider>
+    <DefaultPersonsProvider>
+      <SeasonFilterProvider>
+        <DarkModeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
+          <ContextCapture />
+          <NavigationContainer>
+            <Stack.Navigator>
+              <Stack.Screen name='Parameters' component={Parameters} />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </DarkModeContext.Provider>
+      </SeasonFilterProvider>
+    </DefaultPersonsProvider>
   );
 }
 
 function IngredientsSettingsWrapper() {
   return (
-    <RecipeDatabaseProvider>
-      <DefaultPersonsProvider>
-        <SeasonFilterProvider>
-          <ContextCapture />
-          <NavigationContainer>
-            <Stack.Navigator>
-              <Stack.Screen name='IngredientsSettings' component={IngredientsSettings} />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </SeasonFilterProvider>
-      </DefaultPersonsProvider>
-    </RecipeDatabaseProvider>
+    <DefaultPersonsProvider>
+      <SeasonFilterProvider>
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen name='IngredientsSettings' component={IngredientsSettings} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SeasonFilterProvider>
+    </DefaultPersonsProvider>
   );
 }
 
 function TagsSettingsWrapper() {
   return (
-    <RecipeDatabaseProvider>
-      <DefaultPersonsProvider>
-        <SeasonFilterProvider>
-          <ContextCapture />
-          <NavigationContainer>
-            <Stack.Navigator>
-              <Stack.Screen name='TagsSettings' component={TagsSettings} />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </SeasonFilterProvider>
-      </DefaultPersonsProvider>
-    </RecipeDatabaseProvider>
+    <DefaultPersonsProvider>
+      <SeasonFilterProvider>
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen name='TagsSettings' component={TagsSettings} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SeasonFilterProvider>
+    </DefaultPersonsProvider>
   );
 }
 
@@ -100,7 +84,6 @@ describe('Parameters Screen Performance', () => {
   const database = RecipeDatabase.getInstance();
 
   beforeEach(async () => {
-    dbContextRef = null;
     personsContextRef = null;
     await database.init();
     await database.addMultipleIngredients(performanceIngredients);
@@ -150,8 +133,13 @@ describe('Parameters Screen Performance', () => {
 
   test('re-render after scaling all recipes via hook', async () => {
     const scenario = async () => {
-      if (dbContextRef) {
-        await dbContextRef.scaleAllRecipesForNewDefaultPersons(6);
+      const recipes = database.get_recipes();
+      const recipesToScale = recipes.filter(
+        r => r.persons && r.persons > 0 && r.id !== undefined && r.persons !== 6
+      );
+      for (const recipe of recipesToScale) {
+        const scaled = RecipeDatabase.scaleRecipeToPersons(recipe, 6);
+        await database.scaleAndUpdateRecipe(scaled);
       }
     };
 
@@ -163,7 +151,6 @@ describe('IngredientsSettings Screen Performance', () => {
   const database = RecipeDatabase.getInstance();
 
   beforeEach(async () => {
-    dbContextRef = null;
     personsContextRef = null;
     await database.init();
     await database.addMultipleIngredients(performanceIngredients);
@@ -181,14 +168,12 @@ describe('IngredientsSettings Screen Performance', () => {
 
   test('re-render after adding ingredient', async () => {
     const scenario = async () => {
-      if (dbContextRef) {
-        await dbContextRef.addIngredient({
-          name: 'Test Ingredient',
-          type: ingredientType.vegetable,
-          unit: 'piece',
-          season: [],
-        });
-      }
+      await database.addIngredient({
+        name: 'Test Ingredient',
+        type: ingredientType.vegetable,
+        unit: 'piece',
+        season: [],
+      });
     };
 
     await measureRenders(<IngredientsSettingsWrapper />, { runs: 10, scenario });
@@ -196,9 +181,10 @@ describe('IngredientsSettings Screen Performance', () => {
 
   test('re-render after editing ingredient', async () => {
     const scenario = async () => {
-      if (dbContextRef && dbContextRef.ingredients.length > 0) {
-        const ingredient = dbContextRef.ingredients[0];
-        await dbContextRef.editIngredient({
+      const ingredients = database.get_ingredients();
+      if (ingredients.length > 0) {
+        const ingredient = ingredients[0];
+        await database.editIngredient({
           ...ingredient,
           name: ingredient.name + ' (edited)',
         });
@@ -210,15 +196,13 @@ describe('IngredientsSettings Screen Performance', () => {
 
   test('re-render after adding multiple ingredients rapidly', async () => {
     const scenario = async () => {
-      if (dbContextRef) {
-        for (let i = 0; i < 5; i++) {
-          await dbContextRef.addIngredient({
-            name: `Rapid Ingredient ${i}`,
-            type: ingredientType.vegetable,
-            unit: 'piece',
-            season: [],
-          });
-        }
+      for (let i = 0; i < 5; i++) {
+        await database.addIngredient({
+          name: `Rapid Ingredient ${i}`,
+          type: ingredientType.vegetable,
+          unit: 'piece',
+          season: [],
+        });
       }
     };
 
@@ -227,9 +211,9 @@ describe('IngredientsSettings Screen Performance', () => {
 
   test('re-render after deleting ingredient', async () => {
     const scenario = async () => {
-      if (dbContextRef && dbContextRef.ingredients.length > 0) {
-        const ingredient = dbContextRef.ingredients[0];
-        await dbContextRef.deleteIngredient(ingredient);
+      const ingredients = database.get_ingredients();
+      if (ingredients.length > 0) {
+        await database.deleteIngredient(ingredients[0]);
       }
     };
 
@@ -241,7 +225,6 @@ describe('TagsSettings Screen Performance', () => {
   const database = RecipeDatabase.getInstance();
 
   beforeEach(async () => {
-    dbContextRef = null;
     personsContextRef = null;
     await database.init();
     await database.addMultipleIngredients(performanceIngredients);
@@ -259,9 +242,7 @@ describe('TagsSettings Screen Performance', () => {
 
   test('re-render after adding tag', async () => {
     const scenario = async () => {
-      if (dbContextRef) {
-        await dbContextRef.addTag({ name: 'Test Tag' });
-      }
+      await database.addTag({ name: 'Test Tag' });
     };
 
     await measureRenders(<TagsSettingsWrapper />, { runs: 10, scenario });
@@ -269,9 +250,10 @@ describe('TagsSettings Screen Performance', () => {
 
   test('re-render after editing tag', async () => {
     const scenario = async () => {
-      if (dbContextRef && dbContextRef.tags.length > 0) {
-        const tag = dbContextRef.tags[0];
-        await dbContextRef.editTag({
+      const tags = database.get_tags();
+      if (tags.length > 0) {
+        const tag = tags[0];
+        await database.editTag({
           ...tag,
           name: tag.name + ' (edited)',
         });
@@ -283,10 +265,8 @@ describe('TagsSettings Screen Performance', () => {
 
   test('re-render after adding multiple tags rapidly', async () => {
     const scenario = async () => {
-      if (dbContextRef) {
-        for (let i = 0; i < 5; i++) {
-          await dbContextRef.addTag({ name: `Rapid Tag ${i}` });
-        }
+      for (let i = 0; i < 5; i++) {
+        await database.addTag({ name: `Rapid Tag ${i}` });
       }
     };
 
@@ -295,9 +275,9 @@ describe('TagsSettings Screen Performance', () => {
 
   test('re-render after deleting tag', async () => {
     const scenario = async () => {
-      if (dbContextRef && dbContextRef.tags.length > 0) {
-        const tag = dbContextRef.tags[0];
-        await dbContextRef.deleteTag(tag);
+      const tags = database.get_tags();
+      if (tags.length > 0) {
+        await database.deleteTag(tags[0]);
       }
     };
 
@@ -317,7 +297,6 @@ describe('IngredientsSettings Screen Performance - Large Dataset', () => {
   const database = RecipeDatabase.getInstance();
 
   beforeEach(async () => {
-    dbContextRef = null;
     personsContextRef = null;
     await database.init();
     await database.addMultipleIngredients(largeIngredients);
@@ -333,14 +312,12 @@ describe('IngredientsSettings Screen Performance - Large Dataset', () => {
 
   test('re-render after adding ingredient with 1200 ingredients', async () => {
     const scenario = async () => {
-      if (dbContextRef) {
-        await dbContextRef.addIngredient({
-          name: `ExtraIngredient${Date.now()}`,
-          type: ingredientType.vegetable,
-          unit: 'g',
-          season: [],
-        });
-      }
+      await database.addIngredient({
+        name: `ExtraIngredient${Date.now()}`,
+        type: ingredientType.vegetable,
+        unit: 'g',
+        season: [],
+      });
     };
 
     await measureRenders(<IngredientsSettingsWrapper />, { runs: 5, scenario });
@@ -348,8 +325,9 @@ describe('IngredientsSettings Screen Performance - Large Dataset', () => {
 
   test('re-render after deleting ingredient with 1200 ingredients', async () => {
     const scenario = async () => {
-      if (dbContextRef && dbContextRef.ingredients.length > 0) {
-        await dbContextRef.deleteIngredient(dbContextRef.ingredients[0]);
+      const ingredients = database.get_ingredients();
+      if (ingredients.length > 0) {
+        await database.deleteIngredient(ingredients[0]);
       }
     };
 

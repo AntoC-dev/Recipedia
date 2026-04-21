@@ -13,7 +13,7 @@
 import { tagTableElement } from '@customTypes/DatabaseElementTypes';
 import { useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { useRecipeForm } from '@context/RecipeFormContext';
-import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { useTags } from '@hooks/useTags';
 import { validateAndQueueTags } from '@utils/RecipeValidationHelpers';
 
 /**
@@ -62,7 +62,7 @@ export interface UseRecipeTagsReturn {
 export function useRecipeTags(): UseRecipeTagsReturn {
   const { setValidationQueue } = useRecipeDialogs();
   const { state, setters } = useRecipeForm();
-  const { findSimilarTags } = useRecipeDatabase();
+  const { findSimilarTags } = useTags();
   const { recipeTags } = state;
   const { setRecipeTags } = setters;
 

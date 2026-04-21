@@ -22,7 +22,8 @@ import { useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { useRecipeForm } from '@context/RecipeFormContext';
 import { useRecipeIngredients } from '@hooks/useRecipeIngredients';
 import { FormIngredientElement, tagTableElement } from '@customTypes/DatabaseElementTypes';
-import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { useTags } from '@hooks/useTags';
+import { useIngredients } from '@hooks/useIngredients';
 
 /**
  * Hook that triggers ValidationQueue for scraped recipe data.
@@ -35,7 +36,8 @@ export function useRecipeScraperValidation(): void {
   const { setValidationQueue, validationQueue } = useRecipeDialogs();
   const { state, setters } = useRecipeForm();
   const { replaceAllMatchingFormIngredients } = useRecipeIngredients();
-  const { findSimilarTags, findSimilarIngredients } = useRecipeDatabase();
+  const { findSimilarTags } = useTags();
+  const { findSimilarIngredients } = useIngredients();
 
   const { stackMode, recipeIngredients, recipeTags } = state;
   const { setRecipeIngredients, setRecipeTags } = setters;

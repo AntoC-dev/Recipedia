@@ -10,6 +10,8 @@ import {
 import { mockInitSettings, mockGetDarkMode } from '@mocks/utils/settings-mock';
 import { mockIsFirstLaunch } from '@mocks/utils/firstLaunch-mock';
 import { mockHideAsync } from '@mocks/deps/expo-splash-screen-mock';
+import { init as mockInitFileSystem } from '@mocks/utils/FileGestion-mock';
+import RecipeDatabase from '@utils/RecipeDatabase';
 
 import App from '../../App';
 
@@ -32,17 +34,43 @@ jest.mock('@components/organisms/AppWrapper', () =>
 
 jest.mock('@styles/typography', () => require('@mocks/styles/typography-mock').typographyMock());
 
+jest.mock('@utils/FileGestion', () => require('@mocks/utils/FileGestion-mock').fileGestionMock());
+
 describe('App', () => {
-  beforeEach(() => {
+  const database = RecipeDatabase.getInstance();
+
+  beforeEach(async () => {
     jest.clearAllMocks();
     resetRecipeScraperMocks();
     mockInitSettings.mockResolvedValue(undefined);
     mockGetDarkMode.mockResolvedValue(false);
     mockIsFirstLaunch.mockResolvedValue(false);
     mockHideAsync.mockResolvedValue(undefined);
+    await database.init();
+  });
+
+  afterEach(async () => {
+    await database.closeAndReset();
   });
 
   describe('initialization', () => {
+    it('initializes file system before any other operation', async () => {
+      const callOrder: string[] = [];
+      mockInitFileSystem.mockImplementation(() => {
+        callOrder.push('initFileSystem');
+      });
+      jest.spyOn(database, 'init').mockImplementation(async () => {
+        callOrder.push('dbInit');
+      });
+
+      render(<App />);
+
+      await waitFor(() => {
+        expect(mockInitFileSystem).toHaveBeenCalled();
+      });
+      expect(callOrder.indexOf('initFileSystem')).toBeLessThan(callOrder.indexOf('dbInit'));
+    });
+
     it('calls settings, firstLaunch, and darkMode during initialization', async () => {
       render(<App />);
 

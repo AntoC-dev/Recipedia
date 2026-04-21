@@ -19,7 +19,7 @@ import { bulkImportLogger } from '@utils/logger';
 import { useI18n } from '@utils/i18n';
 import { getIgnoredPatterns } from '@utils/RecipeScraperConverter';
 import { useImportMemory } from '@hooks/useImportMemory';
-import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { useImportHistory } from '@hooks/useImportHistory';
 
 /** Current phase of the discovery screen */
 export type DiscoveryPhase = 'discovering' | 'selecting' | 'parsing';
@@ -73,7 +73,7 @@ export function useDiscoveryWorkflow(
 ): UseDiscoveryWorkflowReturn {
   const { t } = useI18n();
   const { processDiscoveredRecipes } = useImportMemory(providerId);
-  const { markUrlsAsSeen } = useRecipeDatabase();
+  const { markUrlsAsSeen } = useImportHistory();
 
   const [phase, setPhase] = useState<DiscoveryPhase>('discovering');
   const [recipes, setRecipes] = useState<DiscoveredRecipe[]>([]);

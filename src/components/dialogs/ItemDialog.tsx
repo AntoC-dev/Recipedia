@@ -74,7 +74,8 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { Button, Dialog, HelperText, Portal, Text } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
 import { CustomTextInput } from '@components/atomic/CustomTextInput';
-import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { useTags } from '@hooks/useTags';
+import { useIngredients } from '@hooks/useIngredients';
 import { cleanIngredientName, FuzzyMatchLevel, fuzzySearch } from '@utils/FuzzySearch';
 import {
   FormIngredientElement,
@@ -136,7 +137,8 @@ type ValidationState = 'none' | 'duplicate' | 'similar';
 export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialogProps) {
   const { t } = useI18n();
   const shoppingCategories = useShoppingCategories();
-  const { tags, ingredients } = useRecipeDatabase();
+  const { tags } = useTags();
+  const { ingredients } = useIngredients();
 
   const [validationState, setValidationState] = useState<ValidationState>('none');
   const [helperMessage, setHelperMessage] = useState('');

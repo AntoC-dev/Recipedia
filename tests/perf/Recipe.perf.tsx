@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { measureRenders } from 'reassure';
 import { Recipe } from '@screens/Recipe';
 import RecipeDatabase from '@utils/RecipeDatabase';
@@ -6,11 +6,6 @@ import { performanceRecipes } from '@assets/datasets/performance/recipes';
 import { performanceIngredients } from '@assets/datasets/performance/ingredients';
 import { performanceTags } from '@assets/datasets/performance/tags';
 import { SeasonFilterProvider } from '@context/SeasonFilterContext';
-import {
-  RecipeDatabaseContextType,
-  RecipeDatabaseProvider,
-  useRecipeDatabase,
-} from '@context/RecipeDatabaseContext';
 import { DefaultPersonsProvider } from '@context/DefaultPersonsContext';
 import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { RecipePropType, ScrapedRecipeData } from '@customTypes/RecipeNavigationTypes';
@@ -20,16 +15,6 @@ jest.mock('@react-navigation/native', () =>
   require('@mocks/deps/react-navigation-mock').reactNavigationMock()
 );
 jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
-
-let contextRef: RecipeDatabaseContextType | null = null;
-
-function ContextCapture() {
-  const context = useRecipeDatabase();
-  useEffect(() => {
-    contextRef = context;
-  }, [context]);
-  return null;
-}
 
 const mockNavigation = {
   goBack: jest.fn(),
@@ -48,14 +33,11 @@ function createMockRoute(params: RecipePropType) {
 function RecipeWrapper({ initialParams }: { initialParams: RecipePropType }) {
   const route = createMockRoute(initialParams);
   return (
-    <RecipeDatabaseProvider>
-      <DefaultPersonsProvider>
-        <SeasonFilterProvider>
-          <ContextCapture />
-          <Recipe route={route} navigation={mockNavigation} />
-        </SeasonFilterProvider>
-      </DefaultPersonsProvider>
-    </RecipeDatabaseProvider>
+    <DefaultPersonsProvider>
+      <SeasonFilterProvider>
+        <Recipe route={route} navigation={mockNavigation} />
+      </SeasonFilterProvider>
+    </DefaultPersonsProvider>
   );
 }
 
@@ -84,7 +66,6 @@ describe('Recipe Screen Performance', () => {
   const database = RecipeDatabase.getInstance();
 
   beforeEach(async () => {
-    contextRef = null;
     await database.init();
     await database.addMultipleIngredients(performanceIngredients);
     await database.addMultipleTags(performanceTags);
@@ -114,9 +95,7 @@ describe('Recipe Screen Performance', () => {
     const params: RecipePropType = { mode: 'readOnly', recipe: testRecipe };
 
     const scenario = async () => {
-      if (contextRef) {
-        await contextRef.addRecipeToMenu(testRecipe);
-      }
+      await database.addRecipeToMenu(testRecipe);
     };
 
     await measureRenders(<RecipeWrapper initialParams={params} />, { runs: 10, scenario });

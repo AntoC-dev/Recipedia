@@ -45,7 +45,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
-          true,
           4,
           mockFindSimilarTags,
           mockFindSimilarIngredients
@@ -67,7 +66,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
-          true,
           4,
           mockFindSimilarTags,
           mockFindSimilarIngredients
@@ -86,7 +84,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
-          true,
           4,
           mockFindSimilarTags,
           mockFindSimilarIngredients
@@ -110,7 +107,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
-          true,
           4,
           mockFindSimilarTags,
           mockFindSimilarIngredients
@@ -131,7 +127,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
-          true,
           4,
           mockFindSimilarTags,
           mockFindSimilarIngredients
@@ -161,7 +156,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
-          true,
           4,
           mockFindSimilarTags,
           mockFindSimilarIngredients
@@ -182,7 +176,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
-          true,
           4,
           mockFindSimilarTags,
           mockFindSimilarIngredients
@@ -215,7 +208,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
-          true,
           4,
           mockFindSimilarTags,
           mockFindSimilarIngredients
@@ -250,7 +242,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
-          true,
           4,
           mockFindSimilarTags,
           mockFindSimilarIngredients
@@ -285,7 +276,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
-          true,
           4,
           mockFindSimilarTags,
           mockFindSimilarIngredients
@@ -323,7 +313,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
-          true,
           4,
           mockFindSimilarTags,
           mockFindSimilarIngredients
@@ -362,7 +351,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           recipesWithWrongPersons,
           mockAddMultipleRecipes,
-          true,
           4,
           mockFindSimilarTags,
           mockFindSimilarIngredients
@@ -404,7 +392,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
-          true,
           4,
           mockFindSimilarTags,
           mockFindSimilarIngredients,
@@ -458,7 +445,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
-          true,
           4,
           mockFindSimilarTags,
           mockFindSimilarIngredients,
@@ -506,7 +492,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
-          true,
           4,
           mockFindSimilarTags,
           mockFindSimilarIngredients
@@ -533,7 +518,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
-          true,
           4,
           localFindSimilarTags,
           mockFindSimilarIngredients
@@ -564,7 +548,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
-          true,
           4,
           mockFindSimilarTags,
           localFindSimilarIngredients
@@ -580,29 +563,6 @@ describe('useValidationWorkflow', () => {
     });
   });
 
-  describe('early return when database not ready', () => {
-    test('stays in initializing phase when isDatabaseReady is false', async () => {
-      const recipes = [createMockRecipe('Test Recipe', ['NewTag'], ['NewIngredient'])];
-
-      const { result } = renderHook(() =>
-        useValidationWorkflow(
-          recipes,
-          mockAddMultipleRecipes,
-          false,
-          4,
-          mockFindSimilarTags,
-          mockFindSimilarIngredients
-        )
-      );
-
-      await new Promise(resolve => setTimeout(resolve, 200));
-
-      expect(result.current.phase).toBe('initializing');
-      expect(mockFindSimilarTags).not.toHaveBeenCalled();
-      expect(mockFindSimilarIngredients).not.toHaveBeenCalled();
-    });
-  });
-
   describe('startImport null state guard', () => {
     test('startImport does nothing when called before state is initialized', () => {
       const recipes = [createMockRecipe('Test Recipe', ['NewTag'], ['NewIngredient'])];
@@ -611,7 +571,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
-          false,
           4,
           mockFindSimilarTags,
           mockFindSimilarIngredients
@@ -633,7 +592,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           [],
           mockAddMultipleRecipes,
-          true,
           4,
           mockFindSimilarTags,
           mockFindSimilarIngredients
@@ -657,7 +615,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
-          true,
           4,
           mockFindSimilarTags,
           mockFindSimilarIngredients
@@ -720,7 +677,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
-          true,
           4,
           mockFindSimilarTags,
           mockFindSimilarIngredients
@@ -743,7 +699,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
-          true,
           4,
           mockFindSimilarTags,
           mockFindSimilarIngredients
@@ -764,7 +719,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
-          true,
           4,
           mockFindSimilarTags,
           mockFindSimilarIngredients
@@ -791,7 +745,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
-          true,
           4,
           mockFindSimilarTags,
           mockFindSimilarIngredients
@@ -826,7 +779,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
-          false,
           4,
           mockFindSimilarTags,
           mockFindSimilarIngredients
@@ -866,7 +818,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
-          true,
           4,
           mockFindSimilarTags,
           mockFindSimilarIngredients
@@ -889,7 +840,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
-          true,
           4,
           mockFindSimilarTags,
           mockFindSimilarIngredients
@@ -918,7 +868,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
-          true,
           4,
           mockFindSimilarTags,
           mockFindSimilarIngredients
@@ -960,7 +909,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
-          true,
           4,
           mockFindSimilarTags,
           localFindSimilarIngredients
@@ -990,7 +938,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
-          true,
           4,
           mockFindSimilarTags,
           mockFindSimilarIngredients
@@ -1016,7 +963,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
-          true,
           4,
           mockFindSimilarTags,
           mockFindSimilarIngredients
@@ -1054,7 +1000,6 @@ describe('useValidationWorkflow', () => {
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
-          true,
           4,
           mockFindSimilarTags,
           mockFindSimilarIngredients
@@ -1082,6 +1027,113 @@ describe('useValidationWorkflow', () => {
       });
 
       expect(result.current.skippedRecipes).toHaveLength(0);
+    });
+  });
+
+  describe('error message formatting', () => {
+    test('sets error message to String(error) when addMultipleRecipes throws a non-Error', async () => {
+      mockAddMultipleRecipes.mockRejectedValueOnce('string error');
+
+      const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient'])];
+
+      const { result } = renderHook(() =>
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
+      );
+
+      await waitFor(() => expect(result.current.phase).toBe('reviewing'));
+
+      act(() => {
+        result.current.handlers.onIngredientValidated('NewIngredient', {
+          id: 10,
+          name: 'Validated',
+          unit: 'g',
+          type: ingredientType.vegetable,
+          season: [],
+        });
+      });
+
+      act(() => result.current.handlers.startImport());
+
+      await waitFor(() => {
+        expect(result.current.phase).toBe('error');
+      });
+
+      expect(result.current.errorMessage).toBe('string error');
+    });
+  });
+
+  describe('null state guards', () => {
+    test('onTagValidated returns early when called before state initializes', () => {
+      const recipes = [createMockRecipe('Test Recipe', ['NewTag'], ['NewIngredient'])];
+
+      const { result } = renderHook(() =>
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
+      );
+
+      act(() => {
+        result.current.handlers.onTagValidated({ id: 1, name: 'NewTag' }, { id: 10, name: 'Tag' });
+      });
+
+      expect(result.current.validationState).toBeNull();
+    });
+
+    test('onIngredientValidated returns early when called before state initializes', () => {
+      const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient'])];
+
+      const { result } = renderHook(() =>
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
+      );
+
+      act(() => {
+        result.current.handlers.onIngredientValidated('NewIngredient', {
+          id: 10,
+          name: 'Validated',
+          unit: 'g',
+          type: ingredientType.vegetable,
+          season: [],
+        });
+      });
+
+      expect(result.current.validationState).toBeNull();
+    });
+
+    test('acknowledgeWarning does not trigger import when state is null', () => {
+      const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient'])];
+
+      const { result } = renderHook(() =>
+        useValidationWorkflow(
+          recipes,
+          mockAddMultipleRecipes,
+          4,
+          mockFindSimilarTags,
+          mockFindSimilarIngredients
+        )
+      );
+
+      act(() => {
+        result.current.handlers.acknowledgeWarning();
+      });
+
+      expect(result.current.phase).toBe('initializing');
+      expect(mockAddMultipleRecipes).not.toHaveBeenCalled();
     });
   });
 });

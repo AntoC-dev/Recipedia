@@ -8,7 +8,7 @@ import { padding, screenWidth } from '@styles/spacing';
 import { DefaultPersonsSettingsProp } from '@customTypes/ScreenTypes';
 import { defaultPersonsSettingsLogger } from '@utils/logger';
 import { useDefaultPersons } from '@context/DefaultPersonsContext';
-import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { useRecipes } from '@hooks/useRecipes';
 import { LoadingOverlay } from '@components/dialogs/LoadingOverlay';
 import { AppBar } from '@components/organisms/AppBar';
 
@@ -16,7 +16,7 @@ export function DefaultPersonsSettings({ navigation }: DefaultPersonsSettingsPro
   const { t } = useI18n();
   const { colors } = useTheme();
   const { defaultPersons, setDefaultPersons: setDefaultPersonsContext } = useDefaultPersons();
-  const { scaleAllRecipesForNewDefaultPersons, scalingProgress } = useRecipeDatabase();
+  const { scaleAllRecipesForNewDefaultPersons, scalingProgress } = useRecipes();
   const [persons, setPersons] = useState(defaultPersons);
   const [isLoading, setIsLoading] = useState(false);
 

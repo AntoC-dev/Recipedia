@@ -29,7 +29,8 @@ import { ValidationReviewItem } from '@components/molecules/ValidationReviewItem
 import { ItemDialog } from '@components/dialogs/ItemDialog';
 import { DatabasePickerDialog } from '@components/dialogs/DatabasePickerDialog';
 import { BottomActionButton } from '@components/atomic/BottomActionButton';
-import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { useTags } from '@hooks/useTags';
+import { useIngredients } from '@hooks/useIngredients';
 import { useI18n } from '@utils/i18n';
 import { padding } from '@styles/spacing';
 import { Icons } from '@assets/Icons';
@@ -140,14 +141,8 @@ export function ValidationReviewList({
 }: ValidationReviewListProps) {
   const { t } = useI18n();
   const { colors } = useTheme();
-  const {
-    tags: dbTags,
-    ingredients: dbIngredients,
-    addIngredient,
-    addTag,
-    findSimilarTags,
-    findSimilarIngredients,
-  } = useRecipeDatabase();
+  const { tags: dbTags, addTag, findSimilarTags } = useTags();
+  const { ingredients: dbIngredients, addIngredient, findSimilarIngredients } = useIngredients();
 
   const [addNewItem, setAddNewItem] = useState<DialogTarget | null>(null);
   const [pickItem, setPickItem] = useState<DialogTarget | null>(null);

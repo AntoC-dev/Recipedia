@@ -9,7 +9,6 @@ import RecipeDatabase from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
 import { SeasonFilterProvider } from '@context/SeasonFilterContext';
-import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 import { InteractionManager } from 'react-native';
 
 jest.mock(
@@ -44,15 +43,13 @@ const Stack = createStackNavigator();
 
 async function renderHomeAndWaitForRecommendations() {
   const result = render(
-    <RecipeDatabaseProvider>
-      <SeasonFilterProvider>
-        <NavigationContainer>
-          <Stack.Navigator>
-            <Stack.Screen name={'Home'} component={Home} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </SeasonFilterProvider>
-    </RecipeDatabaseProvider>
+    <SeasonFilterProvider>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name={'Home'} component={Home} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </SeasonFilterProvider>
   );
 
   await waitFor(() =>
@@ -162,15 +159,13 @@ describe('Home Screen', () => {
     expect(initialRandomReco.length).toBeLessThanOrEqual(expectedRandomRecommendationLength);
 
     rerender(
-      <RecipeDatabaseProvider>
-        <SeasonFilterProvider>
-          <NavigationContainer>
-            <Stack.Navigator>
-              <Stack.Screen name={'Home'} component={Home} />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </SeasonFilterProvider>
-      </RecipeDatabaseProvider>
+      <SeasonFilterProvider>
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen name={'Home'} component={Home} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SeasonFilterProvider>
     );
 
     await waitFor(() => {
@@ -199,15 +194,13 @@ describe('Home Screen', () => {
     await database.init();
 
     const { getByTestId } = render(
-      <RecipeDatabaseProvider>
-        <SeasonFilterProvider>
-          <NavigationContainer>
-            <Stack.Navigator>
-              <Stack.Screen name={'Home'} component={Home} />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </SeasonFilterProvider>
-      </RecipeDatabaseProvider>
+      <SeasonFilterProvider>
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen name={'Home'} component={Home} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SeasonFilterProvider>
     );
 
     await waitFor(() => {
@@ -274,15 +267,13 @@ describe('Home Screen', () => {
     });
 
     const { UNSAFE_getAllByType, queryByTestId } = render(
-      <RecipeDatabaseProvider>
-        <SeasonFilterProvider>
-          <NavigationContainer>
-            <Stack.Navigator>
-              <Stack.Screen name={'Home'} component={Home} />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </SeasonFilterProvider>
-      </RecipeDatabaseProvider>
+      <SeasonFilterProvider>
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen name={'Home'} component={Home} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SeasonFilterProvider>
     );
 
     const { Animated } = require('react-native');

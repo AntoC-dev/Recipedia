@@ -2,7 +2,6 @@ import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { SimilarityDialog, SimilarityDialogProps } from '@components/dialogs/SimilarityDialog';
 import { ingredientTableElement, tagTableElement } from '@customTypes/DatabaseElementTypes';
-import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
@@ -41,11 +40,7 @@ describe('SimilarityDialog', () => {
   });
 
   const renderDialog = async (props: SimilarityDialogProps) => {
-    const result = render(
-      <RecipeDatabaseProvider>
-        <SimilarityDialog {...props} />
-      </RecipeDatabaseProvider>
-    );
+    const result = render(<SimilarityDialog {...props} />);
     if (props.isVisible) {
       await waitFor(() => {
         expect(result.getByTestId(`${modalTestId}::Title`)).toBeTruthy();
@@ -722,17 +717,9 @@ describe('SimilarityDialog', () => {
       fireEvent.press(getByTestId(`${testId}::DatabasePicker::Item::0`));
       expect(getByTestId(`${testId}::PickConfirmation`)).toBeTruthy();
 
-      rerender(
-        <RecipeDatabaseProvider>
-          <SimilarityDialog {...props} isVisible={false} />
-        </RecipeDatabaseProvider>
-      );
+      rerender(<SimilarityDialog {...props} isVisible={false} />);
 
-      rerender(
-        <RecipeDatabaseProvider>
-          <SimilarityDialog {...props} isVisible={true} />
-        </RecipeDatabaseProvider>
-      );
+      rerender(<SimilarityDialog {...props} isVisible={true} />);
 
       await waitFor(() => {
         expect(getByTestId(`${modalTestId}::Title`)).toBeTruthy();

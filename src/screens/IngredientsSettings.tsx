@@ -35,7 +35,7 @@ import { AppBar } from '@components/organisms/AppBar';
 import { BottomActionButton } from '@components/atomic/BottomActionButton';
 import { DialogMode, ItemDialog } from '@components/dialogs/ItemDialog';
 import { ingredientsSettingsLogger } from '@utils/logger';
-import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { useIngredients } from '@hooks/useIngredients';
 import { useI18n } from '@utils/i18n';
 import { Icons } from '@assets/Icons';
 import { padding } from '@styles/spacing';
@@ -49,7 +49,7 @@ const BUTTON_HEIGHT = 48;
 const BUTTON_CONTAINER_HEIGHT = BUTTON_HEIGHT + padding.small * 2;
 
 export function IngredientsSettings() {
-  const { ingredients, addIngredient, editIngredient, deleteIngredient } = useRecipeDatabase();
+  const { ingredients, addIngredient, editIngredient, deleteIngredient } = useIngredients();
   const navigation = useNavigation();
   const { t } = useI18n();
 

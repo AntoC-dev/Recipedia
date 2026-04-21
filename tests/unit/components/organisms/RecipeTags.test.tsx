@@ -5,7 +5,6 @@ import { testTags } from '@test-data/tagsDataset';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testRecipes } from '@test-data/recipesDataset';
 import RecipeDatabase from '@utils/RecipeDatabase';
-import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 
 jest.mock('@components/atomic/RoundButton', () => ({
   RoundButton: require('@mocks/components/atomic/RoundButton-mock').roundButtonMock,
@@ -23,11 +22,7 @@ describe('RecipeTags Component', () => {
   const sampleTags = testTags.map(tag => tag.name).sort();
 
   const renderRecipeTags = async (props: RecipeTagProps) => {
-    const result = render(
-      <RecipeDatabaseProvider>
-        <RecipeTags {...props} />
-      </RecipeDatabaseProvider>
-    );
+    const result = render(<RecipeTags {...props} />);
 
     await waitFor(() => {
       expect(result.getByTestId('RecipeTags::PropType')).toBeTruthy();

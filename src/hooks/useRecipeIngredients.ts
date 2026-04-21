@@ -14,7 +14,7 @@ import { recipeLogger } from '@utils/logger';
 import { noteSeparator, textSeparator, unitySeparator } from '@styles/typography';
 import { useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { useRecipeForm } from '@context/RecipeFormContext';
-import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { useIngredients } from '@hooks/useIngredients';
 import { validateAndQueueIngredients } from '@utils/RecipeValidationHelpers';
 
 /**
@@ -137,7 +137,7 @@ export interface UseRecipeIngredientsReturn {
 export function useRecipeIngredients(): UseRecipeIngredientsReturn {
   const { setValidationQueue } = useRecipeDialogs();
   const { state, setters } = useRecipeForm();
-  const { findSimilarIngredients } = useRecipeDatabase();
+  const { findSimilarIngredients } = useIngredients();
   const { recipeIngredients } = state;
   const { setRecipeIngredients } = setters;
 

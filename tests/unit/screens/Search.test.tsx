@@ -9,7 +9,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
 import { Button } from 'react-native';
 import { SeasonFilterProvider, useSeasonFilter } from '@context/SeasonFilterContext';
-import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 import { resetFiltersSelection } from '@mocks/components/organisms/FiltersSelection-mock';
 
 function SeasonFilterToggler() {
@@ -43,15 +42,13 @@ describe('Search Screen', () => {
   const database: RecipeDatabase = RecipeDatabase.getInstance();
 
   const defaultComponent = (
-    <RecipeDatabaseProvider>
-      <SeasonFilterProvider>
-        <NavigationContainer>
-          <Stack.Navigator>
-            <Stack.Screen name={'Search'} component={Search} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </SeasonFilterProvider>
-    </RecipeDatabaseProvider>
+    <SeasonFilterProvider>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name={'Search'} component={Search} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </SeasonFilterProvider>
   );
 
   const renderSearchComponent = async () => {
@@ -468,16 +465,14 @@ describe('Search Screen', () => {
 
   test('Season filter toggle covers all useEffect branches', async () => {
     const componentWithToggler = (
-      <RecipeDatabaseProvider>
-        <SeasonFilterProvider>
-          <NavigationContainer>
-            <Stack.Navigator>
-              <Stack.Screen name={'Search'} component={Search} />
-            </Stack.Navigator>
-          </NavigationContainer>
-          <SeasonFilterToggler />
-        </SeasonFilterProvider>
-      </RecipeDatabaseProvider>
+      <SeasonFilterProvider>
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen name={'Search'} component={Search} />
+          </Stack.Navigator>
+        </NavigationContainer>
+        <SeasonFilterToggler />
+      </SeasonFilterProvider>
     );
 
     const { getByTestId, rerender } = render(componentWithToggler);
@@ -522,15 +517,13 @@ describe('Search Screen - empty state', () => {
   const database: RecipeDatabase = RecipeDatabase.getInstance();
 
   const emptyStateComponent = (
-    <RecipeDatabaseProvider>
-      <SeasonFilterProvider>
-        <NavigationContainer>
-          <Stack.Navigator>
-            <Stack.Screen name={'Search'} component={Search} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </SeasonFilterProvider>
-    </RecipeDatabaseProvider>
+    <SeasonFilterProvider>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name={'Search'} component={Search} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </SeasonFilterProvider>
   );
 
   beforeEach(async () => {

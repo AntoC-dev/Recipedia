@@ -4,7 +4,6 @@ import { ValidationReviewList } from '@components/organisms/ValidationReviewList
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { performanceTags } from '@assets/datasets/performance/tags';
 import { performanceIngredients } from '@assets/datasets/performance/ingredients';
-import { RecipeDatabaseProvider } from '@context/RecipeDatabaseContext';
 import { tagTableElement, FormIngredientElement } from '@customTypes/DatabaseElementTypes';
 import { ResolutionMappings } from '@customTypes/ValidationTypes';
 
@@ -20,15 +19,13 @@ function ValidationReviewListWrapper({
   recipeCount?: number;
 }) {
   return (
-    <RecipeDatabaseProvider>
-      <ValidationReviewList
-        testID='PerfTest'
-        rawTags={rawTags}
-        rawIngredients={rawIngredients}
-        onImport={(_: ResolutionMappings) => {}}
-        recipeCount={recipeCount}
-      />
-    </RecipeDatabaseProvider>
+    <ValidationReviewList
+      testID='PerfTest'
+      rawTags={rawTags}
+      rawIngredients={rawIngredients}
+      onImport={(_: ResolutionMappings) => {}}
+      recipeCount={recipeCount}
+    />
   );
 }
 

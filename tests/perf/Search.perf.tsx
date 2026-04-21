@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { fireEvent, screen } from '@testing-library/react-native';
 import { measureRenders } from 'reassure';
 import Search from '@screens/Search';
@@ -10,11 +10,6 @@ import { performanceTags } from '@assets/datasets/performance/tags';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { SeasonFilterProvider } from '@context/SeasonFilterContext';
-import {
-  RecipeDatabaseContextType,
-  RecipeDatabaseProvider,
-  useRecipeDatabase,
-} from '@context/RecipeDatabaseContext';
 
 jest.mock('@react-navigation/native', () =>
   require('@mocks/deps/react-navigation-mock').reactNavigationMock()
@@ -23,28 +18,15 @@ jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 
 const Stack = createStackNavigator();
 
-let contextRef: RecipeDatabaseContextType | null = null;
-
-function ContextCapture() {
-  const context = useRecipeDatabase();
-  useEffect(() => {
-    contextRef = context;
-  }, [context]);
-  return null;
-}
-
 function SearchWrapper() {
   return (
-    <RecipeDatabaseProvider>
-      <SeasonFilterProvider>
-        <ContextCapture />
-        <NavigationContainer>
-          <Stack.Navigator>
-            <Stack.Screen name='Search' component={Search} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </SeasonFilterProvider>
-    </RecipeDatabaseProvider>
+    <SeasonFilterProvider>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name='Search' component={Search} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </SeasonFilterProvider>
   );
 }
 
@@ -64,7 +46,6 @@ describe('Search Screen Performance', () => {
   const database = RecipeDatabase.getInstance();
 
   beforeEach(async () => {
-    contextRef = null;
     await database.init();
     await database.addMultipleIngredients(performanceIngredients);
     await database.addMultipleTags(performanceTags);
@@ -100,9 +81,7 @@ describe('Search Screen Performance', () => {
 
   test('re-render after adding recipe via hook', async () => {
     const scenario = async () => {
-      if (contextRef) {
-        await contextRef.addRecipe({ ...testRecipe, title: `New Recipe ${Date.now()}` });
-      }
+      await database.addRecipe({ ...testRecipe, title: `New Recipe ${Date.now()}` });
     };
 
     await measureRenders(<SearchWrapper />, { runs: 10, scenario });
@@ -110,8 +89,9 @@ describe('Search Screen Performance', () => {
 
   test('re-render after deleting recipe via hook', async () => {
     const scenario = async () => {
-      if (contextRef && contextRef.recipes.length > 0) {
-        await contextRef.deleteRecipe(contextRef.recipes[0]);
+      const recipes = database.get_recipes();
+      if (recipes.length > 0) {
+        await database.deleteRecipe(recipes[0]);
       }
     };
 
@@ -120,9 +100,10 @@ describe('Search Screen Performance', () => {
 
   test('re-render after editing recipe via hook', async () => {
     const scenario = async () => {
-      if (contextRef && contextRef.recipes.length > 0) {
-        const recipe = contextRef.recipes[0];
-        await contextRef.editRecipe({
+      const recipes = database.get_recipes();
+      if (recipes.length > 0) {
+        const recipe = recipes[0];
+        await database.editRecipe({
           ...recipe,
           title: recipe.title + ' (edited)',
         });
@@ -262,7 +243,6 @@ describe('Search Screen Performance - Large Dataset', () => {
   const database = RecipeDatabase.getInstance();
 
   beforeEach(async () => {
-    contextRef = null;
     await database.init();
     await database.addMultipleIngredients(largeIngredients);
     await database.addMultipleRecipes(largeRecipes);
@@ -287,19 +267,17 @@ describe('Search Screen Performance - Large Dataset', () => {
 
   test('re-render after adding recipe with 1000 recipes', async () => {
     const scenario = async () => {
-      if (contextRef) {
-        await contextRef.addRecipe({
-          title: `ExtraRecipe${Date.now()}`,
-          description: '',
-          ingredients: [],
-          tags: [],
-          preparation: [],
-          time: 30,
-          persons: 4,
-          season: [],
-          image_Source: '',
-        });
-      }
+      await database.addRecipe({
+        title: `ExtraRecipe${Date.now()}`,
+        description: '',
+        ingredients: [],
+        tags: [],
+        preparation: [],
+        time: 30,
+        persons: 4,
+        season: [],
+        image_Source: '',
+      });
     };
 
     await measureRenders(<SearchWrapper />, { runs: 5, scenario });

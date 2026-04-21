@@ -57,6 +57,15 @@ import { databaseLogger } from '@utils/logger';
 import { fisherYatesShuffle } from './FilterFunctions';
 
 /**
+ * Identifies a specific slice of reactive store state in RecipeDatabase.
+ *
+ * Used by `subscribe()` and `notify()` to scope change notifications to the
+ * exact slice a hook cares about, so only relevant `useSyncExternalStore`
+ * callbacks are triggered on each mutation.
+ */
+export type StoreSlice = 'recipes' | 'ingredients' | 'tags' | 'menu' | 'purchased';
+
+/**
  * RecipeDatabase - Singleton class for managing recipe data storage and operations
  *
  * This class provides a comprehensive interface for managing recipes, ingredients, tags,
@@ -105,6 +114,9 @@ export class RecipeDatabase {
   protected _menu: menuTableElement[];
   protected _purchasedIngredients: Map<string, boolean>;
 
+  private _listeners = new Map<StoreSlice, Set<() => void>>();
+  private _isReady = false;
+
   /*    PRIVATE METHODS     */
   private constructor() {
     this._databaseName = recipeDatabaseName;
@@ -149,6 +161,26 @@ export class RecipeDatabase {
     }
 
     return RecipeDatabase.#instance;
+  }
+
+  /**
+   * Subscribes a callback to notifications for a specific data slice.
+   *
+   * Called by `useSyncExternalStore` to register a re-render callback. Returns
+   * an unsubscribe function that removes the callback from the listener set.
+   *
+   * @param slice - The data slice to subscribe to
+   * @param callback - Function to call when the slice changes
+   * @returns Unsubscribe function
+   */
+  public subscribe(slice: StoreSlice, callback: () => void): () => void {
+    if (!this._listeners.has(slice)) {
+      this._listeners.set(slice, new Set());
+    }
+    this._listeners.get(slice)!.add(callback);
+    return () => {
+      this._listeners.get(slice)?.delete(callback);
+    };
   }
 
   /**
@@ -214,6 +246,8 @@ export class RecipeDatabase {
       this._dbConnection = undefined as unknown as SQLite.SQLiteDatabase;
     }
 
+    this._isReady = false;
+    this._listeners.clear();
     this.reset();
 
     databaseLogger.info('Database closed and state reset');
@@ -276,6 +310,8 @@ export class RecipeDatabase {
       menuItemsCount: this._menu.length,
       purchasedIngredientsCount: this._purchasedIngredients.size,
     });
+
+    this._isReady = true;
   }
 
   /**
@@ -346,6 +382,8 @@ export class RecipeDatabase {
 
     const decodedIng = this.decodeIngredient(dbIngredient);
     this.add_ingredient(decodedIng);
+    this._ingredients = [...this._ingredients];
+    this.notify('ingredients');
     return decodedIng;
   }
 
@@ -388,6 +426,8 @@ export class RecipeDatabase {
 
     const decodedTag = this.decodeTag(dbTag);
     this.add_tags(decodedTag);
+    this._tags = [...this._tags];
+    this.notify('tags');
     return decodedTag;
   }
 
@@ -451,6 +491,8 @@ export class RecipeDatabase {
       const decodedIng = this.decodeIngredient(encodedIng);
       this.add_ingredient(decodedIng);
     }
+    this._ingredients = [...this._ingredients];
+    this.notify('ingredients');
   }
 
   /**
@@ -502,6 +544,8 @@ export class RecipeDatabase {
       const decodedTag = this.decodeTag(encodedTag);
       this.add_tags(decodedTag);
     }
+    this._tags = [...this._tags];
+    this.notify('tags');
   }
 
   /**
@@ -562,6 +606,8 @@ export class RecipeDatabase {
     } else {
       const decodedRecipe = await this.decodeRecipe(dbRecipe);
       this.add_recipes(decodedRecipe);
+      this._recipes = [...this._recipes];
+      this.notify('recipes');
       databaseLogger.info('Recipe added to cache successfully', {
         recipeTitle: decodedRecipe.title,
         recipeId: decodedRecipe.id,
@@ -618,6 +664,8 @@ export class RecipeDatabase {
     for (const recipe of decodedRecipes) {
       this.add_recipes(recipe);
     }
+    this._recipes = [...this._recipes];
+    this.notify('recipes');
   }
 
   public async editRecipe(recipe: recipeTableElement) {
@@ -636,6 +684,8 @@ export class RecipeDatabase {
     );
     if (success) {
       this.update_recipe(recipe);
+      this._recipes = [...this._recipes];
+      this.notify('recipes');
       databaseLogger.debug('Recipe edited successfully', { recipeId: recipe.id });
     } else {
       databaseLogger.warn('Failed to edit recipe', {
@@ -661,7 +711,10 @@ export class RecipeDatabase {
     );
     if (success) {
       this.update_ingredient(ingredient);
+      this._ingredients = [...this._ingredients];
       this._recipes = await this.getAllRecipes();
+      this.notify('ingredients');
+      this.notify('recipes');
     }
     return success;
   }
@@ -675,7 +728,10 @@ export class RecipeDatabase {
     const success = await this._tagsTable.editElementById(tag.id, updateMap, this._dbConnection);
     if (success) {
       this.update_tag(tag);
+      this._tags = [...this._tags];
       this._recipes = await this.getAllRecipes();
+      this.notify('tags');
+      this.notify('recipes');
     }
     return success;
   }
@@ -761,6 +817,8 @@ export class RecipeDatabase {
     }
     if (recipeDeleted) {
       this.remove_recipe(recipe);
+      this._recipes = [...this._recipes];
+      this.notify('recipes');
 
       if (recipe.id !== undefined) {
         const menuItem = this._menu.find(item => item.recipeId === recipe.id);
@@ -791,6 +849,7 @@ export class RecipeDatabase {
     }
     if (ingredientDeleted) {
       this.remove_ingredient(ingredient);
+      this._ingredients = [...this._ingredients];
 
       const recipesToUpdate = this._recipes.filter(recipe =>
         recipe.ingredients.some(i => i.id === ingredient.id)
@@ -805,6 +864,8 @@ export class RecipeDatabase {
       }
 
       this._recipes = await this.getAllRecipes();
+      this.notify('ingredients');
+      this.notify('recipes');
     }
     return ingredientDeleted;
   }
@@ -821,6 +882,7 @@ export class RecipeDatabase {
     }
     if (tagDeleted) {
       this.remove_tag(tag);
+      this._tags = [...this._tags];
 
       const recipesToUpdate = this._recipes.filter(recipe =>
         recipe.tags.some(t => t.id === tag.id)
@@ -835,6 +897,8 @@ export class RecipeDatabase {
       }
 
       this._recipes = await this.getAllRecipes();
+      this.notify('tags');
+      this.notify('recipes');
     }
     return tagDeleted;
   }
@@ -1032,6 +1096,8 @@ export class RecipeDatabase {
         this._dbConnection
       );
       existingMenuItem.count = newCount;
+      this._menu = [...this._menu];
+      this.notify('menu');
       databaseLogger.debug('Recipe count incremented in menu', {
         recipeId: recipe.id,
         newCount,
@@ -1064,6 +1130,8 @@ export class RecipeDatabase {
 
     if (dbMenu) {
       this._menu.push(this.decodeMenu(dbMenu));
+      this._menu = [...this._menu];
+      this.notify('menu');
       databaseLogger.debug('Recipe added to menu', { recipeId: recipe.id });
     }
   }
@@ -1091,6 +1159,8 @@ export class RecipeDatabase {
 
     if (success) {
       menuItem.isCooked = newCookedStatus;
+      this._menu = [...this._menu];
+      this.notify('menu');
       databaseLogger.debug('Menu item cooked status toggled', {
         menuId,
         isCooked: newCookedStatus,
@@ -1122,6 +1192,8 @@ export class RecipeDatabase {
         this._dbConnection
       );
       menuItem.count = newCount;
+      this._menu = [...this._menu];
+      this.notify('menu');
       databaseLogger.debug('Menu item count decremented', { menuId, newCount });
       return true;
     }
@@ -1132,6 +1204,8 @@ export class RecipeDatabase {
       if (index !== -1) {
         this._menu.splice(index, 1);
       }
+      this._menu = [...this._menu];
+      this.notify('menu');
       databaseLogger.debug('Menu item removed', { menuId });
       return true;
     }
@@ -1146,6 +1220,8 @@ export class RecipeDatabase {
     this._menu.length = 0;
     await this._menuTable.deleteTable(this._dbConnection);
     await this._menuTable.createTable(this._dbConnection);
+    this._menu = [...this._menu];
+    this.notify('menu');
     databaseLogger.debug('Menu cleared');
   }
 
@@ -1182,6 +1258,8 @@ export class RecipeDatabase {
     );
 
     this._purchasedIngredients.set(ingredientName, purchased);
+    this._purchasedIngredients = new Map(this._purchasedIngredients);
+    this.notify('purchased');
     databaseLogger.debug('Purchase state updated', { ingredientName, purchased });
   }
 
@@ -1193,6 +1271,8 @@ export class RecipeDatabase {
     this._purchasedIngredients.clear();
     await this._purchasedIngredientsTable.deleteTable(this._dbConnection);
     await this._purchasedIngredientsTable.createTable(this._dbConnection);
+    this._purchasedIngredients = new Map(this._purchasedIngredients);
+    this.notify('purchased');
     databaseLogger.debug('Purchased ingredients cleared');
   }
 
@@ -1242,6 +1322,8 @@ export class RecipeDatabase {
     }
 
     this.update_recipe(scaledRecipe);
+    this._recipes = [...this._recipes];
+    this.notify('recipes');
     databaseLogger.debug('Recipe updated successfully', { recipeId: scaledRecipe.id });
   }
 
@@ -1605,6 +1687,10 @@ export class RecipeDatabase {
    *
    * @private
    */
+  private notify(slice: StoreSlice): void {
+    this._listeners.get(slice)?.forEach(cb => cb());
+  }
+
   private reset() {
     this._recipes = [];
     this._ingredients = [];

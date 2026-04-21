@@ -37,7 +37,10 @@ import { ImportSkippedWarning } from '@components/molecules/ImportSkippedWarning
 import { ImportSuccessMessage } from '@components/molecules/ImportSuccessMessage';
 import { ValidationReviewList } from '@components/organisms/ValidationReviewList';
 import { useI18n } from '@utils/i18n';
-import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { useRecipes } from '@hooks/useRecipes';
+import { useImportHistory } from '@hooks/useImportHistory';
+import { useTags } from '@hooks/useTags';
+import { useIngredients } from '@hooks/useIngredients';
 import { useDefaultPersons } from '@context/DefaultPersonsContext';
 import { useValidationWorkflow } from '@hooks/useValidationWorkflow';
 import { ResolutionMappings } from '@customTypes/ValidationTypes';
@@ -61,13 +64,10 @@ export function BulkImportValidation() {
   const navigation = useNavigation<StackScreenNavigation>();
   const route = useRoute<BulkImportValidationRouteProp>();
   const { providerId, selectedRecipes } = route.params;
-  const {
-    addMultipleRecipes,
-    removeFromSeenHistory,
-    isDatabaseReady,
-    findSimilarTags,
-    findSimilarIngredients,
-  } = useRecipeDatabase();
+  const { addMultipleRecipes } = useRecipes();
+  const { removeFromSeenHistory } = useImportHistory();
+  const { findSimilarTags } = useTags();
+  const { findSimilarIngredients } = useIngredients();
   const { defaultPersons } = useDefaultPersons();
 
   const handleImportComplete = async (importedUrls: string[]) => {
@@ -85,7 +85,6 @@ export function BulkImportValidation() {
   } = useValidationWorkflow(
     selectedRecipes,
     addMultipleRecipes,
-    isDatabaseReady,
     defaultPersons,
     findSimilarTags,
     findSimilarIngredients,

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import {Platform} from 'react-native';
+import {InteractionManager, Platform} from 'react-native';
 import {PaperProvider} from 'react-native-paper';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {darkTheme, lightTheme} from '@styles/theme';
@@ -11,13 +11,14 @@ import {useFetchFonts} from '@styles/typography';
 import {DarkModeContext} from '@context/DarkModeContext';
 import {SeasonFilterProvider} from '@context/SeasonFilterContext';
 import {DefaultPersonsProvider} from '@context/DefaultPersonsContext';
-import {RecipeDatabaseProvider, useRecipeDatabase} from '@context/RecipeDatabaseContext';
 import {appLogger} from '@utils/logger';
 import {isFirstLaunch} from '@utils/firstLaunch';
 import {recipeScraper} from '@app/modules/recipe-scraper';
 import {PyodideWebView} from '@app/modules/recipe-scraper/src/ios/PyodideWebView';
 import {AuthWebView} from '@app/modules/recipe-scraper/src/ios/AuthWebView';
 import {AuthBridge} from '@app/modules/recipe-scraper/src/ios/AuthBridge';
+import {RecipeDatabase} from '@utils/RecipeDatabase';
+import {init as initFileSystem} from '@utils/FileGestion';
 
 // TODO manage horizontal mode
 
@@ -35,14 +36,21 @@ SplashScreen.preventAutoHideAsync();
 
 function AppContent() {
     const [isAppInitialized, setIsAppInitialized] = useState(false);
+    const [isDatabaseReady, setIsDatabaseReady] = useState(false);
     const [darkMode, setDarkMode] = useState(false);
     const [isFirstLaunchFlag, setIsFirstLaunchFlag] = useState<boolean | null>(null);
-    const {isDatabaseReady} = useRecipeDatabase();
 
     useEffect(() => {
         const initialize = async () => {
             try {
                 appLogger.info('Starting app initialization');
+
+                initFileSystem();
+
+                const db = RecipeDatabase.getInstance();
+                await db.init();
+                setIsDatabaseReady(true);
+                appLogger.debug('Database initialized');
 
                 const [, isFirst, isDarkMode] = await Promise.all([
                     initSettings(),
@@ -82,7 +90,7 @@ function AppContent() {
         animation: { scale: animationsDisabled ? 0 : 1 },
     };
 
-    const shouldHideSplash = isAppInitialized && (isFirstLaunchFlag === true || isDatabaseReady);
+    const shouldHideSplash = isAppInitialized && isDatabaseReady;
 
     const onLayoutRootView = async () => {
         if (shouldHideSplash) {
@@ -136,11 +144,11 @@ export function App() {
     }, []);
 
     return (
-        <RecipeDatabaseProvider>
+        <>
             <AppContent/>
             {Platform.OS === 'ios' && <PyodideWebView />}
             {Platform.OS === 'ios' && authLoginUrl !== null && <AuthWebView loginUrl={authLoginUrl} />}
-        </RecipeDatabaseProvider>
+        </>
     );
 }
 

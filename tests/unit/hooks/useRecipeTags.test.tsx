@@ -7,29 +7,16 @@ import { createMockRecipeProp } from '@test-helpers/recipeHookTestWrapper';
 import { ingredientType, recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { RecipePropType } from '@customTypes/RecipeNavigationTypes';
 import { testTags } from '@data/tagsDataset';
+import {
+  mockFindSimilarTags,
+  mockAddTag,
+  setMockTags,
+  useTagsMock,
+} from '@mocks/hooks/useTags-mock';
 
-const mockFindSimilarTags = jest.fn();
-const mockAddTag = jest.fn();
-
-jest.mock('@context/RecipeDatabaseContext', () => {
-  const { testTags: mockTags } = require('@data/tagsDataset');
-  const { testIngredients: mockIngredients } = require('@data/ingredientsDataset');
-  return {
-    useRecipeDatabase: () => ({
-      ingredients: mockIngredients,
-      tags: mockTags,
-      recipes: [],
-      findSimilarIngredients: jest.fn(() => []),
-      findSimilarTags: mockFindSimilarTags,
-      addIngredient: jest.fn(async (ing: unknown) => ing),
-      addTag: mockAddTag,
-      isDatabaseReady: true,
-      searchRandomlyTags: jest.fn(() => []),
-      getRandomTags: jest.fn(() => []),
-    }),
-    RecipeDatabaseProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  };
-});
+jest.mock('@hooks/useTags', () => ({
+  useTags: require('@mocks/hooks/useTags-mock').useTagsMock,
+}));
 
 function createTagsWrapper(props: RecipePropType) {
   return function Wrapper({ children }: { children: React.ReactNode }) {
@@ -62,6 +49,7 @@ const recipeWithTags: recipeTableElement = {
 describe('useRecipeTags', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    setMockTags(testTags);
     mockFindSimilarTags.mockImplementation((name: string) => {
       const exactMatch = testTags.find(t => t.name.toLowerCase() === name.toLowerCase());
       if (exactMatch) return [exactMatch];
@@ -76,7 +64,7 @@ describe('useRecipeTags', () => {
       });
       return fuzzyMatches;
     });
-    mockAddTag.mockImplementation(async tag => ({ ...tag, id: 100 }));
+    mockAddTag.mockImplementation(async tag => ({ ...(tag as object), id: 100 }));
   });
 
   describe('addTag', () => {

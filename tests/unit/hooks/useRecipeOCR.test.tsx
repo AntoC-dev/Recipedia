@@ -14,36 +14,26 @@ import { testTags } from '@data/tagsDataset';
 import { testIngredients } from '@data/ingredientsDataset';
 import { IngredientValidationProps, TagValidationProps } from '@components/dialogs/ValidationQueue';
 
+import {
+  mockFindSimilarIngredients,
+  mockAddIngredient,
+  setMockIngredients,
+} from '@mocks/hooks/useIngredients-mock';
+import { mockFindSimilarTags, mockAddTag, setMockTags } from '@mocks/hooks/useTags-mock';
+
 const mockExtractFieldFromImage = jest.fn();
 
 jest.mock('@utils/OCR', () => ({
   extractFieldFromImage: (...args: unknown[]) => mockExtractFieldFromImage(...args),
 }));
 
-const mockFindSimilarIngredients = jest.fn();
-const mockFindSimilarTags = jest.fn();
-const mockAddIngredient = jest.fn();
-const mockAddTag = jest.fn();
+jest.mock('@hooks/useIngredients', () => ({
+  useIngredients: require('@mocks/hooks/useIngredients-mock').useIngredientsMock,
+}));
 
-jest.mock('@context/RecipeDatabaseContext', () => {
-  const { testTags: mockTags } = require('@data/tagsDataset');
-  const { testIngredients: mockIngredients } = require('@data/ingredientsDataset');
-  return {
-    useRecipeDatabase: () => ({
-      ingredients: mockIngredients,
-      tags: mockTags,
-      recipes: [],
-      findSimilarIngredients: mockFindSimilarIngredients,
-      findSimilarTags: mockFindSimilarTags,
-      addIngredient: mockAddIngredient,
-      addTag: mockAddTag,
-      isDatabaseReady: true,
-      searchRandomlyTags: jest.fn(() => []),
-      getRandomTags: jest.fn(() => []),
-    }),
-    RecipeDatabaseProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  };
-});
+jest.mock('@hooks/useTags', () => ({
+  useTags: require('@mocks/hooks/useTags-mock').useTagsMock,
+}));
 
 function createOcrWrapper(props: RecipePropType) {
   return function Wrapper({ children }: { children: React.ReactNode }) {
@@ -73,6 +63,8 @@ const recipeForOcr: recipeTableElement = {
 describe('useRecipeOCR', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    setMockIngredients(testIngredients);
+    setMockTags(testTags);
     mockExtractFieldFromImage.mockClear();
     mockFindSimilarIngredients.mockImplementation((name: string) => {
       const exactMatch = testIngredients.find(i => i.name.toLowerCase() === name.toLowerCase());
@@ -84,8 +76,8 @@ describe('useRecipeOCR', () => {
       if (exactMatch) return [exactMatch];
       return [];
     });
-    mockAddIngredient.mockImplementation(async ing => ({ ...ing, id: 100 }));
-    mockAddTag.mockImplementation(async tag => ({ ...tag, id: 100 }));
+    mockAddIngredient.mockImplementation(async ing => ({ ...(ing as object), id: 100 }));
+    mockAddTag.mockImplementation(async tag => ({ ...(tag as object), id: 100 }));
   });
 
   describe('modal state management', () => {
@@ -687,7 +679,7 @@ describe('useRecipeOCR', () => {
     test('ingredientNames fuzzy match goes to validation queue', async () => {
       mockFindSimilarIngredients.mockImplementation((name: string) => {
         if (name.toLowerCase() === 'suggar') {
-          return [{ id: 99, name: 'Sugar' }];
+          return [{ id: 99, name: 'Sugar', unit: 'g', type: ingredientType.sugar, season: [] }];
         }
         return [];
       });

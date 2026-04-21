@@ -12,30 +12,22 @@ import { ingredientType, recipeTableElement } from '@customTypes/DatabaseElement
 import { IngredientValidationProps } from '@components/dialogs/ValidationQueue';
 import { RecipePropType } from '@customTypes/RecipeNavigationTypes';
 import { testIngredients } from '@data/ingredientsDataset';
+import { testTags } from '@data/tagsDataset';
 import * as logger from '@utils/logger';
+import {
+  mockFindSimilarIngredients,
+  mockAddIngredient,
+  setMockIngredients,
+} from '@mocks/hooks/useIngredients-mock';
+import { setMockTags } from '@mocks/hooks/useTags-mock';
 
-const mockFindSimilarIngredients = jest.fn();
-const mockAddIngredient = jest.fn();
+jest.mock('@hooks/useIngredients', () => ({
+  useIngredients: require('@mocks/hooks/useIngredients-mock').useIngredientsMock,
+}));
 
-jest.mock('@context/RecipeDatabaseContext', () => {
-  const { testTags: mockTags } = require('@data/tagsDataset');
-  const { testIngredients: mockIngredients } = require('@data/ingredientsDataset');
-  return {
-    useRecipeDatabase: () => ({
-      ingredients: mockIngredients,
-      tags: mockTags,
-      recipes: [],
-      findSimilarIngredients: mockFindSimilarIngredients,
-      findSimilarTags: jest.fn(() => []),
-      addIngredient: mockAddIngredient,
-      addTag: jest.fn(async (tag: unknown) => tag),
-      isDatabaseReady: true,
-      searchRandomlyTags: jest.fn(() => []),
-      getRandomTags: jest.fn(() => []),
-    }),
-    RecipeDatabaseProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  };
-});
+jest.mock('@hooks/useTags', () => ({
+  useTags: require('@mocks/hooks/useTags-mock').useTagsMock,
+}));
 
 function createIngredientsWrapper(props: RecipePropType) {
   return function Wrapper({ children }: { children: React.ReactNode }) {
@@ -283,6 +275,8 @@ describe('useRecipeIngredients', () => {
 
     beforeEach(() => {
       jest.clearAllMocks();
+      setMockIngredients(testIngredients);
+      setMockTags(testTags);
       loggerWarnSpy = jest.spyOn(logger.recipeLogger, 'warn').mockImplementation(() => {});
       mockFindSimilarIngredients.mockImplementation((name: string) => {
         const exactMatch = testIngredients.find(i => i.name.toLowerCase() === name.toLowerCase());
@@ -298,7 +292,7 @@ describe('useRecipeIngredients', () => {
         });
         return fuzzyMatches;
       });
-      mockAddIngredient.mockImplementation(async ing => ({ ...ing, id: 100 }));
+      mockAddIngredient.mockImplementation(async ing => ({ ...(ing as object), id: 100 }));
     });
 
     afterEach(() => {

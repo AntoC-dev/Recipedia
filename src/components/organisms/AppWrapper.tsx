@@ -4,7 +4,8 @@ import { WelcomeScreen } from '@screens/WelcomeScreen';
 import { TutorialProvider } from './TutorialController';
 import { isFirstLaunch, markAsLaunched } from '@utils/firstLaunch';
 import { appLogger, tutorialLogger } from '@utils/logger';
-import { useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { useRecipes } from '@hooks/useRecipes';
+import { useMenu } from '@hooks/useMenu';
 import { repairMissingRecipeImages } from '@utils/ImageRepair';
 
 enum AppMode {
@@ -36,8 +37,8 @@ enum AppMode {
  * @returns JSX element representing the current app mode
  */
 export default function AppWrapper() {
-  const { clearMenu, recipes, addRecipeToMenu, toggleMenuItemCooked, editRecipe } =
-    useRecipeDatabase();
+  const { recipes, editRecipe } = useRecipes();
+  const { clearMenu, addRecipeToMenu, toggleMenuItemCooked } = useMenu();
   const [mode, setMode] = useState<AppMode>(AppMode.Loading);
 
   useEffect(() => {

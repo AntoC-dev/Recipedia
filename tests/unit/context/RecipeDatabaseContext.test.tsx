@@ -1,18 +1,48 @@
 import { renderHook, waitFor } from '@testing-library/react-native';
-import { RecipeDatabaseProvider, useRecipeDatabase } from '@context/RecipeDatabaseContext';
+import { useRecipes } from '@hooks/useRecipes';
+import { useMenu } from '@hooks/useMenu';
+import { useShopping } from '@hooks/useShopping';
+import { useImportHistory } from '@hooks/useImportHistory';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { testRecipes } from '@test-data/recipesDataset';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
-import {
-  cleanupOrphanedImages,
-  constructImageUri,
-  deleteFile,
-  isTemporaryImageUri,
-} from '@utils/FileGestion';
-import { mockIsFirstLaunch } from '@mocks/utils/firstLaunch-mock';
+import { deleteFile, constructImageUri, isTemporaryImageUri } from '@utils/FileGestion';
 
-describe('RecipeDatabaseContext', () => {
+function useAllHooks() {
+  const {
+    recipes,
+    scalingProgress,
+    addRecipe,
+    editRecipe,
+    deleteRecipe,
+    scaleAllRecipesForNewDefaultPersons,
+  } = useRecipes();
+  const { menu, addRecipeToMenu, toggleMenuItemCooked, clearMenu, togglePurchased } = useMenu();
+  const { shopping } = useShopping();
+  const { getImportedSourceUrls, getSeenUrls, markUrlsAsSeen, removeFromSeenHistory } =
+    useImportHistory();
+  return {
+    recipes,
+    scalingProgress,
+    addRecipe,
+    editRecipe,
+    deleteRecipe,
+    scaleAllRecipesForNewDefaultPersons,
+    menu,
+    addRecipeToMenu,
+    toggleMenuItemCooked,
+    clearMenu,
+    togglePurchased,
+    shopping,
+    getImportedSourceUrls,
+    getSeenUrls,
+    markUrlsAsSeen,
+    removeFromSeenHistory,
+  };
+}
+
+describe('focused database hooks', () => {
   let database: RecipeDatabase;
 
   beforeEach(async () => {
@@ -30,12 +60,10 @@ describe('RecipeDatabaseContext', () => {
 
   describe('scaleAllRecipesForNewDefaultPersons', () => {
     test('scales all recipes to new default persons count', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
+      const { result } = renderHook(() => useAllHooks());
 
       await waitFor(() => {
-        expect(result.current.isDatabaseReady).toBe(true);
+        expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
       const originalRecipes = result.current.recipes;
@@ -54,12 +82,10 @@ describe('RecipeDatabaseContext', () => {
     });
 
     test('progress starts undefined and returns to undefined after scaling', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
+      const { result } = renderHook(() => useAllHooks());
 
       await waitFor(() => {
-        expect(result.current.isDatabaseReady).toBe(true);
+        expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
       expect(result.current.scalingProgress).toBeUndefined();
@@ -72,12 +98,10 @@ describe('RecipeDatabaseContext', () => {
     });
 
     test('clears progress after scaling completes', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
+      const { result } = renderHook(() => useAllHooks());
 
       await waitFor(() => {
-        expect(result.current.isDatabaseReady).toBe(true);
+        expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
       await result.current.scaleAllRecipesForNewDefaultPersons(7);
@@ -88,12 +112,10 @@ describe('RecipeDatabaseContext', () => {
     });
 
     test('does nothing when no recipes need scaling', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
+      const { result } = renderHook(() => useAllHooks());
 
       await waitFor(() => {
-        expect(result.current.isDatabaseReady).toBe(true);
+        expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
       await result.current.scaleAllRecipesForNewDefaultPersons(6);
@@ -115,12 +137,10 @@ describe('RecipeDatabaseContext', () => {
     });
 
     test('skips recipes with invalid persons count', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
+      const { result } = renderHook(() => useAllHooks());
 
       await waitFor(() => {
-        expect(result.current.isDatabaseReady).toBe(true);
+        expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
       const invalidRecipe = {
@@ -151,12 +171,10 @@ describe('RecipeDatabaseContext', () => {
     });
 
     test('correctly scales recipe ingredient quantities', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
+      const { result } = renderHook(() => useAllHooks());
 
       await waitFor(() => {
-        expect(result.current.isDatabaseReady).toBe(true);
+        expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
       const recipeBefore = result.current.recipes[0];
@@ -188,12 +206,10 @@ describe('RecipeDatabaseContext', () => {
 
   describe('import memory methods', () => {
     test('getImportedSourceUrls returns empty set when no recipes imported', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
+      const { result } = renderHook(() => useAllHooks());
 
       await waitFor(() => {
-        expect(result.current.isDatabaseReady).toBe(true);
+        expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
       const importedUrls = result.current.getImportedSourceUrls('hellofresh');
@@ -203,12 +219,10 @@ describe('RecipeDatabaseContext', () => {
     });
 
     test('getImportedSourceUrls returns URLs of imported recipes for provider', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
+      const { result } = renderHook(() => useAllHooks());
 
       await waitFor(() => {
-        expect(result.current.isDatabaseReady).toBe(true);
+        expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
       const importedRecipe = {
@@ -227,12 +241,10 @@ describe('RecipeDatabaseContext', () => {
     });
 
     test('getImportedSourceUrls filters by provider', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
+      const { result } = renderHook(() => useAllHooks());
 
       await waitFor(() => {
-        expect(result.current.isDatabaseReady).toBe(true);
+        expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
       const hellofreshRecipe = {
@@ -264,12 +276,10 @@ describe('RecipeDatabaseContext', () => {
     });
 
     test('getSeenUrls returns empty set when no URLs marked as seen', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
+      const { result } = renderHook(() => useAllHooks());
 
       await waitFor(() => {
-        expect(result.current.isDatabaseReady).toBe(true);
+        expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
       const seenUrls = result.current.getSeenUrls('hellofresh');
@@ -279,12 +289,10 @@ describe('RecipeDatabaseContext', () => {
     });
 
     test('markUrlsAsSeen adds URLs to seen history', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
+      const { result } = renderHook(() => useAllHooks());
 
       await waitFor(() => {
-        expect(result.current.isDatabaseReady).toBe(true);
+        expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
       const urls = ['https://hellofresh.com/recipe-1', 'https://hellofresh.com/recipe-2'];
@@ -297,12 +305,10 @@ describe('RecipeDatabaseContext', () => {
     });
 
     test('markUrlsAsSeen is provider-specific', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
+      const { result } = renderHook(() => useAllHooks());
 
       await waitFor(() => {
-        expect(result.current.isDatabaseReady).toBe(true);
+        expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
       await result.current.markUrlsAsSeen('hellofresh', ['https://hellofresh.com/recipe-1']);
@@ -318,12 +324,10 @@ describe('RecipeDatabaseContext', () => {
     });
 
     test('removeFromSeenHistory removes URLs from seen history', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
+      const { result } = renderHook(() => useAllHooks());
 
       await waitFor(() => {
-        expect(result.current.isDatabaseReady).toBe(true);
+        expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
       const urls = ['https://hellofresh.com/recipe-1', 'https://hellofresh.com/recipe-2'];
@@ -341,12 +345,10 @@ describe('RecipeDatabaseContext', () => {
     });
 
     test('removeFromSeenHistory only affects specified provider', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
+      const { result } = renderHook(() => useAllHooks());
 
       await waitFor(() => {
-        expect(result.current.isDatabaseReady).toBe(true);
+        expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
       await result.current.markUrlsAsSeen('hellofresh', ['https://example.com/recipe-1']);
@@ -364,24 +366,20 @@ describe('RecipeDatabaseContext', () => {
 
   describe('Menu and Shopping List', () => {
     test('shopping is empty when menu is empty', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
+      const { result } = renderHook(() => useAllHooks());
 
       await waitFor(() => {
-        expect(result.current.isDatabaseReady).toBe(true);
+        expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
       expect(result.current.shopping).toEqual([]);
     });
 
     test('shopping is computed from menu items', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
+      const { result } = renderHook(() => useAllHooks());
 
       await waitFor(() => {
-        expect(result.current.isDatabaseReady).toBe(true);
+        expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
       const recipe = result.current.recipes[0];
@@ -402,12 +400,10 @@ describe('RecipeDatabaseContext', () => {
     });
 
     test('shopping excludes ingredients from cooked menu items', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
+      const { result } = renderHook(() => useAllHooks());
 
       await waitFor(() => {
-        expect(result.current.isDatabaseReady).toBe(true);
+        expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
       const recipe = result.current.recipes[0];
@@ -434,12 +430,10 @@ describe('RecipeDatabaseContext', () => {
     });
 
     test('shopping aggregates same ingredients from different recipes', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
+      const { result } = renderHook(() => useAllHooks());
 
       await waitFor(() => {
-        expect(result.current.isDatabaseReady).toBe(true);
+        expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
       await result.current.addRecipeToMenu(result.current.recipes[0]);
@@ -466,12 +460,10 @@ describe('RecipeDatabaseContext', () => {
 
   describe('togglePurchased', () => {
     test('toggles purchased state for ingredient', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
+      const { result } = renderHook(() => useAllHooks());
 
       await waitFor(() => {
-        expect(result.current.isDatabaseReady).toBe(true);
+        expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
       await result.current.addRecipeToMenu(result.current.recipes[0]);
@@ -498,11 +490,9 @@ describe('RecipeDatabaseContext', () => {
 
   describe('editRecipe image cleanup', () => {
     test('deletes old permanent image when image URI changes', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
+      const { result } = renderHook(() => useAllHooks());
 
-      await waitFor(() => expect(result.current.isDatabaseReady).toBe(true));
+      await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
       const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
       const previousImageUri = recipe.image_Source;
@@ -513,11 +503,9 @@ describe('RecipeDatabaseContext', () => {
     });
 
     test('does not delete old image when URI is unchanged', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
+      const { result } = renderHook(() => useAllHooks());
 
-      await waitFor(() => expect(result.current.isDatabaseReady).toBe(true));
+      await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
       const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
 
@@ -527,11 +515,9 @@ describe('RecipeDatabaseContext', () => {
     });
 
     test('returns the edited recipe with updated image URI', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
+      const { result } = renderHook(() => useAllHooks());
 
-      await waitFor(() => expect(result.current.isDatabaseReady).toBe(true));
+      await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
       const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
       const newImageUri = 'file:///documents/new.jpg';
@@ -542,11 +528,9 @@ describe('RecipeDatabaseContext', () => {
     });
 
     test('does not delete old image when it is a temporary URI', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
+      const { result } = renderHook(() => useAllHooks());
 
-      await waitFor(() => expect(result.current.isDatabaseReady).toBe(true));
+      await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
       const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
       (isTemporaryImageUri as jest.Mock).mockImplementation(
@@ -562,11 +546,9 @@ describe('RecipeDatabaseContext', () => {
     });
 
     test('propagates error thrown by db when recipe has no ID', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
+      const { result } = renderHook(() => useAllHooks());
 
-      await waitFor(() => expect(result.current.isDatabaseReady).toBe(true));
+      await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
       const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
 
@@ -574,11 +556,9 @@ describe('RecipeDatabaseContext', () => {
     });
 
     test('deleteFile is called with the previous URI, not the new one', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
+      const { result } = renderHook(() => useAllHooks());
 
-      await waitFor(() => expect(result.current.isDatabaseReady).toBe(true));
+      await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
       const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
       const newImageUri = 'file:///documents/new.jpg';
@@ -592,11 +572,9 @@ describe('RecipeDatabaseContext', () => {
 
   describe('deleteRecipe image cleanup', () => {
     test('deletes image file when recipe has a permanent image', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
+      const { result } = renderHook(() => useAllHooks());
 
-      await waitFor(() => expect(result.current.isDatabaseReady).toBe(true));
+      await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
       const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
       await result.current.deleteRecipe(recipe);
@@ -605,11 +583,9 @@ describe('RecipeDatabaseContext', () => {
     });
 
     test('does not call deleteFile when image_Source is empty', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
+      const { result } = renderHook(() => useAllHooks());
 
-      await waitFor(() => expect(result.current.isDatabaseReady).toBe(true));
+      await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
       const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
       await result.current.deleteRecipe({ ...recipe, image_Source: '' });
@@ -618,11 +594,9 @@ describe('RecipeDatabaseContext', () => {
     });
 
     test('does not call deleteFile when image_Source is a temporary URI', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
+      const { result } = renderHook(() => useAllHooks());
 
-      await waitFor(() => expect(result.current.isDatabaseReady).toBe(true));
+      await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
       const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
       const { isTemporaryImageUri } = require('@utils/FileGestion');
@@ -633,11 +607,9 @@ describe('RecipeDatabaseContext', () => {
     });
 
     test('removes recipe from state after deletion', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
+      const { result } = renderHook(() => useAllHooks());
 
-      await waitFor(() => expect(result.current.isDatabaseReady).toBe(true));
+      await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
       const initialCount = result.current.recipes.length;
       const recipe = result.current.recipes[0];
@@ -649,11 +621,9 @@ describe('RecipeDatabaseContext', () => {
     });
 
     test('returns the database deletion result', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
+      const { result } = renderHook(() => useAllHooks());
 
-      await waitFor(() => expect(result.current.isDatabaseReady).toBe(true));
+      await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
       const recipe = result.current.recipes[0];
       const deleteResult = await result.current.deleteRecipe(recipe);
@@ -662,65 +632,12 @@ describe('RecipeDatabaseContext', () => {
     });
   });
 
-  describe('startup orphan image cleanup', () => {
-    test('calls cleanupOrphanedImages once on non-first-launch startup', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
-
-      await waitFor(() => expect(result.current.isDatabaseReady).toBe(true));
-      await waitFor(() => expect(cleanupOrphanedImages).toHaveBeenCalledTimes(1));
-    });
-
-    test('passes all recipe image URIs to cleanupOrphanedImages', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
-
-      await waitFor(() => expect(result.current.isDatabaseReady).toBe(true));
-      await waitFor(() =>
-        expect(cleanupOrphanedImages).toHaveBeenCalledWith(
-          expect.arrayContaining(testRecipes.map(r => r.image_Source))
-        )
-      );
-    });
-
-    test('provider remains functional when cleanupOrphanedImages rejects', async () => {
-      (cleanupOrphanedImages as jest.Mock).mockRejectedValueOnce(new Error('cleanup failed'));
-
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
-
-      await waitFor(() => expect(result.current.isDatabaseReady).toBe(true));
-      expect(result.current.recipes.length).toBeGreaterThan(0);
-    });
-
-    test('does not call cleanupOrphanedImages on first launch with empty database', async () => {
-      await database.closeAndReset();
-      database = RecipeDatabase.getInstance();
-      await database.init();
-
-      mockIsFirstLaunch.mockResolvedValueOnce(true);
-
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
-
-      await waitFor(() => expect(result.current.isDatabaseReady).toBe(true));
-
-      expect(cleanupOrphanedImages).not.toHaveBeenCalled();
-    });
-  });
-
   describe('clearMenu', () => {
     test('clears all menu items', async () => {
-      const { result } = renderHook(() => useRecipeDatabase(), {
-        wrapper: RecipeDatabaseProvider,
-      });
+      const { result } = renderHook(() => useAllHooks());
 
       await waitFor(() => {
-        expect(result.current.isDatabaseReady).toBe(true);
+        expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
       await result.current.addRecipeToMenu(result.current.recipes[0]);
