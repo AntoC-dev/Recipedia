@@ -18,6 +18,7 @@ import {PyodideWebView} from '@app/modules/recipe-scraper/src/ios/PyodideWebView
 import {AuthWebView} from '@app/modules/recipe-scraper/src/ios/AuthWebView';
 import {AuthBridge} from '@app/modules/recipe-scraper/src/ios/AuthBridge';
 import {RecipeDatabase} from '@utils/RecipeDatabase';
+import {init as initFileSystem} from '@utils/FileGestion';
 
 // TODO manage horizontal mode
 
@@ -43,6 +44,8 @@ function AppContent() {
         const initialize = async () => {
             try {
                 appLogger.info('Starting app initialization');
+
+                initFileSystem();
 
                 const db = RecipeDatabase.getInstance();
                 await db.init();
