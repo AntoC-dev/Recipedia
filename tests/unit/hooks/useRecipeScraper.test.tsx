@@ -1,4 +1,5 @@
 import React from 'react';
+import { Platform } from 'react-native';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { ScrapeResult, useRecipeScraper } from '@hooks/useRecipeScraper';
 import { hellofreshKeftasRecipe } from '@test-data/scraperMocks/hellofresh';
@@ -324,6 +325,195 @@ describe('useRecipeScraper', () => {
       });
 
       expect(result.current.authRequired).toBeNull();
+    });
+
+    test('detects auth redirect via URL pattern and sets authRequired', async () => {
+      const loginHtml = '<html><head><title>Page</title></head><body>Login form</body></html>';
+      mockFetch.mockResolvedValue({
+        ok: true,
+        url: 'https://www.quitoque.fr/connexion',
+        text: () => Promise.resolve(loginHtml),
+      });
+      mockScrapeRecipeFromHtmlSuccess(createEmptyScrapedRecipe());
+
+      const { result } = renderHook(() => useRecipeScraper(), {
+        wrapper: createWrapper(),
+      });
+
+      await act(async () => {
+        await result.current.scrapeAndPrepare(
+          'https://www.quitoque.fr/products/camembert-roti-18628'
+        );
+      });
+
+      expect(result.current.authRequired).toEqual({
+        url: 'https://www.quitoque.fr/products/camembert-roti-18628',
+        host: 'quitoque.fr',
+      });
+      expect(mockScrapeRecipeFromHtml).not.toHaveBeenCalled();
+    });
+
+    test('detects auth page via title keywords and sets authRequired', async () => {
+      const loginHtml =
+        '<html><head><title>Connexion - Quitoque</title></head><body></body></html>';
+      mockFetch.mockResolvedValue({
+        ok: true,
+        url: 'https://www.quitoque.fr/some-redirect',
+        text: () => Promise.resolve(loginHtml),
+      });
+
+      const { result } = renderHook(() => useRecipeScraper(), {
+        wrapper: createWrapper(),
+      });
+
+      await act(async () => {
+        await result.current.scrapeAndPrepare(
+          'https://www.quitoque.fr/products/camembert-roti-18628'
+        );
+      });
+
+      expect(result.current.authRequired).toEqual({
+        url: 'https://www.quitoque.fr/products/camembert-roti-18628',
+        host: 'quitoque.fr',
+      });
+    });
+
+    test('no auth redirect passes through to scraper normally', async () => {
+      mockFetchHtmlSuccess('<html><head><title>Recipe</title></head></html>');
+      mockScrapeRecipeFromHtmlSuccess(hellofreshKeftasRecipe);
+
+      const { result } = renderHook(() => useRecipeScraper(), {
+        wrapper: createWrapper(),
+      });
+
+      await act(async () => {
+        await result.current.scrapeAndPrepare('https://www.hellofresh.fr/recipes/test');
+      });
+
+      expect(mockScrapeRecipeFromHtml).toHaveBeenCalled();
+      expect(result.current.authRequired).toBeNull();
+    });
+
+    test('sets authRequired without waiting for Python when auth redirect detected on iOS', async () => {
+      mockWaitForReady.mockResolvedValue(false);
+      mockFetch.mockResolvedValue({
+        ok: true,
+        url: 'https://www.quitoque.fr/connexion',
+        text: () =>
+          Promise.resolve('<html><head><title>Page</title></head><body>Login</body></html>'),
+      });
+
+      const { result } = renderHook(() => useRecipeScraper(), { wrapper: createWrapper() });
+
+      await act(async () => {
+        await result.current.scrapeAndPrepare(
+          'https://www.quitoque.fr/products/camembert-roti-18628'
+        );
+      });
+
+      expect(result.current.authRequired).toEqual({
+        url: 'https://www.quitoque.fr/products/camembert-roti-18628',
+        host: 'quitoque.fr',
+      });
+      expect(mockWaitForReady).not.toHaveBeenCalled();
+      expect(mockScrapeRecipeFromHtml).not.toHaveBeenCalled();
+    });
+
+    test('fetches HTML once on iOS when URL has no auth redirect', async () => {
+      mockFetchHtmlSuccess('<html><head><title>Recipe</title></head></html>');
+      mockScrapeRecipeFromHtmlSuccess(hellofreshKeftasRecipe);
+
+      const { result } = renderHook(() => useRecipeScraper(), { wrapper: createWrapper() });
+
+      await act(async () => {
+        await result.current.scrapeAndPrepare('https://www.hellofresh.fr/recipes/test');
+      });
+
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+    });
+
+    test('returns timeout error on iOS when Python not ready and no auth redirect', async () => {
+      mockWaitForReady.mockResolvedValue(false);
+      mockFetchHtmlSuccess('<html><head><title>Recipe Page</title></head></html>');
+
+      const { result } = renderHook(() => useRecipeScraper(), { wrapper: createWrapper() });
+
+      let scrapeResult: ScrapeResult | undefined;
+      await act(async () => {
+        scrapeResult = await result.current.scrapeAndPrepare(
+          'https://www.hellofresh.fr/recipes/test'
+        );
+      });
+
+      expect(scrapeResult?.success).toBe(false);
+      if (scrapeResult && !scrapeResult.success) {
+        expect(scrapeResult.error).toBe('urlDialog.errorTimeout');
+      }
+      expect(result.current.authRequired).toBeNull();
+    });
+  });
+
+  describe('platform-specific behaviour', () => {
+    describe('on Android', () => {
+      beforeEach(() => {
+        (Platform as unknown as { OS: string }).OS = 'android';
+      });
+
+      afterEach(() => {
+        (Platform as unknown as { OS: string }).OS = 'ios';
+      });
+
+      test('waits for Python before fetching HTML', async () => {
+        mockFetchHtmlSuccess('<html></html>');
+        mockScrapeRecipeFromHtmlSuccess(hellofreshKeftasRecipe);
+
+        const { result } = renderHook(() => useRecipeScraper(), { wrapper: createWrapper() });
+
+        await act(async () => {
+          await result.current.scrapeAndPrepare('https://www.hellofresh.fr/recipes/test');
+        });
+
+        const waitForReadyCallOrder = mockWaitForReady.mock.invocationCallOrder[0];
+        const fetchCallOrder = mockFetch.mock.invocationCallOrder[0];
+        expect(waitForReadyCallOrder).toBeLessThan(fetchCallOrder);
+      });
+
+      test('returns timeout error when Python scraper not ready', async () => {
+        mockWaitForReady.mockResolvedValue(false);
+
+        const { result } = renderHook(() => useRecipeScraper(), { wrapper: createWrapper() });
+
+        let scrapeResult: ScrapeResult | undefined;
+        await act(async () => {
+          scrapeResult = await result.current.scrapeAndPrepare(
+            'https://www.hellofresh.fr/recipes/test'
+          );
+        });
+
+        expect(scrapeResult?.success).toBe(false);
+        if (scrapeResult && !scrapeResult.success) {
+          expect(scrapeResult.error).toBe('urlDialog.errorTimeout');
+        }
+        expect(mockFetch).not.toHaveBeenCalled();
+      });
+
+      test('detects auth via Python response', async () => {
+        mockFetchHtmlSuccess('<html></html>');
+        mockScrapeRecipeFromHtmlError('Login required', 'AuthenticationRequired', 'quitoque.fr');
+
+        const { result } = renderHook(() => useRecipeScraper(), { wrapper: createWrapper() });
+
+        await act(async () => {
+          await result.current.scrapeAndPrepare(
+            'https://www.quitoque.fr/products/camembert-roti-18628'
+          );
+        });
+
+        expect(result.current.authRequired).toEqual({
+          url: 'https://www.quitoque.fr/products/camembert-roti-18628',
+          host: 'quitoque.fr',
+        });
+      });
     });
   });
 
