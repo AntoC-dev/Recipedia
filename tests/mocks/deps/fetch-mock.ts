@@ -2,9 +2,10 @@ export const mockFetch = jest.fn();
 
 global.fetch = mockFetch;
 
-export function mockFetchHtmlSuccess(html = '<html></html>') {
+export function mockFetchHtmlSuccess(html = '<html></html>', url = 'https://example.com') {
   mockFetch.mockResolvedValue({
     ok: true,
+    url,
     text: () => Promise.resolve(html),
   });
 }

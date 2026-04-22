@@ -4,6 +4,8 @@
  * @module utils/UrlHelpers
  */
 
+import { uiLogger } from '@utils/logger';
+
 /** Timeout for HTML fetch requests in milliseconds */
 const FETCH_TIMEOUT_MS = 15000;
 
@@ -66,14 +68,25 @@ export function normalizeUrl(url: string): string {
 }
 
 /**
- * Fetches HTML content from a URL with timeout handling
+ * Result of fetching HTML from a URL.
+ */
+export interface FetchHtmlResult {
+  html: string;
+  finalUrl: string;
+}
+
+/**
+ * Fetches HTML content from a URL with timeout handling.
+ *
+ * Returns both the HTML and the final URL after any redirects,
+ * which is needed for auth redirect detection on iOS.
  *
  * @param url - The URL to fetch
  * @param signal - Optional abort signal for cancellation
- * @returns The HTML content as a string
+ * @returns The HTML content and final URL after redirects
  * @throws Error if fetch fails or times out
  */
-export async function fetchHtml(url: string, signal?: AbortSignal): Promise<string> {
+export async function fetchHtml(url: string, signal?: AbortSignal): Promise<FetchHtmlResult> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
 
@@ -95,7 +108,12 @@ export async function fetchHtml(url: string, signal?: AbortSignal): Promise<stri
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
-    return await response.text();
+    const html = await response.text();
+    const finalUrl = response.url ?? url;
+
+    uiLogger.debug('fetchHtml', { finalUrl, htmlLength: html.length });
+
+    return { html, finalUrl };
   } finally {
     clearTimeout(timeoutId);
   }
