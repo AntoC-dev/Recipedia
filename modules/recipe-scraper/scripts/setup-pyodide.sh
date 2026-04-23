@@ -28,8 +28,9 @@ if [[ "$1" == "--force" ]]; then
     FORCE=true
 fi
 
-# Check if bundle already exists
-if [[ -f "$BUNDLE_FILE" ]] && [[ "$FORCE" == "false" ]]; then
+# Check if a valid (non-empty) bundle already exists
+MIN_VALID_SIZE=$((10 * 1024 * 1024))  # 10MB
+if [[ -f "$BUNDLE_FILE" ]] && [[ "$FORCE" == "false" ]] && [[ $(wc -c < "$BUNDLE_FILE") -ge $MIN_VALID_SIZE ]]; then
     BUNDLE_SIZE=$(ls -lh "$BUNDLE_FILE" | awk '{print $5}')
     echo "[setup-pyodide] Bundle already exists ($BUNDLE_SIZE), skipping (use --force to regenerate)"
     exit 0
