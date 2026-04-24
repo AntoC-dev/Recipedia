@@ -2,19 +2,16 @@
 /**
  * Generate a self-contained HTML bundle for Pyodide on iOS.
  *
- * This script reads all downloaded Pyodide core files, converts them to base64,
- * and generates a single HTML file that can be loaded in a WebView.
+ * This script reads all downloaded Pyodide core files and Python wheels,
+ * converts them to base64, and generates a single HTML file that can be
+ * loaded in a WebView without any network access.
  *
  * The key trick is a fetch interceptor: when Pyodide internally fetches its
- * assets (WASM, stdlib, lock file), we intercept those requests and serve them
- * from the embedded base64 data. All other requests (like micropip fetching
- * wheels from PyPI) pass through to the real network.
- *
- * Note: Python packages (recipe-scrapers, etc.) are installed at runtime
- * via micropip since they're pure Python wheels available on PyPI.
+ * assets (WASM, stdlib, lock file) or micropip fetches wheels, we intercept
+ * those requests and serve them from the embedded base64 data.
  */
 
-import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -22,11 +19,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const MODULE_DIR = dirname(__dirname);
-const DOWNLOAD_DIR = join(MODULE_DIR, 'assets', 'pyodide-download');
+const PYODIDE_DIR = join(MODULE_DIR, '..', '..', 'node_modules', 'pyodide');
+const WHEELS_DIR = join(MODULE_DIR, 'assets', 'pyodide-download', 'wheels');
 const OUTPUT_FILE = join(MODULE_DIR, 'assets', 'pyodide-bundle.html');
 const SCRAPER_CODE_FILE = join(MODULE_DIR, 'src', 'ios', 'scraperCode.ts');
 
-const PYODIDE_VERSION = '0.26.4';
+const PYODIDE_PKG = JSON.parse(readFileSync(join(PYODIDE_DIR, 'package.json'), 'utf-8'));
+const PYODIDE_VERSION = PYODIDE_PKG.version;
 const PYODIDE_CDN_URL = `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full`;
 
 function readFileAsBase64(filepath) {
@@ -36,6 +35,21 @@ function readFileAsBase64(filepath) {
 
 function readFileAsText(filepath) {
     return readFileSync(filepath, 'utf-8');
+}
+
+function readEmbeddedWheels() {
+    if (!existsSync(WHEELS_DIR)) {
+        throw new Error(`Wheels directory missing: ${WHEELS_DIR}`);
+    }
+    const wheelFiles = readdirSync(WHEELS_DIR).filter(f => f.endsWith('.whl'));
+    if (wheelFiles.length === 0) {
+        throw new Error('No wheel files found in wheels directory');
+    }
+    console.log(`[generate-html] Embedding ${wheelFiles.length} Python wheels...`);
+    return wheelFiles.map(filename => ({
+        filename,
+        base64: readFileAsBase64(join(WHEELS_DIR, filename)),
+    }));
 }
 
 function extractScraperCode() {
@@ -50,19 +64,24 @@ function extractScraperCode() {
 function generateHtml() {
     console.log('[generate-html] Reading Pyodide core files...');
 
+    console.log(`[generate-html] Using Pyodide v${PYODIDE_VERSION} from npm`);
+
     const requiredFiles = ['pyodide.js', 'pyodide.asm.js', 'pyodide.asm.wasm', 'python_stdlib.zip', 'pyodide-lock.json'];
     for (const file of requiredFiles) {
-        const filepath = join(DOWNLOAD_DIR, file);
+        const filepath = join(PYODIDE_DIR, file);
         if (!existsSync(filepath)) {
             throw new Error(`Required file missing: ${filepath}`);
         }
     }
 
-    const pyodideJs = readFileAsText(join(DOWNLOAD_DIR, 'pyodide.js'));
-    const pyodideAsmJs = readFileAsText(join(DOWNLOAD_DIR, 'pyodide.asm.js'));
-    const pyodideWasmBase64 = readFileAsBase64(join(DOWNLOAD_DIR, 'pyodide.asm.wasm'));
-    const pythonStdlibBase64 = readFileAsBase64(join(DOWNLOAD_DIR, 'python_stdlib.zip'));
-    const pyodideLockJson = readFileAsText(join(DOWNLOAD_DIR, 'pyodide-lock.json'));
+    const pyodideJs = readFileAsText(join(PYODIDE_DIR, 'pyodide.js'));
+    const pyodideAsmJs = readFileAsText(join(PYODIDE_DIR, 'pyodide.asm.js'));
+    const pyodideWasmBase64 = readFileAsBase64(join(PYODIDE_DIR, 'pyodide.asm.wasm'));
+    const pythonStdlibBase64 = readFileAsBase64(join(PYODIDE_DIR, 'python_stdlib.zip'));
+    const pyodideLockJson = readFileAsText(join(PYODIDE_DIR, 'pyodide-lock.json'));
+
+    console.log('[generate-html] Reading Python wheels...');
+    const embeddedWheels = readEmbeddedWheels();
 
     console.log('[generate-html] Extracting scraper Python code...');
     const scraperPythonCode = extractScraperCode();
@@ -106,6 +125,11 @@ def dump(obj, fp, **kwargs):
         .replace(/`/g, '\\`')
         .replace(/\$/g, '\\$');
 
+    // Build the embedded wheels map as a JS object literal
+    const wheelsMapEntries = embeddedWheels.map(w =>
+        `    "${w.filename}": "${w.base64}"`
+    ).join(',\n');
+
     const html = `<!DOCTYPE html>
 <html>
 <head>
@@ -124,6 +148,13 @@ const EMBEDDED_ASSETS = {
     lockJson: ${JSON.stringify(pyodideLockJson)}
 };
 
+// ============================================================================
+// EMBEDDED PYTHON WHEELS (downloaded at build time for offline install)
+// ============================================================================
+const EMBEDDED_WHEELS = {
+${wheelsMapEntries}
+};
+
 function base64ToArrayBuffer(base64) {
     const binaryString = atob(base64);
     const bytes = new Uint8Array(binaryString.length);
@@ -135,8 +166,8 @@ function base64ToArrayBuffer(base64) {
 
 // ============================================================================
 // FETCH INTERCEPTOR
-// Intercept Pyodide's internal fetch calls for embedded assets.
-// All other requests (micropip to PyPI, etc.) pass through to real network.
+// Intercept Pyodide's internal fetch calls for embedded assets and wheels.
+// No network access required — everything is served from embedded data.
 // ============================================================================
 const _originalFetch = window.fetch.bind(window);
 window.fetch = function(resource, options) {
@@ -165,7 +196,18 @@ window.fetch = function(resource, options) {
         }));
     }
 
-    // Pass through all other requests (micropip downloading wheels from PyPI, etc.)
+    // Intercept wheel downloads — serve from embedded base64
+    for (const [filename, b64] of Object.entries(EMBEDDED_WHEELS)) {
+        if (url.endsWith('/' + filename) || url.endsWith('/' + filename + '#')) {
+            const buffer = base64ToArrayBuffer(b64);
+            return Promise.resolve(new Response(buffer, {
+                status: 200,
+                headers: { 'Content-Type': 'application/zip' }
+            }));
+        }
+    }
+
+    // Fallback to network for anything else
     return _originalFetch(resource, options);
 };
 
@@ -225,14 +267,22 @@ sys.modules['jstyleson'] = jstyleson
 print('[PyScraper:INFO] jstyleson shim installed')
 \`);
 
-            // Install recipe-scrapers from PyPI via micropip
-            log('info', 'Installing recipe-scrapers via micropip...');
+            // Write embedded wheels to Pyodide's virtual filesystem and install locally
+            log('info', 'Installing pre-bundled Python wheels...');
+            const wheelEntries = Object.entries(EMBEDDED_WHEELS);
+            log('info', 'Writing ' + wheelEntries.length + ' wheels to virtual filesystem...');
+            for (const [filename, b64] of wheelEntries) {
+                const wheelBytes = new Uint8Array(base64ToArrayBuffer(b64));
+                pyodide.FS.writeFile('/tmp/' + filename, wheelBytes);
+            }
+
             await pyodide.loadPackage('micropip');
+            const wheelPaths = wheelEntries.map(([f]) => '/tmp/' + f);
             await pyodide.runPythonAsync(\`
 import micropip
 micropip.add_mock_package('jstyleson', '0.0.2')
-await micropip.install('recipe-scrapers', keep_going=True)
-print('[PyScraper:INFO] recipe-scrapers installed')
+await micropip.install([\${wheelPaths.map(p => "'" + p + "'").join(', ')}], keep_going=True)
+print('[PyScraper:INFO] recipe-scrapers and dependencies installed from local wheels')
 \`);
 
             log('info', 'Loading scraper module...');
@@ -272,9 +322,11 @@ print('[PyScraper:INFO] recipe-scrapers installed')
             switch (method) {
                 case 'scrapeRecipeFromHtml': {
                     const { html, url, wildMode } = params;
-                    const escaped_html = html.replace(/\\\\/g, '\\\\\\\\').replace(/'/g, "\\\\'");
+                    // Use base64 encoding to safely pass HTML to Python,
+                    // avoiding triple-quote escaping issues with arbitrary HTML content
+                    const b64Html = btoa(unescape(encodeURIComponent(html)));
                     const escaped_url = url.replace(/'/g, "\\\\'");
-                    const code = \`scrape_recipe_from_html('''\${escaped_html}''', '\${escaped_url}', \${wildMode ? 'True' : 'False'})\`;
+                    const code = \`scrape_recipe_from_html(__import__('base64').b64decode('\${b64Html}').decode('utf-8'), '\${escaped_url}', \${wildMode ? 'True' : 'False'})\`;
                     result = await pyodide.runPythonAsync(code);
                     break;
                 }
@@ -319,17 +371,23 @@ print('[PyScraper:INFO] recipe-scrapers installed')
         }
     }
 
-    window.handleMessage = function(messageStr) {
+    // Listen for messages via postMessage from React Native.
+    // Guard: only process strings that start with '{' to ignore React Native
+    // internal messages (scheduler events like "sched$...").
+    window.addEventListener('message', function(event) {
+        var data = event.data;
+        if (typeof data !== 'string' || data.charAt(0) !== '{') {
+            return;
+        }
         try {
-            const message = JSON.parse(messageStr);
-
+            var message = JSON.parse(data);
             if (message.type === 'rpc') {
                 handleRpcCall(message.id, message.method, message.params || {});
             }
         } catch (error) {
             log('error', 'Failed to handle message: ' + error.message);
         }
-    };
+    });
 
     initPyodide();
 })();

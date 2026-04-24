@@ -169,6 +169,7 @@
     "lint-staged": "16.1.5",
     "metro-react-native-babel-preset": "~0.77.0",
     "prettier": "^3.6.2",
+    "pyodide": "0.28.3",
     "reassure": "1.4.0",
     "semantic-release": "25.0.2",
     "typedoc": "0.28.13",
