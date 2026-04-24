@@ -7,6 +7,7 @@ export function pyodideBridgeMock() {
       isPythonReady: jest.fn().mockReturnValue(false),
       waitForReady: jest.fn().mockResolvedValue(false),
       getInitializationError: jest.fn().mockReturnValue(null),
+      startInitTimeout: jest.fn(),
       setMessageHandler: jest.fn(),
       sendToWebView: jest.fn(),
       handleMessage: jest.fn(),

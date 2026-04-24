@@ -44,8 +44,14 @@ class PyodideBridgeImpl {
             console.warn('[PyodideBridge] Initialization failed:', error.message);
         });
 
-        console.debug('[PyodideBridge] Initializing...');
+        console.debug('[PyodideBridge] Created (timeout starts when WebView mounts)');
+    }
 
+    startInitTimeout(): void {
+        if (this.initTimeout) {
+            return;
+        }
+        console.debug('[PyodideBridge] Starting init timeout...');
         this.initTimeout = setTimeout(() => {
             if (!this.isReady && this.readyReject) {
                 const error = new Error('Pyodide initialization timed out after 60 seconds');

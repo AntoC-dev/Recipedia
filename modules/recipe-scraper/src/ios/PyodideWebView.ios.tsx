@@ -67,12 +67,10 @@ export function PyodideWebView(): React.ReactElement | null {
     }, []);
 
     useEffect(() => {
+        PyodideBridge.startInitTimeout();
         PyodideBridge.setMessageHandler((message: string) => {
             if (webViewRef.current) {
-                const escaped = message.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-                webViewRef.current.injectJavaScript(
-                    `window.handleMessage('${escaped}'); true;`,
-                );
+                webViewRef.current.postMessage(message);
             }
         });
 

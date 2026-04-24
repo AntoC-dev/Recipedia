@@ -466,6 +466,17 @@ export class RecipeScraper {
     }
 
     /**
+     * Returns the initialization error if Pyodide failed to start.
+     * Useful for diagnostic logging when waitForReady times out.
+     */
+    getInitializationError(): Error | null {
+        if (usePyodide) {
+            return getPyodideBridge().getInitializationError();
+        }
+        return null;
+    }
+
+    /**
      * Checks if the Python runtime is ready for scraping.
      *
      * On Android, returns true once Chaquopy Python has finished initializing.
