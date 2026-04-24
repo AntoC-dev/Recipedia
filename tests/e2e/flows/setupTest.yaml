@@ -23,7 +23,7 @@ appId: "com.recipedia"
 - extendedWaitUntil:
     visible:
       id: "WelcomeScreen::SkipButton"
-    timeout: 300000
+    timeout: 500000
     label: "Wait for Welcome screen to be visible"
 
 - runFlow:

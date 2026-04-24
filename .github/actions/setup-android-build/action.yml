@@ -25,13 +25,6 @@ runs:
         python-version-file: '.python-version'
         cache: 'pip'
 
-    - name: Install Python packages for Chaquopy
-      shell: bash
-      run: |
-        pip install pytest "recipe-scrapers[online]>=15.0.0"
-        python -c "from recipe_scrapers import scrape_me; print('recipe-scrapers OK')"
-        python -c "import pytest; print('pytest OK')"
-
     - name: Setup ccache
       shell: bash
       run: |
