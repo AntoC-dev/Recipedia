@@ -507,36 +507,32 @@ export class RecipeScraper {
      *
      * Call this during app initialization to ensure Python is loaded
      * before allowing users to access web parsing features.
+     * The splash screen should remain visible until this resolves.
      *
-     * @param timeoutMs - Maximum time to wait (default: 30000ms)
-     * @param pollIntervalMs - Time between checks (default: 100ms)
-     * @returns true if ready, false if timeout reached
+     * @param pollIntervalMs - Time between checks on Android (default: 100ms)
      */
-    async waitForReady(timeoutMs = 30000, pollIntervalMs = 100): Promise<boolean> {
+    async waitForReady(pollIntervalMs = 100): Promise<void> {
         if (usePyodide) {
-            return getPyodideBridge().waitForReady(timeoutMs);
+            return getPyodideBridge().waitForReady();
         }
 
         if (!nativeModule?.isPythonAvailable) {
             // Web platform - always ready
-            return true;
+            return;
         }
 
-        const startTime = Date.now();
-
-        while (Date.now() - startTime < timeoutMs) {
+        // Android: poll until Chaquopy is ready
+        while (true) {
             try {
                 const isReady = await nativeModule.isPythonAvailable();
                 if (isReady) {
-                    return true;
+                    return;
                 }
             } catch {
                 // Ignore errors, keep polling
             }
             await new Promise(resolve => setTimeout(resolve, pollIntervalMs));
         }
-
-        return false;
     }
 }
 
@@ -574,9 +570,9 @@ export function usePythonReady(): boolean {
         let mounted = true;
 
         const checkReady = async () => {
-            const ready = await recipeScraper.waitForReady();
+            await recipeScraper.waitForReady();
             if (mounted) {
-                setIsReady(ready);
+                setIsReady(true);
             }
         };
 

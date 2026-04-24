@@ -3,7 +3,6 @@ import { render, waitFor } from '@testing-library/react-native';
 import {
   mockWaitForReady,
   mockWaitForReadySuccess,
-  mockWaitForReadyTimeout,
   mockWaitForReadyDelay,
   resetRecipeScraperMocks,
 } from '@mocks/modules/recipe-scraper-mock';
@@ -81,18 +80,18 @@ describe('App', () => {
       });
     });
 
-    it('starts Python scraper warmup without blocking app initialization', async () => {
-      mockWaitForReadySuccess(true);
+    it('waits for Python scraper to be ready before hiding splash', async () => {
+      mockWaitForReadySuccess();
 
       render(<App />);
 
       await waitFor(() => {
-        expect(mockWaitForReady).toHaveBeenCalledWith(10000);
+        expect(mockWaitForReady).toHaveBeenCalled();
       });
     });
 
-    it('completes initialization even if Python times out', async () => {
-      mockWaitForReadyTimeout();
+    it('shows app content once scraper is ready', async () => {
+      mockWaitForReadySuccess();
 
       const { getByTestId } = render(<App />);
 
@@ -101,38 +100,33 @@ describe('App', () => {
       });
     });
 
-    it('shows app content independently of Python readiness', async () => {
-      let resolveReady!: (value: boolean) => void;
+    it('does not show app content while scraper is still initializing', async () => {
+      let resolveReady!: () => void;
       mockWaitForReady.mockImplementation(
         () =>
-          new Promise<boolean>(resolve => {
+          new Promise<void>(resolve => {
             resolveReady = resolve;
           })
       );
 
-      const { getByTestId } = render(<App />);
+      const { queryByTestId } = render(<App />);
 
       await waitFor(() => {
-        expect(getByTestId('app-wrapper')).toBeTruthy();
+        expect(mockWaitForReady).toHaveBeenCalled();
       });
+      expect(queryByTestId('app-wrapper')).toBeNull();
 
-      resolveReady(true);
-    });
-
-    it('shows app content after settings are loaded', async () => {
-      mockWaitForReadySuccess(true);
-
-      const { getByTestId } = render(<App />);
+      resolveReady();
 
       await waitFor(() => {
-        expect(getByTestId('app-wrapper')).toBeTruthy();
+        expect(queryByTestId('app-wrapper')).toBeTruthy();
       });
     });
   });
 
   describe('Python scraper integration', () => {
     it('handles slow Python initialization gracefully', async () => {
-      mockWaitForReadyDelay(100, true);
+      mockWaitForReadyDelay(100);
 
       const { getByTestId } = render(<App />);
 

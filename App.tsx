@@ -38,6 +38,7 @@ SplashScreen.preventAutoHideAsync();
 function AppContent() {
     const [isAppInitialized, setIsAppInitialized] = useState(false);
     const [isDatabaseReady, setIsDatabaseReady] = useState(false);
+    const [isScraperReady, setIsScraperReady] = useState(false);
     const [darkMode, setDarkMode] = useState(false);
     const [isFirstLaunchFlag, setIsFirstLaunchFlag] = useState<boolean | null>(null);
 
@@ -62,9 +63,11 @@ function AppContent() {
                 setDarkMode(isDarkMode);
                 appLogger.debug('App settings loaded', {isFirst, isDarkMode});
 
-                recipeScraper.waitForReady(10000).catch(err =>
-                    appLogger.warn('Python scraper initialization failed', {error: err})
-                );
+                recipeScraper.waitForReady()
+                    .catch(err =>
+                        appLogger.warn('Python scraper initialization failed', {error: err})
+                    )
+                    .finally(() => setIsScraperReady(true));
 
                 registerImageRepairTask().catch(err =>
                     appLogger.warn('Image repair task registration failed', {error: err})
@@ -95,7 +98,7 @@ function AppContent() {
         animation: { scale: animationsDisabled ? 0 : 1 },
     };
 
-    const shouldHideSplash = isAppInitialized && isDatabaseReady;
+    const shouldHideSplash = isAppInitialized && isDatabaseReady && isScraperReady;
 
     const onLayoutRootView = async () => {
         if (shouldHideSplash) {
@@ -113,6 +116,7 @@ function AppContent() {
             isAppInitialized,
             isFirstLaunchFlag,
             isDatabaseReady,
+            isScraperReady,
         });
         return null;
     }

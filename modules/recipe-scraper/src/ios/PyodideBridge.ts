@@ -20,7 +20,6 @@ type PyodideMessage =
 export type PyodideMessageHandler = (message: string) => void;
 
 const DEFAULT_TIMEOUT_MS = 30000;
-const INIT_TIMEOUT_MS = 60000;
 
 class PyodideBridgeImpl {
     private isReady = false;
@@ -31,34 +30,19 @@ class PyodideBridgeImpl {
     private readyResolve: (() => void) | null = null;
     private readyReject: ((error: Error) => void) | null = null;
     private messageHandler: PyodideMessageHandler | null = null;
-    private initTimeout: ReturnType<typeof setTimeout> | null = null;
 
     constructor() {
         this.readyPromise = new Promise((resolve, reject) => {
             this.readyResolve = resolve;
             this.readyReject = reject;
         });
-        // Handles all rejection paths (timeout + WebView errors) in one place.
+        // Handles WebView error rejection path.
         // Prevents unhandled rejection warning; waitForReady() handles the error for callers.
         this.readyPromise.catch((error: Error) => {
             console.warn('[PyodideBridge] Initialization failed:', error.message);
         });
 
-        console.debug('[PyodideBridge] Created (timeout starts when WebView mounts)');
-    }
-
-    startInitTimeout(): void {
-        if (this.initTimeout) {
-            return;
-        }
-        console.debug('[PyodideBridge] Starting init timeout...');
-        this.initTimeout = setTimeout(() => {
-            if (!this.isReady && this.readyReject) {
-                const error = new Error('Pyodide initialization timed out after 60 seconds');
-                this.initializationError = error;
-                this.readyReject(error);
-            }
-        }, INIT_TIMEOUT_MS);
+        console.debug('[PyodideBridge] Created');
     }
 
     setMessageHandler(handler: PyodideMessageHandler): void {
@@ -100,10 +84,6 @@ class PyodideBridgeImpl {
     private handleReady(): void {
         this.isReady = true;
         console.info('[PyodideBridge] Ready');
-        if (this.initTimeout) {
-            clearTimeout(this.initTimeout);
-            this.initTimeout = null;
-        }
         if (this.readyResolve) {
             this.readyResolve();
         }
@@ -161,25 +141,11 @@ class PyodideBridgeImpl {
         }
     }
 
-    async waitForReady(timeoutMs = INIT_TIMEOUT_MS): Promise<boolean> {
+    async waitForReady(): Promise<void> {
         if (this.isReady) {
-            return true;
+            return;
         }
-
-        try {
-            await Promise.race([
-                this.readyPromise,
-                new Promise<never>((_, reject) =>
-                    setTimeout(
-                        () => reject(new Error('Timeout waiting for Pyodide')),
-                        timeoutMs
-                    )
-                ),
-            ]);
-            return true;
-        } catch {
-            return false;
-        }
+        await this.readyPromise;
     }
 
     isPythonReady(): boolean {
@@ -196,10 +162,7 @@ class PyodideBridgeImpl {
         timeoutMs = DEFAULT_TIMEOUT_MS
     ): Promise<string> {
         if (!this.isReady) {
-            const ready = await this.waitForReady();
-            if (!ready) {
-                throw new Error('Pyodide is not ready');
-            }
+            await this.waitForReady();
         }
 
         return new Promise((resolve, reject) => {
@@ -240,10 +203,6 @@ class PyodideBridgeImpl {
     }
 
     destroy(): void {
-        if (this.initTimeout) {
-            clearTimeout(this.initTimeout);
-        }
-
         for (const [, pending] of this.pendingCalls) {
             clearTimeout(pending.timeout);
             pending.reject(new Error('Bridge destroyed'));

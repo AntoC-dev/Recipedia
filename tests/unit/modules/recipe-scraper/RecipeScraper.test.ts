@@ -331,18 +331,12 @@ describe('RecipeScraper', () => {
   });
 
   describe('waitForReady', () => {
-    it('returns true immediately on web platform', async () => {
+    it('resolves immediately on web platform', async () => {
       const startTime = Date.now();
-      const result = await scraper.waitForReady();
+      await scraper.waitForReady();
       const elapsed = Date.now() - startTime;
 
-      expect(result).toBe(true);
       expect(elapsed).toBeLessThan(100);
-    });
-
-    it('respects timeout parameter', async () => {
-      const result = await scraper.waitForReady(100);
-      expect(result).toBe(true);
     });
   });
 
@@ -393,7 +387,7 @@ describe('RecipeScraper (Pyodide/iOS path)', () => {
         .fn()
         .mockResolvedValue(JSON.stringify({ success: true, data: RECIPE_DATA })),
       isPythonReady: jest.fn().mockReturnValue(true),
-      waitForReady: jest.fn().mockResolvedValue(true),
+      waitForReady: jest.fn().mockResolvedValue(undefined),
       getInitializationError: jest.fn().mockReturnValue(null),
     };
 
@@ -417,7 +411,7 @@ describe('RecipeScraper (Pyodide/iOS path)', () => {
           .fn()
           .mockResolvedValue(JSON.stringify({ success: true, data: RECIPE_DATA })),
         isPythonReady: jest.fn().mockReturnValue(true),
-        waitForReady: jest.fn().mockResolvedValue(true),
+        waitForReady: jest.fn().mockResolvedValue(undefined),
       };
       const mockAuth = {
         isHostSupported: jest.fn().mockReturnValue(true),
@@ -454,7 +448,7 @@ describe('RecipeScraper (Pyodide/iOS path)', () => {
           .fn()
           .mockResolvedValue(JSON.stringify({ success: true, data: RECIPE_DATA })),
         isPythonReady: jest.fn().mockReturnValue(true),
-        waitForReady: jest.fn().mockResolvedValue(true),
+        waitForReady: jest.fn().mockResolvedValue(undefined),
       };
       const mockAuth = {
         isHostSupported: jest.fn().mockReturnValue(true),
@@ -542,7 +536,7 @@ describe('RecipeScraper (Pyodide/iOS path)', () => {
         scrapeRecipeFromHtml: jest.fn().mockRejectedValue(new Error('Pyodide crashed')),
         getInitializationError: jest.fn().mockReturnValue(null),
         isPythonReady: jest.fn().mockReturnValue(false),
-        waitForReady: jest.fn().mockResolvedValue(false),
+        waitForReady: jest.fn().mockRejectedValue(new Error('not ready')),
       };
       const scraper = loadScraperWithMocks({}, mockPyodide);
 
@@ -563,7 +557,7 @@ describe('RecipeScraper (Pyodide/iOS path)', () => {
         scrapeRecipeFromHtml: jest.fn().mockRejectedValue(new Error('Pyodide is not ready')),
         getInitializationError: jest.fn().mockReturnValue(initError),
         isPythonReady: jest.fn().mockReturnValue(false),
-        waitForReady: jest.fn().mockResolvedValue(false),
+        waitForReady: jest.fn().mockRejectedValue(new Error('not ready')),
       };
       const scraper = loadScraperWithMocks({}, mockPyodide);
 
@@ -580,7 +574,7 @@ describe('RecipeScraper (Pyodide/iOS path)', () => {
         scrapeRecipeFromHtml: jest.fn().mockRejectedValue(new Error('Pyodide runtime error')),
         getInitializationError: jest.fn().mockReturnValue(null),
         isPythonReady: jest.fn().mockReturnValue(false),
-        waitForReady: jest.fn().mockResolvedValue(false),
+        waitForReady: jest.fn().mockRejectedValue(new Error('not ready')),
       };
       const scraper = loadScraperWithMocks({}, mockPyodide);
 
@@ -598,7 +592,7 @@ describe('RecipeScraper (Pyodide/iOS path)', () => {
         scrapeRecipeFromHtml: jest.fn().mockRejectedValue(pyodideError),
         getInitializationError: jest.fn().mockReturnValue(null),
         isPythonReady: jest.fn().mockReturnValue(false),
-        waitForReady: jest.fn().mockResolvedValue(false),
+        waitForReady: jest.fn().mockRejectedValue(new Error('not ready')),
       };
       const scraper = loadScraperWithMocks({}, mockPyodide);
 

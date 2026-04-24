@@ -67,7 +67,6 @@ export function PyodideWebView(): React.ReactElement | null {
     }, []);
 
     useEffect(() => {
-        PyodideBridge.startInitTimeout();
         PyodideBridge.setMessageHandler((message: string) => {
             if (webViewRef.current) {
                 webViewRef.current.postMessage(message);

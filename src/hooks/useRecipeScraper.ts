@@ -126,19 +126,10 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
       url,
       title: scraperResult.data.title,
       ingredientCount: scraperResult.data.ingredients.length,
-      ingredients: scraperResult.data.ingredients,
+      instructionCount: scraperResult.data.instructionsList?.length ?? 0,
       category: scraperResult.data.category,
-      cuisine: scraperResult.data.cuisine,
-      keywords: scraperResult.data.keywords,
-      dietaryRestrictions: scraperResult.data.dietaryRestrictions,
       totalTime: scraperResult.data.totalTime,
-      prepTime: scraperResult.data.prepTime,
-      cookTime: scraperResult.data.cookTime,
       yields: scraperResult.data.yields,
-      description: scraperResult.data.description,
-      instructionsList: scraperResult.data.instructionsList,
-      parsedInstructions: scraperResult.data.parsedInstructions,
-      nutrients: scraperResult.data.nutrients,
     });
 
     const recipeData = convertScrapedRecipe(
@@ -220,15 +211,6 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
             error: t(SCRAPER_ERROR_I18N_KEYS[ScraperErrorTypes.AuthenticationRequired]),
           };
         }
-      }
-
-      const scraperReady = await recipeScraper.waitForReady(10000);
-      if (!scraperReady) {
-        const errorMessage = t(SCRAPER_ERROR_I18N_KEYS[ScraperErrorTypes.Timeout]);
-        uiLogger.warn('Python scraper not ready for web parsing', { url });
-        setError(errorMessage);
-        setIsLoading(false);
-        return { success: false, error: errorMessage };
       }
 
       const { html, finalUrl } = cachedFetch ?? (await fetchHtml(url));

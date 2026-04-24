@@ -36,62 +36,7 @@ describe('PyodideBridge', () => {
 
         it('logs debug on construction', () => {
             loadFreshBridge();
-            expect(console.debug).toHaveBeenCalledWith('[PyodideBridge] Created (timeout starts when WebView mounts)');
-        });
-    });
-
-    describe('initialization timeout', () => {
-        it('does not timeout before startInitTimeout is called', async () => {
-            const bridge = loadFreshBridge();
-            jest.advanceTimersByTime(60001);
-            await Promise.resolve();
-            expect(bridge.getInitializationError()).toBeNull();
-        });
-
-        it('stores timeout error after 60 seconds when startInitTimeout called', async () => {
-            const bridge = loadFreshBridge();
-            bridge.startInitTimeout();
-            jest.advanceTimersByTime(60001);
-            await Promise.resolve();
-            expect(bridge.getInitializationError()?.message).toContain('timed out after 60 seconds');
-        });
-
-        it('logs warning via catch handler when timeout fires', async () => {
-            const bridge = loadFreshBridge();
-            bridge.startInitTimeout();
-            jest.advanceTimersByTime(60001);
-            await Promise.resolve();
-            expect(console.warn).toHaveBeenCalledWith(
-                '[PyodideBridge] Initialization failed:',
-                'Pyodide initialization timed out after 60 seconds'
-            );
-        });
-
-        it('isPythonReady remains false after timeout', async () => {
-            const bridge = loadFreshBridge();
-            bridge.startInitTimeout();
-            jest.advanceTimersByTime(60001);
-            await Promise.resolve();
-            expect(bridge.isPythonReady()).toBe(false);
-        });
-
-        it('waitForReady returns false once timeout has fired', async () => {
-            const bridge = loadFreshBridge();
-            bridge.startInitTimeout();
-            jest.advanceTimersByTime(60001);
-            await Promise.resolve();
-            const result = await bridge.waitForReady(100);
-            expect(result).toBe(false);
-        });
-
-        it('startInitTimeout is idempotent — second call does not restart timer', async () => {
-            const bridge = loadFreshBridge();
-            bridge.startInitTimeout();
-            jest.advanceTimersByTime(30000);
-            bridge.startInitTimeout();
-            jest.advanceTimersByTime(30001);
-            await Promise.resolve();
-            expect(bridge.getInitializationError()?.message).toContain('timed out after 60 seconds');
+            expect(console.debug).toHaveBeenCalledWith('[PyodideBridge] Created');
         });
     });
 
@@ -108,11 +53,11 @@ describe('PyodideBridge', () => {
             expect(console.info).toHaveBeenCalledWith('[PyodideBridge] Ready');
         });
 
-        it('waitForReady resolves to true after ready signal', async () => {
+        it('waitForReady resolves after ready signal', async () => {
             const bridge = loadFreshBridge();
             const readyPromise = bridge.waitForReady();
             bridge.handleMessage(JSON.stringify({type: 'ready'}));
-            await expect(readyPromise).resolves.toBe(true);
+            await expect(readyPromise).resolves.toBeUndefined();
         });
 
         it('initialization error remains null after ready signal', () => {
@@ -121,17 +66,6 @@ describe('PyodideBridge', () => {
             expect(bridge.getInitializationError()).toBeNull();
         });
 
-        it('cancels the init timeout so no warn fires after 60 seconds', async () => {
-            const bridge = loadFreshBridge();
-            bridge.startInitTimeout();
-            bridge.handleMessage(JSON.stringify({type: 'ready'}));
-            jest.advanceTimersByTime(60001);
-            await Promise.resolve();
-            expect(console.warn).not.toHaveBeenCalledWith(
-                '[PyodideBridge] Initialization failed:',
-                expect.any(String)
-            );
-        });
     });
 
     describe('handleMessage: error (before ready)', () => {
@@ -170,14 +104,13 @@ describe('PyodideBridge', () => {
             );
         });
 
-        it('waitForReady returns false after WebView error', async () => {
+        it('waitForReady rejects after WebView error', async () => {
             const bridge = loadFreshBridge();
             bridge.handleMessage(JSON.stringify({
                 type: 'error',
                 error: {type: 'ImportError', message: 'fail'},
             }));
-            const result = await bridge.waitForReady(100);
-            expect(result).toBe(false);
+            await expect(bridge.waitForReady()).rejects.toThrow('ImportError: fail');
         });
     });
 
@@ -325,26 +258,26 @@ describe('PyodideBridge', () => {
     });
 
     describe('waitForReady', () => {
-        it('returns true immediately when already ready', async () => {
+        it('resolves immediately when already ready', async () => {
             const bridge = loadFreshBridge();
             bridge.handleMessage(JSON.stringify({type: 'ready'}));
-            await expect(bridge.waitForReady()).resolves.toBe(true);
+            await expect(bridge.waitForReady()).resolves.toBeUndefined();
         });
 
-        it('returns false immediately when initialization already failed', async () => {
+        it('rejects when initialization has failed', async () => {
             const bridge = loadFreshBridge();
             bridge.handleMessage(JSON.stringify({
                 type: 'error',
                 error: {type: 'TestError', message: 'failed'},
             }));
-            await expect(bridge.waitForReady(100)).resolves.toBe(false);
+            await expect(bridge.waitForReady()).rejects.toThrow('TestError: failed');
         });
 
-        it('returns false when custom timeout expires before ready signal', async () => {
+        it('resolves when ready signal arrives after waiting', async () => {
             const bridge = loadFreshBridge();
-            const result = bridge.waitForReady(1000);
-            jest.advanceTimersByTime(1001);
-            await expect(result).resolves.toBe(false);
+            const readyPromise = bridge.waitForReady();
+            bridge.handleMessage(JSON.stringify({type: 'ready'}));
+            await expect(readyPromise).resolves.toBeUndefined();
         });
     });
 
@@ -397,13 +330,13 @@ describe('PyodideBridge', () => {
             await expect(callPromise).resolves.toBe('ok');
         });
 
-        it('throws "Pyodide is not ready" when init has failed', async () => {
+        it('rejects with init error when init has failed', async () => {
             const bridge = loadFreshBridge();
             bridge.handleMessage(JSON.stringify({
                 type: 'error',
                 error: {type: 'TestError', message: 'init failed'},
             }));
-            await expect(bridge.call('testMethod')).rejects.toThrow('Pyodide is not ready');
+            await expect(bridge.call('testMethod')).rejects.toThrow('TestError: init failed');
         });
 
         it('rejects after per-call timeout expires', async () => {
@@ -486,19 +419,6 @@ describe('PyodideBridge', () => {
             }));
             bridge.destroy();
             expect(bridge.getInitializationError()).toBeNull();
-        });
-
-        it('cancels the init timeout so no warn fires after destroy', async () => {
-            const bridge = loadFreshBridge();
-            bridge.startInitTimeout();
-            bridge.destroy();
-            jest.clearAllMocks();
-            jest.advanceTimersByTime(60001);
-            await Promise.resolve();
-            expect(console.warn).not.toHaveBeenCalledWith(
-                '[PyodideBridge] Initialization failed:',
-                expect.any(String)
-            );
         });
 
         it('warns on rpcResponse for a call that was destroyed mid-flight', () => {

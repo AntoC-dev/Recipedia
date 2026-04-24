@@ -11,7 +11,6 @@ import {
   mockScrapeRecipeFromHtml,
   mockScrapeRecipeFromHtmlError,
   mockScrapeRecipeFromHtmlSuccess,
-  mockWaitForReady,
 } from '@mocks/modules/recipe-scraper-mock';
 import {
   mockDownloadImageToCache,
@@ -39,7 +38,6 @@ function createWrapper() {
 describe('useRecipeScraper', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockWaitForReady.mockResolvedValue(true);
     mockDownloadImageToCacheSuccess();
     mockFetchHtmlSuccess();
   });
@@ -394,8 +392,7 @@ describe('useRecipeScraper', () => {
       expect(result.current.authRequired).toBeNull();
     });
 
-    test('sets authRequired without waiting for Python when auth redirect detected on iOS', async () => {
-      mockWaitForReady.mockResolvedValue(false);
+    test('sets authRequired without scraping when auth redirect detected on iOS', async () => {
       mockFetch.mockResolvedValue({
         ok: true,
         url: 'https://www.quitoque.fr/connexion',
@@ -415,7 +412,6 @@ describe('useRecipeScraper', () => {
         url: 'https://www.quitoque.fr/products/camembert-roti-18628',
         host: 'quitoque.fr',
       });
-      expect(mockWaitForReady).not.toHaveBeenCalled();
       expect(mockScrapeRecipeFromHtml).not.toHaveBeenCalled();
     });
 
@@ -431,26 +427,6 @@ describe('useRecipeScraper', () => {
 
       expect(mockFetch).toHaveBeenCalledTimes(1);
     });
-
-    test('returns timeout error on iOS when Python not ready and no auth redirect', async () => {
-      mockWaitForReady.mockResolvedValue(false);
-      mockFetchHtmlSuccess('<html><head><title>Recipe Page</title></head></html>');
-
-      const { result } = renderHook(() => useRecipeScraper(), { wrapper: createWrapper() });
-
-      let scrapeResult: ScrapeResult | undefined;
-      await act(async () => {
-        scrapeResult = await result.current.scrapeAndPrepare(
-          'https://www.hellofresh.fr/recipes/test'
-        );
-      });
-
-      expect(scrapeResult?.success).toBe(false);
-      if (scrapeResult && !scrapeResult.success) {
-        expect(scrapeResult.error).toBe('urlDialog.errorTimeout');
-      }
-      expect(result.current.authRequired).toBeNull();
-    });
   });
 
   describe('platform-specific behaviour', () => {
@@ -461,40 +437,6 @@ describe('useRecipeScraper', () => {
 
       afterEach(() => {
         (Platform as unknown as { OS: string }).OS = 'ios';
-      });
-
-      test('waits for Python before fetching HTML', async () => {
-        mockFetchHtmlSuccess('<html></html>');
-        mockScrapeRecipeFromHtmlSuccess(hellofreshKeftasRecipe);
-
-        const { result } = renderHook(() => useRecipeScraper(), { wrapper: createWrapper() });
-
-        await act(async () => {
-          await result.current.scrapeAndPrepare('https://www.hellofresh.fr/recipes/test');
-        });
-
-        const waitForReadyCallOrder = mockWaitForReady.mock.invocationCallOrder[0];
-        const fetchCallOrder = mockFetch.mock.invocationCallOrder[0];
-        expect(waitForReadyCallOrder).toBeLessThan(fetchCallOrder);
-      });
-
-      test('returns timeout error when Python scraper not ready', async () => {
-        mockWaitForReady.mockResolvedValue(false);
-
-        const { result } = renderHook(() => useRecipeScraper(), { wrapper: createWrapper() });
-
-        let scrapeResult: ScrapeResult | undefined;
-        await act(async () => {
-          scrapeResult = await result.current.scrapeAndPrepare(
-            'https://www.hellofresh.fr/recipes/test'
-          );
-        });
-
-        expect(scrapeResult?.success).toBe(false);
-        if (scrapeResult && !scrapeResult.success) {
-          expect(scrapeResult.error).toBe('urlDialog.errorTimeout');
-        }
-        expect(mockFetch).not.toHaveBeenCalled();
       });
 
       test('detects auth via Python response', async () => {
