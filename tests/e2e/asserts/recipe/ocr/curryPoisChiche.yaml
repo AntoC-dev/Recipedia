@@ -20,7 +20,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeDescription::Text"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll down to description text"
 
@@ -37,7 +37,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeDescription::CustomTextInput"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll down to description text input"
 
@@ -54,7 +54,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeTags::RoundButton"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
 
 - waitForAnimationToEnd
@@ -83,7 +83,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePersons::NumericTextInput"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll down to persons part"
 
@@ -111,7 +111,7 @@ appId: "com.recipedia"
       id: "RecipeIngredients::PrefixText"
     direction: DOWN
     centerElement: true
-    speed: 60
+    speed: 20
 
 - waitForAnimationToEnd
 
@@ -142,7 +142,7 @@ appId: "com.recipedia"
       id: "RecipeIngredients::10::NameInput::CustomTextInput"
     direction: DOWN
     centerElement: true
-    speed: 60
+    speed: 20
     label: "Scroll to last ingredient"
 
 
@@ -166,7 +166,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::AddButton::RoundButton"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll down to ingredients add button"
 
@@ -177,8 +177,26 @@ appId: "com.recipedia"
     label: "Add button of the ingredients is rendered"
 
 - assertVisible:
-    text: "󰐕"
-    label: "Add button of the ingredients has the correct icon"
+    text: "󰏫"
+    label: "Add manually button of the ingredients has the correct icon"
+
+- assertVisible:
+    id: "RecipeIngredients::AddButton::RoundButton::Label"
+    text: "Add manually"
+    label: "Label of the scan quantities bubtton is displayed"
+
+- assertVisible:
+    id: "RecipeIngredients::OpenModalQuantities::RoundButton"
+    label: "Scan quantities button of the ingredients is rendered"
+
+- assertVisible:
+    text: "󰘤"
+    label: "Scan quantities button of the ingredients has the correct icon"
+
+- assertVisible:
+    id: "RecipeIngredients::OpenModalQuantities::RoundButton::Label"
+    text: "Scan quantities"
+    label: "Label of the scan quantities bubtton is displayed"
 
 - waitForAnimationToEnd
 
@@ -186,7 +204,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeTime::PrefixText"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll down to time part"
 
@@ -213,7 +231,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::PrefixText"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
 
 - waitForAnimationToEnd
@@ -229,7 +247,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::EditableStep::0::Step"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
 
 - waitForAnimationToEnd
@@ -256,7 +274,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::EditableStep::0::Content"
     direction: DOWN
     centerElement: true
-    speed: 60
+    speed: 20
     label: "Scroll down to content of first step"
 
 - waitForAnimationToEnd
@@ -273,7 +291,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
     direction: DOWN
     centerElement: true
-    speed: 60
+    speed: 20
     label: "Scroll down to content of first step content"
 
 - waitForAnimationToEnd
@@ -290,7 +308,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::EditableStep::1::Title"
     direction: DOWN
     centerElement: true
-    speed: 40
+    speed: 20
     label: "Scroll down to second step"
 
 - waitForAnimationToEnd
@@ -307,7 +325,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::EditableStep::1::TextInputTitle::CustomTextInput"
     direction: DOWN
     centerElement: true
-    speed: 60
+    speed: 20
     label: "Scroll down to second step content"
 
 - waitForAnimationToEnd
@@ -324,7 +342,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::EditableStep::1::Content"
     direction: DOWN
     centerElement: true
-    speed: 40
+    speed: 20
     label: "Scroll down to second step"
 
 - waitForAnimationToEnd
@@ -341,7 +359,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
     direction: DOWN
     centerElement: true
-    speed: 40
+    speed: 20
     label: "Scroll down to content of second step"
 
 - waitForAnimationToEnd
@@ -358,7 +376,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::EditableStep::2::Title"
     direction: DOWN
     centerElement: true
-    speed: 40
+    speed: 20
     label: "Scroll down to third step"
 
 - waitForAnimationToEnd
@@ -375,7 +393,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::EditableStep::2::TextInputTitle::CustomTextInput"
     direction: DOWN
     centerElement: true
-    speed: 60
+    speed: 20
     label: "Scroll down to third step content"
 
 - waitForAnimationToEnd
@@ -392,7 +410,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::EditableStep::2::Content"
     direction: DOWN
     centerElement: true
-    speed: 40
+    speed: 20
     label: "Scroll down to content of third step"
 
 - waitForAnimationToEnd
@@ -409,7 +427,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::EditableStep::2::TextInputContent::CustomTextInput"
     direction: DOWN
     centerElement: true
-    speed: 60
+    speed: 20
     label: "Scroll down to content of third step content"
 
 - waitForAnimationToEnd
@@ -426,7 +444,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::AddButton::RoundButton"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
 
 - waitForAnimationToEnd

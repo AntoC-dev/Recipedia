@@ -82,3 +82,11 @@ appId: "com.recipedia"
 - runFlow:
     file: ../cleanAndResume.yaml
     label: "Delete nutrition image from gallery and return to Recipedia"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::PrefixText"
+    direction: UP
+    speed: 30
+    centerElement: true
+    label: "Scroll to up back to preparation section"

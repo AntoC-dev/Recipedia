@@ -36,36 +36,36 @@ appId: "com.recipedia"
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
-      INGREDIENT_NAME: "carotte"
-      INGREDIENT_QUANTITY_AND_UNIT: "2"
+      INGREDIENT_NAME: "Carotte"
+      INGREDIENT_QUANTITY_AND_UNIT: "4"
     label: "Assert carotte ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "cumin"
-      INGREDIENT_QUANTITY_AND_UNIT: "2"
+      INGREDIENT_QUANTITY_AND_UNIT: "4"
     label: "Assert cumin ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
-      INGREDIENT_NAME: ".*merguez.*"
-      INGREDIENT_QUANTITY_AND_UNIT: ".*"
+      INGREDIENT_NAME: "merguez"
+      INGREDIENT_QUANTITY_AND_UNIT: "800"
     label: "Assert merguez ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
-      INGREDIENT_NAME: ".*navet.*"
-      INGREDIENT_QUANTITY_AND_UNIT: ".*"
+      INGREDIENT_NAME: "navet"
+      INGREDIENT_QUANTITY_AND_UNIT: "4"
     label: "Assert navet ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
-      INGREDIENT_NAME: ".*pommes de terre jaunes.*"
-      INGREDIENT_QUANTITY_AND_UNIT: ".*"
+      INGREDIENT_NAME: "pommes de terre jaunes"
+      INGREDIENT_QUANTITY_AND_UNIT: "800"
     label: "Assert pommes de terre jaunes ingredient"
 
 - assertVisible:
@@ -80,7 +80,8 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
     direction: DOWN
     centerElement: true
-    speed: 60
+    speed: 20
+    label: "Scroll to section part"
 
 - waitForAnimationToEnd
 

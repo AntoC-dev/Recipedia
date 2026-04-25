@@ -4,9 +4,17 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
+      id: "RecipeIngredients::PrefixText"
+    direction: UP
+    speed: 40
+    centerElement: true
+    label: "Scroll to ingredient section"
+
+- scrollUntilVisible:
+    element:
       id: "RecipeIngredients::OpenModalNames::RoundButton"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to ingredient names OCR button"
 
@@ -58,59 +66,86 @@ appId: "com.recipedia"
     timeout: 120000
     label: "Wait for first ingredient name to be populated"
 
-- assertVisible:
-    id: "RecipeIngredients::OpenModalQuantities::RoundButton::Label"
-    text: "Scan quantities"
-    label: "Scan quantities button label is rendered"
-
 - runFlow:
     file: ../cleanAndResume.yaml
     label: "Delete ingredient names image from gallery and return to Recipedia"
 
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::OpenModalQuantities::RoundButton"
-    direction: DOWN
-    speed: 40
-    centerElement: true
-    label: "Scroll to ingredient quantities OCR button"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipeIngredients::OpenModalQuantities::RoundButton"
-    label: "Tap on ingredient quantities OCR button"
-
 - runFlow:
-    file: ../android/addMedia.yaml
-    env:
-      FIELD_NAME: ingredientQuantities
     when:
-      platform: Android
-- runFlow:
-    file: ../iOS/addMedia.yaml
-    env:
-      FIELD_NAME: ingredientQuantities
-    when:
-      platform: iOS
+      true: ${output.isQuantitiesOCR == true}
+    commands:
+      - scrollUntilVisible:
+          element:
+            id: "RecipeIngredients::OpenModalQuantities::RoundButton"
+          direction: DOWN
+          speed: 40
+          centerElement: true
+          label: "Scroll to ingredient quantities OCR button"
 
-- runFlow:
-    file: ../android/selectMostRecentFromModal.yaml
-    label: "Select ingredient quantities image from modal"
-    when:
-      platform: Android
-- runFlow:
-    file: ../iOS/selectMostRecentFromModal.yaml
-    label: "Select ingredient quantities image from modal"
-    when:
-      platform: iOS
+      - waitForAnimationToEnd
+
+      - tapOn:
+          id: "RecipeIngredients::OpenModalQuantities::RoundButton"
+          label: "Tap on ingredient quantities OCR button"
+
+      - runFlow:
+          file: ../android/addMedia.yaml
+          env:
+            FIELD_NAME: ingredientQuantities
+          when:
+            platform: Android
+      - runFlow:
+          file: ../iOS/addMedia.yaml
+          env:
+            FIELD_NAME: ingredientQuantities
+          when:
+            platform: iOS
+
+      - runFlow:
+          file: ../android/selectMostRecentFromModal.yaml
+          label: "Select ingredient quantities image from modal"
+          when:
+            platform: Android
+      - runFlow:
+          file: ../iOS/selectMostRecentFromModal.yaml
+          label: "Select ingredient quantities image from modal"
+          when:
+            platform: iOS
+
+      - extendedWaitUntil:
+          visible:
+            id: "RecipeIngredients::.*::QuantityInput"
+            text: ".*"
+          timeout: 120000
+          label: "Wait for last ingredient quantity to be populated"
+
+      - runFlow:
+          file: ../cleanAndResume.yaml
+          label: "Delete ingredient quantities image from gallery and return to Recipedia"
 
 - extendedWaitUntil:
     visible:
-      id: "RecipeIngredients::0::QuantityInput::CustomTextInput"
+      id: "RecipeIngredients::.*::QuantityInput"
+      text: ""
     timeout: 120000
-    label: "Wait for first ingredient quantity to be populated"
+    label: "Wait for last ingredient quantity to be populated"
 
 - runFlow:
-    file: ../cleanAndResume.yaml
-    label: "Delete ingredient quantities image from gallery and return to Recipedia"
+    when:
+      true: ${output.isQuantitiesOCR == false}
+    commands:
+      - runFlow:
+          file: "../quantities/quitoqueV1.yaml"
+          label: "Manually fill quitoqueV1 ingredient quantities"
+          when:
+            true: ${RECIPE_NAME == "quitoqueV1"}
+      - runFlow:
+          file: "../quantities/quitoqueV3.yaml"
+          label: "Manually fill quitoqueV3 ingredient quantities"
+          when:
+            true: ${RECIPE_NAME == "quitoqueV3"}
+      - runFlow:
+          file: "../quantities/quitoqueV2.yaml"
+          label: "Manually fill quitoqueV2 ingredient quantities"
+          when:
+            true: ${RECIPE_NAME == "quitoqueV2"}

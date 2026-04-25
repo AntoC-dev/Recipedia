@@ -6,7 +6,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::OpenModal::RoundButton"
     direction: DOWN
-    speed: 90
+    speed: 30
     centerElement: true
 
 - waitForAnimationToEnd

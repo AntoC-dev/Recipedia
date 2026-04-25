@@ -1,5 +1,7 @@
 appId: "com.recipedia"
 ---
+- evalScript: ${output.modalImageCounter = 1}
+
 - runFlow:
     file: "ocrImage.yaml"
     label: "OCR image"

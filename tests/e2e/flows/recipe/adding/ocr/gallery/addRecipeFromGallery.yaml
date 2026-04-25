@@ -32,20 +32,20 @@ appId: "com.recipedia"
     label: "OCR time"
 
 - runFlow:
-    file: "ocrPreparation.yaml"
-    label: "OCR preparation"
-
-- runFlow:
-    file: "ocrIngredients.yaml"
-    label: "OCR ingredients"
-
-- runFlow:
     when:
       true: ${output.isNutritionToOCR}
     commands:
       - runFlow:
           file: "ocrNutrition.yaml"
           label: "OCR nutrition"
+
+- runFlow:
+    file: "ocrPreparation.yaml"
+    label: "OCR preparation"
+
+- runFlow:
+    file: "ocrIngredients.yaml"
+    label: "OCR ingredients"
 
 - tapOn:
     id: "Recipe::BottomActionButton"

@@ -16,7 +16,7 @@ appId: "com.recipedia"
       id: "RecipeDescription::Text"
     direction: DOWN
     centerElement: true
-    speed: 60
+    speed: 20
     label: "Scroll to description"
 
 - waitForAnimationToEnd
@@ -27,8 +27,9 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "RecipeDescription::Text"
-          text: "La sauce satay est une sauce d'Asie du Sud-Est à base de cacahuètes, ail et gingembre! Reproduisez-la pour accompagner notre poulet français !"
+          text: "La sauce satay est une sauce d'Asie du Sud-Est à base de cacahuètes, ail et gingembre! Reproduisez-la pour accompagner notre poulet français!"
           label: "Description of the recipe is rendered"
+
 
 - runFlow:
     when:
@@ -47,7 +48,7 @@ appId: "com.recipedia"
       id: "RecipePersons::Text"
     direction: DOWN
     centerElement: true
-    speed: 60
+    speed: 20
     label: "Scroll to persons"
 
 - waitForAnimationToEnd
@@ -77,7 +78,7 @@ appId: "com.recipedia"
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
-      INGREDIENT_NAME: "flet de poulet"
+      INGREDIENT_NAME: "Filet de poulet"
       INGREDIENT_QUANTITY_AND_UNIT: "4"
     label: "Assert flet de poulet ingredient"
 
@@ -85,7 +86,7 @@ appId: "com.recipedia"
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "gingembre"
-      INGREDIENT_QUANTITY_AND_UNIT: "1à3"
+      INGREDIENT_QUANTITY_AND_UNIT: "1"
     label: "Assert gingembre ingredient"
 
 - runFlow:
@@ -129,7 +130,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeTime::Text"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
 
 - waitForAnimationToEnd
@@ -146,7 +147,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
     direction: DOWN
     centerElement: true
-    speed: 60
+    speed: 20
 
 - waitForAnimationToEnd
 
@@ -167,7 +168,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
     direction: DOWN
     centerElement: true
-    speed: 60
+    speed: 20
 
 - waitForAnimationToEnd
 
@@ -188,7 +189,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"
     direction: DOWN
     centerElement: true
-    speed: 60
+    speed: 20
 
 - waitForAnimationToEnd
 
@@ -208,7 +209,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::ReadOnlyStep::3::SectionTitle"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Fourth preparation title is displayed"
 
@@ -225,7 +226,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::ReadOnlyStep::3::SectionParagraph"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Fourth preparation paragraph is displayed"
 
@@ -233,7 +234,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::3::SectionParagraph"
-    text: "Portez une casserole d'eau salée à ébullition.\nFaites cuire le riz selon les indications du paquet.\nRetirez la base de .*'oignon nouveau et émincez-le.\nDégustez sans attendre votre poulet sauce satay accompagné du riz!\nParsemez-le d'oignon nouveau."
+    text: "Portez une casserole d'eau salée à ébullition.\nFaites cu?ire le riz selon les indications du paquet.\nRetirez la base de l?'oignon nouveau et émincez-le.\nDégustez sans attendre votre poulet sauce satay accompagné du riz!\nParsemez-le d'oignon nouveau."
     label: "Fourth preparation paragraph is displayed"
 
 - runFlow:

@@ -7,6 +7,7 @@ tags:
 - evalScript: ${output.isTagsToOCR = true}
 - evalScript: ${output.isTime = false}
 - evalScript: ${output.isNutritionToOCR = false}
+- evalScript: ${output.isQuantitiesOCR = true}
 
 - runFlow:
     file: "../../flows/recipe/adding/ocr/gallery/addRecipeFromGallery.yaml"
