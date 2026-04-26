@@ -4,6 +4,12 @@ appId: "com.recipedia"
     point: "10%,61%"
     label: "Tap on the first picture"
 
+- extendedWaitUntil:
+    visible:
+      id: "trash"
+    timeout: 5000
+    label: "Wait for cancel button of select to appear"
+
 - repeat:
     while:
       notVisible:
