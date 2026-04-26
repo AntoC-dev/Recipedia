@@ -24,22 +24,18 @@ import {Platform} from 'react-native';
 import {useEffect, useState} from 'react';
 import {SchemaRecipeParser} from './web/SchemaRecipeParser';
 import {applyEnhancements} from './enhancements';
-import type {
-    HostSupportedResult,
-    ScraperErrorResult,
-    ScraperResult,
-    SupportedHostsResult,
-} from './types';
+import type {HostSupportedResult, ScraperErrorResult, ScraperResult, SupportedHostsResult,} from './types';
 import {AuthBridge} from './ios/AuthBridge';
+import {pyodideLogger} from '@utils/logger';
+import {extractHost} from './urlUtils';
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
+ 
 type PyodideBridgeInstance = typeof import('./ios/PyodideBridge').PyodideBridge;
 
 function getPyodideBridge(): PyodideBridgeInstance {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     return require('./ios/PyodideBridge').PyodideBridge;
 }
-import {extractHost} from './urlUtils';
 
 // Auth detection patterns
 const AUTH_URL_PATTERNS = [
@@ -138,12 +134,13 @@ export class RecipeScraper {
         options?: ScrapeOptions
     ): Promise<ScraperResult> {
         try {
-            // 1. Fetch HTML in TypeScript (works on all platforms)
+            pyodideLogger.debug('Scraping recipe from URL', {url});
             const response = await fetch(url, {
                 headers: {'User-Agent': 'Mozilla/5.0'},
             });
 
             if (!response.ok) {
+                pyodideLogger.warn('Recipe fetch failed', {url, status: response.status});
                 return this.errorResult(
                     'FetchError',
                     `HTTP ${response.status}: ${response.statusText}`
@@ -153,15 +150,15 @@ export class RecipeScraper {
             const html = await response.text();
             const finalUrl = response.url;
 
-            // 2. Check for auth redirect
             const authError = this.detectAuthRequired(html, finalUrl, url);
             if (authError) {
+                pyodideLogger.info('Authentication required for recipe', {url, finalUrl});
                 return authError;
             }
 
-            // 3. Parse and enhance
             return this.scrapeRecipeFromHtml(html, url, options);
         } catch (error) {
+            pyodideLogger.error('Scrape failed with exception', {url, error: error instanceof Error ? error.message : String(error)});
             return this.exceptionError(error);
         }
     }
@@ -206,12 +203,11 @@ export class RecipeScraper {
                     // Fallback to TypeScript schema.org parser if Pyodide fails
                     const initError = getPyodideBridge().getInitializationError();
                     if (initError) {
-                        console.warn('[RecipeScraper] Pyodide never initialized:', initError.message);
+                        pyodideLogger.warn('Pyodide never initialized', {error: initError.message});
                     }
-                    console.warn(
-                        '[RecipeScraper] Pyodide failed, falling back to schema.org:',
-                        pyodideError
-                    );
+                    pyodideLogger.warn('Pyodide failed, falling back to schema.org', {
+                        error: pyodideError,
+                    });
                     baseResult = schemaParser.parse(html, url);
                 }
             } else {
@@ -219,16 +215,19 @@ export class RecipeScraper {
                 baseResult = schemaParser.parse(html, url);
             }
 
-            // Apply TypeScript enhancements (ALL platforms)
             if (baseResult.success) {
                 baseResult.data = applyEnhancements({
                     html,
                     baseResult: baseResult.data,
                 });
+                pyodideLogger.debug('Recipe scraped successfully', {url, title: baseResult.data.title});
+            } else {
+                pyodideLogger.warn('Recipe scraping returned error', {url, error: baseResult.error});
             }
 
             return baseResult;
         } catch (error) {
+            pyodideLogger.error('scrapeRecipeFromHtml failed with exception', {url, error: error instanceof Error ? error.message : String(error)});
             return this.exceptionError(error);
         }
     }
@@ -325,6 +324,8 @@ export class RecipeScraper {
         password: string,
         options?: ScrapeOptions
     ): Promise<ScraperResult> {
+        pyodideLogger.debug('Starting authenticated scrape', {url});
+
         if (nativeModule?.scrapeRecipeAuthenticated) {
             try {
                 const json = await nativeModule.scrapeRecipeAuthenticated(
@@ -403,6 +404,57 @@ export class RecipeScraper {
     }
 
     /**
+     * Checks if the Python runtime is ready for scraping.
+     *
+     * On Android, returns true once Chaquopy Python has finished initializing.
+     * On iOS, returns true once Pyodide WebView has finished loading.
+     * On Web, this always returns true (no Python needed).
+     *
+     * @returns true if ready, false if still initializing.
+     */
+    async isPythonReady(): Promise<boolean> {
+        if (nativeModule?.isPythonAvailable) {
+            try {
+                return await nativeModule.isPythonAvailable();
+            } catch {
+                return false;
+            }
+        }
+
+        if (usePyodide) {
+            return getPyodideBridge().isPythonReady();
+        }
+
+        // Web platform - always ready (no Python)
+        return true;
+    }
+
+    /**
+     * Returns a promise that resolves when Python is ready, or rejects on failure.
+     *
+     * On iOS, waits for Pyodide WebView initialization.
+     * On Android, waits for Chaquopy Python initialization.
+     * On Web, resolves immediately (no Python needed).
+     *
+     * @throws Error if Python initialization fails permanently.
+     */
+    async whenReady(): Promise<void> {
+        if (usePyodide) {
+            await getPyodideBridge().whenReady();
+            return;
+        }
+
+        if (!nativeModule?.isPythonAvailable) {
+            return;
+        }
+
+        const isReady = await nativeModule.isPythonAvailable();
+        if (!isReady) {
+            throw new Error('Native Python is not available');
+        }
+    }
+
+    /**
      * Detect if a page requires authentication.
      * Checks for login URL patterns and page title keywords.
      */
@@ -464,76 +516,6 @@ export class RecipeScraper {
             },
         };
     }
-
-    /**
-     * Returns the initialization error if Pyodide failed to start.
-     * Useful for diagnostic logging when waitForReady times out.
-     */
-    getInitializationError(): Error | null {
-        if (usePyodide) {
-            return getPyodideBridge().getInitializationError();
-        }
-        return null;
-    }
-
-    /**
-     * Checks if the Python runtime is ready for scraping.
-     *
-     * On Android, returns true once Chaquopy Python has finished initializing.
-     * On iOS, returns true once Pyodide WebView has finished loading.
-     * On Web, this always returns true (no Python needed).
-     *
-     * @returns true if ready, false if still initializing.
-     */
-    async isPythonReady(): Promise<boolean> {
-        if (nativeModule?.isPythonAvailable) {
-            try {
-                return await nativeModule.isPythonAvailable();
-            } catch {
-                return false;
-            }
-        }
-
-        if (usePyodide) {
-            return getPyodideBridge().isPythonReady();
-        }
-
-        // Web platform - always ready (no Python)
-        return true;
-    }
-
-    /**
-     * Waits for Python to be ready for scraping.
-     *
-     * Call this during app initialization to ensure Python is loaded
-     * before allowing users to access web parsing features.
-     * The splash screen should remain visible until this resolves.
-     *
-     * @param pollIntervalMs - Time between checks on Android (default: 100ms)
-     */
-    async waitForReady(pollIntervalMs = 100): Promise<void> {
-        if (usePyodide) {
-            return getPyodideBridge().waitForReady();
-        }
-
-        if (!nativeModule?.isPythonAvailable) {
-            // Web platform - always ready
-            return;
-        }
-
-        // Android: poll until Chaquopy is ready
-        while (true) {
-            try {
-                const isReady = await nativeModule.isPythonAvailable();
-                if (isReady) {
-                    return;
-                }
-            } catch {
-                // Ignore errors, keep polling
-            }
-            await new Promise(resolve => setTimeout(resolve, pollIntervalMs));
-        }
-    }
 }
 
 /**
@@ -570,9 +552,11 @@ export function usePythonReady(): boolean {
         let mounted = true;
 
         const checkReady = async () => {
-            await recipeScraper.waitForReady();
-            if (mounted) {
-                setIsReady(true);
+            try {
+                await recipeScraper.whenReady();
+                if (mounted) setIsReady(true);
+            } catch {
+                if (mounted) setIsReady(false);
             }
         };
 
