@@ -19,7 +19,10 @@ type PyodideMessage =
 
 export type PyodideMessageHandler = (message: string) => void;
 
+import {pyodideLogger} from '@utils/logger';
+
 const DEFAULT_TIMEOUT_MS = 30000;
+const INIT_TIMEOUT_MS = 60000;
 
 class PyodideBridgeImpl {
     private isReady = false;
@@ -30,19 +33,28 @@ class PyodideBridgeImpl {
     private readyResolve: (() => void) | null = null;
     private readyReject: ((error: Error) => void) | null = null;
     private messageHandler: PyodideMessageHandler | null = null;
+    private initTimeout: ReturnType<typeof setTimeout> | null = null;
 
     constructor() {
         this.readyPromise = new Promise((resolve, reject) => {
             this.readyResolve = resolve;
             this.readyReject = reject;
         });
-        // Handles WebView error rejection path.
-        // Prevents unhandled rejection warning; waitForReady() handles the error for callers.
+        // Handles all rejection paths (timeout + WebView errors) in one place.
+        // Prevents unhandled rejection warning; whenReady() handles the error for callers.
         this.readyPromise.catch((error: Error) => {
-            console.warn('[PyodideBridge] Initialization failed:', error.message);
+            pyodideLogger.warn('Initialization failed', { error: error.message });
         });
 
-        console.debug('[PyodideBridge] Created');
+        pyodideLogger.debug('Initializing...');
+
+        this.initTimeout = setTimeout(() => {
+            if (!this.isReady && this.readyReject) {
+                const error = new Error('Pyodide initialization timed out after 60 seconds');
+                this.initializationError = error;
+                this.readyReject(error);
+            }
+        }, INIT_TIMEOUT_MS);
     }
 
     setMessageHandler(handler: PyodideMessageHandler): void {
@@ -77,40 +89,33 @@ class PyodideBridgeImpl {
                     break;
             }
         } catch (error) {
-            console.error('[PyodideBridge] Failed to parse message:', error);
+            pyodideLogger.error('Failed to parse message', { error });
         }
     }
 
     private handleReady(): void {
         this.isReady = true;
-        console.info('[PyodideBridge] Ready');
+        pyodideLogger.info('Ready');
+        if (this.initTimeout) {
+            clearTimeout(this.initTimeout);
+            this.initTimeout = null;
+        }
         if (this.readyResolve) {
             this.readyResolve();
         }
     }
 
     private handleLog(level: string, message: string): void {
-        const prefix = '[Pyodide]';
-        switch (level) {
-            case 'debug':
-                console.debug(prefix, message);
-                break;
-            case 'info':
-                console.info(prefix, message);
-                break;
-            case 'warn':
-                console.warn(prefix, message);
-                break;
-            case 'error':
-                console.error(prefix, message);
-                break;
-            default:
-                console.log(prefix, message);
-        }
+        const logFn = level === 'debug' ? pyodideLogger.debug
+            : level === 'info' ? pyodideLogger.info
+            : level === 'warn' ? pyodideLogger.warn
+            : level === 'error' ? pyodideLogger.error
+            : pyodideLogger.info;
+        logFn(message);
     }
 
     private handleError(error: {type: string; message: string}): void {
-        console.error('[PyodideBridge] Error:', error.type, error.message);
+        pyodideLogger.error('Bridge error', { type: error.type, message: error.message });
         if (!this.isReady && this.readyReject) {
             const err = new Error(`${error.type}: ${error.message}`);
             this.initializationError = err;
@@ -125,7 +130,7 @@ class PyodideBridgeImpl {
     ): void {
         const pending = this.pendingCalls.get(id);
         if (!pending) {
-            console.warn('[PyodideBridge] Received response for unknown call:', id);
+            pyodideLogger.warn('Received response for unknown call', { id });
             return;
         }
 
@@ -141,10 +146,8 @@ class PyodideBridgeImpl {
         }
     }
 
-    async waitForReady(): Promise<void> {
-        if (this.isReady) {
-            return;
-        }
+    async whenReady(): Promise<void> {
+        if (this.isReady) return;
         await this.readyPromise;
     }
 
@@ -162,7 +165,7 @@ class PyodideBridgeImpl {
         timeoutMs = DEFAULT_TIMEOUT_MS
     ): Promise<string> {
         if (!this.isReady) {
-            await this.waitForReady();
+            await this.whenReady();
         }
 
         return new Promise((resolve, reject) => {
@@ -203,6 +206,10 @@ class PyodideBridgeImpl {
     }
 
     destroy(): void {
+        if (this.initTimeout) {
+            clearTimeout(this.initTimeout);
+        }
+
         for (const [, pending] of this.pendingCalls) {
             clearTimeout(pending.timeout);
             pending.reject(new Error('Bridge destroyed'));
