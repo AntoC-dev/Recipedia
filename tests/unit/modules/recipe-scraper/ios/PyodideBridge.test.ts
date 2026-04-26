@@ -1,6 +1,15 @@
 jest.unmock('@app/modules/recipe-scraper/src/ios/PyodideBridge');
 
- 
+const mockLogger = {
+    debug: jest.fn(),
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+};
+jest.mock('@utils/logger', () => ({
+    pyodideLogger: mockLogger,
+}));
+
 type BridgeInstance = typeof import('@app/modules/recipe-scraper/src/ios/PyodideBridge').PyodideBridge;
 
 function loadFreshBridge(): BridgeInstance {
@@ -14,7 +23,6 @@ describe('PyodideBridge', () => {
     beforeEach(() => {
         jest.useFakeTimers();
         jest.clearAllMocks();
-        jest.spyOn(console, 'debug').mockImplementation(() => {});
     });
 
     afterEach(() => {
@@ -36,7 +44,40 @@ describe('PyodideBridge', () => {
 
         it('logs debug on construction', () => {
             loadFreshBridge();
-            expect(console.debug).toHaveBeenCalledWith('[PyodideBridge] Created');
+            expect(mockLogger.debug).toHaveBeenCalledWith('Initializing...');
+        });
+    });
+
+    describe('initialization timeout', () => {
+        it('stores timeout error after 60 seconds', async () => {
+            const bridge = loadFreshBridge();
+            jest.advanceTimersByTime(60001);
+            await Promise.resolve();
+            expect(bridge.getInitializationError()?.message).toContain('timed out after 60 seconds');
+        });
+
+        it('logs warning via catch handler when timeout fires', async () => {
+            loadFreshBridge();
+            jest.advanceTimersByTime(60001);
+            await Promise.resolve();
+            expect(mockLogger.warn).toHaveBeenCalledWith(
+                'Initialization failed',
+                expect.objectContaining({ error: expect.stringContaining('timed out after 60 seconds') })
+            );
+        });
+
+        it('isPythonReady remains false after timeout', async () => {
+            const bridge = loadFreshBridge();
+            jest.advanceTimersByTime(60001);
+            await Promise.resolve();
+            expect(bridge.isPythonReady()).toBe(false);
+        });
+
+        it('whenReady rejects once timeout has fired', async () => {
+            const bridge = loadFreshBridge();
+            jest.advanceTimersByTime(60001);
+            await Promise.resolve();
+            await expect(bridge.whenReady()).rejects.toThrow('timed out');
         });
     });
 
@@ -50,12 +91,12 @@ describe('PyodideBridge', () => {
         it('logs info when ready', () => {
             const bridge = loadFreshBridge();
             bridge.handleMessage(JSON.stringify({type: 'ready'}));
-            expect(console.info).toHaveBeenCalledWith('[PyodideBridge] Ready');
+            expect(mockLogger.info).toHaveBeenCalledWith('Ready');
         });
 
-        it('waitForReady resolves after ready signal', async () => {
+        it('whenReady resolves after ready signal', async () => {
             const bridge = loadFreshBridge();
-            const readyPromise = bridge.waitForReady();
+            const readyPromise = bridge.whenReady();
             bridge.handleMessage(JSON.stringify({type: 'ready'}));
             await expect(readyPromise).resolves.toBeUndefined();
         });
@@ -66,6 +107,17 @@ describe('PyodideBridge', () => {
             expect(bridge.getInitializationError()).toBeNull();
         });
 
+        it('cancels the init timeout so no warn fires after 60 seconds', async () => {
+            const bridge = loadFreshBridge();
+            bridge.handleMessage(JSON.stringify({type: 'ready'}));
+            jest.clearAllMocks();
+            jest.advanceTimersByTime(60001);
+            await Promise.resolve();
+            expect(mockLogger.warn).not.toHaveBeenCalledWith(
+                'Initialization failed',
+                expect.anything()
+            );
+        });
     });
 
     describe('handleMessage: error (before ready)', () => {
@@ -78,16 +130,15 @@ describe('PyodideBridge', () => {
             expect(bridge.getInitializationError()?.message).toBe('ImportError: Module not found');
         });
 
-        it('logs console.error with type and message', () => {
+        it('logs error with type and message', () => {
             const bridge = loadFreshBridge();
             bridge.handleMessage(JSON.stringify({
                 type: 'error',
                 error: {type: 'ImportError', message: 'Module not found'},
             }));
-            expect(console.error).toHaveBeenCalledWith(
-                '[PyodideBridge] Error:',
-                'ImportError',
-                'Module not found'
+            expect(mockLogger.error).toHaveBeenCalledWith(
+                'Bridge error',
+                {type: 'ImportError', message: 'Module not found'}
             );
         });
 
@@ -98,19 +149,19 @@ describe('PyodideBridge', () => {
                 error: {type: 'ImportError', message: 'Module not found'},
             }));
             await Promise.resolve();
-            expect(console.warn).toHaveBeenCalledWith(
-                '[PyodideBridge] Initialization failed:',
-                'ImportError: Module not found'
+            expect(mockLogger.warn).toHaveBeenCalledWith(
+                'Initialization failed',
+                {error: 'ImportError: Module not found'}
             );
         });
 
-        it('waitForReady rejects after WebView error', async () => {
+        it('whenReady rejects after WebView error', async () => {
             const bridge = loadFreshBridge();
             bridge.handleMessage(JSON.stringify({
                 type: 'error',
                 error: {type: 'ImportError', message: 'fail'},
             }));
-            await expect(bridge.waitForReady()).rejects.toThrow('ImportError: fail');
+            await expect(bridge.whenReady()).rejects.toThrow('ImportError: fail');
         });
     });
 
@@ -124,10 +175,9 @@ describe('PyodideBridge', () => {
             }));
             expect(bridge.isPythonReady()).toBe(true);
             expect(bridge.getInitializationError()).toBeNull();
-            expect(console.error).toHaveBeenCalledWith(
-                '[PyodideBridge] Error:',
-                'RuntimeError',
-                'Something failed'
+            expect(mockLogger.error).toHaveBeenCalledWith(
+                'Bridge error',
+                {type: 'RuntimeError', message: 'Something failed'}
             );
         });
     });
@@ -138,16 +188,16 @@ describe('PyodideBridge', () => {
             ['info', 'info'],
             ['warn', 'warn'],
             ['error', 'error'],
-        ])('routes level "%s" to console.%s', (level, method) => {
+        ])('routes level "%s" to pyodideLogger.%s', (level, method) => {
             const bridge = loadFreshBridge();
             bridge.handleMessage(JSON.stringify({type: 'log', level, message: 'test msg'}));
-            expect((console as unknown as Record<string, jest.Mock>)[method]).toHaveBeenCalledWith('[Pyodide]', 'test msg');
+            expect(mockLogger[method as keyof typeof mockLogger]).toHaveBeenCalledWith('test msg');
         });
 
-        it('routes unknown log level to console.log', () => {
+        it('routes unknown log level to pyodideLogger.info', () => {
             const bridge = loadFreshBridge();
             bridge.handleMessage(JSON.stringify({type: 'log', level: 'verbose', message: 'test'}));
-            expect(console.log).toHaveBeenCalledWith('[Pyodide]', 'test');
+            expect(mockLogger.info).toHaveBeenCalledWith('test');
         });
     });
 
@@ -189,9 +239,9 @@ describe('PyodideBridge', () => {
 
         it('warns when response received for unknown call id', () => {
             bridge.handleMessage(JSON.stringify({type: 'rpcResponse', id: 9999, result: 'data'}));
-            expect(console.warn).toHaveBeenCalledWith(
-                '[PyodideBridge] Received response for unknown call:',
-                9999
+            expect(mockLogger.warn).toHaveBeenCalledWith(
+                'Received response for unknown call',
+                {id: 9999}
             );
         });
 
@@ -219,9 +269,9 @@ describe('PyodideBridge', () => {
         it('logs error on malformed JSON', () => {
             const bridge = loadFreshBridge();
             bridge.handleMessage('not valid json');
-            expect(console.error).toHaveBeenCalledWith(
-                '[PyodideBridge] Failed to parse message:',
-                expect.any(Error)
+            expect(mockLogger.error).toHaveBeenCalledWith(
+                'Failed to parse message',
+                {error: expect.any(SyntaxError)}
             );
         });
 
@@ -257,27 +307,20 @@ describe('PyodideBridge', () => {
         });
     });
 
-    describe('waitForReady', () => {
+    describe('whenReady', () => {
         it('resolves immediately when already ready', async () => {
             const bridge = loadFreshBridge();
             bridge.handleMessage(JSON.stringify({type: 'ready'}));
-            await expect(bridge.waitForReady()).resolves.toBeUndefined();
+            await expect(bridge.whenReady()).resolves.toBeUndefined();
         });
 
-        it('rejects when initialization has failed', async () => {
+        it('rejects immediately when initialization already failed', async () => {
             const bridge = loadFreshBridge();
             bridge.handleMessage(JSON.stringify({
                 type: 'error',
                 error: {type: 'TestError', message: 'failed'},
             }));
-            await expect(bridge.waitForReady()).rejects.toThrow('TestError: failed');
-        });
-
-        it('resolves when ready signal arrives after waiting', async () => {
-            const bridge = loadFreshBridge();
-            const readyPromise = bridge.waitForReady();
-            bridge.handleMessage(JSON.stringify({type: 'ready'}));
-            await expect(readyPromise).resolves.toBeUndefined();
+            await expect(bridge.whenReady()).rejects.toThrow('TestError: failed');
         });
     });
 
@@ -330,7 +373,7 @@ describe('PyodideBridge', () => {
             await expect(callPromise).resolves.toBe('ok');
         });
 
-        it('rejects with init error when init has failed', async () => {
+        it('rejects when init has failed', async () => {
             const bridge = loadFreshBridge();
             bridge.handleMessage(JSON.stringify({
                 type: 'error',
@@ -421,6 +464,18 @@ describe('PyodideBridge', () => {
             expect(bridge.getInitializationError()).toBeNull();
         });
 
+        it('cancels the init timeout so no warn fires after destroy', async () => {
+            const bridge = loadFreshBridge();
+            bridge.destroy();
+            jest.clearAllMocks();
+            jest.advanceTimersByTime(60001);
+            await Promise.resolve();
+            expect(mockLogger.warn).not.toHaveBeenCalledWith(
+                'Initialization failed',
+                expect.anything()
+            );
+        });
+
         it('warns on rpcResponse for a call that was destroyed mid-flight', () => {
             const bridge = loadFreshBridge();
             const messages: string[] = [];
@@ -432,9 +487,9 @@ describe('PyodideBridge', () => {
             bridge.destroy();
 
             bridge.handleMessage(JSON.stringify({type: 'rpcResponse', id, result: 'late'}));
-            expect(console.warn).toHaveBeenCalledWith(
-                '[PyodideBridge] Received response for unknown call:',
-                id
+            expect(mockLogger.warn).toHaveBeenCalledWith(
+                'Received response for unknown call',
+                {id}
             );
         });
     });

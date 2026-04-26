@@ -1,9 +1,9 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react-native';
 import {
-  mockWaitForReady,
-  mockWaitForReadySuccess,
-  mockWaitForReadyDelay,
+  mockWhenReady,
+  mockWhenReadySuccess,
+  mockWhenReadyFailure,
   resetRecipeScraperMocks,
 } from '@mocks/modules/recipe-scraper-mock';
 import { mockInitSettings, mockGetDarkMode } from '@mocks/utils/settings-mock';
@@ -81,17 +81,17 @@ describe('App', () => {
     });
 
     it('waits for Python scraper to be ready before hiding splash', async () => {
-      mockWaitForReadySuccess();
+      mockWhenReadySuccess();
 
       render(<App />);
 
       await waitFor(() => {
-        expect(mockWaitForReady).toHaveBeenCalled();
+        expect(mockWhenReady).toHaveBeenCalled();
       });
     });
 
     it('shows app content once scraper is ready', async () => {
-      mockWaitForReadySuccess();
+      mockWhenReadySuccess();
 
       const { getByTestId } = render(<App />);
 
@@ -102,7 +102,7 @@ describe('App', () => {
 
     it('does not show app content while scraper is still initializing', async () => {
       let resolveReady!: () => void;
-      mockWaitForReady.mockImplementation(
+      mockWhenReady.mockImplementation(
         () =>
           new Promise<void>(resolve => {
             resolveReady = resolve;
@@ -112,7 +112,7 @@ describe('App', () => {
       const { queryByTestId } = render(<App />);
 
       await waitFor(() => {
-        expect(mockWaitForReady).toHaveBeenCalled();
+        expect(mockWhenReady).toHaveBeenCalled();
       });
       expect(queryByTestId('app-wrapper')).toBeNull();
 
@@ -126,7 +126,9 @@ describe('App', () => {
 
   describe('Python scraper integration', () => {
     it('handles slow Python initialization gracefully', async () => {
-      mockWaitForReadyDelay(100);
+      mockWhenReady.mockImplementation(
+        () => new Promise<void>(resolve => setTimeout(resolve, 100))
+      );
 
       const { getByTestId } = render(<App />);
 
@@ -139,7 +141,7 @@ describe('App', () => {
     });
 
     it('continues app initialization even if Python fails', async () => {
-      mockWaitForReady.mockRejectedValue(new Error('Python init failed'));
+      mockWhenReady.mockRejectedValue(new Error('Python init failed'));
 
       const { getByTestId } = render(<App />);
 

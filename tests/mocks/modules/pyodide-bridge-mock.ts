@@ -5,7 +5,7 @@ export function pyodideBridgeMock() {
       getSupportedHosts: jest.fn().mockResolvedValue('[]'),
       isHostSupported: jest.fn().mockResolvedValue('false'),
       isPythonReady: jest.fn().mockReturnValue(false),
-      waitForReady: jest.fn().mockResolvedValue(undefined),
+      whenReady: jest.fn().mockResolvedValue(undefined),
       getInitializationError: jest.fn().mockReturnValue(null),
       setMessageHandler: jest.fn(),
       sendToWebView: jest.fn(),

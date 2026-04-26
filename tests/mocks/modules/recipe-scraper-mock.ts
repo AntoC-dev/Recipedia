@@ -12,9 +12,8 @@ export const mockScrapeRecipeAuthenticated = jest.fn<
 >();
 export const mockGetSupportedHosts = jest.fn<Promise<ScraperResult<string[]>>, []>();
 export const mockIsHostSupported = jest.fn<Promise<ScraperResult<boolean>>, [string]>();
-export const mockWaitForReady = jest.fn<Promise<void>, [number?]>();
+export const mockWhenReady = jest.fn<Promise<void>, []>();
 export const mockIsPythonReady = jest.fn<Promise<boolean>, []>();
-export const mockGetInitializationError = jest.fn<Error | null, []>().mockReturnValue(null);
 
 export const recipeScraperMock = {
   RecipeScraper: jest.fn(),
@@ -24,9 +23,8 @@ export const recipeScraperMock = {
     scrapeRecipeAuthenticated: mockScrapeRecipeAuthenticated,
     getSupportedHosts: mockGetSupportedHosts,
     isHostSupported: mockIsHostSupported,
-    waitForReady: mockWaitForReady,
+    whenReady: mockWhenReady,
     isPythonReady: mockIsPythonReady,
-    getInitializationError: mockGetInitializationError,
   },
   usePythonReady: jest.fn(() => true),
   ScraperErrorTypes: {
@@ -87,14 +85,12 @@ export function mockScrapeRecipeAuthenticatedError(message: string, type = 'Erro
   });
 }
 
-export function mockWaitForReadySuccess() {
-  mockWaitForReady.mockResolvedValue(undefined);
+export function mockWhenReadySuccess() {
+  mockWhenReady.mockResolvedValue(undefined);
 }
 
-export function mockWaitForReadyDelay(delayMs: number) {
-  mockWaitForReady.mockImplementation(
-    () => new Promise(resolve => setTimeout(() => resolve(undefined), delayMs))
-  );
+export function mockWhenReadyFailure(message = 'Pyodide initialization failed') {
+  mockWhenReady.mockRejectedValue(new Error(message));
 }
 
 export function mockIsPythonReadyValue(ready: boolean) {
@@ -107,12 +103,10 @@ export function resetRecipeScraperMocks() {
   mockScrapeRecipeAuthenticated.mockReset();
   mockGetSupportedHosts.mockReset();
   mockIsHostSupported.mockReset();
-  mockWaitForReady.mockReset();
+  mockWhenReady.mockReset();
   mockIsPythonReady.mockReset();
-  mockGetInitializationError.mockReset();
-  mockWaitForReady.mockResolvedValue(undefined);
+  mockWhenReady.mockResolvedValue(undefined);
   mockIsPythonReady.mockResolvedValue(true);
-  mockGetInitializationError.mockReturnValue(null);
 }
 
 export function createEmptyScrapedRecipe(overrides: Partial<ScrapedRecipe> = {}): ScrapedRecipe {
