@@ -184,6 +184,12 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
     uiLogger.info('Starting recipe scrape', { url });
 
     try {
+      await recipeScraper.whenReady();
+    } catch {
+      uiLogger.warn('Python scraper not available for web parsing — using fallback', { url });
+    }
+
+    try {
       // iOS: fetch HTML and check for auth redirect before waiting for Python.
       // Android detects auth through Python's response after scraping.
       let cachedFetch: { html: string; finalUrl: string } | null = null;

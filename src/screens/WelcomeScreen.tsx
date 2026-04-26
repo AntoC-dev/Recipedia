@@ -50,7 +50,7 @@ import { FlatList, InteractionManager, View } from 'react-native';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { Button, Card, Dialog, IconButton, Portal, Text, useTheme } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
-import { appLogger, tutorialLogger } from '@utils/logger';
+import { appLogger, pyodideLogger, tutorialLogger } from '@utils/logger';
 import { CustomImage } from '@components/atomic/CustomImage';
 import { Asset } from 'expo-asset';
 import { padding, screenWidth } from '@styles/spacing';
@@ -59,6 +59,7 @@ import Constants from 'expo-constants';
 import { LoadingOverlay } from '@components/dialogs/LoadingOverlay';
 import { useRecipes } from '@hooks/useRecipes';
 import { loadFirstLaunchDataset } from '@utils/datasetInitializer';
+import { recipeScraper } from '@utils/RecipeScraper';
 
 /**
  * Props for the WelcomeScreen component
@@ -81,9 +82,9 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
   const { t } = useI18n();
   const { recipes } = useRecipes();
   const isDataLoaded = recipes.length > 0;
-  const [datasetLoadError, setDatasetLoadError] = useState<string | undefined>(undefined);
+  const [initErrors, setInitErrors] = useState<string[]>([]);
   const [datasetFailed, setDatasetFailed] = useState(false);
-  const dismissDatasetLoadError = () => setDatasetLoadError(undefined);
+  const dismissInitErrors = () => setInitErrors([]);
   const canProceed = isDataLoaded || datasetFailed;
 
   const [pendingAction, setPendingAction] = useState<'tutorial' | 'skip' | null>(null);
@@ -107,12 +108,22 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
         appLogger.error('Dataset loading failed - app will work without initial data', {
           error: fullDetails,
         });
-        setDatasetLoadError(errorMessage);
+        setInitErrors(prev => [...prev, errorMessage]);
         setDatasetFailed(true);
       }
     });
     return () => task.cancel();
   }, [isDataLoaded]);
+
+  useEffect(() => {
+    recipeScraper.whenReady().catch(error => {
+      const message = error instanceof Error ? error.message : String(error);
+      pyodideLogger.warn('Pyodide failed to initialize — web scraping will use fallback', {
+        error: message,
+      });
+      setInitErrors(prev => [...prev, t('welcome.pyodideError')]);
+    });
+  }, []);
 
   useEffect(() => {
     if (canProceed && pendingAction) {
@@ -290,9 +301,9 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
       />
       <Portal>
         <Dialog
-          visible={datasetLoadError !== undefined}
-          onDismiss={dismissDatasetLoadError}
-          testID={testId + '::DatasetErrorDialog'}
+          visible={initErrors.length > 0}
+          onDismiss={dismissInitErrors}
+          testID={testId + '::InitErrorDialog'}
         >
           <Dialog.Icon icon={Icons.warningIcon} />
           <Dialog.Title>{t('welcome.datasetError.title')}</Dialog.Title>
@@ -303,7 +314,7 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
             </Text>
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={dismissDatasetLoadError} testID={testId + '::DatasetErrorDialog::OK'}>
+            <Button onPress={dismissInitErrors} testID={testId + '::InitErrorDialog::OK'}>
               {t('welcome.datasetError.understood')}
             </Button>
           </Dialog.Actions>

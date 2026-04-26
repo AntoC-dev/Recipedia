@@ -63,9 +63,10 @@ function AppContent() {
                 setDarkMode(isDarkMode);
                 appLogger.debug('App settings loaded', {isFirst, isDarkMode});
 
-                recipeScraper.waitForReady()
-                    .catch(err =>
-                        appLogger.warn('Python scraper initialization failed', {error: err})
+                recipeScraper.whenReady()
+                    .then(() => appLogger.info('Python scraper ready'))
+                    .catch(error =>
+                        appLogger.warn('Python scraper failed to initialize — web scraping will use fallback', {error})
                     )
                     .finally(() => setIsScraperReady(true));
 
@@ -95,7 +96,7 @@ function AppContent() {
     const animationsDisabled = process.env.EXPO_PUBLIC_DISABLE_ANIMATIONS === 'true';
     const theme = {
         ...(darkMode ? darkTheme : lightTheme),
-        animation: { scale: animationsDisabled ? 0 : 1 },
+        animation: {scale: animationsDisabled ? 0 : 1},
     };
 
     const shouldHideSplash = isAppInitialized && isDatabaseReady && isScraperReady;
@@ -155,8 +156,8 @@ export function App() {
     return (
         <>
             <AppContent/>
-            {Platform.OS === 'ios' && <PyodideWebView />}
-            {Platform.OS === 'ios' && authLoginUrl !== null && <AuthWebView loginUrl={authLoginUrl} />}
+            {Platform.OS === 'ios' && <PyodideWebView/>}
+            {Platform.OS === 'ios' && authLoginUrl !== null && <AuthWebView loginUrl={authLoginUrl}/>}
         </>
     );
 }
