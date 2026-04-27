@@ -28,6 +28,7 @@ import type {HostSupportedResult, ScraperErrorResult, ScraperResult, SupportedHo
 import {AuthBridge} from './ios/AuthBridge';
 import {pyodideLogger} from '@utils/logger';
 import {extractHost} from './urlUtils';
+import {detectAuthRequired} from './authDetection';
 
  
 type PyodideBridgeInstance = typeof import('./ios/PyodideBridge').PyodideBridge;
@@ -36,26 +37,6 @@ function getPyodideBridge(): PyodideBridgeInstance {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     return require('./ios/PyodideBridge').PyodideBridge;
 }
-
-// Auth detection patterns
-const AUTH_URL_PATTERNS = [
-    '/login',
-    '/signin',
-    '/sign-in',
-    '/auth',
-    '/connexion',
-    '/account/login',
-    '/user/login',
-];
-const AUTH_TITLE_KEYWORDS = [
-    'login',
-    'sign in',
-    'connexion',
-    'se connecter',
-    'log in',
-    'anmelden',
-    'iniciar sesión',
-];
 
 type NativeScraperInterface = {
     scrapeRecipeFromHtml(
@@ -150,7 +131,7 @@ export class RecipeScraper {
             const html = await response.text();
             const finalUrl = response.url;
 
-            const authError = this.detectAuthRequired(html, finalUrl, url);
+            const authError = detectAuthRequired(html, finalUrl, url);
             if (authError) {
                 pyodideLogger.info('Authentication required for recipe', {url, finalUrl});
                 return authError;
@@ -452,52 +433,6 @@ export class RecipeScraper {
         if (!isReady) {
             throw new Error('Native Python is not available');
         }
-    }
-
-    /**
-     * Detect if a page requires authentication.
-     * Checks for login URL patterns and page title keywords.
-     */
-    private detectAuthRequired(
-        html: string,
-        finalUrl: string,
-        originalUrl: string
-    ): ScraperErrorResult | null {
-        const host = extractHost(originalUrl);
-
-        try {
-            const finalPath = new URL(finalUrl).pathname.toLowerCase();
-            for (const pattern of AUTH_URL_PATTERNS) {
-                if (finalPath.includes(pattern)) {
-                    return this.authErrorResult(host);
-                }
-            }
-        } catch {
-            // Invalid URL, continue
-        }
-
-        const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
-        if (titleMatch) {
-            const title = titleMatch[1].toLowerCase();
-            for (const keyword of AUTH_TITLE_KEYWORDS) {
-                if (title.includes(keyword)) {
-                    return this.authErrorResult(host);
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private authErrorResult(host: string): ScraperErrorResult {
-        return {
-            success: false,
-            error: {
-                type: 'AuthenticationRequired',
-                message: 'This recipe requires authentication',
-                host,
-            },
-        };
     }
 
     private errorResult(type: string, message: string): ScraperErrorResult {
