@@ -70,6 +70,7 @@ export default ({config}: ConfigContext): ExpoConfig => {
             'expo-localization',
             'expo-sqlite',
             'expo-mail-composer',
+            'expo-background-task',
             [
                 'expo-asset',
                 {
