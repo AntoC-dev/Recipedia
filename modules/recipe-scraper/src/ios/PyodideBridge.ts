@@ -36,6 +36,15 @@ class PyodideBridgeImpl {
     private initTimeout: ReturnType<typeof setTimeout> | null = null;
 
     constructor() {
+        this.createReadyPromise();
+        pyodideLogger.debug('Initializing...');
+        // Safety-net timer: ensures whenReady() rejects even if the WebView never
+        // mounts (e.g. bundle asset fails to load). attach() re-arms a fresh timer
+        // on mount so Pyodide gets a full window once it actually starts.
+        this.armInitTimer();
+    }
+
+    private createReadyPromise(): void {
         this.readyPromise = new Promise((resolve, reject) => {
             this.readyResolve = resolve;
             this.readyReject = reject;
@@ -45,9 +54,12 @@ class PyodideBridgeImpl {
         this.readyPromise.catch((error: Error) => {
             pyodideLogger.warn('Initialization failed', { error: error.message });
         });
+    }
 
-        pyodideLogger.debug('Initializing...');
-
+    private armInitTimer(): void {
+        if (this.initTimeout) {
+            clearTimeout(this.initTimeout);
+        }
         this.initTimeout = setTimeout(() => {
             if (!this.isReady && this.readyReject) {
                 const error = new Error('Pyodide initialization timed out after 60 seconds');
@@ -61,6 +73,28 @@ class PyodideBridgeImpl {
         this.messageHandler = handler;
     }
 
+    /**
+     * Called by the WebView wrapper when the WebView mounts.
+     * Re-arms init state so a prior failure or hot-reload remount can recover.
+     */
+    attach(handler: PyodideMessageHandler): void {
+        this.messageHandler = handler;
+        if (this.isReady) return;
+        if (this.initializationError || !this.readyPromise) {
+            this.initializationError = null;
+            this.createReadyPromise();
+        }
+        this.armInitTimer();
+    }
+
+    /**
+     * Called by the WebView wrapper when the WebView unmounts.
+     * Soft-clears the handler without destroying init state, so a remount can re-attach.
+     */
+    detach(): void {
+        this.messageHandler = null;
+    }
+
     sendToWebView(message: string): void {
         if (this.messageHandler) {
             this.messageHandler(message);
@@ -68,6 +102,10 @@ class PyodideBridgeImpl {
     }
 
     handleMessage(messageStr: string): void {
+        // Ignore non-JSON noise (e.g. WebView scheduler events like "sched$...").
+        if (typeof messageStr !== 'string' || messageStr.charAt(0) !== '{') {
+            return;
+        }
         try {
             const message = JSON.parse(messageStr) as PyodideMessage;
 
@@ -208,6 +246,7 @@ class PyodideBridgeImpl {
     destroy(): void {
         if (this.initTimeout) {
             clearTimeout(this.initTimeout);
+            this.initTimeout = null;
         }
 
         for (const [, pending] of this.pendingCalls) {
@@ -215,8 +254,17 @@ class PyodideBridgeImpl {
             pending.reject(new Error('Bridge destroyed'));
         }
         this.pendingCalls.clear();
+
+        // Reject any pending whenReady() awaiters so they don't hang forever.
+        if (!this.isReady && this.readyReject) {
+            this.readyReject(new Error('Bridge destroyed'));
+        }
+
         this.isReady = false;
         this.initializationError = null;
+        this.messageHandler = null;
+        // Recreate readyPromise so a future setMessageHandler() (WebView remount) re-arms init.
+        this.createReadyPromise();
     }
 }
 

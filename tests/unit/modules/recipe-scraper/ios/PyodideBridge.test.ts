@@ -49,15 +49,36 @@ describe('PyodideBridge', () => {
     });
 
     describe('initialization timeout', () => {
-        it('stores timeout error after 60 seconds', async () => {
+        it('arms a safety-net timer at construction so whenReady rejects even if attach() is never called', async () => {
             const bridge = loadFreshBridge();
             jest.advanceTimersByTime(60001);
             await Promise.resolve();
             expect(bridge.getInitializationError()?.message).toContain('timed out after 60 seconds');
         });
 
+        it('attach() re-arms the timer so Pyodide gets a full window from WebView mount', async () => {
+            const bridge = loadFreshBridge();
+            jest.advanceTimersByTime(30000);
+            bridge.attach(() => {});
+            jest.advanceTimersByTime(30001);
+            await Promise.resolve();
+            expect(bridge.getInitializationError()).toBeNull();
+            jest.advanceTimersByTime(30000);
+            await Promise.resolve();
+            expect(bridge.getInitializationError()?.message).toContain('timed out after 60 seconds');
+        });
+
+        it('stores timeout error after 60 seconds once attached', async () => {
+            const bridge = loadFreshBridge();
+            bridge.attach(() => {});
+            jest.advanceTimersByTime(60001);
+            await Promise.resolve();
+            expect(bridge.getInitializationError()?.message).toContain('timed out after 60 seconds');
+        });
+
         it('logs warning via catch handler when timeout fires', async () => {
-            loadFreshBridge();
+            const bridge = loadFreshBridge();
+            bridge.attach(() => {});
             jest.advanceTimersByTime(60001);
             await Promise.resolve();
             expect(mockLogger.warn).toHaveBeenCalledWith(
@@ -68,6 +89,7 @@ describe('PyodideBridge', () => {
 
         it('isPythonReady remains false after timeout', async () => {
             const bridge = loadFreshBridge();
+            bridge.attach(() => {});
             jest.advanceTimersByTime(60001);
             await Promise.resolve();
             expect(bridge.isPythonReady()).toBe(false);
@@ -75,6 +97,7 @@ describe('PyodideBridge', () => {
 
         it('whenReady rejects once timeout has fired', async () => {
             const bridge = loadFreshBridge();
+            bridge.attach(() => {});
             jest.advanceTimersByTime(60001);
             await Promise.resolve();
             await expect(bridge.whenReady()).rejects.toThrow('timed out');
@@ -266,9 +289,15 @@ describe('PyodideBridge', () => {
             expect(() => bridge.handleMessage('not valid json')).not.toThrow();
         });
 
-        it('logs error on malformed JSON', () => {
+        it('silently ignores non-JSON noise (e.g. WebView scheduler events)', () => {
             const bridge = loadFreshBridge();
-            bridge.handleMessage('not valid json');
+            bridge.handleMessage('sched$1$callImmediates');
+            expect(mockLogger.error).not.toHaveBeenCalled();
+        });
+
+        it('logs error when payload starts with "{" but is malformed', () => {
+            const bridge = loadFreshBridge();
+            bridge.handleMessage('{not valid json');
             expect(mockLogger.error).toHaveBeenCalledWith(
                 'Failed to parse message',
                 {error: expect.any(SyntaxError)}
@@ -433,6 +462,64 @@ describe('PyodideBridge', () => {
         });
     });
 
+    describe('attach / detach (lifecycle)', () => {
+        it('attach registers handler and is reachable via sendToWebView', () => {
+            const bridge = loadFreshBridge();
+            const handler = jest.fn<void, [string]>();
+            bridge.attach(handler);
+            bridge.sendToWebView('msg');
+            expect(handler).toHaveBeenCalledWith('msg');
+        });
+
+        it('detach drops handler so sendToWebView becomes a no-op', () => {
+            const bridge = loadFreshBridge();
+            const handler = jest.fn<void, [string]>();
+            bridge.attach(handler);
+            bridge.detach();
+            bridge.sendToWebView('msg');
+            expect(handler).not.toHaveBeenCalled();
+        });
+
+        it('detach preserves init state (does not reject whenReady)', async () => {
+            const bridge = loadFreshBridge();
+            bridge.attach(() => {});
+            bridge.detach();
+            bridge.attach(() => {});
+            bridge.handleMessage(JSON.stringify({type: 'ready'}));
+            await expect(bridge.whenReady()).resolves.toBeUndefined();
+        });
+
+        it('attach after init error clears the error and creates a fresh readyPromise', async () => {
+            const bridge = loadFreshBridge();
+            bridge.handleMessage(JSON.stringify({
+                type: 'error',
+                error: {type: 'TestError', message: 'boom'},
+            }));
+            expect(bridge.getInitializationError()).not.toBeNull();
+
+            bridge.attach(() => {});
+            expect(bridge.getInitializationError()).toBeNull();
+
+            bridge.handleMessage(JSON.stringify({type: 'ready'}));
+            await expect(bridge.whenReady()).resolves.toBeUndefined();
+        });
+
+        it('attach after destroy re-arms init so the bridge can become ready again', async () => {
+            const bridge = loadFreshBridge();
+            bridge.destroy();
+            bridge.attach(() => {});
+            bridge.handleMessage(JSON.stringify({type: 'ready'}));
+            await expect(bridge.whenReady()).resolves.toBeUndefined();
+        });
+
+        it('attach when already ready does not reset isReady', () => {
+            const bridge = loadFreshBridge();
+            bridge.handleMessage(JSON.stringify({type: 'ready'}));
+            bridge.attach(() => {});
+            expect(bridge.isPythonReady()).toBe(true);
+        });
+    });
+
     describe('destroy', () => {
         it('rejects all pending calls with "Bridge destroyed"', async () => {
             const bridge = loadFreshBridge();
@@ -464,7 +551,7 @@ describe('PyodideBridge', () => {
             expect(bridge.getInitializationError()).toBeNull();
         });
 
-        it('cancels the init timeout so no warn fires after destroy', async () => {
+        it('cancels the init timeout so no timeout warn fires after destroy', async () => {
             const bridge = loadFreshBridge();
             bridge.destroy();
             jest.clearAllMocks();
@@ -472,7 +559,7 @@ describe('PyodideBridge', () => {
             await Promise.resolve();
             expect(mockLogger.warn).not.toHaveBeenCalledWith(
                 'Initialization failed',
-                expect.anything()
+                expect.objectContaining({ error: expect.stringContaining('timed out') })
             );
         });
 
