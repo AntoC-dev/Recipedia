@@ -1,3 +1,10 @@
+## [2.33.0](https://github.com/AntoC-dev/Recipedia/compare/v2.32.1...v2.33.0) (2026-04-28)
+
+### Features
+
+* **image-repair:** move to daily background task with orphan cleanup ([2468b8b](https://github.com/AntoC-dev/Recipedia/commit/2468b8b6d0612838c4fda9a8cb7715633cff1f3d))
+* **image-repair:** move to daily background task with orphan cleanup ([#275](https://github.com/AntoC-dev/Recipedia/issues/275)) ([cf1c74a](https://github.com/AntoC-dev/Recipedia/commit/cf1c74a9460a89ff534dffd0bec645fde0943c39))
+
 ## [2.32.1](https://github.com/AntoC-dev/Recipedia/compare/v2.32.0...v2.32.1) (2026-04-21)
 
 ### Bug Fixes
