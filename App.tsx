@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import {InteractionManager, Platform} from 'react-native';
+import {Platform} from 'react-native';
 import {PaperProvider} from 'react-native-paper';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {darkTheme, lightTheme} from '@styles/theme';
@@ -19,6 +19,7 @@ import {AuthWebView} from '@app/modules/recipe-scraper/src/ios/AuthWebView';
 import {AuthBridge} from '@app/modules/recipe-scraper/src/ios/AuthBridge';
 import {RecipeDatabase} from '@utils/RecipeDatabase';
 import {init as initFileSystem} from '@utils/FileGestion';
+import {registerImageRepairTask} from '@utils/ImageRepairTask';
 
 // TODO manage horizontal mode
 
@@ -63,6 +64,10 @@ function AppContent() {
 
                 recipeScraper.waitForReady(10000).catch(err =>
                     appLogger.warn('Python scraper initialization failed', {error: err})
+                );
+
+                registerImageRepairTask().catch(err =>
+                    appLogger.warn('Image repair task registration failed', {error: err})
                 );
 
                 appLogger.info('App initialization completed successfully');

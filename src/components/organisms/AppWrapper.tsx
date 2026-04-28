@@ -6,7 +6,6 @@ import { isFirstLaunch, markAsLaunched } from '@utils/firstLaunch';
 import { appLogger, tutorialLogger } from '@utils/logger';
 import { useRecipes } from '@hooks/useRecipes';
 import { useMenu } from '@hooks/useMenu';
-import { repairMissingRecipeImages } from '@utils/ImageRepair';
 
 enum AppMode {
   Loading = 'loading',
@@ -37,7 +36,7 @@ enum AppMode {
  * @returns JSX element representing the current app mode
  */
 export default function AppWrapper() {
-  const { recipes, editRecipe } = useRecipes();
+  const { recipes } = useRecipes();
   const { clearMenu, addRecipeToMenu, toggleMenuItemCooked } = useMenu();
   const [mode, setMode] = useState<AppMode>(AppMode.Loading);
 
@@ -52,15 +51,6 @@ export default function AppWrapper() {
       }
     });
   }, []);
-
-  useEffect(() => {
-    if (mode !== AppMode.Ready) {
-      return;
-    }
-    repairMissingRecipeImages(recipes, editRecipe).catch(e =>
-      appLogger.warn('Image repair failed unexpectedly', { error: e })
-    );
-  }, [mode]);
 
   /**
    * Handles normal app launch initialization
