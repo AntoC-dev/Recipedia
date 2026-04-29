@@ -12,7 +12,7 @@ export const mockScrapeRecipeAuthenticated = jest.fn<
 >();
 export const mockGetSupportedHosts = jest.fn<Promise<ScraperResult<string[]>>, []>();
 export const mockIsHostSupported = jest.fn<Promise<ScraperResult<boolean>>, [string]>();
-export const mockWaitForReady = jest.fn<Promise<boolean>, [number?, number?]>();
+export const mockWhenReady = jest.fn<Promise<void>, []>();
 export const mockIsPythonReady = jest.fn<Promise<boolean>, []>();
 
 export const recipeScraperMock = {
@@ -23,7 +23,7 @@ export const recipeScraperMock = {
     scrapeRecipeAuthenticated: mockScrapeRecipeAuthenticated,
     getSupportedHosts: mockGetSupportedHosts,
     isHostSupported: mockIsHostSupported,
-    waitForReady: mockWaitForReady,
+    whenReady: mockWhenReady,
     isPythonReady: mockIsPythonReady,
   },
   usePythonReady: jest.fn(() => true),
@@ -85,18 +85,12 @@ export function mockScrapeRecipeAuthenticatedError(message: string, type = 'Erro
   });
 }
 
-export function mockWaitForReadySuccess(ready = true) {
-  mockWaitForReady.mockResolvedValue(ready);
+export function mockWhenReadySuccess() {
+  mockWhenReady.mockResolvedValue(undefined);
 }
 
-export function mockWaitForReadyTimeout() {
-  mockWaitForReady.mockResolvedValue(false);
-}
-
-export function mockWaitForReadyDelay(delayMs: number, ready = true) {
-  mockWaitForReady.mockImplementation(
-    () => new Promise(resolve => setTimeout(() => resolve(ready), delayMs))
-  );
+export function mockWhenReadyFailure(message = 'Pyodide initialization failed') {
+  mockWhenReady.mockRejectedValue(new Error(message));
 }
 
 export function mockIsPythonReadyValue(ready: boolean) {
@@ -109,9 +103,9 @@ export function resetRecipeScraperMocks() {
   mockScrapeRecipeAuthenticated.mockReset();
   mockGetSupportedHosts.mockReset();
   mockIsHostSupported.mockReset();
-  mockWaitForReady.mockReset();
+  mockWhenReady.mockReset();
   mockIsPythonReady.mockReset();
-  mockWaitForReady.mockResolvedValue(true);
+  mockWhenReady.mockResolvedValue(undefined);
   mockIsPythonReady.mockResolvedValue(true);
 }
 

@@ -42,7 +42,7 @@ class RecipeScraperModule : Module() {
         AsyncFunction("scrapeRecipe") { url: String, wildMode: Boolean? ->
             ensurePythonStarted()
             val py = Python.getInstance()
-            val scraperModule = py.getModule("recipe_scraper.scraper")
+            val scraperModule = py.getModule("scraper")
             scraperModule.callAttr("scrape_recipe", url, wildMode ?: true).toString()
         }
 
@@ -56,7 +56,7 @@ class RecipeScraperModule : Module() {
         AsyncFunction("scrapeRecipeFromHtml") { html: String, url: String, wildMode: Boolean? ->
             ensurePythonStarted()
             val py = Python.getInstance()
-            val scraperModule = py.getModule("recipe_scraper.scraper")
+            val scraperModule = py.getModule("scraper")
             scraperModule.callAttr("scrape_recipe_from_html", html, url, wildMode ?: true).toString()
         }
 
@@ -67,7 +67,7 @@ class RecipeScraperModule : Module() {
         AsyncFunction("getSupportedHosts") {
             ensurePythonStarted()
             val py = Python.getInstance()
-            val scraperModule = py.getModule("recipe_scraper.scraper")
+            val scraperModule = py.getModule("scraper")
             scraperModule.callAttr("get_supported_hosts").toString()
         }
 
@@ -79,7 +79,7 @@ class RecipeScraperModule : Module() {
         AsyncFunction("isHostSupported") { host: String ->
             ensurePythonStarted()
             val py = Python.getInstance()
-            val scraperModule = py.getModule("recipe_scraper.scraper")
+            val scraperModule = py.getModule("scraper")
             scraperModule.callAttr("is_host_supported", host).toString()
         }
 
@@ -107,7 +107,7 @@ class RecipeScraperModule : Module() {
         AsyncFunction("scrapeRecipeAuthenticated") { url: String, username: String, password: String, wildMode: Boolean? ->
             ensurePythonStarted()
             val py = Python.getInstance()
-            val scraperModule = py.getModule("recipe_scraper.scraper")
+            val scraperModule = py.getModule("scraper")
             scraperModule.callAttr("scrape_recipe_authenticated", url, username, password, wildMode ?: true).toString()
         }
 
@@ -118,8 +118,8 @@ class RecipeScraperModule : Module() {
         AsyncFunction("getSupportedAuthHosts") {
             ensurePythonStarted()
             val py = Python.getInstance()
-            val authModule = py.getModule("recipe_scraper.auth")
-            authModule.callAttr("get_supported_auth_hosts").toString()
+            val scraperModule = py.getModule("scraper")
+            scraperModule.callAttr("get_supported_auth_hosts").toString()
         }
     }
 

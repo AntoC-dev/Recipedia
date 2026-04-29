@@ -150,7 +150,7 @@ describe('WelcomeScreen Component', () => {
         expect(queryByTestId('WelcomeScreen::Title')).toBeTruthy();
       });
 
-      expect(queryByTestId('WelcomeScreen::DatasetErrorDialog')).toBeNull();
+      expect(queryByTestId('WelcomeScreen::InitErrorDialog')).toBeNull();
     });
 
     test('shows dataset error dialog when dataset loading fails', async () => {
@@ -160,10 +160,10 @@ describe('WelcomeScreen Component', () => {
       const { getByTestId } = renderWelcomeScreen();
 
       await waitFor(() => {
-        expect(getByTestId('WelcomeScreen::DatasetErrorDialog')).toBeTruthy();
+        expect(getByTestId('WelcomeScreen::InitErrorDialog')).toBeTruthy();
       });
 
-      expect(getByTestId('WelcomeScreen::DatasetErrorDialog::OK')).toBeTruthy();
+      expect(getByTestId('WelcomeScreen::InitErrorDialog::OK')).toBeTruthy();
     });
 
     test('dataset error dialog shows user-friendly message and report hint', async () => {
@@ -186,13 +186,13 @@ describe('WelcomeScreen Component', () => {
       const { getByTestId, queryByTestId } = renderWelcomeScreen();
 
       await waitFor(() => {
-        expect(getByTestId('WelcomeScreen::DatasetErrorDialog::OK')).toBeTruthy();
+        expect(getByTestId('WelcomeScreen::InitErrorDialog::OK')).toBeTruthy();
       });
 
-      fireEvent.press(getByTestId('WelcomeScreen::DatasetErrorDialog::OK'));
+      fireEvent.press(getByTestId('WelcomeScreen::InitErrorDialog::OK'));
 
       await waitFor(() => {
-        expect(queryByTestId('WelcomeScreen::DatasetErrorDialog')).toBeNull();
+        expect(queryByTestId('WelcomeScreen::InitErrorDialog')).toBeNull();
       });
     });
 
@@ -295,10 +295,10 @@ describe('WelcomeScreen Component', () => {
       const { getByTestId } = renderWelcomeScreen();
 
       await waitFor(() => {
-        expect(getByTestId('WelcomeScreen::DatasetErrorDialog')).toBeTruthy();
+        expect(getByTestId('WelcomeScreen::InitErrorDialog')).toBeTruthy();
       });
 
-      fireEvent.press(getByTestId('WelcomeScreen::DatasetErrorDialog::OK'));
+      fireEvent.press(getByTestId('WelcomeScreen::InitErrorDialog::OK'));
       fireEvent.press(getByTestId('WelcomeScreen::StartTourButton'));
 
       expect(mockOnStartTutorial).toHaveBeenCalledTimes(1);
@@ -312,10 +312,10 @@ describe('WelcomeScreen Component', () => {
       const { getByTestId } = renderWelcomeScreen();
 
       await waitFor(() => {
-        expect(getByTestId('WelcomeScreen::DatasetErrorDialog')).toBeTruthy();
+        expect(getByTestId('WelcomeScreen::InitErrorDialog')).toBeTruthy();
       });
 
-      fireEvent.press(getByTestId('WelcomeScreen::DatasetErrorDialog::OK'));
+      fireEvent.press(getByTestId('WelcomeScreen::InitErrorDialog::OK'));
       fireEvent.press(getByTestId('WelcomeScreen::SkipButton'));
 
       expect(mockOnSkip).toHaveBeenCalledTimes(1);
@@ -355,10 +355,10 @@ describe('WelcomeScreen Component', () => {
       const { getByTestId, queryByTestId } = renderWelcomeScreen();
 
       await waitFor(() => {
-        expect(getByTestId('WelcomeScreen::DatasetErrorDialog')).toBeTruthy();
+        expect(getByTestId('WelcomeScreen::InitErrorDialog')).toBeTruthy();
       });
 
-      fireEvent.press(getByTestId('WelcomeScreen::DatasetErrorDialog::OK'));
+      fireEvent.press(getByTestId('WelcomeScreen::InitErrorDialog::OK'));
       fireEvent.press(getByTestId('WelcomeScreen::SkipButton'));
 
       expect(queryByTestId('WelcomeScreen::LoadingOverlay::Overlay')).toBeNull();

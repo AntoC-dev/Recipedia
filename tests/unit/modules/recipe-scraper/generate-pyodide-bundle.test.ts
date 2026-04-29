@@ -42,9 +42,9 @@ describeIfBundle('Pyodide bundle (pyodide-bundle.html)', () => {
       expect(shimIndex).toBeLessThan(mockPackageIndex);
     });
 
-    it('registers the mock package before installing recipe-scrapers', () => {
+    it('registers the mock package before installing wheels', () => {
       const mockPackageIndex = bundleContent.indexOf("micropip.add_mock_package('jstyleson'");
-      const installIndex = bundleContent.indexOf("micropip.install('recipe-scrapers'");
+      const installIndex = bundleContent.indexOf('micropip.install(');
       expect(mockPackageIndex).toBeGreaterThan(-1);
       expect(installIndex).toBeGreaterThan(-1);
       expect(mockPackageIndex).toBeLessThan(installIndex);
@@ -75,6 +75,40 @@ describeIfBundle('Pyodide bundle (pyodide-bundle.html)', () => {
     it('is a valid HTML document', () => {
       expect(bundleContent).toMatch(/^<!DOCTYPE html>/);
       expect(bundleContent).toContain('</html>');
+    });
+  });
+
+  describe('offline wheel bundling', () => {
+    it('contains embedded wheels map', () => {
+      expect(bundleContent).toContain('EMBEDDED_WHEELS');
+    });
+
+    it('does not fetch from PyPI at runtime', () => {
+      expect(bundleContent).not.toContain("micropip.install('recipe-scrapers'");
+    });
+
+    it('installs wheels from local filesystem paths', () => {
+      expect(bundleContent).toContain('/tmp/');
+      expect(bundleContent).toContain('micropip.install([');
+    });
+
+    it('writes wheels to virtual filesystem before install', () => {
+      const writeIndex = bundleContent.indexOf('pyodide.FS.writeFile');
+      const installIndex = bundleContent.indexOf('micropip.install([');
+      expect(writeIndex).toBeGreaterThan(-1);
+      expect(installIndex).toBeGreaterThan(-1);
+      expect(writeIndex).toBeLessThan(installIndex);
+    });
+  });
+
+  describe('safe HTML encoding', () => {
+    it('uses base64 encoding for HTML passed to Python (not triple quotes)', () => {
+      expect(bundleContent).toContain('b64decode');
+      expect(bundleContent).not.toMatch(/scrape_recipe_from_html\('''/);
+    });
+
+    it('listens for postMessage events', () => {
+      expect(bundleContent).toContain("window.addEventListener('message'");
     });
   });
 });

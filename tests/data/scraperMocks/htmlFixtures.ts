@@ -163,6 +163,32 @@ export const ingredientsWithEntitiesHtml = `
 </html>
 `;
 
+export const nestedBadgeIngredientsHtml = `
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+<ul class="ingredient-list">
+    <li>
+        <span class="bold">1</span>
+        <span>
+            <span class="ingredient-name">miel</span>
+            <span class="weight">(20g)</span>
+            <span class="badge badge-bio">Bio</span>
+        </span>
+    </li>
+    <li>
+        <span class="bold">2</span>
+        <span>
+            <span class="ingredient-name">petits pains aux épices</span>
+            <span class="weight">(160g)</span>
+        </span>
+    </li>
+</ul>
+</body>
+</html>
+`;
+
 export const nutritionKcalSuffixHtml = `
 <!DOCTYPE html>
 <html>

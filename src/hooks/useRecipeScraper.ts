@@ -26,6 +26,7 @@
  */
 
 import { useState } from 'react';
+import { Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import {
   DEFAULT_SCRAPER_ERROR_I18N_KEY,
@@ -37,6 +38,7 @@ import {
   ScraperErrorTypes,
   ScraperResult,
 } from '@utils/RecipeScraper';
+import { detectAuthRequired } from '@app/modules/recipe-scraper/src/authDetection';
 import { downloadImageToCache } from '@utils/FileGestion';
 import { uiLogger } from '@utils/logger';
 import { useDefaultPersons } from '@context/DefaultPersonsContext';
@@ -124,19 +126,10 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
       url,
       title: scraperResult.data.title,
       ingredientCount: scraperResult.data.ingredients.length,
-      ingredients: scraperResult.data.ingredients,
+      instructionCount: scraperResult.data.instructionsList?.length ?? 0,
       category: scraperResult.data.category,
-      cuisine: scraperResult.data.cuisine,
-      keywords: scraperResult.data.keywords,
-      dietaryRestrictions: scraperResult.data.dietaryRestrictions,
       totalTime: scraperResult.data.totalTime,
-      prepTime: scraperResult.data.prepTime,
-      cookTime: scraperResult.data.cookTime,
       yields: scraperResult.data.yields,
-      description: scraperResult.data.description,
-      instructionsList: scraperResult.data.instructionsList,
-      parsedInstructions: scraperResult.data.parsedInstructions,
-      nutrients: scraperResult.data.nutrients,
     });
 
     const recipeData = convertScrapedRecipe(
@@ -190,21 +183,47 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
 
     uiLogger.info('Starting recipe scrape', { url });
 
-    const scraperReady = await recipeScraper.waitForReady(10000);
-    if (!scraperReady) {
-      const errorMessage = t(SCRAPER_ERROR_I18N_KEYS[ScraperErrorTypes.Timeout]);
-      uiLogger.warn('Python scraper not ready for web parsing', { url });
-      setError(errorMessage);
-      setIsLoading(false);
-      return { success: false, error: errorMessage };
+    try {
+      await recipeScraper.whenReady();
+    } catch {
+      uiLogger.warn('Python scraper not available for web parsing — using fallback', { url });
     }
 
     try {
-      // Fetch HTML once - used for both scraping and image extraction
-      const html = await fetchHtml(url);
-      uiLogger.debug('Fetched HTML', { length: html.length });
+      // iOS: fetch HTML and check for auth redirect before waiting for Python.
+      // Android detects auth through Python's response after scraping.
+      let cachedFetch: { html: string; finalUrl: string } | null = null;
 
-      // Scrape using the fetched HTML
+      if (Platform.OS === 'ios') {
+        cachedFetch = await fetchHtml(url);
+        uiLogger.debug('Fetched HTML', {
+          length: cachedFetch.html.length,
+          finalUrl: cachedFetch.finalUrl,
+          originalUrl: url,
+        });
+
+        const authError = detectAuthRequired(cachedFetch.html, cachedFetch.finalUrl, url);
+        if (authError) {
+          const host = authError.error.host ?? new URL(url).hostname.replace('www.', '');
+          uiLogger.info('Authentication required (redirect detected)', {
+            url,
+            finalUrl: cachedFetch.finalUrl,
+            host,
+          });
+          setAuthRequired({ url, host });
+          setIsLoading(false);
+          return {
+            success: false,
+            error: t(SCRAPER_ERROR_I18N_KEYS[ScraperErrorTypes.AuthenticationRequired]),
+          };
+        }
+      }
+
+      const { html, finalUrl } = cachedFetch ?? (await fetchHtml(url));
+      if (!cachedFetch) {
+        uiLogger.debug('Fetched HTML', { length: html.length, finalUrl, originalUrl: url });
+      }
+
       const scraperResult = await recipeScraper.scrapeRecipeFromHtml(html, url);
 
       if (
@@ -218,7 +237,6 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
         return { success: false, error: getErrorMessage(scraperResult.error) };
       }
 
-      // Pass HTML to processScrapedData for potential image extraction
       const result = await processScrapedData(scraperResult, url, 'Scraping', html);
       setIsLoading(false);
       return result;

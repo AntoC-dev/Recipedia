@@ -108,21 +108,49 @@ describe('UrlHelpers', () => {
       jest.useRealTimers();
     });
 
-    test('returns HTML content on successful fetch', async () => {
+    test('returns HTML content and final URL on successful fetch', async () => {
       const testHtml = '<html><body>Test content</body></html>';
       mockFetch.mockResolvedValueOnce({
         ok: true,
+        url: 'https://example.com/recipe',
         text: () => Promise.resolve(testHtml),
       });
 
       const result = await fetchHtml('https://example.com/recipe');
 
-      expect(result).toBe(testHtml);
+      expect(result).toEqual({
+        html: testHtml,
+        finalUrl: 'https://example.com/recipe',
+      });
+    });
+
+    test('returns final URL after redirect', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        url: 'https://example.com/login',
+        text: () => Promise.resolve('<html></html>'),
+      });
+
+      const result = await fetchHtml('https://example.com/recipe');
+
+      expect(result.finalUrl).toBe('https://example.com/login');
+    });
+
+    test('falls back to original URL when response.url is undefined', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        text: () => Promise.resolve('<html></html>'),
+      });
+
+      const result = await fetchHtml('https://example.com/recipe');
+
+      expect(result.finalUrl).toBe('https://example.com/recipe');
     });
 
     test('sends proper headers', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
+        url: 'https://example.com/recipe',
         text: () => Promise.resolve('<html></html>'),
       });
 

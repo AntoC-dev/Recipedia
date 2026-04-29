@@ -68,6 +68,7 @@ const sharedConfig = {
     'Tutorial',
     'BulkImport',
     'BugReport',
+    'Pyodide',
   ],
 };
 
@@ -94,7 +95,7 @@ const log = __DEV__
     })
   : logger.createLogger({
       ...sharedConfig,
-      severity: 'info',
+      severity: process.env.EXPO_PUBLIC_DATASET_TYPE !== 'production' ? 'debug' : 'info',
       transport: fileAsyncTransport,
       transportOptions: {
         FS: { File, Paths },
@@ -177,6 +178,9 @@ export const bulkImportLogger = log.extend('BulkImport');
 /** Logger for bug report submission operations */
 export const bugReportLogger = log.extend('BugReport');
 
+/** Logger for Pyodide WebView and bridge operations (iOS) */
+export const pyodideLogger = log.extend('Pyodide');
+
 /**
  * Default export providing organized access to all loggers
  *
@@ -211,4 +215,5 @@ export default {
   tutorial: tutorialLogger,
   bulkImport: bulkImportLogger,
   bugReport: bugReportLogger,
+  pyodide: pyodideLogger,
 };

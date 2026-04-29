@@ -1,11 +1,12 @@
 #!/bin/bash
-# Setup Pyodide WASM runtime and generate a self-contained HTML bundle for iOS.
+# Setup Pyodide bundle for iOS recipe scraping.
 #
-# Downloads Pyodide core files and generates a single HTML file with
-# all assets embedded (base64 for WASM, inline for JavaScript).
+# Downloads pure-Python wheels and generates a self-contained HTML bundle with
+# all assets embedded (Pyodide from npm, wheels as base64).
+# This ensures offline initialization without PyPI access at runtime.
 #
-# Note: Python packages (recipe-scrapers, etc.) are installed at runtime
-# via micropip since they're pure Python and don't need pre-bundling.
+# Pyodide runtime files come from the npm package (node_modules/pyodide/).
+# Python dependencies come from pip (pinned in requirements.txt).
 #
 # Usage: ./setup-pyodide.sh [--force]
 #   --force: Re-download and regenerate even if bundle already exists
@@ -17,10 +18,8 @@ MODULE_DIR="$(dirname "$SCRIPT_DIR")"
 DOWNLOAD_DIR="$MODULE_DIR/assets/pyodide-download"
 OUTPUT_DIR="$MODULE_DIR/assets"
 BUNDLE_FILE="$OUTPUT_DIR/pyodide-bundle.html"
-
-# Pyodide version and CDN
-PYODIDE_VERSION="0.26.4"
-PYODIDE_CDN="https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full"
+REQUIREMENTS_FILE="$SCRIPT_DIR/requirements.txt"
+PYODIDE_DIR="$MODULE_DIR/../../node_modules/pyodide"
 
 # Parse arguments
 FORCE=false
@@ -28,53 +27,61 @@ if [[ "$1" == "--force" ]]; then
     FORCE=true
 fi
 
-# Check if bundle already exists
-if [[ -f "$BUNDLE_FILE" ]] && [[ "$FORCE" == "false" ]]; then
+# Check if a valid (non-empty) bundle already exists
+MIN_VALID_SIZE=$((10 * 1024 * 1024))  # 10MB
+if [[ -f "$BUNDLE_FILE" ]] && [[ "$FORCE" == "false" ]] && [[ $(wc -c < "$BUNDLE_FILE") -ge $MIN_VALID_SIZE ]]; then
     BUNDLE_SIZE=$(ls -lh "$BUNDLE_FILE" | awk '{print $5}')
     echo "[setup-pyodide] Bundle already exists ($BUNDLE_SIZE), skipping (use --force to regenerate)"
     exit 0
 fi
 
-echo "[setup-pyodide] Setting up Pyodide v${PYODIDE_VERSION}..."
+# Verify Pyodide npm package is installed
+if [[ ! -f "$PYODIDE_DIR/pyodide.js" ]]; then
+    echo "ERROR: Pyodide npm package not found at $PYODIDE_DIR"
+    echo "       Run 'npm install' first."
+    exit 1
+fi
 
-# Clean and create download directory
+PYODIDE_VERSION=$(node -e "console.log(require('$PYODIDE_DIR/package.json').version)")
+echo "[setup-pyodide] Using Pyodide v${PYODIDE_VERSION} from npm"
+
+# Clean and create download directory (for wheels only)
 rm -rf "$DOWNLOAD_DIR"
-mkdir -p "$DOWNLOAD_DIR"
+mkdir -p "$DOWNLOAD_DIR/wheels"
 mkdir -p "$OUTPUT_DIR"
 
-cd "$DOWNLOAD_DIR"
+# Download pure-Python wheels for offline installation via pip
+WHEELS_DIR="$DOWNLOAD_DIR/wheels"
 
-# Download core Pyodide files
-echo "[setup-pyodide] Downloading Pyodide core files..."
-CORE_FILES=(
-    "pyodide.js"
-    "pyodide.asm.js"
-    "pyodide.asm.wasm"
-    "pyodide-lock.json"
-    "python_stdlib.zip"
-)
+echo "[setup-pyodide] Downloading Python wheels (from $REQUIREMENTS_FILE)..."
 
-for file in "${CORE_FILES[@]}"; do
-    echo "  Downloading $file..."
-    if ! curl -fSL "$PYODIDE_CDN/$file" -o "$file"; then
-        echo "ERROR: Failed to download $file from Pyodide CDN"
-        exit 1
+# Download all deps. Some come as sdists (jstyleson) or platform wheels (lxml).
+# We filter those out below — Pyodide provides C extensions (lxml, beautifulsoup4)
+# and we shim jstyleson in the bundle.
+if ! python3 -m pip download \
+    -r "$REQUIREMENTS_FILE" \
+    --dest "$WHEELS_DIR"; then
+    echo "ERROR: Failed to download Python wheels"
+    exit 1
+fi
+
+# Keep only pure-Python wheels (py3-none-any / py2.py3-none-any).
+# Removes: sdists (.tar.gz), platform-specific wheels, C-extension wheels.
+# Pyodide provides built-in C packages and we shim jstyleson.
+for f in "$WHEELS_DIR"/*; do
+    filename=$(basename "$f")
+    if [[ ! "$filename" =~ -none-any\.whl$ ]]; then
+        echo "  Removing non-portable package: $filename"
+        rm -f "$f"
     fi
 done
 
-# Verify essential files exist
-echo "[setup-pyodide] Verifying downloads..."
-REQUIRED_FILES=("pyodide.js" "pyodide.asm.wasm" "python_stdlib.zip")
-for file in "${REQUIRED_FILES[@]}"; do
-    if [[ ! -f "$file" ]]; then
-        echo "ERROR: Required file missing: $file"
-        exit 1
-    fi
-done
-
-# Calculate download size
-DOWNLOAD_SIZE=$(du -sh "$DOWNLOAD_DIR" | cut -f1)
-echo "[setup-pyodide] Downloaded assets: $DOWNLOAD_SIZE"
+WHEEL_COUNT=$(ls "$WHEELS_DIR"/*.whl 2>/dev/null | wc -l | tr -d ' ')
+if [[ "$WHEEL_COUNT" -eq 0 ]]; then
+    echo "ERROR: No pure-Python wheels downloaded"
+    exit 1
+fi
+echo "[setup-pyodide] Downloaded $WHEEL_COUNT pure-Python wheels"
 
 # Generate the HTML bundle
 echo "[setup-pyodide] Generating self-contained HTML bundle..."

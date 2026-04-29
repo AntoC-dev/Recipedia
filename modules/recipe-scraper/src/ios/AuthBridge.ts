@@ -15,6 +15,7 @@
  */
 
 import {extractHost} from '../urlUtils';
+import {pyodideLogger} from '@utils/logger';
 
 type AuthHandlerConfig = {
     loginUrl: string;
@@ -116,10 +117,14 @@ class AuthBridgeImpl {
         const config = AUTH_HANDLER_CONFIGS[host];
 
         if (!config) {
+            pyodideLogger.warn('AuthBridge: no auth handler for host', {host});
             throw new Error(`AuthBridge: No auth handler for host "${host}"`);
         }
 
+        pyodideLogger.debug('AuthBridge: starting authenticated fetch', {host, url});
+
         if (this.pending) {
+            pyodideLogger.warn('AuthBridge: cancelling previous pending request');
             this.pending.reject(new Error('AuthBridge: new request cancelled previous pending request'));
             clearTimeout(this.pending.timeout);
             this.pending = null;
@@ -158,8 +163,8 @@ class AuthBridgeImpl {
             const loginPath = new URL(this.pending.config.loginUrl).pathname.toLowerCase();
 
             if (loadedPath !== loginPath) {
-                // Redirected away from login page — user likely already has a valid session
                 alreadyLoggedIn = true;
+                pyodideLogger.debug('AuthBridge: session already active, skipping login', {loadedUrl});
             }
         } catch {
             // URL parsing failed - proceed anyway
@@ -169,7 +174,7 @@ class AuthBridgeImpl {
             ? this.buildFetchOnlyScript(this.pending)
             : this.buildAuthScript(this.pending);
         if (!this.injectHandler) {
-            console.error('[AuthBridge] injectHandler not set - AuthWebView may not be mounted yet');
+            pyodideLogger.error('AuthBridge: injectHandler not set — AuthWebView may not be mounted yet');
             return;
         }
         this.pending.scriptInjected = true;
@@ -200,7 +205,7 @@ class AuthBridgeImpl {
         if (!this.pending) {
             return;
         }
-        console.error(`[AuthBridge] WebView error: ${description}`);
+        pyodideLogger.error('AuthBridge: WebView error', {error: description});
         this.resolvePending(null, new Error(`WebView error: ${description}`));
     }
 
@@ -218,7 +223,7 @@ class AuthBridgeImpl {
     }
 
     private handleError(message: string): void {
-        console.error(`[AuthBridge] Auth error: ${message}`);
+        pyodideLogger.error('AuthBridge: auth error', {error: message});
         this.resolvePending(null, new Error(message));
     }
 
@@ -233,8 +238,12 @@ class AuthBridgeImpl {
         this.notifyListeners();
 
         if (error) {
+            pyodideLogger.warn('AuthBridge: request failed', {error: error.message});
             pending.reject(error);
         } else {
+            pyodideLogger.debug('AuthBridge: authenticated HTML received', {
+                htmlLength: html?.length ?? 0,
+            });
             pending.resolve(html!);
         }
     }

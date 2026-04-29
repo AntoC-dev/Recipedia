@@ -10,7 +10,7 @@ import {
   mockScrapeRecipeFromHtml,
   mockScrapeRecipeFromHtmlError,
   mockScrapeRecipeFromHtmlSuccess,
-  mockWaitForReady,
+  mockWhenReady,
 } from '@mocks/modules/recipe-scraper-mock';
 import {
   mockDownloadImageToCache,
@@ -38,7 +38,7 @@ function createWrapper() {
 describe('useRecipeScraper', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockWaitForReady.mockResolvedValue(true);
+    mockWhenReady.mockResolvedValue(undefined);
     mockDownloadImageToCacheSuccess();
     mockFetchHtmlSuccess();
   });

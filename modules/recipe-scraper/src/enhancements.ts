@@ -66,6 +66,9 @@ export function applyEnhancements(context: EnhancementContext): ScrapedRecipe {
         cleanedTitle
     );
 
+    const finalParsedIngredients =
+        baseResult.parsedIngredients ?? extractStructuredIngredients(html);
+
     return {
         ...baseResult,
         title: cleanedTitle,
@@ -74,8 +77,7 @@ export function applyEnhancements(context: EnhancementContext): ScrapedRecipe {
         instructions: decodedInstructions,
         instructionsList: decodedInstructionsList,
         keywords: cleanedKeywords,
-        parsedIngredients:
-            baseResult.parsedIngredients ?? extractStructuredIngredients(html),
+        parsedIngredients: finalParsedIngredients,
         parsedInstructions:
             baseResult.parsedInstructions ?? extractStructuredInstructions(html),
         nutrients: inferServingSizeFromHtml(html, baseResult.nutrients),
@@ -280,26 +282,33 @@ export function extractStructuredIngredients(
     const results: ParsedIngredient[] = [];
     const ingListHtml = ingListMatch[1];
 
-    // Extract main ingredients from list items with spans
+    // Extract main ingredients from list items.
+    // Structure: <li><span class="bold">{qty}</span><span>{name + nested badges/notes}</span></li>
+    // The name wrapper may contain nested spans (e.g. weight "(20g)" or "Bio" badge);
+    // we flatten its full text so downstream parenthetical-note extraction can recover them.
     const liMatches = ingListHtml.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi);
     for (const liMatch of liMatches) {
         const liContent = liMatch[1];
-        const spans = [...liContent.matchAll(/<span[^>]*>([\s\S]*?)<\/span>/gi)];
 
-        if (spans.length >= 2) {
-            const qtyUnit = stripHtml(spans[0][1]).trim();
-            const name = stripHtml(spans[1][1]).trim();
-
-            const [quantity, unit] = splitQuantityUnit(qtyUnit);
-            results.push({
-                quantity,
-                unit,
-                name: cleanIngredientName(name),
-            });
-        } else {
-            // Structure not as expected, bail out
+        const qtyMatch = liContent.match(/<span[^>]*class=["'][^"']*\bbold\b[^"']*["'][^>]*>([\s\S]*?)<\/span>/i);
+        if (!qtyMatch || qtyMatch.index === undefined) {
             return null;
         }
+
+        const qtyUnit = stripHtml(qtyMatch[1]).trim();
+        const afterQty = liContent.slice(qtyMatch.index + qtyMatch[0].length);
+        const name = stripHtml(afterQty).replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim();
+
+        if (!name) {
+            return null;
+        }
+
+        const [quantity, unit] = splitQuantityUnit(qtyUnit);
+        results.push({
+            quantity,
+            unit,
+            name: cleanIngredientName(name),
+        });
     }
 
     // Extract kitchen staples (Dans votre cuisine)
