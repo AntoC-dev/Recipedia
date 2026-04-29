@@ -27,6 +27,7 @@ import {
   simpleRecipeHtml,
   ingredientsWithEntitiesHtml,
   instructionsWithEntitiesHtml,
+  nestedBadgeIngredientsHtml,
   structuredIngredientsHtml,
   structuredInstructionsHtml,
   structuredWithKitchenListHtml,
@@ -444,6 +445,18 @@ describe('enhancements module', () => {
     it('handles no number', () => {
       expect(splitQuantityUnit('pièce')).toEqual(['', 'pièce']);
     });
+
+    it('handles fractions', () => {
+      expect(splitQuantityUnit('1/2 l')).toEqual(['1/2', 'l']);
+    });
+
+    it('trims surrounding whitespace', () => {
+      expect(splitQuantityUnit('  100  g  ')).toEqual(['100', 'g']);
+    });
+
+    it('keeps multi-word units', () => {
+      expect(splitQuantityUnit('2 càs')).toEqual(['2', 'càs']);
+    });
   });
 
   describe('cleanIngredientName', () => {
@@ -455,6 +468,14 @@ describe('enhancements module', () => {
     it('normalizes whitespace', () => {
       const result = cleanIngredientName('  camembert   au   lait  ');
       expect(result).toBe('camembert au lait');
+    });
+
+    it('returns empty string when input is whitespace only', () => {
+      expect(cleanIngredientName('   \u00a0  \n ')).toBe('');
+    });
+
+    it('preserves accented characters and apostrophes', () => {
+      expect(cleanIngredientName("pâtes fraîches d'épeautre")).toBe("pâtes fraîches d'épeautre");
     });
   });
 
@@ -501,6 +522,136 @@ describe('enhancements module', () => {
       expect(result![1].quantity).toBe('200');
       expect(result![1].unit).toBe('g');
       expect(result![1].name).toBe('pâtes fraîches');
+    });
+
+    it('flattens nested badge and weight spans into the ingredient name', () => {
+      const result = extractStructuredIngredients(nestedBadgeIngredientsHtml);
+
+      expect(result).not.toBeNull();
+      expect(result).toHaveLength(2);
+
+      expect(result![0].quantity).toBe('1');
+      expect(result![0].unit).toBe('');
+      expect(result![0].name).toBe('miel (20g) Bio');
+
+      expect(result![1].quantity).toBe('2');
+      expect(result![1].unit).toBe('');
+      expect(result![1].name).toBe('petits pains aux épices (160g)');
+    });
+
+    it('returns null when an item is missing the bold quantity span', () => {
+      const html = `
+        <ul class="ingredient-list">
+          <li>
+            <span class="bold">1</span>
+            <span>oeuf</span>
+          </li>
+          <li>
+            <span>oignon sans quantité</span>
+          </li>
+        </ul>
+      `;
+      expect(extractStructuredIngredients(html)).toBeNull();
+    });
+
+    it('returns null when an item has a quantity but no name content', () => {
+      const html = `
+        <ul class="ingredient-list">
+          <li>
+            <span class="bold">375 g</span>
+          </li>
+        </ul>
+      `;
+      expect(extractStructuredIngredients(html)).toBeNull();
+    });
+
+    it('matches bold span when class has additional modifiers', () => {
+      const html = `
+        <ul class="ingredient-list">
+          <li>
+            <span class="body-2 bold m-0 mb-1">500 ml</span>
+            <span>lait entier</span>
+          </li>
+        </ul>
+      `;
+      const result = extractStructuredIngredients(html);
+      expect(result).toEqual([{ quantity: '500', unit: 'ml', name: 'lait entier' }]);
+    });
+
+    it('parses fractional quantities', () => {
+      const html = `
+        <ul class="ingredient-list">
+          <li>
+            <span class="bold">1/2 l</span>
+            <span>bouillon</span>
+          </li>
+        </ul>
+      `;
+      const result = extractStructuredIngredients(html);
+      expect(result).toEqual([{ quantity: '1/2', unit: 'l', name: 'bouillon' }]);
+    });
+
+    it('normalizes nbsp and collapses whitespace inside nested name spans', () => {
+      const html = `
+        <ul class="ingredient-list">
+          <li>
+            <span class="bold">100 g</span>
+            <span>
+              <span>beurre&nbsp;doux</span>
+              <span>   (plaquette)   </span>
+            </span>
+          </li>
+        </ul>
+      `;
+      const result = extractStructuredIngredients(html);
+      expect(result).toEqual([{ quantity: '100', unit: 'g', name: 'beurre doux (plaquette)' }]);
+    });
+
+    it('decodes HTML entities embedded in nested spans', () => {
+      const html = `
+        <ul class="ingredient-list">
+          <li>
+            <span class="bold">1 x</span>
+            <span>
+              <span>gousse d&#039;ail</span>
+              <span class="badge">Bio</span>
+            </span>
+          </li>
+        </ul>
+      `;
+      const result = extractStructuredIngredients(html);
+      expect(result).toEqual([{ quantity: '1', unit: 'x', name: "gousse d'ail Bio" }]);
+    });
+
+    it('preserves li attributes and data-* attributes when matching', () => {
+      const html = `
+        <ul class="ingredient-list extra-class">
+          <li class="row" data-ingredient-id="42">
+            <span class="bold">200 g</span>
+            <span>farine</span>
+          </li>
+        </ul>
+      `;
+      const result = extractStructuredIngredients(html);
+      expect(result).toEqual([{ quantity: '200', unit: 'g', name: 'farine' }]);
+    });
+
+    it('only processes the first ingredient-list when multiple are present', () => {
+      const html = `
+        <ul class="ingredient-list">
+          <li><span class="bold">1</span><span>oeuf</span></li>
+        </ul>
+        <ul class="ingredient-list">
+          <li><span class="bold">2</span><span>tomate</span></li>
+        </ul>
+      `;
+      const result = extractStructuredIngredients(html);
+      expect(result).toEqual([{ quantity: '1', unit: '', name: 'oeuf' }]);
+    });
+
+    it('returns null when ingredient-list contains no <li> items', () => {
+      const html = `<ul class="ingredient-list"></ul>`;
+      expect(extractStructuredIngredients(html)).toBeNull();
     });
 
     it('extracts kitchen list items', () => {
@@ -558,6 +709,22 @@ describe('enhancements module', () => {
 
     it('handles whitespace', () => {
       expect(parseKitchenItem('  sel  ')).toEqual(['', '', 'sel']);
+    });
+
+    it('parses fractional quantity', () => {
+      expect(parseKitchenItem('1/2 càc poivre')).toEqual(['1/2', 'càc', 'poivre']);
+    });
+
+    it('normalizes nbsp inside the name', () => {
+      expect(parseKitchenItem("1 càs huile d'olive\u00a0extra")).toEqual([
+        '1',
+        'càs',
+        "huile d'olive extra",
+      ]);
+    });
+
+    it('treats single token starting with digits as a name when no remainder', () => {
+      expect(parseKitchenItem('500g')).toEqual(['', '', '500g']);
     });
   });
 

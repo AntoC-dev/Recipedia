@@ -89,7 +89,7 @@ appId: "com.recipedia"
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
-      INGREDIENT_NAME: "miel Bio"
+      INGREDIENT_NAME: "miel"
       INGREDIENT_QUANTITY_AND_UNIT: "40"
     label: "Assert miel ingredient"
 
