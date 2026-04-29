@@ -1,3 +1,21 @@
+## [2.34.0](https://github.com/AntoC-dev/Recipedia/compare/v2.33.0...v2.34.0) (2026-04-29)
+
+### Features
+
+* **app:** graceful Pyodide degradation and non-blocking init ([be223f5](https://github.com/AntoC-dev/Recipedia/commit/be223f531dcd36992721cfad301f38c1d99e1efd))
+* **logger:** add pyodideLogger and enable debug severity for non-prod builds ([afbdaf1](https://github.com/AntoC-dev/Recipedia/commit/afbdaf18888a0c3c48c2b586833e5144f17f1516))
+
+### Bug Fixes
+
+* **build:** skip pyodide setup only when bundle is valid ([8bf0e44](https://github.com/AntoC-dev/Recipedia/commit/8bf0e4411455fb494123276a098ebd0a6fe1e99c))
+* **scraper:** bundle Python wheels offline instead of fetching from PyPI ([f22c463](https://github.com/AntoC-dev/Recipedia/commit/f22c463e6d690ef3dec7565a76c7921a140b0802))
+* **scraper:** defer init timeout and use postMessage for WebView RPC ([f744104](https://github.com/AntoC-dev/Recipedia/commit/f744104975feaa9f6748f9864a8aafed6978656f))
+* **scraper:** detect auth redirects on iOS before calling Python ([85dbd3d](https://github.com/AntoC-dev/Recipedia/commit/85dbd3d5f19887f78931a3c32b35ed40a32503c6))
+* **scraper:** detect auth redirects on iOS web scraping ([#272](https://github.com/AntoC-dev/Recipedia/issues/272)) ([0c94719](https://github.com/AntoC-dev/Recipedia/commit/0c9471930333a37107fad2cb27f28ce11224a615))
+* **scraper:** flatten nested ingredient name spans ([03f2aa7](https://github.com/AntoC-dev/Recipedia/commit/03f2aa7ea24a3fc443e09fee9b1c8ac34e1756f2))
+* **scraper:** gate splash screen on Pyodide ready signal instead of timeout ([2f4a3ed](https://github.com/AntoC-dev/Recipedia/commit/2f4a3edd2d2ada145dd12bfc45600d6d7fa90fc1))
+* **scraper:** return final URL from fetchHtml after redirects ([dd9b2a8](https://github.com/AntoC-dev/Recipedia/commit/dd9b2a8ec9e1e04c154b8027e265842ab4afbd34))
+
 ## [2.33.0](https://github.com/AntoC-dev/Recipedia/compare/v2.32.1...v2.33.0) (2026-04-28)
 
 ### Features
