@@ -127,7 +127,16 @@ android {
 
   sourceSets {
     main {
-      python.srcDir "src/main/python"
+      // Single source of truth for Python: shared with iOS Pyodide bundle.
+      python.srcDir "../python"
+      // Exclude dev-only artifacts (venv, caches, tests) from the APK.
+      python.exclude "**/.venv/**"
+      python.exclude "**/__pycache__/**"
+      python.exclude "**/*.pyc"
+      python.exclude "tests/**"
+      python.exclude "pytest.ini"
+      python.exclude "pyproject.toml"
+      python.exclude "requirements*.txt"
     }
   }
 }
