@@ -1,3 +1,14 @@
+## [2.35.0](https://github.com/AntoC-dev/Recipedia/compare/v2.34.0...v2.35.0) (2026-05-01)
+
+### Features
+
+* **ocr:** add two-step ingredient OCR with redesigned UI buttons ([7695e94](https://github.com/AntoC-dev/Recipedia/commit/7695e944b2cb2fa4e5bc05e0547d76df8d9c401b))
+
+### Bug Fixes
+
+* **ocr:** fix image picker, cropRect bypass, and iOS parsing order ([3f1c46a](https://github.com/AntoC-dev/Recipedia/commit/3f1c46afa7f2b4532dc31627a847f34dcd7e5c49))
+* **ocr:** fix iOS image subsampling degrading OCR quality ([#200](https://github.com/AntoC-dev/Recipedia/issues/200)) ([f20f42f](https://github.com/AntoC-dev/Recipedia/commit/f20f42f5b456f3995cad4768df4915289103d823))
+
 ## [2.34.0](https://github.com/AntoC-dev/Recipedia/compare/v2.33.0...v2.34.0) (2026-04-29)
 
 ### Features
