@@ -9,14 +9,12 @@
  */
 
 import { useState } from 'react';
+import { FormIngredientElement, nutritionTableElement } from '@customTypes/DatabaseElementTypes';
+import { extractFieldFromImage, OcrModalTarget } from '@utils/OCR';
 import {
-  FormIngredientElement,
-  nutritionTableElement,
-  recipeColumnsNames,
-} from '@customTypes/DatabaseElementTypes';
-import { extractFieldFromImage } from '@utils/OCR';
-import {
+  addOrMergeIngredientMatches,
   filterOutExistingTags,
+  processIngredientsForValidation,
   validateAndQueueIngredients,
   validateAndQueueTags,
 } from '@utils/RecipeValidationHelpers';
@@ -36,15 +34,15 @@ import { useRecipeIngredients } from '@hooks/useRecipeIngredients';
  */
 export interface UseRecipeOCRReturn {
   /** Currently active recipe field for OCR modal, or undefined if modal is closed */
-  modalField: recipeColumnsNames | undefined;
+  modalField: OcrModalTarget | undefined;
   /** Whether OCR extraction is currently in progress */
   isProcessingOcrExtraction: boolean;
   /** Opens the OCR modal for a specific recipe field */
-  openModalForField: (field: recipeColumnsNames) => void;
+  openModalForField: (field: OcrModalTarget) => void;
   /** Closes the OCR modal */
   closeModal: () => void;
   /** Extracts data from an image for a specific recipe field and updates recipe state */
-  fillOneField: (uri: string, field: recipeColumnsNames) => Promise<void>;
+  fillOneField: (uri: string, field: OcrModalTarget) => Promise<void>;
   /** Adds a new image URI to the available OCR images */
   addImageUri: (uri: string) => void;
 }
@@ -102,7 +100,7 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
     setRecipeNutrition,
     setImgForOCR,
   } = setters;
-  const [modalField, setModalField] = useState<recipeColumnsNames | undefined>(undefined);
+  const [modalField, setModalField] = useState<OcrModalTarget | undefined>(undefined);
   const [isProcessingOcrExtraction, setIsProcessingOcrExtraction] = useState(false);
 
   /**
@@ -113,7 +111,7 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
    *
    * @param field - The recipe field to extract data for
    */
-  const openModalForField = (field: recipeColumnsNames) => {
+  const openModalForField = (field: OcrModalTarget) => {
     setModalField(field);
   };
 
@@ -152,7 +150,7 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
    * @param uri - The image URI to extract data from
    * @param field - The recipe field type to extract
    */
-  const fillOneField = async (uri: string, field: recipeColumnsNames) => {
+  const fillOneField = async (uri: string, field: OcrModalTarget) => {
     setIsProcessingOcrExtraction(true);
 
     const newFieldData = await extractFieldFromImage(
@@ -224,6 +222,42 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
           addOrMergeIngredient,
           setValidationQueue
         );
+      }
+    }
+    if (newFieldData.ingredientQuantities !== undefined) {
+      const quantities = newFieldData.ingredientQuantities;
+      if (quantities.length === recipeIngredients.length) {
+        setRecipeIngredients(prev =>
+          prev.map((ingredient, index) => ({ ...ingredient, quantity: quantities[index] }))
+        );
+      } else {
+        ocrLogger.warn('Quantity count mismatch', {
+          expected: recipeIngredients.length,
+          received: quantities.length,
+        });
+      }
+    }
+    if (newFieldData.ingredientNames !== undefined) {
+      const ingredientsWithNoQuantity: FormIngredientElement[] = newFieldData.ingredientNames.map(
+        ({ name, unit }) => ({ name, unit, quantity: '' })
+      );
+      if (ingredientsWithNoQuantity.length > 0) {
+        const { exactMatches, needsValidation } = processIngredientsForValidation(
+          ingredientsWithNoQuantity,
+          findSimilarIngredients
+        );
+
+        if (exactMatches.length > 0) {
+          setRecipeIngredients(prev => addOrMergeIngredientMatches(prev, exactMatches));
+        }
+
+        if (needsValidation.length > 0) {
+          setValidationQueue({
+            type: 'Ingredient',
+            items: needsValidation,
+            onValidated: (_, validatedIngredient) => addOrMergeIngredient(validatedIngredient),
+          });
+        }
       }
     }
     if (newFieldData.ingredientQuantities !== undefined) {

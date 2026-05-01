@@ -1,0 +1,256 @@
+appId: "com.recipedia"
+---
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::8::DeleteButton"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to ingredient to delete"
+
+
+- tapOn:
+    id: "RecipeIngredients::8::DeleteButton"
+    label: "Delete the 'conserve' line as it is not an ingredient to keep"
+
+- extendedWaitUntil:
+    notVisible: "RecipeIngredients::11::.*"
+    timeout: 5000
+    label: "Wait for ingredient to be deleted"
+
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::0::QuantityInput"
+    direction: UP
+    speed: 20
+    centerElement: true
+    label: "Scroll to first ingredient quantity input"
+
+- tapOn:
+    id: "RecipeIngredients::0::QuantityInput"
+    label: "Tap on carotte quantity"
+
+- runFlow:
+    file: "../../../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard"
+
+- inputText:
+    text: "2"
+    label: "Enter carotte quantity"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::1::QuantityInput"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to second ingredient quantity input"
+
+- tapOn:
+    id: "RecipeIngredients::1::QuantityInput"
+    label: "Tap on citronnelle quantity"
+
+- runFlow:
+    file: "../../../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard"
+
+- inputText:
+    text: "2"
+    label: "Enter citronnelle quantity"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::2::QuantityInput"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to third ingredient quantity input"
+
+- tapOn:
+    id: "RecipeIngredients::2::QuantityInput"
+    label: "Tap on cébette quantity"
+
+- runFlow:
+    file: "../../../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard"
+
+- inputText:
+    text: "2"
+    label: "Enter cébette quantity"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::3::QuantityInput"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to fourth ingredient quantity input"
+
+- tapOn:
+    id: "RecipeIngredients::3::QuantityInput"
+    label: "Tap on gousse d'ail quantity"
+
+- runFlow:
+    file: "../../../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard"
+
+- inputText:
+    text: "2"
+    label: "Enter gousse d'ail quantity"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::4::QuantityInput"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to fifth ingredient quantity input"
+
+- tapOn:
+    id: "RecipeIngredients::4::QuantityInput"
+    label: "Tap on lait de coco quantity"
+
+- runFlow:
+    file: "../../../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard"
+
+- inputText:
+    text: "400"
+    label: "Enter lait de coco quantity"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::5::QuantityInput"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to sixth ingredient quantity input"
+
+- tapOn:
+    id: "RecipeIngredients::5::QuantityInput"
+    label: "Tap on oignon jaune quantity"
+
+- runFlow:
+    file: "../../../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard"
+
+- inputText:
+    text: "2"
+    label: "Enter oignon jaune quantity"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::6::QuantityInput"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to seventh ingredient quantity input"
+
+- tapOn:
+    id: "RecipeIngredients::6::QuantityInput"
+    label: "Tap on poireau quantity"
+
+- runFlow:
+    file: "../../../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard"
+
+- inputText:
+    text: "2"
+    label: "Enter poireau quantity"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::7::QuantityInput"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to eigth ingredient quantity input"
+
+- tapOn:
+    id: "RecipeIngredients::7::QuantityInput"
+    label: "Tap on pois chiches quantity"
+
+- runFlow:
+    file: "../../../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard"
+
+- inputText:
+    text: "200"
+    label: "Enter pois chiches quantity"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::8::QuantityInput"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to ninth ingredient quantity input"
+
+- tapOn:
+    id: "RecipeIngredients::8::QuantityInput"
+    label: "Tap on purée de tomates quantity"
+
+- runFlow:
+    file: "../../../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard"
+
+- inputText:
+    text: "250"
+    label: "Enter purée de tomates quantity"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::9::QuantityInput"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to tenth ingredient quantity input"
+
+- tapOn:
+    id: "RecipeIngredients::9::QuantityInput"
+    label: "Tap on riz basmati quantity"
+
+- runFlow:
+    file: "../../../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard"
+
+- inputText:
+    text: "300"
+    label: "Enter riz basmati quantity"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::10::QuantityInput"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to eleventh ingredient quantity input"
+
+- tapOn:
+    id: "RecipeIngredients::10::QuantityInput"
+    label: "Tap on épices Cachemire quantity"
+
+- runFlow:
+    file: "../../../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard"
+
+- inputText:
+    text: "2"
+    label: "Enter épices Cachemire quantity"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTime::PrefixText"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to time to be able to close the keyboard"
+
+- tapOn:
+    id: "RecipeTime::PrefixText"
+    label: "Close the keyboard by pressing the prefix of recipe time"
+
+- runFlow:
+    file: "../../../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for keyboard to dismiss"

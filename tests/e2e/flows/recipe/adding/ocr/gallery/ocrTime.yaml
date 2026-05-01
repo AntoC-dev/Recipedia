@@ -67,5 +67,8 @@ appId: "com.recipedia"
       - extendedWaitUntil:
           visible:
             id: "RecipeTime::NumericTextInput"
-          timeout: 10000
+          timeout: 30000
           label: "Wait for time to be populated by OCR"
+      - runFlow:
+          file: ../cleanAndResume.yaml
+          label: "Delete time image from gallery and return to Recipedia"

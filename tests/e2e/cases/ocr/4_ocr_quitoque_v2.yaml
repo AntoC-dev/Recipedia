@@ -5,9 +5,9 @@ tags:
 ---
 - evalScript: ${output.isDescriptionToOCR = true}
 - evalScript: ${output.isTagsToOCR = false}
-- evalScript: ${output.isPersons = true}
 - evalScript: ${output.isTime = false}
 - evalScript: ${output.isNutritionToOCR = true}
+- evalScript: ${output.isQuantitiesOCR = false}
 
 - tapOn:
     id: "BottomTabs::Parameters"

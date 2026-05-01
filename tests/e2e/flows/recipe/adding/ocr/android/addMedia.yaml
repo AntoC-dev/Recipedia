@@ -35,10 +35,17 @@ appId: "com.recipedia"
 
 - runFlow:
     when:
-      true: ${RECIPE_NAME == "hellofresh" && FIELD_NAME == "ingredients"}
+      true: ${RECIPE_NAME == "hellofresh" && FIELD_NAME == "ingredientNames"}
     commands:
       - addMedia:
-          - "../../../../../../assets/aiguillettesTeriyaki/ingredients.jpg"
+          - "../../../../../../assets/aiguillettesTeriyaki/ingredients_names.jpeg"
+
+- runFlow:
+    when:
+      true: ${RECIPE_NAME == "hellofresh" && FIELD_NAME == "ingredientQuantities"}
+    commands:
+      - addMedia:
+          - "../../../../../../assets/aiguillettesTeriyaki/ingredients_quantities.jpeg"
 
 - runFlow:
     when:
@@ -71,10 +78,17 @@ appId: "com.recipedia"
 
 - runFlow:
     when:
-      true: ${RECIPE_NAME == "quitoqueV1" && FIELD_NAME == "ingredients"}
+      true: ${RECIPE_NAME == "quitoqueV1" && FIELD_NAME == "ingredientNames"}
     commands:
       - addMedia:
-          - "../../../../../../assets/tajineMerguez/ingredients.jpg"
+          - "../../../../../../assets/tajineMerguez/ingredients_names.jpeg"
+
+- runFlow:
+    when:
+      true: ${RECIPE_NAME == "quitoqueV1" && FIELD_NAME == "ingredientQuantities"}
+    commands:
+      - addMedia:
+          - "../../../../../../assets/tajineMerguez/ingredients_quantities.jpeg"
 
 - runFlow:
     when:
@@ -114,10 +128,17 @@ appId: "com.recipedia"
 
 - runFlow:
     when:
-      true: ${RECIPE_NAME == "quitoqueV2" && FIELD_NAME == "ingredients"}
+      true: ${RECIPE_NAME == "quitoqueV2" && FIELD_NAME == "ingredientNames"}
     commands:
       - addMedia:
-          - "../../../../../../assets/pouletSatay/ingredients.jpg"
+          - "../../../../../../assets/pouletSatay/ingredients_names.jpeg"
+
+- runFlow:
+    when:
+      true: ${RECIPE_NAME == "quitoqueV2" && FIELD_NAME == "ingredientQuantities"}
+    commands:
+      - addMedia:
+          - "../../../../../../assets/pouletSatay/ingredients_quantities.jpeg"
 
 - runFlow:
     when:
@@ -164,10 +185,17 @@ appId: "com.recipedia"
 
 - runFlow:
     when:
-      true: ${RECIPE_NAME == "quitoqueV3" && FIELD_NAME == "ingredients"}
+      true: ${RECIPE_NAME == "quitoqueV3" && FIELD_NAME == "ingredientNames"}
     commands:
       - addMedia:
-          - "../../../../../../assets/curryPoisChiches/ingredients.jpg"
+          - "../../../../../../assets/curryPoisChiches/ingredients_names.jpeg"
+
+- runFlow:
+    when:
+      true: ${RECIPE_NAME == "quitoqueV3" && FIELD_NAME == "ingredientQuantities"}
+    commands:
+      - addMedia:
+          - "../../../../../../assets/curryPoisChiches/ingredients_quantities.jpeg"
 
 - runFlow:
     when:

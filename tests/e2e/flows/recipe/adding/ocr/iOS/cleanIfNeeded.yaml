@@ -29,11 +29,24 @@ appId: "com.recipedia"
     timeout: 10000
     label: "Wait for select button to appear"
 
+- tapOn:
+    text: "Select"
+    label: "Enter select mode to see if some photos are in library"
+
+- extendedWaitUntil:
+    visible:
+      text: "Cancel"
+    timeout: 5000
+    label: "Wait for cancel button of select to appear"
+
 - runFlow:
     when:
       visible:
-        text: "\\d+ Photo.*"
+        text: "Photo, .*"
     commands:
+      - tapOn:
+          text: "Cancel"
+          label: "Cancel the selection"
       - runFlow:
           file: "cleanupPhotos.yaml"
           label: "Delete all photos from library"

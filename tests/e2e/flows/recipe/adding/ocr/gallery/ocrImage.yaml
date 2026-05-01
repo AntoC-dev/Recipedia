@@ -1,6 +1,5 @@
 appId: "com.recipedia"
 ---
-# First OCR field - initializes the gallery and modal counter
 - runFlow:
     file: ../android/addMedia.yaml
     env:
@@ -37,7 +36,7 @@ appId: "com.recipedia"
     label: "Tap on OCR button of recipe image"
 
 - tapOn:
-    id: "Modal::List#0::SquareButton::Image"
+    id: "Modal::List#${output.modalImageCounter}::SquareButton::Image"
     label: "Select first image from app modal"
 
 - runFlow:
@@ -49,4 +48,8 @@ appId: "com.recipedia"
     when:
       platform: iOS
 
-- evalScript: ${output.modalImageCounter = 1}
+- evalScript: ${output.modalImageCounter = output.modalImageCounter + 1}
+
+- runFlow:
+    file: ../cleanAndResume.yaml
+    label: "Delete recipe image from gallery and return to Recipedia"

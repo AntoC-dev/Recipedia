@@ -50,14 +50,24 @@ export function recipeIngredientsMock(props: RecipeIngredientsProps) {
           )}
         </View>
       ))}
-      {'openModal' in props && ingredients.length === 0 && (
+      {'openModalForField' in props && ingredients.length === 0 && (
         <>
           <Button
-            testID={`${testID}::OpenModal::RoundButton::OnPressFunction`}
-            onPress={props.openModal}
-            title='Open Modal'
+            testID={`${testID}::OpenModalNames::RoundButton::OnPressFunction`}
+            onPress={() => props.openModalForField('ingredientNames')}
+            title='Open Modal Names'
           />
-          <Text testID={`${testID}::OpenModal::RoundButton::Icon`}>line-scan</Text>
+          <Text testID={`${testID}::OpenModalNames::RoundButton::Icon`}>line-scan</Text>
+        </>
+      )}
+      {'openModalForField' in props && ingredients.length > 0 && (
+        <>
+          <Button
+            testID={`${testID}::OpenModalQuantities::RoundButton::OnPressFunction`}
+            onPress={() => props.openModalForField('ingredientQuantities')}
+            title='Open Modal Quantities'
+          />
+          <Text testID={`${testID}::OpenModalQuantities::RoundButton::Icon`}>line-scan</Text>
         </>
       )}
       {'onAddIngredient' in props && (

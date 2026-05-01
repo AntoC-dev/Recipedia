@@ -12,15 +12,15 @@ appId: "com.recipedia"
     text: "󰄀"
     label: "Camera helper text is rendered"
 - assertVisible:
-    id: "Modal::Camera::Text"
+    id: "Modal::Camera::RoundButton::Label"
     text: "Prendre une nouvelle photo"
     label: "Gallery button is rendered"
 - assertVisible:
-    id: "Modal::Gallery::RoundButton"
+    id: "Modal::Gallery::RoundButton::Label"
     label: "Gallery button has the right icon"
 - assertVisible:
     text: "󰋫"
     label: "Gallery helper text is rendered"
 - assertVisible:
-    id: "Modal::Gallery::Text"
+    id: "Modal::Gallery::RoundButton::Label"
     text: "Choisir depuis la galerie"

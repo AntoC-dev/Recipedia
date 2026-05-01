@@ -8,6 +8,7 @@ appId: "com.recipedia"
 
 - tapOn:
     text: "aspectratio.fill"
+    retryTapIfNoChange: true
     label: "Open aspect ratio menu"
 
 - extendedWaitUntil:
@@ -21,6 +22,7 @@ appId: "com.recipedia"
 
 - tapOn:
     text: "Original"
+    retryTapIfNoChange: true
     label: "Select original aspect ratio to show full image"
 
 - extendedWaitUntil:
