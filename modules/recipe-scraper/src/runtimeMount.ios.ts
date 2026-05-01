@@ -5,22 +5,42 @@
  * PyodideWebView only when a scrape call has actually been issued.
  */
 
-import {PyodideBridge} from './ios/PyodideBridge';
+let mountRequested = false;
+const subscribers = new Set<() => void>();
+
+/**
+ * Triggers a mount request and notifies all subscribers.
+ * Call this when the first scrape is initiated.
+ */
+export function requestPythonRuntime(): void {
+    if (mountRequested) return;
+    mountRequested = true;
+    subscribers.forEach(cb => cb());
+    subscribers.clear();
+}
 
 /**
  * Reports whether a consumer has already requested the PyodideWebView to mount.
  */
 export function isPythonRuntimeRequested(): boolean {
-    return PyodideBridge.isMountRequested();
+    return mountRequested;
 }
 
 /**
  * Subscribes to mount-request events. The callback fires the first time
- * a scrape call triggers `PyodideBridge.requestMount()`.
+ * `requestPythonRuntime()` is called.
  *
  * @param callback - Invoked when the WebView mount is requested.
  * @returns Unsubscribe function.
  */
 export function subscribeToPythonRuntimeRequest(callback: () => void): () => void {
-    return PyodideBridge.subscribeMount(callback);
+    if (mountRequested) {
+        callback();
+        return () => {
+        };
+    }
+    subscribers.add(callback);
+    return () => {
+        subscribers.delete(callback);
+    };
 }
