@@ -30,7 +30,6 @@ import {pyodideLogger} from '@utils/logger';
 import {extractHost} from './urlUtils';
 import {detectAuthRequired} from './authDetection';
 
- 
 type PyodideBridgeInstance = typeof import('./ios/PyodideBridge').PyodideBridge;
 
 function getPyodideBridge(): PyodideBridgeInstance {

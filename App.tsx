@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import {Platform} from 'react-native';
 import {PaperProvider} from 'react-native-paper';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {darkTheme, lightTheme} from '@styles/theme';
@@ -13,13 +12,10 @@ import {SeasonFilterProvider} from '@context/SeasonFilterContext';
 import {DefaultPersonsProvider} from '@context/DefaultPersonsContext';
 import {appLogger} from '@utils/logger';
 import {isFirstLaunch} from '@utils/firstLaunch';
-import {recipeScraper} from '@app/modules/recipe-scraper';
-import {PyodideWebView} from '@app/modules/recipe-scraper/src/ios/PyodideWebView';
-import {AuthWebView} from '@app/modules/recipe-scraper/src/ios/AuthWebView';
-import {AuthBridge} from '@app/modules/recipe-scraper/src/ios/AuthBridge';
+import {ScraperProvider} from '@app/modules/recipe-scraper';
 import {RecipeDatabase} from '@utils/RecipeDatabase';
 import {init as initFileSystem} from '@utils/FileGestion';
-import {registerImageRepairTask} from '@utils/ImageRepairTask';
+import {registerOrphanCleanupTask} from '@utils/OrphanCleanupTask';
 
 // TODO manage horizontal mode
 
@@ -38,7 +34,6 @@ SplashScreen.preventAutoHideAsync();
 function AppContent() {
     const [isAppInitialized, setIsAppInitialized] = useState(false);
     const [isDatabaseReady, setIsDatabaseReady] = useState(false);
-    const [isScraperReady, setIsScraperReady] = useState(false);
     const [darkMode, setDarkMode] = useState(false);
     const [isFirstLaunchFlag, setIsFirstLaunchFlag] = useState<boolean | null>(null);
 
@@ -63,15 +58,8 @@ function AppContent() {
                 setDarkMode(isDarkMode);
                 appLogger.debug('App settings loaded', {isFirst, isDarkMode});
 
-                recipeScraper.whenReady()
-                    .then(() => appLogger.info('Python scraper ready'))
-                    .catch(error =>
-                        appLogger.warn('Python scraper failed to initialize — web scraping will use fallback', {error})
-                    )
-                    .finally(() => setIsScraperReady(true));
-
-                registerImageRepairTask().catch(err =>
-                    appLogger.warn('Image repair task registration failed', {error: err})
+                registerOrphanCleanupTask().catch(err =>
+                    appLogger.warn('Orphan cleanup task registration failed', {error: err})
                 );
 
                 appLogger.info('App initialization completed successfully');
@@ -99,7 +87,7 @@ function AppContent() {
         animation: {scale: animationsDisabled ? 0 : 1},
     };
 
-    const shouldHideSplash = isAppInitialized && isDatabaseReady && isScraperReady;
+    const shouldHideSplash = isAppInitialized && isDatabaseReady;
 
     const onLayoutRootView = async () => {
         if (shouldHideSplash) {
@@ -117,7 +105,6 @@ function AppContent() {
             isAppInitialized,
             isFirstLaunchFlag,
             isDatabaseReady,
-            isScraperReady,
         });
         return null;
     }
@@ -146,19 +133,11 @@ function AppContent() {
 
 export function App() {
     useFetchFonts();
-    const [authLoginUrl, setAuthLoginUrl] = useState<string | null>(null);
-
-    useEffect(() => {
-        if (Platform.OS !== 'ios') return;
-        return AuthBridge.subscribe(() => setAuthLoginUrl(AuthBridge.currentLoginUrl));
-    }, []);
 
     return (
-        <>
+        <ScraperProvider>
             <AppContent/>
-            {Platform.OS === 'ios' && <PyodideWebView/>}
-            {Platform.OS === 'ios' && authLoginUrl !== null && <AuthWebView loginUrl={authLoginUrl}/>}
-        </>
+        </ScraperProvider>
     );
 }
 

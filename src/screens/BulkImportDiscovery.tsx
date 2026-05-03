@@ -47,9 +47,9 @@ import { RecipeCardSkeleton } from '@components/molecules/RecipeCardSkeleton';
 import { SelectAllRow } from '@components/molecules/SelectAllRow';
 import { useI18n } from '@utils/i18n';
 import { getProvider } from '@providers/ProviderRegistry';
-import { useDefaultPersons } from '@context/DefaultPersonsContext';
 import { useDiscoveryWorkflow } from '@hooks/useDiscoveryWorkflow';
 import { useVisibleImageLoader } from '@hooks/useVisibleImageLoader';
+import { useRecipeScraper } from '@hooks/useRecipeScraper';
 import { padding } from '@styles/spacing';
 
 type BulkImportDiscoveryRouteProp = RouteProp<StackScreenParamList, 'BulkImportDiscovery'>;
@@ -77,9 +77,9 @@ export function BulkImportDiscovery() {
   const navigation = useNavigation<StackScreenNavigation>();
   const route = useRoute<BulkImportDiscoveryRouteProp>();
   const { providerId } = route.params;
-  const { defaultPersons } = useDefaultPersons();
 
   const provider = getProvider(providerId);
+  const { fetchImageUrlForRecipe } = useRecipeScraper();
 
   const [visibleUrls, setVisibleUrls] = useState<Set<string>>(new Set());
 
@@ -102,13 +102,13 @@ export function BulkImportDiscovery() {
     parseSelectedRecipes,
     abort,
     markUrlsAsSeen,
-  } = useDiscoveryWorkflow(provider, defaultPersons, providerId);
+  } = useDiscoveryWorkflow(provider, providerId);
 
   const { imageMap } = useVisibleImageLoader({
     recipes,
     visibleUrls,
     fetchImageUrl: (url, signal) =>
-      provider?.fetchImageUrlForRecipe(url, signal) ?? Promise.resolve(null),
+      provider ? fetchImageUrlForRecipe(provider, url, signal) : Promise.resolve(null),
   });
 
   const freshRecipesWithImages = freshRecipes.map(r => ({

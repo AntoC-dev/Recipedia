@@ -28,16 +28,8 @@
 import { useState } from 'react';
 import { Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import {
-  DEFAULT_SCRAPER_ERROR_I18N_KEY,
-  isScraperSuccess,
-  recipeScraper,
-  ScrapedRecipe,
-  SCRAPER_ERROR_I18N_KEYS,
-  ScraperError,
-  ScraperErrorTypes,
-  ScraperResult,
-} from '@utils/RecipeScraper';
+import { isScraperSuccess, ScraperErrorTypes, useScraper } from '@app/modules/recipe-scraper';
+import type { ScrapedRecipe, ScraperError, ScraperResult } from '@app/modules/recipe-scraper';
 import { detectAuthRequired } from '@app/modules/recipe-scraper/src/authDetection';
 import { downloadImageToCache } from '@utils/FileGestion';
 import { uiLogger } from '@utils/logger';
@@ -48,6 +40,27 @@ import {
   ScrapedRecipeResult,
 } from '@utils/RecipeScraperConverter';
 import { extractImageFromJsonLd, fetchHtml, isPlaceholderImageUrl } from '@utils/UrlHelpers';
+import {
+  fetchRecipeImageUrl as orchestratorFetchRecipeImageUrl,
+  parseSelectedRecipes as orchestratorParseSelectedRecipes,
+} from '@utils/RecipeImportOrchestrator';
+import { DiscoveredRecipe, ParsingProgress, RecipeProvider } from '@customTypes/BulkImportTypes';
+
+const SCRAPER_ERROR_I18N_KEYS: Record<string, string> = {
+  [ScraperErrorTypes.NoSchemaFoundInWildMode]: 'urlDialog.errorNoRecipeFound',
+  [ScraperErrorTypes.NoRecipeFoundError]: 'urlDialog.errorNoRecipeFound',
+  [ScraperErrorTypes.WebsiteNotImplementedError]: 'urlDialog.errorUnsupportedSite',
+  [ScraperErrorTypes.ConnectionError]: 'urlDialog.errorNetwork',
+  [ScraperErrorTypes.HTTPError]: 'urlDialog.errorNetwork',
+  [ScraperErrorTypes.URLError]: 'urlDialog.errorNetwork',
+  [ScraperErrorTypes.Timeout]: 'urlDialog.errorTimeout',
+  [ScraperErrorTypes.AuthenticationRequired]: 'urlDialog.errorAuthRequired',
+  [ScraperErrorTypes.AuthenticationFailed]: 'urlDialog.errorAuthFailed',
+  [ScraperErrorTypes.UnsupportedAuthSite]: 'urlDialog.errorUnsupportedAuth',
+  [ScraperErrorTypes.UnsupportedPlatform]: 'urlDialog.errorUnsupportedPlatform',
+};
+
+const DEFAULT_SCRAPER_ERROR_I18N_KEY = 'urlDialog.errorScraping';
 
 function serializeError(err: unknown): Record<string, unknown> {
   if (err instanceof Error) {
@@ -83,6 +96,16 @@ export interface AuthRequirement {
 export interface UseRecipeScraperReturn {
   scrapeAndPrepare: (url: string) => Promise<ScrapeResult>;
   scrapeWithAuth: (url: string, username: string, password: string) => Promise<ScrapeResult>;
+  parseSelectedRecipes: (
+    provider: RecipeProvider,
+    selectedRecipes: DiscoveredRecipe[],
+    options?: { signal?: AbortSignal }
+  ) => AsyncGenerator<ParsingProgress>;
+  fetchImageUrlForRecipe: (
+    provider: RecipeProvider,
+    url: string,
+    signal: AbortSignal
+  ) => Promise<string | null>;
   isLoading: boolean;
   error: string | undefined;
   clearError: () => void;
@@ -94,6 +117,7 @@ export interface UseRecipeScraperReturn {
  * Hook for scraping recipes from URLs.
  */
 export function useRecipeScraper(): UseRecipeScraperReturn {
+  const { scrapeRecipeFromHtml, scrapeRecipeAuthenticated } = useScraper();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | undefined>();
   const [authRequired, setAuthRequired] = useState<AuthRequirement | null>(null);
@@ -184,12 +208,6 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
     uiLogger.info('Starting recipe scrape', { url });
 
     try {
-      await recipeScraper.whenReady();
-    } catch {
-      uiLogger.warn('Python scraper not available for web parsing — using fallback', { url });
-    }
-
-    try {
       // iOS: fetch HTML and check for auth redirect before waiting for Python.
       // Android detects auth through Python's response after scraping.
       let cachedFetch: { html: string; finalUrl: string } | null = null;
@@ -224,7 +242,7 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
         uiLogger.debug('Fetched HTML', { length: html.length, finalUrl, originalUrl: url });
       }
 
-      const scraperResult = await recipeScraper.scrapeRecipeFromHtml(html, url);
+      const scraperResult = await scrapeRecipeFromHtml(html, url);
 
       if (
         !isScraperSuccess(scraperResult) &&
@@ -260,7 +278,7 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
     uiLogger.info('Starting authenticated recipe scrape', { url });
 
     try {
-      const scraperResult = await recipeScraper.scrapeRecipeAuthenticated(url, username, password);
+      const scraperResult = await scrapeRecipeAuthenticated(url, username, password);
       const result = await processScrapedData(scraperResult, url, 'Authenticated scraping');
 
       if (result.success) {
@@ -281,9 +299,32 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
     }
   };
 
+  const parseSelectedRecipes = (
+    provider: RecipeProvider,
+    selectedRecipes: DiscoveredRecipe[],
+    options: { signal?: AbortSignal } = {}
+  ): AsyncGenerator<ParsingProgress> => {
+    return orchestratorParseSelectedRecipes(provider, selectedRecipes, {
+      scrapeFromHtml: scrapeRecipeFromHtml,
+      signal: options.signal,
+      defaultPersons,
+      ignoredPatterns: getIgnoredPatterns(t),
+    });
+  };
+
+  const fetchImageUrlForRecipe = (
+    provider: RecipeProvider,
+    url: string,
+    signal: AbortSignal
+  ): Promise<string | null> => {
+    return orchestratorFetchRecipeImageUrl(provider, url, signal, scrapeRecipeFromHtml);
+  };
+
   return {
     scrapeAndPrepare,
     scrapeWithAuth,
+    parseSelectedRecipes,
+    fetchImageUrlForRecipe,
     isLoading,
     error,
     clearError,

@@ -17,9 +17,9 @@ import {
 } from '@customTypes/BulkImportTypes';
 import { bulkImportLogger } from '@utils/logger';
 import { useI18n } from '@utils/i18n';
-import { getIgnoredPatterns } from '@utils/RecipeScraperConverter';
 import { useImportMemory } from '@hooks/useImportMemory';
 import { useImportHistory } from '@hooks/useImportHistory';
+import { useRecipeScraper } from '@hooks/useRecipeScraper';
 
 /** Current phase of the discovery screen */
 export type DiscoveryPhase = 'discovering' | 'selecting' | 'parsing';
@@ -60,18 +60,17 @@ export interface UseDiscoveryWorkflowReturn {
  * The imageMap parameter allows injecting visibility-based loaded images.
  *
  * @param provider - The bulk import provider to use for discovery
- * @param defaultPersons - Default number of persons for recipes
  * @param providerId - Provider identifier for import memory tracking
  * @param imageMap - External map of recipe URLs to image URLs (from visibility-based loader)
  * @returns Workflow state and handlers
  */
 export function useDiscoveryWorkflow(
   provider: RecipeProvider | undefined,
-  defaultPersons: number,
   providerId: string,
   imageMap: Map<string, string> = new Map()
 ): UseDiscoveryWorkflowReturn {
   const { t } = useI18n();
+  const { parseSelectedRecipes: parseSelectedRecipesViaScraper } = useRecipeScraper();
   const { processDiscoveredRecipes } = useImportMemory(providerId);
   const { markUrlsAsSeen } = useImportHistory();
 
@@ -211,10 +210,8 @@ export function useDiscoveryWorkflow(
     abortControllerRef.current = abortController;
 
     try {
-      const generator = provider.parseSelectedRecipes(selectedRecipes, {
+      const generator = parseSelectedRecipesViaScraper(provider, selectedRecipes, {
         signal: abortController.signal,
-        defaultPersons,
-        ignoredPatterns: getIgnoredPatterns(t),
       });
 
       let finalProgress: ParsingProgress | null = null;

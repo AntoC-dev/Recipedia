@@ -11,7 +11,18 @@ import { ingredientType } from '@customTypes/DatabaseElementTypes';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
-import React from 'react';
+
+jest.mock('@context/DefaultPersonsContext', () =>
+  require('@mocks/context/DefaultPersonsContext-mock')
+);
+
+const mockOrchestratorParseSelectedRecipes = jest.fn();
+const mockOrchestratorFetchRecipeImageUrl = jest.fn();
+
+jest.mock('@utils/RecipeImportOrchestrator', () => ({
+  parseSelectedRecipes: (...args: unknown[]) => mockOrchestratorParseSelectedRecipes(...args),
+  fetchRecipeImageUrl: (...args: unknown[]) => mockOrchestratorFetchRecipeImageUrl(...args),
+}));
 
 const createMockDiscoveredRecipe = (id: number): DiscoveredRecipe => ({
   url: `https://example.com/recipe-${id}`,
@@ -42,15 +53,13 @@ const createMockParsedRecipe = (id: number) => ({
 
 const createMockProvider = (options?: {
   discoveryError?: Error;
-  parsingError?: Error;
   recipes?: DiscoveredRecipe[];
-  parsedRecipes?: ReturnType<typeof createMockParsedRecipe>[];
 }): RecipeProvider => ({
   id: 'mock',
   name: 'Mock Provider',
   logoUrl: 'https://example.com/logo.png',
   getBaseUrl: jest.fn().mockResolvedValue('https://example.com'),
-  discoverRecipeUrls: jest.fn(async function* ({ signal, onImageLoaded: _onImageLoaded }) {
+  discoverRecipeUrls: jest.fn(async function* ({ signal }) {
     if (options?.discoveryError) {
       throw options.discoveryError;
     }
@@ -89,13 +98,26 @@ const createMockProvider = (options?: {
       recipes,
     } as DiscoveryProgress;
   }),
-  parseSelectedRecipes: jest.fn(async function* (selectedRecipes, { signal }) {
+  extractImageFromHtml: jest.fn().mockReturnValue(null),
+  canHandleUrl: jest.fn().mockReturnValue(false),
+});
+
+function setupDefaultParsingMock(options?: {
+  parsingError?: Error;
+  parsedRecipes?: ReturnType<typeof createMockParsedRecipe>[];
+}) {
+  mockOrchestratorParseSelectedRecipes.mockImplementation(async function* (
+    _provider: RecipeProvider,
+    selectedRecipes: DiscoveredRecipe[],
+    opts?: { signal?: AbortSignal }
+  ) {
     if (options?.parsingError) {
       throw options.parsingError;
     }
 
     const parsedRecipes =
-      options?.parsedRecipes ?? selectedRecipes.map((_, i) => createMockParsedRecipe(i + 1));
+      options?.parsedRecipes ??
+      selectedRecipes.map((_: DiscoveredRecipe, i: number) => createMockParsedRecipe(i + 1));
 
     yield {
       phase: 'parsing',
@@ -105,7 +127,7 @@ const createMockProvider = (options?: {
       failedRecipes: [],
     } as ParsingProgress;
 
-    if (signal?.aborted) {
+    if (opts?.signal?.aborted) {
       yield {
         phase: 'complete',
         current: selectedRecipes.length,
@@ -123,14 +145,8 @@ const createMockProvider = (options?: {
       parsedRecipes,
       failedRecipes: [],
     } as ParsingProgress;
-  }),
-  fetchRecipe: jest.fn().mockResolvedValue({
-    url: 'https://example.com/recipe',
-    converted: {} as ConvertedImportRecipe,
-  }),
-  fetchImageUrlForRecipe: jest.fn().mockResolvedValue('https://example.com/image.jpg'),
-  canHandleUrl: jest.fn().mockReturnValue(false),
-});
+  });
+}
 
 describe('useDiscoveryWorkflow', () => {
   let database: RecipeDatabase;
@@ -141,6 +157,8 @@ describe('useDiscoveryWorkflow', () => {
     await database.init();
     await database.addMultipleIngredients(testIngredients);
     await database.addMultipleTags(testTags);
+    setupDefaultParsingMock();
+    mockOrchestratorFetchRecipeImageUrl.mockResolvedValue(null);
   });
 
   afterEach(async () => {
@@ -150,14 +168,14 @@ describe('useDiscoveryWorkflow', () => {
   describe('initialization', () => {
     it('starts in discovering phase with provider', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       expect(result.current.phase).toBe('discovering');
       expect(result.current.isDiscovering).toBe(true);
     });
 
     it('sets error and selecting phase when provider is undefined', async () => {
-      const { result } = renderHook(() => useDiscoveryWorkflow(undefined, 4, 'mock'));
+      const { result } = renderHook(() => useDiscoveryWorkflow(undefined, 'mock'));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -168,7 +186,7 @@ describe('useDiscoveryWorkflow', () => {
 
     it('transitions to selecting phase after discovery completes', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -177,7 +195,7 @@ describe('useDiscoveryWorkflow', () => {
 
     it('populates recipes after discovery', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -190,7 +208,7 @@ describe('useDiscoveryWorkflow', () => {
   describe('selection', () => {
     it('selectRecipe adds URL to selection', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -206,7 +224,7 @@ describe('useDiscoveryWorkflow', () => {
 
     it('unselectRecipe removes URL from selection', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -226,7 +244,7 @@ describe('useDiscoveryWorkflow', () => {
 
     it('toggleSelectAll selects all when none selected', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -242,7 +260,7 @@ describe('useDiscoveryWorkflow', () => {
 
     it('toggleSelectAll deselects all when all selected', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -262,7 +280,7 @@ describe('useDiscoveryWorkflow', () => {
 
     it('isSelected returns correct state', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -281,7 +299,7 @@ describe('useDiscoveryWorkflow', () => {
   describe('parseSelectedRecipes', () => {
     it('returns null when no recipes selected', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -298,7 +316,7 @@ describe('useDiscoveryWorkflow', () => {
 
     it('returns converted recipes after successful parsing', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -322,7 +340,7 @@ describe('useDiscoveryWorkflow', () => {
 
     it('updates parsingProgress during parsing', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -344,7 +362,7 @@ describe('useDiscoveryWorkflow', () => {
   describe('abort', () => {
     it('aborts cleanup on unmount', async () => {
       const provider = createMockProvider();
-      const { unmount } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'));
+      const { unmount } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       unmount();
     });
@@ -356,7 +374,7 @@ describe('useDiscoveryWorkflow', () => {
         discoveryError: new Error('Discovery failed'),
       });
 
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -369,7 +387,7 @@ describe('useDiscoveryWorkflow', () => {
   describe('recipesWithImages', () => {
     it('merges image map with recipes', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.recipesWithImages.length).toBeGreaterThan(0);
@@ -382,14 +400,14 @@ describe('useDiscoveryWorkflow', () => {
   describe('showSelectionUI', () => {
     it('is true during discovering phase', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       expect(result.current.showSelectionUI).toBe(true);
     });
 
     it('is true during selecting phase', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -400,7 +418,7 @@ describe('useDiscoveryWorkflow', () => {
 
     it('is false during parsing phase', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -425,7 +443,7 @@ describe('useDiscoveryWorkflow', () => {
       const imageMap = new Map<string, string>();
       imageMap.set('https://example.com/recipe-1', 'https://cdn.example.com/new-image.jpg');
 
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock', imageMap));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock', imageMap));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -443,6 +461,21 @@ describe('useDiscoveryWorkflow', () => {
       let resumeDiscovery!: () => void;
       const discoveryPause = new Promise<void>(resolve => {
         resumeDiscovery = resolve;
+      });
+
+      mockOrchestratorParseSelectedRecipes.mockImplementation(async function* (
+        _provider: RecipeProvider,
+        selectedRecipes: DiscoveredRecipe[]
+      ) {
+        yield {
+          phase: 'complete',
+          current: selectedRecipes.length,
+          total: selectedRecipes.length,
+          parsedRecipes: selectedRecipes.map((_: DiscoveredRecipe, i: number) =>
+            createMockParsedRecipe(i + 1)
+          ),
+          failedRecipes: [],
+        } as ParsingProgress;
       });
 
       const provider: RecipeProvider = {
@@ -471,21 +504,11 @@ describe('useDiscoveryWorkflow', () => {
             recipes: [createMockDiscoveredRecipe(1)],
           } as DiscoveryProgress;
         }),
-        parseSelectedRecipes: jest.fn(async function* (selectedRecipes) {
-          yield {
-            phase: 'complete',
-            current: selectedRecipes.length,
-            total: selectedRecipes.length,
-            parsedRecipes: selectedRecipes.map((_, i) => createMockParsedRecipe(i + 1)),
-            failedRecipes: [],
-          } as ParsingProgress;
-        }),
-        fetchRecipe: jest.fn(),
-        fetchImageUrlForRecipe: jest.fn().mockResolvedValue(null),
+        extractImageFromHtml: jest.fn().mockReturnValue(null),
         canHandleUrl: jest.fn().mockReturnValue(false),
       };
 
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.isDiscovering).toBe(true);
@@ -520,6 +543,36 @@ describe('useDiscoveryWorkflow', () => {
         resumeParsing = resolve;
       });
 
+      mockOrchestratorParseSelectedRecipes.mockImplementation(async function* (
+        _provider: RecipeProvider,
+        selectedRecipes: DiscoveredRecipe[],
+        opts?: { signal?: AbortSignal }
+      ) {
+        yield {
+          phase: 'parsing',
+          current: 0,
+          total: selectedRecipes.length,
+          parsedRecipes: [],
+          failedRecipes: [],
+        } as ParsingProgress;
+
+        await parsingPause;
+
+        if (opts?.signal?.aborted) {
+          return;
+        }
+
+        yield {
+          phase: 'complete',
+          current: selectedRecipes.length,
+          total: selectedRecipes.length,
+          parsedRecipes: selectedRecipes.map((_: DiscoveredRecipe, i: number) =>
+            createMockParsedRecipe(i + 1)
+          ),
+          failedRecipes: [],
+        } as ParsingProgress;
+      });
+
       const provider: RecipeProvider = {
         id: 'mock',
         name: 'Mock Provider',
@@ -546,35 +599,11 @@ describe('useDiscoveryWorkflow', () => {
             recipes: [createMockDiscoveredRecipe(1)],
           } as DiscoveryProgress;
         }),
-        parseSelectedRecipes: jest.fn(async function* (selectedRecipes, { signal }) {
-          yield {
-            phase: 'parsing',
-            current: 0,
-            total: selectedRecipes.length,
-            parsedRecipes: [],
-            failedRecipes: [],
-          } as ParsingProgress;
-
-          await parsingPause;
-
-          if (signal?.aborted) {
-            return;
-          }
-
-          yield {
-            phase: 'complete',
-            current: selectedRecipes.length,
-            total: selectedRecipes.length,
-            parsedRecipes: selectedRecipes.map((_, i) => createMockParsedRecipe(i + 1)),
-            failedRecipes: [],
-          } as ParsingProgress;
-        }),
-        fetchRecipe: jest.fn(),
-        fetchImageUrlForRecipe: jest.fn().mockResolvedValue(null),
+        extractImageFromHtml: jest.fn().mockReturnValue(null),
         canHandleUrl: jest.fn().mockReturnValue(false),
       };
 
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.isDiscovering).toBe(true);
@@ -641,21 +670,11 @@ describe('useDiscoveryWorkflow', () => {
             recipes: [],
           } as DiscoveryProgress;
         }),
-        parseSelectedRecipes: jest.fn(async function* () {
-          yield {
-            phase: 'complete' as const,
-            current: 0,
-            total: 0,
-            parsedRecipes: [],
-            failedRecipes: [],
-          };
-        }),
-        fetchRecipe: jest.fn(),
-        fetchImageUrlForRecipe: jest.fn().mockResolvedValue(null),
+        extractImageFromHtml: jest.fn().mockReturnValue(null),
         canHandleUrl: jest.fn().mockReturnValue(false),
       };
 
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(abortSignal).not.toBeNull();
@@ -674,6 +693,36 @@ describe('useDiscoveryWorkflow', () => {
         resumeParsing = resolve;
       });
 
+      mockOrchestratorParseSelectedRecipes.mockImplementation(async function* (
+        _provider: RecipeProvider,
+        selectedRecipes: DiscoveredRecipe[],
+        opts?: { signal?: AbortSignal }
+      ) {
+        yield {
+          phase: 'parsing',
+          current: 0,
+          total: selectedRecipes.length,
+          parsedRecipes: [],
+          failedRecipes: [],
+        } as ParsingProgress;
+
+        await parsingPause;
+
+        if (opts?.signal?.aborted) {
+          return;
+        }
+
+        yield {
+          phase: 'complete',
+          current: selectedRecipes.length,
+          total: selectedRecipes.length,
+          parsedRecipes: selectedRecipes.map((_: DiscoveredRecipe, i: number) =>
+            createMockParsedRecipe(i + 1)
+          ),
+          failedRecipes: [],
+        } as ParsingProgress;
+      });
+
       const provider: RecipeProvider = {
         id: 'mock',
         name: 'Mock Provider',
@@ -689,35 +738,11 @@ describe('useDiscoveryWorkflow', () => {
             recipes: [createMockDiscoveredRecipe(1)],
           } as DiscoveryProgress;
         }),
-        parseSelectedRecipes: jest.fn(async function* (selectedRecipes, { signal }) {
-          yield {
-            phase: 'parsing',
-            current: 0,
-            total: selectedRecipes.length,
-            parsedRecipes: [],
-            failedRecipes: [],
-          } as ParsingProgress;
-
-          await parsingPause;
-
-          if (signal?.aborted) {
-            return;
-          }
-
-          yield {
-            phase: 'complete',
-            current: selectedRecipes.length,
-            total: selectedRecipes.length,
-            parsedRecipes: selectedRecipes.map((_, i) => createMockParsedRecipe(i + 1)),
-            failedRecipes: [],
-          } as ParsingProgress;
-        }),
-        fetchRecipe: jest.fn(),
-        fetchImageUrlForRecipe: jest.fn().mockResolvedValue(null),
+        extractImageFromHtml: jest.fn().mockReturnValue(null),
         canHandleUrl: jest.fn().mockReturnValue(false),
       };
 
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -762,21 +787,11 @@ describe('useDiscoveryWorkflow', () => {
           abortError.name = 'AbortError';
           throw abortError;
         }),
-        parseSelectedRecipes: jest.fn(async function* () {
-          yield {
-            phase: 'complete' as const,
-            current: 0,
-            total: 0,
-            parsedRecipes: [],
-            failedRecipes: [],
-          };
-        }),
-        fetchRecipe: jest.fn(),
-        fetchImageUrlForRecipe: jest.fn().mockResolvedValue(null),
+        extractImageFromHtml: jest.fn().mockReturnValue(null),
         canHandleUrl: jest.fn().mockReturnValue(false),
       };
 
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -789,7 +804,7 @@ describe('useDiscoveryWorkflow', () => {
   describe('markUrlsAsSeen', () => {
     it('persists URLs to database as seen', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -807,6 +822,22 @@ describe('useDiscoveryWorkflow', () => {
 
   describe('parsing edge cases', () => {
     it('returns null and sets error when no recipes are parsed', async () => {
+      mockOrchestratorParseSelectedRecipes.mockImplementation(async function* () {
+        yield {
+          phase: 'complete' as const,
+          current: 1,
+          total: 1,
+          parsedRecipes: [],
+          failedRecipes: [
+            {
+              url: 'https://example.com/recipe-1',
+              title: 'Recipe 1',
+              error: 'Parse failed',
+            },
+          ],
+        };
+      });
+
       const provider: RecipeProvider = {
         id: 'mock',
         name: 'Mock Provider',
@@ -822,27 +853,11 @@ describe('useDiscoveryWorkflow', () => {
             recipes: [createMockDiscoveredRecipe(1)],
           } as DiscoveryProgress;
         }),
-        parseSelectedRecipes: jest.fn(async function* () {
-          yield {
-            phase: 'complete' as const,
-            current: 1,
-            total: 1,
-            parsedRecipes: [],
-            failedRecipes: [
-              {
-                url: 'https://example.com/recipe-1',
-                title: 'Recipe 1',
-                error: 'Parse failed',
-              },
-            ],
-          };
-        }),
-        fetchRecipe: jest.fn(),
-        fetchImageUrlForRecipe: jest.fn().mockResolvedValue(null),
+        extractImageFromHtml: jest.fn().mockReturnValue(null),
         canHandleUrl: jest.fn().mockReturnValue(false),
       };
 
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -864,11 +879,10 @@ describe('useDiscoveryWorkflow', () => {
     });
 
     it('sets error on parsing failure', async () => {
-      const provider = createMockProvider({
-        parsingError: new Error('Parsing failed'),
-      });
+      setupDefaultParsingMock({ parsingError: new Error('Parsing failed') });
 
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'));
+      const provider = createMockProvider();
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -890,6 +904,15 @@ describe('useDiscoveryWorkflow', () => {
     });
 
     it('handles AbortError during parsing gracefully', async () => {
+      mockOrchestratorParseSelectedRecipes.mockImplementation(
+        // eslint-disable-next-line require-yield
+        async function* () {
+          const abortError = new Error('Aborted');
+          abortError.name = 'AbortError';
+          throw abortError;
+        }
+      );
+
       const provider: RecipeProvider = {
         id: 'mock',
         name: 'Mock Provider',
@@ -905,18 +928,11 @@ describe('useDiscoveryWorkflow', () => {
             recipes: [createMockDiscoveredRecipe(1)],
           } as DiscoveryProgress;
         }),
-        // eslint-disable-next-line require-yield
-        parseSelectedRecipes: jest.fn(async function* () {
-          const abortError = new Error('Aborted');
-          abortError.name = 'AbortError';
-          throw abortError;
-        }),
-        fetchRecipe: jest.fn(),
-        fetchImageUrlForRecipe: jest.fn().mockResolvedValue(null),
+        extractImageFromHtml: jest.fn().mockReturnValue(null),
         canHandleUrl: jest.fn().mockReturnValue(false),
       };
 
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -938,7 +954,7 @@ describe('useDiscoveryWorkflow', () => {
     });
 
     it('returns null when provider is undefined during parsing', async () => {
-      const { result } = renderHook(() => useDiscoveryWorkflow(undefined, 4, 'mock'));
+      const { result } = renderHook(() => useDiscoveryWorkflow(undefined, 'mock'));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -955,7 +971,7 @@ describe('useDiscoveryWorkflow', () => {
 
     it('correctly converts parsed recipe fields', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -987,7 +1003,7 @@ describe('useDiscoveryWorkflow', () => {
   describe('fresh and seen recipe separation', () => {
     it('returns empty arrays when no recipes', async () => {
       const provider = createMockProvider({ recipes: [] });
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -999,7 +1015,7 @@ describe('useDiscoveryWorkflow', () => {
 
     it('allSelected is false when no visible recipes', async () => {
       const provider = createMockProvider({ recipes: [] });
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 4, 'mock'));
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
