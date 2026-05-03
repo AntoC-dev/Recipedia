@@ -112,11 +112,8 @@ android {
         // Include locally-built wheels for packages not available as wheels on PyPI
         // (jstyleson only provides sdist, but Chaquopy 17+ requires wheels from remote indexes)
         options "--find-links", "${localWheelsDir.absolutePath}"
-        // Pin extruct>=0.17.0 for lxml 5.3.0 compatibility (fixes _ElementStringResult import error)
-        // See: https://github.com/scrapinghub/extruct/issues/230
-        install "extruct>=0.17.0"
-        // recipe-scrapers v15+ requires [online] extra for URL fetching (uses requests)
-        install "recipe-scrapers[online]>=15.0.0"
+        // Shared requirements with iOS Pyodide bundle — pins versions to keep both platforms in sync.
+        install "-r", "../scripts/requirements.txt"
       }
     }
   }

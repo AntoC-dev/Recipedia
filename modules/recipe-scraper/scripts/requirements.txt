@@ -1,6 +1,14 @@
-# Python dependencies for iOS Pyodide recipe scraping.
+# Python dependencies shared between iOS (Pyodide bundle) and Android (Chaquopy).
 #
-# Downloaded at build time and bundled into the Pyodide HTML bundle for offline
-# installation. Pyodide version is managed via npm (package.json).
+# iOS: downloaded at build time and bundled into the Pyodide HTML bundle.
+# Android: installed by Chaquopy at Gradle build time.
+# Pyodide version is managed via npm (package.json).
+#
+# Pin all transitive deps that affect parsing behaviour to keep both platforms
+# in sync (e.g. beautifulsoup4 4.14.x breaks AbstractScraper JSON-LD parsing).
 
-recipe-scrapers==15.11.0
+recipe-scrapers[online]==15.11.0
+beautifulsoup4==4.13.3
+# Pin extruct>=0.17.0 for lxml 5.3.0 compatibility (fixes _ElementStringResult import error)
+# See: https://github.com/scrapinghub/extruct/issues/230
+extruct>=0.17.0
