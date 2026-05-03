@@ -1,16 +1,5 @@
 import { QuitoqueProvider } from '@providers/QuitoqueProvider';
-import {
-  createEmptyScrapedRecipe,
-  mockScrapeRecipeFromHtml,
-  mockScrapeRecipeFromHtmlSuccess,
-} from '@mocks/modules/recipe-scraper-mock';
 import { mockFetch } from '@mocks/deps/fetch-mock';
-import { quitoqueCamembertRecipe } from '@test-data/scraperMocks/quitoque';
-
-jest.mock(
-  '@app/modules/recipe-scraper',
-  () => require('@mocks/modules/recipe-scraper-mock').recipeScraperMock
-);
 
 describe('QuitoqueProvider', () => {
   let provider: QuitoqueProvider;
@@ -43,16 +32,6 @@ describe('QuitoqueProvider', () => {
       const result = await provider.getBaseUrl();
 
       expect(result).toBe('https://www.quitoque.fr');
-    });
-  });
-
-  describe('getPlaceholderImageUrl', () => {
-    it('returns the known Quitoque placeholder URL', () => {
-      const result = provider.getPlaceholderImageUrl();
-
-      expect(result).toBe(
-        'https://www.quitoque.fr/media/cache/sylius_shop_product_cover/build/quitoque/theme/images/placeholder.4d937d0d.jpg'
-      );
     });
   });
 
@@ -241,112 +220,59 @@ describe('QuitoqueProvider', () => {
     });
   });
 
-  describe('fetchImageUrlForRecipe', () => {
-    const recipeUrl = 'https://www.quitoque.fr/recettes/camembert-roti';
-    const abortController = new AbortController();
+  describe('extractImageFromHtml', () => {
     const realImageUrl = 'https://www.quitoque.fr/media/cache/recipe-image.jpg';
-    const placeholderUrl = 'https://www.quitoque.fr/images/placeholder.jpg';
 
-    it('extracts image from JSON-LD schema directly', async () => {
-      const htmlWithJsonLd = `
+    it('extracts image from JSON-LD schema', () => {
+      const html = `
         <html>
           <script type="application/ld+json">
             {"@type": "Recipe", "image": "${realImageUrl}"}
           </script>
         </html>
       `;
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        text: () => Promise.resolve(htmlWithJsonLd),
-      });
 
-      const result = await provider.fetchImageUrlForRecipe(recipeUrl, abortController.signal);
-
-      expect(result).toBe(realImageUrl);
-      expect(mockScrapeRecipeFromHtml).not.toHaveBeenCalled();
+      expect(provider.extractImageFromHtml(html)).toBe(realImageUrl);
     });
 
-    it('skips placeholder images from JSON-LD and falls back to scraper', async () => {
-      const htmlWithPlaceholder = `
-        <html>
-          <script type="application/ld+json">
-            {"@type": "Recipe", "image": "${placeholderUrl}"}
-          </script>
-        </html>
-      `;
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        text: () => Promise.resolve(htmlWithPlaceholder),
-      });
-      mockScrapeRecipeFromHtmlSuccess(quitoqueCamembertRecipe);
-
-      const result = await provider.fetchImageUrlForRecipe(recipeUrl, abortController.signal);
-
-      expect(result).toBe(quitoqueCamembertRecipe.image);
-      expect(mockScrapeRecipeFromHtml).toHaveBeenCalled();
-    });
-
-    it('returns null when both JSON-LD and scraper return placeholders', async () => {
-      const htmlWithPlaceholder = `
-        <html>
-          <script type="application/ld+json">
-            {"@type": "Recipe", "image": "${placeholderUrl}"}
-          </script>
-        </html>
-      `;
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        text: () => Promise.resolve(htmlWithPlaceholder),
-      });
-      mockScrapeRecipeFromHtmlSuccess(createEmptyScrapedRecipe({ image: placeholderUrl }));
-
-      const result = await provider.fetchImageUrlForRecipe(recipeUrl, abortController.signal);
-
-      expect(result).toBeNull();
-    });
-
-    it('handles @graph format in JSON-LD', async () => {
-      const htmlWithGraph = `
+    it('handles @graph format in JSON-LD', () => {
+      const html = `
         <html>
           <script type="application/ld+json">
             {"@graph": [{"@type": "WebPage"}, {"@type": "Recipe", "image": "${realImageUrl}"}]}
           </script>
         </html>
       `;
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        text: () => Promise.resolve(htmlWithGraph),
-      });
 
-      const result = await provider.fetchImageUrlForRecipe(recipeUrl, abortController.signal);
-
-      expect(result).toBe(realImageUrl);
+      expect(provider.extractImageFromHtml(html)).toBe(realImageUrl);
     });
 
-    it('handles image as array in JSON-LD', async () => {
-      const htmlWithArray = `
+    it('handles image as array in JSON-LD', () => {
+      const html = `
         <html>
           <script type="application/ld+json">
             {"@type": "Recipe", "image": ["${realImageUrl}", "other.jpg"]}
           </script>
         </html>
       `;
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        text: () => Promise.resolve(htmlWithArray),
-      });
 
-      const result = await provider.fetchImageUrlForRecipe(recipeUrl, abortController.signal);
-
-      expect(result).toBe(realImageUrl);
+      expect(provider.extractImageFromHtml(html)).toBe(realImageUrl);
     });
 
-    it('returns null on fetch error', async () => {
-      mockFetch.mockRejectedValueOnce(new Error('Network error'));
+    it('returns null when no JSON-LD found', () => {
+      expect(provider.extractImageFromHtml('<html><body>No schema</body></html>')).toBeNull();
+    });
 
-      const result = await provider.fetchImageUrlForRecipe(recipeUrl, abortController.signal);
+    it('returns null when JSON-LD has no image', () => {
+      const html = `
+        <html>
+          <script type="application/ld+json">
+            {"@type": "Recipe", "name": "Test"}
+          </script>
+        </html>
+      `;
 
-      expect(result).toBeNull();
+      expect(provider.extractImageFromHtml(html)).toBeNull();
     });
   });
 });

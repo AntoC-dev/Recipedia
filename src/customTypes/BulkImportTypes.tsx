@@ -60,45 +60,17 @@ export interface RecipeProvider {
   discoverRecipeUrls(options: DiscoveryOptions): AsyncGenerator<DiscoveryProgress>;
 
   /**
-   * Parses selected recipes to extract full recipe data with streaming progress
+   * Extracts a recipe image URL directly from page HTML, when the provider has
+   * a faster or more reliable path than the recipe scraper
    *
-   * @param selectedRecipes - Recipes selected by the user for import
-   * @param options - Parsing options including abort signal and default persons
-   * @yields Progress updates with parsed and failed recipes
+   * The orchestrating hook (`useRecipeScraper`) calls this first when fetching
+   * a recipe image and falls back to the scraper-derived image when the
+   * provider returns null. Default implementations may return null.
+   *
+   * @param html - Raw HTML content of the recipe page
+   * @returns Image URL extracted from the HTML, or null when not available
    */
-  parseSelectedRecipes(
-    selectedRecipes: DiscoveredRecipe[],
-    options: DiscoveryOptions
-  ): AsyncGenerator<ParsingProgress>;
-
-  /**
-   * Fetches and parses a single recipe from its URL
-   *
-   * @param url - URL of the recipe page to fetch
-   * @param defaultPersons - Default serving size if not specified in the recipe
-   * @param ignoredPatterns - Patterns for ingredients to skip during parsing
-   * @param signal - Optional abort signal for cancellation
-   * @returns Promise resolving to the fetched and converted recipe
-   * @throws Error if the recipe cannot be fetched or parsed
-   */
-  fetchRecipe(
-    url: string,
-    defaultPersons: number,
-    ignoredPatterns: IgnoredIngredientPatterns,
-    signal?: AbortSignal
-  ): Promise<FetchedRecipe>;
-
-  /**
-   * Fetches just the image URL for a recipe page on-demand
-   *
-   * Used for visibility-based lazy loading of images. Returns null if
-   * no image is found or the fetch fails.
-   *
-   * @param url - Recipe page URL to fetch image for
-   * @param signal - Abort signal for cancellation
-   * @returns Promise resolving to image URL or null
-   */
-  fetchImageUrlForRecipe(url: string, signal: AbortSignal): Promise<string | null>;
+  extractImageFromHtml(html: string): string | null;
 
   /**
    * Returns true if this provider can handle the given recipe source URL
@@ -123,8 +95,6 @@ export interface DiscoveryOptions {
   signal?: AbortSignal;
   /** Default serving size for parsed recipes */
   defaultPersons?: number;
-  /** Callback invoked when a recipe image URL is loaded in background */
-  onImageLoaded?: (recipeUrl: string, imageUrl: string) => void;
   /** Patterns for ingredients to skip during parsing */
   ignoredPatterns?: IgnoredIngredientPatterns;
 }
@@ -234,16 +204,6 @@ export interface FailedDiscoveryRecipe {
   title: string;
   /** Error message describing the failure */
   error: string;
-}
-
-/**
- * Result of fetching and parsing a single recipe
- */
-export interface FetchedRecipe {
-  /** URL of the fetched recipe */
-  url: string;
-  /** Converted recipe data ready for import */
-  converted: ConvertedImportRecipe;
 }
 
 /**

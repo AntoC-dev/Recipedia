@@ -29,12 +29,6 @@ describe('HelloFreshProvider', () => {
     });
   });
 
-  describe('getPlaceholderImageUrl', () => {
-    it('returns null because HelloFresh embeds real images directly', () => {
-      expect(provider.getPlaceholderImageUrl()).toBeNull();
-    });
-  });
-
   describe('getBaseUrl', () => {
     it('returns French URL for fr language', async () => {
       mockGetLanguage.mockResolvedValueOnce('fr');

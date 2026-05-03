@@ -1,7 +1,5 @@
 import { BaseRecipeProvider } from '@providers/BaseRecipeProvider';
-import { hellofreshRecipePageHtml } from '@test-data/scraperMocks/hellofresh';
 import { mockFetch } from '@mocks/deps/fetch-mock';
-import { mockDownloadImageToCache } from '@mocks/utils/FileGestion-mock';
 
 class TestProvider extends BaseRecipeProvider {
   readonly id = 'test';
@@ -153,147 +151,9 @@ describe('BaseRecipeProvider', () => {
     });
   });
 
-  describe('parseSelectedRecipes', () => {
-    const selectedRecipes = [
-      { url: 'https://www.test-provider.com/recipe1', title: 'Recipe 1' },
-      { url: 'https://www.test-provider.com/recipe2', title: 'Recipe 2' },
-    ];
-
-    it('yields initial parsing progress', async () => {
-      mockFetch.mockResolvedValue({
-        ok: true,
-        text: () => Promise.resolve(hellofreshRecipePageHtml),
-      });
-
-      const generator = provider.parseSelectedRecipes(selectedRecipes);
-      const firstProgress = await generator.next();
-
-      expect(firstProgress.value).toMatchObject({
-        phase: 'parsing',
-        current: 0,
-        total: 2,
-      });
-    });
-
-    it('yields complete progress at the end', async () => {
-      jest.useRealTimers();
-
-      mockFetch.mockResolvedValue({
-        ok: true,
-        text: () => Promise.resolve(hellofreshRecipePageHtml),
-      });
-
-      let lastProgress;
-
-      for await (const progress of provider.parseSelectedRecipes(selectedRecipes)) {
-        lastProgress = progress;
-      }
-
-      expect(lastProgress).toMatchObject({
-        phase: 'complete',
-        total: 2,
-      });
-    });
-
-    it('adds failed recipes on fetch error', async () => {
-      jest.useRealTimers();
-
-      mockFetch.mockRejectedValue(new Error('Network error'));
-
-      let lastProgress;
-
-      for await (const progress of provider.parseSelectedRecipes(selectedRecipes)) {
-        lastProgress = progress;
-      }
-
-      expect(lastProgress?.failedRecipes.length).toBe(2);
-      expect(lastProgress?.failedRecipes[0].error).toContain('Network error');
-    });
-
-    it('stops on abort signal', async () => {
-      jest.useRealTimers();
-
-      const controller = new AbortController();
-      controller.abort();
-
-      let lastProgress;
-
-      for await (const progress of provider.parseSelectedRecipes(selectedRecipes, {
-        signal: controller.signal,
-      })) {
-        lastProgress = progress;
-      }
-
-      expect(lastProgress?.parsedRecipes.length).toBe(0);
-    });
-  });
-
-  describe('fetchRecipe', () => {
-    it('returns converted recipe on success', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        text: () => Promise.resolve(hellofreshRecipePageHtml),
-      });
-
-      const result = await provider.fetchRecipe('https://example.com/recipe', 4, {
-        prefixes: [],
-        exactMatches: [],
-      });
-
-      expect(result.url).toBe('https://example.com/recipe');
-      expect(result.converted).toBeDefined();
-      expect(result.converted.title).toBeDefined();
-    });
-
-    it('throws on HTTP error', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        status: 404,
-        statusText: 'Not Found',
-      });
-
-      await expect(
-        provider.fetchRecipe('https://example.com/recipe', 4, { prefixes: [], exactMatches: [] })
-      ).rejects.toThrow('HTTP 404');
-    });
-
-    it('throws on parse failure', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        text: () => Promise.resolve('<html><body>No JSON-LD</body></html>'),
-      });
-
-      await expect(
-        provider.fetchRecipe('https://example.com/recipe', 4, { prefixes: [], exactMatches: [] })
-      ).rejects.toThrow('Failed to parse recipe');
-    });
-  });
-
-  describe('parseSelectedRecipes image handling', () => {
-    it('does not download image when recipe.imageUrl is a placeholder URL', async () => {
-      jest.useRealTimers();
-
-      const PLACEHOLDER_URL =
-        'https://www.quitoque.fr/media/cache/sylius_shop_product_cover/build/quitoque/theme/images/placeholder.4d937d0d.jpg';
-
-      mockFetch.mockResolvedValue({
-        ok: true,
-        text: () => Promise.resolve('<html></html>'),
-      });
-
-      const selectedRecipes = [
-        {
-          url: 'https://www.test-provider.com/recipe1',
-          title: 'Recipe 1',
-          imageUrl: PLACEHOLDER_URL,
-        },
-      ];
-
-      for await (const _ of provider.parseSelectedRecipes(selectedRecipes)) {
-        // consume generator
-      }
-
-      expect(mockDownloadImageToCache).not.toHaveBeenCalled();
+  describe('extractImageFromHtml', () => {
+    it('returns null by default', () => {
+      expect(provider.extractImageFromHtml('<html></html>')).toBeNull();
     });
   });
 

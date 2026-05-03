@@ -9,9 +9,7 @@ const mockProvider: RecipeProvider = {
   logoUrl: 'https://example.com/logo.png',
   getBaseUrl: jest.fn(),
   discoverRecipeUrls: jest.fn(),
-  parseSelectedRecipes: jest.fn(),
-  fetchRecipe: jest.fn(),
-  fetchImageUrlForRecipe: jest.fn().mockResolvedValue(null),
+  extractImageFromHtml: jest.fn().mockReturnValue(null),
   canHandleUrl: jest.fn().mockReturnValue(false),
 };
 

@@ -8,7 +8,7 @@
  */
 
 import { bulkImportLogger } from '@utils/logger';
-import { extractImageFromJsonLd, isPlaceholderImageUrl } from '@utils/UrlHelpers';
+import { extractImageFromJsonLd } from '@utils/UrlHelpers';
 import { BaseRecipeProvider } from './BaseRecipeProvider';
 
 /** URL to Quitoque's logo (may need updating when anniversary branding changes) */
@@ -17,10 +17,6 @@ const QUITOQUE_LOGO_URL =
 
 /** Base URL for Quitoque (French only) */
 const QUITOQUE_BASE_URL = 'https://www.quitoque.fr';
-
-/** Known placeholder image returned by recipe-scrapers for all Quitoque recipes */
-const QUITOQUE_PLACEHOLDER_URL =
-  'https://www.quitoque.fr/media/cache/sylius_shop_product_cover/build/quitoque/theme/images/placeholder.4d937d0d.jpg';
 
 /** Regex to extract recipe URLs from HTML */
 const RECIPE_URL_REGEX = /href="(\/recettes\/[a-z0-9-]+)"/gi;
@@ -43,18 +39,6 @@ export class QuitoqueProvider extends BaseRecipeProvider {
   readonly name = 'Quitoque';
   readonly logoUrl = QUITOQUE_LOGO_URL;
   readonly supportedLanguages = ['fr'] as const;
-
-  /**
-   * Returns the URL of Quitoque's known placeholder image
-   *
-   * The recipe-scrapers library returns this placeholder for all Quitoque recipes.
-   * ImageRepair uses it to detect recipes stored with placeholder content via MD5 comparison.
-   *
-   * @returns The Quitoque placeholder image URL
-   */
-  override getPlaceholderImageUrl(): string {
-    return QUITOQUE_PLACEHOLDER_URL;
-  }
 
   /**
    * Gets the base URL for Quitoque
@@ -180,33 +164,18 @@ export class QuitoqueProvider extends BaseRecipeProvider {
   }
 
   /**
-   * Fetches the image URL for a Quitoque recipe page
+   * Extracts the real recipe image directly from JSON-LD schema markup
    *
-   * The Python recipe-scrapers library returns placeholder images for Quitoque.
-   * This override extracts the real image directly from JSON-LD schema.
+   * The Python recipe-scrapers library returns placeholder images for
+   * Quitoque, so we bypass it and read the canonical image from the
+   * page's JSON-LD payload. The orchestrating hook falls back to the
+   * scraper-derived image when this returns null.
    *
-   * @param url - Recipe page URL
-   * @param signal - Abort signal for cancellation
-   * @returns Promise resolving to image URL or null
+   * @param html - Raw HTML content of the recipe page
+   * @returns Image URL extracted from JSON-LD, or null when not present
    */
-  override async fetchImageUrlForRecipe(url: string, signal: AbortSignal): Promise<string | null> {
-    try {
-      const html = await this.fetchHtml(url, signal);
-
-      const jsonLdImage = extractImageFromJsonLd(html);
-      if (jsonLdImage) {
-        return jsonLdImage;
-      }
-
-      const metadata = await this.extractPreviewMetadata(html, url);
-      if (metadata.imageUrl && !isPlaceholderImageUrl(metadata.imageUrl)) {
-        return metadata.imageUrl;
-      }
-
-      return null;
-    } catch {
-      return null;
-    }
+  override extractImageFromHtml(html: string): string | null {
+    return extractImageFromJsonLd(html);
   }
 
   /**

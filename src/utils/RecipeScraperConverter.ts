@@ -27,7 +27,7 @@ import {
   ParsedInstruction,
   ScrapedNutrients,
   ScrapedRecipe,
-} from '@utils/RecipeScraper';
+} from '@app/modules/recipe-scraper';
 
 const DEFAULT_PORTION_WEIGHT_GRAMS = 100;
 const SODIUM_MG_THRESHOLD = 10;
