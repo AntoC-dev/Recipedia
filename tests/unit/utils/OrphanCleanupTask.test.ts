@@ -1,9 +1,9 @@
 import {
-  IMAGE_REPAIR_TASK_NAME,
-  registerImageRepairTask,
-  runImageRepairTask,
-  unregisterImageRepairTask,
-} from '@utils/ImageRepairTask';
+  ORPHAN_CLEANUP_TASK_NAME,
+  registerOrphanCleanupTask,
+  runOrphanCleanupTask,
+  unregisterOrphanCleanupTask,
+} from '@utils/OrphanCleanupTask';
 import {
   BackgroundTaskResult,
   BackgroundTaskStatus,
@@ -12,7 +12,6 @@ import {
   mockUnregisterTaskAsync,
 } from '@mocks/deps/expo-background-task-mock';
 import { mockIsTaskRegisteredAsync } from '@mocks/deps/expo-task-manager-mock';
-import { mockRepairMissingRecipeImages } from '@mocks/utils/ImageRepair-mock';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
@@ -24,7 +23,6 @@ jest.mock('expo-background-task', () =>
 jest.mock('expo-task-manager', () =>
   require('@mocks/deps/expo-task-manager-mock').expoTaskManagerMock()
 );
-jest.mock('@utils/ImageRepair', () => require('@mocks/utils/ImageRepair-mock').imageRepairMock());
 
 const mockCleanupOrphanedImages = jest.fn().mockResolvedValue(0);
 jest.mock('@utils/FileGestion', () => ({
@@ -32,7 +30,7 @@ jest.mock('@utils/FileGestion', () => ({
   cleanupOrphanedImages: (...args: unknown[]) => mockCleanupOrphanedImages(...args),
 }));
 
-describe('ImageRepairTask', () => {
+describe('OrphanCleanupTask', () => {
   const database = RecipeDatabase.getInstance();
 
   beforeEach(async () => {
@@ -47,11 +45,11 @@ describe('ImageRepairTask', () => {
     await database.closeAndReset();
   });
 
-  describe('registerImageRepairTask', () => {
+  describe('registerOrphanCleanupTask', () => {
     it('registers the task with a daily minimum interval', async () => {
-      await registerImageRepairTask();
+      await registerOrphanCleanupTask();
 
-      expect(mockRegisterTaskAsync).toHaveBeenCalledWith(IMAGE_REPAIR_TASK_NAME, {
+      expect(mockRegisterTaskAsync).toHaveBeenCalledWith(ORPHAN_CLEANUP_TASK_NAME, {
         minimumInterval: 24 * 60,
       });
     });
@@ -59,7 +57,7 @@ describe('ImageRepairTask', () => {
     it('does nothing when background tasks are restricted', async () => {
       mockGetStatusAsync.mockResolvedValue(BackgroundTaskStatus.Restricted);
 
-      await registerImageRepairTask();
+      await registerOrphanCleanupTask();
 
       expect(mockRegisterTaskAsync).not.toHaveBeenCalled();
     });
@@ -67,7 +65,7 @@ describe('ImageRepairTask', () => {
     it('does nothing when the task is already registered', async () => {
       mockIsTaskRegisteredAsync.mockResolvedValue(true);
 
-      await registerImageRepairTask();
+      await registerOrphanCleanupTask();
 
       expect(mockRegisterTaskAsync).not.toHaveBeenCalled();
     });
@@ -75,30 +73,30 @@ describe('ImageRepairTask', () => {
     it('swallows errors from registerTaskAsync', async () => {
       mockRegisterTaskAsync.mockRejectedValueOnce(new Error('boom'));
 
-      await expect(registerImageRepairTask()).resolves.toBeUndefined();
+      await expect(registerOrphanCleanupTask()).resolves.toBeUndefined();
     });
 
     it('swallows errors from getStatusAsync', async () => {
       mockGetStatusAsync.mockRejectedValueOnce(new Error('status failed'));
 
-      await expect(registerImageRepairTask()).resolves.toBeUndefined();
+      await expect(registerOrphanCleanupTask()).resolves.toBeUndefined();
       expect(mockRegisterTaskAsync).not.toHaveBeenCalled();
     });
   });
 
-  describe('unregisterImageRepairTask', () => {
+  describe('unregisterOrphanCleanupTask', () => {
     it('unregisters when the task is registered', async () => {
       mockIsTaskRegisteredAsync.mockResolvedValue(true);
 
-      await unregisterImageRepairTask();
+      await unregisterOrphanCleanupTask();
 
-      expect(mockUnregisterTaskAsync).toHaveBeenCalledWith(IMAGE_REPAIR_TASK_NAME);
+      expect(mockUnregisterTaskAsync).toHaveBeenCalledWith(ORPHAN_CLEANUP_TASK_NAME);
     });
 
     it('does nothing when the task is not registered', async () => {
       mockIsTaskRegisteredAsync.mockResolvedValue(false);
 
-      await unregisterImageRepairTask();
+      await unregisterOrphanCleanupTask();
 
       expect(mockUnregisterTaskAsync).not.toHaveBeenCalled();
     });
@@ -107,57 +105,32 @@ describe('ImageRepairTask', () => {
       mockIsTaskRegisteredAsync.mockResolvedValue(true);
       mockUnregisterTaskAsync.mockRejectedValueOnce(new Error('boom'));
 
-      await expect(unregisterImageRepairTask()).resolves.toBeUndefined();
+      await expect(unregisterOrphanCleanupTask()).resolves.toBeUndefined();
     });
   });
 
-  describe('runImageRepairTask', () => {
+  describe('runOrphanCleanupTask', () => {
     async function seedTestRecipes() {
       await database.addMultipleIngredients(testIngredients);
       await database.addMultipleTags(testTags);
       await database.addMultipleRecipes(testRecipes);
     }
 
-    it('returns Success and invokes the repair routine with all recipes', async () => {
+    it('returns Success and runs orphan cleanup with the full recipe list', async () => {
       await seedTestRecipes();
 
-      const result = await runImageRepairTask();
+      const result = await runOrphanCleanupTask();
 
       expect(result).toBe(BackgroundTaskResult.Success);
-      expect(mockRepairMissingRecipeImages).toHaveBeenCalledTimes(1);
-      const passedRecipes = mockRepairMissingRecipeImages.mock.calls[0][0];
-      expect(passedRecipes.length).toBe(testRecipes.length);
-    });
-
-    it('returns Success and calls repair with empty array when no recipes', async () => {
-      const result = await runImageRepairTask();
-
-      expect(result).toBe(BackgroundTaskResult.Success);
-      expect(mockRepairMissingRecipeImages).toHaveBeenCalledWith([], expect.any(Function));
-    });
-
-    it('returns Failed when repair throws', async () => {
-      await seedTestRecipes();
-      mockRepairMissingRecipeImages.mockRejectedValueOnce(new Error('repair exploded'));
-
-      const result = await runImageRepairTask();
-
-      expect(result).toBe(BackgroundTaskResult.Failed);
-    });
-
-    it('runs orphan cleanup with the full recipe list after repair', async () => {
-      await seedTestRecipes();
-
-      await runImageRepairTask();
-
       expect(mockCleanupOrphanedImages).toHaveBeenCalledTimes(1);
       const passedUris = mockCleanupOrphanedImages.mock.calls[0][0];
       expect(passedUris.length).toBe(testRecipes.length);
     });
 
-    it('runs orphan cleanup even when there are no recipes', async () => {
-      await runImageRepairTask();
+    it('runs orphan cleanup with an empty list when there are no recipes', async () => {
+      const result = await runOrphanCleanupTask();
 
+      expect(result).toBe(BackgroundTaskResult.Success);
       expect(mockCleanupOrphanedImages).toHaveBeenCalledWith([]);
     });
 
@@ -165,7 +138,7 @@ describe('ImageRepairTask', () => {
       await seedTestRecipes();
       mockCleanupOrphanedImages.mockRejectedValueOnce(new Error('cleanup failed'));
 
-      const result = await runImageRepairTask();
+      const result = await runOrphanCleanupTask();
 
       expect(result).toBe(BackgroundTaskResult.Failed);
     });
