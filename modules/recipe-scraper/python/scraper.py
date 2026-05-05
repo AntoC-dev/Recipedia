@@ -12,6 +12,7 @@ Requires: recipe-scrapers[online]>=15.0.0
 
 import html
 import json
+import re
 import sys
 import traceback
 from typing import Any, Optional, List, Dict
@@ -93,6 +94,39 @@ class NoRecipeFoundError(Exception):
     def __init__(self, message: str = "No recipe found on this page"):
         self.message = message
         super().__init__(message)
+
+
+_NEXT_DATA_PATTERN = re.compile(
+    r'<script\s+id="__NEXT_DATA__"\s+type="application/json"[^>]*>'
+    r'(?:[^<]|<(?!/script>))*</script>',
+    re.IGNORECASE,
+)
+
+
+def _strip_large_scripts(html: str) -> str:
+    """Remove large non-essential script blocks (e.g. __NEXT_DATA__) from HTML."""
+    return _NEXT_DATA_PATTERN.sub('', html)
+
+
+def _is_scrape_result_incomplete(data: Dict[str, Any]) -> bool:
+    """Check if a scrape result is missing critical fields that schema.org should provide."""
+    has_title = data.get("title") is not None
+    has_ingredients = len(data.get("ingredients") or []) > 0
+    return not has_title and not has_ingredients
+
+
+def _merge_scrape_results(full: Dict[str, Any], stripped: Dict[str, Any]) -> Dict[str, Any]:
+    """Merge two scrape results, preferring non-null values from ``full`` first."""
+    merged = {}
+    for key in full:
+        full_val = full[key]
+        stripped_val = stripped.get(key)
+
+        if full_val is None or full_val == [] or full_val == 0:
+            merged[key] = stripped_val if stripped_val is not None else full_val
+        else:
+            merged[key] = full_val
+    return merged
 
 
 def _has_recipe_schema(html: str) -> bool:
@@ -198,6 +232,18 @@ def scrape_recipe_from_html(html: str, url: str, wild_mode: bool = True, final_u
         _log_debug("scrape_html succeeded, extracting data...")
 
         data = _extract_all_data(scraper)
+
+        # On environments with old libxml2 (e.g. Chaquopy/Android ships libxml2 2.9.8),
+        # lxml silently fails to parse large HTML, causing extruct to miss JSON-LD data.
+        # Retry with large scripts stripped so lxml can handle the reduced HTML.
+        if _is_scrape_result_incomplete(data):
+            stripped_html = _strip_large_scripts(html)
+            if len(stripped_html) < len(html):
+                _log_info("Incomplete result detected, retrying with stripped HTML")
+                stripped_scraper = scrape_html(html=stripped_html, org_url=url, supported_only=not wild_mode)
+                stripped_data = _extract_all_data(stripped_scraper)
+                data = _merge_scrape_results(data, stripped_data)
+
         _log_info(f"Scrape successful: title='{data.get('title', 'N/A')}', ingredients={len(data.get('ingredients', []))}")
 
         return json.dumps({
@@ -279,54 +325,36 @@ def _unescape(value):
 
 def _extract_all_data(scraper) -> Dict[str, Any]:
     """
-    Extract all available data from a scraper instance.
-
-    Returns raw data from recipe-scrapers without custom enhancements.
-    Custom enhancements are applied in TypeScript for cross-platform consistency.
+    Extract all available data from a scraper instance (production).
     """
     ingredients = _safe_call(scraper.ingredients) or []
 
     return {
-        # Core recipe data (raw, no post-processing)
         "title": _unescape(_safe_call(scraper.title)),
         "description": _unescape(_safe_call(scraper.description)),
         "ingredients": _unescape(ingredients),
-        "parsedIngredients": None,  # TypeScript applies enhancements
+        "parsedIngredients": None,
         "ingredientGroups": _safe_call_ingredient_groups(scraper),
         "instructions": _unescape(_safe_call(scraper.instructions)),
         "instructionsList": _unescape(_safe_call(scraper.instructions_list)),
-        "parsedInstructions": None,  # TypeScript applies enhancements
-
-        # Timing (use numeric call to preserve 0 as valid)
+        "parsedInstructions": None,
         "totalTime": _safe_call_numeric(scraper.total_time),
         "prepTime": _safe_call_numeric(scraper.prep_time),
         "cookTime": _safe_call_numeric(scraper.cook_time),
-
-        # Yield and servings
         "yields": _safe_call(scraper.yields),
-
-        # Media (raw, TypeScript handles fallbacks)
         "image": _safe_call(scraper.image),
-
-        # Metadata
         "host": _safe_call(scraper.host),
         "canonicalUrl": _safe_call(scraper.canonical_url),
         "siteName": _safe_call(scraper.site_name),
         "author": _safe_call(scraper.author),
         "language": _safe_call(scraper.language),
-
-        # Categorization (raw, TypeScript handles cleaning)
         "category": _safe_call(scraper.category),
         "cuisine": _safe_call(scraper.cuisine),
         "cookingMethod": _safe_call(scraper.cooking_method),
         "keywords": _safe_call(scraper.keywords),
         "dietaryRestrictions": _safe_call(scraper.dietary_restrictions),
-
-        # Ratings
         "ratings": _safe_call(scraper.ratings),
         "ratingsCount": _safe_call_numeric(scraper.ratings_count),
-
-        # Additional data (raw, TypeScript handles enhancements)
         "nutrients": _safe_call(scraper.nutrients),
         "equipment": _safe_call(scraper.equipment),
         "links": _safe_call(scraper.links),
@@ -418,7 +446,6 @@ def _detect_auth_required(html: str, final_url: str, original_url: str) -> Optio
     except Exception:
         pass
 
-    import re
     title_match = re.search(r'<title[^>]*>([^<]+)</title>', html, re.IGNORECASE)
     if title_match:
         title = title_match.group(1).lower()

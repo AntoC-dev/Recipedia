@@ -13,6 +13,9 @@ from scraper import (
     _safe_call_numeric,
     _detect_auth_required,
     _has_recipe_schema,
+    _strip_large_scripts,
+    _is_scrape_result_incomplete,
+    _merge_scrape_results,
     _log_debug,
     _log_info,
     _log_warn,
@@ -465,6 +468,167 @@ class TestLogging:
         captured = capsys.readouterr()
         assert "ERROR" in captured.err
         assert "test exception" in captured.err
+
+
+FIXTURES_DIR = Path(__file__).parent / "fixtures"
+
+HELLOFRESH_URL = "https://www.hellofresh.fr/recipes/keftas-de-boeuf-and-semoule-aux-epices-66e83b9e7dfc60d59bf5f913"
+QUITOQUE_URL = "https://www.quitoque.fr/recettes/tartare-de-lentilles-blondes-mangue-et-salade-dalgues"
+
+
+class TestStripLargeScripts:
+    def test_removes_next_data_script(self):
+        html = '<html><script id="__NEXT_DATA__" type="application/json">{"huge":"data"}</script><p>content</p></html>'
+        result = _strip_large_scripts(html)
+        assert "__NEXT_DATA__" not in result
+        assert "<p>content</p>" in result
+
+    def test_preserves_ld_json_scripts(self):
+        html = '<script type="application/ld+json">{"@type":"Recipe"}</script>'
+        result = _strip_large_scripts(html)
+        assert 'application/ld+json' in result
+
+    def test_preserves_html_without_next_data(self):
+        result = _strip_large_scripts(SIMPLE_RECIPE_HTML)
+        assert result == SIMPLE_RECIPE_HTML
+
+    def test_handles_multiline_next_data(self):
+        html = '<script id="__NEXT_DATA__" type="application/json">\n{"big":\n"json"}\n</script><p>ok</p>'
+        result = _strip_large_scripts(html)
+        assert "__NEXT_DATA__" not in result
+        assert "<p>ok</p>" in result
+
+
+class TestIsScrapeResultIncomplete:
+    def test_complete_result(self):
+        data = {"title": "Cake", "ingredients": ["flour", "sugar"]}
+        assert _is_scrape_result_incomplete(data) is False
+
+    def test_missing_title_with_ingredients(self):
+        data = {"title": None, "ingredients": ["flour"]}
+        assert _is_scrape_result_incomplete(data) is False
+
+    def test_title_with_no_ingredients(self):
+        data = {"title": "Cake", "ingredients": []}
+        assert _is_scrape_result_incomplete(data) is False
+
+    def test_no_title_no_ingredients(self):
+        data = {"title": None, "ingredients": []}
+        assert _is_scrape_result_incomplete(data) is True
+
+    def test_no_title_missing_ingredients_key(self):
+        data = {"title": None}
+        assert _is_scrape_result_incomplete(data) is True
+
+
+class TestMergeScrapeResults:
+    def test_prefers_full_non_null_values(self):
+        full = {"title": "Full Title", "totalTime": 70, "ingredients": ["a"]}
+        stripped = {"title": "Stripped Title", "totalTime": 40, "ingredients": ["b"]}
+        merged = _merge_scrape_results(full, stripped)
+        assert merged["title"] == "Full Title"
+        assert merged["totalTime"] == 70
+        assert merged["ingredients"] == ["a"]
+
+    def test_fills_none_from_stripped(self):
+        full = {"title": None, "totalTime": 70, "ingredients": []}
+        stripped = {"title": "From Stripped", "totalTime": 40, "ingredients": ["flour"]}
+        merged = _merge_scrape_results(full, stripped)
+        assert merged["title"] == "From Stripped"
+        assert merged["totalTime"] == 70
+        assert merged["ingredients"] == ["flour"]
+
+    def test_keeps_none_when_both_none(self):
+        full = {"title": None, "category": None}
+        stripped = {"title": "Title", "category": None}
+        merged = _merge_scrape_results(full, stripped)
+        assert merged["title"] == "Title"
+        assert merged["category"] is None
+
+
+class TestHelloFreshLargeHtml:
+    """Regression tests for HelloFresh pages with large __NEXT_DATA__ blobs (~3.9 MB).
+
+    On Android (Chaquopy), libxml2 2.9.8 silently fails to parse large HTML,
+    causing extruct to miss JSON-LD schema data. The retry-with-stripped-HTML
+    fallback recovers schema fields while preserving time data from the first parse.
+    """
+
+    @staticmethod
+    def _scrape_fixture():
+        fixture_path = FIXTURES_DIR / "hellofresh_fr.html"
+        html = fixture_path.read_text(encoding="utf-8")
+        return json.loads(scrape_recipe_from_html(html, HELLOFRESH_URL))
+
+    def test_scrape_succeeds(self):
+        result = self._scrape_fixture()
+        assert result["success"] is True
+
+    def test_extracts_title(self):
+        result = self._scrape_fixture()
+        assert result["data"]["title"] is not None
+        assert "kefta" in result["data"]["title"].lower()
+
+    def test_extracts_ingredients(self):
+        result = self._scrape_fixture()
+        assert len(result["data"]["ingredients"]) > 0
+
+    def test_extracts_instructions(self):
+        result = self._scrape_fixture()
+        instructions = result["data"]["instructionsList"] or []
+        assert len(instructions) > 0
+
+    def test_extracts_time(self):
+        result = self._scrape_fixture()
+        assert result["data"]["totalTime"] is not None
+        assert result["data"]["totalTime"] > 0
+
+    def test_extracts_yields(self):
+        result = self._scrape_fixture()
+        assert result["data"]["yields"] is not None
+
+    def test_extracts_image(self):
+        result = self._scrape_fixture()
+        assert result["data"]["image"] is not None
+        assert result["data"]["image"].startswith("http")
+
+
+class TestQuitoqueHtml:
+    """Tests for Quitoque (small HTML, no retry needed)."""
+
+    @staticmethod
+    def _scrape_fixture():
+        fixture_path = FIXTURES_DIR / "quitoque_fr.html"
+        html = fixture_path.read_text(encoding="utf-8")
+        return json.loads(scrape_recipe_from_html(html, QUITOQUE_URL))
+
+    def test_scrape_succeeds(self):
+        result = self._scrape_fixture()
+        assert result["success"] is True
+
+    def test_extracts_title(self):
+        result = self._scrape_fixture()
+        assert result["data"]["title"] is not None
+        assert "tartare" in result["data"]["title"].lower()
+
+    def test_extracts_ingredients(self):
+        result = self._scrape_fixture()
+        assert len(result["data"]["ingredients"]) > 0
+
+    def test_extracts_instructions(self):
+        result = self._scrape_fixture()
+        instructions = result["data"]["instructionsList"] or []
+        assert len(instructions) > 0
+
+    def test_extracts_time(self):
+        result = self._scrape_fixture()
+        assert result["data"]["totalTime"] is not None
+        assert result["data"]["totalTime"] > 0
+
+    def test_extracts_image(self):
+        result = self._scrape_fixture()
+        assert result["data"]["image"] is not None
+        assert result["data"]["image"].startswith("http")
 
 
 class TestModuleInitialization:
