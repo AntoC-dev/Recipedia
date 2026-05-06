@@ -1,3 +1,10 @@
+## [2.35.1](https://github.com/AntoC-dev/Recipedia/compare/v2.35.0...v2.35.1) (2026-05-06)
+
+### Bug Fixes
+
+* **recipe-scraper:** pin Python deps via shared requirements.txt on Android ([a75b319](https://github.com/AntoC-dev/Recipedia/commit/a75b3190c7f968c72eb99f9b619d9f98882f2313))
+* **recipe-scraper:** retry with stripped HTML when lxml fails on large pages ([5bada5a](https://github.com/AntoC-dev/Recipedia/commit/5bada5aa52ff74ab5fdc6681a87720d595645006))
+
 ## [2.35.0](https://github.com/AntoC-dev/Recipedia/compare/v2.34.0...v2.35.0) (2026-05-01)
 
 ### Features
