@@ -14,8 +14,10 @@ export type {
     SupportedHostsResult,
 } from './src/types';
 
-export { ScraperErrorTypes } from './src/types';
+export { ScraperErrorTypes, isScraperSuccess } from './src/types';
 
-// Scraper class, instance, and hooks
-export { RecipeScraper, recipeScraper, usePythonReady } from './src/RecipeScraper';
 export type { ScrapeOptions } from './src/RecipeScraper';
+
+// Provider + hook
+export { ScraperProvider, useScraper } from './src/ScraperProvider';
+export type { ScraperContextValue } from './src/ScraperProvider';

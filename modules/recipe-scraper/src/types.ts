@@ -187,3 +187,10 @@ export type SupportedHostsResult = ScraperResult<string[]>;
  * Result type for isHostSupported.
  */
 export type HostSupportedResult = ScraperResult<boolean>;
+
+/**
+ * Type guard to check if a scraper result is successful.
+ */
+export function isScraperSuccess<T>(result: ScraperResult<T>): result is ScraperSuccessResult<T> {
+    return result.success;
+}

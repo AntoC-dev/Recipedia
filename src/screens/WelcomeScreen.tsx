@@ -50,7 +50,7 @@ import { FlatList, InteractionManager, View } from 'react-native';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { Button, Card, Dialog, IconButton, Portal, Text, useTheme } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
-import { appLogger, pyodideLogger, tutorialLogger } from '@utils/logger';
+import { appLogger, tutorialLogger } from '@utils/logger';
 import { CustomImage } from '@components/atomic/CustomImage';
 import { Asset } from 'expo-asset';
 import { padding, screenWidth } from '@styles/spacing';
@@ -59,7 +59,7 @@ import Constants from 'expo-constants';
 import { LoadingOverlay } from '@components/dialogs/LoadingOverlay';
 import { useRecipes } from '@hooks/useRecipes';
 import { loadFirstLaunchDataset } from '@utils/datasetInitializer';
-import { recipeScraper } from '@utils/RecipeScraper';
+import { useScraper } from '@app/modules/recipe-scraper';
 
 /**
  * Props for the WelcomeScreen component
@@ -81,6 +81,7 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
   const { colors, fonts } = useTheme();
   const { t } = useI18n();
   const { recipes } = useRecipes();
+  const { initError: scraperInitError } = useScraper();
   const isDataLoaded = recipes.length > 0;
   const [initErrors, setInitErrors] = useState<string[]>([]);
   const [datasetFailed, setDatasetFailed] = useState(false);
@@ -116,14 +117,14 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
   }, [isDataLoaded]);
 
   useEffect(() => {
-    recipeScraper.whenReady().catch(error => {
-      const message = error instanceof Error ? error.message : String(error);
-      pyodideLogger.warn('Pyodide failed to initialize — web scraping will use fallback', {
-        error: message,
+    if (scraperInitError) {
+      setInitErrors(prev => {
+        const msg = t('welcome.pyodideError');
+        if (prev.includes(msg)) return prev;
+        return [...prev, msg];
       });
-      setInitErrors(prev => [...prev, t('welcome.pyodideError')]);
-    });
-  }, []);
+    }
+  }, [scraperInitError, t]);
 
   useEffect(() => {
     if (canProceed && pendingAction) {

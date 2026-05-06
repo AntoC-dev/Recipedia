@@ -2,28 +2,17 @@
  * BaseRecipeProvider - Abstract base class for recipe providers
  *
  * Implements the RecipeProvider interface with common functionality for
- * discovering, parsing, and fetching recipes from external websites.
+ * discovering recipe URLs from external websites. Scraping and recipe
+ * conversion are orchestrated by the `useRecipeScraper` hook so providers
+ * stay free of scraper coupling and IO around content parsing.
  *
  * @module providers/BaseRecipeProvider
  */
 
-import { isScraperSuccess, recipeScraper } from '@utils/RecipeScraper';
 import {
-  cleanImageUrl,
-  convertScrapedRecipe,
-  IgnoredIngredientPatterns,
-} from '@utils/RecipeScraperConverter';
-import { downloadImageToCache } from '@utils/FileGestion';
-import { isPlaceholderImageUrl } from '@utils/UrlHelpers';
-import {
-  ConvertedImportRecipe,
   DiscoveredRecipe,
   DiscoveryOptions,
   DiscoveryProgress,
-  FailedDiscoveryRecipe,
-  FetchedRecipe,
-  FullyDiscoveredRecipe,
-  ParsingProgress,
   RecipeProvider,
 } from '@customTypes/BulkImportTypes';
 import { bulkImportLogger } from '@utils/logger';
@@ -42,9 +31,6 @@ const RETRY_CONCURRENT_LIMIT = 1;
 
 /** Maximum time to wait for an HTTP request before timing out */
 const FETCH_TIMEOUT_MS = 15000;
-
-/** Maximum concurrent image fetch requests to prevent memory exhaustion */
-const MAX_CONCURRENT_IMAGE_FETCHES = 5;
 
 /** Number of category pages to fetch concurrently */
 const CONCURRENT_CATEGORY_LIMIT = 3;
@@ -80,21 +66,13 @@ export interface CategoryResult {
 }
 
 /**
- * Preview metadata extracted from a recipe page for display before full parsing
- */
-export interface RecipePreviewMetadata {
-  /** Recipe title extracted from JSON-LD or null if not found */
-  title: string | null;
-  /** Recipe image URL extracted from JSON-LD or null if not found */
-  imageUrl: string | null;
-}
-
-/**
  * Abstract base class for recipe providers
  *
  * Implements the RecipeProvider interface with common functionality for
- * discovering, parsing, and fetching recipes from external websites.
- * Subclasses must implement provider-specific methods for URL extraction.
+ * discovering recipe URLs and identifying provider ownership. Subclasses
+ * must implement provider-specific URL extraction and may override
+ * {@link extractImageFromHtml} when they have a faster path than the
+ * default scraper-based extraction performed by `useRecipeScraper`.
  */
 export abstract class BaseRecipeProvider implements RecipeProvider {
   /** Unique identifier for this provider */
@@ -105,16 +83,6 @@ export abstract class BaseRecipeProvider implements RecipeProvider {
 
   /** URL to the provider's logo image */
   abstract readonly logoUrl: string;
-
-  /** Currently active image fetch count */
-  private activeImageFetches = 0;
-
-  /** Queue of pending image fetch requests */
-  private pendingImageFetches: {
-    url: string;
-    onImageLoaded: (recipeUrl: string, imageUrl: string) => void;
-    signal?: AbortSignal;
-  }[] = [];
 
   /**
    * Gets the base URL for this provider based on user locale
@@ -179,222 +147,6 @@ export abstract class BaseRecipeProvider implements RecipeProvider {
   }
 
   /**
-   * Parses selected recipes to extract full recipe data
-   *
-   * Fetches and parses each selected recipe, downloading images to cache
-   * and converting to the app's internal format. Yields progress updates
-   * for UI feedback during the parsing process.
-   *
-   * @param selectedRecipes - Recipes selected by the user for import
-   * @param options - Parsing options including abort signal and default persons
-   * @yields Progress updates with parsed and failed recipes
-   */
-  async *parseSelectedRecipes(
-    selectedRecipes: DiscoveredRecipe[],
-    options: DiscoveryOptions = {}
-  ): AsyncGenerator<ParsingProgress> {
-    const {
-      signal,
-      defaultPersons = 4,
-      ignoredPatterns = { prefixes: [], exactMatches: [] },
-    } = options;
-    const parsedRecipes: FullyDiscoveredRecipe[] = [];
-    const failedRecipes: FailedDiscoveryRecipe[] = [];
-
-    bulkImportLogger.info('Starting recipe parsing', {
-      provider: this.id,
-      count: selectedRecipes.length,
-    });
-
-    const CONCURRENT_PARSE_LIMIT = 3;
-    let processedCount = 0;
-
-    for (let i = 0; i < selectedRecipes.length; i += CONCURRENT_PARSE_LIMIT) {
-      if (signal?.aborted) {
-        bulkImportLogger.info('Parsing aborted by user');
-        break;
-      }
-
-      const batch = selectedRecipes.slice(i, i + CONCURRENT_PARSE_LIMIT);
-
-      yield {
-        phase: 'parsing',
-        current: processedCount,
-        total: selectedRecipes.length,
-        currentRecipeTitle: batch.map(r => r.title).join(', '),
-        parsedRecipes: [...parsedRecipes],
-        failedRecipes: [...failedRecipes],
-      };
-
-      const results = await Promise.allSettled(
-        batch.map(async recipe => {
-          const html = await this.fetchHtml(recipe.url, signal);
-          const result = await recipeScraper.scrapeRecipeFromHtml(html, recipe.url);
-
-          if (isScraperSuccess(result)) {
-            const converted = convertScrapedRecipe(result.data, ignoredPatterns, defaultPersons);
-
-            let localImageUri: string | undefined;
-            const rawImageUrl = cleanImageUrl(converted.image_Source || recipe.imageUrl || '');
-            const imageUrl = isPlaceholderImageUrl(rawImageUrl) ? '' : rawImageUrl;
-            if (imageUrl) {
-              const downloadedUri = await downloadImageToCache(imageUrl);
-              localImageUri = downloadedUri || undefined;
-            }
-
-            return {
-              success: true as const,
-              recipe: {
-                url: recipe.url,
-                title: converted.title || recipe.title,
-                description: converted.description || '',
-                localImageUri,
-                persons: converted.persons ?? defaultPersons,
-                time: converted.time ?? 0,
-                ingredients: converted.ingredients,
-                tags: converted.tags ?? [],
-                preparation: converted.preparation ?? [],
-                nutrition: converted.nutrition,
-                skippedIngredients: converted.skippedIngredients,
-              },
-            };
-          } else {
-            return {
-              success: false as const,
-              recipe,
-              error: result.error.message,
-            };
-          }
-        })
-      );
-
-      for (let j = 0; j < results.length; j++) {
-        const originalRecipe = batch[j];
-        const result = results[j];
-        processedCount++;
-
-        if (result.status === 'fulfilled') {
-          if (result.value.success) {
-            parsedRecipes.push(result.value.recipe);
-            bulkImportLogger.debug('Recipe parsed successfully', {
-              url: result.value.recipe.url,
-              title: result.value.recipe.title,
-              hasImage: !!result.value.recipe.localImageUri,
-            });
-          } else {
-            failedRecipes.push({
-              url: originalRecipe.url,
-              title: originalRecipe.title,
-              error: result.value.error,
-            });
-            bulkImportLogger.warn('Failed to parse recipe', {
-              url: originalRecipe.url,
-              error: result.value.error,
-            });
-          }
-        } else {
-          const errorMessage =
-            result.reason instanceof Error ? result.reason.message : String(result.reason);
-          failedRecipes.push({
-            url: originalRecipe.url,
-            title: originalRecipe.title,
-            error: errorMessage,
-          });
-          bulkImportLogger.warn('Failed to fetch recipe', {
-            url: originalRecipe.url,
-            error: errorMessage,
-          });
-        }
-      }
-
-      if (i + CONCURRENT_PARSE_LIMIT < selectedRecipes.length) {
-        await this.delay(FETCH_DELAY_MS);
-      }
-    }
-
-    yield {
-      phase: 'complete',
-      current: selectedRecipes.length,
-      total: selectedRecipes.length,
-      parsedRecipes: [...parsedRecipes],
-      failedRecipes: [...failedRecipes],
-    };
-
-    bulkImportLogger.info('Parsing complete', {
-      provider: this.id,
-      totalParsed: parsedRecipes.length,
-      totalFailed: failedRecipes.length,
-    });
-  }
-
-  /**
-   * Fetches and parses a single recipe from its URL
-   *
-   * @param url - URL of the recipe page to fetch
-   * @param defaultPersons - Default serving size if not specified in recipe
-   * @param ignoredPatterns - Patterns for ingredients to skip during parsing
-   * @param signal - Optional abort signal for cancellation
-   * @returns Promise resolving to the fetched and converted recipe
-   * @throws Error if recipe cannot be parsed
-   */
-  async fetchRecipe(
-    url: string,
-    defaultPersons: number,
-    ignoredPatterns: IgnoredIngredientPatterns,
-    signal?: AbortSignal
-  ): Promise<FetchedRecipe> {
-    bulkImportLogger.debug('Fetching recipe', { url });
-
-    const html = await this.fetchHtml(url, signal);
-    const result = await recipeScraper.scrapeRecipeFromHtml(html, url);
-
-    if (!isScraperSuccess(result)) {
-      throw new Error(`Failed to parse recipe: ${result.error.message}`);
-    }
-
-    const converted = convertScrapedRecipe(result.data, ignoredPatterns, defaultPersons);
-
-    const importRecipe: ConvertedImportRecipe = {
-      title: converted.title ?? '',
-      description: converted.description ?? '',
-      imageUrl: converted.image_Source ?? '',
-      persons: converted.persons ?? defaultPersons,
-      time: converted.time ?? 0,
-      ingredients: converted.ingredients,
-      tags: converted.tags ?? [],
-      preparation: converted.preparation ?? [],
-      nutrition: converted.nutrition,
-      skippedIngredients: converted.skippedIngredients,
-      sourceUrl: url,
-      sourceProvider: this.id,
-    };
-
-    bulkImportLogger.debug('Recipe parsed successfully', {
-      url,
-      title: importRecipe.title,
-      ingredientCount: importRecipe.ingredients.length,
-      tagCount: importRecipe.tags.length,
-    });
-
-    return {
-      url,
-      converted: importRecipe,
-    };
-  }
-
-  /**
-   * Returns the URL of the known placeholder image for this provider, if any
-   *
-   * Used by ImageRepair to detect recipes stored with placeholder content
-   * by comparing MD5 hashes of local files against the placeholder.
-   *
-   * @returns The placeholder image URL, or null if this provider has no known placeholder
-   */
-  getPlaceholderImageUrl(): string | null {
-    return null;
-  }
-
-  /**
    * Returns true if this provider can handle the given recipe source URL
    *
    * Default implementation returns false. Subclasses should override to check
@@ -408,23 +160,20 @@ export abstract class BaseRecipeProvider implements RecipeProvider {
   }
 
   /**
-   * Fetches just the image URL for a recipe page on-demand
+   * Extracts a real image URL directly from page HTML, without invoking the
+   * recipe scraper.
    *
-   * Used for visibility-based lazy loading of images. Fetches the recipe
-   * page HTML and extracts the image URL from JSON-LD schema data.
+   * Default implementation returns `null`, signalling the caller (typically
+   * `useRecipeScraper`) to fall back to the scraper-based image. Subclasses
+   * may override when they have a cheaper or more reliable path (for example,
+   * Quitoque returns a placeholder via the scraper but exposes the real image
+   * in JSON-LD schema markup).
    *
-   * @param url - Recipe page URL to fetch image for
-   * @param signal - Abort signal for cancellation
-   * @returns Promise resolving to image URL or null if not found/failed
+   * @param _html - Raw HTML content of the recipe page
+   * @returns Image URL when found via the provider-specific path, otherwise null
    */
-  async fetchImageUrlForRecipe(url: string, signal: AbortSignal): Promise<string | null> {
-    try {
-      const html = await this.fetchHtml(url, signal);
-      const metadata = await this.extractPreviewMetadata(html, url);
-      return metadata.imageUrl;
-    } catch {
-      return null;
-    }
+  extractImageFromHtml(_html: string): string | null {
+    return null;
   }
 
   /**
@@ -462,27 +211,6 @@ export abstract class BaseRecipeProvider implements RecipeProvider {
     } finally {
       clearTimeout(timeoutId);
     }
-  }
-
-  /**
-   * Extracts preview metadata from HTML for display before full parsing
-   *
-   * @param html - Raw HTML content
-   * @param url - Recipe page URL for host detection
-   * @returns Promise resolving to preview metadata with title and image URL
-   */
-  protected async extractPreviewMetadata(
-    html: string,
-    url: string
-  ): Promise<RecipePreviewMetadata> {
-    const result = await recipeScraper.scrapeRecipeFromHtml(html, url);
-    if (!isScraperSuccess(result)) {
-      return { title: null, imageUrl: null };
-    }
-    return {
-      title: result.data.title ?? null,
-      imageUrl: result.data.image ? cleanImageUrl(result.data.image) : null,
-    };
   }
 
   /**
@@ -750,65 +478,6 @@ export abstract class BaseRecipeProvider implements RecipeProvider {
     });
 
     return stillEmpty;
-  }
-
-  /**
-   * Queues a recipe image fetch for background processing
-   *
-   * Adds the request to a queue and triggers processing. Uses a semaphore
-   * pattern to limit concurrent requests and prevent memory exhaustion.
-   *
-   * @param url - Recipe URL to fetch image for
-   * @param onImageLoaded - Callback invoked when an image URL is found
-   * @param signal - Optional abort signal for cancellation
-   */
-  private fetchSingleImageInBackground(
-    url: string,
-    onImageLoaded: (recipeUrl: string, imageUrl: string) => void,
-    signal?: AbortSignal
-  ): void {
-    this.pendingImageFetches.push({ url, onImageLoaded, signal });
-    this.processImageFetchQueue();
-  }
-
-  /**
-   * Processes queued image fetch requests with concurrency limiting
-   *
-   * Dequeues requests and executes them up to MAX_CONCURRENT_IMAGE_FETCHES
-   * at a time. Each completed request triggers queue processing to maintain
-   * throughput while preventing memory exhaustion.
-   */
-  private processImageFetchQueue(): void {
-    while (
-      this.activeImageFetches < MAX_CONCURRENT_IMAGE_FETCHES &&
-      this.pendingImageFetches.length > 0
-    ) {
-      const request = this.pendingImageFetches.shift();
-      if (!request) break;
-
-      this.activeImageFetches++;
-
-      (async () => {
-        const { url, onImageLoaded, signal } = request;
-        if (signal?.aborted) {
-          this.activeImageFetches--;
-          this.processImageFetchQueue();
-          return;
-        }
-        try {
-          const html = await this.fetchHtml(url, signal);
-          const metadata = await this.extractPreviewMetadata(html, url);
-          if (metadata.imageUrl) {
-            onImageLoaded(url, metadata.imageUrl);
-          }
-        } catch {
-          // Silently ignore - image loading is optional
-        } finally {
-          this.activeImageFetches--;
-          this.processImageFetchQueue();
-        }
-      })();
-    }
   }
 
   /**

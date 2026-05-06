@@ -5,6 +5,8 @@
  * providing a Promise-based RPC interface for Python function calls.
  */
 
+import {pyodideLogger} from '@utils/logger';
+
 type RpcCallback = {
     resolve: (result: string) => void;
     reject: (error: Error) => void;
@@ -12,14 +14,12 @@ type RpcCallback = {
 };
 
 type PyodideMessage =
-    | {type: 'ready'}
-    | {type: 'log'; level: string; message: string}
-    | {type: 'error'; error: {type: string; message: string}}
-    | {type: 'rpcResponse'; id: number; result?: string; error?: {type: string; message: string}};
+    | { type: 'ready' }
+    | { type: 'log'; level: string; message: string }
+    | { type: 'error'; error: { type: string; message: string } }
+    | { type: 'rpcResponse'; id: number; result?: string; error?: { type: string; message: string } };
 
 export type PyodideMessageHandler = (message: string) => void;
-
-import {pyodideLogger} from '@utils/logger';
 
 const DEFAULT_TIMEOUT_MS = 30000;
 const INIT_TIMEOUT_MS = 60000;
@@ -38,35 +38,6 @@ class PyodideBridgeImpl {
     constructor() {
         this.createReadyPromise();
         pyodideLogger.debug('Initializing...');
-        // Safety-net timer: ensures whenReady() rejects even if the WebView never
-        // mounts (e.g. bundle asset fails to load). attach() re-arms a fresh timer
-        // on mount so Pyodide gets a full window once it actually starts.
-        this.armInitTimer();
-    }
-
-    private createReadyPromise(): void {
-        this.readyPromise = new Promise((resolve, reject) => {
-            this.readyResolve = resolve;
-            this.readyReject = reject;
-        });
-        // Handles all rejection paths (timeout + WebView errors) in one place.
-        // Prevents unhandled rejection warning; whenReady() handles the error for callers.
-        this.readyPromise.catch((error: Error) => {
-            pyodideLogger.warn('Initialization failed', { error: error.message });
-        });
-    }
-
-    private armInitTimer(): void {
-        if (this.initTimeout) {
-            clearTimeout(this.initTimeout);
-        }
-        this.initTimeout = setTimeout(() => {
-            if (!this.isReady && this.readyReject) {
-                const error = new Error('Pyodide initialization timed out after 60 seconds');
-                this.initializationError = error;
-                this.readyReject(error);
-            }
-        }, INIT_TIMEOUT_MS);
     }
 
     setMessageHandler(handler: PyodideMessageHandler): void {
@@ -127,60 +98,7 @@ class PyodideBridgeImpl {
                     break;
             }
         } catch (error) {
-            pyodideLogger.error('Failed to parse message', { error });
-        }
-    }
-
-    private handleReady(): void {
-        this.isReady = true;
-        pyodideLogger.info('Ready');
-        if (this.initTimeout) {
-            clearTimeout(this.initTimeout);
-            this.initTimeout = null;
-        }
-        if (this.readyResolve) {
-            this.readyResolve();
-        }
-    }
-
-    private handleLog(level: string, message: string): void {
-        const logFn = level === 'debug' ? pyodideLogger.debug
-            : level === 'info' ? pyodideLogger.info
-            : level === 'warn' ? pyodideLogger.warn
-            : level === 'error' ? pyodideLogger.error
-            : pyodideLogger.info;
-        logFn(message);
-    }
-
-    private handleError(error: {type: string; message: string}): void {
-        pyodideLogger.error('Bridge error', { type: error.type, message: error.message });
-        if (!this.isReady && this.readyReject) {
-            const err = new Error(`${error.type}: ${error.message}`);
-            this.initializationError = err;
-            this.readyReject(err);
-        }
-    }
-
-    private handleRpcResponse(
-        id: number,
-        result?: string,
-        error?: {type: string; message: string}
-    ): void {
-        const pending = this.pendingCalls.get(id);
-        if (!pending) {
-            pyodideLogger.warn('Received response for unknown call', { id });
-            return;
-        }
-
-        clearTimeout(pending.timeout);
-        this.pendingCalls.delete(id);
-
-        if (error) {
-            pending.reject(new Error(`${error.type}: ${error.message}`));
-        } else if (result !== undefined) {
-            pending.resolve(result);
-        } else {
-            pending.reject(new Error('Empty response from Pyodide'));
+            pyodideLogger.error('Failed to parse message', {error});
         }
     }
 
@@ -265,6 +183,84 @@ class PyodideBridgeImpl {
         this.messageHandler = null;
         // Recreate readyPromise so a future setMessageHandler() (WebView remount) re-arms init.
         this.createReadyPromise();
+    }
+
+    private createReadyPromise(): void {
+        this.readyPromise = new Promise((resolve, reject) => {
+            this.readyResolve = resolve;
+            this.readyReject = reject;
+        });
+        // Handles all rejection paths (timeout + WebView errors) in one place.
+        // Prevents unhandled rejection warning; whenReady() handles the error for callers.
+        this.readyPromise.catch((error: Error) => {
+            pyodideLogger.warn('Initialization failed', {error: error.message});
+        });
+    }
+
+    private armInitTimer(): void {
+        if (this.initTimeout) {
+            clearTimeout(this.initTimeout);
+        }
+        this.initTimeout = setTimeout(() => {
+            if (!this.isReady && this.readyReject) {
+                const error = new Error('Pyodide initialization timed out after 60 seconds');
+                this.initializationError = error;
+                this.readyReject(error);
+            }
+        }, INIT_TIMEOUT_MS);
+    }
+
+    private handleReady(): void {
+        this.isReady = true;
+        pyodideLogger.info('Ready');
+        if (this.initTimeout) {
+            clearTimeout(this.initTimeout);
+            this.initTimeout = null;
+        }
+        if (this.readyResolve) {
+            this.readyResolve();
+        }
+    }
+
+    private handleLog(level: string, message: string): void {
+        const logFn = level === 'debug' ? pyodideLogger.debug
+            : level === 'info' ? pyodideLogger.info
+                : level === 'warn' ? pyodideLogger.warn
+                    : level === 'error' ? pyodideLogger.error
+                        : pyodideLogger.info;
+        logFn(message);
+    }
+
+    private handleError(error: { type: string; message: string }): void {
+        pyodideLogger.error('Bridge error', {type: error.type, message: error.message});
+        if (!this.isReady && this.readyReject) {
+            const err = new Error(`${error.type}: ${error.message}`);
+            this.initializationError = err;
+            this.readyReject(err);
+        }
+    }
+
+    private handleRpcResponse(
+        id: number,
+        result?: string,
+        error?: { type: string; message: string }
+    ): void {
+        const pending = this.pendingCalls.get(id);
+        if (!pending) {
+            pyodideLogger.warn('Received response for unknown call', {id});
+            return;
+        }
+
+        clearTimeout(pending.timeout);
+        this.pendingCalls.delete(id);
+
+        if (error) {
+            pending.reject(new Error(`${error.type}: ${error.message}`));
+        } else if (result !== undefined) {
+            pending.resolve(result);
+        } else {
+            pending.reject(new Error('Empty response from Pyodide'));
+        }
     }
 }
 

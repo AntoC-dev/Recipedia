@@ -15,18 +15,16 @@ export const mockIsHostSupported = jest.fn<Promise<ScraperResult<boolean>>, [str
 export const mockWhenReady = jest.fn<Promise<void>, []>();
 export const mockIsPythonReady = jest.fn<Promise<boolean>, []>();
 
+export const mockUseScraper = jest.fn(() => ({
+  scrapeRecipeFromHtml: mockScrapeRecipeFromHtml,
+  scrapeRecipeAuthenticated: mockScrapeRecipeAuthenticated,
+  initError: null as string | null,
+}));
+
 export const recipeScraperMock = {
-  RecipeScraper: jest.fn(),
-  recipeScraper: {
-    scrapeRecipe: mockScrapeRecipe,
-    scrapeRecipeFromHtml: mockScrapeRecipeFromHtml,
-    scrapeRecipeAuthenticated: mockScrapeRecipeAuthenticated,
-    getSupportedHosts: mockGetSupportedHosts,
-    isHostSupported: mockIsHostSupported,
-    whenReady: mockWhenReady,
-    isPythonReady: mockIsPythonReady,
-  },
-  usePythonReady: jest.fn(() => true),
+  ScraperProvider: ({ children }: { children: React.ReactNode }) => children,
+  useScraper: mockUseScraper,
+  isScraperSuccess: <T>(result: ScraperResult<T>) => result.success,
   ScraperErrorTypes: {
     AuthenticationRequired: 'AuthenticationRequired',
     AuthenticationFailed: 'AuthenticationFailed',
@@ -107,6 +105,11 @@ export function resetRecipeScraperMocks() {
   mockIsPythonReady.mockReset();
   mockWhenReady.mockResolvedValue(undefined);
   mockIsPythonReady.mockResolvedValue(true);
+  mockUseScraper.mockReturnValue({
+    scrapeRecipeFromHtml: mockScrapeRecipeFromHtml,
+    scrapeRecipeAuthenticated: mockScrapeRecipeAuthenticated,
+    initError: null,
+  });
 }
 
 export function createEmptyScrapedRecipe(overrides: Partial<ScrapedRecipe> = {}): ScrapedRecipe {

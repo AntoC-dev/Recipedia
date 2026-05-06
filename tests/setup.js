@@ -18,6 +18,12 @@ jest.mock('react-native/Libraries/Interaction/InteractionManager', () =>
   require('@mocks/deps/InteractionManager-mock').interactionManagerMock()
 );
 
+// Mock the recipe-scraper module (ScraperProvider, useScraper)
+jest.mock(
+  '@app/modules/recipe-scraper',
+  () => require('@mocks/modules/recipe-scraper-mock').recipeScraperMock
+);
+
 // Mock the PyodideBridge to prevent its constructor from starting a 60s init timeout
 jest.mock('@app/modules/recipe-scraper/src/ios/PyodideBridge', () =>
   require('@mocks/modules/pyodide-bridge-mock').pyodideBridgeMock()

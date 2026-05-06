@@ -49,11 +49,11 @@ describe('PyodideBridge', () => {
     });
 
     describe('initialization timeout', () => {
-        it('arms a safety-net timer at construction so whenReady rejects even if attach() is never called', async () => {
+        it('does not arm any timer at construction so an unused bridge stays idle', async () => {
             const bridge = loadFreshBridge();
             jest.advanceTimersByTime(60001);
             await Promise.resolve();
-            expect(bridge.getInitializationError()?.message).toContain('timed out after 60 seconds');
+            expect(bridge.getInitializationError()).toBeNull();
         });
 
         it('attach() re-arms the timer so Pyodide gets a full window from WebView mount', async () => {
