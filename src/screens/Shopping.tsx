@@ -67,6 +67,7 @@ import { RoundButton } from '@components/atomic/RoundButton';
 import { TUTORIAL_DEMO_INTERVAL, TUTORIAL_STEPS } from '@utils/Constants';
 import { padding } from '@styles/spacing';
 import { formatQuantityForDisplay } from '@utils/Quantity';
+import { AdBanner } from '@components/organisms/AdBanner';
 
 /** Type for dialog data containing ingredient and recipe information */
 type ingredientDataForDialog = Pick<ComputedShoppingItem, 'name' | 'recipeTitles'>;
@@ -102,6 +103,7 @@ export function Shopping() {
   });
 
   const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] = useState(false);
+  const [adBannerHeight, setAdBannerHeight] = useState(0);
 
   const toggleDemoDialog = useCallback(() => {
     if (isDialogOpenRef.current) {
@@ -294,6 +296,9 @@ export function Shopping() {
           keyExtractor={item => item.name}
           renderItem={renderItem}
           renderSectionHeader={renderSectionHeader}
+          ListHeaderComponent={
+            <AdBanner placement='shopping' testId={screenId} onHeightChange={setAdBannerHeight} />
+          }
           stickySectionHeadersEnabled={false}
         />
       )}
@@ -342,7 +347,7 @@ export function Shopping() {
           testID={screenId + '::ClearShoppingListButton'}
           style={{
             position: 'absolute',
-            top: insets.top + padding.medium,
+            top: insets.top + adBannerHeight + padding.medium,
             right: padding.medium,
             zIndex: 1,
           }}

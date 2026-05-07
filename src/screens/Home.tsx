@@ -61,6 +61,7 @@ import { useSeasonFilter } from '@context/SeasonFilterContext';
 import { useRecipes } from '@hooks/useRecipes';
 import { useIngredients } from '@hooks/useIngredients';
 import { useTags } from '@hooks/useTags';
+import { AdBanner } from '@components/organisms/AdBanner';
 
 const homeId = 'Home';
 const recommandationId = homeId + '::RecipeRecommendation';
@@ -168,6 +169,7 @@ export function Home() {
             />
           )}
           keyExtractor={item => item.id}
+          ListHeaderComponent={<AdBanner placement='home' testId={homeId} />}
           ListEmptyComponent={renderEmptyState}
           refreshControl={
             <RefreshControl

@@ -16,6 +16,8 @@ import {ScraperProvider} from '@app/modules/recipe-scraper';
 import {RecipeDatabase} from '@utils/RecipeDatabase';
 import {init as initFileSystem} from '@utils/FileGestion';
 import {registerOrphanCleanupTask} from '@utils/OrphanCleanupTask';
+import mobileAds from 'react-native-google-mobile-ads';
+import {initializeAdConsent} from '@utils/AdConfig';
 
 // TODO manage horizontal mode
 
@@ -61,6 +63,12 @@ function AppContent() {
                 registerOrphanCleanupTask().catch(err =>
                     appLogger.warn('Orphan cleanup task registration failed', {error: err})
                 );
+
+                appLogger.debug('Initializing Mobile Ads SDK');
+                await mobileAds().initialize();
+
+                appLogger.debug('Initializing ad consent');
+                await initializeAdConsent();
 
                 appLogger.info('App initialization completed successfully');
                 setIsAppInitialized(true);

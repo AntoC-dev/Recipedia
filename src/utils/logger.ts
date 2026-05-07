@@ -69,6 +69,7 @@ const sharedConfig = {
     'BulkImport',
     'BugReport',
     'Pyodide',
+    'Ads',
   ],
 };
 
@@ -181,6 +182,9 @@ export const bugReportLogger = log.extend('BugReport');
 /** Logger for Pyodide WebView and bridge operations (iOS) */
 export const pyodideLogger = log.extend('Pyodide');
 
+/** Logger for ad-related operations and consent management */
+export const adLogger = log.extend('Ads');
+
 /**
  * Default export providing organized access to all loggers
  *
@@ -216,4 +220,5 @@ export default {
   bulkImport: bulkImportLogger,
   bugReport: bugReportLogger,
   pyodide: pyodideLogger,
+  ads: adLogger,
 };

@@ -15,3 +15,7 @@ appId: "com.recipedia"
 - assertVisible:
     text: "󰆴"
     label: "Clear shopping list icons is displayed"
+
+- assertVisible:
+    id: "ShoppingScreen::AdBanner"
+    label: "Ad banner is displayed on shopping screen"
