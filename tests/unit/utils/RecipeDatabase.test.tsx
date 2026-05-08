@@ -1653,6 +1653,63 @@ describe('RecipeDatabase', () => {
         expect(remainingRecipes[0].image_Source).not.toBe(recipeToDelete.image_Source);
       });
     });
+
+    describe('deleteRecipe image cleanup', () => {
+      test('deletes permanent image file on successful recipe deletion', async () => {
+        FileGestionMock.saveRecipeImage.mockResolvedValueOnce(
+          'file:///documents/Recipedia/recipe_img.jpg'
+        );
+        await db.addRecipe({ ...testRecipes[0], id: undefined });
+        const addedRecipe = db.get_recipes()[0];
+        jest.clearAllMocks();
+
+        await db.deleteRecipe(addedRecipe);
+
+        expect(FileGestionMock.deleteFile).toHaveBeenCalledWith(addedRecipe.image_Source);
+      });
+
+      test('does not delete image file when image_Source is empty', async () => {
+        FileGestionMock.saveRecipeImage.mockResolvedValueOnce(
+          'file:///documents/Recipedia/recipe_img.jpg'
+        );
+        await db.addRecipe({ ...testRecipes[0], id: undefined });
+        const addedRecipe = db.get_recipes()[0];
+        jest.clearAllMocks();
+
+        await db.deleteRecipe({ ...addedRecipe, image_Source: '' });
+
+        expect(FileGestionMock.deleteFile).not.toHaveBeenCalled();
+      });
+
+      test('does not delete image file when image_Source is temporary', async () => {
+        FileGestionMock.saveRecipeImage.mockResolvedValueOnce(
+          'file:///documents/Recipedia/recipe_img.jpg'
+        );
+        await db.addRecipe({ ...testRecipes[0], id: undefined });
+        const addedRecipe = db.get_recipes()[0];
+        jest.clearAllMocks();
+
+        await db.deleteRecipe({ ...addedRecipe, image_Source: '/cache/temp.jpg' });
+
+        expect(FileGestionMock.deleteFile).not.toHaveBeenCalled();
+      });
+
+      test('does not delete image file when recipe deletion fails', async () => {
+        FileGestionMock.saveRecipeImage.mockResolvedValueOnce(
+          'file:///documents/Recipedia/recipe_img.jpg'
+        );
+        await db.addRecipe({ ...testRecipes[0], id: undefined });
+        jest.clearAllMocks();
+
+        const nonExistentRecipe: recipeTableElement = {
+          ...testRecipes[0],
+          id: 99999,
+        };
+        await db.deleteRecipe(nonExistentRecipe);
+
+        expect(FileGestionMock.deleteFile).not.toHaveBeenCalled();
+      });
+    });
   });
 
   describe('Recipe verification behavior', () => {
@@ -2308,6 +2365,38 @@ describe('RecipeDatabase', () => {
       const retrievedRecipe = db.get_recipes()[0];
 
       expect(retrievedRecipe.ingredients[0].note).toBeUndefined();
+    });
+  });
+
+  describe('init() concurrency guard', () => {
+    const db = RecipeDatabase.getInstance();
+
+    afterEach(async () => {
+      await db.closeAndReset();
+    });
+
+    test('concurrent init calls resolve without error', async () => {
+      await expect(Promise.all([db.init(), db.init(), db.init()])).resolves.not.toThrow();
+
+      expect(db.get_recipes()).toBeDefined();
+    });
+
+    test('second init after completion is a no-op', async () => {
+      await db.init();
+      const recipesAfterFirstInit = db.get_recipes();
+
+      await db.init();
+      const recipesAfterSecondInit = db.get_recipes();
+
+      expect(recipesAfterSecondInit).toBe(recipesAfterFirstInit);
+    });
+
+    test('init works again after closeAndReset', async () => {
+      await db.init();
+      await db.closeAndReset();
+
+      await db.init();
+      expect(db.get_recipes()).toBeDefined();
     });
   });
 });
