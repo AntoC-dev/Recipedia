@@ -32,6 +32,7 @@ module.exports = {
         '^@styles/(.*)$': '<rootDir>/src/styles/$1',
         '^@customTypes/(.*)$': '<rootDir>/src/customTypes/$1',
         '^@utils/(.*)$': '<rootDir>/src/utils/$1',
+        '^@schemas/(.*)$': '<rootDir>/src/schemas/$1',
         '^@hooks/(.*)$': '<rootDir>/src/hooks/$1',
         '^@providers/(.*)$': '<rootDir>/src/providers/$1',
         '^@test-data/(.*)$': '<rootDir>/tests/data/$1',
