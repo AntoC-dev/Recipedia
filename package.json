@@ -128,7 +128,8 @@
     "react-dom": "19.2.0"
   },
   "overrides": {
-    "undici": "^6.24.1"
+    "undici": "^6.24.1",
+    "zod-validation-error": "^4.0.0"
   },
   "private": true,
   "devDependencies": {
@@ -155,7 +156,7 @@
     "babel-plugin-react-compiler": "1.0.0",
     "better-sqlite3": "~11.8.1",
     "conventional-changelog-conventionalcommits": "^9.1.0",
-    "eslint": "^10.3.0",
+    "eslint": "^9.35.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-react": "^7.37.5",
