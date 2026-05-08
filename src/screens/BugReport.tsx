@@ -13,7 +13,7 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
-import { Button, Snackbar } from 'react-native-paper';
+import { Button, HelperText, Snackbar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { AppBar } from '@components/organisms/AppBar';
 import { ImageThumbnail } from '@components/molecules/ImageThumbnail';
@@ -27,6 +27,9 @@ import { smallCardWidth } from '@styles/buttons';
 import { Icons } from '@assets/Icons';
 import { CustomTextInput } from '@components/atomic/CustomTextInput';
 import { getDatasetType } from '@utils/DatasetLoader';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { bugReportSchema, BugReportFormData, BugReportFormInput } from '@schemas/bugReportSchema';
 
 const screenTestId = 'BugReport';
 
@@ -39,10 +42,21 @@ export function BugReport() {
   const { t } = useI18n();
   const { goBack } = useNavigation<StackScreenNavigation>();
 
-  const [description, setDescription] = useState('');
-  const [screenshots, setScreenshots] = useState<string[]>([]);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
+
+  const {
+    control,
+    handleSubmit,
+    watch,
+    getValues,
+    setValue,
+    formState: { isValid, errors },
+  } = useForm<BugReportFormInput, unknown, BugReportFormData>({
+    resolver: zodResolver(bugReportSchema),
+    defaultValues: { description: '', screenshots: [] },
+    mode: 'onChange',
+  });
 
   const showSnackbar = (message: string) => {
     setSnackbarMessage(message);
@@ -52,17 +66,20 @@ export function BugReport() {
   const handleAddScreenshots = async () => {
     try {
       const uris = await pickScreenshots();
-      setScreenshots(prev => [...prev, ...uris]);
+      setValue('screenshots', [...(getValues('screenshots') ?? []), ...uris]);
     } catch (error) {
       bugReportLogger.warn('Screenshot picker cancelled or failed', { error });
     }
   };
 
   const handleRemoveScreenshot = (uri: string) => {
-    setScreenshots(prev => prev.filter(s => s !== uri));
+    setValue(
+      'screenshots',
+      (getValues('screenshots') ?? []).filter(s => s !== uri)
+    );
   };
 
-  const handleSend = async () => {
+  const onSubmit = async (data: BugReportFormData) => {
     bugReportLogger.info('User initiated bug report submission');
     const available = await isMailAvailable();
     if (!available) {
@@ -72,7 +89,7 @@ export function BugReport() {
     }
 
     try {
-      const result = await sendBugReport(description, screenshots);
+      const result = await sendBugReport(data.description, data.screenshots);
       if (result.status === MailComposerStatus.SENT) {
         bugReportLogger.info('Bug report sent successfully');
         goBack();
@@ -95,19 +112,33 @@ export function BugReport() {
     }
   };
 
+  const screenshots = watch('screenshots') ?? [];
+
   return (
     <ScreenWrapper>
       <AppBar title={t('bugReport.title')} onGoBack={goBack} testID={screenTestId + '::Bar'} />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <CustomTextInput
-          testID={screenTestId + '::Description::Input'}
-          label={t('bugReport.descriptionLabel')}
-          placeholder={t('bugReport.descriptionPlaceholder')}
-          value={description}
-          onChangeText={setDescription}
-          multiline
+        <Controller
+          control={control}
+          name='description'
+          render={({ field: { onChange, value } }) => (
+            <CustomTextInput
+              testID={screenTestId + '::Description::Input'}
+              label={t('bugReport.descriptionLabel')}
+              placeholder={t('bugReport.descriptionPlaceholder')}
+              value={value}
+              onChangeText={onChange}
+              multiline
+              error={!!errors.description}
+            />
+          )}
         />
+        {errors.description && (
+          <HelperText testID={screenTestId + '::Description::Error'} type='error'>
+            {t(errors.description.message ?? '')}
+          </HelperText>
+        )}
 
         <View style={styles.screenshotsSection}>
           <View style={styles.screenshotsThumbnails}>
@@ -137,8 +168,8 @@ export function BugReport() {
         <Button
           testID={screenTestId + '::Send::Button'}
           mode='contained'
-          onPress={handleSend}
-          disabled={description.trim().length === 0}
+          onPress={handleSubmit(onSubmit)}
+          disabled={!isValid}
           style={styles.screenshotsSection}
         >
           {t('bugReport.send')}

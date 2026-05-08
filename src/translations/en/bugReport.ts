@@ -9,4 +9,5 @@ export default {
   send: 'Send report',
   mailUnavailable: 'No email app found. Please configure an email account on your device.',
   sendError: 'Failed to open email client.',
+  descriptionRequired: 'Please describe the issue.',
 };
