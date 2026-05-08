@@ -1,3 +1,9 @@
+## [2.35.2](https://github.com/AntoC-dev/Recipedia/compare/v2.35.1...v2.35.2) (2026-05-08)
+
+### Bug Fixes
+
+* **deps:** fix ESLint after linting group upgrade ([f5d4626](https://github.com/AntoC-dev/Recipedia/commit/f5d46266caca7c3a6dba98f6a2dabd4e6d8ead2b))
+
 ## [2.35.1](https://github.com/AntoC-dev/Recipedia/compare/v2.35.0...v2.35.1) (2026-05-06)
 
 ### Bug Fixes
