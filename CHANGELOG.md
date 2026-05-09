@@ -1,3 +1,11 @@
+## [2.36.0](https://github.com/AntoC-dev/Recipedia/compare/v2.35.3...v2.36.0) (2026-05-09)
+
+### Features
+
+* **BugReport:** migrate form to react-hook-form + zod ([bec6d67](https://github.com/AntoC-dev/Recipedia/commit/bec6d67dd216a259121990db056ad098478a304c))
+* **BugReport:** migrate form to react-hook-form + zod ([#277](https://github.com/AntoC-dev/Recipedia/issues/277)) ([d97f4fb](https://github.com/AntoC-dev/Recipedia/commit/d97f4fbdfbf403e76cd33587294f358320f37361))
+* **schemas:** add bugReportSchema with zod + [@schemas](https://github.com/schemas) path alias ([46c72ae](https://github.com/AntoC-dev/Recipedia/commit/46c72aee660984779c36f5c8ac3b02e582de3524))
+
 ## [2.35.3](https://github.com/AntoC-dev/Recipedia/compare/v2.35.2...v2.35.3) (2026-05-09)
 
 ### Bug Fixes
