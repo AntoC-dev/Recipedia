@@ -10,4 +10,5 @@ export default {
   mailUnavailable:
     'Aucune application e-mail trouvée. Veuillez configurer un compte e-mail sur votre appareil.',
   sendError: "Impossible d'ouvrir le client de messagerie.",
+  descriptionRequired: 'Veuillez décrire le problème.',
 };

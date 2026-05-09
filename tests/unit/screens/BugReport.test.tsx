@@ -1,7 +1,7 @@
 import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import { BugReport } from '@screens/BugReport';
-import { mockNavigate, mockGoBack } from '@mocks/deps/react-navigation-mock';
+import { mockGoBack } from '@mocks/deps/react-navigation-mock';
 
 jest.mock('@react-navigation/native', () =>
   require('@mocks/deps/react-navigation-mock').reactNavigationMock()
@@ -21,8 +21,18 @@ const {
 } = require('@mocks/utils/BugReport-mock');
 
 const descriptionInputTestID = 'BugReport::Description::Input::CustomTextInput';
+const descriptionErrorTestID = 'BugReport::Description::Error';
 const thumbnailTestID = 'BugReport::0::Screenshots';
 const removeButtonTestID = 'BugReport::0::Screenshots::Thumbnail::IconButton';
+
+async function typeDescription(
+  getByTestId: ReturnType<typeof render>['getByTestId'],
+  text: string
+) {
+  await act(async () => {
+    fireEvent.changeText(getByTestId(descriptionInputTestID), text);
+  });
+}
 
 describe('BugReport Screen', () => {
   const renderBugReport = () => render(<BugReport />);
@@ -61,10 +71,10 @@ describe('BugReport Screen', () => {
     expect(sendButton.props.accessibilityState.disabled).toBe(true);
   });
 
-  test('send button is enabled when description has text', () => {
+  test('send button is enabled when description has text', async () => {
     const { getByTestId } = renderBugReport();
 
-    fireEvent.changeText(getByTestId(descriptionInputTestID), 'App crashed on launch');
+    await typeDescription(getByTestId, 'App crashed on launch');
 
     const sendButton = getByTestId('BugReport::Send::Button');
     expect(sendButton.props.accessibilityState.disabled).toBe(false);
@@ -74,7 +84,7 @@ describe('BugReport Screen', () => {
     mockSendBugReport.mockResolvedValue({ status: 'sent' });
     const { getByTestId } = renderBugReport();
 
-    fireEvent.changeText(getByTestId(descriptionInputTestID), 'Test bug description');
+    await typeDescription(getByTestId, 'Test bug description');
     fireEvent.press(getByTestId('BugReport::Send::Button'));
 
     await waitFor(() => {
@@ -86,7 +96,7 @@ describe('BugReport Screen', () => {
     mockSendBugReport.mockResolvedValue({ status: 'sent' });
     const { getByTestId } = renderBugReport();
 
-    fireEvent.changeText(getByTestId(descriptionInputTestID), 'Test bug');
+    await typeDescription(getByTestId, 'Test bug');
     fireEvent.press(getByTestId('BugReport::Send::Button'));
 
     await waitFor(() => {
@@ -98,7 +108,7 @@ describe('BugReport Screen', () => {
     mockIsMailAvailable.mockResolvedValue(false);
     const { getByTestId } = renderBugReport();
 
-    fireEvent.changeText(getByTestId(descriptionInputTestID), 'Test bug');
+    await typeDescription(getByTestId, 'Test bug');
     fireEvent.press(getByTestId('BugReport::Send::Button'));
 
     await waitFor(() => {
@@ -164,7 +174,7 @@ describe('BugReport Screen', () => {
     mockSendBugReport.mockResolvedValue({ status: 'cancelled' });
     const { getByTestId, queryByTestId } = renderBugReport();
 
-    fireEvent.changeText(getByTestId(descriptionInputTestID), 'Test bug');
+    await typeDescription(getByTestId, 'Test bug');
     fireEvent.press(getByTestId('BugReport::Send::Button'));
 
     await waitFor(() => {
@@ -178,7 +188,7 @@ describe('BugReport Screen', () => {
     mockSendBugReport.mockResolvedValue({ status: 'saved' });
     const { getByTestId } = renderBugReport();
 
-    fireEvent.changeText(getByTestId(descriptionInputTestID), 'Test bug');
+    await typeDescription(getByTestId, 'Test bug');
     fireEvent.press(getByTestId('BugReport::Send::Button'));
 
     await waitFor(() => {
@@ -191,7 +201,7 @@ describe('BugReport Screen', () => {
     mockSendBugReport.mockRejectedValue(new Error('Mail composer failed'));
     const { getByTestId } = renderBugReport();
 
-    fireEvent.changeText(getByTestId(descriptionInputTestID), 'Test bug');
+    await typeDescription(getByTestId, 'Test bug');
     fireEvent.press(getByTestId('BugReport::Send::Button'));
 
     await waitFor(() => {
@@ -204,7 +214,7 @@ describe('BugReport Screen', () => {
     mockIsMailAvailable.mockResolvedValue(false);
     const { getByTestId } = renderBugReport();
 
-    fireEvent.changeText(getByTestId(descriptionInputTestID), 'Test bug');
+    await typeDescription(getByTestId, 'Test bug');
     fireEvent.press(getByTestId('BugReport::Send::Button'));
 
     await waitFor(() => {
@@ -221,7 +231,7 @@ describe('BugReport Screen', () => {
     mockIsMailAvailable.mockResolvedValue(false);
     const { getByTestId, queryByTestId } = renderBugReport();
 
-    fireEvent.changeText(getByTestId(descriptionInputTestID), 'Test bug');
+    await typeDescription(getByTestId, 'Test bug');
     fireEvent.press(getByTestId('BugReport::Send::Button'));
 
     await waitFor(() => {
@@ -231,5 +241,100 @@ describe('BugReport Screen', () => {
     fireEvent.press(getByTestId('BugReport::Snackbar::Dismiss'));
 
     expect(queryByTestId('BugReport::Snackbar')).toBeNull();
+  });
+
+  test('description error message is not shown initially', () => {
+    const { queryByTestId } = renderBugReport();
+
+    expect(queryByTestId(descriptionErrorTestID)).toBeNull();
+  });
+
+  test('description error message appears after typing then clearing description', async () => {
+    const { getByTestId, queryByTestId } = renderBugReport();
+
+    await typeDescription(getByTestId, 'Something');
+    await typeDescription(getByTestId, '');
+
+    expect(queryByTestId(descriptionErrorTestID)).toBeTruthy();
+    expect(getByTestId(descriptionErrorTestID).props.children).toBe(
+      'bugReport.descriptionRequired'
+    );
+  });
+
+  test('description error message disappears after re-entering valid text', async () => {
+    const { getByTestId, queryByTestId } = renderBugReport();
+
+    await typeDescription(getByTestId, 'Something');
+    await typeDescription(getByTestId, '');
+
+    expect(queryByTestId(descriptionErrorTestID)).toBeTruthy();
+
+    await typeDescription(getByTestId, 'Fixed');
+
+    expect(queryByTestId(descriptionErrorTestID)).toBeNull();
+  });
+
+  test('send button stays disabled for whitespace-only description', async () => {
+    const { getByTestId } = renderBugReport();
+
+    await typeDescription(getByTestId, '   ');
+
+    expect(getByTestId('BugReport::Send::Button').props.accessibilityState.disabled).toBe(true);
+  });
+
+  test('sendBugReport receives trimmed description', async () => {
+    mockSendBugReport.mockResolvedValue({ status: 'sent' });
+    const { getByTestId } = renderBugReport();
+
+    await typeDescription(getByTestId, '  trimmed description  ');
+    fireEvent.press(getByTestId('BugReport::Send::Button'));
+
+    await waitFor(() => {
+      expect(mockSendBugReport).toHaveBeenCalledWith('trimmed description', []);
+    });
+  });
+
+  test('multiple screenshot picks accumulate thumbnails', async () => {
+    mockPickScreenshots
+      .mockResolvedValueOnce(['file:///first.jpg'])
+      .mockResolvedValueOnce(['file:///second.jpg']);
+    const { getByTestId } = renderBugReport();
+
+    fireEvent.press(getByTestId('BugReport::Screenshots::AddButton'));
+    await waitFor(() => {
+      expect(getByTestId('BugReport::0::Screenshots')).toBeTruthy();
+    });
+
+    fireEvent.press(getByTestId('BugReport::Screenshots::AddButton'));
+    await waitFor(() => {
+      expect(getByTestId('BugReport::1::Screenshots')).toBeTruthy();
+    });
+  });
+
+  test('sendBugReport receives all accumulated screenshots', async () => {
+    mockSendBugReport.mockResolvedValue({ status: 'sent' });
+    mockPickScreenshots
+      .mockResolvedValueOnce(['file:///first.jpg'])
+      .mockResolvedValueOnce(['file:///second.jpg']);
+    const { getByTestId } = renderBugReport();
+
+    fireEvent.press(getByTestId('BugReport::Screenshots::AddButton'));
+    await waitFor(() => {
+      expect(getByTestId('BugReport::0::Screenshots')).toBeTruthy();
+    });
+    fireEvent.press(getByTestId('BugReport::Screenshots::AddButton'));
+    await waitFor(() => {
+      expect(getByTestId('BugReport::1::Screenshots')).toBeTruthy();
+    });
+
+    await typeDescription(getByTestId, 'Bug with screenshots');
+    fireEvent.press(getByTestId('BugReport::Send::Button'));
+
+    await waitFor(() => {
+      expect(mockSendBugReport).toHaveBeenCalledWith('Bug with screenshots', [
+        'file:///first.jpg',
+        'file:///second.jpg',
+      ]);
+    });
   });
 });

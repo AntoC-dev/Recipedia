@@ -35,6 +35,9 @@
       "@utils/*": [
         "utils/*"
       ],
+      "@schemas/*": [
+        "schemas/*"
+      ],
       "@hooks/*": [
         "hooks/*"
       ],
