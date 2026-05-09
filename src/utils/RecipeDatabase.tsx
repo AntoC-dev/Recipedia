@@ -47,6 +47,7 @@ import {
 } from '@styles/typography';
 import {
   constructImageUri,
+  deleteFile,
   extractFilenameFromUri,
   isTemporaryImageUri,
   saveRecipeImage,
@@ -116,6 +117,7 @@ export class RecipeDatabase {
 
   private _listeners = new Map<StoreSlice, Set<() => void>>();
   private _isReady = false;
+  private _initPromise: Promise<void> | null = null;
 
   /*    PRIVATE METHODS     */
   private constructor() {
@@ -247,6 +249,7 @@ export class RecipeDatabase {
     }
 
     this._isReady = false;
+    this._initPromise = null;
     this._listeners.clear();
     this.reset();
 
@@ -270,6 +273,20 @@ export class RecipeDatabase {
    * ```
    */
   public async init() {
+    if (this._isReady) return;
+    if (this._initPromise) return this._initPromise;
+
+    this._initPromise = this.performInit();
+
+    try {
+      await this._initPromise;
+    } catch (error) {
+      this._initPromise = null;
+      throw error;
+    }
+  }
+
+  private async performInit() {
     databaseLogger.info('Initializing database', { databaseName: this._databaseName });
 
     await this.openDatabase();
@@ -802,6 +819,10 @@ export class RecipeDatabase {
       this.remove_recipe(recipe);
       this._recipes = [...this._recipes];
       this.notify('recipes');
+
+      if (recipe.image_Source && !isTemporaryImageUri(recipe.image_Source)) {
+        deleteFile(recipe.image_Source);
+      }
 
       if (recipe.id !== undefined) {
         const menuItem = this._menu.find(item => item.recipeId === recipe.id);

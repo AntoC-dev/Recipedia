@@ -5,8 +5,9 @@
  * `useSyncExternalStore`. Re-renders only when recipe data changes — unaffected
  * by ingredient, tag or menu mutations.
  *
- * Image cleanup (delete old file on edit/delete) and progressive scaling logic
- * live here as UI-layer concerns rather than in the database singleton.
+ * Image cleanup on edit (delete old file when image changes) and progressive
+ * scaling logic live here as UI-layer concerns rather than in the database
+ * singleton. Image deletion on recipe removal is handled by RecipeDatabase.
  *
  * @module useRecipes
  */
@@ -63,11 +64,7 @@ export function useRecipes() {
       recipeId: recipe.id,
       recipeTitle: recipe.title,
     });
-    const result = await db.deleteRecipe(recipe);
-    if (recipe.image_Source && !isTemporaryImageUri(recipe.image_Source)) {
-      deleteFile(recipe.image_Source);
-    }
-    return result;
+    return db.deleteRecipe(recipe);
   };
 
   const findSimilarRecipes = (recipe: recipeTableElement): recipeTableElement[] => {

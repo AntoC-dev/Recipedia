@@ -15,7 +15,7 @@ import {isFirstLaunch} from '@utils/firstLaunch';
 import {ScraperProvider} from '@app/modules/recipe-scraper';
 import {RecipeDatabase} from '@utils/RecipeDatabase';
 import {init as initFileSystem} from '@utils/FileGestion';
-import {registerOrphanCleanupTask} from '@utils/OrphanCleanupTask';
+import {cleanupOrphanedImages} from '@utils/FileGestion';
 
 // TODO manage horizontal mode
 
@@ -31,6 +31,8 @@ import {registerOrphanCleanupTask} from '@utils/OrphanCleanupTask';
 
 SplashScreen.preventAutoHideAsync();
 
+const ORPHAN_CLEANUP_DELAY_MS = 3 * 60 * 1000;
+
 function AppContent() {
     const [isAppInitialized, setIsAppInitialized] = useState(false);
     const [isDatabaseReady, setIsDatabaseReady] = useState(false);
@@ -38,6 +40,8 @@ function AppContent() {
     const [isFirstLaunchFlag, setIsFirstLaunchFlag] = useState<boolean | null>(null);
 
     useEffect(() => {
+        let cleanupTimerId: ReturnType<typeof setTimeout>;
+
         const initialize = async () => {
             try {
                 appLogger.info('Starting app initialization');
@@ -58,9 +62,11 @@ function AppContent() {
                 setDarkMode(isDarkMode);
                 appLogger.debug('App settings loaded', {isFirst, isDarkMode});
 
-                registerOrphanCleanupTask().catch(err =>
-                    appLogger.warn('Orphan cleanup task registration failed', {error: err})
-                );
+                cleanupTimerId = setTimeout(() => {
+                    cleanupOrphanedImages(db.get_recipes().map(r => r.image_Source)).catch(err =>
+                        appLogger.warn('Orphan image cleanup failed', {error: err})
+                    );
+                }, ORPHAN_CLEANUP_DELAY_MS);
 
                 appLogger.info('App initialization completed successfully');
                 setIsAppInitialized(true);
@@ -69,6 +75,8 @@ function AppContent() {
             }
         };
         initialize();
+
+        return () => clearTimeout(cleanupTimerId);
     }, []);
 
     const toggleDarkMode = async () => {
