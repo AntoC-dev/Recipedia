@@ -1,3 +1,10 @@
+## [2.35.3](https://github.com/AntoC-dev/Recipedia/compare/v2.35.2...v2.35.3) (2026-05-09)
+
+### Bug Fixes
+
+* **db:** guard init() against concurrent calls ([c3a75bb](https://github.com/AntoC-dev/Recipedia/commit/c3a75bbc4055e8933aea1ee5208c568a9f292d2f))
+* **db:** guard init() against concurrent calls and cleanup orphan task ([#279](https://github.com/AntoC-dev/Recipedia/issues/279)) ([68e76be](https://github.com/AntoC-dev/Recipedia/commit/68e76be54609ef3249f8fb443201afc98256908f))
+
 ## [2.35.2](https://github.com/AntoC-dev/Recipedia/compare/v2.35.1...v2.35.2) (2026-05-08)
 
 ### Bug Fixes
