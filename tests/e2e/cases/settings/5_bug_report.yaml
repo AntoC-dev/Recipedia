@@ -46,6 +46,31 @@ tags:
 
 - tapOn:
     id: "BugReport::Description::Input::CustomTextInput"
+    label: "Action - Focus description input to trigger validation"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
+- inputText: "test"
+
+- eraseText:
+    label: "Action - Clear description input"
+
+- tapOn:
+    id: "BugReport::Screenshots::AddButton"
+    label: "Action - Tap add screenshot to dismiss keyboard"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to dismiss"
+
+- runFlow:
+    file: "../../asserts/parameters/bugReport/en/assertDescriptionRequiredError.yaml"
+    label: "Assert - Description required error shown after clearing field"
+
+- tapOn:
+    id: "BugReport::Description::Input::CustomTextInput"
     label: "Action - Focus description input"
 
 - runFlow:

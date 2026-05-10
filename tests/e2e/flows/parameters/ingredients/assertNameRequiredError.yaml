@@ -18,6 +18,12 @@ appId: "com.recipedia"
     file: "../../waitForKeyboard.yaml"
     label: "Wait for keyboard to appear"
 
+- inputText:
+    text: "A name"
+    label: "Enter a name in the ingredient input field"
+
+- eraseText
+
 - runFlow:
     when:
       platform: Android

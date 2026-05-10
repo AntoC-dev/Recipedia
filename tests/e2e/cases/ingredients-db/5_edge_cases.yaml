@@ -25,5 +25,9 @@ tags:
     label: "Action - Test canceling delete operation"
 
 - runFlow:
+    file: "../../flows/parameters/ingredients/assertNameRequiredError.yaml"
+    label: "Action - Assert name required error on blur"
+
+- runFlow:
     file: "../../flows/parameters/ingredients/insertTextAtCursorBeginning.yaml"
     label: "Action - Test cursor position preservation on re-render"
