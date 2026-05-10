@@ -1,5 +1,6 @@
 import {
   NativeSyntheticEvent,
+  Text,
   TextInput,
   TextInputEndEditingEventData,
   TextStyle,
@@ -14,6 +15,7 @@ export function CustomTextInputMock({
   value,
   multiline = false,
   style,
+  error,
   onFocus,
   onChangeText,
   onEndEditing,
@@ -39,19 +41,22 @@ export function CustomTextInputMock({
   }
 
   return (
-    <TextInput
-      testID={testID + '::CustomTextInput'}
-      style={style as TextStyle}
-      editable={editable}
-      value={displayValue}
-      multiline={multiline}
-      onFocus={onFocus}
-      onChangeText={handleChangeText}
-      onEndEditing={handleEndEditing}
-      onBlur={onBlur}
-      onLayout={onLayout}
-    >
-      {label}
-    </TextInput>
+    <>
+      <TextInput
+        testID={testID + '::CustomTextInput'}
+        style={style as TextStyle}
+        editable={editable}
+        value={displayValue}
+        multiline={multiline}
+        onFocus={onFocus}
+        onChangeText={handleChangeText}
+        onEndEditing={handleEndEditing}
+        onBlur={onBlur}
+        onLayout={onLayout}
+      >
+        {label}
+      </TextInput>
+      {error !== undefined && <Text testID={testID + '::error'}>{String(error)}</Text>}
+    </>
   );
 }

@@ -69,9 +69,11 @@
  * ```
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { Button, Dialog, HelperText, Portal, Text } from 'react-native-paper';
+import { Controller, Resolver, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useI18n } from '@utils/i18n';
 import { CustomTextInput } from '@components/atomic/CustomTextInput';
 import { useTags } from '@hooks/useTags';
@@ -88,6 +90,8 @@ import { SelectableAccordion } from '@components/molecules/SelectableAccordion';
 import { SeasonalityCalendar } from '@components/molecules/SeasonalityCalendar';
 import { uiLogger } from '@utils/logger';
 import { dialogMaxHeight, padding } from '@styles/spacing';
+import { ingredientDialogSchema, tagDialogSchema } from '@schemas/itemDialogSchema';
+import { buildItemFormValues, ItemDialogFormValues } from '@customTypes/ItemDialogTypes';
 
 /** Available dialog operation modes */
 export type DialogMode = 'add' | 'edit' | 'delete';
@@ -132,7 +136,6 @@ export type ItemDialogProps = {
  * @param props - The component props with operation configuration
  * @returns JSX element representing a multi-purpose item management dialog
  */
-type ValidationState = 'none' | 'duplicate' | 'similar';
 
 export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialogProps) {
   const { t } = useI18n();
@@ -140,34 +143,25 @@ export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialo
   const { tags } = useTags();
   const { ingredients } = useIngredients();
 
-  const [validationState, setValidationState] = useState<ValidationState>('none');
-  const [helperMessage, setHelperMessage] = useState('');
+  const isIngredient = item.type === 'Ingredient';
 
-  const [itemName, setItemName] = useState(item.value.name ?? '');
-  const [ingType, setIngType] = useState<ingredientType | undefined>(
-    item.type === 'Ingredient' ? item.value.type : undefined
-  );
-  const [ingUnit, setIngUnit] = useState(item.type === 'Ingredient' ? (item.value.unit ?? '') : '');
-  const [ingSeason, setIngSeason] = useState(
-    item.type === 'Ingredient' ? (item.value.season ?? []) : []
-  );
+  const { control, handleSubmit, watch, reset, setError, clearErrors, formState } =
+    useForm<ItemDialogFormValues>({
+      resolver: zodResolver(
+        isIngredient ? ingredientDialogSchema : tagDialogSchema
+      ) as unknown as Resolver<ItemDialogFormValues>,
+      defaultValues: buildItemFormValues(item),
+      mode: 'onChange',
+    });
 
-  // Keep a ref to the latest item so we can read it inside the effect without
-  // making it a reactive dependency. This prevents cursor-position resets that
-  // occur when callers pass new inline object references on every render.
-  const itemRef = useRef(item);
-  itemRef.current = item;
-
+  // item intentionally excluded from deps — avoids mid-edit resets when caller
+  // passes new inline object references on every render.
   useEffect(() => {
-    if (isVisible) {
-      setItemName(itemRef.current.value.name ?? '');
-      if (itemRef.current.type === 'Ingredient') {
-        setIngType(itemRef.current.value.type);
-        setIngUnit(itemRef.current.value.unit ?? '');
-        setIngSeason(itemRef.current.value.season ?? []);
-      }
-    }
+    if (isVisible) reset(buildItemFormValues(item));
   }, [isVisible]);
+
+  const nameValue = watch('name');
+  const [similarNames, setSimilarNames] = useState('');
 
   /**
    * Validates item name against database for duplicates and similar items.
@@ -183,17 +177,12 @@ export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialo
    */
   useEffect(() => {
     if (!isVisible || mode === 'delete') {
-      setValidationState('none');
-      setHelperMessage('');
+      clearErrors('name');
       return;
     }
 
-    const trimmedName = itemName.trim();
-    if (!trimmedName) {
-      setValidationState('none');
-      setHelperMessage('');
-      return;
-    }
+    const trimmedName = nameValue.trim();
+    if (!trimmedName) return;
 
     const timeoutId = setTimeout(() => {
       const messageKeys =
@@ -203,7 +192,12 @@ export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialo
 
       const result =
         item.type === 'Tag'
-          ? fuzzySearch<tagTableElement>(tags, trimmedName, t => t.name, FuzzyMatchLevel.MODERATE)
+          ? fuzzySearch<tagTableElement>(
+              tags,
+              trimmedName,
+              tag => tag.name,
+              FuzzyMatchLevel.MODERATE
+            )
           : fuzzySearch<ingredientTableElement>(
               ingredients,
               cleanIngredientName(trimmedName),
@@ -214,11 +208,9 @@ export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialo
       if (result.exact) {
         const isSameElement = item.value.id !== undefined && result.exact.id === item.value.id;
         if (isSameElement) {
-          setValidationState('none');
-          setHelperMessage('');
+          clearErrors('name');
         } else {
-          setValidationState('duplicate');
-          setHelperMessage(t(messageKeys.duplicate));
+          setError('name', { type: 'duplicate', message: messageKeys.duplicate });
         }
       } else {
         const otherSimilar = result.similar.filter(
@@ -226,51 +218,62 @@ export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialo
         );
 
         if (otherSimilar.length > 0) {
-          const names = otherSimilar.map(similarItem => similarItem.name).join(', ');
-          setValidationState('similar');
-          setHelperMessage(`${t(messageKeys.similar)}: ${names}`);
+          setSimilarNames(otherSimilar.map(similarItem => similarItem.name).join(', '));
+          setError('name', { type: 'similar', message: messageKeys.similar });
         } else {
-          setValidationState('none');
-          setHelperMessage('');
+          clearErrors('name');
         }
       }
     }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [itemName, item.type, item.value.id, isVisible, mode, tags, ingredients, t]);
+  }, [nameValue, item.type, item.value.id, isVisible, mode, tags, ingredients, t]);
 
-  const handleConfirm = () => {
-    callOnConfirmWithNewItem();
-    onClose();
-  };
+  const typeValue = watch('type');
 
-  const callOnConfirmWithNewItem = () => {
+  const isConfirmDisabled =
+    mode !== 'delete' &&
+    (!nameValue.trim() ||
+      (isIngredient && typeValue === undefined) ||
+      formState.errors.name?.type === 'duplicate');
+
+  const onSubmit = (data: ItemDialogFormValues) => {
     switch (item.type) {
       case 'Ingredient':
         item.onConfirmIngredient(mode, {
           id: item.value.id,
-          name: itemName,
-          type: ingType as ingredientType,
-          unit: ingUnit,
-          season: ingSeason,
+          name: data.name,
+          type: data.type as ingredientType,
+          unit: data.unit,
+          season: data.season,
         });
         break;
       case 'Tag':
-        item.onConfirmTag(mode, { id: item.value.id, name: itemName });
+        item.onConfirmTag(mode, { id: item.value.id, name: data.name });
         break;
       default:
         uiLogger.error('Unreachable code in ItemDialog');
     }
+    onClose();
   };
 
-  const isConfirmDisabled =
-    !itemName.trim() ||
-    (mode !== 'delete' &&
-      (validationState === 'duplicate' || (item.type === 'Ingredient' && ingType === undefined)));
+  const handleDeleteConfirm = () => {
+    switch (item.type) {
+      case 'Ingredient':
+        item.onConfirmIngredient(mode, item.value as ingredientTableElement);
+        break;
+      case 'Tag':
+        item.onConfirmTag(mode, item.value as tagTableElement);
+        break;
+      default:
+        uiLogger.error('Unreachable code in ItemDialog');
+    }
+    onClose();
+  };
 
   const titleByMode: Record<DialogMode, string> = {
-    add: item.type === 'Ingredient' ? t('add_ingredient') : t('add_tag'),
-    edit: item.type === 'Ingredient' ? t('edit_ingredient') : t('edit_tag'),
+    add: isIngredient ? t('add_ingredient') : t('add_tag'),
+    edit: isIngredient ? t('edit_ingredient') : t('edit_tag'),
     delete: t('delete'),
   };
 
@@ -298,59 +301,88 @@ export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialo
           <Dialog.Content>
             <Text testID={modalTestId + '::Text'} variant='bodyMedium'>
               {t('confirmDelete')}
-              {` ${itemName}${t('interrogationMark')}`}
+              {` ${nameValue}${t('interrogationMark')}`}
             </Text>
           </Dialog.Content>
         ) : (
           <Dialog.ScrollArea>
             <ScrollView contentContainerStyle={styles.formContainer}>
-              {item.type === 'Ingredient' ? (
+              {isIngredient ? (
                 <Text testID={modalTestId + '::FormHint'} variant='bodySmall'>
                   {t('ingredient_form_hint')}
                 </Text>
               ) : null}
-              <CustomTextInput
-                label={item.type === 'Ingredient' ? t('ingredient_name') : t('tag_name')}
-                value={itemName}
-                onChangeText={setItemName}
-                testID={modalTestId + '::Name'}
-                error={validationState === 'duplicate'}
-                dense={true}
-                style={styles.nameInput}
+              <Controller
+                control={control}
+                name='name'
+                render={({ field: { onChange, value } }) => (
+                  <CustomTextInput
+                    label={isIngredient ? t('ingredient_name') : t('tag_name')}
+                    value={value}
+                    onChangeText={onChange}
+                    testID={modalTestId + '::Name'}
+                    error={
+                      formState.errors.name?.type === 'duplicate' ||
+                      formState.errors.name?.type === 'too_small'
+                    }
+                    dense={true}
+                    style={styles.nameInput}
+                  />
+                )}
               />
-              {validationState !== 'none' && (
+              {formState.errors.name && (
                 <HelperText
-                  type={validationState === 'duplicate' ? 'error' : 'info'}
+                  type={formState.errors.name.type === 'similar' ? 'info' : 'error'}
                   testID={modalTestId + '::HelperText'}
                 >
-                  {helperMessage}
+                  {formState.errors.name.type === 'similar'
+                    ? `${t(formState.errors.name.message ?? '')}: ${similarNames}`
+                    : t(formState.errors.name.message ?? '')}
                 </HelperText>
               )}
 
-              {item.type === 'Ingredient' ? (
+              {isIngredient ? (
                 <>
-                  <CustomTextInput
-                    testID={modalTestId + '::Unit'}
-                    label={t('unit')}
-                    value={ingUnit}
-                    onChangeText={setIngUnit}
-                    dense={true}
-                    style={styles.unitInput}
+                  <Controller
+                    control={control}
+                    name='unit'
+                    render={({ field: { onChange, value } }) => (
+                      <CustomTextInput
+                        testID={modalTestId + '::Unit'}
+                        label={t('unit')}
+                        value={value}
+                        onChangeText={onChange}
+                        dense={true}
+                        style={styles.unitInput}
+                      />
+                    )}
                   />
-                  <SelectableAccordion
-                    testID={modalTestId + '::TypeAccordion'}
-                    title={t('type')}
-                    items={shoppingCategories.map(category => ({
-                      value: category,
-                      label: t(category),
-                    }))}
-                    selectedValues={ingType ? [ingType] : []}
-                    onPress={value => setIngType(value as ingredientType)}
+                  <Controller
+                    control={control}
+                    name='type'
+                    render={({ field: { onChange, value } }) => (
+                      <SelectableAccordion
+                        testID={modalTestId + '::TypeAccordion'}
+                        title={t('type')}
+                        items={shoppingCategories.map(category => ({
+                          value: category,
+                          label: t(category),
+                        }))}
+                        selectedValues={value ? [value] : []}
+                        onPress={val => onChange(val as ingredientType)}
+                      />
+                    )}
                   />
-                  <SeasonalityCalendar
-                    testID={modalTestId}
-                    selectedMonths={ingSeason}
-                    onMonthsChange={setIngSeason}
+                  <Controller
+                    control={control}
+                    name='season'
+                    render={({ field: { onChange, value } }) => (
+                      <SeasonalityCalendar
+                        testID={modalTestId}
+                        selectedMonths={value ?? []}
+                        onMonthsChange={onChange}
+                      />
+                    )}
                   />
                 </>
               ) : null}
@@ -365,7 +397,7 @@ export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialo
             <Button
               testID={modalTestId + '::ConfirmButton'}
               mode='contained'
-              onPress={handleConfirm}
+              onPress={mode === 'delete' ? handleDeleteConfirm : handleSubmit(onSubmit)}
               disabled={isConfirmDisabled}
             >
               {confirmButtonText}

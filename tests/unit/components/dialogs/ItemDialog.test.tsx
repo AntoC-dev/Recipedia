@@ -181,17 +181,21 @@ describe('ItemDialog Component', () => {
       });
     });
     describe('calls onConfirm when confirm button is pressed in ', () => {
-      test('add mode', () => {
+      test('add mode', async () => {
         const { getByTestId } = render(<ItemDialog {...props} />);
 
-        fireEvent.press(getByTestId('IngredientDialog::AddModal::ConfirmButton'));
+        await act(async () => {
+          fireEvent.press(getByTestId('IngredientDialog::AddModal::ConfirmButton'));
+        });
 
         expect(mockOnConfirmIngredient).toHaveBeenCalled();
       });
-      test('edit mode', () => {
+      test('edit mode', async () => {
         const { getByTestId } = render(<ItemDialog {...props} mode={'edit'} />);
 
-        fireEvent.press(getByTestId('IngredientDialog::EditModal::ConfirmButton'));
+        await act(async () => {
+          fireEvent.press(getByTestId('IngredientDialog::EditModal::ConfirmButton'));
+        });
 
         expect(mockOnConfirmIngredient).toHaveBeenCalled();
       });
@@ -294,17 +298,21 @@ describe('ItemDialog Component', () => {
     });
 
     describe('calls onConfirm when confirm button is pressed in ', () => {
-      test('add mode', () => {
+      test('add mode', async () => {
         const { getByTestId } = render(<ItemDialog {...props} />);
 
-        fireEvent.press(getByTestId('TagDialog::AddModal::ConfirmButton'));
+        await act(async () => {
+          fireEvent.press(getByTestId('TagDialog::AddModal::ConfirmButton'));
+        });
 
         expect(mockOnConfirmTag).toHaveBeenCalledWith('add', mockTag);
       });
-      test('edit mode', () => {
+      test('edit mode', async () => {
         const { getByTestId } = render(<ItemDialog {...props} mode={'edit'} />);
 
-        fireEvent.press(getByTestId('TagDialog::EditModal::ConfirmButton'));
+        await act(async () => {
+          fireEvent.press(getByTestId('TagDialog::EditModal::ConfirmButton'));
+        });
 
         expect(mockOnConfirmTag).toHaveBeenCalledWith('edit', mockTag);
       });
@@ -317,7 +325,7 @@ describe('ItemDialog Component', () => {
       });
     });
 
-    describe('calls onClose when confirm button is pressed in ', () => {
+    describe('calls onClose when cancel button is pressed in ', () => {
       test('add mode', () => {
         const { getByTestId } = render(<ItemDialog {...props} />);
 
@@ -362,7 +370,7 @@ describe('ItemDialog Component', () => {
     expect(mockOnClose).toHaveBeenCalled();
   });
 
-  test('calls onConfirmIngredient when confirm button is pressed in add mode', () => {
+  test('calls onConfirmIngredient when confirm button is pressed in add mode', async () => {
     const props: ItemDialogProps = {
       testId: 'IngredientDialog',
       mode: 'add',
@@ -377,12 +385,14 @@ describe('ItemDialog Component', () => {
 
     const { getByTestId } = render(<ItemDialog {...props} />);
 
-    fireEvent.press(getByTestId('IngredientDialog::AddModal::ConfirmButton'));
+    await act(async () => {
+      fireEvent.press(getByTestId('IngredientDialog::AddModal::ConfirmButton'));
+    });
 
     expect(mockOnConfirmIngredient).toHaveBeenCalledWith('add', mockIngredient);
   });
 
-  test('calls onConfirmIngredient when confirm button is pressed in edit mode', () => {
+  test('calls onConfirmIngredient when confirm button is pressed in edit mode', async () => {
     const props: ItemDialogProps = {
       testId: 'IngredientDialog',
       mode: 'edit',
@@ -397,7 +407,9 @@ describe('ItemDialog Component', () => {
 
     const { getByTestId } = render(<ItemDialog {...props} />);
 
-    fireEvent.press(getByTestId('IngredientDialog::EditModal::ConfirmButton'));
+    await act(async () => {
+      fireEvent.press(getByTestId('IngredientDialog::EditModal::ConfirmButton'));
+    });
 
     expect(mockOnConfirmIngredient).toHaveBeenCalledWith('edit', mockIngredient);
   });
@@ -504,7 +516,7 @@ describe('ItemDialog Component', () => {
       ).toBe(false);
     });
 
-    test('passes empty unit to onConfirmIngredient callback', () => {
+    test('passes empty unit to onConfirmIngredient callback', async () => {
       const ingredientWithoutUnit: ingredientTableElement = {
         id: 1,
         name: 'Salt',
@@ -527,7 +539,9 @@ describe('ItemDialog Component', () => {
 
       const { getByTestId } = render(<ItemDialog {...props} />);
 
-      fireEvent.press(getByTestId('IngredientDialog::AddModal::ConfirmButton'));
+      await act(async () => {
+        fireEvent.press(getByTestId('IngredientDialog::AddModal::ConfirmButton'));
+      });
 
       expect(mockOnConfirmIngredient).toHaveBeenCalledWith('add', ingredientWithoutUnit);
     });
@@ -584,6 +598,51 @@ describe('ItemDialog Component', () => {
       expect(
         getByTestId('IngredientDialog::AddModal::ConfirmButton').props.accessibilityState.disabled
       ).toBe(false);
+    });
+
+    test('disables confirm button when ingredient name is whitespace only', () => {
+      const { getByTestId } = render(
+        <ItemDialog
+          testId='IngredientDialog'
+          mode='add'
+          isVisible={true}
+          onClose={mockOnClose}
+          item={{
+            type: 'Ingredient',
+            value: { name: '   ', type: ingredientType.fruit, unit: '', season: [] },
+            onConfirmIngredient: mockOnConfirmIngredient,
+          }}
+        />
+      );
+
+      expect(
+        getByTestId('IngredientDialog::AddModal::ConfirmButton').props.accessibilityState.disabled
+      ).toBe(true);
+    });
+
+    test('trims ingredient name before passing to onConfirmIngredient', async () => {
+      const { getByTestId } = render(
+        <ItemDialog
+          testId='IngredientDialog'
+          mode='add'
+          isVisible={true}
+          onClose={mockOnClose}
+          item={{
+            type: 'Ingredient',
+            value: { name: '  Flour  ', type: ingredientType.cereal, unit: '', season: [] },
+            onConfirmIngredient: mockOnConfirmIngredient,
+          }}
+        />
+      );
+
+      await act(async () => {
+        fireEvent.press(getByTestId('IngredientDialog::AddModal::ConfirmButton'));
+      });
+
+      expect(mockOnConfirmIngredient).toHaveBeenCalledWith(
+        'add',
+        expect.objectContaining({ name: 'Flour' })
+      );
     });
 
     test('enables confirm button in delete mode regardless of type or unit', () => {
@@ -810,6 +869,37 @@ describe('ItemDialog Component', () => {
         'pieces'
       );
     });
+
+    test('clears duplicate error when dialog closes and reopens', async () => {
+      const existingTag: tagTableElement = { id: 99, name: 'Italian' };
+      setMockTags([existingTag]);
+
+      const props: ItemDialogProps = {
+        testId: 'TagDialog',
+        mode: 'add',
+        isVisible: true,
+        onClose: mockOnClose,
+        item: { type: 'Tag', value: { name: 'Italian' }, onConfirmTag: mockOnConfirmTag },
+      };
+
+      const { getByTestId, queryByTestId, rerender } = render(<ItemDialog {...props} />);
+
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(300);
+      });
+
+      expect(queryByTestId('TagDialog::AddModal::HelperText')).toBeTruthy();
+
+      rerender(<ItemDialog {...props} isVisible={false} />);
+      rerender(<ItemDialog {...props} isVisible={true} />);
+
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(300);
+      });
+
+      expect(queryByTestId('TagDialog::AddModal::HelperText')).toBeTruthy();
+      expect(getByTestId('TagDialog::AddModal::HelperText').props.type).toBe('error');
+    });
   });
 
   describe('type accordion', () => {
@@ -837,7 +927,7 @@ describe('ItemDialog Component', () => {
       expect(getByTestId('IngredientDialog::EditModal::TypeAccordion')).toBeTruthy();
     });
 
-    test('pressing a type item and confirming calls onConfirmIngredient with selected type', () => {
+    test('pressing a type item and confirming calls onConfirmIngredient with selected type', async () => {
       const ingredientNoType: FormIngredientElement = {
         name: 'Test Ingredient',
         type: undefined,
@@ -859,7 +949,10 @@ describe('ItemDialog Component', () => {
       fireEvent.press(
         getByTestId('IngredientDialog::AddModal::TypeAccordion::' + ingredientType.fruit)
       );
-      fireEvent.press(getByTestId('IngredientDialog::AddModal::ConfirmButton'));
+
+      await act(async () => {
+        fireEvent.press(getByTestId('IngredientDialog::AddModal::ConfirmButton'));
+      });
 
       expect(mockOnConfirmIngredient).toHaveBeenCalledWith('add', {
         id: undefined,
@@ -1039,6 +1132,212 @@ describe('ItemDialog Component', () => {
     });
   });
 
+  describe('calls onClose after confirm button is pressed', () => {
+    test('ingredient add mode', async () => {
+      const { getByTestId } = render(
+        <ItemDialog
+          testId='IngredientDialog'
+          mode='add'
+          isVisible={true}
+          onClose={mockOnClose}
+          item={{
+            type: 'Ingredient',
+            value: mockIngredient,
+            onConfirmIngredient: mockOnConfirmIngredient,
+          }}
+        />
+      );
+
+      await act(async () => {
+        fireEvent.press(getByTestId('IngredientDialog::AddModal::ConfirmButton'));
+      });
+
+      expect(mockOnClose).toHaveBeenCalled();
+    });
+
+    test('ingredient edit mode', async () => {
+      const { getByTestId } = render(
+        <ItemDialog
+          testId='IngredientDialog'
+          mode='edit'
+          isVisible={true}
+          onClose={mockOnClose}
+          item={{
+            type: 'Ingredient',
+            value: mockIngredient,
+            onConfirmIngredient: mockOnConfirmIngredient,
+          }}
+        />
+      );
+
+      await act(async () => {
+        fireEvent.press(getByTestId('IngredientDialog::EditModal::ConfirmButton'));
+      });
+
+      expect(mockOnClose).toHaveBeenCalled();
+    });
+
+    test('ingredient delete mode', () => {
+      const { getByTestId } = render(
+        <ItemDialog
+          testId='IngredientDialog'
+          mode='delete'
+          isVisible={true}
+          onClose={mockOnClose}
+          item={{
+            type: 'Ingredient',
+            value: mockIngredient,
+            onConfirmIngredient: mockOnConfirmIngredient,
+          }}
+        />
+      );
+
+      fireEvent.press(getByTestId('IngredientDialog::DeleteModal::ConfirmButton'));
+
+      expect(mockOnClose).toHaveBeenCalled();
+    });
+
+    test('tag add mode', async () => {
+      const { getByTestId } = render(
+        <ItemDialog
+          testId='TagDialog'
+          mode='add'
+          isVisible={true}
+          onClose={mockOnClose}
+          item={{ type: 'Tag', value: mockTag, onConfirmTag: mockOnConfirmTag }}
+        />
+      );
+
+      await act(async () => {
+        fireEvent.press(getByTestId('TagDialog::AddModal::ConfirmButton'));
+      });
+
+      expect(mockOnClose).toHaveBeenCalled();
+    });
+
+    test('tag edit mode', async () => {
+      const { getByTestId } = render(
+        <ItemDialog
+          testId='TagDialog'
+          mode='edit'
+          isVisible={true}
+          onClose={mockOnClose}
+          item={{ type: 'Tag', value: mockTag, onConfirmTag: mockOnConfirmTag }}
+        />
+      );
+
+      await act(async () => {
+        fireEvent.press(getByTestId('TagDialog::EditModal::ConfirmButton'));
+      });
+
+      expect(mockOnClose).toHaveBeenCalled();
+    });
+
+    test('tag delete mode', () => {
+      const { getByTestId } = render(
+        <ItemDialog
+          testId='TagDialog'
+          mode='delete'
+          isVisible={true}
+          onClose={mockOnClose}
+          item={{ type: 'Tag', value: mockTag, onConfirmTag: mockOnConfirmTag }}
+        />
+      );
+
+      fireEvent.press(getByTestId('TagDialog::DeleteModal::ConfirmButton'));
+
+      expect(mockOnClose).toHaveBeenCalled();
+    });
+  });
+
+  describe('reflects changed form values in confirm callback', () => {
+    test('changed ingredient name is passed to onConfirmIngredient', async () => {
+      const { getByTestId } = render(
+        <ItemDialog
+          testId='IngredientDialog'
+          mode='add'
+          isVisible={true}
+          onClose={mockOnClose}
+          item={{
+            type: 'Ingredient',
+            value: mockIngredient,
+            onConfirmIngredient: mockOnConfirmIngredient,
+          }}
+        />
+      );
+
+      fireEvent.changeText(
+        getByTestId('IngredientDialog::AddModal::Name::CustomTextInput'),
+        'Updated Ingredient'
+      );
+
+      await act(async () => {
+        fireEvent.press(getByTestId('IngredientDialog::AddModal::ConfirmButton'));
+      });
+
+      expect(mockOnConfirmIngredient).toHaveBeenCalledWith(
+        'add',
+        expect.objectContaining({ name: 'Updated Ingredient' })
+      );
+    });
+
+    test('changed ingredient unit is passed to onConfirmIngredient', async () => {
+      const { getByTestId } = render(
+        <ItemDialog
+          testId='IngredientDialog'
+          mode='edit'
+          isVisible={true}
+          onClose={mockOnClose}
+          item={{
+            type: 'Ingredient',
+            value: mockIngredient,
+            onConfirmIngredient: mockOnConfirmIngredient,
+          }}
+        />
+      );
+
+      fireEvent.changeText(
+        getByTestId('IngredientDialog::EditModal::Unit::CustomTextInput'),
+        'liters'
+      );
+
+      await act(async () => {
+        fireEvent.press(getByTestId('IngredientDialog::EditModal::ConfirmButton'));
+      });
+
+      expect(mockOnConfirmIngredient).toHaveBeenCalledWith(
+        'edit',
+        expect.objectContaining({ unit: 'liters' })
+      );
+    });
+
+    test('changed tag name is passed to onConfirmTag', async () => {
+      const { getByTestId } = render(
+        <ItemDialog
+          testId='TagDialog'
+          mode='edit'
+          isVisible={true}
+          onClose={mockOnClose}
+          item={{ type: 'Tag', value: mockTag, onConfirmTag: mockOnConfirmTag }}
+        />
+      );
+
+      fireEvent.changeText(
+        getByTestId('TagDialog::EditModal::Name::CustomTextInput'),
+        'Updated Tag'
+      );
+
+      await act(async () => {
+        fireEvent.press(getByTestId('TagDialog::EditModal::ConfirmButton'));
+      });
+
+      expect(mockOnConfirmTag).toHaveBeenCalledWith(
+        'edit',
+        expect.objectContaining({ name: 'Updated Tag' })
+      );
+    });
+  });
+
   describe('duplicate detection for ingredients', () => {
     beforeEach(() => {
       setMockIngredients([]);
@@ -1153,6 +1452,363 @@ describe('ItemDialog Component', () => {
       expect(
         getByTestId('IngredientDialog::EditModal::ConfirmButton').props.accessibilityState.disabled
       ).toBe(false);
+    });
+  });
+
+  describe('HelperText type attribute', () => {
+    test('is error for duplicate ingredient name', async () => {
+      const existingIngredient: ingredientTableElement = {
+        id: 99,
+        name: 'Flour',
+        type: ingredientType.cereal,
+        unit: 'cups',
+        season: [],
+      };
+      setMockIngredients([existingIngredient]);
+
+      const { getByTestId } = render(
+        <ItemDialog
+          testId='IngredientDialog'
+          mode='add'
+          isVisible={true}
+          onClose={mockOnClose}
+          item={{
+            type: 'Ingredient',
+            value: { name: 'Flour', type: ingredientType.cereal, unit: '', season: [] },
+            onConfirmIngredient: mockOnConfirmIngredient,
+          }}
+        />
+      );
+
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(300);
+      });
+
+      expect(getByTestId('IngredientDialog::AddModal::HelperText').props.type).toBe('error');
+    });
+
+    test('is info for similar ingredient name', async () => {
+      const similarIngredient: ingredientTableElement = {
+        id: 99,
+        name: 'Tomatoes',
+        type: ingredientType.vegetable,
+        unit: 'pieces',
+        season: [],
+      };
+      setMockIngredients([similarIngredient]);
+
+      const { getByTestId } = render(
+        <ItemDialog
+          testId='IngredientDialog'
+          mode='add'
+          isVisible={true}
+          onClose={mockOnClose}
+          item={{
+            type: 'Ingredient',
+            value: { name: 'Tomato', type: ingredientType.vegetable, unit: '', season: [] },
+            onConfirmIngredient: mockOnConfirmIngredient,
+          }}
+        />
+      );
+
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(300);
+      });
+
+      expect(getByTestId('IngredientDialog::AddModal::HelperText').props.type).toBe('info');
+    });
+
+    test('is error for duplicate tag name', async () => {
+      const existingTag: tagTableElement = { id: 99, name: 'Italian' };
+      setMockTags([existingTag]);
+
+      const { getByTestId } = render(
+        <ItemDialog
+          testId='TagDialog'
+          mode='add'
+          isVisible={true}
+          onClose={mockOnClose}
+          item={{ type: 'Tag', value: { name: 'Italian' }, onConfirmTag: mockOnConfirmTag }}
+        />
+      );
+
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(300);
+      });
+
+      expect(getByTestId('TagDialog::AddModal::HelperText').props.type).toBe('error');
+    });
+  });
+
+  describe('duplicate error clears when name changes to unique', () => {
+    test('ingredient', async () => {
+      const existingIngredient: ingredientTableElement = {
+        id: 99,
+        name: 'Flour',
+        type: ingredientType.cereal,
+        unit: 'cups',
+        season: [],
+      };
+      setMockIngredients([existingIngredient]);
+
+      const { getByTestId, queryByTestId } = render(
+        <ItemDialog
+          testId='IngredientDialog'
+          mode='add'
+          isVisible={true}
+          onClose={mockOnClose}
+          item={{
+            type: 'Ingredient',
+            value: { name: 'Flour', type: ingredientType.cereal, unit: '', season: [] },
+            onConfirmIngredient: mockOnConfirmIngredient,
+          }}
+        />
+      );
+
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(300);
+      });
+
+      expect(queryByTestId('IngredientDialog::AddModal::HelperText')).toBeTruthy();
+
+      fireEvent.changeText(
+        getByTestId('IngredientDialog::AddModal::Name::CustomTextInput'),
+        'Unique Ingredient'
+      );
+
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(300);
+      });
+
+      expect(queryByTestId('IngredientDialog::AddModal::HelperText')).toBeNull();
+      expect(
+        getByTestId('IngredientDialog::AddModal::ConfirmButton').props.accessibilityState.disabled
+      ).toBe(false);
+    });
+
+    test('tag', async () => {
+      const existingTag: tagTableElement = { id: 99, name: 'Italian' };
+      setMockTags([existingTag]);
+
+      const { getByTestId, queryByTestId } = render(
+        <ItemDialog
+          testId='TagDialog'
+          mode='add'
+          isVisible={true}
+          onClose={mockOnClose}
+          item={{ type: 'Tag', value: { name: 'Italian' }, onConfirmTag: mockOnConfirmTag }}
+        />
+      );
+
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(300);
+      });
+
+      expect(queryByTestId('TagDialog::AddModal::HelperText')).toBeTruthy();
+
+      fireEvent.changeText(getByTestId('TagDialog::AddModal::Name::CustomTextInput'), 'Unique Tag');
+
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(300);
+      });
+
+      expect(queryByTestId('TagDialog::AddModal::HelperText')).toBeNull();
+      expect(
+        getByTestId('TagDialog::AddModal::ConfirmButton').props.accessibilityState.disabled
+      ).toBe(false);
+    });
+  });
+
+  describe('similar detection for tags', () => {
+    test('shows info HelperText when tag name is similar but not exact', async () => {
+      const similarTag: tagTableElement = { id: 99, name: 'Italian' };
+      setMockTags([similarTag]);
+
+      const { getByTestId } = render(
+        <ItemDialog
+          testId='TagDialog'
+          mode='add'
+          isVisible={true}
+          onClose={mockOnClose}
+          item={{ type: 'Tag', value: { name: 'Italians' }, onConfirmTag: mockOnConfirmTag }}
+        />
+      );
+
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(300);
+      });
+
+      expect(getByTestId('TagDialog::AddModal::HelperText').props.type).toBe('info');
+      expect(
+        getByTestId('TagDialog::AddModal::ConfirmButton').props.accessibilityState.disabled
+      ).toBe(false);
+    });
+  });
+
+  describe('required name validation', () => {
+    test('shows required HelperText when user types then clears name for ingredient', async () => {
+      const { getByTestId, queryByTestId } = render(
+        <ItemDialog
+          testId='IngredientDialog'
+          mode='add'
+          isVisible={true}
+          onClose={mockOnClose}
+          item={{
+            type: 'Ingredient',
+            value: { name: '', type: ingredientType.fruit, unit: '', season: [] },
+            onConfirmIngredient: mockOnConfirmIngredient,
+          }}
+        />
+      );
+
+      expect(queryByTestId('IngredientDialog::AddModal::HelperText')).toBeNull();
+
+      await act(async () => {
+        fireEvent.changeText(
+          getByTestId('IngredientDialog::AddModal::Name::CustomTextInput'),
+          'abc'
+        );
+      });
+
+      await act(async () => {
+        fireEvent.changeText(getByTestId('IngredientDialog::AddModal::Name::CustomTextInput'), '');
+      });
+
+      expect(getByTestId('IngredientDialog::AddModal::HelperText')).toBeTruthy();
+      expect(getByTestId('IngredientDialog::AddModal::HelperText').props.type).toBe('error');
+    });
+
+    test('shows required HelperText when user types then clears name for tag', async () => {
+      const { getByTestId, queryByTestId } = render(
+        <ItemDialog
+          testId='TagDialog'
+          mode='add'
+          isVisible={true}
+          onClose={mockOnClose}
+          item={{ type: 'Tag', value: { name: '' }, onConfirmTag: mockOnConfirmTag }}
+        />
+      );
+
+      expect(queryByTestId('TagDialog::AddModal::HelperText')).toBeNull();
+
+      await act(async () => {
+        fireEvent.changeText(getByTestId('TagDialog::AddModal::Name::CustomTextInput'), 'abc');
+      });
+
+      await act(async () => {
+        fireEvent.changeText(getByTestId('TagDialog::AddModal::Name::CustomTextInput'), '');
+      });
+
+      expect(getByTestId('TagDialog::AddModal::HelperText')).toBeTruthy();
+      expect(getByTestId('TagDialog::AddModal::HelperText').props.type).toBe('error');
+    });
+
+    test('does not show required HelperText when name is empty and never typed', () => {
+      const { queryByTestId } = render(
+        <ItemDialog
+          testId='TagDialog'
+          mode='add'
+          isVisible={true}
+          onClose={mockOnClose}
+          item={{ type: 'Tag', value: { name: '' }, onConfirmTag: mockOnConfirmTag }}
+        />
+      );
+
+      expect(queryByTestId('TagDialog::AddModal::HelperText')).toBeNull();
+    });
+  });
+
+  describe('error prop on name input', () => {
+    test('is true when duplicate ingredient detected', async () => {
+      const existingIngredient: ingredientTableElement = {
+        id: 99,
+        name: 'Flour',
+        type: ingredientType.cereal,
+        unit: 'cups',
+        season: [],
+      };
+      setMockIngredients([existingIngredient]);
+
+      const { getByTestId } = render(
+        <ItemDialog
+          testId='IngredientDialog'
+          mode='add'
+          isVisible={true}
+          onClose={mockOnClose}
+          item={{
+            type: 'Ingredient',
+            value: { name: 'Flour', type: ingredientType.cereal, unit: '', season: [] },
+            onConfirmIngredient: mockOnConfirmIngredient,
+          }}
+        />
+      );
+
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(300);
+      });
+
+      expect(getByTestId('IngredientDialog::AddModal::Name::error').props.children).toBe('true');
+    });
+
+    test('is true when duplicate tag detected', async () => {
+      const existingTag: tagTableElement = { id: 99, name: 'Italian' };
+      setMockTags([existingTag]);
+
+      const { getByTestId } = render(
+        <ItemDialog
+          testId='TagDialog'
+          mode='add'
+          isVisible={true}
+          onClose={mockOnClose}
+          item={{ type: 'Tag', value: { name: 'Italian' }, onConfirmTag: mockOnConfirmTag }}
+        />
+      );
+
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(300);
+      });
+
+      expect(getByTestId('TagDialog::AddModal::Name::error').props.children).toBe('true');
+    });
+
+    test('is false when no duplicate detected', async () => {
+      const { getByTestId } = render(
+        <ItemDialog
+          testId='TagDialog'
+          mode='add'
+          isVisible={true}
+          onClose={mockOnClose}
+          item={{ type: 'Tag', value: { name: 'Unique Tag' }, onConfirmTag: mockOnConfirmTag }}
+        />
+      );
+
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(300);
+      });
+
+      expect(getByTestId('TagDialog::AddModal::Name::error').props.children).toBe('false');
+    });
+
+    test('is true when user types then clears name', async () => {
+      const { getByTestId } = render(
+        <ItemDialog
+          testId='TagDialog'
+          mode='add'
+          isVisible={true}
+          onClose={mockOnClose}
+          item={{ type: 'Tag', value: { name: '' }, onConfirmTag: mockOnConfirmTag }}
+        />
+      );
+
+      await act(async () => {
+        fireEvent.changeText(getByTestId('TagDialog::AddModal::Name::CustomTextInput'), 'abc');
+      });
+
+      await act(async () => {
+        fireEvent.changeText(getByTestId('TagDialog::AddModal::Name::CustomTextInput'), '');
+      });
+
+      expect(getByTestId('TagDialog::AddModal::Name::error').props.children).toBe('true');
     });
   });
 });
