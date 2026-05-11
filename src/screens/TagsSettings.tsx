@@ -145,18 +145,19 @@ export function TagsSettings() {
         label={t('add_tag')}
       />
 
-      {/* ItemDialog for add/edit/delete operations */}
-      <ItemDialog
-        testId={testId + '::ItemDialog'}
-        isVisible={dialogVisible}
-        mode={dialogMode}
-        onClose={closeDialog}
-        item={{
-          type: 'Tag',
-          value: currentTag,
-          onConfirmTag: handleDialogConfirm,
-        }}
-      />
+      {dialogVisible && (
+        <ItemDialog
+          testId={testId + '::ItemDialog'}
+          isVisible={dialogVisible}
+          mode={dialogMode}
+          onClose={closeDialog}
+          item={{
+            type: 'Tag',
+            value: currentTag,
+            onConfirmTag: handleDialogConfirm,
+          }}
+        />
+      )}
     </ScreenWrapper>
   );
 }

@@ -51,11 +51,8 @@ const renderTagsSettings = async () => {
 
 type QueryByIdType = QueryByQuery<TextMatch, CommonQueryOptions & TextMatchOptions>;
 
-function dialogIsNotOpen(getByTestId: QueryByIdType) {
-  expect(getByTestId('TagsSettings::ItemDialog::IsVisible').props.children).toEqual(false);
-  expect(getByTestId('TagsSettings::ItemDialog::Mode')).toBeTruthy();
-  expect(getByTestId('TagsSettings::ItemDialog::OnClose')).toBeTruthy();
-  expect(getByTestId('TagsSettings::ItemDialog::Item')).toBeTruthy();
+function dialogIsNotOpen(queryByTestId: (id: string) => HTMLElement | null) {
+  expect(queryByTestId('TagsSettings::ItemDialog::IsVisible')).toBeNull();
 }
 
 function dialogIsOpen(item: tagTableElement, mode: DialogMode, getByTestId: QueryByIdType) {
@@ -91,7 +88,7 @@ describe('TagsSettings Screen', () => {
   });
 
   test('renders correctly with initial tags', async () => {
-    const { getByTestId } = await renderTagsSettings();
+    const { getByTestId, queryByTestId } = await renderTagsSettings();
 
     expect(getByTestId('TagsSettings::SettingsItemList::Type').props.children).toEqual('tag');
     expect(getByTestId('TagsSettings::SettingsItemList::Items').props.children).toEqual(
@@ -101,7 +98,7 @@ describe('TagsSettings Screen', () => {
     expect(getByTestId('TagsSettings::SettingsItemList::OnEdit')).toBeTruthy();
     expect(getByTestId('TagsSettings::SettingsItemList::OnDelete')).toBeTruthy();
 
-    dialogIsNotOpen(getByTestId);
+    dialogIsNotOpen(queryByTestId);
   });
 
   test('opens add dialog when add button is pressed and save value', async () => {
