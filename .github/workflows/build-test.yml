@@ -66,7 +66,7 @@ jobs:
 
       - name: Post Reassure results on PR
         if: github.event_name == 'pull_request' && hashFiles('.reassure/output-compact.md') != ''
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: marocchino/sticky-pull-request-comment@v3
         with:
           header: reassure
           path: .reassure/output-compact.md
@@ -347,7 +347,7 @@ jobs:
           echo "_📊 Coverage for changed files is posted in a separate comment. View merged logs in the Actions tab._" >> full-summary.md
 
       - name: Comment test summary on PR
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: marocchino/sticky-pull-request-comment@v3
         if: always()
         with:
           path: full-summary.md
