@@ -104,3 +104,17 @@ export function namesMatch(a: string | undefined, b: string | undefined): boolea
   if (!a || !b) return false;
   return normalizeKey(a) === normalizeKey(b);
 }
+
+/**
+ * Removes parenthetical qualifiers from an ingredient name.
+ *
+ * @param name - Raw ingredient name (may contain qualifiers)
+ * @returns Name with all `(...)` segments stripped and trimmed
+ *
+ * @example
+ * cleanIngredientName('Tomatoes (canned)') // 'Tomatoes'
+ * cleanIngredientName('Chicken (boneless) (skinless)') // 'Chicken'
+ */
+export function cleanIngredientName(name: string): string {
+  return name.replace(/\s*\([^)]*\)/g, '').trim();
+}
