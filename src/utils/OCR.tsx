@@ -32,7 +32,7 @@ import {
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
 import {
-  FUSE_THRESHOLD,
+  OCR_FUZZY_THRESHOLD,
   nutritionObject,
   NutritionTerms,
   OcrKeys,
@@ -60,7 +60,9 @@ import { isArrayOfNumber, isArrayOfType, isNumber, isString } from '@utils/TypeC
 import { defaultValueNumber } from '@utils/Constants';
 import { ocrLogger } from '@utils/logger';
 import i18n from '@utils/i18n';
-import Fuse from 'fuse.js';
+import { buildPhraseIndex, FuzzyIndex, fuzzyHasMatch } from '@utils/FuzzyIndex';
+
+type TermSearchIndex = FuzzyIndex;
 
 /**
  * Constants for ingredient parsing heuristics
@@ -1520,19 +1522,17 @@ function normalizeOcrErrors(text: string): string {
  */
 function findAndMergePer100gLines(lines: string[], nutritionTerms: NutritionTerms): number {
   const per100gTerms = nutritionTerms[per100gKey];
-  const per100gFuse = new Fuse(per100gTerms, {
-    threshold: FUSE_THRESHOLD,
-  });
+  const per100gIndex = buildPhraseIndex(per100gTerms, OCR_FUZZY_THRESHOLD);
 
   for (let i = 0; i < lines.length; i++) {
     const normalizedLine = normalizeOcrErrors(lines[i].toLowerCase());
-    if (per100gFuse.search(normalizedLine).length > 0) {
+    if (fuzzyHasMatch(per100gIndex, normalizedLine)) {
       let endIndex = i;
 
       while (endIndex + 1 < lines.length) {
         const currentMerged = lines.slice(i, endIndex + 2).join(' ');
         const normalizedMerged = normalizeOcrErrors(currentMerged.toLowerCase());
-        if (per100gFuse.search(normalizedMerged).length > 0) {
+        if (fuzzyHasMatch(per100gIndex, normalizedMerged)) {
           endIndex++;
         } else {
           break;
@@ -1552,26 +1552,26 @@ function findAndMergePer100gLines(lines: string[], nutritionTerms: NutritionTerm
 }
 
 /**
- * Creates Fuse.js search objects for nutrition term matching
+ * Creates MiniSearch indices for nutrition term matching
  *
- * Builds fuzzy search objects for each nutrition term type, excluding
+ * Builds a fuzzy search index for each nutrition term type, excluding
  * special keys like "per100g" and "perPortion".
  *
  * @param nutritionTerms - Localized nutrition terminology
- * @returns Record of Fuse objects keyed by nutrition term type
+ * @returns Record of search indices keyed by nutrition term type
  */
-function createFuseObjects(nutritionTerms: NutritionTerms): Record<OcrKeys, Fuse<string>> {
-  const fuseOfNutritionTerms = {} as Record<OcrKeys, Fuse<string>>;
+function createNutritionTermIndices(
+  nutritionTerms: NutritionTerms
+): Record<OcrKeys, TermSearchIndex> {
+  const indices = {} as Record<OcrKeys, TermSearchIndex>;
 
   for (const [termKey, termValue] of Object.entries(nutritionTerms)) {
     if (termKey !== per100gKey && termKey !== perPortionKey) {
-      fuseOfNutritionTerms[termKey as OcrKeys] = new Fuse(termValue, {
-        threshold: FUSE_THRESHOLD,
-      });
+      indices[termKey as OcrKeys] = buildPhraseIndex(termValue, OCR_FUZZY_THRESHOLD);
     }
   }
 
-  return fuseOfNutritionTerms;
+  return indices;
 }
 
 /**
@@ -1579,10 +1579,10 @@ function createFuseObjects(nutritionTerms: NutritionTerms): Record<OcrKeys, Fuse
  */
 function isNutritionLabel(
   line: string,
-  fuseOfNutritionTerms: Record<OcrKeys, Fuse<string>>
+  nutritionTermIndices: Record<OcrKeys, TermSearchIndex>
 ): boolean {
-  for (const [key, fuse] of Object.entries(fuseOfNutritionTerms)) {
-    if (key !== per100gKey && key !== perPortionKey && fuse.search(line.toLowerCase()).length > 0) {
+  for (const [key, index] of Object.entries(nutritionTermIndices)) {
+    if (key !== per100gKey && key !== perPortionKey && fuzzyHasMatch(index, line.toLowerCase())) {
       return true;
     }
   }
@@ -1597,27 +1597,27 @@ function isNutritionLabel(
  *
  * @param lines - Array of text lines from nutrition table
  * @param per100gIndex - Index of the "per 100g" indicator line
- * @param fuseOfNutritionTerms - Fuse objects for nutrition term matching
+ * @param nutritionTermIndices - Search indices for nutrition term matching
  * @returns Array of filtered nutrition label lines
  */
 function filterNutritionLabels(
   lines: string[],
   per100gIndex: number,
-  fuseOfNutritionTerms: Record<OcrKeys, Fuse<string>>
+  nutritionTermIndices: Record<OcrKeys, TermSearchIndex>
 ): string[] {
   // First try: search before per100g (Android case)
   const linesBeforePer100g = lines.slice(0, per100gIndex + 1);
   let filteredLines = linesBeforePer100g.filter(item =>
-    isNutritionLabel(item, fuseOfNutritionTerms)
+    isNutritionLabel(item, nutritionTermIndices)
   );
 
   // If no labels found before per100g, search after it (iOS case)
   if (filteredLines.length === 0) {
     const linesAfterPer100g = lines.slice(per100gIndex + 1);
-    filteredLines = linesAfterPer100g.filter(item => isNutritionLabel(item, fuseOfNutritionTerms));
+    filteredLines = linesAfterPer100g.filter(item => isNutritionLabel(item, nutritionTermIndices));
   }
 
-  return duplicateEnergyLabelIfNeeded(filteredLines, fuseOfNutritionTerms);
+  return duplicateEnergyLabelIfNeeded(filteredLines, nutritionTermIndices);
 }
 
 /**
@@ -1630,24 +1630,22 @@ function filterNutritionLabels(
  * @param lines - Array of text lines from nutrition table
  * @param per100gIndex - Index of the "per 100g" indicator line
  * @param nutritionTerms - Localized nutrition terminology
- * @param fuseOfNutritionTerms - Fuse objects for nutrition term matching
+ * @param nutritionTermIndices - Search indices for nutrition term matching
  * @returns Array of nutrition value lines
  */
 function extractNutritionValues(
   lines: string[],
   per100gIndex: number,
   nutritionTerms: NutritionTerms,
-  fuseOfNutritionTerms: Record<OcrKeys, Fuse<string>>
+  nutritionTermIndices: Record<OcrKeys, TermSearchIndex>
 ): string[] {
   const linesAfterPer100g = lines.slice(per100gIndex + 1);
 
   const perPortionTerms = nutritionTerms['perPortion'];
-  const perPortionFuse = new Fuse(perPortionTerms, {
-    threshold: FUSE_THRESHOLD,
-  });
+  const perPortionIdx = buildPhraseIndex(perPortionTerms, OCR_FUZZY_THRESHOLD);
 
   const perPortionIndex = linesAfterPer100g.findIndex(line => {
-    return perPortionFuse.search(line.toLowerCase()).length > 0;
+    return fuzzyHasMatch(perPortionIdx, line.toLowerCase());
   });
 
   let valueCandidates: string[];
@@ -1658,7 +1656,7 @@ function extractNutritionValues(
   }
 
   // Filter out lines that are nutrition labels (for iOS case where labels come after per100g)
-  return valueCandidates.filter(line => !isNutritionLabel(line, fuseOfNutritionTerms));
+  return valueCandidates.filter(line => !isNutritionLabel(line, nutritionTermIndices));
 }
 
 /**
@@ -1668,21 +1666,23 @@ function extractNutritionValues(
  * "Energy" label. This function duplicates the energy label when needed.
  *
  * @param nutritionLabels - Array of nutrition label strings
- * @param fuseOfNutritionTerms - Fuse objects for nutrition term matching
+ * @param nutritionTermIndices - Search indices for nutrition term matching
  * @returns Array with energy label duplicated if necessary
  */
 function duplicateEnergyLabelIfNeeded(
   nutritionLabels: string[],
-  fuseOfNutritionTerms: Record<OcrKeys, Fuse<string>>
+  nutritionTermIndices: Record<OcrKeys, TermSearchIndex>
 ): string[] {
   const labelsWithPossibleDuplicate = [...nutritionLabels];
-  const energyFuse = fuseOfNutritionTerms['energyKcal'];
+  const kcalIndex = nutritionTermIndices['energyKcal'];
+  const kjIndex = nutritionTermIndices['energyKj'];
 
   let energyLabelCount = 0;
   let firstEnergyIndex = -1;
 
   for (let i = 0; i < labelsWithPossibleDuplicate.length; i++) {
-    if (energyFuse.search(labelsWithPossibleDuplicate[i].toLowerCase()).length > 0) {
+    const lower = labelsWithPossibleDuplicate[i].toLowerCase();
+    if (fuzzyHasMatch(kcalIndex, lower) || fuzzyHasMatch(kjIndex, lower)) {
       energyLabelCount++;
       firstEnergyIndex = i;
     }
@@ -1705,13 +1705,13 @@ function duplicateEnergyLabelIfNeeded(
  *
  * @param nutritionLabels - Array of nutrition label strings
  * @param nutritionValues - Array of nutrition value strings
- * @param fuseOfNutritionTerms - Fuse objects for nutrition term matching
+ * @param nutritionTermIndices - Search indices for nutrition term matching
  * @returns Structured nutrition object with parsed values
  */
 function parseNutritionLabelsAndValues(
   nutritionLabels: string[],
   nutritionValues: string[],
-  fuseOfNutritionTerms: Record<OcrKeys, Fuse<string>>
+  nutritionTermIndices: Record<OcrKeys, TermSearchIndex>
 ): nutritionObject {
   const parsedNutritionObject: nutritionObject = {};
 
@@ -1723,8 +1723,8 @@ function parseNutritionLabelsAndValues(
     const value = nutritionValues[i]?.toLowerCase() || '';
 
     let labelKey: OcrKeys | undefined;
-    for (const [key, fuse] of Object.entries(fuseOfNutritionTerms)) {
-      if (fuse.search(label).length > 0) {
+    for (const [key, index] of Object.entries(nutritionTermIndices)) {
+      if (fuzzyHasMatch(index, label)) {
         labelKey = key as OcrKeys;
         break;
       }
@@ -1785,7 +1785,7 @@ function transformOCRInNutrition(ocr: TextRecognitionResult): nutritionObject {
     return {};
   }
 
-  const nutritionSearches = createFuseObjects(nutritionTerms as NutritionTerms);
+  const nutritionSearches = createNutritionTermIndices(nutritionTerms as NutritionTerms);
   const per100gIndex = findAndMergePer100gLines(originalLines, nutritionTerms as NutritionTerms);
 
   if (per100gIndex === -1) {

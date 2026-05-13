@@ -8,13 +8,13 @@
 import { numericQuantity } from 'numeric-quantity';
 import { decode } from 'html-entities';
 import {
+  cleanIngredientName,
   extractFirstInteger,
   extractNumericValue,
   isAllDigits,
   kcalToKj,
   namesMatch,
 } from '@utils/NutritionUtils';
-import { cleanIngredientName } from '@utils/FuzzySearch';
 import {
   FormIngredientElement,
   nutritionTableElement,
