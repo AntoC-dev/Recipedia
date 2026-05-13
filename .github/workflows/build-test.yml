@@ -56,8 +56,10 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           git checkout ${{ github.event.pull_request.base.sha }}
+          npm ci --prefer-offline --no-audit --no-fund
           npm run test:perf:baseline
           git checkout ${{ github.sha }}
+          npm ci --prefer-offline --no-audit --no-fund
           npm run test:perf
 
       - name: Generate compact Reassure summary
