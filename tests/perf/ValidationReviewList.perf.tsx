@@ -1,4 +1,5 @@
 import React from 'react';
+import { fireEvent, screen } from '@testing-library/react-native';
 import { measureRenders } from 'reassure';
 import { ValidationReviewList } from '@components/organisms/ValidationReviewList';
 import RecipeDatabase from '@utils/RecipeDatabase';
@@ -130,5 +131,75 @@ describe('ValidationReviewList Performance', () => {
       <ValidationReviewListWrapper rawTags={rawTags} rawIngredients={rawIngredients} />,
       { runs: 10 }
     );
+  });
+
+  test('re-render after skipping first tag on a large list (100 tags, 100 ingredients)', async () => {
+    const rawTags = generateUnknownTags(100);
+    const rawIngredients = generateUnknownIngredients(100);
+    const scenario = async () => {
+      const skip = screen.queryByTestId(`PerfTest::Tag::${rawTags[0].name}::SkipChip`);
+      if (skip) fireEvent.press(skip);
+    };
+    await measureRenders(
+      <ValidationReviewListWrapper rawTags={rawTags} rawIngredients={rawIngredients} />,
+      { runs: 10, scenario }
+    );
+  });
+
+  test('re-render after skip + undo on a large list (100 tags)', async () => {
+    const rawTags = generateUnknownTags(100);
+    const scenario = async () => {
+      const skip = screen.queryByTestId(`PerfTest::Tag::${rawTags[0].name}::SkipChip`);
+      if (skip) fireEvent.press(skip);
+      const undo = screen.queryByTestId(`PerfTest::Tag::${rawTags[0].name}::UndoButton`);
+      if (undo) fireEvent.press(undo);
+    };
+    await measureRenders(<ValidationReviewListWrapper rawTags={rawTags} rawIngredients={[]} />, {
+      runs: 10,
+      scenario,
+    });
+  });
+
+  test('re-render after use-suggested resolves a similar tag (50 similar tags)', async () => {
+    const rawTags = generateTagsWithSimilarities(50);
+    const scenario = async () => {
+      const useSuggested = screen.queryByTestId(
+        `PerfTest::Tag::${rawTags[0].name}::UseSuggestedChip`
+      );
+      if (useSuggested) fireEvent.press(useSuggested);
+    };
+    await measureRenders(<ValidationReviewListWrapper rawTags={rawTags} rawIngredients={[]} />, {
+      runs: 10,
+      scenario,
+    });
+  });
+
+  test('re-render after use-suggested resolves a similar ingredient (50 similar ingredients)', async () => {
+    const rawIngredients = generateIngredientsWithSimilarities(50);
+    const scenario = async () => {
+      const target = rawIngredients[0];
+      const useSuggested = screen.queryByTestId(
+        `PerfTest::Ingredient::${target.name}::UseSuggestedChip`
+      );
+      if (useSuggested) fireEvent.press(useSuggested);
+    };
+    await measureRenders(
+      <ValidationReviewListWrapper rawTags={[]} rawIngredients={rawIngredients} />,
+      { runs: 10, scenario }
+    );
+  });
+
+  test('re-render after skipping every pending tag on a large list (100 tags)', async () => {
+    const rawTags = generateUnknownTags(100);
+    const scenario = async () => {
+      for (const tag of rawTags) {
+        const skip = screen.queryByTestId(`PerfTest::Tag::${tag.name}::SkipChip`);
+        if (skip) fireEvent.press(skip);
+      }
+    };
+    await measureRenders(<ValidationReviewListWrapper rawTags={rawTags} rawIngredients={[]} />, {
+      runs: 5,
+      scenario,
+    });
   });
 });
