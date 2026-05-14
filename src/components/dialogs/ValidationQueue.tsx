@@ -6,7 +6,7 @@
  * items last, exnpm -vact matches already handled).
  *
  * After "Add New": checks remaining queue items for name matches with the newly
- * added element and auto-validates them (O(n) name comparison, no Fuse.js).
+ * added element and auto-validates them (O(n) name comparison, no fuzzy search).
  *
  * @module components/dialogs/ValidationQueue
  */

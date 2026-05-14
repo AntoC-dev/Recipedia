@@ -11,6 +11,35 @@
 import { useSyncExternalStore } from 'react';
 import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { ingredientTableElement, ingredientType } from '@customTypes/DatabaseElementTypes';
+import {
+  buildItemIndex,
+  DetailedSearchResult,
+  ITEM_FUZZY,
+  ItemSearchIndex,
+  searchItems,
+  searchItemsDetailed,
+} from '@utils/FuzzyIndex';
+import { cleanIngredientName } from '@utils/NutritionUtils';
+
+const ingredientsIndexCache = new WeakMap<
+  ingredientTableElement[],
+  ItemSearchIndex<ingredientTableElement>
+>();
+
+function getIngredientsIndex(
+  ingredients: ingredientTableElement[]
+): ItemSearchIndex<ingredientTableElement> {
+  let cached = ingredientsIndexCache.get(ingredients);
+  if (!cached) {
+    cached = buildItemIndex(ingredients, {
+      fuzzy: ITEM_FUZZY,
+      getName: i => i.name,
+      preprocess: cleanIngredientName,
+    });
+    ingredientsIndexCache.set(ingredients, cached);
+  }
+  return cached;
+}
 
 /**
  * Provides reactive ingredient data and all ingredient operations.
@@ -45,7 +74,13 @@ export function useIngredients() {
   };
 
   const findSimilarIngredients = (ingredientName: string): ingredientTableElement[] => {
-    return db.findSimilarIngredients(ingredientName);
+    return searchItems(getIngredientsIndex(ingredients), ingredientName);
+  };
+
+  const findSimilarIngredientsDetailed = (
+    ingredientName: string
+  ): DetailedSearchResult<ingredientTableElement> => {
+    return searchItemsDetailed(getIngredientsIndex(ingredients), ingredientName);
   };
 
   const getRandomIngredients = (type: ingredientType, count: number): ingredientTableElement[] => {
@@ -64,6 +99,7 @@ export function useIngredients() {
     editIngredient,
     deleteIngredient,
     findSimilarIngredients,
+    findSimilarIngredientsDetailed,
     getRandomIngredients,
     addMultipleIngredients,
   };

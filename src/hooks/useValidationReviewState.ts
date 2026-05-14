@@ -8,7 +8,7 @@
  * @module hooks/useValidationReviewState
  */
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
   FormIngredientElement,
   ingredientTableElement,
@@ -29,7 +29,8 @@ import {
   mergeIngredient,
   sortAlphabetically,
 } from '@utils/RecipeValidationHelpers';
-import { namesMatch, normalizeKey } from '@utils/NutritionUtils';
+import { cleanIngredientName, namesMatch, normalizeKey } from '@utils/NutritionUtils';
+import { buildItemIndex, ITEM_FUZZY, ItemSearchIndex, searchItemsFuzzy } from '@utils/FuzzyIndex';
 
 /** Return value of the useValidationReviewState hook */
 export interface UseValidationReviewStateReturn {
@@ -45,11 +46,33 @@ export interface UseValidationReviewStateReturn {
   getResolutionMappings: () => ResolutionMappings;
 }
 
-/**
- * Builds a map key for a review item
- */
 function makeKey(type: 'Tag' | 'Ingredient', name: string): string {
   return `${type}:${normalizeKey(name)}`;
+}
+
+/**
+ * Refreshes a single item's `similarItems` against the current finder result.
+ * Filters out the item itself so a previously-added DB entry with the same
+ * name doesn't suggest itself.
+ */
+export function refreshSimilarityFor<
+  TItem extends { name?: string; similarItems: TMatch[] },
+  TMatch extends { name: string },
+>(
+  setItems: React.Dispatch<React.SetStateAction<TItem[]>>,
+  finder: (name: string) => TMatch[],
+  itemName: string
+) {
+  setItems(prev => {
+    const idx = prev.findIndex(item => item.name !== undefined && namesMatch(item.name, itemName));
+    if (idx === -1) return prev;
+    const target = prev[idx];
+    const targetName = target.name as string;
+    const newSimilar = finder(targetName).filter(s => !namesMatch(s.name, targetName));
+    const next = [...prev];
+    next[idx] = { ...target, similarItems: newSimilar };
+    return next;
+  });
 }
 
 /**
@@ -90,6 +113,16 @@ export function useValidationReviewState(
     computeIngredientSimilarity(rawIngredients, findSimilarIngredients)
   );
 
+  const [pendingTagsIndex] = useState<ItemSearchIndex<tagTableElement>>(() =>
+    buildItemIndex(rawTags, { fuzzy: ITEM_FUZZY, getName: t => t.name })
+  );
+  const [pendingIngredientsIndex] = useState<ItemSearchIndex<FormIngredientElement>>(() =>
+    buildItemIndex(
+      rawIngredients.filter((i): i is FormIngredientElement & { name: string } => !!i.name),
+      { fuzzy: ITEM_FUZZY, getName: i => i.name ?? '', preprocess: cleanIngredientName }
+    )
+  );
+
   const getState = (type: 'Tag' | 'Ingredient', name: string): ReviewItemState => {
     return stateMap.get(makeKey(type, name)) ?? { status: 'pending' };
   };
@@ -110,96 +143,61 @@ export function useValidationReviewState(
     tags.every(t => t.reviewState.status !== 'pending') &&
     ingredients.every(i => i.reviewState.status !== 'pending');
 
-  const recheckTagSimilarity = () => {
-    setTagItems(prev =>
-      prev.map(tag => {
-        const state = stateMap.get(makeKey('Tag', tag.name));
-        if (state && state.status !== 'pending') return tag;
-        const newSimilar = findSimilarTags(tag.name);
-        return { ...tag, similarItems: newSimilar };
-      })
-    );
-  };
-
-  const recheckIngredientSimilarity = () => {
-    setIngredientItems(prev =>
-      prev.map(ing => {
-        if (!ing.name) return ing;
-        const state = stateMap.get(makeKey('Ingredient', ing.name));
-        if (state && state.status !== 'pending') return ing;
-        const newSimilar = findSimilarIngredients(ing.name);
-        return { ...ing, similarItems: newSimilar };
-      })
-    );
-  };
-
-  const autoResolveExactMatches = (type: 'Tag' | 'Ingredient') => {
-    if (type === 'Tag') {
-      setTagItems(prev => {
-        const updates = new Map<string, ReviewItemState>();
-        const updatedTags = prev.map(tag => {
-          const key = makeKey('Tag', tag.name);
-          const state = stateMap.get(key);
-          if (state && state.status !== 'pending') return tag;
-
-          const newSimilar = findSimilarTags(tag.name);
-          const exactMatch = newSimilar.find(s => namesMatch(s.name, tag.name));
-          if (exactMatch) {
-            updates.set(key, {
-              status: 'resolved',
-              resolution: { type: 'add-new', resolvedItem: exactMatch },
-            });
-          }
-          return { ...tag, similarItems: newSimilar };
-        });
-
-        if (updates.size > 0) {
-          setStateMap(prev => {
-            const next = new Map(prev);
-            for (const [k, v] of updates) {
-              next.set(k, v);
-            }
-            return next;
-          });
-        }
-        return updatedTags;
-      });
-    } else {
-      setIngredientItems(prev => {
-        const updates = new Map<string, ReviewItemState>();
-        const updatedIngs = prev.map(ing => {
-          if (!ing.name) return ing;
-          const key = makeKey('Ingredient', ing.name);
-          const state = stateMap.get(key);
-          if (state && state.status !== 'pending') return ing;
-
-          const newSimilar = findSimilarIngredients(ing.name);
-          const exactMatch = newSimilar.find(s => namesMatch(s.name, ing.name!));
-          if (exactMatch) {
-            updates.set(key, {
-              status: 'resolved',
-              resolution: {
-                type: 'add-new',
-                resolvedItem: mergeIngredient(ing, exactMatch),
-              },
-            });
-          }
-          return { ...ing, similarItems: newSimilar };
-        });
-
-        if (updates.size > 0) {
-          setStateMap(prev => {
-            const next = new Map(prev);
-            for (const [k, v] of updates) {
-              next.set(k, v);
-            }
-            return next;
-          });
-        }
-        return updatedIngs;
+  function autoResolveAgainst<TItem extends { name?: string }, TMatch extends { name: string }>(
+    type: 'Tag' | 'Ingredient',
+    items: TItem[],
+    addedItem: TMatch,
+    buildResolvedItem: (item: TItem, match: TMatch) => ValidationResolution['resolvedItem']
+  ) {
+    const updates = new Map<string, ReviewItemState>();
+    for (const item of items) {
+      if (!item.name) continue;
+      if (!namesMatch(item.name, addedItem.name)) continue;
+      const key = makeKey(type, item.name);
+      const state = stateMap.get(key);
+      if (state && state.status !== 'pending') continue;
+      updates.set(key, {
+        status: 'resolved',
+        resolution: { type: 'add-new', resolvedItem: buildResolvedItem(item, addedItem) },
       });
     }
-  };
+    if (updates.size === 0) return;
+    setStateMap(prevMap => {
+      const merged = new Map(prevMap);
+      for (const [k, v] of updates) merged.set(k, v);
+      return merged;
+    });
+  }
+
+  function appendSimilarityAgainst<
+    TItem extends { name?: string; similarItems: TMatch[] },
+    TMatch extends { name: string },
+  >(
+    type: 'Tag' | 'Ingredient',
+    setItems: React.Dispatch<React.SetStateAction<TItem[]>>,
+    index: ItemSearchIndex<{ name?: string }>,
+    addedItem: TMatch
+  ) {
+    const matches = searchItemsFuzzy(index, addedItem.name);
+    if (matches.length === 0) return;
+    const matchedKeys = new Set(matches.filter(m => m.name).map(m => normalizeKey(m.name!)));
+    matchedKeys.delete(normalizeKey(addedItem.name));
+    if (matchedKeys.size === 0) return;
+
+    setItems(prev => {
+      let changed = false;
+      const next = prev.map(item => {
+        if (!item.name) return item;
+        if (!matchedKeys.has(normalizeKey(item.name))) return item;
+        const state = stateMap.get(makeKey(type, item.name));
+        if (state && state.status !== 'pending') return item;
+        if (item.similarItems.some(s => namesMatch(s.name, addedItem.name))) return item;
+        changed = true;
+        return { ...item, similarItems: [...item.similarItems, addedItem] };
+      });
+      return changed ? next : prev;
+    });
+  }
 
   const resolveTag = (itemName: string, resolution: ValidationResolution) => {
     setStateMap(prev => {
@@ -209,7 +207,9 @@ export function useValidationReviewState(
     });
 
     if (resolution.type === 'add-new') {
-      autoResolveExactMatches('Tag');
+      const addedTag = resolution.resolvedItem as tagTableElement;
+      autoResolveAgainst('Tag', tagItems, addedTag, (_, match) => match);
+      appendSimilarityAgainst('Tag', setTagItems, pendingTagsIndex, addedTag);
     }
   };
 
@@ -221,7 +221,11 @@ export function useValidationReviewState(
     });
 
     if (resolution.type === 'add-new') {
-      autoResolveExactMatches('Ingredient');
+      const addedIng = resolution.resolvedItem as ingredientTableElement;
+      autoResolveAgainst('Ingredient', ingredientItems, addedIng, (ing, match) =>
+        mergeIngredient(ing, match)
+      );
+      appendSimilarityAgainst('Ingredient', setIngredientItems, pendingIngredientsIndex, addedIng);
     }
   };
 
@@ -247,7 +251,7 @@ export function useValidationReviewState(
       next.set(makeKey('Tag', itemName), { status: 'pending' });
       return next;
     });
-    recheckTagSimilarity();
+    refreshSimilarityFor(setTagItems, findSimilarTags, itemName);
   };
 
   const undoIngredient = (itemName: string) => {
@@ -256,13 +260,10 @@ export function useValidationReviewState(
       next.set(makeKey('Ingredient', itemName), { status: 'pending' });
       return next;
     });
-    recheckIngredientSimilarity();
+    refreshSimilarityFor(setIngredientItems, findSimilarIngredients, itemName);
   };
 
-  const getResolutionMappings = (): {
-    tagMappings: Map<string, tagTableElement>;
-    ingredientMappings: Map<string, ingredientTableElement>;
-  } => {
+  const getResolutionMappings = (): ResolutionMappings => {
     const tagMappings = new Map<string, tagTableElement>();
     const ingredientMappings = new Map<string, ingredientTableElement>();
 

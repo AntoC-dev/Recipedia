@@ -1,4 +1,5 @@
 import {
+  cleanIngredientName,
   extractFirstInteger,
   extractNumericValue,
   isAllDigits,
@@ -200,6 +201,40 @@ describe('NutritionUtils', () => {
 
         expect(namesMatch(nfc, nfd)).toBe(true);
       });
+    });
+  });
+
+  describe('cleanIngredientName', () => {
+    it('strips parenthetical content', () => {
+      expect(cleanIngredientName('Tomatoes (canned)')).toBe('Tomatoes');
+    });
+
+    it('strips multiple parenthetical segments', () => {
+      expect(cleanIngredientName('Chicken (boneless) (skinless)')).toBe('Chicken');
+    });
+
+    it('keeps names without parentheses unchanged', () => {
+      expect(cleanIngredientName('Olive Oil')).toBe('Olive Oil');
+    });
+
+    it('trims surrounding whitespace', () => {
+      expect(cleanIngredientName('  Tomatoes (fresh)  ')).toBe('Tomatoes');
+    });
+
+    it('handles an empty input', () => {
+      expect(cleanIngredientName('')).toBe('');
+    });
+
+    it('reduces an only-parenthetical input to the empty string', () => {
+      expect(cleanIngredientName('(everything)')).toBe('');
+    });
+
+    it('strips leading parentheticals', () => {
+      expect(cleanIngredientName('(brand) Olive Oil')).toBe('Olive Oil');
+    });
+
+    it('strips parentheticals mid-string', () => {
+      expect(cleanIngredientName('Olive (brand) Oil')).toBe('Olive Oil');
     });
   });
 });

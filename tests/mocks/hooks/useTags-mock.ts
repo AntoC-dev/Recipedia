@@ -1,6 +1,19 @@
 import { tagTableElement } from '@customTypes/DatabaseElementTypes';
+import {
+  buildItemIndex,
+  DetailedSearchResult,
+  searchItems,
+  searchItemsDetailed,
+} from '@utils/FuzzyIndex';
 
-export const mockFindSimilarTags = jest.fn<tagTableElement[], [string]>(() => []);
+const buildTagIndex = () => buildItemIndex(mockTags, { fuzzy: 0.2, getName: t => t.name });
+
+export const mockFindSimilarTags = jest.fn<tagTableElement[], [string]>((name: string) =>
+  searchItems(buildTagIndex(), name)
+);
+export const mockFindSimilarTagsDetailed = jest.fn<DetailedSearchResult<tagTableElement>, [string]>(
+  (name: string) => searchItemsDetailed(buildTagIndex(), name)
+);
 export const mockAddTag = jest.fn(async (tag: unknown) => tag);
 export const mockEditTag = jest.fn(async () => true);
 export const mockDeleteTag = jest.fn(async () => true);
@@ -16,7 +29,12 @@ export function setMockTags(tags: tagTableElement[]) {
 
 export function resetUseTagsMocks() {
   mockTags = [];
-  mockFindSimilarTags.mockReset().mockReturnValue([]);
+  mockFindSimilarTags
+    .mockReset()
+    .mockImplementation((name: string) => searchItems(buildTagIndex(), name));
+  mockFindSimilarTagsDetailed
+    .mockReset()
+    .mockImplementation((name: string) => searchItemsDetailed(buildTagIndex(), name));
   mockAddTag.mockReset().mockImplementation(async (tag: unknown) => tag);
   mockEditTag.mockReset().mockResolvedValue(true);
   mockDeleteTag.mockReset().mockResolvedValue(true);
@@ -29,6 +47,7 @@ export function useTagsMock() {
   return {
     tags: mockTags,
     findSimilarTags: mockFindSimilarTags,
+    findSimilarTagsDetailed: mockFindSimilarTagsDetailed,
     addTag: mockAddTag,
     editTag: mockEditTag,
     deleteTag: mockDeleteTag,
