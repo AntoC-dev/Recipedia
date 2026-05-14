@@ -27,4 +27,5 @@ export default {
   search_items: 'Search...',
   ingredient_form_hint:
     'Name and type are required. The more details you provide, the better your experience.',
+  name_required: 'Name is required.',
 };

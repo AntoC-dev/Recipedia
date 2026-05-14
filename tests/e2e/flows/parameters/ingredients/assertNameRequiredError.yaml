@@ -1,0 +1,74 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "IngredientsSettings::BottomActionButton"
+    label: "Open Add ingredient dialog"
+
+- extendedWaitUntil:
+    visible:
+      id: "IngredientsSettings::ItemDialog::AddModal::Title"
+    timeout: 20000
+    label: "Wait for Add ingredient modal to appear"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::Name::CustomTextInput"
+    label: "Focus on ingredient name input"
+
+- runFlow:
+    file: "../../waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
+- inputText:
+    text: "A name"
+    label: "Enter a name in the ingredient input field"
+
+- eraseText
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Done"
+          label: "Tap Done key to dismiss keyboard on iOS"
+
+- runFlow:
+    file: "../../waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to dismiss"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::FormHint"
+    label: "Tap form hint to blur the name input"
+
+- extendedWaitUntil:
+    visible:
+      id: "IngredientsSettings::ItemDialog::AddModal::HelperText"
+    timeout: 5000
+    label: "Wait for required error to appear"
+
+- assertVisible:
+    id: "IngredientsSettings::ItemDialog::AddModal::HelperText"
+    text: "Name is required."
+    label: "Verify Name is required error appears"
+
+- assertVisible:
+    id: "IngredientsSettings::ItemDialog::AddModal::ConfirmButton"
+    enabled: false
+    label: "Verify Confirm button is disabled"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::CancelButton"
+    label: "Cancel the dialog"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "IngredientsSettings::ItemDialog::AddModal::Title"
+    timeout: 20000
+    label: "Wait for modal to dismiss"

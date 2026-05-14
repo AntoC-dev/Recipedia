@@ -1,0 +1,11 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    id: "BugReport::Description::Error"
+    text: "Please describe the issue."
+    label: "Description required error is displayed"
+
+- assertVisible:
+    id: "BugReport::Send::Button"
+    enabled: false
+    label: "Send button is disabled when description is empty"

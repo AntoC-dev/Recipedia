@@ -56,11 +56,8 @@ const renderIngredientsSettings = async () => {
 
 type QueryByIdType = QueryByQuery<TextMatch, CommonQueryOptions & TextMatchOptions>;
 
-function dialogIsNotOpen(getByTestId: QueryByIdType) {
-  expect(getByTestId('IngredientsSettings::ItemDialog::IsVisible').props.children).toEqual(false);
-  expect(getByTestId('IngredientsSettings::ItemDialog::Mode')).toBeTruthy();
-  expect(getByTestId('IngredientsSettings::ItemDialog::OnClose')).toBeTruthy();
-  expect(getByTestId('IngredientsSettings::ItemDialog::Item')).toBeTruthy();
+function dialogIsNotOpen(queryByTestId: (id: string) => HTMLElement | null) {
+  expect(queryByTestId('IngredientsSettings::ItemDialog::IsVisible')).toBeNull();
 }
 
 function dialogIsOpen(
@@ -114,7 +111,7 @@ describe('IngredientsSettings Screen', () => {
     expect(getByTestId('IngredientsSettings::SettingsItemList::OnEdit')).toBeTruthy();
     expect(getByTestId('IngredientsSettings::SettingsItemList::OnDelete')).toBeTruthy();
 
-    dialogIsNotOpen(getByTestId);
+    dialogIsNotOpen(queryByTestId);
   });
 
   test('opens add dialog with empty template when add button is pressed', async () => {
