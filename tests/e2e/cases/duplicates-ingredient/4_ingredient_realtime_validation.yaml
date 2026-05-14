@@ -117,7 +117,7 @@ tags:
 
 - assertVisible:
     id: "IngredientsSettings::ItemDialog::AddModal::HelperText"
-    text: "Similar ingredients found: Butter, Burger Buns"
+    text: "Similar ingredients found: Butter"
     label: "Assert - Helper text visible for similar match"
 
 - tapOn:
