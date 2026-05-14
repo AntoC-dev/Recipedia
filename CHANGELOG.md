@@ -1,3 +1,14 @@
+## [2.37.0](https://github.com/AntoC-dev/Recipedia/compare/v2.36.0...v2.37.0) (2026-05-14)
+
+### Features
+
+* **ItemDialog:** migrate form to react-hook-form + zod ([5154e92](https://github.com/AntoC-dev/Recipedia/commit/5154e9261403945ae847e421f20c977af8a8c6b7))
+* **ItemDialog:** migrate form to react-hook-form + zod ([#280](https://github.com/AntoC-dev/Recipedia/issues/280)) ([1b1f944](https://github.com/AntoC-dev/Recipedia/commit/1b1f9447305472d9cfec523890b1beb43b7681e4))
+
+### Performance Improvements
+
+* **ItemDialog:** lazy-mount dialog to eliminate RHF overhead when closed ([8f1833e](https://github.com/AntoC-dev/Recipedia/commit/8f1833e8d60812afba234e536d15a8f25435cc97))
+
 ## [2.36.0](https://github.com/AntoC-dev/Recipedia/compare/v2.35.3...v2.36.0) (2026-05-09)
 
 ### Features
