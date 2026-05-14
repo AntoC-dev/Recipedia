@@ -1433,6 +1433,7 @@ export class RecipeDatabase {
     const titleIndex = buildItemIndex(recipesWithSimilarIngredients, {
       fuzzy: RECIPE_TITLE_FUZZY,
       getName: r => r.title,
+      combineWith: 'AND',
     });
     const finalResult = searchItems(titleIndex, recipeToCompare.title);
     databaseLogger.info('findSimilarRecipes result', {

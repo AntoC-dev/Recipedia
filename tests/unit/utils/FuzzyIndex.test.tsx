@@ -378,5 +378,30 @@ describe('FuzzyIndex', () => {
       const index = buildItemIndex(recipes, { fuzzy: 0.3, getName: r => r.title });
       expect(searchItems(index, '')).toEqual([]);
     });
+
+    it('with combineWith=AND, ignores a title sharing only one common word with the query', () => {
+      const titles: recipeTableElement[] = [
+        makeRecipe(10, 'Test Recipe'),
+        makeRecipe(11, 'Tomato Pasta Sauce'),
+      ];
+      const index = buildItemIndex(titles, {
+        fuzzy: 0.3,
+        getName: r => r.title,
+        combineWith: 'AND',
+      });
+      const got = searchItems(index, 'Completely Different Recipe Name').map(r => r.title);
+      expect(got).not.toContain('Test Recipe');
+    });
+
+    it('with combineWith=AND, matches when all query tokens hit (typo + exact)', () => {
+      const titles: recipeTableElement[] = [makeRecipe(10, 'Spaghetti Bolognese')];
+      const index = buildItemIndex(titles, {
+        fuzzy: 0.3,
+        getName: r => r.title,
+        combineWith: 'AND',
+      });
+      const got = searchItems(index, 'Spagheti Bolognese').map(r => r.title);
+      expect(got).toContain('Spaghetti Bolognese');
+    });
   });
 });

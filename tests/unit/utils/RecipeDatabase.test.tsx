@@ -762,6 +762,24 @@ describe('RecipeDatabase', () => {
         return { ...baseRecipe, ingredients: copyIngredients };
       }
 
+      let titleCaseSeq = 0;
+      async function seedExistingAndCompare(existingTitle: string, candidateTitle: string) {
+        titleCaseSeq += 1;
+        const baseId = testRecipes.length + 100 + titleCaseSeq * 2;
+        const existing: recipeTableElement = {
+          ...createCopyOfBaseRecipe(),
+          id: baseId,
+          title: existingTitle,
+        };
+        await db.addRecipe(existing);
+        const candidate: recipeTableElement = {
+          ...createCopyOfBaseRecipe(),
+          id: baseId + 1,
+          title: candidateTitle,
+        };
+        return db.findSimilarRecipes(candidate);
+      }
+
       test('should find an exact duplicate recipe', () => {
         const recipeToTest: recipeTableElement = createCopyOfBaseRecipe();
         const similar = db.findSimilarRecipes(recipeToTest);
@@ -771,7 +789,7 @@ describe('RecipeDatabase', () => {
 
       test('should find a recipe with a very similar title and ingredients', () => {
         const recipeToTest: recipeTableElement = createCopyOfBaseRecipe();
-        recipeToTest.title = 'Spageti Carbonara'; // Typo in title
+        recipeToTest.title = 'Spageti Bolognes';
         recipeToTest.ingredients[1].quantity = (
           Number(recipeToTest.ingredients[1].quantity) - 1
         ).toString(); // Slightly less
@@ -795,6 +813,29 @@ describe('RecipeDatabase', () => {
 
         const similar = db.findSimilarRecipes(recipeToTest);
         expect(similar.length).toBe(0);
+      });
+
+      test('should not flag a title that only shares a single common word with an existing recipe', async () => {
+        const similar = await seedExistingAndCompare(
+          'Test Recipe',
+          'Completely Different Recipe Name'
+        );
+        expect(similar.find(r => r.title === 'Test Recipe')).toBeUndefined();
+      });
+
+      test('should match a title regardless of word order when all tokens overlap', async () => {
+        const similar = await seedExistingAndCompare('Pasta Tomato', 'Tomato Pasta');
+        expect(similar.find(r => r.title === 'Pasta Tomato')).toBeDefined();
+      });
+
+      test('should match a shorter candidate title whose tokens are a subset of an existing title', async () => {
+        const similar = await seedExistingAndCompare('Tomato Pasta Sauce', 'Tomato Pasta');
+        expect(similar.find(r => r.title === 'Tomato Pasta Sauce')).toBeDefined();
+      });
+
+      test('should not flag two recipes that only share a common cuisine word', async () => {
+        const similar = await seedExistingAndCompare('Tomato Soup', 'Mushroom Soup');
+        expect(similar.find(r => r.title === 'Tomato Soup')).toBeUndefined();
       });
 
       test('should find a similar recipe regardless of serving size (persons)', () => {

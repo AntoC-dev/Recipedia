@@ -119,6 +119,12 @@ export type ItemIndexConfig<T> = {
   fuzzy: number;
   getName: (item: T) => string;
   preprocess?: (text: string) => string;
+  /**
+   * How multi-token queries combine. Defaults to `'OR'` (any token matches).
+   * Use `'AND'` for multi-word names where a single shared common word
+   * (e.g. "Recipe", "Salad") should not by itself flag similarity.
+   */
+  combineWith?: 'OR' | 'AND';
 };
 
 /**
@@ -182,6 +188,7 @@ export function buildItemIndex<T>(corpus: T[], config: ItemIndexConfig<T>): Item
   }
   const fuzzy = buildFuzzyIndex(indexedNames, {
     fuzzy: config.fuzzy,
+    combineWith: config.combineWith,
     processTerm: indexProcessTerm,
     processQueryTerm: queryProcessTerm,
   });
