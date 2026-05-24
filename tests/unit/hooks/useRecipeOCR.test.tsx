@@ -572,6 +572,172 @@ describe('useRecipeOCR', () => {
       });
     });
 
+    test('ingredientNames preserves OCR order even when later items have similar suggestions', async () => {
+      mockFindSimilarIngredients.mockImplementation((name: string) => {
+        if (name.toLowerCase() === 'cébette') {
+          return [{ id: 99, name: 'Onion', unit: 'g', type: ingredientType.vegetable, season: [] }];
+        }
+        return [];
+      });
+
+      mockExtractFieldFromImage.mockResolvedValue({
+        ingredientNames: [
+          { name: 'carotte', unit: 'g' },
+          { name: 'cébette', unit: 'g' },
+          { name: 'citronnelle', unit: 'g' },
+        ],
+      });
+
+      const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
+
+      const { result } = renderHook(
+        () => ({
+          ocr: useRecipeOCR(),
+          form: useRecipeForm(),
+        }),
+        { wrapper }
+      );
+
+      await act(async () => {
+        await result.current.ocr.fillOneField('image.jpg', 'ingredientNames');
+      });
+
+      await waitFor(() => {
+        expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+      });
+
+      const names = result.current.form.state.recipeIngredients.map(i => i.name);
+      expect(names).toEqual(['carotte', 'cébette', 'citronnelle']);
+    });
+
+    test('form order survives bucketed queue resolution', async () => {
+      mockFindSimilarIngredients.mockImplementation((name: string) => {
+        if (name.toLowerCase() === 'cébette') {
+          return [{ id: 99, name: 'Onion', unit: 'g', type: ingredientType.vegetable, season: [] }];
+        }
+        return [];
+      });
+
+      mockExtractFieldFromImage.mockResolvedValue({
+        ingredientNames: [
+          { name: 'carotte', unit: 'g' },
+          { name: 'cébette', unit: 'g' },
+          { name: 'citronnelle', unit: 'g' },
+        ],
+      });
+
+      const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
+
+      const { result } = renderHook(
+        () => ({
+          ocr: useRecipeOCR(),
+          form: useRecipeForm(),
+          dialogs: useRecipeDialogs(),
+        }),
+        { wrapper }
+      );
+
+      await act(async () => {
+        await result.current.ocr.fillOneField('image.jpg', 'ingredientNames');
+      });
+
+      const queue = result.current.dialogs.validationQueue;
+      expect(queue?.type).toBe('Ingredient');
+      const queuedItems = (queue as IngredientValidationProps).items;
+      expect(queuedItems.map(i => i.name)).toEqual(['carotte', 'citronnelle', 'cébette']);
+
+      act(() => {
+        for (const item of queuedItems) {
+          (queue as IngredientValidationProps).onValidated(item, {
+            id: 200 + queuedItems.indexOf(item),
+            name: item.name!,
+            unit: 'g',
+            type: ingredientType.vegetable,
+            season: [],
+            quantity: '',
+          });
+        }
+      });
+
+      const names = result.current.form.state.recipeIngredients.map(i => i.name);
+      expect(names).toEqual(['carotte', 'cébette', 'citronnelle']);
+    });
+
+    test('recipeIngredients (full data) preserves OCR order when items have similar suggestions', async () => {
+      mockFindSimilarIngredients.mockImplementation((name: string) => {
+        if (name.toLowerCase() === 'lait de coco') {
+          return [
+            { id: 99, name: 'Cocoa Powder', unit: 'g', type: ingredientType.baking, season: [] },
+          ];
+        }
+        return [];
+      });
+
+      mockExtractFieldFromImage.mockResolvedValue({
+        recipeIngredients: [
+          { name: 'carotte', unit: 'g', quantity: '2', type: ingredientType.vegetable, season: [] },
+          {
+            name: 'lait de coco',
+            unit: 'mL',
+            quantity: '400',
+            type: ingredientType.baking,
+            season: [],
+          },
+          {
+            name: 'riz basmati',
+            unit: 'g',
+            quantity: '300',
+            type: ingredientType.cereal,
+            season: [],
+          },
+        ],
+      });
+
+      const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
+
+      const { result } = renderHook(() => ({ ocr: useRecipeOCR(), form: useRecipeForm() }), {
+        wrapper,
+      });
+
+      await act(async () => {
+        await result.current.ocr.fillOneField('image.jpg', recipeColumnsNames.ingredients);
+      });
+
+      await waitFor(() => {
+        expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+      });
+
+      const names = result.current.form.state.recipeIngredients.map(i => i.name);
+      expect(names).toEqual(['carotte', 'lait de coco', 'riz basmati']);
+    });
+
+    test('prepopulate skips items whose name already exists in the form', async () => {
+      mockExtractFieldFromImage.mockResolvedValue({
+        ingredientNames: [
+          { name: 'Flour', unit: 'g' },
+          { name: 'carotte', unit: 'g' },
+        ],
+      });
+
+      const wrapper = createOcrWrapper(createMockRecipeProp('edit', recipeForOcr));
+
+      const { result } = renderHook(() => ({ ocr: useRecipeOCR(), form: useRecipeForm() }), {
+        wrapper,
+      });
+
+      await waitFor(() => {
+        expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+      });
+
+      await act(async () => {
+        await result.current.ocr.fillOneField('image.jpg', 'ingredientNames');
+      });
+
+      const names = result.current.form.state.recipeIngredients.map(i => i.name);
+      expect(names.filter(n => n === 'Flour')).toHaveLength(1);
+      expect(names).toContain('carotte');
+    });
+
     test('ingredientNames empty result does not change recipeIngredients', async () => {
       mockExtractFieldFromImage.mockResolvedValue({ ingredientNames: [] });
 

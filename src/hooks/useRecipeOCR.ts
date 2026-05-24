@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { FormIngredientElement, nutritionTableElement } from '@customTypes/DatabaseElementTypes';
 import { extractFieldFromImage, OcrModalTarget } from '@utils/OCR';
 import {
+  addNonDuplicateByName,
   addOrMergeIngredientMatches,
   filterOutExistingTags,
   processIngredientsForValidation,
@@ -136,6 +137,11 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
     setImgForOCR(prev => [...prev, uri]);
   };
 
+  /** Append OCR items to the form in scan order, skipping names already present. */
+  const prepopulateIngredients = (items: FormIngredientElement[]) => {
+    setRecipeIngredients(prev => addNonDuplicateByName(prev, items));
+  };
+
   /**
    * Extracts data from an image for a specific recipe field and updates the form.
    *
@@ -198,6 +204,7 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
     }
     if (newFieldData.recipeIngredients && newFieldData.recipeIngredients.length > 0) {
       const ocrIngredients = newFieldData.recipeIngredients;
+      prepopulateIngredients(ocrIngredients);
       validateAndQueueIngredients(
         ocrIngredients,
         findSimilarIngredients,
@@ -216,6 +223,7 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
         ({ name, unit }) => ({ name, unit, quantity: '' })
       );
       if (ingredientsWithNoQuantity.length > 0) {
+        prepopulateIngredients(ingredientsWithNoQuantity);
         validateAndQueueIngredients(
           ingredientsWithNoQuantity,
           findSimilarIngredients,
@@ -246,6 +254,8 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
           ingredientsWithNoQuantity,
           findSimilarIngredients
         );
+
+        prepopulateIngredients(ingredientsWithNoQuantity);
 
         if (exactMatches.length > 0) {
           setRecipeIngredients(prev => addOrMergeIngredientMatches(prev, exactMatches));
