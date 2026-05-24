@@ -144,19 +144,18 @@ export function replaceMatchingTags(
 }
 
 /**
- * Adds tags that don't already exist in the array.
- * Used by OCR to add only non-duplicate tags.
+ * Appends items whose name doesn't already exist in `current`, comparing
+ * by `namesMatch` (lowercase + NFC + whitespace normalize).
  */
-export function addNonDuplicateTags(
-  current: tagTableElement[],
-  tagsToAdd: tagTableElement[]
-): tagTableElement[] {
+export function addNonDuplicateByName<T extends { name?: string }>(
+  current: T[],
+  itemsToAdd: T[]
+): T[] {
   const updated = [...current];
-  for (const tag of tagsToAdd) {
-    const isDuplicate = updated.some(existing => namesMatch(existing.name, tag.name));
-    if (!isDuplicate) {
-      updated.push(tag);
-    }
+  for (const item of itemsToAdd) {
+    if (!item.name) continue;
+    if (updated.some(existing => namesMatch(existing.name, item.name))) continue;
+    updated.push(item);
   }
   return updated;
 }
@@ -238,13 +237,12 @@ export function processIngredientsForValidation(
     const exactMatch = similarIngredients.find(dbIng => namesMatch(dbIng.name, ingredientName));
 
     if (exactMatch) {
-      const mergedIngredient: ingredientTableElement = {
+      exactMatches.push({
         ...exactMatch,
         quantity: ingredient.quantity || exactMatch.quantity,
         unit: exactMatch.unit,
         note: ingredient.note,
-      };
-      exactMatches.push(mergedIngredient);
+      });
     } else {
       const ingredientWithSimilarity: IngredientWithSimilarity = {
         ...ingredient,

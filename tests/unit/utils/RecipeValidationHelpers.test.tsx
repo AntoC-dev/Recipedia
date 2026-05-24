@@ -1,5 +1,5 @@
 import {
-  addNonDuplicateTags,
+  addNonDuplicateByName,
   addOrMergeIngredientMatches,
   computeIngredientSimilarity,
   computeTagSimilarity,
@@ -1353,13 +1353,13 @@ describe('RecipeValidationHelpers', () => {
     });
   });
 
-  describe('addNonDuplicateTags', () => {
+  describe('addNonDuplicateByName', () => {
     const currentTags: tagTableElement[] = [{ id: 1, name: 'Italian' }];
 
     test('adds tag when not duplicate', () => {
       const newTags: tagTableElement[] = [{ name: 'Vegan' }];
 
-      const result = addNonDuplicateTags(currentTags, newTags);
+      const result = addNonDuplicateByName(currentTags, newTags);
 
       expect(result).toHaveLength(2);
       expect(result[1].name).toBe('Vegan');
@@ -1368,7 +1368,7 @@ describe('RecipeValidationHelpers', () => {
     test('does not add duplicate tag', () => {
       const newTags: tagTableElement[] = [{ name: 'Italian' }];
 
-      const result = addNonDuplicateTags(currentTags, newTags);
+      const result = addNonDuplicateByName(currentTags, newTags);
 
       expect(result).toHaveLength(1);
     });
@@ -1376,7 +1376,7 @@ describe('RecipeValidationHelpers', () => {
     test('handles case-insensitive duplicate detection', () => {
       const newTags: tagTableElement[] = [{ name: 'ITALIAN' }];
 
-      const result = addNonDuplicateTags(currentTags, newTags);
+      const result = addNonDuplicateByName(currentTags, newTags);
 
       expect(result).toHaveLength(1);
     });
@@ -1384,7 +1384,7 @@ describe('RecipeValidationHelpers', () => {
     test('adds multiple non-duplicate tags', () => {
       const newTags: tagTableElement[] = [{ name: 'Vegan' }, { name: 'Quick' }];
 
-      const result = addNonDuplicateTags(currentTags, newTags);
+      const result = addNonDuplicateByName(currentTags, newTags);
 
       expect(result).toHaveLength(3);
     });
@@ -1396,7 +1396,7 @@ describe('RecipeValidationHelpers', () => {
         { name: 'Quick' },
       ];
 
-      const result = addNonDuplicateTags(currentTags, newTags);
+      const result = addNonDuplicateByName(currentTags, newTags);
 
       expect(result).toHaveLength(3);
       expect(result.map(t => t.name)).toContain('Vegan');
@@ -1406,7 +1406,7 @@ describe('RecipeValidationHelpers', () => {
     test('handles empty current array', () => {
       const newTags: tagTableElement[] = [{ name: 'Vegan' }];
 
-      const result = addNonDuplicateTags([], newTags);
+      const result = addNonDuplicateByName([], newTags);
 
       expect(result).toHaveLength(1);
     });
