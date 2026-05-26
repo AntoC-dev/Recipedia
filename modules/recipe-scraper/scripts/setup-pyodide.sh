@@ -45,6 +45,10 @@ fi
 PYODIDE_VERSION=$(node -e "console.log(require('$PYODIDE_DIR/package.json').version)")
 echo "[setup-pyodide] Using Pyodide v${PYODIDE_VERSION} from npm"
 
+# Prefer the project venv (has `packaging` for the validator); fall back to system python3.
+PYTHON_BIN="$MODULE_DIR/python/.venv/bin/python"
+[[ -x "$PYTHON_BIN" ]] || PYTHON_BIN="python3"
+
 # Clean and create download directory (for wheels only)
 rm -rf "$DOWNLOAD_DIR"
 mkdir -p "$DOWNLOAD_DIR/wheels"
@@ -58,7 +62,7 @@ echo "[setup-pyodide] Downloading Python wheels (from $REQUIREMENTS_FILE)..."
 # Download all deps. Some come as sdists (jstyleson) or platform wheels (lxml).
 # We filter those out below — Pyodide provides C extensions (lxml, beautifulsoup4)
 # and we shim jstyleson in the bundle.
-if ! python3 -m pip download \
+if ! "$PYTHON_BIN" -m pip download \
     -r "$REQUIREMENTS_FILE" \
     --dest "$WHEELS_DIR"; then
     echo "ERROR: Failed to download Python wheels"
@@ -107,6 +111,28 @@ fi
 
 BUNDLE_SIZE=$(ls -lh "$BUNDLE_FILE" | awk '{print $5}')
 echo "[setup-pyodide] Bundle created: $BUNDLE_FILE ($BUNDLE_SIZE)"
+
+# Statically validate the dependency graph against Pyodide's built-in packages
+# (catches mismatches like extruct 0.18.0 requiring lxml>=6.1.1 when Pyodide
+# ships lxml-6.0.0 — would otherwise only surface at iOS E2E run time).
+#
+# The validator needs `packaging`. The project venv has it; CI runners typically
+# don't. Install scoped to a temp dir and inject via PYTHONPATH so we don't
+# touch the system site-packages (PEP 668 environments would reject that).
+echo "[setup-pyodide] Validating bundle dependency graph..."
+VALIDATOR_TOOLS_DIR="$DOWNLOAD_DIR/tools"
+if ! "$PYTHON_BIN" -c "import packaging" 2>/dev/null; then
+    echo "[setup-pyodide] Installing 'packaging' for validator into $VALIDATOR_TOOLS_DIR..."
+    if ! "$PYTHON_BIN" -m pip install --quiet --target "$VALIDATOR_TOOLS_DIR" packaging; then
+        echo "ERROR: Failed to install 'packaging' for the bundle validator"
+        exit 1
+    fi
+fi
+if ! PYTHONPATH="$VALIDATOR_TOOLS_DIR${PYTHONPATH:+:$PYTHONPATH}" \
+    "$PYTHON_BIN" "$SCRIPT_DIR/validate-bundle.py"; then
+    echo "ERROR: Bundle dependency validation failed. Fix requirements.txt and rerun."
+    exit 1
+fi
 
 # Clean up download directory to save space
 echo "[setup-pyodide] Cleaning up downloads..."
