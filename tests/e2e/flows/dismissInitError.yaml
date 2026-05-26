@@ -1,0 +1,15 @@
+appId: "com.recipedia"
+---
+# Dismiss WelcomeScreen InitErrorDialog if it appears during initialization.
+# The dialog covers the Skip button and absorbs taps, blocking navigation.
+# Web-scraping E2E tests still surface real Pyodide failures via their own
+# assertions — this flow only prevents the setup step from getting stuck.
+
+- runFlow:
+    when:
+      visible:
+        id: "WelcomeScreen::InitErrorDialog"
+    commands:
+      - tapOn:
+          id: "WelcomeScreen::InitErrorDialog::OK"
+          label: "Dismiss init error dialog"

@@ -1,0 +1,18 @@
+appId: "com.recipedia"
+---
+# Maestro has no native sleep command. We get one by waiting for an element
+# that cannot exist, with `optional: true` so the timeout doesn't fail the run.
+# The `timeout` value below is the sleep duration in milliseconds.
+#
+# Override the duration per invocation by passing the env var DURATION_MS:
+#   - runFlow:
+#       file: "sleep.yaml"
+#       env:
+#         DURATION_MS: 3000
+#       label: "Wait 3s"
+
+- extendedWaitUntil:
+    visible:
+      id: "NonExistentElement::ForSleep"
+    timeout: ${DURATION_MS}
+    optional: true

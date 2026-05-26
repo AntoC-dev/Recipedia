@@ -30,6 +30,10 @@ appId: "com.recipedia"
     file: "handleAnr.yaml"
     label: "Handle ANR during initialization"
 
+- runFlow:
+    file: "dismissInitError.yaml"
+    label: "Dismiss init error dialog if Pyodide init failed"
+
 - tapOn:
     id: "WelcomeScreen::SkipButton"
     label: "Skip onboarding"
@@ -40,11 +44,10 @@ appId: "com.recipedia"
     timeout: 30000
     label: "Wait for data to load"
 
-- extendedWaitUntil:
-    visible:
-      id: "NonExistentElement::ForDelay"
-    timeout: 3000
-    optional: true
+- runFlow:
+    file: "sleep.yaml"
+    env:
+      DURATION_MS: 3000
     label: "Wait 3s before ANR check"
 
 - runFlow:
