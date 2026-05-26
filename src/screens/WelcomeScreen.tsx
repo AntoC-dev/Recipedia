@@ -46,7 +46,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { FlatList, InteractionManager, View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { Button, Card, Dialog, IconButton, Portal, Text, useTheme } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
@@ -95,7 +95,7 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
       return;
     }
 
-    const task = InteractionManager.runAfterInteractions(async () => {
+    const id = setTimeout(async () => {
       try {
         await loadFirstLaunchDataset();
       } catch (error) {
@@ -112,8 +112,8 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
         setInitErrors(prev => [...prev, errorMessage]);
         setDatasetFailed(true);
       }
-    });
-    return () => task.cancel();
+    }, 0);
+    return () => clearTimeout(id);
   }, [isDataLoaded]);
 
   useEffect(() => {

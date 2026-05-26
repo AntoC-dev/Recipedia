@@ -59,7 +59,7 @@ function TutorialManager({ onComplete }: Pick<TutorialProviderProps, 'onComplete
       tutorialLogger.info('Starting tutorial on next tick');
       setTimeout(() => {
         start();
-      }, 0);
+      }, 300);
     }
   }, [copilotEvents, visible, start]);
 

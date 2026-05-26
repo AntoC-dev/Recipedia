@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { act, render } from '@testing-library/react-native';
 import { TutorialProvider } from '@components/organisms/TutorialController';
 import {
   getMockCopilotEvents,
@@ -21,6 +21,7 @@ describe('TutorialController Component', () => {
 
   const renderTutorialProvider = async () => {
     const { View, Text } = require('react-native');
+    jest.useFakeTimers();
     const result = render(
       <TutorialProvider onComplete={mockOnComplete}>
         <View testID='test-child'>
@@ -28,9 +29,8 @@ describe('TutorialController Component', () => {
         </View>
       </TutorialProvider>
     );
-
-    // Wait for the async operation to complete
-    await new Promise(resolve => setTimeout(resolve, 10));
+    act(() => jest.advanceTimersByTime(300));
+    jest.useRealTimers();
     return result;
   };
 
@@ -60,6 +60,29 @@ describe('TutorialController Component', () => {
     await renderTutorialProvider();
 
     expect(mockMethods.start).toHaveBeenCalled();
+  });
+
+  test('does not auto-start before 300ms delay to allow iOS layout to complete', async () => {
+    const mockMethods = getMockCopilotMethods();
+    setMockCopilotState({ isActive: true, visible: false });
+    const { View, Text } = require('react-native');
+
+    jest.useFakeTimers();
+    render(
+      <TutorialProvider onComplete={mockOnComplete}>
+        <View testID='test-child'>
+          <Text testID='test-child-text'>Test Child</Text>
+        </View>
+      </TutorialProvider>
+    );
+
+    act(() => jest.advanceTimersByTime(299));
+    expect(mockMethods.start).not.toHaveBeenCalled();
+
+    act(() => jest.advanceTimersByTime(1));
+    expect(mockMethods.start).toHaveBeenCalled();
+
+    jest.useRealTimers();
   });
 
   test('does not auto-start when tutorial is already visible', async () => {

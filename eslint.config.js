@@ -44,6 +44,7 @@ module.exports = defineConfig([
             },
         },
         plugins: {
+            '@typescript-eslint': require('@typescript-eslint/eslint-plugin'),
             'react-native': require('eslint-plugin-react-native'),
             prettier: require('eslint-plugin-prettier'),
         },
@@ -97,6 +98,7 @@ module.exports = defineConfig([
             },
         },
         plugins: {
+            '@typescript-eslint': require('@typescript-eslint/eslint-plugin'),
             'react-native': require('eslint-plugin-react-native'),
             prettier: require('eslint-plugin-prettier'),
         },

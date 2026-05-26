@@ -48,7 +48,7 @@ import { RecipeRecommendation } from '@components/organisms/RecipeRecommendation
 import { RecommendationSkeletonRow } from '@components/molecules/RecommendationSkeletonRow';
 
 import React, { useEffect, useState } from 'react';
-import { FlatList, InteractionManager, RefreshControl, View } from 'react-native';
+import { FlatList, RefreshControl, View } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { generateHomeRecommendations } from '@utils/FilterFunctions';
@@ -105,14 +105,14 @@ export function Home() {
       seasonFilterEnabled: seasonFilter,
     });
     setIsLoadingRecommendations(true);
-    const task = InteractionManager.runAfterInteractions(() => {
+    const id = setTimeout(() => {
       setRecommendations(
         generateHomeRecommendations(recipes, ingredients, tags, seasonFilter, howManyItemInCarousel)
       );
       setIsLoadingRecommendations(false);
       homeLogger.debug('Smart recipe recommendations loaded successfully');
-    });
-    return () => task.cancel();
+    }, 0);
+    return () => clearTimeout(id);
   }, [recipes, ingredients, tags, seasonFilter]);
 
   const onRefresh = () => {
