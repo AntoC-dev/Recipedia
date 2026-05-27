@@ -137,6 +137,41 @@ jobs:
           only_changed_files: true
         if: github.event_name == 'pull_request'
 
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: install-and-doctor
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Restore node modules
+        uses: actions/cache/restore@v5
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      - name: Run integration tests
+        run: npm run test:integration -- --reporters=default --reporters=jest-junit
+
+      - name: Integration tests summary
+        uses: test-summary/action@v2
+        with:
+          paths: junit.xml
+          output: integration-test-summary.md
+        if: always()
+
+      - name: Upload integration tests summary
+        uses: actions/upload-artifact@v7
+        with:
+          name: integration-test-summary
+          path: integration-test-summary.md
+        if: always()
+
   build-android:
     name: Build Android APK
     needs: install-and-doctor

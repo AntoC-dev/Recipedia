@@ -97,9 +97,10 @@ npm run format:check        # Check formatting
 npm run typecheck           # TypeScript check
 
 # Testing
-npm run test:unit           # Run unit tests
+npm run test:unit           # Run unit tests (tests/unit/)
 npm run test:unit:watch     # Run tests in watch mode
 npm run test:unit:coverage  # Run with coverage
+npm run test:integration    # Run integration tests (tests/integration/)
 npm run test:e2e:android    # Run E2E tests
 
 # Documentation
@@ -260,6 +261,19 @@ npm run test:unit:watch
 - **Utilities**: Test all public functions and edge cases
 - **Database**: Mock database operations in unit tests
 - **Coverage**: Aim for >80% code coverage
+
+### Integration Tests
+
+For cross-module flows where regressions repeatedly surface in E2E only, add an integration test under `tests/integration/`:
+
+```bash
+npm run test:integration
+```
+
+- Exercise the **real pipeline** end-to-end: real hooks, real fuzzy index, real RecipeDatabase, real form context.
+- Mock only at **irreducible boundaries** (native modules such as `@react-native-ml-kit/text-recognition`).
+- Do **not** mock hooks, utility modules, or in-app layers.
+- Runs as its own GitHub Actions job (`Integration Tests`).
 
 ### E2E Tests
 
