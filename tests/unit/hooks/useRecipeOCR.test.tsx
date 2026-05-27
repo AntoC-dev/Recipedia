@@ -782,7 +782,7 @@ describe('useRecipeOCR', () => {
       expect(result.current.form.state.recipeIngredients[0].quantity).toBe('350');
     });
 
-    test('ingredientQuantities count mismatch does not apply quantities', async () => {
+    test('ingredientQuantities count mismatch still pairs by position up to min(len)', async () => {
       mockExtractFieldFromImage.mockResolvedValue({ ingredientQuantities: ['100', '200'] });
 
       const wrapper = createOcrWrapper(createMockRecipeProp('edit', recipeForOcr));
@@ -803,7 +803,7 @@ describe('useRecipeOCR', () => {
         await result.current.ocr.fillOneField('image.jpg', 'ingredientQuantities');
       });
 
-      expect(result.current.form.state.recipeIngredients[0].quantity).toBe('200');
+      expect(result.current.form.state.recipeIngredients[0].quantity).toBe('100');
     });
   });
 });

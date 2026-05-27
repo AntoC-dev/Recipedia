@@ -22,6 +22,7 @@ import {
 import { useTags } from '@hooks/useTags';
 import { useIngredients } from '@hooks/useIngredients';
 import { defaultValueNumber } from '@utils/Constants';
+import { namesMatch } from '@utils/NutritionUtils';
 import { ocrLogger } from '@utils/logger';
 import { useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { useRecipeForm } from '@context/RecipeFormContext';
@@ -209,41 +210,12 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
         ocrIngredients,
         findSimilarIngredients,
         match => {
-          const original = ocrIngredients.find(
-            ing => ing.name?.toLowerCase() === match.name.toLowerCase()
-          );
+          const original = ocrIngredients.find(ing => namesMatch(ing.name, match.name));
           addOrMergeIngredient({ ...match, quantity: original?.quantity || match.quantity });
         },
         setValidationQueue,
         { onValidated: (_, validatedIngredient) => addOrMergeIngredient(validatedIngredient) }
       );
-    }
-    if (newFieldData.ingredientNames !== undefined) {
-      const ingredientsWithNoQuantity: FormIngredientElement[] = newFieldData.ingredientNames.map(
-        ({ name, unit }) => ({ name, unit, quantity: '' })
-      );
-      if (ingredientsWithNoQuantity.length > 0) {
-        prepopulateIngredients(ingredientsWithNoQuantity);
-        validateAndQueueIngredients(
-          ingredientsWithNoQuantity,
-          findSimilarIngredients,
-          addOrMergeIngredient,
-          setValidationQueue
-        );
-      }
-    }
-    if (newFieldData.ingredientQuantities !== undefined) {
-      const quantities = newFieldData.ingredientQuantities;
-      if (quantities.length === recipeIngredients.length) {
-        setRecipeIngredients(prev =>
-          prev.map((ingredient, index) => ({ ...ingredient, quantity: quantities[index] }))
-        );
-      } else {
-        ocrLogger.warn('Quantity count mismatch', {
-          expected: recipeIngredients.length,
-          received: quantities.length,
-        });
-      }
     }
     if (newFieldData.ingredientNames !== undefined) {
       const ingredientsWithNoQuantity: FormIngredientElement[] = newFieldData.ingredientNames.map(
@@ -272,16 +244,21 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
     }
     if (newFieldData.ingredientQuantities !== undefined) {
       const quantities = newFieldData.ingredientQuantities;
-      if (quantities.length === recipeIngredients.length) {
-        setRecipeIngredients(prev =>
-          prev.map((ingredient, index) => ({ ...ingredient, quantity: quantities[index] }))
+      setRecipeIngredients(prev => {
+        if (quantities.length !== prev.length) {
+          ocrLogger.warn('Quantity count mismatch', {
+            expected: prev.length,
+            received: quantities.length,
+          });
+        }
+        const limit = Math.min(prev.length, quantities.length);
+        if (limit === 0) return prev;
+        return prev.map((ingredient, index) =>
+          index < limit && ingredient.quantity !== quantities[index]
+            ? { ...ingredient, quantity: quantities[index] }
+            : ingredient
         );
-      } else {
-        ocrLogger.warn('Quantity count mismatch', {
-          expected: recipeIngredients.length,
-          received: quantities.length,
-        });
-      }
+      });
     }
     if (newFieldData.recipeNutrition) {
       const newNutrition: nutritionTableElement = {

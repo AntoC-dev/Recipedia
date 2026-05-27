@@ -4,9 +4,28 @@ import {
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
 import { IngredientWithSimilarity, TagWithSimilarity } from '@customTypes/ValidationTypes';
-import { namesMatch } from '@utils/NutritionUtils';
+import { namesMatch, normalizeKey } from '@utils/NutritionUtils';
 
 export type IngredientState = (ingredientTableElement | FormIngredientElement)[];
+
+/**
+ * Returns the sum of two numeric quantity strings, or the non-empty side when
+ * one is missing/empty. Falls back to `incoming` when at least one side is
+ * non-numeric.
+ */
+export function mergeQuantities(
+  existing: string | undefined,
+  incoming: string | undefined
+): string {
+  const a = (existing ?? '').trim();
+  const b = (incoming ?? '').trim();
+  if (!a) return b;
+  if (!b) return a;
+  const na = Number(a);
+  const nb = Number(b);
+  if (Number.isFinite(na) && Number.isFinite(nb)) return String(na + nb);
+  return b;
+}
 
 /**
  * Merges an original ingredient from import with a validated database ingredient.
@@ -114,11 +133,14 @@ export function addOrMergeIngredientMatches(
       if (existing && existing.name && existing.unit === ingredient.unit) {
         updated[existingIndex] = {
           ...ingredient,
-          quantity: String(Number(existing.quantity || 0) + Number(ingredient.quantity || 0)),
+          quantity: mergeQuantities(existing.quantity, ingredient.quantity),
           note: ingredient.note || existing.note,
         };
       } else {
-        updated[existingIndex] = ingredient;
+        updated[existingIndex] = {
+          ...ingredient,
+          quantity: ingredient.quantity || existing.quantity || '',
+        };
       }
     }
   }
@@ -239,7 +261,7 @@ export function processIngredientsForValidation(
     if (exactMatch) {
       exactMatches.push({
         ...exactMatch,
-        quantity: ingredient.quantity || exactMatch.quantity,
+        quantity: ingredient.quantity || exactMatch.quantity || '',
         unit: exactMatch.unit,
         note: ingredient.note,
       });
@@ -276,15 +298,14 @@ export function deduplicateIngredientsByName<T extends FormIngredientElement>(
   const seen = new Map<string, T>();
 
   for (const ing of ingredients) {
-    const key = ing.name?.toLowerCase() || '';
-    if (!key) continue;
+    if (!ing.name) continue;
+    const key = normalizeKey(ing.name);
 
     const existing = seen.get(key);
     if (!existing) {
       seen.set(key, { ...ing });
     } else if (existing.unit === ing.unit) {
-      const sum = Number(existing.quantity || 0) + Number(ing.quantity || 0);
-      existing.quantity = isNaN(sum) ? existing.quantity : String(sum);
+      existing.quantity = mergeQuantities(existing.quantity, ing.quantity);
     }
   }
 

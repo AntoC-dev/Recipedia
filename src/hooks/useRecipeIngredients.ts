@@ -15,7 +15,8 @@ import { noteSeparator, textSeparator, unitySeparator } from '@styles/typography
 import { useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { useRecipeForm } from '@context/RecipeFormContext';
 import { useIngredients } from '@hooks/useIngredients';
-import { validateAndQueueIngredients } from '@utils/RecipeValidationHelpers';
+import { mergeQuantities, validateAndQueueIngredients } from '@utils/RecipeValidationHelpers';
+import { namesMatch } from '@utils/NutritionUtils';
 
 /**
  * Parses an ingredient display string into its components
@@ -153,9 +154,7 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
    */
   const addOrMergeIngredient = (ingredient: ingredientTableElement) => {
     setRecipeIngredients(prev => {
-      const existingIndex = prev.findIndex(
-        existing => existing.name?.toLowerCase() === ingredient.name.toLowerCase()
-      );
+      const existingIndex = prev.findIndex(existing => namesMatch(existing.name, ingredient.name));
 
       if (existingIndex === -1) {
         return [...prev, ingredient];
@@ -177,11 +176,14 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
 
           updated[existingIndex] = {
             ...ingredient,
-            quantity: String(Number(existing.quantity || 0) + Number(ingredient.quantity || 0)),
+            quantity: mergeQuantities(existing.quantity, ingredient.quantity),
             note: newNote || existingNote,
           };
         } else {
-          updated[existingIndex] = ingredient;
+          updated[existingIndex] = {
+            ...ingredient,
+            quantity: ingredient.quantity || existing.quantity || '',
+          };
         }
         return updated;
       }
@@ -204,14 +206,14 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
     setRecipeIngredients(prev => {
       const updated = [...prev];
       const duplicateIndex = updated.findIndex(
-        (ing, i) => i !== index && ing.name?.toLowerCase() === ingredient.name.toLowerCase()
+        (ing, i) => i !== index && namesMatch(ing.name, ingredient.name)
       );
       if (duplicateIndex !== -1) {
         const existing = updated[duplicateIndex];
         if (existing.unit === ingredient.unit) {
           updated[index] = {
             ...ingredient,
-            quantity: String(Number(existing.quantity || 0) + Number(ingredient.quantity || 0)),
+            quantity: mergeQuantities(existing.quantity, ingredient.quantity),
             note: ingredient.note || existing.note,
           };
         } else {
@@ -373,7 +375,7 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
   const replaceAllMatchingFormIngredients = (validatedIngredient: ingredientTableElement) => {
     setRecipeIngredients(prev => {
       return prev.map(existing => {
-        if (existing.name?.toLowerCase() === validatedIngredient.name.toLowerCase()) {
+        if (namesMatch(existing.name, validatedIngredient.name)) {
           return {
             id: validatedIngredient.id,
             name: validatedIngredient.name,

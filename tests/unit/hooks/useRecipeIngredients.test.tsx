@@ -802,6 +802,216 @@ describe('useRecipeIngredients', () => {
         expect(merged.season).toEqual(['1', '2', '3']);
       });
 
+      test('merges names that differ only by leading/trailing whitespace', async () => {
+        const recipeWithSpaced: recipeTableElement = {
+          ...recipeWithIngredients,
+          ingredients: [
+            {
+              id: 1,
+              name: '  Carotte',
+              unit: 'g',
+              quantity: '100',
+              type: ingredientType.vegetable,
+              season: [],
+            },
+          ],
+        };
+        const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithSpaced));
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+        });
+
+        act(() => {
+          result.current.ingredients.addOrMergeIngredient({
+            id: 1,
+            name: 'Carotte  ',
+            unit: 'g',
+            quantity: '50',
+            type: ingredientType.vegetable,
+            season: [],
+          });
+        });
+
+        expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+        expect(result.current.form.state.recipeIngredients[0].quantity).toBe('150');
+      });
+
+      test('merges names that differ only by NFC equivalence (decomposed vs precomposed é)', async () => {
+        const decomposedCafe = 'Café';
+        const precomposedCafe = 'Café';
+        const recipeWithDecomposed: recipeTableElement = {
+          ...recipeWithIngredients,
+          ingredients: [
+            {
+              id: 1,
+              name: decomposedCafe,
+              unit: 'g',
+              quantity: '100',
+              type: ingredientType.vegetable,
+              season: [],
+            },
+          ],
+        };
+        const wrapper = createIngredientsWrapper(
+          createMockRecipeProp('edit', recipeWithDecomposed)
+        );
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+        });
+
+        act(() => {
+          result.current.ingredients.addOrMergeIngredient({
+            id: 1,
+            name: precomposedCafe,
+            unit: 'g',
+            quantity: '50',
+            type: ingredientType.vegetable,
+            season: [],
+          });
+        });
+
+        expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+        expect(result.current.form.state.recipeIngredients[0].quantity).toBe('150');
+      });
+
+      test('does NOT merge unrelated names that happen to share a token', async () => {
+        const wrapper = createIngredientsWrapper(
+          createMockRecipeProp('edit', recipeWithIngredients)
+        );
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+        });
+
+        act(() => {
+          result.current.ingredients.addOrMergeIngredient({
+            id: 99,
+            name: 'Whole Wheat Flour',
+            unit: 'g',
+            quantity: '50',
+            type: ingredientType.cereal,
+            season: [],
+          });
+        });
+
+        expect(result.current.form.state.recipeIngredients).toHaveLength(4);
+      });
+
+      test('preserves existing quantity when incoming has none (different unit)', async () => {
+        const recipeWithQty: recipeTableElement = {
+          ...recipeWithIngredients,
+          ingredients: [
+            {
+              id: 1,
+              name: 'Riz basmati Bio',
+              unit: 'g égoutté',
+              quantity: '200',
+              type: ingredientType.cereal,
+              season: [],
+            },
+          ],
+        };
+        const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithQty));
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+        });
+
+        act(() => {
+          result.current.ingredients.addOrMergeIngredient({
+            id: 1,
+            name: 'Riz basmati Bio',
+            unit: 'g',
+            quantity: '',
+            type: ingredientType.cereal,
+            season: [],
+          });
+        });
+
+        expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+        expect(result.current.form.state.recipeIngredients[0].unit).toBe('g');
+        expect(result.current.form.state.recipeIngredients[0].quantity).toBe('200');
+      });
+
+      test('merges names that differ only by internal whitespace', async () => {
+        const recipeWithDoubleSpaced: recipeTableElement = {
+          ...recipeWithIngredients,
+          ingredients: [
+            {
+              id: 1,
+              name: 'Riz basmati  Bio',
+              unit: 'g',
+              quantity: '200',
+              type: ingredientType.cereal,
+              season: [],
+            },
+          ],
+        };
+        const wrapper = createIngredientsWrapper(
+          createMockRecipeProp('edit', recipeWithDoubleSpaced)
+        );
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+        });
+
+        act(() => {
+          result.current.ingredients.addOrMergeIngredient({
+            id: 1,
+            name: 'Riz basmati Bio',
+            unit: 'g',
+            quantity: '50',
+            type: ingredientType.cereal,
+            season: [],
+          });
+        });
+
+        expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+        expect(result.current.form.state.recipeIngredients[0].quantity).toBe('250');
+      });
+
       test('handles existing ingredient with undefined name gracefully', async () => {
         const recipeWithEmptyNameIngredient: recipeTableElement = {
           ...recipeWithIngredients,
@@ -834,7 +1044,7 @@ describe('useRecipeIngredients', () => {
           });
         });
 
-        expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+        expect(result.current.form.state.recipeIngredients).toHaveLength(2);
       });
     });
 
@@ -1466,7 +1676,7 @@ describe('useRecipeIngredients', () => {
           const updated = result.current.form.state.recipeIngredients[0];
           expect(updated.name).toBe('Spaghetti');
           expect(updated.unit).toBe(spaghettiIngredient.unit);
-          expect(updated.quantity).toBe(spaghettiIngredient.quantity);
+          expect(updated.quantity ?? '').toBe(spaghettiIngredient.quantity ?? '');
         });
       });
 
