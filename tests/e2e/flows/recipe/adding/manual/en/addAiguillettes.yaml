@@ -417,23 +417,12 @@ appId: "com.recipedia"
     timeout: 30000
     label: "Wait for autocomplete list to disappear"
 
-- tapOn:
-    id: "RecipeIngredients::3::QuantityInput"
-    label: "Press the TextInput of fourth ingredient's quantity"
-
 - runFlow:
-    file: "../../../../waitForKeyboardNumeric.yaml"
-    label: "Wait for numeric keyboard to appear"
-
-- inputText:
-    text: "5"
-    label: "Enter text for recipe third ingredient quantity"
-
-- pressKey: Enter
-
-- runFlow:
-    file: "../../../../waitForKeyboardNumericDismiss.yaml"
-    label: "Wait for numeric keyboard to dismiss"
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "3"
+      VALUE: "5"
+    label: "Fill fourth ingredient quantity: 5"
 
 - waitForAnimationToEnd
 
