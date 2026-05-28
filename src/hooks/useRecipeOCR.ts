@@ -138,7 +138,6 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
     setImgForOCR(prev => [...prev, uri]);
   };
 
-  /** Append OCR items to the form in scan order, skipping names already present. */
   const prepopulateIngredients = (items: FormIngredientElement[]) => {
     setRecipeIngredients(prev => addNonDuplicateByName(prev, items));
   };
@@ -253,11 +252,12 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
         }
         const limit = Math.min(prev.length, quantities.length);
         if (limit === 0) return prev;
-        return prev.map((ingredient, index) =>
+        const next = prev.map((ingredient, index) =>
           index < limit && ingredient.quantity !== quantities[index]
             ? { ...ingredient, quantity: quantities[index] }
             : ingredient
         );
+        return next.every((ing, i) => ing === prev[i]) ? prev : next;
       });
     }
     if (newFieldData.recipeNutrition) {
