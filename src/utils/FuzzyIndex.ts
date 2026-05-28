@@ -173,6 +173,30 @@ const queryProcessTerm = (term: string): string | null => {
 };
 
 /**
+ * Returns a corpus-keyed cache function that builds an `ItemSearchIndex<T>`
+ * on first access for a given corpus reference and returns the same instance
+ * on subsequent calls with the same reference.
+ *
+ * Callers hold the returned getter at module scope so the `WeakMap` lifetime
+ * matches the module, not any component tree. When the corpus array is
+ * replaced (e.g. after a DB mutation via `useSyncExternalStore`), the old
+ * entry is automatically garbage-collected.
+ */
+export function makeItemIndexCache<T>(
+  config: ItemIndexConfig<T>
+): (corpus: T[]) => ItemSearchIndex<T> {
+  const cache = new WeakMap<T[], ItemSearchIndex<T>>();
+  return (corpus: T[]) => {
+    let cached = cache.get(corpus);
+    if (!cached) {
+      cached = buildItemIndex(corpus, config);
+      cache.set(corpus, cached);
+    }
+    return cached;
+  };
+}
+
+/**
  * Builds a typed-corpus fuzzy index. The MiniSearch instance is rebuilt
  * only when this is called, so callers should memoize on the corpus
  * reference (React Compiler does this automatically for hook-level calls).

@@ -12,24 +12,17 @@ import { useSyncExternalStore } from 'react';
 import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { tagTableElement } from '@customTypes/DatabaseElementTypes';
 import {
-  buildItemIndex,
   DetailedSearchResult,
   ITEM_FUZZY,
-  ItemSearchIndex,
+  makeItemIndexCache,
   searchItems,
   searchItemsDetailed,
 } from '@utils/FuzzyIndex';
 
-const tagsIndexCache = new WeakMap<tagTableElement[], ItemSearchIndex<tagTableElement>>();
-
-function getTagsIndex(tags: tagTableElement[]): ItemSearchIndex<tagTableElement> {
-  let cached = tagsIndexCache.get(tags);
-  if (!cached) {
-    cached = buildItemIndex(tags, { fuzzy: ITEM_FUZZY, getName: t => t.name });
-    tagsIndexCache.set(tags, cached);
-  }
-  return cached;
-}
+const getTagsIndex = makeItemIndexCache<tagTableElement>({
+  fuzzy: ITEM_FUZZY,
+  getName: t => t.name,
+});
 
 /**
  * Provides reactive tag data and all tag operations.

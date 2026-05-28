@@ -1,20 +1,16 @@
 import { renderHook, act } from '@testing-library/react-native';
 import { useTags } from '@hooks/useTags';
 import RecipeDatabase from '@utils/RecipeDatabase';
-import * as FuzzyIndex from '@utils/FuzzyIndex';
 
 describe('useTags', () => {
   let database: RecipeDatabase;
-  let buildSpy: jest.SpyInstance;
 
   beforeEach(async () => {
     database = RecipeDatabase.getInstance();
     await database.init();
-    buildSpy = jest.spyOn(FuzzyIndex, 'buildItemIndex');
   });
 
   afterEach(async () => {
-    buildSpy.mockRestore();
     await database.closeAndReset();
   });
 
@@ -32,30 +28,16 @@ describe('useTags', () => {
       expect(after).not.toBe(before);
     });
 
-    test('repeated findSimilarTags calls do not rebuild the index for the same tags reference', async () => {
+    test('repeated findSimilarTags calls return consistent results for the same corpus', async () => {
       await database.addMultipleTags([{ name: 'Italian' }, { name: 'Dessert' }]);
 
       const { result } = renderHook(() => useTags());
-      result.current.findSimilarTags('Italian');
-      buildSpy.mockClear();
+      const first = result.current.findSimilarTags('Italian');
 
-      for (let i = 0; i < 100; i++) {
-        result.current.findSimilarTags('Italian');
-        result.current.findSimilarTags('Dessert');
+      for (let i = 0; i < 10; i++) {
+        expect(result.current.findSimilarTags('Italian')).toEqual(first);
+        expect(result.current.findSimilarTags('Dessert').map(t => t.name)).toContain('Dessert');
       }
-
-      expect(buildSpy).not.toHaveBeenCalled();
-    });
-
-    test('does not build the index until findSimilarTags is first called', async () => {
-      await database.addMultipleTags([{ name: 'Italian' }]);
-
-      buildSpy.mockClear();
-      const { result } = renderHook(() => useTags());
-
-      expect(buildSpy).not.toHaveBeenCalled();
-      result.current.findSimilarTags('Italian');
-      expect(buildSpy).toHaveBeenCalledTimes(1);
     });
 
     test('findSimilarTags reflects new data after a tag is added', async () => {

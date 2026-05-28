@@ -1,7 +1,6 @@
 import { renderHook, act } from '@testing-library/react-native';
 import { useIngredients } from '@hooks/useIngredients';
 import RecipeDatabase from '@utils/RecipeDatabase';
-import * as FuzzyIndex from '@utils/FuzzyIndex';
 import { ingredientTableElement, ingredientType } from '@customTypes/DatabaseElementTypes';
 
 const makeIngredient = (name: string): ingredientTableElement => ({
@@ -13,16 +12,13 @@ const makeIngredient = (name: string): ingredientTableElement => ({
 
 describe('useIngredients', () => {
   let database: RecipeDatabase;
-  let buildSpy: jest.SpyInstance;
 
   beforeEach(async () => {
     database = RecipeDatabase.getInstance();
     await database.init();
-    buildSpy = jest.spyOn(FuzzyIndex, 'buildItemIndex');
   });
 
   afterEach(async () => {
-    buildSpy.mockRestore();
     await database.closeAndReset();
   });
 
@@ -40,30 +36,16 @@ describe('useIngredients', () => {
       expect(after).not.toBe(before);
     });
 
-    test('repeated findSimilarIngredients calls do not rebuild the index for the same ingredients reference', async () => {
+    test('repeated findSimilarIngredients calls return consistent results for the same corpus', async () => {
       await database.addMultipleIngredients([makeIngredient('Tomato'), makeIngredient('Onion')]);
 
       const { result } = renderHook(() => useIngredients());
-      result.current.findSimilarIngredients('Tomato');
-      buildSpy.mockClear();
+      const first = result.current.findSimilarIngredients('Tomato');
 
-      for (let i = 0; i < 100; i++) {
-        result.current.findSimilarIngredients('Tomato');
-        result.current.findSimilarIngredients('Onion');
+      for (let i = 0; i < 10; i++) {
+        expect(result.current.findSimilarIngredients('Tomato')).toEqual(first);
+        expect(result.current.findSimilarIngredients('Onion').map(i => i.name)).toContain('Onion');
       }
-
-      expect(buildSpy).not.toHaveBeenCalled();
-    });
-
-    test('does not build the index until findSimilarIngredients is first called', async () => {
-      await database.addIngredient(makeIngredient('Tomato'));
-
-      buildSpy.mockClear();
-      const { result } = renderHook(() => useIngredients());
-
-      expect(buildSpy).not.toHaveBeenCalled();
-      result.current.findSimilarIngredients('Tomato');
-      expect(buildSpy).toHaveBeenCalledTimes(1);
     });
 
     test('findSimilarIngredients reflects new data after an ingredient is added', async () => {

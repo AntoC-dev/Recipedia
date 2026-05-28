@@ -4,6 +4,7 @@ import {
   buildPhraseIndex,
   fuzzyHasMatch,
   fuzzySearchIds,
+  makeItemIndexCache,
   searchItems,
   searchItemsDetailed,
   wholePhraseTokenizer,
@@ -402,6 +403,40 @@ describe('FuzzyIndex', () => {
       });
       const got = searchItems(index, 'Spagheti Bolognese').map(r => r.title);
       expect(got).toContain('Spaghetti Bolognese');
+    });
+  });
+
+  describe('makeItemIndexCache', () => {
+    test('returns the same index instance for the same corpus reference', () => {
+      const getIndex = makeItemIndexCache<tagTableElement>({ fuzzy: 0.2, getName: t => t.name });
+      const corpus = [makeTag(1, 'Italian'), makeTag(2, 'Dessert')];
+      const first = getIndex(corpus);
+      const second = getIndex(corpus);
+      expect(second).toBe(first);
+    });
+
+    test('rebuilds the index for a new corpus reference', () => {
+      const getIndex = makeItemIndexCache<tagTableElement>({ fuzzy: 0.2, getName: t => t.name });
+      const corpusA = [makeTag(1, 'Italian')];
+      const corpusB = [makeTag(1, 'Italian'), makeTag(2, 'Dessert')];
+      const indexA = getIndex(corpusA);
+      const indexB = getIndex(corpusB);
+      expect(indexB).not.toBe(indexA);
+    });
+
+    test('each call to makeItemIndexCache produces an independent cache', () => {
+      const getIndexA = makeItemIndexCache<tagTableElement>({ fuzzy: 0.2, getName: t => t.name });
+      const getIndexB = makeItemIndexCache<tagTableElement>({ fuzzy: 0.2, getName: t => t.name });
+      const corpus = [makeTag(1, 'Italian')];
+      expect(getIndexA(corpus)).not.toBe(getIndexB(corpus));
+    });
+
+    test('cached index returns correct search results', () => {
+      const getIndex = makeItemIndexCache<tagTableElement>({ fuzzy: 0.2, getName: t => t.name });
+      const corpus = [makeTag(1, 'Italian'), makeTag(2, 'Dessert')];
+      const index = getIndex(corpus);
+      expect(searchItems(index, 'Italian').map(t => t.name)).toContain('Italian');
+      expect(searchItems(getIndex(corpus), 'Dessert').map(t => t.name)).toContain('Dessert');
     });
   });
 });

@@ -12,34 +12,19 @@ import { useSyncExternalStore } from 'react';
 import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { ingredientTableElement, ingredientType } from '@customTypes/DatabaseElementTypes';
 import {
-  buildItemIndex,
   DetailedSearchResult,
   ITEM_FUZZY,
-  ItemSearchIndex,
+  makeItemIndexCache,
   searchItems,
   searchItemsDetailed,
 } from '@utils/FuzzyIndex';
 import { cleanIngredientName } from '@utils/NutritionUtils';
 
-const ingredientsIndexCache = new WeakMap<
-  ingredientTableElement[],
-  ItemSearchIndex<ingredientTableElement>
->();
-
-function getIngredientsIndex(
-  ingredients: ingredientTableElement[]
-): ItemSearchIndex<ingredientTableElement> {
-  let cached = ingredientsIndexCache.get(ingredients);
-  if (!cached) {
-    cached = buildItemIndex(ingredients, {
-      fuzzy: ITEM_FUZZY,
-      getName: i => i.name,
-      preprocess: cleanIngredientName,
-    });
-    ingredientsIndexCache.set(ingredients, cached);
-  }
-  return cached;
-}
+const getIngredientsIndex = makeItemIndexCache<ingredientTableElement>({
+  fuzzy: ITEM_FUZZY,
+  getName: i => i.name,
+  preprocess: cleanIngredientName,
+});
 
 /**
  * Provides reactive ingredient data and all ingredient operations.

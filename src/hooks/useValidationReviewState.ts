@@ -116,10 +116,12 @@ export function useValidationReviewState(
   const [pendingTagsIndex] = useState<ItemSearchIndex<tagTableElement>>(() =>
     buildItemIndex(rawTags, { fuzzy: ITEM_FUZZY, getName: t => t.name })
   );
-  const [pendingIngredientsIndex] = useState<ItemSearchIndex<FormIngredientElement>>(() =>
+  const [pendingIngredientsIndex] = useState<
+    ItemSearchIndex<FormIngredientElement & { name: string }>
+  >(() =>
     buildItemIndex(
       rawIngredients.filter((i): i is FormIngredientElement & { name: string } => !!i.name),
-      { fuzzy: ITEM_FUZZY, getName: i => i.name ?? '', preprocess: cleanIngredientName }
+      { fuzzy: ITEM_FUZZY, getName: i => i.name, preprocess: cleanIngredientName }
     )
   );
 
@@ -175,12 +177,12 @@ export function useValidationReviewState(
   >(
     type: 'Tag' | 'Ingredient',
     setItems: React.Dispatch<React.SetStateAction<TItem[]>>,
-    index: ItemSearchIndex<{ name?: string }>,
+    index: ItemSearchIndex<{ name: string }>,
     addedItem: TMatch
   ) {
     const matches = searchItemsFuzzy(index, addedItem.name);
     if (matches.length === 0) return;
-    const matchedKeys = new Set(matches.filter(m => m.name).map(m => normalizeKey(m.name!)));
+    const matchedKeys = new Set(matches.map(m => normalizeKey(m.name)));
     matchedKeys.delete(normalizeKey(addedItem.name));
     if (matchedKeys.size === 0) return;
 
