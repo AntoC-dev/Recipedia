@@ -37,7 +37,7 @@ appId: "com.recipedia"
     commands:
       - assertVisible:
           id: "RecipeDescription::Text"
-          text: "La sauce satay est une sauce d'Asie du Sud-Est à base de cacahuètes, ail et gingembre ! Reproduisez-la pour accompagner notre poulet français!"
+          text: "La sauce satay est une sauce d'Asie du Sud-Est à base de cacahuètes, ail et gingembre Reproduisez-la pour accompagner notre poulet français!"
           label: "Description of the recipe is rendered"
 
 
@@ -65,63 +65,63 @@ appId: "com.recipedia"
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "cacahuètes grillées"
-      INGREDIENT_QUANTITY_AND_UNIT: "200"
+      INGREDIENT_QUANTITY_AND_UNIT: "100"
     label: "Assert cacahuètes grillées ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "concentré de tomates"
-      INGREDIENT_QUANTITY_AND_UNIT: "70"
+      INGREDIENT_QUANTITY_AND_UNIT: "35"
     label: "Assert concentré de tomates ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "Filet de poulet"
-      INGREDIENT_QUANTITY_AND_UNIT: "4"
+      INGREDIENT_QUANTITY_AND_UNIT: "2"
     label: "Assert flet de poulet ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "gingembre"
-      INGREDIENT_QUANTITY_AND_UNIT: "1"
+      INGREDIENT_QUANTITY_AND_UNIT: "1à3"
     label: "Assert gingembre ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "gOussed'ail"
-      INGREDIENT_QUANTITY_AND_UNIT: "2"
+      INGREDIENT_QUANTITY_AND_UNIT: "1"
     label: "Assert gOussed'ail ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "lait de coco"
-      INGREDIENT_QUANTITY_AND_UNIT: "400"
+      INGREDIENT_QUANTITY_AND_UNIT: "200"
     label: "Assert lait de coco ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "oignon jaune"
-      INGREDIENT_QUANTITY_AND_UNIT: "2"
+      INGREDIENT_QUANTITY_AND_UNIT: "1"
     label: "Assert lait de coco ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "oignon nouveau"
-      INGREDIENT_QUANTITY_AND_UNIT: "1"
+      INGREDIENT_QUANTITY_AND_UNIT: "0,5"
     label: "Assert oignon nouveau ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "riz basmati  Bio"
-      INGREDIENT_QUANTITY_AND_UNIT: "300"
+      INGREDIENT_QUANTITY_AND_UNIT: "150"
     label: "Assert riz basmati  Bio ingredient"
 
 - waitForAnimationToEnd
@@ -137,7 +137,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeTime::Text"
-    text: "Préparation (30 min)"
+    text: "Préparation (2 min)"
     label: "Preparation section and time are displayed"
 
 - waitForAnimationToEnd

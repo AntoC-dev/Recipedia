@@ -5,7 +5,7 @@ tags:
 ---
 - evalScript: ${output.isDescriptionToOCR = true}
 - evalScript: ${output.isTagsToOCR = false}
-- evalScript: ${output.isTime = false}
+- evalScript: ${output.isTime = true}
 - evalScript: ${output.isNutritionToOCR = true}
 - evalScript: ${output.isQuantitiesOCR = true}
 
