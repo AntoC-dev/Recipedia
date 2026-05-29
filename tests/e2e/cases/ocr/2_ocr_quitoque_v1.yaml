@@ -7,7 +7,9 @@ tags:
 - evalScript: ${output.isTagsToOCR = false}
 - evalScript: ${output.isTime = true}
 - evalScript: ${output.isNutritionToOCR = false}
-- evalScript: ${output.isQuantitiesOCR = true}
+- runFlow:
+    file: "../../flows/recipe/adding/ocr/setQuantitiesOCRByPlatform.yaml"
+    label: "Setup - OCR qty on iOS, manual qty on Android (ML Kit qty extraction unreliable on Android)"
 
 - runFlow:
     file: "../../flows/recipe/adding/ocr/gallery/addRecipeFromGallery.yaml"

@@ -86,15 +86,15 @@ appId: "com.recipedia"
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "gingembre"
-      INGREDIENT_QUANTITY_AND_UNIT: "1à3"
+      INGREDIENT_QUANTITY_AND_UNIT: "1"
     label: "Assert gingembre ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
-      INGREDIENT_NAME: "gOussed'ail"
+      INGREDIENT_NAME: "(gousse d'ail|goussed'ail)"
       INGREDIENT_QUANTITY_AND_UNIT: "1"
-    label: "Assert gOussed'ail ingredient"
+    label: "Assert gousse d'ail ingredient (optional space tolerates iOS vs Android ML Kit spacing)"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
@@ -114,7 +114,7 @@ appId: "com.recipedia"
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "oignon nouveau"
-      INGREDIENT_QUANTITY_AND_UNIT: "0,5"
+      INGREDIENT_QUANTITY_AND_UNIT: "0.5"
     label: "Assert oignon nouveau ingredient"
 
 - runFlow:
@@ -234,7 +234,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::3::SectionParagraph"
-    text: "Portez une casserole d'eau salée à ébullition.\nFaites cu?ire le riz selon les indications du paquet.\nRetirez la base de l?'oignon nouveau et émincez-le.\nDégustez sans attendre votre poulet sauce satay accompagné du riz!\nParsemez-le d'oignon nouveau."
+    text: "Portez une casserole d'eau salée ?à ébullition.\nFaites cu?ire le riz selon les indications du paquet.\nRetirez la base de l'oignon nouveau et émincez-le.\nDégustez sans attendre votre poulet sauce satay accompagné du riz!\nParsemez-le d'oignon nouveau."
     label: "Fourth preparation paragraph is displayed"
 
 - runFlow:

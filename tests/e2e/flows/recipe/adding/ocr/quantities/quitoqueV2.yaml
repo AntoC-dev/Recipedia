@@ -1,0 +1,66 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "0"
+      VALUE: "100"
+    label: "Fill cacahuètes grillées quantity: 100"
+
+- runFlow:
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "1"
+      VALUE: "35"
+    label: "Fill concentré de tomates quantity: 35"
+
+- runFlow:
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "2"
+      VALUE: "2"
+    label: "Fill filet de poulet quantity: 2"
+
+- runFlow:
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "3"
+      VALUE: "1"
+    label: "Fill gingembre quantity: 1"
+
+- runFlow:
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "4"
+      VALUE: "1"
+    label: "Fill gousse d'ail quantity: 1"
+
+- runFlow:
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "5"
+      VALUE: "200"
+    label: "Fill lait de coco quantity: 200"
+
+- inputText: "1Test"
+
+- runFlow:
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "6"
+      VALUE: "1"
+    label: "Fill oignon jaune quantity: 1"
+
+- runFlow:
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "7"
+      VALUE: "0,5"
+    label: "Fill oignon nouveau quantity: 0,5"
+
+- runFlow:
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "8"
+      VALUE: "150"
+    label: "Fill riz basmati Bio quantity: 150"

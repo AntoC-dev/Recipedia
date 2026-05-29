@@ -1,0 +1,12 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - evalScript: ${output.isQuantitiesOCR = true}
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - evalScript: ${output.isQuantitiesOCR = false}

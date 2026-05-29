@@ -1,0 +1,36 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "0"
+      VALUE: "1"
+    label: "Fill Carotte quantity: 1"
+
+- runFlow:
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "1"
+      VALUE: "1"
+    label: "Fill Cumin quantity: 1"
+
+- runFlow:
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "2"
+      VALUE: "4"
+    label: "Fill Merguez quantity: 4"
+
+- runFlow:
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "3"
+      VALUE: "1"
+    label: "Fill Navet quantity: 1"
+
+- runFlow:
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "4"
+      VALUE: "400"
+    label: "Fill Pommes de terre quantity: 400"

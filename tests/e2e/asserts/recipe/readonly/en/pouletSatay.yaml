@@ -64,9 +64,9 @@ appId: "com.recipedia"
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
-      INGREDIENT_NAME: "gOussed'ail"
+      INGREDIENT_NAME: "(gousse d'ail|goussed'ail)"
       INGREDIENT_QUANTITY_AND_UNIT: "2 "
-    label: "Assert gOussed'ail ingredient"
+    label: "Assert gousse d'ail ingredient (optional space tolerates iOS vs Android ML Kit spacing)"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
