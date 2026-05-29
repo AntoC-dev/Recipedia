@@ -805,5 +805,65 @@ describe('useRecipeOCR', () => {
 
       expect(result.current.form.state.recipeIngredients[0].quantity).toBe('100');
     });
+
+    test.each([
+      ['1à3', '1'],
+      ['0,5', '0.5'],
+      ['100kcal', '100'],
+      ['200 g égoutté', '200'],
+      ['  42  ', '42'],
+    ])(
+      'normalizes raw OCR quantity %p to %p via parseQuantity before storing',
+      async (raw, expected) => {
+        mockExtractFieldFromImage.mockResolvedValue({ ingredientQuantities: [raw] });
+
+        const wrapper = createOcrWrapper(createMockRecipeProp('edit', recipeForOcr));
+
+        const { result } = renderHook(
+          () => ({
+            ocr: useRecipeOCR(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+        });
+
+        await act(async () => {
+          await result.current.ocr.fillOneField('image.jpg', 'ingredientQuantities');
+        });
+
+        expect(result.current.form.state.recipeIngredients[0].quantity).toBe(expected);
+      }
+    );
+
+    test.each([['abc'], ['à3'], ['']])(
+      'normalizes non-parseable OCR quantity %p to empty string',
+      async raw => {
+        mockExtractFieldFromImage.mockResolvedValue({ ingredientQuantities: [raw] });
+
+        const wrapper = createOcrWrapper(createMockRecipeProp('edit', recipeForOcr));
+
+        const { result } = renderHook(
+          () => ({
+            ocr: useRecipeOCR(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+        });
+
+        await act(async () => {
+          await result.current.ocr.fillOneField('image.jpg', 'ingredientQuantities');
+        });
+
+        expect(result.current.form.state.recipeIngredients[0].quantity).toBe('');
+      }
+    );
   });
 });

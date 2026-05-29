@@ -53,7 +53,7 @@ import {
   saveRecipeImage,
 } from '@utils/FileGestion';
 import { buildItemIndex, searchItems } from '@utils/FuzzyIndex';
-import { scaleQuantityForPersons } from '@utils/Quantity';
+import { parseQuantity, scaleQuantityForPersons } from '@utils/Quantity';
 import { databaseLogger } from '@utils/logger';
 import { fisherYatesShuffle } from './FilterFunctions';
 
@@ -1371,12 +1371,10 @@ export class RecipeDatabase {
       return recipe.ingredients
         .filter(ing => !ingredientTypesToIgnore.includes(ing.type))
         .map(ing => {
+          const parsed = parseQuantity(ing.quantity);
           return {
             name: ing.name.toLowerCase(),
-            quantityPerPerson:
-              ing.quantity && !isNaN(parseFloat(ing.quantity))
-                ? parseFloat(ing.quantity) / persons
-                : undefined,
+            quantityPerPerson: parsed ? Number(parsed) / persons : undefined,
           } as coreIngredientElement;
         })
         .filter(ing => ing.quantityPerPerson !== undefined)

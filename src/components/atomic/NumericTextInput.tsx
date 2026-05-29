@@ -26,9 +26,10 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Keyboard, StyleProp, TextStyle, View } from 'react-native';
+import { StyleProp, TextStyle, View } from 'react-native';
 import { TextInput, useTheme } from 'react-native-paper';
 import { defaultValueNumber } from '@utils/Constants';
+import { parseQuantity } from '@utils/Quantity';
 
 export type NumericTextInputProps = {
   testID: string;
@@ -74,51 +75,24 @@ export function NumericTextInput({
   };
 
   const [rawText, setRawText] = useState(getTextFromValue(value));
-  const [isFocused, setIsFocused] = useState(false);
   const { colors } = useTheme();
 
   useEffect(() => {
     setRawText(formatNumberForDisplay(value));
   }, [value]);
 
-  useEffect(() => {
-    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
-      if (isFocused) {
-        const normalizedText = rawText.replace(',', '.');
-        const parsed = parseFloat(normalizedText);
-        const finalValue = isNaN(parsed) ? defaultValueNumber : parsed;
-
-        setRawText(getTextFromValue(finalValue));
-        if (finalValue !== value) {
-          onChangeValue?.(finalValue);
-        }
-        setIsFocused(false);
-      }
-    });
-
-    return () => {
-      keyboardDidHideListener.remove();
-    };
-  }, [isFocused, rawText, value, onChangeValue]);
-
   function handleBlur() {
-    const normalizedText = rawText.replace(',', '.');
-    const parsed = parseFloat(normalizedText);
-    const finalValue = isNaN(parsed) ? defaultValueNumber : parsed;
+    const normalized = parseQuantity(rawText);
+    const finalValue = normalized ? Number(normalized) : defaultValueNumber;
 
     setRawText(getTextFromValue(finalValue));
     if (finalValue !== value) {
       onChangeValue?.(finalValue);
     }
-    setIsFocused(false);
   }
 
   function handleChangeText(text: string) {
     setRawText(text);
-  }
-
-  function handleFocus() {
-    setIsFocused(true);
   }
 
   const inputStyle: StyleProp<TextStyle> = [
@@ -134,7 +108,6 @@ export function NumericTextInput({
         label={label}
         value={rawText}
         onChangeText={handleChangeText}
-        onFocus={handleFocus}
         onBlur={handleBlur}
         mode={mode}
         dense={dense}

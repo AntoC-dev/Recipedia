@@ -23,6 +23,7 @@ import { useTags } from '@hooks/useTags';
 import { useIngredients } from '@hooks/useIngredients';
 import { defaultValueNumber } from '@utils/Constants';
 import { namesMatch } from '@utils/NutritionUtils';
+import { parseQuantity } from '@utils/Quantity';
 import { ocrLogger } from '@utils/logger';
 import { useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { useRecipeForm } from '@context/RecipeFormContext';
@@ -242,7 +243,7 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
       }
     }
     if (newFieldData.ingredientQuantities !== undefined) {
-      const quantities = newFieldData.ingredientQuantities;
+      const quantities = newFieldData.ingredientQuantities.map(parseQuantity);
       setRecipeIngredients(prev => {
         if (quantities.length !== prev.length) {
           ocrLogger.warn('Quantity count mismatch', {

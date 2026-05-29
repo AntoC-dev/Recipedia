@@ -11,6 +11,20 @@ import { noteSeparator, textSeparator, unitySeparator } from '@styles/typography
 import { defaultValueNumber } from '@utils/Constants';
 
 /**
+ * Canonical quantity-string parser used wherever raw text becomes a stored
+ * quantity. Trims, normalizes French decimal comma to dot, runs `parseFloat`
+ * (so leading numeric prefixes are kept and OCR ranges like `"1à3"` collapse
+ * to `"1"`), and returns `''` for non-numeric input.
+ */
+export function parseQuantity(raw: string | undefined): string {
+  if (raw === undefined || raw === null) return '';
+  const normalized = raw.replace(',', '.').trim();
+  if (!normalized) return '';
+  const parsed = parseFloat(normalized);
+  return Number.isFinite(parsed) ? String(parsed) : '';
+}
+
+/**
  * Scales a quantity string according to a change in persons.
  * - Scales only if the string contains exactly one numeric token (supports dot/comma decimals)
  * - Preserves the rest of the string
@@ -122,9 +136,8 @@ export function calculateNutritionPerPortion(nutrition: {
  * parseIngredientQuantity(undefined) // returns defaultValueNumber
  */
 export function parseIngredientQuantity(quantityStr: string | undefined): number {
-  if (!quantityStr || quantityStr.trim().length === 0) return defaultValueNumber;
-  const parsed = parseFloat(quantityStr.replace(',', '.'));
-  return isNaN(parsed) ? defaultValueNumber : parsed;
+  const normalized = parseQuantity(quantityStr);
+  return normalized ? Number(normalized) : defaultValueNumber;
 }
 
 /**
