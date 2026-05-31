@@ -1,3 +1,21 @@
+## [2.37.1](https://github.com/AntoC-dev/Recipedia/compare/v2.37.0...v2.37.1) (2026-05-31)
+
+### Bug Fixes
+
+* **fuzzy:** use AND combine for recipe title similarity ([56dd83d](https://github.com/AntoC-dev/Recipedia/commit/56dd83dd2ff686e67fe8cfae87788e90c6b573f4))
+* **ios-e2e:** use setTimeout for deferred work + fix copilot delay ([53c8fd7](https://github.com/AntoC-dev/Recipedia/commit/53c8fd75c2cfc54a5788162f2839821091ccad0a))
+* **ocr:** bind OCR quantities via namesMatch + mergeQuantities ([4c7905f](https://github.com/AntoC-dev/Recipedia/commit/4c7905fe86471538b204d47be525ae11126bc9e0))
+* **ocr:** preserve OCR order in recipe form via pre-populate ([c8f5ccb](https://github.com/AntoC-dev/Recipedia/commit/c8f5ccb02b404c728456cdf28fdd852ea67b409c))
+* **quantity:** centralize quantity parsing in shared parseQuantity helper ([2c3711f](https://github.com/AntoC-dev/Recipedia/commit/2c3711f2d6c0b5f82625020daf16b40049e1548a))
+* **scraper:** pin Pyodide deps to lxml 6.0.0 + add bundle validator ([f5fed27](https://github.com/AntoC-dev/Recipedia/commit/f5fed27aa55c512111941853d1bb644ab1c629c5))
+
+### Performance Improvements
+
+* **hooks:** cache fuzzy index per data ref, expose detailed finders ([9681b8a](https://github.com/AntoC-dev/Recipedia/commit/9681b8a36fb9e30f0050a38f8d71e4d429d78a46))
+* **ocr:** skip ingredient row update when quantity is unchanged ([50378a9](https://github.com/AntoC-dev/Recipedia/commit/50378a9657250b91cd93ed1b10d479b8001f75da))
+* **validation:** build pending index once, O(n) auto-resolve add-new ([190980c](https://github.com/AntoC-dev/Recipedia/commit/190980cdebc9d724fa11658da5eb3f4207a3f14e))
+* **validation:** fix bulk-import freezes via FuzzyIndex migration ([#286](https://github.com/AntoC-dev/Recipedia/issues/286)) ([33cdf75](https://github.com/AntoC-dev/Recipedia/commit/33cdf75bb60974d09e34d6bfb25f1357b4ab2135))
+
 ## [2.37.0](https://github.com/AntoC-dev/Recipedia/compare/v2.36.0...v2.37.0) (2026-05-14)
 
 ### Features
