@@ -141,9 +141,15 @@ Recipedia includes comprehensive testing at multiple levels:
 ### Unit Tests
 
 ```bash
-npm run test:unit           # Run all unit tests
+npm run test:unit           # Run all unit tests (tests/unit/)
 npm run test:unit:watch     # Run tests in watch mode
 npm run test:unit:coverage  # Run with coverage report
+```
+
+### Integration Tests
+
+```bash
+npm run test:integration    # Run cross-module integration tests (tests/integration/)
 ```
 
 ### End-to-End Tests
@@ -156,6 +162,7 @@ npm run workflow:build-test:android  # Full cycle
 ### Test Coverage
 
 - **Unit Tests**: Components, utilities, and business logic
+- **Integration Tests**: Cross-module flows running real pipelines end-to-end; mocks only at irreducible boundaries (e.g. native modules)
 - **E2E Tests**: Complete user workflows using Maestro
 
 ## 🔧 Development
@@ -170,6 +177,7 @@ npm run workflow:build-test:android  # Full cycle
 | `npm run build:test:android` | Build Android APK              |
 | `npm run build:test:ios`     | Build iOS app                  |
 | `npm run test:unit`          | Run unit tests                 |
+| `npm run test:integration`   | Run integration tests          |
 | `npm run test:e2e:android`   | Run E2E tests                  |
 | `npm run release`            | Create semantic release        |
 

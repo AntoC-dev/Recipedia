@@ -52,10 +52,13 @@ import {
   isTemporaryImageUri,
   saveRecipeImage,
 } from '@utils/FileGestion';
-import { cleanIngredientName, FuzzyMatchLevel, fuzzySearch } from '@utils/FuzzySearch';
-import { scaleQuantityForPersons } from '@utils/Quantity';
+import { buildItemIndex, searchItems } from '@utils/FuzzyIndex';
+import { parseQuantity, scaleQuantityForPersons } from '@utils/Quantity';
 import { databaseLogger } from '@utils/logger';
 import { fisherYatesShuffle } from './FilterFunctions';
+
+/** Recipe titles are long and often paraphrased — looser than `ITEM_FUZZY` so wording variants still match. */
+const RECIPE_TITLE_FUZZY = 0.3;
 
 /**
  * Identifies a specific slice of reactive store state in RecipeDatabase.
@@ -75,7 +78,7 @@ export type StoreSlice = 'recipes' | 'ingredients' | 'tags' | 'menu' | 'purchase
  *
  * Key Features:
  * - Recipe CRUD operations with ingredient and tag relationships
- * - Fuzzy search capabilities using FuzzySearch utility
+ * - Fuzzy search for recipe titles via FuzzyIndex utility
  * - Shopping list generation from recipes
  * - Quantity scaling for different serving sizes
  * - Similar recipe detection
@@ -1368,12 +1371,10 @@ export class RecipeDatabase {
       return recipe.ingredients
         .filter(ing => !ingredientTypesToIgnore.includes(ing.type))
         .map(ing => {
+          const parsed = parseQuantity(ing.quantity);
           return {
             name: ing.name.toLowerCase(),
-            quantityPerPerson:
-              ing.quantity && !isNaN(parseFloat(ing.quantity))
-                ? parseFloat(ing.quantity) / persons
-                : undefined,
+            quantityPerPerson: parsed ? Number(parsed) / persons : undefined,
           } as coreIngredientElement;
         })
         .filter(ing => ing.quantityPerPerson !== undefined)
@@ -1427,14 +1428,12 @@ export class RecipeDatabase {
       return [];
     }
 
-    const result = fuzzySearch<recipeTableElement>(
-      recipesWithSimilarIngredients,
-      recipeToCompare.title,
-      recipe => recipe.title,
-      FuzzyMatchLevel.PERMISSIVE
-    );
-
-    const finalResult = result.exact ? [result.exact] : result.similar;
+    const titleIndex = buildItemIndex(recipesWithSimilarIngredients, {
+      fuzzy: RECIPE_TITLE_FUZZY,
+      getName: r => r.title,
+      combineWith: 'AND',
+    });
+    const finalResult = searchItems(titleIndex, recipeToCompare.title);
     databaseLogger.info('findSimilarRecipes result', {
       recipeTitle: recipeToCompare.title,
       foundCount: finalResult.length,
@@ -1442,103 +1441,6 @@ export class RecipeDatabase {
     });
 
     return finalResult;
-  }
-
-  /**
-   * Finds tags with similar names using fuzzy matching
-   *
-   * @param tagName - The tag name to search for
-   * @returns Array of similar tags, sorted by relevance
-   *
-   * @example
-   * ```typescript
-   * const similarTags = db.findSimilarTags("dessrt"); // Finds "Dessert"
-   * ```
-   */
-  public findSimilarTags(tagName: string): tagTableElement[] {
-    const trimmedName = tagName.trim();
-    if (!trimmedName) {
-      return [];
-    }
-
-    const result = fuzzySearch<tagTableElement>(
-      this._tags,
-      trimmedName,
-      t => t.name,
-      FuzzyMatchLevel.MODERATE
-    );
-    return result.exact ? [result.exact] : result.similar;
-  }
-
-  /**
-   * Finds ingredients with similar names using fuzzy matching
-   *
-   * Cleans ingredient names by removing parenthetical content and
-   * uses fuzzy search to find similar ingredients.
-   *
-   * @param ingredientName - The ingredient name to search for
-   * @returns Array of similar ingredients, sorted by relevance
-   *
-   * @example
-   * ```typescript
-   * const similar = db.findSimilarIngredients("tomatoe"); // Finds "Tomato"
-   * ```
-   */
-  public findSimilarIngredients(ingredientName: string): ingredientTableElement[] {
-    const trimmedName = ingredientName.trim();
-    if (!trimmedName) {
-      return [];
-    }
-
-    const cleanedSearchName = cleanIngredientName(trimmedName);
-    const result = fuzzySearch<ingredientTableElement>(
-      this._ingredients,
-      cleanedSearchName,
-      ingredient => cleanIngredientName(ingredient.name),
-      FuzzyMatchLevel.MODERATE
-    );
-
-    return result.exact ? [result.exact] : result.similar;
-  }
-
-  /**
-   * Finds similar ingredients for multiple names in a single operation
-   *
-   * More efficient than calling findSimilarIngredients multiple times
-   * as it processes all names in one pass.
-   *
-   * @param ingredientNames - Array of ingredient names to search for
-   * @returns Map of original names to arrays of similar ingredients
-   */
-  public findSimilarIngredientsBatch(
-    ingredientNames: string[]
-  ): Map<string, ingredientTableElement[]> {
-    const results = new Map<string, ingredientTableElement[]>();
-
-    for (const name of ingredientNames) {
-      results.set(name, this.findSimilarIngredients(name));
-    }
-
-    return results;
-  }
-
-  /**
-   * Finds similar tags for multiple names in a single operation
-   *
-   * More efficient than calling findSimilarTags multiple times
-   * as it processes all names in one pass.
-   *
-   * @param tagNames - Array of tag names to search for
-   * @returns Map of original names to arrays of similar tags
-   */
-  public findSimilarTagsBatch(tagNames: string[]): Map<string, tagTableElement[]> {
-    const results = new Map<string, tagTableElement[]>();
-
-    for (const name of tagNames) {
-      results.set(name, this.findSimilarTags(name));
-    }
-
-    return results;
   }
 
   /**

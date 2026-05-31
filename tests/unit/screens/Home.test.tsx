@@ -9,7 +9,6 @@ import RecipeDatabase from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
 import { SeasonFilterProvider } from '@context/SeasonFilterContext';
-import { InteractionManager } from 'react-native';
 
 jest.mock(
   '@components/organisms/VerticalBottomButtons',
@@ -250,21 +249,7 @@ describe('Home Screen', () => {
   });
 
   test('shows skeleton loading state before recommendations are ready', async () => {
-    let resolveInteraction: () => void;
-    const interactionPromise = new Promise<void>(resolve => {
-      resolveInteraction = resolve;
-    });
-
-    jest.spyOn(InteractionManager, 'runAfterInteractions').mockImplementationOnce(callback => {
-      interactionPromise.then(() => {
-        if (typeof callback === 'function') callback();
-      });
-      return {
-        then: (fn?: () => any) => Promise.resolve(fn?.()),
-        done: jest.fn(),
-        cancel: jest.fn(),
-      };
-    });
+    jest.useFakeTimers();
 
     const { UNSAFE_getAllByType, queryByTestId } = render(
       <SeasonFilterProvider>
@@ -281,9 +266,33 @@ describe('Home Screen', () => {
     expect(animatedViews.length).toBeGreaterThanOrEqual(3);
     expect(queryByTestId('recommendations.randomSelection::CarouselProps')).toBeNull();
 
-    resolveInteraction!();
-    await waitFor(() =>
-      expect(queryByTestId('recommendations.randomSelection::CarouselProps')).not.toBeNull()
+    await waitFor(() => {
+      jest.runAllTimers();
+      expect(queryByTestId('recommendations.randomSelection::CarouselProps')).not.toBeNull();
+    });
+
+    jest.useRealTimers();
+  });
+
+  test('clears timeout on unmount to prevent stale state updates', async () => {
+    jest.useFakeTimers();
+    const clearSpy = jest.spyOn(global, 'clearTimeout');
+
+    const { unmount } = render(
+      <SeasonFilterProvider>
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen name={'Home'} component={Home} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SeasonFilterProvider>
     );
+
+    unmount();
+
+    expect(clearSpy).toHaveBeenCalled();
+
+    clearSpy.mockRestore();
+    jest.useRealTimers();
   });
 });

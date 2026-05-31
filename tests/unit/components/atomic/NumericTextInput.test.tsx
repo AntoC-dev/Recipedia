@@ -1,5 +1,4 @@
 import React from 'react';
-import { Keyboard } from 'react-native';
 import { act, fireEvent, render } from '@testing-library/react-native';
 import NumericTextInput, { NumericTextInputProps } from '@components/atomic/NumericTextInput';
 import { TextInput } from 'react-native-paper';
@@ -247,109 +246,6 @@ describe('NumericTextInput', () => {
     expect(handleChangeValue).toHaveBeenCalledWith(10);
   });
 
-  test('keyboard hide event calls onChangeValue when focused and value changed', async () => {
-    const keyboardListeners: Record<string, (() => void)[]> = {};
-    const mockRemove = jest.fn();
-    const addListenerSpy = jest.spyOn(Keyboard, 'addListener').mockImplementation((event, cb) => {
-      if (!keyboardListeners[event]) keyboardListeners[event] = [];
-      keyboardListeners[event].push(cb as () => void);
-      return { remove: mockRemove } as any;
-    });
-
-    const handleChangeValue = jest.fn();
-    const { getByTestId } = render(
-      <NumericTextInput {...baseProps} value={5} onChangeValue={handleChangeValue} />
-    );
-    const input = getByTestId('numeric-input');
-
-    fireEvent(input, 'focus');
-    fireEvent.changeText(input, '20');
-
-    await act(async () => {
-      const hideCallbacks = keyboardListeners['keyboardDidHide'] || [];
-      hideCallbacks.forEach(cb => cb());
-    });
-
-    expect(handleChangeValue).toHaveBeenCalledWith(20);
-    addListenerSpy.mockRestore();
-  });
-
-  test('keyboard hide event with invalid text sets defaultValueNumber', async () => {
-    const keyboardListeners: Record<string, (() => void)[]> = {};
-    const mockRemove = jest.fn();
-    const addListenerSpy = jest.spyOn(Keyboard, 'addListener').mockImplementation((event, cb) => {
-      if (!keyboardListeners[event]) keyboardListeners[event] = [];
-      keyboardListeners[event].push(cb as () => void);
-      return { remove: mockRemove } as any;
-    });
-
-    const handleChangeValue = jest.fn();
-    const { getByTestId } = render(
-      <NumericTextInput {...baseProps} value={5} onChangeValue={handleChangeValue} />
-    );
-    const input = getByTestId('numeric-input');
-
-    fireEvent(input, 'focus');
-    fireEvent.changeText(input, 'invalid');
-
-    await act(async () => {
-      const hideCallbacks = keyboardListeners['keyboardDidHide'] || [];
-      hideCallbacks.forEach(cb => cb());
-    });
-
-    expect(handleChangeValue).toHaveBeenCalledWith(defaultValueNumber);
-    addListenerSpy.mockRestore();
-  });
-
-  test('keyboard hide event with same value does not call onChangeValue', async () => {
-    const keyboardListeners: Record<string, (() => void)[]> = {};
-    const mockRemove = jest.fn();
-    const addListenerSpy = jest.spyOn(Keyboard, 'addListener').mockImplementation((event, cb) => {
-      if (!keyboardListeners[event]) keyboardListeners[event] = [];
-      keyboardListeners[event].push(cb as () => void);
-      return { remove: mockRemove } as any;
-    });
-
-    const handleChangeValue = jest.fn();
-    const { getByTestId } = render(
-      <NumericTextInput {...baseProps} value={5} onChangeValue={handleChangeValue} />
-    );
-    const input = getByTestId('numeric-input');
-
-    fireEvent(input, 'focus');
-
-    await act(async () => {
-      const hideCallbacks = keyboardListeners['keyboardDidHide'] || [];
-      hideCallbacks.forEach(cb => cb());
-    });
-
-    expect(handleChangeValue).not.toHaveBeenCalled();
-    addListenerSpy.mockRestore();
-  });
-
-  test('keyboard hide event does nothing when not focused', async () => {
-    const keyboardListeners: Record<string, (() => void)[]> = {};
-    const mockRemove = jest.fn();
-    const addListenerSpy = jest.spyOn(Keyboard, 'addListener').mockImplementation((event, cb) => {
-      if (!keyboardListeners[event]) keyboardListeners[event] = [];
-      keyboardListeners[event].push(cb as () => void);
-      return { remove: mockRemove } as any;
-    });
-
-    const handleChangeValue = jest.fn();
-    const { getByTestId } = render(
-      <NumericTextInput {...baseProps} value={5} onChangeValue={handleChangeValue} />
-    );
-
-    await act(async () => {
-      const hideCallbacks = keyboardListeners['keyboardDidHide'] || [];
-      hideCallbacks.forEach(cb => cb());
-    });
-
-    expect(handleChangeValue).not.toHaveBeenCalled();
-    addListenerSpy.mockRestore();
-  });
-
   test('renders without error when underlineColor prop is provided', () => {
     const { getByTestId } = render(
       <NumericTextInput {...baseProps} value={5} underlineColor='transparent' />
@@ -423,6 +319,50 @@ describe('NumericTextInput', () => {
 
       rerender(<NumericTextInput {...baseProps} value={66.6667} />);
       expect(input.props.value).toEqual('66.67');
+    });
+  });
+
+  describe('shared parseQuantity behavior on blur', () => {
+    test.each([
+      ['1à3', 1],
+      ['100kcal', 100],
+      ['200 g', 200],
+      ['0,5L', 0.5],
+      ['  42  ', 42],
+    ])('blurring with raw OCR-style input %p commits %p', (input, expected) => {
+      const handleChangeValue = jest.fn();
+      const { getByTestId } = render(
+        <NumericTextInput {...baseProps} value={0} onChangeValue={handleChangeValue} />
+      );
+      const inputEl = getByTestId('numeric-input');
+
+      fireEvent.changeText(inputEl, input);
+      fireEvent(inputEl, 'onBlur');
+
+      expect(handleChangeValue).toHaveBeenCalledWith(expected);
+    });
+
+    test.each([['à3'], ['kcal'], ['.'], [',']])(
+      'blurring with non-parseable %p defaults to defaultValueNumber',
+      input => {
+        const handleChangeValue = jest.fn();
+        const { getByTestId } = render(
+          <NumericTextInput {...baseProps} value={5} onChangeValue={handleChangeValue} />
+        );
+        const inputEl = getByTestId('numeric-input');
+
+        fireEvent.changeText(inputEl, input);
+        fireEvent(inputEl, 'onBlur');
+
+        expect(handleChangeValue).toHaveBeenCalledWith(defaultValueNumber);
+        expect(inputEl.props.value).toEqual('');
+      }
+    );
+
+    test('does not pass onFocus prop to underlying TextInput (focus listener removed)', () => {
+      const { getByTestId } = render(<NumericTextInput {...baseProps} value={5} />);
+      const input = getByTestId('numeric-input');
+      expect(input.props.onFocus).toBeUndefined();
     });
   });
 });

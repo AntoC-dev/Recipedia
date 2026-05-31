@@ -150,26 +150,12 @@ appId: "com.recipedia"
     id: "RecipeIngredients::AddButton::RoundButton"
     label: "Add an ingredient"
 
-- tapOn:
-    id: "RecipeIngredients::0::QuantityInput"
-    label: "Focus on ingredient quantity"
-
 - runFlow:
-    file: "../../../../waitForKeyboardNumeric.yaml"
-    label: "Wait for numeric keyboard to appear"
-
-- inputText:
-    text: "100"
-    label: "Enter ingredient quantity"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
-
-- runFlow:
-    file: "../../../../waitForKeyboardNumericDismiss.yaml"
-    label: "Wait for numeric keyboard to dismiss"
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "0"
+      VALUE: "100"
+    label: "Fill first ingredient quantity: 100"
 
 - tapOn:
     id: "RecipeIngredients::0::NameInput::CustomTextInput"

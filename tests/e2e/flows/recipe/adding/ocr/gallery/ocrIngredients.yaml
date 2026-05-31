@@ -136,16 +136,16 @@ appId: "com.recipedia"
     commands:
       - runFlow:
           file: "../quantities/quitoqueV1.yaml"
-          label: "Manually fill quitoqueV1 ingredient quantities"
+          label: "Manually fill quitoqueV1 ingredient quantities (Android: ML Kit qty extraction unreliable; iOS uses OCR path)"
           when:
             true: ${RECIPE_NAME == "quitoqueV1"}
       - runFlow:
-          file: "../quantities/quitoqueV3.yaml"
-          label: "Manually fill quitoqueV3 ingredient quantities"
-          when:
-            true: ${RECIPE_NAME == "quitoqueV3"}
-      - runFlow:
           file: "../quantities/quitoqueV2.yaml"
-          label: "Manually fill quitoqueV2 ingredient quantities"
+          label: "Manually fill quitoqueV2 ingredient quantities (Android: ML Kit qty extraction unreliable; iOS uses OCR path)"
           when:
             true: ${RECIPE_NAME == "quitoqueV2"}
+      - runFlow:
+          file: "../quantities/quitoqueV3.yaml"
+          label: "Manually fill quitoqueV3 ingredient quantities (OCR yields fewer qty than names for this recipe — exercises manual-edit path)"
+          when:
+            true: ${RECIPE_NAME == "quitoqueV3"}

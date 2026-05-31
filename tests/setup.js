@@ -18,6 +18,12 @@ jest.mock('react-native/Libraries/Interaction/InteractionManager', () =>
   require('@mocks/deps/InteractionManager-mock').interactionManagerMock()
 );
 
+global.requestIdleCallback = (callback, options) => {
+  callback({ didTimeout: false, timeRemaining: () => options?.timeout ?? 0 });
+  return 0;
+};
+global.cancelIdleCallback = id => {};
+
 // Mock the recipe-scraper module (ScraperProvider, useScraper)
 jest.mock(
   '@app/modules/recipe-scraper',

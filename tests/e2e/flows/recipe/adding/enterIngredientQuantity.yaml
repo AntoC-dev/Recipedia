@@ -1,0 +1,29 @@
+appId: "com.recipedia"
+---
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::${INDEX}::QuantityInput"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to ingredient ${INDEX} quantity input"
+
+- tapOn:
+    id: "RecipeIngredients::${INDEX}::QuantityInput"
+    label: "Tap on ingredient ${INDEX} quantity input"
+
+- runFlow:
+    file: "../../waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard"
+
+- inputText:
+    text: "${VALUE}"
+    label: "Type ${VALUE} as quantity for ingredient ${INDEX}"
+
+- tapOn:
+    id: "RecipeIngredients::${INDEX}::Unit"
+    label: "Tap on ingredient ${INDEX} unit cell to dismiss keyboard"
+
+- runFlow:
+    file: "../../waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard to dismiss"

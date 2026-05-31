@@ -29,5 +29,5 @@ export const per100gKey: OcrKeys = 'per100g';
 /** Key for per portion nutrition terms in OCR */
 export const perPortionKey: OcrKeys = 'perPortion';
 
-/** Threshold for fuzzy matching nutrition terms */
-export const FUSE_THRESHOLD = 0.2;
+/** Whole-phrase fuzzy threshold for nutrition labels — tuned for OCR char-level noise on Quitoque/HelloFresh/FR labels. */
+export const OCR_FUZZY_THRESHOLD = 0.2;

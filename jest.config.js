@@ -3,7 +3,10 @@ module.exports = {
     transform: {
         '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
     },
-    testMatch: ['**/tests/unit/**/*.test.{js,jsx,ts,tsx}'],
+    testMatch: [
+        '**/tests/unit/**/*.test.{js,jsx,ts,tsx}',
+        '**/tests/integration/**/*.test.{js,jsx,ts,tsx}',
+    ],
     maxWorkers: process.env.CI ? '100%' : '50%',
     testTimeout: 10000,
     workerIdleMemoryLimit: '512MB',

@@ -1,197 +1,66 @@
 appId: "com.recipedia"
 ---
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::0::QuantityInput"
-    direction: DOWN
-    speed: 20
-    centerElement: true
-    label: "Scroll to first ingredient quantity input"
-
-- tapOn:
-    id: "RecipeIngredients::0::QuantityInput"
-    label: "Tap on cacahuètes grillées quantity"
+- runFlow:
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "0"
+      VALUE: "100"
+    label: "Fill cacahuètes grillées quantity: 100"
 
 - runFlow:
-    file: "../../../../waitForKeyboardNumeric.yaml"
-    label: "Wait for numeric keyboard"
-
-- inputText:
-    text: "200"
-    label: "Enter cacahuètes grillées quantity"
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::1::QuantityInput"
-    direction: DOWN
-    speed: 20
-    centerElement: true
-    label: "Scroll to second ingredient quantity input"
-
-- tapOn:
-    id: "RecipeIngredients::1::QuantityInput"
-    label: "Tap on concentré de tomates quantity"
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "1"
+      VALUE: "35"
+    label: "Fill concentré de tomates quantity: 35"
 
 - runFlow:
-    file: "../../../../waitForKeyboardNumeric.yaml"
-    label: "Wait for numeric keyboard"
-
-- inputText:
-    text: "70"
-    label: "Enter concentré de tomates quantity"
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::2::QuantityInput"
-    direction: DOWN
-    speed: 20
-    centerElement: true
-    label: "Scroll to third ingredient quantity input"
-
-- tapOn:
-    id: "RecipeIngredients::2::QuantityInput"
-    label: "Tap on filet de poulet quantity"
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "2"
+      VALUE: "2"
+    label: "Fill filet de poulet quantity: 2"
 
 - runFlow:
-    file: "../../../../waitForKeyboardNumeric.yaml"
-    label: "Wait for numeric keyboard"
-
-- inputText:
-    text: "4"
-    label: "Enter filet de poulet quantity"
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::3::QuantityInput"
-    direction: DOWN
-    speed: 20
-    centerElement: true
-    label: "Scroll to fourth ingredient quantity input"
-
-- tapOn:
-    id: "RecipeIngredients::3::QuantityInput"
-    label: "Tap on gingembre quantity"
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "3"
+      VALUE: "1"
+    label: "Fill gingembre quantity: 1"
 
 - runFlow:
-    file: "../../../../waitForKeyboardNumeric.yaml"
-    label: "Wait for numeric keyboard"
-
-- inputText:
-    text: "1"
-    label: "Enter gingembre quantity"
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::4::QuantityInput"
-    direction: DOWN
-    speed: 20
-    centerElement: true
-    label: "Scroll to fifth ingredient quantity input"
-
-- tapOn:
-    id: "RecipeIngredients::4::QuantityInput"
-    label: "Tap on gousse d'ail quantity"
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "4"
+      VALUE: "1"
+    label: "Fill gousse d'ail quantity: 1"
 
 - runFlow:
-    file: "../../../../waitForKeyboardNumeric.yaml"
-    label: "Wait for numeric keyboard"
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "5"
+      VALUE: "200"
+    label: "Fill lait de coco quantity: 200"
 
-- inputText:
-    text: "2"
-    label: "Enter gousse d'ail quantity"
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::5::QuantityInput"
-    direction: DOWN
-    speed: 20
-    centerElement: true
-    label: "Scroll to sixth ingredient quantity input"
-
-- tapOn:
-    id: "RecipeIngredients::5::QuantityInput"
-    label: "Tap on lait de coco quantity"
+- inputText: "1Test"
 
 - runFlow:
-    file: "../../../../waitForKeyboardNumeric.yaml"
-    label: "Wait for numeric keyboard"
-
-- inputText:
-    text: "400"
-    label: "Enter lait de coco quantity"
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::6::QuantityInput"
-    direction: DOWN
-    speed: 20
-    centerElement: true
-    label: "Scroll to seventh ingredient quantity input"
-
-- tapOn:
-    id: "RecipeIngredients::6::QuantityInput"
-    label: "Tap on oignon jaune quantity"
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "6"
+      VALUE: "1"
+    label: "Fill oignon jaune quantity: 1"
 
 - runFlow:
-    file: "../../../../waitForKeyboardNumeric.yaml"
-    label: "Wait for numeric keyboard"
-
-- inputText:
-    text: "2"
-    label: "Enter oignon jaune quantity"
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::7::QuantityInput"
-    direction: DOWN
-    speed: 20
-    centerElement: true
-    label: "Scroll to eighth ingredient quantity input"
-
-- tapOn:
-    id: "RecipeIngredients::7::QuantityInput"
-    label: "Tap on oignon nouveau quantity"
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "7"
+      VALUE: "0,5"
+    label: "Fill oignon nouveau quantity: 0,5"
 
 - runFlow:
-    file: "../../../../waitForKeyboardNumeric.yaml"
-    label: "Wait for numeric keyboard"
-
-- inputText:
-    text: "1"
-    label: "Enter oignon nouveau quantity"
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::8::QuantityInput"
-    direction: DOWN
-    speed: 20
-    centerElement: true
-    label: "Scroll to ninth ingredient quantity input"
-
-- tapOn:
-    id: "RecipeIngredients::8::QuantityInput"
-    label: "Tap on riz basmati Bio quantity"
-
-- runFlow:
-    file: "../../../../waitForKeyboardNumeric.yaml"
-    label: "Wait for numeric keyboard"
-
-- inputText:
-    text: "300"
-    label: "Enter riz basmati Bio quantity"
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeTime::PrefixText"
-    direction: DOWN
-    speed: 20
-    centerElement: true
-    label: "Scroll to time to be able to close the keyboard"
-
-- tapOn:
-    id: "RecipeTime::PrefixText"
-    label: "Close the keyboard by pressing the prefix of recipe time"
-
-- runFlow:
-    file: "../../../../waitForKeyboardNumericDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "8"
+      VALUE: "150"
+    label: "Fill riz basmati Bio quantity: 150"

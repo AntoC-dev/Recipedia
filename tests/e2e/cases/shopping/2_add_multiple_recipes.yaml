@@ -93,7 +93,7 @@ tags:
     element:
       id: "SearchScreen::RecipeCards::5::.*"
     direction: DOWN
-    speed: 10
+    speed: 5
     centerElement: true
     label: "Action - Scroll to Margherita Pizza recipe"
 

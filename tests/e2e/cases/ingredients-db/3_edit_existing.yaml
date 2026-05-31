@@ -137,13 +137,13 @@ tags:
 
 - scrollUntilVisible:
     element:
-      id: "IngredientsSettings::ItemDialog::EditModal::SeasonalityCalendar::10"
+      id: "IngredientsSettings::ItemDialog::EditModal::SeasonalityCalendar::1"
     direction: DOWN
     speed: 20
     label: "Action - Scroll to october item"
 
 - tapOn:
-    id: "IngredientsSettings::ItemDialog::EditModal::SeasonalityCalendar::10"
+    id: "IngredientsSettings::ItemDialog::EditModal::SeasonalityCalendar::1"
     label: "Action - Remove october from seasonality"
 
 - runFlow:
@@ -152,9 +152,10 @@ tags:
     commands:
       - extendedWaitUntil:
           visible:
-            text: "October"
+            text: "󰄬, January"
           timeout: 30000
           label: "Wait for item to be checked on iOS"
+
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::ConfirmButton"

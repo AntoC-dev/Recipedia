@@ -1,118 +1,36 @@
 appId: "com.recipedia"
 ---
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::0::QuantityInput"
-    direction: DOWN
-    speed: 20
-    centerElement: true
-    label: "Scroll to first ingredient quantity input"
-
-
-- tapOn:
-    id: "RecipeIngredients::0::QuantityInput"
-    label: "Tap on carotte quantity"
+- runFlow:
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "0"
+      VALUE: "1"
+    label: "Fill Carotte quantity: 1"
 
 - runFlow:
-    file: "../../../../waitForKeyboardNumeric.yaml"
-    label: "Wait for numeric keyboard"
-
-- inputText:
-    text: "2"
-    label: "Enter carotte quantity"
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::1::QuantityInput"
-    direction: DOWN
-    speed: 20
-    centerElement: true
-    label: "Scroll to second ingredient quantity input"
-
-- tapOn:
-    id: "RecipeIngredients::1::QuantityInput"
-    label: "Tap on cumin quantity"
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "1"
+      VALUE: "1"
+    label: "Fill Cumin quantity: 1"
 
 - runFlow:
-    file: "../../../../waitForKeyboardNumeric.yaml"
-    label: "Wait for numeric keyboard"
-
-- inputText:
-    text: "2"
-    label: "Enter cumin quantity"
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::2::QuantityInput"
-    direction: DOWN
-    speed: 20
-    centerElement: true
-    label: "Scroll to third ingredient quantity input"
-
-- tapOn:
-    id: "RecipeIngredients::2::QuantityInput"
-    label: "Tap on merguez quantity"
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "2"
+      VALUE: "4"
+    label: "Fill Merguez quantity: 4"
 
 - runFlow:
-    file: "../../../../waitForKeyboardNumeric.yaml"
-    label: "Wait for numeric keyboard"
-
-- inputText:
-    text: "400"
-    label: "Enter merguez quantity"
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::3::QuantityInput"
-    direction: DOWN
-    speed: 20
-    centerElement: true
-    label: "Scroll to fourth ingredient quantity input"
-
-- tapOn:
-    id: "RecipeIngredients::3::QuantityInput"
-    label: "Tap on navet quantity"
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "3"
+      VALUE: "1"
+    label: "Fill Navet quantity: 1"
 
 - runFlow:
-    file: "../../../../waitForKeyboardNumeric.yaml"
-    label: "Wait for numeric keyboard"
-
-- inputText:
-    text: "2"
-    label: "Enter navet quantity"
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::4::QuantityInput"
-    direction: DOWN
-    speed: 20
-    centerElement: true
-    label: "Scroll to fifth ingredient quantity input"
-
-- tapOn:
-    id: "RecipeIngredients::4::QuantityInput"
-    label: "Tap on pommes de terre quantity"
-
-- runFlow:
-    file: "../../../../waitForKeyboardNumeric.yaml"
-    label: "Wait for numeric keyboard"
-
-- inputText:
-    text: "400"
-    label: "Enter pommes de terre quantity"
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeTime::PrefixText"
-    direction: DOWN
-    speed: 20
-    centerElement: true
-    label: "Scroll to time to be able to close the keyboard"
-
-- tapOn:
-    id: "RecipeTime::PrefixText"
-    label: "Close the keyboard by pressing the prefix of recipe time"
-
-- runFlow:
-    file: "../../../../waitForKeyboardNumericDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "4"
+      VALUE: "400"
+    label: "Fill Pommes de terre quantity: 400"

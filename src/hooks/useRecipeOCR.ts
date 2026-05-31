@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { FormIngredientElement, nutritionTableElement } from '@customTypes/DatabaseElementTypes';
 import { extractFieldFromImage, OcrModalTarget } from '@utils/OCR';
 import {
+  addNonDuplicateByName,
   addOrMergeIngredientMatches,
   filterOutExistingTags,
   processIngredientsForValidation,
@@ -21,6 +22,8 @@ import {
 import { useTags } from '@hooks/useTags';
 import { useIngredients } from '@hooks/useIngredients';
 import { defaultValueNumber } from '@utils/Constants';
+import { namesMatch } from '@utils/NutritionUtils';
+import { parseQuantity } from '@utils/Quantity';
 import { ocrLogger } from '@utils/logger';
 import { useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { useRecipeForm } from '@context/RecipeFormContext';
@@ -136,6 +139,10 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
     setImgForOCR(prev => [...prev, uri]);
   };
 
+  const prepopulateIngredients = (items: FormIngredientElement[]) => {
+    setRecipeIngredients(prev => addNonDuplicateByName(prev, items));
+  };
+
   /**
    * Extracts data from an image for a specific recipe field and updates the form.
    *
@@ -198,13 +205,12 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
     }
     if (newFieldData.recipeIngredients && newFieldData.recipeIngredients.length > 0) {
       const ocrIngredients = newFieldData.recipeIngredients;
+      prepopulateIngredients(ocrIngredients);
       validateAndQueueIngredients(
         ocrIngredients,
         findSimilarIngredients,
         match => {
-          const original = ocrIngredients.find(
-            ing => ing.name?.toLowerCase() === match.name.toLowerCase()
-          );
+          const original = ocrIngredients.find(ing => namesMatch(ing.name, match.name));
           addOrMergeIngredient({ ...match, quantity: original?.quantity || match.quantity });
         },
         setValidationQueue,
@@ -216,36 +222,12 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
         ({ name, unit }) => ({ name, unit, quantity: '' })
       );
       if (ingredientsWithNoQuantity.length > 0) {
-        validateAndQueueIngredients(
-          ingredientsWithNoQuantity,
-          findSimilarIngredients,
-          addOrMergeIngredient,
-          setValidationQueue
-        );
-      }
-    }
-    if (newFieldData.ingredientQuantities !== undefined) {
-      const quantities = newFieldData.ingredientQuantities;
-      if (quantities.length === recipeIngredients.length) {
-        setRecipeIngredients(prev =>
-          prev.map((ingredient, index) => ({ ...ingredient, quantity: quantities[index] }))
-        );
-      } else {
-        ocrLogger.warn('Quantity count mismatch', {
-          expected: recipeIngredients.length,
-          received: quantities.length,
-        });
-      }
-    }
-    if (newFieldData.ingredientNames !== undefined) {
-      const ingredientsWithNoQuantity: FormIngredientElement[] = newFieldData.ingredientNames.map(
-        ({ name, unit }) => ({ name, unit, quantity: '' })
-      );
-      if (ingredientsWithNoQuantity.length > 0) {
         const { exactMatches, needsValidation } = processIngredientsForValidation(
           ingredientsWithNoQuantity,
           findSimilarIngredients
         );
+
+        prepopulateIngredients(ingredientsWithNoQuantity);
 
         if (exactMatches.length > 0) {
           setRecipeIngredients(prev => addOrMergeIngredientMatches(prev, exactMatches));
@@ -261,17 +243,23 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
       }
     }
     if (newFieldData.ingredientQuantities !== undefined) {
-      const quantities = newFieldData.ingredientQuantities;
-      if (quantities.length === recipeIngredients.length) {
-        setRecipeIngredients(prev =>
-          prev.map((ingredient, index) => ({ ...ingredient, quantity: quantities[index] }))
+      const quantities = newFieldData.ingredientQuantities.map(parseQuantity);
+      setRecipeIngredients(prev => {
+        if (quantities.length !== prev.length) {
+          ocrLogger.warn('Quantity count mismatch', {
+            expected: prev.length,
+            received: quantities.length,
+          });
+        }
+        const limit = Math.min(prev.length, quantities.length);
+        if (limit === 0) return prev;
+        const next = prev.map((ingredient, index) =>
+          index < limit && ingredient.quantity !== quantities[index]
+            ? { ...ingredient, quantity: quantities[index] }
+            : ingredient
         );
-      } else {
-        ocrLogger.warn('Quantity count mismatch', {
-          expected: recipeIngredients.length,
-          received: quantities.length,
-        });
-      }
+        return next.every((ing, i) => ing === prev[i]) ? prev : next;
+      });
     }
     if (newFieldData.recipeNutrition) {
       const newNutrition: nutritionTableElement = {

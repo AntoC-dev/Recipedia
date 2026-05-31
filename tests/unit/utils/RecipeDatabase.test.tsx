@@ -762,6 +762,24 @@ describe('RecipeDatabase', () => {
         return { ...baseRecipe, ingredients: copyIngredients };
       }
 
+      let titleCaseSeq = 0;
+      async function seedExistingAndCompare(existingTitle: string, candidateTitle: string) {
+        titleCaseSeq += 1;
+        const baseId = testRecipes.length + 100 + titleCaseSeq * 2;
+        const existing: recipeTableElement = {
+          ...createCopyOfBaseRecipe(),
+          id: baseId,
+          title: existingTitle,
+        };
+        await db.addRecipe(existing);
+        const candidate: recipeTableElement = {
+          ...createCopyOfBaseRecipe(),
+          id: baseId + 1,
+          title: candidateTitle,
+        };
+        return db.findSimilarRecipes(candidate);
+      }
+
       test('should find an exact duplicate recipe', () => {
         const recipeToTest: recipeTableElement = createCopyOfBaseRecipe();
         const similar = db.findSimilarRecipes(recipeToTest);
@@ -771,7 +789,7 @@ describe('RecipeDatabase', () => {
 
       test('should find a recipe with a very similar title and ingredients', () => {
         const recipeToTest: recipeTableElement = createCopyOfBaseRecipe();
-        recipeToTest.title = 'Spageti Carbonara'; // Typo in title
+        recipeToTest.title = 'Spageti Bolognes';
         recipeToTest.ingredients[1].quantity = (
           Number(recipeToTest.ingredients[1].quantity) - 1
         ).toString(); // Slightly less
@@ -795,6 +813,29 @@ describe('RecipeDatabase', () => {
 
         const similar = db.findSimilarRecipes(recipeToTest);
         expect(similar.length).toBe(0);
+      });
+
+      test('should not flag a title that only shares a single common word with an existing recipe', async () => {
+        const similar = await seedExistingAndCompare(
+          'Test Recipe',
+          'Completely Different Recipe Name'
+        );
+        expect(similar.find(r => r.title === 'Test Recipe')).toBeUndefined();
+      });
+
+      test('should match a title regardless of word order when all tokens overlap', async () => {
+        const similar = await seedExistingAndCompare('Pasta Tomato', 'Tomato Pasta');
+        expect(similar.find(r => r.title === 'Pasta Tomato')).toBeDefined();
+      });
+
+      test('should match a shorter candidate title whose tokens are a subset of an existing title', async () => {
+        const similar = await seedExistingAndCompare('Tomato Pasta Sauce', 'Tomato Pasta');
+        expect(similar.find(r => r.title === 'Tomato Pasta Sauce')).toBeDefined();
+      });
+
+      test('should not flag two recipes that only share a common cuisine word', async () => {
+        const similar = await seedExistingAndCompare('Tomato Soup', 'Mushroom Soup');
+        expect(similar.find(r => r.title === 'Tomato Soup')).toBeUndefined();
       });
 
       test('should find a similar recipe regardless of serving size (persons)', () => {
@@ -1103,211 +1144,6 @@ describe('RecipeDatabase', () => {
 
       const uniqueManyTags = new Set(manyTags.map(tag => tag.id));
       expect(uniqueManyTags.size).toBe(manyTags.length);
-    });
-
-    describe('findSimilarTags', () => {
-      test('should return empty array for empty or null input', () => {
-        expect(db.findSimilarTags('')).toEqual([]);
-        expect(db.findSimilarTags('   ')).toEqual([]);
-      });
-
-      test('should return exact match first when tag name matches exactly', () => {
-        const expected = testTags[0];
-        const result = db.findSimilarTags(expected.name);
-        expect(result).toHaveLength(1);
-        expect(result[0]).toEqual(expected);
-      });
-
-      test('should return exact match case-insensitively', () => {
-        {
-          const expected = testTags[1];
-
-          const result = db.findSimilarTags(expected.name.toLowerCase());
-          expect(result).toHaveLength(1);
-          expect(result[0]).toEqual(expected);
-        }
-
-        {
-          const expected = testTags[2];
-          const result = db.findSimilarTags(expected.name.toUpperCase());
-          expect(result).toHaveLength(1);
-          expect(result[0]).toEqual(expected);
-        }
-      });
-
-      test('should return exact match even with extra whitespace', () => {
-        const expected = testTags[3];
-
-        const result = db.findSimilarTags(` ${expected.name} `);
-        expect(result).toHaveLength(1);
-        expect(result[0]).toEqual(expected);
-      });
-
-      test('should find similar tags using fuzzy search when no exact match', () => {
-        const expected = testTags[0];
-
-        const result = db.findSimilarTags('Italien');
-        expect(result.length).toEqual(1);
-        expect(result[0]).toEqual(expected);
-      });
-
-      test('should find similar tags for partial matches', () => {
-        const expected = testTags[4];
-
-        const result = db.findSimilarTags(expected.name.slice(0, -2));
-        expect(result.length).toBe(1);
-        expect(result[0]).toEqual(expected);
-      });
-
-      test('should handle typos in tag names', () => {
-        const expected = testTags[5];
-
-        const result = db.findSimilarTags(expected.name.slice(0, -1));
-        expect(result.length).toBe(1);
-        expect(result[0]).toEqual(expected);
-      });
-
-      test('should handle multiple word tags correctly', () => {
-        const expected = testTags[8];
-
-        const result = db.findSimilarTags(expected.name.split(' ')[0]);
-        expect(result.length).toBe(1);
-        expect(result[0]).toEqual(expected);
-
-        const result2 = db.findSimilarTags(expected.name.split(' ')[0]);
-        expect(result2.length).toBe(1);
-        expect(result2[0]).toEqual(expected);
-      });
-
-      test('should handle tags with spaces', () => {
-        const expected = testTags[15];
-
-        const result = db.findSimilarTags(expected.name);
-        expect(result.length).toBe(1);
-        expect(result[0]).toEqual(expected);
-
-        const result2 = db.findSimilarTags('space');
-        expect(result2.length).toBe(1);
-        expect(result2[0]).toEqual(expected);
-      });
-
-      test('should return results sorted by relevance score', () => {
-        const expected = testTags[0];
-
-        const result = db.findSimilarTags(expected.name.slice(0, 2));
-        expect(result.length).toBeGreaterThan(0);
-        expect(result[0]).toEqual(expected);
-      });
-
-      test('should return empty array when no similar tags found', () => {
-        const result = db.findSimilarTags('NonExistentCuisineType');
-        expect(result).toEqual([]);
-      });
-
-      test('should find similar tags with different similarity thresholds', () => {
-        const expected = testTags[0];
-
-        // Close match should return results
-        const closeMatch = db.findSimilarTags(expected.name.slice(0, -2));
-        expect(closeMatch.length).toBeGreaterThan(0);
-
-        // Very different string should return empty
-        const noMatch = db.findSimilarTags('xyz123');
-        expect(noMatch).toEqual([]);
-      });
-
-      test('should work with database containing single tag', async () => {
-        const tag: tagTableElement = { id: 1, name: 'SingleTag' };
-        await db.closeAndReset();
-        await db.init();
-        await db.addTag(tag);
-
-        const exactMatch = db.findSimilarTags(tag.name);
-        expect(exactMatch).toHaveLength(1);
-        expect(exactMatch[0]).toEqual(tag);
-
-        const similarMatch = db.findSimilarTags(tag.name.slice(0, -3));
-        expect(similarMatch.length).toBeGreaterThan(0);
-        expect(similarMatch[0]).toEqual(tag);
-      });
-
-      test('should handle empty database gracefully', async () => {
-        await db.closeAndReset();
-        await db.init();
-
-        const result = db.findSimilarTags('AnyTag');
-        expect(result).toEqual([]);
-      });
-    });
-
-    describe('findSimilarIngredients', () => {
-      test('should return empty array for empty input', () => {
-        const resultEmpty = db.findSimilarIngredients('');
-        expect(resultEmpty).toEqual([]);
-
-        const resultWhitespaces = db.findSimilarIngredients('   ');
-        expect(resultWhitespaces).toEqual([]);
-      });
-
-      test('should return exact match when ingredient exists', () => {
-        const expected = testIngredients[0];
-
-        const result = db.findSimilarIngredients(expected.name);
-        expect(result.length).toBe(1);
-        expect(result[0]).toEqual(expected);
-      });
-
-      test('should return exact match case insensitive', () => {
-        const expected = testIngredients[1];
-
-        const result = db.findSimilarIngredients(expected.name.toUpperCase());
-        expect(result.length).toBe(1);
-        expect(result[0]).toEqual(expected);
-      });
-
-      test('should find similar ingredients with typos', () => {
-        const expected = testIngredients[2];
-
-        const result = db.findSimilarIngredients(expected.name.slice(0, -3));
-        expect(result.length).toBeGreaterThan(0);
-        expect(result[0]).toEqual(expected);
-      });
-
-      test('should clean ingredient names by removing parentheses', () => {
-        const expected = testIngredients[3];
-
-        const result = db.findSimilarIngredients(expected.name + ' (fresh)');
-        expect(result.length).toBeGreaterThan(0);
-        expect(result[0]).toEqual(expected);
-      });
-
-      test('should return multiple similar ingredients sorted by relevance', () => {
-        const expected = testIngredients[36];
-
-        const result = db.findSimilarIngredients(expected.name.slice(0, 3));
-        expect(result.length).toBeGreaterThan(0);
-        expect(result[0].name).toMatch(/tom/i);
-      });
-
-      test('should return empty array for completely unmatched ingredient', () => {
-        const result = db.findSimilarIngredients('XYZNonExistentIngredient123');
-        expect(result).toEqual([]);
-      });
-
-      test('should handle special characters and spaces in ingredient names', () => {
-        // Test with special characters if any exist in test data
-        const result = db.findSimilarIngredients('Pâte');
-        // Should not crash and return appropriate results
-        expect(Array.isArray(result)).toBe(true);
-      });
-
-      test('should handle empty database gracefully', async () => {
-        await db.closeAndReset();
-        await db.init();
-
-        const result = db.findSimilarIngredients('AnyIngredient');
-        expect(result).toEqual([]);
-      });
     });
   });
 

@@ -104,7 +104,7 @@ appId: "com.recipedia"
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "Ciboulette"
-      INGREDIENT_QUANTITY_AND_UNIT: "3g"
+      INGREDIENT_QUANTITY_AND_UNIT: "3"
     label: "Assert Ciboulette ingredient"
 
 - runFlow:

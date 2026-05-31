@@ -1,235 +1,60 @@
 appId: "com.recipedia"
 ---
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::0::QuantityInput"
-    direction: DOWN
-    centerElement: true
-    speed: 60
-    label: "Scroll to ingredients section"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipeIngredients::0::QuantityInput"
-    label: "Tap on Oignon quantity"
+- runFlow:
+    file: "../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "0"
+      VALUE: "1"
+    label: "Fill Oignon quantity: 1"
 
 - runFlow:
-    file: "../../../waitForKeyboardNumeric.yaml"
-    label: "Wait for numeric keyboard to appear"
-
-- inputText: "1"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- tapOn:
-    id: "RecipeIngredients::0::Unit"
-    label: "Action - Focus on ingredient unit input to close keyboard"
+    file: "../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "1"
+      VALUE: "100"
+    label: "Fill Cheddar quantity: 100"
 
 - runFlow:
-    file: "../../../waitForKeyboardNumericDismiss.yaml"
-    label: "Wait for numeric keyboard to dismiss"
-
-- tapOn:
-    id: "RecipeIngredients::1::QuantityInput"
-    label: "Tap on Cheddar quantity"
-
-- runFlow:
-    file: "../../../waitForKeyboardNumeric.yaml"
-    label: "Wait for numeric keyboard to appear"
-
-- inputText: "100"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- tapOn:
-    id: "RecipeIngredients::1::Unit"
-    label: "Action - Focus on ingredient unit input to close keyboard"
+    file: "../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "2"
+      VALUE: "4"
+    label: "Fill Pain pour hamburger quantity: 4"
 
 - runFlow:
-    file: "../../../waitForKeyboardNumericDismiss.yaml"
-    label: "Wait for numeric keyboard to dismiss"
-
-- tapOn:
-    id: "RecipeIngredients::2::QuantityInput"
-    label: "Tap on Pain pour hamburger quantity"
-
-- runFlow:
-    file: "../../../waitForKeyboardNumeric.yaml"
-    label: "Wait for numeric keyboard to appear"
-
-- inputText: "4"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- tapOn:
-    id: "RecipeIngredients::2::Unit"
-    label: "Action - Focus on ingredient unit input to close keyboard"
+    file: "../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "3"
+      VALUE: "400"
+    label: "Fill Viande hachée quantity: 400"
 
 - runFlow:
-    file: "../../../waitForKeyboardNumericDismiss.yaml"
-    label: "Wait for numeric keyboard to dismiss"
-
-- tapOn:
-    id: "RecipeIngredients::3::QuantityInput"
-    label: "Tap on Viande hachée quantity"
-
-- runFlow:
-    file: "../../../waitForKeyboardNumeric.yaml"
-    label: "Wait for numeric keyboard to appear"
-
-- inputText: "400"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- tapOn:
-    id: "RecipeIngredients::3::Unit"
-    label: "Action - Focus on ingredient unit input to close keyboard"
+    file: "../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "4"
+      VALUE: "1"
+    label: "Fill Tomate quantity: 1"
 
 - runFlow:
-    file: "../../../waitForKeyboardNumericDismiss.yaml"
-    label: "Wait for numeric keyboard to dismiss"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::4::QuantityInput"
-    direction: DOWN
-    centerElement: true
-    speed: 40
-    label: "Scroll to more ingredients"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipeIngredients::4::QuantityInput"
-    label: "Tap on Tomate quantity"
+    file: "../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "5"
+      VALUE: "50"
+    label: "Fill Salade quantity: 50"
 
 - runFlow:
-    file: "../../../waitForKeyboardNumeric.yaml"
-    label: "Wait for numeric keyboard to appear"
-
-- inputText: "1"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- tapOn:
-    id: "RecipeIngredients::4::Unit"
-    label: "Action - Focus on ingredient unit input to close keyboard"
+    file: "../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "6"
+      VALUE: "30"
+    label: "Fill Moutarde quantity: 30"
 
 - runFlow:
-    file: "../../../waitForKeyboardNumericDismiss.yaml"
-    label: "Wait for numeric keyboard to dismiss"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::5::QuantityInput"
-    direction: DOWN
-    centerElement: true
-    speed: 40
-    label: "Scroll to more ingredients"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipeIngredients::5::QuantityInput"
-    label: "Tap on Salade quantity"
-
-- runFlow:
-    file: "../../../waitForKeyboardNumeric.yaml"
-    label: "Wait for numeric keyboard to appear"
-
-- inputText: "50"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- tapOn:
-    id: "RecipeIngredients::5::Unit"
-    label: "Action - Focus on ingredient unit input to close keyboard"
-
-- runFlow:
-    file: "../../../waitForKeyboardNumericDismiss.yaml"
-    label: "Wait for numeric keyboard to dismiss"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::6::QuantityInput"
-    direction: DOWN
-    centerElement: true
-    speed: 40
-    label: "Scroll to more ingredients"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipeIngredients::6::QuantityInput"
-    label: "Tap on Moutarde quantity"
-
-- runFlow:
-    file: "../../../waitForKeyboardNumeric.yaml"
-    label: "Wait for numeric keyboard to appear"
-
-- inputText: "30"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- tapOn:
-    id: "RecipeIngredients::6::Unit"
-    label: "Action - Focus on ingredient unit input to close keyboard"
-
-- runFlow:
-    file: "../../../waitForKeyboardNumericDismiss.yaml"
-    label: "Wait for numeric keyboard to dismiss"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::7::QuantityInput"
-    direction: DOWN
-    centerElement: true
-    speed: 40
-    label: "Scroll to more ingredients"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipeIngredients::7::QuantityInput"
-    label: "Tap on Ketchup quantity"
-
-- runFlow:
-    file: "../../../waitForKeyboardNumeric.yaml"
-    label: "Wait for numeric keyboard to appear"
-
-- inputText: "30"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- tapOn:
-    id: "RecipeIngredients::7::Unit"
-    label: "Action - Focus on ingredient unit input to close keyboard"
-
-- runFlow:
-    file: "../../../waitForKeyboardNumericDismiss.yaml"
-    label: "Wait for numeric keyboard to dismiss"
-
-- waitForAnimationToEnd
+    file: "../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "7"
+      VALUE: "30"
+    label: "Fill Ketchup quantity: 30"
 
 - scrollUntilVisible:
     element:

@@ -9,6 +9,11 @@
 
 recipe-scrapers[online]==15.11.0
 beautifulsoup4==4.13.3
-# Pin extruct>=0.17.0 for lxml 5.3.0 compatibility (fixes _ElementStringResult import error)
-# See: https://github.com/scrapinghub/extruct/issues/230
-extruct>=0.17.0
+# Pin extruct>=0.17.0,<0.18.0 — 0.17.x is compatible with lxml 5.3.0 (Android, fixes
+# _ElementStringResult import error, see https://github.com/scrapinghub/extruct/issues/230)
+# AND with the lxml 6.0.0 WASM wheel that Pyodide 0.28 ships. extruct 0.18.0 requires
+# lxml>=6.1.1, which has no pure-Python/WASM wheel — micropip install fails on iOS.
+extruct>=0.17.0,<0.18.0
+# lxml_html_clean is a transitive dep of extruct. 0.4.5+ requires lxml>=6.1.1, which
+# Pyodide does not ship as WASM. Pin to <0.4.5 to stay compatible with Pyodide's lxml 6.0.0.
+lxml_html_clean<0.4.5

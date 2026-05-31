@@ -287,6 +287,39 @@ describe('WelcomeScreen Component', () => {
     });
   });
 
+  describe('Deferred dataset loading', () => {
+    test('schedules loadFirstLaunchDataset via setTimeout so iOS cold start cannot block it', async () => {
+      const { loadFirstLaunchDataset } = require('@utils/datasetInitializer');
+      jest.useFakeTimers();
+
+      renderWelcomeScreen();
+
+      expect(loadFirstLaunchDataset).not.toHaveBeenCalled();
+
+      jest.runAllTimers();
+
+      expect(loadFirstLaunchDataset).toHaveBeenCalledTimes(1);
+
+      jest.useRealTimers();
+    });
+
+    test('clears scheduled dataset load on unmount before it runs', async () => {
+      const { loadFirstLaunchDataset } = require('@utils/datasetInitializer');
+      jest.useFakeTimers();
+      const clearSpy = jest.spyOn(global, 'clearTimeout');
+
+      const { unmount } = renderWelcomeScreen();
+      unmount();
+
+      expect(clearSpy).toHaveBeenCalled();
+      jest.runAllTimers();
+      expect(loadFirstLaunchDataset).not.toHaveBeenCalled();
+
+      clearSpy.mockRestore();
+      jest.useRealTimers();
+    });
+  });
+
   describe('Dataset failure recovery', () => {
     test('calls onSkip when start tour clicked after dataset fails', async () => {
       const { loadFirstLaunchDataset } = require('@utils/datasetInitializer');
@@ -334,6 +367,10 @@ describe('WelcomeScreen Component', () => {
 
       await waitFor(() => {
         expect(getByTestId('WelcomeScreen::StartTourButton')).toBeTruthy();
+      });
+
+      await waitFor(() => {
+        expect(loadFirstLaunchDataset).toHaveBeenCalled();
       });
 
       fireEvent.press(getByTestId('WelcomeScreen::StartTourButton'));

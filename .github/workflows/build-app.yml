@@ -154,12 +154,25 @@ jobs:
           expo-token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Build app
+        id: build-app
         if: |
           steps.filter.outputs.build_required == 'true' ||
           github.ref == 'refs/heads/main' ||
           startsWith(github.ref, 'refs/tags/') ||
           env.BUILD_FALLBACK == 'true'
-        run: npm run build:${{ inputs.build-profile }}:${{ inputs.platform }}
+        run: |
+          set -o pipefail
+          npm run build:${{ inputs.build-profile }}:${{ inputs.platform }} 2>&1 \
+            | tee build-${{ inputs.platform }}.log
+
+      - name: Upload build log
+        if: always() && steps.build-app.outcome != 'skipped'
+        uses: actions/upload-artifact@v7
+        with:
+          name: build-log-${{ inputs.platform }}-${{ inputs.build-profile }}
+          path: build-${{ inputs.platform }}.log
+          retention-days: 7
+          if-no-files-found: warn
 
       - name: Package Android APK
         if: |

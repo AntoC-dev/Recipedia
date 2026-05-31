@@ -78,7 +78,6 @@ import { useI18n } from '@utils/i18n';
 import { CustomTextInput } from '@components/atomic/CustomTextInput';
 import { useTags } from '@hooks/useTags';
 import { useIngredients } from '@hooks/useIngredients';
-import { cleanIngredientName, FuzzyMatchLevel, fuzzySearch } from '@utils/FuzzySearch';
 import {
   FormIngredientElement,
   ingredientTableElement,
@@ -140,8 +139,8 @@ export type ItemDialogProps = {
 export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialogProps) {
   const { t } = useI18n();
   const shoppingCategories = useShoppingCategories();
-  const { tags } = useTags();
-  const { ingredients } = useIngredients();
+  const { findSimilarTagsDetailed } = useTags();
+  const { findSimilarIngredientsDetailed } = useIngredients();
 
   const isIngredient = item.type === 'Ingredient';
 
@@ -192,18 +191,8 @@ export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialo
 
       const result =
         item.type === 'Tag'
-          ? fuzzySearch<tagTableElement>(
-              tags,
-              trimmedName,
-              tag => tag.name,
-              FuzzyMatchLevel.MODERATE
-            )
-          : fuzzySearch<ingredientTableElement>(
-              ingredients,
-              cleanIngredientName(trimmedName),
-              ing => cleanIngredientName(ing.name),
-              FuzzyMatchLevel.MODERATE
-            );
+          ? findSimilarTagsDetailed(trimmedName)
+          : findSimilarIngredientsDetailed(trimmedName);
 
       if (result.exact) {
         const isSameElement = item.value.id !== undefined && result.exact.id === item.value.id;
@@ -227,7 +216,16 @@ export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialo
     }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [nameValue, item.type, item.value.id, isVisible, mode, tags, ingredients, t]);
+  }, [
+    nameValue,
+    item.type,
+    item.value.id,
+    isVisible,
+    mode,
+    findSimilarTagsDetailed,
+    findSimilarIngredientsDetailed,
+    t,
+  ]);
 
   const typeValue = watch('type');
 

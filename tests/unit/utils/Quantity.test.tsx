@@ -3,6 +3,7 @@ import {
   formatIngredientForCallback,
   formatQuantityForDisplay,
   parseIngredientQuantity,
+  parseQuantity,
   scaleQuantityForPersons,
 } from '@utils/Quantity';
 import { nutritionTableElement } from '@customTypes/DatabaseElementTypes';
@@ -399,6 +400,171 @@ describe('formatIngredientForCallback', () => {
     test('handles note containing unitySeparator (@@) character', () => {
       const result = formatIngredientForCallback(100, 'g', 'Email', 'contact@@example.com');
       expect(result).toBe('100@@g--Email%%contact@@example.com');
+    });
+  });
+});
+
+describe('parseQuantity', () => {
+  describe('pure integers', () => {
+    it.each([
+      ['0', '0'],
+      ['1', '1'],
+      ['100', '100'],
+      ['12345', '12345'],
+    ])('parses integer %p → %p', (input, expected) => {
+      expect(parseQuantity(input)).toBe(expected);
+    });
+  });
+
+  describe('decimals (dot and comma)', () => {
+    it.each([
+      ['0.5', '0.5'],
+      ['1.25', '1.25'],
+      ['0,5', '0.5'],
+      ['1,25', '1.25'],
+      ['100.0', '100'],
+    ])('parses decimal %p → %p', (input, expected) => {
+      expect(parseQuantity(input)).toBe(expected);
+    });
+  });
+
+  describe('OCR strings with trailing non-numeric (ranges, units, garbage)', () => {
+    it.each([
+      ['1à3', '1'],
+      ['100kcal', '100'],
+      ['100 kcal', '100'],
+      ['1,5kg', '1.5'],
+      ['0,5L', '0.5'],
+      ['8g', '8'],
+      ['200 g égoutté', '200'],
+      ['1 pièce', '1'],
+      ['1à3 cm', '1'],
+      ['2cc', '2'],
+    ])('parses %p → %p (leading numeric prefix)', (input, expected) => {
+      expect(parseQuantity(input)).toBe(expected);
+    });
+  });
+
+  describe('non-numeric / empty / whitespace returns empty string (not "0" or "NaN")', () => {
+    it.each([
+      ['', ''],
+      ['   ', ''],
+      ['\t\n', ''],
+      ['abc', ''],
+      ['à3', ''],
+      ['kcal', ''],
+      ['.', ''],
+      [',', ''],
+    ])('returns empty for %p', input => {
+      expect(parseQuantity(input)).toBe('');
+    });
+
+    it('returns empty for undefined', () => {
+      expect(parseQuantity(undefined)).toBe('');
+    });
+  });
+
+  describe('whitespace handling', () => {
+    it('trims leading whitespace', () => {
+      expect(parseQuantity('  100')).toBe('100');
+    });
+
+    it('trims trailing whitespace', () => {
+      expect(parseQuantity('100  ')).toBe('100');
+    });
+
+    it('trims both sides', () => {
+      expect(parseQuantity('  100  ')).toBe('100');
+    });
+  });
+
+  describe('regression: legacy raw-OCR storage bug', () => {
+    it('previously stored "1à3" string is normalized to "1"', () => {
+      expect(parseQuantity('1à3')).toBe('1');
+    });
+
+    it('previously stored "0,5" is normalized to "0.5"', () => {
+      expect(parseQuantity('0,5')).toBe('0.5');
+    });
+  });
+
+  describe('parity with parseIngredientQuantity', () => {
+    it.each([
+      ['1', 1],
+      ['0,5', 0.5],
+      ['1à3', 1],
+      ['', defaultValueNumber],
+      ['abc', defaultValueNumber],
+    ])('parseQuantity(%p) → Number() → parseIngredientQuantity(%p)', (input, expectedNum) => {
+      const parsed = parseQuantity(input);
+      const asNumber = parsed === '' ? defaultValueNumber : Number(parsed);
+      expect(asNumber).toBe(expectedNum);
+      expect(parseIngredientQuantity(input)).toBe(expectedNum);
+    });
+  });
+
+  describe('parseQuantity additional edge cases', () => {
+    it('returns empty when raw is null (type-cast)', () => {
+      expect(parseQuantity(null as unknown as string)).toBe('');
+    });
+
+    it.each([
+      ['-5', '-5'],
+      ['-0.5', '-0.5'],
+      ['-1,5', '-1.5'],
+    ])('preserves negative sign for %p → %p', (input, expected) => {
+      expect(parseQuantity(input)).toBe(expected);
+    });
+
+    it.each([
+      ['+5', '5'],
+      ['+0.5', '0.5'],
+    ])('strips leading + sign via parseFloat for %p → %p', (input, expected) => {
+      expect(parseQuantity(input)).toBe(expected);
+    });
+
+    it.each([
+      ['1e3', '1000'],
+      ['1.5e2', '150'],
+      ['2E1', '20'],
+    ])('handles scientific notation %p → %p', (input, expected) => {
+      expect(parseQuantity(input)).toBe(expected);
+    });
+
+    it.each([
+      ['.5', '0.5'],
+      [',5', '0.5'],
+    ])('handles leading decimal separator %p → %p', (input, expected) => {
+      expect(parseQuantity(input)).toBe(expected);
+    });
+
+    it('returns empty for "Infinity" (not finite)', () => {
+      expect(parseQuantity('Infinity')).toBe('');
+    });
+
+    it('returns empty for "-Infinity" (not finite)', () => {
+      expect(parseQuantity('-Infinity')).toBe('');
+    });
+
+    it('returns empty for "NaN" string', () => {
+      expect(parseQuantity('NaN')).toBe('');
+    });
+
+    it('returns empty for overflow that becomes Infinity', () => {
+      expect(parseQuantity('1e1000')).toBe('');
+    });
+
+    it('only replaces the first comma (parseFloat stops at second)', () => {
+      expect(parseQuantity('1,2,3')).toBe('1.2');
+    });
+
+    it('handles multiple internal separators by parsing the prefix', () => {
+      expect(parseQuantity('1.2.3')).toBe('1.2');
+    });
+
+    it('treats sign followed by non-digit as empty', () => {
+      expect(parseQuantity('-')).toBe('');
+      expect(parseQuantity('+')).toBe('');
     });
   });
 });

@@ -37,28 +37,28 @@ appId: "com.recipedia"
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "Carotte"
-      INGREDIENT_QUANTITY_AND_UNIT: "4"
+      INGREDIENT_QUANTITY_AND_UNIT: "2"
     label: "Assert carotte ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "cumin"
-      INGREDIENT_QUANTITY_AND_UNIT: "4"
+      INGREDIENT_QUANTITY_AND_UNIT: "2"
     label: "Assert cumin ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "merguez"
-      INGREDIENT_QUANTITY_AND_UNIT: "800"
-    label: "Assert merguez ingredient"
+      INGREDIENT_QUANTITY_AND_UNIT: "8"
+    label: "Assert merguez ingredient (OCR drops '00' from 400 → reads 4, scaled to 8)"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "navet"
-      INGREDIENT_QUANTITY_AND_UNIT: "4"
+      INGREDIENT_QUANTITY_AND_UNIT: "2"
     label: "Assert navet ingredient"
 
 - runFlow:

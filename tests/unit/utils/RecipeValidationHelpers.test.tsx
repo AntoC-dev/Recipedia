@@ -1,11 +1,12 @@
 import {
-  addNonDuplicateTags,
+  addNonDuplicateByName,
   addOrMergeIngredientMatches,
   computeIngredientSimilarity,
   computeTagSimilarity,
   deduplicateIngredientsByName,
   filterOutExistingTags,
   mergeIngredient,
+  mergeQuantities,
   processIngredientsForValidation,
   processTagsForValidation,
   removeIngredientByName,
@@ -1170,6 +1171,159 @@ describe('RecipeValidationHelpers', () => {
     });
   });
 
+  describe('mergeQuantities', () => {
+    test.each([
+      [undefined, undefined, ''],
+      ['', '', ''],
+      ['', undefined, ''],
+      [undefined, '', ''],
+      ['100', '', '100'],
+      ['', '50', '50'],
+      ['100', undefined, '100'],
+      [undefined, '50', '50'],
+      ['100', '50', '150'],
+      ['1.5', '0.5', '2'],
+      ['0', '0', '0'],
+      ['  100  ', '  50  ', '150'],
+      ['100', 'a pinch', 'a pinch'],
+      ['a pinch', '100', '100'],
+      ['some', 'lots', 'lots'],
+    ])('mergeQuantities(%p, %p) → %p', (a, b, expected) => {
+      expect(mergeQuantities(a, b)).toBe(expected);
+    });
+  });
+
+  describe('addOrMergeIngredientMatches — different unit branch', () => {
+    test('preserves existing quantity when incoming has no quantity (different unit)', () => {
+      const current: ingredientTableElement[] = [
+        {
+          name: 'riz basmati  Bio',
+          quantity: '200',
+          unit: 'g égoutté',
+          type: ingredientType.cereal,
+          season: [],
+        },
+      ];
+      const incoming: ingredientTableElement[] = [
+        {
+          name: 'Riz basmati Bio',
+          quantity: '',
+          unit: 'g',
+          type: ingredientType.cereal,
+          season: [],
+        },
+      ];
+
+      const result = addOrMergeIngredientMatches(current, incoming);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].name).toBe('Riz basmati Bio');
+      expect(result[0].unit).toBe('g');
+      expect(result[0].quantity).toBe('200');
+    });
+
+    test('preserves existing quantity when incoming quantity is undefined (different unit)', () => {
+      const current: ingredientTableElement[] = [
+        {
+          name: 'Carotte',
+          quantity: '3',
+          unit: 'pièce',
+          type: ingredientType.vegetable,
+          season: [],
+        },
+      ];
+      const incoming: ingredientTableElement[] = [
+        {
+          name: 'Carotte',
+          unit: 'g',
+          type: ingredientType.vegetable,
+          season: [],
+        },
+      ];
+
+      const result = addOrMergeIngredientMatches(current, incoming);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].unit).toBe('g');
+      expect(result[0].quantity).toBe('3');
+    });
+
+    test('uses incoming quantity when provided (different unit)', () => {
+      const current: ingredientTableElement[] = [
+        {
+          name: 'Sugar',
+          quantity: '100',
+          unit: 'g',
+          type: ingredientType.sugar,
+          season: [],
+        },
+      ];
+      const incoming: ingredientTableElement[] = [
+        {
+          name: 'Sugar',
+          quantity: '2',
+          unit: 'tbsp',
+          type: ingredientType.sugar,
+          season: [],
+        },
+      ];
+
+      const result = addOrMergeIngredientMatches(current, incoming);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].unit).toBe('tbsp');
+      expect(result[0].quantity).toBe('2');
+    });
+
+    test('replaces by namesMatch (whitespace + NFC normalized)', () => {
+      const current: ingredientTableElement[] = [
+        {
+          name: 'riz basmati  Bio',
+          quantity: '200',
+          unit: 'g',
+          type: ingredientType.cereal,
+          season: [],
+        },
+      ];
+      const incoming: ingredientTableElement[] = [
+        {
+          name: 'Riz basmati Bio',
+          quantity: '50',
+          unit: 'g',
+          type: ingredientType.cereal,
+          season: [],
+        },
+      ];
+
+      const result = addOrMergeIngredientMatches(current, incoming);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].quantity).toBe('250');
+      expect(result[0].name).toBe('Riz basmati Bio');
+    });
+  });
+
+  describe('processIngredientsForValidation — quantity coalescing', () => {
+    const dbIngredients: ingredientTableElement[] = [
+      {
+        id: 1,
+        name: 'Spaghetti',
+        unit: 'g',
+        type: ingredientType.cereal,
+        season: [],
+      },
+    ];
+    const findSimilar = (name: string) =>
+      dbIngredients.filter(d => d.name.toLowerCase() === name.toLowerCase());
+
+    test('exact match with no incoming quantity and no DB quantity yields empty string (never undefined)', () => {
+      const input: FormIngredientElement[] = [{ name: 'Spaghetti', unit: '', quantity: '' }];
+      const { exactMatches } = processIngredientsForValidation(input, findSimilar);
+      expect(exactMatches).toHaveLength(1);
+      expect(exactMatches[0].quantity).toBe('');
+    });
+  });
+
   describe('addOrMergeIngredientMatches', () => {
     const currentIngredients: ingredientTableElement[] = [
       { id: 1, name: 'Flour', quantity: '200', unit: 'g', type: ingredientType.cereal, season: [] },
@@ -1353,13 +1507,13 @@ describe('RecipeValidationHelpers', () => {
     });
   });
 
-  describe('addNonDuplicateTags', () => {
+  describe('addNonDuplicateByName', () => {
     const currentTags: tagTableElement[] = [{ id: 1, name: 'Italian' }];
 
     test('adds tag when not duplicate', () => {
       const newTags: tagTableElement[] = [{ name: 'Vegan' }];
 
-      const result = addNonDuplicateTags(currentTags, newTags);
+      const result = addNonDuplicateByName(currentTags, newTags);
 
       expect(result).toHaveLength(2);
       expect(result[1].name).toBe('Vegan');
@@ -1368,7 +1522,7 @@ describe('RecipeValidationHelpers', () => {
     test('does not add duplicate tag', () => {
       const newTags: tagTableElement[] = [{ name: 'Italian' }];
 
-      const result = addNonDuplicateTags(currentTags, newTags);
+      const result = addNonDuplicateByName(currentTags, newTags);
 
       expect(result).toHaveLength(1);
     });
@@ -1376,7 +1530,7 @@ describe('RecipeValidationHelpers', () => {
     test('handles case-insensitive duplicate detection', () => {
       const newTags: tagTableElement[] = [{ name: 'ITALIAN' }];
 
-      const result = addNonDuplicateTags(currentTags, newTags);
+      const result = addNonDuplicateByName(currentTags, newTags);
 
       expect(result).toHaveLength(1);
     });
@@ -1384,7 +1538,7 @@ describe('RecipeValidationHelpers', () => {
     test('adds multiple non-duplicate tags', () => {
       const newTags: tagTableElement[] = [{ name: 'Vegan' }, { name: 'Quick' }];
 
-      const result = addNonDuplicateTags(currentTags, newTags);
+      const result = addNonDuplicateByName(currentTags, newTags);
 
       expect(result).toHaveLength(3);
     });
@@ -1396,7 +1550,7 @@ describe('RecipeValidationHelpers', () => {
         { name: 'Quick' },
       ];
 
-      const result = addNonDuplicateTags(currentTags, newTags);
+      const result = addNonDuplicateByName(currentTags, newTags);
 
       expect(result).toHaveLength(3);
       expect(result.map(t => t.name)).toContain('Vegan');
@@ -1406,7 +1560,7 @@ describe('RecipeValidationHelpers', () => {
     test('handles empty current array', () => {
       const newTags: tagTableElement[] = [{ name: 'Vegan' }];
 
-      const result = addNonDuplicateTags([], newTags);
+      const result = addNonDuplicateByName([], newTags);
 
       expect(result).toHaveLength(1);
     });
@@ -1539,7 +1693,7 @@ describe('RecipeValidationHelpers', () => {
       expect(result[0].note).toBe('for the dressing');
     });
 
-    test('preserves first quantity when sum would be NaN', () => {
+    test('prefers numeric side when only one quantity is numeric', () => {
       const ingredients = [
         { name: 'Flour', quantity: 'some', unit: 'g' },
         { name: 'Flour', quantity: '200', unit: 'g' },
@@ -1548,10 +1702,10 @@ describe('RecipeValidationHelpers', () => {
       const result = deduplicateIngredientsByName(ingredients);
 
       expect(result).toHaveLength(1);
-      expect(result[0].quantity).toBe('some');
+      expect(result[0].quantity).toBe('200');
     });
 
-    test('handles mixed numeric and non-numeric quantities gracefully', () => {
+    test('keeps the later quantity when both are non-numeric', () => {
       const ingredients = [
         { name: 'Salt', quantity: 'a pinch', unit: '' },
         { name: 'Salt', quantity: 'to taste', unit: '' },
@@ -1560,7 +1714,7 @@ describe('RecipeValidationHelpers', () => {
       const result = deduplicateIngredientsByName(ingredients);
 
       expect(result).toHaveLength(1);
-      expect(result[0].quantity).toBe('a pinch');
+      expect(result[0].quantity).toBe('to taste');
     });
 
     describe('similarItems preservation', () => {

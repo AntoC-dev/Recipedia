@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { fireEvent, screen } from '@testing-library/react-native';
+import { fireEvent, screen, waitFor } from '@testing-library/react-native';
 import { measureRenders } from 'reassure';
 import Home from '@screens/Home';
 import { RefreshControl } from 'react-native';
@@ -101,7 +101,7 @@ describe('Home Screen Performance', () => {
 
   test('re-render after pull-to-refresh', async () => {
     const scenario = async () => {
-      const refreshControl = screen.UNSAFE_getByType(RefreshControl);
+      const refreshControl = await waitFor(() => screen.UNSAFE_getByType(RefreshControl));
       fireEvent(refreshControl, 'refresh');
     };
 
