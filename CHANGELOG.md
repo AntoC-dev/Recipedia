@@ -1,3 +1,14 @@
+## [2.38.0](https://github.com/AntoC-dev/Recipedia/compare/v2.37.1...v2.38.0) (2026-06-04)
+
+### Features
+
+* **logging:** daily log rotation with 30-day retention and updated bug-report attachment ([1942425](https://github.com/AntoC-dev/Recipedia/commit/194242576feeafd18370c8c59daaca0cba3a593b))
+* **logging:** fill debug/warn coverage gaps across form and import modules ([b8151cf](https://github.com/AntoC-dev/Recipedia/commit/b8151cf7a738731320e340b1f5ad2df396e46c13))
+
+### Bug Fixes
+
+* **recipes,ocr:** wrap async ops in try/catch/finally to prevent stuck state ([f4a67ab](https://github.com/AntoC-dev/Recipedia/commit/f4a67ab2f1804e91ddf2136b19a07df608a6c256))
+
 ## [2.37.1](https://github.com/AntoC-dev/Recipedia/compare/v2.37.0...v2.37.1) (2026-05-31)
 
 ### Bug Fixes
