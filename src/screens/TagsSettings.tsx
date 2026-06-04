@@ -77,7 +77,10 @@ export function TagsSettings() {
   };
 
   const handleDeleteTag = async (tag: tagTableElement) => {
-    await deleteTag(tag);
+    const success = await deleteTag(tag);
+    if (!success) {
+      tagsSettingsLogger.warn('Tag not found for deletion', { tagId: tag.id, tagName: tag.name });
+    }
   };
 
   const handleAddtag = async (newTag: tagTableElement) => {

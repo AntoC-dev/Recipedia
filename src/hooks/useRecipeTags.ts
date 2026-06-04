@@ -15,6 +15,7 @@ import { useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { useRecipeForm } from '@context/RecipeFormContext';
 import { useTags } from '@hooks/useTags';
 import { validateAndQueueTags } from '@utils/RecipeValidationHelpers';
+import { recipeLogger } from '@utils/logger';
 
 /**
  * Return value of the useRecipeTags hook containing tag management operations.
@@ -104,9 +105,11 @@ export function useRecipeTags(): UseRecipeTagsReturn {
     }
 
     if (recipeTags.some(tag => tag.name.toLowerCase() === newTag.toLowerCase())) {
+      recipeLogger.debug('Tag skipped - already in recipe', { tag: newTag });
       return;
     }
 
+    recipeLogger.debug('Tag queued for validation', { tag: newTag });
     validateAndQueueTags(
       [{ id: -1, name: newTag }],
       findSimilarTags,
@@ -124,6 +127,7 @@ export function useRecipeTags(): UseRecipeTagsReturn {
    * @param tagName - The exact name of the tag to remove
    */
   const removeTag = (tagName: string) => {
+    recipeLogger.debug('Tag removed', { tag: tagName });
     setRecipeTags(prev => prev.filter(tagElement => tagElement.name !== tagName));
   };
 

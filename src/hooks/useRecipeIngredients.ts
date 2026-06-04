@@ -157,6 +157,7 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
       const existingIndex = prev.findIndex(existing => namesMatch(existing.name, ingredient.name));
 
       if (existingIndex === -1) {
+        recipeLogger.debug('Ingredient added', { name: ingredient.name });
         return [...prev, ingredient];
       } else {
         const updated = [...prev];
@@ -171,15 +172,20 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
           const newNote = ingredient.note?.trim();
 
           if (existingNote && newNote && existingNote !== newNote) {
+            recipeLogger.debug('Ingredient added separately - conflicting notes', {
+              name: ingredient.name,
+            });
             return [...prev, ingredient];
           }
 
+          recipeLogger.debug('Ingredient quantities merged', { name: ingredient.name });
           updated[existingIndex] = {
             ...ingredient,
             quantity: mergeQuantities(existing.quantity, ingredient.quantity),
             note: newNote || existingNote,
           };
         } else {
+          recipeLogger.debug('Ingredient replaced - different unit', { name: ingredient.name });
           updated[existingIndex] = {
             ...ingredient,
             quantity: ingredient.quantity || existing.quantity || '',
@@ -351,6 +357,7 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
    * the user to fill in the details through the UI.
    */
   const addNewIngredient = () => {
+    recipeLogger.debug('Empty ingredient row added');
     setRecipeIngredients(prev => [...prev, { name: '' }]);
   };
 
@@ -360,6 +367,7 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
    * @param index - Index of the ingredient to remove
    */
   const removeIngredient = (index: number) => {
+    recipeLogger.debug('Ingredient removed', { index });
     setRecipeIngredients(prev => prev.filter((_, i) => i !== index));
   };
 

@@ -201,7 +201,8 @@ export async function fetchRecipeImageUrl(
     }
 
     return null;
-  } catch {
+  } catch (error) {
+    bulkImportLogger.warn('Failed to fetch recipe image URL', { url, error });
     return null;
   }
 }

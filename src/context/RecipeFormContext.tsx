@@ -37,6 +37,7 @@ import {
   hasScrapedDataFromProps,
 } from '@utils/RecipeFormHelpers';
 import { useTags } from '@hooks/useTags';
+import { recipeLogger } from '@utils/logger';
 
 /**
  * Recipe form state containing all recipe field values
@@ -113,6 +114,17 @@ export function RecipeFormProvider({ props, children }: RecipeFormProviderProps)
   const { searchRandomlyTags } = useTags();
   const initStateFromProp = hasRecipeFromProps(props);
   const initStateFromScrape = hasScrapedDataFromProps(props);
+
+  useEffect(() => {
+    recipeLogger.debug('Recipe form initialized', {
+      mode: props.mode,
+      source: initStateFromProp
+        ? 'existing-recipe'
+        : initStateFromScrape
+          ? 'scraped-data'
+          : 'blank',
+    });
+  }, []);
 
   const getInitialImage = () => {
     if (initStateFromProp) {
@@ -252,6 +264,7 @@ export function RecipeFormProvider({ props, children }: RecipeFormProviderProps)
   }, [recipePersons]);
 
   const resetToOriginal = () => {
+    recipeLogger.debug('Recipe form reset to original');
     if (initStateFromProp) {
       setRecipeImage(props.recipe.image_Source);
       setRecipeTitle(props.recipe.title);
