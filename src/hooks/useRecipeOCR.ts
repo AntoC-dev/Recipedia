@@ -158,132 +158,139 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
    * @param field - The recipe field type to extract
    */
   const fillOneField = async (uri: string, field: OcrModalTarget) => {
+    ocrLogger.debug('OCR extraction started', { field, uri });
     setIsProcessingOcrExtraction(true);
 
-    const newFieldData = await extractFieldFromImage(
-      uri,
-      field,
-      {
-        recipePreparation: recipePreparation,
-        recipePersons: recipePersons,
-        recipeIngredients: recipeIngredients,
-        recipeTags: recipeTags,
-      },
-      msg => {
-        ocrLogger.warn('OCR processing warning', { message: msg });
-      }
-    );
-
-    if (newFieldData.recipeImage) {
-      setRecipeImage(newFieldData.recipeImage);
-    }
-    if (newFieldData.recipeTitle) {
-      setRecipeTitle(newFieldData.recipeTitle);
-    }
-    if (newFieldData.recipeDescription) {
-      setRecipeDescription(newFieldData.recipeDescription);
-    }
-    if (newFieldData.recipeTags && newFieldData.recipeTags.length > 0) {
-      const filteredTags = filterOutExistingTags(newFieldData.recipeTags, recipeTags);
-      if (filteredTags.length > 0) {
-        validateAndQueueTags(
-          filteredTags,
-          findSimilarTags,
-          addTagIfNotDuplicate,
-          setValidationQueue
-        );
-      }
-    }
-    if (newFieldData.recipePreparation) {
-      setRecipePreparation(newFieldData.recipePreparation);
-    }
-    if (newFieldData.recipePersons) {
-      setRecipePersons(newFieldData.recipePersons);
-    }
-    if (newFieldData.recipeTime) {
-      setRecipeTime(newFieldData.recipeTime);
-    }
-    if (newFieldData.recipeIngredients && newFieldData.recipeIngredients.length > 0) {
-      const ocrIngredients = newFieldData.recipeIngredients;
-      prepopulateIngredients(ocrIngredients);
-      validateAndQueueIngredients(
-        ocrIngredients,
-        findSimilarIngredients,
-        match => {
-          const original = ocrIngredients.find(ing => namesMatch(ing.name, match.name));
-          addOrMergeIngredient({ ...match, quantity: original?.quantity || match.quantity });
+    try {
+      const newFieldData = await extractFieldFromImage(
+        uri,
+        field,
+        {
+          recipePreparation: recipePreparation,
+          recipePersons: recipePersons,
+          recipeIngredients: recipeIngredients,
+          recipeTags: recipeTags,
         },
-        setValidationQueue,
-        { onValidated: (_, validatedIngredient) => addOrMergeIngredient(validatedIngredient) }
-      );
-    }
-    if (newFieldData.ingredientNames !== undefined) {
-      const ingredientsWithNoQuantity: FormIngredientElement[] = newFieldData.ingredientNames.map(
-        ({ name, unit }) => ({ name, unit, quantity: '' })
-      );
-      if (ingredientsWithNoQuantity.length > 0) {
-        const { exactMatches, needsValidation } = processIngredientsForValidation(
-          ingredientsWithNoQuantity,
-          findSimilarIngredients
-        );
-
-        prepopulateIngredients(ingredientsWithNoQuantity);
-
-        if (exactMatches.length > 0) {
-          setRecipeIngredients(prev => addOrMergeIngredientMatches(prev, exactMatches));
+        msg => {
+          ocrLogger.warn('OCR processing warning', { message: msg });
         }
+      );
 
-        if (needsValidation.length > 0) {
-          setValidationQueue({
-            type: 'Ingredient',
-            items: needsValidation,
-            onValidated: (_, validatedIngredient) => addOrMergeIngredient(validatedIngredient),
-          });
+      if (newFieldData.recipeImage) {
+        setRecipeImage(newFieldData.recipeImage);
+      }
+      if (newFieldData.recipeTitle) {
+        setRecipeTitle(newFieldData.recipeTitle);
+      }
+      if (newFieldData.recipeDescription) {
+        setRecipeDescription(newFieldData.recipeDescription);
+      }
+      if (newFieldData.recipeTags && newFieldData.recipeTags.length > 0) {
+        const filteredTags = filterOutExistingTags(newFieldData.recipeTags, recipeTags);
+        if (filteredTags.length > 0) {
+          validateAndQueueTags(
+            filteredTags,
+            findSimilarTags,
+            addTagIfNotDuplicate,
+            setValidationQueue
+          );
         }
       }
-    }
-    if (newFieldData.ingredientQuantities !== undefined) {
-      const quantities = newFieldData.ingredientQuantities.map(parseQuantity);
-      setRecipeIngredients(prev => {
-        if (quantities.length !== prev.length) {
-          ocrLogger.warn('Quantity count mismatch', {
-            expected: prev.length,
-            received: quantities.length,
-          });
-        }
-        const limit = Math.min(prev.length, quantities.length);
-        if (limit === 0) return prev;
-        const next = prev.map((ingredient, index) =>
-          index < limit && ingredient.quantity !== quantities[index]
-            ? { ...ingredient, quantity: quantities[index] }
-            : ingredient
+      if (newFieldData.recipePreparation) {
+        setRecipePreparation(newFieldData.recipePreparation);
+      }
+      if (newFieldData.recipePersons) {
+        setRecipePersons(newFieldData.recipePersons);
+      }
+      if (newFieldData.recipeTime) {
+        setRecipeTime(newFieldData.recipeTime);
+      }
+      if (newFieldData.recipeIngredients && newFieldData.recipeIngredients.length > 0) {
+        const ocrIngredients = newFieldData.recipeIngredients;
+        prepopulateIngredients(ocrIngredients);
+        validateAndQueueIngredients(
+          ocrIngredients,
+          findSimilarIngredients,
+          match => {
+            const original = ocrIngredients.find(ing => namesMatch(ing.name, match.name));
+            addOrMergeIngredient({ ...match, quantity: original?.quantity || match.quantity });
+          },
+          setValidationQueue,
+          { onValidated: (_, validatedIngredient) => addOrMergeIngredient(validatedIngredient) }
         );
-        return next.every((ing, i) => ing === prev[i]) ? prev : next;
-      });
-    }
-    if (newFieldData.recipeNutrition) {
-      const newNutrition: nutritionTableElement = {
-        energyKcal: defaultValueNumber,
-        energyKj: defaultValueNumber,
-        fat: defaultValueNumber,
-        saturatedFat: defaultValueNumber,
-        carbohydrates: defaultValueNumber,
-        sugars: defaultValueNumber,
-        fiber: defaultValueNumber,
-        protein: defaultValueNumber,
-        salt: defaultValueNumber,
-        portionWeight: defaultValueNumber,
-      };
+      }
+      if (newFieldData.ingredientNames !== undefined) {
+        const ingredientsWithNoQuantity: FormIngredientElement[] = newFieldData.ingredientNames.map(
+          ({ name, unit }) => ({ name, unit, quantity: '' })
+        );
+        if (ingredientsWithNoQuantity.length > 0) {
+          const { exactMatches, needsValidation } = processIngredientsForValidation(
+            ingredientsWithNoQuantity,
+            findSimilarIngredients
+          );
 
-      for (const [key, value] of Object.entries(newFieldData.recipeNutrition)) {
-        if (value !== undefined) {
-          newNutrition[key as keyof nutritionTableElement] = value;
+          prepopulateIngredients(ingredientsWithNoQuantity);
+
+          if (exactMatches.length > 0) {
+            setRecipeIngredients(prev => addOrMergeIngredientMatches(prev, exactMatches));
+          }
+
+          if (needsValidation.length > 0) {
+            setValidationQueue({
+              type: 'Ingredient',
+              items: needsValidation,
+              onValidated: (_, validatedIngredient) => addOrMergeIngredient(validatedIngredient),
+            });
+          }
         }
       }
+      if (newFieldData.ingredientQuantities !== undefined) {
+        const quantities = newFieldData.ingredientQuantities.map(parseQuantity);
+        setRecipeIngredients(prev => {
+          if (quantities.length !== prev.length) {
+            ocrLogger.warn('Quantity count mismatch', {
+              expected: prev.length,
+              received: quantities.length,
+            });
+          }
+          const limit = Math.min(prev.length, quantities.length);
+          if (limit === 0) return prev;
+          const next = prev.map((ingredient, index) =>
+            index < limit && ingredient.quantity !== quantities[index]
+              ? { ...ingredient, quantity: quantities[index] }
+              : ingredient
+          );
+          return next.every((ing, i) => ing === prev[i]) ? prev : next;
+        });
+      }
+      if (newFieldData.recipeNutrition) {
+        const newNutrition: nutritionTableElement = {
+          energyKcal: defaultValueNumber,
+          energyKj: defaultValueNumber,
+          fat: defaultValueNumber,
+          saturatedFat: defaultValueNumber,
+          carbohydrates: defaultValueNumber,
+          sugars: defaultValueNumber,
+          fiber: defaultValueNumber,
+          protein: defaultValueNumber,
+          salt: defaultValueNumber,
+          portionWeight: defaultValueNumber,
+        };
 
-      setRecipeNutrition(newNutrition);
+        for (const [key, value] of Object.entries(newFieldData.recipeNutrition)) {
+          if (value !== undefined) {
+            newNutrition[key as keyof nutritionTableElement] = value;
+          }
+        }
+
+        setRecipeNutrition(newNutrition);
+      }
+      ocrLogger.debug('OCR extraction completed', { field });
+    } catch (error) {
+      ocrLogger.error('OCR extraction failed', { field, uri, error });
+    } finally {
+      setIsProcessingOcrExtraction(false);
     }
-    setIsProcessingOcrExtraction(false);
   };
 
   return {
