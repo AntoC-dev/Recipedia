@@ -1,12 +1,13 @@
 import {
   buildEmailBody,
   buildEmailSubject,
+  deleteOldLogFiles,
+  getRecentLogFiles,
   isMailAvailable,
-  LOG_FILE,
   pickScreenshots,
   sendBugReport,
 } from '@utils/BugReport';
-import { mockFileExists } from '@mocks/deps/expo-file-system-mock';
+import { mockDirectoryList, mockFileExists } from '@mocks/deps/expo-file-system-mock';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import { mockComposeAsync, mockIsAvailableAsync } from '@mocks/deps/expo-mail-composer-mock';
 
@@ -20,15 +21,112 @@ describe('BugReport utils', () => {
 
   beforeEach(() => {
     mockFileExists.mockReset().mockReturnValue(false);
+    mockDirectoryList.mockReset().mockReturnValue([]);
   });
 
-  describe('LOG_FILE', () => {
-    it('has a URI ending with recipedia-logs.txt', () => {
-      expect(LOG_FILE.uri).toMatch(/recipedia-logs\.txt$/);
+  describe('getRecentLogFiles', () => {
+    it('returns files with URIs matching recipedia-logs-<date>.txt pattern', () => {
+      getRecentLogFiles().forEach(f => {
+        expect(f.uri).toMatch(/recipedia-logs-\d{4}-\d{1,2}-\d{1,2}\.txt$/);
+      });
     });
 
-    it('does not contain double slashes', () => {
-      expect(LOG_FILE.uri).not.toMatch(/\/\//);
+    it('returns files with no double slashes in URIs', () => {
+      getRecentLogFiles().forEach(f => {
+        expect(f.uri).not.toMatch(/\/\//);
+      });
+    });
+
+    it('returns today and yesterday files', () => {
+      const files = getRecentLogFiles();
+      expect(files).toHaveLength(2);
+      const today = new Date();
+      const yesterday = new Date(today);
+      yesterday.setDate(today.getDate() - 1);
+      const todayStr = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+      const yesterdayStr = `${yesterday.getFullYear()}-${yesterday.getMonth() + 1}-${yesterday.getDate()}`;
+      expect(files[0].uri).toContain(todayStr);
+      expect(files[1].uri).toContain(yesterdayStr);
+    });
+  });
+
+  describe('deleteOldLogFiles', () => {
+    it('deletes log files older than 30 days', () => {
+      const oldDate = new Date();
+      oldDate.setDate(oldDate.getDate() - 31);
+      const oldFilename = `recipedia-logs-${oldDate.getFullYear()}-${oldDate.getMonth() + 1}-${oldDate.getDate()}.txt`;
+      const mockDelete = jest.fn();
+      mockDirectoryList.mockReturnValue([{ uri: `/documents/${oldFilename}`, delete: mockDelete }]);
+
+      deleteOldLogFiles();
+
+      expect(mockDelete).toHaveBeenCalled();
+    });
+
+    it('keeps log files within 30 days', () => {
+      const today = new Date();
+      const recentFilename = `recipedia-logs-${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}.txt`;
+      const mockDelete = jest.fn();
+      mockDirectoryList.mockReturnValue([
+        { uri: `/documents/${recentFilename}`, delete: mockDelete },
+      ]);
+
+      deleteOldLogFiles();
+
+      expect(mockDelete).not.toHaveBeenCalled();
+    });
+
+    it('ignores files not matching the log file pattern', () => {
+      const mockDelete = jest.fn();
+      mockDirectoryList.mockReturnValue([
+        { uri: '/documents/some-other-file.txt', delete: mockDelete },
+      ]);
+
+      deleteOldLogFiles();
+
+      expect(mockDelete).not.toHaveBeenCalled();
+    });
+
+    it('keeps log files 29 days old', () => {
+      const twentyNineDaysAgo = new Date();
+      twentyNineDaysAgo.setDate(twentyNineDaysAgo.getDate() - 29);
+      const filename = `recipedia-logs-${twentyNineDaysAgo.getFullYear()}-${twentyNineDaysAgo.getMonth() + 1}-${twentyNineDaysAgo.getDate()}.txt`;
+      const mockDelete = jest.fn();
+      mockDirectoryList.mockReturnValue([{ uri: `/documents/${filename}`, delete: mockDelete }]);
+
+      deleteOldLogFiles();
+
+      expect(mockDelete).not.toHaveBeenCalled();
+    });
+
+    it('deletes only old files when directory contains mixed ages', () => {
+      const oldDate = new Date();
+      oldDate.setDate(oldDate.getDate() - 31);
+      const oldFilename = `recipedia-logs-${oldDate.getFullYear()}-${oldDate.getMonth() + 1}-${oldDate.getDate()}.txt`;
+      const today = new Date();
+      const recentFilename = `recipedia-logs-${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}.txt`;
+      const mockDeleteOld = jest.fn();
+      const mockDeleteRecent = jest.fn();
+      mockDirectoryList.mockReturnValue([
+        { uri: `/documents/${oldFilename}`, delete: mockDeleteOld },
+        { uri: `/documents/${recentFilename}`, delete: mockDeleteRecent },
+      ]);
+
+      deleteOldLogFiles();
+
+      expect(mockDeleteOld).toHaveBeenCalled();
+      expect(mockDeleteRecent).not.toHaveBeenCalled();
+    });
+
+    it('ignores files with malformed date suffix', () => {
+      const mockDelete = jest.fn();
+      mockDirectoryList.mockReturnValue([
+        { uri: '/documents/recipedia-logs-notadate.txt', delete: mockDelete },
+      ]);
+
+      deleteOldLogFiles();
+
+      expect(mockDelete).not.toHaveBeenCalled();
     });
   });
 
@@ -78,22 +176,37 @@ describe('BugReport utils', () => {
       );
     });
 
-    it('includes log file in attachments when the log file exists', async () => {
+    it('includes existing log files in attachments', async () => {
       mockFileExists.mockReturnValue(true);
 
       await sendBugReport('Test description', []);
 
       const callArgs = mockComposeAsync.mock.calls[0][0];
-      expect(callArgs.attachments).toContain(LOG_FILE.uri);
+      getRecentLogFiles().forEach(f => {
+        expect(callArgs.attachments).toContain(f.uri);
+      });
     });
 
-    it('excludes log file from attachments when the log file does not exist', async () => {
+    it('attaches only existing log files when some are missing', async () => {
+      const logFiles = getRecentLogFiles();
+      mockFileExists.mockImplementation((uri: string) => uri === logFiles[0].uri);
+
+      await sendBugReport('Test description', []);
+
+      const callArgs = mockComposeAsync.mock.calls[0][0];
+      expect(callArgs.attachments).toContain(logFiles[0].uri);
+      expect(callArgs.attachments).not.toContain(logFiles[1].uri);
+    });
+
+    it('excludes log files from attachments when none exist', async () => {
       mockFileExists.mockReturnValue(false);
 
       await sendBugReport('Test description', []);
 
       const callArgs = mockComposeAsync.mock.calls[0][0];
-      expect(callArgs.attachments).not.toContain(LOG_FILE.uri);
+      getRecentLogFiles().forEach(f => {
+        expect(callArgs.attachments).not.toContain(f.uri);
+      });
     });
 
     it('includes screenshot URIs in attachments', async () => {

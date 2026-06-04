@@ -4,6 +4,7 @@ import { WelcomeScreen } from '@screens/WelcomeScreen';
 import { TutorialProvider } from './TutorialController';
 import { isFirstLaunch, markAsLaunched } from '@utils/firstLaunch';
 import { appLogger, tutorialLogger } from '@utils/logger';
+import { deleteOldLogFiles } from '@utils/BugReport';
 import { useRecipes } from '@hooks/useRecipes';
 import { useMenu } from '@hooks/useMenu';
 
@@ -41,6 +42,7 @@ export default function AppWrapper() {
   const [mode, setMode] = useState<AppMode>(AppMode.Loading);
 
   useEffect(() => {
+    deleteOldLogFiles();
     isFirstLaunch().then(isFirst => {
       if (isFirst) {
         appLogger.info('First launch detected - showing welcome screen');
