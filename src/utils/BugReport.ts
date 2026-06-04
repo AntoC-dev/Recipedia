@@ -24,8 +24,56 @@ import { bugReportLogger } from '@utils/logger';
 /** Developer contact email for bug reports */
 const DEVELOPER_EMAIL = 'antonin.coupanec.dev@outlook.com';
 
-/** Log file stored in the document directory */
-export const LOG_FILE = new File(Paths.document, 'recipedia-logs.txt');
+const LOG_FILE_PREFIX = 'recipedia-logs-';
+const LOG_FILE_SUFFIX = '.txt';
+const LOG_ATTACH_COUNT = 2;
+const LOG_RETENTION_DAYS = 30;
+
+/**
+ * Returns File references for the most recent log files.
+ *
+ * Constructs file paths for the last {@link LOG_ATTACH_COUNT} days using the same
+ * ISO date format as the logger's fileAsyncTransport. Files are returned regardless
+ * of whether they exist; callers should check `.exists` before attaching.
+ *
+ * @returns Array of File references ordered from newest to oldest
+ */
+export function getRecentLogFiles(): File[] {
+  const today = new Date();
+  return Array.from({ length: LOG_ATTACH_COUNT }, (_, i) => {
+    const date = new Date(today);
+    date.setDate(today.getDate() - i);
+    const y = date.getFullYear();
+    const m = date.getMonth() + 1;
+    const d = date.getDate();
+    return new File(Paths.document, `${LOG_FILE_PREFIX}${y}-${m}-${d}${LOG_FILE_SUFFIX}`);
+  });
+}
+
+/**
+ * Deletes log files older than {@link LOG_RETENTION_DAYS} days from the documents directory.
+ *
+ * Scans the documents directory for files matching the `recipedia-logs-*.txt` pattern,
+ * parses their date suffix, and removes those past the retention threshold.
+ */
+export function deleteOldLogFiles(): void {
+  try {
+    const cutoff = Date.now() - LOG_RETENTION_DAYS * 24 * 60 * 60 * 1000;
+    Paths.document.list().forEach(item => {
+      const filename = item.uri.split('/').pop() ?? '';
+      if (!filename.startsWith(LOG_FILE_PREFIX) || !filename.endsWith(LOG_FILE_SUFFIX)) return;
+      const datePart = filename.slice(LOG_FILE_PREFIX.length, -LOG_FILE_SUFFIX.length);
+      const [y, m, d] = datePart.split('-').map(Number);
+      if (!y || !m || !d) return;
+      if (new Date(y, m - 1, d).getTime() < cutoff) {
+        item.delete();
+        bugReportLogger.debug('Deleted old log file', { filename });
+      }
+    });
+  } catch (error) {
+    bugReportLogger.warn('Failed to clean up old log files', { error });
+  }
+}
 
 /**
  * Builds the email subject line for a bug report.
@@ -59,9 +107,9 @@ export function buildEmailBody(description: string): string {
 }
 
 /**
- * Sends a bug report email with optional log file and screenshot attachments.
+ * Sends a bug report email with optional log files and screenshot attachments.
  *
- * Checks if the log file exists before attaching it; skips silently if not found.
+ * Attaches the most recent log files (up to {@link LOG_ATTACH_COUNT} days) if they exist.
  * Opens the system email composer with pre-filled fields.
  *
  * @param description - User-provided description of the issue
@@ -77,18 +125,18 @@ export async function sendBugReport(
   const body = buildEmailBody(description);
 
   const attachments: string[] = [];
+  const logFiles = getRecentLogFiles().filter(f => f.exists);
+  attachments.push(...logFiles.map(f => f.uri));
 
-  if (LOG_FILE.exists) {
-    attachments.push(LOG_FILE.uri);
-  } else {
-    bugReportLogger.warn('Log file not found, skipping attachment', { logPath: LOG_FILE.uri });
+  if (logFiles.length === 0) {
+    bugReportLogger.warn('No log files found, skipping attachment');
   }
 
   attachments.push(...screenshotUris);
 
   bugReportLogger.info('Composing bug report email', {
     screenshotCount: screenshotUris.length,
-    logAttached: LOG_FILE.exists,
+    logFilesAttached: logFiles.length,
   });
 
   const result = await composeAsync({
