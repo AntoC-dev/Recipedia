@@ -19,13 +19,13 @@ APP_CONTAINER=$(perl -e 'alarm shift; exec @ARGV' 30 xcrun simctl get_app_contai
 echo "📋 APP_CONTAINER: $APP_CONTAINER"
 
 if [ -n "$APP_CONTAINER" ]; then
-  LOG_FILE="$APP_CONTAINER/Documents/recipedia-logs.txt"
-  echo "📋 Checking for log file at: $LOG_FILE"
-  if [ -f "$LOG_FILE" ]; then
-    cp "$LOG_FILE" "$LOG_DIR/recipedia-app-logs.txt"
-    echo "📋 App log file collected ($(wc -l < "$LOG_DIR/recipedia-app-logs.txt") lines)"
+  LOG_FILES=$(ls -t "$APP_CONTAINER/Documents/recipedia-logs-"*.txt 2>/dev/null)
+  echo "📋 Checking for log files in: $APP_CONTAINER/Documents"
+  if [ -n "$LOG_FILES" ]; then
+    echo "$LOG_FILES" | xargs cat > "$LOG_DIR/recipedia-app-logs.txt"
+    echo "📋 App log files collected ($(wc -l < "$LOG_DIR/recipedia-app-logs.txt") lines)"
   else
-    echo "⚠️ App log file not found at $LOG_FILE"
+    echo "⚠️ App log files not found"
     ls -la "$APP_CONTAINER/Documents" || echo "❌ Cannot list Documents directory"
   fi
 else
