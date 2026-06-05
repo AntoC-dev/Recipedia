@@ -17,9 +17,11 @@ jest.mock('@components/organisms/TutorialController', () =>
 );
 
 jest.mock('@utils/firstLaunch', () => require('@mocks/utils/firstLaunch-mock').firstLaunchMock());
+jest.mock('@utils/BugReport', () => require('@mocks/utils/BugReport-mock'));
 
 describe('AppWrapper Component', () => {
   const { isFirstLaunch, markAsLaunched } = require('@utils/firstLaunch');
+  const { mockDeleteOldLogFiles } = require('@utils/BugReport');
   const database = RecipeDatabase.getInstance();
 
   beforeEach(async () => {
@@ -171,6 +173,16 @@ describe('AppWrapper Component', () => {
     expect(database.get_menu().map(m => m.recipeTitle)).toEqual(
       testRecipes.slice(0, 3).map(r => r.title)
     );
+  });
+
+  test('calls deleteOldLogFiles on mount', async () => {
+    isFirstLaunch.mockResolvedValue(false);
+
+    render(<AppWrapper />);
+
+    await waitFor(() => {
+      expect(mockDeleteOldLogFiles).toHaveBeenCalledTimes(1);
+    });
   });
 
   test('clears menu on app launch', async () => {

@@ -86,6 +86,10 @@ export class HelloFreshProvider extends BaseRecipeProvider {
 
     if (!tld) {
       const supportedLanguages = Object.keys(HELLOFRESH_TLD_BY_LANGUAGE).join(', ');
+      bulkImportLogger.warn('HelloFresh not available for language', {
+        language,
+        supportedLanguages,
+      });
       throw new Error(
         `HelloFresh is not available for language "${language}". Supported languages: ${supportedLanguages}`
       );

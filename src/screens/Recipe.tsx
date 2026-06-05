@@ -186,6 +186,7 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
    * @returns {Promise<void>} Resolves when recipe is added to shopping list
    */
   async function readOnlyValidation() {
+    recipeLogger.info('Adding recipe to menu', { recipeTitle: state.recipeTitle });
     await addRecipeToMenu(actions.createRecipeSnapshot());
     dialogs.showValidationDialog({
       title: t('success'),
@@ -257,6 +258,7 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
     const missingElem = validateRecipeData(state, t);
 
     if (missingElem.length > 0) {
+      recipeLogger.warn('Validation failed, missing elements', { missingElements: missingElem });
       dialogs.showValidationErrorDialog(missingElem, t);
       return;
     }
@@ -347,6 +349,7 @@ function RecipeContent({ route, navigation }: RecipeScreenProp) {
    * @returns {void}
    */
   function handleCancel() {
+    recipeLogger.debug('Recipe edit cancelled');
     actions.resetToOriginal();
   }
 

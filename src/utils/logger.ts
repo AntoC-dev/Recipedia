@@ -100,7 +100,8 @@ const log = __DEV__
       transportOptions: {
         FS: { File, Paths },
         filePath: Paths.document.uri,
-        fileName: 'recipedia-logs.txt',
+        fileName: 'recipedia-logs-{date-today}.txt',
+        fileNameDateType: 'iso',
       },
     });
 

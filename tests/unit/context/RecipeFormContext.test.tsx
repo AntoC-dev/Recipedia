@@ -80,6 +80,22 @@ describe('RecipeFormContext', () => {
       expect(result.current.initStateFromProp).toBe(false);
     });
 
+    test('initializes state from scraped data in addFromScrape mode', async () => {
+      const wrapper = createFormWrapper(createMockRecipeProp('addFromScrape', defaultTestRecipe));
+      const { result } = renderHook(() => useRecipeForm(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.state.stackMode).toBe(recipeStateType.addScrape);
+      });
+
+      expect(result.current.state.recipeTitle).toBe(defaultTestRecipe.title);
+      expect(result.current.state.recipeDescription).toBe(defaultTestRecipe.description);
+      expect(result.current.state.recipeIngredients).toHaveLength(
+        defaultTestRecipe.ingredients.length
+      );
+      expect(result.current.initStateFromProp).toBe(false);
+    });
+
     test('loads default persons for add modes', async () => {
       const wrapper = createFormWrapper(createMockRecipeProp('addManually'));
       const { result } = renderHook(() => useRecipeForm(), { wrapper });
@@ -224,6 +240,27 @@ describe('RecipeFormContext', () => {
       expect(result.current.state.recipeIngredients[0].quantity).toBe(
         defaultTestRecipe.ingredients[0].quantity
       );
+    });
+
+    test('resetToOriginal in add mode only switches to readOnly without resetting fields', async () => {
+      const wrapper = createFormWrapper(createMockRecipeProp('addManually'));
+      const { result } = renderHook(() => useRecipeForm(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.state.stackMode).toBe(recipeStateType.addManual);
+      });
+
+      act(() => {
+        result.current.setters.setRecipeTitle('Draft Recipe');
+        result.current.setters.setStackMode(recipeStateType.edit);
+      });
+
+      act(() => {
+        result.current.actions.resetToOriginal();
+      });
+
+      expect(result.current.state.stackMode).toBe(recipeStateType.readOnly);
+      expect(result.current.state.recipeTitle).toBe('Draft Recipe');
     });
 
     test('switches to readOnly mode after reset', async () => {

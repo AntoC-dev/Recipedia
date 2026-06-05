@@ -97,21 +97,25 @@ export function useRecipes() {
       recipesToScale: recipesToScale.length,
     });
 
-    for (let i = 0; i < recipesToScale.length; i++) {
-      const scaledRecipe = RecipeDatabase.scaleRecipeToPersons(
-        recipesToScale[i],
-        newDefaultPersons
-      );
-      await db.scaleAndUpdateRecipe(scaledRecipe);
-      const progress = Math.floor(((i + 1) / recipesToScale.length) * 100);
-      setScalingProgress(progress);
-      if (i % 20 === 0) {
-        await new Promise(resolve => setTimeout(resolve, 0));
+    try {
+      for (let i = 0; i < recipesToScale.length; i++) {
+        const scaledRecipe = RecipeDatabase.scaleRecipeToPersons(
+          recipesToScale[i],
+          newDefaultPersons
+        );
+        await db.scaleAndUpdateRecipe(scaledRecipe);
+        const progress = Math.floor(((i + 1) / recipesToScale.length) * 100);
+        setScalingProgress(progress);
+        if (i % 20 === 0) {
+          await new Promise(resolve => setTimeout(resolve, 0));
+        }
       }
+      databaseLogger.info('Recipe scaling completed', { updatedCount: recipesToScale.length });
+    } catch (error) {
+      databaseLogger.error('Recipe scaling failed', { error });
+    } finally {
+      setScalingProgress(undefined);
     }
-
-    databaseLogger.info('Recipe scaling completed', { updatedCount: recipesToScale.length });
-    setScalingProgress(undefined);
   };
 
   return {
