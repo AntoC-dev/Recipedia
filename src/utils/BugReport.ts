@@ -26,8 +26,8 @@ const DEVELOPER_EMAIL = 'antonin.coupanec.dev@outlook.com';
 
 const LOG_FILE_PREFIX = 'recipedia-logs-';
 const LOG_FILE_SUFFIX = '.txt';
-const LOG_ATTACH_COUNT = 2;
-const LOG_RETENTION_DAYS = 30;
+export const LOG_ATTACH_COUNT = 2;
+export const LOG_RETENTION_DAYS = 30;
 
 /**
  * Returns File references for the most recent log files.
