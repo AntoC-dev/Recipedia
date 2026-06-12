@@ -79,7 +79,7 @@ export function RecipeCard({ testId, size, recipe }: RecipeCardProps) {
         borderRadius: radius,
       }}
       onPress={() => {
-        navigate('Recipe', { mode: 'readOnly', recipe: recipe });
+        navigate('RecipeView', { recipe });
       }}
     >
       <Card.Cover

@@ -21,12 +21,11 @@
  * @example
  * ```typescript
  * // Type-safe navigation calls
- * navigation.navigate('Recipe', {
- *   mode: 'readOnly',
+ * navigation.navigate('RecipeView', {
  *   recipe: selectedRecipe
  * }); // ✅ Type-safe
  *
- * navigation.navigate('Recipe', {
+ * navigation.navigate('RecipeView', {
  *   invalidProp: 'value'
  * }); // ❌ TypeScript error
  *
@@ -47,7 +46,13 @@ import { NavigationProp } from '@react-navigation/native';
 import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
 import { BottomTabScreenProps, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import type { RecipePropType } from '@customTypes/RecipeNavigationTypes';
+import type {
+  RecipeViewParams,
+  RecipeEditParams,
+  RecipeAddManualParams,
+  RecipeAddOcrParams,
+  RecipeAddScrapeParams,
+} from '@customTypes/RecipeNavigationTypes';
 import type { ConvertedImportRecipe } from '@customTypes/BulkImportTypes';
 
 /**
@@ -74,8 +79,16 @@ export enum recipeStateType {
 export type StackScreenParamList = {
   /** Main tab navigator (no parameters) */
   Tabs: React.JSX.Element;
-  /** Recipe screen with mode and data parameters */
-  Recipe: RecipePropType;
+  /** Readonly recipe display */
+  RecipeView: RecipeViewParams;
+  /** Edit an existing recipe */
+  RecipeEdit: RecipeEditParams;
+  /** Create a new recipe from scratch */
+  RecipeAddManual: RecipeAddManualParams;
+  /** Create a new recipe from an OCR image */
+  RecipeAddOcr: RecipeAddOcrParams;
+  /** Create a new recipe from scraped website data */
+  RecipeAddScrape: RecipeAddScrapeParams;
   /** Language selection screen (no parameters) */
   LanguageSettings: undefined;
   /** Default persons setting screen (no parameters) */
@@ -144,9 +157,6 @@ export type ParametersScreenProp = BottomTabScreenProps<TabScreenParamList, 'Par
 // =============================================================================
 // STACK SCREEN PROP TYPES
 // =============================================================================
-
-/** Props for Recipe stack screen component */
-export type RecipeScreenProp = NativeStackScreenProps<StackScreenParamList, 'Recipe'>;
 
 /** Props for Language Settings stack screen component */
 export type LanguageSettingsProp = NativeStackScreenProps<StackScreenParamList, 'LanguageSettings'>;
