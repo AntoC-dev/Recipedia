@@ -1,191 +1,49 @@
 /**
- * RecipeIngredients - Dedicated ingredient table component
+ * RecipeIngredients - Ingredient table display + editable building blocks
  *
- * A specialized component for displaying and editing recipe ingredients in a table format.
- * Features two distinct modes: read-only display with perfect alignment and editable mode
- * with inline inputs for quantity, unit, and ingredient name.
+ * This file exposes the pieces the Recipe screen composes for ingredients.
+ * The recipe form drives row-level state through per-row `useController`
+ * subscriptions, so the organism no longer owns the array orchestration.
+ * Instead it provides:
  *
- * Key Features:
- * - React Native Paper DataTable for consistent table layout
- * - Editable mode with inline NumericTextInput, CustomTextInput, and dropdown
- * - Column headers in editable mode for clarity
- * - Scrollable list for handling many ingredients
- * - Three-column layout: Quantity | Unit | Ingredient Name
- * - Autocomplete for ingredient names with database integration
+ * - `RecipeIngredients` (default): read-only render of an ingredient array.
+ * - `IngredientsTable`: the prefix-text wrapper + DataTable header frame,
+ *   wraps the caller's mapped rows and renders the "add row" round button.
+ * - `IngredientRow`: a single editable row with blur-commit quantity + name
+ *   inputs, note dialog trigger, and delete button.
+ * - `IngredientsAddEmpty`: the empty-state OCR-names + manual-add button
+ *   block rendered in `addOCR` mode before any ingredient exists.
+ * - `IngredientsAddTail`: the OCR-quantities + manual-add tail row rendered
+ *   in `addOCR` mode once at least one ingredient exists.
  *
- * @example
- * ```typescript
- * // Read-only mode
- * <RecipeIngredients
- *   testID="recipe-ingredients"
- *   ingredients={recipe.ingredients}
- *   mode="readOnly"
- * />
- *
- * // Editable mode
- * <RecipeIngredients
- *   testID="recipe-ingredients"
- *   ingredients={editableIngredients}
- *   mode="editable"
- *   columnTitles={{
- *     column1: "Quantity",
- *     column2: "Unit",
- *     column3: "Ingredient"
- *   }}
- *   onIngredientChange={(index, newValue) => updateIngredient(index, newValue)}
- *   onAddIngredient={() => addNewIngredient()}
- * />
- * ```
+ * @module components/organisms/RecipeIngredients
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
-import { DataTable, IconButton, Text, useTheme } from 'react-native-paper';
+import { DataTable, HelperText, IconButton, Text, useTheme } from 'react-native-paper';
 import { FormIngredientElement, ingredientTableElement } from '@customTypes/DatabaseElementTypes';
 import { RoundButton } from '@components/atomic/RoundButton';
 import { Icons } from '@assets/Icons';
-import { useIngredients } from '@hooks/useIngredients';
 import { NumericTextInput } from '@components/atomic/NumericTextInput';
 import { TextInputWithDropDown } from '@components/molecules/TextInputWithDropDown';
-import { NoteEditDialog } from '@components/dialogs/NoteEditDialog';
 import {
   formatIngredientForCallback,
   formatQuantityForDisplay,
   parseIngredientQuantity,
 } from '@utils/Quantity';
 import { padding } from '@styles/spacing';
-import { useI18n } from '@utils/i18n';
-import { OcrModalTarget } from '@utils/OCR';
 
 /**
- * Common props shared across all modes
+ * Read-only display of an ingredient list.
  */
-export type BaseProps = {
-  /** Unique identifier for testing and accessibility */
+export interface RecipeIngredientsProps {
   testID: string;
-  /** Array of ingredient table elements to display/edit */
   ingredients: ingredientTableElement[];
-};
-
-/**
- * Props for read-only mode
- */
-export type ReadOnlyProps = BaseProps & {
-  mode: 'readOnly';
-};
-
-/**
- * Common props for editable and add modes
- */
-export type EditableBaseProps = BaseProps & {
-  /** Prefix text displayed above the table */
-  prefixText: string;
-  /** Column titles for the table header */
-  columnTitles: {
-    column1: string;
-    column2: string;
-    column3: string;
-  };
-  /** Callback fired when an ingredient is edited */
-  onIngredientChange: (index: number, newValue: string) => void;
-  /** Callback fired to add a new ingredient */
-  onAddIngredient: () => void;
-  /** Callback fired to remove an ingredient at a given index */
-  onRemoveIngredient: (index: number) => void;
-  /** Placeholder text for the ingredient note input */
-  noteInputPlaceholder: string;
-  /** Force hide the dropdown (e.g., during scroll) */
-  hideDropdown?: boolean;
-};
-
-/**
- * Props for editable mode
- */
-export type EditableProps = EditableBaseProps & {
-  mode: 'editable';
-};
-
-/**
- * Props for add mode (OCR)
- * Same as editable mode but with additional OCR button support for empty and non-empty states.
- * Accepts incomplete ingredients (FormIngredientElement) for new ingredients being added.
- */
-export type AddProps = Omit<EditableBaseProps, 'ingredients'> & {
-  mode: 'add';
-  /** Array of ingredients, may include incomplete FormIngredientElement for new ingredients */
-  ingredients: (ingredientTableElement | FormIngredientElement)[];
-  /** Callback fired to open OCR modal for a given field */
-  openModalForField: (field: OcrModalTarget) => void;
-};
-
-/**
- * Props for the RecipeIngredients component (discriminated union)
- */
-export type RecipeIngredientsProps = ReadOnlyProps | EditableProps | AddProps;
-
-/**
- * Wrapper component that displays a section header with prefix text.
- *
- * Provides consistent styling for ingredient sections in editable/add modes,
- * wrapping content in a styled container with a headline-sized prefix label.
- *
- * @param testID - Base test ID for accessibility and testing
- * @param prefixText - Header text to display above the content (e.g., "Ingredients:")
- * @param children - Content to render below the prefix text
- * @returns JSX element with styled container and prefix text
- */
-function PrefixTextWrapper({
-  testID,
-  prefixText,
-  children,
-}: {
-  testID: string;
-  prefixText: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <View style={cellStyles.container} accessible={false}>
-      <Text testID={`${testID}::PrefixText`} variant='headlineSmall' style={cellStyles.prefixText}>
-        {prefixText}
-      </Text>
-      {children}
-    </View>
-  );
 }
 
-/**
- * Internal props for EditableIngredients component
- * Accepts both complete and incomplete ingredients since it's used by both editable and add modes
- */
-type EditableIngredientsProps = {
-  testID: string;
-  ingredients: (ingredientTableElement | FormIngredientElement)[];
-  prefixText: string;
-  columnTitles: {
-    column1: string;
-    column2: string;
-    column3: string;
-  };
-  onIngredientChange: (index: number, newValue: string) => void;
-  onAddIngredient: () => void;
-  onRemoveIngredient: (index: number) => void;
-  /** Placeholder text for the ingredient note input */
-  noteInputPlaceholder: string;
-  /** Force hide the dropdown (e.g., during scroll) */
-  hideDropdown?: boolean;
-  /** Hide the internal add button (used by add mode which renders its own row) */
-  hideAddButton?: boolean;
-};
-
-/**
- * Read-only ingredients component
- *
- * Displays ingredients with quantity, unit, name, and optional usage note.
- * Notes are shown inline after the name with lighter styling.
- */
-function ReadOnlyIngredients({ testID, ingredients }: ReadOnlyProps) {
+export function RecipeIngredients({ testID, ingredients }: RecipeIngredientsProps) {
   const { colors } = useTheme();
-
   return (
     <View style={cellStyles.readOnlyContainer} accessible={false}>
       {ingredients.map((item, index) => (
@@ -225,80 +83,47 @@ function ReadOnlyIngredients({ testID, ingredients }: ReadOnlyProps) {
   );
 }
 
+export interface IngredientsTableColumnTitles {
+  column1: string;
+  column2: string;
+  column3: string;
+}
+
 /**
- * Editable ingredients component (internal)
- *
- * Used by both editable and add modes. Displays ingredients in a 3-column table
- * with editable quantity, unit display, and ingredient name autocomplete.
- * Notes can be edited via a dialog triggered by an icon button in the name column.
+ * The prefix label + DataTable header frame. Renders any mapped row children
+ * the caller passes, plus an optional add button below the table.
  */
-function EditableIngredients(props: EditableIngredientsProps) {
-  const {
-    testID,
-    ingredients,
-    prefixText,
-    columnTitles,
-    onIngredientChange,
-    onAddIngredient,
-    onRemoveIngredient,
-    noteInputPlaceholder,
-    hideDropdown,
-    hideAddButton,
-  } = props;
-  const { ingredients: dbIngredients } = useIngredients();
+export interface IngredientsTableProps {
+  testID: string;
+  prefixText: string;
+  columnTitles: IngredientsTableColumnTitles;
+  children: React.ReactNode;
+  /** When false the add-row round button is rendered below the table. */
+  hideAddButton?: boolean;
+  onAddIngredient?: () => void;
+  /** Optional error rendered below the table (e.g. empty-array message). */
+  error?: string;
+}
+
+export function IngredientsTable({
+  testID,
+  prefixText,
+  columnTitles,
+  children,
+  hideAddButton,
+  onAddIngredient,
+  error,
+}: IngredientsTableProps) {
   const { colors, fonts } = useTheme();
-  const [noteDialogIndex, setNoteDialogIndex] = useState<number | null>(null);
-
-  const usedIngredientNames = ingredients
-    .map(ing => ing.name)
-    .filter((name, idx, arr) => name && name.trim().length > 0 && arr.indexOf(name) === idx);
-
-  const availableIngredients = dbIngredients
-    .map(ingredient => ingredient.name)
-    .filter(dbIngredient => !usedIngredientNames.includes(dbIngredient))
-    .sort();
-
-  /**
-   * Handles changes to an ingredient's fields.
-   * Formats the data using standard separators and calls the parent callback.
-   */
-  const handleIngredientChange = (
-    index: number,
-    quantity: number,
-    unit: string,
-    name: string,
-    note?: string
-  ) => {
-    onIngredientChange(index, formatIngredientForCallback(quantity, unit, name, note));
-  };
-
-  /**
-   * Handles saving a note from the note edit dialog.
-   * Retrieves the current ingredient data and triggers an update with the new note.
-   */
-  const handleNoteDialogSave = (note: string) => {
-    if (noteDialogIndex !== null) {
-      const item = ingredients[noteDialogIndex];
-      const quantity = parseIngredientQuantity(item.quantity);
-      handleIngredientChange(
-        noteDialogIndex,
-        quantity,
-        item.unit ?? '',
-        item.name ?? '',
-        note || undefined
-      );
-    }
-  };
-
-  const headerTestId = testID + '::Header';
-  const dialogItem = noteDialogIndex !== null ? ingredients[noteDialogIndex] : null;
-
   const borderColor = colors.outline;
-  const transparentBg = colors.elevation.level0;
   const titleFontSize = fonts.titleMedium.fontSize;
+  const headerTestId = testID + '::Header';
 
   return (
-    <PrefixTextWrapper testID={testID} prefixText={prefixText}>
+    <View style={cellStyles.container} accessible={false}>
+      <Text testID={`${testID}::PrefixText`} variant='headlineSmall' style={cellStyles.prefixText}>
+        {prefixText}
+      </Text>
       <DataTable style={cellStyles.table} accessible={false}>
         <DataTable.Header style={{ borderBottomWidth: 0 }} accessible={false}>
           <DataTable.Title
@@ -337,96 +162,10 @@ function EditableIngredients(props: EditableIngredientsProps) {
             {''}
           </DataTable.Title>
         </DataTable.Header>
-        {ingredients.map((item, index) => {
-          const quantity = parseIngredientQuantity(item.quantity);
-          const hasNote = item.note && item.note.trim().length > 0;
-
-          return (
-            <DataTable.Row
-              key={item.id ?? index}
-              testID={`${testID}::${index}::Row`}
-              style={{ borderBottomWidth: 0 }}
-              accessible={false}
-            >
-              <DataTable.Cell style={cellStyles.quantityCell} accessible={false}>
-                <NumericTextInput
-                  testID={`${testID}::${index}::QuantityInput`}
-                  value={Math.round(quantity * 100) / 100}
-                  onChangeValue={newQuantity =>
-                    handleIngredientChange(
-                      index,
-                      newQuantity,
-                      item.unit ?? '',
-                      item.name ?? '',
-                      item.note
-                    )
-                  }
-                  dense
-                  mode='flat'
-                  style={cellStyles.flex1}
-                  textInputStyle={[cellStyles.flex1, { backgroundColor: transparentBg }]}
-                />
-              </DataTable.Cell>
-              <DataTable.Cell
-                style={[cellStyles.unitCell, { borderBottomColor: borderColor }]}
-                accessible={false}
-              >
-                <Text
-                  testID={`${testID}::${index}::Unit`}
-                  variant='bodyLarge'
-                  style={[cellStyles.flex1, { textAlign: 'center', textAlignVertical: 'center' }]}
-                >
-                  {item.unit}
-                </Text>
-              </DataTable.Cell>
-              <DataTable.Cell
-                style={[cellStyles.noteCell, { borderBottomColor: borderColor }]}
-                accessible={false}
-              >
-                <IconButton
-                  testID={`${testID}::${index}::NoteButton`}
-                  icon={hasNote ? Icons.commentEditOutline : Icons.commentPlusOutline}
-                  iconColor={hasNote ? colors.primary : colors.onSurfaceVariant}
-                  onPress={() => setNoteDialogIndex(index)}
-                  size={20}
-                />
-              </DataTable.Cell>
-              <DataTable.Cell style={cellStyles.nameCell} accessible={false}>
-                <TextInputWithDropDown
-                  testID={`${testID}::${index}::NameInput`}
-                  value={item.name}
-                  referenceTextArray={availableIngredients}
-                  dense
-                  mode='flat'
-                  hideDropdown={hideDropdown}
-                  onValidate={newName => {
-                    if (!newName || newName.trim().length === 0) {
-                      return;
-                    }
-                    handleIngredientChange(index, quantity, item.unit ?? '', newName, item.note);
-                  }}
-                  style={cellStyles.flex1}
-                  textInputStyle={[cellStyles.flex1, { backgroundColor: transparentBg }]}
-                />
-              </DataTable.Cell>
-              <DataTable.Cell
-                style={[cellStyles.deleteCell, { borderBottomColor: borderColor }]}
-                accessible={false}
-              >
-                <IconButton
-                  testID={`${testID}::${index}::DeleteButton`}
-                  icon={Icons.trashIcon}
-                  iconColor={colors.error}
-                  onPress={() => onRemoveIngredient(index)}
-                  size={20}
-                />
-              </DataTable.Cell>
-            </DataTable.Row>
-          );
-        })}
+        {children}
       </DataTable>
 
-      {!hideAddButton && (
+      {!hideAddButton && onAddIngredient && (
         <RoundButton
           testID={`${testID}::AddButton`}
           size='medium'
@@ -436,98 +175,216 @@ function EditableIngredients(props: EditableIngredientsProps) {
         />
       )}
 
-      <NoteEditDialog
-        testId={testID}
-        isVisible={noteDialogIndex !== null}
-        ingredientName={dialogItem?.name ?? ''}
-        initialNote={dialogItem?.note ?? ''}
-        placeholder={noteInputPlaceholder}
-        onClose={() => setNoteDialogIndex(null)}
-        onSave={handleNoteDialogSave}
-      />
-    </PrefixTextWrapper>
+      {error ? (
+        <HelperText testID={`${testID}::Error`} type='error' visible={true}>
+          {error}
+        </HelperText>
+      ) : null}
+    </View>
   );
 }
 
 /**
- * Add mode ingredients component with OCR support.
- *
- * Displays either an empty state with OCR/manual entry buttons, or delegates
- * to EditableIngredients (plus a scan-quantities button) when ingredients exist.
- * Used during recipe creation via OCR workflow.
- *
- * Empty state buttons:
- * - Scan icon: Opens OCR modal for scanning ingredient names and units
- * - Pencil icon: Adds a blank ingredient row for manual entry
- *
- * Non-empty state adds a scan-quantities button below the table so the user
- * can fill quantities after names have been scanned.
- *
- * @param props - AddProps including openModalForField callback
- * @returns JSX element for add mode ingredient management
+ * Single editable ingredient row. Commits via the provided callbacks on blur
+ * only — no per-keystroke writes. The caller wires the commit callbacks to a
+ * per-row form controller so a row edit never re-renders sibling rows.
  */
-function AddIngredients(props: AddProps) {
-  const {
-    testID,
-    ingredients,
-    prefixText,
-    openModalForField,
-    onAddIngredient,
-    onRemoveIngredient,
-    columnTitles,
-    onIngredientChange,
-    noteInputPlaceholder,
-    hideDropdown,
-  } = props;
-  const { t } = useI18n();
+export interface IngredientRowProps {
+  testID: string;
+  index: number;
+  ingredient: ingredientTableElement | FormIngredientElement;
+  availableIngredients: string[];
+  hideDropdown?: boolean;
+  rowError?: string;
+  /**
+   * Single commit callback fired with the row's formatted ingredient string
+   * after the user blurs an input or saves the note dialog. The caller is
+   * responsible for parsing the string back into per-field commits.
+   */
+  onCommit: (formatted: string) => void;
+  /**
+   * Live-commit callback fired on every keystroke in the name input. Wired to
+   * the column controller's `field.onChange` so RHF stays in sync with what
+   * the user is typing without waiting for blur. Optional — consumers that
+   * only need the validation-queue commit semantics can rely on `onCommit`.
+   */
+  onLiveNameChange?: (name: string) => void;
+  /**
+   * Fired when the user picks an ingredient from the name autocomplete
+   * dropdown. Distinct from `onCommit`: the selection must always re-resolve
+   * the row against the database (id / type / season), even when the name
+   * already matches what live-commit wrote — so the consumer forces a fresh
+   * validation pass rather than short-circuiting on an unchanged name.
+   */
+  onSelectName?: (name: string) => void;
+  onRemove: () => void;
+  onOpenNote: () => void;
+  /** Optional focus handler called when any row input gains focus. */
+  onFocus?: () => void;
+  /** Optional blur handler called when any row input loses focus. */
+  onBlur?: () => void;
+}
 
-  if (ingredients.length === 0) {
-    return (
-      <PrefixTextWrapper testID={testID} prefixText={prefixText}>
-        <View style={cellStyles.roundButtonsContainer}>
-          <RoundButton
-            testID={`${testID}::OpenModalNames`}
-            style={cellStyles.roundButton}
-            size='medium'
-            icon={Icons.scanImageIcon}
-            onPressFunction={() => openModalForField('ingredientNames')}
-            label={t('recipe.ingredientsScanNames')}
-          />
-          <RoundButton
-            testID={`${testID}::AddButton`}
-            style={cellStyles.roundButton}
-            size='medium'
-            icon={Icons.pencilIcon}
-            onPressFunction={onAddIngredient}
-            label={t('recipe.ingredientsAddManually')}
-          />
-        </View>
-      </PrefixTextWrapper>
+export function IngredientRow({
+  testID,
+  index,
+  ingredient,
+  availableIngredients,
+  hideDropdown,
+  rowError,
+  onCommit,
+  onLiveNameChange,
+  onSelectName,
+  onRemove,
+  onOpenNote,
+  onFocus,
+  onBlur,
+}: IngredientRowProps) {
+  const { colors } = useTheme();
+  const borderColor = colors.outline;
+  const transparentBg = colors.elevation.level0;
+  const quantity = parseIngredientQuantity(ingredient.quantity);
+  const hasNote = ingredient.note && ingredient.note.trim().length > 0;
+
+  const commit = (next: { quantity?: number; unit?: string; name?: string; note?: string }) => {
+    onCommit(
+      formatIngredientForCallback(
+        next.quantity ?? quantity,
+        next.unit ?? ingredient.unit ?? '',
+        next.name ?? ingredient.name ?? '',
+        next.note ?? ingredient.note
+      )
     );
-  }
+  };
 
   return (
-    <>
-      <EditableIngredients
-        testID={testID}
-        ingredients={ingredients}
-        prefixText={prefixText}
-        columnTitles={columnTitles}
-        onIngredientChange={onIngredientChange}
-        onAddIngredient={onAddIngredient}
-        onRemoveIngredient={onRemoveIngredient}
-        noteInputPlaceholder={noteInputPlaceholder}
-        hideDropdown={hideDropdown}
-        hideAddButton
-      />
+    <React.Fragment>
+      <DataTable.Row
+        testID={`${testID}::${index}::Row`}
+        style={{ borderBottomWidth: 0 }}
+        accessible={false}
+      >
+        <DataTable.Cell style={cellStyles.quantityCell} accessible={false}>
+          <NumericTextInput
+            testID={`${testID}::${index}::QuantityInput`}
+            value={Math.round(quantity * 100) / 100}
+            onChangeValue={newQuantity => commit({ quantity: newQuantity })}
+            onFocus={onFocus}
+            onBlur={onBlur}
+            dense
+            mode='flat'
+            style={cellStyles.flex1}
+            textInputStyle={[cellStyles.flex1, { backgroundColor: transparentBg }]}
+          />
+        </DataTable.Cell>
+        <DataTable.Cell
+          style={[cellStyles.unitCell, { borderBottomColor: borderColor }]}
+          accessible={false}
+        >
+          <Text
+            testID={`${testID}::${index}::Unit`}
+            variant='bodyLarge'
+            style={[cellStyles.flex1, { textAlign: 'center', textAlignVertical: 'center' }]}
+          >
+            {ingredient.unit}
+          </Text>
+        </DataTable.Cell>
+        <DataTable.Cell
+          style={[cellStyles.noteCell, { borderBottomColor: borderColor }]}
+          accessible={false}
+        >
+          <IconButton
+            testID={`${testID}::${index}::NoteButton`}
+            icon={hasNote ? Icons.commentEditOutline : Icons.commentPlusOutline}
+            iconColor={hasNote ? colors.primary : colors.onSurfaceVariant}
+            onPress={onOpenNote}
+            size={20}
+          />
+        </DataTable.Cell>
+        <DataTable.Cell style={cellStyles.nameCell} accessible={false}>
+          <TextInputWithDropDown
+            testID={`${testID}::${index}::NameInput`}
+            value={ingredient.name}
+            referenceTextArray={availableIngredients}
+            dense
+            mode='flat'
+            hideDropdown={hideDropdown}
+            onFocus={onFocus}
+            onChangeText={onLiveNameChange}
+            onSelect={newName => {
+              if (newName && newName.trim().length > 0) {
+                onSelectName?.(newName);
+              }
+              onBlur?.();
+            }}
+            onValidate={newName => {
+              if (newName && newName.trim().length > 0) {
+                commit({ name: newName });
+              }
+              onBlur?.();
+            }}
+            style={cellStyles.flex1}
+            textInputStyle={[cellStyles.flex1, { backgroundColor: transparentBg }]}
+          />
+        </DataTable.Cell>
+        <DataTable.Cell
+          style={[cellStyles.deleteCell, { borderBottomColor: borderColor }]}
+          accessible={false}
+        >
+          <IconButton
+            testID={`${testID}::${index}::DeleteButton`}
+            icon={Icons.trashIcon}
+            iconColor={colors.error}
+            onPress={onRemove}
+            size={20}
+          />
+        </DataTable.Cell>
+      </DataTable.Row>
+      {rowError ? (
+        <HelperText testID={`${testID}::${index}::Error`} type='error' visible={true}>
+          {rowError}
+        </HelperText>
+      ) : null}
+    </React.Fragment>
+  );
+}
+
+/**
+ * Empty-state add block for `addOCR` mode: lets the user either OCR-scan
+ * ingredient names or start adding ingredients manually.
+ */
+export interface IngredientsAddEmptyProps {
+  testID: string;
+  prefixText: string;
+  scanLabel: string;
+  manualLabel: string;
+  openOcrModal: () => void;
+  onAddIngredient: () => void;
+  error?: string;
+}
+
+export function IngredientsAddEmpty({
+  testID,
+  prefixText,
+  scanLabel,
+  manualLabel,
+  openOcrModal,
+  onAddIngredient,
+  error,
+}: IngredientsAddEmptyProps) {
+  return (
+    <View style={cellStyles.container} accessible={false}>
+      <Text testID={`${testID}::PrefixText`} variant='headlineSmall' style={cellStyles.prefixText}>
+        {prefixText}
+      </Text>
       <View style={cellStyles.roundButtonsContainer}>
         <RoundButton
-          testID={`${testID}::OpenModalQuantities`}
+          testID={`${testID}::OpenModalNames`}
           style={cellStyles.roundButton}
           size='medium'
           icon={Icons.scanImageIcon}
-          onPressFunction={() => openModalForField('ingredientQuantities')}
-          label={t('recipe.ingredientsScanQuantities')}
+          onPressFunction={openOcrModal}
+          label={scanLabel}
         />
         <RoundButton
           testID={`${testID}::AddButton`}
@@ -535,40 +392,57 @@ function AddIngredients(props: AddProps) {
           size='medium'
           icon={Icons.pencilIcon}
           onPressFunction={onAddIngredient}
-          label={t('recipe.ingredientsAddManually')}
+          label={manualLabel}
         />
       </View>
-    </>
+      {error ? (
+        <HelperText testID={`${testID}::Error`} type='error' visible={true}>
+          {error}
+        </HelperText>
+      ) : null}
+    </View>
   );
 }
 
 /**
- * RecipeIngredients component for ingredient table display and editing
- *
- * @param props - The component props
- * @returns JSX element representing the ingredients table
+ * Tail row for `addOCR` mode when at least one ingredient exists: lets the
+ * user OCR-scan quantities for existing names or add another manual row.
  */
-export function RecipeIngredients(props: RecipeIngredientsProps) {
-  switch (props.mode) {
-    case 'add':
-      return <AddIngredients {...props} />;
-    case 'readOnly':
-      return <ReadOnlyIngredients {...props} />;
-    case 'editable':
-      return (
-        <EditableIngredients
-          testID={props.testID}
-          ingredients={props.ingredients}
-          prefixText={props.prefixText}
-          columnTitles={props.columnTitles}
-          onIngredientChange={props.onIngredientChange}
-          onAddIngredient={props.onAddIngredient}
-          onRemoveIngredient={props.onRemoveIngredient}
-          noteInputPlaceholder={props.noteInputPlaceholder}
-          hideDropdown={props.hideDropdown}
-        />
-      );
-  }
+export interface IngredientsAddTailProps {
+  testID: string;
+  scanLabel: string;
+  manualLabel: string;
+  openOcrModal: () => void;
+  onAddIngredient: () => void;
+}
+
+export function IngredientsAddTail({
+  testID,
+  scanLabel,
+  manualLabel,
+  openOcrModal,
+  onAddIngredient,
+}: IngredientsAddTailProps) {
+  return (
+    <View style={cellStyles.roundButtonsContainer}>
+      <RoundButton
+        testID={`${testID}::OpenModalQuantities`}
+        style={cellStyles.roundButton}
+        size='medium'
+        icon={Icons.scanImageIcon}
+        onPressFunction={openOcrModal}
+        label={scanLabel}
+      />
+      <RoundButton
+        testID={`${testID}::AddButton`}
+        style={cellStyles.roundButton}
+        size='medium'
+        icon={Icons.pencilIcon}
+        onPressFunction={onAddIngredient}
+        label={manualLabel}
+      />
+    </View>
+  );
 }
 
 const recipeTableBorderWidth = 0.5;

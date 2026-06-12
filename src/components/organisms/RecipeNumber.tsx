@@ -56,7 +56,7 @@ import React from 'react';
 import { RoundButton } from '@components/atomic/RoundButton';
 import { Icons } from '@assets/Icons';
 import { recipeNumberStyles, recipeTextStyles } from '@styles/recipeComponents';
-import { Text } from 'react-native-paper';
+import { HelperText, Text } from 'react-native-paper';
 import { VariantProp } from 'react-native-paper/lib/typescript/components/Typography/types';
 import { NumericTextInput } from '@components/atomic/NumericTextInput';
 import { defaultValueNumber } from '@utils/Constants';
@@ -75,8 +75,8 @@ export type RecipeNumberEditProps = {
   editType: 'editable';
   /** Current numeric value being edited */
   textEditable: number;
-  /** State setter for updating the numeric value */
-  setTextToEdit: React.Dispatch<React.SetStateAction<number>>;
+  /** Setter for updating the numeric value */
+  setTextToEdit: (value: number) => void;
 };
 
 /** Props for add/edit modes with discriminated union */
@@ -103,6 +103,10 @@ export type RecipeNumberProps = {
   numberProps: RecipeNumberReadAddOrEditProps;
   /** Unique identifier for testing and accessibility */
   testID: string;
+  /** Optional translated error message displayed below the input */
+  error?: string;
+  /** Optional blur handler forwarded to the editable numeric input */
+  onBlur?: () => void;
 };
 
 /**
@@ -111,7 +115,7 @@ export type RecipeNumberProps = {
  * @param props - The component props with mode-specific configuration
  * @returns JSX element representing a numeric input with multiple interaction modes
  */
-export function RecipeNumber({ testID, numberProps }: RecipeNumberProps) {
+export function RecipeNumber({ testID, numberProps, error, onBlur }: RecipeNumberProps) {
   return (
     <View style={recipeTextStyles.containerSection}>
       {numberProps.editType === 'read' ? (
@@ -119,8 +123,13 @@ export function RecipeNumber({ testID, numberProps }: RecipeNumberProps) {
           {numberProps.text}
         </Text>
       ) : (
-        <RecipeNumberEditablePart {...numberProps} />
+        <RecipeNumberEditablePart {...numberProps} onBlur={onBlur} />
       )}
+      {error ? (
+        <HelperText testID={testID + '::Error'} type='error' visible={true}>
+          {error}
+        </HelperText>
+      ) : null}
     </View>
   );
 }
@@ -131,7 +140,9 @@ export function RecipeNumber({ testID, numberProps }: RecipeNumberProps) {
  * @param addOrEditProps - The add/edit configuration props
  * @returns JSX element representing the editable numeric input interface
  */
-function RecipeNumberEditablePart(addOrEditProps: RecipeNumberAddOrEditProps) {
+function RecipeNumberEditablePart(
+  addOrEditProps: RecipeNumberAddOrEditProps & { onBlur?: () => void }
+) {
   const view =
     addOrEditProps.editType === 'editable'
       ? recipeNumberStyles.editableView
@@ -149,6 +160,7 @@ function RecipeNumberEditablePart(addOrEditProps: RecipeNumberAddOrEditProps) {
           value={addOrEditProps.textEditable ?? defaultValueNumber}
           onChangeValue={addOrEditProps.setTextToEdit}
           keyboardType='numeric'
+          onBlur={addOrEditProps.onBlur}
         />
       ) : (
         <View style={recipeNumberStyles.roundButtonsContainer}>
