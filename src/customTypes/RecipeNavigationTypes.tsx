@@ -110,6 +110,9 @@ export interface AddFromScrapeProp extends BaseRecipeProp {
  * Uses the `mode` field as discriminator to determine which additional
  * properties are available. TypeScript can narrow the type based on
  * the mode value.
+ *
+ * Used by `RecipeFormScreen` to multiplex initial-defaults selection on
+ * `mode` before mounting RHF's `FormProvider`.
  */
 export type RecipePropType =
   | ReadRecipeProp
@@ -117,3 +120,15 @@ export type RecipePropType =
   | AddManuallyProp
   | AddFromPicProp
   | AddFromScrapeProp;
+
+/**
+ * Per-route navigation param types — one entry per `Stack.Screen` registered
+ * in `RootNavigator`. They are intentionally narrower than `RecipePropType`:
+ * each route knows its own mode so the discriminant is implicit in the
+ * route name.
+ */
+export type RecipeViewParams = { recipe: recipeTableElement };
+export type RecipeEditParams = { recipe: recipeTableElement };
+export type RecipeAddManualParams = undefined;
+export type RecipeAddOcrParams = { imgUri: string };
+export type RecipeAddScrapeParams = { scrapedData: ScrapedRecipeData; sourceUrl: string };

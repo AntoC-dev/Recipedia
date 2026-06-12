@@ -15,8 +15,7 @@
  * const handleImport = async (url: string) => {
  *   const result = await scrapeAndPrepare(url);
  *   if (result.success) {
- *     navigation.navigate('Recipe', {
- *       mode: 'addFromScrape',
+ *     navigation.navigate('RecipeAddScrape', {
  *       scrapedData: result.data,
  *       sourceUrl: url,
  *     });

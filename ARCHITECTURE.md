@@ -123,16 +123,17 @@ Defined in `src/context/` and provided near the root in `App.tsx`:
 | `SeasonFilterContext` | `useSeasonFilter()` | Global season filter toggle, persisted to AsyncStorage |
 | `DefaultPersonsContext` | `useDefaultPersons()` | Default serving count setting, persisted to AsyncStorage |
 
-### Screen-scoped state (React Context, Recipe screen only)
+### Screen-scoped state (React Context, Recipe form only)
 
-Provided by wrappers inside `src/screens/Recipe.tsx`:
+Form field state itself is held by `react-hook-form` (`FormProvider` in `src/screens/recipe/RecipeFormScreen.tsx`), read via `useFormContext()` — not a bespoke context. The remaining screen-scoped contexts wrap the form body:
 
 | Context | Hook | Responsibility |
 |---|---|---|
-| `RecipeFormContext` | `useRecipeForm()` | All form field values and setters for the active recipe; resets on navigation |
-| `RecipeDialogsContext` | `useRecipeDialogs()` | Dialog open/close state (validation, similarity, queue) scoped to the Recipe screen |
+| `RecipeDialogsContext` | `useRecipeDialogs()` | Dialog open/close state (validation, similarity, queue) scoped to the recipe form |
+| `IngredientFocusContext` | `useIngredientFocusRef()` | Ref counter of currently-focused ingredient inputs; lets `useScalingOnPersonsChange` defer scaling while a row is being edited |
+| `IngredientArrayActionsContext` | `useIngredientArrayActions()` | Shares the field-array `applyPatch` callback so feature hooks (`useRecipeOCR`, `useRecipeScraperValidation`) mutate `recipeIngredients` through the same patch shape that preserves sibling row identity |
 
-These contexts are intentionally narrow. They exist to avoid prop-drilling across the several hooks (`useRecipeIngredients`, `useRecipeTags`, `useRecipePreparation`, `useRecipeOCR`, `useRecipeScraperValidation`) that all need access to form state from within a single screen.
+These contexts are intentionally narrow. They exist to avoid prop-drilling across the several hooks (`useRecipeIngredients`, `useRecipeTags`, `useRecipeOCR`, `useRecipeScraperValidation`) that all need access to the shared form context from within a single screen.
 
 ### Reactive database state (useSyncExternalStore, cross-component)
 
@@ -162,7 +163,11 @@ NavigationContainer (App.tsx)
     │   ├── Menu                            -- weekly cooking menu
     │   ├── Shopping                        -- shopping list derived from menu
     │   └── Parameters                      -- settings hub
-    ├── Recipe                              -- view / edit / create recipe
+    ├── RecipeView                          -- view an existing recipe (read-only)
+    ├── RecipeEdit                          -- edit an existing recipe
+    ├── RecipeAddManual                     -- create a recipe from a blank form
+    ├── RecipeAddOcr                        -- create a recipe from a photo (OCR)
+    ├── RecipeAddScrape                     -- create a recipe from scraped web data
     ├── LanguageSettings
     ├── DefaultPersonsSettings
     ├── IngredientsSettings
@@ -175,13 +180,13 @@ NavigationContainer (App.tsx)
 
 All screens are header-less (`headerShown: false`). Navigation animations can be disabled globally via `EXPO_PUBLIC_DISABLE_ANIMATIONS=true` (used by E2E tests).
 
-The `Recipe` screen receives a typed `RecipePropType` parameter that describes the mode:
+Each recipe route is a thin wrapper that forwards its own narrow params (see `src/customTypes/RecipeNavigationTypes.tsx`) to the shared `RecipeFormScreen`, which derives the form `mode`:
 
-- `readOnly` — view an existing recipe
-- `edit` — edit an existing recipe
-- `add` — create a new recipe from scratch
-- `addFromPic` — create from a photo (OCR pre-fills fields)
-- `addFromScrape` — create from scraped web data (pre-fills from scraper output)
+- `RecipeView` → `readOnly` — view an existing recipe
+- `RecipeEdit` → `edit` — edit an existing recipe
+- `RecipeAddManual` → `addManually` — create a new recipe from a blank form
+- `RecipeAddOcr` → `addFromPic` — create from a photo (OCR pre-fills fields)
+- `RecipeAddScrape` → `addFromScrape` — create from scraped web data (pre-fills from scraper output)
 
 ---
 
@@ -203,41 +208,43 @@ Use React Native Paper components (`Text`, `Button`, `Card`, etc.) before writin
 
 ## 7. Recipe form architecture
 
-The Recipe screen (`src/screens/Recipe.tsx`) supports read-only view, edit, and create modes in a single component. Form state is held in `RecipeFormContext`.
+The recipe form is built on `react-hook-form` (RHF) with a Zod resolver. Read-only view, edit, and the three create modes are split into per-mode route wrappers (`RecipeView`, `RecipeEdit`, `RecipeAddManual`, `RecipeAddOcr`, `RecipeAddScrape` under `src/screens/recipe/`) that all delegate to a shared `RecipeFormScreen`. The earlier single `Recipe.tsx` component and its `RecipeFormContext` are gone.
 
-### Context structure
+### Form state
 
-`RecipeFormContext` (see `src/context/RecipeFormContext.tsx`) exposes three objects:
+`RecipeFormScreen` (`src/screens/recipe/RecipeFormScreen.tsx`) owns RHF's `<FormProvider>`, configured with `zodResolver(recipeFormSchema)`. Form values are read and written through `useFormContext()` / `useController()` / `useFieldArray()` — there is no bespoke form context. Initial `defaultValues` are selected on `mode` by the builders in `src/screens/recipe/defaults/`:
 
-- `state` — current values for all form fields
-- `setters` — `Dispatch<SetStateAction<T>>` for each field
-- `actions` — `resetToOriginal()` and `createRecipeSnapshot()`
+- `buildEmptyDefaults` — blank form (`addManually`); seeds `recipePersons` from `getDefaultPersonsSync()`
+- `buildDefaultsFromRecipe` — existing recipe (`edit`, `readOnly`)
+- `buildDefaultsFromScrape` — scraped payload (`addFromScrape`)
 
-`RecipeFormProvider` initialises state from navigation props: existing recipe data (edit mode), scraped data (web import), or blank defaults (new recipe).
+### Per-column field controllers
+
+Editable fields live under `src/screens/recipe/fields/`. Each ingredient column (`quantity`, `unit`, `name`) and each preparation step binds its own `useController`, so a keystroke in one column re-renders only that controller — not sibling columns or sibling rows. Array mutations go through `useIngredientArray` / `useStepArray` (thin `useFieldArray` wrappers that emit structured patches), keeping unchanged rows object-stable.
 
 ### Ingredient quantity scaling
 
-When `recipePersons` changes, a `useEffect` in `RecipeFormProvider` automatically scales all ingredient quantities proportionally using `scaleQuantityForPersons` from `src/utils/Quantity.ts`. This keeps ingredient quantities consistent with the displayed serving count throughout the editing session.
+Scaling is no longer a provider effect. `useScalingOnPersonsChange` (`src/screens/recipe/hooks/`) watches `recipePersons` and rewrites ingredient quantities via `scaleQuantityForPersons` (`src/utils/Quantity.ts`), but defers while any ingredient input is focused (tracked by `IngredientFocusContext`) to avoid an on-blur commit clobbering a freshly-scaled value.
 
 ### Field hooks
 
-Each field domain has its own hook that reads from and writes to `RecipeFormContext`:
+Each field domain has its own hook that reads/writes the shared RHF context:
 
 | Hook | Responsibility |
 |---|---|
-| `useRecipeIngredients` | Add, edit, delete, reorder ingredients; similarity detection |
+| `useRecipeIngredients` | Add, edit, merge ingredients; fuzzy DB matching + similarity queue. Emits field-array patches via `IngredientArrayActionsContext` |
 | `useRecipeTags` | Add, remove, suggest tags |
-| `useRecipePreparation` | Add, edit, delete, reorder preparation steps |
 | `useRecipeOCR` | Trigger OCR, parse results into form fields |
 | `useRecipeScraperValidation` | Validate and apply scraped recipe data |
+| `useRandomTagSuggestions` | Provide a random tag sample for the empty-form tag picker |
 
 ### Validation and save
 
-`validateRecipeData` in `src/utils/RecipeFormHelpers.tsx` checks required fields before saving. `createRecipeSnapshot()` assembles the current form state into a `recipeTableElement` ready for `useRecipes.addRecipe()` or `useRecipes.editRecipe()`.
+Validation is schema-driven: `recipeFormSchema` (`src/schemas/recipeFormSchema.ts`) attaches an i18n message key to every field error. At submit time `collectMissingElementsFromErrors` (`src/utils/recipeFormErrors.ts`) walks RHF's error tree and translates the keys into the missing-elements dialog list; `firstErrorMessage` / inline gating (`src/screens/recipe/helpers/inlineErrorGate.ts`) drive per-field inline errors. `createRecipeSnapshot()` (`src/screens/recipe/helpers/`) assembles current form values into a `recipeTableElement` ready for `useRecipes.addRecipe()` or `useRecipes.editRecipe()`.
 
 ### Zod schemas
 
-Narrow Zod schemas exist in `src/schemas/` for sub-forms like the item dialog (`itemDialogSchema.ts`) and bug report (`bugReportSchema.ts`). These use `react-hook-form` with `@hookform/resolvers/zod`. The main recipe form still uses the custom `RecipeFormContext` approach.
+Zod schemas live in `src/schemas/`: the recipe form (`recipeFormSchema.ts`), the item dialog (`itemDialogSchema.ts`), and bug report (`bugReportSchema.ts`). All use `react-hook-form` with `@hookform/resolvers/zod`.
 
 ---
 
@@ -314,7 +321,7 @@ These must not be violated. Violating them causes subtle bugs or breaks CI.
 | React components | PascalCase `.tsx` | `RecipeCard.tsx` |
 | Hooks | camelCase, `use` prefix, `.ts` | `useRecipeIngredients.ts` |
 | Utilities | PascalCase `.tsx` or `.ts` | `RecipeDatabase.tsx`, `Quantity.ts` |
-| Context files | PascalCase, `Context` suffix, `.tsx` | `RecipeFormContext.tsx` |
+| Context files | PascalCase, `Context` suffix, `.tsx` | `RecipeDialogsContext.tsx` |
 | Type files | PascalCase, `Types` suffix, `.tsx` | `DatabaseElementTypes.tsx`, `BulkImportTypes.tsx` |
 | Schemas | camelCase, `Schema` suffix, `.ts` | `itemDialogSchema.ts` |
 | Providers | PascalCase, `Provider` suffix, `.ts` | `HelloFreshProvider.ts` |
