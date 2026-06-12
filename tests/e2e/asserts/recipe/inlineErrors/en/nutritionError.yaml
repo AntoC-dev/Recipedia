@@ -1,0 +1,6 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    id: "Recipe::RecipeNutrition::Error"
+    text: "Fill in all nutrition values"
+    label: "Nutrition inline error is visible"

@@ -1,0 +1,6 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    id: "RecipeTitle::Error"
+    text: "Enter a title"
+    label: "Title inline error is visible"

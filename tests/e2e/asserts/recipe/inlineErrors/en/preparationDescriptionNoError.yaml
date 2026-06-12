@@ -1,0 +1,5 @@
+appId: "com.recipedia"
+---
+- assertNotVisible:
+    id: "RecipePreparation::EditableStep::0::DescriptionError"
+    label: "First preparation step description inline error is hidden"
