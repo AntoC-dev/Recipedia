@@ -12,14 +12,10 @@
  * @module RecipeFormHelpers
  */
 
-import { Dispatch, SetStateAction } from 'react';
 import { recipeStateType } from '@customTypes/ScreenTypes';
 import {
   extractTagsName,
-  FormIngredientElement,
-  ingredientTableElement,
   nutritionTableElement,
-  preparationStepElement,
   recipeColumnsNames,
   recipeTableElement,
   tagTableElement,
@@ -33,8 +29,6 @@ import { RecipeImageProps } from '@components/organisms/RecipeImage';
 import { RecipeTextProps, TextProp } from '@components/organisms/RecipeText';
 import { RecipeTagProps } from '@components/organisms/RecipeTags';
 import { RecipeNumberProps } from '@components/organisms/RecipeNumber';
-import { RecipeIngredientsProps } from '@components/organisms/RecipeIngredients';
-import { RecipePreparationProps } from '@components/organisms/RecipePreparation';
 import { RecipeNutritionProps } from '@components/organisms/RecipeNutrition';
 import { RecipeSourceUrlProps } from '@components/molecules/RecipeSourceUrl';
 
@@ -165,83 +159,6 @@ export function hasScrapedDataFromProps(
 }
 
 /**
- * Data required for recipe validation
- */
-export interface RecipeValidationData {
-  recipeImage: string;
-  recipeTitle: string;
-  recipeIngredients: (ingredientTableElement | FormIngredientElement)[];
-  recipePreparation: preparationStepElement[];
-  recipePersons: number;
-  recipeTime: number;
-  recipeNutrition: nutritionTableElement | undefined;
-}
-
-/**
- * Validates recipe data before saving to database
- *
- * Checks all required fields and returns a list of missing/invalid elements.
- * Used before add/edit operations to ensure data completeness.
- *
- * @param data - Recipe form data to validate
- * @param t - Translation function for error messages
- * @returns Array of translated error messages for missing/invalid fields
- */
-export function validateRecipeData(
-  data: RecipeValidationData,
-  t: (key: string) => string
-): string[] {
-  const missingElem: string[] = [];
-  const translatedMissingElemPrefix = 'alerts.missingElements.';
-
-  if (!data.recipeImage || data.recipeImage.trim().length === 0) {
-    missingElem.push(t(translatedMissingElemPrefix + 'image'));
-  }
-  if (!data.recipeTitle || data.recipeTitle.trim().length === 0) {
-    missingElem.push(t(translatedMissingElemPrefix + 'titleRecipe'));
-  }
-  if (data.recipeIngredients.length === 0) {
-    missingElem.push(t(translatedMissingElemPrefix + 'titleIngredients'));
-  } else {
-    const allIngredientsHaveNames = data.recipeIngredients.every(
-      ingredient => ingredient.name && ingredient.name.trim().length > 0
-    );
-    if (!allIngredientsHaveNames) {
-      missingElem.push(t(translatedMissingElemPrefix + 'ingredientNames'));
-    }
-    const allIngredientsHaveQuantities = data.recipeIngredients.every(
-      ingredient => ingredient.quantity && ingredient.quantity.trim().length > 0
-    );
-    if (!allIngredientsHaveQuantities) {
-      missingElem.push(t(translatedMissingElemPrefix + 'ingredientQuantities'));
-    }
-    const areKnownInDatabase = data.recipeIngredients.every(
-      ingredient => ingredient.type !== undefined && ingredient.season !== undefined
-    );
-    if (!areKnownInDatabase) {
-      missingElem.push(t(translatedMissingElemPrefix + 'ingredientInDatabase'));
-    }
-  }
-  if (data.recipePreparation.length === 0) {
-    missingElem.push(t(translatedMissingElemPrefix + 'titlePreparation'));
-  }
-  if (data.recipePersons === defaultValueNumber) {
-    missingElem.push(t(translatedMissingElemPrefix + 'titlePersons'));
-  }
-  if (data.recipeTime === defaultValueNumber) {
-    missingElem.push(t(translatedMissingElemPrefix + 'titleTime'));
-  }
-  if (
-    data.recipeNutrition &&
-    Object.values(data.recipeNutrition).some(value => value === defaultValueNumber)
-  ) {
-    missingElem.push(t(translatedMissingElemPrefix + 'nutrition'));
-  }
-
-  return missingElem;
-}
-
-/**
  * Scales recipe ingredients to default person count for database storage
  *
  * Normalizes recipes to a standard serving size before saving to ensure
@@ -279,11 +196,26 @@ export function scaleRecipeForSave(
  * @param openModalForField - Callback to open OCR modal
  * @returns Props object for RecipeImage component
  */
-export function buildRecipeImageProps(
-  stackMode: recipeStateType,
-  recipeImage: string,
-  openModalForField: (field: OcrModalTarget) => void
-): RecipeImageProps {
+/** Fields every recipe-form `build*Props` helper accepts */
+interface BaseFieldInput {
+  stackMode: recipeStateType;
+  openModalForField: (field: OcrModalTarget) => void;
+}
+
+/** Adds the translation function — every helper that emits user-facing copy */
+interface BaseFieldInputT extends BaseFieldInput {
+  t: (key: string) => string;
+}
+
+export interface RecipeImagePropsInput extends BaseFieldInput {
+  recipeImage: string;
+}
+
+export function buildRecipeImageProps({
+  stackMode,
+  recipeImage,
+  openModalForField,
+}: RecipeImagePropsInput): RecipeImageProps {
   return {
     imgUri: recipeImage,
     openModal: openModalForField,
@@ -306,13 +238,18 @@ export function buildRecipeImageProps(
  * @param t - Translation function
  * @returns Props object for RecipeText component
  */
-export function buildRecipeTitleProps(
-  stackMode: recipeStateType,
-  recipeTitle: string,
-  setRecipeTitle: Dispatch<SetStateAction<string>>,
-  openModalForField: (field: OcrModalTarget) => void,
-  t: (key: string) => string
-): RecipeTextProps {
+export interface RecipeTitlePropsInput extends BaseFieldInputT {
+  recipeTitle: string;
+  setRecipeTitle: (value: string) => void;
+}
+
+export function buildRecipeTitleProps({
+  stackMode,
+  recipeTitle,
+  setRecipeTitle,
+  openModalForField,
+  t,
+}: RecipeTitlePropsInput): RecipeTextProps {
   const titleTestID = 'RecipeTitle';
   const titleRootText: TextProp = {
     style: TITLE_STYLE_CONFIG[stackMode],
@@ -365,13 +302,18 @@ export function buildRecipeTitleProps(
  * @param t - Translation function
  * @returns Props object for RecipeText component
  */
-export function buildRecipeDescriptionProps(
-  stackMode: recipeStateType,
-  recipeDescription: string,
-  setRecipeDescription: Dispatch<SetStateAction<string>>,
-  openModalForField: (field: OcrModalTarget) => void,
-  t: (key: string) => string
-): RecipeTextProps {
+export interface RecipeDescriptionPropsInput extends BaseFieldInputT {
+  recipeDescription: string;
+  setRecipeDescription: (value: string) => void;
+}
+
+export function buildRecipeDescriptionProps({
+  stackMode,
+  recipeDescription,
+  setRecipeDescription,
+  openModalForField,
+  t,
+}: RecipeDescriptionPropsInput): RecipeTextProps {
   const descriptionTestID = 'RecipeDescription';
   const descriptionRootText: TextProp = {
     style: stackMode === recipeStateType.readOnly ? 'paragraph' : 'title',
@@ -425,15 +367,23 @@ export function buildRecipeDescriptionProps(
  * @param openModalForField - Callback to open OCR modal
  * @returns Props object for RecipeTags component
  */
-export function buildRecipeTagsProps(
-  stackMode: recipeStateType,
-  recipeTags: tagTableElement[],
-  randomTags: string[],
-  addTag: (newTag: string) => void,
-  removeTag: (tagName: string) => void,
-  openModalForField: (field: OcrModalTarget) => void,
-  hideDropdown?: boolean
-): RecipeTagProps {
+export interface RecipeTagsPropsInput extends BaseFieldInput {
+  recipeTags: tagTableElement[];
+  randomTags: string[];
+  addTag: (newTag: string) => void;
+  removeTag: (tagName: string) => void;
+  hideDropdown?: boolean;
+}
+
+export function buildRecipeTagsProps({
+  stackMode,
+  recipeTags,
+  randomTags,
+  addTag,
+  removeTag,
+  openModalForField,
+  hideDropdown,
+}: RecipeTagsPropsInput): RecipeTagProps {
   const tagsExtracted = extractTagsName(recipeTags);
   const editProps: RecipeTagProps = {
     tagsList: tagsExtracted,
@@ -473,13 +423,18 @@ export function buildRecipeTagsProps(
  * @param t - Translation function
  * @returns Props object for RecipeNumber component
  */
-export function buildRecipePersonsProps(
-  stackMode: recipeStateType,
-  recipePersons: number,
-  setRecipePersons: Dispatch<SetStateAction<number>>,
-  openModalForField: (field: OcrModalTarget) => void,
-  t: (key: string) => string
-): RecipeNumberProps {
+export interface RecipePersonsPropsInput extends BaseFieldInputT {
+  recipePersons: number;
+  setRecipePersons: (value: number) => void;
+}
+
+export function buildRecipePersonsProps({
+  stackMode,
+  recipePersons,
+  setRecipePersons,
+  openModalForField,
+  t,
+}: RecipePersonsPropsInput): RecipeNumberProps {
   const personTestID = 'RecipePersons';
 
   if (stackMode === recipeStateType.readOnly) {
@@ -534,13 +489,18 @@ export function buildRecipePersonsProps(
  * @param t - Translation function
  * @returns Props object for RecipeNumber component
  */
-export function buildRecipeTimeProps(
-  stackMode: recipeStateType,
-  recipeTime: number,
-  setRecipeTime: Dispatch<SetStateAction<number>>,
-  openModalForField: (field: OcrModalTarget) => void,
-  t: (key: string) => string
-): RecipeNumberProps {
+export interface RecipeTimePropsInput extends BaseFieldInputT {
+  recipeTime: number;
+  setRecipeTime: (value: number) => void;
+}
+
+export function buildRecipeTimeProps({
+  stackMode,
+  recipeTime,
+  setRecipeTime,
+  openModalForField,
+  t,
+}: RecipeTimePropsInput): RecipeNumberProps {
   const timeTestID = 'RecipeTime';
 
   if (stackMode === recipeStateType.readOnly) {
@@ -580,128 +540,6 @@ export function buildRecipeTimeProps(
 }
 
 /**
- * Builds props for RecipeIngredients component based on current mode
- *
- * Handles mode-specific behavior:
- * - readOnly: Displays ingredients as read-only list
- * - edit/addManual: Editable ingredients with inline editing
- * - addOCR: Add mode with two OCR scan buttons (names photo, quantities photo)
- *
- * @param stackMode - Current recipe screen mode
- * @param recipeIngredients - Current ingredients array
- * @param editIngredients - Callback to edit an ingredient
- * @param addNewIngredient - Callback to add a new ingredient
- * @param openModalForField - Callback to open OCR modal for a given field
- * @param t - Translation function
- * @returns Props object for RecipeIngredients component
- */
-export function buildRecipeIngredientsProps(
-  stackMode: recipeStateType,
-  recipeIngredients: (ingredientTableElement | FormIngredientElement)[],
-  editIngredients: (oldIngredientId: number, newIngredient: string) => void,
-  addNewIngredient: () => void,
-  removeIngredient: (index: number) => void,
-  openModalForField: (field: OcrModalTarget) => void,
-  t: (key: string) => string,
-  hideDropdown?: boolean
-): RecipeIngredientsProps {
-  const ingredientTestID = 'RecipeIngredients';
-  const ingredientPrefixText = t('ingredients') + ': ';
-
-  if (stackMode === recipeStateType.readOnly) {
-    return {
-      testID: ingredientTestID,
-      ingredients: recipeIngredients as ingredientTableElement[],
-      mode: 'readOnly',
-    };
-  }
-
-  const baseEditProps = {
-    testID: ingredientTestID,
-    ingredients: recipeIngredients as ingredientTableElement[],
-    prefixText: ingredientPrefixText,
-    columnTitles: {
-      column1: t('quantity'),
-      column2: t('unit'),
-      column3: t('ingredientName'),
-    },
-    onIngredientChange: editIngredients,
-    onAddIngredient: addNewIngredient,
-    onRemoveIngredient: removeIngredient,
-    noteInputPlaceholder: t('ingredientNotePlaceholder'),
-    hideDropdown,
-  };
-
-  if (stackMode === recipeStateType.addOCR) {
-    return {
-      mode: 'add',
-      openModalForField,
-      ...baseEditProps,
-    };
-  }
-
-  return {
-    mode: 'editable',
-    ...baseEditProps,
-  };
-}
-
-/**
- * Builds props for RecipePreparation component based on current mode
- *
- * Handles mode-specific behavior:
- * - readOnly: Displays preparation steps as read-only list
- * - edit/addManual: Editable steps with inline editing
- * - addOCR with no steps: Shows OCR button option
- *
- * @param stackMode - Current recipe screen mode
- * @param recipePreparation - Current preparation steps array
- * @param commitPreparationTitle - Callback to commit a step title on blur
- * @param commitPreparationDescription - Callback to commit a step description on blur
- * @param addNewPreparationStep - Callback to add a new step
- * @param openModalForField - Callback to open OCR modal
- * @param t - Translation function
- * @returns Props object for RecipePreparation component
- */
-export function buildRecipePreparationProps(
-  stackMode: recipeStateType,
-  recipePreparation: preparationStepElement[],
-  commitPreparationTitle: (stepIndex: number, title: string) => void,
-  commitPreparationDescription: (stepIndex: number, description: string) => void,
-  addNewPreparationStep: () => void,
-  openModalForField: (field: OcrModalTarget) => void,
-  t: (key: string) => string
-): RecipePreparationProps {
-  if (stackMode === recipeStateType.readOnly) {
-    return {
-      steps: recipePreparation,
-      mode: 'readOnly',
-    };
-  }
-
-  const editableProps = {
-    steps: recipePreparation,
-    prefixText: t('preparationReadOnly'),
-    onTitleEditingEnded: commitPreparationTitle,
-    onDescriptionEditingEnded: commitPreparationDescription,
-    onAddStep: addNewPreparationStep,
-  };
-
-  if (stackMode === recipeStateType.addOCR && recipePreparation.length === 0) {
-    return {
-      ...editableProps,
-      mode: 'add',
-      openModal: () => openModalForField(recipeColumnsNames.preparation),
-    };
-  }
-
-  return {
-    ...editableProps,
-    mode: 'editable',
-  };
-}
-
-/**
  * Builds props for RecipeNutrition component based on current mode
  *
  * Handles mode-specific behavior:
@@ -716,50 +554,31 @@ export function buildRecipePreparationProps(
  * @param parentTestId - Test ID prefix for component
  * @returns Props object for RecipeNutrition component
  */
-export function buildRecipeNutritionProps(
-  stackMode: recipeStateType,
-  recipeNutrition: nutritionTableElement | undefined,
-  setRecipeNutrition: Dispatch<SetStateAction<nutritionTableElement | undefined>>,
-  openModalForField: (field: OcrModalTarget) => void,
-  parentTestId: string
-): RecipeNutritionProps {
-  switch (stackMode) {
-    case recipeStateType.readOnly:
-      return {
-        parentTestId,
-        nutrition: recipeNutrition,
-        mode: recipeStateType.readOnly,
-      };
-    case recipeStateType.edit:
-      return {
-        parentTestId,
-        nutrition: recipeNutrition,
-        mode: recipeStateType.edit,
-        onNutritionChange: setRecipeNutrition,
-      };
-    case recipeStateType.addManual:
-      return {
-        parentTestId,
-        nutrition: recipeNutrition,
-        mode: recipeStateType.addManual,
-        onNutritionChange: setRecipeNutrition,
-      };
-    case recipeStateType.addOCR:
-      return {
-        parentTestId,
-        nutrition: recipeNutrition,
-        mode: recipeStateType.addOCR,
-        onNutritionChange: setRecipeNutrition,
-        openModal: () => openModalForField(recipeColumnsNames.nutrition),
-      };
-    case recipeStateType.addScrape:
-      return {
-        parentTestId,
-        nutrition: recipeNutrition,
-        mode: recipeStateType.addScrape,
-        onNutritionChange: setRecipeNutrition,
-      };
+export interface RecipeNutritionPropsInput extends BaseFieldInput {
+  recipeNutrition: nutritionTableElement | undefined;
+  setRecipeNutrition: (value: nutritionTableElement | undefined) => void;
+  parentTestId: string;
+}
+
+export function buildRecipeNutritionProps({
+  stackMode,
+  recipeNutrition,
+  setRecipeNutrition,
+  openModalForField,
+  parentTestId,
+}: RecipeNutritionPropsInput): RecipeNutritionProps {
+  if (stackMode === recipeStateType.readOnly) {
+    return { parentTestId, nutrition: recipeNutrition, mode: stackMode };
   }
+  const base = {
+    parentTestId,
+    nutrition: recipeNutrition,
+    mode: stackMode,
+    onNutritionChange: setRecipeNutrition,
+  };
+  return stackMode === recipeStateType.addOCR
+    ? { ...base, openModal: () => openModalForField(recipeColumnsNames.nutrition) }
+    : base;
 }
 
 /**
@@ -841,11 +660,17 @@ export function getMissingFieldsErrorContent(
  * @param onCopied - Callback fired after URL is copied to clipboard
  * @returns Props object for RecipeSourceUrl or undefined if component should not be shown
  */
-export function buildRecipeSourceUrlProps(
-  stackMode: recipeStateType,
-  sourceUrl: string | undefined,
-  onCopied: () => void
-): RecipeSourceUrlProps | undefined {
+export interface RecipeSourceUrlPropsInput {
+  stackMode: recipeStateType;
+  sourceUrl: string | undefined;
+  onCopied: () => void;
+}
+
+export function buildRecipeSourceUrlProps({
+  stackMode,
+  sourceUrl,
+  onCopied,
+}: RecipeSourceUrlPropsInput): RecipeSourceUrlProps | undefined {
   if (stackMode !== recipeStateType.readOnly) {
     return undefined;
   }

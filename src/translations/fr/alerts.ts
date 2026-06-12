@@ -22,6 +22,16 @@ export default {
     ingredientNames: 'des noms pour tous les ingrédients',
     nutrition: 'informations nutritionnelles complètes',
   },
+  inlineErrors: {
+    image: 'Ajoutez une photo de la recette',
+    titleRecipe: 'Saisissez un titre',
+    titleIngredients: 'Ajoutez au moins un ingrédient',
+    ingredientRow: 'Complétez cet ingrédient',
+    titlePreparation: 'Ajoutez au moins une étape',
+    titlePersons: 'Indiquez le nombre de personnes',
+    titleTime: 'Indiquez un temps de préparation',
+    nutrition: 'Renseignez toutes les valeurs nutritionnelles',
+  },
   ocrRecipe: {
     explanationText: 'Choisissez une image:',
     photo: 'Prendre une nouvelle photo',

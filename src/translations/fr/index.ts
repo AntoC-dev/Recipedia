@@ -41,6 +41,7 @@ export default {
   filterTypes: filters.filterTypes,
   alerts: {
     missingElements: alerts.missingElements,
+    inlineErrors: alerts.inlineErrors,
     ocrRecipe: alerts.ocrRecipe,
     tagSimilarity: alerts.tagSimilarity,
     ingredientSimilarity: alerts.ingredientSimilarity,

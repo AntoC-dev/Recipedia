@@ -74,6 +74,24 @@ export const setDarkMode = async (value: boolean): Promise<void> => {
 };
 
 /**
+ * In-memory cache of the user's default-persons preference, populated by
+ * `initSettings` at app startup and refreshed by `setDefaultPersons`. Allows
+ * downstream consumers (notably the Recipe form's `useForm` defaultValues) to
+ * read the value synchronously at mount time without a post-mount async
+ * `setValue` round-trip that would force an extra render.
+ */
+let defaultPersonsCache: number = DEFAULT_SETTINGS.defaultPersons;
+
+/**
+ * Synchronous read of the default-persons setting from the in-memory cache.
+ *
+ * Returns the user's preferred value if `initSettings` has already loaded it,
+ * otherwise the `DEFAULT_SETTINGS.defaultPersons` fallback. Always returns a
+ * sensible number — never throws.
+ */
+export const getDefaultPersonsSync = (): number => defaultPersonsCache;
+
+/**
  * Reads the default serving-persons preference from storage.
  *
  * Falls back to {@link DEFAULT_SETTINGS}.`defaultPersons` when the value has
@@ -84,7 +102,9 @@ export const setDarkMode = async (value: boolean): Promise<void> => {
 export const getDefaultPersons = async (): Promise<number> => {
   try {
     const value = await AsyncStorage.getItem(SETTINGS_KEYS.DEFAULT_PERSONS);
-    return value !== null ? parseInt(value, 10) : DEFAULT_SETTINGS.defaultPersons;
+    const parsed = value !== null ? parseInt(value, 10) : DEFAULT_SETTINGS.defaultPersons;
+    defaultPersonsCache = parsed;
+    return parsed;
   } catch (error) {
     settingsLogger.error('Failed to get default persons setting', { error });
     return DEFAULT_SETTINGS.defaultPersons;
@@ -99,6 +119,13 @@ export const getDefaultPersons = async (): Promise<number> => {
 export const setDefaultPersons = async (value: number): Promise<void> => {
   try {
     settingsLogger.info('Set default persons to ', value);
+    // Refresh the in-memory cache BEFORE awaiting AsyncStorage. Any sync
+    // reader (e.g. `getDefaultPersonsSync` called by `buildEmptyDefaults`
+    // inside `RecipeFormScreen`) that fires during the AsyncStorage round-trip
+    // would otherwise still see the pre-write value, opening a recipe form
+    // with stale persons even though the React state in
+    // `DefaultPersonsContext` has already updated.
+    defaultPersonsCache = value;
     await AsyncStorage.setItem(SETTINGS_KEYS.DEFAULT_PERSONS, value.toString());
   } catch (error) {
     settingsLogger.error('Failed to save default persons setting', { value, error });
@@ -200,5 +227,8 @@ export const initSettings = async (): Promise<void> => {
     settingsLogger.debug('Setting language', { language });
     await i18n.changeLanguage(language);
   }
+  // Warm the default-persons cache so `getDefaultPersonsSync` returns the
+  // user's saved preference (not the hard-coded fallback) on first read.
+  await getDefaultPersons();
   settingsLogger.debug('Settings initialization completed');
 };
