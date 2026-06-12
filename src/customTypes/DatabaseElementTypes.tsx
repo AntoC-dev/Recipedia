@@ -96,8 +96,6 @@ export enum recipeColumnsNames {
   nutrition = 'NUTRITION',
   sourceUrl = 'SOURCE_URL',
   sourceProvider = 'SOURCE_PROVIDER',
-  ingredientNames = 'INGREDIENT_NAMES',
-  ingredientQuantities = 'INGREDIENT_QUANTITIES',
 }
 
 /**
@@ -442,7 +440,6 @@ export function isRecipePartiallyEqual(
 export function isRecipeEqual(recipe1: recipeTableElement, recipe2: recipeTableElement): boolean {
   return (
     recipe1.image_Source === recipe2.image_Source &&
-    recipe1.image_Source === recipe2.image_Source &&
     recipe1.title === recipe2.title &&
     recipe1.description === recipe2.description &&
     JSON.stringify(recipe1.tags) === JSON.stringify(recipe2.tags) &&
@@ -450,7 +447,9 @@ export function isRecipeEqual(recipe1: recipeTableElement, recipe2: recipeTableE
     JSON.stringify(recipe1.ingredients) === JSON.stringify(recipe2.ingredients) &&
     JSON.stringify(recipe1.season) === JSON.stringify(recipe2.season) &&
     JSON.stringify(recipe1.preparation) === JSON.stringify(recipe2.preparation) &&
-    recipe1.time === recipe2.time
+    recipe1.time === recipe2.time &&
+    JSON.stringify(recipe1.nutrition) === JSON.stringify(recipe2.nutrition) &&
+    recipe1.sourceUrl === recipe2.sourceUrl
   );
 }
 
