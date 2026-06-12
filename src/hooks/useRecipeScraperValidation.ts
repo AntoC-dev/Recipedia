@@ -8,22 +8,30 @@
  * @module useRecipeScraperValidation
  */
 
-import { useEffect, useRef } from 'react';
-import { recipeStateType } from '@customTypes/ScreenTypes';
+import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
 import {
   deduplicateIngredientsByName,
-  removeIngredientByName,
   removeTagByName,
   replaceMatchingTags,
   validateAndQueueIngredients,
   validateAndQueueTags,
 } from '@utils/RecipeValidationHelpers';
 import { useRecipeDialogs } from '@context/RecipeDialogsContext';
-import { useRecipeForm } from '@context/RecipeFormContext';
+import { useFormContext } from 'react-hook-form';
+import { makeFormSetter } from '@utils/recipeFormSetters';
+import type { RecipeFormInput } from '@schemas/recipeFormSchema';
 import { useRecipeIngredients } from '@hooks/useRecipeIngredients';
-import { FormIngredientElement, tagTableElement } from '@customTypes/DatabaseElementTypes';
+import { validationLogger } from '@utils/logger';
+import { markAllRecipeFieldsTouched } from '@utils/recipeFormErrors';
+import {
+  FormIngredientElement,
+  ingredientTableElement,
+  tagTableElement,
+} from '@customTypes/DatabaseElementTypes';
 import { useTags } from '@hooks/useTags';
 import { useIngredients } from '@hooks/useIngredients';
+
+type ScraperIngredientList = (ingredientTableElement | FormIngredientElement)[];
 
 /**
  * Hook that triggers ValidationQueue for scraped recipe data.
@@ -34,18 +42,21 @@ import { useIngredients } from '@hooks/useIngredients';
  */
 export function useRecipeScraperValidation(): void {
   const { setValidationQueue, validationQueue } = useRecipeDialogs();
-  const { state, setters } = useRecipeForm();
-  const { replaceAllMatchingFormIngredients } = useRecipeIngredients();
+  const form = useFormContext<RecipeFormInput>();
+  const { replaceAllMatchingFormIngredients, removeMatchingFormIngredients } =
+    useRecipeIngredients();
   const { findSimilarTags } = useTags();
   const { findSimilarIngredients } = useIngredients();
 
-  const { stackMode, recipeIngredients, recipeTags } = state;
-  const { setRecipeIngredients, setRecipeTags } = setters;
+  const setRecipeTags = makeFormSetter(form, 'recipeTags') as unknown as Dispatch<
+    SetStateAction<tagTableElement[]>
+  >;
 
   const hasRunRef = useRef(false);
   const pendingIngredientsRef = useRef<FormIngredientElement[] | null>(null);
 
   const getIngredientItems = (): FormIngredientElement[] => {
+    const recipeIngredients = (form.getValues('recipeIngredients') ?? []) as ScraperIngredientList;
     if (recipeIngredients.length === 0) {
       return [];
     }
@@ -58,7 +69,7 @@ export function useRecipeScraperValidation(): void {
       findSimilarIngredients,
       replaceAllMatchingFormIngredients,
       setValidationQueue,
-      { onDismissed: item => setRecipeIngredients(prev => removeIngredientByName(prev, item.name)) }
+      { onDismissed: item => removeMatchingFormIngredients(item.name) }
     );
   };
 
@@ -80,25 +91,43 @@ export function useRecipeScraperValidation(): void {
     }
   }, [validationQueue]);
 
+  // Mount-once: this hook is only invoked from `RecipeAddScrape`, so the route
+  // name already guarantees the addScrape mode. The ref guards re-mounts.
   useEffect(() => {
-    if (stackMode !== recipeStateType.addScrape || hasRunRef.current) {
+    if (hasRunRef.current) {
       return;
     }
     hasRunRef.current = true;
 
     const ingredientItems = getIngredientItems();
+    const recipeTags = (form.getValues('recipeTags') ?? []) as tagTableElement[];
     const tagItems = recipeTags.length > 0 ? [...recipeTags] : [];
+
+    validationLogger.info('Scraper validation kicking off', {
+      ingredientsToValidate: ingredientItems.length,
+      tagsToValidate: tagItems.length,
+    });
+
+    // Scraped data is pre-populated via defaultValues, which bypasses field
+    // blur events. Mark every field as touched and trigger a full-form
+    // validation so missing or invalid fields surface as inline errors
+    // immediately rather than only on submit (inline display is gated on
+    // `fieldState.isTouched`).
+    markAllRecipeFieldsTouched(form);
+    void form.trigger();
 
     if (tagItems.length > 0) {
       if (ingredientItems.length > 0) {
         pendingIngredientsRef.current = ingredientItems;
       }
+      validationLogger.debug('Starting tag validation queue (ingredients deferred)');
       startTagValidation(tagItems);
       return;
     }
 
     if (ingredientItems.length > 0) {
+      validationLogger.debug('Starting ingredient validation queue');
       startIngredientValidation(ingredientItems);
     }
-  }, [stackMode]);
+  }, []);
 }

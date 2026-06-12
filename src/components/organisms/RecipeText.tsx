@@ -49,7 +49,7 @@ import { View } from 'react-native';
 import React from 'react';
 import { RoundButton } from '@components/atomic/RoundButton';
 import { Icons } from '@assets/Icons';
-import { Text } from 'react-native-paper';
+import { HelperText, Text } from 'react-native-paper';
 import { recipeTextStyles } from '@styles/recipeComponents';
 import { VariantProp } from 'react-native-paper/lib/typescript/components/Typography/types';
 import { CustomTextInput } from '@components/atomic/CustomTextInput';
@@ -74,8 +74,8 @@ export type RecipeTextEditProps = {
   editType: 'editable';
   /** Current editable text value */
   textEditable: string;
-  /** State setter for updating editable text */
-  setTextToEdit: React.Dispatch<React.SetStateAction<string>>;
+  /** Setter for updating editable text */
+  setTextToEdit: (value: string) => void;
 };
 
 /**
@@ -97,6 +97,10 @@ export type RecipeTextProps = {
   addOrEditProps?: RecipeTextAddOrEditProps;
   /** Unique identifier for testing and accessibility */
   testID?: string;
+  /** Optional translated error message displayed below the input */
+  error?: string;
+  /** Optional blur handler forwarded to the editable input */
+  onBlur?: () => void;
 };
 
 /**
@@ -105,7 +109,7 @@ export type RecipeTextProps = {
  * @param props - The component props with discriminated union for editing modes
  * @returns JSX element representing formatted text with optional editing capabilities
  */
-export function RecipeText({ rootText, testID, addOrEditProps }: RecipeTextProps) {
+export function RecipeText({ rootText, testID, addOrEditProps, error, onBlur }: RecipeTextProps) {
   const containerStyle =
     addOrEditProps?.editType === 'add'
       ? recipeTextStyles.containerTab
@@ -134,7 +138,12 @@ export function RecipeText({ rootText, testID, addOrEditProps }: RecipeTextProps
       >
         {rootText.value}
       </Text>
-      {addOrEditProps ? <RecipeTextEditablePart {...addOrEditProps} /> : null}
+      {addOrEditProps ? <RecipeTextEditablePart {...addOrEditProps} onBlur={onBlur} /> : null}
+      {error ? (
+        <HelperText testID={(testID ?? 'RecipeText') + '::Error'} type='error' visible={true}>
+          {error}
+        </HelperText>
+      ) : null}
     </View>
   );
 }
@@ -145,7 +154,9 @@ export function RecipeText({ rootText, testID, addOrEditProps }: RecipeTextProps
  * @param addOrEditProps - The editing configuration props
  * @returns JSX element representing the editable portion (input or modal button)
  */
-function RecipeTextEditablePart(addOrEditProps: RecipeTextAddOrEditProps) {
+function RecipeTextEditablePart(
+  addOrEditProps: RecipeTextAddOrEditProps & { onBlur?: () => void }
+) {
   return (
     <View>
       {addOrEditProps.editType === 'editable' ? (
@@ -154,7 +165,15 @@ function RecipeTextEditablePart(addOrEditProps: RecipeTextAddOrEditProps) {
           style={recipeTextStyles.containerElement}
           value={addOrEditProps.textEditable ?? ''}
           multiline={true}
+          // Commit on every keystroke AND on blur. The keystroke write keeps
+          // the form value live so a Save tap with an unfocused-but-typed
+          // input still persists the latest text (`Keyboard.dismiss` cannot
+          // guarantee a synchronous blur over the RN bridge). Per-field
+          // `useController` bounds the re-render cascade to this one field
+          // wrapper — sibling fields are unaffected.
           onChangeText={newText => addOrEditProps.setTextToEdit(newText)}
+          onEndEditing={newText => addOrEditProps.setTextToEdit(newText)}
+          onBlur={addOrEditProps.onBlur}
         />
       ) : (
         <RoundButton
