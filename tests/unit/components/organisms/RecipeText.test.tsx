@@ -160,7 +160,6 @@ describe('RecipeText Component', () => {
     expect(mockSetTextToEdit).not.toHaveBeenCalled();
 
     fireEvent.changeText(textInput, 'Updated text content');
-
     expect(mockSetTextToEdit).toHaveBeenCalledTimes(1);
     expect(mockSetTextToEdit).toHaveBeenCalledWith('Updated text content');
 
@@ -405,6 +404,67 @@ describe('RecipeText Component', () => {
       );
 
       expect(getByTestId('test-recipe-text::Text').props.children).toBe(state.rootText.value);
+    });
+  });
+
+  describe('error display', () => {
+    test('does not render error helper when error prop is absent', () => {
+      const { queryByTestId } = renderRecipeText({
+        addOrEditProps: {
+          testID: 'test-recipe-text',
+          editType: 'editable',
+          textEditable: 'value',
+          setTextToEdit: mockSetTextToEdit,
+        },
+      });
+      expect(queryByTestId('test-recipe-text::Error')).toBeNull();
+    });
+
+    test('renders error helper with the provided message in editable mode', () => {
+      const { getByTestId } = renderRecipeText({
+        addOrEditProps: {
+          testID: 'test-recipe-text',
+          editType: 'editable',
+          textEditable: '',
+          setTextToEdit: mockSetTextToEdit,
+        },
+        error: 'Title is required',
+      });
+      const helper = getByTestId('test-recipe-text::Error');
+      expect(helper.props.children).toBe('Title is required');
+      expect(helper.props.type).toBe('error');
+    });
+
+    test('renders error helper alongside add mode', () => {
+      const { getByTestId } = renderRecipeText({
+        addOrEditProps: {
+          testID: 'test-recipe-text',
+          editType: 'add',
+          openModal: mockOpenModal,
+        },
+        error: 'Required',
+      });
+      expect(getByTestId('test-recipe-text::Error').props.children).toBe('Required');
+    });
+
+    test('does not render error in read-only mode when no error provided', () => {
+      const { queryByTestId } = renderRecipeText();
+      expect(queryByTestId('test-recipe-text::Error')).toBeNull();
+    });
+
+    test('forwards onBlur to the underlying text input', () => {
+      const onBlur = jest.fn();
+      const { getByTestId } = renderRecipeText({
+        addOrEditProps: {
+          testID: 'test-recipe-text',
+          editType: 'editable',
+          textEditable: '',
+          setTextToEdit: mockSetTextToEdit,
+        },
+        onBlur,
+      });
+      const input = getByTestId('test-recipe-text::CustomTextInput');
+      expect(input.props.onBlur).toBe(onBlur);
     });
   });
 });

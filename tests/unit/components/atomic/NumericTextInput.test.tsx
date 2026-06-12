@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import NumericTextInput, { NumericTextInputProps } from '@components/atomic/NumericTextInput';
 import { TextInput } from 'react-native-paper';
 import { defaultValueNumber } from '@utils/Constants';
@@ -32,7 +32,24 @@ describe('NumericTextInput', () => {
     expect(input.props.value).toEqual('2.5');
   });
 
-  test('parses "2." to 2 on blur', () => {
+  test('live-commits parsed value on each keystroke', () => {
+    const handleChangeValue = jest.fn();
+    const { getByTestId } = render(
+      <NumericTextInput {...baseProps} value={0} onChangeValue={handleChangeValue} />
+    );
+    const input = getByTestId('numeric-input');
+
+    fireEvent.changeText(input, '2');
+    expect(handleChangeValue).toHaveBeenLastCalledWith(2);
+
+    fireEvent.changeText(input, '2.');
+    expect(handleChangeValue).toHaveBeenLastCalledWith(2);
+
+    fireEvent.changeText(input, '2.5');
+    expect(handleChangeValue).toHaveBeenLastCalledWith(2.5);
+  });
+
+  test('normalizes display to canonical form on blur', () => {
     const handleChangeValue = jest.fn();
     const { getByTestId } = render(
       <NumericTextInput {...baseProps} value={0} onChangeValue={handleChangeValue} />
@@ -42,24 +59,10 @@ describe('NumericTextInput', () => {
     fireEvent.changeText(input, '2.');
     fireEvent(input, 'onBlur');
 
-    expect(handleChangeValue).toHaveBeenCalledWith(2);
     expect(input.props.value).toEqual('2');
   });
 
-  test('parses "2.5" to 2.5 on blur', () => {
-    const handleChangeValue = jest.fn();
-    const { getByTestId } = render(
-      <NumericTextInput {...baseProps} value={0} onChangeValue={handleChangeValue} />
-    );
-    const input = getByTestId('numeric-input');
-
-    fireEvent.changeText(input, '2.5');
-    fireEvent(input, 'onBlur');
-
-    expect(handleChangeValue).toHaveBeenCalledWith(2.5);
-  });
-
-  test('handles empty input by defaulting to defaultValueNumber', () => {
+  test('commits empty input as defaultValueNumber on blur, not on the empty-string change', () => {
     const handleChangeValue = jest.fn();
     const { getByTestId } = render(
       <NumericTextInput {...baseProps} value={42} onChangeValue={handleChangeValue} />
@@ -67,13 +70,14 @@ describe('NumericTextInput', () => {
     const input = getByTestId('numeric-input');
 
     fireEvent.changeText(input, '');
-    fireEvent(input, 'onBlur');
-
-    expect(handleChangeValue).toHaveBeenCalledWith(defaultValueNumber);
+    expect(handleChangeValue).not.toHaveBeenCalled();
     expect(input.props.value).toEqual('');
+
+    fireEvent(input, 'onBlur');
+    expect(handleChangeValue).toHaveBeenCalledWith(defaultValueNumber);
   });
 
-  test('handles invalid input by defaulting to defaultValueNumber', () => {
+  test('commits defaultValueNumber on invalid input on blur', () => {
     const handleChangeValue = jest.fn();
     const { getByTestId } = render(
       <NumericTextInput {...baseProps} value={5} onChangeValue={handleChangeValue} />
@@ -81,13 +85,13 @@ describe('NumericTextInput', () => {
     const input = getByTestId('numeric-input');
 
     fireEvent.changeText(input, 'abc');
-    fireEvent(input, 'onBlur');
+    expect(handleChangeValue).not.toHaveBeenCalled();
 
+    fireEvent(input, 'onBlur');
     expect(handleChangeValue).toHaveBeenCalledWith(defaultValueNumber);
-    expect(input.props.value).toEqual('');
   });
 
-  test('does not call onChangeValue if value unchanged on blur', () => {
+  test('does not call onChangeValue on bare blur with no change', () => {
     const handleChangeValue = jest.fn();
     const { getByTestId } = render(
       <NumericTextInput {...baseProps} value={42} onChangeValue={handleChangeValue} />
@@ -121,6 +125,17 @@ describe('NumericTextInput', () => {
     expect(input.props.label).toEqual('Weight');
   });
 
+  test('does not overwrite raw text from value prop while the input is focused', () => {
+    const { getByTestId, rerender } = render(<NumericTextInput {...baseProps} value={10} />);
+    const input = getByTestId('numeric-input');
+
+    fireEvent(input, 'focus');
+    fireEvent.changeText(input, '12.');
+
+    rerender(<NumericTextInput {...baseProps} value={42} />);
+    expect(input.props.value).toEqual('12.');
+  });
+
   test('updates internal state when value prop changes', () => {
     const { getByTestId, rerender } = render(<NumericTextInput {...baseProps} value={10} />);
     const input = getByTestId('numeric-input');
@@ -138,10 +153,21 @@ describe('NumericTextInput', () => {
     const input = getByTestId('numeric-input');
 
     fireEvent.changeText(input, '-5.5');
-    fireEvent(input, 'onBlur');
 
     expect(handleChangeValue).toHaveBeenCalledWith(-5.5);
     expect(input.props.value).toEqual('-5.5');
+  });
+
+  test('commits a typed -1 instead of swallowing it as the unset sentinel', () => {
+    const handleChangeValue = jest.fn();
+    const { getByTestId } = render(
+      <NumericTextInput {...baseProps} value={5} onChangeValue={handleChangeValue} />
+    );
+    const input = getByTestId('numeric-input');
+
+    fireEvent.changeText(input, '-1');
+
+    expect(handleChangeValue).toHaveBeenCalledWith(-1);
   });
 
   test('uses numeric keyboard by default', () => {
@@ -179,7 +205,7 @@ describe('NumericTextInput', () => {
     expect(handleChange).not.toHaveBeenCalled();
   });
 
-  test('converts to defaultValueNumber when blurring empty field that started with a real value', () => {
+  test('defers the defaultValueNumber commit to blur when erasing a real value', () => {
     const handleChange = jest.fn();
     const { getByTestId } = render(
       <NumericTextInput {...baseProps} value={100} onChangeValue={handleChange} />
@@ -187,11 +213,13 @@ describe('NumericTextInput', () => {
     const input = getByTestId('numeric-input');
 
     fireEvent.changeText(input, '');
+    expect(handleChange).not.toHaveBeenCalled();
+
     fireEvent(input, 'onBlur');
     expect(handleChange).toHaveBeenCalledWith(defaultValueNumber);
   });
 
-  test('allows changing from defaultValueNumber to a real value', () => {
+  test('allows changing from defaultValueNumber to a real value via change event', () => {
     const handleChange = jest.fn();
     const { getByTestId } = render(
       <NumericTextInput {...baseProps} value={defaultValueNumber} onChangeValue={handleChange} />
@@ -199,11 +227,10 @@ describe('NumericTextInput', () => {
     const input = getByTestId('numeric-input');
 
     fireEvent.changeText(input, '5');
-    fireEvent(input, 'onBlur');
     expect(handleChange).toHaveBeenCalledWith(5);
   });
 
-  test('handles invalid input from defaultValueNumber by staying at defaultValueNumber', () => {
+  test('reports defaultValueNumber when user types invalid text into a sentinel-valued field', () => {
     const handleChange = jest.fn();
     const { getByTestId } = render(
       <NumericTextInput {...baseProps} value={defaultValueNumber} onChangeValue={handleChange} />
@@ -211,7 +238,6 @@ describe('NumericTextInput', () => {
     const input = getByTestId('numeric-input');
 
     fireEvent.changeText(input, 'invalid');
-    fireEvent(input, 'onBlur');
     expect(handleChange).not.toHaveBeenCalled();
   });
 
@@ -232,7 +258,7 @@ describe('NumericTextInput', () => {
     expect(styleArray.length).toBeGreaterThan(0);
   });
 
-  test('sets focused state when onFocus fires', () => {
+  test('sets focused state when onFocus fires and live-commits changes', () => {
     const handleChangeValue = jest.fn();
     const { getByTestId } = render(
       <NumericTextInput {...baseProps} value={5} onChangeValue={handleChangeValue} />
@@ -241,7 +267,6 @@ describe('NumericTextInput', () => {
 
     fireEvent(input, 'focus');
     fireEvent.changeText(input, '10');
-    fireEvent(input, 'onBlur');
 
     expect(handleChangeValue).toHaveBeenCalledWith(10);
   });
@@ -259,7 +284,7 @@ describe('NumericTextInput', () => {
     expect(input.props.mode).toBe('flat');
   });
 
-  test('handles comma decimal separator by converting to period on blur', () => {
+  test('handles comma decimal separator by converting to period', () => {
     const handleChangeValue = jest.fn();
     const { getByTestId } = render(
       <NumericTextInput {...baseProps} value={0} onChangeValue={handleChangeValue} />
@@ -267,18 +292,15 @@ describe('NumericTextInput', () => {
     const input = getByTestId('numeric-input');
 
     fireEvent.changeText(input, '2,5');
-    fireEvent(input, 'onBlur');
 
     expect(handleChangeValue).toHaveBeenCalledWith(2.5);
-    expect(input.props.value).toEqual('2.5');
   });
 
-  test('does not call onChangeValue when no handler provided on blur', () => {
+  test('does not call onChangeValue when no handler provided', () => {
     const { getByTestId } = render(<NumericTextInput {...baseProps} value={5} />);
     const input = getByTestId('numeric-input');
 
-    fireEvent.changeText(input, '10');
-    fireEvent(input, 'onBlur');
+    expect(() => fireEvent.changeText(input, '10')).not.toThrow();
   });
 
   describe('display formatting (2 decimal precision)', () => {
@@ -322,14 +344,14 @@ describe('NumericTextInput', () => {
     });
   });
 
-  describe('shared parseQuantity behavior on blur', () => {
+  describe('shared parseQuantity behavior on change', () => {
     test.each([
       ['1à3', 1],
       ['100kcal', 100],
       ['200 g', 200],
       ['0,5L', 0.5],
       ['  42  ', 42],
-    ])('blurring with raw OCR-style input %p commits %p', (input, expected) => {
+    ])('typing raw OCR-style input %p commits %p', (input, expected) => {
       const handleChangeValue = jest.fn();
       const { getByTestId } = render(
         <NumericTextInput {...baseProps} value={0} onChangeValue={handleChangeValue} />
@@ -337,13 +359,12 @@ describe('NumericTextInput', () => {
       const inputEl = getByTestId('numeric-input');
 
       fireEvent.changeText(inputEl, input);
-      fireEvent(inputEl, 'onBlur');
 
       expect(handleChangeValue).toHaveBeenCalledWith(expected);
     });
 
     test.each([['à3'], ['kcal'], ['.'], [',']])(
-      'blurring with non-parseable %p defaults to defaultValueNumber',
+      'typing non-parseable %p commits defaultValueNumber on blur',
       input => {
         const handleChangeValue = jest.fn();
         const { getByTestId } = render(
@@ -352,17 +373,67 @@ describe('NumericTextInput', () => {
         const inputEl = getByTestId('numeric-input');
 
         fireEvent.changeText(inputEl, input);
-        fireEvent(inputEl, 'onBlur');
+        expect(handleChangeValue).not.toHaveBeenCalled();
 
+        fireEvent(inputEl, 'onBlur');
         expect(handleChangeValue).toHaveBeenCalledWith(defaultValueNumber);
-        expect(inputEl.props.value).toEqual('');
       }
     );
+  });
 
-    test('does not pass onFocus prop to underlying TextInput (focus listener removed)', () => {
+  describe('onBlur prop', () => {
+    test('invokes onBlur after blur handler runs', () => {
+      const onBlur = jest.fn();
+      const onChangeValue = jest.fn();
+      const { getByTestId } = render(
+        <NumericTextInput {...baseProps} value={5} onChangeValue={onChangeValue} onBlur={onBlur} />
+      );
+      const input = getByTestId('numeric-input');
+
+      fireEvent.changeText(input, '12');
+      fireEvent(input, 'onBlur');
+
+      expect(onChangeValue).toHaveBeenCalledWith(12);
+      expect(onBlur).toHaveBeenCalledTimes(1);
+    });
+
+    test('still invokes onBlur on bare focus + blur with no keystroke', () => {
+      const onBlur = jest.fn();
+      const onChangeValue = jest.fn();
+      const { getByTestId } = render(
+        <NumericTextInput {...baseProps} value={5} onChangeValue={onChangeValue} onBlur={onBlur} />
+      );
+      const input = getByTestId('numeric-input');
+
+      fireEvent(input, 'focus');
+      fireEvent(input, 'onBlur');
+
+      expect(onChangeValue).not.toHaveBeenCalled();
+      expect(onBlur).toHaveBeenCalledTimes(1);
+    });
+
+    test('fires onChangeValue with sentinel when user types then erases back to default sentinel', () => {
+      const onChangeValue = jest.fn();
+      const { getByTestId } = render(
+        <NumericTextInput {...baseProps} value={defaultValueNumber} onChangeValue={onChangeValue} />
+      );
+      const input = getByTestId('numeric-input');
+
+      fireEvent(input, 'focus');
+      fireEvent.changeText(input, '1');
+      fireEvent.changeText(input, '');
+      expect(onChangeValue).toHaveBeenCalledTimes(1);
+
+      fireEvent(input, 'onBlur');
+      expect(onChangeValue).toHaveBeenNthCalledWith(1, 1);
+      expect(onChangeValue).toHaveBeenNthCalledWith(2, defaultValueNumber);
+    });
+
+    test('does not throw when onBlur prop is omitted', () => {
       const { getByTestId } = render(<NumericTextInput {...baseProps} value={5} />);
       const input = getByTestId('numeric-input');
-      expect(input.props.onFocus).toBeUndefined();
+
+      expect(() => fireEvent(input, 'onBlur')).not.toThrow();
     });
   });
 });

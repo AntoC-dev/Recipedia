@@ -1,38 +1,36 @@
-import React from "react";
-import {Button, Text, View} from "react-native";
-import {RecipeTextProps} from "@components/organisms/RecipeText";
+import React from 'react';
+import { Button, Text, View } from 'react-native';
+import { RecipeTextProps } from '@components/organisms/RecipeText';
+import { BlurButton, ErrorEcho } from './_recipeFieldMockHelpers';
 
 export function recipeTextMock(recipeTextProp: RecipeTextProps) {
-    return (
+  const { rootText, addOrEditProps, error, onBlur } = recipeTextProp;
+  const testID = recipeTextProp.testID ?? 'RecipeText';
+  return (
+    <View>
+      <Text testID={testID + '::RootText'}>{rootText.value}</Text>
+      {addOrEditProps ? (
         <View>
-            <Text testID={recipeTextProp.testID + "::RootText"}>
-                {recipeTextProp.rootText.value}
-            </Text>
-            {recipeTextProp.addOrEditProps ?
-                <View>
-                    {recipeTextProp.addOrEditProps.editType === 'add' ?
-                        <View>
-                            <Button testID={recipeTextProp.testID + "::OpenModal"} onPress={() => {
-                                // @ts-ignore always edit here
-                                recipeTextProp.addOrEditProps.openModal()
-                            }}
-                                    title="Open Modal"/>
-                        </View>
-                        :
-                        <View>
-                            <Text testID={recipeTextProp.testID + "::TextEditable"}>
-                                {recipeTextProp.addOrEditProps.textEditable}
-                            </Text>
-                            <Button testID={recipeTextProp.testID + "::SetTextToEdit"}
-                                    onPress={(newText) => {
-                                        // @ts-ignore always edit here
-                                        recipeTextProp.addOrEditProps.setTextToEdit(newText);
-                                    }}
-                                    title="Set Text to Edit"/>
-                        </View>
-                    }
-                </View>
-                : null}
+          {addOrEditProps.editType === 'add' ? (
+            <Button
+              testID={testID + '::OpenModal'}
+              title='Open Modal'
+              onPress={() => addOrEditProps.openModal()}
+            />
+          ) : (
+            <View>
+              <Text testID={testID + '::TextEditable'}>{addOrEditProps.textEditable}</Text>
+              <Button
+                testID={testID + '::SetTextToEdit'}
+                title='Set Text to Edit'
+                onPress={newText => addOrEditProps.setTextToEdit(newText as unknown as string)}
+              />
+              <BlurButton testID={testID} onBlur={onBlur} />
+            </View>
+          )}
         </View>
-    );
+      ) : null}
+      <ErrorEcho testID={testID} error={error} />
+    </View>
+  );
 }

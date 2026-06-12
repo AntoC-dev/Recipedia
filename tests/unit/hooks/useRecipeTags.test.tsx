@@ -1,7 +1,7 @@
 import React from 'react';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { useRecipeTags } from '@hooks/useRecipeTags';
-import { RecipeFormProvider, useRecipeForm } from '@context/RecipeFormContext';
+import { RecipeFormProvider, useRecipeForm } from '@test-helpers/recipeFormTestProvider';
 import { RecipeDialogsProvider, useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { createMockRecipeProp } from '@test-helpers/recipeHookTestWrapper';
 import { ingredientType, recipeTableElement } from '@customTypes/DatabaseElementTypes';
@@ -80,14 +80,14 @@ describe('useRecipeTags', () => {
       );
 
       await waitFor(() => {
-        expect(result.current.form.state.recipeTags).toHaveLength(2);
+        expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
       });
 
       act(() => {
         result.current.tags.addTag('');
       });
 
-      expect(result.current.form.state.recipeTags).toHaveLength(2);
+      expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
     });
 
     test('rejects whitespace-only tag', async () => {
@@ -102,14 +102,14 @@ describe('useRecipeTags', () => {
       );
 
       await waitFor(() => {
-        expect(result.current.form.state.recipeTags).toHaveLength(2);
+        expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
       });
 
       act(() => {
         result.current.tags.addTag('   ');
       });
 
-      expect(result.current.form.state.recipeTags).toHaveLength(2);
+      expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
     });
 
     test('skips duplicate tag (case-insensitive)', async () => {
@@ -124,14 +124,14 @@ describe('useRecipeTags', () => {
       );
 
       await waitFor(() => {
-        expect(result.current.form.state.recipeTags).toHaveLength(2);
+        expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
       });
 
       act(() => {
         result.current.tags.addTag('ITALIAN');
       });
 
-      expect(result.current.form.state.recipeTags).toHaveLength(2);
+      expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
     });
 
     test('adds exact match tag from database', async () => {
@@ -147,15 +147,17 @@ describe('useRecipeTags', () => {
       );
 
       await waitFor(() => {
-        expect(result.current.form.state.recipeTags).toHaveLength(2);
+        expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
       });
 
       act(() => {
         result.current.tags.addTag('Mexican');
       });
 
-      expect(result.current.form.state.recipeTags).toHaveLength(3);
-      expect(result.current.form.state.recipeTags.some(t => t.name === 'Mexican')).toBe(true);
+      expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(3);
+      expect(
+        result.current.form.form.getValues('recipeTags')!.some(t => t.name === 'Mexican')
+      ).toBe(true);
       expect(result.current.dialogs.validationQueue).toBeNull();
     });
 
@@ -179,7 +181,7 @@ describe('useRecipeTags', () => {
       );
 
       await waitFor(() => {
-        expect(result.current.form.state.recipeTags).toHaveLength(2);
+        expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
       });
 
       act(() => {
@@ -207,7 +209,7 @@ describe('useRecipeTags', () => {
       );
 
       await waitFor(() => {
-        expect(result.current.form.state.recipeTags).toHaveLength(2);
+        expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
       });
 
       act(() => {
@@ -233,15 +235,15 @@ describe('useRecipeTags', () => {
       );
 
       await waitFor(() => {
-        expect(result.current.form.state.recipeTags).toHaveLength(2);
+        expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
       });
 
       act(() => {
         result.current.tags.removeTag('Italian');
       });
 
-      expect(result.current.form.state.recipeTags).toHaveLength(1);
-      expect(result.current.form.state.recipeTags[0].name).toBe('Dinner');
+      expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(1);
+      expect(result.current.form.form.getValues('recipeTags')![0].name).toBe('Dinner');
     });
 
     test('does nothing for non-existing tag', async () => {
@@ -256,14 +258,14 @@ describe('useRecipeTags', () => {
       );
 
       await waitFor(() => {
-        expect(result.current.form.state.recipeTags).toHaveLength(2);
+        expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
       });
 
       act(() => {
         result.current.tags.removeTag('NonExistentTag');
       });
 
-      expect(result.current.form.state.recipeTags).toHaveLength(2);
+      expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
     });
 
     test('case-sensitive removal (does not remove different case)', async () => {
@@ -278,14 +280,14 @@ describe('useRecipeTags', () => {
       );
 
       await waitFor(() => {
-        expect(result.current.form.state.recipeTags).toHaveLength(2);
+        expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
       });
 
       act(() => {
         result.current.tags.removeTag('ITALIAN');
       });
 
-      expect(result.current.form.state.recipeTags).toHaveLength(2);
+      expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
     });
 
     test('removes all tags when called for each', async () => {
@@ -300,7 +302,7 @@ describe('useRecipeTags', () => {
       );
 
       await waitFor(() => {
-        expect(result.current.form.state.recipeTags).toHaveLength(2);
+        expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
       });
 
       act(() => {
@@ -311,7 +313,7 @@ describe('useRecipeTags', () => {
         result.current.tags.removeTag('Dinner');
       });
 
-      expect(result.current.form.state.recipeTags).toHaveLength(0);
+      expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(0);
     });
 
     test('removes multiple tags when removeTag is called in the same act', async () => {
@@ -326,7 +328,7 @@ describe('useRecipeTags', () => {
       );
 
       await waitFor(() => {
-        expect(result.current.form.state.recipeTags).toHaveLength(2);
+        expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
       });
 
       act(() => {
@@ -334,7 +336,7 @@ describe('useRecipeTags', () => {
         result.current.tags.removeTag('Dinner');
       });
 
-      expect(result.current.form.state.recipeTags).toHaveLength(0);
+      expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(0);
     });
   });
 
@@ -351,15 +353,17 @@ describe('useRecipeTags', () => {
       );
 
       await waitFor(() => {
-        expect(result.current.form.state.recipeTags).toHaveLength(2);
+        expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
       });
 
       act(() => {
         result.current.tags.addTagIfNotDuplicate({ id: 3, name: 'Mexican' });
       });
 
-      expect(result.current.form.state.recipeTags).toHaveLength(3);
-      expect(result.current.form.state.recipeTags.some(t => t.name === 'Mexican')).toBe(true);
+      expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(3);
+      expect(
+        result.current.form.form.getValues('recipeTags')!.some(t => t.name === 'Mexican')
+      ).toBe(true);
     });
 
     test('does not add duplicate (case-insensitive)', async () => {
@@ -374,14 +378,14 @@ describe('useRecipeTags', () => {
       );
 
       await waitFor(() => {
-        expect(result.current.form.state.recipeTags).toHaveLength(2);
+        expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
       });
 
       act(() => {
         result.current.tags.addTagIfNotDuplicate({ id: 1, name: 'ITALIAN' });
       });
 
-      expect(result.current.form.state.recipeTags).toHaveLength(2);
+      expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
     });
 
     test('adds tag with different case as new entry', async () => {
@@ -397,20 +401,20 @@ describe('useRecipeTags', () => {
       );
 
       await waitFor(() => {
-        expect(result.current.form.state.recipeTags).toHaveLength(0);
+        expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(0);
       });
 
       act(() => {
         result.current.tags.addTagIfNotDuplicate({ id: 1, name: 'Italian' });
       });
 
-      expect(result.current.form.state.recipeTags).toHaveLength(1);
+      expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(1);
 
       act(() => {
         result.current.tags.addTagIfNotDuplicate({ id: 2, name: 'ITALIAN' });
       });
 
-      expect(result.current.form.state.recipeTags).toHaveLength(1);
+      expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(1);
     });
 
     test('can add multiple unique tags', async () => {
@@ -426,7 +430,7 @@ describe('useRecipeTags', () => {
       );
 
       await waitFor(() => {
-        expect(result.current.form.state.recipeTags).toHaveLength(0);
+        expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(0);
       });
 
       act(() => {
@@ -441,7 +445,7 @@ describe('useRecipeTags', () => {
         result.current.tags.addTagIfNotDuplicate({ id: 3, name: 'Quick Meal' });
       });
 
-      expect(result.current.form.state.recipeTags).toHaveLength(3);
+      expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(3);
     });
   });
 });

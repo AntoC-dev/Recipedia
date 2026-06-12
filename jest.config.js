@@ -4,9 +4,10 @@ module.exports = {
         '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
     },
     testMatch: [
-        '**/tests/unit/**/*.test.{js,jsx,ts,tsx}',
-        '**/tests/integration/**/*.test.{js,jsx,ts,tsx}',
+        '<rootDir>/tests/unit/**/*.test.{js,jsx,ts,tsx}',
+        '<rootDir>/tests/integration/**/*.test.{js,jsx,ts,tsx}',
     ],
+    modulePathIgnorePatterns: ['<rootDir>/.claude/worktrees/'],
     maxWorkers: process.env.CI ? '100%' : '50%',
     testTimeout: 10000,
     workerIdleMemoryLimit: '512MB',
