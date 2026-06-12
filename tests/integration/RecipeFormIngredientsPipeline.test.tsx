@@ -1,12 +1,55 @@
 import React from 'react';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
-import { useRecipeIngredients, formatIngredientString } from '@hooks/useRecipeIngredients';
-import { RecipeFormProvider, useRecipeForm } from '@context/RecipeFormContext';
+import { UseFormReturn } from 'react-hook-form';
+import {
+  ApplyIngredientEditPatch,
+  formatIngredientString,
+  useRecipeIngredients,
+} from '@hooks/useRecipeIngredients';
+import { RecipeFormProvider, useRecipeForm } from '@test-helpers/recipeFormTestProvider';
 import { RecipeDialogsProvider, useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { createMockRecipeProp } from '@test-helpers/recipeHookTestWrapper';
+import {
+  IngredientArrayActionsProvider,
+  useIngredientArrayActionsRegister,
+} from '@screens/recipe/fields/IngredientArrayActionsContext';
 import RecipeDatabase from '@utils/RecipeDatabase';
-import { ingredientTableElement, ingredientType } from '@customTypes/DatabaseElementTypes';
+import {
+  FormIngredientElement,
+  ingredientTableElement,
+  ingredientType,
+} from '@customTypes/DatabaseElementTypes';
+import { RecipeFormInput } from '@schemas/recipeFormSchema';
 import { IngredientValidationProps } from '@components/dialogs/ValidationQueue';
+
+type IngredientRow = ingredientTableElement | FormIngredientElement;
+type RecipeForm = UseFormReturn<RecipeFormInput>;
+
+function makeFormApplyPatch(form: RecipeForm): ApplyIngredientEditPatch {
+  return patch => {
+    const current = (form.getValues('recipeIngredients') ?? []) as IngredientRow[];
+    if (patch.kind === 'replace') {
+      const next = [...current];
+      next[patch.index] = patch.row;
+      form.setValue('recipeIngredients', next as never, { shouldValidate: true });
+      return;
+    }
+    if (patch.kind === 'merge') {
+      const next = [...current];
+      next[patch.intoIndex] = patch.row;
+      next.splice(patch.removeIndex, 1);
+      form.setValue('recipeIngredients', next as never, { shouldValidate: true });
+      return;
+    }
+    if (patch.kind === 'append') {
+      const next = [...current, patch.row];
+      form.setValue('recipeIngredients', next as never, { shouldValidate: true });
+      return;
+    }
+    const next = current.filter((_, i) => i !== patch.index);
+    form.setValue('recipeIngredients', next as never, { shouldValidate: true });
+  };
+}
 
 const tomato: ingredientTableElement = {
   name: 'Tomato',
@@ -31,12 +74,23 @@ const garlic: ingredientTableElement = {
 
 const seededIngredients: ingredientTableElement[] = [tomato, onion, garlic];
 
+function FormDrivenApplyPatchRegistrar({ children }: { children: React.ReactNode }) {
+  const { form } = useRecipeForm();
+  const applyPatch = React.useMemo(() => makeFormApplyPatch(form), [form]);
+  useIngredientArrayActionsRegister(applyPatch);
+  return <>{children}</>;
+}
+
 function createWrapper() {
   const props = createMockRecipeProp('addManually');
   return function Wrapper({ children }: { children: React.ReactNode }) {
     return (
       <RecipeFormProvider props={props}>
-        <RecipeDialogsProvider>{children}</RecipeDialogsProvider>
+        <RecipeDialogsProvider>
+          <IngredientArrayActionsProvider>
+            <FormDrivenApplyPatchRegistrar>{children}</FormDrivenApplyPatchRegistrar>
+          </IngredientArrayActionsProvider>
+        </RecipeDialogsProvider>
       </RecipeFormProvider>
     );
   };
@@ -80,9 +134,9 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
         });
       });
 
-      expect(result.current.form.state.recipeIngredients).toHaveLength(1);
-      expect(result.current.form.state.recipeIngredients[0].name).toBe('Tomato');
-      expect(result.current.form.state.recipeIngredients[0].quantity).toBe('100');
+      expect(result.current.form.form.getValues('recipeIngredients')!).toHaveLength(1);
+      expect(result.current.form.form.getValues('recipeIngredients')![0].name).toBe('Tomato');
+      expect(result.current.form.form.getValues('recipeIngredients')![0].quantity).toBe('100');
     });
 
     test('merges quantities when duplicate name + same unit', async () => {
@@ -108,8 +162,8 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
         });
       });
 
-      expect(result.current.form.state.recipeIngredients).toHaveLength(1);
-      expect(result.current.form.state.recipeIngredients[0].quantity).toBe('125');
+      expect(result.current.form.form.getValues('recipeIngredients')!).toHaveLength(1);
+      expect(result.current.form.form.getValues('recipeIngredients')![0].quantity).toBe('125');
     });
 
     test('replaces existing when duplicate name + different unit', async () => {
@@ -135,9 +189,9 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
         });
       });
 
-      expect(result.current.form.state.recipeIngredients).toHaveLength(1);
-      expect(result.current.form.state.recipeIngredients[0].unit).toBe('g');
-      expect(result.current.form.state.recipeIngredients[0].quantity).toBe('10');
+      expect(result.current.form.form.getValues('recipeIngredients')!).toHaveLength(1);
+      expect(result.current.form.form.getValues('recipeIngredients')![0].unit).toBe('g');
+      expect(result.current.form.form.getValues('recipeIngredients')![0].quantity).toBe('10');
     });
 
     test('adds as separate ingredient when same name + same unit + different non-empty notes', async () => {
@@ -165,22 +219,13 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
         });
       });
 
-      expect(result.current.form.state.recipeIngredients).toHaveLength(2);
-      expect(result.current.form.state.recipeIngredients[0].note).toBe('for the sauce');
-      expect(result.current.form.state.recipeIngredients[1].note).toBe('for the salad');
-    });
-  });
-
-  describe('addNewIngredient', () => {
-    test('adds an empty row to the form', async () => {
-      const { result } = renderIngredientHook();
-
-      act(() => {
-        result.current.ingredientOps.addNewIngredient();
-      });
-
-      expect(result.current.form.state.recipeIngredients).toHaveLength(1);
-      expect(result.current.form.state.recipeIngredients[0]).toEqual({ name: '' });
+      expect(result.current.form.form.getValues('recipeIngredients')!).toHaveLength(2);
+      expect(result.current.form.form.getValues('recipeIngredients')![0].note).toBe(
+        'for the sauce'
+      );
+      expect(result.current.form.form.getValues('recipeIngredients')![1].note).toBe(
+        'for the salad'
+      );
     });
   });
 
@@ -201,12 +246,13 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
       act(() => {
         result.current.ingredientOps.editIngredients(
           0,
-          formatIngredientString({ name: 'Onion', unit: 'g', quantity: '200', season: [] })
+          formatIngredientString({ name: 'Onion', unit: 'g', quantity: '200', season: [] }),
+          makeFormApplyPatch(result.current.form.form)
         );
       });
 
-      expect(result.current.form.state.recipeIngredients[0].quantity).toBe('200');
-      expect(result.current.form.state.recipeIngredients[0].name).toBe('Onion');
+      expect(result.current.form.form.getValues('recipeIngredients')![0].quantity).toBe('200');
+      expect(result.current.form.form.getValues('recipeIngredients')![0].name).toBe('Onion');
       expect(result.current.dialogs.validationQueue).toBeNull();
     });
 
@@ -214,13 +260,16 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
       const { result } = renderIngredientHook();
 
       act(() => {
-        result.current.ingredientOps.addNewIngredient();
+        result.current.form.form.setValue('recipeIngredients', [{ name: '' }] as never, {
+          shouldValidate: true,
+        });
       });
 
       act(() => {
         result.current.ingredientOps.editIngredients(
           0,
-          formatIngredientString({ name: 'Onions', unit: 'g', quantity: '100', season: [] })
+          formatIngredientString({ name: 'Onions', unit: 'g', quantity: '100', season: [] }),
+          makeFormApplyPatch(result.current.form.form)
         );
       });
 
@@ -237,18 +286,21 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
       const { result } = renderIngredientHook();
 
       act(() => {
-        result.current.ingredientOps.addNewIngredient();
+        result.current.form.form.setValue('recipeIngredients', [{ name: '' }] as never, {
+          shouldValidate: true,
+        });
       });
 
       act(() => {
         result.current.ingredientOps.editIngredients(
           0,
-          formatIngredientString({ name: 'Tomato', unit: 'g', quantity: '150', season: [] })
+          formatIngredientString({ name: 'Tomato', unit: 'g', quantity: '150', season: [] }),
+          makeFormApplyPatch(result.current.form.form)
         );
       });
 
       await waitFor(() => {
-        expect(result.current.form.state.recipeIngredients[0].name).toBe('Tomato');
+        expect(result.current.form.form.getValues('recipeIngredients')![0].name).toBe('Tomato');
       });
 
       expect(result.current.dialogs.validationQueue).toBeNull();

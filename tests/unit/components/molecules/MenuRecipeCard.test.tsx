@@ -234,8 +234,7 @@ describe('MenuRecipeCard', () => {
       fireEvent.press(getByTestId(testId));
 
       expect(mockNavigate).toHaveBeenCalledTimes(1);
-      expect(mockNavigate).toHaveBeenCalledWith('Recipe', {
-        mode: 'readOnly',
+      expect(mockNavigate).toHaveBeenCalledWith('RecipeView', {
         recipe: expect.objectContaining({
           id: testMenuItemUncooked.recipeId,
           title: testMenuItemUncooked.recipeTitle,
@@ -267,8 +266,7 @@ describe('MenuRecipeCard', () => {
       fireEvent.press(getByTestId(testId));
 
       expect(mockNavigate).toHaveBeenCalledTimes(1);
-      expect(mockNavigate).toHaveBeenCalledWith('Recipe', {
-        mode: 'readOnly',
+      expect(mockNavigate).toHaveBeenCalledWith('RecipeView', {
         recipe: expect.objectContaining({
           id: cookedMenuItem.recipeId,
         }),
@@ -286,8 +284,7 @@ describe('MenuRecipeCard', () => {
       fireEvent.press(getByTestId(testId));
 
       expect(mockNavigate).toHaveBeenCalledTimes(1);
-      expect(mockNavigate).toHaveBeenCalledWith('Recipe', {
-        mode: 'readOnly',
+      expect(mockNavigate).toHaveBeenCalledWith('RecipeView', {
         recipe: expect.objectContaining({
           id: multipleMenuItem.recipeId,
         }),

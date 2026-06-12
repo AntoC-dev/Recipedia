@@ -94,8 +94,7 @@ describe('RecipeCard Component', () => {
     fireEvent.press(getByTestId(`test-recipe-card::${sampleRecipe.title}`));
 
     expect(mockNavigate).toHaveBeenCalledTimes(1);
-    expect(mockNavigate).toHaveBeenCalledWith('Recipe', {
-      mode: 'readOnly',
+    expect(mockNavigate).toHaveBeenCalledWith('RecipeView', {
       recipe: sampleRecipe,
     });
 

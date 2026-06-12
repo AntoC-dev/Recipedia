@@ -1,6 +1,10 @@
 import React from 'react';
 import { measureRenders } from 'reassure';
-import { Recipe } from '@screens/Recipe';
+import { RecipeView } from '@screens/recipe/RecipeView';
+import { RecipeEdit } from '@screens/recipe/RecipeEdit';
+import { RecipeAddManual } from '@screens/recipe/RecipeAddManual';
+import { RecipeAddOcr } from '@screens/recipe/RecipeAddOcr';
+import { RecipeAddScrape } from '@screens/recipe/RecipeAddScrape';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { performanceRecipes } from '@assets/datasets/performance/recipes';
 import { performanceIngredients } from '@assets/datasets/performance/ingredients';
@@ -8,34 +12,98 @@ import { performanceTags } from '@assets/datasets/performance/tags';
 import { SeasonFilterProvider } from '@context/SeasonFilterContext';
 import { DefaultPersonsProvider } from '@context/DefaultPersonsContext';
 import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
-import { RecipePropType, ScrapedRecipeData } from '@customTypes/RecipeNavigationTypes';
-import { RecipeScreenProp } from '@customTypes/ScreenTypes';
+import { ScrapedRecipeData } from '@customTypes/RecipeNavigationTypes';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { StackScreenParamList } from '@customTypes/ScreenTypes';
 
 jest.mock('@react-navigation/native', () =>
   require('@mocks/deps/react-navigation-mock').reactNavigationMock()
 );
 jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 
-const mockNavigation = {
+const baseNavigation = {
   goBack: jest.fn(),
   navigate: jest.fn(),
   setOptions: jest.fn(),
-} as unknown as RecipeScreenProp['navigation'];
+};
 
-function createMockRoute(params: RecipePropType) {
-  return {
-    key: 'Recipe-perf',
-    name: 'Recipe' as const,
-    params,
-  };
+function navFor<R extends keyof StackScreenParamList>() {
+  return baseNavigation as unknown as NativeStackNavigationProp<StackScreenParamList, R>;
 }
 
-function RecipeWrapper({ initialParams }: { initialParams: RecipePropType }) {
-  const route = createMockRoute(initialParams);
+function routeFor<R extends keyof StackScreenParamList>(
+  name: R,
+  params: StackScreenParamList[R]
+): { key: string; name: R; params: StackScreenParamList[R] } {
+  return { key: `${name}-perf`, name, params };
+}
+
+function ViewWrapper({ recipe }: { recipe: recipeTableElement }) {
   return (
     <DefaultPersonsProvider>
       <SeasonFilterProvider>
-        <Recipe route={route} navigation={mockNavigation} />
+        <RecipeView
+          route={routeFor('RecipeView', { recipe })}
+          navigation={navFor<'RecipeView'>()}
+        />
+      </SeasonFilterProvider>
+    </DefaultPersonsProvider>
+  );
+}
+
+function EditWrapper({ recipe }: { recipe: recipeTableElement }) {
+  return (
+    <DefaultPersonsProvider>
+      <SeasonFilterProvider>
+        <RecipeEdit
+          route={routeFor('RecipeEdit', { recipe })}
+          navigation={navFor<'RecipeEdit'>()}
+        />
+      </SeasonFilterProvider>
+    </DefaultPersonsProvider>
+  );
+}
+
+function AddManualWrapper() {
+  return (
+    <DefaultPersonsProvider>
+      <SeasonFilterProvider>
+        <RecipeAddManual
+          route={routeFor('RecipeAddManual', undefined as unknown as undefined)}
+          navigation={navFor<'RecipeAddManual'>()}
+        />
+      </SeasonFilterProvider>
+    </DefaultPersonsProvider>
+  );
+}
+
+function AddOcrWrapper({ imgUri }: { imgUri: string }) {
+  return (
+    <DefaultPersonsProvider>
+      <SeasonFilterProvider>
+        <RecipeAddOcr
+          route={routeFor('RecipeAddOcr', { imgUri })}
+          navigation={navFor<'RecipeAddOcr'>()}
+        />
+      </SeasonFilterProvider>
+    </DefaultPersonsProvider>
+  );
+}
+
+function AddScrapeWrapper({
+  scrapedData,
+  sourceUrl,
+}: {
+  scrapedData: ScrapedRecipeData;
+  sourceUrl: string;
+}) {
+  return (
+    <DefaultPersonsProvider>
+      <SeasonFilterProvider>
+        <RecipeAddScrape
+          route={routeFor('RecipeAddScrape', { scrapedData, sourceUrl })}
+          navigation={navFor<'RecipeAddScrape'>()}
+        />
       </SeasonFilterProvider>
     </DefaultPersonsProvider>
   );
@@ -77,28 +145,22 @@ describe('Recipe Screen Performance', () => {
   });
 
   test('initial render in read-only mode', async () => {
-    const params: RecipePropType = { mode: 'readOnly', recipe: testRecipe };
-    await measureRenders(<RecipeWrapper initialParams={params} />, { runs: 10 });
+    await measureRenders(<ViewWrapper recipe={testRecipe} />, { runs: 10 });
   });
 
   test('initial render in edit mode', async () => {
-    const params: RecipePropType = { mode: 'edit', recipe: testRecipe };
-    await measureRenders(<RecipeWrapper initialParams={params} />, { runs: 10 });
+    await measureRenders(<EditWrapper recipe={testRecipe} />, { runs: 10 });
   });
 
   test('initial render in add manually mode', async () => {
-    const params: RecipePropType = { mode: 'addManually' };
-    await measureRenders(<RecipeWrapper initialParams={params} />, { runs: 10 });
+    await measureRenders(<AddManualWrapper />, { runs: 10 });
   });
 
   test('re-render after adding recipe to menu', async () => {
-    const params: RecipePropType = { mode: 'readOnly', recipe: testRecipe };
-
     const scenario = async () => {
       await database.addRecipeToMenu(testRecipe);
     };
-
-    await measureRenders(<RecipeWrapper initialParams={params} />, { runs: 10, scenario });
+    await measureRenders(<ViewWrapper recipe={testRecipe} />, { runs: 10, scenario });
   });
 
   test('re-render with recipe having many ingredients', async () => {
@@ -110,8 +172,7 @@ describe('Recipe Screen Performance', () => {
         quantity: '100',
       })),
     };
-    const params: RecipePropType = { mode: 'readOnly', recipe: recipeWithManyIngredients };
-    await measureRenders(<RecipeWrapper initialParams={params} />, { runs: 10 });
+    await measureRenders(<ViewWrapper recipe={recipeWithManyIngredients} />, { runs: 10 });
   });
 
   test('re-render with recipe having many preparation steps', async () => {
@@ -122,8 +183,7 @@ describe('Recipe Screen Performance', () => {
         description: `Description for step ${i + 1} with detailed instructions`,
       })),
     };
-    const params: RecipePropType = { mode: 'readOnly', recipe: recipeWithManySteps };
-    await measureRenders(<RecipeWrapper initialParams={params} />, { runs: 10 });
+    await measureRenders(<ViewWrapper recipe={recipeWithManySteps} />, { runs: 10 });
   });
 
   test('initial render in addFromScrape mode with large scraped data', async () => {
@@ -156,20 +216,16 @@ describe('Recipe Screen Performance', () => {
         portionWeight: 100,
       },
     };
-    const params: RecipePropType = {
-      mode: 'addFromScrape',
-      scrapedData,
-      sourceUrl: 'https://example.com/recipe',
-    };
-    await measureRenders(<RecipeWrapper initialParams={params} />, { runs: 10 });
+    await measureRenders(
+      <AddScrapeWrapper scrapedData={scrapedData} sourceUrl='https://example.com/recipe' />,
+      { runs: 10 }
+    );
   }, 30000);
 
   test('initial render in addFromPic (OCR) mode', async () => {
-    const params: RecipePropType = {
-      mode: 'addFromPic',
-      imgUri: 'file:///mock/path/to/recipe-image.jpg',
-    };
-    await measureRenders(<RecipeWrapper initialParams={params} />, { runs: 10 });
+    await measureRenders(<AddOcrWrapper imgUri='file:///mock/path/to/recipe-image.jpg' />, {
+      runs: 10,
+    });
   });
 
   test('re-render with full nutrition data', async () => {
@@ -188,8 +244,7 @@ describe('Recipe Screen Performance', () => {
         portionWeight: 150,
       },
     };
-    const params: RecipePropType = { mode: 'readOnly', recipe: recipeWithNutrition };
-    await measureRenders(<RecipeWrapper initialParams={params} />, { runs: 10 });
+    await measureRenders(<ViewWrapper recipe={recipeWithNutrition} />, { runs: 10 });
   });
 
   test('re-render with recipe containing all optional fields', async () => {
@@ -225,7 +280,6 @@ describe('Recipe Screen Performance', () => {
         portionWeight: 200,
       },
     };
-    const params: RecipePropType = { mode: 'readOnly', recipe: fullRecipe };
-    await measureRenders(<RecipeWrapper initialParams={params} />, { runs: 10 });
+    await measureRenders(<ViewWrapper recipe={fullRecipe} />, { runs: 10 });
   });
 });
