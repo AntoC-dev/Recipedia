@@ -1,0 +1,6 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    id: "RecipeIngredients::0::Error"
+    text: "Complete this ingredient"
+    label: "First ingredient row inline error is visible"

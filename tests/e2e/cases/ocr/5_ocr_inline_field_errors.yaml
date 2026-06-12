@@ -1,0 +1,161 @@
+name: "5 - OCR Inline Field Errors Flow"
+appId: "com.recipedia"
+tags:
+  - ocr
+---
+- evalScript: ${output.isDescriptionToOCR = false}
+- evalScript: ${output.isTagsToOCR = false}
+- evalScript: ${output.isTime = false}
+- evalScript: ${output.isNutritionToOCR = false}
+- evalScript: ${output.isQuantitiesOCR = false}
+- evalScript: ${output.modalImageCounter = 0}
+
+- runFlow:
+    file: "../../flows/recipe/adding/ocr/gallery/ocrImage.yaml"
+    env:
+      RECIPE_NAME: hellofresh
+    label: "Setup - Open recipe screen in OCR mode with HelloFresh image"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTitle::OpenModal::RoundButton"
+    direction: DOWN
+    speed: 10
+    centerElement: true
+    label: "Action - Scroll to title input"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/titleNoError.yaml"
+    label: "Assert (start) - No title inline error before OCR"
+
+- runFlow:
+    file: "../../flows/recipe/adding/ocr/gallery/ocrTitle.yaml"
+    env:
+      RECIPE_NAME: hellofresh
+    label: "Action - OCR the title field only"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTitle::CustomTextInput"
+    direction: DOWN
+    speed: 10
+    centerElement: true
+    label: "Action - Scroll back to title input"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/titleNoError.yaml"
+    label: "Assert (after OCR) - No title inline error (field is populated)"
+
+- tapOn:
+    id: "RecipeTitle::CustomTextInput"
+    point: "95%,95%"
+    label: "Action - Focus title input to edit OCRed value"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard"
+
+- eraseText:
+    label: "Action - Erase OCRed title to leave it dirty + invalid"
+
+- eraseText:
+    label: "Action - Erase OCRed title again to ensure it is empty"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "RecipeTitle::Text"
+    label: "Action - Blur title"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard dismiss"
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/titleError.yaml"
+    label: "Assert (after erase) - Title inline error visible"
+
+
+- tapOn:
+    id: "RecipeTitle::CustomTextInput"
+    label: "Action - Focus title input to refill it manually (stays editable once edited, no OCR button)"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard"
+
+- inputText:
+    text: "Inline Errors Test"
+    label: "Action - Enter valid title text manually"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "RecipeTitle::Text"
+    label: "Action - Blur title"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard dismiss"
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/titleNoError.yaml"
+    label: "Assert (after refill) - Title inline error cleared"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeDescription::Text"
+    direction: DOWN
+    speed: 10
+    centerElement: true
+    label: "Action - Scroll to description"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/descriptionNoError.yaml"
+    label: "Assert (start) - No description inline error before OCR"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePersons::SuffixText"
+    direction: DOWN
+    speed: 10
+    centerElement: true
+    label: "Action - Scroll to persons"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/personsNoError.yaml"
+    label: "Assert (start) - No persons inline error before OCR"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::OpenModalNames::RoundButton"
+    direction: DOWN
+    speed: 10
+    label: "Action - Scroll to ingredients"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/ingredientsEmptyNoError.yaml"
+    label: "Assert (after refill) - No ingredients inline error visible"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTime::OpenModal::RoundButton"
+    direction: DOWN
+    speed: 10
+    label: "Action - Scroll to time"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/timeNoError.yaml"
+    label: "Assert (start) - No time inline error before OCR"

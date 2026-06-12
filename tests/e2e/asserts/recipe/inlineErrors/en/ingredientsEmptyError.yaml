@@ -1,0 +1,6 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    id: "RecipeIngredients::Error"
+    text: "Add at least one ingredient"
+    label: "Ingredients section empty error is visible"

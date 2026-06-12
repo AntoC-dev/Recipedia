@@ -13,3 +13,8 @@ executionOrder:
     - "2 - Manual Recipe Creation Cancel Flow"
     - "3 - Manual Recipe Quantity Scaling Flow"
     - "4 - Recipe Validation All Fields Flow"
+    - "5 - Recipe Create Inline Field Errors Flow"
+    - "6 - Recipe Create Preparation Step Validation Flow"
+    - "7 - Recipe Create Preparation Inline Error Flow"
+    - "8 - Recipe Create Ingredient Dropdown Clears Inline Error Flow"
+    - "9 - Recipe Create Nutrition Inline Error Flow"
