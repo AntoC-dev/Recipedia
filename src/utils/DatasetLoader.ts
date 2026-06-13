@@ -1,3 +1,13 @@
+/**
+ * Utilities for loading the appropriate seed dataset based on the runtime environment.
+ *
+ * Supports three dataset types — `production`, `performance`, and `test` — selected
+ * via `EXPO_PUBLIC_DATASET_TYPE` or `NODE_ENV`. Production datasets are
+ * language-specific; performance and test datasets are language-agnostic.
+ *
+ * @module DatasetLoader
+ */
+
 import {
   ingredientTableElement,
   recipeTableElement,
@@ -20,12 +30,22 @@ import { performanceIngredients } from '@assets/datasets/performance/ingredients
 import { performanceTags } from '@assets/datasets/performance/tags';
 import { performanceRecipes } from '@assets/datasets/performance/recipes';
 
+/**
+ * A complete set of seed data for one dataset variant.
+ */
 export interface DatasetCollection {
   ingredients: ingredientTableElement[];
   tags: tagTableElement[];
   recipes: recipeTableElement[];
 }
 
+/**
+ * Identifies which seed dataset is active.
+ *
+ * - `production` — localised real-world data, language-specific
+ * - `performance` — large synthetic dataset for render benchmarks
+ * - `test` — minimal fixture data used in unit and integration tests
+ */
 export type DatasetType = 'test' | 'production' | 'performance';
 
 /**
@@ -77,11 +97,20 @@ function loadProductionDataset(language: SupportedLanguage): DatasetCollection {
 }
 
 /**
- * Determines the current dataset type based on EXPO_PUBLIC_DATASET_TYPE or NODE_ENV
+ * Determines the active dataset type from environment variables.
  *
- * Priority: EXPO_PUBLIC_DATASET_TYPE takes precedence if set, otherwise falls back to NODE_ENV
+ * `EXPO_PUBLIC_DATASET_TYPE` takes precedence over `NODE_ENV`. When neither
+ * variable resolves to `'production'` or `'performance'`, returns `'test'`.
  *
- * @returns 'production' if the active variable is 'production', 'performance' for performance testing, otherwise 'test'
+ * @returns The resolved {@link DatasetType} for the current environment.
+ *
+ * @example
+ * ```typescript
+ * // EXPO_PUBLIC_DATASET_TYPE=production → 'production'
+ * // NODE_ENV=production               → 'production'
+ * // NODE_ENV=test                     → 'test'
+ * const type = getDatasetType();
+ * ```
  */
 export function getDatasetType(): DatasetType {
   if (process.env.EXPO_PUBLIC_DATASET_TYPE !== undefined) {
@@ -97,6 +126,23 @@ export function getDatasetType(): DatasetType {
   return process.env.NODE_ENV === 'production' ? 'production' : 'test';
 }
 
+/**
+ * Loads the seed dataset appropriate for the current environment and language.
+ *
+ * Resolves the dataset type via {@link getDatasetType}, then returns the
+ * matching collection. On any load error, falls back to the test dataset and
+ * logs the failure.
+ *
+ * @param language - The active app language; used to select the correct
+ *   production dataset. Ignored for `test` and `performance` types.
+ * @returns The resolved {@link DatasetCollection}.
+ *
+ * @example
+ * ```typescript
+ * const { ingredients, tags, recipes } = getDataset('fr');
+ * await db.seedDatabase(ingredients, tags, recipes);
+ * ```
+ */
 export function getDataset(language: SupportedLanguage): DatasetCollection {
   try {
     const datasetType = getDatasetType();
