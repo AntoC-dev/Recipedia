@@ -1,3 +1,16 @@
+/**
+ * Pure helper functions for the recipe import validation pipeline.
+ *
+ * Covers ingredient and tag list manipulation (merging, deduplication, filtering,
+ * replacement) as well as the higher-level orchestration functions that split
+ * items into exact database matches and fuzzy-match queues requiring user review.
+ *
+ * All functions are side-effect-free and return new arrays; none mutate their
+ * inputs.
+ *
+ * @module RecipeValidationHelpers
+ */
+
 import {
   FormIngredientElement,
   ingredientTableElement,
@@ -6,6 +19,10 @@ import {
 import { IngredientWithSimilarity, TagWithSimilarity } from '@customTypes/ValidationTypes';
 import { namesMatch, normalizeKey } from '@utils/NutritionUtils';
 
+/**
+ * Mutable ingredient list that may contain a mix of fully validated database
+ * records and partial form entries produced by OCR or web scraping.
+ */
 export type IngredientState = (ingredientTableElement | FormIngredientElement)[];
 
 /**
@@ -312,6 +329,10 @@ export function deduplicateIngredientsByName<T extends FormIngredientElement>(
   return Array.from(seen.values());
 }
 
+/**
+ * Configuration object passed to the validation queue for tag items that
+ * require user review.
+ */
 interface TagQueueConfig {
   type: 'Tag';
   items: TagWithSimilarity[];
@@ -319,6 +340,10 @@ interface TagQueueConfig {
   onDismissed?: (tag: TagWithSimilarity) => void;
 }
 
+/**
+ * Configuration object passed to the validation queue for ingredient items
+ * that require user review.
+ */
 interface IngredientQueueConfig {
   type: 'Ingredient';
   items: IngredientWithSimilarity[];

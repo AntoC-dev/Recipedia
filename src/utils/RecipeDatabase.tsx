@@ -1,3 +1,14 @@
+/**
+ * Singleton SQLite database layer for the Recipedia app.
+ *
+ * Exposes all CRUD operations for recipes, ingredients, tags, menu items, and
+ * purchased-ingredient state. Maintains an in-memory cache of every table so
+ * that read operations are synchronous after initialization. Implements a
+ * slice-based pub/sub model (via {@link StoreSlice}) to integrate with
+ * `useSyncExternalStore` without requiring React Context or Redux.
+ *
+ * @module RecipeDatabase
+ */
 import * as SQLite from 'expo-sqlite';
 import {
   coreIngredientElement,
@@ -671,6 +682,16 @@ export class RecipeDatabase {
     await this.insertAndCacheRecipes(prepared);
   }
 
+  /**
+   * Updates an existing recipe in the database.
+   *
+   * Saves any temporary image to permanent storage before persisting the
+   * update, then refreshes the in-memory cache and notifies `recipes` subscribers.
+   *
+   * @param recipe - The recipe to update. Must have a valid `id`.
+   * @returns The updated recipe object (same reference as the input).
+   * @throws Error if `recipe.id` is undefined.
+   */
   public async editRecipe(recipe: recipeTableElement) {
     if (recipe.id === undefined) {
       throw new Error(`Cannot edit recipe without ID: ${recipe.title}`);
@@ -699,6 +720,16 @@ export class RecipeDatabase {
     return recipe;
   }
 
+  /**
+   * Updates an existing ingredient in the database.
+   *
+   * After a successful update the in-memory ingredients cache is refreshed and
+   * all recipes that reference this ingredient are reloaded from the database,
+   * then both the `ingredients` and `recipes` store slices are notified.
+   *
+   * @param ingredient - The ingredient to update. Must have a valid `id`.
+   * @returns `true` if the update succeeded, `false` otherwise.
+   */
   public async editIngredient(ingredient: ingredientTableElement) {
     if (ingredient.id === undefined) {
       databaseLogger.warn('Cannot edit ingredient - missing ID', {
@@ -722,6 +753,16 @@ export class RecipeDatabase {
     return success;
   }
 
+  /**
+   * Updates an existing tag in the database.
+   *
+   * After a successful update the in-memory tags cache is refreshed and all
+   * recipes that reference this tag are reloaded from the database, then both
+   * the `tags` and `recipes` store slices are notified.
+   *
+   * @param tag - The tag to update. Must have a valid `id`.
+   * @returns `true` if the update succeeded, `false` otherwise.
+   */
   public async editTag(tag: tagTableElement) {
     if (tag.id === undefined) {
       databaseLogger.warn('Cannot edit tag - missing ID', { tagName: tag.name });
@@ -739,6 +780,15 @@ export class RecipeDatabase {
     return success;
   }
 
+  /**
+   * Returns a random sample of tags from the local cache.
+   *
+   * If the cache contains fewer tags than requested, all available tags are
+   * returned. When the cache is empty an empty array is returned immediately.
+   *
+   * @param numOfElements - Number of distinct random tags to return.
+   * @returns Array of randomly selected tags, length ≤ `numOfElements`.
+   */
   public searchRandomlyTags(numOfElements: number): tagTableElement[] {
     if (this._tags.length === 0) {
       databaseLogger.error('Cannot get random tags - tag table is empty');
@@ -808,6 +858,17 @@ export class RecipeDatabase {
     return fisherYatesShuffle(this._tags, count);
   }
 
+  /**
+   * Deletes a recipe from the database and performs related cleanup.
+   *
+   * In addition to removing the recipe row, this method:
+   * - Deletes the associated image file if it is stored in permanent storage.
+   * - Removes any corresponding menu entry.
+   * - Removes the recipe URL from the seen-history if it originated from a provider.
+   *
+   * @param recipe - The recipe to delete. Matched by `id` if present, otherwise by title/description/image.
+   * @returns `true` if the recipe was deleted, `false` otherwise.
+   */
   public async deleteRecipe(recipe: recipeTableElement): Promise<boolean> {
     let recipeDeleted: boolean;
     if (recipe.id !== undefined) {
@@ -841,6 +902,16 @@ export class RecipeDatabase {
     return recipeDeleted;
   }
 
+  /**
+   * Deletes an ingredient from the database and removes it from all recipes.
+   *
+   * Any recipe that referenced the deleted ingredient is updated in-place to
+   * drop that ingredient, and both the `ingredients` and `recipes` store slices
+   * are notified after the operation completes.
+   *
+   * @param ingredient - The ingredient to delete. Matched by `id` if present, otherwise by name/unit/type.
+   * @returns `true` if the ingredient was deleted, `false` otherwise.
+   */
   public async deleteIngredient(ingredient: ingredientTableElement): Promise<boolean> {
     let ingredientDeleted: boolean;
     if (ingredient.id !== undefined) {
@@ -877,6 +948,16 @@ export class RecipeDatabase {
     return ingredientDeleted;
   }
 
+  /**
+   * Deletes a tag from the database and removes it from all recipes.
+   *
+   * Any recipe that referenced the deleted tag is updated in-place to drop
+   * that tag, and both the `tags` and `recipes` store slices are notified after
+   * the operation completes.
+   *
+   * @param tag - The tag to delete. Matched by `id` if present, otherwise by name.
+   * @returns `true` if the tag was deleted, `false` otherwise.
+   */
   public async deleteTag(tag: tagTableElement): Promise<boolean> {
     let tagDeleted: boolean;
     if (tag.id !== undefined) {
@@ -947,18 +1028,51 @@ export class RecipeDatabase {
     return this._tags;
   }
 
+  /**
+   * Appends a recipe to the in-memory cache without persisting to the database.
+   *
+   * Used internally after a successful database insert. Prefer {@link addRecipe}
+   * or {@link addMultipleRecipes} for full persistence.
+   *
+   * @param recipe - The recipe to append to the cache.
+   */
   public add_recipes(recipe: recipeTableElement) {
     this._recipes.push(recipe);
   }
 
+  /**
+   * Appends an ingredient to the in-memory cache without persisting to the database.
+   *
+   * Used internally after a successful database insert. Prefer {@link addIngredient}
+   * or {@link addMultipleIngredients} for full persistence.
+   *
+   * @param ingredient - The ingredient to append to the cache.
+   */
   public add_ingredient(ingredient: ingredientTableElement) {
     this._ingredients.push(ingredient);
   }
 
+  /**
+   * Appends a tag to the in-memory cache without persisting to the database.
+   *
+   * Used internally after a successful database insert. Prefer {@link addTag}
+   * or {@link addMultipleTags} for full persistence.
+   *
+   * @param tag - The tag to append to the cache.
+   */
   public add_tags(tag: tagTableElement) {
     this._tags.push(tag);
   }
 
+  /**
+   * Removes a recipe from the in-memory cache without touching the database.
+   *
+   * Matches by `id` when present, otherwise uses partial equality. Logs a warning
+   * if the recipe is not found in the cache. Prefer {@link deleteRecipe} for full
+   * persistence including cascaded cleanup.
+   *
+   * @param recipe - The recipe to remove from the cache.
+   */
   public remove_recipe(recipe: recipeTableElement) {
     const foundRecipe = this.find_recipe(recipe);
     if (foundRecipe !== undefined) {
@@ -970,6 +1084,14 @@ export class RecipeDatabase {
     }
   }
 
+  /**
+   * Removes an ingredient from the in-memory cache without touching the database.
+   *
+   * Matches by `id` when present, otherwise uses full equality. Logs a warning if
+   * the ingredient is not found. Prefer {@link deleteIngredient} for full persistence.
+   *
+   * @param ingredient - The ingredient to remove from the cache.
+   */
   public remove_ingredient(ingredient: ingredientTableElement) {
     const foundIngredient = this.find_ingredient(ingredient);
     if (foundIngredient !== undefined) {
@@ -981,6 +1103,14 @@ export class RecipeDatabase {
     }
   }
 
+  /**
+   * Removes a tag from the in-memory cache without touching the database.
+   *
+   * Matches by `id` when present, otherwise uses full equality. Logs a warning if
+   * the tag is not found. Prefer {@link deleteTag} for full persistence.
+   *
+   * @param tag - The tag to remove from the cache.
+   */
   public remove_tag(tag: tagTableElement) {
     const foundTag = this.find_tag(tag);
     if (foundTag !== undefined) {
@@ -990,6 +1120,12 @@ export class RecipeDatabase {
     }
   }
 
+  /**
+   * Replaces an existing recipe in the in-memory cache by `id` without touching
+   * the database. No-ops silently if the recipe is not found.
+   *
+   * @param newRecipe - The updated recipe. Matched by `id`.
+   */
   public update_recipe(newRecipe: recipeTableElement) {
     const foundRecipe = this._recipes.findIndex(recipe => recipe.id === newRecipe.id);
     if (foundRecipe !== -1) {
@@ -997,6 +1133,14 @@ export class RecipeDatabase {
     }
   }
 
+  /**
+   * Replaces multiple recipes in the in-memory cache in a single pass.
+   *
+   * Uses a pre-built id→index Map for O(n) performance. Logs a warning for
+   * any recipe in `updatedRecipes` whose `id` is not found in the current cache.
+   *
+   * @param updatedRecipes - Array of updated recipes. Each must have a valid `id`.
+   */
   public update_multiple_recipes(updatedRecipes: recipeTableElement[]) {
     const recipeMap = new Map(this._recipes.map((recipe, index) => [recipe.id, index]));
 
@@ -1013,6 +1157,12 @@ export class RecipeDatabase {
     }
   }
 
+  /**
+   * Replaces an existing ingredient in the in-memory cache by `id` without
+   * touching the database. No-ops silently if the ingredient is not found.
+   *
+   * @param newIngredient - The updated ingredient. Matched by `id`.
+   */
   public update_ingredient(newIngredient: ingredientTableElement) {
     const foundIngredient = this._ingredients.findIndex(
       ingredient => ingredient.id === newIngredient.id
@@ -1022,6 +1172,12 @@ export class RecipeDatabase {
     }
   }
 
+  /**
+   * Replaces an existing tag in the in-memory cache by `id` without touching
+   * the database. No-ops silently if the tag is not found.
+   *
+   * @param newTag - The updated tag. Matched by `id`.
+   */
   public update_tag(newTag: tagTableElement) {
     const foundTag = this._tags.findIndex(tag => tag.id === newTag.id);
     if (foundTag !== -1) {
@@ -1029,6 +1185,15 @@ export class RecipeDatabase {
     }
   }
 
+  /**
+   * Looks up a recipe in the in-memory cache.
+   *
+   * Uses strict `id` equality when the recipe has an `id`; falls back to
+   * partial structural equality ({@link isRecipePartiallyEqual}) otherwise.
+   *
+   * @param recipeToFind - Recipe to search for.
+   * @returns The matching cached recipe, or `undefined` if not found.
+   */
   public find_recipe(recipeToFind: recipeTableElement): recipeTableElement | undefined {
     let findFunc: (element: recipeTableElement) => boolean;
     if (recipeToFind.id !== undefined) {
@@ -1039,6 +1204,15 @@ export class RecipeDatabase {
     return this._recipes.find(element => findFunc(element));
   }
 
+  /**
+   * Looks up an ingredient in the in-memory cache.
+   *
+   * Uses strict `id` equality when the ingredient has an `id`; falls back to
+   * full structural equality ({@link isIngredientEqual}) otherwise.
+   *
+   * @param ingToFind - Ingredient to search for.
+   * @returns The matching cached ingredient, or `undefined` if not found.
+   */
   public find_ingredient(ingToFind: ingredientTableElement): ingredientTableElement | undefined {
     let findFunc: (element: ingredientTableElement) => boolean;
     if (ingToFind.id !== undefined) {
@@ -1049,6 +1223,15 @@ export class RecipeDatabase {
     return this._ingredients.find(element => findFunc(element));
   }
 
+  /**
+   * Looks up a tag in the in-memory cache.
+   *
+   * Uses strict `id` equality when the tag has an `id`; falls back to full
+   * structural equality ({@link isTagEqual}) otherwise.
+   *
+   * @param tagToSearch - Tag to search for.
+   * @returns The matching cached tag, or `undefined` if not found.
+   */
   public find_tag(tagToSearch: tagTableElement): tagTableElement | undefined {
     let findFunc: (element: tagTableElement) => boolean;
     if (tagToSearch.id !== undefined) {
@@ -1650,14 +1833,23 @@ export class RecipeDatabase {
   /* PRIVATE METHODS */
 
   /**
-   * Resets all internal state to empty values
+   * Fires all registered callbacks for the given store slice.
    *
-   * @private
+   * Called after every mutation so that `useSyncExternalStore` subscribers
+   * know to re-read the store snapshot.
+   *
+   * @param slice - The data slice whose listeners should be triggered.
    */
   private notify(slice: StoreSlice): void {
     this._listeners.get(slice)?.forEach(cb => cb());
   }
 
+  /**
+   * Resets all in-memory caches to their initial empty values.
+   *
+   * Does not touch the database — use {@link closeAndReset} for a full teardown
+   * that also closes the SQLite connection.
+   */
   private reset() {
     this._recipes = [];
     this._ingredients = [];

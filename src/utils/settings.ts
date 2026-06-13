@@ -1,10 +1,24 @@
+/**
+ * Persistent app settings backed by AsyncStorage.
+ *
+ * Provides typed getters and setters for dark mode, default persons count,
+ * season filter, and language. On first use, each setting falls back to a
+ * device-derived or hardcoded default. `initSettings` should be called once
+ * during app startup to apply persisted values (e.g. the active language) to
+ * the running i18n instance.
+ *
+ * @module settings
+ */
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Localization from 'expo-localization';
 import { Appearance } from 'react-native';
 import i18n from './i18n';
 import { settingsLogger } from '@utils/logger';
 
-// Settings keys for AsyncStorage
+/**
+ * AsyncStorage keys used to persist each user setting.
+ */
 export const SETTINGS_KEYS = {
   DARK_MODE: 'settings_dark_mode',
   DEFAULT_PERSONS: 'settings_default_persons',
@@ -12,18 +26,25 @@ export const SETTINGS_KEYS = {
   LANGUAGE: 'settings_language',
 };
 
-// Default settings values
+/**
+ * Fallback values applied when a setting has not yet been written to storage.
+ * An empty string for `language` means the device locale will be used.
+ */
 export const DEFAULT_SETTINGS = {
   darkMode: false,
   defaultPersons: 4,
   seasonFilter: true,
-  language: '', // Empty string means use device locale
+  language: '',
 };
 
 /**
- * Get the dark mode setting
- * Uses system preference on first launch, then respects user choice
- * @returns Promise resolving to dark mode boolean
+ * Reads the dark mode preference from storage.
+ *
+ * On first launch (before the setting is written) falls back to the OS colour
+ * scheme reported by `Appearance`. On storage error, also falls back to the OS
+ * colour scheme.
+ *
+ * @returns `true` when dark mode should be enabled, `false` otherwise.
  */
 export const getDarkMode = async (): Promise<boolean> => {
   try {
@@ -39,9 +60,9 @@ export const getDarkMode = async (): Promise<boolean> => {
 };
 
 /**
- * Set the dark mode setting
- * @param value Dark mode boolean value
- * @returns Promise that resolves when setting is saved
+ * Persists the dark mode preference.
+ *
+ * @param value - `true` to enable dark mode, `false` to disable.
  */
 export const setDarkMode = async (value: boolean): Promise<void> => {
   try {
@@ -53,8 +74,12 @@ export const setDarkMode = async (value: boolean): Promise<void> => {
 };
 
 /**
- * Get the default persons setting
- * @returns Promise resolving to default persons number
+ * Reads the default serving-persons preference from storage.
+ *
+ * Falls back to {@link DEFAULT_SETTINGS}.`defaultPersons` when the value has
+ * not been set or storage fails.
+ *
+ * @returns The saved default number of persons, or `4` as the fallback.
  */
 export const getDefaultPersons = async (): Promise<number> => {
   try {
@@ -67,9 +92,9 @@ export const getDefaultPersons = async (): Promise<number> => {
 };
 
 /**
- * Set the default persons setting
- * @param value Default persons number
- * @returns Promise that resolves when setting is saved
+ * Persists the default serving-persons preference.
+ *
+ * @param value - The number of persons to use as default for recipe scaling.
  */
 export const setDefaultPersons = async (value: number): Promise<void> => {
   try {
@@ -81,8 +106,12 @@ export const setDefaultPersons = async (value: number): Promise<void> => {
 };
 
 /**
- * Get the season filter setting
- * @returns Promise resolving to season filter boolean
+ * Reads the season filter preference from storage.
+ *
+ * Returns `false` when the value has never been written; falls back to
+ * {@link DEFAULT_SETTINGS}.`seasonFilter` on storage error.
+ *
+ * @returns `true` when the season filter is enabled.
  */
 export const getSeasonFilter = async (): Promise<boolean> => {
   try {
@@ -95,9 +124,9 @@ export const getSeasonFilter = async (): Promise<boolean> => {
 };
 
 /**
- * Set the season filter setting
- * @param value Season filter boolean value
- * @returns Promise that resolves when setting is saved
+ * Persists the season filter preference.
+ *
+ * @param value - `true` to restrict recipe results to seasonal ingredients.
  */
 export const setSeasonFilter = async (value: boolean): Promise<void> => {
   try {
@@ -109,8 +138,9 @@ export const setSeasonFilter = async (value: boolean): Promise<void> => {
 };
 
 /**
- * Toggle the season filter setting
- * @returns Promise resolving to the new season filter value
+ * Flips the season filter preference and persists the new value.
+ *
+ * @returns The new season filter state after toggling.
  */
 export const toggleSeasonFilter = async (): Promise<boolean> => {
   const currentValue = await getSeasonFilter();
@@ -120,8 +150,12 @@ export const toggleSeasonFilter = async (): Promise<boolean> => {
 };
 
 /**
- * Get the language setting
- * @returns Promise resolving to language code
+ * Reads the language preference from storage.
+ *
+ * Falls back to the device locale (`expo-localization`) when no value has been
+ * saved, and to `'en'` if the device locale cannot be determined.
+ *
+ * @returns A BCP 47 language code (e.g. `'en'`, `'fr'`).
  */
 export const getLanguage = async (): Promise<string> => {
   try {
@@ -136,9 +170,9 @@ export const getLanguage = async (): Promise<string> => {
 };
 
 /**
- * Set the language setting
- * @param value Language code
- * @returns Promise that resolves when setting is saved
+ * Persists the language preference and applies it to the running i18n instance.
+ *
+ * @param value - A BCP 47 language code (e.g. `'en'`, `'fr'`).
  */
 export const setLanguage = async (value: string): Promise<void> => {
   try {
@@ -152,8 +186,11 @@ export const setLanguage = async (value: string): Promise<void> => {
 };
 
 /**
- * Initialize settings by loading from AsyncStorage
- * This should be called on app startup
+ * Applies persisted settings to the running app.
+ *
+ * Reads the saved language from storage and calls `i18n.changeLanguage` so
+ * the correct translation bundle is active before any component renders. Should
+ * be awaited during app startup before the root navigator mounts.
  */
 export const initSettings = async (): Promise<void> => {
   settingsLogger.debug('Initializing app settings');

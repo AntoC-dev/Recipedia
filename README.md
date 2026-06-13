@@ -100,16 +100,13 @@ src/
 
 ### For Users
 
-- [Installation Guide](docs/installation.md)
-- [User Manual](docs/user-guide.md)
-- [FAQ](docs/faq.md)
+- [Installation Guide](guides/installation.md)
+- [FAQ](guides/faq.md)
 
 ### For Developers
 
 - **[API Documentation](https://AntoC-dev.github.io/Recipedia/)** - Complete TypeScript API reference
 - [Contributing Guidelines](CONTRIBUTING.md)
-- [Testing Guide](docs/testing.md)
-- [CI/CD Setup](docs/ci-setup.md)
 
 ### API Documentation
 
@@ -268,7 +265,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- **Documentation**: Check our [docs folder](docs/)
+- **Documentation**: Check our [guides folder](guides/)
 - **Issues**: [GitHub Issues](https://github.com/AntoC-dev/Recipedia/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/AntoC-dev/Recipedia/discussions)
 

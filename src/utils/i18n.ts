@@ -1,3 +1,14 @@
+/**
+ * Internationalisation setup and React hook for the Recipedia app.
+ *
+ * Configures a dedicated i18next instance with dynamic backend loading and
+ * device-locale detection via `expo-localization`. Exports the singleton
+ * `i18n` instance, language metadata constants, and the {@link useI18n} hook
+ * for use in React components.
+ *
+ * @module i18n
+ */
+
 import { createInstance } from 'i18next';
 import { initReactI18next, useTranslation } from 'react-i18next';
 import * as Localization from 'expo-localization';
@@ -65,39 +76,35 @@ i18n
   });
 
 /**
- * Hook to use translations in React components
- * @returns Translation functions and utilities
+ * Hook providing translation utilities for React components.
+ *
+ * Wraps `react-i18next`'s `useTranslation` and exposes a stable API for
+ * reading and changing the active locale.
+ *
+ * @returns An object containing:
+ *   - `t` — the i18next translation function
+ *   - `setLocale(locale)` — changes the active language; resolves when loaded
+ *   - `getLocale()` — returns the current language code (e.g. `'en'`)
+ *   - `getAvailableLocales()` — returns all supported {@link SupportedLanguage} codes
+ *   - `getLocaleName(locale)` — returns the display name for a language code,
+ *     or the raw code if it is not in {@link SUPPORTED_LANGUAGES}
+ *
+ * @example
+ * ```tsx
+ * const { t, setLocale, getLocale } = useI18n();
+ * return <Button onPress={() => setLocale('fr')}>{t('settings.language')}</Button>;
+ * ```
  */
 export const useI18n = () => {
   const { t, i18n } = useTranslation();
 
   return {
     t,
-    /**
-     * Changes the current locale
-     * @param locale The locale to set (e.g., 'en', 'fr')
-     */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setLocale: (locale: string): Promise<any> => i18n.changeLanguage(locale),
-
-    /**
-     * Gets the current locale
-     * @returns The current locale
-     */
     getLocale: (): string => i18n.language,
-
-    /**
-     * Gets all available locales
-     * @returns Array of available locale codes
-     */
     getAvailableLocales: (): SupportedLanguage[] =>
       Object.keys(SUPPORTED_LANGUAGES) as SupportedLanguage[],
-
-    /**
-     * Gets the locale name in its own language
-     * @param locale The locale code
-     * @returns The name of the language in its own language
-     */
     getLocaleName: (locale: string): string =>
       locale in SUPPORTED_LANGUAGES
         ? SUPPORTED_LANGUAGES[locale as SupportedLanguage].name
