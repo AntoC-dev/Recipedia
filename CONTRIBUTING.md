@@ -456,7 +456,7 @@ We use labels to categorize issues:
 
 ### Performance
 
-- Use `React.memo` for expensive components
+- React Compiler handles memoization — do **not** add `React.memo`, `useMemo`, or `useCallback`
 - Optimize large lists with FlashList
 - Profile app performance regularly
 - Monitor bundle size
@@ -571,6 +571,23 @@ targetServings: number
 - **TypeScript Integration**: All types must be properly exported and documented
 - **Source Links**: Documentation includes direct links to GitHub source files
 - **Examples Required**: Complex components and utilities must include usage examples
+
+#### Keeping Documentation Current
+
+When submitting a PR, update the relevant docs alongside the code:
+
+| Change | What to update |
+|--------|----------------|
+| Add/modify exported function or type in `utils/` or `hooks/` | TSDoc block on that export; run `npm run docs:build` |
+| Add a new React Context provider | `ARCHITECTURE.md` — State management section |
+| Introduce a new architectural pattern or invariant | `ARCHITECTURE.md` — relevant section + Key Invariants |
+| Change navigation structure | `ARCHITECTURE.md` — Navigation section |
+| Add a workflow spanning multiple layers (new import pipeline, new form type) | New file in `guides/` |
+| Add a new dev setup requirement (env var, native dep) | `guides/installation.md` |
+
+Docs files live in:
+- `ARCHITECTURE.md` — system-level overview and invariants (root)
+- `guides/` — step-by-step guides for setup, testing, CI, FAQ
 
 #### Documentation Publishing
 
