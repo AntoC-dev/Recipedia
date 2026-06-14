@@ -24,6 +24,13 @@ export function NutritionTable({
           title='Mock Change Nutrition'
         />
       )}
+      {onNutritionChange && (
+        <Button
+          testID={testId + '::OnNutritionReapply'}
+          onPress={() => onNutritionChange(nutrition ?? ({} as never))}
+          title='Mock Reapply Nutrition'
+        />
+      )}
       {onRemoveNutrition && (
         <Button
           testID={testId + '::OnRemoveNutrition'}

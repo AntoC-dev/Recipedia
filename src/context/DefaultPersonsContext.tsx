@@ -42,7 +42,11 @@
  */
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { getDefaultPersons, setDefaultPersons as saveDefaultPersons } from '@utils/settings';
+import {
+  getDefaultPersons,
+  getDefaultPersonsSync,
+  setDefaultPersons as saveDefaultPersons,
+} from '@utils/settings';
 
 export interface DefaultPersonsContextType {
   defaultPersons: number;
@@ -60,7 +64,11 @@ export const useDefaultPersons = () => {
 };
 
 export const DefaultPersonsProvider = ({ children }: { children: React.ReactNode }) => {
-  const [defaultPersons, setDefaultPersonsState] = useState(4);
+  // Seed from the synchronous settings cache so the first render carries the
+  // user's saved value when `initSettings` has already warmed it; otherwise
+  // the fallback returned by `getDefaultPersonsSync` is used until the async
+  // load below resolves.
+  const [defaultPersons, setDefaultPersonsState] = useState(() => getDefaultPersonsSync());
 
   useEffect(() => {
     getDefaultPersons().then(value => {

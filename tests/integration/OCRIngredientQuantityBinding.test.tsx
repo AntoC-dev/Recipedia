@@ -1,13 +1,24 @@
 import React from 'react';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
+import { UseFormReturn } from 'react-hook-form';
 import TextRecognition, { TextRecognitionResult } from '@react-native-ml-kit/text-recognition';
 import { useRecipeOCR } from '@hooks/useRecipeOCR';
-import { RecipeFormProvider, useRecipeForm } from '@context/RecipeFormContext';
+import { RecipeFormProvider, useRecipeForm } from '@test-helpers/recipeFormTestProvider';
 import { RecipeDialogsProvider } from '@context/RecipeDialogsContext';
 import { createMockRecipeProp } from '@test-helpers/recipeHookTestWrapper';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { normalizeKey } from '@utils/NutritionUtils';
-import { ingredientTableElement, ingredientType } from '@customTypes/DatabaseElementTypes';
+import {
+  FormIngredientElement,
+  ingredientTableElement,
+  ingredientType,
+} from '@customTypes/DatabaseElementTypes';
+import { ApplyIngredientEditPatch } from '@hooks/useRecipeIngredients';
+import { RecipeFormInput } from '@schemas/recipeFormSchema';
+import {
+  IngredientArrayActionsProvider,
+  useIngredientArrayActionsRegister,
+} from '@screens/recipe/fields/IngredientArrayActionsContext';
 
 import {
   iosNamesOcrResult as v1Names,
@@ -29,6 +40,42 @@ import {
   iosQuantitiesOcrResult as hfQuantities,
   expectedIosIngredientNames as hfExpectedNames,
 } from '@data/ocrMocks/hellofresh';
+
+type IngredientRow = ingredientTableElement | FormIngredientElement;
+type RecipeForm = UseFormReturn<RecipeFormInput>;
+
+function makeFormApplyPatch(form: RecipeForm): ApplyIngredientEditPatch {
+  return patch => {
+    const current = (form.getValues('recipeIngredients') ?? []) as IngredientRow[];
+    if (patch.kind === 'replace') {
+      const next = [...current];
+      next[patch.index] = patch.row;
+      form.setValue('recipeIngredients', next as never, { shouldValidate: true });
+      return;
+    }
+    if (patch.kind === 'merge') {
+      const next = [...current];
+      next[patch.intoIndex] = patch.row;
+      next.splice(patch.removeIndex, 1);
+      form.setValue('recipeIngredients', next as never, { shouldValidate: true });
+      return;
+    }
+    if (patch.kind === 'append') {
+      const next = [...current, patch.row];
+      form.setValue('recipeIngredients', next as never, { shouldValidate: true });
+      return;
+    }
+    const next = current.filter((_, i) => i !== patch.index);
+    form.setValue('recipeIngredients', next as never, { shouldValidate: true });
+  };
+}
+
+function FormDrivenApplyPatchRegistrar({ children }: { children: React.ReactNode }) {
+  const { form } = useRecipeForm();
+  const applyPatch = React.useMemo(() => makeFormApplyPatch(form), [form]);
+  useIngredientArrayActionsRegister(applyPatch);
+  return <>{children}</>;
+}
 
 const mockRecognize = TextRecognition.recognize as jest.Mock;
 
@@ -72,7 +119,11 @@ function createWrapper() {
   return function Wrapper({ children }: { children: React.ReactNode }) {
     return (
       <RecipeFormProvider props={props}>
-        <RecipeDialogsProvider>{children}</RecipeDialogsProvider>
+        <RecipeDialogsProvider>
+          <IngredientArrayActionsProvider>
+            <FormDrivenApplyPatchRegistrar>{children}</FormDrivenApplyPatchRegistrar>
+          </IngredientArrayActionsProvider>
+        </RecipeDialogsProvider>
       </RecipeFormProvider>
     );
   };
@@ -107,7 +158,7 @@ async function runNamesThenQuantities(
   });
 
   await waitFor(() => {
-    expect(result.current.form.state.recipeIngredients.length).toBeGreaterThan(0);
+    expect(result.current.form.form.getValues('recipeIngredients')!.length).toBeGreaterThan(0);
   });
 
   await act(async () => {
@@ -170,7 +221,7 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
       const { result } = renderOcrHook();
       await runNamesThenQuantities(result, namesOcr, quantitiesOcr);
 
-      const ingredients = result.current.form.state.recipeIngredients;
+      const ingredients = result.current.form.form.getValues('recipeIngredients')!;
       const missing = ingredients.filter(i => !i.quantity || i.quantity.trim().length === 0);
 
       const maxAcceptableMissing = Math.max(0, ingredients.length - qtyCountInOcr);
@@ -188,7 +239,9 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
       });
 
       await waitFor(() => {
-        expect(result.current.form.state.recipeIngredients.length).toBe(v1ExpectedNames.length);
+        expect(result.current.form.form.getValues('recipeIngredients')!.length).toBe(
+          v1ExpectedNames.length
+        );
       });
     });
 
@@ -201,12 +254,14 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
       });
 
       await waitFor(() => {
-        expect(result.current.form.state.recipeIngredients.length).toBe(v1ExpectedNames.length);
+        expect(result.current.form.form.getValues('recipeIngredients')!.length).toBe(
+          v1ExpectedNames.length
+        );
       });
 
-      expect(result.current.form.state.recipeIngredients.map(i => normalize(i.name))).toEqual(
-        v1ExpectedNames.map(i => normalize(i.name))
-      );
+      expect(
+        result.current.form.form.getValues('recipeIngredients')!.map(i => normalize(i.name))
+      ).toEqual(v1ExpectedNames.map(i => normalize(i.name)));
     });
 
     test('Quitoque V1: no quantities are set before the qty pass runs', async () => {
@@ -218,10 +273,12 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
       });
 
       await waitFor(() => {
-        expect(result.current.form.state.recipeIngredients.length).toBe(v1ExpectedNames.length);
+        expect(result.current.form.form.getValues('recipeIngredients')!.length).toBe(
+          v1ExpectedNames.length
+        );
       });
 
-      const qty = result.current.form.state.recipeIngredients.map(i => i.quantity);
+      const qty = result.current.form.form.getValues('recipeIngredients')!.map(i => i.quantity);
       expect(qty.every(q => !q || q.trim().length === 0)).toBe(true);
     });
   });
@@ -231,7 +288,7 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
       const { result } = renderOcrHook();
       await runNamesThenQuantities(result, v1Names, v1Quantities);
 
-      const final = result.current.form.state.recipeIngredients;
+      const final = result.current.form.form.getValues('recipeIngredients')!;
       expect(final).toHaveLength(v1ExpectedQuantities.length);
       final.forEach((ingredient, index) => {
         expect(ingredient.quantity).toBe(v1ExpectedQuantities[index]);
@@ -242,7 +299,7 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
       const { result } = renderOcrHook();
       await runNamesThenQuantities(result, v3Names, v3Quantities);
 
-      const final = result.current.form.state.recipeIngredients;
+      const final = result.current.form.form.getValues('recipeIngredients')!;
       const finalNamesLower = final.map(i => normalize(i.name));
       expect(new Set(finalNamesLower).size).toBe(finalNamesLower.length);
       expect(new Set(finalNamesLower)).toEqual(
@@ -256,7 +313,9 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
       const { result } = renderOcrHook();
       await runNamesThenQuantities(result, hfNames, hfQuantities);
 
-      const finalNames = result.current.form.state.recipeIngredients.map(i => normalize(i.name));
+      const finalNames = result.current.form.form
+        .getValues('recipeIngredients')!
+        .map(i => normalize(i.name));
       const expectedNames = hfExpectedNames.map(n => normalize(n.name));
       expect(finalNames.slice(0, expectedNames.length)).toEqual(expectedNames);
     });
@@ -271,7 +330,7 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
         await result.current.ocr.fillOneField('names.jpg', 'ingredientNames');
       });
 
-      expect(result.current.form.state.recipeIngredients).toEqual([]);
+      expect(result.current.form.form.getValues('recipeIngredients')!).toEqual([]);
     });
 
     test('empty quantities pass keeps previously-scanned ingredients with empty qty', async () => {
@@ -281,7 +340,7 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
 
       await runNamesThenQuantities(result, namesOcr, emptyQuantities);
 
-      const final = result.current.form.state.recipeIngredients;
+      const final = result.current.form.form.getValues('recipeIngredients')!;
       expect(final.length).toBeGreaterThanOrEqual(3);
       final.forEach(i => {
         expect(i.quantity ?? '').toBe('');
@@ -295,7 +354,7 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
 
       await runNamesThenQuantities(result, namesOcr, qtyOcr);
 
-      const final = result.current.form.state.recipeIngredients;
+      const final = result.current.form.form.getValues('recipeIngredients')!;
       const withQty = final.filter(i => (i.quantity ?? '').trim().length > 0);
       expect(withQty.length).toBeGreaterThanOrEqual(2);
     });
@@ -307,7 +366,7 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
 
       await runNamesThenQuantities(result, namesOcr, qtyOcr);
 
-      const final = result.current.form.state.recipeIngredients;
+      const final = result.current.form.form.getValues('recipeIngredients')!;
       const carotte = final.find(i => normalize(i.name) === 'carotte');
       const cumin = final.find(i => normalize(i.name) === 'cumin');
       expect(carotte?.quantity).toBe('100');
@@ -322,7 +381,7 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
         await result.current.ocr.fillOneField('qty.jpg', 'ingredientQuantities');
       });
 
-      expect(result.current.form.state.recipeIngredients).toEqual([]);
+      expect(result.current.form.form.getValues('recipeIngredients')!).toEqual([]);
     });
 
     test('names pass is idempotent: rescanning the same image does not duplicate rows', async () => {
@@ -334,13 +393,13 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
         await result.current.ocr.fillOneField('names.jpg', 'ingredientNames');
       });
 
-      const firstPassCount = result.current.form.state.recipeIngredients.length;
+      const firstPassCount = result.current.form.form.getValues('recipeIngredients')!.length;
 
       await act(async () => {
         await result.current.ocr.fillOneField('names.jpg', 'ingredientNames');
       });
 
-      expect(result.current.form.state.recipeIngredients.length).toBe(firstPassCount);
+      expect(result.current.form.form.getValues('recipeIngredients')!.length).toBe(firstPassCount);
     });
 
     test('after names pass, no row has quantity "0"', async () => {
@@ -353,10 +412,12 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
       });
 
       await waitFor(() => {
-        expect(result.current.form.state.recipeIngredients.length).toBeGreaterThan(0);
+        expect(result.current.form.form.getValues('recipeIngredients')!.length).toBeGreaterThan(0);
       });
 
-      const qtyValues = result.current.form.state.recipeIngredients.map(i => i.quantity ?? '');
+      const qtyValues = result.current.form.form
+        .getValues('recipeIngredients')!
+        .map(i => i.quantity ?? '');
       qtyValues.forEach(q => {
         expect(q).not.toBe('0');
       });
@@ -376,7 +437,7 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
         await result.current.ocr.fillOneField('qty.jpg', 'ingredientQuantities');
       });
 
-      const final = result.current.form.state.recipeIngredients;
+      const final = result.current.form.form.getValues('recipeIngredients')!;
       const carotte = final.find(i => normalize(i.name) === 'carotte');
       const cumin = final.find(i => normalize(i.name) === 'cumin');
       expect(carotte?.quantity).toBe('100');
@@ -389,7 +450,7 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
       const { result } = renderOcrHook();
       await runNamesThenQuantities(result, v1Names, v1Quantities);
 
-      const final = result.current.form.state.recipeIngredients;
+      const final = result.current.form.form.getValues('recipeIngredients')!;
       expect(final.map(i => i.quantity)).toEqual(v1ExpectedQuantities);
     });
 
@@ -397,7 +458,7 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
       const { result } = renderOcrHook();
       await runNamesThenQuantities(result, hfNames, hfQuantities);
 
-      const final = result.current.form.state.recipeIngredients;
+      const final = result.current.form.form.getValues('recipeIngredients')!;
       final.forEach(i => {
         const q = (i.quantity ?? '').trim();
         expect(q.length).toBeGreaterThan(0);

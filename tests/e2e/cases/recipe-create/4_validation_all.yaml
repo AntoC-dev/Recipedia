@@ -197,8 +197,8 @@ tags:
       - runFlow:
           file: "../../asserts/alerts/en/recipeValidationError.yaml"
           env:
-            MISSING_ELEMENTS: "\n\t- names for all ingredients\n\t- quantities for all ingredients\n\t- all ingredients to be known by Recipedia\n\t- some instructions for the preparation\n\t- a preparation time"
-          label: "Assert - Verify validation error for missing name on ingredient and preparation"
+            MISSING_ELEMENTS: "\n\t- quantities for all ingredients\n\t- all ingredients to be known by Recipedia\n\t- some instructions for the preparation\n\t- a preparation time"
+          label: "Assert - Verify validation error for unknown ingredient and missing preparation"
 
       - runFlow:
           file: "../../flows/recipe/adding/manual/en/fixIngredientName.yaml"

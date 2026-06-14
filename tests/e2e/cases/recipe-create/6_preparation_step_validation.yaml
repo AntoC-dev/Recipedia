@@ -1,0 +1,77 @@
+name: "6 - Recipe Create Preparation Step Validation Flow"
+appId: "com.recipedia"
+tags:
+  - recipe-create
+---
+- runFlow:
+    file: "../../flows/recipe/adding/manual/en/openAddManually.yaml"
+    label: "Action - Open manual recipe adding screen"
+
+- runFlow:
+    file: "../../flows/recipe/adding/en/addRecipeImage.yaml"
+    label: "Action - Add recipe image"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTitle::CustomTextInput"
+    direction: DOWN
+    speed: 10
+    centerElement: true
+    label: "Action - Scroll to title input"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: "../../flows/recipe/adding/setRecipeTitle.yaml"
+    env:
+      TITLE: "Preparation Step Validation Test"
+    label: "Action - Enter recipe title"
+
+- runFlow:
+    file: "../../flows/recipe/adding/setRecipePersons.yaml"
+    env:
+      PERSONS: "4"
+    label: "Action - Set persons count"
+
+- runFlow:
+    file: "../../flows/recipe/adding/addIngredientToRecipe.yaml"
+    env:
+      INDEX: "0"
+      QUANTITY: "100"
+      NAME: "Carrots"
+    label: "Action - Add Carrots ingredient (exact DB match, no validation queue)"
+
+- runFlow:
+    file: "../../flows/recipe/adding/addRecipeTimeToPrepare.yaml"
+    env:
+      PERSONS_VALUE: "30"
+    label: "Action - Set preparation time"
+
+- tapOn:
+    id: "Recipe::BottomActionButton"
+    label: "Action - Validate recipe before adding a preparation step"
+
+- runFlow:
+    file: "../../asserts/alerts/en/recipeValidationErrorSingle.yaml"
+    env:
+      MISSING_ELEMENT: "some instructions for the preparation"
+    label: "Assert - Dialog reports preparation as the single missing element (no spurious extra fields from addNewPreparationStep auto-validation)"
+    
+- runFlow:
+    file: "../../flows/recipe/adding/addRecipePreparationStep.yaml"
+    env:
+      INDEX: "0"
+      TEXT: "Cook for 10 minutes"
+    label: "Action - Add an empty step then fill its description (covers C8b: no premature errors on add; C5: typed value clears the missing-prep error)"
+
+- tapOn:
+    id: "Recipe::BottomActionButton"
+    label: "Action - Validate recipe after the preparation step is filled"
+
+- runFlow:
+    file: "../../asserts/alerts/en/recipeAddedToDatabase.yaml"
+    env:
+      RECIPE_NAME: "Preparation Step Validation Test"
+    label: "Assert - Recipe saved successfully (the typed description cleared the previous missing-prep error without a stale-state round-trip)"

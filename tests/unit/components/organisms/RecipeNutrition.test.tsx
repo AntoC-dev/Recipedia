@@ -396,4 +396,48 @@ describe('RecipeNutrition', () => {
       expect(parsedData.energyKcal).toBe(mockNutrition.energyKcal);
     });
   });
+
+  describe('Error display', () => {
+    test('renders error helper below table when error prop provided', () => {
+      const { getByTestId } = render(
+        <RecipeNutrition
+          nutrition={mockNutrition}
+          mode={recipeStateType.edit}
+          onNutritionChange={mockOnChange}
+          parentTestId={defaultTestId}
+          error='Nutrition is invalid'
+        />
+      );
+      const helper = getByTestId(defaultTestId + '::RecipeNutrition::Error');
+      expect(helper.props.children).toBe('Nutrition is invalid');
+      expect(helper.props.type).toBe('error');
+    });
+
+    test('renders error helper below empty state when nutrition missing in edit mode', () => {
+      const { getByTestId } = render(
+        <RecipeNutrition
+          nutrition={undefined}
+          mode={recipeStateType.addManual}
+          onNutritionChange={mockOnChange}
+          parentTestId={defaultTestId}
+          error='Required'
+        />
+      );
+      expect(getByTestId(defaultTestId + '::RecipeNutrition::Error').props.children).toBe(
+        'Required'
+      );
+    });
+
+    test('omits error helper when error prop is absent', () => {
+      const { queryByTestId } = render(
+        <RecipeNutrition
+          nutrition={mockNutrition}
+          mode={recipeStateType.edit}
+          onNutritionChange={mockOnChange}
+          parentTestId={defaultTestId}
+        />
+      );
+      expect(queryByTestId(defaultTestId + '::RecipeNutrition::Error')).toBeNull();
+    });
+  });
 });

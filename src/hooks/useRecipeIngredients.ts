@@ -11,12 +11,48 @@
 
 import { FormIngredientElement, ingredientTableElement } from '@customTypes/DatabaseElementTypes';
 import { recipeLogger } from '@utils/logger';
+import { useFormContext } from 'react-hook-form';
 import { noteSeparator, textSeparator, unitySeparator } from '@styles/typography';
 import { useRecipeDialogs } from '@context/RecipeDialogsContext';
-import { useRecipeForm } from '@context/RecipeFormContext';
 import { useIngredients } from '@hooks/useIngredients';
 import { mergeQuantities, validateAndQueueIngredients } from '@utils/RecipeValidationHelpers';
 import { namesMatch } from '@utils/NutritionUtils';
+import type { RecipeFormInput } from '@schemas/recipeFormSchema';
+import { useIngredientArrayActions } from '@screens/recipe/fields/IngredientArrayActionsContext';
+
+type IngredientList = (ingredientTableElement | FormIngredientElement)[];
+
+/**
+ * Structured patch emitted by `editIngredients`, `replaceAllMatchingFormIngredients`,
+ * and `addOrMergeIngredient` so the caller (the ingredient field-array hook)
+ * can apply the change via the RHF field-array API:
+ *
+ * - `replace`: `fieldArray.update(index, row)` — single-slot rewrite.
+ * - `merge`: `fieldArray.update(intoIndex, row) + fieldArray.remove(removeIndex)` —
+ *   collapse a duplicate row into another.
+ * - `remove`: `fieldArray.remove(index)` — drop a row (dismissed from queue).
+ * - `append`: `fieldArray.append(row)` — add a new row at the end.
+ *
+ * Mass `setValue('recipeIngredients', next)` writes are gone: the caller
+ * touches only the slots that actually changed, so sibling rows retain
+ * object identity and do not re-render.
+ */
+export type IngredientEditPatch =
+  | { kind: 'replace'; index: number; row: ingredientTableElement | FormIngredientElement }
+  | {
+      kind: 'merge';
+      removeIndex: number;
+      intoIndex: number;
+      row: ingredientTableElement | FormIngredientElement;
+    }
+  | { kind: 'remove'; index: number }
+  | { kind: 'append'; row: ingredientTableElement | FormIngredientElement };
+
+/**
+ * Callback the caller passes to `editIngredients` to apply the emitted patch
+ * via the local RHF field-array API.
+ */
+export type ApplyIngredientEditPatch = (patch: IngredientEditPatch) => void;
 
 /**
  * Parses an ingredient display string into its components
@@ -75,11 +111,17 @@ export interface UseRecipeIngredientsReturn {
    * Updates an existing ingredient at the specified index.
    * If the ingredient name changes, triggers validation workflow for fuzzy matching.
    * If only quantity/unit changes, updates the ingredient in place.
+   *
+   * Does not touch RHF state directly. The caller supplies `applyPatch`, which
+   * the hook invokes with `IngredientEditPatch` values so the caller can apply
+   * each change via the local RHF field-array API (`fieldArray.update` /
+   * `fieldArray.remove`). Sibling rows retain object identity.
    */
-  editIngredients: (oldIngredientId: number, newIngredient: string) => void;
-
-  /** Adds an empty ingredient row to the recipe form */
-  addNewIngredient: () => void;
+  editIngredients: (
+    index: number,
+    newIngredient: string,
+    applyPatch: ApplyIngredientEditPatch
+  ) => void;
 
   /**
    * Adds a validated ingredient to the recipe or merges its quantity if the same ingredient exists.
@@ -95,8 +137,13 @@ export interface UseRecipeIngredientsReturn {
    */
   replaceAllMatchingFormIngredients: (validatedIngredient: ingredientTableElement) => void;
 
-  /** Removes the ingredient at the given index from the recipe form */
-  removeIngredient: (index: number) => void;
+  /**
+   * Removes every form ingredient whose name matches `name`, emitting one
+   * `remove` patch per match (highest index first so earlier removals don't
+   * shift the indices still pending). Used by scraper validation when the user
+   * dismisses an ingredient from the queue. No-ops on an empty / undefined name.
+   */
+  removeMatchingFormIngredients: (name: string | undefined) => void;
 }
 
 /**
@@ -104,7 +151,6 @@ export interface UseRecipeIngredientsReturn {
  *
  * This hook provides three main operations:
  * - **editIngredients**: Updates an existing ingredient, triggering validation if the name changes
- * - **addNewIngredient**: Adds an empty ingredient row to the form
  * - **addOrMergeIngredient**: Adds a new ingredient or merges quantities if it already exists
  *
  * The hook handles the complexity of ingredient validation, fuzzy matching, and duplicate detection.
@@ -116,10 +162,7 @@ export interface UseRecipeIngredientsReturn {
  *
  * @example
  * ```tsx
- * const { editIngredients, addNewIngredient, addOrMergeIngredient } = useRecipeIngredients();
- *
- * // Add a new empty ingredient row
- * addNewIngredient();
+ * const { editIngredients, addOrMergeIngredient } = useRecipeIngredients();
  *
  * // Edit an ingredient (triggers validation if name changes)
  * editIngredients(0, '200g flour');
@@ -137,117 +180,147 @@ export interface UseRecipeIngredientsReturn {
  */
 export function useRecipeIngredients(): UseRecipeIngredientsReturn {
   const { setValidationQueue } = useRecipeDialogs();
-  const { state, setters } = useRecipeForm();
+  const form = useFormContext<RecipeFormInput>();
   const { findSimilarIngredients } = useIngredients();
-  const { recipeIngredients } = state;
-  const { setRecipeIngredients } = setters;
+  const { applyPatch } = useIngredientArrayActions();
+  const getRecipeIngredients = (): IngredientList =>
+    (form.getValues('recipeIngredients') ?? []) as IngredientList;
 
   /**
    * Adds an ingredient to the recipe or merges quantities if it already exists.
    *
    * Performs case-insensitive name matching to detect duplicates:
-   * - Same name + same unit + both have different notes → adds as separate ingredient
-   * - Same name + same unit + compatible notes → merges quantities, keeps note
-   * - Same name + different unit → replaces existing with new ingredient
+   * - No match → emits an `append` patch.
+   * - Same name + same unit + both have different non-empty notes → emits an
+   *   `append` patch (treated as a distinct row).
+   * - Same name + same unit + compatible notes → emits a `replace` patch at
+   *   the existing index with summed quantities, keeps the existing or new
+   *   note depending on which is non-empty.
+   * - Same name + different unit → emits a `replace` patch at the existing
+   *   index with the new ingredient, falling back to the existing quantity
+   *   when the incoming one is empty.
+   *
+   * Patches are applied via the shared IngredientArrayActionsContext so
+   * non-touched sibling rows retain object identity.
    *
    * @param ingredient - The validated ingredient to add or merge
    */
   const addOrMergeIngredient = (ingredient: ingredientTableElement) => {
-    setRecipeIngredients(prev => {
-      const existingIndex = prev.findIndex(existing => namesMatch(existing.name, ingredient.name));
+    const prev = getRecipeIngredients();
+    const existingIndex = prev.findIndex(existing => namesMatch(existing.name, ingredient.name));
 
-      if (existingIndex === -1) {
-        recipeLogger.debug('Ingredient added', { name: ingredient.name });
-        return [...prev, ingredient];
-      } else {
-        const updated = [...prev];
-        const existing = updated[existingIndex];
+    if (existingIndex === -1) {
+      recipeLogger.debug('Adding new ingredient', {
+        name: ingredient.name,
+        quantity: ingredient.quantity,
+        unit: ingredient.unit,
+      });
+      applyPatch({ kind: 'append', row: ingredient });
+      return;
+    }
 
-        if (!existing || !existing.name) {
-          return prev;
-        }
+    const existing = prev[existingIndex];
+    if (!existing || !existing.name) {
+      return;
+    }
 
-        if (existing.unit === ingredient.unit) {
-          const existingNote = existing.note?.trim();
-          const newNote = ingredient.note?.trim();
+    if (existing.unit === ingredient.unit) {
+      const existingNote = existing.note?.trim();
+      const newNote = ingredient.note?.trim();
 
-          if (existingNote && newNote && existingNote !== newNote) {
-            recipeLogger.debug('Ingredient added separately - conflicting notes', {
-              name: ingredient.name,
-            });
-            return [...prev, ingredient];
-          }
-
-          recipeLogger.debug('Ingredient quantities merged', { name: ingredient.name });
-          updated[existingIndex] = {
-            ...ingredient,
-            quantity: mergeQuantities(existing.quantity, ingredient.quantity),
-            note: newNote || existingNote,
-          };
-        } else {
-          recipeLogger.debug('Ingredient replaced - different unit', { name: ingredient.name });
-          updated[existingIndex] = {
-            ...ingredient,
-            quantity: ingredient.quantity || existing.quantity || '',
-          };
-        }
-        return updated;
+      if (existingNote && newNote && existingNote !== newNote) {
+        recipeLogger.debug('Adding duplicate-name ingredient as new row (note differs)', {
+          name: ingredient.name,
+          existingNote,
+          newNote,
+        });
+        applyPatch({ kind: 'append', row: ingredient });
+        return;
       }
+
+      applyPatch({
+        kind: 'replace',
+        index: existingIndex,
+        row: {
+          ...ingredient,
+          quantity: mergeQuantities(existing.quantity, ingredient.quantity),
+          note: newNote || existingNote,
+        },
+      });
+      return;
+    }
+
+    applyPatch({
+      kind: 'replace',
+      index: existingIndex,
+      row: {
+        ...ingredient,
+        quantity: ingredient.quantity || existing.quantity || '',
+      },
     });
   };
 
   /**
-   * Replaces the ingredient at the given index in-place, merging with a duplicate
-   * at another index if the new ingredient's name already exists elsewhere.
-   *
-   * Merge rules (same as addOrMergeIngredient):
-   * - Same unit → sum quantities, keep note
-   * - Different unit → overwrite the duplicate slot
-   * The duplicate slot is then removed.
-   *
-   * @param index - Index of the ingredient to replace
-   * @param ingredient - The new ingredient data to place at that index
+   * Builds a `replace` or `merge` patch for placing `ingredient` at `index`,
+   * honoring the duplicate-name merge rules:
+   * - same unit → sum quantities, keep note
+   * - different unit → overwrite the duplicate slot
    */
-  const replaceIngredientAtIndex = (index: number, ingredient: ingredientTableElement) => {
-    setRecipeIngredients(prev => {
-      const updated = [...prev];
-      const duplicateIndex = updated.findIndex(
-        (ing, i) => i !== index && namesMatch(ing.name, ingredient.name)
-      );
-      if (duplicateIndex !== -1) {
-        const existing = updated[duplicateIndex];
-        if (existing.unit === ingredient.unit) {
-          updated[index] = {
+  const buildReplacePatch = (
+    index: number,
+    ingredient: ingredientTableElement
+  ): IngredientEditPatch => {
+    const current = getRecipeIngredients();
+    const duplicateIndex = current.findIndex(
+      (ing, i) => i !== index && namesMatch(ing.name, ingredient.name)
+    );
+    if (duplicateIndex === -1) {
+      return { kind: 'replace', index, row: ingredient };
+    }
+    const existing = current[duplicateIndex];
+    const merged =
+      existing.unit === ingredient.unit
+        ? {
             ...ingredient,
             quantity: mergeQuantities(existing.quantity, ingredient.quantity),
             note: ingredient.note || existing.note,
-          };
-        } else {
-          updated[index] = ingredient;
-        }
-        updated.splice(duplicateIndex, 1);
-      } else {
-        updated[index] = ingredient;
-      }
-      return updated;
-    });
+          }
+        : ingredient;
+    // Place the merged row in the lower of the two slots and drop the higher
+    // one — keeps the merged ingredient at a stable, known index regardless of
+    // whether the duplicate came before or after the edit position.
+    const keepIndex = Math.min(index, duplicateIndex);
+    const dropIndex = Math.max(index, duplicateIndex);
+    return { kind: 'merge', intoIndex: keepIndex, removeIndex: dropIndex, row: merged };
   };
 
   /**
    * Edits an existing ingredient at the specified index.
    *
-   * Parses the new ingredient string and determines the appropriate action:
-   * - If the name changes, replaces the slot in-place and triggers validation
-   *   workflow to check for similar ingredients in the database
-   * - If only quantity/unit/note changes, updates the ingredient in place
+   * Parses the new ingredient string and decides the patch shape:
+   * - Name changed → run the fuzzy-match validation queue, emit a `replace`
+   *   or `merge` patch on resolution, or a `remove` patch on dismissal.
+   * - Name unchanged → emit a single `replace` patch with only the edited
+   *   fields applied to the current row.
    *
-   * @param oldIngredientId - Index of the ingredient to edit
+   * The hook never writes RHF state itself. The caller supplies `applyPatch`
+   * to translate the patch into `fieldArray.update` / `fieldArray.remove`
+   * calls so unchanged sibling rows keep object identity and do not re-render.
+   *
+   * @param index - Index of the ingredient to edit
    * @param newIngredient - Formatted ingredient string (e.g., "100@@g--Rice%%For sauce")
+   * @param applyPatch - Callback that applies the emitted patch via the local
+   *   RHF field-array API.
    */
-  const editIngredients = (oldIngredientId: number, newIngredient: string) => {
-    if (oldIngredientId < 0 || oldIngredientId >= recipeIngredients.length) {
+  const editIngredients = (
+    index: number,
+    newIngredient: string,
+    applyPatch: ApplyIngredientEditPatch
+  ) => {
+    const recipeIngredients = getRecipeIngredients();
+    if (index < 0 || index >= recipeIngredients.length) {
       recipeLogger.warn('Cannot edit ingredient - invalid index', {
-        oldIngredientId,
+        index,
         ingredientsCount: recipeIngredients.length,
       });
       return;
@@ -260,87 +333,73 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
       note: newNote,
     } = parseIngredientString(newIngredient);
 
-    /**
-     * Updates an ingredient's properties in place without triggering validation.
-     *
-     * Used when only quantity, unit, or note changes but the ingredient name remains the same.
-     * Selectively updates only the fields that have changed.
-     * Uses functional update to avoid stale closure issues.
-     *
-     * @param ingredient - The new ingredient data to apply
-     */
-    const updateIngredient = (ingredient: FormIngredientElement) => {
-      setRecipeIngredients(prev => {
-        const ingredientCopy: (ingredientTableElement | FormIngredientElement)[] = prev.map(
-          ing => ({ ...ing })
-        );
-        const foundIngredient = ingredientCopy[oldIngredientId];
+    const emitInPlaceUpdate = (ingredient: FormIngredientElement) => {
+      const current = getRecipeIngredients();
+      const foundIngredient = current[index];
+      if (!foundIngredient) return;
+      const nextRow: ingredientTableElement | FormIngredientElement = { ...foundIngredient };
 
-        if (!foundIngredient) {
-          return prev;
-        }
+      if (ingredient.id && nextRow.id !== ingredient.id) {
+        nextRow.id = ingredient.id;
+      }
+      if (ingredient.name && nextRow.name !== ingredient.name) {
+        nextRow.name = ingredient.name;
+      }
+      if (ingredient.unit && nextRow.unit !== ingredient.unit) {
+        nextRow.unit = ingredient.unit;
+      }
+      if (ingredient.quantity && nextRow.quantity !== ingredient.quantity) {
+        nextRow.quantity = ingredient.quantity;
+      }
+      if (
+        ingredient.season &&
+        ingredient.season.length > 0 &&
+        nextRow.season !== ingredient.season
+      ) {
+        nextRow.season = ingredient.season;
+      }
+      if (ingredient.type && nextRow.type !== ingredient.type) {
+        nextRow.type = ingredient.type;
+      }
+      if (ingredient.note !== undefined && nextRow.note !== ingredient.note) {
+        nextRow.note = ingredient.note;
+      }
 
-        if (ingredient.id && foundIngredient.id !== ingredient.id) {
-          foundIngredient.id = ingredient.id;
-        }
-        if (ingredient.name && foundIngredient.name !== ingredient.name) {
-          foundIngredient.name = ingredient.name;
-        }
-        if (ingredient.unit && foundIngredient.unit !== ingredient.unit) {
-          foundIngredient.unit = ingredient.unit;
-        }
-        if (ingredient.quantity && foundIngredient.quantity !== ingredient.quantity) {
-          foundIngredient.quantity = ingredient.quantity;
-        }
-        if (
-          ingredient.season &&
-          ingredient.season.length > 0 &&
-          foundIngredient.season !== ingredient.season
-        ) {
-          foundIngredient.season = ingredient.season;
-        }
-        if (ingredient.type && foundIngredient.type !== ingredient.type) {
-          foundIngredient.type = ingredient.type;
-        }
-        if (ingredient.note !== undefined && foundIngredient.note !== ingredient.note) {
-          foundIngredient.note = ingredient.note;
-        }
-
-        return ingredientCopy;
-      });
+      applyPatch({ kind: 'replace', index, row: nextRow });
     };
 
-    if (
-      newName &&
-      newName.trim().length > 0 &&
-      recipeIngredients[oldIngredientId] &&
-      recipeIngredients[oldIngredientId].name !== newName
-    ) {
+    const currentRow = recipeIngredients[index];
+    const nameChanged = currentRow.name !== newName;
+    const isResolved = !!(currentRow as ingredientTableElement).type;
+    if (newName && newName.trim().length > 0 && (nameChanged || !isResolved)) {
       validateAndQueueIngredients(
         [{ name: newName, unit: newUnit, quantity: newQuantity, note: newNote, season: [] }],
         findSimilarIngredients,
         match =>
-          replaceIngredientAtIndex(oldIngredientId, {
-            ...match,
-            quantity: newQuantity || match.quantity,
-            unit: newUnit || match.unit,
-            note: newNote,
-          }),
+          applyPatch(
+            buildReplacePatch(index, {
+              ...match,
+              quantity: newQuantity || match.quantity,
+              unit: newUnit || match.unit,
+              note: newNote,
+            })
+          ),
         setValidationQueue,
         {
           onValidated: (originalItem, validatedIngredient) =>
-            replaceIngredientAtIndex(oldIngredientId, {
-              ...validatedIngredient,
-              quantity: originalItem.quantity || validatedIngredient.quantity,
-              unit: originalItem.unit || validatedIngredient.unit,
-              note: originalItem.note,
-            }),
-          onDismissed: () =>
-            setRecipeIngredients(prev => prev.filter((_, i) => i !== oldIngredientId)),
+            applyPatch(
+              buildReplacePatch(index, {
+                ...validatedIngredient,
+                quantity: originalItem.quantity || validatedIngredient.quantity,
+                unit: originalItem.unit || validatedIngredient.unit,
+                note: originalItem.note,
+              })
+            ),
+          onDismissed: () => applyPatch({ kind: 'remove', index }),
         }
       );
     } else {
-      updateIngredient({
+      emitInPlaceUpdate({
         name: newName,
         unit: newUnit,
         quantity: newQuantity,
@@ -351,59 +410,61 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
   };
 
   /**
-   * Adds an empty ingredient row to the recipe form.
-   *
-   * Creates a new ingredient entry with only an empty name field, allowing
-   * the user to fill in the details through the UI.
-   */
-  const addNewIngredient = () => {
-    recipeLogger.debug('Empty ingredient row added');
-    setRecipeIngredients(prev => [...prev, { name: '' }]);
-  };
-
-  /**
-   * Removes the ingredient at the given index from the recipe form.
-   *
-   * @param index - Index of the ingredient to remove
-   */
-  const removeIngredient = (index: number) => {
-    recipeLogger.debug('Ingredient removed', { index });
-    setRecipeIngredients(prev => prev.filter((_, i) => i !== index));
-  };
-
-  /**
    * Replaces ALL FormIngredients with matching name with the validated database ingredient.
    *
    * Used by scraper validation when the same ingredient appears multiple times in a recipe.
    * Each matching ingredient keeps its own quantity and note while receiving database metadata
    * (id, name, type, season, unit).
    *
+   * Emits one `replace` patch per matching row via the shared
+   * `IngredientArrayActionsContext` so non-matching siblings retain object
+   * identity. Non-matching rows are not touched.
+   *
    * @param validatedIngredient - The validated database ingredient to use as template
    */
   const replaceAllMatchingFormIngredients = (validatedIngredient: ingredientTableElement) => {
-    setRecipeIngredients(prev => {
-      return prev.map(existing => {
-        if (namesMatch(existing.name, validatedIngredient.name)) {
-          return {
-            id: validatedIngredient.id,
-            name: validatedIngredient.name,
-            type: validatedIngredient.type,
-            season: validatedIngredient.season,
-            quantity: existing.quantity || '',
-            unit: validatedIngredient.unit,
-            note: existing.note,
-          };
-        }
-        return existing;
+    const current = getRecipeIngredients();
+    current.forEach((existing, index) => {
+      if (!namesMatch(existing.name, validatedIngredient.name)) {
+        return;
+      }
+      applyPatch({
+        kind: 'replace',
+        index,
+        row: {
+          id: validatedIngredient.id,
+          name: validatedIngredient.name,
+          type: validatedIngredient.type,
+          season: validatedIngredient.season,
+          quantity: existing.quantity || '',
+          unit: validatedIngredient.unit,
+          note: existing.note,
+        },
       });
     });
   };
 
+  /**
+   * Removes every form ingredient whose name matches `name` via `remove`
+   * patches so non-matching siblings retain object identity. Patches are
+   * emitted highest-index first to keep the remaining indices stable.
+   *
+   * @param name - Name to match (case-insensitive via `namesMatch`)
+   */
+  const removeMatchingFormIngredients = (name: string | undefined) => {
+    if (!name) return;
+    const current = getRecipeIngredients();
+    const indices = current
+      .map((ing, index) => (namesMatch(ing.name, name) ? index : -1))
+      .filter(index => index !== -1)
+      .sort((a, b) => b - a);
+    indices.forEach(index => applyPatch({ kind: 'remove', index }));
+  };
+
   return {
     editIngredients,
-    addNewIngredient,
     addOrMergeIngredient,
     replaceAllMatchingFormIngredients,
-    removeIngredient,
+    removeMatchingFormIngredients,
   };
 }

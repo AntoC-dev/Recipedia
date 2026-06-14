@@ -1,0 +1,86 @@
+name: '7 - Recipe Create Preparation Inline Error Flow'
+appId: 'com.recipedia'
+tags:
+  - recipe-create
+---
+- runFlow:
+    file: '../../flows/recipe/adding/manual/en/openAddManually.yaml'
+    label: 'Action - Open manual recipe adding screen'
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: 'RecipePreparation::AddButton::RoundButton'
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: 'Action - Scroll to preparation section'
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: 'RecipePreparation::AddButton::RoundButton'
+    label: 'Action - Add preparation step row'
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: '../../asserts/recipe/inlineErrors/en/preparationDescriptionNoError.yaml'
+    label: 'Assert - No description inline error before user interacts with the step'
+
+- scrollUntilVisible:
+    element:
+      id: 'RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput'
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: 'Action - Scroll to preparation step content input'
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: 'RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput'
+    label: 'Action - Focus the description input'
+
+- runFlow:
+    file: '../../flows/waitForKeyboard.yaml'
+    label: 'Wait for keyboard'
+
+- tapOn:
+    id: 'RecipePreparation::EditableStep::0::Content'
+    label: 'Action - Tap the content label to blur the description input (still empty)'
+
+- runFlow:
+    file: '../../flows/waitForKeyboardDismiss.yaml'
+    label: 'Wait for keyboard dismiss'
+
+- runFlow:
+    file: '../../asserts/recipe/inlineErrors/en/preparationDescriptionError.yaml'
+    label: 'Assert - Description inline error visible once the step description has been blurred empty'
+
+- tapOn:
+    id: 'RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput'
+    label: 'Action - Focus the description input again'
+
+- runFlow:
+    file: '../../flows/waitForKeyboard.yaml'
+    label: 'Wait for keyboard'
+
+- inputText:
+    text: 'Cook for 10 minutes'
+    label: 'Action - Enter valid description text'
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: 'RecipePreparation::EditableStep::0::Content'
+    label: 'Action - Blur the description input after typing'
+
+- runFlow:
+    file: '../../flows/waitForKeyboardDismiss.yaml'
+    label: 'Wait for keyboard dismiss'
+
+- runFlow:
+    file: '../../asserts/recipe/inlineErrors/en/preparationDescriptionNoError.yaml'
+    label: 'Assert - Description inline error cleared after a non-empty value is committed'

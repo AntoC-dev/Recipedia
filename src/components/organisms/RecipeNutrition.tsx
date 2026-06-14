@@ -40,12 +40,14 @@
  * ```
  */
 import React, { useEffect, useState } from 'react';
+import { View } from 'react-native';
+import { HelperText } from 'react-native-paper';
 import { nutritionTableElement } from '@customTypes/DatabaseElementTypes';
 import { NutritionTable } from '@components/molecules/NutritionTable';
 import { NutritionEmptyState } from '@components/molecules/NutritionEmptyState';
 import { recipeStateType } from '@customTypes/ScreenTypes';
 import { recipeLogger } from '@utils/logger';
-import { defaultValueNumber } from '@utils/Constants';
+import { emptyNutrition } from '@utils/NutritionUtils';
 
 export interface RecipeNutritionProps {
   /** Current nutrition data (undefined when no nutrition available) */
@@ -58,6 +60,8 @@ export interface RecipeNutritionProps {
   openModal?: () => void;
   /** Test ID of parent for component testing */
   parentTestId: string;
+  /** Optional i18n key or message for an inline field-level error */
+  error?: string;
 }
 
 export function RecipeNutrition({
@@ -66,6 +70,7 @@ export function RecipeNutrition({
   onNutritionChange,
   openModal,
   parentTestId,
+  error,
 }: RecipeNutritionProps) {
   const [editedNutrition, setEditedNutrition] = useState<nutritionTableElement | undefined>(
     nutrition
@@ -86,19 +91,7 @@ export function RecipeNutrition({
 
     const updated = currentNutrition
       ? { ...currentNutrition, ...updates }
-      : {
-          energyKcal: defaultValueNumber,
-          energyKj: defaultValueNumber,
-          fat: defaultValueNumber,
-          saturatedFat: defaultValueNumber,
-          carbohydrates: defaultValueNumber,
-          sugars: defaultValueNumber,
-          fiber: defaultValueNumber,
-          protein: defaultValueNumber,
-          salt: defaultValueNumber,
-          portionWeight: defaultValueNumber,
-          ...updates,
-        };
+      : { ...emptyNutrition(), ...updates };
 
     setEditedNutrition(updated);
     onNutritionChange?.(updated);
@@ -121,17 +114,26 @@ export function RecipeNutrition({
     handleNutritionUpdate({});
   };
 
+  const errorHelper = error ? (
+    <HelperText testID={testId + '::Error'} type='error' visible={true}>
+      {error}
+    </HelperText>
+  ) : null;
+
   if (!currentNutrition && mode === recipeStateType.readOnly) {
     return null;
   }
 
   if (!currentNutrition && isEditing) {
     return (
-      <NutritionEmptyState
-        mode={mode === recipeStateType.addOCR ? 'ocr' : 'add'}
-        onButtonPressed={mode === recipeStateType.addOCR ? handleOCRModal : handleAddNutrition}
-        parentTestId={testId}
-      />
+      <View>
+        <NutritionEmptyState
+          mode={mode === recipeStateType.addOCR ? 'ocr' : 'add'}
+          onButtonPressed={mode === recipeStateType.addOCR ? handleOCRModal : handleAddNutrition}
+          parentTestId={testId}
+        />
+        {errorHelper}
+      </View>
     );
   }
 
@@ -140,14 +142,17 @@ export function RecipeNutrition({
   }
 
   return (
-    <NutritionTable
-      nutrition={currentNutrition}
-      isEditable={isEditing}
-      onNutritionChange={handleNutritionUpdate}
-      onRemoveNutrition={handleRemoveNutrition}
-      showRemoveButton={isEditing}
-      parentTestId={testId}
-    />
+    <View>
+      <NutritionTable
+        nutrition={currentNutrition}
+        isEditable={isEditing}
+        onNutritionChange={handleNutritionUpdate}
+        onRemoveNutrition={handleRemoveNutrition}
+        showRemoveButton={isEditing}
+        parentTestId={testId}
+      />
+      {errorHelper}
+    </View>
   );
 }
 

@@ -1,53 +1,29 @@
 /**
- * RecipePreparation - Dedicated preparation steps component
+ * RecipePreparation - Preparation steps display + editable building blocks
  *
- * A specialized component for displaying and editing recipe preparation steps.
- * Features two distinct modes: read-only display with numbered steps and editable mode
- * with inline inputs for step titles and descriptions.
+ * This file exposes the pieces the Recipe screen composes for preparation
+ * steps. The recipe form drives row-level state through per-row
+ * `useController` subscriptions, so the organism no longer owns the array
+ * orchestration. Instead it provides:
  *
- * Key Features:
- * - Simple View/Text/Input layout for text-based content
- * - Editable mode with inline CustomTextInput for title and description
- * - Scrollable list for handling multiple steps
- * - Two-field layout per step: Title and Description
- * - Empty state with OCR scanning button and manual add button
- * - Step numbering in both read-only and editable modes
+ * - `RecipePreparation` (default): read-only render of a preparation steps
+ *   array.
+ * - `EditableStep`: a single editable row with blur-commit title +
+ *   description inputs. Used by the per-row field wrapper.
+ * - `PreparationEmptyAdd`: the empty-state OCR + manual-add button block
+ *   rendered when the user opens the screen in `addOCR` mode without any
+ *   preparation steps yet.
+ * - `PreparationSection`: the prefix-text wrapper used to frame the editable
+ *   list and the "add step" round button. Exposed so the field wrapper can
+ *   wrap its mapped `useFieldArray` rows without reaching back into the
+ *   organism's internals.
  *
- * @example
- * ```typescript
- * // Read-only mode
- * <RecipePreparation
- *   testID="recipe-preparation"
- *   steps={recipe.preparation}
- *   mode="readOnly"
- * />
- *
- * // Editable mode
- * <RecipePreparation
- *   testID="recipe-preparation"
- *   steps={editableSteps}
- *   mode="editable"
- *   prefixText="Preparation :"
- *   onStepChange={(index, title, description) => updateStep(index, title, description)}
- *   onAddStep={() => addNewStep()}
- * />
- *
- * // Add mode with OCR support
- * <RecipePreparation
- *   testID="recipe-preparation"
- *   steps={[]}
- *   mode="add"
- *   prefixText="Preparation :"
- *   onStepChange={(index, title, description) => updateStep(index, title, description)}
- *   onAddStep={() => addNewStep()}
- *   openModal={() => openOCRScanner()}
- * />
- * ```
+ * @module components/organisms/RecipePreparation
  */
 
 import React from 'react';
 import { View } from 'react-native';
-import { Text } from 'react-native-paper';
+import { HelperText, Text } from 'react-native-paper';
 import { preparationStepElement } from '@customTypes/DatabaseElementTypes';
 import { recipeTableStyles, recipeTextRenderStyles } from '@styles/recipeComponents';
 import { RoundButton } from '@components/atomic/RoundButton';
@@ -55,90 +31,52 @@ import { Icons } from '@assets/Icons';
 import { CustomTextInput } from '@components/atomic/CustomTextInput';
 import { useI18n } from '@utils/i18n';
 
+const TEST_ID = 'RecipePreparation';
+
 /**
- * Common props shared across all modes
+ * Props for the read-only RecipePreparation component.
  */
-export type BaseProps = {
-  /** Array of preparation step elements to display/edit */
+export interface RecipePreparationProps {
   steps: preparationStepElement[];
-};
-
-/**
- * Props for read-only mode
- */
-export type ReadOnlyProps = BaseProps & {
-  mode: 'readOnly';
-};
-
-/**
- * Common props for editable and add modes
- */
-export type EditableBaseProps = BaseProps & {
-  /** Prefix text displayed above the steps */
-  prefixText: string;
-  /** Callback fired when a step title is committed (on blur) */
-  onTitleEditingEnded: (index: number, title: string) => void;
-  /** Callback fired when a step description is committed (on blur) */
-  onDescriptionEditingEnded: (index: number, description: string) => void;
-  /** Callback fired to add a new step */
-  onAddStep: () => void;
-};
-
-/**
- * Props for editable mode
- */
-export type EditableProps = EditableBaseProps & {
-  mode: 'editable';
-};
-
-/**
- * Props for add mode (OCR)
- * Same as editable mode but with additional OCR button support for empty state
- */
-export type AddProps = EditableBaseProps & {
-  mode: 'add';
-  /** Callback fired to open OCR modal (for empty state) */
-  openModal: () => void;
-};
-
-/**
- * Props for the RecipePreparation component (discriminated union)
- */
-export type RecipePreparationProps = ReadOnlyProps | EditableProps | AddProps;
-
-const testID: string = 'RecipePreparation';
-
-/**
- * Wrapper component with prefix text and container
- */
-function PrefixTextWrapper({
-  testID,
-  prefixText,
-  children,
-}: {
-  testID: string;
-  prefixText: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <View style={recipeTextRenderStyles.containerSection}>
-      <Text
-        testID={`${testID}::PrefixText`}
-        variant={'headlineSmall'}
-        style={recipeTextRenderStyles.containerElement}
-      >
-        {prefixText}
-      </Text>
-      {children}
-    </View>
-  );
 }
 
 /**
- * Read-only preparation steps component
+ * Props for the editable section frame (prefix text + add-step round button).
  */
-function ReadOnlyPreparation({ steps }: ReadOnlyProps) {
-  const testId = testID + `::ReadOnlyStep`;
+export interface PreparationSectionProps {
+  prefixText: string;
+  children: React.ReactNode;
+  onAddStep: () => void;
+}
+
+/**
+ * Props for the empty-state add block (OCR scan + manual-add buttons).
+ */
+export interface PreparationEmptyAddProps {
+  prefixText: string;
+  openModal: () => void;
+  onAddStep: () => void;
+}
+
+/**
+ * Props for a single editable preparation step row.
+ */
+export interface EditableStepProps {
+  index: number;
+  title: string;
+  description: string;
+  onTitleCommit: (title: string) => void;
+  onDescriptionCommit: (description: string) => void;
+  /** Optional translated inline error for the step's description (required by schema). */
+  descriptionError?: string;
+}
+
+/**
+ * Read-only preparation steps. Renders each step's numbered title and
+ * description in a vertical stack.
+ */
+export function RecipePreparation({ steps }: RecipePreparationProps) {
+  const testId = TEST_ID + `::ReadOnlyStep`;
   return (
     <View style={recipeTextRenderStyles.containerSection}>
       {steps.map((item, index) => (
@@ -166,32 +104,85 @@ function ReadOnlyPreparation({ steps }: ReadOnlyProps) {
 }
 
 /**
- * Individual editable step component with local state management
+ * Section frame for editable preparation: the prefix label, the caller's
+ * mapped rows, then the round "add step" button.
  */
-function EditableStep({
-  testID,
+export function PreparationSection({ prefixText, children, onAddStep }: PreparationSectionProps) {
+  return (
+    <View style={recipeTextRenderStyles.containerSection}>
+      <Text
+        testID={`${TEST_ID}::PrefixText`}
+        variant={'headlineSmall'}
+        style={recipeTextRenderStyles.containerElement}
+      >
+        {prefixText}
+      </Text>
+      {children}
+      <RoundButton
+        testID={`${TEST_ID}::AddButton`}
+        size='medium'
+        icon={Icons.plusIcon}
+        onPressFunction={onAddStep}
+        style={recipeTextRenderStyles.roundButtonPadding}
+      />
+    </View>
+  );
+}
+
+/**
+ * Empty-state add block for `addOCR` mode: lets the user either OCR-scan a
+ * recipe image for preparation steps or start adding steps manually.
+ */
+export function PreparationEmptyAdd({
+  prefixText,
+  openModal,
+  onAddStep,
+}: PreparationEmptyAddProps) {
+  return (
+    <View style={recipeTextRenderStyles.containerSection}>
+      <Text
+        testID={`${TEST_ID}::PrefixText`}
+        variant={'headlineSmall'}
+        style={recipeTextRenderStyles.containerElement}
+      >
+        {prefixText}
+      </Text>
+      <View style={recipeTableStyles.roundButtonsContainer}>
+        <RoundButton
+          testID={`${TEST_ID}::OpenModal`}
+          style={recipeTableStyles.roundButton}
+          size='medium'
+          icon={Icons.scanImageIcon}
+          onPressFunction={openModal}
+        />
+        <RoundButton
+          testID={`${TEST_ID}::AddButton`}
+          style={recipeTableStyles.roundButton}
+          size='medium'
+          icon={Icons.pencilIcon}
+          onPressFunction={onAddStep}
+        />
+      </View>
+    </View>
+  );
+}
+
+/**
+ * Single editable preparation step. Inputs commit on blur via the
+ * `CustomTextInput.onEndEditing` callback. The caller wires
+ * `onTitleCommit` / `onDescriptionCommit` to a per-row form controller, so a
+ * keystroke in one step never triggers a re-render of any sibling row.
+ */
+export function EditableStep({
   index,
-  item,
-  onTitleEditingEnded,
-  onDescriptionEditingEnded,
-}: {
-  testID: string;
-  index: number;
-  item: preparationStepElement;
-  onTitleEditingEnded: (index: number, title: string) => void;
-  onDescriptionEditingEnded: (index: number, description: string) => void;
-}) {
-  const testId = testID + `::EditableStep::${index}`;
-
+  title,
+  description,
+  onTitleCommit,
+  onDescriptionCommit,
+  descriptionError,
+}: EditableStepProps) {
+  const testId = `${TEST_ID}::EditableStep::${index}`;
   const { t } = useI18n();
-
-  const handleTitleChange = (newTitle: string) => {
-    onTitleEditingEnded(index, newTitle);
-  };
-
-  const handleDescriptionChange = (newDescription: string) => {
-    onDescriptionEditingEnded(index, newDescription);
-  };
 
   return (
     <View style={recipeTextRenderStyles.containerSection}>
@@ -213,9 +204,9 @@ function EditableStep({
         </Text>
         <CustomTextInput
           testID={testId + `::TextInputTitle`}
-          value={item.title}
+          value={title}
           style={recipeTextRenderStyles.containerElement}
-          onEndEditing={handleTitleChange}
+          onEndEditing={onTitleCommit}
           multiline={true}
         />
         <Text
@@ -228,96 +219,19 @@ function EditableStep({
         <CustomTextInput
           testID={testId + `::TextInputContent`}
           style={recipeTextRenderStyles.containerElement}
-          value={item.description}
-          onEndEditing={handleDescriptionChange}
+          value={description}
+          onEndEditing={onDescriptionCommit}
           multiline={true}
+          error={!!descriptionError}
         />
+        {descriptionError ? (
+          <HelperText testID={testId + `::DescriptionError`} type='error' visible={true}>
+            {descriptionError}
+          </HelperText>
+        ) : null}
       </View>
     </View>
   );
-}
-
-/**
- * Editable preparation steps component
- */
-function EditablePreparation({
-  steps,
-  prefixText,
-  onTitleEditingEnded,
-  onDescriptionEditingEnded,
-  onAddStep,
-}: EditableProps) {
-  return (
-    <PrefixTextWrapper testID={testID} prefixText={prefixText}>
-      {steps.map((item, index) => (
-        <EditableStep
-          key={index}
-          testID={testID}
-          index={index}
-          item={item}
-          onTitleEditingEnded={onTitleEditingEnded}
-          onDescriptionEditingEnded={onDescriptionEditingEnded}
-        />
-      ))}
-
-      <RoundButton
-        testID={`${testID}::AddButton`}
-        size='medium'
-        icon={Icons.plusIcon}
-        onPressFunction={onAddStep}
-        style={recipeTextRenderStyles.roundButtonPadding}
-      />
-    </PrefixTextWrapper>
-  );
-}
-
-/**
- * Add preparation steps component (with OCR support)
- */
-function AddPreparation(props: AddProps) {
-  const { steps, prefixText, openModal, onAddStep } = props;
-
-  if (steps.length === 0) {
-    return (
-      <PrefixTextWrapper testID={testID} prefixText={prefixText}>
-        <View style={recipeTableStyles.roundButtonsContainer}>
-          <RoundButton
-            testID={`${testID}::OpenModal`}
-            style={recipeTableStyles.roundButton}
-            size='medium'
-            icon={Icons.scanImageIcon}
-            onPressFunction={openModal}
-          />
-          <RoundButton
-            testID={`${testID}::AddButton`}
-            style={recipeTableStyles.roundButton}
-            size='medium'
-            icon={Icons.pencilIcon}
-            onPressFunction={onAddStep}
-          />
-        </View>
-      </PrefixTextWrapper>
-    );
-  }
-
-  return <EditablePreparation {...props} mode='editable' />;
-}
-
-/**
- * RecipePreparation component for preparation steps display and editing
- *
- * @param props - The component props
- * @returns JSX element representing the preparation steps
- */
-export function RecipePreparation(props: RecipePreparationProps) {
-  switch (props.mode) {
-    case 'add':
-      return <AddPreparation {...props} />;
-    case 'readOnly':
-      return <ReadOnlyPreparation {...props} />;
-    case 'editable':
-      return <EditablePreparation {...props} />;
-  }
 }
 
 export default RecipePreparation;

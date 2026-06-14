@@ -171,6 +171,74 @@ describe('TextInputWithDropDown Component', () => {
     });
   });
 
+  describe('onChangeText callback', () => {
+    test('fires onChangeText on every keystroke with the typed text', async () => {
+      const mockOnChangeText = jest.fn();
+      const { getByTestId } = render(
+        <TextInputWithDropDown {...defaultProps} onChangeText={mockOnChangeText} />
+      );
+
+      const input = getByTestId('TextInputWithDropDown::CustomTextInput');
+      await act(async () => {
+        fireEvent.changeText(input, 'p');
+      });
+      await act(async () => {
+        fireEvent.changeText(input, 'pa');
+      });
+      await act(async () => {
+        fireEvent.changeText(input, 'pas');
+      });
+
+      expect(mockOnChangeText).toHaveBeenCalledTimes(3);
+      expect(mockOnChangeText).toHaveBeenNthCalledWith(1, 'p');
+      expect(mockOnChangeText).toHaveBeenNthCalledWith(2, 'pa');
+      expect(mockOnChangeText).toHaveBeenNthCalledWith(3, 'pas');
+    });
+
+    test('fires both onChangeText and onValidate when a dropdown item is selected', async () => {
+      const mockOnChangeText = jest.fn();
+      const { getByTestId } = render(
+        <TextInputWithDropDown
+          {...defaultProps}
+          onChangeText={mockOnChangeText}
+          onValidate={mockOnValidate}
+        />
+      );
+
+      const input = getByTestId('TextInputWithDropDown::CustomTextInput');
+      await act(async () => {
+        fireEvent.changeText(input, 'past');
+      });
+
+      await waitFor(() =>
+        expect(getByTestId('TextInputWithDropDown::AutocompleteItem::Pasta')).toBeTruthy()
+      );
+
+      mockOnChangeText.mockClear();
+      mockOnValidate.mockClear();
+
+      await act(async () => {
+        fireEvent.press(getByTestId('TextInputWithDropDown::AutocompleteItem::Pasta'));
+      });
+
+      expect(mockOnChangeText).toHaveBeenCalledWith('Pasta');
+      expect(mockOnValidate).toHaveBeenCalledWith('Pasta');
+    });
+
+    test('does not throw when onChangeText is not provided', async () => {
+      const { getByTestId } = render(
+        <TextInputWithDropDown {...defaultProps} onChangeText={undefined} />
+      );
+
+      const input = getByTestId('TextInputWithDropDown::CustomTextInput');
+      await expect(
+        act(async () => {
+          fireEvent.changeText(input, 'test');
+        })
+      ).resolves.not.toThrow();
+    });
+  });
+
   describe('item selection', () => {
     test('calls onValidate exactly once when endEditing fires after dropdown selection', async () => {
       const { getByTestId } = render(<TextInputWithDropDown {...defaultProps} />);
@@ -232,6 +300,32 @@ describe('TextInputWithDropDown Component', () => {
       });
 
       expect(mockOnValidate).toHaveBeenCalledWith('custom text');
+    });
+
+    test('routes a dropdown pick through onSelect (not onChangeText/onValidate) when onSelect is provided', async () => {
+      const onSelect = jest.fn();
+      const onChangeText = jest.fn();
+      const { getByTestId } = render(
+        <TextInputWithDropDown {...defaultProps} onChangeText={onChangeText} onSelect={onSelect} />
+      );
+
+      const input = getByTestId('TextInputWithDropDown::CustomTextInput');
+      await act(async () => {
+        fireEvent.changeText(input, 'past');
+      });
+      onChangeText.mockClear();
+
+      await waitFor(() =>
+        expect(getByTestId('TextInputWithDropDown::AutocompleteItem::Pasta')).toBeTruthy()
+      );
+      await act(async () => {
+        fireEvent.press(getByTestId('TextInputWithDropDown::AutocompleteItem::Pasta'));
+      });
+
+      expect(onSelect).toHaveBeenCalledTimes(1);
+      expect(onSelect).toHaveBeenCalledWith('Pasta');
+      expect(mockOnValidate).not.toHaveBeenCalled();
+      expect(onChangeText).not.toHaveBeenCalled();
     });
   });
 

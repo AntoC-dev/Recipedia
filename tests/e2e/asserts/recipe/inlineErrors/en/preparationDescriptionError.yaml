@@ -1,0 +1,6 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    id: "RecipePreparation::EditableStep::0::DescriptionError"
+    text: "Add at least one step"
+    label: "First preparation step description inline error is visible"

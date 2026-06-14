@@ -50,13 +50,17 @@
  * }
  *
  * // Navigation from any screen
- * navigation.navigate('Recipe', { mode: 'readOnly', recipe: selectedRecipe });
+ * navigation.navigate('RecipeView', { recipe: selectedRecipe });
  * navigation.navigate('LanguageSettings');
  * ```
  */
 
 import React from 'react';
-import { Recipe } from '@screens/Recipe';
+import { RecipeView } from '@screens/recipe/RecipeView';
+import { RecipeEdit } from '@screens/recipe/RecipeEdit';
+import { RecipeAddManual } from '@screens/recipe/RecipeAddManual';
+import { RecipeAddOcr } from '@screens/recipe/RecipeAddOcr';
+import { RecipeAddScrape } from '@screens/recipe/RecipeAddScrape';
 import { LanguageSettings } from '@screens/LanguageSettings';
 import { DefaultPersonsSettings } from '@screens/DefaultPersonsSettings';
 import { IngredientsSettings } from '@screens/IngredientsSettings';
@@ -93,7 +97,11 @@ export function RootNavigator() {
   return (
     <Stack.Navigator initialRouteName='Tabs' screenOptions={screenOptions}>
       <Stack.Screen name='Tabs' component={BottomTabs} />
-      <Stack.Screen name='Recipe' component={Recipe} />
+      <Stack.Screen name='RecipeView' component={RecipeView} />
+      <Stack.Screen name='RecipeEdit' component={RecipeEdit} />
+      <Stack.Screen name='RecipeAddManual' component={RecipeAddManual} />
+      <Stack.Screen name='RecipeAddOcr' component={RecipeAddOcr} />
+      <Stack.Screen name='RecipeAddScrape' component={RecipeAddScrape} />
       <Stack.Screen name='LanguageSettings' component={LanguageSettings} />
       <Stack.Screen name='DefaultPersonsSettings' component={DefaultPersonsSettings} />
       <Stack.Screen name='IngredientsSettings' component={IngredientsSettings} />

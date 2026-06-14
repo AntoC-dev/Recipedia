@@ -1,0 +1,40 @@
+name: '9 - Recipe Create Nutrition Inline Error Flow'
+appId: 'com.recipedia'
+tags:
+  - recipe-create
+---
+- runFlow:
+    file: '../../flows/recipe/adding/manual/en/openAddManually.yaml'
+    label: 'Action - Open manual recipe adding screen'
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: 'Recipe::RecipeNutrition::NutritionEmptyState::AddButton::RoundButton'
+    direction: DOWN
+    speed: 95
+    timeout: 30000
+    label: 'Action - Scroll to nutrition section'
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: '../../asserts/recipe/inlineErrors/en/nutritionNoError.yaml'
+    label: 'Assert - No nutrition inline error before the table is opened'
+
+- tapOn:
+    id: 'Recipe::RecipeNutrition::NutritionEmptyState::AddButton::RoundButton'
+    label: 'Action - Add nutrition table'
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: '../../flows/recipe/editing/addPartialNutrition.yaml'
+    label: 'Action - Fill nutrition partially (leaves required cells unset)'
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: '../../asserts/recipe/inlineErrors/en/nutritionError.yaml'
+    label: "Assert - Nutrition inline error appears after editing a cell, without pressing the validate button (parity with the other fields' onChange trigger)"

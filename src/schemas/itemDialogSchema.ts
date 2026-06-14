@@ -13,7 +13,7 @@ export const tagDialogSchema = z.object({
 
 export const ingredientDialogSchema = z.object({
   name: nameField,
-  type: z.nativeEnum(ingredientType),
+  type: z.enum(ingredientType),
   unit: z.string().default(''),
   season: z.array(z.string()).default([]),
 });

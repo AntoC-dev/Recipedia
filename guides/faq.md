@@ -30,9 +30,9 @@ A new field touches several layers:
 
 3. **Schema migration** — If an existing database already exists on a device, the new column must be added via a migration in the `init()` method using `ALTER TABLE ... ADD COLUMN ...`. Without a migration, existing installs crash on startup.
 
-4. **Form state** — Add the field to `RecipeFormState` and `RecipeFormSetters` in `src/context/RecipeFormContext.tsx`, wire up the initial value logic, and add it to `createRecipeSnapshot()`.
+4. **Form schema** — Add the field to `recipeFormSchema` (`src/schemas/recipeFormSchema.ts`) with its validation rule and i18n error key, seed it in the relevant `src/screens/recipe/defaults/` builder(s), and add it to `createRecipeSnapshot()` (`src/screens/recipe/helpers/`).
 
-5. **UI** — Add the relevant organism or field component under `src/components/organisms/` and wire it into `src/screens/Recipe.tsx`.
+5. **UI** — Add the relevant organism under `src/components/organisms/` plus a controller-bound field under `src/screens/recipe/fields/`, and wire it into `RecipeFormScreen` (`src/screens/recipe/RecipeFormScreen.tsx`).
 
 6. **Tests** — Add unit tests for the encoding/decoding functions and an integration test that round-trips the field through the full DB pipeline.
 

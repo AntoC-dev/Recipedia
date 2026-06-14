@@ -1,0 +1,6 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    id: "RecipePersons::Error"
+    text: "Enter the number of servings"
+    label: "Persons inline error is visible"

@@ -1,7 +1,7 @@
 import React from 'react';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { useRecipeTags } from '@hooks/useRecipeTags';
-import { RecipeFormProvider, useRecipeForm } from '@context/RecipeFormContext';
+import { RecipeFormProvider, useRecipeForm } from '@test-helpers/recipeFormTestProvider';
 import { RecipeDialogsProvider, useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { createMockRecipeProp } from '@test-helpers/recipeHookTestWrapper';
 import RecipeDatabase from '@utils/RecipeDatabase';
@@ -56,10 +56,10 @@ describe('RecipeFormTagsPipeline (real useTags + real RecipeDatabase)', () => {
       });
 
       await waitFor(() => {
-        expect(result.current.form.state.recipeTags).toHaveLength(1);
+        expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(1);
       });
 
-      expect(result.current.form.state.recipeTags[0].name).toBe('Italian');
+      expect(result.current.form.form.getValues('recipeTags')![0].name).toBe('Italian');
       expect(result.current.dialogs.validationQueue).toBeNull();
     });
   });
@@ -77,7 +77,7 @@ describe('RecipeFormTagsPipeline (real useTags + real RecipeDatabase)', () => {
       });
 
       expect(result.current.dialogs.validationQueue?.type).toBe('Tag');
-      expect(result.current.form.state.recipeTags).toHaveLength(0);
+      expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(0);
     });
   });
 
@@ -105,7 +105,7 @@ describe('RecipeFormTagsPipeline (real useTags + real RecipeDatabase)', () => {
         result.current.tagOps.addTag('');
       });
 
-      expect(result.current.form.state.recipeTags).toHaveLength(0);
+      expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(0);
       expect(result.current.dialogs.validationQueue).toBeNull();
     });
   });
@@ -119,7 +119,7 @@ describe('RecipeFormTagsPipeline (real useTags + real RecipeDatabase)', () => {
       });
 
       await waitFor(() => {
-        expect(result.current.form.state.recipeTags).toHaveLength(1);
+        expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(1);
       });
 
       act(() => {
@@ -127,7 +127,7 @@ describe('RecipeFormTagsPipeline (real useTags + real RecipeDatabase)', () => {
         result.current.tagOps.addTag('ITALIAN');
       });
 
-      expect(result.current.form.state.recipeTags).toHaveLength(1);
+      expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(1);
       expect(result.current.dialogs.validationQueue).toBeNull();
     });
   });
@@ -141,14 +141,14 @@ describe('RecipeFormTagsPipeline (real useTags + real RecipeDatabase)', () => {
       });
 
       await waitFor(() => {
-        expect(result.current.form.state.recipeTags).toHaveLength(1);
+        expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(1);
       });
 
       act(() => {
         result.current.tagOps.removeTag('Italian');
       });
 
-      expect(result.current.form.state.recipeTags).toHaveLength(0);
+      expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(0);
     });
   });
 
@@ -161,29 +161,29 @@ describe('RecipeFormTagsPipeline (real useTags + real RecipeDatabase)', () => {
       });
 
       await waitFor(() => {
-        expect(result.current.form.state.recipeTags).toHaveLength(1);
+        expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(1);
       });
 
       act(() => {
         result.current.tagOps.addTagIfNotDuplicate({ id: 1, name: 'ITALIAN' });
       });
 
-      expect(result.current.form.state.recipeTags).toHaveLength(1);
+      expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(1);
     });
 
     test('adds tag when it is genuinely new', async () => {
       const { result } = renderTagHook();
 
       await waitFor(() => {
-        expect(result.current.form.state.recipeTags).toHaveLength(0);
+        expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(0);
       });
 
       act(() => {
         result.current.tagOps.addTagIfNotDuplicate({ id: 5, name: 'Vegan' });
       });
 
-      expect(result.current.form.state.recipeTags).toHaveLength(1);
-      expect(result.current.form.state.recipeTags[0].name).toBe('Vegan');
+      expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(1);
+      expect(result.current.form.form.getValues('recipeTags')![0].name).toBe('Vegan');
     });
   });
 });

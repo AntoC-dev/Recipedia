@@ -1,0 +1,247 @@
+name: "7 - Recipe Edit Inline Field Errors Flow"
+appId: "com.recipedia"
+tags:
+  - recipe-edit
+---
+- runFlow:
+    file: "../../flows/recipe/adding/createBaseRecipeForDuplicateTests.yaml"
+    label: "Action - Create base Test Recipe (Pasta 200g + Tomatoes 100g, 2 persons, time 20)"
+
+- runFlow:
+    file: "../../asserts/alerts/en/recipeAddedToDatabase.yaml"
+    env:
+      RECIPE_NAME: ".*"
+    label: "Assert - Recipe added to database"
+
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Action - Navigate to Search screen"
+
+- tapOn:
+    id: "SearchScreen::SearchBar"
+    label: "Action - Focus search bar"
+
+- inputText:
+    text: "Test Recipe"
+    label: "Action - Search for Test Recipe"
+
+- waitForAnimationToEnd
+
+- pressKey: "enter"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard dismiss"
+
+- tapOn:
+    id: "SearchScreen::RecipeCards::.*::Cover"
+    label: "Action - Open Test Recipe"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::AppBar.*"
+    timeout: 5000
+    label: "Wait for recipe screen to load"
+
+- tapOn:
+    id: "Recipe::AppBar::Edit"
+    waitToSettleTimeoutMs: 0
+    retryTapIfNoChange: false
+    label: "Action - Enter edit mode"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTitle::CustomTextInput"
+    direction: DOWN
+    speed: 10
+    centerElement: true
+    label: "Action - Scroll to title input"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/titleNoError.yaml"
+    label: "Assert - No title inline error visible before user interacts"
+
+- tapOn:
+    id: "RecipeTitle::CustomTextInput"
+    label: "Action - Focus title input"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard"
+
+- eraseText:
+    label: "Action - Erase title"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "RecipeImage"
+    label: "Action - Tap image to blur title"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard dismiss"
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/titleError.yaml"
+    label: "Assert - Title inline error visible after erase + blur"
+
+- tapOn:
+    id: "RecipeTitle::CustomTextInput"
+    label: "Action - Focus title input again"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard"
+
+- inputText:
+    text: "Test Recipe"
+    label: "Action - Restore title"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "RecipeImage"
+    label: "Action - Tap image to blur title"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard dismiss"
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/titleNoError.yaml"
+    label: "Assert - Title inline error cleared after restore"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeDescription::CustomTextInput"
+    direction: DOWN
+    speed: 10
+    centerElement: true
+    label: "Action - Scroll to description input"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/descriptionNoError.yaml"
+    label: "Assert - No description inline error visible before user interacts"
+
+- tapOn:
+    id: "RecipeDescription::CustomTextInput"
+    label: "Action - Focus description input"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard"
+
+- tapOn:
+    id: "RecipeDescription::Text"
+    label: "Action - Tap on description text to close the keyboard"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard dismiss"
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/descriptionNoError.yaml"
+    label: "Assert - Description never shows inline error (it is optional)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePersons::NumericTextInput"
+    direction: DOWN
+    speed: 10
+    centerElement: true
+    label: "Action - Scroll to persons input"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/personsNoError.yaml"
+    label: "Assert - No persons inline error visible before user interacts"
+
+- tapOn:
+    id: "RecipePersons::NumericTextInput"
+    label: "Action - Focus persons input"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard"
+
+- eraseText:
+    label: "Action - Erase persons"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "RecipePersons::PrefixText"
+    label: "Action - Tap person prefix to dismiss keyboard"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard dismiss"
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/personsError.yaml"
+    label: "Assert - Persons inline error visible after erase + blur"
+
+- runFlow:
+    file: "../../flows/recipe/adding/setRecipePersons.yaml"
+    env:
+      PERSONS: "2"
+    label: "Action - Restore persons to 2"
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/personsNoError.yaml"
+    label: "Assert - Persons inline error cleared after restore"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTime::NumericTextInput"
+    direction: DOWN
+    speed: 10
+    centerElement: true
+    label: "Action - Scroll to time input"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/timeNoError.yaml"
+    label: "Assert - No time inline error visible before user interacts"
+
+- tapOn:
+    id: "RecipeTime::NumericTextInput"
+    label: "Action - Focus time input"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard"
+
+- eraseText:
+    label: "Action - Erase time"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "RecipeTime::PrefixText"
+    label: "Action - Tap prefix on iOS to dismiss keyboard"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard dismiss"
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/timeError.yaml"
+    label: "Assert - Time inline error visible after erase + blur"
+
+- runFlow:
+    file: "../../flows/recipe/adding/addRecipeTimeToPrepare.yaml"
+    env:
+      PERSONS_VALUE: "20"
+    label: "Action - Restore time to 20"
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/timeNoError.yaml"
+    label: "Assert - Time inline error cleared after restore"

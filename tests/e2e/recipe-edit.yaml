@@ -14,3 +14,7 @@ executionOrder:
     - "3 - Recipe Quantity Scaling Flow"
     - "4 - Recipe Edit Cancel Flow"
     - "5 - Recipe Edit Image Persistence Flow"
+    - "6 - Recipe Edit Delete Ingredient Flow"
+    - "7 - Recipe Edit Inline Field Errors Flow"
+    - "8 - Recipe Edit Save Then Cancel Restores Saved Flow"
+    - "9 - Recipe Edit Cancel Then Re-Enter No Inline Errors Flow"

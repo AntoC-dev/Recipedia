@@ -1,0 +1,319 @@
+name: "5 - Recipe Create Inline Field Errors Flow"
+appId: "com.recipedia"
+tags:
+  - recipe-create
+---
+- runFlow:
+    file: "../../flows/recipe/adding/manual/en/openAddManually.yaml"
+    label: "Action - Open manual recipe adding screen"
+
+- runFlow:
+    file: "../../flows/recipe/adding/en/addRecipeImage.yaml"
+    label: "Action - Add image so RecipeImage is safe to tap for blurring keyboards"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTitle::CustomTextInput"
+    direction: DOWN
+    speed: 10
+    centerElement: true
+    label: "Action - Scroll to title input"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/titleNoError.yaml"
+    label: "Assert - No title inline error visible before user interacts"
+
+- tapOn:
+    id: "RecipeTitle::CustomTextInput"
+    label: "Action - Focus empty title input without typing"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard"
+
+- tapOn:
+    id: "RecipeTitle::Text"
+    label: "Action - Tap title text to close keyboard (still untouched)"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard dismiss"
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/titleNoError.yaml"
+    label: "Assert - No title error when user only focused and blurred (not dirty)"
+
+- tapOn:
+    id: "RecipeTitle::CustomTextInput"
+    label: "Action - Focus title input"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard"
+
+- inputText:
+    text: "Temp"
+    label: "Action - Type a title to make the field dirty"
+
+- waitForAnimationToEnd
+
+- eraseText:
+    label: "Action - Erase title to make it dirty and invalid"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "RecipeTitle::Text"
+    label: "Action - Blur title"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard dismiss"
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/titleError.yaml"
+    label: "Assert - Title inline error visible once dirty and empty"
+
+- tapOn:
+    id: "RecipeTitle::CustomTextInput"
+    label: "Action - Focus title input again"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard"
+
+- inputText:
+    text: "Inline Errors Test"
+    label: "Action - Enter valid title text"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "RecipeTitle::Text"
+    label: "Action - Blur title"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard dismiss"
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/titleNoError.yaml"
+    label: "Assert - Title inline error cleared after fix"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeDescription::CustomTextInput"
+    direction: DOWN
+    speed: 10
+    centerElement: true
+    label: "Action - Scroll to description input"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/descriptionNoError.yaml"
+    label: "Assert - No description inline error visible before user interacts"
+
+- tapOn:
+    id: "RecipeDescription::CustomTextInput"
+    label: "Action - Focus empty description input"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard"
+
+- tapOn:
+    id: "RecipeDescription::Text"
+    label: "Action - Tap on description text to close the keyboard"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard dismiss"
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/descriptionNoError.yaml"
+    label: "Assert - Description never shows inline error (it is optional)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePersons::NumericTextInput"
+    direction: DOWN
+    speed: 10
+    centerElement: true
+    label: "Action - Scroll to persons input"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/personsNoError.yaml"
+    label: "Assert - No persons inline error visible before user interacts"
+
+- tapOn:
+    id: "RecipePersons::NumericTextInput"
+    label: "Action - Focus persons input"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard"
+
+- eraseText:
+    label: "Action - Erase persons default value to make field dirty and invalid"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "RecipePersons::PrefixText"
+    label: "Action - Tap prefix on iOS to dismiss keyboard"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard dismiss"
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/personsError.yaml"
+    label: "Assert - Persons inline error visible after erasing the default"
+
+- runFlow:
+    file: "../../flows/recipe/adding/setRecipePersons.yaml"
+    env:
+      PERSONS: "4"
+    label: "Action - Restore persons value to 4"
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/personsNoError.yaml"
+    label: "Assert - Persons inline error cleared after fix"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTime::NumericTextInput"
+    direction: DOWN
+    speed: 10
+    centerElement: true
+    label: "Action - Scroll to time input"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/timeNoError.yaml"
+    label: "Assert - No time inline error visible before user interacts"
+
+- tapOn:
+    id: "RecipeTime::NumericTextInput"
+    label: "Action - Focus time input"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard"
+
+- inputText:
+    text: "1"
+    label: "Action - Type a digit so the field becomes dirty"
+
+- waitForAnimationToEnd
+
+- eraseText:
+    label: "Action - Erase the digit to leave time dirty and invalid"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "RecipeTime::PrefixText"
+    label: "Action - Tap prefix on iOS to dismiss keyboard"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard dismiss"
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/timeError.yaml"
+    label: "Assert - Time inline error visible after dirty + erase"
+
+- runFlow:
+    file: "../../flows/recipe/adding/addRecipeTimeToPrepare.yaml"
+    env:
+      PERSONS_VALUE: "30"
+    label: "Action - Enter time value 30"
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/timeNoError.yaml"
+    label: "Assert - Time inline error cleared after fix"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::PrefixText"
+    direction: UP
+    speed: 10
+    centerElement: true
+    label: "Action - Scroll to ingredients section"
+
+- waitForAnimationToEnd
+
+- assertNotVisible:
+    id: "RecipeIngredients::Error"
+    label: "Assert - Empty ingredients does NOT show inline error until the user edits the list"
+
+- tapOn:
+    id: "RecipeIngredients::AddButton::RoundButton"
+    label: "Action - Add first ingredient row"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::0::QuantityInput"
+    direction: DOWN
+    speed: 10
+    centerElement: true
+    label: "Action - Scroll to first ingredient quantity input"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "RecipeIngredients::0::QuantityInput"
+    label: "Action - Focus ingredient quantity"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardNumeric.yaml"
+    label: "Wait for numeric keyboard"
+
+- inputText:
+    text: "100"
+    label: "Action - Enter quantity 100 (makes row dirty)"
+
+- waitForAnimationToEnd
+
+- pressKey: ENTER
+
+- runFlow:
+    file: "../../flows/waitForKeyboardNumericDismiss.yaml"
+    label: "Wait for numeric keyboard dismiss"
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/ingredientRowError.yaml"
+    label: "Assert - Ingredient row inline error visible once row is dirty and still incomplete (name missing)"
+
+- tapOn:
+    id: "RecipeIngredients::0::NameInput::CustomTextInput"
+    label: "Action - Focus ingredient name input"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard"
+
+- inputText:
+    text: "Carrots"
+    label: "Action - Enter ingredient name Carrot (exact DB match, no validation queue)"
+
+- waitForAnimationToEnd
+
+- pressKey: ENTER
+
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard dismiss"
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/ingredientRowNoError.yaml"
+    label: "Assert - Ingredient row inline error cleared after fix"

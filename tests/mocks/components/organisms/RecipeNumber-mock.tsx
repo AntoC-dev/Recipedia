@@ -1,44 +1,40 @@
-import React from "react";
-import {Button, Text, View} from "react-native";
-import {RecipeNumberProps} from "@components/organisms/RecipeNumber";
+import React from 'react';
+import { Button, Text, View } from 'react-native';
+import { RecipeNumberProps } from '@components/organisms/RecipeNumber';
+import { BlurButton, ErrorEcho } from './_recipeFieldMockHelpers';
 
 export function recipeNumberMock(recipeNumberProp: RecipeNumberProps) {
-    return (
-        <View>
-            <View>
-                {recipeNumberProp.numberProps.editType === 'read' ?
-                    <Text testID={recipeNumberProp.testID + "::Text"}>
-                        {recipeNumberProp.numberProps.text}
-                    </Text>
-                    :
-                    <View>
-                        <Text testID={recipeNumberProp.testID + "::PrefixText"}>
-                            {recipeNumberProp.numberProps.prefixText}
-                        </Text>
-                        <Text testID={recipeNumberProp.testID + "::SuffixText"}>
-                            {recipeNumberProp.numberProps.suffixText}
-                        </Text>
-                        {recipeNumberProp.numberProps.editType === 'add' ?
-                            <Button testID={recipeNumberProp.testID + "::OpenModal"} onPress={() => {
-                                // @ts-ignore always add here
-                                recipeNumberProp.numberProps.openModal()
-                            }}
-                                    title="Open Modal"/>
-                            :
-                            <View>
-                                <Text testID={recipeNumberProp.testID + "::TextEditable"}>
-                                    {recipeNumberProp.numberProps.textEditable}
-                                </Text>
-                                <Button testID={recipeNumberProp.testID + "::SetTextToEdit"}
-                                        onPress={(newNumber) => {
-                                            // @ts-ignore always editable here
-                                            recipeNumberProp.numberProps.setTextToEdit(Number(newNumber));
-                                        }}
-                                        title="Set Text to Edit"/>
-                            </View>}
-                    </View>
-                }
-            </View>
-        </View>
-    );
+  const { testID, numberProps, error, onBlur } = recipeNumberProp;
+  return (
+    <View>
+      <View>
+        {numberProps.editType === 'read' ? (
+          <Text testID={testID + '::Text'}>{numberProps.text}</Text>
+        ) : (
+          <View>
+            <Text testID={testID + '::PrefixText'}>{numberProps.prefixText}</Text>
+            <Text testID={testID + '::SuffixText'}>{numberProps.suffixText}</Text>
+            {numberProps.editType === 'add' ? (
+              <Button
+                testID={testID + '::OpenModal'}
+                title='Open Modal'
+                onPress={() => numberProps.openModal()}
+              />
+            ) : (
+              <View>
+                <Text testID={testID + '::TextEditable'}>{numberProps.textEditable}</Text>
+                <Button
+                  testID={testID + '::SetTextToEdit'}
+                  title='Set Text to Edit'
+                  onPress={newNumber => numberProps.setTextToEdit(Number(newNumber))}
+                />
+                <BlurButton testID={testID} onBlur={onBlur} />
+              </View>
+            )}
+          </View>
+        )}
+      </View>
+      <ErrorEcho testID={testID} error={error} />
+    </View>
+  );
 }

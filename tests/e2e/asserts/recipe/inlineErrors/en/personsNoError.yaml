@@ -1,0 +1,5 @@
+appId: "com.recipedia"
+---
+- assertNotVisible:
+    id: "RecipePersons::Error"
+    label: "Persons inline error is not visible"

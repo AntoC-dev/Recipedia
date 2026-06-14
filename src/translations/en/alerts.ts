@@ -5,7 +5,7 @@ export default {
     titlePlural: 'Missing elements',
     messageAll:
       "You haven't add any of the elements to your recipe. Please enter before validate at least: \
-                                                                                    \n\t- an image\n\t- a title\n\t- some ingredients\n\t- for how many persons this recipe is\n\t- some instructions for the preparation",
+                                                                                          \n\t- an image\n\t- a title\n\t- some ingredients\n\t- for how many persons this recipe is\n\t- some instructions for the preparation",
     messageSingularBeginning: "You're missing ",
     messageSingularEnding: ' to your recipe. Please add this before validate.',
     messageSingularNutrition:
@@ -23,6 +23,16 @@ export default {
     ingredientInDatabase: 'all ingredients to be known by Recipedia',
     ingredientNames: 'names for all ingredients',
     nutrition: 'complete nutrition information',
+  },
+  inlineErrors: {
+    image: 'Add a picture of the recipe',
+    titleRecipe: 'Enter a title',
+    titleIngredients: 'Add at least one ingredient',
+    ingredientRow: 'Complete this ingredient',
+    titlePreparation: 'Add at least one step',
+    titlePersons: 'Enter the number of servings',
+    titleTime: 'Enter a preparation time',
+    nutrition: 'Fill in all nutrition values',
   },
   ocrRecipe: {
     explanationText: 'Choose a picture:',

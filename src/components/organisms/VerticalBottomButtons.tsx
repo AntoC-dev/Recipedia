@@ -171,7 +171,7 @@ function VerticalBottomButtons() {
 
   function openRecipeWithUri(uri: string) {
     if (uri.length > 0) {
-      navigate('Recipe', { mode: 'addFromPic', imgUri: uri });
+      navigate('RecipeAddOcr', { imgUri: uri });
     }
   }
 
@@ -189,8 +189,7 @@ function VerticalBottomButtons() {
     const result = await scrapeAndPrepare(url);
     if (result.success) {
       setUrlDialogVisible(false);
-      navigate('Recipe', {
-        mode: 'addFromScrape',
+      navigate('RecipeAddScrape', {
         scrapedData: result.data,
         sourceUrl: result.sourceUrl,
       });
@@ -211,8 +210,7 @@ function VerticalBottomButtons() {
     const result = await scrapeWithAuth(authRequired.url, username, password);
     if (result.success) {
       setAuthDialogVisible(false);
-      navigate('Recipe', {
-        mode: 'addFromScrape',
+      navigate('RecipeAddScrape', {
         scrapedData: result.data,
         sourceUrl: result.sourceUrl,
       });
@@ -249,7 +247,7 @@ function VerticalBottomButtons() {
             {
               icon: Icons.pencilIcon,
               label: t('fab.addManually'),
-              onPress: () => navigate('Recipe', { mode: 'addManually' }),
+              onPress: () => navigate('RecipeAddManual'),
               ...fabTestProps(FAB_TEST_IDS.edit),
               style: { borderRadius: 999 },
               size: 'medium',

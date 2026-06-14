@@ -10,12 +10,15 @@
  * @module hooks/useRecipeTags
  */
 
+import type { Dispatch, SetStateAction } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { tagTableElement } from '@customTypes/DatabaseElementTypes';
 import { useRecipeDialogs } from '@context/RecipeDialogsContext';
-import { useRecipeForm } from '@context/RecipeFormContext';
+import { makeFormSetter } from '@utils/recipeFormSetters';
 import { useTags } from '@hooks/useTags';
-import { validateAndQueueTags } from '@utils/RecipeValidationHelpers';
 import { recipeLogger } from '@utils/logger';
+import { validateAndQueueTags } from '@utils/RecipeValidationHelpers';
+import type { RecipeFormInput } from '@schemas/recipeFormSchema';
 
 /**
  * Return value of the useRecipeTags hook containing tag management operations.
@@ -62,10 +65,13 @@ export interface UseRecipeTagsReturn {
  */
 export function useRecipeTags(): UseRecipeTagsReturn {
   const { setValidationQueue } = useRecipeDialogs();
-  const { state, setters } = useRecipeForm();
+  const form = useFormContext<RecipeFormInput>();
   const { findSimilarTags } = useTags();
-  const { recipeTags } = state;
-  const { setRecipeTags } = setters;
+  const setRecipeTags = makeFormSetter(form, 'recipeTags') as unknown as Dispatch<
+    SetStateAction<tagTableElement[]>
+  >;
+  const getRecipeTags = (): tagTableElement[] =>
+    (form.getValues('recipeTags') ?? []) as tagTableElement[];
 
   /**
    * Adds a tag to the recipe only if it doesn't already exist.
@@ -82,8 +88,10 @@ export function useRecipeTags(): UseRecipeTagsReturn {
         existing => existing.name.toLowerCase() === tag.name.toLowerCase()
       );
       if (!isDuplicate) {
+        recipeLogger.debug('Adding tag', { name: tag.name, id: tag.id });
         return [...prev, tag];
       }
+      recipeLogger.debug('Skipping duplicate tag', { name: tag.name });
       return prev;
     });
   };
@@ -101,15 +109,16 @@ export function useRecipeTags(): UseRecipeTagsReturn {
    */
   const addTag = (newTag: string) => {
     if (!newTag || newTag.trim().length === 0) {
+      recipeLogger.debug('addTag rejected - empty or whitespace name');
       return;
     }
 
-    if (recipeTags.some(tag => tag.name.toLowerCase() === newTag.toLowerCase())) {
-      recipeLogger.debug('Tag skipped - already in recipe', { tag: newTag });
+    if (getRecipeTags().some(tag => tag.name.toLowerCase() === newTag.toLowerCase())) {
+      recipeLogger.debug('addTag skipped - tag already in recipe', { name: newTag });
       return;
     }
 
-    recipeLogger.debug('Tag queued for validation', { tag: newTag });
+    recipeLogger.debug('Queueing tag for validation', { name: newTag });
     validateAndQueueTags(
       [{ id: -1, name: newTag }],
       findSimilarTags,
@@ -127,7 +136,7 @@ export function useRecipeTags(): UseRecipeTagsReturn {
    * @param tagName - The exact name of the tag to remove
    */
   const removeTag = (tagName: string) => {
-    recipeLogger.debug('Tag removed', { tag: tagName });
+    recipeLogger.debug('Removing tag', { name: tagName });
     setRecipeTags(prev => prev.filter(tagElement => tagElement.name !== tagName));
   };
 

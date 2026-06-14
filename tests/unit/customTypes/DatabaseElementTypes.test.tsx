@@ -309,6 +309,39 @@ describe('DatabaseElementTypes Helper Functions', () => {
     expect(isRecipeEqual(testRecipes[0], expected)).toBe(false);
   });
 
+  test('isRecipeEqual detects nutrition-only differences', () => {
+    const nutrition = {
+      energyKcal: 200,
+      energyKj: 837,
+      fat: 10,
+      saturatedFat: 3,
+      carbohydrates: 20,
+      sugars: 5,
+      fiber: 2,
+      protein: 8,
+      salt: 1,
+      portionWeight: 100,
+    };
+    const withNutrition: recipeTableElement = { ...testRecipes[0], nutrition };
+    const withChangedNutrition: recipeTableElement = {
+      ...testRecipes[0],
+      nutrition: { ...nutrition, energyKcal: 999 },
+    };
+
+    expect(isRecipeEqual(withNutrition, withNutrition)).toBe(true);
+    expect(isRecipeEqual(withNutrition, withChangedNutrition)).toBe(false);
+    expect(isRecipeEqual(testRecipes[0], withNutrition)).toBe(false);
+  });
+
+  test('isRecipeEqual detects sourceUrl-only differences', () => {
+    const withUrl: recipeTableElement = { ...testRecipes[0], sourceUrl: 'https://a.example' };
+    const withOtherUrl: recipeTableElement = { ...testRecipes[0], sourceUrl: 'https://b.example' };
+
+    expect(isRecipeEqual(withUrl, withUrl)).toBe(true);
+    expect(isRecipeEqual(withUrl, withOtherUrl)).toBe(false);
+    expect(isRecipeEqual(testRecipes[0], withUrl)).toBe(false);
+  });
+
   test('isIngredientEqual correctly identifies equal ingredients', () => {
     expect(isIngredientEqual(testIngredients[0], testIngredients[0])).toBe(true);
     expect(isIngredientEqual(testIngredients[0], testIngredients[1])).toBe(false);

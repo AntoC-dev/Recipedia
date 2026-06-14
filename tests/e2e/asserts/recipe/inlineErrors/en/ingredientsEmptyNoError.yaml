@@ -1,0 +1,5 @@
+appId: "com.recipedia"
+---
+- assertNotVisible:
+    id: "RecipeIngredients::Error"
+    label: "Ingredients section empty error is not visible"
