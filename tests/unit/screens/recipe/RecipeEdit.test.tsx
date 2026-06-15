@@ -20,6 +20,7 @@ import {
   checkTitle,
   mockNavigation,
   renderRoute,
+  runSaveNavigationReducer,
   setupDb,
   teardownDb,
 } from './recipeTestHelpers';
@@ -326,11 +327,25 @@ describe('RecipeEdit', () => {
       fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
 
       await waitFor(() => {
-        expect(mockNavigation.replace).toHaveBeenCalled();
+        expect(mockNavigation.dispatch).toHaveBeenCalled();
       });
 
-      const replaceCall = mockNavigation.replace.mock.calls[0];
-      expect(replaceCall[0]).toBe('RecipeView');
+      expect(runSaveNavigationReducer().savedView.name).toBe('RecipeView');
+    });
+
+    test('save rewrites the stack so the stale original RecipeView is dropped', async () => {
+      const { getByTestId } = await renderRoute(mockRouteEdit);
+
+      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Stack Rewrite Title');
+      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+
+      await waitFor(() => {
+        expect(mockNavigation.dispatch).toHaveBeenCalled();
+      });
+
+      const { routes, savedView } = runSaveNavigationReducer();
+      expect(routes.map(route => route.name)).toEqual(['Home', 'RecipeView']);
+      expect(savedView.name).toBe('RecipeView');
     });
 
     test('Validate saves in-progress text from text inputs without an explicit blur', async () => {
@@ -383,6 +398,42 @@ describe('RecipeEdit', () => {
       editRecipeSpy.mockRestore();
     });
 
+    test('forwards the entered serving count as scaledFromServings when scaling occurs', async () => {
+      const editRoute: EditRecipeProp = { mode: 'edit', recipe: { ...testRecipes[0] } };
+
+      const { getByTestId } = await renderRoute(editRoute);
+
+      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Modified Title');
+      fireEvent.press(getByTestId('RecipePersons::SetTextToEdit'), '8');
+
+      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+
+      await waitFor(() => {
+        expect(mockNavigation.dispatch).toHaveBeenCalled();
+      });
+
+      const { savedView } = runSaveNavigationReducer();
+      expect(savedView.name).toBe('RecipeView');
+      expect(savedView.params?.scaledFromServings).toBe(8);
+    });
+
+    test('omits scaledFromServings when the serving count stays at the default', async () => {
+      const editRoute: EditRecipeProp = { mode: 'edit', recipe: { ...testRecipes[0] } };
+
+      const { getByTestId } = await renderRoute(editRoute);
+
+      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Another Title');
+      fireEvent.press(getByTestId('RecipePersons::SetTextToEdit'), '4');
+
+      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+
+      await waitFor(() => {
+        expect(mockNavigation.dispatch).toHaveBeenCalled();
+      });
+
+      expect(runSaveNavigationReducer().savedView.params?.scaledFromServings).toBeUndefined();
+    });
+
     test('validation passes when all required fields are complete', async () => {
       const completeRoute: EditRecipeProp = {
         mode: 'edit',
@@ -405,10 +456,11 @@ describe('RecipeEdit', () => {
       fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
 
       await waitFor(() => {
-        expect(mockNavigation.replace).toHaveBeenCalledWith('RecipeView', {
-          recipe: expect.any(Object),
-        });
+        expect(mockNavigation.dispatch).toHaveBeenCalled();
       });
+      const { savedView } = runSaveNavigationReducer();
+      expect(savedView.name).toBe('RecipeView');
+      expect(savedView.params?.recipe).toEqual(expect.any(Object));
       expect(editRecipeSpy).not.toHaveBeenCalled();
       editRecipeSpy.mockRestore();
     });
@@ -766,7 +818,7 @@ describe('RecipeEdit', () => {
       editRecipeSpy.mockRestore();
     });
 
-    test('after save the route replaces to RecipeView with undefined nutrition', async () => {
+    test('after save the route resets to RecipeView with undefined nutrition', async () => {
       const { getByTestId } = await renderRoute(mockRouteEdit);
 
       expect(getByTestId('Recipe::RecipeNutrition::NutritionTable')).toBeTruthy();
@@ -776,16 +828,14 @@ describe('RecipeEdit', () => {
 
       await waitFor(
         () => {
-          expect(mockNavigation.replace).toHaveBeenCalled();
+          expect(mockNavigation.dispatch).toHaveBeenCalled();
         },
         { timeout: 8000 }
       );
 
-      const replaceCall = mockNavigation.replace.mock.calls[0];
-      expect(replaceCall[0]).toBe('RecipeView');
-      expect(
-        (replaceCall[1] as { recipe: { nutrition?: unknown } }).recipe.nutrition
-      ).toBeUndefined();
+      const { savedView } = runSaveNavigationReducer();
+      expect(savedView.name).toBe('RecipeView');
+      expect(savedView.params?.recipe?.nutrition).toBeUndefined();
     });
 
     test('removing nutrition then editing an ingredient still persists undefined nutrition', async () => {
@@ -943,7 +993,7 @@ describe('RecipeEdit', () => {
 
       fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
 
-      await waitFor(() => expect(mockNavigation.replace).toHaveBeenCalled());
+      await waitFor(() => expect(mockNavigation.dispatch).toHaveBeenCalled());
       expect(editRecipeSpy).not.toHaveBeenCalled();
       editRecipeSpy.mockRestore();
     });
@@ -996,7 +1046,7 @@ describe('RecipeEdit', () => {
         expect(editRecipeSpy).toHaveBeenCalled();
       });
 
-      expect(mockNavigation.replace).not.toHaveBeenCalled();
+      expect(mockNavigation.dispatch).not.toHaveBeenCalled();
 
       editRecipeSpy.mockRestore();
     });

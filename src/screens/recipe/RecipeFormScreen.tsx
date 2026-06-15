@@ -64,6 +64,7 @@ import { buildEmptyDefaults } from '@screens/recipe/defaults/buildEmptyDefaults'
 
 import {
   convertModeFromProps,
+  getServingsScaledFrom,
   getValidationButtonConfig,
   scaleRecipeForSave,
 } from '@utils/RecipeFormHelpers';
@@ -140,9 +141,12 @@ export interface RecipeFormScreenProps {
   /**
    * Called after a successful save. Edit routes navigate.replace to
    * `RecipeView` with the saved recipe; add routes just `goBack`. The wrapper
-   * supplies whichever behaviour fits.
+   * supplies whichever behaviour fits. `scaledFromServings` is the serving
+   * count the user entered when the save normalized the recipe's quantities to
+   * the stored default — edit routes forward it so `RecipeView` can surface a
+   * scaling notice.
    */
-  onSaveSuccess: (savedRecipe: recipeTableElement) => void;
+  onSaveSuccess: (savedRecipe: recipeTableElement, scaledFromServings?: number) => void;
   /**
    * Called when the user taps Back. Add routes call `navigation.goBack()`;
    * edit routes typically also `goBack` so the underlying View stays on top.
@@ -319,8 +323,10 @@ function RecipeFormBody({
       const scaledRecipe = scaleRecipeForSave(recipeToEdit, defaultPersons);
 
       let savedRecipe = recipeToEdit;
+      let scaledFromServings: number | undefined;
       if (!isRecipeEqual(originalRecipe, scaledRecipe)) {
         savedRecipe = await editRecipe(scaledRecipe);
+        scaledFromServings = getServingsScaledFrom(recipeToEdit.persons, defaultPersons);
         form.reset(
           { ...form.getValues(), recipeImage: savedRecipe.image_Source },
           { keepTouched: true, keepSubmitCount: true }
@@ -330,7 +336,7 @@ function RecipeFormBody({
       }
 
       clearCache();
-      onSaveSuccess(savedRecipe);
+      onSaveSuccess(savedRecipe, scaledFromServings);
     } catch (error) {
       recipeLogger.error('editValidation failed with unexpected error', { error });
     }

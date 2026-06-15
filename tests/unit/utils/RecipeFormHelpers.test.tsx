@@ -9,6 +9,7 @@ import {
   buildRecipeTitleProps,
   convertModeFromProps,
   getMissingFieldsErrorContent,
+  getServingsScaledFrom,
   getValidationButtonConfig,
   hasRecipeFromProps,
   hasScrapedDataFromProps,
@@ -82,6 +83,24 @@ describe('RecipeFormHelpers', () => {
     test('returns false for addFromPic mode', () => {
       const props: RecipePropType = { mode: 'addFromPic', imgUri: 'test.jpg' };
       expect(hasRecipeFromProps(props)).toBe(false);
+    });
+  });
+
+  describe('getServingsScaledFrom', () => {
+    test('returns the entered count when it differs from the default', () => {
+      expect(getServingsScaledFrom(2, 4)).toBe(2);
+    });
+
+    test('returns undefined when entered equals the default', () => {
+      expect(getServingsScaledFrom(4, 4)).toBeUndefined();
+    });
+
+    test('returns undefined when entered is zero', () => {
+      expect(getServingsScaledFrom(0, 4)).toBeUndefined();
+    });
+
+    test('returns undefined when entered is negative', () => {
+      expect(getServingsScaledFrom(-3, 4)).toBeUndefined();
     });
   });
 
@@ -367,6 +386,30 @@ describe('RecipeFormHelpers', () => {
         t: mockT,
       });
       expect(result.addOrEditProps?.editType).toBe('add');
+    });
+
+    test('returns editable props for addOCR mode with empty title when forceEditable', () => {
+      const result = buildRecipeTitleProps({
+        stackMode: recipeStateType.addOCR,
+        recipeTitle: '',
+        setRecipeTitle: mockSetTitle,
+        openModalForField: mockOpenModal,
+        t: mockT,
+        forceEditable: true,
+      });
+      expect(result.addOrEditProps?.editType).toBe('editable');
+    });
+
+    test('returns editable props for addOCR mode with whitespace-only title when forceEditable', () => {
+      const result = buildRecipeTitleProps({
+        stackMode: recipeStateType.addOCR,
+        recipeTitle: '   ',
+        setRecipeTitle: mockSetTitle,
+        openModalForField: mockOpenModal,
+        t: mockT,
+        forceEditable: true,
+      });
+      expect(result.addOrEditProps?.editType).toBe('editable');
     });
 
     test('openModal callback in addOCR add mode calls openModalForField with title', () => {

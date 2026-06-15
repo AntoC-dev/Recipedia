@@ -11,9 +11,10 @@
  * - Add to menu (Bottom action button) — pushes the recipe onto `useMenu`.
  *
  * Edit handoff: the AppBar pencil button calls `navigation.push('RecipeEdit',
- * { recipe })`. When the user finishes editing the form, the Edit route does
- * `navigation.replace('RecipeView', { recipe: saved })`, so the view always
- * shows the latest persisted snapshot.
+ * { recipe })`. When the user finishes editing the form, the Edit route rewrites
+ * the stack so this now-stale view is replaced by a fresh `RecipeView` for the
+ * saved recipe, so the view always shows the latest persisted snapshot and Back
+ * skips the pre-edit duplicate.
  *
  * @module screens/recipe/RecipeView
  */
@@ -57,6 +58,12 @@ import { noop, RECIPE_TEST_ID } from '@screens/recipe/constants';
 const BUTTON_HEIGHT = 48;
 const BUTTON_CONTAINER_HEIGHT = BUTTON_HEIGHT + padding.small * 2;
 
+// The scaling notice stays until the user explicitly dismisses it — it reports
+// that stored quantities differ from what was just entered, which the user
+// must not miss. A long duration plus a dismiss action keeps it on screen
+// rather than auto-hiding after a few seconds.
+const SCALING_NOTICE_DURATION = 3_600_000;
+
 /** This screen always renders in read-only mode. */
 const stackMode = recipeStateType.readOnly;
 
@@ -67,11 +74,12 @@ export type RecipeViewProps = NativeStackScreenProps<StackScreenParamList, 'Reci
  * pays only for the render layer.
  */
 export function RecipeView({ route, navigation }: RecipeViewProps) {
-  const { recipe } = route.params;
+  const { recipe, scaledFromServings } = route.params;
   const { t } = useI18n();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [scalingNoticeVisible, setScalingNoticeVisible] = useState(scaledFromServings != null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogProps, setDialogProps] = useState<{
     title: string;
@@ -253,6 +261,16 @@ export function RecipeView({ route, navigation }: RecipeViewProps) {
         testID='RecipeSourceUrlSnackbar'
       >
         {t('sourceUrl.copied')}
+      </Snackbar>
+
+      <Snackbar
+        visible={scalingNoticeVisible}
+        onDismiss={() => setScalingNoticeVisible(false)}
+        duration={SCALING_NOTICE_DURATION}
+        action={{ label: t('ok'), onPress: () => setScalingNoticeVisible(false) }}
+        testID='RecipeScalingSnackbar'
+      >
+        {t('servingsScaledNotice', { from: scaledFromServings, to: recipe.persons })}
       </Snackbar>
     </ScreenWrapper>
   );

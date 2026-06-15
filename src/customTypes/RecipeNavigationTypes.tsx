@@ -127,7 +127,15 @@ export type RecipePropType =
  * each route knows its own mode so the discriminant is implicit in the
  * route name.
  */
-export type RecipeViewParams = { recipe: recipeTableElement };
+export type RecipeViewParams = {
+  recipe: recipeTableElement;
+  /**
+   * Serving count the user entered before saving, when the save normalized the
+   * recipe's quantities to the stored default. Present only on the post-edit
+   * `replace` to `RecipeView`; drives the "quantities were scaled" notice.
+   */
+  scaledFromServings?: number;
+};
 export type RecipeEditParams = { recipe: recipeTableElement };
 export type RecipeAddManualParams = undefined;
 export type RecipeAddOcrParams = { imgUri: string };

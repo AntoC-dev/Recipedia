@@ -91,6 +91,24 @@ tags:
 
 - waitForAnimationToEnd
 
+- extendedWaitUntil:
+    visible:
+      id: "RecipeScalingSnackbar"
+    timeout: 10000
+    label: "Wait for the scaling-notice snackbar"
+
+- assertVisible:
+    id: "RecipeScalingSnackbar"
+    label: "Assert - Scaling notice snackbar is displayed (by ID)"
+
+- assertVisible:
+    text: "Saved. Quantities were scaled from 2 to 4 servings — recipes are stored at your default serving size."
+    label: "Assert - Scaling notice shows the full scaled-from-2-to-4 message (by text)"
+
+- tapOn:
+    text: "OK"
+    label: "Action - Dismiss the scaling notice snackbar"
+
 - scrollUntilVisible:
     element:
       id: "RecipeImage"
@@ -102,8 +120,8 @@ tags:
 - waitForAnimationToEnd
 
 - runFlow:
-    file: "../../asserts/recipe/readonly/en/chocolateCakeFor2Persons.yaml"
-    label: "Assert - Verify read-only after edit: still showing 2 persons"
+    file: "../../asserts/recipe/readonly/en/chocolateCakeFor4Persons.yaml"
+    label: "Assert - Verify read-only after edit: shows saved canonical recipe (4 persons)"
 
 - tapOn:
     id: "Recipe::AppBar::BackButton"

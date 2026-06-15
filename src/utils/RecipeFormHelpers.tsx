@@ -189,6 +189,29 @@ export function scaleRecipeForSave(
 }
 
 /**
+ * Returns the serving count a recipe was entered with when saving it scaled its
+ * quantities to `defaultPersons`, or `undefined` when no scaling happened.
+ *
+ * Mirrors the gate in {@link scaleRecipeForSave}: scaling only occurs when the
+ * entered serving count is positive and differs from the default. The returned
+ * value is the "from" serving count, used to surface a post-save notice telling
+ * the user their quantities were normalized to the stored default.
+ *
+ * @param enteredPersons - The serving count the user entered in the form.
+ * @param defaultPersons - The default serving count recipes are normalized to.
+ * @returns The entered serving count when scaling occurred, otherwise `undefined`.
+ */
+export function getServingsScaledFrom(
+  enteredPersons: number,
+  defaultPersons: number
+): number | undefined {
+  if (enteredPersons > 0 && enteredPersons !== defaultPersons) {
+    return enteredPersons;
+  }
+  return undefined;
+}
+
+/**
  * Builds props for RecipeImage component based on current mode
  *
  * @param stackMode - Current recipe screen mode
@@ -229,18 +252,22 @@ export function buildRecipeImageProps({
  * Handles mode-specific behavior:
  * - readOnly: Displays title as headline
  * - edit/addManual: Editable text input
- * - addOCR with empty title: Shows OCR button
+ * - addOCR with empty title: Shows OCR button, unless `forceEditable` is set
  *
  * @param stackMode - Current recipe screen mode
  * @param recipeTitle - Current title value
  * @param setRecipeTitle - Setter function for title
  * @param openModalForField - Callback to open OCR modal
  * @param t - Translation function
+ * @param forceEditable - Keeps the editable input mounted in addOCR mode even
+ *        when the title is empty, so a field that was filled then cleared still
+ *        surfaces its inline error instead of reverting to the OCR button.
  * @returns Props object for RecipeText component
  */
 export interface RecipeTitlePropsInput extends BaseFieldInputT {
   recipeTitle: string;
   setRecipeTitle: (value: string) => void;
+  forceEditable?: boolean;
 }
 
 export function buildRecipeTitleProps({
@@ -249,6 +276,7 @@ export function buildRecipeTitleProps({
   setRecipeTitle,
   openModalForField,
   t,
+  forceEditable = false,
 }: RecipeTitlePropsInput): RecipeTextProps {
   const titleTestID = 'RecipeTitle';
   const titleRootText: TextProp = {
@@ -263,7 +291,11 @@ export function buildRecipeTitleProps({
     };
   }
 
-  if (stackMode === recipeStateType.addOCR && (!recipeTitle || recipeTitle.trim().length === 0)) {
+  if (
+    stackMode === recipeStateType.addOCR &&
+    !forceEditable &&
+    (!recipeTitle || recipeTitle.trim().length === 0)
+  ) {
     return {
       testID: titleTestID,
       rootText: titleRootText,

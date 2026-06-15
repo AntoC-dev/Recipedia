@@ -1,7 +1,9 @@
-import { fireEvent, waitFor } from '@testing-library/react-native';
+import React from 'react';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { testRecipes } from '@test-data/recipesDataset';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { RecipePropType } from '@customTypes/RecipeNavigationTypes';
+import { RecipeView } from '@screens/recipe/RecipeView';
 
 import {
   checkAppbarButtons,
@@ -14,6 +16,7 @@ import {
   checkTags,
   checkTime,
   checkTitle,
+  makeRoute,
   mockNavigation,
   renderRoute,
   setupDb,
@@ -187,6 +190,43 @@ describe('RecipeView', () => {
       fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
 
       expect(mockNavigation.goBack).toHaveBeenCalled();
+    });
+  });
+
+  describe('scaling notice', () => {
+    test('does not show the scaling snackbar without a scaledFromServings param', async () => {
+      const { queryByTestId } = await renderRoute(mockRouteReadOnly);
+
+      expect(queryByTestId('RecipeScalingSnackbar')).toBeNull();
+    });
+
+    test('shows the scaling snackbar when scaledFromServings is present', () => {
+      const recipe = testRecipes[1];
+      const { getByTestId } = render(
+        <RecipeView
+          route={makeRoute('RecipeView', { recipe, scaledFromServings: 2 })}
+          navigation={mockNavigation as never}
+        />
+      );
+
+      expect(getByTestId('RecipeScalingSnackbar')).toBeTruthy();
+      expect(getByTestId('RecipeScalingSnackbar::Text').props.children).toBe(
+        'servingsScaledNotice'
+      );
+    });
+
+    test('dismissing the scaling snackbar hides it', () => {
+      const recipe = testRecipes[1];
+      const { getByTestId, queryByTestId } = render(
+        <RecipeView
+          route={makeRoute('RecipeView', { recipe, scaledFromServings: 2 })}
+          navigation={mockNavigation as never}
+        />
+      );
+
+      fireEvent.press(getByTestId('RecipeScalingSnackbar::Action'));
+
+      expect(queryByTestId('RecipeScalingSnackbar')).toBeNull();
     });
   });
 
