@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
+import { StatusBar } from 'react-native';
 import { CopilotProvider, useCopilot } from 'react-native-copilot';
 import { useNavigation } from '@react-navigation/native';
 import { tutorialLogger } from '@utils/logger';
@@ -6,7 +7,7 @@ import { TabScreenNavigation } from '@customTypes/ScreenTypes';
 import { CopilotStepData } from '@customTypes/TutorialTypes';
 import { TutorialTooltip } from '@components/molecules/TutorialTooltip';
 import { TutorialStepNumber } from '@components/molecules/TutorialStepNumber';
-import { TUTORIAL_VERTICAL_OFFSET } from '@utils/Constants';
+import { TUTORIAL_AUTO_START_DELAY, TUTORIAL_SPOTLIGHT_MARGIN } from '@utils/Constants';
 
 export type TutorialProviderProps = {
   children: React.ReactNode;
@@ -25,6 +26,9 @@ export type TutorialProviderProps = {
 function TutorialManager({ onComplete }: Pick<TutorialProviderProps, 'onComplete'>) {
   const navigation = useNavigation<TabScreenNavigation>();
   const { start, copilotEvents, visible } = useCopilot();
+  const hasAutoStartedRef = useRef(false);
+  const startRef = useRef(start);
+  startRef.current = start;
 
   /**
    * Handles tutorial start event
@@ -53,15 +57,24 @@ function TutorialManager({ onComplete }: Pick<TutorialProviderProps, 'onComplete
     }
   };
 
-  // Auto-start tutorial when copilot is ready
+  // Auto-start tutorial once when copilot is ready. `start` is read through a
+  // ref and kept out of the deps: the library returns a new `start` each render,
+  // and depending on it would re-run this effect and cancel the pending timer.
   useEffect(() => {
-    if (copilotEvents && !visible) {
-      tutorialLogger.info('Starting tutorial on next tick');
-      setTimeout(() => {
-        start();
-      }, 300);
+    if (!copilotEvents || visible || hasAutoStartedRef.current) {
+      return;
     }
-  }, [copilotEvents, visible, start]);
+
+    hasAutoStartedRef.current = true;
+    tutorialLogger.info('Starting tutorial on next tick');
+    const timer = setTimeout(() => {
+      startRef.current();
+    }, TUTORIAL_AUTO_START_DELAY);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [copilotEvents, visible]);
 
   // Setup event listeners
   useEffect(() => {
@@ -115,14 +128,21 @@ export function TutorialProvider({ children, onComplete }: TutorialProviderProps
     padding: 0,
   };
 
+  // With androidStatusBarVisible set, copilot measures targets a status-bar
+  // height higher than the overlay draws, so push the spotlight down by that
+  // exact amount. StatusBar.currentHeight is Android-only (undefined on iOS).
+  const verticalOffset = StatusBar.currentHeight ?? 0;
+
   return (
     <CopilotProvider
-      overlay='view'
+      overlay='svg'
       animated={true}
+      androidStatusBarVisible={true}
+      margin={TUTORIAL_SPOTLIGHT_MARGIN}
       tooltipComponent={TutorialTooltip}
       stepNumberComponent={TutorialStepNumber}
       tooltipStyle={tooltipStyle}
-      verticalOffset={TUTORIAL_VERTICAL_OFFSET}
+      verticalOffset={verticalOffset}
     >
       {children}
       <TutorialManager onComplete={onComplete} />

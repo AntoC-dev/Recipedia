@@ -29,12 +29,13 @@ export function mapToObject(map: Map<any, any>) {
   return obj;
 }
 
-export function filtersSelectionMock({
+function FiltersSelectionMock({
   testId,
-  filters,
   addingFilterMode,
   onRemoveFilter,
   setAddingAFilter,
+  onToggleButtonTop,
+  screenFocused,
 }: FiltersSelectionProps) {
   const [localFilters, setLocalFilters] = useState<string[]>([...globalCurrentFilters]);
 
@@ -82,6 +83,14 @@ export function filtersSelectionMock({
         onPress={() => setAddingAFilter(!addingFilterMode)}
         title='Toggle Filter Mode'
       />
+      <Text testID={testId + '::ScreenFocused'}>{String(screenFocused)}</Text>
+      <Button
+        testID={testId + '::ReportToggleTop'}
+        onPress={() => onToggleButtonTop?.(88)}
+        title='Report Toggle Top'
+      />
     </View>
   );
 }
+
+export const filtersSelectionMock = FiltersSelectionMock;

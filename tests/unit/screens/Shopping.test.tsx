@@ -24,6 +24,12 @@ jest.mock('@hooks/useSafeCopilot', () =>
   require('@mocks/hooks/useSafeCopilot-mock').useSafeCopilotMock()
 );
 
+jest.mock('@hooks/useReducedMotion', () =>
+  require('@mocks/hooks/useReducedMotion-mock').useReducedMotionMock()
+);
+
+const { mockUseReducedMotion } = require('@mocks/hooks/useReducedMotion-mock');
+
 jest.mock('@react-navigation/native', () => ({
   ...require('@mocks/deps/react-navigation-mock').reactNavigationMock(),
   useFocusEffect: jest.fn(callback => {
@@ -247,6 +253,7 @@ describe('Shopping Screen', () => {
       jest.useFakeTimers();
       resetMockCopilot();
       mockUseSafeCopilot.mockReturnValue(null);
+      mockUseReducedMotion.mockReturnValue(false);
     });
 
     afterEach(() => {
@@ -275,6 +282,17 @@ describe('Shopping Screen', () => {
       expect(queryByTestId('CopilotStep::Shopping')).toBeNull();
       expect(getByTestId('ShoppingScreen::ClearShoppingListButton::RoundButton')).toBeTruthy();
       expect(getByTestId('ShoppingScreen::Alert::IsVisible')).toBeTruthy();
+      expect(getByTestId('ShoppingScreen::Alert::IsVisible').props.children).toBe(false);
+    });
+
+    test('does not run the demo when reduced motion is enabled', async () => {
+      mockUseReducedMotion.mockReturnValue(true);
+      mockUseSafeCopilot.mockReturnValue(defaultMockValue);
+
+      const { getByTestId } = await renderShoppingAndWaitForButtons();
+
+      jest.advanceTimersByTime(TUTORIAL_DEMO_INTERVAL * 2);
+
       expect(getByTestId('ShoppingScreen::Alert::IsVisible').props.children).toBe(false);
     });
 

@@ -35,6 +35,11 @@ jest.mock('@components/organisms/FilterAccordion', () => ({
 jest.mock('@components/molecules/RecipeCard', () => ({
   RecipeCard: require('@mocks/components/molecules/RecipeCard-mock').recipeCardMock,
 }));
+jest.mock('@hooks/useSafeCopilot', () =>
+  require('@mocks/hooks/useSafeCopilot-mock').useSafeCopilotMock()
+);
+
+const { mockUseSafeCopilot } = require('@mocks/hooks/useSafeCopilot-mock');
 
 const Stack = createStackNavigator();
 
@@ -110,6 +115,74 @@ describe('Search Screen', () => {
 
   afterEach(async () => {
     await database.closeAndReset();
+    mockUseSafeCopilot.mockReturnValue(null);
+  });
+
+  test('renders the tutorial spotlight proxy when copilot is available', async () => {
+    mockUseSafeCopilot.mockReturnValue({
+      copilotEvents: {},
+      currentStep: { order: 2, name: 'Search', text: 'Search step' },
+      isActive: true,
+    });
+
+    const { getByTestId } = await renderSearchComponent();
+
+    expect(getByTestId('CopilotStep::Search')).toBeTruthy();
+    expect(getByTestId('SearchScreen::Tutorial')).toBeTruthy();
+  });
+
+  test('advances to the search step once its target is measured from an earlier step', async () => {
+    const goToNext = jest.fn();
+    const goToPrev = jest.fn();
+    mockUseSafeCopilot.mockReturnValue({
+      copilotEvents: {},
+      currentStep: { order: 1, name: 'Home', text: 'Home step' },
+      isActive: true,
+      goToNext,
+      goToPrev,
+    });
+
+    const { getByTestId } = await renderSearchComponent();
+    fireEvent.press(getByTestId('SearchScreen::ReportToggleTop'));
+
+    expect(goToNext).toHaveBeenCalled();
+    expect(goToPrev).not.toHaveBeenCalled();
+  });
+
+  test('regresses to the search step once its target is measured from a later step', async () => {
+    const goToNext = jest.fn();
+    const goToPrev = jest.fn();
+    mockUseSafeCopilot.mockReturnValue({
+      copilotEvents: {},
+      currentStep: { order: 3, name: 'Menu', text: 'Menu step' },
+      isActive: true,
+      goToNext,
+      goToPrev,
+    });
+
+    const { getByTestId } = await renderSearchComponent();
+    fireEvent.press(getByTestId('SearchScreen::ReportToggleTop'));
+
+    expect(goToPrev).toHaveBeenCalled();
+    expect(goToNext).not.toHaveBeenCalled();
+  });
+
+  test('does not change step when already on the search step', async () => {
+    const goToNext = jest.fn();
+    const goToPrev = jest.fn();
+    mockUseSafeCopilot.mockReturnValue({
+      copilotEvents: {},
+      currentStep: { order: 2, name: 'Search', text: 'Search step' },
+      isActive: true,
+      goToNext,
+      goToPrev,
+    });
+
+    const { getByTestId } = await renderSearchComponent();
+    fireEvent.press(getByTestId('SearchScreen::ReportToggleTop'));
+
+    expect(goToNext).not.toHaveBeenCalled();
+    expect(goToPrev).not.toHaveBeenCalled();
   });
 
   test('initializes with database recipes', async () => {

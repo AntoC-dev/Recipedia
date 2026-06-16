@@ -5,7 +5,13 @@ import { useNavigation } from '@react-navigation/native';
 import { useSafeCopilot } from '@hooks/useSafeCopilot';
 import { useI18n } from '@utils/i18n';
 import { TabScreenNavigation } from '@customTypes/ScreenTypes';
-import { TUTORIAL_STEPS } from '@utils/Constants';
+import {
+  getNextTutorialScreen,
+  getPreviousTutorialScreen,
+  isFirstTutorialStep,
+  isLastTutorialStep,
+  SELF_ADVANCING_TUTORIAL_SCREEN,
+} from '@utils/Tutorial';
 import { padding } from '@styles/spacing';
 
 /**
@@ -32,97 +38,41 @@ export function TutorialTooltip() {
     return null;
   }
 
-  const { isLastStep, goToNext, goToPrev, stop, currentStep } = copilotData;
-
-  /**
-   * Helper function to find tutorial step configuration by order number
-   *
-   * @param order - The order number of the tutorial step to find
-   * @returns Tutorial step configuration object
-   * @throws Error if step with given order is not found
-   */
-  const findStepByOrder = (order: number) => {
-    const screens = Object.values(TUTORIAL_STEPS);
-    const step = screens.find(step => step.order === order);
-    if (!step) {
-      throw new Error(
-        `Tutorial step with order ${order} not found. Check TUTORIAL_STEPS configuration.`
-      );
-    }
-    return step;
-  };
-
-  /**
-   * Gets the screen name for the next tutorial step
-   *
-   * @param currentOrder - Current step order number
-   * @returns Screen name for the next step
-   */
-  const getNextScreen = (currentOrder: number) => {
-    return findStepByOrder(currentOrder + 1).name;
-  };
-
-  /**
-   * Gets the screen name for the previous tutorial step
-   *
-   * @param currentOrder - Current step order number
-   * @returns Screen name for the previous step
-   */
-  const getPreviousScreen = (currentOrder: number) => {
-    return findStepByOrder(currentOrder - 1).name;
-  };
+  const { goToNext, goToPrev, stop, currentStep } = copilotData;
 
   // Don't render if no current step
   if (!currentStep) {
     return null;
   }
 
-  // Calculate isFirstStep from order, not library's broken calculation
-  const isFirstStep = currentStep.order === 1;
+  const isFirstStep = isFirstTutorialStep(currentStep.order);
+  const isLastStep = isLastTutorialStep(currentStep.order);
 
   /**
-   * Handles advancing to the next tutorial step
+   * Navigates to a tutorial screen, then moves the copilot step. The Search
+   * screen is the exception: its spotlight target is measured at runtime and is
+   * only correct once focused, so it advances the step itself once ready (see
+   * Search screen). Every other screen uses a stable proxy, safe to move now.
    *
-   * Navigates to the next screen in the tutorial sequence and sets up
-   * step advancement to occur after navigation completes. Uses deferred
-   * execution to ensure proper timing with navigation state changes.
+   * @param screen - Destination screen, or undefined at a sequence boundary
+   * @param moveStep - Copilot step mover (goToNext / goToPrev)
    */
-  const handleNext = async () => {
-    if (!currentStep) {
+  const navigateToStep = (
+    screen: ReturnType<typeof getNextTutorialScreen>,
+    moveStep: () => void
+  ) => {
+    if (!screen) {
       return;
     }
-
-    const nextScreen = getNextScreen(currentStep.order);
-    if (!nextScreen) {
-      return;
+    navigation.navigate(screen);
+    if (screen !== SELF_ADVANCING_TUTORIAL_SCREEN) {
+      moveStep();
     }
-
-    goToNext().then(() => {
-      navigation.navigate(nextScreen);
-    });
   };
 
-  /**
-   * Handles going back to the previous tutorial step
-   *
-   * Navigates to the previous screen in the tutorial sequence and sets up
-   * step regression to occur after navigation completes. Uses deferred
-   * execution to ensure proper timing with navigation state changes.
-   */
-  const handlePrevious = async () => {
-    if (!currentStep) {
-      return;
-    }
-
-    const previousScreen = getPreviousScreen(currentStep.order);
-    if (!previousScreen) {
-      return;
-    }
-
-    goToPrev().then(() => {
-      navigation.navigate(previousScreen);
-    });
-  };
+  const handleNext = () => navigateToStep(getNextTutorialScreen(currentStep.order), goToNext);
+  const handlePrevious = () =>
+    navigateToStep(getPreviousTutorialScreen(currentStep.order), goToPrev);
 
   // From copilot source files, see that they add 15 padding to tooltip
   const paddingOfCopilot = 15;
@@ -141,8 +91,13 @@ export function TutorialTooltip() {
       }}
     >
       <Card.Content>
-        <Text testID={testId + '::Text'} variant='bodyMedium'>
-          {currentStep?.text}
+        <Text
+          testID={testId + '::Text'}
+          variant='bodyMedium'
+          accessible
+          accessibilityLiveRegion='polite'
+        >
+          {currentStep.text}
         </Text>
       </Card.Content>
 

@@ -67,6 +67,8 @@ export type AlertProps = {
   onConfirm?: () => void;
   /** Optional callback fired when cancel button is pressed */
   onCancel?: () => void;
+  /** Optional style applied to the dialog surface (e.g. to offset its position) */
+  style?: StyleProp<ViewStyle>;
 };
 
 /**
@@ -85,6 +87,7 @@ export function Alert({
   onClose,
   onConfirm,
   onCancel,
+  style,
 }: AlertProps) {
   const handleDismiss = () => {
     onClose();
@@ -114,7 +117,7 @@ export function Alert({
 
   return (
     <Portal>
-      <Dialog visible={isVisible} onDismiss={handleDismiss}>
+      <Dialog visible={isVisible} onDismiss={handleDismiss} style={style}>
         <Dialog.Title testID={dialogTestId + '::Title'}>{title}</Dialog.Title>
         <Dialog.Content>
           <Text testID={dialogTestId + '::Content'} variant={'bodyMedium'}>
