@@ -8,9 +8,14 @@ import {
   triggerStepChangeEvent,
   triggerStopEvent,
 } from '@mocks/deps/react-native-copilot-mock';
+import { mockUseReducedMotion } from '@mocks/hooks/useReducedMotion-mock';
 import { TUTORIAL_DEMO_INTERVAL, TUTORIAL_STEPS } from '@utils/Constants';
 
 jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
+
+jest.mock('@hooks/useReducedMotion', () =>
+  require('@mocks/hooks/useReducedMotion-mock').useReducedMotionMock()
+);
 
 describe('FiltersSelection Component', () => {
   const mockSetAddingAFilter = jest.fn();
@@ -105,6 +110,7 @@ describe('FiltersSelection Component', () => {
     beforeEach(() => {
       jest.clearAllMocks();
       resetMockCopilot();
+      mockUseReducedMotion.mockReturnValue(false);
       jest.useFakeTimers();
     });
 
@@ -112,25 +118,37 @@ describe('FiltersSelection Component', () => {
       jest.runOnlyPendingTimers();
       jest.useRealTimers();
     });
-    test('renders with tutorial wrapper when copilot is available', () => {
+
+    test('does not run the demo when reduced motion is enabled', () => {
+      mockUseReducedMotion.mockReturnValue(true);
       setMockCopilotState({
         isActive: true,
-        currentStep: { order: 1, name: 'Home', text: 'Test step' },
+        currentStep: { order: TUTORIAL_STEPS.Search.order, name: 'Search', text: 'Search step' },
       });
-      const { getByTestId } = render(<FiltersSelection {...defaultProps} />);
 
-      expect(getByTestId('FiltersSelection::FiltersSelection::Tutorial')).toBeTruthy();
-      expect(getByTestId('CopilotStep::Search')).toBeTruthy();
+      render(<FiltersSelection {...defaultProps} />);
+
+      jest.advanceTimersByTime(TUTORIAL_DEMO_INTERVAL * 2);
+
+      expect(mockSetAddingAFilter).not.toHaveBeenCalled();
+    });
+
+    test('renders the toggle button without owning a copilot step when copilot is available', () => {
+      setMockCopilotState({
+        isActive: true,
+        currentStep: { order: TUTORIAL_STEPS.Search.order, name: 'Search', text: 'Search step' },
+      });
+      const { getByTestId, queryByTestId } = render(<FiltersSelection {...defaultProps} />);
+
+      expect(queryByTestId('CopilotStep::Search')).toBeNull();
       expect(getByTestId('FiltersSelection::FiltersToggleButtons')).toBeTruthy();
       expect(getByTestId('FiltersSelection::FiltersToggleButtons')).toHaveTextContent('addFilter');
     });
-    test('renders without tutorial wrapper when copilot is not available', () => {
+    test('renders the toggle button when copilot is not available', () => {
       setMockCopilotState({ isActive: false });
 
-      const { getByTestId, queryByTestId } = render(<FiltersSelection {...defaultProps} />);
+      const { getByTestId } = render(<FiltersSelection {...defaultProps} />);
 
-      expect(queryByTestId('FiltersSelection::FiltersSelection::Tutorial')).toBeNull();
-      expect(queryByTestId('CopilotStep::Search')).toBeNull();
       expect(getByTestId('FiltersSelection::FiltersToggleButtons')).toBeTruthy();
       expect(getByTestId('FiltersSelection::FiltersToggleButtons')).toHaveTextContent('addFilter');
     });

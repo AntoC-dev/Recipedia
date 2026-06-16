@@ -14,6 +14,7 @@ describe('TutorialTooltip Component', () => {
   const mockHomeStep = { order: 1, name: 'Home', text: 'First step' };
   const mockSearchStep = { order: 2, name: 'Search', text: 'Middle step' };
   const mockShoppingStep = { order: 3, name: 'Shopping', text: 'Last step' };
+  const mockLastStep = { order: 5, name: 'Parameters', text: 'Last step' };
 
   const defaultMockFirstStepData = {
     currentStep: mockHomeStep,
@@ -131,8 +132,7 @@ describe('TutorialTooltip Component', () => {
     const mockStop = jest.fn();
     useCopilot.mockReturnValue({
       ...defaultMockData,
-      isLastStep: true,
-      currentStep: mockShoppingStep,
+      currentStep: mockLastStep,
       stop: mockStop,
     });
 
@@ -162,15 +162,36 @@ describe('TutorialTooltip Component', () => {
     expect(mockNavigate).toHaveBeenCalledWith('Home');
   });
 
-  test('calls goToNext when next is pressed', async () => {
+  test('advances the step when moving to a non-self-advancing screen', () => {
     const mockGoToNext = jest.fn().mockResolvedValue(undefined);
-    useCopilot.mockReturnValue({ ...defaultMockData, goToNext: mockGoToNext });
+    useCopilot.mockReturnValue({
+      ...defaultMockData,
+      currentStep: mockSearchStep,
+      goToNext: mockGoToNext,
+    });
 
     const { getByTestId } = render(<TutorialTooltip />);
 
     fireEvent.press(getByTestId('TutorialTooltip::Next'));
 
+    expect(mockNavigate).toHaveBeenCalledWith('Menu');
     expect(mockGoToNext).toHaveBeenCalled();
+  });
+
+  test('does not advance the step when navigating to the self-advancing Search screen', () => {
+    const mockGoToNext = jest.fn().mockResolvedValue(undefined);
+    useCopilot.mockReturnValue({
+      ...defaultMockData,
+      currentStep: mockHomeStep,
+      goToNext: mockGoToNext,
+    });
+
+    const { getByTestId } = render(<TutorialTooltip />);
+
+    fireEvent.press(getByTestId('TutorialTooltip::Next'));
+
+    expect(mockNavigate).toHaveBeenCalledWith('Search');
+    expect(mockGoToNext).not.toHaveBeenCalled();
   });
 
   test('renders correctly with valid step order', () => {

@@ -47,11 +47,15 @@ export const TUTORIAL_STEPS = {
   Parameters: { order: 5, name: 'Parameters' },
 } as const;
 
+/** Delay before auto-starting the tutorial, letting screens lay out first (ms) */
+export const TUTORIAL_AUTO_START_DELAY = 300;
+
 /**
- * Tutorial spotlight vertical offset in pixels
- * Applied to all tutorial steps for consistent positioning
+ * Tutorial spotlight padding in pixels around each highlighted target
+ * Applied by the SVG overlay to keep a consistent breathing space between
+ * the spotlight edge and the highlighted element
  */
-export const TUTORIAL_VERTICAL_OFFSET = 20;
+export const TUTORIAL_SPOTLIGHT_MARGIN = 8;
 
 /**
  * Array of test recipe images used in development and testing

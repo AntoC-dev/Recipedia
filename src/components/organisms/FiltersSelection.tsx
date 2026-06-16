@@ -42,16 +42,19 @@
 
 import React, { useEffect, useRef } from 'react';
 import { TagButton } from '@components/atomic/TagButton';
+import { FilterToggleButton } from '@components/atomic/FilterToggleButton';
 import { Icons } from '@assets/Icons';
 import { useI18n } from '@utils/i18n';
 import { TUTORIAL_DEMO_INTERVAL, TUTORIAL_STEPS } from '@utils/Constants';
 import { FlatList, View } from 'react-native';
 import { padding } from '@styles/spacing';
-import { Button } from 'react-native-paper';
-import { CopilotStep, walkthroughable } from 'react-native-copilot';
 import { useSafeCopilot } from '@hooks/useSafeCopilot';
+import { useReducedMotion } from '@hooks/useReducedMotion';
 import { CopilotStepData } from '@customTypes/TutorialTypes';
 import { listFilter, prepTimeValues } from '@customTypes/RecipeFiltersTypes';
+
+/** Frame cap for the spotlight measure-until-stable loop, so it cannot spin forever */
+const MAX_MEASURE_ATTEMPTS = 30;
 
 /**
  * Props for the FiltersSelection component
@@ -67,6 +70,10 @@ export type FiltersSelectionProps = {
   setAddingAFilter: React.Dispatch<React.SetStateAction<boolean>>;
   /** Callback fired when a filter is removed */
   onRemoveFilter: (filter: string) => void;
+  /** Reports the window-space top (px) of the filter toggle button when it lays out */
+  onToggleButtonTop?: (windowTop: number) => void;
+  /** Whether the host screen is focused; re-measures the toggle button on focus */
+  screenFocused?: boolean;
 };
 
 /**
@@ -75,14 +82,14 @@ export type FiltersSelectionProps = {
  * @param props - The component props with filter state and management functions
  * @returns JSX element representing active filters with toggle functionality
  */
-const CopilotView = walkthroughable(View);
-
 export function FiltersSelection({
   testId,
   filters,
   addingFilterMode,
   setAddingAFilter,
   onRemoveFilter,
+  onToggleButtonTop,
+  screenFocused,
 }: FiltersSelectionProps) {
   const { t } = useI18n();
   const copilotData = useSafeCopilot();
@@ -90,6 +97,8 @@ export function FiltersSelection({
   const currentStep = copilotData?.currentStep;
 
   const demoIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const toggleButtonRef = useRef<View>(null);
+  const reducedMotion = useReducedMotion();
 
   const stepOrder = TUTORIAL_STEPS.Search.order;
   const selectionTestID = testId + '::FiltersSelection';
@@ -105,34 +114,15 @@ export function FiltersSelection({
     setAddingAFilter(prev => !prev);
   };
 
-  /**
-   * Filter Toggle Button - Internal component for filter mode switching
-   *
-   * Renders the toggle button that switches between filter selection and results view.
-   * Clean separation of concerns:
-   * - Button handles only its main responsibility (toggling mode)
-   * - Demo system manages itself through dedicated trigger function
-   */
-  function FilterToggleButton() {
-    return (
-      <Button
-        testID={testId + '::FiltersToggleButtons'}
-        mode={'contained'}
-        onPress={triggerToggle}
-        icon={addingFilterMode ? Icons.removeFilterIcon : Icons.addFilterIcon}
-        style={{ margin: padding.medium, alignSelf: 'flex-start', borderRadius: 20 }}
-      >
-        {t(addingFilterMode ? 'seeFilterResult' : 'addFilter')}
-      </Button>
-    );
-  }
-
   useEffect(() => {
     if (!copilotData || !copilotEvents) {
       return;
     }
 
     const startDemo = () => {
+      if (reducedMotion) {
+        return;
+      }
       if (demoIntervalRef.current) {
         clearInterval(demoIntervalRef.current);
       }
@@ -170,7 +160,39 @@ export function FiltersSelection({
       copilotEvents.off('stop', stopDemo);
       stopDemo();
     };
-  }, [currentStep, copilotData, copilotEvents, stepOrder, setAddingAFilter]);
+  }, [currentStep, copilotData, copilotEvents, reducedMotion, stepOrder, setAddingAFilter]);
+
+  // On focus during the tutorial, the screen is still mid-transition (the
+  // spotlight target moves as the safe area settles), so a single measurement
+  // can be stale. Measure each frame until the window position stops changing,
+  // then report the settled value. Deterministic (ends when layout is stable),
+  // capped so it cannot spin forever, and only runs while the tutorial is active.
+  useEffect(() => {
+    if (!screenFocused || !copilotData) {
+      return;
+    }
+    let cancelled = false;
+    let previousTop: number | null = null;
+    let attempts = 0;
+    let frame = requestAnimationFrame(function measureUntilStable() {
+      toggleButtonRef.current?.measureInWindow((_x, y) => {
+        if (cancelled) {
+          return;
+        }
+        if ((previousTop !== null && y === previousTop) || attempts >= MAX_MEASURE_ATTEMPTS) {
+          onToggleButtonTop?.(y);
+        } else {
+          previousTop = y;
+          attempts += 1;
+          frame = requestAnimationFrame(measureUntilStable);
+        }
+      });
+    });
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(frame);
+    };
+  }, [screenFocused, copilotData, onToggleButtonTop]);
 
   return (
     <>
@@ -196,17 +218,12 @@ export function FiltersSelection({
         )}
       />
 
-      {copilotData ? (
-        <View>
-          <CopilotStep text={t('tutorial.search.description')} order={stepOrder} name={'Search'}>
-            <CopilotView testID={selectionTestID + '::Tutorial'}>
-              <FilterToggleButton />
-            </CopilotView>
-          </CopilotStep>
-        </View>
-      ) : (
-        <FilterToggleButton />
-      )}
+      <FilterToggleButton
+        ref={toggleButtonRef}
+        testID={testId + '::FiltersToggleButtons'}
+        addingFilterMode={addingFilterMode}
+        onToggle={triggerToggle}
+      />
     </>
   );
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import VerticalBottomButtons from '@components/organisms/VerticalBottomButtons';
 import { mockNavigate } from '@mocks/deps/react-navigation-mock';
 import { RecipePropType } from '@customTypes/RecipeNavigationTypes';
@@ -8,9 +8,15 @@ import {
   resetMockCopilot,
   setMockCopilotState,
 } from '@mocks/deps/react-native-copilot-mock';
+import { mockUseReducedMotion } from '@mocks/hooks/useReducedMotion-mock';
+import { TUTORIAL_DEMO_INTERVAL } from '@utils/Constants';
 import { DefaultPersonsProvider } from '@context/DefaultPersonsContext';
 
 jest.mock('@utils/ImagePicker', () => require('@mocks/utils/ImagePicker-mock').imagePickerMock());
+
+jest.mock('@hooks/useReducedMotion', () =>
+  require('@mocks/hooks/useReducedMotion-mock').useReducedMotionMock()
+);
 
 jest.mock('@react-navigation/native', () =>
   require('@mocks/deps/react-navigation-mock').reactNavigationMock()
@@ -145,12 +151,45 @@ describe('VerticalBottomButtons Component', () => {
     beforeEach(() => {
       jest.clearAllMocks();
       resetMockCopilot();
+      mockUseReducedMotion.mockReturnValue(false);
       jest.useFakeTimers();
     });
 
     afterEach(() => {
       jest.runOnlyPendingTimers();
       jest.useRealTimers();
+    });
+
+    test('auto-opens the FAB during the demo', () => {
+      setMockCopilotState({
+        isActive: true,
+        currentStep: { order: 1, name: 'Home', text: 'Home step' },
+      });
+
+      const { getByTestId } = renderWithProvider(<VerticalBottomButtons />);
+
+      act(() => {
+        jest.advanceTimersByTime(TUTORIAL_DEMO_INTERVAL);
+      });
+
+      expect(getByTestId('ReduceButton')).toBeTruthy();
+    });
+
+    test('does not auto-run the demo when reduced motion is enabled', () => {
+      mockUseReducedMotion.mockReturnValue(true);
+      setMockCopilotState({
+        isActive: true,
+        currentStep: { order: 1, name: 'Home', text: 'Home step' },
+      });
+
+      const { getByTestId, queryByTestId } = renderWithProvider(<VerticalBottomButtons />);
+
+      act(() => {
+        jest.advanceTimersByTime(TUTORIAL_DEMO_INTERVAL * 2);
+      });
+
+      expect(getByTestId('ExpandButton')).toBeTruthy();
+      expect(queryByTestId('ReduceButton')).toBeNull();
     });
 
     test('renders with tutorial wrapper when copilot is available', () => {

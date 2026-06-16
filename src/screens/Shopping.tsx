@@ -48,12 +48,13 @@
  */
 
 import { ComputedShoppingItem } from '@customTypes/DatabaseElementTypes';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { SectionList, StyleProp, TextStyle, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { CopilotStep, walkthroughable } from 'react-native-copilot';
 import { useSafeCopilot } from '@hooks/useSafeCopilot';
+import { useReducedMotion } from '@hooks/useReducedMotion';
 import { CopilotStepData } from '@customTypes/TutorialTypes';
 import { Checkbox, Divider, List, Text, useTheme } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
@@ -92,6 +93,9 @@ export function Shopping() {
 
   const demoIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const isDialogOpenRef = useRef(false);
+  const reducedMotion = useReducedMotion();
+  const shoppingListRef = useRef(shoppingList);
+  shoppingListRef.current = shoppingList;
 
   const stepOrder = TUTORIAL_STEPS.Shopping.order;
 
@@ -103,58 +107,58 @@ export function Shopping() {
 
   const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] = useState(false);
 
-  const toggleDemoDialog = useCallback(() => {
-    if (isDialogOpenRef.current) {
-      setIsDialogOpen(false);
-      setIngredientDataForDialog({ name: '', recipeTitles: [] });
-      isDialogOpenRef.current = false;
-    } else if (shoppingList.length > 2) {
-      setIngredientDataForDialog(shoppingList[2]);
-      setIsDialogOpen(true);
-      isDialogOpenRef.current = true;
-    }
-  }, [shoppingList]);
-
-  const closingDialogInDemo = () => {
-    setIsDialogOpen(false);
-    setIngredientDataForDialog({ name: '', recipeTitles: [] });
-    isDialogOpenRef.current = false;
-  };
-
-  const stopDemo = useCallback(() => {
-    if (demoIntervalRef.current) {
-      clearInterval(demoIntervalRef.current);
-      demoIntervalRef.current = null;
-    }
-    closingDialogInDemo();
-  }, []);
-
-  const startDemo = useCallback(() => {
-    if (demoIntervalRef.current) {
-      clearInterval(demoIntervalRef.current);
-      demoIntervalRef.current = null;
-    }
-
-    demoIntervalRef.current = setInterval(toggleDemoDialog, TUTORIAL_DEMO_INTERVAL);
-  }, [toggleDemoDialog]);
-
-  const handleStepChange = useCallback(
-    (step: CopilotStepData | undefined) => {
-      if (step?.order === stepOrder) {
-        startDemo();
-      } else {
-        stopDemo();
-      }
-    },
-    [stepOrder, startDemo, stopDemo]
-  );
-
   useEffect(() => {
     if (!copilotData || !copilotEvents) {
       return;
     }
 
-    // Start demo if we're already on our step when component mounts
+    function closeDialog() {
+      if (!isDialogOpenRef.current) {
+        return;
+      }
+      setIsDialogOpen(false);
+      setIngredientDataForDialog({ name: '', recipeTitles: [] });
+      isDialogOpenRef.current = false;
+    }
+
+    function toggleDemoDialog() {
+      const list = shoppingListRef.current;
+      if (isDialogOpenRef.current) {
+        closeDialog();
+      } else if (list.length > 2) {
+        setIngredientDataForDialog(list[2]);
+        setIsDialogOpen(true);
+        isDialogOpenRef.current = true;
+      }
+    }
+
+    function startDemo() {
+      if (reducedMotion) {
+        return;
+      }
+      if (demoIntervalRef.current) {
+        clearInterval(demoIntervalRef.current);
+        demoIntervalRef.current = null;
+      }
+      demoIntervalRef.current = setInterval(toggleDemoDialog, TUTORIAL_DEMO_INTERVAL);
+    }
+
+    function stopDemo() {
+      if (demoIntervalRef.current) {
+        clearInterval(demoIntervalRef.current);
+        demoIntervalRef.current = null;
+      }
+      closeDialog();
+    }
+
+    function handleStepChange(step: CopilotStepData | undefined) {
+      if (step?.order === stepOrder) {
+        startDemo();
+      } else {
+        stopDemo();
+      }
+    }
+
     if (currentStep?.order === stepOrder) {
       startDemo();
     }
@@ -167,7 +171,7 @@ export function Shopping() {
       copilotEvents.off('stop', stopDemo);
       stopDemo();
     };
-  }, [currentStep, copilotData, copilotEvents, handleStepChange, startDemo, stepOrder, stopDemo]);
+  }, [currentStep, copilotData, copilotEvents, reducedMotion, stepOrder]);
 
   const sections = shoppingCategories
     .map(category => ({
@@ -319,6 +323,9 @@ export function Shopping() {
         content={createDialogContent()}
         testId={screenId}
         title={createDialogTitle()}
+        // During the tutorial the demo dialog is pushed down so its top clears
+        // the tutorial tooltip anchored above the highlighted list.
+        style={copilotData ? { marginTop: '25%' } : undefined}
         onClose={() => {
           setIsDialogOpen(false);
           setIngredientDataForDialog({ name: '', recipeTitles: [] });

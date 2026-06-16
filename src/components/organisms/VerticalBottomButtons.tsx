@@ -32,6 +32,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { View } from 'react-native';
 import { CopilotStep, walkthroughable } from 'react-native-copilot';
 import { useSafeCopilot } from '@hooks/useSafeCopilot';
+import { useReducedMotion } from '@hooks/useReducedMotion';
 import { useRecipeScraper } from '@hooks/useRecipeScraper';
 import { CopilotStepData } from '@customTypes/TutorialTypes';
 import { useI18n } from '@utils/i18n';
@@ -41,7 +42,7 @@ import { Icons } from '@assets/Icons';
 import { StackScreenNavigation } from '@customTypes/ScreenTypes';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { FAB, Portal, useTheme } from 'react-native-paper';
-import { padding, screenHeight, screenWidth } from '@styles/spacing';
+import { padding, screenHeight } from '@styles/spacing';
 import { UrlInputDialog } from '@components/dialogs/UrlInputDialog';
 import { AuthenticationDialog } from '@components/dialogs/AuthenticationDialog';
 
@@ -79,10 +80,11 @@ function VerticalBottomButtons() {
   const insets = useSafeAreaInsets();
 
   const tabBarHeight = screenHeight / 9 + insets.bottom;
-  const copilotWidth = screenWidth * 0.62;
   const copilotHeight =
-    MAIN_FAB_SIZE + (ACTION_BUTTON_SIZE + ACTION_BUTTON_SPACING) * ACTION_BUTTON_COUNT;
-  const copilotBottom = tabBarHeight - (ACTION_BUTTON_SIZE + 2 * ACTION_BUTTON_SPACING);
+    MAIN_FAB_SIZE +
+    (ACTION_BUTTON_SIZE + ACTION_BUTTON_SPACING) * ACTION_BUTTON_COUNT +
+    ACTION_BUTTON_SPACING;
+  const copilotBottom = tabBarHeight - MAIN_FAB_SIZE;
 
   const copilotData = useSafeCopilot();
   const copilotEvents = copilotData?.copilotEvents;
@@ -93,6 +95,7 @@ function VerticalBottomButtons() {
   const [authDialogVisible, setAuthDialogVisible] = useState(false);
   const demoIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const isFocused = useIsFocused();
+  const reducedMotion = useReducedMotion();
 
   const {
     scrapeAndPrepare,
@@ -112,6 +115,9 @@ function VerticalBottomButtons() {
     }
 
     function startDemo() {
+      if (reducedMotion) {
+        return;
+      }
       if (demoIntervalRef.current) {
         clearInterval(demoIntervalRef.current);
       }
@@ -148,7 +154,7 @@ function VerticalBottomButtons() {
       copilotEvents.off('stop', stopDemo);
       stopDemo();
     };
-  }, [isFocused, copilotData, copilotEvents, currentStep, stepOrder]);
+  }, [isFocused, copilotData, copilotEvents, currentStep, reducedMotion, stepOrder]);
 
   useEffect(() => {
     if (authRequired) {
@@ -156,10 +162,6 @@ function VerticalBottomButtons() {
       setAuthDialogVisible(true);
     }
   }, [authRequired]);
-
-  if (!isFocused) {
-    return null;
-  }
 
   async function takePhotoAndOpenNewRecipe() {
     openRecipeWithUri(await takePhoto(colors));
@@ -230,8 +232,8 @@ function VerticalBottomButtons() {
               style={{
                 position: 'absolute',
                 bottom: copilotBottom,
+                left: padding.small,
                 right: padding.small,
-                width: copilotWidth,
                 height: copilotHeight,
                 pointerEvents: 'none',
               }}
@@ -239,73 +241,77 @@ function VerticalBottomButtons() {
           </CopilotStep>
         </View>
       )}
-      <Portal>
-        <FAB.Group
-          open={open}
-          visible
-          icon={open ? Icons.minusIcon : Icons.plusIcon}
-          {...fabTestProps(open ? FAB_TEST_IDS.reduce : FAB_TEST_IDS.expand)}
-          actions={[
-            {
-              icon: Icons.pencilIcon,
-              label: t('fab.addManually'),
-              onPress: () => navigate('Recipe', { mode: 'addManually' }),
-              ...fabTestProps(FAB_TEST_IDS.edit),
-              style: { borderRadius: 999 },
-              size: 'medium',
-            },
-            {
-              icon: Icons.webIcon,
-              label: t('fab.addFromUrl'),
-              onPress: handleOpenUrlDialog,
-              ...fabTestProps(FAB_TEST_IDS.url),
-              style: { borderRadius: 999 },
-              size: 'medium',
-            },
-            {
-              icon: Icons.galleryIcon,
-              label: t('fab.pickFromGallery'),
-              onPress: () => pickImageAndOpenNewRecipe(),
-              ...fabTestProps(FAB_TEST_IDS.gallery),
-              style: { borderRadius: 999 },
-              size: 'medium',
-            },
-            {
-              icon: Icons.cameraIcon,
-              label: t('fab.takePhoto'),
-              onPress: () => takePhotoAndOpenNewRecipe(),
-              ...fabTestProps(FAB_TEST_IDS.camera),
-              style: { borderRadius: 999 },
-              size: 'medium',
-            },
-          ]}
-          onStateChange={({ open: isOpen }) => setOpen(isOpen)}
-          fabStyle={{
-            marginBottom: tabBarHeight,
-            marginRight: padding.small,
-            backgroundColor: colors.primaryContainer,
-            borderRadius: 999,
-          }}
-          color={colors.onPrimaryContainer}
-        />
-      </Portal>
-      <UrlInputDialog
-        testId={testID}
-        isVisible={urlDialogVisible}
-        onClose={handleCloseUrlDialog}
-        onSubmit={handleUrlSubmit}
-        isLoading={isScrapingLoading}
-        error={scrapingError}
-      />
-      <AuthenticationDialog
-        testId={testID}
-        isVisible={authDialogVisible}
-        host={authRequired?.host ?? ''}
-        onClose={handleCloseAuthDialog}
-        onSubmit={handleAuthSubmit}
-        isLoading={isScrapingLoading}
-        error={scrapingError}
-      />
+      {isFocused && (
+        <>
+          <Portal>
+            <FAB.Group
+              open={open}
+              visible
+              icon={open ? Icons.minusIcon : Icons.plusIcon}
+              {...fabTestProps(open ? FAB_TEST_IDS.reduce : FAB_TEST_IDS.expand)}
+              actions={[
+                {
+                  icon: Icons.pencilIcon,
+                  label: t('fab.addManually'),
+                  onPress: () => navigate('Recipe', { mode: 'addManually' }),
+                  ...fabTestProps(FAB_TEST_IDS.edit),
+                  style: { borderRadius: 999 },
+                  size: 'medium',
+                },
+                {
+                  icon: Icons.webIcon,
+                  label: t('fab.addFromUrl'),
+                  onPress: handleOpenUrlDialog,
+                  ...fabTestProps(FAB_TEST_IDS.url),
+                  style: { borderRadius: 999 },
+                  size: 'medium',
+                },
+                {
+                  icon: Icons.galleryIcon,
+                  label: t('fab.pickFromGallery'),
+                  onPress: () => pickImageAndOpenNewRecipe(),
+                  ...fabTestProps(FAB_TEST_IDS.gallery),
+                  style: { borderRadius: 999 },
+                  size: 'medium',
+                },
+                {
+                  icon: Icons.cameraIcon,
+                  label: t('fab.takePhoto'),
+                  onPress: () => takePhotoAndOpenNewRecipe(),
+                  ...fabTestProps(FAB_TEST_IDS.camera),
+                  style: { borderRadius: 999 },
+                  size: 'medium',
+                },
+              ]}
+              onStateChange={({ open: isOpen }) => setOpen(isOpen)}
+              fabStyle={{
+                marginBottom: tabBarHeight,
+                marginRight: padding.small,
+                backgroundColor: colors.primaryContainer,
+                borderRadius: 999,
+              }}
+              color={colors.onPrimaryContainer}
+            />
+          </Portal>
+          <UrlInputDialog
+            testId={testID}
+            isVisible={urlDialogVisible}
+            onClose={handleCloseUrlDialog}
+            onSubmit={handleUrlSubmit}
+            isLoading={isScrapingLoading}
+            error={scrapingError}
+          />
+          <AuthenticationDialog
+            testId={testID}
+            isVisible={authDialogVisible}
+            host={authRequired?.host ?? ''}
+            onClose={handleCloseAuthDialog}
+            onSubmit={handleAuthSubmit}
+            isLoading={isScrapingLoading}
+            error={scrapingError}
+          />
+        </>
+      )}
     </View>
   );
 }

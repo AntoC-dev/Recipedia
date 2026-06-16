@@ -1,4 +1,5 @@
 import React from 'react';
+import { StatusBar } from 'react-native';
 import { act, render } from '@testing-library/react-native';
 import { TutorialProvider } from '@components/organisms/TutorialController';
 import {
@@ -6,11 +7,12 @@ import {
   getMockCopilotMethods,
   resetMockCopilot,
   setMockCopilotState,
+  triggerStartEvent,
   triggerStepChangeEvent,
   triggerStopEvent,
 } from '@mocks/deps/react-native-copilot-mock';
 import { mockNavigate } from '@mocks/deps/react-navigation-mock';
-import { TUTORIAL_VERTICAL_OFFSET } from '@utils/Constants';
+import { TUTORIAL_SPOTLIGHT_MARGIN } from '@utils/Constants';
 
 jest.mock('@react-navigation/native', () =>
   require('@mocks/deps/react-navigation-mock').reactNavigationMock()
@@ -85,6 +87,68 @@ describe('TutorialController Component', () => {
     jest.useRealTimers();
   });
 
+  test('auto-starts only once across re-renders', () => {
+    const mockMethods = getMockCopilotMethods();
+    setMockCopilotState({ isActive: true, visible: false });
+    const { View } = require('react-native');
+
+    jest.useFakeTimers();
+    const { rerender } = render(
+      <TutorialProvider onComplete={mockOnComplete}>
+        <View testID='test-child' />
+      </TutorialProvider>
+    );
+    act(() => jest.advanceTimersByTime(300));
+
+    rerender(
+      <TutorialProvider onComplete={mockOnComplete}>
+        <View testID='test-child' />
+      </TutorialProvider>
+    );
+    act(() => jest.advanceTimersByTime(300));
+
+    expect(mockMethods.start).toHaveBeenCalledTimes(1);
+    jest.useRealTimers();
+  });
+
+  test('auto-starts with the latest start when its identity changes before the delay', () => {
+    const { useCopilot } = require('react-native-copilot');
+    const originalImpl = useCopilot.getMockImplementation();
+    const start1 = jest.fn();
+    const start2 = jest.fn();
+    let currentStart = start1;
+    useCopilot.mockImplementation(() => ({
+      start: currentStart,
+      stop: jest.fn(),
+      copilotEvents: getMockCopilotEvents(),
+      visible: false,
+      currentStep: undefined,
+    }));
+    const { View } = require('react-native');
+
+    jest.useFakeTimers();
+    const { rerender } = render(
+      <TutorialProvider onComplete={mockOnComplete}>
+        <View testID='test-child' />
+      </TutorialProvider>
+    );
+
+    currentStart = start2;
+    rerender(
+      <TutorialProvider onComplete={mockOnComplete}>
+        <View testID='test-child' />
+      </TutorialProvider>
+    );
+
+    act(() => jest.advanceTimersByTime(300));
+
+    expect(start1).not.toHaveBeenCalled();
+    expect(start2).toHaveBeenCalledTimes(1);
+
+    jest.useRealTimers();
+    useCopilot.mockImplementation(originalImpl);
+  });
+
   test('does not auto-start when tutorial is already visible', async () => {
     const mockMethods = getMockCopilotMethods();
     setMockCopilotState({
@@ -131,6 +195,14 @@ describe('TutorialController Component', () => {
     triggerStepChangeEvent(mockStep);
   });
 
+  test('handles start event without throwing', async () => {
+    setMockCopilotState({ isActive: true });
+
+    await renderTutorialProvider();
+
+    expect(() => triggerStartEvent()).not.toThrow();
+  });
+
   test('cleans up event listeners on unmount', async () => {
     const mockEvents = getMockCopilotEvents();
     setMockCopilotState({ isActive: true });
@@ -162,9 +234,11 @@ describe('TutorialController Component', () => {
     const { getByTestId } = await renderTutorialProvider();
 
     const copilotProvider = getByTestId('CopilotProvider');
-    expect(copilotProvider.props.overlay).toBe('view');
+    expect(copilotProvider.props.overlay).toBe('svg');
     expect(copilotProvider.props.animated).toBe(true);
-    expect(copilotProvider.props.verticalOffset).toBe(TUTORIAL_VERTICAL_OFFSET);
+    expect(copilotProvider.props.androidStatusBarVisible).toBe(true);
+    expect(copilotProvider.props.margin).toBe(TUTORIAL_SPOTLIGHT_MARGIN);
+    expect(copilotProvider.props.verticalOffset).toBe(StatusBar.currentHeight ?? 0);
     expect(copilotProvider.props.tooltipStyle).toEqual({
       margin: 0,
       padding: 0,

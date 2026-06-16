@@ -25,6 +25,12 @@ import { FilterAccordion } from '@components/organisms/FilterAccordion';
 import { useSeasonFilter } from '@context/SeasonFilterContext';
 import { useRecipes } from '@hooks/useRecipes';
 import { getRecipeKey } from '@utils/listUtils';
+import { CopilotStep, walkthroughable } from 'react-native-copilot';
+import { useIsFocused } from '@react-navigation/native';
+import { useSafeCopilot } from '@hooks/useSafeCopilot';
+import { TUTORIAL_STEPS } from '@utils/Constants';
+
+const CopilotView = walkthroughable(View);
 
 /**
  * Search screen component - Advanced recipe search with filtering
@@ -36,10 +42,42 @@ export function Search() {
 
   const { seasonFilter } = useSeasonFilter();
   const { recipes } = useRecipes();
+  const copilotData = useSafeCopilot();
+  const stepOrder = TUTORIAL_STEPS.Search.order;
+  const screenFocused = useIsFocused();
+  const [toggleButtonTop, setToggleButtonTop] = useState<number | null>(null);
 
   // Refs
   const flashListRef = useRef<FlashListRef<recipeTableElement>>(null);
   const searchBarClearRef = useRef<SearchBarHandle>(null);
+  const hasSelfAdvancedRef = useRef(false);
+
+  // Advance the tutorial to this step once the screen is focused and its
+  // spotlight target has been measured. The toggle button is in-flow, so its
+  // position is only correct after focus; advancing here (rather than from the
+  // tooltip) guarantees the spotlight is measured against the focused position.
+  const currentStepOrder = copilotData?.currentStep?.order;
+  useEffect(() => {
+    if (!screenFocused) {
+      hasSelfAdvancedRef.current = false;
+      return;
+    }
+    if (
+      !copilotData ||
+      toggleButtonTop == null ||
+      hasSelfAdvancedRef.current ||
+      currentStepOrder == null ||
+      currentStepOrder === stepOrder
+    ) {
+      return;
+    }
+    hasSelfAdvancedRef.current = true;
+    if (currentStepOrder < stepOrder) {
+      copilotData.goToNext();
+    } else {
+      copilotData.goToPrev();
+    }
+  }, [copilotData, screenFocused, toggleButtonTop, currentStepOrder, stepOrder]);
 
   // Core state
   const [filtersState, setFiltersState] = useState(new Map<TListFilter, string[]>());
@@ -180,6 +218,8 @@ export function Search() {
                   addingFilterMode={addingFilterMode}
                   setAddingAFilter={setAddingFilterMode}
                   onRemoveFilter={findFilterStringAndRemove}
+                  onToggleButtonTop={setToggleButtonTop}
+                  screenFocused={screenFocused}
                 />
 
                 <Divider testID={screenId + '::Divider'} />
@@ -225,6 +265,30 @@ export function Search() {
           />
         )}
       />
+
+      {copilotData && (
+        <CopilotStep text={t('tutorial.search.description')} order={stepOrder} name={'Search'}>
+          {/*
+            Unlike the other tutorial screens (which can hardcode a percentage
+            top), the toggle button sits below the search bar and a variable
+            filter-chip row, and its focused window position differs from its
+            unfocused one by the status-bar height. A static percentage left a
+            visible vertical offset, so the top is driven by the measured
+            (settled, focused) button position, falling back to '15%' until measured.
+          */}
+          <CopilotView
+            testID={screenId + '::Tutorial'}
+            style={{
+              position: 'absolute',
+              top: toggleButtonTop ?? '15%',
+              left: padding.small,
+              right: padding.small,
+              height: '40%',
+              pointerEvents: 'none',
+            }}
+          />
+        </CopilotStep>
+      )}
     </ScreenWrapper>
   );
 }
