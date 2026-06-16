@@ -1,3 +1,22 @@
+## [2.38.0](https://github.com/AntoC-dev/Recipedia/compare/v2.37.1...v2.38.0) (2026-06-16)
+
+### Features
+
+* **logging:** daily log rotation, retention, and observability gaps ([#292](https://github.com/AntoC-dev/Recipedia/issues/292)) ([776e586](https://github.com/AntoC-dev/Recipedia/commit/776e5866db52568bfe3b0e76bbb34035337bf49f))
+* **logging:** daily rotation, 30-day retention, bug-report update ([cb5d992](https://github.com/AntoC-dev/Recipedia/commit/cb5d9920353a717da5bcd6a7f89442921d28bf88))
+* **logging:** fill debug/warn coverage gaps across form and import modules ([6c6b4da](https://github.com/AntoC-dev/Recipedia/commit/6c6b4da79484412548b011a619e06e19ba252593))
+* **tutorial:** add useReducedMotion accessibility hook ([8d52b10](https://github.com/AntoC-dev/Recipedia/commit/8d52b10cbc007935d2cb7f38474784254f4bf436))
+
+### Bug Fixes
+
+* **deps:** resolve critical and high security advisories ([#295](https://github.com/AntoC-dev/Recipedia/issues/295)) ([0023a1a](https://github.com/AntoC-dev/Recipedia/commit/0023a1a1005937785ca5b02345455bd71b3a8896))
+* **deps:** resolve critical and high security advisories via npm audit fix ([598b0b7](https://github.com/AntoC-dev/Recipedia/commit/598b0b7d279b4a10fe729e3195e07fa5662f23e3))
+* **recipes,ocr:** wrap async ops in try/catch/finally to prevent stuck state ([cc54851](https://github.com/AntoC-dev/Recipedia/commit/cc548518e7013666cde3c4fef1ec98a7e297fcc4))
+* **startup:** unregister legacy background tasks on app init ([87f3e09](https://github.com/AntoC-dev/Recipedia/commit/87f3e09a620291f992605f29657fe53fa580138b))
+* **startup:** unregister legacy background tasks on app init ([#293](https://github.com/AntoC-dev/Recipedia/issues/293)) ([6c9710e](https://github.com/AntoC-dev/Recipedia/commit/6c9710ebd3ea6c98b3846127a2e3ca8c0983e2ac))
+* **tutorial:** align copilot spotlights, nav and reduced-motion demos ([2981f58](https://github.com/AntoC-dev/Recipedia/commit/2981f58c57d85c8ee91e31817f1481a1032025b2))
+* **tutorial:** copilot spotlight alignment, navigation & reduced-motion ([#297](https://github.com/AntoC-dev/Recipedia/issues/297)) ([84ac84a](https://github.com/AntoC-dev/Recipedia/commit/84ac84acc1c7f38175c528a53947ab9d15dd5a7a))
+
 ## [2.38.0](https://github.com/AntoC-dev/Recipedia/compare/v2.37.1...v2.38.0) (2026-06-13)
 
 ### Features
