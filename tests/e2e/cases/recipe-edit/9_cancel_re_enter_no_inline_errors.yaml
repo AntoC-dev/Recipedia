@@ -60,8 +60,8 @@ tags:
     label: "Wait for keyboard"
 
 - tapOn:
-    id: "RecipeImage"
-    label: "Action - Tap image to blur title without editing"
+    id: "RecipeTitle::Text"
+    label: "Action - Tap title label to blur title without editing"
 
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"
@@ -85,8 +85,8 @@ tags:
 - waitForAnimationToEnd
 
 - tapOn:
-    id: "RecipeImage"
-    label: "Action - Tap image to blur title"
+    id: "RecipeTitle::Text"
+    label: "Action - Tap title label to blur title"
 
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"
@@ -158,8 +158,8 @@ tags:
     label: "Wait for keyboard"
 
 - tapOn:
-    id: "RecipeImage"
-    label: "Action - Tap image to blur title without editing"
+    id: "RecipeDescription::Text"
+    label: "Action - Tap description label to blur title without editing"
 
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"

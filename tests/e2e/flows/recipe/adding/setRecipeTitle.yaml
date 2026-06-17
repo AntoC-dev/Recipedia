@@ -1,6 +1,14 @@
 appId: "com.recipedia"
 ---
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeTitle::CustomTextInput"
+    direction: DOWN
+    speed: 10
+    centerElement: true
+    label: "Center title input before focus"
+
 - tapOn:
     id: "RecipeTitle::CustomTextInput"
     label: "Focus on recipe title input"
@@ -28,8 +36,8 @@ appId: "com.recipedia"
     label: "Wait for keyboard animation"
 
 - tapOn:
-    id: "RecipeImage"
-    label: "Tap on recipe image to close the keyboard"
+    id: "RecipeTitle::Text"
+    label: "Tap title label to blur title and close the keyboard"
 
 - assertVisible:
     id: "RecipeTitle::CustomTextInput"

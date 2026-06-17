@@ -77,8 +77,8 @@ tags:
 - waitForAnimationToEnd
 
 - tapOn:
-    id: "RecipeImage"
-    label: "Action - Tap image to blur title"
+    id: "RecipeTitle::Text"
+    label: "Action - Tap title label to blur title"
 
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"
@@ -103,8 +103,8 @@ tags:
 - waitForAnimationToEnd
 
 - tapOn:
-    id: "RecipeImage"
-    label: "Action - Tap image to blur title"
+    id: "RecipeTitle::Text"
+    label: "Action - Tap title label to blur title"
 
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"

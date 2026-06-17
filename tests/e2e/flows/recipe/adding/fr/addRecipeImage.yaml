@@ -47,3 +47,9 @@ appId: "com.recipedia"
     when:
       platform: iOS
     label: "Validate without cropping on iOS"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "RecipeImage::Placeholder"
+    timeout: 10000
+    label: "Wait for picked image to commit to the form"
