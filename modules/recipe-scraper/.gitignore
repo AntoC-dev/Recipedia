@@ -1,3 +1,8 @@
 # Generated Pyodide assets (regenerated at build time)
 assets/pyodide-bundle.html
 assets/pyodide-download/
+
+# Local Python venv — must not be copied into EAS build (its certifi cacert.pem
+# is stripped by the root *.pem ignore, breaking pip's truststore at prebuild).
+# Build falls back to system python3 instead (matches CI).
+python/.venv/
