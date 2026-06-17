@@ -22,6 +22,7 @@ function versionToCode(version: string): number {
 
 const configuredName = toSlug(pkg.name);
 const appId = `com.${toIdentifierSegment(pkg.name)}`;
+const iosAppId = `${appId}.ios`;
 
 const primaryColorLight = '#006D38';
 const primaryColorDark = '#79DB95';
@@ -48,7 +49,7 @@ export default ({config}: ConfigContext): ExpoConfig => {
         },
         ios: {
             supportsTablet: true,
-            bundleIdentifier: appId,
+            bundleIdentifier: iosAppId,
             buildNumber: pkg.version,
             infoPlist: {
                 "ITSAppUsesNonExemptEncryption": false,
