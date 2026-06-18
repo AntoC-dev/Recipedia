@@ -108,6 +108,28 @@ tests/e2e/
 9. **Platform Awareness**: Android and iOS implementations are conditionally
    executed
 
+## Bundle ID (`appId`)
+
+Every flow declares `appId: 'com.recipedia'`. This is shared across **iOS and
+Android** on purpose, and it is **not** the iOS App Store bundle id.
+
+iOS is published under a distinct store identity, `com.recipedia.ios`. That
+suffix is applied **only to the `production` EAS build profile** — see the
+`isStoreBuild` gate in `app.config.ts`. Every non-store build (Maestro E2E, dev,
+simulator) keeps the plain `com.recipedia`, identical to Android.
+
+Why it matters for tests:
+
+- Maestro launches the app **solely by bundle id**. There is no per-platform
+  `appId` in a flow, so the test build must carry the same id on both platforms.
+- If the iOS test build also used `com.recipedia.ios`, Maestro would try to
+  launch a bundle id that isn't installed and **every iOS suite would fail**
+  with `Failed to get app binary directory for bundle com.recipedia`.
+- Keeping the suffix gated to store builds means the flows stay
+  platform-agnostic and any single flow runs directly
+  (`maestro test path/to/flow.yaml`) with no extra env. Do **not** change
+  `appId` to the `.ios` id in flow files.
+
 ## Directory Structure
 
 ### Suite Configuration Files (Root Level)
