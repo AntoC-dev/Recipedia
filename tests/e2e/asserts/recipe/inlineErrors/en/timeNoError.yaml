@@ -1,0 +1,5 @@
+appId: "com.recipedia"
+---
+- assertNotVisible:
+    id: "RecipeTime::Error"
+    label: "Time inline error is not visible"

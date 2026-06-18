@@ -121,6 +121,9 @@ export default {
     copied: 'URL copiée dans le presse-papiers',
   },
 
+  servingsScaledNotice:
+    'Enregistrée. Les quantités ont été ajustées de {{from}} à {{to}} portions — les recettes sont stockées avec votre nombre de portions par défaut.',
+
   scraper: {
     ignoredIngredientPrefixes: [
       'selon le goût',

@@ -35,7 +35,7 @@ export function MenuRecipeCard({
   const handlePress = () => {
     const recipe = recipes.find(r => r.id === menuItem.recipeId);
     if (recipe) {
-      navigate('Recipe', { mode: 'readOnly', recipe });
+      navigate('RecipeView', { recipe });
     }
   };
 

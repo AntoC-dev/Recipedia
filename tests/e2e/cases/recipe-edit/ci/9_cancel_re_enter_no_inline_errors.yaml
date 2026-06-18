@@ -1,0 +1,14 @@
+name: "9 - Recipe Edit Cancel Then Re-Enter No Inline Errors Flow"
+appId: "com.recipedia"
+tags:
+  - recipe-edit
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../9_cancel_re_enter_no_inline_errors.yaml"
+          label: "Run 9 - Recipe Edit Cancel Then Re-Enter No Inline Errors Flow"

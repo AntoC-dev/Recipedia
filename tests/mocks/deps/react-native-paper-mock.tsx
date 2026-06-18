@@ -601,6 +601,11 @@ export const Snackbar: React.FC<any> = props => {
           Dismiss
         </Button>
       )}
+      {props.action && (
+        <Button testID={props.testID + '::Action'} onPress={props.action.onPress}>
+          {props.action.label}
+        </Button>
+      )}
     </View>
   );
 };

@@ -1,0 +1,6 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    id: "RecipeTime::Error"
+    text: "Enter a preparation time"
+    label: "Time inline error is visible"

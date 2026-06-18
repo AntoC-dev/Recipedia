@@ -1,4 +1,5 @@
 export const mockGetDefaultPersons = jest.fn().mockResolvedValue(4);
+export const mockGetDefaultPersonsSync = jest.fn().mockReturnValue(4);
 export const mockSetDefaultPersons = jest.fn().mockResolvedValue(undefined);
 export const mockSetLanguage = jest.fn();
 export const mockGetLanguage = jest.fn().mockResolvedValue('en');
@@ -10,11 +11,13 @@ export const mockSetDarkMode = jest.fn().mockResolvedValue(undefined);
 export const mockInitSettings = jest.fn().mockResolvedValue(undefined);
 
 export const getDefaultPersons = mockGetDefaultPersons;
+export const getDefaultPersonsSync = mockGetDefaultPersonsSync;
 export const setDefaultPersons = mockSetDefaultPersons;
 
 export function settingsMock() {
   return {
     getDefaultPersons: mockGetDefaultPersons,
+    getDefaultPersonsSync: mockGetDefaultPersonsSync,
     setDefaultPersons: mockSetDefaultPersons,
     getLanguage: mockGetLanguage,
     setLanguage: mockSetLanguage,

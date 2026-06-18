@@ -1,949 +1,276 @@
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import RecipeIngredients, { RecipeIngredientsProps } from '@components/organisms/RecipeIngredients';
+import { fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
-import { testIngredients } from '@test-data/ingredientsDataset';
-import { testRecipes } from '@test-data/recipesDataset';
-import { testTags } from '@test-data/tagsDataset';
-import RecipeDatabase from '@utils/RecipeDatabase';
 import { ingredientTableElement, ingredientType } from '@customTypes/DatabaseElementTypes';
+import RecipeIngredients, {
+  IngredientRow,
+  IngredientsAddEmpty,
+  IngredientsAddTail,
+  IngredientsTable,
+} from '@components/organisms/RecipeIngredients';
 
+jest.mock('@expo/vector-icons', () => require('@mocks/deps/expo-vector-icons-mock'));
 jest.mock('@components/atomic/RoundButton', () => ({
   RoundButton: require('@mocks/components/atomic/RoundButton-mock').roundButtonMock,
 }));
 jest.mock('@components/atomic/NumericTextInput', () => ({
   NumericTextInput: require('@mocks/components/atomic/NumericTextInput-mock').numericTextInputMock,
 }));
-jest.mock('@components/atomic/CustomTextInput', () => ({
-  CustomTextInput: require('@mocks/components/atomic/CustomTextInput-mock').CustomTextInputMock,
-}));
 jest.mock('@components/molecules/TextInputWithDropDown', () => ({
-  TextInputWithDropDown: require('@mocks/components/molecules/TextInputWithDropDown-mock.tsx')
+  TextInputWithDropDown: require('@mocks/components/molecules/TextInputWithDropDown-mock')
     .textInputWithDropdownMock,
 }));
-jest.mock('@expo/vector-icons', () => require('@mocks/deps/expo-vector-icons-mock'));
 
-describe('RecipeIngredients Component', () => {
-  const sampleIngredients: ingredientTableElement[] = [
-    { quantity: '2', unit: 'cups', name: 'flour', type: ingredientType.cereal, season: [] },
-    { quantity: '1', unit: 'tsp', name: 'salt', type: ingredientType.condiment, season: [] },
-    { quantity: '3', unit: 'tbsp', name: 'sugar', type: ingredientType.condiment, season: [] },
-  ];
-
-  const renderRecipeIngredients = async (props: RecipeIngredientsProps) => {
-    const result = render(<RecipeIngredients {...props} />);
-
-    await waitFor(() => {
-      expect(result.root).toBeTruthy();
-    });
-    return result;
-  };
-
-  const dbInstance = RecipeDatabase.getInstance();
-
-  beforeEach(async () => {
-    jest.clearAllMocks();
-    await dbInstance.init();
-    await dbInstance.addMultipleIngredients(testIngredients);
-    await dbInstance.addMultipleTags(testTags);
-    await dbInstance.addMultipleRecipes(testRecipes);
-  });
-
-  afterEach(async () => {
-    await dbInstance.closeAndReset();
-  });
-
-  describe('readOnly mode', () => {
-    it('renders ingredients in read-only mode with quantity, unit, and name', async () => {
-      const { getByTestId } = await renderRecipeIngredients({
-        mode: 'readOnly',
-        testID: 'ReadOnlyIngredients',
-        ingredients: sampleIngredients,
-      });
-
-      sampleIngredients.forEach((ingredient, index) => {
-        expect(getByTestId(`ReadOnlyIngredients::${index}::Row`)).toBeTruthy();
-        const quantityAndUnitCell = getByTestId(`ReadOnlyIngredients::${index}::QuantityAndUnit`);
-        const quantityAndUnitText = quantityAndUnitCell.props.children;
-        expect(quantityAndUnitText).toEqual([ingredient.quantity, ' ', ingredient.unit]);
-
-        const ingredientNameText = getByTestId(`ReadOnlyIngredients::${index}::IngredientName`);
-        expect(ingredientNameText.props.children[0]).toEqual(ingredient.name);
-      });
-    });
-
-    it('renders empty list when no ingredients provided', async () => {
-      const { queryByTestId } = await renderRecipeIngredients({
-        mode: 'readOnly',
-        testID: 'ReadOnlyIngredients',
-        ingredients: [],
-      });
-
-      expect(queryByTestId('ReadOnlyIngredients::0::Row')).toBeNull();
-    });
-  });
-
-  describe('editable mode', () => {
-    const mockOnIngredientChange = jest.fn();
-    const mockOnAddIngredient = jest.fn();
-    const mockOnRemoveIngredient = jest.fn();
-
-    const editableProps: RecipeIngredientsProps = {
-      mode: 'editable',
-      testID: 'EditableIngredients',
-      ingredients: sampleIngredients,
-      prefixText: 'Ingredients',
-      columnTitles: {
-        column1: 'Quantity',
-        column2: 'Unit',
-        column3: 'Ingredient',
-      },
-      onIngredientChange: mockOnIngredientChange,
-      onAddIngredient: mockOnAddIngredient,
-      onRemoveIngredient: mockOnRemoveIngredient,
-      noteInputPlaceholder: 'Usage note',
-    };
-
-    beforeEach(() => {
-      jest.clearAllMocks();
-    });
-
-    it('renders prefix text and column titles', async () => {
-      const { getByTestId } = await renderRecipeIngredients(editableProps);
-
-      expect(getByTestId('EditableIngredients::PrefixText').props.children).toEqual('Ingredients');
-    });
-
-    it('renders editable inputs for each ingredient', async () => {
-      const { getByTestId } = await renderRecipeIngredients(editableProps);
-
-      sampleIngredients.forEach((ingredient, index) => {
-        expect(getByTestId(`EditableIngredients::${index}::Row`)).toBeTruthy();
-        expect(getByTestId(`EditableIngredients::${index}::QuantityInput`).props.value).toEqual(
-          ingredient.quantity
-        );
-        expect(getByTestId(`EditableIngredients::${index}::Unit`).props.children).toEqual(
-          ingredient.unit
-        );
-        expect(
-          getByTestId(`EditableIngredients::${index}::NameInput::TextInputWithDropdown::Value`)
-            .props.children
-        ).toEqual(ingredient.name);
-      });
-    });
-
-    it('renders add button', async () => {
-      const { getByTestId } = await renderRecipeIngredients(editableProps);
-
-      expect(
-        getByTestId('EditableIngredients::AddButton::RoundButton::Icon').props.children
-      ).toEqual('plus');
-      expect(
-        getByTestId('EditableIngredients::AddButton::RoundButton::OnPressFunction')
-      ).toBeTruthy();
-    });
-
-    it('calls onAddIngredient when add button is pressed', async () => {
-      const { getByTestId } = await renderRecipeIngredients(editableProps);
-
-      fireEvent.press(getByTestId('EditableIngredients::AddButton::RoundButton::OnPressFunction'));
-
-      expect(mockOnAddIngredient).toHaveBeenCalledTimes(1);
-    });
-
-    it('calls onIngredientChange when quantity is modified', async () => {
-      const { getByTestId } = await renderRecipeIngredients(editableProps);
-
-      const quantityInput = getByTestId('EditableIngredients::0::QuantityInput');
-      fireEvent.changeText(quantityInput, '5');
-      fireEvent(quantityInput, 'blur');
-
-      expect(mockOnIngredientChange).toHaveBeenCalledWith(0, expect.any(String));
-    });
-
-    it('calls onIngredientChange when ingredient name is validated', async () => {
-      const { getByTestId } = await renderRecipeIngredients(editableProps);
-
-      fireEvent.press(
-        getByTestId('EditableIngredients::0::NameInput::TextInputWithDropdown::OnValidate')
-      );
-
-      expect(mockOnIngredientChange).toHaveBeenCalledWith(0, expect.any(String));
-    });
-
-    it('filters out already used ingredients from dropdown suggestions', async () => {
-      const { getByTestId } = await renderRecipeIngredients(editableProps);
-
-      const referenceArray = JSON.parse(
-        getByTestId('EditableIngredients::0::NameInput::TextInputWithDropdown::ReferenceTextArray')
-          .props.children
-      );
-
-      sampleIngredients.forEach(ingredient => {
-        expect(referenceArray).not.toContain(ingredient.name);
-      });
-    });
-
-    describe('delete button', () => {
-      const mockOnRemoveIngredient = jest.fn();
-
-      const deleteButtonEditableProps: RecipeIngredientsProps = {
-        mode: 'editable',
-        testID: 'EditableIngredients',
-        ingredients: sampleIngredients,
-        prefixText: 'Ingredients',
-        columnTitles: {
-          column1: 'Quantity',
-          column2: 'Unit',
-          column3: 'Ingredient',
-        },
-        onIngredientChange: jest.fn(),
-        onAddIngredient: jest.fn(),
-        onRemoveIngredient: mockOnRemoveIngredient,
-        noteInputPlaceholder: 'Usage note',
-      };
-
-      beforeEach(() => {
-        jest.clearAllMocks();
-      });
-
-      it('renders a delete button for each row', async () => {
-        const { getByTestId } = await renderRecipeIngredients(deleteButtonEditableProps);
-
-        sampleIngredients.forEach((_, index) => {
-          expect(getByTestId(`EditableIngredients::${index}::DeleteButton`)).toBeTruthy();
-        });
-      });
-
-      it('shows trash icon on each delete button', async () => {
-        const { getByTestId } = await renderRecipeIngredients(deleteButtonEditableProps);
-
-        sampleIngredients.forEach((_, index) => {
-          expect(
-            getByTestId(`EditableIngredients::${index}::DeleteButton::Icon`).props.children
-          ).toBe('delete');
-        });
-      });
-
-      it('calls onRemoveIngredient(0) when first delete button is pressed', async () => {
-        const { getByTestId } = await renderRecipeIngredients(deleteButtonEditableProps);
-
-        fireEvent.press(getByTestId('EditableIngredients::0::DeleteButton'));
-
-        expect(mockOnRemoveIngredient).toHaveBeenCalledWith(0);
-      });
-
-      it('calls onRemoveIngredient(1) when middle delete button is pressed', async () => {
-        const { getByTestId } = await renderRecipeIngredients(deleteButtonEditableProps);
-
-        fireEvent.press(getByTestId('EditableIngredients::1::DeleteButton'));
-
-        expect(mockOnRemoveIngredient).toHaveBeenCalledWith(1);
-      });
-
-      it('calls onRemoveIngredient(2) when last delete button is pressed', async () => {
-        const { getByTestId } = await renderRecipeIngredients(deleteButtonEditableProps);
-
-        fireEvent.press(getByTestId('EditableIngredients::2::DeleteButton'));
-
-        expect(mockOnRemoveIngredient).toHaveBeenCalledWith(2);
-      });
-
-      it('calls onRemoveIngredient exactly once per press', async () => {
-        const { getByTestId } = await renderRecipeIngredients(deleteButtonEditableProps);
-
-        fireEvent.press(getByTestId('EditableIngredients::0::DeleteButton'));
-
-        expect(mockOnRemoveIngredient).toHaveBeenCalledTimes(1);
-      });
-
-      it('does not render delete button in readOnly mode', async () => {
-        const { queryByTestId } = await renderRecipeIngredients({
-          mode: 'readOnly',
-          testID: 'ReadOnlyIngredients',
-          ingredients: sampleIngredients,
-        });
-
-        expect(queryByTestId('ReadOnlyIngredients::0::DeleteButton')).toBeNull();
-      });
-    });
-  });
-
-  describe('onValidate guard', () => {
-    const mockOnIngredientChange = jest.fn();
-    const mockOnAddIngredient = jest.fn();
-
-    beforeEach(() => {
-      jest.clearAllMocks();
-    });
-
-    it('calls onIngredientChange when ingredient name is validated with non-empty string', async () => {
-      const props: RecipeIngredientsProps = {
-        mode: 'editable',
-        testID: 'GuardTest',
-        ingredients: sampleIngredients,
-        prefixText: 'Ingredients',
-        columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
-        onIngredientChange: mockOnIngredientChange,
-        onAddIngredient: mockOnAddIngredient,
-        onRemoveIngredient: jest.fn(),
-        noteInputPlaceholder: 'Note',
-      };
-
-      const { getByTestId } = await renderRecipeIngredients(props);
-
-      fireEvent.press(getByTestId('GuardTest::0::NameInput::TextInputWithDropdown::OnValidate'));
-
-      expect(mockOnIngredientChange).toHaveBeenCalledTimes(1);
-    });
-
-    it('does not call onIngredientChange when validated name is whitespace only', async () => {
-      const mockOnIngredientChange2 = jest.fn();
-
-      const props: RecipeIngredientsProps = {
-        mode: 'editable',
-        testID: 'GuardWhitespaceTest',
-        ingredients: sampleIngredients,
-        prefixText: 'Ingredients',
-        columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
-        onIngredientChange: mockOnIngredientChange2,
-        onAddIngredient: jest.fn(),
-        onRemoveIngredient: jest.fn(),
-        noteInputPlaceholder: 'Note',
-      };
-
-      const { UNSAFE_getAllByType } = await renderRecipeIngredients(props);
-
-      const {
-        textInputWithDropdownMock,
-      } = require('@mocks/components/molecules/TextInputWithDropDown-mock.tsx');
-      const dropdownInstances = UNSAFE_getAllByType(textInputWithDropdownMock);
-      dropdownInstances[0].props.onValidate('   ');
-
-      expect(mockOnIngredientChange2).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('key stability', () => {
-    const mockOnIngredientChange = jest.fn();
-    const mockOnAddIngredient = jest.fn();
-
-    const ingredientA: ingredientTableElement = {
-      id: 1,
-      quantity: '200',
-      unit: 'g',
-      name: 'flour',
-      type: ingredientType.cereal,
-      season: [],
-    };
-
-    const ingredientB: ingredientTableElement = {
-      id: 2,
-      quantity: '5',
-      unit: 'g',
-      name: 'salt',
-      type: ingredientType.condiment,
-      season: [],
-    };
-
-    beforeEach(() => {
-      jest.clearAllMocks();
-    });
-
-    it('shows correct ingredient name after first ingredient is removed', async () => {
-      const props: RecipeIngredientsProps = {
-        mode: 'editable',
-        testID: 'KeyStabilityTest',
-        ingredients: [ingredientA, ingredientB],
-        prefixText: 'Ingredients',
-        columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
-        onIngredientChange: mockOnIngredientChange,
-        onAddIngredient: mockOnAddIngredient,
-        onRemoveIngredient: jest.fn(),
-        noteInputPlaceholder: 'Note',
-      };
-
-      const { getByTestId, rerender } = await renderRecipeIngredients(props);
-
-      expect(
-        getByTestId('KeyStabilityTest::0::NameInput::TextInputWithDropdown::Value').props.children
-      ).toEqual('flour');
-      expect(
-        getByTestId('KeyStabilityTest::1::NameInput::TextInputWithDropdown::Value').props.children
-      ).toEqual('salt');
-
-      rerender(<RecipeIngredients {...props} ingredients={[ingredientB]} />);
-
-      await waitFor(() => {
-        expect(
-          getByTestId('KeyStabilityTest::0::NameInput::TextInputWithDropdown::Value').props.children
-        ).toEqual('salt');
-      });
-
-      expect(mockOnIngredientChange).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('add mode', () => {
-    const mockOnIngredientChange = jest.fn();
-    const mockOnAddIngredient = jest.fn();
-    const mockOpenModalForField = jest.fn();
-
-    const addPropsWithIngredients: RecipeIngredientsProps = {
-      mode: 'add',
-      testID: 'AddIngredients',
-      ingredients: sampleIngredients,
-      prefixText: 'Ingredients',
-      columnTitles: {
-        column1: 'Quantity',
-        column2: 'Unit',
-        column3: 'Ingredient',
-      },
-      onIngredientChange: mockOnIngredientChange,
-      onAddIngredient: mockOnAddIngredient,
-      onRemoveIngredient: jest.fn(),
-      openModalForField: mockOpenModalForField,
-      noteInputPlaceholder: 'Usage note',
-    };
-
-    const addPropsEmpty: RecipeIngredientsProps = {
-      mode: 'add',
-      testID: 'AddIngredients',
-      ingredients: [],
-      prefixText: 'Ingredients',
-      columnTitles: {
-        column1: 'Quantity',
-        column2: 'Unit',
-        column3: 'Ingredient',
-      },
-      onIngredientChange: mockOnIngredientChange,
-      onAddIngredient: mockOnAddIngredient,
-      onRemoveIngredient: jest.fn(),
-      openModalForField: mockOpenModalForField,
-      noteInputPlaceholder: 'Usage note',
-    };
-
-    beforeEach(() => {
-      jest.clearAllMocks();
-    });
-
-    it('renders as editable mode when ingredients exist', async () => {
-      const { getByTestId } = await renderRecipeIngredients(addPropsWithIngredients);
-
-      expect(getByTestId('AddIngredients::PrefixText').props.children).toEqual('Ingredients');
-      expect(getByTestId('AddIngredients::0::Row')).toBeTruthy();
-      expect(getByTestId('AddIngredients::AddButton::RoundButton::Icon').props.children).toEqual(
-        'pencil'
-      );
-      expect(getByTestId('AddIngredients::AddButton::RoundButton::Label').props.children).toBe(
-        'recipe.ingredientsAddManually'
-      );
-      expect(
-        getByTestId('AddIngredients::OpenModalQuantities::RoundButton::Label').props.children
-      ).toBe('recipe.ingredientsScanQuantities');
-    });
-
-    it('renders OCR names and add buttons when ingredients are empty', async () => {
-      const { getByTestId } = await renderRecipeIngredients(addPropsEmpty);
-
-      expect(getByTestId('AddIngredients::PrefixText').props.children).toEqual('Ingredients');
-      expect(
-        getByTestId('AddIngredients::OpenModalNames::RoundButton::Icon').props.children
-      ).toEqual('line-scan');
-      expect(getByTestId('AddIngredients::AddButton::RoundButton::Icon').props.children).toEqual(
-        'pencil'
-      );
-      expect(getByTestId('AddIngredients::OpenModalNames::RoundButton::Label').props.children).toBe(
-        'recipe.ingredientsScanNames'
-      );
-      expect(getByTestId('AddIngredients::AddButton::RoundButton::Label').props.children).toBe(
-        'recipe.ingredientsAddManually'
+const sampleIngredients: ingredientTableElement[] = [
+  {
+    id: 1,
+    name: 'Flour',
+    unit: 'g',
+    quantity: '200',
+    type: ingredientType.cereal,
+    season: [],
+  },
+  {
+    id: 2,
+    name: 'Sugar',
+    unit: 'g',
+    quantity: '100',
+    type: ingredientType.cereal,
+    season: [],
+    note: 'Brown',
+  },
+];
+
+const TEST_ID = 'RecipeIngredients';
+
+describe('RecipeIngredients (read-only)', () => {
+  it('renders each row with quantity/unit + name + optional note', () => {
+    const { getByTestId, queryByTestId } = render(
+      <RecipeIngredients testID={TEST_ID} ingredients={sampleIngredients} />
+    );
+
+    sampleIngredients.forEach((item, index) => {
+      expect(getByTestId(`${TEST_ID}::${index}::Row`)).toBeTruthy();
+      expect(getByTestId(`${TEST_ID}::${index}::QuantityAndUnit`)).toBeTruthy();
+      expect(getByTestId(`${TEST_ID}::${index}::IngredientName`).props.children).toContain(
+        item.name
       );
     });
-
-    it('calls openModalForField with ingredientNames when OCR names button is pressed in empty state', async () => {
-      const { getByTestId } = await renderRecipeIngredients(addPropsEmpty);
-
-      fireEvent.press(getByTestId('AddIngredients::OpenModalNames::RoundButton::OnPressFunction'));
-
-      expect(mockOpenModalForField).toHaveBeenCalledWith('ingredientNames');
-    });
-
-    it('calls onAddIngredient when add button is pressed in empty state', async () => {
-      const { getByTestId } = await renderRecipeIngredients(addPropsEmpty);
-
-      fireEvent.press(getByTestId('AddIngredients::AddButton::RoundButton::OnPressFunction'));
-
-      expect(mockOnAddIngredient).toHaveBeenCalledTimes(1);
-    });
-
-    describe('delete button in add mode', () => {
-      const mockOnRemoveIngredient = jest.fn();
-
-      beforeEach(() => {
-        jest.clearAllMocks();
-      });
-
-      it('renders delete buttons when ingredients exist', async () => {
-        const { getByTestId } = await renderRecipeIngredients({
-          ...addPropsWithIngredients,
-          onRemoveIngredient: mockOnRemoveIngredient,
-        });
-
-        sampleIngredients.forEach((_, index) => {
-          expect(getByTestId(`AddIngredients::${index}::DeleteButton`)).toBeTruthy();
-        });
-      });
-
-      it('calls onRemoveIngredient correctly in add mode', async () => {
-        const { getByTestId } = await renderRecipeIngredients({
-          ...addPropsWithIngredients,
-          onRemoveIngredient: mockOnRemoveIngredient,
-        });
-
-        fireEvent.press(getByTestId('AddIngredients::0::DeleteButton'));
-
-        expect(mockOnRemoveIngredient).toHaveBeenCalledWith(0);
-      });
-    });
-
-    it('calls openModalForField with ingredientQuantities when scan quantities button is pressed in non-empty state', async () => {
-      const { getByTestId } = await renderRecipeIngredients(addPropsWithIngredients);
-
-      fireEvent.press(
-        getByTestId('AddIngredients::OpenModalQuantities::RoundButton::OnPressFunction')
-      );
-
-      expect(mockOpenModalForField).toHaveBeenCalledWith('ingredientQuantities');
-    });
+    expect(getByTestId(`${TEST_ID}::1::Note`).props.children).toEqual(' (Brown)');
+    expect(queryByTestId(`${TEST_ID}::0::Note`)).toBeNull();
   });
 
-  describe('note icon display', () => {
-    const mockOnIngredientChange = jest.fn();
-    const mockOnAddIngredient = jest.fn();
-
-    const ingredientsWithNotes: ingredientTableElement[] = [
-      {
-        quantity: '100',
-        unit: 'g',
-        name: 'flour',
-        type: ingredientType.cereal,
-        season: [],
-        note: 'for the sauce',
-      },
-      { quantity: '50', unit: 'g', name: 'sugar', type: ingredientType.condiment, season: [] },
-      {
-        quantity: '25',
-        unit: 'ml',
-        name: 'oil',
-        type: ingredientType.oilAndFat,
-        season: [],
-        note: '   ',
-      },
-    ];
-
-    const editableProps: RecipeIngredientsProps = {
-      mode: 'editable',
-      testID: 'NoteTest',
-      ingredients: ingredientsWithNotes,
-      prefixText: 'Ingredients',
-      columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
-      onIngredientChange: mockOnIngredientChange,
-      onAddIngredient: mockOnAddIngredient,
-      onRemoveIngredient: jest.fn(),
-      noteInputPlaceholder: 'Usage note',
-    };
-
-    beforeEach(() => {
-      jest.clearAllMocks();
-    });
-
-    it('shows commentEditOutline icon when note exists', async () => {
-      const { getByTestId } = await renderRecipeIngredients(editableProps);
-
-      const iconElement = getByTestId('NoteTest::0::NoteButton::Icon');
-      expect(iconElement.props.children).toBe('comment-edit-outline');
-    });
-
-    it('shows commentPlusOutline icon when no note', async () => {
-      const { getByTestId } = await renderRecipeIngredients(editableProps);
-
-      const iconElement = getByTestId('NoteTest::1::NoteButton::Icon');
-      expect(iconElement.props.children).toBe('comment-plus-outline');
-    });
-
-    it('shows commentPlusOutline icon when note is whitespace only', async () => {
-      const { getByTestId } = await renderRecipeIngredients(editableProps);
-
-      const iconElement = getByTestId('NoteTest::2::NoteButton::Icon');
-      expect(iconElement.props.children).toBe('comment-plus-outline');
-    });
-
-    it('uses primary color when note exists', async () => {
-      const { getByTestId } = await renderRecipeIngredients(editableProps);
-
-      const colorElement = getByTestId('NoteTest::0::NoteButton::Color');
-      expect(colorElement.props.children).toBe('#6200ee');
-    });
-
-    it('uses onSurfaceVariant color when no note', async () => {
-      const { getByTestId } = await renderRecipeIngredients(editableProps);
-
-      const colorElement = getByTestId('NoteTest::1::NoteButton::Color');
-      expect(colorElement.props.children).toBe('#49454f');
-    });
-  });
-
-  describe('note dialog integration', () => {
-    const mockOnIngredientChange = jest.fn();
-    const mockOnAddIngredient = jest.fn();
-
-    const ingredientsWithNote: ingredientTableElement[] = [
-      {
-        quantity: '100',
-        unit: 'g',
-        name: 'Butter',
-        type: ingredientType.oilAndFat,
-        season: [],
-        note: 'melted',
-      },
-    ];
-
-    const editableProps: RecipeIngredientsProps = {
-      mode: 'editable',
-      testID: 'DialogTest',
-      ingredients: ingredientsWithNote,
-      prefixText: 'Ingredients',
-      columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
-      onIngredientChange: mockOnIngredientChange,
-      onAddIngredient: mockOnAddIngredient,
-      onRemoveIngredient: jest.fn(),
-      noteInputPlaceholder: 'Usage note',
-    };
-
-    beforeEach(() => {
-      jest.clearAllMocks();
-    });
-
-    it('opens NoteEditDialog when note icon pressed', async () => {
-      const { getByTestId } = await renderRecipeIngredients(editableProps);
-
-      fireEvent.press(getByTestId('DialogTest::0::NoteButton'));
-
-      expect(getByTestId('DialogTest::NoteDialog::Title')).toBeTruthy();
-    });
-
-    it('passes correct ingredient name to dialog', async () => {
-      const { getByTestId } = await renderRecipeIngredients(editableProps);
-
-      fireEvent.press(getByTestId('DialogTest::0::NoteButton'));
-
-      expect(getByTestId('DialogTest::NoteDialog::IngredientName').props.children).toBe('Butter');
-    });
-
-    it('passes correct initial note to dialog', async () => {
-      const { getByTestId } = await renderRecipeIngredients(editableProps);
-
-      fireEvent.press(getByTestId('DialogTest::0::NoteButton'));
-
-      expect(getByTestId('DialogTest::NoteDialog::Input::CustomTextInput').props.value).toBe(
-        'melted'
-      );
-    });
-
-    it('calls onIngredientChange with note after dialog save', async () => {
-      const { getByTestId } = await renderRecipeIngredients(editableProps);
-
-      fireEvent.press(getByTestId('DialogTest::0::NoteButton'));
-      fireEvent.changeText(
-        getByTestId('DialogTest::NoteDialog::Input::CustomTextInput'),
-        'softened'
-      );
-      fireEvent.press(getByTestId('DialogTest::NoteDialog::SaveButton'));
-
-      expect(mockOnIngredientChange).toHaveBeenCalledWith(0, expect.stringContaining('softened'));
-    });
-
-    it('closes dialog without change on cancel', async () => {
-      const { getByTestId, queryByTestId } = await renderRecipeIngredients(editableProps);
-
-      fireEvent.press(getByTestId('DialogTest::0::NoteButton'));
-      fireEvent.press(getByTestId('DialogTest::NoteDialog::CancelButton'));
-
-      await waitFor(() => {
-        expect(queryByTestId('DialogTest::NoteDialog::Title')).toBeNull();
-      });
-      expect(mockOnIngredientChange).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('read-only note display', () => {
-    const ingredientsWithNote: ingredientTableElement[] = [
-      {
-        quantity: '100',
-        unit: 'g',
-        name: 'Butter',
-        type: ingredientType.oilAndFat,
-        season: [],
-        note: 'melted',
-      },
-      { quantity: '50', unit: 'g', name: 'Sugar', type: ingredientType.condiment, season: [] },
-      {
-        quantity: '25',
-        unit: 'ml',
-        name: 'Milk',
-        type: ingredientType.dairy,
-        season: [],
-        note: '',
-      },
-    ];
-
-    it('displays note in parentheses after ingredient name', async () => {
-      const { getByTestId } = await renderRecipeIngredients({
-        mode: 'readOnly',
-        testID: 'ReadOnlyNote',
-        ingredients: ingredientsWithNote,
-      });
-
-      const noteElement = getByTestId('ReadOnlyNote::0::Note');
-      expect(noteElement).toBeTruthy();
-      expect(noteElement.props.children).toBe(' (melted)');
-    });
-
-    it('does not display note element when no note', async () => {
-      const { queryByTestId } = await renderRecipeIngredients({
-        mode: 'readOnly',
-        testID: 'ReadOnlyNote',
-        ingredients: ingredientsWithNote,
-      });
-
-      expect(queryByTestId('ReadOnlyNote::1::Note')).toBeNull();
-    });
-
-    it('does not display note element when note is empty string', async () => {
-      const { queryByTestId } = await renderRecipeIngredients({
-        mode: 'readOnly',
-        testID: 'ReadOnlyNote',
-        ingredients: ingredientsWithNote,
-      });
-
-      expect(queryByTestId('ReadOnlyNote::2::Note')).toBeNull();
-    });
-
-    it('uses outline color for note text', async () => {
-      const { getByTestId } = await renderRecipeIngredients({
-        mode: 'readOnly',
-        testID: 'ReadOnlyNote',
-        ingredients: ingredientsWithNote,
-      });
-
-      const noteElement = getByTestId('ReadOnlyNote::0::Note');
-      expect(noteElement.props.style.color).toBe('#79767d');
-    });
-  });
-
-  describe('type safety', () => {
-    it('enforces required props for editable mode', async () => {
-      const editableProps: RecipeIngredientsProps = {
-        mode: 'editable',
-        testID: 'Test',
-        ingredients: [],
-        prefixText: 'Test',
-        columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
-        onIngredientChange: jest.fn(),
-        onAddIngredient: jest.fn(),
-        onRemoveIngredient: jest.fn(),
-        noteInputPlaceholder: 'Note',
-      };
-
-      expect(editableProps.mode).toEqual('editable');
-      expect(editableProps.prefixText).toBeDefined();
-      expect(editableProps.columnTitles).toBeDefined();
-      expect(editableProps.onIngredientChange).toBeDefined();
-      expect(editableProps.onAddIngredient).toBeDefined();
-      expect(editableProps.noteInputPlaceholder).toBeDefined();
-    });
-
-    it('enforces required props for add mode', async () => {
-      const addProps: RecipeIngredientsProps = {
-        mode: 'add',
-        testID: 'Test',
-        ingredients: [],
-        prefixText: 'Test',
-        columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
-        onIngredientChange: jest.fn(),
-        onAddIngredient: jest.fn(),
-        onRemoveIngredient: jest.fn(),
-        openModalForField: jest.fn(),
-        noteInputPlaceholder: 'Note',
-      };
-
-      expect(addProps.mode).toEqual('add');
-      expect(addProps.openModalForField).toBeDefined();
-      expect(addProps.noteInputPlaceholder).toBeDefined();
-    });
-
-    it('does not require callbacks for readOnly mode', async () => {
-      const readOnlyProps: RecipeIngredientsProps = {
-        mode: 'readOnly',
-        testID: 'Test',
-        ingredients: [],
-      };
-
-      expect(readOnlyProps.mode).toEqual('readOnly');
-      expect('prefixText' in readOnlyProps).toBeFalsy();
-      expect('columnTitles' in readOnlyProps).toBeFalsy();
-    });
-  });
-
-  describe('hideDropdown prop', () => {
-    const mockOnIngredientChange = jest.fn();
-    const mockOnAddIngredient = jest.fn();
-
-    beforeEach(() => {
-      jest.clearAllMocks();
-    });
-
-    it('passes hideDropdown=false to TextInputWithDropDown by default', async () => {
-      const editableProps: RecipeIngredientsProps = {
-        mode: 'editable',
-        testID: 'HideDropdownTest',
-        ingredients: sampleIngredients,
-        prefixText: 'Ingredients',
-        columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
-        onIngredientChange: mockOnIngredientChange,
-        onAddIngredient: mockOnAddIngredient,
-        onRemoveIngredient: jest.fn(),
-        noteInputPlaceholder: 'Note',
-      };
-
-      const { getByTestId } = await renderRecipeIngredients(editableProps);
-
-      expect(
-        getByTestId('HideDropdownTest::0::NameInput::TextInputWithDropdown::HideDropdown').props
-          .children
-      ).toEqual('false');
-    });
-
-    it('passes hideDropdown=true to TextInputWithDropDown when set', async () => {
-      const editableProps: RecipeIngredientsProps = {
-        mode: 'editable',
-        testID: 'HideDropdownTest',
-        ingredients: sampleIngredients,
-        prefixText: 'Ingredients',
-        columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
-        onIngredientChange: mockOnIngredientChange,
-        onAddIngredient: mockOnAddIngredient,
-        onRemoveIngredient: jest.fn(),
-        noteInputPlaceholder: 'Note',
-        hideDropdown: true,
-      };
-
-      const { getByTestId } = await renderRecipeIngredients(editableProps);
-
-      expect(
-        getByTestId('HideDropdownTest::0::NameInput::TextInputWithDropdown::HideDropdown').props
-          .children
-      ).toEqual('true');
-    });
-
-    it('passes hideDropdown to TextInputWithDropDown in add mode', async () => {
-      const addProps: RecipeIngredientsProps = {
-        mode: 'add',
-        testID: 'HideDropdownAddTest',
-        ingredients: sampleIngredients,
-        prefixText: 'Ingredients',
-        columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
-        onIngredientChange: mockOnIngredientChange,
-        onAddIngredient: mockOnAddIngredient,
-        onRemoveIngredient: jest.fn(),
-        openModalForField: jest.fn(),
-        noteInputPlaceholder: 'Note',
-        hideDropdown: true,
-      };
-
-      const { getByTestId } = await renderRecipeIngredients(addProps);
-
-      expect(
-        getByTestId('HideDropdownAddTest::0::NameInput::TextInputWithDropdown::HideDropdown').props
-          .children
-      ).toEqual('true');
-    });
-  });
-
-  describe('ingredient name sorting', () => {
-    it('provides available ingredients sorted alphabetically to TextInputWithDropDown', async () => {
-      const dbInstanceLocal = RecipeDatabase.getInstance();
-      await dbInstanceLocal.closeAndReset();
-      await dbInstanceLocal.init();
-      await dbInstanceLocal.addMultipleIngredients([
-        {
-          id: 200,
-          name: 'Zucchini',
-          unit: 'g',
-          type: ingredientType.vegetable,
-          season: ['1', '2', '3'],
-        },
-        {
-          id: 201,
-          name: 'Apple',
-          unit: 'piece',
-          type: ingredientType.fruit,
-          season: ['9', '10', '11'],
-        },
-        {
-          id: 202,
-          name: 'Mango',
-          unit: 'piece',
-          type: ingredientType.fruit,
-          season: ['5', '6', '7'],
-        },
-        {
-          id: 203,
-          name: 'Banana',
-          unit: 'piece',
-          type: ingredientType.fruit,
-          season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-        },
-      ]);
-
-      const mockOnIngredientChange = jest.fn();
-      const mockOnAddIngredient = jest.fn();
-
-      const existingIngredient: ingredientTableElement = {
-        quantity: '1',
-        unit: 'piece',
-        name: 'Existing',
-        type: ingredientType.condiment,
-        season: [],
-      };
-
-      const editableProps: RecipeIngredientsProps = {
-        mode: 'editable',
-        testID: 'SortTest',
-        ingredients: [existingIngredient],
-        prefixText: 'Ingredients',
-        columnTitles: { column1: 'Q', column2: 'U', column3: 'I' },
-        onIngredientChange: mockOnIngredientChange,
-        onAddIngredient: mockOnAddIngredient,
-        onRemoveIngredient: jest.fn(),
-        noteInputPlaceholder: 'Note',
-      };
-
-      const { getByTestId } = await renderRecipeIngredients(editableProps);
-
-      const referenceArray = JSON.parse(
-        getByTestId('SortTest::0::NameInput::TextInputWithDropdown::ReferenceTextArray').props
-          .children
-      );
-
-      const sortedCopy = [...referenceArray].sort((a: string, b: string) => a.localeCompare(b));
-      expect(referenceArray).toEqual(sortedCopy);
-
-      expect(referenceArray.indexOf('Apple')).toBeLessThan(referenceArray.indexOf('Banana'));
-      expect(referenceArray.indexOf('Banana')).toBeLessThan(referenceArray.indexOf('Mango'));
-      expect(referenceArray.indexOf('Mango')).toBeLessThan(referenceArray.indexOf('Zucchini'));
-
-      await dbInstanceLocal.closeAndReset();
-    });
+  it('renders nothing when the ingredient list is empty', () => {
+    const { queryByTestId } = render(<RecipeIngredients testID={TEST_ID} ingredients={[]} />);
+    expect(queryByTestId(`${TEST_ID}::0::Row`)).toBeNull();
   });
 });
+
+describe('IngredientsTable', () => {
+  const columnTitles = { column1: 'Quantity', column2: 'Unit', column3: 'Name' };
+
+  it('renders prefix, column titles, children, and add button', () => {
+    const onAddIngredient = jest.fn();
+    const { getByTestId, getByText } = render(
+      <IngredientsTable
+        testID={TEST_ID}
+        prefixText='Ingredients :'
+        columnTitles={columnTitles}
+        onAddIngredient={onAddIngredient}
+      >
+        {childMarker()}
+      </IngredientsTable>
+    );
+
+    expect(getByTestId(`${TEST_ID}::PrefixText`).props.children).toEqual('Ingredients :');
+    expect(getByTestId(`${TEST_ID}::Header::Quantity`)).toBeTruthy();
+    expect(getByText('child-marker')).toBeTruthy();
+    fireEvent.press(getByTestId(`${TEST_ID}::AddButton::RoundButton::OnPressFunction`));
+    expect(onAddIngredient).toHaveBeenCalledTimes(1);
+  });
+
+  it('hides add button when hideAddButton is true', () => {
+    const { queryByTestId } = render(
+      <IngredientsTable
+        testID={TEST_ID}
+        prefixText='Ingredients :'
+        columnTitles={columnTitles}
+        hideAddButton
+        onAddIngredient={jest.fn()}
+      >
+        {null}
+      </IngredientsTable>
+    );
+    expect(queryByTestId(`${TEST_ID}::AddButton::RoundButton::OnPressFunction`)).toBeNull();
+  });
+
+  it('renders an error helper when error prop is set', () => {
+    const { getByTestId } = render(
+      <IngredientsTable
+        testID={TEST_ID}
+        prefixText='Ingredients :'
+        columnTitles={columnTitles}
+        error='boom'
+      >
+        {null}
+      </IngredientsTable>
+    );
+    expect(getByTestId(`${TEST_ID}::Error`).props.children).toEqual('boom');
+  });
+});
+
+describe('IngredientRow', () => {
+  const baseIngredient: ingredientTableElement = {
+    id: 1,
+    name: 'Flour',
+    unit: 'g',
+    quantity: '200',
+    type: ingredientType.cereal,
+    season: [],
+  };
+
+  it('renders quantity and name inputs from the ingredient prop', () => {
+    const { getByTestId } = render(
+      <IngredientRow
+        testID={TEST_ID}
+        index={0}
+        ingredient={baseIngredient}
+        availableIngredients={['Sugar', 'Butter']}
+        onCommit={jest.fn()}
+        onRemove={jest.fn()}
+        onOpenNote={jest.fn()}
+      />
+    );
+
+    expect(getByTestId(`${TEST_ID}::0::QuantityInput`)).toBeTruthy();
+    expect(
+      getByTestId(`${TEST_ID}::0::NameInput::TextInputWithDropdown::Value`).props.children
+    ).toEqual('Flour');
+  });
+
+  it('commits a quantity change as a formatted ingredient string on blur', () => {
+    const onCommit = jest.fn();
+    const { getByTestId } = render(
+      <IngredientRow
+        testID={TEST_ID}
+        index={0}
+        ingredient={baseIngredient}
+        availableIngredients={[]}
+        onCommit={onCommit}
+        onRemove={jest.fn()}
+        onOpenNote={jest.fn()}
+      />
+    );
+
+    const qty = getByTestId(`${TEST_ID}::0::QuantityInput`);
+    fireEvent.changeText(qty, '300');
+    fireEvent(qty, 'blur');
+    expect(onCommit).toHaveBeenCalledTimes(1);
+    expect(onCommit.mock.calls[0][0]).toContain('Flour');
+    expect(onCommit.mock.calls[0][0]).toContain('300');
+  });
+
+  it('commits a name change via TextInputWithDropDown.onValidate', () => {
+    const onCommit = jest.fn();
+    const { getByTestId } = render(
+      <IngredientRow
+        testID={TEST_ID}
+        index={0}
+        ingredient={baseIngredient}
+        availableIngredients={[]}
+        onCommit={onCommit}
+        onRemove={jest.fn()}
+        onOpenNote={jest.fn()}
+      />
+    );
+
+    fireEvent.press(getByTestId(`${TEST_ID}::0::NameInput::TextInputWithDropdown::OnValidate`));
+    expect(onCommit).toHaveBeenCalled();
+    const lastCall = onCommit.mock.calls[onCommit.mock.calls.length - 1][0];
+    expect(lastCall).toContain('Test string');
+  });
+
+  it('triggers onRemove + onOpenNote when their buttons are pressed', () => {
+    const onRemove = jest.fn();
+    const onOpenNote = jest.fn();
+    const { getByTestId } = render(
+      <IngredientRow
+        testID={TEST_ID}
+        index={2}
+        ingredient={baseIngredient}
+        availableIngredients={[]}
+        onCommit={jest.fn()}
+        onRemove={onRemove}
+        onOpenNote={onOpenNote}
+      />
+    );
+
+    fireEvent.press(getByTestId(`${TEST_ID}::2::DeleteButton`));
+    expect(onRemove).toHaveBeenCalledTimes(1);
+    fireEvent.press(getByTestId(`${TEST_ID}::2::NoteButton`));
+    expect(onOpenNote).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders the rowError helper when rowError is set', () => {
+    const { getByTestId } = render(
+      <IngredientRow
+        testID={TEST_ID}
+        index={0}
+        ingredient={baseIngredient}
+        availableIngredients={[]}
+        rowError='row broken'
+        onCommit={jest.fn()}
+        onRemove={jest.fn()}
+        onOpenNote={jest.fn()}
+      />
+    );
+    expect(getByTestId(`${TEST_ID}::0::Error`).props.children).toEqual('row broken');
+  });
+});
+
+describe('IngredientsAddEmpty', () => {
+  it('renders OCR + add buttons and forwards callbacks', () => {
+    const openOcrModal = jest.fn();
+    const onAddIngredient = jest.fn();
+    const { getByTestId } = render(
+      <IngredientsAddEmpty
+        testID={TEST_ID}
+        prefixText='Ingredients :'
+        scanLabel='Scan names'
+        manualLabel='Add manually'
+        openOcrModal={openOcrModal}
+        onAddIngredient={onAddIngredient}
+      />
+    );
+
+    fireEvent.press(getByTestId(`${TEST_ID}::OpenModalNames::RoundButton::OnPressFunction`));
+    expect(openOcrModal).toHaveBeenCalledTimes(1);
+    fireEvent.press(getByTestId(`${TEST_ID}::AddButton::RoundButton::OnPressFunction`));
+    expect(onAddIngredient).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('IngredientsAddTail', () => {
+  it('renders scan-quantities + add buttons and forwards callbacks', () => {
+    const openOcrModal = jest.fn();
+    const onAddIngredient = jest.fn();
+    const { getByTestId } = render(
+      <IngredientsAddTail
+        testID={TEST_ID}
+        scanLabel='Scan quantities'
+        manualLabel='Add manually'
+        openOcrModal={openOcrModal}
+        onAddIngredient={onAddIngredient}
+      />
+    );
+
+    fireEvent.press(getByTestId(`${TEST_ID}::OpenModalQuantities::RoundButton::OnPressFunction`));
+    expect(openOcrModal).toHaveBeenCalledTimes(1);
+    fireEvent.press(getByTestId(`${TEST_ID}::AddButton::RoundButton::OnPressFunction`));
+    expect(onAddIngredient).toHaveBeenCalledTimes(1);
+  });
+});
+
+function childMarker() {
+  const { Text } = require('react-native');
+  return <Text>child-marker</Text>;
+}

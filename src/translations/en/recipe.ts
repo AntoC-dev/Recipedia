@@ -120,6 +120,9 @@ export default {
     copied: 'URL copied to clipboard',
   },
 
+  servingsScaledNotice:
+    'Saved. Quantities were scaled from {{from}} to {{to}} servings — recipes are stored at your default serving size.',
+
   scraper: {
     ignoredIngredientPrefixes: ['to taste', 'as needed', 'optional', 'for garnish', 'for serving'],
     ignoredIngredientExactMatches: [

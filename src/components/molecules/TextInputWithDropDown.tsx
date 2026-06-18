@@ -70,8 +70,27 @@ export type TextInputWithDropDownType = {
   mode?: 'flat' | 'outlined';
   /** Whether to use dense styling (default: false) */
   dense?: boolean;
-  /** Callback fired when text is validated (submitted or selected) */
+  /**
+   * Live-commit callback fired on every keystroke. Use this to keep an
+   * external store (e.g. react-hook-form) in sync with what the user is
+   * currently typing, without waiting for blur. Optional — consumers that
+   * only need a final "submit/select" event can rely on `onValidate`.
+   */
+  onChangeText?: (newText: string) => void;
+  /**
+   * Callback fired when the text is validated (submitted via end-editing or
+   * selected from the dropdown). Use this for semantic commit operations
+   * (e.g. adding to an array, fuzzy-matching against a DB).
+   */
   onValidate?: (newText: string) => void;
+  /**
+   * Callback fired ONLY when an item is picked from the autocomplete dropdown.
+   * When provided, the dropdown-select path calls this instead of the
+   * `onChangeText` + `onValidate` pair — so the consumer can treat an explicit
+   * selection differently from typed-then-blurred text (e.g. force a fresh DB
+   * resolution rather than relying on a stale name-changed comparison).
+   */
+  onSelect?: (selectedText: string) => void;
   /** Unique identifier for testing and accessibility */
   testID: string;
   /** Custom styles for the container */
@@ -84,6 +103,10 @@ export type TextInputWithDropDownType = {
   right?: React.ReactNode;
   /** Force hide the dropdown (e.g., during scroll) */
   hideDropdown?: boolean;
+  /** Optional focus handler called when the inner input gains focus */
+  onFocus?: () => void;
+  /** Optional blur handler called when the inner input loses focus */
+  onBlur?: () => void;
 };
 
 /**
@@ -96,7 +119,9 @@ export type TextInputWithDropDownType = {
  * @returns JSX element representing an autocomplete text input with dropdown suggestions
  */
 export function TextInputWithDropDown({
+  onChangeText,
   onValidate,
+  onSelect,
   right,
   testID,
   label,
@@ -108,6 +133,8 @@ export function TextInputWithDropDown({
   referenceTextArray,
   value,
   hideDropdown,
+  onFocus,
+  onBlur,
 }: TextInputWithDropDownType) {
   const { colors } = useTheme();
   const containerRef = useRef<View>(null);
@@ -175,12 +202,14 @@ export function TextInputWithDropDown({
   function handleFocus() {
     measurePosition();
     setShowDropdown(true);
+    onFocus?.();
   }
 
   function handleChangeText(text: string) {
     setTextInput(text);
     measurePosition();
     setShowDropdown(true);
+    onChangeText?.(text);
   }
 
   function handleSelect(text: string) {
@@ -188,6 +217,15 @@ export function TextInputWithDropDown({
     setShowDropdown(false);
     isSelectingRef.current = true;
     Keyboard.dismiss();
+    // A dedicated `onSelect` path lets the consumer distinguish an explicit
+    // dropdown pick from typed-then-blurred text. When present it owns the
+    // commit entirely — we skip the `onChangeText` live-commit so the consumer
+    // can run its own resolution against the still-previous value.
+    if (onSelect) {
+      onSelect(text);
+      return;
+    }
+    onChangeText?.(text);
     onValidate?.(text);
   }
 
@@ -220,6 +258,7 @@ export function TextInputWithDropDown({
         onChangeText={handleChangeText}
         onFocus={handleFocus}
         onEndEditing={handleEndEditing}
+        onBlur={onBlur}
         mode={mode}
         dense={dense}
         style={textInputStyle}

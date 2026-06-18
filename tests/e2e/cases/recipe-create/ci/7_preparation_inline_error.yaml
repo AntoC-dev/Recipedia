@@ -1,0 +1,14 @@
+name: "7 - Recipe Create Preparation Inline Error Flow"
+appId: "com.recipedia"
+tags:
+  - recipe-create
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../7_preparation_inline_error.yaml"
+          label: "Run 7 - Recipe Create Preparation Inline Error Flow"

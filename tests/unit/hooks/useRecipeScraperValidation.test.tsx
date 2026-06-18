@@ -1,13 +1,15 @@
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { useRecipeScraperValidation } from '@hooks/useRecipeScraperValidation';
 import React, { ReactNode } from 'react';
+import { UseFormReturn } from 'react-hook-form';
 import {
   FormIngredientElement,
+  ingredientTableElement,
   ingredientType,
   recipeTableElement,
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
-import { RecipeFormProvider, useRecipeForm } from '@context/RecipeFormContext';
+import { RecipeFormProvider, useRecipeForm } from '@test-helpers/recipeFormTestProvider';
 import { RecipeDialogsProvider, useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { createMockRecipeProp } from '@test-helpers/recipeHookTestWrapper';
 import { testTags } from '@test-data/tagsDataset';
@@ -15,6 +17,48 @@ import { testIngredients } from '@test-data/ingredientsDataset';
 import { testRecipes } from '@test-data/recipesDataset';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { IngredientValidationProps, TagValidationProps } from '@components/dialogs/ValidationQueue';
+import { ApplyIngredientEditPatch } from '@hooks/useRecipeIngredients';
+import { RecipeFormInput } from '@schemas/recipeFormSchema';
+import {
+  IngredientArrayActionsProvider,
+  useIngredientArrayActionsRegister,
+} from '@screens/recipe/fields/IngredientArrayActionsContext';
+
+type IngredientRow = ingredientTableElement | FormIngredientElement;
+type RecipeForm = UseFormReturn<RecipeFormInput>;
+
+function makeFormApplyPatch(form: RecipeForm): ApplyIngredientEditPatch {
+  return patch => {
+    const current = (form.getValues('recipeIngredients') ?? []) as IngredientRow[];
+    if (patch.kind === 'replace') {
+      const next = [...current];
+      next[patch.index] = patch.row;
+      form.setValue('recipeIngredients', next as never, { shouldValidate: true });
+      return;
+    }
+    if (patch.kind === 'merge') {
+      const next = [...current];
+      next[patch.intoIndex] = patch.row;
+      next.splice(patch.removeIndex, 1);
+      form.setValue('recipeIngredients', next as never, { shouldValidate: true });
+      return;
+    }
+    if (patch.kind === 'append') {
+      const next = [...current, patch.row];
+      form.setValue('recipeIngredients', next as never, { shouldValidate: true });
+      return;
+    }
+    const next = current.filter((_, i) => i !== patch.index);
+    form.setValue('recipeIngredients', next as never, { shouldValidate: true });
+  };
+}
+
+function FormDrivenApplyPatchRegistrar({ children }: { children: React.ReactNode }) {
+  const { form } = useRecipeForm();
+  const applyPatch = React.useMemo(() => makeFormApplyPatch(form), [form]);
+  useIngredientArrayActionsRegister(applyPatch);
+  return <>{children}</>;
+}
 
 const createMockIngredient = (name: string): FormIngredientElement => ({
   name,
@@ -56,7 +100,11 @@ function createWrapper(ingredients: FormIngredientElement[], tags: tagTableEleme
   return function Wrapper({ children }: { children: ReactNode }) {
     return (
       <RecipeFormProvider props={props}>
-        <RecipeDialogsProvider>{children}</RecipeDialogsProvider>
+        <RecipeDialogsProvider>
+          <IngredientArrayActionsProvider>
+            <FormDrivenApplyPatchRegistrar>{children}</FormDrivenApplyPatchRegistrar>
+          </IngredientArrayActionsProvider>
+        </RecipeDialogsProvider>
       </RecipeFormProvider>
     );
   };
@@ -67,7 +115,11 @@ function createReadOnlyWrapper() {
   return function Wrapper({ children }: { children: ReactNode }) {
     return (
       <RecipeFormProvider props={props}>
-        <RecipeDialogsProvider>{children}</RecipeDialogsProvider>
+        <RecipeDialogsProvider>
+          <IngredientArrayActionsProvider>
+            <FormDrivenApplyPatchRegistrar>{children}</FormDrivenApplyPatchRegistrar>
+          </IngredientArrayActionsProvider>
+        </RecipeDialogsProvider>
       </RecipeFormProvider>
     );
   };
@@ -241,9 +293,9 @@ describe('useRecipeScraperValidation', () => {
     });
 
     await waitFor(() => {
-      const updatedIngredient = result.current.form.state.recipeIngredients.find(
-        ing => ing.name === unknownIngredientName
-      );
+      const updatedIngredient = result.current.form.form
+        .getValues('recipeIngredients')
+        .find(ing => ing.name === unknownIngredientName);
       expect(updatedIngredient).toBeDefined();
       expect((updatedIngredient as typeof validatedIngredient).id).toBe(99);
       expect((updatedIngredient as typeof validatedIngredient).type).toBe(ingredientType.vegetable);
@@ -282,9 +334,9 @@ describe('useRecipeScraperValidation', () => {
     });
 
     await waitFor(() => {
-      const remainingIngredient = result.current.form.state.recipeIngredients.find(
-        ing => ing.name === unknownIngredientName
-      );
+      const remainingIngredient = result.current.form.form
+        .getValues('recipeIngredients')
+        .find(ing => ing.name === unknownIngredientName);
       expect(remainingIngredient).toBeUndefined();
     });
   });
@@ -316,7 +368,7 @@ describe('useRecipeScraperValidation', () => {
     });
 
     await waitFor(() => {
-      const tags = result.current.form.state.recipeTags;
+      const tags = result.current.form.form.getValues('recipeTags')!;
       const replacedTag = tags.find(tag => tag.name === unknownTagName);
       expect(replacedTag).toBeDefined();
       expect(replacedTag?.id).toBe(42);
@@ -349,7 +401,7 @@ describe('useRecipeScraperValidation', () => {
     });
 
     await waitFor(() => {
-      const tags = result.current.form.state.recipeTags;
+      const tags = result.current.form.form.getValues('recipeTags')!;
       expect(tags.some(tag => tag.name === unknownTagName)).toBe(false);
     });
   });

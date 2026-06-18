@@ -1,0 +1,25 @@
+name: "6 - OCR Image Target Flow"
+appId: "com.recipedia"
+tags:
+  - ocr
+---
+- evalScript: ${output.isDescriptionToOCR = false}
+- evalScript: ${output.isTagsToOCR = false}
+- evalScript: ${output.isTime = false}
+- evalScript: ${output.isNutritionToOCR = false}
+- evalScript: ${output.isQuantitiesOCR = false}
+- evalScript: ${output.modalImageCounter = 0}
+
+- runFlow:
+    file: "../../flows/recipe/adding/ocr/gallery/ocrImage.yaml"
+    env:
+      RECIPE_NAME: hellofresh
+    label: "Action - OCR-mode image target sets the recipe image only"
+
+- assertVisible:
+    id: "RecipeImage::Image"
+    label: "Assert - Recipe image is set"
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/titleNoError.yaml"
+    label: "Assert - Image target does not populate the title field"

@@ -1,0 +1,5 @@
+appId: "com.recipedia"
+---
+- assertNotVisible:
+    id: "RecipeDescription::Error"
+    label: "Description inline error is never visible (description is optional)"

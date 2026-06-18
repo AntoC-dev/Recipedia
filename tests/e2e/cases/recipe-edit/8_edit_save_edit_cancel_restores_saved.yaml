@@ -1,0 +1,97 @@
+name: "8 - Recipe Edit Save Then Cancel Restores Saved Flow"
+appId: "com.recipedia"
+tags:
+  - recipe-edit
+---
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Action - Navigate to Search screen"
+
+- extendedWaitUntil:
+    visible:
+      id: "SearchScreen::SearchBar"
+    timeout: 60000
+    label: "Wait for search screen to load"
+
+- runFlow:
+    file: "../../flows/search/searchAndOpenRecipe.yaml"
+    env:
+      RECIPE_NAME: "Pesto"
+    label: "Verification - Search and open pesto pasta recipe"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::AppBar"
+    timeout: 60000
+    label: "Wait for recipe screen to load"
+
+- tapOn:
+    id: "Recipe::AppBar::Edit"
+    waitToSettleTimeoutMs: 0
+    retryTapIfNoChange: false
+    label: "Action - Enter first edit pass"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::AppBar::Validate"
+    timeout: 60000
+    label: "Wait for recipe screen to switch to edit mode"
+
+- runFlow:
+    file: "../../flows/recipe/adding/setRecipeTitle.yaml"
+    env:
+      TITLE: "Pesto Pasta Saved"
+    label: "Action - Rename title to the to-be-saved value"
+
+- tapOn:
+    id: "Recipe::AppBar::Validate"
+    label: "Action - Save edit (commits new baseline)"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::AppBar::Edit"
+    timeout: 60000
+    label: "Wait for recipe screen to switch to read-only mode"
+
+- assertVisible:
+    id: "RecipeTitle::Text"
+    text: "Pesto Pasta Saved"
+    label: "Assert - Read-only title reflects saved value"
+
+- tapOn:
+    id: "Recipe::AppBar::Edit"
+    waitToSettleTimeoutMs: 0
+    retryTapIfNoChange: false
+    label: "Action - Re-enter edit mode for the cancel-restores-saved check"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::AppBar::Validate"
+    timeout: 60000
+    label: "Wait for recipe screen to switch to edit mode again"
+
+- runFlow:
+    file: "../../flows/recipe/adding/setRecipeTitle.yaml"
+    env:
+      TITLE: "Pesto Pasta DRAFT"
+    label: "Action - Mutate title to a draft value that must NOT survive cancel"
+
+- tapOn:
+    id: "Recipe::AppBar::Cancel"
+    label: "Action - Cancel the draft edit"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::AppBar::Edit"
+    timeout: 60000
+    label: "Wait for recipe screen to switch to read-only mode again"
+
+- assertVisible:
+    id: "RecipeTitle::Text"
+    text: "Pesto Pasta Saved"
+    label: "Assert - Cancel restores the LAST-SAVED title, not the navigation prop (would be 'Pesto Pasta') and not the draft"
+
+- assertNotVisible:
+    id: "RecipeTitle::Text"
+    text: "Pesto Pasta DRAFT"
+    label: "Assert - Draft value did not survive cancel"

@@ -13,3 +13,5 @@ executionOrder:
     - "2 - OCR Quitoque V1 Gallery Flow"
     - "3 - OCR Quitoque V3 Camera Flow"
     - "4 - OCR Quitoque V2 French Flow"
+    - "5 - OCR Inline Field Errors Flow"
+    - "6 - OCR Image Target Flow"

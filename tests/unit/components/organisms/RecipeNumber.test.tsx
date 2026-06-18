@@ -373,4 +373,62 @@ describe('RecipeNumber Component', () => {
     fireEvent(textInput, 'onBlur');
     expect(mockSetTextToEdit).toHaveBeenCalledWith(20);
   });
+
+  describe('error display', () => {
+    test('does not render error helper when error prop is absent', () => {
+      const { queryByTestId } = renderRecipeNumber(defaultEditProps);
+      expect(queryByTestId(defaultTestId + '::Error')).toBeNull();
+    });
+
+    test('renders error helper with the provided message in editable mode', () => {
+      const propsWithError: RecipeNumberProps = {
+        ...defaultEditProps,
+        error: 'Persons must be set',
+      };
+      const { getByTestId } = renderRecipeNumber(propsWithError);
+      const helper = getByTestId(defaultTestId + '::Error');
+      expect(helper.props.children).toBe('Persons must be set');
+      expect(helper.props.type).toBe('error');
+    });
+
+    test('renders error helper in read-only mode when provided', () => {
+      const propsWithError: RecipeNumberProps = {
+        ...defaultProps,
+        error: 'Should not normally appear here',
+      };
+      const { getByTestId } = renderRecipeNumber(propsWithError);
+      expect(getByTestId(defaultTestId + '::Error').props.children).toBe(
+        'Should not normally appear here'
+      );
+    });
+
+    test('renders error helper in add mode', () => {
+      const propsWithError: RecipeNumberProps = {
+        ...defaultAddProps,
+        error: 'Time is required',
+      };
+      const { getByTestId } = renderRecipeNumber(propsWithError);
+      expect(getByTestId(defaultTestId + '::Error').props.children).toBe('Time is required');
+    });
+
+    test('forwards onBlur to the underlying numeric input', () => {
+      const onBlur = jest.fn();
+      const props: RecipeNumberProps = {
+        testID: defaultTestId,
+        numberProps: {
+          testID: defaultTestId,
+          editType: 'editable',
+          prefixText: 'p',
+          suffixText: 's',
+          textEditable: 1,
+          setTextToEdit: mockSetTextToEdit,
+        },
+        onBlur,
+      };
+      const { getByTestId } = renderRecipeNumber(props);
+      const input = getByTestId(defaultTestId + '::NumericTextInput');
+      fireEvent(input, 'onBlur');
+      expect(onBlur).toHaveBeenCalled();
+    });
+  });
 });

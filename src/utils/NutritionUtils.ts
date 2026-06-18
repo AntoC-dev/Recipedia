@@ -4,7 +4,33 @@
  * @module NutritionUtils
  */
 
+import { nutritionTableElement } from '@customTypes/DatabaseElementTypes';
+import { defaultValueNumber } from '@utils/Constants';
+
 const KCAL_TO_KJ_FACTOR = 4.184;
+
+/**
+ * Builds a fresh nutrition object with every numeric field set to the
+ * "not set" sentinel (`defaultValueNumber`). Single source of the ten-field
+ * shape so seeders (OCR extraction, manual table first-edit) don't each
+ * transcribe the key set.
+ *
+ * @returns A nutrition object with all values unset
+ */
+export function emptyNutrition(): nutritionTableElement {
+  return {
+    energyKcal: defaultValueNumber,
+    energyKj: defaultValueNumber,
+    fat: defaultValueNumber,
+    saturatedFat: defaultValueNumber,
+    carbohydrates: defaultValueNumber,
+    sugars: defaultValueNumber,
+    fiber: defaultValueNumber,
+    protein: defaultValueNumber,
+    salt: defaultValueNumber,
+    portionWeight: defaultValueNumber,
+  };
+}
 
 /**
  * Normalizes a string key for consistent comparison.

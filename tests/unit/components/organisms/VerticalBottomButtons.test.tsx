@@ -2,7 +2,6 @@ import React from 'react';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import VerticalBottomButtons from '@components/organisms/VerticalBottomButtons';
 import { mockNavigate } from '@mocks/deps/react-navigation-mock';
-import { RecipePropType } from '@customTypes/RecipeNavigationTypes';
 import {
   getMockCopilotEvents,
   resetMockCopilot,
@@ -87,9 +86,7 @@ describe('VerticalBottomButtons Component', () => {
 
     await waitFor(() => expect(mockNavigate).toHaveBeenCalled());
 
-    expect(mockNavigate).toHaveBeenCalledWith('Recipe', {
-      mode: 'addManually',
-    } as RecipePropType);
+    expect(mockNavigate).toHaveBeenCalledWith('RecipeAddManual');
   });
 
   test('picks image and navigates to recipe creation when gallery button is pressed', async () => {
@@ -103,10 +100,9 @@ describe('VerticalBottomButtons Component', () => {
 
     await waitFor(() => expect(mockNavigate).toHaveBeenCalled());
 
-    expect(mockNavigate).toHaveBeenCalledWith('Recipe', {
-      mode: 'addFromPic',
+    expect(mockNavigate).toHaveBeenCalledWith('RecipeAddOcr', {
       imgUri: '/path/to/picked/img',
-    } as RecipePropType);
+    });
   });
 
   test('takes photo and navigates to recipe creation when camera button is pressed', async () => {
@@ -120,10 +116,9 @@ describe('VerticalBottomButtons Component', () => {
 
     await waitFor(() => expect(mockNavigate).toHaveBeenCalled());
 
-    expect(mockNavigate).toHaveBeenCalledWith('Recipe', {
-      mode: 'addFromPic',
+    expect(mockNavigate).toHaveBeenCalledWith('RecipeAddOcr', {
       imgUri: '/path/to/photo',
-    } as RecipePropType);
+    });
   });
 
   test('handles state transitions correctly', () => {

@@ -1,0 +1,170 @@
+name: "9 - Recipe Edit Cancel Then Re-Enter No Inline Errors Flow"
+appId: "com.recipedia"
+tags:
+  - recipe-edit
+---
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Action - Navigate to Search screen"
+
+- extendedWaitUntil:
+    visible:
+      id: "SearchScreen::SearchBar"
+    timeout: 60000
+    label: "Wait for search screen to load"
+
+- runFlow:
+    file: "../../flows/search/searchAndOpenRecipe.yaml"
+    env:
+      RECIPE_NAME: "Pesto"
+    label: "Verification - Search and open pesto pasta recipe"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::AppBar"
+    timeout: 60000
+    label: "Wait for recipe screen to load"
+
+- tapOn:
+    id: "Recipe::AppBar::Edit"
+    waitToSettleTimeoutMs: 0
+    retryTapIfNoChange: false
+    label: "Action - Enter edit mode"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::AppBar::Validate"
+    timeout: 60000
+    label: "Wait for recipe screen to switch to edit mode"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTitle::CustomTextInput"
+    direction: DOWN
+    speed: 10
+    centerElement: true
+    label: "Action - Scroll to title input"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/titleNoError.yaml"
+    label: "Assert - No title inline error visible before user interacts"
+
+- tapOn:
+    id: "RecipeTitle::CustomTextInput"
+    label: "Action - Focus title input (no typing)"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard"
+
+- tapOn:
+    id: "RecipeTitle::Text"
+    label: "Action - Tap title label to blur title without editing"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard dismiss"
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/titleNoError.yaml"
+    label: "Assert - Focus + blur with no edit does not surface inline error"
+
+- tapOn:
+    id: "RecipeTitle::CustomTextInput"
+    label: "Action - Focus title input to edit it"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard"
+
+- eraseText:
+    label: "Action - Erase title to surface inline error"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "RecipeTitle::Text"
+    label: "Action - Tap title label to blur title"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard dismiss"
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/titleError.yaml"
+    label: "Assert - Title inline error visible after erase + blur"
+
+- tapOn:
+    id: "Recipe::AppBar::Cancel"
+    label: "Action - Cancel the draft edit (clears touched fields via form.reset)"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::AppBar::Edit"
+    timeout: 60000
+    label: "Wait for recipe screen to switch back to read-only mode"
+
+- tapOn:
+    id: "Recipe::AppBar::Edit"
+    waitToSettleTimeoutMs: 0
+    retryTapIfNoChange: false
+    label: "Action - Re-enter edit mode"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::AppBar::Validate"
+    timeout: 60000
+    label: "Wait for recipe screen to switch back to edit mode"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTitle::CustomTextInput"
+    direction: DOWN
+    speed: 10
+    centerElement: true
+    label: "Action - Scroll to title input again"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "RecipeTitle::CustomTextInput"
+    text: "Pesto Pasta"
+    label: "Assert - Title shows the original (valid) value after cancel + re-enter"
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/titleNoError.yaml"
+    label: "Assert - No title inline error on re-enter even though it was visible before cancel"
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/descriptionNoError.yaml"
+    label: "Assert - No description inline error on re-enter"
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/personsNoError.yaml"
+    label: "Assert - No persons inline error on re-enter"
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/timeNoError.yaml"
+    label: "Assert - No time inline error on re-enter"
+
+- tapOn:
+    id: "RecipeTitle::CustomTextInput"
+    label: "Action - Focus title input briefly"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard"
+
+- tapOn:
+    id: "RecipeDescription::Text"
+    label: "Action - Tap description label to blur title without editing"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard dismiss"
+
+- runFlow:
+    file: "../../asserts/recipe/inlineErrors/en/titleNoError.yaml"
+    label: "Assert - Focus + blur on re-entered Edit mode without typing does not surface inline error"

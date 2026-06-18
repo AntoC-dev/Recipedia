@@ -33,6 +33,18 @@ appId: "com.recipedia"
     text: "See filtered recipes"
     label: "Filter button shows correct text"
 
-- assertVisible:
-    text: "󰈴"
-    label: "Filter icon is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          text: "󰈴"
+          label: "Filter icon is displayed"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "SearchScreen::FiltersToggleButtons-icon-container"
+          label: "Filter icon is displayed"

@@ -1,25 +1,22 @@
 import {
   buildRecipeDescriptionProps,
   buildRecipeImageProps,
-  buildRecipeIngredientsProps,
   buildRecipeNutritionProps,
   buildRecipePersonsProps,
-  buildRecipePreparationProps,
   buildRecipeSourceUrlProps,
   buildRecipeTagsProps,
   buildRecipeTimeProps,
   buildRecipeTitleProps,
   convertModeFromProps,
   getMissingFieldsErrorContent,
+  getServingsScaledFrom,
   getValidationButtonConfig,
   hasRecipeFromProps,
   hasScrapedDataFromProps,
   IMAGE_BUTTON_CONFIG,
   RecipePropType,
   scaleRecipeForSave,
-  validateRecipeData,
 } from '@utils/RecipeFormHelpers';
-import { AddProps } from '@components/organisms/RecipeIngredients';
 import { OcrModalTarget } from '@utils/OCR';
 import { recipeStateType } from '@customTypes/ScreenTypes';
 import {
@@ -89,206 +86,21 @@ describe('RecipeFormHelpers', () => {
     });
   });
 
-  describe('validateRecipeData', () => {
-    const mockT = (key: string) => key;
-    const validIngredient: ingredientTableElement = {
-      id: 1,
-      name: 'Tomato',
-      unit: 'g',
-      quantity: '100',
-      type: ingredientType.vegetable,
-      season: ['1', '2', '3'],
-    };
-    const validPreparationStep: preparationStepElement = {
-      title: 'Step 1',
-      description: 'Do something',
-    };
-    const validData = {
-      recipeImage: 'image.jpg',
-      recipeTitle: 'Recipe Title',
-      recipeIngredients: [validIngredient],
-      recipePreparation: [validPreparationStep],
-      recipePersons: 4,
-      recipeTime: 30,
-      recipeNutrition: undefined,
-    };
-
-    test('returns empty array for valid recipe data', () => {
-      const result = validateRecipeData(validData, mockT);
-      expect(result).toEqual([]);
+  describe('getServingsScaledFrom', () => {
+    test('returns the entered count when it differs from the default', () => {
+      expect(getServingsScaledFrom(2, 4)).toBe(2);
     });
 
-    test('returns missing image error for empty image', () => {
-      const result = validateRecipeData({ ...validData, recipeImage: '' }, mockT);
-      expect(result).toContain('alerts.missingElements.image');
+    test('returns undefined when entered equals the default', () => {
+      expect(getServingsScaledFrom(4, 4)).toBeUndefined();
     });
 
-    test('returns missing title error for empty title', () => {
-      const result = validateRecipeData({ ...validData, recipeTitle: '' }, mockT);
-      expect(result).toContain('alerts.missingElements.titleRecipe');
+    test('returns undefined when entered is zero', () => {
+      expect(getServingsScaledFrom(0, 4)).toBeUndefined();
     });
 
-    test('returns missing ingredients error for empty ingredients array', () => {
-      const result = validateRecipeData({ ...validData, recipeIngredients: [] }, mockT);
-      expect(result).toContain('alerts.missingElements.titleIngredients');
-    });
-
-    test('returns missing ingredient names error for ingredients without names', () => {
-      const ingredientWithoutName: ingredientTableElement = { ...validIngredient, name: '' };
-      const result = validateRecipeData(
-        { ...validData, recipeIngredients: [ingredientWithoutName] },
-        mockT
-      );
-      expect(result).toContain('alerts.missingElements.ingredientNames');
-    });
-
-    test('returns missing ingredient quantities error for ingredients without quantities', () => {
-      const ingredientWithoutQuantity: ingredientTableElement = {
-        ...validIngredient,
-        quantity: '',
-      };
-      const result = validateRecipeData(
-        { ...validData, recipeIngredients: [ingredientWithoutQuantity] },
-        mockT
-      );
-      expect(result).toContain('alerts.missingElements.ingredientQuantities');
-    });
-
-    test('returns missing ingredient database error for ingredients without type', () => {
-      const ingredientWithoutType = {
-        name: 'Tomato',
-        unit: 'g',
-        quantity: '100',
-        season: ['1', '2', '3'],
-      };
-      const result = validateRecipeData(
-        { ...validData, recipeIngredients: [ingredientWithoutType] },
-        mockT
-      );
-      expect(result).toContain('alerts.missingElements.ingredientInDatabase');
-    });
-
-    test('returns missing preparation error for empty preparation array', () => {
-      const result = validateRecipeData({ ...validData, recipePreparation: [] }, mockT);
-      expect(result).toContain('alerts.missingElements.titlePreparation');
-    });
-
-    test('returns missing persons error for default persons value', () => {
-      const result = validateRecipeData({ ...validData, recipePersons: defaultValueNumber }, mockT);
-      expect(result).toContain('alerts.missingElements.titlePersons');
-    });
-
-    test('returns missing time error for default time value', () => {
-      const result = validateRecipeData({ ...validData, recipeTime: defaultValueNumber }, mockT);
-      expect(result).toContain('alerts.missingElements.titleTime');
-    });
-
-    test('returns missing nutrition error for incomplete nutrition', () => {
-      const incompleteNutrition = {
-        energyKcal: 100,
-        energyKj: 420,
-        fat: 5,
-        saturatedFat: defaultValueNumber,
-        carbohydrates: 20,
-        sugars: 10,
-        fiber: 2,
-        protein: 10,
-        salt: 0.5,
-        portionWeight: 100,
-      };
-      const result = validateRecipeData(
-        { ...validData, recipeNutrition: incompleteNutrition },
-        mockT
-      );
-      expect(result).toContain('alerts.missingElements.nutrition');
-    });
-
-    test('returns missing ingredient names error for whitespace-only name', () => {
-      const ingredientWithWhitespaceName: ingredientTableElement = {
-        ...validIngredient,
-        name: '  ',
-      };
-      const result = validateRecipeData(
-        { ...validData, recipeIngredients: [ingredientWithWhitespaceName] },
-        mockT
-      );
-      expect(result).toContain('alerts.missingElements.ingredientNames');
-    });
-
-    test('returns missing ingredient quantities error for whitespace-only quantity', () => {
-      const ingredientWithWhitespaceQty: ingredientTableElement = {
-        ...validIngredient,
-        quantity: '  ',
-      };
-      const result = validateRecipeData(
-        { ...validData, recipeIngredients: [ingredientWithWhitespaceQty] },
-        mockT
-      );
-      expect(result).toContain('alerts.missingElements.ingredientQuantities');
-    });
-
-    test('returns missing image error for whitespace-only image', () => {
-      const result = validateRecipeData({ ...validData, recipeImage: '   ' }, mockT);
-      expect(result).toContain('alerts.missingElements.image');
-    });
-
-    test('returns missing title error for whitespace-only title', () => {
-      const result = validateRecipeData({ ...validData, recipeTitle: '   ' }, mockT);
-      expect(result).toContain('alerts.missingElements.titleRecipe');
-    });
-
-    test('returns no error when nutrition is undefined', () => {
-      const result = validateRecipeData({ ...validData, recipeNutrition: undefined }, mockT);
-      expect(result).not.toContain('alerts.missingElements.nutrition');
-    });
-
-    test('returns no error when all nutrition fields are valid', () => {
-      const validNutrition = {
-        energyKcal: 200,
-        energyKj: 840,
-        fat: 10,
-        saturatedFat: 3,
-        carbohydrates: 25,
-        sugars: 5,
-        fiber: 3,
-        protein: 8,
-        salt: 0.5,
-        portionWeight: 150,
-      };
-      const result = validateRecipeData({ ...validData, recipeNutrition: validNutrition }, mockT);
-      expect(result).not.toContain('alerts.missingElements.nutrition');
-    });
-
-    test('returns missing ingredient database error for ingredients without season', () => {
-      const ingredientWithoutSeason = {
-        name: 'Tomato',
-        unit: 'g',
-        quantity: '100',
-        type: ingredientType.vegetable,
-      };
-      const result = validateRecipeData(
-        { ...validData, recipeIngredients: [ingredientWithoutSeason] },
-        mockT
-      );
-      expect(result).toContain('alerts.missingElements.ingredientInDatabase');
-    });
-
-    test('returns multiple errors for multiple missing fields', () => {
-      const result = validateRecipeData(
-        {
-          recipeImage: '',
-          recipeTitle: '',
-          recipeIngredients: [],
-          recipePreparation: [],
-          recipePersons: defaultValueNumber,
-          recipeTime: defaultValueNumber,
-          recipeNutrition: undefined,
-        },
-        mockT
-      );
-      expect(result.length).toBeGreaterThan(1);
-      expect(result).toContain('alerts.missingElements.image');
-      expect(result).toContain('alerts.missingElements.titleRecipe');
+    test('returns undefined when entered is negative', () => {
+      expect(getServingsScaledFrom(-3, 4)).toBeUndefined();
     });
   });
 
@@ -458,33 +270,57 @@ describe('RecipeFormHelpers', () => {
     const mockOpenModal = jest.fn();
 
     test('returns undefined button for readOnly mode', () => {
-      const result = buildRecipeImageProps(recipeStateType.readOnly, 'image.jpg', mockOpenModal);
+      const result = buildRecipeImageProps({
+        stackMode: recipeStateType.readOnly,
+        recipeImage: 'image.jpg',
+        openModalForField: mockOpenModal,
+      });
       expect(result.imgUri).toBe('image.jpg');
       expect(result.buttonIcon).toBeUndefined();
     });
 
     test('returns camera icon for edit mode', () => {
-      const result = buildRecipeImageProps(recipeStateType.edit, 'image.jpg', mockOpenModal);
+      const result = buildRecipeImageProps({
+        stackMode: recipeStateType.edit,
+        recipeImage: 'image.jpg',
+        openModalForField: mockOpenModal,
+      });
       expect(result.buttonIcon).toBe(Icons.cameraIcon);
     });
 
     test('returns camera icon for addManual mode', () => {
-      const result = buildRecipeImageProps(recipeStateType.addManual, 'image.jpg', mockOpenModal);
+      const result = buildRecipeImageProps({
+        stackMode: recipeStateType.addManual,
+        recipeImage: 'image.jpg',
+        openModalForField: mockOpenModal,
+      });
       expect(result.buttonIcon).toBe(Icons.cameraIcon);
     });
 
     test('returns scan icon for addOCR mode', () => {
-      const result = buildRecipeImageProps(recipeStateType.addOCR, 'image.jpg', mockOpenModal);
+      const result = buildRecipeImageProps({
+        stackMode: recipeStateType.addOCR,
+        recipeImage: 'image.jpg',
+        openModalForField: mockOpenModal,
+      });
       expect(result.buttonIcon).toBe(Icons.scanImageIcon);
     });
 
     test('returns camera icon for addScrape mode', () => {
-      const result = buildRecipeImageProps(recipeStateType.addScrape, 'image.jpg', mockOpenModal);
+      const result = buildRecipeImageProps({
+        stackMode: recipeStateType.addScrape,
+        recipeImage: 'image.jpg',
+        openModalForField: mockOpenModal,
+      });
       expect(result.buttonIcon).toBe(Icons.cameraIcon);
     });
 
     test('passes openModal callback to props', () => {
-      const result = buildRecipeImageProps(recipeStateType.edit, 'image.jpg', mockOpenModal);
+      const result = buildRecipeImageProps({
+        stackMode: recipeStateType.edit,
+        recipeImage: 'image.jpg',
+        openModalForField: mockOpenModal,
+      });
       expect(result.openModal).toBe(mockOpenModal);
     });
   });
@@ -495,71 +331,95 @@ describe('RecipeFormHelpers', () => {
     const mockOpenModal = jest.fn();
 
     test('returns headline style for readOnly mode', () => {
-      const result = buildRecipeTitleProps(
-        recipeStateType.readOnly,
-        'Test Title',
-        mockSetTitle,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipeTitleProps({
+        stackMode: recipeStateType.readOnly,
+        recipeTitle: 'Test Title',
+        setRecipeTitle: mockSetTitle,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
       expect(result.rootText.style).toBe('headline');
       expect(result.rootText.value).toBe('Test Title');
       expect(result.addOrEditProps).toBeUndefined();
     });
 
     test('returns editable props for edit mode', () => {
-      const result = buildRecipeTitleProps(
-        recipeStateType.edit,
-        'Test Title',
-        mockSetTitle,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipeTitleProps({
+        stackMode: recipeStateType.edit,
+        recipeTitle: 'Test Title',
+        setRecipeTitle: mockSetTitle,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
       expect(result.rootText.style).toBe('title');
       expect(result.addOrEditProps?.editType).toBe('editable');
     });
 
     test('returns add props for addOCR mode with empty title', () => {
-      const result = buildRecipeTitleProps(
-        recipeStateType.addOCR,
-        '',
-        mockSetTitle,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipeTitleProps({
+        stackMode: recipeStateType.addOCR,
+        recipeTitle: '',
+        setRecipeTitle: mockSetTitle,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
       expect(result.addOrEditProps?.editType).toBe('add');
     });
 
     test('returns editable props for addOCR mode with existing title', () => {
-      const result = buildRecipeTitleProps(
-        recipeStateType.addOCR,
-        'Existing Title',
-        mockSetTitle,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipeTitleProps({
+        stackMode: recipeStateType.addOCR,
+        recipeTitle: 'Existing Title',
+        setRecipeTitle: mockSetTitle,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
       expect(result.addOrEditProps?.editType).toBe('editable');
     });
 
     test('returns add props for addOCR mode with whitespace-only title', () => {
-      const result = buildRecipeTitleProps(
-        recipeStateType.addOCR,
-        '   ',
-        mockSetTitle,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipeTitleProps({
+        stackMode: recipeStateType.addOCR,
+        recipeTitle: '   ',
+        setRecipeTitle: mockSetTitle,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
       expect(result.addOrEditProps?.editType).toBe('add');
     });
 
+    test('returns editable props for addOCR mode with empty title when forceEditable', () => {
+      const result = buildRecipeTitleProps({
+        stackMode: recipeStateType.addOCR,
+        recipeTitle: '',
+        setRecipeTitle: mockSetTitle,
+        openModalForField: mockOpenModal,
+        t: mockT,
+        forceEditable: true,
+      });
+      expect(result.addOrEditProps?.editType).toBe('editable');
+    });
+
+    test('returns editable props for addOCR mode with whitespace-only title when forceEditable', () => {
+      const result = buildRecipeTitleProps({
+        stackMode: recipeStateType.addOCR,
+        recipeTitle: '   ',
+        setRecipeTitle: mockSetTitle,
+        openModalForField: mockOpenModal,
+        t: mockT,
+        forceEditable: true,
+      });
+      expect(result.addOrEditProps?.editType).toBe('editable');
+    });
+
     test('openModal callback in addOCR add mode calls openModalForField with title', () => {
-      const result = buildRecipeTitleProps(
-        recipeStateType.addOCR,
-        '',
-        mockSetTitle,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipeTitleProps({
+        stackMode: recipeStateType.addOCR,
+        recipeTitle: '',
+        setRecipeTitle: mockSetTitle,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
       if (result.addOrEditProps?.editType === 'add') {
         result.addOrEditProps.openModal();
         expect(mockOpenModal).toHaveBeenCalled();
@@ -567,24 +427,24 @@ describe('RecipeFormHelpers', () => {
     });
 
     test('returns editable props for addManual mode', () => {
-      const result = buildRecipeTitleProps(
-        recipeStateType.addManual,
-        'My Recipe',
-        mockSetTitle,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipeTitleProps({
+        stackMode: recipeStateType.addManual,
+        recipeTitle: 'My Recipe',
+        setRecipeTitle: mockSetTitle,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
       expect(result.addOrEditProps?.editType).toBe('editable');
     });
 
     test('returns editable props for addScrape mode', () => {
-      const result = buildRecipeTitleProps(
-        recipeStateType.addScrape,
-        'Scraped Title',
-        mockSetTitle,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipeTitleProps({
+        stackMode: recipeStateType.addScrape,
+        recipeTitle: 'Scraped Title',
+        setRecipeTitle: mockSetTitle,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
       expect(result.addOrEditProps?.editType).toBe('editable');
     });
   });
@@ -595,37 +455,37 @@ describe('RecipeFormHelpers', () => {
     const mockOpenModal = jest.fn();
 
     test('returns readOnly with paragraph style for readOnly mode', () => {
-      const result = buildRecipeDescriptionProps(
-        recipeStateType.readOnly,
-        'A tasty recipe',
-        mockSetDescription,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipeDescriptionProps({
+        stackMode: recipeStateType.readOnly,
+        recipeDescription: 'A tasty recipe',
+        setRecipeDescription: mockSetDescription,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
       expect(result.rootText.style).toBe('paragraph');
       expect(result.rootText.value).toBe('A tasty recipe');
       expect(result.addOrEditProps).toBeUndefined();
     });
 
     test('returns add editType for addOCR mode with empty description', () => {
-      const result = buildRecipeDescriptionProps(
-        recipeStateType.addOCR,
-        '',
-        mockSetDescription,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipeDescriptionProps({
+        stackMode: recipeStateType.addOCR,
+        recipeDescription: '',
+        setRecipeDescription: mockSetDescription,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
       expect(result.addOrEditProps?.editType).toBe('add');
     });
 
     test('openModal callback in addOCR add mode calls openModalForField with description', () => {
-      const result = buildRecipeDescriptionProps(
-        recipeStateType.addOCR,
-        '',
-        mockSetDescription,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipeDescriptionProps({
+        stackMode: recipeStateType.addOCR,
+        recipeDescription: '',
+        setRecipeDescription: mockSetDescription,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
       if (result.addOrEditProps?.editType === 'add') {
         result.addOrEditProps.openModal();
         expect(mockOpenModal).toHaveBeenCalled();
@@ -633,57 +493,57 @@ describe('RecipeFormHelpers', () => {
     });
 
     test('returns add editType for addOCR mode with whitespace description', () => {
-      const result = buildRecipeDescriptionProps(
-        recipeStateType.addOCR,
-        '   ',
-        mockSetDescription,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipeDescriptionProps({
+        stackMode: recipeStateType.addOCR,
+        recipeDescription: '   ',
+        setRecipeDescription: mockSetDescription,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
       expect(result.addOrEditProps?.editType).toBe('add');
     });
 
     test('returns editable editType for addOCR mode with existing description', () => {
-      const result = buildRecipeDescriptionProps(
-        recipeStateType.addOCR,
-        'Some description',
-        mockSetDescription,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipeDescriptionProps({
+        stackMode: recipeStateType.addOCR,
+        recipeDescription: 'Some description',
+        setRecipeDescription: mockSetDescription,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
       expect(result.addOrEditProps?.editType).toBe('editable');
     });
 
     test('returns editable editType for edit mode', () => {
-      const result = buildRecipeDescriptionProps(
-        recipeStateType.edit,
-        'Description',
-        mockSetDescription,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipeDescriptionProps({
+        stackMode: recipeStateType.edit,
+        recipeDescription: 'Description',
+        setRecipeDescription: mockSetDescription,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
       expect(result.addOrEditProps?.editType).toBe('editable');
     });
 
     test('returns editable editType for addManual mode', () => {
-      const result = buildRecipeDescriptionProps(
-        recipeStateType.addManual,
-        'Description',
-        mockSetDescription,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipeDescriptionProps({
+        stackMode: recipeStateType.addManual,
+        recipeDescription: 'Description',
+        setRecipeDescription: mockSetDescription,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
       expect(result.addOrEditProps?.editType).toBe('editable');
     });
 
     test('returns editable editType for addScrape mode', () => {
-      const result = buildRecipeDescriptionProps(
-        recipeStateType.addScrape,
-        'Scraped description',
-        mockSetDescription,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipeDescriptionProps({
+        stackMode: recipeStateType.addScrape,
+        recipeDescription: 'Scraped description',
+        setRecipeDescription: mockSetDescription,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
       expect(result.addOrEditProps?.editType).toBe('editable');
     });
   });
@@ -695,26 +555,26 @@ describe('RecipeFormHelpers', () => {
     const mockTags = [{ id: 1, name: 'Italian' }];
 
     test('returns readOnly type for readOnly mode', () => {
-      const result = buildRecipeTagsProps(
-        recipeStateType.readOnly,
-        mockTags,
-        ['Lunch'],
-        mockAddTag,
-        mockRemoveTag,
-        mockOpenModal
-      );
+      const result = buildRecipeTagsProps({
+        stackMode: recipeStateType.readOnly,
+        recipeTags: mockTags,
+        randomTags: ['Lunch'],
+        addTag: mockAddTag,
+        removeTag: mockRemoveTag,
+        openModalForField: mockOpenModal,
+      });
       expect(result.type).toBe('readOnly');
     });
 
     test('returns addOrEdit type with edit for edit mode', () => {
-      const result = buildRecipeTagsProps(
-        recipeStateType.edit,
-        mockTags,
-        ['Lunch'],
-        mockAddTag,
-        mockRemoveTag,
-        mockOpenModal
-      );
+      const result = buildRecipeTagsProps({
+        stackMode: recipeStateType.edit,
+        recipeTags: mockTags,
+        randomTags: ['Lunch'],
+        addTag: mockAddTag,
+        removeTag: mockRemoveTag,
+        openModalForField: mockOpenModal,
+      });
       expect(result.type).toBe('addOrEdit');
       if (result.type === 'addOrEdit') {
         expect(result.editType).toBe('edit');
@@ -722,14 +582,14 @@ describe('RecipeFormHelpers', () => {
     });
 
     test('returns addOrEdit type with add for addOCR mode', () => {
-      const result = buildRecipeTagsProps(
-        recipeStateType.addOCR,
-        mockTags,
-        ['Lunch'],
-        mockAddTag,
-        mockRemoveTag,
-        mockOpenModal
-      );
+      const result = buildRecipeTagsProps({
+        stackMode: recipeStateType.addOCR,
+        recipeTags: mockTags,
+        randomTags: ['Lunch'],
+        addTag: mockAddTag,
+        removeTag: mockRemoveTag,
+        openModalForField: mockOpenModal,
+      });
       expect(result.type).toBe('addOrEdit');
       if (result.type === 'addOrEdit' && result.editType === 'add') {
         expect(result.openModal).toBeDefined();
@@ -737,14 +597,14 @@ describe('RecipeFormHelpers', () => {
     });
 
     test('openModal callback in addOCR mode calls openModalForField with tags', () => {
-      const result = buildRecipeTagsProps(
-        recipeStateType.addOCR,
-        mockTags,
-        ['Lunch'],
-        mockAddTag,
-        mockRemoveTag,
-        mockOpenModal
-      );
+      const result = buildRecipeTagsProps({
+        stackMode: recipeStateType.addOCR,
+        recipeTags: mockTags,
+        randomTags: ['Lunch'],
+        addTag: mockAddTag,
+        removeTag: mockRemoveTag,
+        openModalForField: mockOpenModal,
+      });
       if (result.type === 'addOrEdit' && result.editType === 'add' && result.openModal) {
         result.openModal();
         expect(mockOpenModal).toHaveBeenCalled();
@@ -752,14 +612,14 @@ describe('RecipeFormHelpers', () => {
     });
 
     test('returns addOrEdit type with edit for addManual mode', () => {
-      const result = buildRecipeTagsProps(
-        recipeStateType.addManual,
-        mockTags,
-        ['Lunch'],
-        mockAddTag,
-        mockRemoveTag,
-        mockOpenModal
-      );
+      const result = buildRecipeTagsProps({
+        stackMode: recipeStateType.addManual,
+        recipeTags: mockTags,
+        randomTags: ['Lunch'],
+        addTag: mockAddTag,
+        removeTag: mockRemoveTag,
+        openModalForField: mockOpenModal,
+      });
       expect(result.type).toBe('addOrEdit');
       if (result.type === 'addOrEdit') {
         expect(result.editType).toBe('edit');
@@ -767,15 +627,15 @@ describe('RecipeFormHelpers', () => {
     });
 
     test('passes hideDropdown to tags props', () => {
-      const result = buildRecipeTagsProps(
-        recipeStateType.edit,
-        mockTags,
-        ['Lunch'],
-        mockAddTag,
-        mockRemoveTag,
-        mockOpenModal,
-        true
-      );
+      const result = buildRecipeTagsProps({
+        stackMode: recipeStateType.edit,
+        recipeTags: mockTags,
+        randomTags: ['Lunch'],
+        addTag: mockAddTag,
+        removeTag: mockRemoveTag,
+        openModalForField: mockOpenModal,
+        hideDropdown: true,
+      });
       if (result.type === 'addOrEdit') {
         expect(result.hideDropdown).toBe(true);
       }
@@ -788,69 +648,97 @@ describe('RecipeFormHelpers', () => {
     const mockOpenModal = jest.fn();
 
     test('returns read type for readOnly mode', () => {
-      const result = buildRecipePersonsProps(
-        recipeStateType.readOnly,
-        4,
-        mockSetPersons,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipePersonsProps({
+        stackMode: recipeStateType.readOnly,
+        recipePersons: 4,
+        setRecipePersons: mockSetPersons,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
       expect(result.numberProps.editType).toBe('read');
     });
 
     test('returns editable type for edit mode', () => {
-      const result = buildRecipePersonsProps(
-        recipeStateType.edit,
-        4,
-        mockSetPersons,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipePersonsProps({
+        stackMode: recipeStateType.edit,
+        recipePersons: 4,
+        setRecipePersons: mockSetPersons,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
       expect(result.numberProps.editType).toBe('editable');
     });
 
     test('returns editable type for addOCR mode', () => {
-      const result = buildRecipePersonsProps(
-        recipeStateType.addOCR,
-        defaultValueNumber,
-        mockSetPersons,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipePersonsProps({
+        stackMode: recipeStateType.addOCR,
+        recipePersons: defaultValueNumber,
+        setRecipePersons: mockSetPersons,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
       expect(result.numberProps.editType).toBe('add');
     });
 
     test('returns editable type for addOCR mode with existing value', () => {
-      const result = buildRecipePersonsProps(
-        recipeStateType.addOCR,
-        4,
-        mockSetPersons,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipePersonsProps({
+        stackMode: recipeStateType.addOCR,
+        recipePersons: 4,
+        setRecipePersons: mockSetPersons,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
       expect(result.numberProps.editType).toBe('editable');
     });
 
     test('returns editable type for addManual mode', () => {
-      const result = buildRecipePersonsProps(
-        recipeStateType.addManual,
-        4,
-        mockSetPersons,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipePersonsProps({
+        stackMode: recipeStateType.addManual,
+        recipePersons: 4,
+        setRecipePersons: mockSetPersons,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
       expect(result.numberProps.editType).toBe('editable');
     });
 
     test('returns editable type for addScrape mode', () => {
-      const result = buildRecipePersonsProps(
-        recipeStateType.addScrape,
-        2,
-        mockSetPersons,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipePersonsProps({
+        stackMode: recipeStateType.addScrape,
+        recipePersons: 2,
+        setRecipePersons: mockSetPersons,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
       expect(result.numberProps.editType).toBe('editable');
+    });
+
+    test('addOCR add mode openModal invokes openModalForField for persons', () => {
+      const result = buildRecipePersonsProps({
+        stackMode: recipeStateType.addOCR,
+        recipePersons: defaultValueNumber,
+        setRecipePersons: mockSetPersons,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
+      if (result.numberProps.editType === 'add') {
+        result.numberProps.openModal();
+        expect(mockOpenModal).toHaveBeenCalledWith('PERSONS');
+      }
+    });
+
+    test('addOCR add mode manuallyFill calls setRecipePersons with 0', () => {
+      const result = buildRecipePersonsProps({
+        stackMode: recipeStateType.addOCR,
+        recipePersons: defaultValueNumber,
+        setRecipePersons: mockSetPersons,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
+      if (result.numberProps.editType === 'add') {
+        result.numberProps.manuallyFill();
+        expect(mockSetPersons).toHaveBeenCalledWith(0);
+      }
     });
   });
 
@@ -860,35 +748,35 @@ describe('RecipeFormHelpers', () => {
     const mockOpenModal = jest.fn();
 
     test('returns read editType for readOnly mode', () => {
-      const result = buildRecipeTimeProps(
-        recipeStateType.readOnly,
-        30,
-        mockSetTime,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipeTimeProps({
+        stackMode: recipeStateType.readOnly,
+        recipeTime: 30,
+        setRecipeTime: mockSetTime,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
       expect(result.numberProps.editType).toBe('read');
     });
 
     test('returns add editType for addOCR mode with default value', () => {
-      const result = buildRecipeTimeProps(
-        recipeStateType.addOCR,
-        defaultValueNumber,
-        mockSetTime,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipeTimeProps({
+        stackMode: recipeStateType.addOCR,
+        recipeTime: defaultValueNumber,
+        setRecipeTime: mockSetTime,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
       expect(result.numberProps.editType).toBe('add');
     });
 
     test('openModal callback in addOCR mode calls openModalForField with time', () => {
-      const result = buildRecipeTimeProps(
-        recipeStateType.addOCR,
-        defaultValueNumber,
-        mockSetTime,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipeTimeProps({
+        stackMode: recipeStateType.addOCR,
+        recipeTime: defaultValueNumber,
+        setRecipeTime: mockSetTime,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
       if (result.numberProps.editType === 'add') {
         result.numberProps.openModal();
         expect(mockOpenModal).toHaveBeenCalled();
@@ -896,13 +784,13 @@ describe('RecipeFormHelpers', () => {
     });
 
     test('manuallyFill callback in addOCR mode calls setRecipeTime with 0', () => {
-      const result = buildRecipeTimeProps(
-        recipeStateType.addOCR,
-        defaultValueNumber,
-        mockSetTime,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipeTimeProps({
+        stackMode: recipeStateType.addOCR,
+        recipeTime: defaultValueNumber,
+        setRecipeTime: mockSetTime,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
       if (result.numberProps.editType === 'add') {
         result.numberProps.manuallyFill();
         expect(mockSetTime).toHaveBeenCalledWith(0);
@@ -910,288 +798,47 @@ describe('RecipeFormHelpers', () => {
     });
 
     test('returns editable editType for addOCR mode with existing value', () => {
-      const result = buildRecipeTimeProps(
-        recipeStateType.addOCR,
-        30,
-        mockSetTime,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipeTimeProps({
+        stackMode: recipeStateType.addOCR,
+        recipeTime: 30,
+        setRecipeTime: mockSetTime,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
       expect(result.numberProps.editType).toBe('editable');
     });
 
     test('returns editable editType for edit mode', () => {
-      const result = buildRecipeTimeProps(
-        recipeStateType.edit,
-        45,
-        mockSetTime,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipeTimeProps({
+        stackMode: recipeStateType.edit,
+        recipeTime: 45,
+        setRecipeTime: mockSetTime,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
       expect(result.numberProps.editType).toBe('editable');
     });
 
     test('returns editable editType for addManual mode', () => {
-      const result = buildRecipeTimeProps(
-        recipeStateType.addManual,
-        20,
-        mockSetTime,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipeTimeProps({
+        stackMode: recipeStateType.addManual,
+        recipeTime: 20,
+        setRecipeTime: mockSetTime,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
       expect(result.numberProps.editType).toBe('editable');
     });
 
     test('returns editable editType for addScrape mode', () => {
-      const result = buildRecipeTimeProps(
-        recipeStateType.addScrape,
-        15,
-        mockSetTime,
-        mockOpenModal,
-        mockT
-      );
+      const result = buildRecipeTimeProps({
+        stackMode: recipeStateType.addScrape,
+        recipeTime: 15,
+        setRecipeTime: mockSetTime,
+        openModalForField: mockOpenModal,
+        t: mockT,
+      });
       expect(result.numberProps.editType).toBe('editable');
-    });
-  });
-
-  describe('buildRecipeIngredientsProps', () => {
-    const mockT = (key: string) => key;
-    const mockEditIngredients = jest.fn();
-    const mockAddIngredient = jest.fn();
-    const mockRemoveIngredient = jest.fn();
-    const mockOpenModalForField = jest.fn();
-    const mockIngredients: ingredientTableElement[] = [
-      { id: 1, name: 'Flour', unit: 'g', quantity: '200', type: ingredientType.cereal, season: [] },
-    ];
-
-    test('returns readOnly mode for readOnly state', () => {
-      const result = buildRecipeIngredientsProps(
-        recipeStateType.readOnly,
-        mockIngredients,
-        mockEditIngredients,
-        mockAddIngredient,
-        mockRemoveIngredient,
-        mockOpenModalForField,
-        mockT
-      );
-      expect(result.mode).toBe('readOnly');
-    });
-
-    test('returns editable mode for edit state', () => {
-      const result = buildRecipeIngredientsProps(
-        recipeStateType.edit,
-        mockIngredients,
-        mockEditIngredients,
-        mockAddIngredient,
-        mockRemoveIngredient,
-        mockOpenModalForField,
-        mockT
-      );
-      expect(result.mode).toBe('editable');
-      expect((result as any).onRemoveIngredient).toBe(mockRemoveIngredient);
-    });
-
-    test('returns add mode for addOCR state', () => {
-      const result = buildRecipeIngredientsProps(
-        recipeStateType.addOCR,
-        mockIngredients,
-        mockEditIngredients,
-        mockAddIngredient,
-        mockRemoveIngredient,
-        mockOpenModalForField,
-        mockT
-      );
-      expect(result.mode).toBe('add');
-      expect((result as any).onRemoveIngredient).toBe(mockRemoveIngredient);
-    });
-
-    test('openModalForField callback in addOCR mode calls openModalForField with ingredientNames', () => {
-      const result = buildRecipeIngredientsProps(
-        recipeStateType.addOCR,
-        mockIngredients,
-        mockEditIngredients,
-        mockAddIngredient,
-        mockRemoveIngredient,
-        mockOpenModalForField,
-        mockT
-      );
-      if (result.mode === 'add') {
-        result.openModalForField('ingredientNames');
-        expect(mockOpenModalForField).toHaveBeenCalledWith('ingredientNames');
-      }
-    });
-
-    test('returns editable mode for addManual state', () => {
-      const result = buildRecipeIngredientsProps(
-        recipeStateType.addManual,
-        mockIngredients,
-        mockEditIngredients,
-        mockAddIngredient,
-        mockRemoveIngredient,
-        mockOpenModalForField,
-        mockT
-      );
-      expect(result.mode).toBe('editable');
-    });
-
-    test('returns editable mode for addScrape state', () => {
-      const result = buildRecipeIngredientsProps(
-        recipeStateType.addScrape,
-        mockIngredients,
-        mockEditIngredients,
-        mockAddIngredient,
-        mockRemoveIngredient,
-        mockOpenModalForField,
-        mockT
-      );
-      expect(result.mode).toBe('editable');
-    });
-
-    test('passes hideDropdown to props', () => {
-      const result = buildRecipeIngredientsProps(
-        recipeStateType.edit,
-        mockIngredients,
-        mockEditIngredients,
-        mockAddIngredient,
-        mockRemoveIngredient,
-        mockOpenModalForField,
-        mockT,
-        true
-      );
-      expect((result as any).hideDropdown).toBe(true);
-    });
-
-    test('in addOCR mode, openModalForField prop calls callback with ingredientNames', () => {
-      const result = buildRecipeIngredientsProps(
-        recipeStateType.addOCR,
-        mockIngredients,
-        mockEditIngredients,
-        mockAddIngredient,
-        mockRemoveIngredient,
-        mockOpenModalForField,
-        mockT
-      );
-      const addResult = result as AddProps;
-      addResult.openModalForField('ingredientNames' as OcrModalTarget);
-      expect(mockOpenModalForField).toHaveBeenCalledWith('ingredientNames');
-    });
-
-    test('in addOCR mode, openModalForField prop calls callback with ingredientQuantities', () => {
-      const result = buildRecipeIngredientsProps(
-        recipeStateType.addOCR,
-        mockIngredients,
-        mockEditIngredients,
-        mockAddIngredient,
-        mockRemoveIngredient,
-        mockOpenModalForField,
-        mockT
-      );
-      const addResult = result as AddProps;
-      addResult.openModalForField('ingredientQuantities' as OcrModalTarget);
-      expect(mockOpenModalForField).toHaveBeenCalledWith('ingredientQuantities');
-    });
-  });
-
-  describe('buildRecipePreparationProps', () => {
-    const mockT = (key: string) => key;
-    const mockCommitTitle = jest.fn();
-    const mockCommitDescription = jest.fn();
-    const mockAddStep = jest.fn();
-    const mockOpenModal = jest.fn();
-    const mockSteps: preparationStepElement[] = [{ title: 'Step 1', description: 'Do something' }];
-
-    test('returns readOnly mode for readOnly state', () => {
-      const result = buildRecipePreparationProps(
-        recipeStateType.readOnly,
-        mockSteps,
-        mockCommitTitle,
-        mockCommitDescription,
-        mockAddStep,
-        mockOpenModal,
-        mockT
-      );
-      expect(result.mode).toBe('readOnly');
-    });
-
-    test('returns editable mode for edit state', () => {
-      const result = buildRecipePreparationProps(
-        recipeStateType.edit,
-        mockSteps,
-        mockCommitTitle,
-        mockCommitDescription,
-        mockAddStep,
-        mockOpenModal,
-        mockT
-      );
-      expect(result.mode).toBe('editable');
-    });
-
-    test('returns add mode for addOCR state with no steps', () => {
-      const result = buildRecipePreparationProps(
-        recipeStateType.addOCR,
-        [],
-        mockCommitTitle,
-        mockCommitDescription,
-        mockAddStep,
-        mockOpenModal,
-        mockT
-      );
-      expect(result.mode).toBe('add');
-    });
-
-    test('openModal callback in addOCR mode calls openModalForField with preparation', () => {
-      const result = buildRecipePreparationProps(
-        recipeStateType.addOCR,
-        [],
-        mockCommitTitle,
-        mockCommitDescription,
-        mockAddStep,
-        mockOpenModal,
-        mockT
-      );
-      if (result.mode === 'add') {
-        result.openModal();
-        expect(mockOpenModal).toHaveBeenCalled();
-      }
-    });
-
-    test('returns editable mode for addOCR state with existing steps', () => {
-      const result = buildRecipePreparationProps(
-        recipeStateType.addOCR,
-        mockSteps,
-        mockCommitTitle,
-        mockCommitDescription,
-        mockAddStep,
-        mockOpenModal,
-        mockT
-      );
-      expect(result.mode).toBe('editable');
-    });
-
-    test('returns editable mode for addManual state', () => {
-      const result = buildRecipePreparationProps(
-        recipeStateType.addManual,
-        mockSteps,
-        mockCommitTitle,
-        mockCommitDescription,
-        mockAddStep,
-        mockOpenModal,
-        mockT
-      );
-      expect(result.mode).toBe('editable');
-    });
-
-    test('returns editable mode for addScrape state', () => {
-      const result = buildRecipePreparationProps(
-        recipeStateType.addScrape,
-        mockSteps,
-        mockCommitTitle,
-        mockCommitDescription,
-        mockAddStep,
-        mockOpenModal,
-        mockT
-      );
-      expect(result.mode).toBe('editable');
     });
   });
 
@@ -1212,48 +859,48 @@ describe('RecipeFormHelpers', () => {
     };
 
     test('returns readOnly mode for readOnly state', () => {
-      const result = buildRecipeNutritionProps(
-        recipeStateType.readOnly,
-        mockNutrition,
-        mockSetNutrition,
-        mockOpenModal,
-        'Recipe'
-      );
+      const result = buildRecipeNutritionProps({
+        stackMode: recipeStateType.readOnly,
+        recipeNutrition: mockNutrition,
+        setRecipeNutrition: mockSetNutrition,
+        openModalForField: mockOpenModal,
+        parentTestId: 'Recipe',
+      });
       expect(result.mode).toBe(recipeStateType.readOnly);
     });
 
     test('returns edit mode with change handler for edit state', () => {
-      const result = buildRecipeNutritionProps(
-        recipeStateType.edit,
-        mockNutrition,
-        mockSetNutrition,
-        mockOpenModal,
-        'Recipe'
-      );
+      const result = buildRecipeNutritionProps({
+        stackMode: recipeStateType.edit,
+        recipeNutrition: mockNutrition,
+        setRecipeNutrition: mockSetNutrition,
+        openModalForField: mockOpenModal,
+        parentTestId: 'Recipe',
+      });
       expect(result.mode).toBe(recipeStateType.edit);
       expect(result.onNutritionChange).toBe(mockSetNutrition);
     });
 
     test('returns addOCR mode with openModal for addOCR state', () => {
-      const result = buildRecipeNutritionProps(
-        recipeStateType.addOCR,
-        undefined,
-        mockSetNutrition,
-        mockOpenModal,
-        'Recipe'
-      );
+      const result = buildRecipeNutritionProps({
+        stackMode: recipeStateType.addOCR,
+        recipeNutrition: undefined,
+        setRecipeNutrition: mockSetNutrition,
+        openModalForField: mockOpenModal,
+        parentTestId: 'Recipe',
+      });
       expect(result.mode).toBe(recipeStateType.addOCR);
       expect(result.openModal).toBeDefined();
     });
 
     test('openModal callback in addOCR mode calls openModalForField with nutrition', () => {
-      const result = buildRecipeNutritionProps(
-        recipeStateType.addOCR,
-        undefined,
-        mockSetNutrition,
-        mockOpenModal,
-        'Recipe'
-      );
+      const result = buildRecipeNutritionProps({
+        stackMode: recipeStateType.addOCR,
+        recipeNutrition: undefined,
+        setRecipeNutrition: mockSetNutrition,
+        openModalForField: mockOpenModal,
+        parentTestId: 'Recipe',
+      });
       if (result.openModal) {
         result.openModal();
         expect(mockOpenModal).toHaveBeenCalled();
@@ -1261,37 +908,37 @@ describe('RecipeFormHelpers', () => {
     });
 
     test('returns addManual mode with change handler for addManual state', () => {
-      const result = buildRecipeNutritionProps(
-        recipeStateType.addManual,
-        mockNutrition,
-        mockSetNutrition,
-        mockOpenModal,
-        'Recipe'
-      );
+      const result = buildRecipeNutritionProps({
+        stackMode: recipeStateType.addManual,
+        recipeNutrition: mockNutrition,
+        setRecipeNutrition: mockSetNutrition,
+        openModalForField: mockOpenModal,
+        parentTestId: 'Recipe',
+      });
       expect(result.mode).toBe(recipeStateType.addManual);
       expect(result.onNutritionChange).toBe(mockSetNutrition);
     });
 
     test('returns addScrape mode with change handler for addScrape state', () => {
-      const result = buildRecipeNutritionProps(
-        recipeStateType.addScrape,
-        mockNutrition,
-        mockSetNutrition,
-        mockOpenModal,
-        'Recipe'
-      );
+      const result = buildRecipeNutritionProps({
+        stackMode: recipeStateType.addScrape,
+        recipeNutrition: mockNutrition,
+        setRecipeNutrition: mockSetNutrition,
+        openModalForField: mockOpenModal,
+        parentTestId: 'Recipe',
+      });
       expect(result.mode).toBe(recipeStateType.addScrape);
       expect(result.onNutritionChange).toBe(mockSetNutrition);
     });
 
     test('passes parentTestId to props', () => {
-      const result = buildRecipeNutritionProps(
-        recipeStateType.readOnly,
-        undefined,
-        mockSetNutrition,
-        mockOpenModal,
-        'MyTestId'
-      );
+      const result = buildRecipeNutritionProps({
+        stackMode: recipeStateType.readOnly,
+        recipeNutrition: undefined,
+        setRecipeNutrition: mockSetNutrition,
+        openModalForField: mockOpenModal,
+        parentTestId: 'MyTestId',
+      });
       expect(result.parentTestId).toBe('MyTestId');
     });
   });
@@ -1356,42 +1003,74 @@ describe('RecipeFormHelpers', () => {
     const testUrl = 'https://www.hellofresh.fr/recipes/test-recipe';
 
     test('returns undefined for edit mode', () => {
-      const result = buildRecipeSourceUrlProps(recipeStateType.edit, testUrl, mockOnCopied);
+      const result = buildRecipeSourceUrlProps({
+        stackMode: recipeStateType.edit,
+        sourceUrl: testUrl,
+        onCopied: mockOnCopied,
+      });
       expect(result).toBeUndefined();
     });
 
     test('returns undefined for addManual mode', () => {
-      const result = buildRecipeSourceUrlProps(recipeStateType.addManual, testUrl, mockOnCopied);
+      const result = buildRecipeSourceUrlProps({
+        stackMode: recipeStateType.addManual,
+        sourceUrl: testUrl,
+        onCopied: mockOnCopied,
+      });
       expect(result).toBeUndefined();
     });
 
     test('returns undefined for addOCR mode', () => {
-      const result = buildRecipeSourceUrlProps(recipeStateType.addOCR, testUrl, mockOnCopied);
+      const result = buildRecipeSourceUrlProps({
+        stackMode: recipeStateType.addOCR,
+        sourceUrl: testUrl,
+        onCopied: mockOnCopied,
+      });
       expect(result).toBeUndefined();
     });
 
     test('returns undefined for addScrape mode', () => {
-      const result = buildRecipeSourceUrlProps(recipeStateType.addScrape, testUrl, mockOnCopied);
+      const result = buildRecipeSourceUrlProps({
+        stackMode: recipeStateType.addScrape,
+        sourceUrl: testUrl,
+        onCopied: mockOnCopied,
+      });
       expect(result).toBeUndefined();
     });
 
     test('returns undefined when sourceUrl is undefined', () => {
-      const result = buildRecipeSourceUrlProps(recipeStateType.readOnly, undefined, mockOnCopied);
+      const result = buildRecipeSourceUrlProps({
+        stackMode: recipeStateType.readOnly,
+        sourceUrl: undefined,
+        onCopied: mockOnCopied,
+      });
       expect(result).toBeUndefined();
     });
 
     test('returns undefined when sourceUrl is empty string', () => {
-      const result = buildRecipeSourceUrlProps(recipeStateType.readOnly, '', mockOnCopied);
+      const result = buildRecipeSourceUrlProps({
+        stackMode: recipeStateType.readOnly,
+        sourceUrl: '',
+        onCopied: mockOnCopied,
+      });
       expect(result).toBeUndefined();
     });
 
     test('returns undefined when sourceUrl is whitespace only', () => {
-      const result = buildRecipeSourceUrlProps(recipeStateType.readOnly, '   ', mockOnCopied);
+      const result = buildRecipeSourceUrlProps({
+        stackMode: recipeStateType.readOnly,
+        sourceUrl: '   ',
+        onCopied: mockOnCopied,
+      });
       expect(result).toBeUndefined();
     });
 
     test('returns correct props for readOnly mode with valid sourceUrl', () => {
-      const result = buildRecipeSourceUrlProps(recipeStateType.readOnly, testUrl, mockOnCopied);
+      const result = buildRecipeSourceUrlProps({
+        stackMode: recipeStateType.readOnly,
+        sourceUrl: testUrl,
+        onCopied: mockOnCopied,
+      });
       expect(result).toEqual({
         sourceUrl: testUrl,
         onCopied: mockOnCopied,

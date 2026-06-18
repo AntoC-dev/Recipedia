@@ -1,14 +1,26 @@
-import React from 'react';
+import React, { createContext, useContext } from 'react';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
+import { useFieldArray, UseFormReturn } from 'react-hook-form';
 import {
+  ApplyIngredientEditPatch,
   formatIngredientString,
   parseIngredientString,
   useRecipeIngredients,
 } from '@hooks/useRecipeIngredients';
-import { RecipeFormProvider, useRecipeForm } from '@context/RecipeFormContext';
+import { RecipeFormProvider, useRecipeForm } from '@test-helpers/recipeFormTestProvider';
 import { RecipeDialogsProvider, useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { createMockRecipeProp } from '@test-helpers/recipeHookTestWrapper';
-import { ingredientType, recipeTableElement } from '@customTypes/DatabaseElementTypes';
+import {
+  IngredientArrayActionsProvider,
+  useIngredientArrayActionsRegister,
+} from '@screens/recipe/fields/IngredientArrayActionsContext';
+import {
+  FormIngredientElement,
+  ingredientTableElement,
+  ingredientType,
+  recipeTableElement,
+} from '@customTypes/DatabaseElementTypes';
+import { RecipeFormInput } from '@schemas/recipeFormSchema';
 import { IngredientValidationProps } from '@components/dialogs/ValidationQueue';
 import { RecipePropType } from '@customTypes/RecipeNavigationTypes';
 import { testIngredients } from '@data/ingredientsDataset';
@@ -21,6 +33,37 @@ import {
 } from '@mocks/hooks/useIngredients-mock';
 import { setMockTags } from '@mocks/hooks/useTags-mock';
 
+type IngredientRow = ingredientTableElement | FormIngredientElement;
+type RecipeForm = UseFormReturn<RecipeFormInput>;
+
+function makeFormApplyPatch(form: RecipeForm): ApplyIngredientEditPatch {
+  return patch => {
+    const current = (form.getValues('recipeIngredients') ?? []) as IngredientRow[];
+    if (patch.kind === 'replace') {
+      const next = [...current];
+      next[patch.index] = patch.row;
+      form.setValue('recipeIngredients', next as never, { shouldValidate: true });
+      return;
+    }
+    if (patch.kind === 'merge') {
+      const next = [...current];
+      next[patch.intoIndex] = patch.row;
+      next.splice(patch.removeIndex, 1);
+      form.setValue('recipeIngredients', next as never, { shouldValidate: true });
+      return;
+    }
+    if (patch.kind === 'append') {
+      const next = [...current, patch.row];
+      form.setValue('recipeIngredients', next as never, { shouldValidate: true });
+      return;
+    }
+    const next = current.filter((_, i) => i !== patch.index);
+    form.setValue('recipeIngredients', next as never, { shouldValidate: true });
+  };
+}
+
+const noopApplyPatch: ApplyIngredientEditPatch = () => {};
+
 jest.mock('@hooks/useIngredients', () => ({
   useIngredients: require('@mocks/hooks/useIngredients-mock').useIngredientsMock,
 }));
@@ -29,11 +72,79 @@ jest.mock('@hooks/useTags', () => ({
   useTags: require('@mocks/hooks/useTags-mock').useTagsMock,
 }));
 
+function FormDrivenApplyPatchRegistrar({ children }: { children: React.ReactNode }) {
+  const { form } = useRecipeForm();
+  const applyPatch = React.useMemo(() => makeFormApplyPatch(form), [form]);
+  useIngredientArrayActionsRegister(applyPatch);
+  return <>{children}</>;
+}
+
+type FieldArrayReturn = ReturnType<typeof useFieldArray<RecipeFormInput, 'recipeIngredients'>>;
+
+const IdentityProbeFieldArrayContext = createContext<FieldArrayReturn | null>(null);
+
+function useIdentityProbeFieldArray(): FieldArrayReturn {
+  const ctx = useContext(IdentityProbeFieldArrayContext);
+  if (!ctx) throw new Error('IdentityProbeFieldArrayContext missing');
+  return ctx;
+}
+
+function FieldArrayBackedApplyPatchRegistrar({ children }: { children: React.ReactNode }) {
+  const { form } = useRecipeForm();
+  const fieldArray = useFieldArray({ control: form.control, name: 'recipeIngredients' });
+  const applyPatch: ApplyIngredientEditPatch = React.useMemo(
+    () => patch => {
+      switch (patch.kind) {
+        case 'replace':
+          fieldArray.update(patch.index, patch.row as RecipeFormInput['recipeIngredients'][number]);
+          return;
+        case 'merge':
+          fieldArray.update(
+            patch.intoIndex,
+            patch.row as RecipeFormInput['recipeIngredients'][number]
+          );
+          fieldArray.remove(patch.removeIndex);
+          return;
+        case 'remove':
+          fieldArray.remove(patch.index);
+          return;
+        case 'append':
+          fieldArray.append(patch.row as RecipeFormInput['recipeIngredients'][number]);
+      }
+    },
+    [fieldArray]
+  );
+  useIngredientArrayActionsRegister(applyPatch);
+  return (
+    <IdentityProbeFieldArrayContext.Provider value={fieldArray}>
+      {children}
+    </IdentityProbeFieldArrayContext.Provider>
+  );
+}
+
+function createIdentityProbeWrapper(props: RecipePropType) {
+  return function Wrapper({ children }: { children: React.ReactNode }) {
+    return (
+      <RecipeFormProvider props={props}>
+        <RecipeDialogsProvider>
+          <IngredientArrayActionsProvider>
+            <FieldArrayBackedApplyPatchRegistrar>{children}</FieldArrayBackedApplyPatchRegistrar>
+          </IngredientArrayActionsProvider>
+        </RecipeDialogsProvider>
+      </RecipeFormProvider>
+    );
+  };
+}
+
 function createIngredientsWrapper(props: RecipePropType) {
   return function Wrapper({ children }: { children: React.ReactNode }) {
     return (
       <RecipeFormProvider props={props}>
-        <RecipeDialogsProvider>{children}</RecipeDialogsProvider>
+        <RecipeDialogsProvider>
+          <IngredientArrayActionsProvider>
+            <FormDrivenApplyPatchRegistrar>{children}</FormDrivenApplyPatchRegistrar>
+          </IngredientArrayActionsProvider>
+        </RecipeDialogsProvider>
       </RecipeFormProvider>
     );
   };
@@ -299,57 +410,6 @@ describe('useRecipeIngredients', () => {
       loggerWarnSpy.mockRestore();
     });
 
-    describe('addNewIngredient', () => {
-      test('adds empty ingredient to recipe', async () => {
-        const wrapper = createIngredientsWrapper(
-          createMockRecipeProp('edit', recipeWithIngredients)
-        );
-
-        const { result } = renderHook(
-          () => ({
-            ingredients: useRecipeIngredients(),
-            form: useRecipeForm(),
-          }),
-          { wrapper }
-        );
-
-        await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
-        });
-
-        act(() => {
-          result.current.ingredients.addNewIngredient();
-        });
-
-        expect(result.current.form.state.recipeIngredients).toHaveLength(4);
-        expect(result.current.form.state.recipeIngredients[3]).toEqual({ name: '' });
-      });
-
-      test('adds ingredient to empty array', async () => {
-        const emptyRecipe: recipeTableElement = { ...recipeWithIngredients, ingredients: [] };
-        const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', emptyRecipe));
-
-        const { result } = renderHook(
-          () => ({
-            ingredients: useRecipeIngredients(),
-            form: useRecipeForm(),
-          }),
-          { wrapper }
-        );
-
-        await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(0);
-        });
-
-        act(() => {
-          result.current.ingredients.addNewIngredient();
-        });
-
-        expect(result.current.form.state.recipeIngredients).toHaveLength(1);
-        expect(result.current.form.state.recipeIngredients[0]).toEqual({ name: '' });
-      });
-    });
-
     describe('editIngredients', () => {
       test('updates quantity only without triggering validation', async () => {
         const wrapper = createIngredientsWrapper(
@@ -365,15 +425,19 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
         act(() => {
-          result.current.ingredients.editIngredients(0, '300@@g--Flour');
+          result.current.ingredients.editIngredients(
+            0,
+            '300@@g--Flour',
+            makeFormApplyPatch(result.current.form.form)
+          );
         });
 
-        expect(result.current.form.state.recipeIngredients[0].quantity).toBe('300');
-        expect(result.current.form.state.recipeIngredients[0].name).toBe('Flour');
+        expect(result.current.form.form.getValues('recipeIngredients')[0].quantity).toBe('300');
+        expect(result.current.form.form.getValues('recipeIngredients')[0].name).toBe('Flour');
       });
 
       test('updates unit without triggering validation', async () => {
@@ -390,15 +454,115 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
         act(() => {
-          result.current.ingredients.editIngredients(0, '200@@kg--Flour');
+          result.current.ingredients.editIngredients(
+            0,
+            '200@@kg--Flour',
+            makeFormApplyPatch(result.current.form.form)
+          );
         });
 
-        expect(result.current.form.state.recipeIngredients[0].unit).toBe('kg');
-        expect(result.current.form.state.recipeIngredients[0].name).toBe('Flour');
+        expect(result.current.form.form.getValues('recipeIngredients')[0].unit).toBe('kg');
+        expect(result.current.form.form.getValues('recipeIngredients')[0].name).toBe('Flour');
+      });
+
+      test('resolves an unresolved row against the database when the committed name is unchanged', async () => {
+        const wrapper = createIngredientsWrapper(
+          createMockRecipeProp('edit', recipeWithIngredients)
+        );
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
+        });
+
+        act(() => {
+          result.current.form.form.setValue(
+            'recipeIngredients',
+            [{ name: 'Flour', quantity: '200', unit: '' }] as never,
+            { shouldValidate: false }
+          );
+        });
+
+        act(() => {
+          result.current.ingredients.editIngredients(
+            0,
+            '200@@g--Flour',
+            makeFormApplyPatch(result.current.form.form)
+          );
+        });
+
+        await waitFor(() => {
+          const row = result.current.form.form.getValues('recipeIngredients')[0];
+          expect(row.type).toBe(ingredientType.baking);
+          expect(row.season).toBeDefined();
+          expect(row.id).toBe(9);
+        });
+      });
+
+      test('clears stale row-level error after quantity-only edit', async () => {
+        const recipeMissingQty: recipeTableElement = {
+          ...recipeWithIngredients,
+          ingredients: [
+            {
+              id: 1,
+              name: 'Flour',
+              unit: 'g',
+              quantity: '',
+              type: ingredientType.cereal,
+              season: [],
+            },
+          ],
+        };
+        const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeMissingQty));
+
+        const { result } = renderHook(
+          () => ({ ingredients: useRecipeIngredients(), form: useRecipeForm() }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
+        });
+
+        await act(async () => {
+          await result.current.form.form.trigger('recipeIngredients');
+        });
+
+        const rawErrorsBefore = (
+          result.current.form.form.control as unknown as {
+            _formState: { errors: { recipeIngredients?: { quantity?: unknown }[] } };
+          }
+        )._formState.errors;
+        expect(rawErrorsBefore.recipeIngredients?.[0]?.quantity).toBeDefined();
+
+        await act(async () => {
+          result.current.ingredients.editIngredients(
+            0,
+            '250@@g--Flour',
+            makeFormApplyPatch(result.current.form.form)
+          );
+        });
+
+        await waitFor(() => {
+          const rawErrorsAfter = (
+            result.current.form.form.control as unknown as {
+              _formState: { errors: { recipeIngredients?: { quantity?: unknown }[] } };
+            }
+          )._formState.errors;
+          expect(rawErrorsAfter.recipeIngredients?.[0]?.quantity).toBeUndefined();
+        });
+        expect(result.current.form.form.getValues('recipeIngredients')[0].quantity).toBe('250');
       });
 
       test('logs warning for negative index', async () => {
@@ -413,12 +577,12 @@ describe('useRecipeIngredients', () => {
         });
 
         act(() => {
-          result.current.editIngredients(-1, '100@@g--Test');
+          result.current.editIngredients(-1, '100@@g--Test', noopApplyPatch);
         });
 
         expect(loggerWarnSpy).toHaveBeenCalledWith(
           'Cannot edit ingredient - invalid index',
-          expect.objectContaining({ oldIngredientId: -1 })
+          expect.objectContaining({ index: -1 })
         );
       });
 
@@ -434,12 +598,12 @@ describe('useRecipeIngredients', () => {
         });
 
         act(() => {
-          result.current.editIngredients(100, '100@@g--Test');
+          result.current.editIngredients(100, '100@@g--Test', noopApplyPatch);
         });
 
         expect(loggerWarnSpy).toHaveBeenCalledWith(
           'Cannot edit ingredient - invalid index',
-          expect.objectContaining({ oldIngredientId: 100 })
+          expect.objectContaining({ index: 100 })
         );
       });
 
@@ -465,11 +629,15 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
         act(() => {
-          result.current.ingredients.editIngredients(0, '200@@g--Spaghettis');
+          result.current.ingredients.editIngredients(
+            0,
+            '200@@g--Spaghettis',
+            makeFormApplyPatch(result.current.form.form)
+          );
         });
 
         await waitFor(() => {
@@ -492,15 +660,19 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
         act(() => {
-          result.current.ingredients.editIngredients(0, '200@@g--Spaghetti');
+          result.current.ingredients.editIngredients(
+            0,
+            '200@@g--Spaghetti',
+            makeFormApplyPatch(result.current.form.form)
+          );
         });
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients[0].name).toBe('Spaghetti');
+          expect(result.current.form.form.getValues('recipeIngredients')[0].name).toBe('Spaghetti');
         });
 
         expect(result.current.dialogs.validationQueue).toBeNull();
@@ -529,18 +701,22 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
         act(() => {
-          result.current.ingredients.editIngredients(0, '200@@g--Spaghetti');
+          result.current.ingredients.editIngredients(
+            0,
+            '200@@g--Spaghetti',
+            makeFormApplyPatch(result.current.form.form)
+          );
         });
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients[0].name).toBe('Spaghetti');
+          expect(result.current.form.form.getValues('recipeIngredients')[0].name).toBe('Spaghetti');
         });
 
-        expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+        expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
       });
 
       test('preserves ingredient order when validation is confirmed', async () => {
@@ -566,11 +742,15 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
         act(() => {
-          result.current.ingredients.editIngredients(0, '200@@g--Spaghettis');
+          result.current.ingredients.editIngredients(
+            0,
+            '200@@g--Spaghettis',
+            makeFormApplyPatch(result.current.form.form)
+          );
         });
 
         await waitFor(() => {
@@ -583,8 +763,50 @@ describe('useRecipeIngredients', () => {
           queue.onValidated(queue.items[0], spaghettiIngredient);
         });
 
-        expect(result.current.form.state.recipeIngredients[0].name).toBe('Spaghetti');
-        expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+        expect(result.current.form.form.getValues('recipeIngredients')[0].name).toBe('Spaghetti');
+        expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
+      });
+
+      test('merges duplicate at lower index without splice-shift drift', async () => {
+        const flourIngredient = testIngredients.find(i => i.name === 'Flour')!;
+        mockFindSimilarIngredients.mockImplementation((name: string) => {
+          if (name.toLowerCase() === 'flour') return [flourIngredient];
+          return [];
+        });
+
+        const wrapper = createIngredientsWrapper(
+          createMockRecipeProp('edit', recipeWithIngredients)
+        );
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            form: useRecipeForm(),
+            dialogs: useRecipeDialogs(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
+        });
+
+        // Edit row 2 (Milk) to "Flour" — duplicate at row 0. Names match exact,
+        // so replaceIngredientAtIndex fires directly without a queue.
+        act(() => {
+          result.current.ingredients.editIngredients(
+            2,
+            '150@@g--Flour',
+            makeFormApplyPatch(result.current.form.form)
+          );
+        });
+
+        const ingredients = result.current.form.form.getValues('recipeIngredients');
+        expect(ingredients).toHaveLength(2);
+        // Merged Flour lands at the lower of the two indices (the surviving slot)
+        expect(ingredients[0].name).toBe('Flour');
+        expect(ingredients[0].quantity).toBe('350');
+        expect(ingredients[1].name).toBe('Sugar');
       });
 
       test('removes ingredient when validation dialog is dismissed', async () => {
@@ -610,11 +832,15 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
         act(() => {
-          result.current.ingredients.editIngredients(0, '200@@g--Spaghettis');
+          result.current.ingredients.editIngredients(
+            0,
+            '200@@g--Spaghettis',
+            makeFormApplyPatch(result.current.form.form)
+          );
         });
 
         await waitFor(() => {
@@ -627,10 +853,10 @@ describe('useRecipeIngredients', () => {
           queue.onDismissed?.(queue.items[0]);
         });
 
-        expect(result.current.form.state.recipeIngredients).toHaveLength(2);
-        expect(result.current.form.state.recipeIngredients.some(i => i.name === 'Flour')).toBe(
-          false
-        );
+        expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(2);
+        expect(
+          result.current.form.form.getValues('recipeIngredients').some(i => i.name === 'Flour')
+        ).toBe(false);
       });
     });
 
@@ -649,7 +875,7 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
         act(() => {
@@ -663,8 +889,8 @@ describe('useRecipeIngredients', () => {
           });
         });
 
-        expect(result.current.form.state.recipeIngredients).toHaveLength(4);
-        expect(result.current.form.state.recipeIngredients[3].name).toBe('Butter');
+        expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(4);
+        expect(result.current.form.form.getValues('recipeIngredients')[3].name).toBe('Butter');
       });
 
       test('merges quantity for existing ingredient with same unit', async () => {
@@ -681,7 +907,7 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
         act(() => {
@@ -695,8 +921,8 @@ describe('useRecipeIngredients', () => {
           });
         });
 
-        expect(result.current.form.state.recipeIngredients).toHaveLength(3);
-        expect(result.current.form.state.recipeIngredients[0].quantity).toBe('300');
+        expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
+        expect(result.current.form.form.getValues('recipeIngredients')[0].quantity).toBe('300');
       });
 
       test('replaces ingredient when same name but different unit', async () => {
@@ -713,7 +939,7 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
         act(() => {
@@ -727,9 +953,9 @@ describe('useRecipeIngredients', () => {
           });
         });
 
-        expect(result.current.form.state.recipeIngredients).toHaveLength(3);
-        expect(result.current.form.state.recipeIngredients[0].unit).toBe('kg');
-        expect(result.current.form.state.recipeIngredients[0].quantity).toBe('0.5');
+        expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
+        expect(result.current.form.form.getValues('recipeIngredients')[0].unit).toBe('kg');
+        expect(result.current.form.form.getValues('recipeIngredients')[0].quantity).toBe('0.5');
       });
 
       test('case-insensitive name matching for merge', async () => {
@@ -746,7 +972,7 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
         act(() => {
@@ -760,8 +986,8 @@ describe('useRecipeIngredients', () => {
           });
         });
 
-        expect(result.current.form.state.recipeIngredients).toHaveLength(3);
-        expect(result.current.form.state.recipeIngredients[0].quantity).toBe('300');
+        expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
+        expect(result.current.form.form.getValues('recipeIngredients')[0].quantity).toBe('300');
       });
 
       test('preserves type and season from validated ingredient when merging with FormIngredient', async () => {
@@ -782,7 +1008,7 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
         });
 
         act(() => {
@@ -796,7 +1022,7 @@ describe('useRecipeIngredients', () => {
           });
         });
 
-        const merged = result.current.form.state.recipeIngredients[0];
+        const merged = result.current.form.form.getValues('recipeIngredients')[0];
         expect(merged.quantity).toBe('300');
         expect(merged.type).toBe(ingredientType.cereal);
         expect(merged.season).toEqual(['1', '2', '3']);
@@ -827,7 +1053,7 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+          expect(result.current.form.form.getValues('recipeIngredients')!).toHaveLength(1);
         });
 
         act(() => {
@@ -841,8 +1067,8 @@ describe('useRecipeIngredients', () => {
           });
         });
 
-        expect(result.current.form.state.recipeIngredients).toHaveLength(1);
-        expect(result.current.form.state.recipeIngredients[0].quantity).toBe('150');
+        expect(result.current.form.form.getValues('recipeIngredients')!).toHaveLength(1);
+        expect(result.current.form.form.getValues('recipeIngredients')![0].quantity).toBe('150');
       });
 
       test('merges names that differ only by NFC equivalence (decomposed vs precomposed é)', async () => {
@@ -874,7 +1100,7 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+          expect(result.current.form.form.getValues('recipeIngredients')!).toHaveLength(1);
         });
 
         act(() => {
@@ -888,8 +1114,8 @@ describe('useRecipeIngredients', () => {
           });
         });
 
-        expect(result.current.form.state.recipeIngredients).toHaveLength(1);
-        expect(result.current.form.state.recipeIngredients[0].quantity).toBe('150');
+        expect(result.current.form.form.getValues('recipeIngredients')!).toHaveLength(1);
+        expect(result.current.form.form.getValues('recipeIngredients')![0].quantity).toBe('150');
       });
 
       test('does NOT merge unrelated names that happen to share a token', async () => {
@@ -906,7 +1132,7 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+          expect(result.current.form.form.getValues('recipeIngredients')!).toHaveLength(3);
         });
 
         act(() => {
@@ -920,7 +1146,7 @@ describe('useRecipeIngredients', () => {
           });
         });
 
-        expect(result.current.form.state.recipeIngredients).toHaveLength(4);
+        expect(result.current.form.form.getValues('recipeIngredients')!).toHaveLength(4);
       });
 
       test('preserves existing quantity when incoming has none (different unit)', async () => {
@@ -948,7 +1174,7 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+          expect(result.current.form.form.getValues('recipeIngredients')!).toHaveLength(1);
         });
 
         act(() => {
@@ -962,9 +1188,9 @@ describe('useRecipeIngredients', () => {
           });
         });
 
-        expect(result.current.form.state.recipeIngredients).toHaveLength(1);
-        expect(result.current.form.state.recipeIngredients[0].unit).toBe('g');
-        expect(result.current.form.state.recipeIngredients[0].quantity).toBe('200');
+        expect(result.current.form.form.getValues('recipeIngredients')!).toHaveLength(1);
+        expect(result.current.form.form.getValues('recipeIngredients')![0].unit).toBe('g');
+        expect(result.current.form.form.getValues('recipeIngredients')![0].quantity).toBe('200');
       });
 
       test('merges names that differ only by internal whitespace', async () => {
@@ -994,7 +1220,7 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+          expect(result.current.form.form.getValues('recipeIngredients')!).toHaveLength(1);
         });
 
         act(() => {
@@ -1008,8 +1234,8 @@ describe('useRecipeIngredients', () => {
           });
         });
 
-        expect(result.current.form.state.recipeIngredients).toHaveLength(1);
-        expect(result.current.form.state.recipeIngredients[0].quantity).toBe('250');
+        expect(result.current.form.form.getValues('recipeIngredients')!).toHaveLength(1);
+        expect(result.current.form.form.getValues('recipeIngredients')![0].quantity).toBe('250');
       });
 
       test('handles existing ingredient with undefined name gracefully', async () => {
@@ -1030,7 +1256,7 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
         });
 
         act(() => {
@@ -1044,7 +1270,7 @@ describe('useRecipeIngredients', () => {
           });
         });
 
-        expect(result.current.form.state.recipeIngredients).toHaveLength(2);
+        expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(2);
       });
     });
 
@@ -1084,15 +1310,21 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(2);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(2);
         });
 
         act(() => {
-          result.current.ingredients.editIngredients(0, '300@@g--Flour%%for the sauce');
+          result.current.ingredients.editIngredients(
+            0,
+            '300@@g--Flour%%for the sauce',
+            makeFormApplyPatch(result.current.form.form)
+          );
         });
 
-        expect(result.current.form.state.recipeIngredients[0].quantity).toBe('300');
-        expect(result.current.form.state.recipeIngredients[0].note).toBe('for the sauce');
+        expect(result.current.form.form.getValues('recipeIngredients')[0].quantity).toBe('300');
+        expect(result.current.form.form.getValues('recipeIngredients')[0].note).toBe(
+          'for the sauce'
+        );
       });
 
       test('updates note when explicitly changed', async () => {
@@ -1107,14 +1339,20 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(2);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(2);
         });
 
         act(() => {
-          result.current.ingredients.editIngredients(0, '200@@g--Flour%%for the filling');
+          result.current.ingredients.editIngredients(
+            0,
+            '200@@g--Flour%%for the filling',
+            makeFormApplyPatch(result.current.form.form)
+          );
         });
 
-        expect(result.current.form.state.recipeIngredients[0].note).toBe('for the filling');
+        expect(result.current.form.form.getValues('recipeIngredients')[0].note).toBe(
+          'for the filling'
+        );
       });
 
       test('clears note when empty string passed', async () => {
@@ -1129,14 +1367,18 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(2);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(2);
         });
 
         act(() => {
-          result.current.ingredients.editIngredients(0, '200@@g--Flour%%');
+          result.current.ingredients.editIngredients(
+            0,
+            '200@@g--Flour%%',
+            makeFormApplyPatch(result.current.form.form)
+          );
         });
 
-        expect(result.current.form.state.recipeIngredients[0].note).toBe('');
+        expect(result.current.form.form.getValues('recipeIngredients')[0].note).toBe('');
       });
 
       test('adds note to ingredient without one', async () => {
@@ -1151,14 +1393,20 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(2);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(2);
         });
 
         act(() => {
-          result.current.ingredients.editIngredients(1, '100@@g--Sugar%%for the topping');
+          result.current.ingredients.editIngredients(
+            1,
+            '100@@g--Sugar%%for the topping',
+            makeFormApplyPatch(result.current.form.form)
+          );
         });
 
-        expect(result.current.form.state.recipeIngredients[1].note).toBe('for the topping');
+        expect(result.current.form.form.getValues('recipeIngredients')[1].note).toBe(
+          'for the topping'
+        );
       });
 
       test('multiple rapid edits preserve all changes (stale closure regression)', async () => {
@@ -1202,21 +1450,37 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
         act(() => {
-          result.current.ingredients.editIngredients(0, '200@@g--Flour%%for the dough');
-          result.current.ingredients.editIngredients(1, '100@@g--Sugar%%for the topping');
-          result.current.ingredients.editIngredients(2, '2@@tsp--Salt%%a pinch');
+          result.current.ingredients.editIngredients(
+            0,
+            '200@@g--Flour%%for the dough',
+            makeFormApplyPatch(result.current.form.form)
+          );
+          result.current.ingredients.editIngredients(
+            1,
+            '100@@g--Sugar%%for the topping',
+            makeFormApplyPatch(result.current.form.form)
+          );
+          result.current.ingredients.editIngredients(
+            2,
+            '2@@tsp--Salt%%a pinch',
+            makeFormApplyPatch(result.current.form.form)
+          );
         });
 
-        expect(result.current.form.state.recipeIngredients[0].quantity).toBe('200');
-        expect(result.current.form.state.recipeIngredients[0].note).toBe('for the dough');
-        expect(result.current.form.state.recipeIngredients[1].quantity).toBe('100');
-        expect(result.current.form.state.recipeIngredients[1].note).toBe('for the topping');
-        expect(result.current.form.state.recipeIngredients[2].quantity).toBe('2');
-        expect(result.current.form.state.recipeIngredients[2].note).toBe('a pinch');
+        expect(result.current.form.form.getValues('recipeIngredients')[0].quantity).toBe('200');
+        expect(result.current.form.form.getValues('recipeIngredients')[0].note).toBe(
+          'for the dough'
+        );
+        expect(result.current.form.form.getValues('recipeIngredients')[1].quantity).toBe('100');
+        expect(result.current.form.form.getValues('recipeIngredients')[1].note).toBe(
+          'for the topping'
+        );
+        expect(result.current.form.form.getValues('recipeIngredients')[2].quantity).toBe('2');
+        expect(result.current.form.form.getValues('recipeIngredients')[2].note).toBe('a pinch');
       });
     });
 
@@ -1248,7 +1512,7 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
         });
 
         act(() => {
@@ -1263,11 +1527,15 @@ describe('useRecipeIngredients', () => {
           });
         });
 
-        expect(result.current.form.state.recipeIngredients).toHaveLength(2);
-        expect(result.current.form.state.recipeIngredients[0].quantity).toBe('200');
-        expect(result.current.form.state.recipeIngredients[0].note).toBe('for the sauce');
-        expect(result.current.form.state.recipeIngredients[1].quantity).toBe('100');
-        expect(result.current.form.state.recipeIngredients[1].note).toBe('for the filling');
+        expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(2);
+        expect(result.current.form.form.getValues('recipeIngredients')[0].quantity).toBe('200');
+        expect(result.current.form.form.getValues('recipeIngredients')[0].note).toBe(
+          'for the sauce'
+        );
+        expect(result.current.form.form.getValues('recipeIngredients')[1].quantity).toBe('100');
+        expect(result.current.form.form.getValues('recipeIngredients')[1].note).toBe(
+          'for the filling'
+        );
       });
 
       test('merges when both have same note', async () => {
@@ -1282,7 +1550,7 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
         });
 
         act(() => {
@@ -1297,9 +1565,11 @@ describe('useRecipeIngredients', () => {
           });
         });
 
-        expect(result.current.form.state.recipeIngredients).toHaveLength(1);
-        expect(result.current.form.state.recipeIngredients[0].quantity).toBe('300');
-        expect(result.current.form.state.recipeIngredients[0].note).toBe('for the sauce');
+        expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
+        expect(result.current.form.form.getValues('recipeIngredients')[0].quantity).toBe('300');
+        expect(result.current.form.form.getValues('recipeIngredients')[0].note).toBe(
+          'for the sauce'
+        );
       });
 
       test('merges when new ingredient has note but existing does not', async () => {
@@ -1327,7 +1597,7 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
         });
 
         act(() => {
@@ -1342,9 +1612,11 @@ describe('useRecipeIngredients', () => {
           });
         });
 
-        expect(result.current.form.state.recipeIngredients).toHaveLength(1);
-        expect(result.current.form.state.recipeIngredients[0].quantity).toBe('300');
-        expect(result.current.form.state.recipeIngredients[0].note).toBe('for the filling');
+        expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
+        expect(result.current.form.form.getValues('recipeIngredients')[0].quantity).toBe('300');
+        expect(result.current.form.form.getValues('recipeIngredients')[0].note).toBe(
+          'for the filling'
+        );
       });
 
       test('falls back to existing note when new note is undefined', async () => {
@@ -1359,7 +1631,7 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
         });
 
         act(() => {
@@ -1373,8 +1645,10 @@ describe('useRecipeIngredients', () => {
           });
         });
 
-        expect(result.current.form.state.recipeIngredients[0].quantity).toBe('300');
-        expect(result.current.form.state.recipeIngredients[0].note).toBe('for the sauce');
+        expect(result.current.form.form.getValues('recipeIngredients')[0].quantity).toBe('300');
+        expect(result.current.form.form.getValues('recipeIngredients')[0].note).toBe(
+          'for the sauce'
+        );
       });
 
       test('preserves new note when replacing with different unit', async () => {
@@ -1389,7 +1663,7 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
         });
 
         act(() => {
@@ -1404,8 +1678,10 @@ describe('useRecipeIngredients', () => {
           });
         });
 
-        expect(result.current.form.state.recipeIngredients[0].unit).toBe('kg');
-        expect(result.current.form.state.recipeIngredients[0].note).toBe('for the bread');
+        expect(result.current.form.form.getValues('recipeIngredients')[0].unit).toBe('kg');
+        expect(result.current.form.form.getValues('recipeIngredients')[0].note).toBe(
+          'for the bread'
+        );
       });
     });
 
@@ -1432,7 +1708,7 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
         act(() => {
@@ -1446,7 +1722,7 @@ describe('useRecipeIngredients', () => {
           });
         });
 
-        const ingredients = result.current.form.state.recipeIngredients;
+        const ingredients = result.current.form.form.getValues('recipeIngredients');
         expect(ingredients[0].id).toBe(10);
         expect(ingredients[0].name).toBe('Olive Oil');
         expect(ingredients[0].type).toBe(ingredientType.oilAndFat);
@@ -1481,7 +1757,7 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(2);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(2);
         });
 
         act(() => {
@@ -1495,7 +1771,7 @@ describe('useRecipeIngredients', () => {
           });
         });
 
-        const ingredients = result.current.form.state.recipeIngredients;
+        const ingredients = result.current.form.form.getValues('recipeIngredients');
         expect(ingredients[0].note).toBe('white or cider');
         expect(ingredients[1].note).toBe('balsamic');
       });
@@ -1519,7 +1795,7 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(2);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(2);
         });
 
         act(() => {
@@ -1533,7 +1809,7 @@ describe('useRecipeIngredients', () => {
           });
         });
 
-        const ingredients = result.current.form.state.recipeIngredients;
+        const ingredients = result.current.form.form.getValues('recipeIngredients');
         expect(ingredients[0].id).toBe(10);
         expect(ingredients[1].id).toBe(10);
       });
@@ -1552,7 +1828,7 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
         act(() => {
@@ -1566,9 +1842,52 @@ describe('useRecipeIngredients', () => {
           });
         });
 
-        expect(result.current.form.state.recipeIngredients[0].name).toBe('Flour');
-        expect(result.current.form.state.recipeIngredients[1].name).toBe('Sugar');
-        expect(result.current.form.state.recipeIngredients[2].name).toBe('Milk');
+        expect(result.current.form.form.getValues('recipeIngredients')[0].name).toBe('Flour');
+        expect(result.current.form.form.getValues('recipeIngredients')[1].name).toBe('Sugar');
+        expect(result.current.form.form.getValues('recipeIngredients')[2].name).toBe('Milk');
+      });
+
+      test('preserves object identity for non-matching rows so UI subscribers do not re-render', async () => {
+        const recipeWithDuplicates: recipeTableElement = {
+          ...recipeWithIngredients,
+          ingredients: [
+            { name: 'Olive Oil', quantity: '2', unit: 'càs' } as never,
+            { name: 'Salt', quantity: '1', unit: 'tsp' } as never,
+            { name: 'Olive Oil', quantity: '', unit: '' } as never,
+          ],
+        };
+        const wrapper = createIdentityProbeWrapper(
+          createMockRecipeProp('edit', recipeWithDuplicates)
+        );
+
+        const { result } = renderHook(
+          () => ({
+            ingredients: useRecipeIngredients(),
+            fieldArray: useIdentityProbeFieldArray(),
+          }),
+          { wrapper }
+        );
+
+        await waitFor(() => {
+          expect(result.current.fieldArray.fields).toHaveLength(3);
+        });
+
+        const saltBefore = result.current.fieldArray.fields[1];
+
+        act(() => {
+          result.current.ingredients.replaceAllMatchingFormIngredients({
+            id: 10,
+            name: 'Olive Oil',
+            type: ingredientType.oilAndFat,
+            season: ['1', '2', '3'],
+            quantity: '',
+            unit: 'ml',
+          });
+        });
+
+        const saltAfter = result.current.fieldArray.fields[1];
+        expect(saltAfter.id).toBe(saltBefore.id);
+        expect(saltAfter.name).toBe('Salt');
       });
     });
 
@@ -1587,15 +1906,19 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
         act(() => {
-          result.current.ingredients.editIngredients(0, '200@@g--Flour');
+          result.current.ingredients.editIngredients(
+            0,
+            '200@@g--Flour',
+            makeFormApplyPatch(result.current.form.form)
+          );
         });
 
-        expect(result.current.form.state.recipeIngredients[0].name).toBe('Flour');
-        expect(result.current.form.state.recipeIngredients[0].quantity).toBe('200');
+        expect(result.current.form.form.getValues('recipeIngredients')[0].name).toBe('Flour');
+        expect(result.current.form.form.getValues('recipeIngredients')[0].quantity).toBe('200');
       });
 
       test('updates ingredient type from database match', async () => {
@@ -1621,17 +1944,21 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
         act(() => {
-          result.current.ingredients.editIngredients(0, '200@@g--Spaghetti');
+          result.current.ingredients.editIngredients(
+            0,
+            '200@@g--Spaghetti',
+            makeFormApplyPatch(result.current.form.form)
+          );
         });
 
         await waitFor(() => {
-          const spaghetti = result.current.form.state.recipeIngredients.find(
-            i => i.name === 'Spaghetti'
-          );
+          const spaghetti = result.current.form.form
+            .getValues('recipeIngredients')
+            .find(i => i.name === 'Spaghetti');
           expect(spaghetti).toBeDefined();
           expect(spaghetti?.type).toBeDefined();
         });
@@ -1665,15 +1992,19 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
         });
 
         act(() => {
-          result.current.ingredients.editIngredients(0, '@@--Spaghetti');
+          result.current.ingredients.editIngredients(
+            0,
+            '@@--Spaghetti',
+            makeFormApplyPatch(result.current.form.form)
+          );
         });
 
         await waitFor(() => {
-          const updated = result.current.form.state.recipeIngredients[0];
+          const updated = result.current.form.form.getValues('recipeIngredients')[0];
           expect(updated.name).toBe('Spaghetti');
           expect(updated.unit).toBe(spaghettiIngredient.unit);
           expect(updated.quantity ?? '').toBe(spaghettiIngredient.quantity ?? '');
@@ -1703,15 +2034,19 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
         act(() => {
-          result.current.ingredients.editIngredients(0, '350@@kg--Spaghetti');
+          result.current.ingredients.editIngredients(
+            0,
+            '350@@kg--Spaghetti',
+            makeFormApplyPatch(result.current.form.form)
+          );
         });
 
         await waitFor(() => {
-          const updated = result.current.form.state.recipeIngredients[0];
+          const updated = result.current.form.form.getValues('recipeIngredients')[0];
           expect(updated.name).toBe('Spaghetti');
           expect(updated.unit).toBe('kg');
           expect(updated.quantity).toBe('350');
@@ -1773,20 +2108,24 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
         act(() => {
-          result.current.ingredients.editIngredients(0, '300@@piece--Spaghetti');
+          result.current.ingredients.editIngredients(
+            0,
+            '300@@piece--Spaghetti',
+            makeFormApplyPatch(result.current.form.form)
+          );
         });
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(2);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(2);
         });
 
-        const spaghetti = result.current.form.state.recipeIngredients.find(
-          i => i.name === 'Spaghetti'
-        );
+        const spaghetti = result.current.form.form
+          .getValues('recipeIngredients')
+          .find(i => i.name === 'Spaghetti');
         expect(spaghetti).toBeDefined();
         expect(spaghetti?.unit).toBe('piece');
       });
@@ -1846,20 +2185,24 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
         act(() => {
-          result.current.ingredients.editIngredients(0, '300@@g--Spaghetti');
+          result.current.ingredients.editIngredients(
+            0,
+            '300@@g--Spaghetti',
+            makeFormApplyPatch(result.current.form.form)
+          );
         });
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(2);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(2);
         });
 
-        const spaghetti = result.current.form.state.recipeIngredients.find(
-          i => i.name === 'Spaghetti'
-        );
+        const spaghetti = result.current.form.form
+          .getValues('recipeIngredients')
+          .find(i => i.name === 'Spaghetti');
         expect(spaghetti).toBeDefined();
         expect(Number(spaghetti?.quantity)).toBe(400);
       });
@@ -1880,20 +2223,21 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
-        const originalIngredient = result.current.form.state.recipeIngredients[0];
+        const originalIngredient = result.current.form.form.getValues('recipeIngredients')[0];
 
         act(() => {
           result.current.ingredients.editIngredients(
             0,
-            `${originalIngredient.quantity}@@${originalIngredient.unit}--${originalIngredient.name}`
+            `${originalIngredient.quantity}@@${originalIngredient.unit}--${originalIngredient.name}`,
+            makeFormApplyPatch(result.current.form.form)
           );
         });
 
         await waitFor(() => {
-          const updated = result.current.form.state.recipeIngredients[0];
+          const updated = result.current.form.form.getValues('recipeIngredients')[0];
           expect(updated.name).toBe(originalIngredient.name);
           expect(updated.quantity).toBe(originalIngredient.quantity);
           expect(updated.unit).toBe(originalIngredient.unit);
@@ -1926,224 +2270,22 @@ describe('useRecipeIngredients', () => {
         );
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(1);
+          expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
         });
 
         act(() => {
-          result.current.ingredients.editIngredients(0, '300@@g--Flour');
+          result.current.ingredients.editIngredients(
+            0,
+            '300@@g--Flour',
+            makeFormApplyPatch(result.current.form.form)
+          );
         });
 
         await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients[0].quantity).toBe('300');
+          expect(result.current.form.form.getValues('recipeIngredients')[0].quantity).toBe('300');
         });
 
-        expect(result.current.form.state.recipeIngredients[0].id).toBe(42);
-      });
-    });
-
-    describe('removeIngredient', () => {
-      test('removes ingredient at given index', async () => {
-        const wrapper = createIngredientsWrapper(
-          createMockRecipeProp('edit', recipeWithIngredients)
-        );
-
-        const { result } = renderHook(
-          () => ({
-            ingredients: useRecipeIngredients(),
-            form: useRecipeForm(),
-          }),
-          { wrapper }
-        );
-
-        await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
-        });
-
-        act(() => {
-          result.current.ingredients.removeIngredient(1);
-        });
-
-        await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(2);
-        });
-      });
-
-      test('removes first ingredient correctly', async () => {
-        const wrapper = createIngredientsWrapper(
-          createMockRecipeProp('edit', recipeWithIngredients)
-        );
-
-        const { result } = renderHook(
-          () => ({
-            ingredients: useRecipeIngredients(),
-            form: useRecipeForm(),
-          }),
-          { wrapper }
-        );
-
-        await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
-        });
-
-        act(() => {
-          result.current.ingredients.removeIngredient(0);
-        });
-
-        await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients[0].name).toBe('Sugar');
-        });
-      });
-
-      test('removes last ingredient correctly', async () => {
-        const wrapper = createIngredientsWrapper(
-          createMockRecipeProp('edit', recipeWithIngredients)
-        );
-
-        const { result } = renderHook(
-          () => ({
-            ingredients: useRecipeIngredients(),
-            form: useRecipeForm(),
-          }),
-          { wrapper }
-        );
-
-        await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
-        });
-
-        act(() => {
-          result.current.ingredients.removeIngredient(2);
-        });
-
-        await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(2);
-          expect(result.current.form.state.recipeIngredients[1].name).toBe('Sugar');
-        });
-      });
-
-      test('removes a middle ingredient correctly', async () => {
-        const wrapper = createIngredientsWrapper(
-          createMockRecipeProp('edit', recipeWithIngredients)
-        );
-
-        const { result } = renderHook(
-          () => ({
-            ingredients: useRecipeIngredients(),
-            form: useRecipeForm(),
-          }),
-          { wrapper }
-        );
-
-        await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
-        });
-
-        act(() => {
-          result.current.ingredients.removeIngredient(1);
-        });
-
-        await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients[0].name).toBe('Flour');
-          expect(result.current.form.state.recipeIngredients[1].name).toBe('Milk');
-        });
-      });
-
-      test('results in empty list when the only ingredient is removed', async () => {
-        const singleIngredientRecipe: recipeTableElement = {
-          ...recipeWithIngredients,
-          ingredients: [
-            {
-              id: 1,
-              name: 'Flour',
-              unit: 'g',
-              quantity: '200',
-              type: ingredientType.cereal,
-              season: [],
-            },
-          ],
-        };
-        const wrapper = createIngredientsWrapper(
-          createMockRecipeProp('edit', singleIngredientRecipe)
-        );
-
-        const { result } = renderHook(
-          () => ({
-            ingredients: useRecipeIngredients(),
-            form: useRecipeForm(),
-          }),
-          { wrapper }
-        );
-
-        await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(1);
-        });
-
-        act(() => {
-          result.current.ingredients.removeIngredient(0);
-        });
-
-        await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(0);
-        });
-      });
-
-      test('does not remove ingredient when index is out of range', async () => {
-        const wrapper = createIngredientsWrapper(
-          createMockRecipeProp('edit', recipeWithIngredients)
-        );
-
-        const { result } = renderHook(
-          () => ({
-            ingredients: useRecipeIngredients(),
-            form: useRecipeForm(),
-          }),
-          { wrapper }
-        );
-
-        await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
-        });
-
-        act(() => {
-          result.current.ingredients.removeIngredient(99);
-        });
-
-        await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
-        });
-      });
-
-      test('does not mutate data of remaining ingredients', async () => {
-        const wrapper = createIngredientsWrapper(
-          createMockRecipeProp('edit', recipeWithIngredients)
-        );
-
-        const { result } = renderHook(
-          () => ({
-            ingredients: useRecipeIngredients(),
-            form: useRecipeForm(),
-          }),
-          { wrapper }
-        );
-
-        await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(3);
-        });
-
-        act(() => {
-          result.current.ingredients.removeIngredient(1);
-        });
-
-        await waitFor(() => {
-          expect(result.current.form.state.recipeIngredients).toHaveLength(2);
-        });
-
-        expect(result.current.form.state.recipeIngredients[0].name).toBe('Flour');
-        expect(result.current.form.state.recipeIngredients[0].quantity).toBe('200');
-        expect(result.current.form.state.recipeIngredients[0].unit).toBe('g');
-        expect(result.current.form.state.recipeIngredients[1].name).toBe('Milk');
-        expect(result.current.form.state.recipeIngredients[1].quantity).toBe('250');
-        expect(result.current.form.state.recipeIngredients[1].unit).toBe('ml');
+        expect(result.current.form.form.getValues('recipeIngredients')[0].id).toBe(42);
       });
     });
   });
