@@ -88,15 +88,6 @@ export default ({config}: ConfigContext): ExpoConfig => {
             'expo-sqlite',
             'expo-mail-composer',
             'expo-background-task',
-            [
-                'expo-asset',
-                {
-                    assets: [
-                        './src/assets/app',
-                        './src/assets/images',
-                    ],
-                },
-            ],
             'expo-font',
             [
                 'expo-build-properties',
@@ -105,6 +96,8 @@ export default ({config}: ConfigContext): ExpoConfig => {
                         compileSdkVersion: 36,
                         targetSdkVersion: 36,
                         buildToolsVersion: '36.0.0',
+                        enableProguardInReleaseBuilds: true,
+                        enableShrinkResourcesInReleaseBuilds: true,
                     },
                     ios: {
                         deploymentTarget: '18.0',
@@ -112,6 +105,7 @@ export default ({config}: ConfigContext): ExpoConfig => {
                 },
             ],
             './modules/recipe-scraper/plugin/build/index.js',
+            './plugins/withAndroidLocaleFilters',
         ],
         extra: {
             eas: {
