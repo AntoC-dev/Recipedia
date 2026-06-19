@@ -32,6 +32,9 @@ ios/
 docs/
 jsdoc-output/
 
+# Store listing screenshots (binary images)
+store-listing/
+
 # Temporary files
 *.tmp
 *.temp
