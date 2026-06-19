@@ -45,6 +45,7 @@
     "release": "semantic-release",
     "security:audit": "npm audit --audit-level=moderate",
     "prepare": "husky",
+    "postinstall": "patch-package",
     "android": "expo run:android",
     "ios": "expo run:ios"
   },
@@ -174,6 +175,7 @@
     "junit-report-merger": "9.0.3",
     "lint-staged": "16.1.5",
     "metro-react-native-babel-preset": "~0.77.0",
+    "patch-package": "^8.0.1",
     "prettier": "^3.6.2",
     "pyodide": "0.28.3",
     "reassure": "1.4.0",
