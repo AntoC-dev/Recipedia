@@ -465,8 +465,8 @@ export async function copyDatasetImages(): Promise<void> {
 /**
  * Transforms dataset recipe images from bare filenames to full URIs
  *
- * Converts recipe image sources from simple filenames (e.g., 'spaghetti_bolognese.png')
- * to full file system URIs (e.g., 'file:///documents/Recipedia/spaghetti_bolognese.png').
+ * Converts recipe image sources from simple filenames (e.g., 'spaghetti_bolognese.webp')
+ * to full file system URIs (e.g., 'file:///documents/Recipedia/spaghetti_bolognese.webp').
  * This is used during dataset initialization to ensure dataset recipes use the same
  * URI format as user-created recipes.
  *

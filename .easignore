@@ -1,0 +1,47 @@
+# .easignore — paths excluded from the EAS build upload tarball.
+# Dev-only files (tests, docs, IDE config, build caches) are not needed by
+# the cloud build and only slow uploads / risk pulling junk into the app.
+# Do NOT add anything required at build or runtime (src/, the recipe-scraper
+# native/plugin/asset sources, app.config.ts, metro/babel configs).
+
+# Tests — exclude all test code EXCEPT tests/data/, which holds runtime seed
+# data imported by src/utils/DatasetLoader.ts (@test-data alias). gitignore
+# semantics can't re-include a subdir under an excluded parent, so list each.
+tests/unit/
+tests/integration/
+tests/e2e/
+tests/perf/
+tests/mocks/
+tests/helpers/
+tests/assets/
+tests/setup.js
+tests/setup-community-mocks.js
+*.test.ts
+*.test.tsx
+.reassure/
+jest-results.json
+
+# Documentation
+docs/
+guides/
+CHANGELOG.md
+
+# Coverage reports
+coverage/
+
+# Store assets (screenshots etc. — not bundled into the app)
+store-listing/
+
+# Python dev-only artifacts. The python/ dir must stay: scraper.py is bundled
+# into the APK by Chaquopy (sourceSet python.srcDir "../python") and the iOS
+# Pyodide bundle, and python/tests/ is run at build time by the mandatory
+# :recipe-scraper:testPython gradle task (assemble dependsOn testPython). Only
+# the regenerable venv/cache artifacts are safe to drop.
+.pytest_cache/
+modules/recipe-scraper/python/.venv/
+modules/recipe-scraper/android/build/
+
+# IDE / editor / tooling config
+.idea/
+.windsurf/
+.husky/

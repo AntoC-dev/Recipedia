@@ -2,7 +2,7 @@ import { ingredientType, recipeTableElement } from '@customTypes/DatabaseElement
 
 export const englishRecipes: recipeTableElement[] = [
   {
-    image_Source: 'spaghetti_bolognaise.png',
+    image_Source: 'spaghetti_bolognaise.webp',
     title: 'Spaghetti Bolognese',
     description: 'A classic Italian dish with a savory meat sauce.',
     tags: [{ name: 'Italian' }, { name: 'Dinner' }],
@@ -108,7 +108,7 @@ export const englishRecipes: recipeTableElement[] = [
     },
   },
   {
-    image_Source: 'soupe_legumes_hiver.png',
+    image_Source: 'soupe_legumes_hiver.webp',
     title: 'Winter Vegetable Soup',
     description: 'A comforting seasonal vegetable soup, perfect for cold days.',
     tags: [{ name: 'French' }, { name: 'Soup' }, { name: 'Healthy' }, { name: 'Vegetarian' }],
@@ -208,7 +208,7 @@ export const englishRecipes: recipeTableElement[] = [
     },
   },
   {
-    image_Source: 'curry_lentilles_corail.png',
+    image_Source: 'curry_lentilles_corail.webp',
     title: 'Red Lentil Curry',
     description: 'A flavorful and spicy vegetarian dish with red lentils and coconut milk.',
     tags: [{ name: 'Indian' }, { name: 'Vegetarian' }, { name: 'Quick' }, { name: 'Healthy' }],
@@ -322,7 +322,7 @@ export const englishRecipes: recipeTableElement[] = [
     },
   },
   {
-    image_Source: 'salade_cesar_poulet.png',
+    image_Source: 'salade_cesar_poulet.webp',
     title: 'Chicken Caesar Salad',
     description: 'A fresh and crunchy salad with grilled chicken and Parmesan.',
     tags: [{ name: 'Salad' }, { name: 'Lunch' }, { name: 'Quick' }],
@@ -422,7 +422,7 @@ export const englishRecipes: recipeTableElement[] = [
     },
   },
   {
-    image_Source: 'risotto_champignons.png',
+    image_Source: 'risotto_champignons.webp',
     title: 'Mushroom Risotto',
     description: 'A creamy risotto with button mushrooms and Parmesan.',
     tags: [{ name: 'Italian' }, { name: 'Vegetarian' }, { name: 'Dinner' }],
@@ -535,7 +535,7 @@ export const englishRecipes: recipeTableElement[] = [
     },
   },
   {
-    image_Source: 'tacos_poulet.png',
+    image_Source: 'tacos_poulet.webp',
     title: 'Chicken Tacos',
     description: 'Colorful and flavorful tacos with marinated chicken and crunchy vegetables.',
     tags: [{ name: 'Mexican' }, { name: 'Quick' }, { name: 'Dinner' }],
@@ -656,7 +656,7 @@ export const englishRecipes: recipeTableElement[] = [
     },
   },
   {
-    image_Source: 'quiche_lorraine.png',
+    image_Source: 'quiche_lorraine.webp',
     title: 'Quiche Lorraine',
     description: 'Traditional French quiche with bacon and cream.',
     tags: [{ name: 'French' }, { name: 'Lunch' }, { name: 'Appetizer' }],
@@ -757,7 +757,7 @@ export const englishRecipes: recipeTableElement[] = [
     },
   },
   {
-    image_Source: 'poelee_legumes_mediterraneens.png',
+    image_Source: 'poelee_legumes_mediterraneens.webp',
     title: 'Mediterranean Vegetable Pan',
     description: 'A colorful mix of sun-kissed vegetables, perfect as a side dish or main course.',
     tags: [
@@ -870,7 +870,7 @@ export const englishRecipes: recipeTableElement[] = [
     },
   },
   {
-    image_Source: 'saumon_grille_brocoli.png',
+    image_Source: 'saumon_grille_brocoli.webp',
     title: 'Grilled Salmon with Broccoli',
     description: 'A healthy and balanced dish with grilled salmon and steamed broccoli.',
     tags: [{ name: 'Healthy' }, { name: 'Quick' }, { name: 'Dinner' }],
@@ -970,7 +970,7 @@ export const englishRecipes: recipeTableElement[] = [
     },
   },
   {
-    image_Source: 'butternut_rotie.png',
+    image_Source: 'butternut_rotie.webp',
     title: 'Roasted Butternut Squash',
     description: 'Oven-roasted butternut squash with aromatic herbs.',
     tags: [{ name: 'Vegetarian' }, { name: 'Healthy' }, { name: 'Vegan' }],
