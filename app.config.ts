@@ -20,25 +20,42 @@ function versionToCode(version: string): number {
     return major * 10000 + minor * 100 + patch;
 }
 
+/**
+ * Resolves the iOS bundle identifier for a build.
+ *
+ * iOS is republished under a new App Store identity, so only the store build
+ * uses the suffixed id (`<baseAppId>.ios`); every other build (Maestro E2E, dev,
+ * simulator) keeps the plain `baseAppId`, identical to Android, so the E2E flows
+ * can launch a single shared bundle id.
+ *
+ * The store build is detected via `EXPO_PUBLIC_DATASET_TYPE === 'production'`,
+ * which only the `production` EAS profile sets in its `env` block. This is used
+ * instead of `EAS_BUILD_PROFILE` because EAS only injects `EAS_BUILD_PROFILE`
+ * into the build job, whereas the bundle id is resolved earlier, when `eas build`
+ * evaluates this config to set up credentials — before the job env exists. A
+ * build-profile `env` var is applied at config-evaluation time, so it resolves
+ * the same bundle id for both local (`eas build --local`) and cloud builds.
+ *
+ * @param baseAppId - The platform-agnostic application id (e.g. `com.recipedia`).
+ * @param env - Environment variables to read the dataset type from. Defaults to
+ *   `process.env`.
+ * @returns The store bundle id (`<baseAppId>.ios`) for production builds,
+ *   otherwise `baseAppId`.
+ */
+export function resolveIosBundleId(
+    baseAppId: string,
+    env: Record<string, string | undefined> = process.env,
+): string {
+    const isStoreBuild = env.EXPO_PUBLIC_DATASET_TYPE === 'production';
+    return isStoreBuild ? `${baseAppId}.ios` : baseAppId;
+}
+
 const configuredName = toSlug(pkg.name);
 const appId = `com.${toIdentifierSegment(pkg.name)}`;
 
-// iOS is being republished under a new App Store identity, so the store build
-// uses a distinct bundle id (`<appId>.ios`). Only the `production` EAS profile
-// gets that id; every other build (Maestro E2E, dev, simulator) keeps the plain
-// `appId`, identical to Android.
-//
-// Why: Maestro identifies the app solely by bundle id and the E2E flows hardcode
-// a single `appId: 'com.recipedia'` shared across both platforms. If the iOS test
-// build also carried the `.ios` suffix, Maestro would try to launch a bundle id
-// that isn't installed and every iOS suite would fail. Gating the suffix to store
-// builds keeps the test bundle id aligned with Android, so the flows stay
-// platform-agnostic and any single flow can be run directly without extra env.
-//
-// Test builds are simulator-only and never submitted, so reusing `com.recipedia`
-// for them cannot collide with the published `com.recipedia.ios` App Store app.
-const isStoreBuild = process.env.EAS_BUILD_PROFILE === 'production';
-const iosAppId = isStoreBuild ? `${appId}.ios` : appId;
+// Maestro E2E flows hardcode a single `com.recipedia` shared across platforms,
+// so only the store build carries the `.ios` suffix. See `resolveIosBundleId`.
+const iosAppId = resolveIosBundleId(appId);
 
 const primaryColorLight = '#006D38';
 const primaryColorDark = '#79DB95';
