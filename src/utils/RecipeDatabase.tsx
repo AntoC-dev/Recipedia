@@ -685,21 +685,23 @@ export class RecipeDatabase {
   /**
    * Updates an existing recipe in the database.
    *
-   * Saves any temporary image to permanent storage before persisting the
-   * update, then refreshes the in-memory cache and notifies `recipes` subscribers.
+   * Verifies all tags and ingredients exist in the database and saves any
+   * temporary image to permanent storage before persisting the update, then
+   * refreshes the in-memory cache and notifies `recipes` subscribers.
    *
    * @param recipe - The recipe to update. Must have a valid `id`.
-   * @returns The updated recipe object (same reference as the input).
+   * @returns The prepared recipe object with verified tags and ingredients.
    * @throws Error if `recipe.id` is undefined.
+   * @throws Error if any tags or ingredients are not found in the database.
    */
   public async editRecipe(recipe: recipeTableElement) {
     if (recipe.id === undefined) {
       throw new Error(`Cannot edit recipe without ID: ${recipe.title}`);
     }
 
-    recipe.image_Source = await this.prepareRecipeImage(recipe.image_Source, recipe.title);
+    const preparedRecipe = await this.prepareRecipe(recipe);
 
-    const updateMap = this.constructUpdateRecipeStructure(this.encodeRecipe(recipe));
+    const updateMap = this.constructUpdateRecipeStructure(this.encodeRecipe(preparedRecipe));
     databaseLogger.debug('Editing recipe', { recipeId: recipe.id, recipeTitle: recipe.title });
     const success = await this._recipesTable.editElementById(
       recipe.id,
@@ -707,7 +709,7 @@ export class RecipeDatabase {
       this._dbConnection
     );
     if (success) {
-      this.update_recipe(recipe);
+      this.update_recipe(preparedRecipe);
       this._recipes = [...this._recipes];
       this.notify('recipes');
       databaseLogger.debug('Recipe edited successfully', { recipeId: recipe.id });
@@ -717,7 +719,7 @@ export class RecipeDatabase {
         recipeTitle: recipe.title,
       });
     }
-    return recipe;
+    return preparedRecipe;
   }
 
   /**
@@ -2223,7 +2225,8 @@ export class RecipeDatabase {
    *
    * @private
    * @param ingredientToEncode - The ingredient object to encode
-   * @returns Encoded string, or empty string if ingredient not found in database
+   * @returns Encoded string representation of the ingredient
+   * @throws Error if the ingredient cannot be resolved in the database
    *
    * @example
    * // Without note
@@ -2235,19 +2238,18 @@ export class RecipeDatabase {
   private encodeIngredient(ingredientToEncode: ingredientTableElement): string {
     const quantity = ingredientToEncode.quantity ? ingredientToEncode.quantity.toString() : '';
     const note = ingredientToEncode.note || '';
-    let idForEncoding: number;
-    if (ingredientToEncode.id === undefined) {
+    let idForEncoding = ingredientToEncode.id;
+    if (idForEncoding === undefined) {
       const foundIngredient = this.find_ingredient(ingredientToEncode);
-      if (foundIngredient === undefined || foundIngredient.id === undefined) {
-        databaseLogger.warn('Cannot encode ingredient - not found in database', {
+      if (foundIngredient?.id === undefined) {
+        databaseLogger.error('Cannot encode ingredient - not found in database', {
           ingredientName: ingredientToEncode.name,
         });
-        return '';
-      } else {
-        idForEncoding = foundIngredient.id;
+        throw new Error(
+          `Cannot encode recipe: ingredient not found in database: ${ingredientToEncode.name}`
+        );
       }
-    } else {
-      idForEncoding = ingredientToEncode.id;
+      idForEncoding = foundIngredient.id;
     }
     const baseEncoding = idForEncoding + textSeparator + quantity;
     return note ? baseEncoding + noteSeparator + note : baseEncoding;
@@ -2442,19 +2444,19 @@ export class RecipeDatabase {
    *
    * @private
    * @param tag - The tag object to encode
-   * @returns String representation of the tag's database ID, or error message if not found
+   * @returns String representation of the tag's database ID
+   * @throws Error if the tag cannot be resolved in the database
    */
   private encodeTagForRecipe(tag: tagTableElement): string {
-    if (tag.id === undefined) {
-      const foundedTag = this.find_tag(tag);
-      if (foundedTag && foundedTag.id) {
-        return foundedTag.id.toString();
-      } else {
-        return 'ERROR : tag not found';
-      }
-    } else {
+    if (tag.id !== undefined) {
       return tag.id.toString();
     }
+    const foundedTag = this.find_tag(tag);
+    if (foundedTag?.id) {
+      return foundedTag.id.toString();
+    }
+    databaseLogger.error('Cannot encode tag - not found in database', { tagName: tag.name });
+    throw new Error(`Cannot encode recipe: tag not found in database: ${tag.name}`);
   }
 
   /**

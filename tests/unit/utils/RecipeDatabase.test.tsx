@@ -733,6 +733,49 @@ describe('RecipeDatabase', () => {
         expect(updated?.persons).toBe(4);
         expect(updated?.ingredients).toEqual([]);
       });
+
+      test('rejects and leaves the recipe untouched when a tag is unresolved', async () => {
+        const originalRecipe = db.get_recipes()[0];
+        const scaledRecipe = RecipeDatabase.scaleRecipeToPersons(originalRecipe, 6);
+        const scaledWithUnresolvedTag = {
+          ...scaledRecipe,
+          tags: [...scaledRecipe.tags, { name: 'Unresolved Tag' }],
+        };
+
+        await expect(db.scaleAndUpdateRecipe(scaledWithUnresolvedTag)).rejects.toThrow(
+          /tag not found/i
+        );
+
+        const reloaded = db.get_recipes().find(r => r.id === originalRecipe.id);
+        expect(reloaded?.tags).toEqual(originalRecipe.tags);
+        expect(reloaded?.persons).toBe(originalRecipe.persons);
+      });
+
+      test('rejects and leaves the recipe untouched when an ingredient is unresolved', async () => {
+        const originalRecipe = db.get_recipes()[0];
+        const scaledRecipe = RecipeDatabase.scaleRecipeToPersons(originalRecipe, 6);
+        const scaledWithUnresolvedIngredient = {
+          ...scaledRecipe,
+          ingredients: [
+            ...scaledRecipe.ingredients,
+            {
+              name: 'Unresolved Ingredient',
+              unit: 'g',
+              type: ingredientType.vegetable,
+              season: ['1'],
+              quantity: '100',
+            },
+          ],
+        };
+
+        await expect(db.scaleAndUpdateRecipe(scaledWithUnresolvedIngredient)).rejects.toThrow(
+          /ingredient not found/i
+        );
+
+        const reloaded = db.get_recipes().find(r => r.id === originalRecipe.id);
+        expect(reloaded?.ingredients).toEqual(originalRecipe.ingredients);
+        expect(reloaded?.persons).toBe(originalRecipe.persons);
+      });
     });
 
     // TODO found a test where the insertion fails
@@ -1704,6 +1747,131 @@ describe('RecipeDatabase', () => {
       await db.addMultipleRecipes(recipesWithNoIngredients);
 
       expect(db.get_recipes().length).toBe(0);
+    });
+  });
+
+  describe('editRecipe verification behavior', () => {
+    const db = RecipeDatabase.getInstance();
+
+    beforeEach(async () => {
+      await db.init();
+      await db.addMultipleIngredients(testIngredients);
+      await db.addMultipleTags(testTags);
+      await db.addMultipleRecipes(testRecipes);
+    });
+
+    afterEach(async () => {
+      await db.closeAndReset();
+    });
+
+    test('throws when an edited recipe contains an unpersisted tag', async () => {
+      const existing = db.get_recipes()[0];
+      const edited = {
+        ...existing,
+        tags: [...existing.tags, { id: -1, name: 'Unpersisted Tag' }],
+      };
+
+      await expect(db.editRecipe(edited)).rejects.toThrow(/Tags not found in database:/);
+
+      const reloaded = db.get_recipes().find(r => r.id === existing.id);
+      expect(reloaded?.tags).toEqual(existing.tags);
+    });
+
+    test('throws when an edited recipe contains an unpersisted ingredient', async () => {
+      const existing = db.get_recipes()[0];
+      const edited = {
+        ...existing,
+        ingredients: [
+          ...existing.ingredients,
+          {
+            id: -1,
+            name: 'Unpersisted Ingredient',
+            unit: 'g',
+            type: ingredientType.vegetable,
+            season: ['1'],
+            quantity: '100',
+          },
+        ],
+      };
+
+      await expect(db.editRecipe(edited)).rejects.toThrow(/Ingredients not found in database:/);
+
+      const reloaded = db.get_recipes().find(r => r.id === existing.id);
+      expect(reloaded?.ingredients).toEqual(existing.ingredients);
+    });
+
+    test('edits successfully when all tags and ingredients are persisted', async () => {
+      const existing = db.get_recipes()[0];
+      const edited = { ...existing, title: 'Verified Edit' };
+
+      await expect(db.editRecipe(edited)).resolves.toMatchObject({ title: 'Verified Edit' });
+
+      const reloaded = db.get_recipes().find(r => r.id === existing.id);
+      expect(reloaded?.title).toBe('Verified Edit');
+      expect(reloaded?.tags).toEqual(existing.tags);
+      expect(reloaded?.ingredients).toEqual(existing.ingredients);
+    });
+  });
+
+  describe('encoder error handling', () => {
+    const db = RecipeDatabase.getInstance();
+
+    beforeEach(async () => {
+      await db.init();
+    });
+
+    afterEach(async () => {
+      await db.closeAndReset();
+    });
+
+    const getEncodeTagForRecipe = () =>
+      (
+        db as unknown as { encodeTagForRecipe: (tag: tagTableElement) => string }
+      ).encodeTagForRecipe.bind(db);
+    const getEncodeIngredient = () =>
+      (
+        db as unknown as { encodeIngredient: (ing: ingredientTableElement) => string }
+      ).encodeIngredient.bind(db);
+
+    test('encodeTagForRecipe throws when the tag cannot be resolved', () => {
+      expect(() => getEncodeTagForRecipe()({ name: 'Ghost Tag' })).toThrow(/tag not found/i);
+    });
+
+    test('encodeTagForRecipe resolves an id-less tag by name', async () => {
+      await db.addMultipleTags(testTags);
+      const persisted = db.get_tags()[0];
+
+      expect(getEncodeTagForRecipe()({ name: persisted.name })).toBe(persisted.id?.toString());
+    });
+
+    test('encodeIngredient throws when the ingredient cannot be resolved', () => {
+      expect(() =>
+        getEncodeIngredient()({
+          name: 'Ghost Ingredient',
+          unit: 'g',
+          type: ingredientType.vegetable,
+          season: ['1'],
+          quantity: '100',
+        })
+      ).toThrow(/ingredient not found/i);
+    });
+
+    test('encodeIngredient resolves an id-less ingredient by name', async () => {
+      await db.addMultipleIngredients(testIngredients);
+      const persisted = db.get_ingredients()[0];
+
+      expect(getEncodeIngredient()({ ...persisted, id: undefined, quantity: '200' })).toBe(
+        `${persisted.id}--200`
+      );
+    });
+
+    test('encodeIngredient appends a note to the resolved encoding', async () => {
+      await db.addMultipleIngredients(testIngredients);
+      const persisted = db.get_ingredients()[0];
+
+      expect(
+        getEncodeIngredient()({ ...persisted, id: undefined, quantity: '200', note: 'For sauce' })
+      ).toBe(`${persisted.id}--200%%For sauce`);
     });
   });
 
