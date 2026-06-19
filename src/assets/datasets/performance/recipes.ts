@@ -6,7 +6,7 @@ import { ingredientType, recipeTableElement } from '@customTypes/DatabaseElement
 export const performanceRecipes: recipeTableElement[] = [
   {
     id: 1,
-    image_Source: 'spaghetti_bolognese.png',
+    image_Source: 'spaghetti_bolognese.webp',
     title: 'Spaghetti Bolognese',
     description: 'A classic Italian pasta dish with rich meat sauce.',
     tags: [
@@ -108,7 +108,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 2,
-    image_Source: 'taco_shell.png',
+    image_Source: 'taco_shell.webp',
     title: 'Chicken Tacos',
     description: 'Mexican-style tacos with seasoned chicken.',
     tags: [
@@ -186,7 +186,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 3,
-    image_Source: 'classic_pancakes.png',
+    image_Source: 'classic_pancakes.webp',
     title: 'Classic Pancakes',
     description: 'Fluffy and golden pancakes for breakfast.',
     tags: [
@@ -265,7 +265,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 4,
-    image_Source: 'caesar_salad.png',
+    image_Source: 'caesar_salad.webp',
     title: 'Caesar Salad',
     description: 'Crisp lettuce with creamy Caesar dressing.',
     tags: [
@@ -373,7 +373,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 5,
-    image_Source: 'margherita_pizza.png',
+    image_Source: 'margherita_pizza.webp',
     title: 'Margherita Pizza',
     description: 'Classic pizza with tomato and mozzarella.',
     tags: [
@@ -453,7 +453,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 6,
-    image_Source: 'vegetable_soup.png',
+    image_Source: 'vegetable_soup.webp',
     title: 'Vegetable Soup',
     description: 'A warm and hearty vegetable soup.',
     tags: [
@@ -577,7 +577,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 7,
-    image_Source: 'chocolate_cake.png',
+    image_Source: 'chocolate_cake.webp',
     title: 'Chocolate Cake',
     description: 'Rich and moist chocolate cake.',
     tags: [
@@ -697,7 +697,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 8,
-    image_Source: 'pesto_pasta.png',
+    image_Source: 'pesto_pasta.webp',
     title: 'Pesto Pasta',
     description: 'Pasta tossed with fresh basil pesto.',
     tags: [
@@ -816,7 +816,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 9,
-    image_Source: 'sushi_rolls.png',
+    image_Source: 'sushi_rolls.webp',
     title: 'Sushi Rolls',
     description: 'Classic sushi rolls with nori, rice, and fillings.',
     tags: [
@@ -943,7 +943,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 10,
-    image_Source: 'lentil_curry.png',
+    image_Source: 'lentil_curry.webp',
     title: 'Lentil Curry',
     description: 'A spicy and flavorful lentil curry.',
     tags: [
@@ -1046,7 +1046,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 11,
-    image_Source: 'spaghetti_bolognese.png',
+    image_Source: 'spaghetti_bolognese.webp',
     title: 'Spaghetti Bolognese #2',
     description: 'A classic Italian pasta dish with rich meat sauce.',
     tags: [
@@ -1133,7 +1133,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 12,
-    image_Source: 'taco_shell.png',
+    image_Source: 'taco_shell.webp',
     title: 'Chicken Tacos #2',
     description: 'Mexican-style tacos with seasoned chicken.',
     tags: [
@@ -1212,7 +1212,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 13,
-    image_Source: 'classic_pancakes.png',
+    image_Source: 'classic_pancakes.webp',
     title: 'Classic Pancakes #2',
     description: 'Fluffy and golden pancakes for breakfast.',
     tags: [
@@ -1298,7 +1298,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 14,
-    image_Source: 'caesar_salad.png',
+    image_Source: 'caesar_salad.webp',
     title: 'Caesar Salad #2',
     description: 'Crisp lettuce with creamy Caesar dressing.',
     tags: [
@@ -1413,7 +1413,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 15,
-    image_Source: 'margherita_pizza.png',
+    image_Source: 'margherita_pizza.webp',
     title: 'Margherita Pizza #2',
     description: 'Classic pizza with tomato and mozzarella.',
     tags: [
@@ -1523,7 +1523,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 16,
-    image_Source: 'vegetable_soup.png',
+    image_Source: 'vegetable_soup.webp',
     title: 'Vegetable Soup #2',
     description: 'A warm and hearty vegetable soup.',
     tags: [
@@ -1651,7 +1651,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 17,
-    image_Source: 'chocolate_cake.png',
+    image_Source: 'chocolate_cake.webp',
     title: 'Chocolate Cake #2',
     description: 'Rich and moist chocolate cake.',
     tags: [
@@ -1780,7 +1780,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 18,
-    image_Source: 'pesto_pasta.png',
+    image_Source: 'pesto_pasta.webp',
     title: 'Pesto Pasta #2',
     description: 'Pasta tossed with fresh basil pesto.',
     tags: [
@@ -1903,7 +1903,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 19,
-    image_Source: 'sushi_rolls.png',
+    image_Source: 'sushi_rolls.webp',
     title: 'Sushi Rolls #2',
     description: 'Classic sushi rolls with nori, rice, and fillings.',
     tags: [
@@ -1983,7 +1983,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 20,
-    image_Source: 'lentil_curry.png',
+    image_Source: 'lentil_curry.webp',
     title: 'Lentil Curry #2',
     description: 'A spicy and flavorful lentil curry.',
     tags: [
@@ -2107,7 +2107,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 21,
-    image_Source: 'spaghetti_bolognese.png',
+    image_Source: 'spaghetti_bolognese.webp',
     title: 'Spaghetti Bolognese #3',
     description: 'A classic Italian pasta dish with rich meat sauce.',
     tags: [
@@ -2227,7 +2227,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 22,
-    image_Source: 'taco_shell.png',
+    image_Source: 'taco_shell.webp',
     title: 'Chicken Tacos #3',
     description: 'Mexican-style tacos with seasoned chicken.',
     tags: [
@@ -2314,7 +2314,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 23,
-    image_Source: 'classic_pancakes.png',
+    image_Source: 'classic_pancakes.webp',
     title: 'Classic Pancakes #3',
     description: 'Fluffy and golden pancakes for breakfast.',
     tags: [
@@ -2434,7 +2434,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 24,
-    image_Source: 'caesar_salad.png',
+    image_Source: 'caesar_salad.webp',
     title: 'Caesar Salad #3',
     description: 'Crisp lettuce with creamy Caesar dressing.',
     tags: [
@@ -2537,7 +2537,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 25,
-    image_Source: 'margherita_pizza.png',
+    image_Source: 'margherita_pizza.webp',
     title: 'Margherita Pizza #3',
     description: 'Classic pizza with tomato and mozzarella.',
     tags: [
@@ -2648,7 +2648,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 26,
-    image_Source: 'vegetable_soup.png',
+    image_Source: 'vegetable_soup.webp',
     title: 'Vegetable Soup #3',
     description: 'A warm and hearty vegetable soup.',
     tags: [
@@ -2734,7 +2734,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 27,
-    image_Source: 'chocolate_cake.png',
+    image_Source: 'chocolate_cake.webp',
     title: 'Chocolate Cake #3',
     description: 'Rich and moist chocolate cake.',
     tags: [
@@ -2840,7 +2840,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 28,
-    image_Source: 'pesto_pasta.png',
+    image_Source: 'pesto_pasta.webp',
     title: 'Pesto Pasta #3',
     description: 'Pasta tossed with fresh basil pesto.',
     tags: [
@@ -2927,7 +2927,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 29,
-    image_Source: 'sushi_rolls.png',
+    image_Source: 'sushi_rolls.webp',
     title: 'Sushi Rolls #3',
     description: 'Classic sushi rolls with nori, rice, and fillings.',
     tags: [
@@ -3049,7 +3049,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 30,
-    image_Source: 'lentil_curry.png',
+    image_Source: 'lentil_curry.webp',
     title: 'Lentil Curry #3',
     description: 'A spicy and flavorful lentil curry.',
     tags: [
@@ -3137,7 +3137,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 31,
-    image_Source: 'spaghetti_bolognese.png',
+    image_Source: 'spaghetti_bolognese.webp',
     title: 'Spaghetti Bolognese #4',
     description: 'A classic Italian pasta dish with rich meat sauce.',
     tags: [
@@ -3232,7 +3232,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 32,
-    image_Source: 'taco_shell.png',
+    image_Source: 'taco_shell.webp',
     title: 'Chicken Tacos #4',
     description: 'Mexican-style tacos with seasoned chicken.',
     tags: [
@@ -3312,7 +3312,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 33,
-    image_Source: 'classic_pancakes.png',
+    image_Source: 'classic_pancakes.webp',
     title: 'Classic Pancakes #4',
     description: 'Fluffy and golden pancakes for breakfast.',
     tags: [
@@ -3399,7 +3399,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 34,
-    image_Source: 'caesar_salad.png',
+    image_Source: 'caesar_salad.webp',
     title: 'Caesar Salad #4',
     description: 'Crisp lettuce with creamy Caesar dressing.',
     tags: [
@@ -3490,7 +3490,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 35,
-    image_Source: 'margherita_pizza.png',
+    image_Source: 'margherita_pizza.webp',
     title: 'Margherita Pizza #4',
     description: 'Classic pizza with tomato and mozzarella.',
     tags: [
@@ -3617,7 +3617,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 36,
-    image_Source: 'vegetable_soup.png',
+    image_Source: 'vegetable_soup.webp',
     title: 'Vegetable Soup #4',
     description: 'A warm and hearty vegetable soup.',
     tags: [
@@ -3703,7 +3703,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 37,
-    image_Source: 'chocolate_cake.png',
+    image_Source: 'chocolate_cake.webp',
     title: 'Chocolate Cake #4',
     description: 'Rich and moist chocolate cake.',
     tags: [
@@ -3805,7 +3805,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 38,
-    image_Source: 'pesto_pasta.png',
+    image_Source: 'pesto_pasta.webp',
     title: 'Pesto Pasta #4',
     description: 'Pasta tossed with fresh basil pesto.',
     tags: [
@@ -3899,7 +3899,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 39,
-    image_Source: 'sushi_rolls.png',
+    image_Source: 'sushi_rolls.webp',
     title: 'Sushi Rolls #4',
     description: 'Classic sushi rolls with nori, rice, and fillings.',
     tags: [
@@ -4004,7 +4004,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 40,
-    image_Source: 'lentil_curry.png',
+    image_Source: 'lentil_curry.webp',
     title: 'Lentil Curry #4',
     description: 'A spicy and flavorful lentil curry.',
     tags: [
@@ -4132,7 +4132,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 41,
-    image_Source: 'spaghetti_bolognese.png',
+    image_Source: 'spaghetti_bolognese.webp',
     title: 'Spaghetti Bolognese #5',
     description: 'A classic Italian pasta dish with rich meat sauce.',
     tags: [
@@ -4236,7 +4236,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 42,
-    image_Source: 'taco_shell.png',
+    image_Source: 'taco_shell.webp',
     title: 'Chicken Tacos #5',
     description: 'Mexican-style tacos with seasoned chicken.',
     tags: [
@@ -4356,7 +4356,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 43,
-    image_Source: 'classic_pancakes.png',
+    image_Source: 'classic_pancakes.webp',
     title: 'Classic Pancakes #5',
     description: 'Fluffy and golden pancakes for breakfast.',
     tags: [
@@ -4452,7 +4452,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 44,
-    image_Source: 'caesar_salad.png',
+    image_Source: 'caesar_salad.webp',
     title: 'Caesar Salad #5',
     description: 'Crisp lettuce with creamy Caesar dressing.',
     tags: [
@@ -4524,7 +4524,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 45,
-    image_Source: 'margherita_pizza.png',
+    image_Source: 'margherita_pizza.webp',
     title: 'Margherita Pizza #5',
     description: 'Classic pizza with tomato and mozzarella.',
     tags: [
@@ -4620,7 +4620,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 46,
-    image_Source: 'vegetable_soup.png',
+    image_Source: 'vegetable_soup.webp',
     title: 'Vegetable Soup #5',
     description: 'A warm and hearty vegetable soup.',
     tags: [
@@ -4722,7 +4722,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 47,
-    image_Source: 'chocolate_cake.png',
+    image_Source: 'chocolate_cake.webp',
     title: 'Chocolate Cake #5',
     description: 'Rich and moist chocolate cake.',
     tags: [
@@ -4829,7 +4829,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 48,
-    image_Source: 'pesto_pasta.png',
+    image_Source: 'pesto_pasta.webp',
     title: 'Pesto Pasta #5',
     description: 'Pasta tossed with fresh basil pesto.',
     tags: [
@@ -4933,7 +4933,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 49,
-    image_Source: 'sushi_rolls.png',
+    image_Source: 'sushi_rolls.webp',
     title: 'Sushi Rolls #5',
     description: 'Classic sushi rolls with nori, rice, and fillings.',
     tags: [
@@ -5021,7 +5021,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 50,
-    image_Source: 'lentil_curry.png',
+    image_Source: 'lentil_curry.webp',
     title: 'Lentil Curry #5',
     description: 'A spicy and flavorful lentil curry.',
     tags: [
@@ -5147,7 +5147,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 51,
-    image_Source: 'spaghetti_bolognese.png',
+    image_Source: 'spaghetti_bolognese.webp',
     title: 'Spaghetti Bolognese #6',
     description: 'A classic Italian pasta dish with rich meat sauce.',
     tags: [
@@ -5238,7 +5238,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 52,
-    image_Source: 'taco_shell.png',
+    image_Source: 'taco_shell.webp',
     title: 'Chicken Tacos #6',
     description: 'Mexican-style tacos with seasoned chicken.',
     tags: [
@@ -5318,7 +5318,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 53,
-    image_Source: 'classic_pancakes.png',
+    image_Source: 'classic_pancakes.webp',
     title: 'Classic Pancakes #6',
     description: 'Fluffy and golden pancakes for breakfast.',
     tags: [
@@ -5406,7 +5406,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 54,
-    image_Source: 'caesar_salad.png',
+    image_Source: 'caesar_salad.webp',
     title: 'Caesar Salad #6',
     description: 'Crisp lettuce with creamy Caesar dressing.',
     tags: [
@@ -5493,7 +5493,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 55,
-    image_Source: 'margherita_pizza.png',
+    image_Source: 'margherita_pizza.webp',
     title: 'Margherita Pizza #6',
     description: 'Classic pizza with tomato and mozzarella.',
     tags: [
@@ -5622,7 +5622,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 56,
-    image_Source: 'vegetable_soup.png',
+    image_Source: 'vegetable_soup.webp',
     title: 'Vegetable Soup #6',
     description: 'A warm and hearty vegetable soup.',
     tags: [
@@ -5726,7 +5726,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 57,
-    image_Source: 'chocolate_cake.png',
+    image_Source: 'chocolate_cake.webp',
     title: 'Chocolate Cake #6',
     description: 'Rich and moist chocolate cake.',
     tags: [
@@ -5854,7 +5854,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 58,
-    image_Source: 'pesto_pasta.png',
+    image_Source: 'pesto_pasta.webp',
     title: 'Pesto Pasta #6',
     description: 'Pasta tossed with fresh basil pesto.',
     tags: [
@@ -5972,7 +5972,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 59,
-    image_Source: 'sushi_rolls.png',
+    image_Source: 'sushi_rolls.webp',
     title: 'Sushi Rolls #6',
     description: 'Classic sushi rolls with nori, rice, and fillings.',
     tags: [
@@ -6077,7 +6077,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 60,
-    image_Source: 'lentil_curry.png',
+    image_Source: 'lentil_curry.webp',
     title: 'Lentil Curry #6',
     description: 'A spicy and flavorful lentil curry.',
     tags: [
@@ -6195,7 +6195,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 61,
-    image_Source: 'spaghetti_bolognese.png',
+    image_Source: 'spaghetti_bolognese.webp',
     title: 'Spaghetti Bolognese #7',
     description: 'A classic Italian pasta dish with rich meat sauce.',
     tags: [
@@ -6299,7 +6299,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 62,
-    image_Source: 'taco_shell.png',
+    image_Source: 'taco_shell.webp',
     title: 'Chicken Tacos #7',
     description: 'Mexican-style tacos with seasoned chicken.',
     tags: [
@@ -6418,7 +6418,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 63,
-    image_Source: 'classic_pancakes.png',
+    image_Source: 'classic_pancakes.webp',
     title: 'Classic Pancakes #7',
     description: 'Fluffy and golden pancakes for breakfast.',
     tags: [
@@ -6512,7 +6512,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 64,
-    image_Source: 'caesar_salad.png',
+    image_Source: 'caesar_salad.webp',
     title: 'Caesar Salad #7',
     description: 'Crisp lettuce with creamy Caesar dressing.',
     tags: [
@@ -6596,7 +6596,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 65,
-    image_Source: 'margherita_pizza.png',
+    image_Source: 'margherita_pizza.webp',
     title: 'Margherita Pizza #7',
     description: 'Classic pizza with tomato and mozzarella.',
     tags: [
@@ -6706,7 +6706,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 66,
-    image_Source: 'vegetable_soup.png',
+    image_Source: 'vegetable_soup.webp',
     title: 'Vegetable Soup #7',
     description: 'A warm and hearty vegetable soup.',
     tags: [
@@ -6825,7 +6825,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 67,
-    image_Source: 'chocolate_cake.png',
+    image_Source: 'chocolate_cake.webp',
     title: 'Chocolate Cake #7',
     description: 'Rich and moist chocolate cake.',
     tags: [
@@ -6944,7 +6944,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 68,
-    image_Source: 'pesto_pasta.png',
+    image_Source: 'pesto_pasta.webp',
     title: 'Pesto Pasta #7',
     description: 'Pasta tossed with fresh basil pesto.',
     tags: [
@@ -7040,7 +7040,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 69,
-    image_Source: 'sushi_rolls.png',
+    image_Source: 'sushi_rolls.webp',
     title: 'Sushi Rolls #7',
     description: 'Classic sushi rolls with nori, rice, and fillings.',
     tags: [
@@ -7142,7 +7142,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 70,
-    image_Source: 'lentil_curry.png',
+    image_Source: 'lentil_curry.webp',
     title: 'Lentil Curry #7',
     description: 'A spicy and flavorful lentil curry.',
     tags: [
@@ -7240,7 +7240,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 71,
-    image_Source: 'spaghetti_bolognese.png',
+    image_Source: 'spaghetti_bolognese.webp',
     title: 'Spaghetti Bolognese #8',
     description: 'A classic Italian pasta dish with rich meat sauce.',
     tags: [
@@ -7315,7 +7315,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 72,
-    image_Source: 'taco_shell.png',
+    image_Source: 'taco_shell.webp',
     title: 'Chicken Tacos #8',
     description: 'Mexican-style tacos with seasoned chicken.',
     tags: [
@@ -7436,7 +7436,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 73,
-    image_Source: 'classic_pancakes.png',
+    image_Source: 'classic_pancakes.webp',
     title: 'Classic Pancakes #8',
     description: 'Fluffy and golden pancakes for breakfast.',
     tags: [
@@ -7542,7 +7542,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 74,
-    image_Source: 'caesar_salad.png',
+    image_Source: 'caesar_salad.webp',
     title: 'Caesar Salad #8',
     description: 'Crisp lettuce with creamy Caesar dressing.',
     tags: [
@@ -7622,7 +7622,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 75,
-    image_Source: 'margherita_pizza.png',
+    image_Source: 'margherita_pizza.webp',
     title: 'Margherita Pizza #8',
     description: 'Classic pizza with tomato and mozzarella.',
     tags: [
@@ -7701,7 +7701,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 76,
-    image_Source: 'vegetable_soup.png',
+    image_Source: 'vegetable_soup.webp',
     title: 'Vegetable Soup #8',
     description: 'A warm and hearty vegetable soup.',
     tags: [
@@ -7783,7 +7783,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 77,
-    image_Source: 'chocolate_cake.png',
+    image_Source: 'chocolate_cake.webp',
     title: 'Chocolate Cake #8',
     description: 'Rich and moist chocolate cake.',
     tags: [
@@ -7870,7 +7870,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 78,
-    image_Source: 'pesto_pasta.png',
+    image_Source: 'pesto_pasta.webp',
     title: 'Pesto Pasta #8',
     description: 'Pasta tossed with fresh basil pesto.',
     tags: [
@@ -7973,7 +7973,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 79,
-    image_Source: 'sushi_rolls.png',
+    image_Source: 'sushi_rolls.webp',
     title: 'Sushi Rolls #8',
     description: 'Classic sushi rolls with nori, rice, and fillings.',
     tags: [
@@ -8051,7 +8051,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 80,
-    image_Source: 'lentil_curry.png',
+    image_Source: 'lentil_curry.webp',
     title: 'Lentil Curry #8',
     description: 'A spicy and flavorful lentil curry.',
     tags: [
@@ -8134,7 +8134,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 81,
-    image_Source: 'spaghetti_bolognese.png',
+    image_Source: 'spaghetti_bolognese.webp',
     title: 'Spaghetti Bolognese #9',
     description: 'A classic Italian pasta dish with rich meat sauce.',
     tags: [
@@ -8257,7 +8257,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 82,
-    image_Source: 'taco_shell.png',
+    image_Source: 'taco_shell.webp',
     title: 'Chicken Tacos #9',
     description: 'Mexican-style tacos with seasoned chicken.',
     tags: [
@@ -8328,7 +8328,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 83,
-    image_Source: 'classic_pancakes.png',
+    image_Source: 'classic_pancakes.webp',
     title: 'Classic Pancakes #9',
     description: 'Fluffy and golden pancakes for breakfast.',
     tags: [
@@ -8431,7 +8431,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 84,
-    image_Source: 'caesar_salad.png',
+    image_Source: 'caesar_salad.webp',
     title: 'Caesar Salad #9',
     description: 'Crisp lettuce with creamy Caesar dressing.',
     tags: [
@@ -8536,7 +8536,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 85,
-    image_Source: 'margherita_pizza.png',
+    image_Source: 'margherita_pizza.webp',
     title: 'Margherita Pizza #9',
     description: 'Classic pizza with tomato and mozzarella.',
     tags: [
@@ -8616,7 +8616,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 86,
-    image_Source: 'vegetable_soup.png',
+    image_Source: 'vegetable_soup.webp',
     title: 'Vegetable Soup #9',
     description: 'A warm and hearty vegetable soup.',
     tags: [
@@ -8737,7 +8737,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 87,
-    image_Source: 'chocolate_cake.png',
+    image_Source: 'chocolate_cake.webp',
     title: 'Chocolate Cake #9',
     description: 'Rich and moist chocolate cake.',
     tags: [
@@ -8817,7 +8817,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 88,
-    image_Source: 'pesto_pasta.png',
+    image_Source: 'pesto_pasta.webp',
     title: 'Pesto Pasta #9',
     description: 'Pasta tossed with fresh basil pesto.',
     tags: [
@@ -8898,7 +8898,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 89,
-    image_Source: 'sushi_rolls.png',
+    image_Source: 'sushi_rolls.webp',
     title: 'Sushi Rolls #9',
     description: 'Classic sushi rolls with nori, rice, and fillings.',
     tags: [
@@ -8985,7 +8985,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 90,
-    image_Source: 'lentil_curry.png',
+    image_Source: 'lentil_curry.webp',
     title: 'Lentil Curry #9',
     description: 'A spicy and flavorful lentil curry.',
     tags: [
@@ -9056,7 +9056,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 91,
-    image_Source: 'spaghetti_bolognese.png',
+    image_Source: 'spaghetti_bolognese.webp',
     title: 'Spaghetti Bolognese #10',
     description: 'A classic Italian pasta dish with rich meat sauce.',
     tags: [
@@ -9152,7 +9152,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 92,
-    image_Source: 'taco_shell.png',
+    image_Source: 'taco_shell.webp',
     title: 'Chicken Tacos #10',
     description: 'Mexican-style tacos with seasoned chicken.',
     tags: [
@@ -9276,7 +9276,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 93,
-    image_Source: 'classic_pancakes.png',
+    image_Source: 'classic_pancakes.webp',
     title: 'Classic Pancakes #10',
     description: 'Fluffy and golden pancakes for breakfast.',
     tags: [
@@ -9388,7 +9388,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 94,
-    image_Source: 'caesar_salad.png',
+    image_Source: 'caesar_salad.webp',
     title: 'Caesar Salad #10',
     description: 'Crisp lettuce with creamy Caesar dressing.',
     tags: [
@@ -9464,7 +9464,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 95,
-    image_Source: 'margherita_pizza.png',
+    image_Source: 'margherita_pizza.webp',
     title: 'Margherita Pizza #10',
     description: 'Classic pizza with tomato and mozzarella.',
     tags: [
@@ -9558,7 +9558,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 96,
-    image_Source: 'vegetable_soup.png',
+    image_Source: 'vegetable_soup.webp',
     title: 'Vegetable Soup #10',
     description: 'A warm and hearty vegetable soup.',
     tags: [
@@ -9674,7 +9674,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 97,
-    image_Source: 'chocolate_cake.png',
+    image_Source: 'chocolate_cake.webp',
     title: 'Chocolate Cake #10',
     description: 'Rich and moist chocolate cake.',
     tags: [
@@ -9754,7 +9754,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 98,
-    image_Source: 'pesto_pasta.png',
+    image_Source: 'pesto_pasta.webp',
     title: 'Pesto Pasta #10',
     description: 'Pasta tossed with fresh basil pesto.',
     tags: [
@@ -9848,7 +9848,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 99,
-    image_Source: 'sushi_rolls.png',
+    image_Source: 'sushi_rolls.webp',
     title: 'Sushi Rolls #10',
     description: 'Classic sushi rolls with nori, rice, and fillings.',
     tags: [
@@ -9936,7 +9936,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 100,
-    image_Source: 'lentil_curry.png',
+    image_Source: 'lentil_curry.webp',
     title: 'Lentil Curry #10',
     description: 'A spicy and flavorful lentil curry.',
     tags: [
@@ -10015,7 +10015,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 101,
-    image_Source: 'spaghetti_bolognese.png',
+    image_Source: 'spaghetti_bolognese.webp',
     title: 'Spaghetti Bolognese #11',
     description: 'A classic Italian pasta dish with rich meat sauce.',
     tags: [
@@ -10127,7 +10127,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 102,
-    image_Source: 'taco_shell.png',
+    image_Source: 'taco_shell.webp',
     title: 'Chicken Tacos #11',
     description: 'Mexican-style tacos with seasoned chicken.',
     tags: [
@@ -10249,7 +10249,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 103,
-    image_Source: 'classic_pancakes.png',
+    image_Source: 'classic_pancakes.webp',
     title: 'Classic Pancakes #11',
     description: 'Fluffy and golden pancakes for breakfast.',
     tags: [
@@ -10328,7 +10328,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 104,
-    image_Source: 'caesar_salad.png',
+    image_Source: 'caesar_salad.webp',
     title: 'Caesar Salad #11',
     description: 'Crisp lettuce with creamy Caesar dressing.',
     tags: [
@@ -10448,7 +10448,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 105,
-    image_Source: 'margherita_pizza.png',
+    image_Source: 'margherita_pizza.webp',
     title: 'Margherita Pizza #11',
     description: 'Classic pizza with tomato and mozzarella.',
     tags: [
@@ -10569,7 +10569,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 106,
-    image_Source: 'vegetable_soup.png',
+    image_Source: 'vegetable_soup.webp',
     title: 'Vegetable Soup #11',
     description: 'A warm and hearty vegetable soup.',
     tags: [
@@ -10689,7 +10689,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 107,
-    image_Source: 'chocolate_cake.png',
+    image_Source: 'chocolate_cake.webp',
     title: 'Chocolate Cake #11',
     description: 'Rich and moist chocolate cake.',
     tags: [
@@ -10811,7 +10811,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 108,
-    image_Source: 'pesto_pasta.png',
+    image_Source: 'pesto_pasta.webp',
     title: 'Pesto Pasta #11',
     description: 'Pasta tossed with fresh basil pesto.',
     tags: [
@@ -10898,7 +10898,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 109,
-    image_Source: 'sushi_rolls.png',
+    image_Source: 'sushi_rolls.webp',
     title: 'Sushi Rolls #11',
     description: 'Classic sushi rolls with nori, rice, and fillings.',
     tags: [
@@ -10996,7 +10996,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 110,
-    image_Source: 'lentil_curry.png',
+    image_Source: 'lentil_curry.webp',
     title: 'Lentil Curry #11',
     description: 'A spicy and flavorful lentil curry.',
     tags: [
@@ -11114,7 +11114,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 111,
-    image_Source: 'spaghetti_bolognese.png',
+    image_Source: 'spaghetti_bolognese.webp',
     title: 'Spaghetti Bolognese #12',
     description: 'A classic Italian pasta dish with rich meat sauce.',
     tags: [
@@ -11210,7 +11210,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 112,
-    image_Source: 'taco_shell.png',
+    image_Source: 'taco_shell.webp',
     title: 'Chicken Tacos #12',
     description: 'Mexican-style tacos with seasoned chicken.',
     tags: [
@@ -11329,7 +11329,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 113,
-    image_Source: 'classic_pancakes.png',
+    image_Source: 'classic_pancakes.webp',
     title: 'Classic Pancakes #12',
     description: 'Fluffy and golden pancakes for breakfast.',
     tags: [
@@ -11457,7 +11457,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 114,
-    image_Source: 'caesar_salad.png',
+    image_Source: 'caesar_salad.webp',
     title: 'Caesar Salad #12',
     description: 'Crisp lettuce with creamy Caesar dressing.',
     tags: [
@@ -11583,7 +11583,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 115,
-    image_Source: 'margherita_pizza.png',
+    image_Source: 'margherita_pizza.webp',
     title: 'Margherita Pizza #12',
     description: 'Classic pizza with tomato and mozzarella.',
     tags: [
@@ -11655,7 +11655,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 116,
-    image_Source: 'vegetable_soup.png',
+    image_Source: 'vegetable_soup.webp',
     title: 'Vegetable Soup #12',
     description: 'A warm and hearty vegetable soup.',
     tags: [
@@ -11725,7 +11725,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 117,
-    image_Source: 'chocolate_cake.png',
+    image_Source: 'chocolate_cake.webp',
     title: 'Chocolate Cake #12',
     description: 'Rich and moist chocolate cake.',
     tags: [
@@ -11853,7 +11853,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 118,
-    image_Source: 'pesto_pasta.png',
+    image_Source: 'pesto_pasta.webp',
     title: 'Pesto Pasta #12',
     description: 'Pasta tossed with fresh basil pesto.',
     tags: [
@@ -11972,7 +11972,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 119,
-    image_Source: 'sushi_rolls.png',
+    image_Source: 'sushi_rolls.webp',
     title: 'Sushi Rolls #12',
     description: 'Classic sushi rolls with nori, rice, and fillings.',
     tags: [
@@ -12083,7 +12083,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 120,
-    image_Source: 'lentil_curry.png',
+    image_Source: 'lentil_curry.webp',
     title: 'Lentil Curry #12',
     description: 'A spicy and flavorful lentil curry.',
     tags: [
@@ -12170,7 +12170,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 121,
-    image_Source: 'spaghetti_bolognese.png',
+    image_Source: 'spaghetti_bolognese.webp',
     title: 'Spaghetti Bolognese #13',
     description: 'A classic Italian pasta dish with rich meat sauce.',
     tags: [
@@ -12276,7 +12276,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 122,
-    image_Source: 'taco_shell.png',
+    image_Source: 'taco_shell.webp',
     title: 'Chicken Tacos #13',
     description: 'Mexican-style tacos with seasoned chicken.',
     tags: [
@@ -12388,7 +12388,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 123,
-    image_Source: 'classic_pancakes.png',
+    image_Source: 'classic_pancakes.webp',
     title: 'Classic Pancakes #13',
     description: 'Fluffy and golden pancakes for breakfast.',
     tags: [
@@ -12491,7 +12491,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 124,
-    image_Source: 'caesar_salad.png',
+    image_Source: 'caesar_salad.webp',
     title: 'Caesar Salad #13',
     description: 'Crisp lettuce with creamy Caesar dressing.',
     tags: [
@@ -12561,7 +12561,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 125,
-    image_Source: 'margherita_pizza.png',
+    image_Source: 'margherita_pizza.webp',
     title: 'Margherita Pizza #13',
     description: 'Classic pizza with tomato and mozzarella.',
     tags: [
@@ -12648,7 +12648,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 126,
-    image_Source: 'vegetable_soup.png',
+    image_Source: 'vegetable_soup.webp',
     title: 'Vegetable Soup #13',
     description: 'A warm and hearty vegetable soup.',
     tags: [
@@ -12763,7 +12763,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 127,
-    image_Source: 'chocolate_cake.png',
+    image_Source: 'chocolate_cake.webp',
     title: 'Chocolate Cake #13',
     description: 'Rich and moist chocolate cake.',
     tags: [
@@ -12881,7 +12881,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 128,
-    image_Source: 'pesto_pasta.png',
+    image_Source: 'pesto_pasta.webp',
     title: 'Pesto Pasta #13',
     description: 'Pasta tossed with fresh basil pesto.',
     tags: [
@@ -12968,7 +12968,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 129,
-    image_Source: 'sushi_rolls.png',
+    image_Source: 'sushi_rolls.webp',
     title: 'Sushi Rolls #13',
     description: 'Classic sushi rolls with nori, rice, and fillings.',
     tags: [
@@ -13070,7 +13070,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 130,
-    image_Source: 'lentil_curry.png',
+    image_Source: 'lentil_curry.webp',
     title: 'Lentil Curry #13',
     description: 'A spicy and flavorful lentil curry.',
     tags: [
@@ -13156,7 +13156,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 131,
-    image_Source: 'spaghetti_bolognese.png',
+    image_Source: 'spaghetti_bolognese.webp',
     title: 'Spaghetti Bolognese #14',
     description: 'A classic Italian pasta dish with rich meat sauce.',
     tags: [
@@ -13254,7 +13254,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 132,
-    image_Source: 'taco_shell.png',
+    image_Source: 'taco_shell.webp',
     title: 'Chicken Tacos #14',
     description: 'Mexican-style tacos with seasoned chicken.',
     tags: [
@@ -13362,7 +13362,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 133,
-    image_Source: 'classic_pancakes.png',
+    image_Source: 'classic_pancakes.webp',
     title: 'Classic Pancakes #14',
     description: 'Fluffy and golden pancakes for breakfast.',
     tags: [
@@ -13465,7 +13465,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 134,
-    image_Source: 'caesar_salad.png',
+    image_Source: 'caesar_salad.webp',
     title: 'Caesar Salad #14',
     description: 'Crisp lettuce with creamy Caesar dressing.',
     tags: [
@@ -13578,7 +13578,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 135,
-    image_Source: 'margherita_pizza.png',
+    image_Source: 'margherita_pizza.webp',
     title: 'Margherita Pizza #14',
     description: 'Classic pizza with tomato and mozzarella.',
     tags: [
@@ -13680,7 +13680,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 136,
-    image_Source: 'vegetable_soup.png',
+    image_Source: 'vegetable_soup.webp',
     title: 'Vegetable Soup #14',
     description: 'A warm and hearty vegetable soup.',
     tags: [
@@ -13799,7 +13799,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 137,
-    image_Source: 'chocolate_cake.png',
+    image_Source: 'chocolate_cake.webp',
     title: 'Chocolate Cake #14',
     description: 'Rich and moist chocolate cake.',
     tags: [
@@ -13920,7 +13920,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 138,
-    image_Source: 'pesto_pasta.png',
+    image_Source: 'pesto_pasta.webp',
     title: 'Pesto Pasta #14',
     description: 'Pasta tossed with fresh basil pesto.',
     tags: [
@@ -14028,7 +14028,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 139,
-    image_Source: 'sushi_rolls.png',
+    image_Source: 'sushi_rolls.webp',
     title: 'Sushi Rolls #14',
     description: 'Classic sushi rolls with nori, rice, and fillings.',
     tags: [
@@ -14111,7 +14111,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 140,
-    image_Source: 'lentil_curry.png',
+    image_Source: 'lentil_curry.webp',
     title: 'Lentil Curry #14',
     description: 'A spicy and flavorful lentil curry.',
     tags: [
@@ -14189,7 +14189,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 141,
-    image_Source: 'spaghetti_bolognese.png',
+    image_Source: 'spaghetti_bolognese.webp',
     title: 'Spaghetti Bolognese #15',
     description: 'A classic Italian pasta dish with rich meat sauce.',
     tags: [
@@ -14309,7 +14309,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 142,
-    image_Source: 'taco_shell.png',
+    image_Source: 'taco_shell.webp',
     title: 'Chicken Tacos #15',
     description: 'Mexican-style tacos with seasoned chicken.',
     tags: [
@@ -14427,7 +14427,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 143,
-    image_Source: 'classic_pancakes.png',
+    image_Source: 'classic_pancakes.webp',
     title: 'Classic Pancakes #15',
     description: 'Fluffy and golden pancakes for breakfast.',
     tags: [
@@ -14547,7 +14547,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 144,
-    image_Source: 'caesar_salad.png',
+    image_Source: 'caesar_salad.webp',
     title: 'Caesar Salad #15',
     description: 'Crisp lettuce with creamy Caesar dressing.',
     tags: [
@@ -14651,7 +14651,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 145,
-    image_Source: 'margherita_pizza.png',
+    image_Source: 'margherita_pizza.webp',
     title: 'Margherita Pizza #15',
     description: 'Classic pizza with tomato and mozzarella.',
     tags: [
@@ -14770,7 +14770,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 146,
-    image_Source: 'vegetable_soup.png',
+    image_Source: 'vegetable_soup.webp',
     title: 'Vegetable Soup #15',
     description: 'A warm and hearty vegetable soup.',
     tags: [
@@ -14866,7 +14866,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 147,
-    image_Source: 'chocolate_cake.png',
+    image_Source: 'chocolate_cake.webp',
     title: 'Chocolate Cake #15',
     description: 'Rich and moist chocolate cake.',
     tags: [
@@ -14990,7 +14990,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 148,
-    image_Source: 'pesto_pasta.png',
+    image_Source: 'pesto_pasta.webp',
     title: 'Pesto Pasta #15',
     description: 'Pasta tossed with fresh basil pesto.',
     tags: [
@@ -15078,7 +15078,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 149,
-    image_Source: 'sushi_rolls.png',
+    image_Source: 'sushi_rolls.webp',
     title: 'Sushi Rolls #15',
     description: 'Classic sushi rolls with nori, rice, and fillings.',
     tags: [
@@ -15200,7 +15200,7 @@ export const performanceRecipes: recipeTableElement[] = [
   },
   {
     id: 150,
-    image_Source: 'lentil_curry.png',
+    image_Source: 'lentil_curry.webp',
     title: 'Lentil Curry #15',
     description: 'A spicy and flavorful lentil curry.',
     tags: [

@@ -3,7 +3,7 @@ import { ingredientType, recipeTableElement } from '@customTypes/DatabaseElement
 export const testRecipes: recipeTableElement[] = [
   {
     id: 1,
-    image_Source: 'spaghetti_bolognese.png',
+    image_Source: 'spaghetti_bolognese.webp',
     title: 'Spaghetti Bolognese',
     description: 'A classic Italian pasta dish.',
     tags: [
@@ -77,7 +77,7 @@ export const testRecipes: recipeTableElement[] = [
   },
   {
     id: 2,
-    image_Source: 'taco_shell.png',
+    image_Source: 'taco_shell.webp',
     title: 'Chicken Tacos',
     description: 'Mexican-style tacos with chicken.',
     tags: [
@@ -155,7 +155,7 @@ export const testRecipes: recipeTableElement[] = [
   },
   {
     id: 3,
-    image_Source: 'classic_pancakes.png',
+    image_Source: 'classic_pancakes.webp',
     title: 'Classic Pancakes',
     description: 'Fluffy and golden pancakes.',
     tags: [
@@ -225,7 +225,7 @@ export const testRecipes: recipeTableElement[] = [
   },
   {
     id: 4,
-    image_Source: 'caesar_salad.png',
+    image_Source: 'caesar_salad.webp',
     title: 'Caesar Salad',
     description: 'Crisp lettuce with creamy Caesar dressing.',
     tags: [
@@ -289,7 +289,7 @@ export const testRecipes: recipeTableElement[] = [
   },
   {
     id: 5,
-    image_Source: 'margherita_pizza.png',
+    image_Source: 'margherita_pizza.webp',
     title: 'Margherita Pizza',
     description: 'Classic pizza with tomato and mozzarella.',
     tags: [
@@ -353,7 +353,7 @@ export const testRecipes: recipeTableElement[] = [
   },
   {
     id: 6,
-    image_Source: 'vegetable_soup.png',
+    image_Source: 'vegetable_soup.webp',
     title: 'Vegetable Soup',
     description: 'A warm and hearty vegetable soup.',
     tags: [
@@ -420,7 +420,7 @@ export const testRecipes: recipeTableElement[] = [
   },
   {
     id: 7,
-    image_Source: 'chocolate_cake.png',
+    image_Source: 'chocolate_cake.webp',
     title: 'Chocolate Cake',
     description: 'Rich and moist chocolate cake.',
     tags: [
@@ -489,7 +489,7 @@ export const testRecipes: recipeTableElement[] = [
   },
   {
     id: 8,
-    image_Source: 'pesto_pasta.png',
+    image_Source: 'pesto_pasta.webp',
     title: 'Pesto Pasta',
     description: 'Pasta tossed with fresh basil pesto.',
     tags: [
@@ -570,7 +570,7 @@ export const testRecipes: recipeTableElement[] = [
   },
   {
     id: 9,
-    image_Source: 'sushi_rolls.png',
+    image_Source: 'sushi_rolls.webp',
     title: 'Sushi Rolls',
     description: 'Classic sushi rolls with nori, rice, and fillings.',
     tags: [
@@ -657,7 +657,7 @@ export const testRecipes: recipeTableElement[] = [
   },
   {
     id: 10,
-    image_Source: 'lentil_curry.png',
+    image_Source: 'lentil_curry.webp',
     title: 'Lentil Curry',
     description: 'A spicy and flavorful lentil curry.',
     tags: [

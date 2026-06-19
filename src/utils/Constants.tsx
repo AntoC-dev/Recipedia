@@ -25,10 +25,10 @@
  * const [servings, setServings] = useState(defaultValueNumber);
  *
  * // Accessing test recipe images
- * const recipeImage = testRecipesImages[0]; // spaghetti_bolognese.png
+ * const recipeImage = testRecipesImages[0]; // spaghetti_bolognese.webp
  *
  * // Accessing production recipe images
- * const prodImage = productionRecipesImages[0]; // spaghetti_bolognaise.png
+ * const prodImage = productionRecipesImages[0]; // spaghetti_bolognaise.webp
  * ```
  */
 
@@ -63,16 +63,16 @@ export const TUTORIAL_SPOTLIGHT_MARGIN = 8;
  * a diverse collection of popular international recipes
  */
 export const testRecipesImages = [
-  require('../assets/images/spaghetti_bolognese.png'),
-  require('../assets/images/taco_shell.png'),
-  require('../assets/images/classic_pancakes.png'),
-  require('../assets/images/caesar_salad.png'),
-  require('../assets/images/margherita_pizza.png'),
-  require('../assets/images/vegetable_soup.png'),
-  require('../assets/images/chocolate_cake.png'),
-  require('../assets/images/pesto_pasta.png'),
-  require('../assets/images/sushi_rolls.png'),
-  require('../assets/images/lentil_curry.png'),
+  require('../assets/images/spaghetti_bolognese.webp'),
+  require('../assets/images/taco_shell.webp'),
+  require('../assets/images/classic_pancakes.webp'),
+  require('../assets/images/caesar_salad.webp'),
+  require('../assets/images/margherita_pizza.webp'),
+  require('../assets/images/vegetable_soup.webp'),
+  require('../assets/images/chocolate_cake.webp'),
+  require('../assets/images/pesto_pasta.webp'),
+  require('../assets/images/sushi_rolls.webp'),
+  require('../assets/images/lentil_curry.webp'),
 ];
 
 /**
@@ -81,14 +81,14 @@ export const testRecipesImages = [
  * the curated production recipe collection
  */
 export const productionRecipesImages = [
-  require('../assets/images/spaghetti_bolognaise.png'),
-  require('../assets/images/soupe_legumes_hiver.png'),
-  require('../assets/images/curry_lentilles_corail.png'),
-  require('../assets/images/salade_cesar_poulet.png'),
-  require('../assets/images/risotto_champignons.png'),
-  require('../assets/images/tacos_poulet.png'),
-  require('../assets/images/quiche_lorraine.png'),
-  require('../assets/images/poelee_legumes_mediterraneens.png'),
-  require('../assets/images/saumon_grille_brocoli.png'),
-  require('../assets/images/butternut_rotie.png'),
+  require('../assets/images/spaghetti_bolognaise.webp'),
+  require('../assets/images/soupe_legumes_hiver.webp'),
+  require('../assets/images/curry_lentilles_corail.webp'),
+  require('../assets/images/salade_cesar_poulet.webp'),
+  require('../assets/images/risotto_champignons.webp'),
+  require('../assets/images/tacos_poulet.webp'),
+  require('../assets/images/quiche_lorraine.webp'),
+  require('../assets/images/poelee_legumes_mediterraneens.webp'),
+  require('../assets/images/saumon_grille_brocoli.webp'),
+  require('../assets/images/butternut_rotie.webp'),
 ];

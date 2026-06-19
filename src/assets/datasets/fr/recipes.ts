@@ -2,7 +2,7 @@ import { ingredientType, recipeTableElement } from '@customTypes/DatabaseElement
 
 export const frenchRecipes: recipeTableElement[] = [
   {
-    image_Source: 'spaghetti_bolognaise.png',
+    image_Source: 'spaghetti_bolognaise.webp',
     title: 'Spaghetti Bolognaise',
     description:
       'Un grand classique de la cuisine italienne avec une sauce à la viande savoureuse.',
@@ -109,7 +109,7 @@ export const frenchRecipes: recipeTableElement[] = [
     },
   },
   {
-    image_Source: 'soupe_legumes_hiver.png',
+    image_Source: 'soupe_legumes_hiver.webp',
     title: "Soupe de Légumes d'Hiver",
     description:
       'Une soupe réconfortante aux légumes de saison, parfaite pour les journées froides.',
@@ -210,7 +210,7 @@ export const frenchRecipes: recipeTableElement[] = [
     },
   },
   {
-    image_Source: 'curry_lentilles_corail.png',
+    image_Source: 'curry_lentilles_corail.webp',
     title: 'Curry de Lentilles Corail',
     description: 'Un plat végétarien savoureux et épicé aux lentilles corail et lait de coco.',
     tags: [{ name: 'Indien' }, { name: 'Végétarien' }, { name: 'Rapide' }, { name: 'Santé' }],
@@ -324,7 +324,7 @@ export const frenchRecipes: recipeTableElement[] = [
     },
   },
   {
-    image_Source: 'salade_cesar_poulet.png',
+    image_Source: 'salade_cesar_poulet.webp',
     title: 'Salade César au Poulet',
     description: 'Une salade fraîche et croquante avec du poulet grillé et du parmesan.',
     tags: [{ name: 'Salade' }, { name: 'Déjeuner' }, { name: 'Rapide' }],
@@ -425,7 +425,7 @@ export const frenchRecipes: recipeTableElement[] = [
     },
   },
   {
-    image_Source: 'risotto_champignons.png',
+    image_Source: 'risotto_champignons.webp',
     title: 'Risotto aux Champignons',
     description: 'Un risotto crémeux aux champignons de Paris et au parmesan.',
     tags: [{ name: 'Italien' }, { name: 'Végétarien' }, { name: 'Dîner' }],
@@ -538,7 +538,7 @@ export const frenchRecipes: recipeTableElement[] = [
     },
   },
   {
-    image_Source: 'tacos_poulet.png',
+    image_Source: 'tacos_poulet.webp',
     title: 'Tacos au Poulet',
     description: 'Des tacos colorés et savoureux avec du poulet mariné et des légumes croquants.',
     tags: [{ name: 'Mexicain' }, { name: 'Rapide' }, { name: 'Dîner' }],
@@ -660,7 +660,7 @@ export const frenchRecipes: recipeTableElement[] = [
     },
   },
   {
-    image_Source: 'quiche_lorraine.png',
+    image_Source: 'quiche_lorraine.webp',
     title: 'Quiche Lorraine',
     description: 'La quiche lorraine traditionnelle avec des lardons et de la crème.',
     tags: [{ name: 'Français' }, { name: 'Déjeuner' }, { name: 'Apéritif' }],
@@ -761,7 +761,7 @@ export const frenchRecipes: recipeTableElement[] = [
     },
   },
   {
-    image_Source: 'poelee_legumes_mediterraneens.png',
+    image_Source: 'poelee_legumes_mediterraneens.webp',
     title: 'Poêlée de Légumes Méditerranéens',
     description:
       'Un mélange coloré de légumes du soleil, parfait en accompagnement ou plat principal.',
@@ -870,7 +870,7 @@ export const frenchRecipes: recipeTableElement[] = [
     },
   },
   {
-    image_Source: 'saumon_grille_brocoli.png',
+    image_Source: 'saumon_grille_brocoli.webp',
     title: 'Saumon Grillé et Brocoli',
     description: 'Un plat sain et équilibré avec du saumon grillé et du brocoli vapeur.',
     tags: [{ name: 'Santé' }, { name: 'Rapide' }, { name: 'Dîner' }],
@@ -971,7 +971,7 @@ export const frenchRecipes: recipeTableElement[] = [
     },
   },
   {
-    image_Source: 'butternut_rotie.png',
+    image_Source: 'butternut_rotie.webp',
     title: 'Butternut Rôtie au Four',
     description: 'Une courge butternut rôtie au four avec des herbes aromatiques.',
     tags: [{ name: 'Végétarien' }, { name: 'Santé' }, { name: 'Vegan' }],

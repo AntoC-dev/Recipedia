@@ -527,7 +527,7 @@ describe('isTemporaryImageUri', () => {
 
   test('returns false for permanent storage URIs', () => {
     expect(isTemporaryImageUri(defaultDocumentsPath + 'recipe.jpg')).toBe(false);
-    expect(isTemporaryImageUri(defaultDocumentsPath + 'pasta.png')).toBe(false);
+    expect(isTemporaryImageUri(defaultDocumentsPath + 'pasta.webp')).toBe(false);
   });
 });
 
@@ -578,9 +578,9 @@ describe('copyDatasetImages', () => {
     const { productionRecipesImages } = require('@utils/Constants');
 
     const mockAssets = [
-      createMockAsset('spaghetti_bolognaise', 'png', '/asset/path/spaghetti_bolognaise.png'),
-      createMockAsset('soupe_legumes_hiver', 'png', '/asset/path/soupe_legumes_hiver.png'),
-      createMockAsset('curry_lentilles_corail', 'png', '/asset/path/curry_lentilles_corail.png'),
+      createMockAsset('spaghetti_bolognaise', 'webp', '/asset/path/spaghetti_bolognaise.webp'),
+      createMockAsset('soupe_legumes_hiver', 'webp', '/asset/path/soupe_legumes_hiver.webp'),
+      createMockAsset('curry_lentilles_corail', 'webp', '/asset/path/curry_lentilles_corail.webp'),
     ];
     setupFromModuleSequence(mockAssets);
 
@@ -589,8 +589,8 @@ describe('copyDatasetImages', () => {
     expect(mockAssetFromModule).toHaveBeenCalledTimes(productionRecipesImages.length);
     expect(mockFileCopy).toHaveBeenCalledTimes(3);
     expect(mockFileCopy).toHaveBeenCalledWith(
-      '/asset/path/spaghetti_bolognaise.png',
-      expect.objectContaining({ uri: defaultDocumentsPath + 'spaghetti_bolognaise.png' })
+      '/asset/path/spaghetti_bolognaise.webp',
+      expect.objectContaining({ uri: defaultDocumentsPath + 'spaghetti_bolognaise.webp' })
     );
   });
 
@@ -869,7 +869,7 @@ describe('transformDatasetRecipeImages', () => {
         id: 1,
         title: 'Spaghetti Bolognese',
         description: 'A classic Italian pasta dish',
-        image_Source: 'spaghetti_bolognese.png',
+        image_Source: 'spaghetti_bolognese.webp',
         preparation: [],
         ingredients: [],
         tags: [],
@@ -881,7 +881,7 @@ describe('transformDatasetRecipeImages', () => {
 
     const result = transformDatasetRecipeImages(recipes);
 
-    expect(result[0].image_Source).toBe(defaultDocumentsPath + 'spaghetti_bolognese.png');
+    expect(result[0].image_Source).toBe(defaultDocumentsPath + 'spaghetti_bolognese.webp');
   });
 
   test('transforms multiple recipes', () => {
