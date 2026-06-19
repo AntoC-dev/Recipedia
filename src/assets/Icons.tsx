@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { remValue } from '@styles/spacing';
 
 export type dictionaryIcons = keyof typeof MaterialCommunityIcons.glyphMap;
