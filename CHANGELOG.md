@@ -1,3 +1,10 @@
+## [2.38.1](https://github.com/AntoC-dev/Recipedia/compare/v2.38.0...v2.38.1) (2026-06-19)
+
+### Bug Fixes
+
+* **build:** exclude local venv from EAS copy to fix iOS prebuild ([4906267](https://github.com/AntoC-dev/Recipedia/commit/4906267650f22a5fcf8b9633c7d13e66e9077e3b))
+* **ios:** gate new App Store bundle id to production builds ([2e2141f](https://github.com/AntoC-dev/Recipedia/commit/2e2141f896f4ca73009329f91b7589025cabbcec))
+
 ## [2.38.0](https://github.com/AntoC-dev/Recipedia/compare/v2.37.1...v2.38.0) (2026-06-19)
 
 ### Features
