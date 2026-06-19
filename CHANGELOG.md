@@ -1,3 +1,14 @@
+## [2.38.2](https://github.com/AntoC-dev/Recipedia/compare/v2.38.1...v2.38.2) (2026-06-19)
+
+### Performance Improvements
+
+* **assets:** compress app icon and splash PNGs ([1edc08b](https://github.com/AntoC-dev/Recipedia/commit/1edc08bf7ab062c9d2d8298f726976b7fa6ba009))
+* **assets:** convert seed recipe images to WebP ([bac4120](https://github.com/AntoC-dev/Recipedia/commit/bac412073bbb936c817399b79c662795d766cec0))
+* **build:** enable R8/resource shrink, locale filter, drop asset glob ([8289b0a](https://github.com/AntoC-dev/Recipedia/commit/8289b0a6f034ab845570f634a2547d9d97d504f1))
+* **icons:** deep-import MaterialCommunityIcons set ([e7f6328](https://github.com/AntoC-dev/Recipedia/commit/e7f63282616762c6dcc76851fbadae6ccd34fa05))
+* **ocr:** strip non-Latin ML Kit script models via patch-package ([066b183](https://github.com/AntoC-dev/Recipedia/commit/066b183b633260b8160fd9e2f8fcddcaaa41b215))
+* reduce app bundle size ~50% on both platforms ([#364](https://github.com/AntoC-dev/Recipedia/issues/364)) ([af2ba1a](https://github.com/AntoC-dev/Recipedia/commit/af2ba1a04a377a5a829e99821456db09b489580f))
+
 ## [2.38.1](https://github.com/AntoC-dev/Recipedia/compare/v2.38.0...v2.38.1) (2026-06-19)
 
 ### Bug Fixes
