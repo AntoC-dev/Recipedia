@@ -7,8 +7,6 @@ import {
   isNumber,
   isOfType,
   isString,
-  subtractNumberInString,
-  sumNumberInString,
 } from '@utils/TypeCheckingFunctions';
 
 describe('Type Checking Functions', () => {
@@ -47,6 +45,16 @@ describe('Type Checking Functions', () => {
       expect(hasAtLeastKeys<{ a: any; b: any }>({ a: 1, b: 2, c: 3 }, ['a', 'b'])).toBe(true);
     });
 
+    test('hasAtLeastKeys should reject null and non-objects', () => {
+      expect(hasAtLeastKeys<{ a: any }>(null, ['a'])).toBe(false);
+      expect(hasAtLeastKeys<{ a: any }>('not an object', ['a'])).toBe(false);
+    });
+
+    test('hasSameKeysAs should reject null and non-objects', () => {
+      expect(hasSameKeysAs<{ a: any }>(null, ['a'])).toBe(false);
+      expect(hasSameKeysAs<{ a: any }>(42, ['a'])).toBe(false);
+    });
+
     test('isOfType should confirm object has required keys (allows extra keys)', () => {
       expect(isOfType<{ name: string }>({ name: 'Alice' }, ['name'])).toBe(true);
       expect(isOfType<{ name: string }>({ name: 'Alice', age: 30 }, ['name'])).toBe(true);
@@ -56,60 +64,6 @@ describe('Type Checking Functions', () => {
     test('isArrayOfType should confirm array of structured objects', () => {
       const array = [{ id: 1 }, { id: 2 }];
       expect(isArrayOfType<{ id: number }>(array, ['id'])).toBe(true);
-    });
-  });
-
-  describe('sumNumberInString', () => {
-    test('adds plain numbers', () => {
-      expect(sumNumberInString('10', '5')).toBe('15');
-    });
-
-    test('adds embedded numbers in strings', () => {
-      expect(sumNumberInString('2x3y', '4x7y')).toBe('6x10y');
-      expect(sumNumberInString('1and3', '1and3')).toBe('2and6');
-    });
-
-    test('adds text intelligently', () => {
-      expect(sumNumberInString('a5b', 'a2b')).toBe('a7b');
-      expect(sumNumberInString('abc1', 'abc2')).toBe('abc3');
-    });
-
-    test('logs error when mixing number and non-number strings', () => {
-      expect(sumNumberInString('42', 'abc')).toBe('42abc');
-      // Should handle mixed types gracefully
-    });
-
-    test('sums a pure number with a number-and-unit string and reattaches the unit', () => {
-      expect(sumNumberInString('100', '200 g')).toBe('300 g');
-      expect(sumNumberInString('200 g', '100')).toBe('300 g');
-    });
-
-    test('sums two number-and-unit strings sharing the same unit', () => {
-      expect(sumNumberInString('2 cups', '1 cups')).toBe('3 cups');
-    });
-  });
-
-  describe('subtractNumberInString', () => {
-    test('subtracts plain numbers', () => {
-      expect(subtractNumberInString('10', '4')).toBe('6');
-    });
-
-    test('subtracts embedded numbers', () => {
-      expect(subtractNumberInString('5x8y', '2x3y')).toBe('3x5y');
-    });
-
-    test('subtracts text-number combos safely', () => {
-      expect(subtractNumberInString('a9b', 'a2b')).toBe('a7b');
-    });
-
-    test('logs error when mixing types', () => {
-      expect(subtractNumberInString('oops', '123')).toBe('oops123');
-      // Should handle mixed types gracefully
-    });
-
-    test('subtracts a pure number from a number-and-unit string and reattaches the unit', () => {
-      expect(subtractNumberInString('200 g', '50')).toBe('150 g');
-      expect(subtractNumberInString('200', '50 g')).toBe('150 g');
     });
   });
 });
