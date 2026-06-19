@@ -78,6 +78,15 @@ describe('Type Checking Functions', () => {
       expect(sumNumberInString('42', 'abc')).toBe('42abc');
       // Should handle mixed types gracefully
     });
+
+    test('sums a pure number with a number-and-unit string and reattaches the unit', () => {
+      expect(sumNumberInString('100', '200 g')).toBe('300 g');
+      expect(sumNumberInString('200 g', '100')).toBe('300 g');
+    });
+
+    test('sums two number-and-unit strings sharing the same unit', () => {
+      expect(sumNumberInString('2 cups', '1 cups')).toBe('3 cups');
+    });
   });
 
   describe('subtractNumberInString', () => {
@@ -96,6 +105,11 @@ describe('Type Checking Functions', () => {
     test('logs error when mixing types', () => {
       expect(subtractNumberInString('oops', '123')).toBe('oops123');
       // Should handle mixed types gracefully
+    });
+
+    test('subtracts a pure number from a number-and-unit string and reattaches the unit', () => {
+      expect(subtractNumberInString('200 g', '50')).toBe('150 g');
+      expect(subtractNumberInString('200', '50 g')).toBe('150 g');
     });
   });
 });

@@ -7,7 +7,6 @@
  */
 
 import { separateNumbersFromStr } from '@styles/typography';
-import { validationLogger } from '@utils/logger';
 
 /**
  * Checks if a value is a string
@@ -194,10 +193,11 @@ export function subtractNumberInString(lhs: string, rhs: string) {
  * Performs arithmetic operations on strings containing numbers
  *
  * Internal helper function that handles the logic for both addition and subtraction
- * on strings. Supports three cases:
- * 1. Both strings are pure numbers
- * 2. Both strings contain mixed content (numbers + text)
- * 3. Mixed case (one number, one mixed) - logs error and concatenates
+ * on strings. When both strings are pure numbers the operation is applied directly.
+ * Otherwise both strings are tokenized into number/non-number runs and combined
+ * position by position: paired numbers are summed/subtracted, a number paired with
+ * an empty slot (e.g. `"100"` vs `"200 g"`) keeps its value and reattaches the unit,
+ * and matching text runs are kept once.
  *
  * @param lhs - Left-hand side string
  * @param rhs - Right-hand side string
@@ -214,31 +214,25 @@ function operatorNumberInString(lhs: string, rhs: string, operator: '+' | '-') {
     }
   };
 
-  const lhsIsNumber = isNumber(lhs);
-  const rhsIsNumber = isNumber(rhs);
-  if (lhsIsNumber && rhsIsNumber) {
+  if (isNumber(lhs) && isNumber(rhs)) {
     return applyOp(Number(lhs), Number(rhs)).toString();
-  } else if (!lhsIsNumber && !rhsIsNumber) {
-    const tokens1 = lhs.match(separateNumbersFromStr) || [];
-    const tokens2 = rhs.match(separateNumbersFromStr) || [];
-
-    return tokens1
-      .map((token, i) => {
-        const other = tokens2[i] ?? '';
-        if (isNumber(token) && isNumber(other)) {
-          return applyOp(Number(token), Number(other)).toString();
-        }
-        if (token === other) return token;
-        return token + other;
-      })
-      .join('');
-  } else {
-    validationLogger.error(
-      "Can't have one which can be a number and other which cannot be: ",
-      lhs,
-      ' ',
-      rhs
-    );
-    return lhs + rhs;
   }
+
+  const tokens1 = lhs.match(separateNumbersFromStr) || [];
+  const tokens2 = rhs.match(separateNumbersFromStr) || [];
+  const length = Math.max(tokens1.length, tokens2.length);
+
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    const token = tokens1[i] ?? '';
+    const other = tokens2[i] ?? '';
+    if (token !== '' && other !== '' && isNumber(token) && isNumber(other)) {
+      result += applyOp(Number(token), Number(other)).toString();
+    } else if (token === '' || other === '') {
+      result += token + other;
+    } else {
+      result += token === other ? token : token + other;
+    }
+  }
+  return result;
 }
