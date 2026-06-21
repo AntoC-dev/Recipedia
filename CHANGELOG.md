@@ -1,3 +1,10 @@
+## [2.38.3](https://github.com/AntoC-dev/Recipedia/compare/v2.38.2...v2.38.3) (2026-06-21)
+
+### Bug Fixes
+
+* **build:** resolve store iOS bundle id for local production builds ([6b455fe](https://github.com/AntoC-dev/Recipedia/commit/6b455fe5d07ac321e5e12d3f0d5b4535b5a7312b))
+* **build:** resolve store iOS bundle id for local production builds ([#367](https://github.com/AntoC-dev/Recipedia/issues/367)) ([af5f735](https://github.com/AntoC-dev/Recipedia/commit/af5f735192cefb25636b8da649470bded7e9e776))
+
 ## [2.38.2](https://github.com/AntoC-dev/Recipedia/compare/v2.38.1...v2.38.2) (2026-06-19)
 
 ### Performance Improvements
