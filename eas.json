@@ -60,9 +60,6 @@
           "android/build"
         ]
       },
-      "env": {
-        "NODE_OPTIONS": "--max-old-space-size=4096"
-      },
       "android": {
         "buildType": "app-bundle",
         "image": "latest"
@@ -71,6 +68,7 @@
         "buildConfiguration": "Release"
       },
       "env": {
+        "NODE_OPTIONS": "--max-old-space-size=4096",
         "EXPO_PUBLIC_DATASET_TYPE": "production"
       }
     }
