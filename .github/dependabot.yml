@@ -1,6 +1,9 @@
 version: 2
 updates:
-  # Enable version updates for npm dependencies
+  # npm dependencies. Expo SDK pins the React Native / React / Expo / Babel /
+  # Metro toolchain — those are bumped via `expo install` / SDK upgrades, never
+  # by Dependabot. Dependabot only handles standalone JS libs and dev tooling,
+  # minor + patch only. Major bumps are a deliberate human action.
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
@@ -11,14 +14,8 @@ updates:
     open-pull-requests-limit: 5
     reviewers:
       - "AntoC"
-    assignees:
-      - "dependabot"
-    # Pull request configuration
     pull-request-branch-name:
       separator: "/"
-    allow:
-      - dependency-type: "direct"
-        update-types: ["version-update:semver-major", "version-update:semver-minor"]
     commit-message:
       prefix: "chore"
       prefix-development: "chore"
@@ -26,49 +23,52 @@ updates:
     labels:
       - "dependencies"
       - "automated"
-    # Group React Native related packages together
+    allow:
+      - dependency-type: "direct"
+        update-types:
+          - "version-update:semver-minor"
+          - "version-update:semver-patch"
     groups:
-      expo:
-        patterns:
-          - "expo*"
-          - "@expo*"
       testing:
         patterns:
           - "*jest*"
-          - "babel-jest"
           - "reassure"
       linting:
         patterns:
           - "eslint*"
           - "@typescript-eslint/*"
           - "prettier*"
-      build-tools:
+      semantic-release:
         patterns:
-          - "typescript"
-          - "webpack*"
-          - "babel*"
-          - "@babel/*"
+          - "semantic-release"
+          - "@semantic-release/*"
+          - "conventional-changelog-*"
+      commitlint:
+        patterns:
+          - "@commitlint/*"
     ignore:
-      # Expo SDK versions should be updated manually
-      - dependency-name: "expo"
-      # React Native versions should be updated carefully
-      - dependency-name: "react-native"
-      # All React Native related packages should be updated manually
-      - dependency-name: "react-native*"
-      - dependency-name: "@react-native*"
-      # All Expo related packages should be updated manually
+      # Expo / React Native / React — managed by Expo SDK, bump via `expo install`
       - dependency-name: "expo*"
       - dependency-name: "@expo*"
-      # React versions must track Expo SDK — update manually
+      - dependency-name: "react-native*"
+      - dependency-name: "@react-native*"
       - dependency-name: "react"
       - dependency-name: "react-dom"
       - dependency-name: "react-compiler-runtime"
+      - dependency-name: "babel-plugin-react-compiler"
+      - dependency-name: "eslint-plugin-react-compiler"
       - dependency-name: "@types/react*"
-      # React Navigation is tightly coupled to React Native version
       - dependency-name: "@react-navigation/*"
-      # React Native Testing Library must match React Native version
       - dependency-name: "@testing-library/react-native"
-      # Node.js types often have issues with automatic updates
+      - dependency-name: "@shopify/flash-list"
+      # Expo-SDK-versioned, not matched by the wildcards above
+      - dependency-name: "jest-expo"
+      - dependency-name: "eslint-config-expo"
+      # Babel / Metro — pinned by babel-preset-expo / jest-expo / metro
+      - dependency-name: "@babel/*"
+      - dependency-name: "babel-*"
+      - dependency-name: "metro-*"
+      # Node types — avoid disruptive majors
       - dependency-name: "@types/node"
         update-types: ["version-update:semver-major"]
 
@@ -82,9 +82,6 @@ updates:
     open-pull-requests-limit: 3
     reviewers:
       - "AntoC"
-    assignees:
-      - "dependabot"
-    # Pull request configuration
     pull-request-branch-name:
       separator: "/"
     commit-message:
