@@ -1,13 +1,9 @@
 /**
  * TypeCheckingFunctions - Utility functions for runtime type validation and string arithmetic
  *
- * This module provides type checking utilities for validating data at runtime and
- * performing arithmetic operations on strings containing numbers. Used primarily
- * for validating user input and processing recipe quantity strings.
+ * This module provides type checking utilities for validating data at runtime.
+ * Used primarily for validating user input and database records.
  */
-
-import { separateNumbersFromStr } from '@styles/typography';
-import { validationLogger } from '@utils/logger';
 
 /**
  * Checks if a value is a string
@@ -148,97 +144,4 @@ export function hasSameKeysAs<T>(val: unknown, keys: (keyof T)[]): boolean {
 
   const valKeys = Object.keys(val);
   return valKeys.length === keys.length && keys.every(key => valKeys.includes(key as string));
-}
-
-/**
- * Adds numbers contained in two strings
- *
- * Performs addition on strings that contain numeric values. Handles both pure numbers
- * and strings with mixed content (e.g., "2 cups" + "1 cup" = "3 cups").
- *
- * @param lhs - Left-hand side string
- * @param rhs - Right-hand side string
- * @returns String containing the sum
- *
- * @example
- * ```typescript
- * sumNumberInString("2", "3") // "5"
- * sumNumberInString("2 cups", "1 cup") // "3 cups"
- * ```
- */
-export function sumNumberInString(lhs: string, rhs: string) {
-  return operatorNumberInString(lhs, rhs, '+');
-}
-
-/**
- * Subtracts numbers contained in two strings
- *
- * Performs subtraction on strings that contain numeric values. Handles both pure numbers
- * and strings with mixed content (e.g., "5 cups" - "2 cups" = "3 cups").
- *
- * @param lhs - Left-hand side string (minuend)
- * @param rhs - Right-hand side string (subtrahend)
- * @returns String containing the difference
- *
- * @example
- * ```typescript
- * subtractNumberInString("5", "2") // "3"
- * subtractNumberInString("5 cups", "2 cups") // "3 cups"
- * ```
- */
-export function subtractNumberInString(lhs: string, rhs: string) {
-  return operatorNumberInString(lhs, rhs, '-');
-}
-
-/**
- * Performs arithmetic operations on strings containing numbers
- *
- * Internal helper function that handles the logic for both addition and subtraction
- * on strings. Supports three cases:
- * 1. Both strings are pure numbers
- * 2. Both strings contain mixed content (numbers + text)
- * 3. Mixed case (one number, one mixed) - logs error and concatenates
- *
- * @param lhs - Left-hand side string
- * @param rhs - Right-hand side string
- * @param operator - The arithmetic operator ('+' or '-')
- * @returns String containing the result of the operation
- */
-function operatorNumberInString(lhs: string, rhs: string, operator: '+' | '-') {
-  const applyOp = (lhs: number, rhs: number): number => {
-    switch (operator) {
-      case '+':
-        return lhs + rhs;
-      case '-':
-        return lhs - rhs;
-    }
-  };
-
-  const lhsIsNumber = isNumber(lhs);
-  const rhsIsNumber = isNumber(rhs);
-  if (lhsIsNumber && rhsIsNumber) {
-    return applyOp(Number(lhs), Number(rhs)).toString();
-  } else if (!lhsIsNumber && !rhsIsNumber) {
-    const tokens1 = lhs.match(separateNumbersFromStr) || [];
-    const tokens2 = rhs.match(separateNumbersFromStr) || [];
-
-    return tokens1
-      .map((token, i) => {
-        const other = tokens2[i] ?? '';
-        if (isNumber(token) && isNumber(other)) {
-          return applyOp(Number(token), Number(other)).toString();
-        }
-        if (token === other) return token;
-        return token + other;
-      })
-      .join('');
-  } else {
-    validationLogger.error(
-      "Can't have one which can be a number and other which cannot be: ",
-      lhs,
-      ' ',
-      rhs
-    );
-    return lhs + rhs;
-  }
 }

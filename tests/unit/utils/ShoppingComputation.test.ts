@@ -117,6 +117,59 @@ describe('computeShoppingList', () => {
     expect(result[0].quantity).toBe('350');
   });
 
+  test('sums same ingredient across recipes when quantity formats are mixed', () => {
+    const recipe1 = makeRecipe(1, 'Pasta', [makeIngredient('flour', '100', 'g')]);
+    const recipe2 = makeRecipe(2, 'Cake', [makeIngredient('flour', '200 g', 'g')]);
+    const result = computeShoppingList(
+      [makeMenuItem(1), makeMenuItem(2)],
+      [recipe1, recipe2],
+      noPurchased
+    );
+
+    expect(result).toHaveLength(1);
+    expect(result[0].quantity).toBe('300');
+    expect(result[0].unit).toBe('g');
+  });
+
+  test('multiplies a numeric quantity parsed from mixed input by count', () => {
+    const recipe = makeRecipe(1, 'Pasta', [makeIngredient('flour', '100 g', 'g')]);
+    const result = computeShoppingList([makeMenuItem(1, { count: 3 })], [recipe], noPurchased);
+
+    expect(result[0].quantity).toBe('300');
+  });
+
+  test('keeps quantity empty when same ingredient lacks quantity in two recipes', () => {
+    const recipe1 = makeRecipe(1, 'Soup', [makeIngredient('salt', '', 'pinch')]);
+    const recipe2 = makeRecipe(2, 'Stew', [makeIngredient('salt', '', 'pinch')]);
+    const result = computeShoppingList(
+      [makeMenuItem(1), makeMenuItem(2)],
+      [recipe1, recipe2],
+      noPurchased
+    );
+
+    expect(result).toHaveLength(1);
+    expect(result[0].quantity).toBe('');
+  });
+
+  test('keeps quantity empty when an unquantified ingredient has count greater than one', () => {
+    const recipe = makeRecipe(1, 'Soup', [makeIngredient('salt', '', 'pinch')]);
+    const result = computeShoppingList([makeMenuItem(1, { count: 3 })], [recipe], noPurchased);
+
+    expect(result[0].quantity).toBe('');
+  });
+
+  test('sums decimal quantities without floating point artifacts', () => {
+    const recipe1 = makeRecipe(1, 'Cake', [makeIngredient('oil', '0.1', 'l')]);
+    const recipe2 = makeRecipe(2, 'Bread', [makeIngredient('oil', '0.2', 'l')]);
+    const result = computeShoppingList(
+      [makeMenuItem(1), makeMenuItem(2)],
+      [recipe1, recipe2],
+      noPurchased
+    );
+
+    expect(result[0].quantity).toBe('0.3');
+  });
+
   test('accumulates both recipe titles when ingredient appears in two recipes', () => {
     const recipe1 = makeRecipe(1, 'Pasta', [makeIngredient('flour', '200', 'g')]);
     const recipe2 = makeRecipe(2, 'Cake', [makeIngredient('flour', '150', 'g')]);

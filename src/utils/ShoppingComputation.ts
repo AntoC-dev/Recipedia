@@ -14,7 +14,13 @@ import {
   menuTableElement,
   recipeTableElement,
 } from '@customTypes/DatabaseElementTypes';
-import { sumNumberInString } from '@utils/TypeCheckingFunctions';
+import { parseQuantity } from '@utils/Quantity';
+
+type ShoppingAggregate = {
+  item: ComputedShoppingItem;
+  total: number;
+  hasQuantity: boolean;
+};
 
 /**
  * Computes a flat shopping list from the current menu, recipes and purchase state.
@@ -22,8 +28,10 @@ import { sumNumberInString } from '@utils/TypeCheckingFunctions';
  * Iterates over non-cooked menu items, looks up each recipe and accumulates
  * ingredient quantities (multiplied by the menu item count). Duplicate
  * ingredient names across recipes are merged into a single entry. Quantities
- * are summed using `sumNumberInString` to preserve locale-aware decimal
- * separators.
+ * are parsed to numbers via `parseQuantity`, summed numerically and formatted
+ * once at the end (rounded to six decimals to avoid binary floating point
+ * artifacts). Ingredients that never carry a quantity keep an empty string
+ * rather than `"0"`.
  *
  * @param menu - All current menu items (cooked items are excluded)
  * @param recipes - Full recipe catalogue used to resolve `menu[].recipeId`
@@ -36,7 +44,7 @@ export function computeShoppingList(
   purchasedIngredients: Map<string, boolean>
 ): ComputedShoppingItem[] {
   const toCookItems = menu.filter(item => !item.isCooked);
-  const shoppingIngredientMap = new Map<string, ComputedShoppingItem>();
+  const aggregates = new Map<string, ShoppingAggregate>();
   const recipeById = new Map(recipes.map(r => [r.id, r]));
 
   for (const menuItem of toCookItems) {
@@ -47,34 +55,36 @@ export function computeShoppingList(
 
     const count = menuItem.count ?? 1;
     for (const ingredient of recipe.ingredients) {
-      const existing = shoppingIngredientMap.get(ingredient.name);
-      const ingredientQuantity = ingredient.quantity ?? '';
+      const parsed = parseQuantity(ingredient.quantity);
+      const hasQuantity = parsed !== '';
+      const quantityToAdd = hasQuantity ? Number(parsed) * count : 0;
 
-      let quantityToAdd = ingredientQuantity;
-      for (let i = 1; i < count; i++) {
-        quantityToAdd = sumNumberInString(quantityToAdd, ingredientQuantity);
-      }
-
+      const existing = aggregates.get(ingredient.name);
       if (existing) {
-        shoppingIngredientMap.set(ingredient.name, {
-          ...existing,
-          quantity: sumNumberInString(existing.quantity, quantityToAdd),
-          recipeTitles: existing.recipeTitles.includes(recipe.title)
-            ? existing.recipeTitles
-            : [...existing.recipeTitles, recipe.title],
-        });
+        existing.total += quantityToAdd;
+        existing.hasQuantity = existing.hasQuantity || hasQuantity;
+        if (!existing.item.recipeTitles.includes(recipe.title)) {
+          existing.item.recipeTitles.push(recipe.title);
+        }
       } else {
-        shoppingIngredientMap.set(ingredient.name, {
-          name: ingredient.name,
-          type: ingredient.type,
-          quantity: quantityToAdd,
-          unit: ingredient.unit ?? '',
-          recipeTitles: [recipe.title],
-          purchased: purchasedIngredients.get(ingredient.name) ?? false,
+        aggregates.set(ingredient.name, {
+          item: {
+            name: ingredient.name,
+            type: ingredient.type,
+            quantity: '',
+            unit: ingredient.unit ?? '',
+            recipeTitles: [recipe.title],
+            purchased: purchasedIngredients.get(ingredient.name) ?? false,
+          },
+          total: quantityToAdd,
+          hasQuantity,
         });
       }
     }
   }
 
-  return Array.from(shoppingIngredientMap.values());
+  return Array.from(aggregates.values()).map(({ item, total, hasQuantity }) => ({
+    ...item,
+    quantity: hasQuantity ? (Math.round(total * 1e6) / 1e6).toString() : '',
+  }));
 }
