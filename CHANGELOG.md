@@ -1,3 +1,10 @@
+## [2.38.4](https://github.com/AntoC-dev/Recipedia/compare/v2.38.3...v2.38.4) (2026-06-24)
+
+### Bug Fixes
+
+* **shopping:** aggregate quantities numerically ([176a3b5](https://github.com/AntoC-dev/Recipedia/commit/176a3b543115239ffb05d61b441e6bf56d858af5))
+* **shopping:** aggregate quantities numerically ([#366](https://github.com/AntoC-dev/Recipedia/issues/366)) ([ae9799b](https://github.com/AntoC-dev/Recipedia/commit/ae9799be48ea0925a2cdda9635d31950c9a5b73d)), closes [#359](https://github.com/AntoC-dev/Recipedia/issues/359)
+
 ## [2.38.3](https://github.com/AntoC-dev/Recipedia/compare/v2.38.2...v2.38.3) (2026-06-21)
 
 ### Bug Fixes
