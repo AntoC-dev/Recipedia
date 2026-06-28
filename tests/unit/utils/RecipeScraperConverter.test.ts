@@ -24,6 +24,7 @@ describe('RecipeScraperConverter', () => {
       'sel et poivre',
       'poivre et sel',
       'huile de cuisson',
+      'huile végétale',
       'salt',
       'pepper',
       'cooking oil',
@@ -308,12 +309,14 @@ describe('RecipeScraperConverter', () => {
 
     it('returns true for generic cooking oil exact matches', () => {
       expect(isUnparseableIngredient('huile de cuisson', ignoredPatterns)).toBe(true);
+      expect(isUnparseableIngredient('huile végétale', ignoredPatterns)).toBe(true);
       expect(isUnparseableIngredient('cooking oil', ignoredPatterns)).toBe(true);
       expect(isUnparseableIngredient('vegetable oil', ignoredPatterns)).toBe(true);
     });
 
     it('is case-insensitive for cooking oil exact matches', () => {
       expect(isUnparseableIngredient('HUILE DE CUISSON', ignoredPatterns)).toBe(true);
+      expect(isUnparseableIngredient('Huile Végétale', ignoredPatterns)).toBe(true);
       expect(isUnparseableIngredient('Cooking Oil', ignoredPatterns)).toBe(true);
       expect(isUnparseableIngredient('Vegetable Oil', ignoredPatterns)).toBe(true);
     });
@@ -554,7 +557,7 @@ describe('RecipeScraperConverter', () => {
 
     it('skips generic cooking oil exact matches when no quantity', () => {
       const result = convertIngredients(
-        ['150 g Flour', 'huile de cuisson', 'cooking oil', 'vegetable oil'],
+        ['150 g Flour', 'huile de cuisson', 'huile végétale', 'cooking oil', 'vegetable oil'],
         null,
         null,
         ignoredPatterns
@@ -563,6 +566,7 @@ describe('RecipeScraperConverter', () => {
       expect(result.ingredients).toHaveLength(1);
       expect(result.ingredients[0].name).toBe('Flour');
       expect(result.skipped).toContain('huile de cuisson');
+      expect(result.skipped).toContain('huile végétale');
       expect(result.skipped).toContain('cooking oil');
       expect(result.skipped).toContain('vegetable oil');
     });
