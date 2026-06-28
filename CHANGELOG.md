@@ -1,3 +1,9 @@
+## [2.38.5](https://github.com/AntoC-dev/Recipedia/compare/v2.38.4...v2.38.5) (2026-06-28)
+
+### Bug Fixes
+
+* add missing French vegetable oil match ([ed1d752](https://github.com/AntoC-dev/Recipedia/commit/ed1d75240f50d3ab129ad3be52a9a7464a5ab477))
+
 ## [2.38.4](https://github.com/AntoC-dev/Recipedia/compare/v2.38.3...v2.38.4) (2026-06-24)
 
 ### Bug Fixes
