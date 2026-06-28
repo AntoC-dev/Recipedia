@@ -1,0 +1,12 @@
+name: "Perf - Shopping screen"
+appId: "com.recipedia"
+tags:
+  - performance
+---
+- runFlow:
+    file: "../../../flows/performance/warmLaunch.yaml"
+    label: "Warm launch to Home"
+
+- runFlow:
+    file: "../../../flows/performance/shoppingScreen.yaml"
+    label: "Shopping screen interactions"

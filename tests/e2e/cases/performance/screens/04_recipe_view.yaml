@@ -1,0 +1,22 @@
+name: "Perf - Recipe view and edit"
+appId: "com.recipedia"
+tags:
+  - performance
+---
+- runFlow:
+    file: "../../../flows/performance/warmLaunch.yaml"
+    label: "Warm launch to Home"
+
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Navigate to Search (recipe list entry point)"
+
+- extendedWaitUntil:
+    visible:
+      id: "SearchScreen::SearchBar"
+    timeout: 10000
+    label: "Wait for Search screen"
+
+- runFlow:
+    file: "../../../flows/performance/recipeView.yaml"
+    label: "Recipe view and edit interactions"

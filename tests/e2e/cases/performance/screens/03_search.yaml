@@ -1,0 +1,12 @@
+name: "Perf - Search screen"
+appId: "com.recipedia"
+tags:
+  - performance
+---
+- runFlow:
+    file: "../../../flows/performance/warmLaunch.yaml"
+    label: "Warm launch to Home"
+
+- runFlow:
+    file: "../../../flows/performance/searchScreen.yaml"
+    label: "Search screen interactions (list, filters, accordions)"

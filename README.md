@@ -1,43 +1,51 @@
 # 🍳 Recipedia
 
-A React Native recipe management app built with Expo that allows users to add, search, and manage recipes with OCR
-capabilities for extracting recipe information from images.
+A React Native recipe management app built with Expo — add, search, and manage recipes with OCR scanning and web import.
 
 <div align="center">
 
-[![Version](https://img.shields.io/badge/version-0.7.0-blue.svg)](package.json)
-[![React Native](https://img.shields.io/badge/React%20Native-0.76.9-blue.svg)](https://reactnative.dev/)
-[![Expo](https://img.shields.io/badge/Expo-~52.0.42-black.svg)](https://expo.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.3.3-blue.svg)](https://www.typescriptlang.org/)
+[![Version](https://img.shields.io/badge/version-2.38.4-blue.svg)](package.json)
+[![React Native](https://img.shields.io/badge/React%20Native-0.83.2-blue.svg)](https://reactnative.dev/)
+[![Expo](https://img.shields.io/badge/Expo-~55.0.9-black.svg)](https://expo.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-~5.9.2-blue.svg)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 </div>
 
 ## ✨ Features
 
-- 📱 **Cross-platform**: Built with React Native and Expo for iOS and Android
-- 🔍 **Smart Search**: Fuzzy search for recipes and ingredients using Fuse.js
-- 📸 **OCR Integration**: Extract recipe information from images using ML Kit text recognition
-- 🌐 **Web Recipe Import**: Import recipes from 400+ websites using [recipe-scrapers](https://github.com/hhursev/recipe-scrapers)
-- 🌍 **Multi-language**: Full internationalization support (English & French)
-- 🌙 **Dark Mode**: Complete dark/light theme support
-- 🗃️ **Local Storage**: SQLite database for offline functionality
-- 🛒 **Shopping Lists**: Convert recipe ingredients to shopping lists
-- 🏷️ **Smart Filtering**: Filter recipes by ingredients, tags, time, and seasonality
-- 📅 **Seasonal Awareness**: Track ingredient seasonality for better meal planning
+- 📱 **Cross-platform**: iOS and Android, portrait mode, fully offline
+- 🔍 **Smart Search**: Fuzzy search across recipes, ingredients, and tags (MiniSearch)
+- 📸 **OCR Scanning**: Extract recipe text from photos using ML Kit
+- 🌐 **Web Import**: Import from 400+ recipe websites via an embedded Python scraper
+- 📦 **Bulk Import**: Import recipe packs from HelloFresh and Quitoque with a validation workflow
+- 🌍 **Multi-language**: English and French
+- 🌙 **Dark Mode**: Full dark/light theme
+- 🗃️ **Local Storage**: SQLite — all data stays on device, no cloud sync
+- 📅 **Weekly Menu**: Plan meals and auto-generate shopping lists
+- 🛒 **Shopping Lists**: Derived from your weekly menu with quantity aggregation
+- 🏷️ **Smart Filtering**: Filter by ingredients, tags, time, and seasonality
+- 🌱 **Seasonal Awareness**: Track ingredient seasonality for better meal planning
 
 ## 📷 Screenshots
 
-| Home Screen   | Recipe View   | Search & Filters | Shopping List |
-|---------------|---------------|------------------|---------------|
-| *Coming soon* | *Coming soon* | *Coming soon*    | *Coming soon* |
+<div align="center">
+
+| Home | Recipe | Search |
+|:----:|:------:|:------:|
+| <img src="store-listing/en/phone/ios/home_overlay.png" width="200"/> | <img src="store-listing/en/phone/ios/recipe_overlay.png" width="200"/> | <img src="store-listing/en/phone/ios/search_overlay.png" width="200"/> |
+
+| Add Recipe | Shopping List |
+|:----------:|:-------------:|
+| <img src="store-listing/en/phone/ios/add_overlay.jpeg" width="200"/> | <img src="store-listing/en/phone/ios/shopping_overlay.png" width="200"/> |
+
+</div>
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/) (v18 or higher)
-- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
 - [Expo CLI](https://docs.expo.dev/get-started/installation/)
 - For Android: [Android Studio](https://developer.android.com/studio) with Android SDK
 - For iOS: [Xcode](https://developer.apple.com/xcode/) (macOS only)
@@ -61,12 +69,12 @@ capabilities for extracting recipe information from images.
    ```
 
 4. **Run on your platform**
-    - **Android**: `npm run dev:android`
-    - **iOS**: `npm run dev:ios`
+   - **Android**: `npm run dev:android`
+   - **iOS**: `npm run dev:ios`
 
-## 🏗️ Project Architecture
+## 🏗️ Architecture
 
-Recipedia follows a well-structured architecture with clear separation of concerns:
+Local-first, single-user, no backend. All data lives in a SQLite database on-device.
 
 ```
 src/
@@ -77,6 +85,7 @@ src/
 ├── screens/            # App screens
 ├── navigation/         # Navigation configuration
 ├── context/           # React Context providers
+├── hooks/             # Focused data hooks (useRecipes, useShopping, …)
 ├── utils/             # Utility functions and database
 ├── styles/            # Theme and styling
 ├── translations/      # i18n translations
@@ -85,195 +94,119 @@ src/
 
 ### Key Technologies
 
-- **Framework**: React Native with Expo
-- **Database**: SQLite with expo-sqlite
-- **Navigation**: React Navigation v6
-- **State Management**: React Context + Hooks
-- **UI Library**: React Native Paper for design system
-- **Internationalization**: i18next
-- **Search**: Fuse.js for fuzzy search
-- **OCR**: @react-native-ml-kit/text-recognition
-- **Recipe Scraping**: [recipe-scrapers](https://github.com/hhursev/recipe-scrapers) via Python (Chaquopy on Android, BeeWare on iOS, Pyodide on Web)
-- **Testing**: Jest + React Native Testing Library + Maestro (E2E)
+| Layer | Library |
+|-------|---------|
+| Framework | React Native + Expo |
+| Database | SQLite via expo-sqlite |
+| Navigation | React Navigation v6 |
+| State | React Context + hooks |
+| UI | React Native Paper |
+| Search | MiniSearch (fuzzy, offline) |
+| OCR | @react-native-ml-kit/text-recognition |
+| i18n | i18next |
+| Recipe scraping | [recipe-scrapers](https://github.com/hhursev/recipe-scrapers) via embedded Python (Chaquopy on Android, BeeWare on iOS) |
+| Testing | Jest + RNTL + Reassure + Maestro (E2E) |
 
 ## 📖 Documentation
 
-### For Users
-
+- [API Documentation](https://AntoC-dev.github.io/Recipedia/) — TypeScript reference, auto-generated with TypeDoc
+- [Architecture](ARCHITECTURE.md) — data flow, DB schema, key invariants
+- [Contributing](CONTRIBUTING.md)
 - [Installation Guide](guides/installation.md)
 - [FAQ](guides/faq.md)
 
-### For Developers
-
-- **[API Documentation](https://AntoC-dev.github.io/Recipedia/)** - Complete TypeScript API reference
-- [Contributing Guidelines](CONTRIBUTING.md)
-
-### API Documentation
-
-The project maintains comprehensive API documentation generated with TypeDoc, covering all components, utilities, and
-types. The documentation is automatically published to GitHub Pages and includes:
-
-- **Component Documentation**: All atomic, molecular, and organism components
-- **Utility Functions**: Database operations, file management, and helper functions
-- **Type Definitions**: Complete TypeScript interfaces and types
-- **Source Code**: Direct links to GitHub source files
-- **Examples**: Usage examples and code snippets
-
-**Documentation Commands:**
-
 ```bash
-npm run docs:build    # Generate documentation
-npm run docs:clean    # Clean documentation build
+npm run docs:build    # Generate TypeDoc
+npm run docs:clean    # Clean build
 ```
 
-**Viewing Documentation:**
-
-- **Online**: [https://AntoC-dev.github.io/Recipedia/](https://AntoC-dev.github.io/Recipedia/)
-- **Local**: Run `npm run docs:build` then open `docs/index.html`
-
 ## 🧪 Testing
-
-Recipedia includes comprehensive testing at multiple levels:
 
 ### Unit Tests
 
 ```bash
-npm run test:unit           # Run all unit tests (tests/unit/)
-npm run test:unit:watch     # Run tests in watch mode
-npm run test:unit:coverage  # Run with coverage report
+npm run test:unit           # Run unit tests (tests/unit/)
+npm run test:unit:watch     # Watch mode
+npm run test:unit:coverage  # With coverage report
 ```
 
 ### Integration Tests
 
 ```bash
-npm run test:integration    # Run cross-module integration tests (tests/integration/)
+npm run test:integration    # Cross-module integration tests (tests/integration/)
+```
+
+### Performance Tests
+
+```bash
+npm run test:perf           # Reassure render benchmarks
 ```
 
 ### End-to-End Tests
 
 ```bash
-npm run test:e2e:android    # Run E2E tests on Android
-npm run workflow:build-test:android  # Full cycle
+npm run test:e2e:android             # Run E2E tests on Android
+npm run workflow:build-test:android  # Full build + test cycle
 ```
-
-### Test Coverage
-
-- **Unit Tests**: Components, utilities, and business logic
-- **Integration Tests**: Cross-module flows running real pipelines end-to-end; mocks only at irreducible boundaries (e.g. native modules)
-- **E2E Tests**: Complete user workflows using Maestro
 
 ## 🔧 Development
 
 ### Available Scripts
 
-| Command                      | Description                    |
-|------------------------------|--------------------------------|
-| `npm start`                  | Start Expo development server  |
-| `npm run dev:android`        | Run on Android device/emulator |
-| `npm run dev:ios`            | Run on iOS device/simulator    |
-| `npm run build:test:android` | Build Android APK              |
-| `npm run build:test:ios`     | Build iOS app                  |
-| `npm run test:unit`          | Run unit tests                 |
-| `npm run test:integration`   | Run integration tests          |
-| `npm run test:e2e:android`   | Run E2E tests                  |
-| `npm run release`            | Create semantic release        |
-
-### Code Style
-
-The project follows strict TypeScript and React Native best practices:
-
-- **ESLint** for code linting
-- **Prettier** for code formatting
-- **TypeScript** for type safety
-- **Atomic Design** for component architecture
-- **Feature-first** folder structure
-
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
-
-### How to Contribute
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/123-amazing-feature`)
-3. Make your changes
-4. Run tests (`npm run test:unit`)
-5. Commit your changes (`git commit -m 'feat(#123): add amazing feature'`)
-6. Push to the branch (`git push origin feature/123-amazing-feature`)
-7. Open a Pull Request
-
-### Development Guidelines
-
-- Follow the existing code style and patterns
-- Add unit tests for new functionality
-- Update documentation as needed
-- Ensure all tests pass before submitting PR
-- Use semantic commit messages with issue numbers
-
-## 🐛 Bug Reports & Feature Requests
-
-Please use [GitHub Issues](https://github.com/AntoC-dev/Recipedia/issues) to:
-
-- Report bugs
-- Request new features
-- Ask questions about usage
-
-### Bug Report Template
-
-When reporting bugs, please include:
-
-- Device and OS version
-- App version
-- Steps to reproduce
-- Expected vs actual behavior
-- Screenshots if applicable
+| Command | Description |
+|---------|-------------|
+| `npm start` | Start Expo development server |
+| `npm run dev:android` | Run on Android device/emulator |
+| `npm run dev:ios` | Run on iOS device/simulator |
+| `npm run quality` | Full quality suite (lint + format + typecheck + expo:doctor) |
+| `npm run lint:fix` | Auto-fix lint issues |
+| `npm run format` | Run Prettier |
+| `npm run typecheck` | TypeScript check |
+| `npm run build:test:android` | Build Android APK for testing |
+| `npm run build:test:ios` | Build iOS app for testing |
+| `npm run release` | Create semantic release |
 
 ## 📱 Device Support
 
-### Minimum Requirements
+- **iOS**: 13.0+
+- **Android**: 6.0+ (API 23+)
 
-- **iOS**: iOS 13.0+
-- **Android**: Android 6.0+ (API level 23+)
+## 🔐 Privacy
 
-### Tested Devices
+- All data stored locally — no cloud sync, no account required
+- Camera used only for OCR scanning
+- No analytics, no tracking
 
-- iOS: Not yet, to come
-- Android: Various devices with Android 14.0+
+## 🤝 Contributing
 
-## 🔐 Privacy & Security
+See [CONTRIBUTING.md](CONTRIBUTING.md) for full guidelines.
 
-- **Local Data**: All recipes are stored locally on your device
-- **No Cloud Sync**: Your data stays on your device
-- **Camera Permissions**: Only used for OCR recipe scanning
-- **No Analytics**: No user tracking or data collection
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/123-my-feature`)
+3. Make your changes and add tests
+4. Run quality checks (`npm run quality`)
+5. Commit with a conventional message (`feat(#123): add my feature`)
+6. Open a Pull Request
+
+## 🐛 Issues & Requests
+
+Use [GitHub Issues](https://github.com/AntoC-dev/Recipedia/issues) to report bugs or request features.
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT — see [LICENSE](LICENSE).
 
 ## 🙏 Acknowledgments
 
-- [Expo](https://expo.dev/) for the amazing development platform
-- [React Native](https://reactnative.dev/) team for the framework
-- [React Native Paper](https://reactnativepaper.com/) for the UI components
-- [ML Kit](https://developers.google.com/ml-kit) for OCR capabilities
-- **[recipe-scrapers](https://github.com/hhursev/recipe-scrapers)** - A huge thank you to [Hristo Harsev](https://github.com/hhursev) and all the [contributors](https://github.com/hhursev/recipe-scrapers/graphs/contributors) for this incredible Python library that powers our web recipe import feature, supporting 400+ recipe websites
-- [Chaquopy](https://chaquo.com/chaquopy/) for embedding Python in Android apps
-- [BeeWare](https://beeware.org/) for Python on iOS support
-- [Pyodide](https://pyodide.org/) for running Python in the browser via WebAssembly
-- All contributors who help make this project better
-
-## 📞 Support
-
-- **Documentation**: Check our [guides folder](guides/)
-- **Issues**: [GitHub Issues](https://github.com/AntoC-dev/Recipedia/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/AntoC-dev/Recipedia/discussions)
+- [recipe-scrapers](https://github.com/hhursev/recipe-scrapers) — the Python library powering web import, supporting 400+ sites. Huge thanks to [Hristo Harsev](https://github.com/hhursev) and all contributors.
+- [Expo](https://expo.dev/), [React Native](https://reactnative.dev/), [React Native Paper](https://reactnativepaper.com/)
+- [ML Kit](https://developers.google.com/ml-kit) for OCR
+- [Chaquopy](https://chaquo.com/chaquopy/) for Python on Android
+- [BeeWare](https://beeware.org/) for Python on iOS
 
 ---
 
 <div align="center">
-
-**Made with ❤️ by the Recipedia team**
 
 [⭐ Star this repo](https://github.com/AntoC-dev/Recipedia) • [🐛 Report bug](https://github.com/AntoC-dev/Recipedia/issues) • [✨ Request feature](https://github.com/AntoC-dev/Recipedia/issues)
 

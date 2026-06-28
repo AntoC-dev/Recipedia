@@ -1,0 +1,34 @@
+appId: "com.recipedia"
+---
+# Warm launch: app data already seeded by a prior run (no clearState).
+# Used by per-screen performance cases so each screen is measured in isolation
+# against an already-populated database (realistic power-user warm start).
+- launchApp:
+    label: "Warm launch (data already seeded)"
+
+- runFlow:
+    file: "../handleAnr.yaml"
+    label: "Handle ANR dialog if it appears"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "WelcomeScreen::LoadingOverlay"
+    timeout: 30000
+    optional: true
+    label: "Wait for any loading overlay to clear"
+
+- extendedWaitUntil:
+    visible:
+      id: "Home::RecipeRecommendation::random::Carousel::Card::0::Cover"
+    timeout: 30000
+    label: "Wait for Home screen ready"
+
+- extendedWaitUntil:
+    visible:
+      id: "ExpandButton.*"
+    timeout: 5000
+    label: "Wait for FAB"
+
+- waitForAnimationToEnd:
+    timeout: 3000
+    label: "Wait for FAB animation"

@@ -1,0 +1,12 @@
+name: "Perf - Cold start + seeding"
+appId: "com.recipedia"
+tags:
+  - performance
+  - performance-seed
+---
+# Cold start with a fresh DB: measures first-launch cost including seeding the
+# full power-user dataset (~1200 recipes / ~1000 ingredients / ~300 tags).
+# MUST run before the warm per-screen cases so they reuse this seeded database.
+- runFlow:
+    file: "../../../flows/setupPerformanceTest.yaml"
+    label: "Cold launch, skip onboarding, seed dataset, wait Home ready"

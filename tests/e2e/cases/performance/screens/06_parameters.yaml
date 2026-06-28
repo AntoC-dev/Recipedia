@@ -1,0 +1,15 @@
+name: "Perf - Parameters, Ingredients and Tags"
+appId: "com.recipedia"
+tags:
+  - performance
+---
+# Exercises the data-management screens that render the FULL ingredient (~1000)
+# and tag (~300) lists at power-user scale, even though most are not used by any
+# recipe. This is the heaviest list-rendering path in the app.
+- runFlow:
+    file: "../../../flows/performance/warmLaunch.yaml"
+    label: "Warm launch to Home"
+
+- runFlow:
+    file: "../../../flows/performance/parametersScreen.yaml"
+    label: "Parameters, Ingredients DB and Tags DB interactions"

@@ -1,0 +1,6 @@
+{
+  "_comment": "Production JS bundle-size budget enforced in CI by check-bundle-size.mjs. maxBytes is a hard ceiling; referenceBytes is the last calibrated size used for growth warnings. Run the bundle-size CI step once with BUNDLE_CALIBRATE=1 to populate referenceBytes, then tighten maxBytes. Initial maxBytes is a generous placeholder so the gate never false-fails before calibration.",
+  "maxBytes": 31457280,
+  "referenceBytes": null,
+  "warnGrowthPct": 5
+}

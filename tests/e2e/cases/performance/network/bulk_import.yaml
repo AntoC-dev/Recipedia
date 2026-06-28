@@ -1,0 +1,16 @@
+name: "Perf (network) - Bulk import 100 recipes"
+appId: "com.recipedia"
+tags:
+  - performance-network
+---
+# NOT score-gated: depends on live HelloFresh network. Run on demand / nightly to
+# stress the import pipeline and grow the DB beyond the seeded power-user baseline.
+- runFlow:
+    file: "../../../flows/performance/warmLaunch.yaml"
+    label: "Warm launch to Home"
+
+- runFlow:
+    file: "../../../flows/performance/bulkImportNetwork.yaml"
+    env:
+      RECIPE_COUNT: "100"
+    label: "Import 100 recipes from HelloFresh"

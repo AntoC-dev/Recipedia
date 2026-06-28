@@ -1,0 +1,12 @@
+name: "Perf - Home screen"
+appId: "com.recipedia"
+tags:
+  - performance
+---
+- runFlow:
+    file: "../../../flows/performance/warmLaunch.yaml"
+    label: "Warm launch to Home"
+
+- runFlow:
+    file: "../../../flows/performance/homeScreen.yaml"
+    label: "Home screen interactions"

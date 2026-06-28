@@ -1,0 +1,78 @@
+appId: "com.recipedia"
+---
+# Network-dependent bulk import of RECIPE_COUNT recipes (default 100).
+# Lives in the non-gated "network" performance suite: it depends on live
+# HelloFresh discovery/parsing, so its timing is NOT used as a perf-score gate.
+# Generous timeouts absorb network variance.
+- runFlow:
+    file: "../bulk-import/navigateToBulkImport.yaml"
+    label: "Open Bulk Import settings"
+
+- tapOn:
+    id: "BulkImportSettings::Provider::hellofresh"
+    label: "Select HelloFresh provider"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "BulkImportDiscovery::DiscoveryProgress"
+    timeout: 1800000
+    label: "Wait for recipe discovery to complete (30 min)"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "BulkImportDiscovery::(fresh|seen)-0"
+    direction: UP
+    speed: 50
+    timeout: 200000
+    label: "Scroll back to the first discovered recipe"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: "../bulk-import/selectRecipes.yaml"
+    env:
+      RECIPE_COUNT: "${RECIPE_COUNT}"
+    label: "Select RECIPE_COUNT recipes"
+
+- assertVisible:
+    id: "BulkImportDiscovery::ContinueButton"
+    label: "Verify Continue button is available"
+
+- tapOn:
+    id: "BulkImportDiscovery::ContinueButton"
+    label: "Continue to validation"
+
+- extendedWaitUntil:
+    visible:
+      id: "BulkImportValidation::AppBar::Title"
+    timeout: 900000
+    label: "Wait for parsing to start (15 min)"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "BulkImportValidation::InitializingIndicator"
+    timeout: 1200000
+    label: "Wait for initialization to complete (20 min)"
+
+- runFlow:
+    file: "../recipe/validation/validateAllDialogs.yaml"
+    env:
+      TAG_PREFIX: "BulkImportValidation::TagQueue"
+      INGREDIENT_PREFIX: "BulkImportValidation::IngredientQueue"
+    label: "Validate all tags and ingredients"
+
+- extendedWaitUntil:
+    visible:
+      id: "BulkImportValidation::FinishButton"
+    timeout: 300000
+    label: "Wait for import completion"
+
+- tapOn:
+    id: "BulkImportValidation::FinishButton"
+    label: "Finish import"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Return to Home screen"

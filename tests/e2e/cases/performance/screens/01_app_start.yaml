@@ -1,0 +1,10 @@
+name: "Perf - Warm app start (TTI)"
+appId: "com.recipedia"
+tags:
+  - performance
+---
+# Warm start: DB already seeded by 00_seed. Measures time-to-interactive of a
+# returning power user (the common real-world case).
+- runFlow:
+    file: "../../../flows/performance/warmLaunch.yaml"
+    label: "Warm launch and wait for Home interactive"
