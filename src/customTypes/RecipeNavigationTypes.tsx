@@ -115,11 +115,7 @@ export interface AddFromScrapeProp extends BaseRecipeProp {
  * `mode` before mounting RHF's `FormProvider`.
  */
 export type RecipePropType =
-  | ReadRecipeProp
-  | EditRecipeProp
-  | AddManuallyProp
-  | AddFromPicProp
-  | AddFromScrapeProp;
+  ReadRecipeProp | EditRecipeProp | AddManuallyProp | AddFromPicProp | AddFromScrapeProp;
 
 /**
  * Per-route navigation param types — one entry per `Stack.Screen` registered

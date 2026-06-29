@@ -1,4 +1,4 @@
-import {ConfigPlugin, createRunOncePlugin} from '@expo/config-plugins';
+import {ConfigPlugin, createRunOncePlugin} from 'expo/config-plugins';
 import {withAndroidChaquopy} from './withAndroidChaquopy';
 import {withiOSPython} from './withiOSPython';
 import {RecipeScraperPluginConfig} from './types';

@@ -62,8 +62,7 @@ export function useScalingOnPersonsChange(
         return;
       }
       const current = (form.getValues('recipeIngredients') ?? []) as (
-        | ingredientTableElement
-        | FormIngredientElement
+        ingredientTableElement | FormIngredientElement
       )[];
       const scaled = current.map(ing => ({
         ...ing,
