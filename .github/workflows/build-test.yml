@@ -17,6 +17,9 @@ jobs:
   install-and-doctor:
     name: Install Dependencies and run Expo doctor
     runs-on: ubuntu-latest
+    # Trusted context that receives secrets: push or same-repo PR. Fork PRs don't.
+    outputs:
+      is_internal: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -29,8 +32,6 @@ jobs:
         with:
           path: node_modules
           key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
-
-
 
   bundle-size:
     name: JS Bundle Size
@@ -92,7 +93,7 @@ jobs:
         run: node .github/scripts/reassure-compact-summary.mjs
 
       - name: Post Reassure results on PR
-        if: github.event_name == 'pull_request' && hashFiles('.reassure/output-compact.md') != ''
+        if: github.event_name == 'pull_request' && needs.install-and-doctor.outputs.is_internal == 'true' && hashFiles('.reassure/output-compact.md') != ''
         uses: marocchino/sticky-pull-request-comment@v3
         with:
           header: reassure
@@ -167,7 +168,7 @@ jobs:
           show_branch: true
           show_class_names: false
           only_changed_files: true
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && needs.install-and-doctor.outputs.is_internal == 'true'
 
   integration-tests:
     name: Integration Tests
@@ -216,18 +217,6 @@ jobs:
     secrets:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
-  build-android-performance:
-    name: Build Android APK (Performance)
-    needs: install-and-doctor
-    uses: ./.github/workflows/build-app.yml
-    with:
-      platform: android
-      build-profile: perf
-      artifact-name: build-apk-performance
-      app-filename: recipedia-performance.apk
-    secrets:
-      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-
   build-ios:
     name: Build iOS App
     needs: install-and-doctor
@@ -240,14 +229,29 @@ jobs:
     secrets:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
+  build-android-performance:
+    name: Build Android APK (Performance)
+    # Perf build needs the EAS perf dataset, so it can't use the fork fallback
+    if: needs.install-and-doctor.outputs.is_internal == 'true'
+    needs: install-and-doctor
+    uses: ./.github/workflows/build-app.yml
+    with:
+      platform: android
+      build-profile: perf
+      artifact-name: build-apk-performance
+      app-filename: recipedia-performance.apk
+    secrets:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
   e2e-tests-android:
     name: E2E Tests (Android)
-    needs: build-android
+    needs: [ build-android, install-and-doctor ]
     uses: ./.github/workflows/e2e-maestro.yml
     with:
       platform: android
       app-artifact: build-apk
-      suites: '["app-init", "bulk-import",  "duplicates-ingredient", "duplicates-recipe","duplicates-tag", "ingredient-dialog", "ingredients-db", "menu", "ocr", "recipe-create", "recipe-readonly", "recipe-edit", "search", "settings", "shopping", "tags-db", "web", "web-edge-cases"]'
+      # Forks lack QUITOQUE_*: drop the bulk-import, ocr and web suites
+      suites: ${{ needs.install-and-doctor.outputs.is_internal == 'true' && '["app-init", "bulk-import", "duplicates-ingredient", "duplicates-recipe", "duplicates-tag", "ingredient-dialog", "ingredients-db", "menu", "ocr", "recipe-create", "recipe-readonly", "recipe-edit", "search", "settings", "shopping", "tags-db", "web", "web-edge-cases"]' || '["app-init", "duplicates-ingredient", "duplicates-recipe", "duplicates-tag", "ingredient-dialog", "ingredients-db", "menu", "recipe-create", "recipe-readonly", "recipe-edit", "search", "settings", "shopping", "tags-db", "web-edge-cases"]' }}
     secrets:
       QUITOQUE_USERNAME: ${{ secrets.QUITOQUE_USERNAME }}
       QUITOQUE_PASSWORD: ${{ secrets.QUITOQUE_PASSWORD }}
@@ -267,12 +271,13 @@ jobs:
 
   e2e-tests-ios:
     name: E2E Tests (iOS)
-    needs: build-ios
+    if: needs.install-and-doctor.outputs.is_internal == 'true'
+    needs: [ build-ios, install-and-doctor ]
     uses: ./.github/workflows/e2e-maestro.yml
     with:
       platform: ios
       app-artifact: build-ios-app
-      suites: '["app-init", "bulk-import",  "duplicates-ingredient", "duplicates-recipe","duplicates-tag", "ingredient-dialog", "ingredients-db", "menu", "ocr", "recipe-create", "recipe-readonly", "recipe-edit", "search", "settings", "shopping", "tags-db", "web", "web-edge-cases"]'
+      suites: '["app-init", "bulk-import", "duplicates-ingredient", "duplicates-recipe", "duplicates-tag", "ingredient-dialog", "ingredients-db", "menu", "ocr", "recipe-create", "recipe-readonly", "recipe-edit", "search", "settings", "shopping", "tags-db", "web", "web-edge-cases"]'
     secrets:
       QUITOQUE_USERNAME: ${{ secrets.QUITOQUE_USERNAME }}
       QUITOQUE_PASSWORD: ${{ secrets.QUITOQUE_PASSWORD }}
@@ -324,7 +329,11 @@ jobs:
         if: always()
         run: |
           mkdir -p merged-reports
-          npx jrm merged-reports/report.xml "junit-reports/**/*.xml"
+          if find junit-reports -name '*.xml' -type f 2>/dev/null | grep -q .; then
+            npx jrm merged-reports/report.xml "junit-reports/**/*.xml"
+          else
+            echo "No JUnit reports to merge"
+          fi
 
       - name: Package Android Maestro logs
         if: always()
@@ -351,6 +360,7 @@ jobs:
           name: e2e-junit-merged
           path: merged-reports/report.xml
           retention-days: 7
+          if-no-files-found: ignore
 
       - name: Upload Android Maestro logs
         if: always()
@@ -359,6 +369,7 @@ jobs:
           name: maestro-logs-android.zip
           path: maestro-logs-android-merged/
           retention-days: 7
+          if-no-files-found: ignore
 
       - name: Upload iOS Maestro logs
         if: always()
@@ -367,12 +378,14 @@ jobs:
           name: maestro-logs-ios.zip
           path: maestro-logs-ios-merged/
           retention-days: 7
+          if-no-files-found: ignore
 
   test-result-summary:
     name: Generate Test Result Summary
-    if: always()
+    # Posts a PR comment (needs pull-requests: write) which forks can't do
+    if: always() && needs.install-and-doctor.outputs.is_internal == 'true'
     runs-on: ubuntu-latest
-    needs: [ merge-test-artifacts, unit-tests-and-coverage ]
+    needs: [ merge-test-artifacts, unit-tests-and-coverage, install-and-doctor ]
     steps:
       - name: Download unit test results
         if: always()

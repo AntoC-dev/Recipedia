@@ -1,5 +1,9 @@
 name: Build App
 
+# Uses an EAS signed build when EXPO_TOKEN is set (push / same-repo PRs), and
+# falls back to a secret-free local build (gradlew / xcodebuild simulator) on
+# fork PRs, which never receive secrets.
+
 on:
   workflow_call:
     inputs:
@@ -21,12 +25,14 @@ on:
         type: string
     secrets:
       EXPO_TOKEN:
-        required: true
+        required: false
 
 jobs:
   build:
     name: Build ${{ inputs.platform == 'ios' && 'iOS App' || 'APK' }} (${{ inputs.build-profile }})
     runs-on: ${{ inputs.platform == 'ios' && 'macos-15' || 'ubuntu-latest' }}
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
     steps:
       - name: Select Xcode 26
         if: inputs.platform == 'ios'
@@ -38,6 +44,7 @@ jobs:
           fetch-depth: 0
 
       - name: Detect changed files
+        if: env.EXPO_TOKEN != ''
         uses: dorny/paths-filter@v4
         id: filter
         with:
@@ -76,6 +83,7 @@ jobs:
         run: npm ci
 
       - name: Build decision summary
+        if: env.EXPO_TOKEN != ''
         env:
           PLATFORM_LABEL: ${{ inputs.platform == 'ios' && 'iOS app' || 'APK' }}
         run: |
@@ -88,6 +96,7 @@ jobs:
 
       - name: Find cached app
         if: |
+          env.EXPO_TOKEN != '' &&
           steps.filter.outputs.build_required != 'true' &&
           github.ref != 'refs/heads/main' &&
           !startsWith(github.ref, 'refs/tags/')
@@ -103,6 +112,7 @@ jobs:
 
       - name: Download cached app
         if: |
+          env.EXPO_TOKEN != '' &&
           steps.filter.outputs.build_required != 'true' &&
           github.ref != 'refs/heads/main' &&
           !startsWith(github.ref, 'refs/tags/') &&
@@ -117,6 +127,7 @@ jobs:
 
       - name: Handle download failure
         if: |
+          env.EXPO_TOKEN != '' &&
           steps.filter.outputs.build_required != 'true' &&
           github.ref != 'refs/heads/main' &&
           !startsWith(github.ref, 'refs/tags/') &&
@@ -129,7 +140,7 @@ jobs:
 
       - name: Setup Android build environment
         if: |
-          inputs.platform == 'android' && (
+          env.EXPO_TOKEN != '' && inputs.platform == 'android' && (
             steps.filter.outputs.build_required == 'true' ||
             github.ref == 'refs/heads/main' ||
             startsWith(github.ref, 'refs/tags/') ||
@@ -142,7 +153,7 @@ jobs:
 
       - name: Setup iOS build environment
         if: |
-          inputs.platform == 'ios' && (
+          env.EXPO_TOKEN != '' && inputs.platform == 'ios' && (
             steps.filter.outputs.build_required == 'true' ||
             github.ref == 'refs/heads/main' ||
             startsWith(github.ref, 'refs/tags/') ||
@@ -153,13 +164,15 @@ jobs:
           eas-version: '16.3.0'
           expo-token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Build app
+      - name: Build app (EAS)
         id: build-app
         if: |
-          steps.filter.outputs.build_required == 'true' ||
-          github.ref == 'refs/heads/main' ||
-          startsWith(github.ref, 'refs/tags/') ||
-          env.BUILD_FALLBACK == 'true'
+          env.EXPO_TOKEN != '' && (
+            steps.filter.outputs.build_required == 'true' ||
+            github.ref == 'refs/heads/main' ||
+            startsWith(github.ref, 'refs/tags/') ||
+            env.BUILD_FALLBACK == 'true'
+          )
         run: |
           set -o pipefail
           npm run build:${{ inputs.build-profile }}:${{ inputs.platform }} 2>&1 \
@@ -176,7 +189,7 @@ jobs:
 
       - name: Package Android APK
         if: |
-          inputs.platform == 'android' && (
+          env.EXPO_TOKEN != '' && inputs.platform == 'android' && (
             steps.filter.outputs.build_required == 'true' ||
             github.ref == 'refs/heads/main' ||
             startsWith(github.ref, 'refs/tags/') ||
@@ -188,7 +201,7 @@ jobs:
 
       - name: Package iOS app bundle
         if: |
-          inputs.platform == 'ios' && (
+          env.EXPO_TOKEN != '' && inputs.platform == 'ios' && (
             steps.filter.outputs.build_required == 'true' ||
             github.ref == 'refs/heads/main' ||
             startsWith(github.ref, 'refs/tags/') ||
@@ -218,6 +231,50 @@ jobs:
           mv "$APP_PATH" "${{ inputs.app-filename }}"
           zip -r "${{ inputs.app-filename }}.zip" "${{ inputs.app-filename }}"
           rm -rf _extracted
+          echo "✅ iOS app built and packaged: ${{ inputs.app-filename }}.zip"
+
+      - name: Setup Java 17 (fork build)
+        if: env.EXPO_TOKEN == '' && inputs.platform == 'android'
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build Android APK without EXPO_TOKEN
+        if: env.EXPO_TOKEN == '' && inputs.platform == 'android'
+        # Match the EAS maestro profile env so Metro inlines the test dataset
+        env:
+          EXPO_PUBLIC_DATASET_TYPE: test
+          EXPO_PUBLIC_DISABLE_ANIMATIONS: 'true'
+        run: |
+          npx expo prebuild --platform android --no-install
+          (cd android && ./gradlew assembleRelease --no-daemon -PreactNativeArchitectures=x86_64)
+          mv android/app/build/outputs/apk/release/app-release.apk "${{ inputs.app-filename }}"
+          echo "✅ APK built: ${{ inputs.app-filename }}"
+
+      - name: Build iOS app without EXPO_TOKEN
+        if: env.EXPO_TOKEN == '' && inputs.platform == 'ios'
+        # Match the EAS maestro profile env so Metro inlines the test dataset
+        env:
+          SCHEME: ${{ inputs.app-filename }}
+          EXPO_PUBLIC_DATASET_TYPE: test
+          EXPO_PUBLIC_DISABLE_ANIMATIONS: 'true'
+        run: |
+          SCHEME="${SCHEME%.app}"
+          npx expo prebuild --platform ios --no-install
+          npx pod-install
+          xcodebuild \
+            -workspace "ios/${SCHEME}.xcworkspace" \
+            -scheme "${SCHEME}" \
+            -configuration Release \
+            -sdk iphonesimulator \
+            -derivedDataPath ios/build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            build
+          APP_PATH=$(find ios/build/Build/Products/Release-iphonesimulator -name "*.app" -type d | head -1)
+          mv "$APP_PATH" "${{ inputs.app-filename }}"
+          zip -r "${{ inputs.app-filename }}.zip" "${{ inputs.app-filename }}"
           echo "✅ iOS app built and packaged: ${{ inputs.app-filename }}.zip"
 
       - name: Verify app availability
