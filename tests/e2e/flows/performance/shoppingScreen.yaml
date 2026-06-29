@@ -1,5 +1,37 @@
 appId: "com.recipedia"
 ---
+# Each case runs from a cleared state, so the menu — and therefore the shopping
+# list — starts empty. Populate the menu with a few anchor recipes first so the
+# Shopping screen has an aggregated list to render. Recipe 2 (Chicken Tacos)
+# contributes Butter, which the long-press interaction below targets.
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Navigate to Search to populate the menu"
+
+- extendedWaitUntil:
+    visible:
+      id: "SearchScreen::SearchBar"
+    timeout: 10000
+    label: "Wait for Search screen"
+
+- runFlow:
+    file: "addRecipeToMenuByCard.yaml"
+    env:
+      RECIPE_ID: "1"
+    label: "Add anchor recipe 1 to menu"
+
+- runFlow:
+    file: "addRecipeToMenuByCard.yaml"
+    env:
+      RECIPE_ID: "2"
+    label: "Add anchor recipe 2 (Chicken Tacos, has Butter) to menu"
+
+- runFlow:
+    file: "addRecipeToMenuByCard.yaml"
+    env:
+      RECIPE_ID: "3"
+    label: "Add anchor recipe 3 to menu"
+
 - tapOn:
     id: "BottomTabs::Shopping"
     label: "Navigate to Shopping screen"
@@ -11,18 +43,9 @@ appId: "com.recipedia"
     label: "Wait for Shopping screen"
     optional: true
 
-- swipe:
-    start: "50%,80%"
-    end: "50%,20%"
-    label: "Scroll down through shopping list"
-
-- swipe:
-    start: "50%,80%"
-    end: "50%,20%"
-    label: "Continue scrolling down"
-
-- waitForAnimationToEnd
-
+# Scroll to Butter from the top first: its "Oil & Fat" section sorts above the
+# sections at the bottom of the list, so blind down-swipes would overshoot it
+# and a downward scrollUntilVisible could never reach it.
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::Butter"
@@ -42,6 +65,18 @@ appId: "com.recipedia"
 - tapOn:
     id: "ShoppingScreen::Dialog::Confirm"
     label: "Dismiss ingredient usage dialog"
+
+- swipe:
+    start: "50%,80%"
+    end: "50%,20%"
+    label: "Scroll down through shopping list"
+
+- swipe:
+    start: "50%,20%"
+    end: "50%,80%"
+    label: "Scroll back up through shopping list"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "ShoppingScreen::ClearShoppingListButton::RoundButton"

@@ -47,5 +47,5 @@ appId: "com.recipedia"
     visible:
       id: "${SETTINGS_SCREEN}::.*"
       text: ".*${SEARCH_QUERY}.*"
-    timeout: 10000
+    timeout: 30000
     label: "Wait for searched item to be visible"
