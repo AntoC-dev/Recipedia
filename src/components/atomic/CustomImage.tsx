@@ -31,7 +31,8 @@
  * ```
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { useResetOnChange } from '@hooks/useResetOnChange';
 import { StyleProp, View, ViewStyle } from 'react-native';
 import { Image } from 'expo-image';
 import { Icon, useTheme } from 'react-native-paper';
@@ -83,10 +84,7 @@ export function CustomImage({
 }: CustomImageProps) {
   const { colors } = useTheme();
   const [hasError, setHasError] = useState(false);
-
-  useEffect(() => {
-    setHasError(false);
-  }, [uri]);
+  useResetOnChange([uri], () => setHasError(false));
 
   const dimensions: StyleProp<ViewStyle> = size ? { width: size, height: size } : { flex: 1 };
   const borderRadius = customBorderRadius ?? (circular && size ? size / 2 : 0);

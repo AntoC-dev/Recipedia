@@ -48,6 +48,7 @@ import { RecipeRecommendation } from '@components/organisms/RecipeRecommendation
 import { RecommendationSkeletonRow } from '@components/molecules/RecommendationSkeletonRow';
 
 import React, { useEffect, useState } from 'react';
+import { useResetOnChange } from '@hooks/useResetOnChange';
 import { FlatList, RefreshControl, View } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
@@ -99,12 +100,15 @@ export function Home() {
   const [recommendations, setRecommendations] = useState<RecommendationType[]>([]);
   const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(true);
 
+  useResetOnChange([recipes, ingredients, tags, seasonFilter], () =>
+    setIsLoadingRecommendations(true)
+  );
+
   useEffect(() => {
     homeLogger.debug('Loading smart recipe recommendations', {
       carouselSize: howManyItemInCarousel,
       seasonFilterEnabled: seasonFilter,
     });
-    setIsLoadingRecommendations(true);
     const id = setTimeout(() => {
       setRecommendations(
         generateHomeRecommendations(recipes, ingredients, tags, seasonFilter, howManyItemInCarousel)

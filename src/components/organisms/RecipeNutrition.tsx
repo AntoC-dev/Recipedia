@@ -39,7 +39,8 @@
  * />
  * ```
  */
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { useResetOnChange } from '@hooks/useResetOnChange';
 import { View } from 'react-native';
 import { HelperText } from 'react-native-paper';
 import { nutritionTableElement } from '@customTypes/DatabaseElementTypes';
@@ -80,11 +81,11 @@ export function RecipeNutrition({
   const isEditing = mode !== recipeStateType.readOnly;
   const currentNutrition = isEditing ? editedNutrition : nutrition;
 
-  useEffect(() => {
+  useResetOnChange([nutrition, isEditing], () => {
     if (isEditing) {
       setEditedNutrition(nutrition);
     }
-  }, [nutrition, isEditing]);
+  });
 
   const handleNutritionUpdate = (updates: Partial<nutritionTableElement>) => {
     if (!isEditing) return;

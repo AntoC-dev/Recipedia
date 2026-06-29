@@ -21,7 +21,7 @@
  * @module screens/recipe/fields/IngredientArrayActionsContext
  */
 
-import React, { createContext, ReactNode, useContext, useEffect, useRef } from 'react';
+import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
 import { ApplyIngredientEditPatch } from '@hooks/useRecipeIngredients';
 import { noop } from '@screens/recipe/constants';
@@ -43,10 +43,9 @@ const noopApplyPatch: ApplyIngredientEditPatch = noop;
  * and the OCR / scraper hooks (mounted via the FeatureHookSlot) can read it.
  */
 export function IngredientArrayActionsProvider({ children }: { children: ReactNode }) {
-  const valueRef = useRef<IngredientArrayActionsContextValue | null>(null);
-  if (valueRef.current === null) {
+  const [value] = useState<IngredientArrayActionsContextValue>(() => {
     const applyPatchHolder: { current: ApplyIngredientEditPatch | null } = { current: null };
-    valueRef.current = {
+    return {
       register: applyPatch => {
         applyPatchHolder.current = applyPatch;
         return () => {
@@ -64,9 +63,9 @@ export function IngredientArrayActionsProvider({ children }: { children: ReactNo
         noopApplyPatch(patch);
       },
     };
-  }
+  });
   return (
-    <IngredientArrayActionsContext.Provider value={valueRef.current}>
+    <IngredientArrayActionsContext.Provider value={value}>
       {children}
     </IngredientArrayActionsContext.Provider>
   );

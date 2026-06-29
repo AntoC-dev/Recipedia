@@ -53,7 +53,8 @@
  * ```
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { useResetOnChange } from '@hooks/useResetOnChange';
 import { StyleSheet, View } from 'react-native';
 import { Button, Dialog, Portal, Text } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
@@ -134,18 +135,18 @@ export function SimilarityDialog({ testId, isVisible, onClose, item }: Similarit
     null
   );
 
-  useEffect(() => {
+  useResetOnChange([isVisible], () => {
     if (isVisible) {
       setShowPicker(false);
       setPickedItem(null);
     }
-  }, [isVisible]);
+  });
 
-  useEffect(() => {
+  useResetOnChange([item.newItemName], () => {
     setShowItemDialog(false);
     setShowPicker(false);
     setPickedItem(null);
-  }, [item.newItemName]);
+  });
 
   const sortedPickerItems =
     item.type === 'Ingredient'
