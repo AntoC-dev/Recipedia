@@ -5,8 +5,14 @@ platform:
     disableAnimations: true
 
 flows:
-  - cases/performance/ci/*
+  - cases/performance/screens/*
 
 executionOrder:
   flowsOrder:
-    - "1 - Full Performance Flow"
+    - "Perf - Cold start + seeding"
+    - "Perf - Warm app start (TTI)"
+    - "Perf - Home screen"
+    - "Perf - Search screen"
+    - "Perf - Recipe view and edit"
+    - "Perf - Shopping screen"
+    - "Perf - Parameters, Ingredients and Tags"
