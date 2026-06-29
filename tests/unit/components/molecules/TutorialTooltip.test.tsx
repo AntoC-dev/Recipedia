@@ -39,8 +39,8 @@ describe('TutorialTooltip Component', () => {
   });
 
   function assertTooltipContent(
-    getByTestId: (testId: string) => React.ReactElement,
-    queryByTestId: (testId: string) => React.ReactElement,
+    getByTestId: ReturnType<typeof render>['getByTestId'],
+    queryByTestId: ReturnType<typeof render>['queryByTestId'],
     currentStep: number,
     isLastStep: boolean = false
   ) {

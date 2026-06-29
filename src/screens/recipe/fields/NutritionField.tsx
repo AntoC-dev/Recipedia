@@ -55,8 +55,7 @@ export function RecipeNutritionField({
   t,
 }: NutritionFieldProps) {
   const value = useWatch({ control: form.control, name: 'recipeNutrition' }) as
-    | nutritionTableElement
-    | undefined;
+    nutritionTableElement | undefined;
   // Registered field: `fieldState.error` is the reactive, compiler-safe error
   // source (the same one the ingredient field reads).
   const { fieldState } = useController({ control: form.control, name: 'recipeNutrition' });

@@ -11,6 +11,7 @@ export type AppBarProps = {
   onValidate?: () => Promise<void>;
   onDelete?: () => void;
   onEdit?: () => void;
+  onDismissedList?: () => void;
 };
 
 export function AppBar({
@@ -22,6 +23,7 @@ export function AppBar({
   onValidate,
   onDelete,
   onEdit,
+  onDismissedList,
 }: AppBarProps) {
   const { colors } = useTheme();
 

@@ -1,4 +1,4 @@
-import {ConfigPlugin, withGradleProperties, withProjectBuildGradle,} from '@expo/config-plugins';
+import {ConfigPlugin, withGradleProperties, withProjectBuildGradle,} from 'expo/config-plugins';
 import {CHAQUOPY_VERSION, DEFAULT_CONFIG, RecipeScraperPluginConfig} from './types';
 
 export const withAndroidChaquopy: ConfigPlugin<RecipeScraperPluginConfig> = (

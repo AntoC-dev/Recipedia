@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var config_plugins_1 = require("@expo/config-plugins");
+var config_plugins_1 = require("expo/config-plugins");
 var withAndroidChaquopy_1 = require("./withAndroidChaquopy");
 var withiOSPython_1 = require("./withiOSPython");
 var withRecipeScraper = function (config, props) {

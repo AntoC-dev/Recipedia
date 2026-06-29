@@ -39,7 +39,13 @@ class MockFile {
   move(dest: MockFile) {
     return mockFileMove(this.uri, dest);
   }
+  moveSync(dest: MockFile) {
+    return mockFileMove(this.uri, dest);
+  }
   copy(dest: MockFile) {
+    return mockFileCopy(this.uri, dest);
+  }
+  copySync(dest: MockFile) {
     return mockFileCopy(this.uri, dest);
   }
   create(opts?: object) {
