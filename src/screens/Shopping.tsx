@@ -95,7 +95,9 @@ export function Shopping() {
   const isDialogOpenRef = useRef(false);
   const reducedMotion = useReducedMotion();
   const shoppingListRef = useRef(shoppingList);
-  shoppingListRef.current = shoppingList;
+  useEffect(() => {
+    shoppingListRef.current = shoppingList;
+  });
 
   const stepOrder = TUTORIAL_STEPS.Shopping.order;
 

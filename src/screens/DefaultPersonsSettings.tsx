@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useResetOnChange } from '@hooks/useResetOnChange';
 import { StyleSheet, View } from 'react-native';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { Button, Text, useTheme } from 'react-native-paper';
@@ -20,11 +21,12 @@ export function DefaultPersonsSettings({ navigation }: DefaultPersonsSettingsPro
   const [persons, setPersons] = useState(defaultPersons);
   const [isLoading, setIsLoading] = useState(false);
 
+  useResetOnChange([defaultPersons], () => setPersons(defaultPersons));
+
   useEffect(() => {
     defaultPersonsSettingsLogger.debug('Loaded default persons from context', {
       persons: defaultPersons,
     });
-    setPersons(defaultPersons);
   }, [defaultPersons]);
 
   const handleSave = async () => {

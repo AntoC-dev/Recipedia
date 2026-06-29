@@ -20,7 +20,8 @@
  * ```
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { useResetOnChange } from '@hooks/useResetOnChange';
 import { StyleSheet, View } from 'react-native';
 import { ActivityIndicator, Button, Dialog, HelperText, Portal, Text } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
@@ -62,22 +63,12 @@ export function UrlInputDialog({
 }: UrlInputDialogProps) {
   const { t } = useI18n();
   const [url, setUrl] = useState('');
-  const [validationError, setValidationError] = useState<string | undefined>();
+  useResetOnChange([isVisible], () => {
+    if (isVisible) setUrl('');
+  });
 
-  useEffect(() => {
-    if (isVisible) {
-      setUrl('');
-      setValidationError(undefined);
-    }
-  }, [isVisible]);
-
-  useEffect(() => {
-    if (url.trim() && !isValidUrl(url)) {
-      setValidationError(t('urlDialog.errorInvalidUrl'));
-    } else {
-      setValidationError(undefined);
-    }
-  }, [url, t]);
+  const validationError =
+    url.trim() && !isValidUrl(url) ? t('urlDialog.errorInvalidUrl') : undefined;
 
   const handleDismiss = () => {
     if (!isLoading) {
@@ -87,7 +78,6 @@ export function UrlInputDialog({
 
   const handleSubmit = () => {
     if (!url.trim() || !isValidUrl(url)) {
-      setValidationError(t('urlDialog.errorInvalidUrl'));
       return;
     }
     onSubmit(normalizeUrl(url));

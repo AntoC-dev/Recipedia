@@ -74,19 +74,19 @@ export function useDiscoveryWorkflow(
   const { processDiscoveredRecipes } = useImportMemory(providerId);
   const { markUrlsAsSeen } = useImportHistory();
 
-  const [phase, setPhase] = useState<DiscoveryPhase>('discovering');
+  const [phase, setPhase] = useState<DiscoveryPhase>(provider ? 'discovering' : 'selecting');
   const [recipes, setRecipes] = useState<DiscoveredRecipe[]>([]);
   const [selectedUrls, setSelectedUrls] = useState<Set<string>>(new Set());
   const [discoveryProgress, setDiscoveryProgress] = useState<DiscoveryProgress | null>(null);
   const [parsingProgress, setParsingProgress] = useState<ParsingProgress | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(() =>
+    provider ? null : t('discovery.unknownProvider')
+  );
 
   const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     if (!provider) {
-      setError(t('discovery.unknownProvider'));
-      setPhase('selecting');
       return;
     }
 
