@@ -4,7 +4,7 @@ import { mkdtempSync, writeFileSync, mkdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { averageFps, evaluateFps } from './check-perf-budget.mjs';
+import { averageFps, evaluateFps, formatMarkdownSummary } from './check-perf-budget.mjs';
 import { findRegressions } from './check-reassure-regression.mjs';
 import { measureBundleBytes } from './check-bundle-size.mjs';
 
@@ -38,22 +38,31 @@ test('evaluateFps is collect-only before calibration', () => {
   assert.equal(verdicts[0].status, 'pass');
 });
 
-test('evaluateFps fails below floor when calibrated', () => {
+test('evaluateFps fails a missing result even before calibration', () => {
+  const budgets = {
+    regressionTolerancePct: 15,
+    screens: { home: { minFps: 40, referenceFps: null } },
+  };
+  const verdicts = evaluateFps(new Map([['home', null]]), budgets);
+  assert.equal(verdicts[0].status, 'fail');
+});
+
+test('evaluateFps warns (not fails) below floor when calibrated', () => {
   const budgets = {
     regressionTolerancePct: 15,
     screens: { home: { minFps: 40, referenceFps: 58 } },
   };
   const verdicts = evaluateFps(new Map([['home', 30]]), budgets);
-  assert.equal(verdicts[0].status, 'fail');
+  assert.equal(verdicts[0].status, 'warn');
 });
 
-test('evaluateFps fails on regression beyond tolerance', () => {
+test('evaluateFps warns (not fails) on regression beyond tolerance', () => {
   const budgets = {
     regressionTolerancePct: 15,
     screens: { home: { minFps: 20, referenceFps: 58 } },
   };
   const verdicts = evaluateFps(new Map([['home', 45]]), budgets);
-  assert.equal(verdicts[0].status, 'fail');
+  assert.equal(verdicts[0].status, 'warn');
 });
 
 test('evaluateFps passes within tolerance', () => {
@@ -63,6 +72,17 @@ test('evaluateFps passes within tolerance', () => {
   };
   const verdicts = evaluateFps(new Map([['home', 52]]), budgets);
   assert.equal(verdicts[0].status, 'pass');
+});
+
+test('formatMarkdownSummary renders a row per screen with status icons', () => {
+  const md = formatMarkdownSummary([
+    { screen: 'home', fps: 58, status: 'pass', message: 'ok' },
+    { screen: 'search', fps: 30, status: 'warn', message: 'below floor (min 40 fps)' },
+    { screen: 'menu', fps: 'n/a', status: 'fail', message: 'flow failed (no result)' },
+  ]);
+  assert.match(md, /\| home \| 58 \| ✅ \| ok \|/);
+  assert.match(md, /\| search \| 30 \| ⚠️ \| below floor \(min 40 fps\) \|/);
+  assert.match(md, /\| menu \| n\/a \| ❌ \| flow failed \(no result\) \|/);
 });
 
 test('findRegressions flags duration over threshold', () => {

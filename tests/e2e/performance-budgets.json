@@ -1,5 +1,5 @@
 {
-  "_comment": "Per-screen Flashlight FPS budgets. 'minFps' is an absolute floor: the CI job fails if a screen's mean UI frame rate drops below it. 'referenceFps' is the last-known-good FPS used for relative regression detection. Emulator FPS is noisy, so floors are conservative and screens are collect-only until calibrated. Run the perf job once with FLASHLIGHT_CALIBRATE=1 to populate 'referenceFps' from real measurements, then tighten floors.",
+  "_comment": "Per-screen Flashlight FPS budgets. minFps/referenceFps drive WARNINGS only (never a hard failure); see .github/scripts/check-perf-budget.mjs for the exact semantics and FLASHLIGHT_CALIBRATE=1 calibration.",
   "regressionTolerancePct": 15,
   "screens": {
     "00_seed": { "minFps": 24, "referenceFps": null },
