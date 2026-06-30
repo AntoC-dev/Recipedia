@@ -1,3 +1,15 @@
+## [2.39.0](https://github.com/AntoC-dev/Recipedia/compare/v2.38.5...v2.39.0) (2026-06-30)
+
+### Features
+
+* **ci:** gate per-screen perf on mean FPS ([749c1a5](https://github.com/AntoC-dev/Recipedia/commit/749c1a55550df87f3144b1b3ff2ab020e83a2319))
+* **perf-dataset:** scale seed data to power-user volume ([1f4c0ae](https://github.com/AntoC-dev/Recipedia/commit/1f4c0ae29de600dfc26b4f71766ae3299dafa9be))
+* **perf:** per-screen performance monitoring at power-user scale ([#385](https://github.com/AntoC-dev/Recipedia/issues/385)) ([dde413c](https://github.com/AntoC-dev/Recipedia/commit/dde413c0a6de27ecddce7890fe56d670494b943f))
+
+### Bug Fixes
+
+* **e2e:** make per-screen perf flows independently runnable ([4bf8323](https://github.com/AntoC-dev/Recipedia/commit/4bf8323e6a6782642bc0784eb6cccdcd201327fc))
+
 ## [2.38.5](https://github.com/AntoC-dev/Recipedia/compare/v2.38.4...v2.38.5) (2026-06-28)
 
 ### Bug Fixes
