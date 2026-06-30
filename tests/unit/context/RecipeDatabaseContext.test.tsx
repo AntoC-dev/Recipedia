@@ -111,6 +111,27 @@ describe('focused database hooks', () => {
       });
     });
 
+    test('swallows a scaleAndUpdateRecipe rejection and clears progress', async () => {
+      const { result } = renderHook(() => useAllHooks());
+
+      await waitFor(() => {
+        expect(result.current.recipes.length).toBeGreaterThan(0);
+      });
+
+      const scaleSpy = jest
+        .spyOn(database, 'scaleAndUpdateRecipe')
+        .mockRejectedValue(new Error('Cannot encode recipe: tag not found in database: Ghost'));
+
+      await expect(result.current.scaleAllRecipesForNewDefaultPersons(6)).resolves.toBeUndefined();
+      expect(scaleSpy).toHaveBeenCalled();
+
+      await waitFor(() => {
+        expect(result.current.scalingProgress).toBeUndefined();
+      });
+
+      scaleSpy.mockRestore();
+    });
+
     test('does nothing when no recipes need scaling', async () => {
       const { result } = renderHook(() => useAllHooks());
 
