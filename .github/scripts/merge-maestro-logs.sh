@@ -25,8 +25,8 @@ for suite_dir in "$INPUT_DIR"/*/; do
 done
 
 if [ $SUITE_COUNT -eq 0 ]; then
-  echo "No suite directories found to merge"
-  exit 1
+  echo "No suite directories found to merge (nothing to package)"
+  exit 0
 fi
 
 mkdir -p "$OUTPUT_DIR"
