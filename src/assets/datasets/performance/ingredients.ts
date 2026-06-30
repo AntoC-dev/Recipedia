@@ -1,9 +1,13 @@
 import { ingredientTableElement, ingredientType } from '@customTypes/DatabaseElementTypes';
+import { generatePerformanceIngredients } from '@assets/datasets/performance/generate';
 
 /**
- * Performance test dataset - 50 ingredients for stress testing render performance.
+ * Curated anchor ingredients preserved for E2E flows that reference them by
+ * exact name (e.g. "Parmesan" as {@link ingredientType.cheese}). These keep
+ * their stable ids at the front of the pool; the deterministically generated
+ * bulk is appended after them.
  */
-export const performanceIngredients: ingredientTableElement[] = [
+const curatedIngredients: ingredientTableElement[] = [
   {
     id: 1,
     name: 'Spaghetti',
@@ -354,4 +358,16 @@ export const performanceIngredients: ingredientTableElement[] = [
     type: ingredientType.vegetable,
     season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
   },
+];
+
+const GENERATED_INGREDIENT_COUNT = 950;
+
+/**
+ * Performance ingredient pool: curated anchors followed by a deterministic
+ * bulk, totalling roughly 1000 ingredients. Covers every {@link ingredientType}
+ * value so every filter accordion populates at power-user scale.
+ */
+export const performanceIngredients: ingredientTableElement[] = [
+  ...curatedIngredients,
+  ...generatePerformanceIngredients(GENERATED_INGREDIENT_COUNT, curatedIngredients.length + 1),
 ];

@@ -1,9 +1,15 @@
 import { ingredientType, recipeTableElement } from '@customTypes/DatabaseElementTypes';
+import { generatePerformanceRecipes } from '@assets/datasets/performance/generate';
+import { performanceIngredients } from '@assets/datasets/performance/ingredients';
+import { performanceTags } from '@assets/datasets/performance/tags';
 
 /**
- * Performance test dataset - 150 recipes for stress testing render performance.
+ * Curated anchor recipes preserved for E2E flows that open them by exact title
+ * (e.g. recipe id 1 "Spaghetti Bolognese"). These keep their stable ids at the
+ * front of the pool; the deterministically generated bulk is appended after
+ * them, drawing only from the existing ingredient and tag pools.
  */
-export const performanceRecipes: recipeTableElement[] = [
+const curatedRecipes: recipeTableElement[] = [
   {
     id: 1,
     image_Source: 'spaghetti_bolognese.webp',
@@ -15322,4 +15328,28 @@ export const performanceRecipes: recipeTableElement[] = [
       portionWeight: 147,
     },
   },
-] as const;
+];
+
+const GENERATED_RECIPE_COUNT = 1050;
+
+// Reuse the curated recipes' images: these are the only filenames bundled and
+// copied for the performance dataset (see copyDatasetImages / testRecipesImages),
+// so generated recipes must draw from the same set to render real images.
+const CURATED_IMAGE_POOL = [...new Set(curatedRecipes.map(recipe => recipe.image_Source))];
+
+/**
+ * Performance recipe pool: curated anchors followed by a deterministic bulk,
+ * totalling roughly 1200 recipes. Every generated recipe draws its ingredients
+ * and tags from {@link performanceIngredients} and {@link performanceTags}, so
+ * all references resolve against the seeded database.
+ */
+export const performanceRecipes: recipeTableElement[] = [
+  ...curatedRecipes,
+  ...generatePerformanceRecipes(
+    GENERATED_RECIPE_COUNT,
+    performanceIngredients,
+    performanceTags,
+    CURATED_IMAGE_POOL,
+    curatedRecipes.length + 1
+  ),
+];

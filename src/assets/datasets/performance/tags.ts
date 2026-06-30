@@ -1,9 +1,12 @@
 import { tagTableElement } from '@customTypes/DatabaseElementTypes';
+import { generatePerformanceTags } from '@assets/datasets/performance/generate';
 
 /**
- * Performance test dataset - 20 tags for stress testing render performance.
+ * Curated anchor tags preserved for E2E flows that tap them by exact text
+ * (e.g. "Breakfast"). These keep their stable ids at the front of the pool;
+ * the deterministically generated bulk is appended after them.
  */
-export const performanceTags: tagTableElement[] = [
+const curatedTags: tagTableElement[] = [
   { id: 1, name: 'Italian' },
   { id: 2, name: 'Dinner' },
   { id: 3, name: 'Mexican' },
@@ -24,4 +27,16 @@ export const performanceTags: tagTableElement[] = [
   { id: 18, name: 'Spicy' },
   { id: 19, name: 'Sweet' },
   { id: 20, name: 'Savory' },
+];
+
+const GENERATED_TAG_COUNT = 280;
+
+/**
+ * Performance tag pool: curated anchors followed by a deterministic bulk,
+ * totalling roughly 300 tags to populate the Tags settings and filter
+ * accordions at power-user scale.
+ */
+export const performanceTags: tagTableElement[] = [
+  ...curatedTags,
+  ...generatePerformanceTags(GENERATED_TAG_COUNT, curatedTags.length + 1),
 ];

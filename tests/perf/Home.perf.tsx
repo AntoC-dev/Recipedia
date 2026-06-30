@@ -76,7 +76,7 @@ describe('Home Screen Performance', () => {
     await database.closeAndReset();
   });
 
-  test('initial render with 150 recipes', async () => {
+  test('initial render with 1200 recipes', async () => {
     await measureRenders(<HomeWrapper />, { runs: 10 });
   });
 

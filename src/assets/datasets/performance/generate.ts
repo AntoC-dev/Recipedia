@@ -73,22 +73,26 @@ export function pickByIndex<T>(pool: readonly T[], index: number, salt: number):
   return pool[hashIndex(index, salt) % pool.length];
 }
 
-const SALT_SEASON = 11;
-const SALT_TYPE = 23;
-const SALT_PART = 37;
-const SALT_TAG_PREFIX = 41;
-const SALT_TAG_SUFFIX = 53;
-const SALT_TITLE_ADJ = 59;
-const SALT_TITLE_DISH = 67;
-const SALT_ING_COUNT = 71;
-const SALT_ING_START = 79;
-const SALT_QUANTITY = 83;
-const SALT_TAG_COUNT = 89;
-const SALT_TAG_START = 97;
-const SALT_PERSONS = 101;
-const SALT_TIME = 103;
-const SALT_NUTRITION = 107;
-const SALT_STEPS = 109;
+// Per-field salts. Only distinctness matters (it's what decorrelates fields in
+// `hashIndex`), so these are plain sequential ids. The nutrition fields reserve a
+// contiguous block (20..27) that nothing else overlaps.
+const SALT_SEASON = 1;
+const SALT_TYPE = 2;
+const SALT_PART = 3;
+const SALT_TAG_PREFIX = 4;
+const SALT_TAG_SUFFIX = 5;
+const SALT_TITLE_ADJ = 6;
+const SALT_TITLE_DISH = 7;
+const SALT_ING_COUNT = 8;
+const SALT_ING_START = 9;
+const SALT_QUANTITY = 10;
+const SALT_TAG_COUNT = 11;
+const SALT_TAG_START = 12;
+const SALT_PERSONS = 13;
+const SALT_TIME = 14;
+const SALT_STEPS = 15;
+const SALT_NUTRITION_INCLUDE = 16;
+const SALT_NUTRITION_BASE = 20;
 
 const SEASON_PROFILES: readonly string[][] = [
   ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
@@ -371,20 +375,20 @@ export function generatePerformanceTags(count: number, startId: number): tagTabl
 }
 
 function buildNutrition(index: number): nutritionTableElement {
-  const fat = intInRange(index, SALT_NUTRITION, 2, 40);
-  const carbohydrates = intInRange(index, SALT_NUTRITION + 1, 5, 60);
-  const protein = intInRange(index, SALT_NUTRITION + 2, 2, 35);
+  const fat = intInRange(index, SALT_NUTRITION_BASE, 2, 40);
+  const carbohydrates = intInRange(index, SALT_NUTRITION_BASE + 1, 5, 60);
+  const protein = intInRange(index, SALT_NUTRITION_BASE + 2, 2, 35);
   return {
-    energyKcal: intInRange(index, SALT_NUTRITION + 3, 120, 720),
-    energyKj: intInRange(index, SALT_NUTRITION + 4, 500, 3000),
+    energyKcal: intInRange(index, SALT_NUTRITION_BASE + 3, 120, 720),
+    energyKj: intInRange(index, SALT_NUTRITION_BASE + 4, 500, 3000),
     fat,
     saturatedFat: Math.round(fat * 0.35 * 10) / 10,
     carbohydrates,
     sugars: Math.round(carbohydrates * 0.3 * 10) / 10,
-    fiber: Math.round(intInRange(index, SALT_NUTRITION + 5, 0, 12) * 10) / 10,
+    fiber: Math.round(intInRange(index, SALT_NUTRITION_BASE + 5, 0, 12) * 10) / 10,
     protein,
-    salt: Math.round(intInRange(index, SALT_NUTRITION + 6, 1, 25) * 10) / 100,
-    portionWeight: intInRange(index, SALT_NUTRITION + 7, 180, 520),
+    salt: Math.round(intInRange(index, SALT_NUTRITION_BASE + 6, 1, 25) * 10) / 100,
+    portionWeight: intInRange(index, SALT_NUTRITION_BASE + 7, 180, 520),
   };
 }
 
@@ -510,7 +514,7 @@ export function generatePerformanceRecipes(
       time: intInRange(i, SALT_TIME, 10, 120),
     };
 
-    if (intInRange(i, SALT_NUTRITION, 0, 3) > 0) {
+    if (intInRange(i, SALT_NUTRITION_INCLUDE, 0, 3) > 0) {
       recipe.nutrition = buildNutrition(i);
     }
 

@@ -13,16 +13,19 @@ appId: "com.recipedia"
 - swipe:
     start: "50%,80%"
     end: "50%,20%"
+    duration: 150
     label: "Scroll down through recipe list"
 
 - swipe:
     start: "50%,80%"
     end: "50%,20%"
+    duration: 150
     label: "Continue scrolling"
 
 - swipe:
     start: "50%,80%"
     end: "50%,20%"
+    duration: 150
     label: "Continue scrolling"
 
 - waitForAnimationToEnd
@@ -31,7 +34,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::SearchBar"
     direction: UP
-    speed: 90
+    speed: 95
     label: "Scroll back to SearchBar"
 
 - waitForAnimationToEnd
@@ -48,65 +51,67 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd
 
+# Accordion index 2 is always the Tags filter (0 = in-season, 1 = prep time).
+# Selecting by index avoids depending on which tag names the seed happens to
+# attach to recipes, which is what the Tags filter list is derived from.
 - scrollUntilVisible:
     element:
-      text: "Tags"
+      id: "SearchScreen::FilterAccordion::Accordion::2"
     direction: DOWN
     speed: 40
+    centerElement: true
     label: "Scroll to Tags accordion"
 
-- waitForAnimationToEnd
-
 - tapOn:
-    text: "Tags"
+    id: "SearchScreen::FilterAccordion::Accordion::2"
     label: "Expand Tags accordion"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      text: "Breakfast"
-    direction: UP
-    speed: 40
-    label: "Scroll to Breakfast tag"
+- extendedWaitUntil:
+    visible:
+      id: "SearchScreen::FilterAccordion::Accordion::2::Item::.*"
+    timeout: 5000
+    label: "Wait for tag options"
 
 - waitForAnimationToEnd
 
 - tapOn:
-    text: "Breakfast"
-    label: "Select Breakfast filter"
+    id: "SearchScreen::FilterAccordion::Accordion::2::Item::.*"
+    label: "Select first tag filter"
 
 - waitForAnimationToEnd
 
+- tapOn:
+    id: "SearchScreen::FilterAccordion::Accordion::2"
+    label: "Collapse Tags accordion"
+
+- waitForAnimationToEnd
+
+# Accordion index 3 is the first ingredient-type filter, always populated at
+# power-user scale. Selecting its first item exercises the ingredient filter
+# path without depending on a specific ingredient name.
 - scrollUntilVisible:
     element:
-      text: "Cheese"
+      id: "SearchScreen::FilterAccordion::Accordion::3"
     direction: DOWN
     speed: 40
     centerElement: true
-    label: "Scroll to Cheese accordion"
+    label: "Scroll to first ingredient-type accordion"
+
+- tapOn:
+    id: "SearchScreen::FilterAccordion::Accordion::3"
+    label: "Expand first ingredient-type accordion"
+
+- extendedWaitUntil:
+    visible:
+      id: "SearchScreen::FilterAccordion::Accordion::3::Item::0"
+    timeout: 5000
+    label: "Wait for ingredient options"
 
 - waitForAnimationToEnd
 
 - tapOn:
-    text: "Cheese"
-    label: "Expand Cheese accordion"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      text: "Parmesan"
-    direction: DOWN
-    speed: 40
-    centerElement: true
-    label: "Scroll to Parmesan item"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    text: "Parmesan"
-    label: "Select Parmesan filter"
+    id: "SearchScreen::FilterAccordion::Accordion::3::Item::0"
+    label: "Select first ingredient filter"
 
 - waitForAnimationToEnd
 

@@ -1,0 +1,38 @@
+appId: "com.recipedia"
+---
+# Opens the recipe whose card id is RECIPE_ID from the Search list and adds it to
+# the menu. Acknowledging the success dialog navigates back to Search, ready for
+# the next add. Card ids match recipe database ids (curated anchors 1, 2, 3...).
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::RecipeCards::${RECIPE_ID}::Cover"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to recipe card ${RECIPE_ID}"
+
+- tapOn:
+    id: "SearchScreen::RecipeCards::${RECIPE_ID}::Cover"
+    label: "Open recipe ${RECIPE_ID}"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::BottomActionButton"
+    timeout: 10000
+    label: "Wait for recipe view"
+
+- tapOn:
+    id: "Recipe::BottomActionButton"
+    label: "Add recipe ${RECIPE_ID} to menu"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::Dialog::Confirm"
+    timeout: 5000
+    label: "Wait for added-to-menu dialog"
+
+- tapOn:
+    id: "Recipe::Dialog::Confirm"
+    label: "Acknowledge and return to Search"
+
+- waitForAnimationToEnd

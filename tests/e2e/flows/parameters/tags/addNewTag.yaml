@@ -55,7 +55,7 @@ appId: "com.recipedia"
     label: "Clear the search bar"
 
 - extendedWaitUntil:
-    visible:
-      id: "TagsSettings::5::TagName"
+    notVisible:
+      text: "RecipeTag"
     timeout: 60000
     label: "Wait for list to show all items"
