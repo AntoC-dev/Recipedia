@@ -1,3 +1,10 @@
+## [2.39.1](https://github.com/AntoC-dev/Recipedia/compare/v2.39.0...v2.39.1) (2026-06-30)
+
+### Bug Fixes
+
+* **db:** verify tags/ingredients in editRecipe, throw on unresolved encode ([cc6bfb0](https://github.com/AntoC-dev/Recipedia/commit/cc6bfb00b8926f14084ec9ef436a06aaef760d9f)), closes [#358](https://github.com/AntoC-dev/Recipedia/issues/358)
+* **db:** verify tags/ingredients in editRecipe, throw on unresolved encode ([#365](https://github.com/AntoC-dev/Recipedia/issues/365)) ([3baec24](https://github.com/AntoC-dev/Recipedia/commit/3baec246ae00c55e183349e07dfec91d849074e7)), closes [#358](https://github.com/AntoC-dev/Recipedia/issues/358)
+
 ## [2.39.0](https://github.com/AntoC-dev/Recipedia/compare/v2.38.5...v2.39.0) (2026-06-30)
 
 ### Features
