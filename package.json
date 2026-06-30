@@ -181,7 +181,7 @@
     "pyodide": "0.28.3",
     "reassure": "1.4.0",
     "semantic-release": "25.0.2",
-    "typedoc": "0.28.13",
+    "typedoc": "0.28.19",
     "typescript": "6.0.3",
     "varvara-typedoc-theme": "0.3.8"
   }
