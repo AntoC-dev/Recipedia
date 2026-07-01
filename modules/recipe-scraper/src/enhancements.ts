@@ -474,7 +474,7 @@ function extractStepTitle(stepHtml: string): string | null {
             let title = stripHtml(match[1]).trim();
             // Remove leading patterns like "1. ", "Étape 1:", "Step 2 -"
             title = title.replace(
-                /^(\d+[\.\:\-\s]+|[Éé]tape\s*\d*[\.\:\-\s]*|Step\s*\d*[\.\:\-\s]*)/i,
+                /^(\d+[.:\s-]+|[Éé]tape\s*\d*[.:\s-]*|Step\s*\d*[.:\s-]*)/i,
                 ''
             );
             title = title.trim();
