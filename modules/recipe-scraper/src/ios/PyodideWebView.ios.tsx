@@ -24,7 +24,6 @@ import {pyodideLogger} from '@utils/logger';
 
 let PYODIDE_BUNDLE: number | null = null;
 try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     PYODIDE_BUNDLE = require('../../assets/pyodide-bundle.html');
 } catch (error) {
     pyodideLogger.error('Pyodide bundle asset not found — web scraping will use schema.org fallback', {
