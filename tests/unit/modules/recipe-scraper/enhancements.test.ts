@@ -751,6 +751,26 @@ describe('enhancements module', () => {
       expect(result![0].instructions[1]).toBe('Ajoutez les p\u00e2tes\u00a0fra\u00eeches.');
     });
 
+    it('strips Étape and Step numbering prefixes from step titles', () => {
+      const html = `
+        <div id="preparation-steps">
+          <div class="toggle">
+            <p class="bold">Étape 1: Préparez la pâte</p>
+            <ul><li>Mélangez la farine.</li></ul>
+          </div>
+          <div class="step">
+            <p class="bold">Step 2 - Bake it</p>
+            <ul><li>Enfournez le tout.</li></ul>
+          </div>
+        </div>`;
+
+      const result = extractStructuredInstructions(html);
+
+      expect(result).not.toBeNull();
+      expect(result![0].title).toBe('Préparez la pâte');
+      expect(result![1].title).toBe('Bake it');
+    });
+
     it('returns null when no container found', () => {
       const result = extractStructuredInstructions('<html><body></body></html>');
       expect(result).toBeNull();
