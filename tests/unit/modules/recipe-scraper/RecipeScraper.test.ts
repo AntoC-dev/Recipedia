@@ -1,5 +1,9 @@
-import { RecipeScraper, usePythonReady } from '@app/modules/recipe-scraper/src/RecipeScraper';
-import { renderHook, waitFor } from '@testing-library/react-native';
+import {
+  RecipeScraper,
+  recipeScraper,
+  usePythonReady,
+} from '@app/modules/recipe-scraper/src/RecipeScraper';
+import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { Platform } from 'react-native';
 import { nutritionKcalSuffixHtml } from '@test-data/scraperMocks/htmlFixtures';
 
@@ -94,6 +98,18 @@ describe('RecipeScraper', () => {
       if (!result.success) {
         expect(result.error.type).toBe('EXCEPTION');
         expect(result.error.message).toContain('Network error');
+      }
+    });
+
+    it('stringifies a non-Error rejection', async () => {
+      mockFetch.mockRejectedValueOnce('network down');
+
+      const result = await scraper.scrapeRecipe('https://example.com/recipe');
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.type).toBe('EXCEPTION');
+        expect(result.error.message).toBe('network down');
       }
     });
 
@@ -353,6 +369,55 @@ describe('RecipeScraper', () => {
       await waitFor(() => {
         expect(result.current).toBe(true);
       });
+    });
+
+    it('stays false when readiness rejects', async () => {
+      const spy = jest
+        .spyOn(recipeScraper, 'whenReady')
+        .mockRejectedValue(new Error('init failed'));
+
+      const { result } = renderHook(() => usePythonReady());
+
+      await waitFor(() => {
+        expect(recipeScraper.whenReady).toHaveBeenCalled();
+      });
+      expect(result.current).toBe(false);
+
+      spy.mockRestore();
+    });
+
+    it('does not set state when unmounted before readiness resolves', async () => {
+      let resolveReady: () => void = () => {};
+      const spy = jest
+        .spyOn(recipeScraper, 'whenReady')
+        .mockReturnValue(new Promise<void>(resolve => (resolveReady = resolve)));
+
+      const { result, unmount } = renderHook(() => usePythonReady());
+      unmount();
+      await act(async () => {
+        resolveReady();
+        await Promise.resolve();
+      });
+
+      expect(result.current).toBe(false);
+      spy.mockRestore();
+    });
+
+    it('does not set state when unmounted before readiness rejects', async () => {
+      let rejectReady: (reason: unknown) => void = () => {};
+      const spy = jest
+        .spyOn(recipeScraper, 'whenReady')
+        .mockReturnValue(new Promise<void>((_, reject) => (rejectReady = reject)));
+
+      const { result, unmount } = renderHook(() => usePythonReady());
+      unmount();
+      await act(async () => {
+        rejectReady(new Error('late failure'));
+        await Promise.resolve();
+      });
+
+      expect(result.current).toBe(false);
+      spy.mockRestore();
     });
   });
 });
@@ -718,6 +783,133 @@ describe('RecipeScraper (Android native module path)', () => {
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error.type).toBe('AuthenticationFailed');
+      }
+    });
+  });
+
+  describe('whenReady', () => {
+    it('warms up Python via the native module', async () => {
+      const warmup = jest.fn().mockResolvedValue(undefined);
+      const scraper = loadScraperWithNativeModule({ warmup });
+
+      await expect(scraper.whenReady()).resolves.toBeUndefined();
+      expect(warmup).toHaveBeenCalledTimes(1);
+    });
+
+    it('rejects when native warmup fails', async () => {
+      const warmup = jest.fn().mockRejectedValue(new Error('Python warmup failed'));
+      const scraper = loadScraperWithNativeModule({ warmup });
+
+      await expect(scraper.whenReady()).rejects.toThrow('Python warmup failed');
+    });
+
+    it('resolves when the native module exposes no warmup', async () => {
+      const scraper = loadScraperWithNativeModule({});
+
+      await expect(scraper.whenReady()).resolves.toBeUndefined();
+    });
+
+    it('warms up only once across repeated calls', async () => {
+      const warmup = jest.fn().mockResolvedValue(undefined);
+      const scraper = loadScraperWithNativeModule({ warmup });
+
+      await scraper.whenReady();
+      await scraper.whenReady();
+
+      expect(warmup).toHaveBeenCalledTimes(1);
+    });
+
+    it('retries warmup on a later call after a failure', async () => {
+      const warmup = jest
+        .fn()
+        .mockRejectedValueOnce(new Error('Python warmup failed'))
+        .mockResolvedValueOnce(undefined);
+      const scraper = loadScraperWithNativeModule({ warmup });
+
+      await expect(scraper.whenReady()).rejects.toThrow('Python warmup failed');
+      await expect(scraper.whenReady()).resolves.toBeUndefined();
+      expect(warmup).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('isPythonReady', () => {
+    it('reports readiness from the native module without starting Python', async () => {
+      const isPythonAvailable = jest.fn().mockResolvedValue(true);
+      const warmup = jest.fn();
+      const scraper = loadScraperWithNativeModule({ isPythonAvailable, warmup });
+
+      await expect(scraper.isPythonReady()).resolves.toBe(true);
+      expect(isPythonAvailable).toHaveBeenCalledTimes(1);
+      expect(warmup).not.toHaveBeenCalled();
+    });
+
+    it('returns false when the native readiness check throws', async () => {
+      const isPythonAvailable = jest.fn().mockRejectedValue(new Error('not ready'));
+      const scraper = loadScraperWithNativeModule({ isPythonAvailable });
+
+      await expect(scraper.isPythonReady()).resolves.toBe(false);
+    });
+  });
+
+  describe('exception handling', () => {
+    it('returns EXCEPTION when scrapeRecipeFromHtml backend throws', async () => {
+      const scrapeRecipeFromHtml = jest.fn().mockRejectedValue(new Error('native crash'));
+      const scraper = loadScraperWithNativeModule({ scrapeRecipeFromHtml });
+
+      const result = await scraper.scrapeRecipeFromHtml('<html>', 'https://example.com/recipe');
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.type).toBe('EXCEPTION');
+        expect(result.error.message).toContain('native crash');
+      }
+    });
+
+    it('returns EXCEPTION when getSupportedHosts backend throws', async () => {
+      const getSupportedHosts = jest.fn().mockRejectedValue(new Error('hosts crash'));
+      const scraper = loadScraperWithNativeModule({ getSupportedHosts });
+
+      const result = await scraper.getSupportedHosts();
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.type).toBe('EXCEPTION');
+      }
+    });
+
+    it('returns EXCEPTION when isHostSupported backend throws', async () => {
+      const isHostSupported = jest.fn().mockRejectedValue(new Error('host crash'));
+      const scraper = loadScraperWithNativeModule({ isHostSupported });
+
+      const result = await scraper.isHostSupported('allrecipes.com');
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.type).toBe('EXCEPTION');
+      }
+    });
+
+    it('returns EXCEPTION when getSupportedAuthHosts backend throws', async () => {
+      const getSupportedAuthHosts = jest.fn().mockRejectedValue(new Error('auth hosts crash'));
+      const scraper = loadScraperWithNativeModule({ getSupportedAuthHosts });
+
+      const result = await scraper.getSupportedAuthHosts();
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.type).toBe('EXCEPTION');
+      }
+    });
+
+    it('stringifies a non-Error thrown by the backend', async () => {
+      const scrapeRecipeFromHtml = jest.fn().mockRejectedValue('kaboom');
+      const scraper = loadScraperWithNativeModule({ scrapeRecipeFromHtml });
+
+      const result = await scraper.scrapeRecipeFromHtml('<html>', 'https://example.com/recipe');
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.message).toBe('kaboom');
       }
     });
   });
