@@ -219,6 +219,9 @@ jobs:
 
   build-ios:
     name: Build iOS App
+    # Skipped for dependabot: iOS-only breakage from a dep bump is caught by
+    # build-android; keeps the routine-bump pipeline fast and low-flake.
+    if: github.actor != 'dependabot[bot]'
     needs: install-and-doctor
     uses: ./.github/workflows/build-app.yml
     with:
@@ -231,8 +234,9 @@ jobs:
 
   build-android-performance:
     name: Build Android APK (Performance)
-    # Perf build needs the EAS perf dataset, so it can't use the fork fallback
-    if: needs.install-and-doctor.outputs.is_internal == 'true'
+    # Perf build needs the EAS perf dataset, so it can't use the fork fallback.
+    # Also skipped for dependabot: perf regressions aren't caused by dep bumps.
+    if: needs.install-and-doctor.outputs.is_internal == 'true' && github.actor != 'dependabot[bot]'
     needs: install-and-doctor
     uses: ./.github/workflows/build-app.yml
     with:
@@ -262,7 +266,7 @@ jobs:
   e2e-tests-android-performance:
     name: E2E Tests Android (Performance)
     needs: [ build-android-performance, e2e-tests-android ]
-    if: ${{ always() && needs.build-android-performance.result == 'success' }}
+    if: ${{ always() && needs.build-android-performance.result == 'success' && github.actor != 'dependabot[bot]' }}
     uses: ./.github/workflows/e2e-maestro.yml
     with:
       platform: android
@@ -271,7 +275,8 @@ jobs:
 
   e2e-tests-ios:
     name: E2E Tests (iOS)
-    if: needs.install-and-doctor.outputs.is_internal == 'true'
+    # Skipped for dependabot alongside build-ios (see above).
+    if: needs.install-and-doctor.outputs.is_internal == 'true' && github.actor != 'dependabot[bot]'
     needs: [ build-ios, install-and-doctor ]
     uses: ./.github/workflows/e2e-maestro.yml
     with:
