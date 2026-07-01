@@ -69,6 +69,13 @@ declare class RecipeScraperModuleType extends NativeModule {
      * @returns true if Python is ready, false otherwise.
      */
     isPythonAvailable(): Promise<boolean>;
+
+    /**
+     * Starts the Python runtime on a low-priority background thread if not
+     * already started, resolving once it is ready. Idempotent and safe to call
+     * repeatedly. Used to lazily warm up Python without blocking the UI thread.
+     */
+    warmup(): Promise<void>;
 }
 
 export default requireNativeModule<RecipeScraperModuleType>('RecipeScraper');
