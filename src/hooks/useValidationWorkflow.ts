@@ -34,12 +34,7 @@ import { useI18n } from '@utils/i18n';
 
 /** Current phase of the validation workflow */
 export type ValidationPhase =
-  | 'initializing'
-  | 'warning'
-  | 'reviewing'
-  | 'importing'
-  | 'complete'
-  | 'error';
+  'initializing' | 'warning' | 'reviewing' | 'importing' | 'complete' | 'error';
 
 /** Sub-phase during initialization for more granular progress */
 export type InitializationStage = 'analyzing' | 'matching-ingredients' | 'matching-tags' | 'ready';
@@ -136,12 +131,8 @@ export function useValidationWorkflow(
   const hasInitializedRef = useRef(false);
   const hasItemsToReviewRef = useRef(false);
   const validationStateRef = useRef<BatchValidationState | null>(null);
-  validationStateRef.current = validationState;
-
   const findSimilarTagsRef = useRef(findSimilarTags);
-  findSimilarTagsRef.current = findSimilarTags;
   const findSimilarIngredientsRef = useRef(findSimilarIngredients);
-  findSimilarIngredientsRef.current = findSimilarIngredients;
 
   /**
    * Saves validated recipes to the database
@@ -193,7 +184,13 @@ export function useValidationWorkflow(
   };
 
   const saveRecipesRef = useRef(saveRecipes);
-  saveRecipesRef.current = saveRecipes;
+
+  useEffect(() => {
+    validationStateRef.current = validationState;
+    findSimilarTagsRef.current = findSimilarTags;
+    findSimilarIngredientsRef.current = findSimilarIngredients;
+    saveRecipesRef.current = saveRecipes;
+  });
 
   useEffect(() => {
     if (hasInitializedRef.current) {

@@ -28,7 +28,9 @@ function TutorialManager({ onComplete }: Pick<TutorialProviderProps, 'onComplete
   const { start, copilotEvents, visible } = useCopilot();
   const hasAutoStartedRef = useRef(false);
   const startRef = useRef(start);
-  startRef.current = start;
+  useEffect(() => {
+    startRef.current = start;
+  });
 
   /**
    * Handles tutorial start event

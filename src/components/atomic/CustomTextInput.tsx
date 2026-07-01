@@ -34,6 +34,7 @@
  */
 
 import React, { useRef, useState } from 'react';
+import { useResetOnChange } from '@hooks/useResetOnChange';
 import { LayoutChangeEvent, StyleProp, TextStyle, ViewStyle } from 'react-native';
 import { TextInput, useTheme } from 'react-native-paper';
 import { getDatasetType } from '@utils/DatasetLoader';
@@ -117,13 +118,9 @@ export function CustomTextInput({
   spellCheck,
 }: CustomTextInputProps) {
   const [displayValue, setDisplayValue] = useState(value ?? '');
-  const prevExternalValueRef = useRef(value);
   const lastCommittedValueRef = useRef<string | null>(null);
 
-  if (value !== prevExternalValueRef.current) {
-    prevExternalValueRef.current = value;
-    setDisplayValue(value ?? '');
-  }
+  useResetOnChange([value], () => setDisplayValue(value ?? ''));
 
   const { colors } = useTheme();
 

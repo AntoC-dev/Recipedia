@@ -102,13 +102,13 @@ describe('SearchBar Component', () => {
     expect(mockSetSearchBarClicked).toHaveBeenCalledWith(true);
   });
 
-  test('handles submit editing correctly', () => {
+  test('collapses on blur', () => {
     const { getByTestId } = renderSearchBar();
 
     expect(mockSetSearchBarClicked).not.toHaveBeenCalled();
 
     const textInput = getByTestId(defaultTestId);
-    fireEvent(textInput, 'onSubmitEditing');
+    fireEvent(textInput, 'onBlur');
 
     expect(mockSetSearchBarClicked).toHaveBeenCalledWith(false);
   });
@@ -154,7 +154,7 @@ describe('SearchBar Component', () => {
     fireEvent(textInput, 'onFocus');
     fireEvent.changeText(textInput, 'new text');
     fireEvent(textInput, 'onFocus');
-    fireEvent(textInput, 'onSubmitEditing');
+    fireEvent(textInput, 'onBlur');
 
     expect(mockSetSearchBarClicked).toHaveBeenCalledTimes(3);
     expect(mockUpdateSearchString).toHaveBeenCalledTimes(1);
@@ -224,7 +224,7 @@ describe('SearchBar Component', () => {
     expect(mockSetSearchBarClicked).toHaveBeenCalledWith(true);
     expect(mockUpdateSearchString).toHaveBeenCalledWith('focused text');
 
-    fireEvent(textInput, 'onSubmitEditing');
+    fireEvent(textInput, 'onBlur');
     expect(mockSetSearchBarClicked).toHaveBeenLastCalledWith(false);
 
     expect(mockSetSearchBarClicked).toHaveBeenCalledTimes(2);

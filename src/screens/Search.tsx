@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useResetOnChange } from '@hooks/useResetOnChange';
 import { BackHandler, Keyboard, View } from 'react-native';
 import type { FlashListRef, ListRenderItemInfo } from '@shopify/flash-list';
 import { FlashList } from '@shopify/flash-list';
@@ -80,7 +81,13 @@ export function Search() {
   }, [copilotData, screenFocused, toggleButtonTop, currentStepOrder, stepOrder]);
 
   // Core state
-  const [filtersState, setFiltersState] = useState(new Map<TListFilter, string[]>());
+  const [filtersState, setFiltersState] = useState<Map<TListFilter, string[]>>(() => {
+    const initial = new Map<TListFilter, string[]>();
+    if (seasonFilter) {
+      addValueToMultimap(initial, listFilter.inSeason, listFilter.inSeason);
+    }
+    return initial;
+  });
   const [searchBarClicked, setSearchBarClicked] = useState(false);
   const [addingFilterMode, setAddingFilterMode] = useState(false);
 
@@ -89,21 +96,18 @@ export function Search() {
   const [filteredTitles, filteredIngredients, filteredTags] =
     extractFilteredRecipeDatas(filteredRecipes);
 
-  // Handle season filter synchronization with global context
-  useEffect(() => {
-    const seasonFilterKey = listFilter.inSeason;
-    const seasonFilterValue = listFilter.inSeason;
-
+  // Sync the season filter into filter state when the global toggle changes
+  useResetOnChange([seasonFilter], () => {
     setFiltersState(prevState => {
       const newState = new Map(prevState);
+      const seasonFilterKey = listFilter.inSeason;
+      const seasonFilterValue = listFilter.inSeason;
 
-      // Add season filter if enabled and no filters exist
       if (seasonFilter && prevState.size === 0) {
         addValueToMultimap(newState, seasonFilterKey, seasonFilterValue);
         return newState;
       }
 
-      // Remove season filter if disabled and it's the only filter
       if (!seasonFilter && prevState.size === 1 && prevState.has(seasonFilterKey)) {
         removeValueToMultimap(newState, seasonFilterKey, seasonFilterValue);
         return newState;
@@ -111,7 +115,7 @@ export function Search() {
 
       return prevState;
     });
-  }, [seasonFilter]);
+  });
 
   useEffect(() => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {

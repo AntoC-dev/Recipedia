@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withiOSPython = void 0;
-var config_plugins_1 = require("@expo/config-plugins");
+var config_plugins_1 = require("expo/config-plugins");
 var child_process_1 = require("child_process");
 var fs_1 = require("fs");
 var path_1 = require("path");

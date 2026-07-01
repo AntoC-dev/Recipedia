@@ -21,7 +21,8 @@
  * ```
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { useResetOnChange } from '@hooks/useResetOnChange';
 import { StyleSheet, View } from 'react-native';
 import {
   ActivityIndicator,
@@ -75,13 +76,13 @@ export function AuthenticationDialog({
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  useEffect(() => {
+  useResetOnChange([isVisible], () => {
     if (isVisible) {
       setUsername('');
       setPassword('');
       setShowPassword(false);
     }
-  }, [isVisible]);
+  });
 
   const handleDismiss = () => {
     if (!isLoading) {

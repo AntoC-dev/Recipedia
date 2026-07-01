@@ -13,7 +13,7 @@
  * @module screens/recipe/helpers/inlineErrorGate
  */
 
-import { useRef } from 'react';
+import { useState } from 'react';
 import { FieldPath, useFormContext, useFormState } from 'react-hook-form';
 
 import { RecipeFormInput } from '@schemas/recipeFormSchema';
@@ -54,13 +54,13 @@ export function useInlineErrorFor<TName extends FieldPath<RecipeFormInput>>(
   // default (e.g. type then erase), so it can't tell "never edited" from
   // "edited then emptied". Latch the first edit to keep them apart: a bare
   // focus/blur stays silent, but an edited-then-emptied field still surfaces.
-  const everEditedRef = useRef(false);
-  if (isDirty) everEditedRef.current = true;
-  const showInlineError = (isTouched && everEditedRef.current) || formState.isSubmitted;
+  const [hasBeenEdited, setHasBeenEdited] = useState(false);
+  if (isDirty && !hasBeenEdited) setHasBeenEdited(true);
+  const showInlineError = (isTouched && hasBeenEdited) || formState.isSubmitted;
   return {
     error: showInlineError ? inlineMessage(error?.message, t) : undefined,
     isTouched,
     showInlineError,
-    hasBeenEdited: everEditedRef.current,
+    hasBeenEdited,
   };
 }

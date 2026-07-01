@@ -12,7 +12,7 @@ var __assign = (this && this.__assign) || function () {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withAndroidChaquopy = void 0;
-var config_plugins_1 = require("@expo/config-plugins");
+var config_plugins_1 = require("expo/config-plugins");
 var types_1 = require("./types");
 var withAndroidChaquopy = function (config, pluginConfig) {
     var mergedConfig = __assign(__assign({}, types_1.DEFAULT_CONFIG), pluginConfig);

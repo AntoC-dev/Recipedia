@@ -315,7 +315,7 @@ export function saveRecipeImage(cacheFileUri: string, recName: string): string {
     const imgFile = new File(APP_DIR, imgName);
 
     const sourceFile = new File(cacheFileUri);
-    sourceFile.copy(imgFile);
+    sourceFile.copySync(imgFile);
     try {
       sourceFile.delete();
     } catch {
@@ -443,7 +443,7 @@ export async function copyDatasetImages(): Promise<void> {
 
       try {
         const sourceFile = new File(asset.localUri);
-        sourceFile.copy(destFile);
+        sourceFile.copySync(destFile);
       } catch (copyError) {
         fileSystemLogger.warn('Failed to copy individual asset file', {
           assetName: asset.name,

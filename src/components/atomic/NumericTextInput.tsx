@@ -29,6 +29,7 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
+import { useResetOnChange } from '@hooks/useResetOnChange';
 import { StyleProp, TextStyle, View } from 'react-native';
 import { TextInput, useTheme } from 'react-native-paper';
 import { defaultValueNumber } from '@utils/Constants';
@@ -94,11 +95,13 @@ export function NumericTextInput({
   const lastCommittedValueRef = useRef(value);
   const { colors } = useTheme();
 
+  useResetOnChange([value, isFocused], () => {
+    if (!isFocused) setRawText(formatNumberForDisplay(value));
+  });
+
   useEffect(() => {
     lastCommittedValueRef.current = value;
-    if (isFocused) return;
-    setRawText(formatNumberForDisplay(value));
-  }, [value, isFocused]);
+  }, [value]);
 
   function handleChangeText(text: string) {
     setRawText(text);

@@ -38,8 +38,7 @@ export type IngredientValidationProps = ValidationQueuePropsBase<
 >;
 
 export type ValidationQueueProps = { testId: string; onComplete: () => void } & (
-  | TagValidationProps
-  | IngredientValidationProps
+  TagValidationProps | IngredientValidationProps
 );
 
 export function ValidationQueue({
@@ -65,9 +64,7 @@ export function ValidationQueue({
   const currentItem = queue[0];
   const itemName = currentItem.name!;
   const similarItem = currentItem.similarItems[0] as
-    | tagTableElement
-    | ingredientTableElement
-    | undefined;
+    tagTableElement | ingredientTableElement | undefined;
 
   uiLogger.debug('ValidationQueue showing dialog', {
     type,

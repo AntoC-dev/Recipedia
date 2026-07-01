@@ -18,8 +18,7 @@ import {
  * to prevent a circular dependency with the component file.
  */
 type ItemProp =
-  | { type: 'Ingredient'; value: FormIngredientElement }
-  | { type: 'Tag'; value: tagTableElement };
+  { type: 'Ingredient'; value: FormIngredientElement } | { type: 'Tag'; value: tagTableElement };
 
 /**
  * Unified RHF form value shape covering both Tag and Ingredient dialogs.

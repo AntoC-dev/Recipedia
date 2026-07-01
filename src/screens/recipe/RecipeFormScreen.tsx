@@ -202,13 +202,10 @@ function buildInitialFormValues(routeProps: RecipePropType): RecipeFormInput {
  * tree inside `RecipeFormBody`.
  */
 export function RecipeFormScreen(props: RecipeFormScreenProps) {
-  const defaultValuesRef = useRef<RecipeFormInput | null>(null);
-  if (defaultValuesRef.current === null) {
-    defaultValuesRef.current = buildInitialFormValues(props.routeProps);
-  }
+  const [defaultValues] = useState(() => buildInitialFormValues(props.routeProps));
   const form = useForm<RecipeFormInput>({
     resolver: recipeFormResolver,
-    defaultValues: defaultValuesRef.current,
+    defaultValues,
     mode: 'onTouched',
   });
 
@@ -476,15 +473,11 @@ function RecipeFormBody({
   // Stabilise slotProps across re-renders so a slot can list these setters
   // in useEffect deps without looping. Each setter writes into a ref, so
   // the wrappers are referentially fixed for the screen's lifetime.
-  const slotPropsRef = useRef<FeatureHookSlotProps | null>(null);
-  if (slotPropsRef.current === null) {
-    slotPropsRef.current = {
-      setOnSelectOcrField: fn => {
-        slotOnSelectOcrFieldRef.current = fn;
-      },
-    };
-  }
-  const slotProps = slotPropsRef.current;
+  const [slotProps] = useState<FeatureHookSlotProps>(() => ({
+    setOnSelectOcrField: fn => {
+      slotOnSelectOcrFieldRef.current = fn;
+    },
+  }));
 
   return (
     <ScreenWrapper>

@@ -83,9 +83,7 @@ function EditableIngredientsField({
     name: 'recipeIngredients',
   });
   const rowDirtyFlags = (dirtyFields.recipeIngredients ?? []) as (
-    | Record<string, unknown>
-    | boolean
-    | undefined
+    Record<string, unknown> | boolean | undefined
   )[];
   const arrayDirty = rowDirtyFlags.length > 0;
   // Single source for both the array-root `.min` message and the per-row item
@@ -94,8 +92,7 @@ function EditableIngredientsField({
   // from the `useFormState` errors tree: `.message` for the root, indexed
   // entries for each row.
   const arrayErrors = errors.recipeIngredients as unknown as
-    | (Record<number, unknown> & { message?: string })
-    | undefined;
+    (Record<number, unknown> & { message?: string }) | undefined;
   const rowErrors = arrayErrors;
 
   const rootErrorMessage =

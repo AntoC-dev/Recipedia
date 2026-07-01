@@ -7,12 +7,6 @@ import RecipeDatabase from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
 import { testRecipes } from '@test-data/recipesDataset';
-import { QueryByQuery } from '@testing-library/react-native/build/queries/make-queries';
-import {
-  CommonQueryOptions,
-  TextMatchOptions,
-} from '@testing-library/react-native/build/queries/options';
-import { TextMatch } from '@testing-library/react-native/build/matches';
 import { DialogMode } from '@components/dialogs/ItemDialog';
 
 jest.mock('@react-navigation/native', () =>
@@ -49,13 +43,14 @@ const renderTagsSettings = async () => {
   return result;
 };
 
-type QueryByIdType = QueryByQuery<TextMatch, CommonQueryOptions & TextMatchOptions>;
+type GetByIdType = ReturnType<typeof render>['getByTestId'];
+type QueryByIdType = ReturnType<typeof render>['queryByTestId'];
 
-function dialogIsNotOpen(queryByTestId: (id: string) => HTMLElement | null) {
+function dialogIsNotOpen(queryByTestId: QueryByIdType) {
   expect(queryByTestId('TagsSettings::ItemDialog::IsVisible')).toBeNull();
 }
 
-function dialogIsOpen(item: tagTableElement, mode: DialogMode, getByTestId: QueryByIdType) {
+function dialogIsOpen(item: tagTableElement, mode: DialogMode, getByTestId: GetByIdType) {
   expect(getByTestId('TagsSettings::ItemDialog::IsVisible').props.children).toEqual(true);
   expect(getByTestId('TagsSettings::ItemDialog::Mode').props.children).toEqual(mode);
   expect(getByTestId('TagsSettings::ItemDialog::OnClose')).toBeTruthy();

@@ -7,10 +7,11 @@
  * @module components/molecules/RecipeCardSkeleton
  */
 
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { Animated, StyleSheet } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import { padding } from '@styles/spacing';
+import { usePulseOpacity } from '@hooks/usePulseOpacity';
 
 const AnimatedCard = Animated.View;
 
@@ -20,18 +21,7 @@ export type RecipeCardSkeletonProps = {
 
 export function RecipeCardSkeleton({ testID }: RecipeCardSkeletonProps) {
   const { colors } = useTheme();
-  const opacity = useRef(new Animated.Value(0.3)).current;
-
-  useEffect(() => {
-    const pulse = Animated.loop(
-      Animated.sequence([
-        Animated.timing(opacity, { toValue: 0.7, duration: 1000, useNativeDriver: true }),
-        Animated.timing(opacity, { toValue: 0.3, duration: 1000, useNativeDriver: true }),
-      ])
-    );
-    pulse.start();
-    return () => pulse.stop();
-  }, [opacity]);
+  const opacity = usePulseOpacity();
 
   return (
     <AnimatedCard
