@@ -1,7 +1,9 @@
 package expo.modules.recipescraper
 
+import android.os.Process
 import com.chaquo.python.Python
 import com.chaquo.python.android.AndroidPlatform
+import expo.modules.kotlin.Promise
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
@@ -15,22 +17,42 @@ import expo.modules.kotlin.modules.ModuleDefinition
  */
 class RecipeScraperModule : Module() {
     companion object {
+        private val initLock = Any()
+
+        @Volatile
         private var pythonInitialized = false
     }
 
     override fun definition() = ModuleDefinition {
         Name("RecipeScraper")
 
-        // Start Python initialization in background when module loads
-        // This ensures Python is ready by the time user tries to scrape
-        OnCreate {
+        // Warm up the Python runtime on a low-priority background thread, off the
+        // main thread, and resolve once it is ready. Driven lazily by the JS layer
+        // (whenReady) when a scraper consumer mounts — never at app boot — so the
+        // heavy Chaquopy unpack/JNI init cannot starve the UI thread on launch.
+        AsyncFunction("warmup") { promise: Promise ->
+            if (pythonInitialized) {
+                promise.resolve(null)
+                return@AsyncFunction
+            }
             Thread {
+                Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND)
                 try {
                     ensurePythonStarted()
+                    promise.resolve(null)
                 } catch (e: Exception) {
-                    // Ignore warmup errors - will retry on actual use
+                    promise.reject("ERR_PYTHON_WARMUP", e.message ?: "Python warmup failed", e)
                 }
+            }.apply {
+                name = "recipe-scraper-python-warmup"
+                isDaemon = true
             }.start()
+        }
+
+        // Non-blocking readiness check: reports whether Python is already started
+        // without triggering initialization.
+        AsyncFunction("isPythonAvailable") {
+            Python.isStarted() && pythonInitialized
         }
 
         /**
@@ -125,7 +147,7 @@ class RecipeScraperModule : Module() {
 
     private fun ensurePythonStarted() {
         if (!pythonInitialized) {
-            synchronized(this) {
+            synchronized(initLock) {
                 if (!pythonInitialized) {
                     if (!Python.isStarted()) {
                         val context = appContext.reactContext
