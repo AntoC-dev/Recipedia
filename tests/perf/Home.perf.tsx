@@ -16,6 +16,7 @@ import {
   useSeasonFilter,
 } from '@context/SeasonFilterContext';
 import { DefaultPersonsProvider } from '@context/DefaultPersonsContext';
+import { HEAVY_WARMUP } from './perfOptions';
 
 jest.mock('@react-navigation/native', () =>
   require('@mocks/deps/react-navigation-mock').reactNavigationMock()
@@ -105,7 +106,7 @@ describe('Home Screen Performance', () => {
       fireEvent(refreshControl, 'refresh');
     };
 
-    await measureRenders(<HomeWrapper />, { runs: 10, scenario });
+    await measureRenders(<HomeWrapper />, { runs: 10, ...HEAVY_WARMUP, scenario });
   });
 
   test('re-render after toggling season filter on', async () => {

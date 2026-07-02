@@ -4,6 +4,7 @@ import { fireEvent, screen } from '@testing-library/react-native';
 import { measureRenders } from 'reassure';
 import { RecipeSelectionCard } from '@components/molecules/RecipeSelectionCard';
 import { DiscoveredRecipe } from '@customTypes/BulkImportTypes';
+import { HEAVY_WARMUP } from './perfOptions';
 
 jest.mock('@react-navigation/native', () =>
   require('@mocks/deps/react-navigation-mock').reactNavigationMock()
@@ -147,7 +148,10 @@ describe('RecipeSelectionCard Performance', () => {
     });
 
     test('50 fresh cards initial render', async () => {
-      await measureRenders(<BatchCardsWrapper count={50} memoryStatus='fresh' />, { runs: 10 });
+      await measureRenders(<BatchCardsWrapper count={50} memoryStatus='fresh' />, {
+        runs: 10,
+        ...HEAVY_WARMUP,
+      });
     });
 
     test('50 cards with selection toggle', async () => {
@@ -158,12 +162,16 @@ describe('RecipeSelectionCard Performance', () => {
 
       await measureRenders(<BatchCardsWrapper count={50} memoryStatus='fresh' />, {
         runs: 10,
+        ...HEAVY_WARMUP,
         scenario,
       });
     });
 
     test('100 fresh cards initial render', async () => {
-      await measureRenders(<BatchCardsWrapper count={100} memoryStatus='fresh' />, { runs: 10 });
+      await measureRenders(<BatchCardsWrapper count={100} memoryStatus='fresh' />, {
+        runs: 10,
+        ...HEAVY_WARMUP,
+      });
     });
 
     test('100 cards with multiple selections', async () => {
@@ -175,6 +183,7 @@ describe('RecipeSelectionCard Performance', () => {
 
       await measureRenders(<BatchCardsWrapper count={100} memoryStatus='fresh' />, {
         runs: 5,
+        ...HEAVY_WARMUP,
         scenario,
       });
     }, 30000);

@@ -7,6 +7,7 @@ import { performanceTags } from '@assets/datasets/performance/tags';
 import { performanceIngredients } from '@assets/datasets/performance/ingredients';
 import { tagTableElement, FormIngredientElement } from '@customTypes/DatabaseElementTypes';
 import { ResolutionMappings } from '@customTypes/ValidationTypes';
+import { HEAVY_WARMUP } from './perfOptions';
 
 jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 
@@ -87,7 +88,7 @@ describe('ValidationReviewList Performance', () => {
     const rawIngredients = generateUnknownIngredients(10);
     await measureRenders(
       <ValidationReviewListWrapper rawTags={rawTags} rawIngredients={rawIngredients} />,
-      { runs: 10 }
+      { runs: 10, ...HEAVY_WARMUP }
     );
   });
 
@@ -96,7 +97,7 @@ describe('ValidationReviewList Performance', () => {
     const rawIngredients = generateUnknownIngredients(20);
     await measureRenders(
       <ValidationReviewListWrapper rawTags={rawTags} rawIngredients={rawIngredients} />,
-      { runs: 10 }
+      { runs: 10, ...HEAVY_WARMUP }
     );
   });
 
@@ -111,7 +112,7 @@ describe('ValidationReviewList Performance', () => {
     const rawIngredients = generateUnknownIngredients(20);
     await measureRenders(
       <ValidationReviewListWrapper rawTags={[]} rawIngredients={rawIngredients} />,
-      { runs: 10 }
+      { runs: 10, ...HEAVY_WARMUP }
     );
   });
 
@@ -129,7 +130,7 @@ describe('ValidationReviewList Performance', () => {
     const rawIngredients = generateUnknownIngredients(10);
     await measureRenders(
       <ValidationReviewListWrapper rawTags={rawTags} rawIngredients={rawIngredients} />,
-      { runs: 10 }
+      { runs: 10, ...HEAVY_WARMUP }
     );
   });
 
@@ -142,7 +143,7 @@ describe('ValidationReviewList Performance', () => {
     };
     await measureRenders(
       <ValidationReviewListWrapper rawTags={rawTags} rawIngredients={rawIngredients} />,
-      { runs: 10, scenario }
+      { runs: 10, ...HEAVY_WARMUP, scenario }
     );
   });
 
@@ -156,6 +157,7 @@ describe('ValidationReviewList Performance', () => {
     };
     await measureRenders(<ValidationReviewListWrapper rawTags={rawTags} rawIngredients={[]} />, {
       runs: 10,
+      ...HEAVY_WARMUP,
       scenario,
     });
   });
@@ -170,6 +172,7 @@ describe('ValidationReviewList Performance', () => {
     };
     await measureRenders(<ValidationReviewListWrapper rawTags={rawTags} rawIngredients={[]} />, {
       runs: 10,
+      ...HEAVY_WARMUP,
       scenario,
     });
   });
@@ -185,7 +188,7 @@ describe('ValidationReviewList Performance', () => {
     };
     await measureRenders(
       <ValidationReviewListWrapper rawTags={[]} rawIngredients={rawIngredients} />,
-      { runs: 10, scenario }
+      { runs: 10, ...HEAVY_WARMUP, scenario }
     );
   });
 
@@ -199,6 +202,7 @@ describe('ValidationReviewList Performance', () => {
     };
     await measureRenders(<ValidationReviewListWrapper rawTags={rawTags} rawIngredients={[]} />, {
       runs: 5,
+      ...HEAVY_WARMUP,
       scenario,
     });
   });

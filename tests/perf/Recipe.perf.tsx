@@ -15,6 +15,7 @@ import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { ScrapedRecipeData } from '@customTypes/RecipeNavigationTypes';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { StackScreenParamList } from '@customTypes/ScreenTypes';
+import { HEAVY_WARMUP } from './perfOptions';
 
 jest.mock('@react-navigation/native', () =>
   require('@mocks/deps/react-navigation-mock').reactNavigationMock()
@@ -149,7 +150,7 @@ describe('Recipe Screen Performance', () => {
   });
 
   test('initial render in edit mode', async () => {
-    await measureRenders(<EditWrapper recipe={testRecipe} />, { runs: 10 });
+    await measureRenders(<EditWrapper recipe={testRecipe} />, { runs: 10, ...HEAVY_WARMUP });
   });
 
   test('initial render in add manually mode', async () => {
@@ -218,7 +219,7 @@ describe('Recipe Screen Performance', () => {
     };
     await measureRenders(
       <AddScrapeWrapper scrapedData={scrapedData} sourceUrl='https://example.com/recipe' />,
-      { runs: 10 }
+      { runs: 10, ...HEAVY_WARMUP }
     );
   }, 30000);
 

@@ -14,6 +14,7 @@ import { SeasonFilterProvider } from '@context/SeasonFilterContext';
 import { DefaultPersonsProvider, useDefaultPersons } from '@context/DefaultPersonsContext';
 import { DarkModeContext } from '@context/DarkModeContext';
 import { ingredientType } from '@customTypes/DatabaseElementTypes';
+import { HEAVY_WARMUP } from './perfOptions';
 
 jest.mock('@react-navigation/native', () =>
   require('@mocks/deps/react-navigation-mock').reactNavigationMock()
@@ -163,7 +164,7 @@ describe('IngredientsSettings Screen Performance', () => {
   });
 
   test('initial render', async () => {
-    await measureRenders(<IngredientsSettingsWrapper />, { runs: 10 });
+    await measureRenders(<IngredientsSettingsWrapper />, { runs: 10, ...HEAVY_WARMUP });
   });
 
   test('re-render after adding ingredient', async () => {
@@ -176,7 +177,7 @@ describe('IngredientsSettings Screen Performance', () => {
       });
     };
 
-    await measureRenders(<IngredientsSettingsWrapper />, { runs: 10, scenario });
+    await measureRenders(<IngredientsSettingsWrapper />, { runs: 10, ...HEAVY_WARMUP, scenario });
   });
 
   test('re-render after editing ingredient', async () => {
@@ -191,7 +192,7 @@ describe('IngredientsSettings Screen Performance', () => {
       }
     };
 
-    await measureRenders(<IngredientsSettingsWrapper />, { runs: 10, scenario });
+    await measureRenders(<IngredientsSettingsWrapper />, { runs: 10, ...HEAVY_WARMUP, scenario });
   });
 
   test('re-render after adding multiple ingredients rapidly', async () => {
@@ -206,7 +207,7 @@ describe('IngredientsSettings Screen Performance', () => {
       }
     };
 
-    await measureRenders(<IngredientsSettingsWrapper />, { runs: 10, scenario });
+    await measureRenders(<IngredientsSettingsWrapper />, { runs: 10, ...HEAVY_WARMUP, scenario });
   });
 
   test('re-render after deleting ingredient', async () => {
@@ -217,7 +218,7 @@ describe('IngredientsSettings Screen Performance', () => {
       }
     };
 
-    await measureRenders(<IngredientsSettingsWrapper />, { runs: 10, scenario });
+    await measureRenders(<IngredientsSettingsWrapper />, { runs: 10, ...HEAVY_WARMUP, scenario });
   });
 });
 
