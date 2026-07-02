@@ -5,7 +5,10 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { averageFps, evaluateFps, formatMarkdownSummary } from './check-perf-budget.mjs';
-import { findRegressions } from './check-reassure-regression.mjs';
+import {
+  findRegressions,
+  lowerBoundRelativeDurationDiff,
+} from './check-reassure-regression.mjs';
 import { measureBundleBytes } from './check-bundle-size.mjs';
 
 test('averageFps pools fps across iterations and measures', () => {
@@ -85,27 +88,79 @@ test('formatMarkdownSummary renders a row per screen with status icons', () => {
   assert.match(md, /\| menu \| n\/a \| ❌ \| flow failed \(no result\) \|/);
 });
 
-test('findRegressions flags duration over threshold', () => {
+const tightRegression = {
+  name: 'tight',
+  relativeDurationDiff: 0.2,
+  baseline: { meanDuration: 100, stdevDuration: 2, runs: 10 },
+  current: { meanDuration: 120, stdevDuration: 2, runs: 10 },
+};
+
+const noisyBlip = {
+  name: 'noisy',
+  relativeDurationDiff: 0.171,
+  baseline: { meanDuration: 61.9, stdevDuration: 11, runs: 10 },
+  current: { meanDuration: 72.5, stdevDuration: 11, runs: 10 },
+};
+
+test('findRegressions flags duration over threshold via point-estimate fallback', () => {
   const { durationRegressions } = findRegressions([{ name: 'a', relativeDurationDiff: 0.2 }], 15);
   assert.equal(durationRegressions.length, 1);
 });
 
-test('findRegressions ignores duration under threshold', () => {
+test('findRegressions ignores duration under threshold via point-estimate fallback', () => {
   const { durationRegressions } = findRegressions([{ name: 'a', relativeDurationDiff: 0.1 }], 15);
   assert.equal(durationRegressions.length, 0);
 });
 
+test('findRegressions fails a tightly-measured regression above the CI lower bound', () => {
+  const { durationRegressions } = findRegressions([tightRegression], 15);
+  assert.equal(durationRegressions.length, 1);
+});
+
+test('findRegressions passes a noisy blip whose point estimate exceeds the threshold', () => {
+  const { durationRegressions } = findRegressions([noisyBlip], 15);
+  assert.equal(durationRegressions.length, 0);
+});
+
 test('findRegressions flags any positive render-count growth', () => {
-  const { countRegressions } = findRegressions([{ name: 'a', relativeRenderCountDiff: 0.01 }], 15);
+  const { countRegressions } = findRegressions([{ name: 'a', relativeCountDiff: 0.01 }], 15);
   assert.equal(countRegressions.length, 1);
 });
 
 test('findRegressions passes a clean entry', () => {
   const { durationRegressions, countRegressions } = findRegressions(
-    [{ name: 'a', relativeDurationDiff: 0.05, relativeRenderCountDiff: 0 }],
+    [{ name: 'a', relativeDurationDiff: 0.05, relativeCountDiff: 0 }],
     15
   );
   assert.equal(durationRegressions.length + countRegressions.length, 0);
+});
+
+test('lowerBoundRelativeDurationDiff discounts noise below the point estimate', () => {
+  const lower = lowerBoundRelativeDurationDiff(noisyBlip);
+  assert.ok(lower < noisyBlip.relativeDurationDiff);
+  assert.ok(lower * 100 < 15);
+});
+
+test('lowerBoundRelativeDurationDiff falls back to the point estimate without per-run stats', () => {
+  assert.equal(lowerBoundRelativeDurationDiff({ relativeDurationDiff: 0.2 }), 0.2);
+});
+
+test('lowerBoundRelativeDurationDiff falls back when current lacks a mean duration', () => {
+  const entry = {
+    relativeDurationDiff: 0.2,
+    baseline: { meanDuration: 100, stdevDuration: 2, runs: 10 },
+    current: { stdevDuration: 2, runs: 10 },
+  };
+  assert.equal(lowerBoundRelativeDurationDiff(entry), 0.2);
+});
+
+test('lowerBoundRelativeDurationDiff equals the point estimate at zero variance', () => {
+  const entry = {
+    relativeDurationDiff: 0.2,
+    baseline: { meanDuration: 100, stdevDuration: 0, runs: 10 },
+    current: { meanDuration: 120, stdevDuration: 0, runs: 10 },
+  };
+  assert.equal(lowerBoundRelativeDurationDiff(entry), 0.2);
 });
 
 test('measureBundleBytes sums js and hbc files recursively', () => {
