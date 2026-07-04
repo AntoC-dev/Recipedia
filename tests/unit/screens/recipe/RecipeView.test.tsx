@@ -1,5 +1,6 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { expectKeyboardDismissesOnDrag } from '@test-helpers/expectKeyboardDismissesOnDrag';
 import { testRecipes } from '@test-data/recipesDataset';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { RecipePropType } from '@customTypes/RecipeNavigationTypes';
@@ -239,5 +240,11 @@ describe('RecipeView', () => {
 
       expect(mockNavigation.goBack).toHaveBeenCalled();
     });
+  });
+
+  test('recipe form dismisses the keyboard on drag', async () => {
+    const { UNSAFE_getAllByType } = await renderRoute({ mode: 'addManually' });
+    const { ScrollView } = require('react-native');
+    expectKeyboardDismissesOnDrag(UNSAFE_getAllByType, ScrollView);
   });
 });

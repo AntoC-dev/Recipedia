@@ -1,4 +1,5 @@
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { expectKeyboardDismissesOnDrag } from '@test-helpers/expectKeyboardDismissesOnDrag';
 import Search from '@screens/Search';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
@@ -583,6 +584,12 @@ describe('Search Screen', () => {
         '{"filterTypes.tags":["New filter"]}'
       );
     });
+  });
+
+  test('recipe list dismisses the keyboard on drag', async () => {
+    const { UNSAFE_getAllByType } = await renderSearchComponent();
+    const { FlatList } = require('react-native');
+    expectKeyboardDismissesOnDrag(UNSAFE_getAllByType, FlatList);
   });
 });
 

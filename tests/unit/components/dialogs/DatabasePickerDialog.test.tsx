@@ -1,5 +1,6 @@
 import React from 'react';
 import { act, fireEvent, render } from '@testing-library/react-native';
+import { expectKeyboardDismissesOnDrag } from '@test-helpers/expectKeyboardDismissesOnDrag';
 import { DatabasePickerDialog } from '@components/dialogs/DatabasePickerDialog';
 import { ingredientTableElement, ingredientType } from '@customTypes/DatabaseElementTypes';
 
@@ -624,6 +625,22 @@ describe('DatabasePickerDialog', () => {
 
       expect(getByTestId(`${testId}::Item::0`)).toBeTruthy();
       expect(getByTestId(`${testId}::Item::1`)).toBeTruthy();
+    });
+
+    test('list dismisses the keyboard on drag', () => {
+      const { UNSAFE_getAllByType } = render(
+        <DatabasePickerDialog
+          testId={testId}
+          isVisible={true}
+          title='Select an item'
+          items={mockItems}
+          onSelect={mockOnSelect}
+          onDismiss={mockOnDismiss}
+        />
+      );
+
+      const { FlatList } = require('react-native');
+      expectKeyboardDismissesOnDrag(UNSAFE_getAllByType, FlatList);
     });
   });
 });

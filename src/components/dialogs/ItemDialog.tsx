@@ -304,7 +304,7 @@ export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialo
           </Dialog.Content>
         ) : (
           <Dialog.ScrollArea>
-            <ScrollView contentContainerStyle={styles.formContainer}>
+            <ScrollView keyboardDismissMode='on-drag' contentContainerStyle={styles.formContainer}>
               {isIngredient ? (
                 <Text testID={modalTestId + '::FormHint'} variant='bodySmall'>
                   {t('ingredient_form_hint')}
