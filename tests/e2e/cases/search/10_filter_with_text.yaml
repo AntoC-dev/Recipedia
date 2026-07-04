@@ -18,7 +18,9 @@ tags:
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- pressKey: "enter"
+- runFlow:
+    file: "../../flows/search/commitTypedSearch.yaml"
+    label: "Commit typed search, keep filter"
 
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"

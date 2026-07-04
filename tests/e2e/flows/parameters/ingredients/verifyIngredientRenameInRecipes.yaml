@@ -15,11 +15,9 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- pressKey: "enter"
-
 - runFlow:
-    file: "../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
+    file: "../../search/selectFirstSuggestion.yaml"
+    label: "Select the first suggestion to close the dropdown and reveal the grid"
 
 - waitForAnimationToEnd
 

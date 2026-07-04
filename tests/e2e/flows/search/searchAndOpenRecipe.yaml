@@ -30,22 +30,8 @@ appId: "com.recipedia"
     label: "Check that recipe has been written in search bar"
 
 - runFlow:
-    when:
-      platform: Android
-    commands:
-      - pressKey: enter
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn:
-          id: "Search"
-          label: "Tap Search key to validates the search"
-
-- runFlow:
-    file: "../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
+    file: "./selectFirstSuggestion.yaml"
+    label: "Select the first suggestion to close the dropdown and reveal the grid"
 
 - tapOn:
     id: "SearchScreen::RecipeCards::.*"

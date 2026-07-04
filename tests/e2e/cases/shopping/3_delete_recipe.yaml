@@ -28,11 +28,9 @@ tags:
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- pressKey: "ENTER"
-
 - runFlow:
-    file: "../../flows/waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
+    file: "../../flows/search/selectFirstSuggestion.yaml"
+    label: "Select the first suggestion to close the dropdown and reveal the grid"
 
 - extendedWaitUntil:
     visible:

@@ -15,7 +15,9 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- pressKey: "ENTER"
+- runFlow:
+    file: "../search/commitTypedSearch.yaml"
+    label: "Commit typed search, keep filter"
 
 - runFlow:
     file: "../waitForKeyboardDismiss.yaml"

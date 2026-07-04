@@ -27,11 +27,9 @@ tags:
 
 - waitForAnimationToEnd
 
-- pressKey: "enter"
-
 - runFlow:
-    file: "../../flows/waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard dismiss"
+    file: "../../flows/search/selectFirstSuggestion.yaml"
+    label: "Select the first suggestion to close the dropdown and reveal the grid"
 
 - tapOn:
     id: "SearchScreen::RecipeCards::.*::Cover"
