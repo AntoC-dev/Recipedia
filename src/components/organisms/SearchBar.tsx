@@ -115,7 +115,10 @@ export function SearchBar({
         borderRadius: screenWidth / 10,
       }}
       onFocus={() => setSearchBarClicked(true)}
-      onBlur={() => setSearchBarClicked(false)}
+      onSubmitEditing={() => {
+        Keyboard.dismiss();
+        setSearchBarClicked(false);
+      }}
       right={props =>
         (searchPhrase.length > 0 || searchBarClicked) && (
           <IconButton
