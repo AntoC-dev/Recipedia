@@ -1339,6 +1339,9 @@ export class RecipeDatabase {
     if (success) {
       menuItem.isCooked = newCookedStatus;
       this._menu = [...this._menu];
+      if (newCookedStatus && this._menu.every(item => item.isCooked)) {
+        await this.clearPurchasedIngredients();
+      }
       this.notify('menu');
       databaseLogger.debug('Menu item cooked status toggled', {
         menuId,
