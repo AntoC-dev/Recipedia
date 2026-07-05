@@ -1,3 +1,12 @@
+## [2.39.2](https://github.com/AntoC-dev/Recipedia/compare/v2.39.1...v2.39.2) (2026-07-05)
+
+### Bug Fixes
+
+* **ci:** gate reassure on CI lower bound, fix dead count check ([9eba9df](https://github.com/AntoC-dev/Recipedia/commit/9eba9df16478046a91baea37dd3c4bd620ce9282))
+* **recipe-scraper:** fix Android ANR + decouple platforms behind ScraperBackend ([#389](https://github.com/AntoC-dev/Recipedia/issues/389)) ([6a3a710](https://github.com/AntoC-dev/Recipedia/commit/6a3a71050c4409b853b72d11471d6a407c4cc034))
+* **recipe-scraper:** prevent Android ANR from eager Python warmup ([5c5e040](https://github.com/AntoC-dev/Recipedia/commit/5c5e040b830e02754e1d6d9cadcaae3779bafd24))
+* **ui:** dismiss keyboard on scroll drag to unblock navigation ([cc4c4e1](https://github.com/AntoC-dev/Recipedia/commit/cc4c4e1aae8a7b82055436e27d422d0ae20bd3c4))
+
 ## [2.39.1](https://github.com/AntoC-dev/Recipedia/compare/v2.39.0...v2.39.1) (2026-06-30)
 
 ### Bug Fixes
