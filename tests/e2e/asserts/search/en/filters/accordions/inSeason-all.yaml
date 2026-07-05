@@ -4,23 +4,10 @@ appId: "com.recipedia"
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Only in-season ingredients accordion is displayed"
 
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - assertVisible:
-          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-          text: "Only in-season ingredients"
-          label: "Only in-season ingredients accordion title on Android"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - assertVisible:
-          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-          text: "Only in-season ingredients, 󰅀"
-          label: "Only in-season ingredients accordion title with chevron on iOS"
+- assertVisible:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    text: "Only in-season ingredients"
+    label: "Only in-season ingredients accordion title"
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"

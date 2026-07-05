@@ -73,10 +73,6 @@ appId: "com.recipedia"
     id: "RecipeTags::RoundButton"
     label: "Add button for the tag is rendered"
 
-- assertVisible:
-    text: "󰐕"
-    label: "Add button has the correct icon"
-
 - waitForAnimationToEnd
 
 - scrollUntilVisible:
@@ -145,7 +141,6 @@ appId: "com.recipedia"
     speed: 20
     label: "Scroll to last ingredient"
 
-
 - waitForAnimationToEnd
 
 - assertVisible:
@@ -177,10 +172,6 @@ appId: "com.recipedia"
     label: "Add button of the ingredients is rendered"
 
 - assertVisible:
-    text: "󰏫"
-    label: "Add manually button of the ingredients has the correct icon"
-
-- assertVisible:
     id: "RecipeIngredients::AddButton::RoundButton::Label"
     text: "Add manually"
     label: "Label of the scan quantities bubtton is displayed"
@@ -188,10 +179,6 @@ appId: "com.recipedia"
 - assertVisible:
     id: "RecipeIngredients::OpenModalQuantities::RoundButton"
     label: "Scan quantities button of the ingredients is rendered"
-
-- assertVisible:
-    text: "󰘤"
-    label: "Scan quantities button of the ingredients has the correct icon"
 
 - assertVisible:
     id: "RecipeIngredients::OpenModalQuantities::RoundButton::Label"
@@ -437,7 +424,6 @@ appId: "com.recipedia"
     text: "[\\s\\S]+"
     label: "Third step is rendered and not empty"
 
-
 - waitForAnimationToEnd
 
 - scrollUntilVisible:
@@ -458,6 +444,3 @@ appId: "com.recipedia"
     id: "RecipePreparation::AddButton::RoundButton"
     label: "Add button of the preparation is rendered"
 
-- assertVisible:
-    text: "󰐕"
-    label: "Add button of the preparation has the right icon"

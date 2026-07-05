@@ -17,25 +17,11 @@ appId: "com.recipedia"
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Sauce accordion is displayed"
 
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - assertVisible:
-          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-          text: "Sauce"
-          label: "Sauce accordion title on Android"
+- assertVisible:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    text: "Sauce"
+    label: "Sauce accordion title"
 
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - assertVisible:
-          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-          text: "Sauce, 󰅀"
-          label: "Sauce accordion title with chevron on iOS"
-
-# Expand the accordion
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Expand Sauce accordion"

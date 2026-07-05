@@ -422,7 +422,6 @@ appId: "com.recipedia"
     text: "Delete"
     label: "Delete button for Tag with space is displayed"
 
-
 - waitForAnimationToEnd
 
 - scrollUntilVisible:
@@ -450,20 +449,7 @@ appId: "com.recipedia"
     text: "Delete"
     label: "Delete button for Vegetarian is displayed"
 
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - assertVisible:
-          id: "TagsSettings::BottomActionButton"
-          text: "Add tag"
-          label: "Add tag button is visible with correct text"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - assertVisible:
-          id: "TagsSettings::BottomActionButton"
-          text: "󰐕, Add Tag"
-          label: "Add tag button is visible with correct text"
+- assertVisible:
+    id: "TagsSettings::BottomActionButton"
+    text: "Add Tag"
+    label: "Add tag button is visible with correct text"

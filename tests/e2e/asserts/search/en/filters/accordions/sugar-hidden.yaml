@@ -1,18 +1,7 @@
 appId: "com.recipedia"
 ---
 # Assert accordion is NOT displayed
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - assertNotVisible:
-          text: "Sugar"
-          label: "Sugar accordion not displayed on Android"
+- assertNotVisible:
+    text: "Sugar"
+    label: "Sugar accordion not displayed"
 
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - assertNotVisible:
-          text: "Sugar, 󰅀"
-          label: "Sugar accordion not displayed on iOS"

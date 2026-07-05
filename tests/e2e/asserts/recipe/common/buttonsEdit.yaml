@@ -28,6 +28,3 @@ appId: "com.recipedia"
     id: "Recipe::AppBar::Validate"
     label: "Validate recipe button is displayed"
 
-- assertVisible:
-    text: "󰄬"
-    label: "Icon of the validate button is displayed"

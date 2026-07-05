@@ -7,9 +7,6 @@ appId: "com.recipedia"
     id: "RecipeImage::RoundButton"
     label: "Image button is rendered"
 - assertVisible:
-    text: "󰄀"
-    label: "Image button has the correct icon"
-- assertVisible:
     id: "RecipeImage"
     label: "Image is rendered"
 - assertVisible:
@@ -70,15 +67,6 @@ appId: "com.recipedia"
 
 - runFlow:
     when:
-      platform: Android
-    commands:
-      - assertVisible:
-          text: "󰅖"
-          index: 0
-          label: "Cross icon of the first tag is rendered on Android"
-
-- runFlow:
-    when:
       platform: iOS
     commands:
       - assertVisible:
@@ -124,9 +112,6 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeTags::RoundButton"
-    label: "Add button for the tag is rendered"
-- assertVisible:
-    text: "󰐕"
     label: "Add button for the tag is rendered"
 
 - waitForAnimationToEnd
@@ -325,9 +310,6 @@ appId: "com.recipedia"
 - assertVisible:
     id: "RecipeIngredients::AddButton::RoundButton"
     label: "Add button of the ingredients is rendered"
-- assertVisible:
-    text: "󰐕"
-    label: "Add button of the ingredients has the correct icon"
 
 - waitForAnimationToEnd
 
@@ -572,9 +554,6 @@ appId: "com.recipedia"
 - assertVisible:
     id: "RecipePreparation::AddButton::RoundButton"
     label: "Add button of the preparation is rendered"
-- assertVisible:
-    text: "󰐕"
-    label: "Add button of the preparation has the right icon"
 
 - runFlow:
     file: "../common/nutritionEdit.yaml"

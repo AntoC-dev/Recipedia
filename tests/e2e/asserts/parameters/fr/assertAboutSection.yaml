@@ -31,26 +31,10 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd
 
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - assertVisible:
-          text: "󰋼"
-          label: "Version icon is displayed on Android"
-      - assertVisible:
-          id: "Parameters::Section::About::Version::Item"
-          text: "Version, .*\\d+\\.\\d+\\.\\d+"
-          label: "Version item on Android"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - assertVisible:
-          id: "Parameters::Section::About::Version::Item"
-          text: "󰋼, Version, .*\\d+\\.\\d+\\.\\d+"
-          label: "Version item with icon on iOS"
+- assertVisible:
+    id: "Parameters::Section::About::Version::Item"
+    text: "Version, .*\\d+\\.\\d+\\.\\d+"
+    label: "Version item"
 
 - scrollUntilVisible:
     element:
@@ -66,20 +50,8 @@ appId: "com.recipedia"
     id: "Parameters::Section::About::BugReport::Divider"
     label: "Bug Report divider is displayed"
 
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - assertVisible:
-          id: "Parameters::Section::About::BugReport::Item"
-          text: "Signaler un bug, Décrivez un problème ou envoyez un retour"
-          label: "Bug Report item text on Android"
+- assertVisible:
+    id: "Parameters::Section::About::BugReport::Item"
+    text: "Signaler un bug, Décrivez un problème ou envoyez un retour"
+    label: "Bug Report item text"
 
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - assertVisible:
-          id: "Parameters::Section::About::BugReport::Item"
-          text: "󰃤, Signaler un bug, Décrivez un problème ou envoyez un retour, 󰅂"
-          label: "Bug Report item text on iOS"

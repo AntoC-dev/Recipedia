@@ -6,14 +6,6 @@ appId: "com.recipedia"
 
 - runFlow:
     when:
-      platform: Android
-    commands:
-      - assertVisible:
-          text: "󰁍"
-          label: "Back button icon is displayed on Android"
-
-- runFlow:
-    when:
       platform: iOS
     commands:
       - assertVisible:

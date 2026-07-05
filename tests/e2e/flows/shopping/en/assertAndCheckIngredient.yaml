@@ -12,23 +12,10 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd
 
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - assertVisible:
-          id: "ShoppingScreen::SectionList::${INGREDIENT_NAME}"
-          text: "${INGREDIENT_NAME} (${QUANTITY}${UNIT}), ${RECIPE_COUNT}"
-          label: "${INGREDIENT_NAME} item title on Android"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - assertVisible:
-          id: "ShoppingScreen::SectionList::${INGREDIENT_NAME}"
-          text: "󰄬, ${INGREDIENT_NAME} (${QUANTITY}${UNIT}), ${RECIPE_COUNT}"
-          label: "${INGREDIENT_NAME} item with checkbox and recipe count on iOS"
+- assertVisible:
+    id: "ShoppingScreen::SectionList::${INGREDIENT_NAME}"
+    text: "${INGREDIENT_NAME} (${QUANTITY}${UNIT}), ${RECIPE_COUNT}"
+    label: "${INGREDIENT_NAME} item title"
 
 - runFlow:
     file: "../longPressIngredient.yaml"

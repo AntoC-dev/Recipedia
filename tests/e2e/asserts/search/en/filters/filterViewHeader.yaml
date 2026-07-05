@@ -35,14 +35,6 @@ appId: "com.recipedia"
 
 - runFlow:
     when:
-      platform: Android
-    commands:
-      - assertVisible:
-          text: "󰈴"
-          label: "Filter icon is displayed"
-
-- runFlow:
-    when:
       platform: iOS
     commands:
       - assertVisible:

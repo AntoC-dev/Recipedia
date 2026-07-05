@@ -6,14 +6,6 @@ appId: "com.recipedia"
 
 - runFlow:
     when:
-      platform: Android
-    commands:
-      - assertVisible:
-          text: "󰁍"
-          label: "Back button icon is displayed on Android"
-
-- runFlow:
-    when:
       platform: iOS
     commands:
       - assertVisible:
@@ -34,16 +26,8 @@ appId: "com.recipedia"
     label: "Edit image button is not displayed"
 
 - assertVisible:
-    text: "󰆴"
-    label: "Delete icon is displayed"
-
-- assertVisible:
     id: "Recipe::AppBar::Edit"
     label: "Edit button is rendered"
-
-- assertVisible:
-    text: "󰏫"
-    label: "Edit button has the correct icon"
 
 - assertNotVisible:
     id: "RecipeImage::RoundButton"

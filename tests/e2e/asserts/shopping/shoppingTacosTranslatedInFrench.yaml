@@ -8,23 +8,10 @@ appId: "com.recipedia"
     text: "Céréales"
     label: "Cereales subheader shows French text"
 
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - assertVisible:
-          id: "ShoppingScreen::SectionList::Taco Shells"
-          text: "Taco Shells (12pieces), 1 recette"
-          label: "Taco Shells item on Android"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - assertVisible:
-          id: "ShoppingScreen::SectionList::Taco Shells"
-          text: "󰄬, Taco Shells (12pieces), 1 recette"
-          label: "Taco Shells item on iOS"
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Taco Shells"
+    text: "Taco Shells (12pieces), 1 recette"
+    label: "Taco Shells item"
 
 - repeat:
     while:

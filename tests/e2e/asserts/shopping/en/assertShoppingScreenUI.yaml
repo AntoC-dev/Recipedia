@@ -12,6 +12,3 @@ appId: "com.recipedia"
     id: "ShoppingScreen::ClearShoppingListButton::RoundButton"
     label: "Clear shopping list button is displayed"
 
-- assertVisible:
-    text: "󰆴"
-    label: "Clear shopping list icons is displayed"

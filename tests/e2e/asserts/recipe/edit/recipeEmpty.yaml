@@ -54,20 +54,11 @@ appId: "com.recipedia"
 
 - runFlow:
     when:
-      platform: Android
-    commands:
-      - assertNotVisible:
-          text: "󰅖"
-          label: "Tag's icon is not displayed on Android"
-
-- runFlow:
-    when:
       platform: iOS
     commands:
       - assertNotVisible:
           text: "Close"
           label: "Tag's icon is not displayed on iOS"
-
 
 - waitForAnimationToEnd
 

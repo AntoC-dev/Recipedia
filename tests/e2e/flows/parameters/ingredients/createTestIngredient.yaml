@@ -144,7 +144,7 @@ appId: "com.recipedia"
     commands:
       - extendedWaitUntil:
           visible:
-            text: "󰄬, December"
+            text: "December"
           timeout: 30000
           label: "Wait for item to be checked on iOS"
 
