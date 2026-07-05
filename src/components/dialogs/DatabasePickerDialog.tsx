@@ -111,6 +111,7 @@ export function DatabasePickerDialog<T extends { name: string }>({
           />
           <View style={styles.searchResults}>
             <FlashList
+              keyboardDismissMode='on-drag'
               data={filteredItems}
               keyExtractor={(item, index) => `${item.name}-${index}`}
               renderItem={({ item, index }) => (

@@ -1,5 +1,6 @@
 import React from 'react';
 import { act, fireEvent, render } from '@testing-library/react-native';
+import { expectKeyboardDismissesOnDrag } from '@test-helpers/expectKeyboardDismissesOnDrag';
 import { ItemDialog, ItemDialogProps } from '@components/dialogs/ItemDialog';
 import {
   FormIngredientElement,
@@ -1810,5 +1811,23 @@ describe('ItemDialog Component', () => {
 
       expect(getByTestId('TagDialog::AddModal::Name::error').props.children).toBe('true');
     });
+  });
+
+  test('form dismisses the keyboard on drag', () => {
+    const props: ItemDialogProps = {
+      testId: 'IngredientDialog',
+      mode: 'add',
+      isVisible: true,
+      onClose: mockOnClose,
+      item: {
+        type: 'Ingredient',
+        value: mockIngredient,
+        onConfirmIngredient: mockOnConfirmIngredient,
+      },
+    };
+
+    const { UNSAFE_getAllByType } = render(<ItemDialog {...props} />);
+    const { ScrollView } = require('react-native');
+    expectKeyboardDismissesOnDrag(UNSAFE_getAllByType, ScrollView);
   });
 });

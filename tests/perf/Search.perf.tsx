@@ -10,6 +10,7 @@ import { performanceTags } from '@assets/datasets/performance/tags';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { SeasonFilterProvider } from '@context/SeasonFilterContext';
+import { HEAVY_WARMUP } from './perfOptions';
 
 jest.mock('@react-navigation/native', () =>
   require('@mocks/deps/react-navigation-mock').reactNavigationMock()
@@ -57,7 +58,7 @@ describe('Search Screen Performance', () => {
   });
 
   test('initial render with 1200 recipes', async () => {
-    await measureRenders(<SearchWrapper />, { runs: 10 });
+    await measureRenders(<SearchWrapper />, { runs: 10, ...HEAVY_WARMUP });
   });
 
   test('re-render after search text change', async () => {
@@ -76,7 +77,7 @@ describe('Search Screen Performance', () => {
       fireEvent.changeText(searchBar, '');
     };
 
-    await measureRenders(<SearchWrapper />, { runs: 10, scenario });
+    await measureRenders(<SearchWrapper />, { runs: 10, ...HEAVY_WARMUP, scenario });
   });
 
   test('re-render after adding recipe via hook', async () => {
@@ -119,7 +120,7 @@ describe('Search Screen Performance', () => {
       fireEvent.press(filterToggle);
     };
 
-    await measureRenders(<SearchWrapper />, { runs: 10, scenario });
+    await measureRenders(<SearchWrapper />, { runs: 10, ...HEAVY_WARMUP, scenario });
   });
 
   test('re-render after selecting filter via UI', async () => {
@@ -134,7 +135,7 @@ describe('Search Screen Performance', () => {
       fireEvent.press(firstItem);
     };
 
-    await measureRenders(<SearchWrapper />, { runs: 10, scenario });
+    await measureRenders(<SearchWrapper />, { runs: 10, ...HEAVY_WARMUP, scenario });
   });
 
   test('re-render after removing filter via UI', async () => {
@@ -150,7 +151,7 @@ describe('Search Screen Performance', () => {
       fireEvent.press(firstItem);
     };
 
-    await measureRenders(<SearchWrapper />, { runs: 10, scenario });
+    await measureRenders(<SearchWrapper />, { runs: 10, ...HEAVY_WARMUP, scenario });
   });
 
   test('re-render with combined search and filter', async () => {
@@ -167,7 +168,7 @@ describe('Search Screen Performance', () => {
       fireEvent.press(firstItem);
     };
 
-    await measureRenders(<SearchWrapper />, { runs: 10, scenario });
+    await measureRenders(<SearchWrapper />, { runs: 10, ...HEAVY_WARMUP, scenario });
   });
 
   test('re-render with long fuzzy search query', async () => {
@@ -178,7 +179,7 @@ describe('Search Screen Performance', () => {
       fireEvent.changeText(searchBar, 'chicken with vege');
     };
 
-    await measureRenders(<SearchWrapper />, { runs: 10, scenario });
+    await measureRenders(<SearchWrapper />, { runs: 10, ...HEAVY_WARMUP, scenario });
   });
 
   test('re-render with multiple filters from different categories', async () => {
@@ -201,7 +202,7 @@ describe('Search Screen Performance', () => {
       fireEvent.press(secondItem);
     };
 
-    await measureRenders(<SearchWrapper />, { runs: 10, scenario });
+    await measureRenders(<SearchWrapper />, { runs: 10, ...HEAVY_WARMUP, scenario });
   });
 
   test('re-render after rapid search text changes', async () => {
@@ -214,7 +215,7 @@ describe('Search Screen Performance', () => {
       fireEvent.changeText(searchBar, 'abcde');
     };
 
-    await measureRenders(<SearchWrapper />, { runs: 10, scenario });
+    await measureRenders(<SearchWrapper />, { runs: 10, ...HEAVY_WARMUP, scenario });
   });
 });
 
@@ -262,7 +263,7 @@ describe('Search Screen Performance - Large Dataset', () => {
       fireEvent.changeText(searchBar, 'large');
     };
 
-    await measureRenders(<SearchWrapper />, { runs: 5, scenario });
+    await measureRenders(<SearchWrapper />, { runs: 5, ...HEAVY_WARMUP, scenario });
   });
 
   test('re-render after adding recipe with 1000 recipes', async () => {

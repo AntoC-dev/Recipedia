@@ -45,6 +45,8 @@ appId: "com.recipedia"
       id: "SearchScreen::RecipeCards::3::Cover"
     direction: DOWN
     speed: 5
+    visibilityPercentage: 40
+    centerElement: true
     label: "Scroll to third recipe card cover"
 
 - waitForAnimationToEnd
@@ -129,6 +131,8 @@ appId: "com.recipedia"
       id: "SearchScreen::RecipeCards::5::Cover"
     direction: DOWN
     speed: 5
+    visibilityPercentage: 40
+    centerElement: true
     label: "Scroll to fifth recipe card cover"
 
 - waitForAnimationToEnd
@@ -215,6 +219,8 @@ appId: "com.recipedia"
       id: "SearchScreen::RecipeCards::7::Cover"
     direction: DOWN
     speed: 5
+    visibilityPercentage: 40
+    centerElement: true
     label: "Scroll to sixth recipe card cover"
 
 - waitForAnimationToEnd
@@ -299,6 +305,8 @@ appId: "com.recipedia"
       id: "SearchScreen::RecipeCards::9::Cover"
     direction: DOWN
     speed: 5
+    visibilityPercentage: 40
+    centerElement: true
     label: "Scroll to ninth recipe card cover"
 
 - waitForAnimationToEnd

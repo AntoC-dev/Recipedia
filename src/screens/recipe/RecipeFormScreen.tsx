@@ -507,6 +507,7 @@ function RecipeFormBody({
           style={{ flex: 1, backgroundColor: colors.background }}
           contentContainerStyle={{ paddingBottom: BUTTON_CONTAINER_HEIGHT + insets.bottom }}
           keyboardShouldPersistTaps={'handled'}
+          keyboardDismissMode='on-drag'
           nestedScrollEnabled={true}
           onScrollBeginDrag={() => setIsScrolling(true)}
           onScrollEndDrag={() => setIsScrolling(false)}

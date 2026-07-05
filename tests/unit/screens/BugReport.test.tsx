@@ -1,5 +1,6 @@
 import React from 'react';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
+import { expectKeyboardDismissesOnDrag } from '@test-helpers/expectKeyboardDismissesOnDrag';
 import { BugReport } from '@screens/BugReport';
 import { mockGoBack } from '@mocks/deps/react-navigation-mock';
 
@@ -336,5 +337,11 @@ describe('BugReport Screen', () => {
         'file:///second.jpg',
       ]);
     });
+  });
+
+  test('form dismisses the keyboard on drag', () => {
+    const { UNSAFE_getAllByType } = renderBugReport();
+    const { ScrollView } = require('react-native');
+    expectKeyboardDismissesOnDrag(UNSAFE_getAllByType, ScrollView);
   });
 });

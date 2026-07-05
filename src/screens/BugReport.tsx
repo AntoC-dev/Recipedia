@@ -118,7 +118,7 @@ export function BugReport() {
     <ScreenWrapper>
       <AppBar title={t('bugReport.title')} onGoBack={goBack} testID={screenTestId + '::Bar'} />
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView keyboardDismissMode='on-drag' contentContainerStyle={styles.scrollContent}>
         <Controller
           control={control}
           name='description'
