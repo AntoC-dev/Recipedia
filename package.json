@@ -113,7 +113,7 @@
     "react": "19.2.0",
     "react-compiler-runtime": "1.0.0",
     "react-dom": "19.2.0",
-    "react-hook-form": "7.75.0",
+    "react-hook-form": "7.81.0",
     "react-i18next": "^15.5.1",
     "react-native": "0.83.2",
     "react-native-copilot": "3.3.3",
