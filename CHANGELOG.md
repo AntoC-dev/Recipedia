@@ -1,3 +1,15 @@
+## [2.40.0](https://github.com/AntoC-dev/Recipedia/compare/v2.39.2...v2.40.0) (2026-07-06)
+
+### Features
+
+* **hooks:** add useResetOnChange and usePulseOpacity ([ad27b10](https://github.com/AntoC-dev/Recipedia/commit/ad27b10ed53777a82444197e15c3e442d93587c0))
+
+### Bug Fixes
+
+* **search:** collapse search bar on blur instead of submit ([cfa579a](https://github.com/AntoC-dev/Recipedia/commit/cfa579a9c71b2fa0b1148191b7bf45e0b8bec584))
+* **search:** validate search on submit, not blur ([4189e01](https://github.com/AntoC-dev/Recipedia/commit/4189e012cd94670180bb96652a80d1d924b9e28b))
+* **ui:** bump react-native-paper to 5.15.3 for RN 0.85 portals ([ec4ef25](https://github.com/AntoC-dev/Recipedia/commit/ec4ef2509505f70467fc62d483eb145bdf9991f7))
+
 ## [2.39.2](https://github.com/AntoC-dev/Recipedia/compare/v2.39.1...v2.39.2) (2026-07-05)
 
 ### Bug Fixes
