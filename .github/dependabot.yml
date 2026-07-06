@@ -1,9 +1,13 @@
 version: 2
 updates:
   # npm dependencies. Expo SDK pins the React Native / React / Expo / Babel /
-  # Metro toolchain — those are bumped via `expo install` / SDK upgrades, never
-  # by Dependabot. Dependabot only handles standalone JS libs and dev tooling,
-  # minor + patch only. Major bumps are a deliberate human action.
+  # Metro toolchain. Standalone JS libs and dev tooling: minor + patch only,
+  # major bumps are a deliberate human action. The Expo-SDK-managed family
+  # (expo*, react-native*, react, jest-expo, eslint-config-expo) is restricted
+  # to PATCH-only: Expo republishes these patches within an SDK on a weekly
+  # cadence, and a stale lockfile makes `expo-doctor` fail CI. Patch PRs keep
+  # the lockfile fresh; minor/major on that family = an SDK upgrade, done by
+  # hand via `expo install` — never by Dependabot.
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
@@ -47,13 +51,26 @@ updates:
         patterns:
           - "@commitlint/*"
     ignore:
-      # Expo / React Native / React — managed by Expo SDK, bump via `expo install`
+      # Expo-SDK-managed family — allow PATCH only (keeps lockfile fresh so
+      # expo-doctor stays green); block minor/major (= SDK upgrade, done via
+      # `expo install` by hand).
       - dependency-name: "expo*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "@expo*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "react-native*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "@react-native*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "react"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "jest-expo"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "eslint-config-expo"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      # Toolchain pins — fully ignored (bumped only alongside an SDK upgrade).
       - dependency-name: "react-compiler-runtime"
       - dependency-name: "babel-plugin-react-compiler"
       - dependency-name: "eslint-plugin-react-compiler"
@@ -61,9 +78,6 @@ updates:
       - dependency-name: "@react-navigation/*"
       - dependency-name: "@testing-library/react-native"
       - dependency-name: "@shopify/flash-list"
-      # Expo-SDK-versioned, not matched by the wildcards above
-      - dependency-name: "jest-expo"
-      - dependency-name: "eslint-config-expo"
       # Babel / Metro — pinned by babel-preset-expo / jest-expo / metro
       - dependency-name: "@babel/*"
       - dependency-name: "babel-*"
