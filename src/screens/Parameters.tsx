@@ -140,35 +140,33 @@ export function Parameters() {
    * Renders the recipe defaults section with default persons and season filter settings.
    * Has direct access to parent component's state and handlers for cleaner implementation.
    */
-  function RecipeDefaultsSection() {
-    return (
-      <List.Section>
-        <List.Subheader testID={recipeId + '::SubHeader'}>{t('recipe_defaults')}</List.Subheader>
-        <List.Item
-          testID={personsId + '::Item'}
-          title={t('default_persons')}
-          description={`${defaultPersons} ${t('persons')}`}
-          left={props => <List.Icon {...props} icon={Icons.groupPeople} />}
-          right={props => <List.Icon {...props} icon={Icons.chevronRight} />}
-          onPress={handlePersonsPress}
-        />
-        <Divider testID={recipeId + '::Divider'} />
-        <List.Item
-          testID={seasonId + '::Item'}
-          title={t('default_season_filter')}
-          accessible={false}
-          left={props => <List.Icon {...props} icon={Icons.plannerUnselectedIcon} />}
-          right={() => (
-            <Switch
-              testID={seasonId + '::Switch'}
-              value={seasonFilter}
-              onValueChange={setSeasonFilter}
-            />
-          )}
-        />
-      </List.Section>
-    );
-  }
+  const recipeDefaultsSection = (
+    <List.Section>
+      <List.Subheader testID={recipeId + '::SubHeader'}>{t('recipe_defaults')}</List.Subheader>
+      <List.Item
+        testID={personsId + '::Item'}
+        title={t('default_persons')}
+        description={`${defaultPersons} ${t('persons')}`}
+        left={props => <List.Icon {...props} icon={Icons.groupPeople} />}
+        right={props => <List.Icon {...props} icon={Icons.chevronRight} />}
+        onPress={handlePersonsPress}
+      />
+      <Divider testID={recipeId + '::Divider'} />
+      <List.Item
+        testID={seasonId + '::Item'}
+        title={t('default_season_filter')}
+        accessible={false}
+        left={props => <List.Icon {...props} icon={Icons.plannerUnselectedIcon} />}
+        right={() => (
+          <Switch
+            testID={seasonId + '::Switch'}
+            value={seasonFilter}
+            onValueChange={setSeasonFilter}
+          />
+        )}
+      />
+    </List.Section>
+  );
 
   return (
     <ScreenWrapper edges={['top', 'left', 'right']}>
@@ -207,12 +205,10 @@ export function Parameters() {
             order={TUTORIAL_STEPS.Parameters.order}
             name={TUTORIAL_STEPS.Parameters.name}
           >
-            <CopilotView testID={screenId + '::Tutorial'}>
-              <RecipeDefaultsSection />
-            </CopilotView>
+            <CopilotView testID={screenId + '::Tutorial'}>{recipeDefaultsSection}</CopilotView>
           </CopilotStep>
         ) : (
-          <RecipeDefaultsSection />
+          recipeDefaultsSection
         )}
 
         {/* Data Management Section */}

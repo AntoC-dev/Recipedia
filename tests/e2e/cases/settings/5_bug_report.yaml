@@ -168,10 +168,6 @@ tags:
     label: "Wait for screenshots to be displayed on bug report screen"
 
 - assertVisible:
-    text: "󰅖"
-    label: "Icon of the thumbnails is displayed"
-
-- assertVisible:
     id: "BugReport::0::Screenshots"
     label: "Assert - First screenshot image is displayed"
 

@@ -71,15 +71,6 @@ export default ({config}: ConfigContext): ExpoConfig => {
         orientation: "portrait",
         icon: "./src/assets/app/icon.png",
         userInterfaceStyle: "automatic",
-        splash: {
-            image: './src/assets/app/splash_light.png',
-            resizeMode: 'cover',
-            backgroundColor: primaryColorLight,
-            dark: {
-                image: './src/assets/app/splash_dark.png',
-                backgroundColor: primaryColorDark,
-            },
-        },
         ios: {
             supportsTablet: true,
             bundleIdentifier: iosAppId,
@@ -100,6 +91,18 @@ export default ({config}: ConfigContext): ExpoConfig => {
             permissions: ['android.permission.CAMERA'],
         },
         plugins: [
+            [
+                'expo-splash-screen',
+                {
+                    image: './src/assets/app/splash_light.png',
+                    resizeMode: 'cover',
+                    backgroundColor: primaryColorLight,
+                    dark: {
+                        image: './src/assets/app/splash_dark.png',
+                        backgroundColor: primaryColorDark,
+                    },
+                },
+            ],
             'expo-image',
             'expo-localization',
             'expo-sqlite',

@@ -46,6 +46,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { useResetOnChange } from '@hooks/useResetOnChange';
 import { FlatList, View } from 'react-native';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { Button, Card, Dialog, IconButton, Portal, Text, useTheme } from 'react-native-paper';
@@ -116,7 +117,7 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
     return () => clearTimeout(id);
   }, [isDataLoaded]);
 
-  useEffect(() => {
+  useResetOnChange([scraperInitError], () => {
     if (scraperInitError) {
       setInitErrors(prev => {
         const msg = t('welcome.pyodideError');
@@ -124,7 +125,7 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
         return [...prev, msg];
       });
     }
-  }, [scraperInitError, t]);
+  });
 
   useEffect(() => {
     if (canProceed && pendingAction) {
@@ -143,6 +144,10 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
         );
         onSkip();
       }
+      // Clears the one-shot trigger after performing the deferred navigation.
+      // This must run in an effect: the action waits on `canProceed` becoming
+      // true and fires imperative navigation, which cannot happen during render.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPendingAction(null);
     }
   }, [canProceed, datasetFailed, pendingAction, onStartTutorial, onSkip]);

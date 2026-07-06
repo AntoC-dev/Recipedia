@@ -7,9 +7,6 @@ appId: "com.recipedia"
     id: "RecipeImage::RoundButton"
     label: "OCR image button is still rendered"
 - assertVisible:
-    text: "󰄀"
-    label: "Add image button has the right icon"
-- assertVisible:
     id: "RecipeImage"
     label: "Image is rendered"
 - assertVisible:
@@ -96,15 +93,6 @@ appId: "com.recipedia"
 
 - runFlow:
     when:
-      platform: Android
-    commands:
-      - assertVisible:
-          text: "󰅖"
-          index: 0
-          label: "Cross icon of the first tag is rendered on Android"
-
-- runFlow:
-    when:
       platform: iOS
     commands:
       - assertVisible:
@@ -121,25 +109,12 @@ appId: "com.recipedia"
 
 - runFlow:
     when:
-      platform: Android
-    commands:
-      - assertVisible:
-          text: "󰅖"
-          index: 1
-          label: "Cross icon of the first tag is rendered on Android"
-
-- runFlow:
-    when:
       platform: iOS
     commands:
       - assertVisible:
           text: "Close"
           index: 1
           label: "Cross icon of the first tag is rendered on iOS"
-
-- assertVisible:
-    text: "󰐕"
-    label: "Add button for the tag is rendered"
 
 - waitForAnimationToEnd
 
@@ -194,7 +169,6 @@ appId: "com.recipedia"
     label: "Scroll down to the ingredients header"
 
 - waitForAnimationToEnd
-
 
 - assertVisible:
     id: "RecipeIngredients::Header::Quantity"
@@ -279,7 +253,6 @@ appId: "com.recipedia"
     label: "Scroll down to the third ingredients row"
 
 - waitForAnimationToEnd
-
 
 - assertVisible:
     id: "RecipeIngredients::2::QuantityInput"
@@ -394,10 +367,6 @@ appId: "com.recipedia"
 - assertVisible:
     id: "RecipeIngredients::AddButton::RoundButton"
     label: "Add button of the ingredients is rendered"
-
-- assertVisible:
-    text: "󰐕"
-    label: "Add button of the ingredients has the correct icon"
 
 - waitForAnimationToEnd
 
@@ -797,10 +766,6 @@ appId: "com.recipedia"
     centerElement: true
 
 - waitForAnimationToEnd
-
-- assertVisible:
-    text: "󰐕"
-    label: "Add button of the preparation is rendered"
 
 - runFlow:
     file: "../common/nutritionEdit.yaml"

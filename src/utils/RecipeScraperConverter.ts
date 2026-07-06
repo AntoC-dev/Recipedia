@@ -62,8 +62,7 @@ function stripHtml(text: string): string {
 }
 
 export type ParsedIngredient =
-  | { success: true; ingredient: FormIngredientElement }
-  | { success: false; original: string };
+  { success: true; ingredient: FormIngredientElement } | { success: false; original: string };
 
 export type ConvertedIngredients = {
   ingredients: FormIngredientElement[];

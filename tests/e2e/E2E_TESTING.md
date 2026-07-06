@@ -289,23 +289,23 @@ easy to locate in tests.
 
 ```yaml
 # Screen-level elements
-id: "SearchScreen::SearchBar"
-id: "SearchScreen::RecipeCards::1"
-id: "BottomTabs::Home"
+id: 'SearchScreen::SearchBar'
+id: 'SearchScreen::RecipeCards::1'
+id: 'BottomTabs::Home'
 
 # Component-level elements
-id: "RecipeTitle::Text"
-id: "RecipeTitle::CustomTextInput"
-id: "RecipeTitle::OpenModal::RoundButton"
+id: 'RecipeTitle::Text'
+id: 'RecipeTitle::CustomTextInput'
+id: 'RecipeTitle::OpenModal::RoundButton'
 
 # Indexed elements (for lists)
-id: "RecipeIngredients::0::QuantityInput::NumericTextInput"
-id: "Modal::List#2::SquareButton::Image"
+id: 'RecipeIngredients::0::QuantityInput::NumericTextInput'
+id: 'Modal::List#2::SquareButton::Image'
 
 # Button types
-id: "BackButton::RoundButton"
-id: "ExpandButton::RoundButton"
-id: "RecipeValidate-text"  # Text button
+id: 'BackButton::RoundButton'
+id: 'ExpandButton::RoundButton'
+id: 'RecipeValidate-text' # Text button
 ```
 
 ### TestID Best Practices
@@ -1245,8 +1245,22 @@ dismiss the keyboard:
 For multiline inputs, `pressKey: enter` adds a newline character instead of
 dismissing the keyboard, so we tap on section headers to dismiss safely.
 
-**Exception 3 - SearchBar**: For the SearchBar component, use `hideKeyboard`
-instead of `pressKey: enter`:
+**Exception 3 - SearchBar**: While the search bar is focused
+(`searchBarClicked === true`), the recipe grid (`SearchScreen::RecipeCards::*`)
+is **empty** and replaced by the suggestion dropdown
+(`SearchScreen::SearchBarResults::Item::<N>`). The grid only renders once the
+dropdown is closed via `onSubmitEditing` (native keyboard submit). Never rely on
+`pressKey: enter` to close it — on Android, Maestro's `pressKey: enter` does not
+reliably trigger Paper Searchbar's IME action, so `onSubmitEditing` never fires,
+the dropdown stays open, the grid stays empty, and any subsequent
+`SearchScreen::RecipeCards::*` assertion times out (this was the root cause of
+intermittent CI failures across recipe-create/ingredients-db/search suites).
+Close the dropdown deterministically instead, picking one of two patterns
+depending on intent:
+
+**Pattern A — open/act on one specific recipe** (the top suggestion IS that
+recipe): tap the suggestion directly. Works on both platforms, no platform split
+needed:
 
 ```yaml
 # Type in SearchBar
@@ -1258,14 +1272,58 @@ instead of `pressKey: enter`:
     text: 'E2E'
     label: 'Enter search text'
 
-# Dismiss keyboard WITHOUT submitting search
-- hideKeyboard:
-    label: 'Dismiss keyboard'
+- waitForAnimationToEnd:
+    label: 'Wait for keyboard animation'
+
+# Select the top suggestion: closes the dropdown, dismisses the keyboard,
+# and sets the filter to that suggestion's full title
+- tapOn:
+    id: 'SearchScreen::SearchBarResults::Item::0'
+    label: 'Select top suggestion to close dropdown and reveal grid'
 ```
 
-Using `pressKey: enter` on SearchBar validates/submits the search text instead
-of just dismissing the keyboard. `hideKeyboard` works correctly for SearchBar on
-both platforms.
+Note that this **replaces the typed text with the suggestion's full title**
+(e.g. typing `"Lentil"` then tapping `Item::0` sets the filter to
+`"Lentil Soup"`). That's fine when the test only cares about landing on one
+known recipe, but wrong whenever the raw typed string must remain the filter.
+
+**Pattern B — commit exactly the text the user typed** (the grid must show every
+recipe matching the raw string, not narrow to one suggestion, or the suggestion
+list may be empty/unpredictable — e.g. verifying a title was _not_ added): close
+the dropdown without touching the filter, via the shared
+`flows/search/commitTypedSearch.yaml` flow (same sharing pattern as
+`waitForKeyboardDismiss.yaml`) instead of inlining the platform split in every
+caller:
+
+```yaml
+- inputText:
+    text: 'Ca'
+    label: 'Enter search text'
+
+- waitForAnimationToEnd:
+    label: 'Wait for keyboard animation'
+
+- runFlow:
+    file: 'flows/search/commitTypedSearch.yaml' # adjust relative path per caller depth
+    label: 'Commit typed search, keep filter'
+```
+
+`commitTypedSearch.yaml` contains the platform split, and on both platforms it
+taps the keyboard's action key so the app's `onSubmitEditing` fires — closing
+the dropdown and keeping the typed filter (does not select a suggestion, does
+not clear text). On Android, tap the soft-keyboard action button by resource-id
+(`tapOn: { id: "key_pos_ime_action" }`); on iOS, tap the keyboard Search key
+(`tapOn: { id: "Search" }`). This replaces the flaky `pressKey: enter` /
+`pressKey: back` — neither reliably triggered the IME action on Android (with
+`pressKey: back` the first press was consumed by the IME and never reached the
+app). Do **not** substitute `hideKeyboard` here: dismissing the keyboard alone
+does not close the dropdown (there is no `onBlur`; the dropdown must stay open
+so the user can scroll it and pick a suggestion).
+
+Use Pattern A when the flow taps a card or asserts on a single recipe right
+after; use Pattern B when the flow later inspects a filter chip showing the raw
+typed text, expects multiple matching cards, or expects the dropdown/grid to end
+up empty. When unsure, prefer Pattern B — it never changes the search term.
 
 **Important**: If you tap on SearchBar **without entering text** (to open the
 dropdown without typing), the keyboard doesn't appear on iOS. In this case, use
@@ -1306,11 +1364,17 @@ This provides consistent cross-platform behavior for closing the dropdown:
     label: 'Close dropdown'
 ```
 
-The icon replaces platform-specific approaches:
+The icon replaces platform-specific approaches for **clearing** the search bar
+entirely:
 
 - ❌ OLD: `pressKey: "BACK"` (Android only)
 - ❌ OLD: `tapOn: point: "50%,95%"` (fragile coordinates on iOS)
 - ✅ NEW: Tap close icon (works on both platforms)
+
+Don't confuse this with Pattern B above: the RightIcon clears the text and
+closes the dropdown, while Pattern B's keyboard action key closes the dropdown
+but **keeps** the typed filter. Pick RightIcon when the test wants to reset the
+search, Pattern B when it wants to keep browsing with the current filter.
 
 ### List Item Selection Pattern
 
@@ -1463,10 +1527,10 @@ the wrapper as well so values are available at the retry level.
 # And target is: flows/feature/flow.yaml
 
 # Wrong:
-file: "flows/feature/flow.yaml"  # Absolute path doesn't work
+file: 'flows/feature/flow.yaml' # Absolute path doesn't work
 
 # Correct:
-file: "../../flows/feature/flow.yaml"  # Relative from current location
+file: '../../flows/feature/flow.yaml' # Relative from current location
 ```
 
 #### Issue: OCR test shows wrong recipe data
@@ -1604,9 +1668,39 @@ automatically — see the [CI Retry Mechanism](#ci-retry-mechanism) section.
 
 ---
 
-**Last Updated**: 2026-04-13
+**Last Updated**: 2026-07-05
 
 **Key Changes**:
+
+- **Android search-commit via keyboard action key (replaces `pressKey: back`)**:
+  The earlier `pressKey: back` Android branch of `commitTypedSearch.yaml` still
+  failed in CI (run 28719307433, search/ingredients-db/duplicates-recipe/
+  web-edge-cases suites): when the soft keyboard is open, Android's first back
+  press is consumed by the IME and never reaches the JS `hardwareBackPress`
+  listener, so `searchBarClicked` stayed `true` and the dropdown never closed.
+  Fixed (E2E-only, no app change) by tapping the Android soft-keyboard action
+  button directly — `tapOn: { id: "key_pos_ime_action" }` — which fires the
+  app's `onSubmitEditing`, closing the dropdown and keeping the typed filter.
+  This is the Android analog of the iOS `tapOn: { id: "Search" }` key.
+  `hideKeyboard` is not used: it would only dismiss the keyboard, not close the
+  dropdown (the dropdown must stay open for scroll-and-pick).
+
+- **SearchBar dropdown dismissal (no more `pressKey: enter`)**: While the search
+  bar is focused, the recipe grid is empty and the suggestion dropdown covers
+  it; the grid only renders once the dropdown closes via `onSubmitEditing` or
+  hardware back. On Android, Maestro's `pressKey: enter` does not reliably
+  trigger Paper Searchbar's IME submit, leaving the dropdown open and the grid
+  empty — the confirmed root cause of intermittent
+  `SearchScreen::RecipeCards::*` timeouts across recipe-create, ingredients-db,
+  and search suites (CI run 28471911471). Replaced with two deterministic
+  patterns: tap `SearchScreen::SearchBarResults::Item::0` to select the top
+  suggestion when opening one specific recipe (this also replaces the typed text
+  with the suggestion's full title), or `pressKey: back` (Android) /
+  `tapOn: { id: "Search" }` (iOS) to close the dropdown while keeping the exact
+  typed filter when the grid must show all matches for the raw text. Updated 15
+  flow and case files. The Pattern B platform split was later extracted into the
+  shared `flows/search/commitTypedSearch.yaml` flow (mirroring
+  `waitForKeyboardDismiss.yaml`) to remove duplication across 8 callers.
 
 - **CI retry mechanism**: Each test case now has a CI wrapper in
   `cases/{feature}/ci/` that wraps the original flow in `retry: maxRetries: 2`.

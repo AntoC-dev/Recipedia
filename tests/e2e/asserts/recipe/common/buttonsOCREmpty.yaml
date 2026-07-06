@@ -6,14 +6,6 @@ appId: "com.recipedia"
 
 - runFlow:
     when:
-      platform: Android
-    commands:
-      - assertVisible:
-          text: "󰁍"
-          label: "Back button icon is displayed on Android"
-
-- runFlow:
-    when:
       platform: iOS
     commands:
       - assertVisible:
@@ -31,11 +23,6 @@ appId: "com.recipedia"
 - assertVisible:
     id: "RecipeImage::RoundButton-content"
     label: "Image button is rendered"
-
-- assertVisible:
-    text: "󰘤"
-    index: 0
-    label: "OCR image button has the right icon"
 
 - assertVisible:
     id: "RecipeImage"

@@ -285,6 +285,7 @@ export const Searchbar: React.FC<any> = props => (
       onChangeText={props.onChangeText}
       value={props.value}
       onFocus={props.onFocus}
+      onBlur={props.onBlur}
       onSubmitEditing={props.onSubmitEditing}
     />
     <RNText testID={props.testID + '::Placeholder'}>{props.placeholder}</RNText>

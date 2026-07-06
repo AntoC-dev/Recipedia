@@ -62,18 +62,8 @@ tags:
     label: "Wait for keyboard animation"
 
 - runFlow:
-    when:
-      platform: Android
-    commands:
-      - pressKey: enter
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn:
-          id: "Search"
-          label: "Tap Search key to validates the search"
+    file: "../../flows/search/commitTypedSearch.yaml"
+    label: "Commit typed search, keep filter"
 
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"

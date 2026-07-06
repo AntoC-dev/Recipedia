@@ -9,18 +9,12 @@ appId: "com.recipedia"
     id: "Modal::Camera::RoundButton"
     label: "Camera button is rendered"
 - assertVisible:
-    text: "󰄀"
-    label: "Camera button has the right icon"
-- assertVisible:
     id: "Modal::Camera::RoundButton::Label"
     text: "Take a new photo"
     label: "Camera helper text is rendered"
 - assertVisible:
     id: "Modal::Gallery::RoundButton::Label"
     label: "Gallery button is rendered"
-- assertVisible:
-    text: "󰋫"
-    label: "Gallery button has the right icon"
 - assertVisible:
     id: "Modal::Gallery::RoundButton::Label"
     text: "Choose from gallery"

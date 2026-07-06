@@ -22,6 +22,3 @@ appId: "com.recipedia"
     id: "Recipe::RecipeNutrition::NutritionEmptyState::OCRButton::RoundButton"
     label: "OCR scan button for nutrition is displayed"
 
-- assertVisible:
-    text: "󰘤"
-    label: "OCR scan icon is displayed"

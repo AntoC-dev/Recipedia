@@ -17,7 +17,8 @@
  * ```
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { useResetOnChange } from '@hooks/useResetOnChange';
 import { StyleSheet, View } from 'react-native';
 import { Button, Dialog, Portal, Text } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
@@ -61,12 +62,9 @@ export function NoteEditDialog({
 }: NoteEditDialogProps) {
   const { t } = useI18n();
   const [note, setNote] = useState(initialNote);
-
-  useEffect(() => {
-    if (isVisible) {
-      setNote(initialNote);
-    }
-  }, [isVisible, initialNote]);
+  useResetOnChange([isVisible], () => {
+    if (isVisible) setNote(initialNote);
+  });
 
   const handleDismiss = () => {
     onClose();

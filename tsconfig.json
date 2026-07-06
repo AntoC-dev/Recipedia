@@ -9,6 +9,7 @@
     "jsx": "react",
     "esModuleInterop": true,
     "resolveJsonModule": true,
+    "ignoreDeprecations": "6.0",
     "baseUrl": "./src/",
     "paths": {
       "@assets/*": [
@@ -62,6 +63,10 @@
       "@providers/*": [
         "providers/*"
       ]
-    }
+    },
+    "types": [
+      "jest",
+      "node"
+    ]
   }
 }

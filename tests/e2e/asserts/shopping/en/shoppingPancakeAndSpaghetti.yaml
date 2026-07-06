@@ -6,25 +6,10 @@ appId: "com.recipedia"
     id: "ShoppingScreen::SectionList::ingredientTypes.baking::SubHeader"
     label: "Baking category header is displayed"
 
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - assertVisible:
-          id: "ShoppingScreen::SectionList::Flour"
-          text: "Flour (200g), 1 recipe"
-          label: "Flour item on Android"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - assertVisible:
-          id: "ShoppingScreen::SectionList::Flour"
-          text: "󰄬, Flour (200g), 1 recipe"
-          label: "Flour item on iOS"
-
-# CEREAL
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Flour"
+    text: "Flour (200g), 1 recipe"
+    label: "Flour item"
 
 - waitForAnimationToEnd
 
@@ -42,27 +27,10 @@ appId: "com.recipedia"
     id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
     label: "Cereal category header is displayed"
 
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - assertVisible:
-          id: "ShoppingScreen::SectionList::Spaghetti"
-          text: "Spaghetti (200g), 1 recipe"
-          label: "Spaghetti item on Android"
-
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - assertVisible:
-          id: "ShoppingScreen::SectionList::Spaghetti"
-          text: "󰄬, Spaghetti (200g), 1 recipe"
-          label: "Spaghetti item on iOS"
-
-
-# CHEESE
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Spaghetti"
+    text: "Spaghetti (200g), 1 recipe"
+    label: "Spaghetti item"
 
 - waitForAnimationToEnd
 
@@ -80,26 +48,10 @@ appId: "com.recipedia"
     id: "ShoppingScreen::SectionList::ingredientTypes.cheese::SubHeader"
     label: "Cheese category header is displayed"
 
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - assertVisible:
-          id: "ShoppingScreen::SectionList::Parmesan"
-          text: "Parmesan (50g), 1 recipe"
-          label: "Parmesan item on Android"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - assertVisible:
-          id: "ShoppingScreen::SectionList::Parmesan"
-          text: "󰄬, Parmesan (50g), 1 recipe"
-          label: "Parmesan item on iOS"
-
-
-# DAIRY
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Parmesan"
+    text: "Parmesan (50g), 1 recipe"
+    label: "Parmesan item"
 
 - waitForAnimationToEnd
 
@@ -117,26 +69,10 @@ appId: "com.recipedia"
     id: "ShoppingScreen::SectionList::ingredientTypes.dairy::SubHeader"
     label: "Dairy category header is displayed"
 
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - assertVisible:
-          id: "ShoppingScreen::SectionList::Milk"
-          text: "Milk (300ml), 1 recipe"
-          label: "Milk item on Android"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - assertVisible:
-          id: "ShoppingScreen::SectionList::Milk"
-          text: "󰄬, Milk (300ml), 1 recipe"
-          label: "Milk item on iOS"
-
-
-# MEAT
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Milk"
+    text: "Milk (300ml), 1 recipe"
+    label: "Milk item"
 
 - waitForAnimationToEnd
 
@@ -154,25 +90,10 @@ appId: "com.recipedia"
     id: "ShoppingScreen::SectionList::ingredientTypes.meat::SubHeader"
     label: "Meat category header is displayed"
 
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - assertVisible:
-          id: "ShoppingScreen::SectionList::Ground Beef"
-          text: "Ground Beef (300g), 1 recipe"
-          label: "Ground Beef item on Android"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - assertVisible:
-          id: "ShoppingScreen::SectionList::Ground Beef"
-          text: "󰄬, Ground Beef (300g), 1 recipe"
-          label: "Ground Beef item on iOS"
-
-# OIL AND FAT
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Ground Beef"
+    text: "Ground Beef (300g), 1 recipe"
+    label: "Ground Beef item"
 
 - waitForAnimationToEnd
 
@@ -190,26 +111,10 @@ appId: "com.recipedia"
     id: "ShoppingScreen::SectionList::ingredientTypes.oilAndFat::SubHeader"
     label: "Oil and Fat category header is displayed"
 
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - assertVisible:
-          id: "ShoppingScreen::SectionList::Butter"
-          text: "Butter (50g), 1 recipe"
-          label: "Butter item on Android"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - assertVisible:
-          id: "ShoppingScreen::SectionList::Butter"
-          text: "󰄬, Butter (50g), 1 recipe"
-          label: "Butter item on iOS"
-
-
-# PLANT PROTEIN
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Butter"
+    text: "Butter (50g), 1 recipe"
+    label: "Butter item"
 
 - waitForAnimationToEnd
 
@@ -227,25 +132,10 @@ appId: "com.recipedia"
     id: "ShoppingScreen::SectionList::ingredientTypes.plantProtein::SubHeader"
     label: "Plant Protein category header is displayed"
 
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - assertVisible:
-          id: "ShoppingScreen::SectionList::Eggs"
-          text: "Eggs (2pieces), 1 recipe"
-          label: "Eggs item on Android"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - assertVisible:
-          id: "ShoppingScreen::SectionList::Eggs"
-          text: "󰄬, Eggs (2pieces), 1 recipe"
-          label: "Eggs item on iOS"
-
-# SAUCE
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Eggs"
+    text: "Eggs (2pieces), 1 recipe"
+    label: "Eggs item"
 
 - waitForAnimationToEnd
 
@@ -263,23 +153,10 @@ appId: "com.recipedia"
     id: "ShoppingScreen::SectionList::ingredientTypes.sauce::SubHeader"
     label: "Sauce category header is displayed"
 
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - assertVisible:
-          id: "ShoppingScreen::SectionList::Tomato Sauce"
-          text: "Tomato Sauce (250ml), 1 recipe"
-          label: "Tomato Sauce item on Android"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - assertVisible:
-          id: "ShoppingScreen::SectionList::Tomato Sauce"
-          text: "󰄬, Tomato Sauce (250ml), 1 recipe"
-          label: "Tomato Sauce item on iOS"
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Tomato Sauce"
+    text: "Tomato Sauce (250ml), 1 recipe"
+    label: "Tomato Sauce item"
 
 - runFlow:
     file: "../../../flows/shopping/scrollToTop.yaml"

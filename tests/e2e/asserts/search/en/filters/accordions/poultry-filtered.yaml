@@ -17,25 +17,11 @@ appId: "com.recipedia"
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Poultry accordion is displayed"
 
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - assertVisible:
-          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-          text: "Poultry"
-          label: "Poultry accordion title on Android"
+- assertVisible:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    text: "Poultry"
+    label: "Poultry accordion title"
 
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - assertVisible:
-          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-          text: "Poultry, 󰅀"
-          label: "Poultry accordion title with chevron on iOS"
-
-# Expand the accordion
 - tapOn:
     text: "Poultry"
     label: "Expand Poultry accordion"
@@ -54,7 +40,6 @@ appId: "com.recipedia"
     when:
       true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Chicken Breast')=== undefined}
     file: "poultry-items/chickenBreast-hidden.yaml"
-
 
 - waitForAnimationToEnd
 

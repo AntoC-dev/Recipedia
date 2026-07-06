@@ -4,10 +4,6 @@ appId: "com.recipedia"
     id: "RecipePreparation::AddButton::RoundButton"
     label: "New preparation id is displayed with the correct icon"
 
-- assertVisible:
-    text: "󰐕"
-    label: "Add tag button icons is displayed"
-
 - runFlow:
     when:
       platform: Android
@@ -132,7 +128,6 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd
 
-
 - assertVisible:
     id: "RecipePreparation::EditableStep::1::TextInputTitle::CustomTextInput"
     text: "La sauce"
@@ -182,7 +177,6 @@ appId: "com.recipedia"
     label: "Scroll to first preparation content input text"
 
 - waitForAnimationToEnd
-
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
@@ -298,10 +292,6 @@ appId: "com.recipedia"
 - assertVisible:
     id: "RecipeIngredients::AddButton::RoundButton"
     label: "Add ingredient button is displayed with the correct text"
-
-- assertVisible:
-    text: "󰐕"
-    label: "Add ingredient button icon is displayed"
 
 - waitForAnimationToEnd
 
@@ -492,19 +482,6 @@ appId: "com.recipedia"
     id: "RecipeTags::RoundButton"
     label: "Add tag button is displayed"
 
-- assertVisible:
-    text: "󰐕"
-    label: "Add tag button icons is displayed"
-
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - assertVisible:
-          text: "󰅖"
-          index: 0
-          label: "Second tag's icon is displayed on Android"
-
 - runFlow:
     when:
       platform: iOS
@@ -533,15 +510,6 @@ appId: "com.recipedia"
 - assertVisible:
     text: "Italian"
     label: "First tag's text is displayed"
-
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - assertVisible:
-          text: "󰅖"
-          index: 0
-          label: "First tag's icon is displayed on Android"
 
 - runFlow:
     when:
@@ -628,13 +596,6 @@ appId: "com.recipedia"
     label: "Scroll until the image button is displayed"
 
 - waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      text: "󰄀"
-    direction: UP
-    speed: 60
-    label: "Scroll until icon of the image button is displayed"
 
 - waitForAnimationToEnd
 

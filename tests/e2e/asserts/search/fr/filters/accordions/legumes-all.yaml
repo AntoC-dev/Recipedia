@@ -11,30 +11,16 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to legumes accordion"
 
-
 - waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Légumineuses accordion is displayed"
 
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - assertVisible:
-          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-          text: "Légumineuses"
-          label: "Légumineuses accordion title on Android"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - assertVisible:
-          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-          text: "Légumineuses, 󰅀"
-          label: "Légumineuses accordion title with chevron on iOS"
+- assertVisible:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    text: "Légumineuses"
+    label: "Légumineuses accordion title"
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"

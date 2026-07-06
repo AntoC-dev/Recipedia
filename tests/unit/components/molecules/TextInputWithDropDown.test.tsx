@@ -13,7 +13,7 @@ const keyboardListeners: { [key: string]: (() => void)[] } = {};
 const mockRemove = jest.fn();
 let keyboardAddListenerSpy: jest.SpyInstance;
 
-const MockNativeMethodsModule = require('react-native/jest/MockNativeMethods');
+const MockNativeMethodsModule = require('@react-native/jest-preset/jest/MockNativeMethods');
 const MockNativeMethods = MockNativeMethodsModule.default || MockNativeMethodsModule;
 MockNativeMethods.measureInWindow.mockImplementation(
   (cb: (x: number, y: number, width: number, height: number) => void) => {

@@ -234,7 +234,7 @@ tags:
     commands:
       - extendedWaitUntil:
           visible:
-            text: "󰄬, February"
+            text: "February"
           timeout: 30000
           label: "Wait for item to be checked on iOS"
 

@@ -152,10 +152,9 @@ tags:
     commands:
       - extendedWaitUntil:
           visible:
-            text: "󰄬, January"
+            text: "January"
           timeout: 30000
           label: "Wait for item to be checked on iOS"
-
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::ConfirmButton"

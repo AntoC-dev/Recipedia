@@ -16,25 +16,11 @@ appId: "com.recipedia"
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Oil and Fat accordion is displayed"
 
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - assertVisible:
-          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-          text: "Oil and Fat"
-          label: "Oil and Fat accordion title on Android"
+- assertVisible:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    text: "Oil and Fat"
+    label: "Oil and Fat accordion title"
 
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - assertVisible:
-          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
-          text: "Oil and Fat, 󰅀"
-          label: "Oil and Fat accordion title with chevron on iOS"
-
-# Expand the accordion
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Expand Oil and Fat accordion"
@@ -65,7 +51,6 @@ appId: "com.recipedia"
     when:
       true: ${VISIBLE_ITEMS.split(',').find(item => item === 'Olive Oil')=== undefined}
     file: "oilAndFat-items/oliveOil-hidden.yaml"
-
 
 - waitForAnimationToEnd
 

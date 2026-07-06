@@ -10,10 +10,11 @@
  * ```
  */
 
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { Animated, ScrollView, StyleSheet, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import { padding, screenWidth } from '@styles/spacing';
+import { usePulseOpacity } from '@hooks/usePulseOpacity';
 
 /**
  * RecommendationSkeletonRow component — animated placeholder for one recommendation carousel.
@@ -22,18 +23,7 @@ import { padding, screenWidth } from '@styles/spacing';
  */
 export function RecommendationSkeletonRow() {
   const { colors } = useTheme();
-  const opacity = useRef(new Animated.Value(0.3)).current;
-
-  useEffect(() => {
-    const pulse = Animated.loop(
-      Animated.sequence([
-        Animated.timing(opacity, { toValue: 0.7, duration: 1000, useNativeDriver: true }),
-        Animated.timing(opacity, { toValue: 0.3, duration: 1000, useNativeDriver: true }),
-      ])
-    );
-    pulse.start();
-    return () => pulse.stop();
-  }, [opacity]);
+  const opacity = usePulseOpacity();
 
   return (
     <Animated.View style={{ opacity }}>

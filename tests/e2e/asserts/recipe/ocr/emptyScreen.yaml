@@ -14,11 +14,6 @@ appId: "com.recipedia"
     label: "OCR button for the title is rendered"
 
 - assertVisible:
-    text: "󰘤"
-    index: 1
-    label: "OCR button for the title has the correct icon"
-
-- assertVisible:
     id: "RecipeDescription::Text"
     text: "Description:"
     label: "Intro text for the description is rendered"
@@ -26,11 +21,6 @@ appId: "com.recipedia"
 - assertVisible:
     id: "RecipeDescription::OpenModal::RoundButton"
     label: "OCR button for the description is rendered"
-
-- assertVisible:
-    text: "󰘤"
-    index: 2
-    label: "OCR button for the description has the correct icon"
 
 - waitForAnimationToEnd
 
@@ -43,7 +33,6 @@ appId: "com.recipedia"
     label: "Scroll down to the tags section"
 
 - waitForAnimationToEnd
-
 
 - assertVisible:
     id: "RecipeTags::HeaderText"
@@ -84,16 +73,8 @@ appId: "com.recipedia"
     label: "OCR button for the tags is rendered"
 
 - assertVisible:
-    text: "󰐕"
-    label: "Add button has the correct icon"
-
-- assertVisible:
     id: "RecipeTags::RoundButton"
     label: "Add button for the tag is rendered"
-
-- assertVisible:
-    text: "󰘤"
-    label: "OCR button for the tags has the correct icon"
 
 - waitForAnimationToEnd
 

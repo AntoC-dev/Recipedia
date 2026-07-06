@@ -17,7 +17,9 @@ tags:
     file: "../../asserts/search/searchbar/searchBarFilteredOnLentil.yaml"
     label: "Assert - Verify dropdown filtered on 'Lentil'"
 
-- pressKey: "enter"
+- runFlow:
+    file: "../../flows/search/commitTypedSearch.yaml"
+    label: "Commit typed search, keep filter"
 
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"

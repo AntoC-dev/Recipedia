@@ -27,21 +27,9 @@ appId: "com.recipedia"
     text: "Unit:"
     label: "Verify unit label is displayed"
 
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - assertNotVisible:
-          id: "IngredientsSettings::.*::Unit"
-          label: "Verify ingredient unit is not displayed on Android"
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - assertVisible:
-          id: "IngredientsSettings::.*::Unit"
-          text: ""
-          label: "Verify ingredient unit is empty on ios"
+- assertNotVisible:
+    id: "IngredientsSettings::.*::Unit"
+    label: "Verify ingredient unit is not displayed when empty"
 
 - assertVisible:
     id: "IngredientsSettings::.*::SeasonalityCalendar::SeasonalityText"

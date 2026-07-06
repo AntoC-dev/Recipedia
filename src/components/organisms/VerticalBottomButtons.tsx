@@ -28,6 +28,7 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
+import { useResetOnChange } from '@hooks/useResetOnChange';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { View } from 'react-native';
 import { CopilotStep, walkthroughable } from 'react-native-copilot';
@@ -156,12 +157,12 @@ function VerticalBottomButtons() {
     };
   }, [isFocused, copilotData, copilotEvents, currentStep, reducedMotion, stepOrder]);
 
-  useEffect(() => {
+  useResetOnChange([authRequired], () => {
     if (authRequired) {
       setUrlDialogVisible(false);
       setAuthDialogVisible(true);
     }
-  }, [authRequired]);
+  });
 
   async function takePhotoAndOpenNewRecipe() {
     openRecipeWithUri(await takePhoto(colors));

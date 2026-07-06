@@ -1,0 +1,17 @@
+appId: 'com.recipedia'
+---
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - tapOn:
+          id: 'key_pos_ime_action'
+          label: 'Tap Android keyboard action key to commit the typed filter'
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: 'Search'
+          label: 'Tap keyboard Search key to commit the typed filter'

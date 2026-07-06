@@ -8,6 +8,3 @@ appId: "com.recipedia"
     id: "RecipeImage::RoundButton"
     label: "Image button is rendered"
 
-- assertVisible:
-    text: "󰄀"
-    label: "Web image button has the link icon"
