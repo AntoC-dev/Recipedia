@@ -12,6 +12,11 @@
 import * as SQLite from 'expo-sqlite';
 import {
   coreIngredientElement,
+  dismissedRecipeTableElement,
+  dismissedRecipesColumnsEncoding,
+  dismissedRecipesColumnsNames,
+  dismissedRecipesTableName,
+  encodedDismissedRecipeElement,
   encodedImportHistoryElement,
   encodedIngredientElement,
   encodedMenuElement,
@@ -66,6 +71,7 @@ import {
 import { buildItemIndex, searchItems } from '@utils/FuzzyIndex';
 import { parseQuantity, scaleQuantityForPersons } from '@utils/Quantity';
 import { databaseLogger } from '@utils/logger';
+import { epochMillis } from '@utils/time';
 import { fisherYatesShuffle } from './FilterFunctions';
 
 /** Recipe titles are long and often paraphrased — looser than `ITEM_FUZZY` so wording variants still match. */
@@ -118,6 +124,7 @@ export class RecipeDatabase {
   protected _tagsTable: TableManipulation;
 
   protected _importHistoryTable: TableManipulation;
+  protected _dismissedRecipesTable: TableManipulation;
   protected _menuTable: TableManipulation;
   protected _purchasedIngredientsTable: TableManipulation;
 
@@ -126,6 +133,7 @@ export class RecipeDatabase {
   protected _tags: tagTableElement[];
 
   protected _importHistory: importHistoryTableElement[];
+  protected _dismissedRecipes: dismissedRecipeTableElement[];
   protected _menu: menuTableElement[];
   protected _purchasedIngredients: Map<string, boolean>;
 
@@ -145,6 +153,10 @@ export class RecipeDatabase {
       importHistoryTableName,
       importHistoryColumnsEncoding
     );
+    this._dismissedRecipesTable = new TableManipulation(
+      dismissedRecipesTableName,
+      dismissedRecipesColumnsEncoding
+    );
     this._menuTable = new TableManipulation(menuTableName, menuColumnsEncoding);
     this._purchasedIngredientsTable = new TableManipulation(
       purchasedIngredientsTableName,
@@ -155,6 +167,7 @@ export class RecipeDatabase {
     this._ingredients = [];
     this._tags = [];
     this._importHistory = [];
+    this._dismissedRecipes = [];
     this._menu = [];
     this._purchasedIngredients = new Map();
   }
@@ -310,6 +323,7 @@ export class RecipeDatabase {
       this._ingredientsTable.createTable(this._dbConnection),
       this._tagsTable.createTable(this._dbConnection),
       this._importHistoryTable.createTable(this._dbConnection),
+      this._dismissedRecipesTable.createTable(this._dbConnection),
       this._menuTable.createTable(this._dbConnection),
       this._purchasedIngredientsTable.createTable(this._dbConnection),
     ]);
@@ -317,19 +331,28 @@ export class RecipeDatabase {
     await this.migrateAddSourceColumns();
     await this.migrateWildcardSeasons();
 
-    const [ingredients, tags, recipes, importHistory, menu, purchasedIngredients] =
-      await Promise.all([
-        this.getAllIngredients(),
-        this.getAllTags(),
-        this.getAllRecipes(),
-        this.getAllImportHistory(),
-        this.getAllMenu(),
-        this.getAllPurchasedIngredients(),
-      ]);
+    const [
+      ingredients,
+      tags,
+      recipes,
+      importHistory,
+      dismissedRecipes,
+      menu,
+      purchasedIngredients,
+    ] = await Promise.all([
+      this.getAllIngredients(),
+      this.getAllTags(),
+      this.getAllRecipes(),
+      this.getAllImportHistory(),
+      this.getAllDismissedRecipes(),
+      this.getAllMenu(),
+      this.getAllPurchasedIngredients(),
+    ]);
     this._ingredients = ingredients;
     this._tags = tags;
     this._recipes = recipes;
     this._importHistory = importHistory;
+    this._dismissedRecipes = dismissedRecipes;
     this._menu = menu;
     this._purchasedIngredients = purchasedIngredients;
 
@@ -338,6 +361,7 @@ export class RecipeDatabase {
       ingredientsCount: this._ingredients.length,
       tagsCount: this._tags.length,
       importHistoryCount: this._importHistory.length,
+      dismissedRecipesCount: this._dismissedRecipes.length,
       menuItemsCount: this._menu.length,
       purchasedIngredientsCount: this._purchasedIngredients.size,
     });
@@ -1740,6 +1764,118 @@ export class RecipeDatabase {
   }
 
   /**
+   * Gets all permanently dismissed recipe URLs for a specific provider.
+   *
+   * Dismissed recipes were explicitly hidden by the user and must be filtered
+   * out of every future bulk-import discovery run.
+   *
+   * @param providerId - The provider identifier (e.g., 'hellofresh')
+   * @returns Set of URLs the user has dismissed
+   */
+  public getDismissedUrls(providerId: string): Set<string> {
+    return new Set(
+      this._dismissedRecipes.filter(r => r.providerId === providerId).map(r => r.recipeUrl)
+    );
+  }
+
+  /**
+   * Gets dismissed recipe records, optionally scoped to a provider.
+   *
+   * Returns the full records (including title) so the manage list can display
+   * them without re-running discovery. Sorted most-recently-dismissed first.
+   * When `providerId` is omitted, records from every provider are returned.
+   *
+   * @param providerId - Optional provider identifier to filter by (e.g., 'hellofresh')
+   * @returns Array of dismissed recipe records, newest first
+   */
+  public getDismissedRecipes(providerId?: string): dismissedRecipeTableElement[] {
+    return this._dismissedRecipes
+      .filter(r => providerId === undefined || r.providerId === providerId)
+      .sort((a, b) => b.dismissedAt - a.dismissedAt);
+  }
+
+  /**
+   * Permanently dismisses recipes for a specific provider.
+   *
+   * Records that the user never wants to see these recipes again. Already-dismissed
+   * URLs are skipped. Dismissed recipes are excluded from all future discovery runs.
+   *
+   * @param providerId - The provider identifier (e.g., 'hellofresh')
+   * @param recipes - Recipes to dismiss, each providing its `url`, `title` and optional `imageUrl`
+   */
+  public async markRecipesAsDismissed(
+    providerId: string,
+    recipes: { url: string; title: string; imageUrl?: string }[]
+  ): Promise<void> {
+    if (recipes.length === 0) return;
+
+    const existingDismissedUrls = this.getDismissedUrls(providerId);
+    const now = epochMillis();
+
+    const newEntries = recipes
+      .filter(recipe => !existingDismissedUrls.has(recipe.url))
+      .map(recipe => ({
+        providerId,
+        recipeUrl: recipe.url,
+        title: recipe.title,
+        imageUrl: recipe.imageUrl ?? '',
+        dismissedAt: now,
+      }));
+
+    if (newEntries.length === 0) return;
+
+    const encodedEntries = newEntries.map(entry => this.encodeDismissedRecipe(entry));
+
+    databaseLogger.debug('Dismissing recipes', {
+      providerId,
+      count: newEntries.length,
+    });
+
+    const success = await this._dismissedRecipesTable.insertArrayOfElement(
+      encodedEntries,
+      this._dbConnection
+    );
+
+    if (success) {
+      for (const entry of newEntries) {
+        this._dismissedRecipes.push(entry as dismissedRecipeTableElement);
+      }
+    } else {
+      databaseLogger.error('Failed to dismiss recipes', { providerId, count: newEntries.length });
+    }
+  }
+
+  /**
+   * Restores previously dismissed recipes for a specific provider.
+   *
+   * Removes the dismissal so the recipes reappear in future discovery runs.
+   * Used by the undo action and the manage list. Deletion is keyed on
+   * provider + URL, so it works regardless of whether the in-memory record
+   * carries a database id yet.
+   *
+   * @param providerId - The provider identifier (e.g., 'hellofresh')
+   * @param urls - Array of recipe URLs to restore
+   */
+  public async restoreDismissedRecipes(providerId: string, urls: string[]): Promise<void> {
+    if (urls.length === 0) return;
+
+    databaseLogger.debug('Restoring dismissed recipes', {
+      providerId,
+      count: urls.length,
+    });
+
+    const conditions = new Map<string, string | string[]>([
+      [dismissedRecipesColumnsNames.providerId, providerId],
+      [dismissedRecipesColumnsNames.recipeUrl, urls],
+    ]);
+    await this._dismissedRecipesTable.deleteElement(this._dbConnection, conditions);
+
+    this._dismissedRecipes = this._dismissedRecipes.filter(
+      r => !(r.providerId === providerId && urls.includes(r.recipeUrl))
+    );
+  }
+
+  /**
    * Validates and prepares a single recipe for insertion.
    *
    * Verifies that all referenced tags and ingredients exist in the database,
@@ -1857,6 +1993,7 @@ export class RecipeDatabase {
     this._ingredients = [];
     this._tags = [];
     this._importHistory = [];
+    this._dismissedRecipes = [];
     this._menu = [];
     this._purchasedIngredients = new Map();
   }
@@ -2901,6 +3038,60 @@ export class RecipeDatabase {
       PROVIDER_ID: history.providerId,
       RECIPE_URL: history.recipeUrl,
       LAST_SEEN_AT: history.lastSeenAt,
+    };
+  }
+
+  /**
+   * Retrieves all dismissed recipe records from the database
+   *
+   * @private
+   * @returns Promise resolving to array of all dismissed recipe records
+   */
+  private async getAllDismissedRecipes(): Promise<dismissedRecipeTableElement[]> {
+    const results = (await this._dismissedRecipesTable.searchElement(
+      this._dbConnection
+    )) as encodedDismissedRecipeElement[];
+
+    if (!results || !Array.isArray(results) || results.length === 0) {
+      return [];
+    }
+
+    return results.map(encoded => this.decodeDismissedRecipe(encoded));
+  }
+
+  /**
+   * Decodes a dismissed recipe record from database format
+   *
+   * @private
+   */
+  private decodeDismissedRecipe(
+    encoded: encodedDismissedRecipeElement
+  ): dismissedRecipeTableElement {
+    return {
+      id: encoded.ID,
+      providerId: encoded.PROVIDER_ID,
+      recipeUrl: encoded.RECIPE_URL,
+      title: encoded.TITLE,
+      imageUrl: encoded.IMAGE_URL,
+      dismissedAt: encoded.DISMISSED_AT,
+    };
+  }
+
+  /**
+   * Encodes a dismissed recipe record for database storage
+   *
+   * @private
+   */
+  private encodeDismissedRecipe(
+    dismissed: dismissedRecipeTableElement
+  ): encodedDismissedRecipeElement {
+    return {
+      ID: dismissed.id || 0,
+      PROVIDER_ID: dismissed.providerId,
+      RECIPE_URL: dismissed.recipeUrl,
+      TITLE: dismissed.title,
+      IMAGE_URL: dismissed.imageUrl,
+      DISMISSED_AT: dismissed.dismissedAt,
     };
   }
 }

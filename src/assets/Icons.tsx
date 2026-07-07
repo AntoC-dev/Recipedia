@@ -60,6 +60,8 @@ export const Icons: Record<string, dictionaryIcons> = {
   commentEditOutline: 'comment-edit-outline',
   bug: 'bug',
   history: 'history',
+  eyeOff: 'eye-off-outline',
+  restore: 'restore',
   undo: 'undo',
   import: 'import',
   copy: 'content-copy',

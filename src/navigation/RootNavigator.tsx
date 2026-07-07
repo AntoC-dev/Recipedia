@@ -66,6 +66,7 @@ import { DefaultPersonsSettings } from '@screens/DefaultPersonsSettings';
 import { IngredientsSettings } from '@screens/IngredientsSettings';
 import { TagsSettings } from '@screens/TagsSettings';
 import { BulkImportSettings } from '@screens/BulkImportSettings';
+import { DismissedRecipesSettings } from '@screens/DismissedRecipesSettings';
 import { BulkImportDiscovery } from '@screens/BulkImportDiscovery';
 import { BulkImportValidation } from '@screens/BulkImportValidation';
 import { BugReport } from '@screens/BugReport';
@@ -107,6 +108,7 @@ export function RootNavigator() {
       <Stack.Screen name='IngredientsSettings' component={IngredientsSettings} />
       <Stack.Screen name='TagsSettings' component={TagsSettings} />
       <Stack.Screen name='BulkImportSettings' component={BulkImportSettings} />
+      <Stack.Screen name='DismissedRecipesSettings' component={DismissedRecipesSettings} />
       <Stack.Screen name='BulkImportDiscovery' component={BulkImportDiscovery} />
       <Stack.Screen name='BulkImportValidation' component={BulkImportValidation} />
       <Stack.Screen name='BugReport' component={BugReport} />

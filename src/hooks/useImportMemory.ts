@@ -32,12 +32,14 @@ export interface UseImportMemoryReturn {
  * @returns Import memory state and management functions
  */
 export function useImportMemory(providerId: string): UseImportMemoryReturn {
-  const { getImportedSourceUrls, getSeenUrls } = useImportHistory();
+  const { getImportedSourceUrls, getSeenUrls, getDismissedUrls } = useImportHistory();
 
   const importedUrls = getImportedSourceUrls(providerId);
   const seenUrls = getSeenUrls(providerId);
+  const dismissedUrls = getDismissedUrls(providerId);
 
   const getMemoryStatus = (url: string): ImportMemoryStatus => {
+    if (dismissedUrls.has(url)) return 'dismissed';
     if (importedUrls.has(url)) return 'imported';
     if (seenUrls.has(url)) return 'seen';
     return 'fresh';
@@ -52,6 +54,7 @@ export function useImportMemory(providerId: string): UseImportMemoryReturn {
         ...recipe,
         memoryStatus: getMemoryStatus(recipe.url),
       }))
+      .filter(recipe => recipe.memoryStatus !== 'dismissed')
       .filter(recipe => !hideImported || recipe.memoryStatus !== 'imported');
   };
 

@@ -39,12 +39,16 @@ export interface UseDiscoveryWorkflowReturn {
   parsingProgress: ParsingProgress | null;
   error: string | null;
   isSelected: (url: string) => boolean;
+  isDismissed: (url: string) => boolean;
   selectRecipe: (url: string) => void;
   unselectRecipe: (url: string) => void;
   toggleSelectAll: () => void;
   parseSelectedRecipes: () => Promise<ConvertedImportRecipe[] | null>;
   abort: () => void;
   markUrlsAsSeen: () => Promise<void>;
+  dismissRecipe: (recipe: DiscoveredRecipe) => void;
+  restoreRecipe: (recipe: DiscoveredRecipe) => void;
+  commitDismissals: () => Promise<void>;
 }
 
 /**
@@ -72,11 +76,14 @@ export function useDiscoveryWorkflow(
   const { t } = useI18n();
   const { parseSelectedRecipes: parseSelectedRecipesViaScraper } = useRecipeScraper();
   const { processDiscoveredRecipes } = useImportMemory(providerId);
-  const { markUrlsAsSeen } = useImportHistory();
+  const { markUrlsAsSeen, markRecipesAsDismissed } = useImportHistory();
 
   const [phase, setPhase] = useState<DiscoveryPhase>(provider ? 'discovering' : 'selecting');
   const [recipes, setRecipes] = useState<DiscoveredRecipe[]>([]);
   const [selectedUrls, setSelectedUrls] = useState<Set<string>>(new Set());
+  const [pendingDismissed, setPendingDismissed] = useState<Map<string, DiscoveredRecipe>>(
+    new Map()
+  );
   const [discoveryProgress, setDiscoveryProgress] = useState<DiscoveryProgress | null>(null);
   const [parsingProgress, setParsingProgress] = useState<ParsingProgress | null>(null);
   const [error, setError] = useState<string | null>(() =>
@@ -153,6 +160,17 @@ export function useDiscoveryWorkflow(
   const isSelected = (url: string) => selectedUrls.has(url);
 
   /**
+   * Checks if a recipe is pending dismissal for this session.
+   *
+   * Pending-dismissed recipes stay visible in the list (styled as hidden) until
+   * the user presses Continue, at which point the dismissals are persisted.
+   *
+   * @param url - The recipe URL to check
+   * @returns True if the recipe is pending dismissal
+   */
+  const isDismissed = (url: string) => pendingDismissed.has(url);
+
+  /**
    * Adds a recipe to the selection
    *
    * @param url - The URL of the recipe to select
@@ -181,11 +199,13 @@ export function useDiscoveryWorkflow(
    * Otherwise, selects all visible recipes (excluding hidden imported ones).
    */
   const toggleSelectAll = () => {
-    const visibleRecipes = processDiscoveredRecipes(recipes, true);
-    if (selectedUrls.size === visibleRecipes.length) {
+    const selectableUrls = [...freshRecipes, ...seenRecipes]
+      .map(r => r.url)
+      .filter(url => !pendingDismissed.has(url));
+    if (selectedUrls.size === selectableUrls.length) {
       setSelectedUrls(new Set());
     } else {
-      setSelectedUrls(new Set(visibleRecipes.map(r => r.url)));
+      setSelectedUrls(new Set(selectableUrls));
     }
   };
 
@@ -274,16 +294,57 @@ export function useDiscoveryWorkflow(
 
   const freshRecipes = processedRecipes.filter(r => r.memoryStatus === 'fresh');
   const seenRecipes = processedRecipes.filter(r => r.memoryStatus === 'seen');
-  const totalVisibleCount = freshRecipes.length + seenRecipes.length;
+  const selectableCount = freshRecipes.length + seenRecipes.length - pendingDismissed.size;
 
   const selectedCount = selectedUrls.size;
-  const allSelected = selectedCount === totalVisibleCount && totalVisibleCount > 0;
+  const allSelected = selectedCount === selectableCount && selectableCount > 0;
   const isDiscovering = phase === 'discovering';
   const showSelectionUI = isDiscovering || phase === 'selecting';
 
   const markDiscoveredUrlsAsSeen = async () => {
     const urls = recipes.map(r => r.url);
     await markUrlsAsSeen(providerId, urls);
+  };
+
+  /**
+   * Marks a discovered recipe as pending dismissal for this session.
+   *
+   * The recipe stays visible (styled as hidden) and is removed from the
+   * selection, but nothing is persisted until {@link commitDismissals} runs on
+   * Continue. This lets the user change their mind beforehand.
+   *
+   * @param recipe - The recipe to dismiss
+   */
+  const dismissRecipe = (recipe: DiscoveredRecipe) => {
+    setPendingDismissed(prev => new Map(prev).set(recipe.url, recipe));
+    unselectRecipe(recipe.url);
+  };
+
+  /**
+   * Cancels a pending dismissal, restoring the recipe to a normal state.
+   *
+   * @param recipe - The recipe to restore
+   */
+  const restoreRecipe = (recipe: DiscoveredRecipe) => {
+    setPendingDismissed(prev => {
+      const next = new Map(prev);
+      next.delete(recipe.url);
+      return next;
+    });
+  };
+
+  /**
+   * Persists every pending dismissal so the recipes are hidden from all future
+   * discovery runs. Called when the user confirms with Continue.
+   */
+  const commitDismissals = async () => {
+    if (pendingDismissed.size === 0) return;
+    const dismissed = Array.from(pendingDismissed.values()).map(r => ({
+      url: r.url,
+      title: r.title,
+      imageUrl: imageMap.get(r.url) ?? r.imageUrl,
+    }));
+    await markRecipesAsDismissed(providerId, dismissed);
   };
 
   return {
@@ -300,11 +361,15 @@ export function useDiscoveryWorkflow(
     parsingProgress,
     error,
     isSelected,
+    isDismissed,
     selectRecipe,
     unselectRecipe,
     toggleSelectAll,
     parseSelectedRecipes,
     abort,
     markUrlsAsSeen: markDiscoveredUrlsAsSeen,
+    dismissRecipe,
+    restoreRecipe,
+    commitDismissals,
   };
 }

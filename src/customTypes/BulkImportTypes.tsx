@@ -141,8 +141,9 @@ export interface ParsingProgress {
  * - 'fresh': Recipe has never been seen before
  * - 'seen': Recipe was discovered but not imported in a previous session
  * - 'imported': Recipe has been successfully imported (should be hidden)
+ * - 'dismissed': Recipe was permanently dismissed by the user (should be hidden)
  */
-export type ImportMemoryStatus = 'fresh' | 'seen' | 'imported';
+export type ImportMemoryStatus = 'fresh' | 'seen' | 'imported' | 'dismissed';
 
 /**
  * Lightweight recipe data discovered during URL scanning

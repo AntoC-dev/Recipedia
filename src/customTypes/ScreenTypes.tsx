@@ -99,6 +99,8 @@ export type StackScreenParamList = {
   TagsSettings: undefined;
   /** Bulk import provider selection screen (no parameters) */
   BulkImportSettings: undefined;
+  /** Dismissed bulk-import recipes management screen (all providers) */
+  DismissedRecipesSettings: undefined;
   /** Bulk import discovery screen with provider ID */
   BulkImportDiscovery: { providerId: string };
   /** Bulk import validation screen with selected recipes */
@@ -178,3 +180,9 @@ export type TagsSettingsProp = NativeStackScreenProps<StackScreenParamList, 'Tag
 
 /** Props for Bug Report stack screen component */
 export type BugReportScreenProp = NativeStackScreenProps<StackScreenParamList, 'BugReport'>;
+
+/** Props for Dismissed Recipes Settings stack screen component */
+export type DismissedRecipesSettingsProp = NativeStackScreenProps<
+  StackScreenParamList,
+  'DismissedRecipesSettings'
+>;

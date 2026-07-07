@@ -130,6 +130,7 @@ export function Parameters() {
 
   const importId = sectionId + '::Import';
   const importFromWebsiteId = importId + '::FromWebsite';
+  const dismissedRecipesId = importId + '::DismissedRecipes';
 
   const aboutId = sectionId + '::About';
   const versionId = aboutId + '::Version';
@@ -244,6 +245,17 @@ export function Parameters() {
             right={props => <List.Icon {...props} icon={Icons.chevronRight} />}
             onPress={() => {
               navigate('BulkImportSettings');
+            }}
+          />
+          <Divider testID={importId + '::Divider'} />
+          <List.Item
+            testID={dismissedRecipesId + '::Item'}
+            title={t('bulkImport.dismissed.title')}
+            description={t('bulkImport.dismissed.manage')}
+            left={props => <List.Icon {...props} icon={Icons.eyeOff} />}
+            right={props => <List.Icon {...props} icon={Icons.chevronRight} />}
+            onPress={() => {
+              navigate('DismissedRecipesSettings');
             }}
           />
         </List.Section>

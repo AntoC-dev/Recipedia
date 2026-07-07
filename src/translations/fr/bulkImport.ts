@@ -43,6 +43,21 @@ export default {
     fetchingRecipes: 'Récupération de la recette {{current}} sur {{total}}...',
     newRecipes: 'Nouvelles recettes ({{count}})',
     previouslySeen: 'Déjà vues ({{count}})',
+    dismiss: 'Ne plus afficher',
+    dismissAccessibility: 'Ne plus jamais afficher cette recette',
+    restoreAccessibility: 'Continuer à afficher cette recette',
+    undo: 'Annuler',
+  },
+
+  dismissed: {
+    title: 'Recettes masquées',
+    manage: "Recettes masquées de l'import en masse",
+    empty: 'Aucune recette masquée',
+    emptyDescription:
+      'Les recettes que vous masquez pendant la recherche apparaissent ici pour être restaurées.',
+    restore: 'Restaurer',
+    count: '{{count}} recette masquée',
+    countPlural: '{{count}} recettes masquées',
   },
 
   validation: {

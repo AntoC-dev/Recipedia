@@ -105,6 +105,19 @@ export const padding = {
 };
 
 /**
+ * Border-radius scale for consistent rounded corners throughout the app
+ * All values are in pixels
+ */
+export const radius = {
+  /** Subtle rounding for small thumbnails */
+  small: 8,
+  /** Standard rounding for cards and images */
+  medium: 12,
+  /** Fully rounded corners for pills and circular badges */
+  full: 999,
+};
+
+/**
  * Card-related size constants for consistent card layouts
  */
 export const cardSizes = {

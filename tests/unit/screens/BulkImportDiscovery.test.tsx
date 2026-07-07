@@ -9,11 +9,15 @@ import {
 } from '@mocks/deps/react-navigation-mock';
 import {
   mockAbort,
+  mockCommitDismissals,
   mockDiscoveryProgress,
+  mockDismissRecipe,
   mockFreshRecipes,
+  mockIsDismissed,
   mockIsSelected,
   mockParseSelectedRecipes,
   mockParsingProgress,
+  mockRestoreRecipe,
   mockSelectRecipe,
   mockToggleSelectAll,
   mockUnselectRecipe,
@@ -170,6 +174,42 @@ describe('BulkImportDiscovery', () => {
     const { getByText } = render(<BulkImportDiscovery />);
 
     expect(getByText('Network error')).toBeTruthy();
+  });
+
+  describe('dismiss recipe', () => {
+    test('calls dismissRecipe when dismiss button pressed', () => {
+      const { getByTestId } = render(<BulkImportDiscovery />);
+
+      fireEvent.press(getByTestId('BulkImportDiscovery::fresh-0::DismissButton'));
+
+      expect(mockDismissRecipe).toHaveBeenCalledWith(
+        expect.objectContaining({ url: 'https://example.com/recipe-1' })
+      );
+    });
+
+    test('shows restore button and calls restoreRecipe for a dismissed recipe', () => {
+      mockIsDismissed.mockReturnValue(true);
+      const { getByTestId } = render(<BulkImportDiscovery />);
+
+      fireEvent.press(getByTestId('BulkImportDiscovery::fresh-0::RestoreButton'));
+
+      expect(mockRestoreRecipe).toHaveBeenCalledWith(
+        expect.objectContaining({ url: 'https://example.com/recipe-1' })
+      );
+    });
+
+    test('commits pending dismissals on continue', async () => {
+      setMockDiscoveryState({ selectedCount: 2 });
+      mockParseSelectedRecipes.mockResolvedValue([{ title: 'Recipe 1' }]);
+
+      const { getByTestId } = render(<BulkImportDiscovery />);
+
+      fireEvent.press(getByTestId('BulkImportDiscovery::ContinueButton'));
+
+      await waitFor(() => {
+        expect(mockCommitDismissals).toHaveBeenCalledTimes(1);
+      });
+    });
   });
 
   describe('section headers', () => {
