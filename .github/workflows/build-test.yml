@@ -21,7 +21,7 @@ jobs:
     outputs:
       is_internal: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v6
         with:
           node-version: '24'
@@ -39,7 +39,7 @@ jobs:
     needs: install-and-doctor
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Restore node modules
         uses: actions/cache/restore@v5
@@ -65,7 +65,7 @@ jobs:
     needs: install-and-doctor
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -120,7 +120,7 @@ jobs:
     needs: install-and-doctor
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Restore node modules
         uses: actions/cache/restore@v5
@@ -176,7 +176,7 @@ jobs:
     needs: install-and-doctor
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Restore node modules
         uses: actions/cache/restore@v5
@@ -294,7 +294,7 @@ jobs:
     needs: [ e2e-tests-android, e2e-tests-android-performance, e2e-tests-ios ]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Restore node modules
         uses: actions/cache/restore@v5
