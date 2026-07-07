@@ -18,7 +18,15 @@ function useAllHooks() {
     deleteRecipe,
     scaleAllRecipesForNewDefaultPersons,
   } = useRecipes();
-  const { menu, addRecipeToMenu, toggleMenuItemCooked, clearMenu, togglePurchased } = useMenu();
+  const {
+    menu,
+    addRecipeToMenu,
+    toggleMenuItemCooked,
+    clearMenu,
+    togglePurchased,
+    isRecipeInMenu,
+    clearPurchased,
+  } = useMenu();
   const { shopping } = useShopping();
   const { getImportedSourceUrls, getSeenUrls, markUrlsAsSeen, removeFromSeenHistory } =
     useImportHistory();
@@ -34,6 +42,8 @@ function useAllHooks() {
     toggleMenuItemCooked,
     clearMenu,
     togglePurchased,
+    isRecipeInMenu,
+    clearPurchased,
     shopping,
     getImportedSourceUrls,
     getSeenUrls,
@@ -506,6 +516,55 @@ describe('focused database hooks', () => {
         const item = result.current.shopping.find(i => i.name === ingredientName);
         expect(item?.purchased).toBe(true);
       });
+    });
+
+    test('clearPurchased resets every purchased ingredient', async () => {
+      const { result } = renderHook(() => useAllHooks());
+
+      await waitFor(() => {
+        expect(result.current.recipes.length).toBeGreaterThan(0);
+      });
+
+      await result.current.addRecipeToMenu(result.current.recipes[0]);
+
+      await waitFor(() => {
+        expect(result.current.shopping.length).toBeGreaterThan(0);
+      });
+
+      const ingredientName = result.current.shopping[0].name;
+      await result.current.togglePurchased(ingredientName);
+
+      await waitFor(() => {
+        const item = result.current.shopping.find(i => i.name === ingredientName);
+        expect(item?.purchased).toBe(true);
+      });
+
+      await result.current.clearPurchased();
+
+      await waitFor(() => {
+        expect(result.current.shopping.every(item => !item.purchased)).toBe(true);
+      });
+    });
+  });
+
+  describe('isRecipeInMenu', () => {
+    test('returns false before a recipe is added and true afterwards', async () => {
+      const { result } = renderHook(() => useAllHooks());
+
+      await waitFor(() => {
+        expect(result.current.recipes.length).toBeGreaterThan(0);
+      });
+
+      const recipe = result.current.recipes[0];
+      expect(result.current.isRecipeInMenu(recipe.id!)).toBe(false);
+
+      await result.current.addRecipeToMenu(recipe);
+
+      await waitFor(() => {
+        expect(result.current.menu.length).toBe(1);
+      });
+
+      expect(result.current.isRecipeInMenu(recipe.id!)).toBe(true);
     });
   });
 
