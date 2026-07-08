@@ -31,7 +31,7 @@ import {
 import { NoteEditDialog } from '@components/dialogs/NoteEditDialog';
 import { formatIngredientForCallback, parseIngredientQuantity } from '@utils/Quantity';
 import { hasErrorMessage, inlineMessage, isNestedDirty } from '@utils/recipeFormErrors';
-import { RecipeFormInput } from '@schemas/recipeFormSchema';
+import { INGREDIENTS_MIN_MESSAGE, RecipeFormInput } from '@schemas/recipeFormSchema';
 import { useIngredientFocusRef } from '@screens/recipe/IngredientFocusContext';
 import { RECIPE_INGREDIENTS_TEST_ID } from '@screens/recipe/constants';
 
@@ -86,18 +86,13 @@ function EditableIngredientsField({
     Record<string, unknown> | boolean | undefined
   )[];
   const arrayDirty = rowDirtyFlags.length > 0;
-  // Single source for both the array-root `.min` message and the per-row item
-  // errors. The array-root controller's `fieldState.error` only carries the
-  // `.min` error and never the nested per-row errors, so the whole field reads
-  // from the `useFormState` errors tree: `.message` for the root, indexed
-  // entries for each row.
-  const arrayErrors = errors.recipeIngredients as unknown as
-    (Record<number, unknown> & { message?: string }) | undefined;
-  const rowErrors = arrayErrors;
+  const rowErrors = errors.recipeIngredients as unknown as Record<number, unknown> | undefined;
 
+  // Derived from `rowCount`, not form state: RHF drops the array-root `.min`
+  // error once the removal that emptied the array runs.
   const rootErrorMessage =
-    rowCount === 0 && arrayErrors?.message && (arrayDirty || isSubmitted)
-      ? inlineMessage(arrayErrors.message, t)
+    rowCount === 0 && (arrayDirty || isSubmitted)
+      ? inlineMessage(INGREDIENTS_MIN_MESSAGE, t)
       : undefined;
 
   const noteDialogIngredient =
