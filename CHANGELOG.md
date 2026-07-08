@@ -1,3 +1,9 @@
+## [2.40.1](https://github.com/AntoC-dev/Recipedia/compare/v2.40.0...v2.40.1) (2026-07-08)
+
+### Bug Fixes
+
+* **recipe:** surface empty-ingredients error after last row removal ([4d8e64b](https://github.com/AntoC-dev/Recipedia/commit/4d8e64b9c99f356fd04db51eed3654c8f49ce2d4))
+
 ## [2.40.0](https://github.com/AntoC-dev/Recipedia/compare/v2.39.2...v2.40.0) (2026-07-06)
 
 ### Features
