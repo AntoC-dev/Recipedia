@@ -63,6 +63,13 @@ const ingredientSchema = z
     }
   });
 
+/**
+ * i18n key for the array-level "at least one ingredient" constraint. Exported so
+ * the ingredients field can derive the empty-array error without reading it back
+ * from form state (RHF drops it after a field-array mutation empties the array).
+ */
+export const INGREDIENTS_MIN_MESSAGE = 'alerts.missingElements.titleIngredients';
+
 const preparationStepSchema = z.object({
   title: z.string(),
   description: z.string().trim().min(1, 'alerts.missingElements.titlePreparation'),
@@ -97,7 +104,7 @@ export const recipeFormSchema = z.object({
   recipeDescription: z.string(),
   recipeTags: z.array(tagSchema).default([]),
   recipePersons: numericNotSentinel('alerts.missingElements.titlePersons'),
-  recipeIngredients: z.array(ingredientSchema).min(1, 'alerts.missingElements.titleIngredients'),
+  recipeIngredients: z.array(ingredientSchema).min(1, INGREDIENTS_MIN_MESSAGE),
   recipePreparation: z
     .array(preparationStepSchema)
     .min(1, 'alerts.missingElements.titlePreparation'),

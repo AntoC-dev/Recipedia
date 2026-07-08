@@ -132,7 +132,7 @@ export function useIngredientArray({ form }: UseIngredientArrayParams): UseIngre
   const handleAddIngredient = () => {
     fieldArray.append({ name: '' } as RecipeFormInput['recipeIngredients'][number]);
   };
-  /** Removes a row, then re-validates (RHF's `remove` does not validate in `onTouched` mode). */
+  /** Removes a row, then re-validates the remaining rows (RHF's `remove` does not validate in `onTouched` mode). */
   const handleRemoveIngredient = (index: number) => {
     fieldArray.remove(index);
     void form.trigger('recipeIngredients');
