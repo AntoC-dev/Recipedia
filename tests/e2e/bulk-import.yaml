@@ -13,3 +13,4 @@ executionOrder:
     - "2 - Bulk Import Seen Recipes (French)"
     - "3 - Bulk Import with Skipped Recipe (all ingredients rejected)"
     - "4 - Bulk Import Quitoque with Language Filter (French)"
+    - "5 - Bulk Import Dismiss Recipes (French)"

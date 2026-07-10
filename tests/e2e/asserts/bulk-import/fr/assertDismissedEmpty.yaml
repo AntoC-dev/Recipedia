@@ -1,0 +1,6 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    id: "DismissedRecipesSettings::Empty"
+    text: "Aucune recette masquée"
+    label: "Empty state message is displayed (French)"

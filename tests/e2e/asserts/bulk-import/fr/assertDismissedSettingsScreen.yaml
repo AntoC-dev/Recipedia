@@ -1,0 +1,18 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    id: "DismissedRecipesSettings::AppBar::Title-title-text"
+    text: "Recettes masquées"
+    label: "App bar title displays correct text (French)"
+
+- assertVisible:
+    id: "DismissedRecipesSettings::hellofresh"
+    label: "HelloFresh provider accordion is displayed"
+
+- assertVisible:
+    id: "DismissedRecipesSettings::hellofresh::Logo"
+    label: "HelloFresh provider logo is displayed"
+
+- assertVisible:
+    text: "\\d+ recette(s)? masquée(s)?"
+    label: "Dismissed recipes count displays correct format (French)"
