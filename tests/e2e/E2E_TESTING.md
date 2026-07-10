@@ -18,6 +18,7 @@ Maestro.
 - [Platform-Specific Testing](#platform-specific-testing)
 - [Language Support](#language-support)
 - [Common Patterns](#common-patterns)
+- [Validating Flows with the Maestro MCP Server](#validating-flows-with-the-maestro-mcp-server)
 - [Troubleshooting](#troubleshooting)
 
 ## Overview
@@ -1443,6 +1444,74 @@ visibility assertions on CI despite the app rendering correctly.
 `handleAnr.yaml` is kept as a guarded no-op safety net for **local** emulators,
 which run bare `maestro test` and do not get these adb settings. New flows do
 not need `handleAnr.yaml` when they only target CI.
+
+## Validating Flows with the Maestro MCP Server
+
+Maestro ships an MCP server (`maestro mcp`) that lets an agent drive the running
+app directly. **Every new or edited flow must be validated live against the app
+before it is considered done** — reading source and screenshots is not enough to
+prove a selector resolves.
+
+### Setup (once)
+
+```bash
+claude mcp add -s user maestro -- maestro mcp
+```
+
+Reconnect the session (`/mcp`) so the tools load. Add it at **user scope**
+(`-s user`) so it is available in every project — a project-local add lands
+under the wrong project key and silently fails to connect.
+
+### Workflow: `list_devices` → `inspect_screen` → `run`
+
+1. **`list_devices`** — pick the connected `device_id`. Share the Maestro Viewer
+   URL with the user.
+2. **`inspect_screen`** — read the REAL view hierarchy (`rid`/`txt`/`a11y`) of
+   the screen before authoring selectors. Never author a selector from a
+   screenshot; screenshots cause hallucinated text (an icon looks labelled but
+   has no text node).
+3. **`run`** — execute the flow, or drive it in small inline-YAML chunks with a
+   `take_screenshot` between steps so a failure pinpoints the exact command.
+   `run` validates syntax as part of the call.
+
+### Selector gotcha: Paper Button text lives on a `-text` child
+
+A React Native Paper `Button`'s `testID` lands on a **wrapper** whose
+accessibility text (`a11y`/content-desc) is the `accessibilityLabel` prop,
+**not** the visible label. To assert the visible label, target the label child
+`<testID>-text` (mirrors the AppBar title node `...::Title-title-text`):
+
+```yaml
+# WRONG — id wrapper carries the accessibilityLabel, not "Annuler"
+- assertVisible:
+    id: 'BulkImportDiscovery::fresh-0::RestoreButton'
+    text: 'Annuler'
+
+# RIGHT — id and text resolve to the same (-text) element
+- assertVisible:
+    id: 'BulkImportDiscovery::fresh-0::RestoreButton-text'
+    text: 'Annuler'
+```
+
+A wrapper `id` + `text` works only when the button has NO `accessibilityLabel`
+(RN then derives `a11y` from the visible text, e.g. `ContinueButton` +
+"Continuer"). `tapOn` the wrapper `id` (it is the clickable node);
+`assertVisible` the `-text` child for the label.
+
+### CRITICAL: never reload or launch the app yourself
+
+The local target is a **dev build**. `launchApp` / relaunch / cold-start drops
+to the Expo dev-client launcher ("npx expo start / Connect"), not the app —
+breaking the run and losing state.
+
+- Do NOT run `launchApp`, restart, reload, or `adb`-relaunch during local
+  validation.
+- When a step needs a fresh app state or reload (committed-DB check, onboarding
+  reset), STOP and ASK THE USER to run/reload the app, then wait for
+  confirmation and re-`inspect_screen` before continuing.
+- The committed test YAML MAY keep `launchApp` for CI — the release **test
+  build** handles it correctly (unlike the local dev build). Keep it in the
+  file; only the local reload is handed to the user.
 
 ## CI Retry Mechanism
 
