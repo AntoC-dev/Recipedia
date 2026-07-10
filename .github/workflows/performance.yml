@@ -152,38 +152,10 @@ jobs:
           arch: x86_64
           profile: Nexus 5
           emulator-options: -no-snapshot -no-window -noaudio -no-boot-anim -wipe-data -memory 4096 -cores 4
-          script: |
-            sleep 10
-            echo "🔄 Waiting for device..."
-            adb wait-for-device
-
-            adb install "${{ steps.find-apk.outputs.apk_path }}"
-
-            mkdir -p perf-results perf-reports maestro_logs_performance
-
-            # 00_seed runs first (clearState seeds the DB); the warm screens reuse
-            # that seeded DB, so screens must run in filename order. Each screen is
-            # profiled with 3 iterations (averages out noise). --duration is a
-            # per-iteration cap; 5 min covers the heaviest flow (parameters re-scales
-            # all ~1200 recipes) and flashlight stops early when a flow finishes.
-            for case in tests/e2e/cases/performance/screens/*.yaml; do
-              name=$(basename "$case" .yaml)
-              run_screen() {
-                ~/.flashlight/bin/flashlight test \
-                  --bundleId "com.recipedia" \
-                  --testCommand "maestro test $case --debug-output=maestro_logs_performance/$name" \
-                  --resultsFilePath "perf-results/$name.json" \
-                  --duration 300000 \
-                  --iterationCount 3
-              }
-              echo "▶ $name"
-              # One retry absorbs transient flakiness (e.g. an ANR dialog); on a
-              # second failure we move on so the remaining screens still run.
-              run_screen || { echo "::warning::retrying $name"; run_screen || echo "::warning::$name failed"; }
-              ~/.flashlight/bin/flashlight report \
-                --resultsFilePath "perf-results/$name.json" \
-                --outputFilePath "perf-reports/$name.html" || true
-            done
+          # android-emulator-runner splits `script` on newlines and runs each
+          # line via a separate `sh -c`, so the profiling loop lives in its own
+          # file (run as one shell) — see run-perf-screens.sh.
+          script: bash .github/scripts/run-perf-screens.sh "${{ steps.find-apk.outputs.apk_path }}"
 
       # A broken flow (no result) fails; FPS regressions only warn (single-run
       # device FPS is too noisy to hard-gate). Writes the merged FPS table to the UI.
