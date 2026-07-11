@@ -535,45 +535,53 @@ export class TableManipulation {
     return [result, params];
   }
 
-  protected verifyLengthOfElement<TElement extends string>(element: TElement[]) {
-    let isCheck: boolean = true;
-    if (element.length > this.m_columnsTable.length + 1) {
-      databaseLogger.warn(
-        'ERROR: you try to add an element in a table that is not mapping. Impossible to add this. Size of column table is ',
-        this.m_columnsTable.length,
-        ' and size of element is ',
-        element.length,
-        '\n\nelement : ',
-        element
-      );
-      isCheck = false;
+  /**
+   * Encodes an element's values in the exact order of {@link m_columnsTable}.
+   *
+   * Values are read by column name — never by object-key iteration order — so a
+   * future reordering of an encoder's object literal can never silently write a
+   * value into the wrong column. Booleans are normalised to SQLite's `'1'`/`'0'`.
+   *
+   * @param element - Object keyed by column name (plus an ignored `ID` key)
+   * @returns Encoded string values in column order, or `undefined` when the
+   *   element's non-ID keys do not exactly match the table columns
+   */
+  private encodeElementInColumnOrder<TElement>(element: TElement): string[] | undefined {
+    const nonIdKeys = Object.keys(element as object).filter(key => key !== this.m_idColumn);
+    if (nonIdKeys.length !== this.m_columnsTable.length) {
+      return undefined;
     }
-    return isCheck;
+
+    const values: string[] = [];
+    for (const col of this.m_columnsTable) {
+      if (!Object.prototype.hasOwnProperty.call(element, col.colName)) {
+        return undefined;
+      }
+      const valueToPush = (element[col.colName as keyof TElement] as string).toString();
+      if (valueToPush === 'false') {
+        values.push('0');
+      } else if (valueToPush === 'true') {
+        values.push('1');
+      } else {
+        values.push(valueToPush);
+      }
+    }
+    return values;
   }
 
   protected prepareInsertQuery<TElement>(
     elementToInsert: TElement | TElement[]
   ): [string, string[]] {
-    type TElementKey = keyof TElement;
-
     let insertQuery =
       `INSERT INTO "${this.m_tableName}" ("` +
       this.m_columnsTable.map(col => col.colName).join('","') +
       '") VALUES ';
-    const returnValues = [];
+    const returnValues: string[] = [];
 
     if (!(elementToInsert instanceof Array)) {
-      for (const key of Object.keys(elementToInsert as object).filter(key => key !== 'ID')) {
-        const valueToPush = (elementToInsert[key as TElementKey] as string).toString();
-        if (valueToPush.toString() === 'false') {
-          returnValues.push('0');
-        } else if (valueToPush === 'true') {
-          returnValues.push('1');
-        } else {
-          returnValues.push(valueToPush);
-        }
-      }
-      if (this.verifyLengthOfElement(returnValues)) {
+      const values = this.encodeElementInColumnOrder(elementToInsert);
+      if (values) {
+        returnValues.push(...values);
         insertQuery += '(' + returnValues.map(() => '?').join(',') + ');';
       } else {
         insertQuery = '';
@@ -582,21 +590,10 @@ export class TableManipulation {
       const placeHolders = [];
 
       for (const element of elementToInsert) {
-        const elementValues = [];
-
-        for (const key of Object.keys(element as object).filter(key => key !== 'ID')) {
-          const valueToPush = (element[key as TElementKey] as TElementKey).toString();
-          if (valueToPush === 'false') {
-            elementValues.push('0');
-          } else if (valueToPush === 'true') {
-            elementValues.push('1');
-          } else {
-            elementValues.push(valueToPush);
-          }
-        }
-        if (this.verifyLengthOfElement(elementValues)) {
-          placeHolders.push('(' + elementValues.map(() => '?').join(',') + ')');
-          returnValues.push(...elementValues);
+        const values = this.encodeElementInColumnOrder(element);
+        if (values) {
+          placeHolders.push('(' + values.map(() => '?').join(',') + ')');
+          returnValues.push(...values);
         }
       }
       insertQuery += placeHolders.join(',') + ';';

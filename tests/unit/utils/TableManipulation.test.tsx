@@ -76,6 +76,56 @@ describe('TableManipulation', () => {
     ).toBeUndefined();
   });
 
+  test('insertElement maps values by column name regardless of object key order', async () => {
+    await table.createTable(DB);
+
+    const reversedKeyOrder = { age: 30, name: 'John' };
+    const id = await table.insertElement<TestDbType>(reversedKeyOrder, DB);
+
+    expect(await table.searchElementById(id as number, DB)).toEqual({
+      ID: id,
+      name: 'John',
+      age: 30,
+    });
+  });
+
+  test('insertElement rejects an element whose keys do not match the columns', async () => {
+    await table.createTable(DB);
+
+    const wrongKeyName = { name: 'John', country: 'Mexico' };
+    expect(await table.insertElement(wrongKeyName, DB)).toBeUndefined();
+  });
+
+  test('insertElement encodes boolean values as SQLite 1 and 0', async () => {
+    const booleanColumns: databaseColumnType[] = [
+      { colName: 'enabled', type: encodedType.INTEGER },
+      { colName: 'archived', type: encodedType.INTEGER },
+    ];
+    const booleanTable = new TableManipulation('BooleanTable', booleanColumns);
+    await booleanTable.createTable(DB);
+
+    const id = await booleanTable.insertElement({ enabled: true, archived: false }, DB);
+
+    expect(await booleanTable.searchElementById(id as number, DB)).toEqual({
+      ID: id,
+      enabled: 1,
+      archived: 0,
+    });
+  });
+
+  test('insertArrayOfElement maps values by column name regardless of object key order', async () => {
+    await table.createTable(DB);
+
+    const reversedKeyOrder = new Array<TestDbType>(
+      { age: 30, name: 'John' },
+      { age: 8, name: 'Toto' }
+    );
+    expect(await table.insertArrayOfElement(reversedKeyOrder, DB)).toEqual(true);
+
+    expect(await table.searchElementById(1, DB)).toEqual({ ID: 1, name: 'John', age: 30 });
+    expect(await table.searchElementById(2, DB)).toEqual({ ID: 2, name: 'Toto', age: 8 });
+  });
+
   test('insertArrayOfElement should add multiple elements at once', async () => {
     await table.createTable(DB);
 
