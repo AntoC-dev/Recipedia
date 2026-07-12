@@ -1424,6 +1424,26 @@ search, Pattern B when it wants to keep browsing with the current filter.
 - pressKey: 'BACK'
 ```
 
+## Emulator Dialog Suppression (Android CI)
+
+`.github/scripts/run-e2e-android.sh` applies these emulator settings before
+running Maestro, once the device is booted:
+
+```bash
+adb shell settings put global hide_error_dialogs 1      # no system crash/ANR dialogs
+adb shell settings put global window_animation_scale 0
+adb shell settings put global transition_animation_scale 0
+adb shell settings put global animator_duration_scale 0
+```
+
+`hide_error_dialogs 1` stops the launcher ANR dialog
+(`Pixel Launcher isn't responding`) from ever rendering, which was tripping
+visibility assertions on CI despite the app rendering correctly.
+
+`handleAnr.yaml` is kept as a guarded no-op safety net for **local** emulators,
+which run bare `maestro test` and do not get these adb settings. New flows do
+not need `handleAnr.yaml` when they only target CI.
+
 ## CI Retry Mechanism
 
 E2E tests can fail on CI due to infrastructure flakiness — ANR dialogs, scroll
