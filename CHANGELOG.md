@@ -1,3 +1,10 @@
+## [2.40.2](https://github.com/AntoC-dev/Recipedia/compare/v2.40.1...v2.40.2) (2026-07-12)
+
+### Bug Fixes
+
+* **db:** map insert values by column name not key order ([3c63e6b](https://github.com/AntoC-dev/Recipedia/commit/3c63e6b79d695abffff8fea384c907aecc02ca04)), closes [#361](https://github.com/AntoC-dev/Recipedia/issues/361)
+* **db:** map insert values by column name not key order ([#407](https://github.com/AntoC-dev/Recipedia/issues/407)) ([3947ff1](https://github.com/AntoC-dev/Recipedia/commit/3947ff1c3fc16c324351a5b4941bbc0b0ff08dd9))
+
 ## [2.40.1](https://github.com/AntoC-dev/Recipedia/compare/v2.40.0...v2.40.1) (2026-07-08)
 
 ### Bug Fixes
