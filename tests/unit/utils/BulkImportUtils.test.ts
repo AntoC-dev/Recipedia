@@ -88,10 +88,10 @@ describe('BulkImportUtils', () => {
       const result = buildDiscoveryListData(freshRecipes, seenRecipes);
 
       expect(result).toHaveLength(4);
-      expect(result[0].type).toBe('header');
-      expect(result[0].key).toBe('fresh-header');
-      expect(result[2].type).toBe('header');
-      expect(result[2].key).toBe('seen-header');
+      expect(result[0]!.type).toBe('header');
+      expect(result[0]!.key).toBe('fresh-header');
+      expect(result[2]!.type).toBe('header');
+      expect(result[2]!.key).toBe('seen-header');
     });
 
     test('includes correct count in header items', () => {
@@ -367,8 +367,8 @@ describe('BulkImportUtils', () => {
       const groups = groupDismissedRecipesByProvider(recipes, upperCaseName);
 
       expect(groups).toHaveLength(1);
-      expect(groups[0].providerId).toBe('hellofresh');
-      expect(groups[0].recipes).toHaveLength(2);
+      expect(groups[0]!.providerId).toBe('hellofresh');
+      expect(groups[0]!.recipes).toHaveLength(2);
     });
 
     test('resolves the provider display name', () => {
@@ -376,7 +376,7 @@ describe('BulkImportUtils', () => {
 
       const groups = groupDismissedRecipesByProvider(recipes, upperCaseName);
 
-      expect(groups[0].providerName).toBe('HELLOFRESH');
+      expect(groups[0]!.providerName).toBe('HELLOFRESH');
     });
 
     test('creates one group per provider in first-encountered order', () => {
@@ -389,8 +389,8 @@ describe('BulkImportUtils', () => {
       const groups = groupDismissedRecipesByProvider(recipes, upperCaseName);
 
       expect(groups.map(g => g.providerId)).toEqual(['quitoque', 'hellofresh']);
-      expect(groups[0].recipes).toHaveLength(2);
-      expect(groups[1].recipes).toHaveLength(1);
+      expect(groups[0]!.recipes).toHaveLength(2);
+      expect(groups[1]!.recipes).toHaveLength(1);
     });
 
     test('preserves input order within a group', () => {
@@ -401,7 +401,7 @@ describe('BulkImportUtils', () => {
 
       const groups = groupDismissedRecipesByProvider(recipes, upperCaseName);
 
-      expect(groups[0].recipes.map(r => r.title)).toEqual(['First', 'Second']);
+      expect(groups[0]!.recipes.map(r => r.title)).toEqual(['First', 'Second']);
     });
   });
 });

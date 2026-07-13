@@ -55,7 +55,7 @@ describe('bugReportSchema', () => {
     const result = bugReportSchema.safeParse({ description: '' });
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0].message).toBe('bugReport.descriptionRequired');
+      expect(result.error.issues[0]!.message).toBe('bugReport.descriptionRequired');
     }
   });
 });

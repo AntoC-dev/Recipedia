@@ -11,7 +11,7 @@ jest.mock('@components/molecules/RecipeCard', () => ({
 describe('Carousel Component', () => {
   const sampleRecipes: recipeTableElement[] = testRecipes.slice(0, 3);
   const emptyRecipes: recipeTableElement[] = [];
-  const singleRecipe: recipeTableElement[] = [testRecipes[0]];
+  const singleRecipe: recipeTableElement[] = [testRecipes[0]!];
 
   const renderCarousel = (overrideProps = {}) => {
     const defaultProps: CarouselItemProps = {
@@ -36,16 +36,16 @@ describe('Carousel Component', () => {
       // Assert card receives recipe data
       const recipeData = JSON.parse(getByTestId(cardTestId + '::Recipe').props.children);
       expect(recipeData).toBeDefined();
-      expect(recipeData.id).toEqual(recipes[i].id);
-      expect(recipeData.title).toEqual(recipes[i].title);
-      expect(recipeData.image_Source).toEqual(recipes[i].image_Source);
-      expect(recipeData.description).toEqual(recipes[i].description);
-      expect(recipeData.tags).toEqual(recipes[i].tags);
-      expect(recipeData.ingredients).toEqual(recipes[i].ingredients);
-      expect(recipeData.preparation).toEqual(recipes[i].preparation);
-      expect(recipeData.season).toEqual(recipes[i].season);
-      expect(recipeData.persons).toEqual(recipes[i].persons);
-      expect(recipeData.time).toEqual(recipes[i].time);
+      expect(recipeData.id).toEqual(recipes[i]!.id);
+      expect(recipeData.title).toEqual(recipes[i]!.title);
+      expect(recipeData.image_Source).toEqual(recipes[i]!.image_Source);
+      expect(recipeData.description).toEqual(recipes[i]!.description);
+      expect(recipeData.tags).toEqual(recipes[i]!.tags);
+      expect(recipeData.ingredients).toEqual(recipes[i]!.ingredients);
+      expect(recipeData.preparation).toEqual(recipes[i]!.preparation);
+      expect(recipeData.season).toEqual(recipes[i]!.season);
+      expect(recipeData.persons).toEqual(recipes[i]!.persons);
+      expect(recipeData.time).toEqual(recipes[i]!.time);
     }
     // Verify cards beyond expected count don't exist
     expect(() => getByTestId(`test-carousel::Card::${expectedCount}`)).toThrow();
@@ -100,10 +100,10 @@ describe('Carousel Component', () => {
   test('handles recipe data variations correctly', () => {
     // Create recipes with different data characteristics
     const variedRecipes = [
-      { ...testRecipes[0], title: 'Recipe with Special Characters: café & créme' },
-      { ...testRecipes[1], title: '' }, // Empty title
+      { ...testRecipes[0]!, title: 'Recipe with Special Characters: café & créme' },
+      { ...testRecipes[1]!, title: '' }, // Empty title
       {
-        ...testRecipes[2],
+        ...testRecipes[2]!,
         title: 'Very Long Recipe Title That Might Cause Layout Issues Or Text Truncation Problems',
       },
     ];
@@ -152,9 +152,9 @@ describe('Carousel Component', () => {
 
   test('generates unique keys for recipes with same title but different ids', () => {
     const duplicateTitleRecipes: recipeTableElement[] = [
-      { ...testRecipes[0], id: 1, title: 'Duplicate Title' },
-      { ...testRecipes[1], id: 2, title: 'Duplicate Title' },
-      { ...testRecipes[2], id: 3, title: 'Duplicate Title' },
+      { ...testRecipes[0]!, id: 1, title: 'Duplicate Title' },
+      { ...testRecipes[1]!, id: 2, title: 'Duplicate Title' },
+      { ...testRecipes[2]!, id: 3, title: 'Duplicate Title' },
     ];
 
     expect(() => renderCarousel({ items: duplicateTitleRecipes })).not.toThrow();
@@ -165,8 +165,8 @@ describe('Carousel Component', () => {
 
   test('generates unique keys for recipes without id using title and index', () => {
     const noIdRecipes: recipeTableElement[] = [
-      { ...testRecipes[0], id: undefined as any, title: 'Same Title' },
-      { ...testRecipes[1], id: undefined as any, title: 'Same Title' },
+      { ...testRecipes[0]!, id: undefined as any, title: 'Same Title' },
+      { ...testRecipes[1]!, id: undefined as any, title: 'Same Title' },
     ];
 
     expect(() => renderCarousel({ items: noIdRecipes })).not.toThrow();

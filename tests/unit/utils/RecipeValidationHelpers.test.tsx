@@ -57,8 +57,8 @@ describe('RecipeValidationHelpers', () => {
 
       expect(result.exactMatches).toEqual([]);
       expect(result.needsValidation).toHaveLength(1);
-      expect(result.needsValidation[0].name).toBe('Vegan');
-      expect(result.needsValidation[0].similarItems).toEqual([dbTags[0]]);
+      expect(result.needsValidation[0]!.name).toBe('Vegan');
+      expect(result.needsValidation[0]!.similarItems).toEqual([dbTags[0]]);
       expect(mockFindSimilarTags).toHaveBeenCalledWith('Vegan');
     });
 
@@ -88,10 +88,10 @@ describe('RecipeValidationHelpers', () => {
 
       expect(result.exactMatches).toEqual([dbTags[0]]);
       expect(result.needsValidation).toHaveLength(2);
-      expect(result.needsValidation[0].name).toBe('Gluten-Free');
-      expect(result.needsValidation[0].similarItems).toEqual([]);
-      expect(result.needsValidation[1].name).toBe('Vegan');
-      expect(result.needsValidation[1].similarItems).toEqual([dbTags[1]]);
+      expect(result.needsValidation[0]!.name).toBe('Gluten-Free');
+      expect(result.needsValidation[0]!.similarItems).toEqual([]);
+      expect(result.needsValidation[1]!.name).toBe('Vegan');
+      expect(result.needsValidation[1]!.similarItems).toEqual([dbTags[1]]);
     });
 
     test('returns empty arrays for empty input', () => {
@@ -110,7 +110,7 @@ describe('RecipeValidationHelpers', () => {
 
       expect(result.exactMatches).toEqual([]);
       expect(result.needsValidation).toHaveLength(1);
-      expect(result.needsValidation[0].name).toBe('NewTag');
+      expect(result.needsValidation[0]!.name).toBe('NewTag');
     });
 
     describe('similarItems attachment', () => {
@@ -121,7 +121,7 @@ describe('RecipeValidationHelpers', () => {
         const result = processTagsForValidation(inputTags, mockFindSimilarTags);
 
         expect(result.needsValidation).toHaveLength(1);
-        expect(result.needsValidation[0].similarItems).toEqual([]);
+        expect(result.needsValidation[0]!.similarItems).toEqual([]);
       });
 
       test('attaches similar tags to needsValidation items', () => {
@@ -132,7 +132,7 @@ describe('RecipeValidationHelpers', () => {
         const result = processTagsForValidation(inputTags, mockFindSimilarTags);
 
         expect(result.needsValidation).toHaveLength(1);
-        expect(result.needsValidation[0].similarItems).toEqual(similarResults);
+        expect(result.needsValidation[0]!.similarItems).toEqual(similarResults);
       });
 
       test('attaches different similarItems to different tags', () => {
@@ -144,8 +144,8 @@ describe('RecipeValidationHelpers', () => {
         const result = processTagsForValidation(inputTags, mockFindSimilarTags);
 
         expect(result.needsValidation).toHaveLength(2);
-        expect(result.needsValidation[0].similarItems).toEqual([dbTags[0]]);
-        expect(result.needsValidation[1].similarItems).toEqual([dbTags[1], dbTags[2]]);
+        expect(result.needsValidation[0]!.similarItems).toEqual([dbTags[0]]);
+        expect(result.needsValidation[1]!.similarItems).toEqual([dbTags[1], dbTags[2]]);
       });
 
       test('preserves original tag properties alongside similarItems', () => {
@@ -154,9 +154,9 @@ describe('RecipeValidationHelpers', () => {
         const inputTags: tagTableElement[] = [{ id: 99, name: 'CustomTag' }];
         const result = processTagsForValidation(inputTags, mockFindSimilarTags);
 
-        expect(result.needsValidation[0].id).toBe(99);
-        expect(result.needsValidation[0].name).toBe('CustomTag');
-        expect(result.needsValidation[0].similarItems).toEqual([dbTags[0]]);
+        expect(result.needsValidation[0]!.id).toBe(99);
+        expect(result.needsValidation[0]!.name).toBe('CustomTag');
+        expect(result.needsValidation[0]!.similarItems).toEqual([dbTags[0]]);
       });
     });
 
@@ -176,12 +176,12 @@ describe('RecipeValidationHelpers', () => {
         const result = processTagsForValidation(inputTags, mockFindSimilarTags);
 
         expect(result.needsValidation).toHaveLength(3);
-        expect(result.needsValidation[0].name).toBe('NoMatch');
-        expect(result.needsValidation[0].similarItems).toEqual([]);
-        expect(result.needsValidation[1].name).toBe('HasMatch1');
-        expect(result.needsValidation[1].similarItems).toEqual([dbTags[0]]);
-        expect(result.needsValidation[2].name).toBe('HasMatch2');
-        expect(result.needsValidation[2].similarItems).toEqual([dbTags[1]]);
+        expect(result.needsValidation[0]!.name).toBe('NoMatch');
+        expect(result.needsValidation[0]!.similarItems).toEqual([]);
+        expect(result.needsValidation[1]!.name).toBe('HasMatch1');
+        expect(result.needsValidation[1]!.similarItems).toEqual([dbTags[0]]);
+        expect(result.needsValidation[2]!.name).toBe('HasMatch2');
+        expect(result.needsValidation[2]!.similarItems).toEqual([dbTags[1]]);
       });
 
       test('maintains relative order within same group (no matches)', () => {
@@ -195,9 +195,9 @@ describe('RecipeValidationHelpers', () => {
 
         const result = processTagsForValidation(inputTags, mockFindSimilarTags);
 
-        expect(result.needsValidation[0].name).toBe('First');
-        expect(result.needsValidation[1].name).toBe('Second');
-        expect(result.needsValidation[2].name).toBe('Third');
+        expect(result.needsValidation[0]!.name).toBe('First');
+        expect(result.needsValidation[1]!.name).toBe('Second');
+        expect(result.needsValidation[2]!.name).toBe('Third');
       });
 
       test('maintains relative order within same group (with matches)', () => {
@@ -211,9 +211,9 @@ describe('RecipeValidationHelpers', () => {
 
         const result = processTagsForValidation(inputTags, mockFindSimilarTags);
 
-        expect(result.needsValidation[0].name).toBe('First');
-        expect(result.needsValidation[1].name).toBe('Second');
-        expect(result.needsValidation[2].name).toBe('Third');
+        expect(result.needsValidation[0]!.name).toBe('First');
+        expect(result.needsValidation[1]!.name).toBe('Second');
+        expect(result.needsValidation[2]!.name).toBe('Third');
       });
 
       test('handles all items having similar matches', () => {
@@ -255,11 +255,11 @@ describe('RecipeValidationHelpers', () => {
         const result = processTagsForValidation(inputTags, mockFindSimilarTags);
 
         expect(result.exactMatches).toHaveLength(1);
-        expect(result.exactMatches[0].name).toBe('Vegetarian');
+        expect(result.exactMatches[0]!.name).toBe('Vegetarian');
         expect(result.needsValidation).toHaveLength(3);
-        expect(result.needsValidation[0].name).toBe('BrandNew');
-        expect(result.needsValidation[1].name).toBe('SimilarToItalian');
-        expect(result.needsValidation[2].name).toBe('SimilarToQuick');
+        expect(result.needsValidation[0]!.name).toBe('BrandNew');
+        expect(result.needsValidation[1]!.name).toBe('SimilarToItalian');
+        expect(result.needsValidation[2]!.name).toBe('SimilarToQuick');
       });
 
       test('handles single item without similar matches', () => {
@@ -270,8 +270,8 @@ describe('RecipeValidationHelpers', () => {
         const result = processTagsForValidation(inputTags, mockFindSimilarTags);
 
         expect(result.needsValidation).toHaveLength(1);
-        expect(result.needsValidation[0].name).toBe('SingleTag');
-        expect(result.needsValidation[0].similarItems).toEqual([]);
+        expect(result.needsValidation[0]!.name).toBe('SingleTag');
+        expect(result.needsValidation[0]!.similarItems).toEqual([]);
       });
 
       test('handles single item with similar matches', () => {
@@ -282,8 +282,8 @@ describe('RecipeValidationHelpers', () => {
         const result = processTagsForValidation(inputTags, mockFindSimilarTags);
 
         expect(result.needsValidation).toHaveLength(1);
-        expect(result.needsValidation[0].name).toBe('SingleTag');
-        expect(result.needsValidation[0].similarItems).toEqual([dbTags[0], dbTags[1]]);
+        expect(result.needsValidation[0]!.name).toBe('SingleTag');
+        expect(result.needsValidation[0]!.similarItems).toEqual([dbTags[0], dbTags[1]]);
       });
     });
   });
@@ -409,8 +409,8 @@ describe('RecipeValidationHelpers', () => {
 
       expect(result.exactMatches).toEqual([]);
       expect(result.needsValidation).toHaveLength(1);
-      expect(result.needsValidation[0].name).toBe('Tomato');
-      expect(result.needsValidation[0].similarItems).toEqual([dbIngredients[0]]);
+      expect(result.needsValidation[0]!.name).toBe('Tomato');
+      expect(result.needsValidation[0]!.similarItems).toEqual([dbIngredients[0]]);
     });
 
     test('handles exact match case-insensitively', () => {
@@ -478,10 +478,10 @@ describe('RecipeValidationHelpers', () => {
         },
       ]);
       expect(result.needsValidation).toHaveLength(2);
-      expect(result.needsValidation[0].name).toBe('DragonFruit');
-      expect(result.needsValidation[0].similarItems).toEqual([]);
-      expect(result.needsValidation[1].name).toBe('Tomato');
-      expect(result.needsValidation[1].similarItems).toEqual([dbIngredients[1]]);
+      expect(result.needsValidation[0]!.name).toBe('DragonFruit');
+      expect(result.needsValidation[0]!.similarItems).toEqual([]);
+      expect(result.needsValidation[1]!.name).toBe('Tomato');
+      expect(result.needsValidation[1]!.similarItems).toEqual([dbIngredients[1]]);
     });
 
     test('returns empty arrays for empty input', () => {
@@ -509,7 +509,7 @@ describe('RecipeValidationHelpers', () => {
 
       expect(result.exactMatches).toEqual([]);
       expect(result.needsValidation).toHaveLength(1);
-      expect(result.needsValidation[0].name).toBe('NewIngredient');
+      expect(result.needsValidation[0]!.name).toBe('NewIngredient');
     });
 
     describe('similarItems attachment', () => {
@@ -532,7 +532,7 @@ describe('RecipeValidationHelpers', () => {
         );
 
         expect(result.needsValidation).toHaveLength(1);
-        expect(result.needsValidation[0].similarItems).toEqual([]);
+        expect(result.needsValidation[0]!.similarItems).toEqual([]);
       });
 
       test('attaches similar ingredients to needsValidation items', () => {
@@ -554,7 +554,7 @@ describe('RecipeValidationHelpers', () => {
         );
 
         expect(result.needsValidation).toHaveLength(1);
-        expect(result.needsValidation[0].similarItems).toEqual([
+        expect(result.needsValidation[0]!.similarItems).toEqual([
           dbIngredients[0],
           dbIngredients[1],
         ]);
@@ -576,8 +576,8 @@ describe('RecipeValidationHelpers', () => {
         );
 
         expect(result.needsValidation).toHaveLength(2);
-        expect(result.needsValidation[0].similarItems).toEqual([dbIngredients[0]]);
-        expect(result.needsValidation[1].similarItems).toEqual([dbIngredients[1]]);
+        expect(result.needsValidation[0]!.similarItems).toEqual([dbIngredients[0]]);
+        expect(result.needsValidation[1]!.similarItems).toEqual([dbIngredients[1]]);
       });
 
       test('preserves original ingredient properties alongside similarItems', () => {
@@ -601,12 +601,12 @@ describe('RecipeValidationHelpers', () => {
         );
 
         const validationItem = result.needsValidation[0];
-        expect(validationItem.id).toBe(99);
-        expect(validationItem.name).toBe('CustomIng');
-        expect(validationItem.quantity).toBe('250');
-        expect(validationItem.unit).toBe('ml');
-        expect(validationItem.note).toBe('Test note');
-        expect(validationItem.similarItems).toEqual([dbIngredients[0]]);
+        expect(validationItem!.id).toBe(99);
+        expect(validationItem!.name).toBe('CustomIng');
+        expect(validationItem!.quantity).toBe('250');
+        expect(validationItem!.unit).toBe('ml');
+        expect(validationItem!.note).toBe('Test note');
+        expect(validationItem!.similarItems).toEqual([dbIngredients[0]]);
       });
     });
 
@@ -641,12 +641,12 @@ describe('RecipeValidationHelpers', () => {
         );
 
         expect(result.needsValidation).toHaveLength(3);
-        expect(result.needsValidation[0].name).toBe('NoMatch');
-        expect(result.needsValidation[0].similarItems).toEqual([]);
-        expect(result.needsValidation[1].name).toBe('HasMatch1');
-        expect(result.needsValidation[1].similarItems).toEqual([dbIngredients[0]]);
-        expect(result.needsValidation[2].name).toBe('HasMatch2');
-        expect(result.needsValidation[2].similarItems).toEqual([dbIngredients[1]]);
+        expect(result.needsValidation[0]!.name).toBe('NoMatch');
+        expect(result.needsValidation[0]!.similarItems).toEqual([]);
+        expect(result.needsValidation[1]!.name).toBe('HasMatch1');
+        expect(result.needsValidation[1]!.similarItems).toEqual([dbIngredients[0]]);
+        expect(result.needsValidation[2]!.name).toBe('HasMatch2');
+        expect(result.needsValidation[2]!.similarItems).toEqual([dbIngredients[1]]);
       });
 
       test('maintains relative order within same group (no matches)', () => {
@@ -663,9 +663,9 @@ describe('RecipeValidationHelpers', () => {
           mockFindSimilarIngredients
         );
 
-        expect(result.needsValidation[0].name).toBe('First');
-        expect(result.needsValidation[1].name).toBe('Second');
-        expect(result.needsValidation[2].name).toBe('Third');
+        expect(result.needsValidation[0]!.name).toBe('First');
+        expect(result.needsValidation[1]!.name).toBe('Second');
+        expect(result.needsValidation[2]!.name).toBe('Third');
       });
 
       test('maintains relative order within same group (with matches)', () => {
@@ -682,9 +682,9 @@ describe('RecipeValidationHelpers', () => {
           mockFindSimilarIngredients
         );
 
-        expect(result.needsValidation[0].name).toBe('First');
-        expect(result.needsValidation[1].name).toBe('Second');
-        expect(result.needsValidation[2].name).toBe('Third');
+        expect(result.needsValidation[0]!.name).toBe('First');
+        expect(result.needsValidation[1]!.name).toBe('Second');
+        expect(result.needsValidation[2]!.name).toBe('Third');
       });
 
       test('handles all items having similar matches', () => {
@@ -765,11 +765,11 @@ describe('RecipeValidationHelpers', () => {
         );
 
         expect(result.exactMatches).toHaveLength(1);
-        expect(result.exactMatches[0].name).toBe('Tomato Sauce');
+        expect(result.exactMatches[0]!.name).toBe('Tomato Sauce');
         expect(result.needsValidation).toHaveLength(3);
-        expect(result.needsValidation[0].name).toBe('BrandNew');
-        expect(result.needsValidation[1].name).toBe('SimilarToParm');
-        expect(result.needsValidation[2].name).toBe('SimilarToTomato');
+        expect(result.needsValidation[0]!.name).toBe('BrandNew');
+        expect(result.needsValidation[1]!.name).toBe('SimilarToParm');
+        expect(result.needsValidation[2]!.name).toBe('SimilarToTomato');
       });
 
       test('handles single item without similar matches', () => {
@@ -791,8 +791,8 @@ describe('RecipeValidationHelpers', () => {
         );
 
         expect(result.needsValidation).toHaveLength(1);
-        expect(result.needsValidation[0].name).toBe('SingleIng');
-        expect(result.needsValidation[0].similarItems).toEqual([]);
+        expect(result.needsValidation[0]!.name).toBe('SingleIng');
+        expect(result.needsValidation[0]!.similarItems).toEqual([]);
       });
 
       test('handles single item with similar matches', () => {
@@ -814,8 +814,8 @@ describe('RecipeValidationHelpers', () => {
         );
 
         expect(result.needsValidation).toHaveLength(1);
-        expect(result.needsValidation[0].name).toBe('SingleIng');
-        expect(result.needsValidation[0].similarItems).toEqual([
+        expect(result.needsValidation[0]!.name).toBe('SingleIng');
+        expect(result.needsValidation[0]!.similarItems).toEqual([
           dbIngredients[0],
           dbIngredients[1],
         ]);
@@ -898,8 +898,8 @@ describe('RecipeValidationHelpers', () => {
       const result = processIngredientsForValidation(inputIngredients, mockFindSimilarIngredients);
 
       expect(result.exactMatches).toHaveLength(1);
-      expect(result.exactMatches[0].note).toBe('For the sauce');
-      expect(result.exactMatches[0].id).toBe(dbIngredients[0].id);
+      expect(result.exactMatches[0]!.note).toBe('For the sauce');
+      expect(result.exactMatches[0]!.id).toBe(dbIngredients[0]!.id);
     });
 
     test('preserves note as undefined when not provided', () => {
@@ -918,7 +918,7 @@ describe('RecipeValidationHelpers', () => {
       const result = processIngredientsForValidation(inputIngredients, mockFindSimilarIngredients);
 
       expect(result.exactMatches).toHaveLength(1);
-      expect(result.exactMatches[0].note).toBeUndefined();
+      expect(result.exactMatches[0]!.note).toBeUndefined();
     });
 
     test('uses database unit instead of scraped unit', () => {
@@ -937,8 +937,8 @@ describe('RecipeValidationHelpers', () => {
       const result = processIngredientsForValidation(inputIngredients, mockFindSimilarIngredients);
 
       expect(result.exactMatches).toHaveLength(1);
-      expect(result.exactMatches[0].quantity).toBe('2');
-      expect(result.exactMatches[0].unit).toBe('g');
+      expect(result.exactMatches[0]!.quantity).toBe('2');
+      expect(result.exactMatches[0]!.unit).toBe('g');
     });
   });
 
@@ -990,14 +990,14 @@ describe('RecipeValidationHelpers', () => {
       const result = removeIngredientByName(ingredients, 'Flour');
 
       expect(result).toHaveLength(1);
-      expect(result[0].name).toBe('Sugar');
+      expect(result[0]!.name).toBe('Sugar');
     });
 
     test('removes ingredient case-insensitively', () => {
       const result = removeIngredientByName(ingredients, 'FLOUR');
 
       expect(result).toHaveLength(1);
-      expect(result[0].name).toBe('Sugar');
+      expect(result[0]!.name).toBe('Sugar');
     });
 
     test('returns original array when name not found', () => {
@@ -1029,14 +1029,14 @@ describe('RecipeValidationHelpers', () => {
       const result = removeTagByName(tags, 'Italian');
 
       expect(result).toHaveLength(1);
-      expect(result[0].name).toBe('Quick');
+      expect(result[0]!.name).toBe('Quick');
     });
 
     test('removes tag case-insensitively', () => {
       const result = removeTagByName(tags, 'ITALIAN');
 
       expect(result).toHaveLength(1);
-      expect(result[0].name).toBe('Quick');
+      expect(result[0]!.name).toBe('Quick');
     });
 
     test('returns original array when name not found', () => {
@@ -1090,7 +1090,7 @@ describe('RecipeValidationHelpers', () => {
 
       const result = replaceMatchingIngredients(current, dbIngredients);
 
-      expect(result[0].id).toBe(10);
+      expect(result[0]!.id).toBe(10);
     });
 
     test('handles empty exactMatches array', () => {
@@ -1134,10 +1134,10 @@ describe('RecipeValidationHelpers', () => {
       const result = replaceMatchingIngredients(current, exactMatches);
 
       expect(result).toHaveLength(3);
-      expect(result[0].quantity).toBe('2');
-      expect(result[0].unit).toBe('tbsp');
-      expect(result[2].quantity).toBe('1');
-      expect(result[2].unit).toBe('g');
+      expect(result[0]!.quantity).toBe('2');
+      expect(result[0]!.unit).toBe('tbsp');
+      expect(result[2]!.quantity).toBe('1');
+      expect(result[2]!.unit).toBe('g');
     });
   });
 
@@ -1217,9 +1217,9 @@ describe('RecipeValidationHelpers', () => {
       const result = addOrMergeIngredientMatches(current, incoming);
 
       expect(result).toHaveLength(1);
-      expect(result[0].name).toBe('Riz basmati Bio');
-      expect(result[0].unit).toBe('g');
-      expect(result[0].quantity).toBe('200');
+      expect(result[0]!.name).toBe('Riz basmati Bio');
+      expect(result[0]!.unit).toBe('g');
+      expect(result[0]!.quantity).toBe('200');
     });
 
     test('preserves existing quantity when incoming quantity is undefined (different unit)', () => {
@@ -1244,8 +1244,8 @@ describe('RecipeValidationHelpers', () => {
       const result = addOrMergeIngredientMatches(current, incoming);
 
       expect(result).toHaveLength(1);
-      expect(result[0].unit).toBe('g');
-      expect(result[0].quantity).toBe('3');
+      expect(result[0]!.unit).toBe('g');
+      expect(result[0]!.quantity).toBe('3');
     });
 
     test('uses incoming quantity when provided (different unit)', () => {
@@ -1271,8 +1271,8 @@ describe('RecipeValidationHelpers', () => {
       const result = addOrMergeIngredientMatches(current, incoming);
 
       expect(result).toHaveLength(1);
-      expect(result[0].unit).toBe('tbsp');
-      expect(result[0].quantity).toBe('2');
+      expect(result[0]!.unit).toBe('tbsp');
+      expect(result[0]!.quantity).toBe('2');
     });
 
     test('replaces by namesMatch (whitespace + NFC normalized)', () => {
@@ -1298,8 +1298,8 @@ describe('RecipeValidationHelpers', () => {
       const result = addOrMergeIngredientMatches(current, incoming);
 
       expect(result).toHaveLength(1);
-      expect(result[0].quantity).toBe('250');
-      expect(result[0].name).toBe('Riz basmati Bio');
+      expect(result[0]!.quantity).toBe('250');
+      expect(result[0]!.name).toBe('Riz basmati Bio');
     });
   });
 
@@ -1320,7 +1320,7 @@ describe('RecipeValidationHelpers', () => {
       const input: FormIngredientElement[] = [{ name: 'Spaghetti', unit: '', quantity: '' }];
       const { exactMatches } = processIngredientsForValidation(input, findSimilar);
       expect(exactMatches).toHaveLength(1);
-      expect(exactMatches[0].quantity).toBe('');
+      expect(exactMatches[0]!.quantity).toBe('');
     });
   });
 
@@ -1342,7 +1342,7 @@ describe('RecipeValidationHelpers', () => {
       const result = addOrMergeIngredientMatches(currentIngredients, [newIngredient]);
 
       expect(result).toHaveLength(2);
-      expect(result[1].name).toBe('Sugar');
+      expect(result[1]!.name).toBe('Sugar');
     });
 
     test('merges quantity for same name and unit', () => {
@@ -1358,7 +1358,7 @@ describe('RecipeValidationHelpers', () => {
       const result = addOrMergeIngredientMatches(currentIngredients, [existingFlour]);
 
       expect(result).toHaveLength(1);
-      expect(result[0].quantity).toBe('300');
+      expect(result[0]!.quantity).toBe('300');
     });
 
     test('replaces ingredient when same name but different unit', () => {
@@ -1374,8 +1374,8 @@ describe('RecipeValidationHelpers', () => {
       const result = addOrMergeIngredientMatches(currentIngredients, [flourInKg]);
 
       expect(result).toHaveLength(1);
-      expect(result[0].unit).toBe('kg');
-      expect(result[0].quantity).toBe('0.5');
+      expect(result[0]!.unit).toBe('kg');
+      expect(result[0]!.quantity).toBe('0.5');
     });
 
     test('handles case-insensitive name matching', () => {
@@ -1391,7 +1391,7 @@ describe('RecipeValidationHelpers', () => {
       const result = addOrMergeIngredientMatches(currentIngredients, [flourUppercase]);
 
       expect(result).toHaveLength(1);
-      expect(result[0].quantity).toBe('300');
+      expect(result[0]!.quantity).toBe('300');
     });
 
     test('handles empty current array', () => {
@@ -1407,7 +1407,7 @@ describe('RecipeValidationHelpers', () => {
       const result = addOrMergeIngredientMatches([], [newIngredient]);
 
       expect(result).toHaveLength(1);
-      expect(result[0].name).toBe('Sugar');
+      expect(result[0]!.name).toBe('Sugar');
     });
 
     test('does not merge ingredients with empty names', () => {
@@ -1436,9 +1436,9 @@ describe('RecipeValidationHelpers', () => {
       const result = addOrMergeIngredientMatches(currentWithFormIngredient, [validatedIngredient]);
 
       expect(result).toHaveLength(1);
-      expect(result[0].quantity).toBe('300');
-      expect(result[0].type).toBe(ingredientType.cereal);
-      expect(result[0].season).toEqual(['1', '2', '3']);
+      expect(result[0]!.quantity).toBe('300');
+      expect(result[0]!.type).toBe(ingredientType.cereal);
+      expect(result[0]!.season).toEqual(['1', '2', '3']);
     });
 
     test('adds new ingredient with note', () => {
@@ -1455,8 +1455,8 @@ describe('RecipeValidationHelpers', () => {
       const result = addOrMergeIngredientMatches(currentIngredients, [newIngredient]);
 
       expect(result).toHaveLength(2);
-      expect(result[1].name).toBe('Sugar');
-      expect(result[1].note).toBe('For the frosting');
+      expect(result[1]!.name).toBe('Sugar');
+      expect(result[1]!.note).toBe('For the frosting');
     });
 
     test('preserves note from new ingredient when merging quantities', () => {
@@ -1473,8 +1473,8 @@ describe('RecipeValidationHelpers', () => {
       const result = addOrMergeIngredientMatches(currentIngredients, [flourWithNote]);
 
       expect(result).toHaveLength(1);
-      expect(result[0].quantity).toBe('300');
-      expect(result[0].note).toBe('For the dough');
+      expect(result[0]!.quantity).toBe('300');
+      expect(result[0]!.note).toBe('For the dough');
     });
 
     test('preserves existing note when new ingredient has no note during merge', () => {
@@ -1502,8 +1502,8 @@ describe('RecipeValidationHelpers', () => {
       const result = addOrMergeIngredientMatches(currentWithNote, [flourWithoutNote]);
 
       expect(result).toHaveLength(1);
-      expect(result[0].quantity).toBe('300');
-      expect(result[0].note).toBe('Original note');
+      expect(result[0]!.quantity).toBe('300');
+      expect(result[0]!.note).toBe('Original note');
     });
   });
 
@@ -1516,7 +1516,7 @@ describe('RecipeValidationHelpers', () => {
       const result = addNonDuplicateByName(currentTags, newTags);
 
       expect(result).toHaveLength(2);
-      expect(result[1].name).toBe('Vegan');
+      expect(result[1]!.name).toBe('Vegan');
     });
 
     test('does not add duplicate tag', () => {
@@ -1576,8 +1576,8 @@ describe('RecipeValidationHelpers', () => {
       const result = deduplicateIngredientsByName(ingredients);
 
       expect(result).toHaveLength(2);
-      expect(result[0].name).toBe('Flour');
-      expect(result[1].name).toBe('Sugar');
+      expect(result[0]!.name).toBe('Flour');
+      expect(result[1]!.name).toBe('Sugar');
     });
 
     test('sums quantities for same name and unit', () => {
@@ -1589,9 +1589,9 @@ describe('RecipeValidationHelpers', () => {
       const result = deduplicateIngredientsByName(ingredients);
 
       expect(result).toHaveLength(1);
-      expect(result[0].name).toBe("huile d'olive");
-      expect(result[0].quantity).toBe('6');
-      expect(result[0].unit).toBe('càs');
+      expect(result[0]!.name).toBe("huile d'olive");
+      expect(result[0]!.quantity).toBe('6');
+      expect(result[0]!.unit).toBe('càs');
     });
 
     test('keeps first occurrence when units differ', () => {
@@ -1603,8 +1603,8 @@ describe('RecipeValidationHelpers', () => {
       const result = deduplicateIngredientsByName(ingredients);
 
       expect(result).toHaveLength(1);
-      expect(result[0].quantity).toBe('2');
-      expect(result[0].unit).toBe('tbsp');
+      expect(result[0]!.quantity).toBe('2');
+      expect(result[0]!.unit).toBe('tbsp');
     });
 
     test('handles case-insensitive name matching', () => {
@@ -1616,7 +1616,7 @@ describe('RecipeValidationHelpers', () => {
       const result = deduplicateIngredientsByName(ingredients);
 
       expect(result).toHaveLength(1);
-      expect(result[0].quantity).toBe('300');
+      expect(result[0]!.quantity).toBe('300');
     });
 
     test('preserves note from first occurrence', () => {
@@ -1628,8 +1628,8 @@ describe('RecipeValidationHelpers', () => {
       const result = deduplicateIngredientsByName(ingredients);
 
       expect(result).toHaveLength(1);
-      expect(result[0].note).toBe('white or cider');
-      expect(result[0].quantity).toBe('3');
+      expect(result[0]!.note).toBe('white or cider');
+      expect(result[0]!.quantity).toBe('3');
     });
 
     test('skips ingredients with empty names', () => {
@@ -1641,7 +1641,7 @@ describe('RecipeValidationHelpers', () => {
       const result = deduplicateIngredientsByName(ingredients);
 
       expect(result).toHaveLength(1);
-      expect(result[0].name).toBe('Flour');
+      expect(result[0]!.name).toBe('Flour');
     });
 
     test('handles empty array', () => {
@@ -1676,7 +1676,7 @@ describe('RecipeValidationHelpers', () => {
       const result = deduplicateIngredientsByName(ingredients);
 
       expect(result).toHaveLength(1);
-      expect(result[0].quantity).toBe('200');
+      expect(result[0]!.quantity).toBe('200');
     });
 
     test('keeps first occurrence when notes and units differ', () => {
@@ -1688,9 +1688,9 @@ describe('RecipeValidationHelpers', () => {
       const result = deduplicateIngredientsByName(ingredients);
 
       expect(result).toHaveLength(1);
-      expect(result[0].quantity).toBe('2');
-      expect(result[0].unit).toBe('tbsp');
-      expect(result[0].note).toBe('for the dressing');
+      expect(result[0]!.quantity).toBe('2');
+      expect(result[0]!.unit).toBe('tbsp');
+      expect(result[0]!.note).toBe('for the dressing');
     });
 
     test('prefers numeric side when only one quantity is numeric', () => {
@@ -1702,7 +1702,7 @@ describe('RecipeValidationHelpers', () => {
       const result = deduplicateIngredientsByName(ingredients);
 
       expect(result).toHaveLength(1);
-      expect(result[0].quantity).toBe('200');
+      expect(result[0]!.quantity).toBe('200');
     });
 
     test('keeps the later quantity when both are non-numeric', () => {
@@ -1714,7 +1714,7 @@ describe('RecipeValidationHelpers', () => {
       const result = deduplicateIngredientsByName(ingredients);
 
       expect(result).toHaveLength(1);
-      expect(result[0].quantity).toBe('to taste');
+      expect(result[0]!.quantity).toBe('to taste');
     });
 
     describe('similarItems preservation', () => {
@@ -1738,8 +1738,8 @@ describe('RecipeValidationHelpers', () => {
         const result = deduplicateIngredientsByName(ingredients);
 
         expect(result).toHaveLength(1);
-        expect(result[0].quantity).toBe('300');
-        expect(result[0].similarItems).toEqual(mockSimilarItems);
+        expect(result[0]!.quantity).toBe('300');
+        expect(result[0]!.similarItems).toEqual(mockSimilarItems);
       });
 
       test('preserves empty similarItems array', () => {
@@ -1751,7 +1751,7 @@ describe('RecipeValidationHelpers', () => {
         const result = deduplicateIngredientsByName(ingredients);
 
         expect(result).toHaveLength(1);
-        expect(result[0].similarItems).toEqual([]);
+        expect(result[0]!.similarItems).toEqual([]);
       });
 
       test('handles ingredients without similarItems property', () => {
@@ -1763,8 +1763,8 @@ describe('RecipeValidationHelpers', () => {
         const result = deduplicateIngredientsByName(ingredients);
 
         expect(result).toHaveLength(2);
-        expect(result[0].similarItems).toBeUndefined();
-        expect(result[1].similarItems).toEqual(mockSimilarItems);
+        expect(result[0]!.similarItems).toBeUndefined();
+        expect(result[1]!.similarItems).toEqual(mockSimilarItems);
       });
 
       test('preserves multiple similarItems in array', () => {
@@ -1802,8 +1802,8 @@ describe('RecipeValidationHelpers', () => {
         const result = deduplicateIngredientsByName(ingredients);
 
         expect(result).toHaveLength(1);
-        expect(result[0].similarItems).toEqual(multipleSimilarItems);
-        expect(result[0].similarItems).toHaveLength(3);
+        expect(result[0]!.similarItems).toEqual(multipleSimilarItems);
+        expect(result[0]!.similarItems).toHaveLength(3);
       });
 
       test('handles mixed ingredients with and without similarItems during deduplication', () => {
@@ -1838,8 +1838,8 @@ describe('RecipeValidationHelpers', () => {
       const result = deduplicateIngredientsByName(ingredients);
 
       expect(result).toHaveLength(1);
-      expect(result[0].unit).toBe('ml');
-      expect(result[0].quantity).toBe('600');
+      expect(result[0]!.unit).toBe('ml');
+      expect(result[0]!.quantity).toBe('600');
     });
 
     test('converts summed quantity to string when duplicate quantity is undefined', () => {
@@ -1851,7 +1851,7 @@ describe('RecipeValidationHelpers', () => {
       const result = deduplicateIngredientsByName(ingredients);
 
       expect(result).toHaveLength(1);
-      expect(result[0].quantity).toBe('5');
+      expect(result[0]!.quantity).toBe('5');
     });
   });
 
@@ -1938,8 +1938,8 @@ describe('RecipeValidationHelpers', () => {
       const result = replaceMatchingIngredients(current, exactMatches);
 
       expect(result).toHaveLength(1);
-      expect(result[0].name).toBe('Flour');
-      expect(result[0].id).toBe(1);
+      expect(result[0]!.name).toBe('Flour');
+      expect(result[0]!.id).toBe(1);
     });
   });
 
@@ -1951,8 +1951,8 @@ describe('RecipeValidationHelpers', () => {
       const result = replaceMatchingTags(current, exactMatches);
 
       expect(result).toHaveLength(1);
-      expect(result[0].name).toBe('Italian');
-      expect(result[0].id).toBe(1);
+      expect(result[0]!.name).toBe('Italian');
+      expect(result[0]!.id).toBe(1);
     });
   });
 
@@ -1968,7 +1968,7 @@ describe('RecipeValidationHelpers', () => {
       const result = addOrMergeIngredientMatches(current, incoming);
 
       expect(result).toHaveLength(1);
-      expect(result[0].quantity).toBe('2');
+      expect(result[0]!.quantity).toBe('2');
     });
 
     test('converts summed quantity to string when incoming quantity is undefined', () => {
@@ -1982,7 +1982,7 @@ describe('RecipeValidationHelpers', () => {
       const result = addOrMergeIngredientMatches(current, incoming);
 
       expect(result).toHaveLength(1);
-      expect(result[0].quantity).toBe('3');
+      expect(result[0]!.quantity).toBe('3');
     });
   });
 
@@ -2142,7 +2142,7 @@ describe('RecipeValidationHelpers', () => {
 
       expect(mockOnExactMatch).toHaveBeenCalledTimes(1);
       expect(mockOnExactMatch.mock.calls[0][0].name).toBe('Tomato');
-      expect(mockOnExactMatch.mock.calls[0][0].id).toBe(dbIngredients[0].id);
+      expect(mockOnExactMatch.mock.calls[0][0].id).toBe(dbIngredients[0]!.id);
     });
 
     test('does not call setQueue when all items are exact matches', () => {
@@ -2288,16 +2288,16 @@ describe('RecipeValidationHelpers', () => {
       const sorted = sortAlphabetically(items);
 
       expect(sorted).not.toBe(items);
-      expect(items[0].name).toBe('B');
+      expect(items[0]!.name).toBe('B');
     });
 
     test('treats undefined name as empty string for sorting', () => {
       const items = [{ name: 'Banana' }, { name: undefined }, { name: 'Apple' }];
       const sorted = sortAlphabetically(items);
 
-      expect(sorted[0].name).toBeUndefined();
-      expect(sorted[1].name).toBe('Apple');
-      expect(sorted[2].name).toBe('Banana');
+      expect(sorted[0]!.name).toBeUndefined();
+      expect(sorted[1]!.name).toBe('Apple');
+      expect(sorted[2]!.name).toBe('Banana');
     });
 
     test('returns empty array for empty input', () => {
@@ -2318,7 +2318,7 @@ describe('RecipeValidationHelpers', () => {
 
       const result = computeTagSimilarity([{ id: 1, name: 'Italian' }], findSimilarTags);
 
-      expect(result[0].similarItems).toEqual([similar]);
+      expect(result[0]!.similarItems).toEqual([similar]);
     });
 
     test('filters out exact-name matches from similarItems', () => {
@@ -2328,7 +2328,7 @@ describe('RecipeValidationHelpers', () => {
 
       const result = computeTagSimilarity([{ id: 1, name: 'Italian' }], findSimilarTags);
 
-      expect(result[0].similarItems).toEqual([otherMatch]);
+      expect(result[0]!.similarItems).toEqual([otherMatch]);
     });
 
     test('returns empty similarItems when no similar tags found', () => {
@@ -2336,7 +2336,7 @@ describe('RecipeValidationHelpers', () => {
 
       const result = computeTagSimilarity([{ id: 1, name: 'Italian' }], findSimilarTags);
 
-      expect(result[0].similarItems).toEqual([]);
+      expect(result[0]!.similarItems).toEqual([]);
     });
 
     test('preserves original tag fields alongside similarItems', () => {
@@ -2345,8 +2345,8 @@ describe('RecipeValidationHelpers', () => {
 
       const result = computeTagSimilarity([tag], findSimilarTags);
 
-      expect(result[0].id).toBe(5);
-      expect(result[0].name).toBe('Dinner');
+      expect(result[0]!.id).toBe(5);
+      expect(result[0]!.name).toBe('Dinner');
     });
 
     test('calls findSimilarTags once per tag', () => {
@@ -2385,7 +2385,7 @@ describe('RecipeValidationHelpers', () => {
         findSimilarIngredients
       );
 
-      expect(result[0].similarItems).toEqual([similar]);
+      expect(result[0]!.similarItems).toEqual([similar]);
     });
 
     test('filters out exact-name matches from similarItems', () => {
@@ -2404,7 +2404,7 @@ describe('RecipeValidationHelpers', () => {
         findSimilarIngredients
       );
 
-      expect(result[0].similarItems).toEqual([otherMatch]);
+      expect(result[0]!.similarItems).toEqual([otherMatch]);
     });
 
     test('skips ingredients without a name', () => {
@@ -2429,7 +2429,7 @@ describe('RecipeValidationHelpers', () => {
         findSimilarIngredients
       );
 
-      expect(result[0].similarItems).toEqual([]);
+      expect(result[0]!.similarItems).toEqual([]);
     });
 
     test('preserves original ingredient fields alongside similarItems', () => {
@@ -2438,9 +2438,9 @@ describe('RecipeValidationHelpers', () => {
 
       const result = computeIngredientSimilarity([ingredient], findSimilarIngredients);
 
-      expect(result[0].name).toBe('Olive Oil');
-      expect(result[0].quantity).toBe('2');
-      expect(result[0].unit).toBe('tbsp');
+      expect(result[0]!.name).toBe('Olive Oil');
+      expect(result[0]!.quantity).toBe('2');
+      expect(result[0]!.unit).toBe('tbsp');
     });
   });
 });

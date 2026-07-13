@@ -17,7 +17,7 @@ export function recipeTagsMock(recipeTagProp: RecipeTagProps) {
           />
           <Button
             testID={tagsTestID + '::RemoveTag'}
-            onPress={() => recipeTagProp.removeTag(recipeTagProp.tagsList[0])}
+            onPress={() => recipeTagProp.removeTag(recipeTagProp.tagsList[0]!)}
             title='Change Tag'
           />
         </View>

@@ -223,7 +223,7 @@ describe('useRecipeScraperValidation', () => {
   });
 
   test('does not trigger validation for known ingredients', async () => {
-    const knownIngredientName = testIngredients[0].name;
+    const knownIngredientName = testIngredients[0]!.name;
     const wrapper = createWrapper([createMockIngredient(knownIngredientName)], []);
 
     const { result } = renderHook(
@@ -240,7 +240,7 @@ describe('useRecipeScraperValidation', () => {
   });
 
   test('does not trigger validation for known tags', async () => {
-    const knownTagName = testTags[0].name;
+    const knownTagName = testTags[0]!.name;
     const wrapper = createWrapper([], [createMockTag(knownTagName)]);
 
     const { result } = renderHook(

@@ -25,8 +25,8 @@ describe('RecommendationSkeletonRow Component', () => {
     const scrollViews = UNSAFE_getAllByType(ScrollView);
 
     expect(scrollViews.length).toBe(1);
-    expect(scrollViews[0].props.horizontal).toBe(true);
-    expect(scrollViews[0].props.scrollEnabled).toBe(false);
+    expect(scrollViews[0]!.props.horizontal).toBe(true);
+    expect(scrollViews[0]!.props.scrollEnabled).toBe(false);
   });
 
   test('renders an animated view as root', () => {

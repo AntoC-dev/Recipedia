@@ -237,14 +237,14 @@ describe('PyodideBridge', () => {
 
         it('resolves the pending call with result', async () => {
             const callPromise = bridge.call('testMethod', {});
-            const {id} = JSON.parse(receivedMessages[0]);
+            const {id} = JSON.parse(receivedMessages[0]!);
             bridge.handleMessage(JSON.stringify({type: 'rpcResponse', id, result: '{"ok":true}'}));
             await expect(callPromise).resolves.toBe('{"ok":true}');
         });
 
         it('rejects the pending call with formatted error message', async () => {
             const callPromise = bridge.call('testMethod', {});
-            const {id} = JSON.parse(receivedMessages[0]);
+            const {id} = JSON.parse(receivedMessages[0]!);
             bridge.handleMessage(JSON.stringify({
                 type: 'rpcResponse',
                 id,
@@ -255,7 +255,7 @@ describe('PyodideBridge', () => {
 
         it('rejects with "Empty response" when neither result nor error is provided', async () => {
             const callPromise = bridge.call('testMethod', {});
-            const {id} = JSON.parse(receivedMessages[0]);
+            const {id} = JSON.parse(receivedMessages[0]!);
             bridge.handleMessage(JSON.stringify({type: 'rpcResponse', id}));
             await expect(callPromise).rejects.toThrow('Empty response from Pyodide');
         });
@@ -272,8 +272,8 @@ describe('PyodideBridge', () => {
             const call1 = bridge.call('method1');
             const call2 = bridge.call('method2');
 
-            const id1 = JSON.parse(receivedMessages[0]).id;
-            const id2 = JSON.parse(receivedMessages[1]).id;
+            const id1 = JSON.parse(receivedMessages[0]!).id;
+            const id2 = JSON.parse(receivedMessages[1]!).id;
 
             bridge.handleMessage(JSON.stringify({type: 'rpcResponse', id: id2, result: 'res2'}));
             bridge.handleMessage(JSON.stringify({type: 'rpcResponse', id: id1, result: 'res1'}));
@@ -362,7 +362,7 @@ describe('PyodideBridge', () => {
 
             bridge.call('scrapeRecipe', {url: 'https://example.com', wildMode: true}).catch(() => {});
 
-            const sent = JSON.parse(messages[0]);
+            const sent = JSON.parse(messages[0]!);
             expect(sent.type).toBe('rpc');
             expect(sent.method).toBe('scrapeRecipe');
             expect(sent.params).toEqual({url: 'https://example.com', wildMode: true});
@@ -378,8 +378,8 @@ describe('PyodideBridge', () => {
             bridge.call('method1').catch(() => {});
             bridge.call('method2').catch(() => {});
 
-            const id1 = JSON.parse(messages[0]).id;
-            const id2 = JSON.parse(messages[1]).id;
+            const id1 = JSON.parse(messages[0]!).id;
+            const id2 = JSON.parse(messages[1]!).id;
             expect(id2).toBe(id1 + 1);
         });
 
@@ -397,7 +397,7 @@ describe('PyodideBridge', () => {
             await Promise.resolve();
 
             expect(messages).toHaveLength(1);
-            const {id} = JSON.parse(messages[0]);
+            const {id} = JSON.parse(messages[0]!);
             bridge.handleMessage(JSON.stringify({type: 'rpcResponse', id, result: 'ok'}));
             await expect(callPromise).resolves.toBe('ok');
         });
@@ -436,27 +436,27 @@ describe('PyodideBridge', () => {
 
         it('scrapeRecipeFromHtml sends correct method and params', () => {
             bridge.scrapeRecipeFromHtml('<html/>', 'https://example.com', false).catch(() => {});
-            const sent = JSON.parse(receivedMessages[0]);
+            const sent = JSON.parse(receivedMessages[0]!);
             expect(sent.method).toBe('scrapeRecipeFromHtml');
             expect(sent.params).toEqual({html: '<html/>', url: 'https://example.com', wildMode: false});
         });
 
         it('scrapeRecipeFromHtml defaults wildMode to true', () => {
             bridge.scrapeRecipeFromHtml('<html/>', 'https://example.com').catch(() => {});
-            const sent = JSON.parse(receivedMessages[0]);
+            const sent = JSON.parse(receivedMessages[0]!);
             expect(sent.params.wildMode).toBe(true);
         });
 
         it('getSupportedHosts sends correct method with empty params', () => {
             bridge.getSupportedHosts().catch(() => {});
-            const sent = JSON.parse(receivedMessages[0]);
+            const sent = JSON.parse(receivedMessages[0]!);
             expect(sent.method).toBe('getSupportedHosts');
             expect(sent.params).toEqual({});
         });
 
         it('isHostSupported sends correct method with host param', () => {
             bridge.isHostSupported('allrecipes.com').catch(() => {});
-            const sent = JSON.parse(receivedMessages[0]);
+            const sent = JSON.parse(receivedMessages[0]!);
             expect(sent.method).toBe('isHostSupported');
             expect(sent.params).toEqual({host: 'allrecipes.com'});
         });
@@ -570,7 +570,7 @@ describe('PyodideBridge', () => {
             bridge.handleMessage(JSON.stringify({type: 'ready'}));
 
             bridge.call('method1').catch(() => {});
-            const {id} = JSON.parse(messages[0]);
+            const {id} = JSON.parse(messages[0]!);
             bridge.destroy();
 
             bridge.handleMessage(JSON.stringify({type: 'rpcResponse', id, result: 'late'}));

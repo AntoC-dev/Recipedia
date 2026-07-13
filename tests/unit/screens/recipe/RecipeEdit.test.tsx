@@ -85,7 +85,7 @@ describe('RecipeEdit', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     dbInstance = await setupDb();
-    mockRouteEdit = { mode: 'edit', recipe: { ...testRecipes[6] } } as EditRecipeProp;
+    mockRouteEdit = { mode: 'edit', recipe: { ...testRecipes[6]! } } as EditRecipeProp;
   });
 
   afterEach(async () => {
@@ -247,13 +247,13 @@ describe('RecipeEdit', () => {
           preparation: [...mockRouteEdit.recipe.preparation],
         },
       };
-      newEditProp.recipe.preparation[0].description += '.New part of a paragraph';
+      newEditProp.recipe.preparation[0]!.description += '.New part of a paragraph';
 
       const descriptionInput = getByTestId(
         'RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput'
       );
       fireEvent(descriptionInput, 'endEditing', {
-        nativeEvent: { text: newEditProp.recipe.preparation[0].description },
+        nativeEvent: { text: newEditProp.recipe.preparation[0]!.description },
       });
 
       await waitFor(() => {
@@ -280,7 +280,7 @@ describe('RecipeEdit', () => {
           image_Source: mockRouteEdit.recipe.image_Source,
           title: 'New Recipe Title',
           description: 'New Recipe Description',
-          tags: new Array(mockRouteEdit.recipe.tags[1]),
+          tags: new Array(mockRouteEdit.recipe.tags[1]!),
           persons: 23,
           ingredients: mockRouteEdit.recipe.ingredients.map(ingredient => ({ ...ingredient })),
           time: 71,
@@ -302,7 +302,7 @@ describe('RecipeEdit', () => {
       }));
 
       const updatePreparationWith = '.New part of a paragraph';
-      newPropEdit.recipe.preparation[0].description += updatePreparationWith;
+      newPropEdit.recipe.preparation[0]!.description += updatePreparationWith;
 
       fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), newPropEdit.recipe.title);
       fireEvent.press(
@@ -317,7 +317,7 @@ describe('RecipeEdit', () => {
         'RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput'
       );
       fireEvent(descriptionInput, 'endEditing', {
-        nativeEvent: { text: newPropEdit.recipe.preparation[0].description },
+        nativeEvent: { text: newPropEdit.recipe.preparation[0]!.description },
       });
 
       await waitFor(() => {
@@ -351,7 +351,7 @@ describe('RecipeEdit', () => {
     test('Validate saves in-progress text from text inputs without an explicit blur', async () => {
       const editRecipeSpy = jest.spyOn(dbInstance, 'editRecipe');
 
-      const editRoute: EditRecipeProp = { mode: 'edit', recipe: { ...testRecipes[0] } };
+      const editRoute: EditRecipeProp = { mode: 'edit', recipe: { ...testRecipes[0]! } };
 
       const { getByTestId } = await renderRoute(editRoute);
 
@@ -364,7 +364,7 @@ describe('RecipeEdit', () => {
         expect(editRecipeSpy).toHaveBeenCalled();
       });
 
-      const savedRecipe = editRecipeSpy.mock.calls[0][0];
+      const savedRecipe = editRecipeSpy.mock.calls[0]![0];
       expect(savedRecipe.title).toBe('Live-Commit Title');
       expect(savedRecipe.description).toBe('Live-Commit Description');
 
@@ -374,7 +374,7 @@ describe('RecipeEdit', () => {
     test('scales recipe back to default persons before saving', async () => {
       const editRecipeSpy = jest.spyOn(dbInstance, 'editRecipe');
 
-      const editRoute: EditRecipeProp = { mode: 'edit', recipe: { ...testRecipes[0] } };
+      const editRoute: EditRecipeProp = { mode: 'edit', recipe: { ...testRecipes[0]! } };
 
       const { getByTestId } = await renderRoute(editRoute);
 
@@ -387,19 +387,19 @@ describe('RecipeEdit', () => {
         expect(editRecipeSpy).toHaveBeenCalled();
       });
 
-      const savedRecipe = editRecipeSpy.mock.calls[0][0];
+      const savedRecipe = editRecipeSpy.mock.calls[0]![0];
       expect(savedRecipe.title).toBe('Modified Title');
       expect(savedRecipe.persons).toBe(4);
-      expect(savedRecipe.ingredients[0].quantity).toBe('200');
-      expect(savedRecipe.ingredients[1].quantity).toBe('300');
-      expect(savedRecipe.ingredients[2].quantity).toBe('250');
-      expect(savedRecipe.ingredients[3].quantity).toBe('50');
+      expect(savedRecipe.ingredients[0]!.quantity).toBe('200');
+      expect(savedRecipe.ingredients[1]!.quantity).toBe('300');
+      expect(savedRecipe.ingredients[2]!.quantity).toBe('250');
+      expect(savedRecipe.ingredients[3]!.quantity).toBe('50');
 
       editRecipeSpy.mockRestore();
     });
 
     test('forwards the entered serving count as scaledFromServings when scaling occurs', async () => {
-      const editRoute: EditRecipeProp = { mode: 'edit', recipe: { ...testRecipes[0] } };
+      const editRoute: EditRecipeProp = { mode: 'edit', recipe: { ...testRecipes[0]! } };
 
       const { getByTestId } = await renderRoute(editRoute);
 
@@ -418,7 +418,7 @@ describe('RecipeEdit', () => {
     });
 
     test('omits scaledFromServings when the serving count stays at the default', async () => {
-      const editRoute: EditRecipeProp = { mode: 'edit', recipe: { ...testRecipes[0] } };
+      const editRoute: EditRecipeProp = { mode: 'edit', recipe: { ...testRecipes[0]! } };
 
       const { getByTestId } = await renderRoute(editRoute);
 
@@ -437,7 +437,7 @@ describe('RecipeEdit', () => {
     test('validation passes when all required fields are complete', async () => {
       const completeRoute: EditRecipeProp = {
         mode: 'edit',
-        recipe: { ...testRecipes[1], nutrition: undefined },
+        recipe: { ...testRecipes[1]!, nutrition: undefined },
       };
 
       const { getByTestId } = await renderRoute(completeRoute);
@@ -449,7 +449,7 @@ describe('RecipeEdit', () => {
 
     test('editRecipe is not called when validating unchanged recipe', async () => {
       const editRecipeSpy = jest.spyOn(dbInstance, 'editRecipe');
-      const route: EditRecipeProp = { mode: 'edit', recipe: { ...testRecipes[0] } };
+      const route: EditRecipeProp = { mode: 'edit', recipe: { ...testRecipes[0]! } };
 
       const { getByTestId } = await renderRoute(route);
 
@@ -469,7 +469,7 @@ describe('RecipeEdit', () => {
       const editRecipeSpy = jest.spyOn(dbInstance, 'editRecipe');
       const clearCacheMock = FileGestion.clearCache as jest.Mock;
 
-      const route: EditRecipeProp = { mode: 'edit', recipe: { ...testRecipes[0] } };
+      const route: EditRecipeProp = { mode: 'edit', recipe: { ...testRecipes[0]! } };
       const { getByTestId } = await renderRoute(route);
 
       fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Modified Title For Ordering');
@@ -481,7 +481,7 @@ describe('RecipeEdit', () => {
       });
 
       expect(clearCacheMock.mock.invocationCallOrder[0]).toBeGreaterThan(
-        editRecipeSpy.mock.invocationCallOrder[0]
+        editRecipeSpy.mock.invocationCallOrder[0]!
       );
 
       editRecipeSpy.mockRestore();
@@ -493,7 +493,7 @@ describe('RecipeEdit', () => {
       const mockRecipeWithNutrition: EditRecipeProp = {
         mode: 'edit',
         recipe: {
-          ...testRecipes[1],
+          ...testRecipes[1]!,
           nutrition: {
             energyKcal: defaultValueNumber,
             energyKj: 200,
@@ -527,7 +527,7 @@ describe('RecipeEdit', () => {
     test('edit mode validates comprehensively when image missing', async () => {
       const route: EditRecipeProp = {
         mode: 'edit',
-        recipe: { ...testRecipes[1], image_Source: '' },
+        recipe: { ...testRecipes[1]!, image_Source: '' },
       };
 
       const { getByTestId } = await renderRoute(route);
@@ -549,7 +549,7 @@ describe('RecipeEdit', () => {
       const route: EditRecipeProp = {
         mode: 'edit',
         recipe: {
-          ...testRecipes[1],
+          ...testRecipes[1]!,
           nutrition: {
             energyKcal: defaultValueNumber,
             energyKj: defaultValueNumber,
@@ -606,7 +606,7 @@ describe('RecipeEdit', () => {
     test('prevents adding duplicate tag with case insensitive match', async () => {
       const route: RecipePropType = {
         mode: 'edit',
-        recipe: { ...testRecipes[6], tags: [{ id: 1, name: 'Dessert' }] },
+        recipe: { ...testRecipes[6]!, tags: [{ id: 1, name: 'Dessert' }] },
       };
 
       const { getByTestId } = await renderRoute(route);
@@ -688,7 +688,7 @@ describe('RecipeEdit', () => {
       const route: RecipePropType = {
         mode: 'edit',
         recipe: {
-          ...testRecipes[6],
+          ...testRecipes[6]!,
           ingredients: [
             {
               id: 1,
@@ -715,7 +715,7 @@ describe('RecipeEdit', () => {
       const route: RecipePropType = {
         mode: 'edit',
         recipe: {
-          ...testRecipes[6],
+          ...testRecipes[6]!,
           ingredients: [
             {
               id: 1,
@@ -742,7 +742,7 @@ describe('RecipeEdit', () => {
     test('does not show ValidationQueue for duplicate tags (pre-filtered)', async () => {
       const route: RecipePropType = {
         mode: 'edit',
-        recipe: { ...testRecipes[6], tags: [{ id: 1, name: 'mockTag' }] },
+        recipe: { ...testRecipes[6]!, tags: [{ id: 1, name: 'mockTag' }] },
       };
 
       const { getByTestId, queryByTestId } = await renderRoute(route);
@@ -812,7 +812,7 @@ describe('RecipeEdit', () => {
         expect(editRecipeSpy).toHaveBeenCalled();
       });
 
-      const saved = editRecipeSpy.mock.calls[0][0];
+      const saved = editRecipeSpy.mock.calls[0]![0];
       expect(saved.nutrition).toBeUndefined();
 
       editRecipeSpy.mockRestore();
@@ -848,7 +848,7 @@ describe('RecipeEdit', () => {
       const firstIngredient = mockRouteEdit.recipe.ingredients[0];
       fireEvent.press(
         getByTestId('RecipeIngredients::0::OnIngredientChange'),
-        `${firstIngredient.quantity}::${firstIngredient.unit}::${firstIngredient.name}::a note`
+        `${firstIngredient!.quantity}::${firstIngredient!.unit}::${firstIngredient!.name}::a note`
       );
 
       fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
@@ -857,7 +857,7 @@ describe('RecipeEdit', () => {
         expect(editRecipeSpy).toHaveBeenCalled();
       });
 
-      const saved = editRecipeSpy.mock.calls[0][0];
+      const saved = editRecipeSpy.mock.calls[0]![0];
       expect(saved.nutrition).toBeUndefined();
 
       editRecipeSpy.mockRestore();
@@ -947,7 +947,7 @@ describe('RecipeEdit', () => {
 
       const recipeWithNoImage: EditRecipeProp = {
         mode: 'edit',
-        recipe: { ...testRecipes[1], image_Source: '' },
+        recipe: { ...testRecipes[1]!, image_Source: '' },
       };
       const { getByTestId } = await renderRoute(recipeWithNoImage);
 
@@ -963,7 +963,7 @@ describe('RecipeEdit', () => {
       await waitFor(() => expect(editRecipeSpy).toHaveBeenCalled());
 
       const editCallOrder = editRecipeSpy.mock.invocationCallOrder[0];
-      const clearCacheCallOrder = clearCacheMock.mock.invocationCallOrder[0];
+      const clearCacheCallOrder = clearCacheMock.mock.invocationCallOrder[0]!;
       expect(editCallOrder).toBeLessThan(clearCacheCallOrder);
 
       editRecipeSpy.mockRestore();
@@ -988,7 +988,7 @@ describe('RecipeEdit', () => {
 
     test('editRecipe is not called when validating an unchanged recipe', async () => {
       const editRecipeSpy = jest.spyOn(dbInstance, 'editRecipe');
-      const route: EditRecipeProp = { mode: 'edit', recipe: { ...testRecipes[0] } };
+      const route: EditRecipeProp = { mode: 'edit', recipe: { ...testRecipes[0]! } };
       const { getByTestId } = await renderRoute(route);
 
       fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
@@ -1007,7 +1007,7 @@ describe('RecipeEdit', () => {
 
       const recipeWithNoImage: EditRecipeProp = {
         mode: 'edit',
-        recipe: { ...testRecipes[1], image_Source: '' },
+        recipe: { ...testRecipes[1]!, image_Source: '' },
       };
       const { getByTestId } = await renderRoute(recipeWithNoImage);
 
@@ -1057,7 +1057,7 @@ describe('RecipeEdit', () => {
 
       const { getByTestId } = await renderRoute({
         mode: 'edit',
-        recipe: { ...testRecipes[0] },
+        recipe: { ...testRecipes[0]! },
       });
 
       fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Modified Title For Ordering');
@@ -1069,7 +1069,7 @@ describe('RecipeEdit', () => {
       });
 
       expect(clearCacheMock.mock.invocationCallOrder[0]).toBeGreaterThan(
-        editRecipeSpy.mock.invocationCallOrder[0]
+        editRecipeSpy.mock.invocationCallOrder[0]!
       );
 
       editRecipeSpy.mockRestore();
@@ -1079,7 +1079,7 @@ describe('RecipeEdit', () => {
   describe('state-input consistency', () => {
     test('Validate saves in-progress numeric text without explicit blur', async () => {
       const editRecipeSpy = jest.spyOn(dbInstance, 'editRecipe');
-      const editRoute: EditRecipeProp = { mode: 'edit', recipe: { ...testRecipes[0] } };
+      const editRoute: EditRecipeProp = { mode: 'edit', recipe: { ...testRecipes[0]! } };
 
       const { getByTestId } = await renderRoute(editRoute);
 
@@ -1092,7 +1092,7 @@ describe('RecipeEdit', () => {
         expect(editRecipeSpy).toHaveBeenCalled();
       });
 
-      const savedRecipe = editRecipeSpy.mock.calls[0][0];
+      const savedRecipe = editRecipeSpy.mock.calls[0]![0];
       expect(savedRecipe.time).toBe(42);
 
       editRecipeSpy.mockRestore();
@@ -1100,7 +1100,7 @@ describe('RecipeEdit', () => {
 
     test('Validate saves in-progress dropdown (ingredient name) text without explicit blur', async () => {
       const editRecipeSpy = jest.spyOn(dbInstance, 'editRecipe');
-      const editRoute: EditRecipeProp = { mode: 'edit', recipe: { ...testRecipes[0] } };
+      const editRoute: EditRecipeProp = { mode: 'edit', recipe: { ...testRecipes[0]! } };
 
       const { getByTestId } = await renderRoute(editRoute);
 
@@ -1115,8 +1115,8 @@ describe('RecipeEdit', () => {
         expect(editRecipeSpy).toHaveBeenCalled();
       });
 
-      const savedRecipe = editRecipeSpy.mock.calls[0][0];
-      expect(savedRecipe.ingredients[0].name).toBe('Live-Commit Ingredient');
+      const savedRecipe = editRecipeSpy.mock.calls[0]![0];
+      expect(savedRecipe.ingredients[0]!.name).toBe('Live-Commit Ingredient');
 
       editRecipeSpy.mockRestore();
     });
@@ -1127,7 +1127,7 @@ describe('RecipeEdit', () => {
       const { CopilotProvider } = require('react-native-copilot');
       const { render } = require('@testing-library/react-native');
       const RecipeEdit = require('@screens/recipe/RecipeEdit').default;
-      const recipe = { ...testRecipes[6] };
+      const recipe = { ...testRecipes[6]! };
 
       const tree = render(
         <CopilotProvider>

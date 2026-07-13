@@ -29,7 +29,7 @@ describe('tagDialogSchema', () => {
     const result = tagDialogSchema.safeParse({ name: '' });
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0].message).toBe('name_required');
+      expect(result.error.issues[0]!.message).toBe('name_required');
     }
   });
 });

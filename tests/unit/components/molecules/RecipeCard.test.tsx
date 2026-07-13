@@ -17,10 +17,10 @@ jest.mock('@react-navigation/native', () =>
 const Stack = createStackNavigator();
 
 describe('RecipeCard Component', () => {
-  const sampleRecipe: recipeTableElement = testRecipes[0];
-  const recipeWithoutImage: recipeTableElement = { ...testRecipes[1], image_Source: '' };
+  const sampleRecipe: recipeTableElement = testRecipes[0]!;
+  const recipeWithoutImage: recipeTableElement = { ...testRecipes[1]!, image_Source: '' };
   const recipeWithManyTags: recipeTableElement = {
-    ...testRecipes[2],
+    ...testRecipes[2]!,
     tags: testTags,
   };
 

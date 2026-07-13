@@ -29,7 +29,7 @@ function MockSearchBar({ testId, setSearchBarClicked, updateSearchString, clearR
           const searchSteps = ['', 'S', 'Su', 'Sus', 'Sush', 'Sushi'];
           const currentIndex = searchSteps.indexOf(currentPhrase);
           const nextIndex = (currentIndex + 1) % searchSteps.length;
-          const newPhrase = searchSteps[nextIndex];
+          const newPhrase = searchSteps[nextIndex]!;
           setCurrentPhrase(newPhrase);
           if (updateSearchString) updateSearchString(newPhrase);
         }}

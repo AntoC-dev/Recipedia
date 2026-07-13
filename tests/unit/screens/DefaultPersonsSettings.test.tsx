@@ -111,26 +111,26 @@ describe('DefaultPersonsSettings Screen', () => {
   test('scales all recipes in database when default persons is changed', async () => {
     const recipeToModify = database.get_recipes()[0];
     expect(recipeToModify).toBeDefined();
-    expect(recipeToModify.id).toBeDefined();
+    expect(recipeToModify!.id).toBeDefined();
 
-    const firstIngredient = recipeToModify.ingredients[0];
+    const firstIngredient = recipeToModify!.ingredients[0];
     expect(firstIngredient).toBeDefined();
 
     const modifiedRecipe = {
-      ...recipeToModify,
+      ...recipeToModify!,
       persons: 2,
-      ingredients: recipeToModify.ingredients.map(ing => ({
+      ingredients: recipeToModify!.ingredients.map(ing => ({
         ...ing,
-        quantity: ing.id === firstIngredient.id ? '100' : ing.quantity,
+        quantity: ing.id === firstIngredient!.id ? '100' : ing.quantity,
       })),
     };
 
     await database.editRecipe(modifiedRecipe);
 
-    const recipeAfterEdit = database.get_recipes().find(r => r.id === recipeToModify.id);
+    const recipeAfterEdit = database.get_recipes().find(r => r.id === recipeToModify!.id);
     expect(recipeAfterEdit?.persons).toBe(2);
     const ingredientBefore = recipeAfterEdit?.ingredients.find(
-      ing => ing.id === firstIngredient.id
+      ing => ing.id === firstIngredient!.id
     );
     expect(ingredientBefore).toBeDefined();
     expect(ingredientBefore?.quantity).toBe('100');
@@ -145,7 +145,7 @@ describe('DefaultPersonsSettings Screen', () => {
       expect(mockNavigationFunctions.goBack).toHaveBeenCalled();
     });
 
-    const scaledRecipe = database.get_recipes().find(r => r.id === recipeToModify.id);
+    const scaledRecipe = database.get_recipes().find(r => r.id === recipeToModify!.id);
 
     expect(scaledRecipe).toBeDefined();
     expect(scaledRecipe?.persons).toBe(5);

@@ -78,10 +78,10 @@ describe('RecipeImportOrchestrator', () => {
       );
 
       const complete = updates[updates.length - 1];
-      expect(complete.phase).toBe('complete');
-      expect(complete.failedRecipes).toEqual([]);
-      expect(complete.parsedRecipes).toHaveLength(1);
-      expect(complete.parsedRecipes[0]).toMatchObject({
+      expect(complete!.phase).toBe('complete');
+      expect(complete!.failedRecipes).toEqual([]);
+      expect(complete!.parsedRecipes).toHaveLength(1);
+      expect(complete!.parsedRecipes[0]).toMatchObject({
         url: 'https://site.com/recipe-1',
         title: 'Pasta',
         persons: 4,
@@ -99,7 +99,7 @@ describe('RecipeImportOrchestrator', () => {
       );
 
       expect(updates.map(u => u.phase)).toEqual(['parsing', 'complete']);
-      expect(updates[0].total).toBe(1);
+      expect(updates[0]!.total).toBe(1);
     });
 
     test('records a failure when the scraper returns an error', async () => {
@@ -110,8 +110,8 @@ describe('RecipeImportOrchestrator', () => {
       );
 
       const complete = updates[updates.length - 1];
-      expect(complete.parsedRecipes).toEqual([]);
-      expect(complete.failedRecipes).toEqual([
+      expect(complete!.parsedRecipes).toEqual([]);
+      expect(complete!.failedRecipes).toEqual([
         { url: 'https://site.com/recipe-1', title: 'Recipe 1', error: 'no recipe found' },
       ]);
     });
@@ -125,7 +125,7 @@ describe('RecipeImportOrchestrator', () => {
       );
 
       const complete = updates[updates.length - 1];
-      expect(complete.failedRecipes[0].error).toBe('network down');
+      expect(complete!.failedRecipes[0]!.error).toBe('network down');
       expect(scrapeFromHtml).not.toHaveBeenCalled();
     });
 
@@ -137,7 +137,7 @@ describe('RecipeImportOrchestrator', () => {
         parseSelectedRecipes(makeProvider(), [discovered(1)], { scrapeFromHtml })
       );
 
-      expect(updates[updates.length - 1].failedRecipes[0].error).toBe('boom');
+      expect(updates[updates.length - 1]!.failedRecipes[0]!.error).toBe('boom');
     });
 
     test('skips image download when the resolved image is a placeholder', async () => {
@@ -151,7 +151,7 @@ describe('RecipeImportOrchestrator', () => {
         parseSelectedRecipes(makeProvider(), [discovered(1, false)], { scrapeFromHtml })
       );
 
-      expect(updates[updates.length - 1].parsedRecipes[0].localImageUri).toBeUndefined();
+      expect(updates[updates.length - 1]!.parsedRecipes[0]!.localImageUri).toBeUndefined();
       expect(mockDownload).not.toHaveBeenCalled();
     });
 
@@ -164,7 +164,7 @@ describe('RecipeImportOrchestrator', () => {
         parseSelectedRecipes(makeProvider(), [discovered(1, false)], { scrapeFromHtml })
       );
 
-      expect(updates[updates.length - 1].parsedRecipes[0].localImageUri).toBeUndefined();
+      expect(updates[updates.length - 1]!.parsedRecipes[0]!.localImageUri).toBeUndefined();
       expect(mockDownload).not.toHaveBeenCalled();
     });
 
@@ -176,7 +176,7 @@ describe('RecipeImportOrchestrator', () => {
         parseSelectedRecipes(makeProvider(), [discovered(1)], { scrapeFromHtml })
       );
 
-      expect(updates[updates.length - 1].parsedRecipes[0].localImageUri).toBeUndefined();
+      expect(updates[updates.length - 1]!.parsedRecipes[0]!.localImageUri).toBeUndefined();
     });
 
     test('processes recipes in batches with a progress update per batch', async () => {
@@ -190,7 +190,7 @@ describe('RecipeImportOrchestrator', () => {
       jest.useRealTimers();
 
       expect(updates.filter(u => u.phase === 'parsing')).toHaveLength(2);
-      expect(updates[updates.length - 1].parsedRecipes).toHaveLength(4);
+      expect(updates[updates.length - 1]!.parsedRecipes).toHaveLength(4);
     });
 
     test('stops before parsing when the signal is already aborted', async () => {
@@ -206,8 +206,8 @@ describe('RecipeImportOrchestrator', () => {
       );
 
       expect(updates).toHaveLength(1);
-      expect(updates[0].phase).toBe('complete');
-      expect(updates[0].parsedRecipes).toEqual([]);
+      expect(updates[0]!.phase).toBe('complete');
+      expect(updates[0]!.parsedRecipes).toEqual([]);
       expect(mockFetchHtml).not.toHaveBeenCalled();
     });
 
@@ -223,12 +223,12 @@ describe('RecipeImportOrchestrator', () => {
         })
       );
 
-      const parsed = updates[updates.length - 1].parsedRecipes[0];
-      expect(parsed.title).toBe('Recipe 7');
-      expect(parsed.persons).toBe(6);
-      expect(parsed.time).toBe(0);
-      expect(parsed.tags).toEqual([]);
-      expect(parsed.preparation).toEqual([]);
+      const parsed = updates[updates.length - 1]!.parsedRecipes[0];
+      expect(parsed!.title).toBe('Recipe 7');
+      expect(parsed!.persons).toBe(6);
+      expect(parsed!.time).toBe(0);
+      expect(parsed!.tags).toEqual([]);
+      expect(parsed!.preparation).toEqual([]);
     });
 
     test('falls back to the discovered image when the scraped image is empty', async () => {

@@ -421,8 +421,8 @@ describe('RecipeIngredientsField', () => {
       });
 
       const snapshot = createRecipeSnapshot(form, null);
-      expect(snapshot.ingredients[0].season).toEqual(['6', '7', '8', '9']);
-      expect(snapshot.ingredients[1].season).toEqual([]);
+      expect(snapshot.ingredients[0]!.season).toEqual(['6', '7', '8', '9']);
+      expect(snapshot.ingredients[1]!.season).toEqual([]);
     });
   });
 

@@ -102,9 +102,9 @@ describe('Menu Screen', () => {
 
   describe('Menu with Items - Sections', () => {
     beforeEach(async () => {
-      await database.addRecipeToMenu(testRecipes[0]);
-      await database.addRecipeToMenu(testRecipes[1]);
-      await database.addRecipeToMenu(testRecipes[2]);
+      await database.addRecipeToMenu(testRecipes[0]!);
+      await database.addRecipeToMenu(testRecipes[1]!);
+      await database.addRecipeToMenu(testRecipes[2]!);
     });
 
     test('renders toCook section when uncooked items exist', async () => {
@@ -116,7 +116,7 @@ describe('Menu Screen', () => {
     test('renders cooked section when cooked items exist', async () => {
       const menu = database.get_menu();
       const firstMenuItem = menu[0];
-      await database.toggleMenuItemCooked(firstMenuItem.id!);
+      await database.toggleMenuItemCooked(firstMenuItem!.id!);
 
       const { getByText } = await renderMenuAndWait();
 
@@ -126,7 +126,7 @@ describe('Menu Screen', () => {
     test('renders both sections when mixed items', async () => {
       const menu = database.get_menu();
       const firstMenuItem = menu[0];
-      await database.toggleMenuItemCooked(firstMenuItem.id!);
+      await database.toggleMenuItemCooked(firstMenuItem!.id!);
 
       const { getByText } = await renderMenuAndWait();
 
@@ -156,9 +156,9 @@ describe('Menu Screen', () => {
 
   describe('MenuRecipeCard Integration', () => {
     beforeEach(async () => {
-      await database.addRecipeToMenu(testRecipes[0]);
-      await database.addRecipeToMenu(testRecipes[1]);
-      await database.addRecipeToMenu(testRecipes[2]);
+      await database.addRecipeToMenu(testRecipes[0]!);
+      await database.addRecipeToMenu(testRecipes[1]!);
+      await database.addRecipeToMenu(testRecipes[2]!);
     });
 
     test('renders correct number of cards', async () => {
@@ -183,8 +183,8 @@ describe('Menu Screen', () => {
 
   describe('User Interactions', () => {
     beforeEach(async () => {
-      await database.addRecipeToMenu(testRecipes[0]);
-      await database.addRecipeToMenu(testRecipes[1]);
+      await database.addRecipeToMenu(testRecipes[0]!);
+      await database.addRecipeToMenu(testRecipes[1]!);
     });
 
     test('calls toggleMenuItemCooked when checkbox pressed on card', async () => {
@@ -192,13 +192,13 @@ describe('Menu Screen', () => {
 
       const menu = database.get_menu();
       const firstMenuItem = menu[0];
-      const initialCookedStatus = firstMenuItem.isCooked;
+      const initialCookedStatus = firstMenuItem!.isCooked;
 
       fireEvent.press(getByTestId(`${screenId}::MenuItem::1::Checkbox`));
 
       await waitFor(() => {
         const updatedMenu = database.get_menu();
-        const updatedItem = updatedMenu.find(item => item.id === firstMenuItem.id);
+        const updatedItem = updatedMenu.find(item => item.id === firstMenuItem!.id);
         expect(updatedItem?.isCooked).toBe(!initialCookedStatus);
       });
     });
@@ -220,7 +220,7 @@ describe('Menu Screen', () => {
     test('calls toggleMenuItemCooked when checkbox pressed on cooked card', async () => {
       const menu = database.get_menu();
       const firstMenuItem = menu[0];
-      await database.toggleMenuItemCooked(firstMenuItem.id!);
+      await database.toggleMenuItemCooked(firstMenuItem!.id!);
 
       const { getByTestId } = await renderMenuAndWait();
 
@@ -228,7 +228,7 @@ describe('Menu Screen', () => {
 
       await waitFor(() => {
         const updatedMenu = database.get_menu();
-        const updatedItem = updatedMenu.find(item => item.id === firstMenuItem.id);
+        const updatedItem = updatedMenu.find(item => item.id === firstMenuItem!.id);
         expect(updatedItem?.isCooked).toBe(false);
       });
     });
@@ -236,7 +236,7 @@ describe('Menu Screen', () => {
     test('calls removeFromMenu when remove button pressed on cooked card', async () => {
       const menu = database.get_menu();
       const firstMenuItem = menu[0];
-      await database.toggleMenuItemCooked(firstMenuItem.id!);
+      await database.toggleMenuItemCooked(firstMenuItem!.id!);
       const initialMenuLength = menu.length;
 
       const { getByTestId, queryByTestId } = await renderMenuAndWait();
@@ -257,7 +257,7 @@ describe('Menu Screen', () => {
     });
 
     test('renders CopilotStep when copilotData exists AND menu has items', async () => {
-      await database.addRecipeToMenu(testRecipes[0]);
+      await database.addRecipeToMenu(testRecipes[0]!);
 
       mockUseSafeCopilot.mockReturnValue({
         copilotEvents: {},
@@ -271,7 +271,7 @@ describe('Menu Screen', () => {
     });
 
     test('does not render CopilotStep when copilotData is null', async () => {
-      await database.addRecipeToMenu(testRecipes[0]);
+      await database.addRecipeToMenu(testRecipes[0]!);
 
       const { queryByTestId } = await renderMenuAndWait();
 

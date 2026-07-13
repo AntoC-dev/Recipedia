@@ -47,8 +47,8 @@ describe('BugReport utils', () => {
       yesterday.setDate(today.getDate() - 1);
       const todayStr = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
       const yesterdayStr = `${yesterday.getFullYear()}-${yesterday.getMonth() + 1}-${yesterday.getDate()}`;
-      expect(files[0].uri).toContain(todayStr);
-      expect(files[1].uri).toContain(yesterdayStr);
+      expect(files[0]!.uri).toContain(todayStr);
+      expect(files[1]!.uri).toContain(yesterdayStr);
     });
   });
 
@@ -191,13 +191,13 @@ describe('BugReport utils', () => {
 
     it('attaches only existing log files when some are missing', async () => {
       const logFiles = getRecentLogFiles();
-      mockFileExists.mockImplementation((uri: string) => uri === logFiles[0].uri);
+      mockFileExists.mockImplementation((uri: string) => uri === logFiles[0]!.uri);
 
       await sendBugReport('Test description', []);
 
       const callArgs = mockComposeAsync.mock.calls[0][0];
-      expect(callArgs.attachments).toContain(logFiles[0].uri);
-      expect(callArgs.attachments).not.toContain(logFiles[1].uri);
+      expect(callArgs.attachments).toContain(logFiles[0]!.uri);
+      expect(callArgs.attachments).not.toContain(logFiles[1]!.uri);
     });
 
     it('excludes log files from attachments when none exist', async () => {

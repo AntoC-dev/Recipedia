@@ -31,7 +31,7 @@ describe('recipeFormSchema', () => {
     const result = recipeFormSchema.safeParse({ ...validRecipe, recipeImage: '' });
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0].message).toBe('alerts.missingElements.image');
+      expect(result.error.issues[0]!.message).toBe('alerts.missingElements.image');
     }
   });
 
@@ -44,7 +44,7 @@ describe('recipeFormSchema', () => {
     const result = recipeFormSchema.safeParse({ ...validRecipe, recipeTitle: '' });
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0].message).toBe('alerts.missingElements.titleRecipe');
+      expect(result.error.issues[0]!.message).toBe('alerts.missingElements.titleRecipe');
     }
   });
 
@@ -57,7 +57,7 @@ describe('recipeFormSchema', () => {
     const result = recipeFormSchema.safeParse({ ...validRecipe, recipeIngredients: [] });
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0].message).toBe('alerts.missingElements.titleIngredients');
+      expect(result.error.issues[0]!.message).toBe('alerts.missingElements.titleIngredients');
     }
   });
 
@@ -115,7 +115,7 @@ describe('recipeFormSchema', () => {
     });
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0].message).toBe('alerts.missingElements.titlePersons');
+      expect(result.error.issues[0]!.message).toBe('alerts.missingElements.titlePersons');
     }
   });
 
@@ -126,7 +126,7 @@ describe('recipeFormSchema', () => {
     });
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0].message).toBe('alerts.missingElements.titleTime');
+      expect(result.error.issues[0]!.message).toBe('alerts.missingElements.titleTime');
     }
   });
 
@@ -134,7 +134,7 @@ describe('recipeFormSchema', () => {
     const result = recipeFormSchema.safeParse({ ...validRecipe, recipePreparation: [] });
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0].message).toBe('alerts.missingElements.titlePreparation');
+      expect(result.error.issues[0]!.message).toBe('alerts.missingElements.titlePreparation');
     }
   });
 
@@ -148,8 +148,8 @@ describe('recipeFormSchema', () => {
     });
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0].message).toBe('alerts.missingElements.titlePreparation');
-      expect(result.error.issues[0].path).toEqual(['recipePreparation', 1, 'description']);
+      expect(result.error.issues[0]!.message).toBe('alerts.missingElements.titlePreparation');
+      expect(result.error.issues[0]!.path).toEqual(['recipePreparation', 1, 'description']);
     }
   });
 

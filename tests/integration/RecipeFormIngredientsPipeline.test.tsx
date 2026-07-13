@@ -135,8 +135,8 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
       });
 
       expect(result.current.form.form.getValues('recipeIngredients')!).toHaveLength(1);
-      expect(result.current.form.form.getValues('recipeIngredients')![0].name).toBe('Tomato');
-      expect(result.current.form.form.getValues('recipeIngredients')![0].quantity).toBe('100');
+      expect(result.current.form.form.getValues('recipeIngredients')![0]!.name).toBe('Tomato');
+      expect(result.current.form.form.getValues('recipeIngredients')![0]!.quantity).toBe('100');
     });
 
     test('merges quantities when duplicate name + same unit', async () => {
@@ -163,7 +163,7 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
       });
 
       expect(result.current.form.form.getValues('recipeIngredients')!).toHaveLength(1);
-      expect(result.current.form.form.getValues('recipeIngredients')![0].quantity).toBe('125');
+      expect(result.current.form.form.getValues('recipeIngredients')![0]!.quantity).toBe('125');
     });
 
     test('replaces existing when duplicate name + different unit', async () => {
@@ -190,8 +190,8 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
       });
 
       expect(result.current.form.form.getValues('recipeIngredients')!).toHaveLength(1);
-      expect(result.current.form.form.getValues('recipeIngredients')![0].unit).toBe('g');
-      expect(result.current.form.form.getValues('recipeIngredients')![0].quantity).toBe('10');
+      expect(result.current.form.form.getValues('recipeIngredients')![0]!.unit).toBe('g');
+      expect(result.current.form.form.getValues('recipeIngredients')![0]!.quantity).toBe('10');
     });
 
     test('adds as separate ingredient when same name + same unit + different non-empty notes', async () => {
@@ -220,10 +220,10 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
       });
 
       expect(result.current.form.form.getValues('recipeIngredients')!).toHaveLength(2);
-      expect(result.current.form.form.getValues('recipeIngredients')![0].note).toBe(
+      expect(result.current.form.form.getValues('recipeIngredients')![0]!.note).toBe(
         'for the sauce'
       );
-      expect(result.current.form.form.getValues('recipeIngredients')![1].note).toBe(
+      expect(result.current.form.form.getValues('recipeIngredients')![1]!.note).toBe(
         'for the salad'
       );
     });
@@ -251,8 +251,8 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
         );
       });
 
-      expect(result.current.form.form.getValues('recipeIngredients')![0].quantity).toBe('200');
-      expect(result.current.form.form.getValues('recipeIngredients')![0].name).toBe('Onion');
+      expect(result.current.form.form.getValues('recipeIngredients')![0]!.quantity).toBe('200');
+      expect(result.current.form.form.getValues('recipeIngredients')![0]!.name).toBe('Onion');
       expect(result.current.dialogs.validationQueue).toBeNull();
     });
 
@@ -300,7 +300,7 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
       });
 
       await waitFor(() => {
-        expect(result.current.form.form.getValues('recipeIngredients')![0].name).toBe('Tomato');
+        expect(result.current.form.form.getValues('recipeIngredients')![0]!.name).toBe('Tomato');
       });
 
       expect(result.current.dialogs.validationQueue).toBeNull();

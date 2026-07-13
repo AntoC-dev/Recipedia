@@ -63,8 +63,8 @@ describe('useScalingOnPersonsChange', () => {
     });
 
     await waitFor(() => {
-      expect(getForm().getValues('recipeIngredients')[0].quantity).toBe('400');
-      expect(getForm().getValues('recipeIngredients')[1].quantity).toBe('200');
+      expect(getForm().getValues('recipeIngredients')[0]!.quantity).toBe('400');
+      expect(getForm().getValues('recipeIngredients')[1]!.quantity).toBe('200');
     });
   });
 
@@ -100,7 +100,7 @@ describe('useScalingOnPersonsChange', () => {
     });
 
     await waitFor(() => {
-      expect(getForm().getValues('recipeIngredients')[0].quantity).toBeUndefined();
+      expect(getForm().getValues('recipeIngredients')[0]!.quantity).toBeUndefined();
     });
   });
 
@@ -121,7 +121,7 @@ describe('useScalingOnPersonsChange', () => {
     await waitFor(() => {
       expect(getForm().getValues('recipePersons')).toBe(8);
     });
-    expect(getForm().getValues('recipeIngredients')[0].quantity).toBe('200');
+    expect(getForm().getValues('recipeIngredients')[0]!.quantity).toBe('200');
   });
 
   test('skips scaling while user is editing a row', async () => {
@@ -143,7 +143,7 @@ describe('useScalingOnPersonsChange', () => {
     await waitFor(() => {
       expect(getForm().getValues('recipePersons')).toBe(8);
     });
-    expect(getForm().getValues('recipeIngredients')[0].quantity).toBe('200');
+    expect(getForm().getValues('recipeIngredients')[0]!.quantity).toBe('200');
     expect(focusRefHolder.current?.current).toBe(1);
   });
 

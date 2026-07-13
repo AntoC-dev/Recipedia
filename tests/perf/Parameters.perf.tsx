@@ -184,10 +184,10 @@ describe('IngredientsSettings Screen Performance', () => {
     const scenario = async () => {
       const ingredients = database.get_ingredients();
       if (ingredients.length > 0) {
-        const ingredient = ingredients[0];
+        const ingredient = ingredients[0]!;
         await database.editIngredient({
           ...ingredient,
-          name: ingredient.name + ' (edited)',
+          name: ingredient!.name + ' (edited)',
         });
       }
     };
@@ -214,7 +214,7 @@ describe('IngredientsSettings Screen Performance', () => {
     const scenario = async () => {
       const ingredients = database.get_ingredients();
       if (ingredients.length > 0) {
-        await database.deleteIngredient(ingredients[0]);
+        await database.deleteIngredient(ingredients[0]!);
       }
     };
 
@@ -256,7 +256,7 @@ describe('TagsSettings Screen Performance', () => {
         const tag = tags[0];
         await database.editTag({
           ...tag,
-          name: tag.name + ' (edited)',
+          name: tag!.name + ' (edited)',
         });
       }
     };
@@ -278,7 +278,7 @@ describe('TagsSettings Screen Performance', () => {
     const scenario = async () => {
       const tags = database.get_tags();
       if (tags.length > 0) {
-        await database.deleteTag(tags[0]);
+        await database.deleteTag(tags[0]!);
       }
     };
 
@@ -328,7 +328,7 @@ describe('IngredientsSettings Screen Performance - Large Dataset', () => {
     const scenario = async () => {
       const ingredients = database.get_ingredients();
       if (ingredients.length > 0) {
-        await database.deleteIngredient(ingredients[0]);
+        await database.deleteIngredient(ingredients[0]!);
       }
     };
 

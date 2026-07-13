@@ -178,7 +178,7 @@ describe('RecipePreparationField', () => {
       act(() => {
         fireEvent.changeText(descInput, 'Live description');
       });
-      expect(form.getValues('recipePreparation')![0].description).toBe('Live description');
+      expect(form.getValues('recipePreparation')![0]!.description).toBe('Live description');
     });
 
     test('typing does not mark the step touched, so no inline error surfaces', () => {

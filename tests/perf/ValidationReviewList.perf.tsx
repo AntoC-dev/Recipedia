@@ -138,7 +138,7 @@ describe('ValidationReviewList Performance', () => {
     const rawTags = generateUnknownTags(100);
     const rawIngredients = generateUnknownIngredients(100);
     const scenario = async () => {
-      const skip = screen.queryByTestId(`PerfTest::Tag::${rawTags[0].name}::SkipChip`);
+      const skip = screen.queryByTestId(`PerfTest::Tag::${rawTags[0]!.name}::SkipChip`);
       if (skip) fireEvent.press(skip);
     };
     await measureRenders(
@@ -150,9 +150,9 @@ describe('ValidationReviewList Performance', () => {
   test('re-render after skip + undo on a large list (100 tags)', async () => {
     const rawTags = generateUnknownTags(100);
     const scenario = async () => {
-      const skip = screen.queryByTestId(`PerfTest::Tag::${rawTags[0].name}::SkipChip`);
+      const skip = screen.queryByTestId(`PerfTest::Tag::${rawTags[0]!.name}::SkipChip`);
       if (skip) fireEvent.press(skip);
-      const undo = screen.queryByTestId(`PerfTest::Tag::${rawTags[0].name}::UndoButton`);
+      const undo = screen.queryByTestId(`PerfTest::Tag::${rawTags[0]!.name}::UndoButton`);
       if (undo) fireEvent.press(undo);
     };
     await measureRenders(<ValidationReviewListWrapper rawTags={rawTags} rawIngredients={[]} />, {
@@ -166,7 +166,7 @@ describe('ValidationReviewList Performance', () => {
     const rawTags = generateTagsWithSimilarities(50);
     const scenario = async () => {
       const useSuggested = screen.queryByTestId(
-        `PerfTest::Tag::${rawTags[0].name}::UseSuggestedChip`
+        `PerfTest::Tag::${rawTags[0]!.name}::UseSuggestedChip`
       );
       if (useSuggested) fireEvent.press(useSuggested);
     };
@@ -182,7 +182,7 @@ describe('ValidationReviewList Performance', () => {
     const scenario = async () => {
       const target = rawIngredients[0];
       const useSuggested = screen.queryByTestId(
-        `PerfTest::Ingredient::${target.name}::UseSuggestedChip`
+        `PerfTest::Ingredient::${target!.name}::UseSuggestedChip`
       );
       if (useSuggested) fireEvent.press(useSuggested);
     };

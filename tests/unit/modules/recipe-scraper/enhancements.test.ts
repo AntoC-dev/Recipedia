@@ -486,17 +486,17 @@ describe('enhancements module', () => {
       expect(result).not.toBeNull();
       expect(result).toHaveLength(3);
 
-      expect(result![0].quantity).toBe('375');
-      expect(result![0].unit).toBe('g');
-      expect(result![0].name).toBe('camembert au lait cru');
+      expect(result![0]!.quantity).toBe('375');
+      expect(result![0]!.unit).toBe('g');
+      expect(result![0]!.name).toBe('camembert au lait cru');
 
-      expect(result![1].quantity).toBe('3');
-      expect(result![1].unit).toBe('x');
-      expect(result![1].name).toBe('petits pains (240g)');
+      expect(result![1]!.quantity).toBe('3');
+      expect(result![1]!.unit).toBe('x');
+      expect(result![1]!.name).toBe('petits pains (240g)');
 
-      expect(result![2].quantity).toBe('0.25');
-      expect(result![2].unit).toBe('');
-      expect(result![2].name).toBe('herbes de Provence');
+      expect(result![2]!.quantity).toBe('0.25');
+      expect(result![2]!.unit).toBe('');
+      expect(result![2]!.name).toBe('herbes de Provence');
     });
 
     it('returns null for unstructured HTML', () => {
@@ -515,13 +515,13 @@ describe('enhancements module', () => {
       expect(result).not.toBeNull();
       expect(result).toHaveLength(2);
 
-      expect(result![0].quantity).toBe('1');
-      expect(result![0].unit).toBe('x');
-      expect(result![0].name).toBe("gousse d'ail");
+      expect(result![0]!.quantity).toBe('1');
+      expect(result![0]!.unit).toBe('x');
+      expect(result![0]!.name).toBe("gousse d'ail");
 
-      expect(result![1].quantity).toBe('200');
-      expect(result![1].unit).toBe('g');
-      expect(result![1].name).toBe('pâtes fraîches');
+      expect(result![1]!.quantity).toBe('200');
+      expect(result![1]!.unit).toBe('g');
+      expect(result![1]!.name).toBe('pâtes fraîches');
     });
 
     it('flattens nested badge and weight spans into the ingredient name', () => {
@@ -530,13 +530,13 @@ describe('enhancements module', () => {
       expect(result).not.toBeNull();
       expect(result).toHaveLength(2);
 
-      expect(result![0].quantity).toBe('1');
-      expect(result![0].unit).toBe('');
-      expect(result![0].name).toBe('miel (20g) Bio');
+      expect(result![0]!.quantity).toBe('1');
+      expect(result![0]!.unit).toBe('');
+      expect(result![0]!.name).toBe('miel (20g) Bio');
 
-      expect(result![1].quantity).toBe('2');
-      expect(result![1].unit).toBe('');
-      expect(result![1].name).toBe('petits pains aux épices (160g)');
+      expect(result![1]!.quantity).toBe('2');
+      expect(result![1]!.unit).toBe('');
+      expect(result![1]!.name).toBe('petits pains aux épices (160g)');
     });
 
     it('returns null when an item is missing the bold quantity span', () => {
@@ -660,29 +660,29 @@ describe('enhancements module', () => {
       expect(result).not.toBeNull();
       expect(result).toHaveLength(6);
 
-      expect(result![0].quantity).toBe('375');
-      expect(result![0].unit).toBe('g');
-      expect(result![0].name).toBe('camembert au lait cru');
+      expect(result![0]!.quantity).toBe('375');
+      expect(result![0]!.unit).toBe('g');
+      expect(result![0]!.name).toBe('camembert au lait cru');
 
-      expect(result![1].quantity).toBe('3');
-      expect(result![1].unit).toBe('x');
-      expect(result![1].name).toBe('petits pains (240g)');
+      expect(result![1]!.quantity).toBe('3');
+      expect(result![1]!.unit).toBe('x');
+      expect(result![1]!.name).toBe('petits pains (240g)');
 
-      expect(result![2].quantity).toBe('');
-      expect(result![2].unit).toBe('');
-      expect(result![2].name).toBe('sel');
+      expect(result![2]!.quantity).toBe('');
+      expect(result![2]!.unit).toBe('');
+      expect(result![2]!.name).toBe('sel');
 
-      expect(result![3].quantity).toBe('');
-      expect(result![3].unit).toBe('');
-      expect(result![3].name).toBe('poivre');
+      expect(result![3]!.quantity).toBe('');
+      expect(result![3]!.unit).toBe('');
+      expect(result![3]!.name).toBe('poivre');
 
-      expect(result![4].quantity).toBe('2');
-      expect(result![4].unit).toBe('càs');
-      expect(result![4].name).toBe("huile d'olive");
+      expect(result![4]!.quantity).toBe('2');
+      expect(result![4]!.unit).toBe('càs');
+      expect(result![4]!.name).toBe("huile d'olive");
 
-      expect(result![5].quantity).toBe('1');
-      expect(result![5].unit).toBe('càs');
-      expect(result![5].name).toBe('vinaigre de votre choix');
+      expect(result![5]!.quantity).toBe('1');
+      expect(result![5]!.unit).toBe('càs');
+      expect(result![5]!.name).toBe('vinaigre de votre choix');
     });
   });
 
@@ -734,10 +734,10 @@ describe('enhancements module', () => {
 
       expect(result).not.toBeNull();
       expect(result).toHaveLength(2);
-      expect(result![0].title).toBe('Le camembert rôti');
-      expect(result![0].instructions).toHaveLength(2);
-      expect(result![1].title).toBe('Les mouillettes');
-      expect(result![1].instructions).toHaveLength(3);
+      expect(result![0]!.title).toBe('Le camembert rôti');
+      expect(result![0]!.instructions).toHaveLength(2);
+      expect(result![1]!.title).toBe('Les mouillettes');
+      expect(result![1]!.instructions).toHaveLength(3);
     });
 
     it('decodes HTML entities in step titles and instructions', () => {
@@ -745,10 +745,10 @@ describe('enhancements module', () => {
 
       expect(result).not.toBeNull();
       expect(result).toHaveLength(1);
-      expect(result![0].title).toBe("Pr'paration d'ail");
-      expect(result![0].instructions).toHaveLength(2);
-      expect(result![0].instructions[0]).toBe("\u00C9mincez l'ail et faites-le revenir.");
-      expect(result![0].instructions[1]).toBe('Ajoutez les p\u00e2tes\u00a0fra\u00eeches.');
+      expect(result![0]!.title).toBe("Pr'paration d'ail");
+      expect(result![0]!.instructions).toHaveLength(2);
+      expect(result![0]!.instructions[0]).toBe("\u00C9mincez l'ail et faites-le revenir.");
+      expect(result![0]!.instructions[1]).toBe('Ajoutez les p\u00e2tes\u00a0fra\u00eeches.');
     });
 
     it('strips Étape and Step numbering prefixes from step titles', () => {
@@ -767,8 +767,8 @@ describe('enhancements module', () => {
       const result = extractStructuredInstructions(html);
 
       expect(result).not.toBeNull();
-      expect(result![0].title).toBe('Préparez la pâte');
-      expect(result![1].title).toBe('Bake it');
+      expect(result![0]!.title).toBe('Préparez la pâte');
+      expect(result![1]!.title).toBe('Bake it');
     });
 
     it('returns null when no container found', () => {

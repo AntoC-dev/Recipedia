@@ -327,7 +327,7 @@ describe('BulkImportValidation Performance', () => {
         imageUrl: 'file:///cache/recipe.jpg',
         persons: 4,
         time: 30,
-        ingredients: [{ name: performanceIngredients[0].name, quantity: '100', unit: 'g' }],
+        ingredients: [{ name: performanceIngredients[0]!.name, quantity: '100', unit: 'g' }],
         tags: Array.from({ length: 20 }, (_, i) => ({
           name: `Completely Unknown Tag ${i + 1}`,
         })),
@@ -399,7 +399,7 @@ describe('BulkImportValidation Performance', () => {
         imageUrl: 'file:///cache/recipe.jpg',
         persons: 4,
         time: 30,
-        ingredients: [{ name: performanceIngredients[0].name, quantity: '100', unit: 'g' }],
+        ingredients: [{ name: performanceIngredients[0]!.name, quantity: '100', unit: 'g' }],
         tags: existingTagNames.map(name => ({
           name: name.substring(0, 4) + ' variation',
         })),

@@ -380,8 +380,8 @@ describe('TableManipulation', () => {
     expect(id).not.toBeUndefined();
 
     const updateMap = new Map<string, number | string>([
-      [mockColumns[0].colName, 'Edited'],
-      [mockColumns[1].colName, 21],
+      [mockColumns[0]!.colName, 'Edited'],
+      [mockColumns[1]!.colName, 21],
     ]);
     expect(await table.editElementById(id as number, updateMap, DB)).toBe(true);
 
@@ -397,7 +397,7 @@ describe('TableManipulation', () => {
     expect(
       await table.editElementById(
         0,
-        new Map<string, string | number>([[mockColumns[0].colName, 'Nope']]),
+        new Map<string, string | number>([[mockColumns[0]!.colName, 'Nope']]),
         DB
       )
     ).toEqual(false);
@@ -409,7 +409,7 @@ describe('TableManipulation', () => {
 
     const result = await table.editElementById(
       id as number,
-      new Map<string, number | string>([[mockColumns[1].colName, 31]]),
+      new Map<string, number | string>([[mockColumns[1]!.colName, 31]]),
       DB
     );
     expect(result).toBe(true);
@@ -579,7 +579,7 @@ describe('TableManipulation', () => {
 
       expect(result).toBeDefined();
       expect(Array.isArray(result)).toBe(true);
-      expect((result as TestDbType[])[0].name).toBe('Alice');
+      expect((result as TestDbType[])[0]!.name).toBe('Alice');
     });
 
     test('should return empty array when no matches found with WHERE IN', async () => {

@@ -157,8 +157,8 @@ describe('RecipeFormHelpers', () => {
       const result = scaleRecipeForSave(morePersonsRecipe, 4);
 
       expect(result.persons).toBe(4);
-      expect(result.ingredients[0].quantity).toBe('100');
-      expect(result.ingredients[1].quantity).toBe('50');
+      expect(result.ingredients[0]!.quantity).toBe('100');
+      expect(result.ingredients[1]!.quantity).toBe('50');
     });
 
     test('scales ingredients up when recipe has fewer persons than default', () => {
@@ -166,8 +166,8 @@ describe('RecipeFormHelpers', () => {
       const result = scaleRecipeForSave(fewerPersonsRecipe, 4);
 
       expect(result.persons).toBe(4);
-      expect(result.ingredients[0].quantity).toBe('400');
-      expect(result.ingredients[1].quantity).toBe('200');
+      expect(result.ingredients[0]!.quantity).toBe('400');
+      expect(result.ingredients[1]!.quantity).toBe('200');
     });
 
     test('handles ingredients without quantity', () => {
@@ -187,7 +187,7 @@ describe('RecipeFormHelpers', () => {
       };
       const result = scaleRecipeForSave(recipeWithNoQuantity, 4);
 
-      expect(result.ingredients[0].quantity).toBeUndefined();
+      expect(result.ingredients[0]!.quantity).toBeUndefined();
     });
   });
 

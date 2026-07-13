@@ -54,8 +54,8 @@ function FiltersSelectionMock({
           // Add the next filter in sequence
           if (addFilterCalls < mockFilters.length) {
             const filterToAdd = mockFilters[addFilterCalls];
-            if (!globalCurrentFilters.includes(filterToAdd)) {
-              globalCurrentFilters.push(filterToAdd);
+            if (!globalCurrentFilters.includes(filterToAdd!)) {
+              globalCurrentFilters.push(filterToAdd!);
               setLocalFilters([...globalCurrentFilters]);
             }
             addFilterCalls++;

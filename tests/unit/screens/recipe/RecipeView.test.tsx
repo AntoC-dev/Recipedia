@@ -74,7 +74,7 @@ jest.mock('@components/organisms/AppBar', () => ({
 describe('RecipeView', () => {
   const mockRouteReadOnly: RecipePropType = {
     mode: 'readOnly',
-    recipe: testRecipes[1],
+    recipe: testRecipes[1]!,
   };
 
   let dbInstance: ReturnType<typeof RecipeDatabase.getInstance>;
@@ -113,8 +113,8 @@ describe('RecipeView', () => {
     });
 
     const menu = RecipeDatabase.getInstance().get_menu();
-    expect(menu[0].recipeTitle).toEqual('Chicken Tacos');
-    expect(menu[0].isCooked).toBe(false);
+    expect(menu[0]!.recipeTitle).toEqual('Chicken Tacos');
+    expect(menu[0]!.isCooked).toBe(false);
   });
 
   describe('edit handoff', () => {
@@ -124,7 +124,7 @@ describe('RecipeView', () => {
       fireEvent.press(getByTestId('Recipe::AppBar::Edit'));
 
       expect(mockNavigation.push).toHaveBeenCalledWith('RecipeEdit', {
-        recipe: mockRouteReadOnly.recipe,
+        recipe: (mockRouteReadOnly as Extract<RecipePropType, { mode: 'readOnly' }>).recipe,
       });
     });
   });
@@ -202,7 +202,7 @@ describe('RecipeView', () => {
     });
 
     test('shows the scaling snackbar when scaledFromServings is present', () => {
-      const recipe = testRecipes[1];
+      const recipe = testRecipes[1]!;
       const { getByTestId } = render(
         <RecipeView
           route={makeRoute('RecipeView', { recipe, scaledFromServings: 2 })}
@@ -217,7 +217,7 @@ describe('RecipeView', () => {
     });
 
     test('dismissing the scaling snackbar hides it', () => {
-      const recipe = testRecipes[1];
+      const recipe = testRecipes[1]!;
       const { getByTestId, queryByTestId } = render(
         <RecipeView
           route={makeRoute('RecipeView', { recipe, scaledFromServings: 2 })}

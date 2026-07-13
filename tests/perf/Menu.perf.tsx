@@ -56,9 +56,9 @@ describe('Menu Screen Performance', () => {
     const scenario = async () => {
       const recipes = database.get_recipes();
       if (recipes.length >= 3) {
-        await database.addRecipeToMenu(recipes[0]);
-        await database.addRecipeToMenu(recipes[1]);
-        await database.addRecipeToMenu(recipes[2]);
+        await database.addRecipeToMenu(recipes[0]!);
+        await database.addRecipeToMenu(recipes[1]!);
+        await database.addRecipeToMenu(recipes[2]!);
       }
     };
 
@@ -69,7 +69,7 @@ describe('Menu Screen Performance', () => {
     const scenario = async () => {
       const recipes = database.get_recipes();
       if (recipes.length > 0) {
-        await database.addRecipeToMenu(recipes[0]);
+        await database.addRecipeToMenu(recipes[0]!);
       }
     };
 
@@ -79,15 +79,15 @@ describe('Menu Screen Performance', () => {
   test('re-render after toggling cooked status', async () => {
     const recipes = database.get_recipes();
     if (recipes.length > 0) {
-      await database.addRecipeToMenu(recipes[0]);
+      await database.addRecipeToMenu(recipes[0]!);
     }
 
     const scenario = async () => {
       const menu = database.get_menu();
       if (menu.length > 0) {
         const menuItem = menu[0];
-        if (menuItem.id) {
-          await database.toggleMenuItemCooked(menuItem.id);
+        if (menuItem!.id) {
+          await database.toggleMenuItemCooked(menuItem!.id);
         }
       }
     };
@@ -98,16 +98,16 @@ describe('Menu Screen Performance', () => {
   test('re-render after removing item from menu', async () => {
     const recipes = database.get_recipes();
     if (recipes.length >= 2) {
-      await database.addRecipeToMenu(recipes[0]);
-      await database.addRecipeToMenu(recipes[1]);
+      await database.addRecipeToMenu(recipes[0]!);
+      await database.addRecipeToMenu(recipes[1]!);
     }
 
     const scenario = async () => {
       const menu = database.get_menu();
       if (menu.length > 0) {
         const menuItem = menu[0];
-        if (menuItem.id) {
-          await database.removeFromMenu(menuItem.id);
+        if (menuItem!.id) {
+          await database.removeFromMenu(menuItem!.id);
         }
       }
     };
@@ -120,7 +120,7 @@ describe('Menu Screen Performance', () => {
       const recipes = database.get_recipes();
       if (recipes.length >= 10) {
         for (let i = 0; i < 10; i++) {
-          await database.addRecipeToMenu(recipes[i]);
+          await database.addRecipeToMenu(recipes[i]!);
         }
       }
     };
@@ -131,10 +131,10 @@ describe('Menu Screen Performance', () => {
   test('re-render with mixed cooked and uncooked items', async () => {
     const recipes = database.get_recipes();
     if (recipes.length >= 4) {
-      await database.addRecipeToMenu(recipes[0]);
-      await database.addRecipeToMenu(recipes[1]);
-      await database.addRecipeToMenu(recipes[2]);
-      await database.addRecipeToMenu(recipes[3]);
+      await database.addRecipeToMenu(recipes[0]!);
+      await database.addRecipeToMenu(recipes[1]!);
+      await database.addRecipeToMenu(recipes[2]!);
+      await database.addRecipeToMenu(recipes[3]!);
 
       const menu = database.get_menu();
       if (menu[0]?.id) await database.toggleMenuItemCooked(menu[0].id);
@@ -155,9 +155,9 @@ describe('Menu Screen Performance', () => {
   test('re-render after clearing menu', async () => {
     const recipes = database.get_recipes();
     if (recipes.length >= 3) {
-      await database.addRecipeToMenu(recipes[0]);
-      await database.addRecipeToMenu(recipes[1]);
-      await database.addRecipeToMenu(recipes[2]);
+      await database.addRecipeToMenu(recipes[0]!);
+      await database.addRecipeToMenu(recipes[1]!);
+      await database.addRecipeToMenu(recipes[2]!);
     }
 
     const scenario = async () => {
