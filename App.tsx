@@ -4,6 +4,7 @@ import {PaperProvider} from 'react-native-paper';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {darkTheme, lightTheme} from '@styles/theme';
 import AppWrapper from '@components/organisms/AppWrapper';
+import {ErrorBoundary} from '@components/organisms/ErrorBoundary';
 import {getDarkMode, initSettings, setDarkMode as setDarkModeSetting,} from '@utils/settings';
 import * as SplashScreen from 'expo-splash-screen';
 import {useFetchFonts} from '@styles/typography';
@@ -146,9 +147,13 @@ export function App() {
     useFetchFonts();
 
     return (
-        <ScraperProvider>
-            <AppContent/>
-        </ScraperProvider>
+        <SafeAreaProvider>
+            <ErrorBoundary>
+                <ScraperProvider>
+                    <AppContent/>
+                </ScraperProvider>
+            </ErrorBoundary>
+        </SafeAreaProvider>
     );
 }
 
