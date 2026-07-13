@@ -16,31 +16,29 @@ module.exports = defineConfig([
     // Base JavaScript config
     js.configs.recommended,
 
+    // Flag stale eslint-disable directives across the whole codebase
+    {
+        linterOptions: {
+            reportUnusedDisableDirectives: 'error',
+        },
+    },
+
     // Main configuration for TypeScript and React Native files
     {
         files: ['src/**/*.{ts,tsx,js,jsx}'],
         languageOptions: {
             parser: require('@typescript-eslint/parser'),
             parserOptions: {
-                ecmaVersion: 2020,
+                ecmaVersion: 'latest',
                 sourceType: 'module',
                 ecmaFeatures: {
                     jsx: true,
                 },
             },
             globals: {
-                __DEV__: 'readonly',
-                global: 'readonly',
-                require: 'readonly',
-                module: 'readonly',
-                exports: 'readonly',
-                console: 'readonly',
-                process: 'readonly',
+                // Node/RN/Expo globals (__DEV__, console, process, timers, …) come
+                // from eslint-config-expo; only Buffer is not provided by the preset.
                 Buffer: 'readonly',
-                setTimeout: 'readonly',
-                clearTimeout: 'readonly',
-                setInterval: 'readonly',
-                clearInterval: 'readonly',
             },
         },
         plugins: {
@@ -50,7 +48,10 @@ module.exports = defineConfig([
         },
         rules: {
             'no-unused-vars': 'off',
-            '@typescript-eslint/no-unused-vars': ['error'],
+            '@typescript-eslint/no-unused-vars': [
+                'error',
+                {argsIgnorePattern: '^_', varsIgnorePattern: '^_'},
+            ],
             '@typescript-eslint/no-explicit-any': 'warn',
 
             'react/prop-types': 'off',

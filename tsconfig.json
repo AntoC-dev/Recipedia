@@ -4,7 +4,7 @@
     "strict": true,
     "strictPropertyInitialization": false,
     "noImplicitOverride": true,
-    "target": "es2015",
+    "target": "esnext",
     "moduleResolution": "bundler",
     "jsx": "react",
     "esModuleInterop": true,
