@@ -14,7 +14,12 @@
  * ```
  */
 
-import { composeAsync, isAvailableAsync, MailComposerResult } from 'expo-mail-composer';
+import {
+  composeAsync,
+  isAvailableAsync,
+  MailComposerResult,
+  MailComposerStatus,
+} from 'expo-mail-composer';
 import { File, Paths } from 'expo-file-system';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
@@ -158,6 +163,73 @@ export async function sendBugReport(
  */
 export async function isMailAvailable(): Promise<boolean> {
   return isAvailableAsync();
+}
+
+/**
+ * Outcome of an automatic crash report attempt.
+ *
+ * - `sent`: the mail composer reported the report as sent.
+ * - `cancelled`: the user dismissed the mail composer without sending.
+ * - `mail_unavailable`: no mail app is configured on the device.
+ * - `error`: the mail composer failed to open or threw.
+ */
+export type CrashReportOutcome = 'sent' | 'cancelled' | 'mail_unavailable' | 'error';
+
+/**
+ * Builds the pre-filled description for an automatic crash report.
+ *
+ * The full error (with its stack) is already written to the log files by the
+ * error boundary, which are attached to the report; this description gives the
+ * developer an immediate summary without opening the logs.
+ *
+ * @param error - The error caught by the boundary
+ * @param componentStack - React component stack from `componentDidCatch`, if available
+ * @returns Formatted crash description
+ */
+export function buildCrashDescription(error: Error, componentStack: string | null): string {
+  return [
+    'Automatic crash report — the app recovered from an unexpected error.',
+    '',
+    `Error: ${error.message || 'Unknown error'}`,
+    '',
+    'Component stack:',
+    componentStack ?? 'unavailable',
+  ].join('\n');
+}
+
+/**
+ * Composes and sends an automatic crash report email for an error caught by an
+ * error boundary, attaching the recent log files and device info.
+ *
+ * Does not throw: failures are reported through the returned {@link CrashReportOutcome}
+ * so the recovery UI can surface them to the user.
+ *
+ * @param error - The error caught by the boundary
+ * @param componentStack - React component stack from `componentDidCatch`, if available
+ * @returns Promise resolving to the report outcome
+ */
+export async function reportCrash(
+  error: Error,
+  componentStack: string | null
+): Promise<CrashReportOutcome> {
+  if (!(await isMailAvailable())) {
+    bugReportLogger.warn('Crash report skipped: mail unavailable');
+    return 'mail_unavailable';
+  }
+
+  try {
+    const result = await sendBugReport(buildCrashDescription(error, componentStack), []);
+    if (result.status === MailComposerStatus.SENT) {
+      return 'sent';
+    }
+    if (result.status === MailComposerStatus.CANCELLED) {
+      return 'cancelled';
+    }
+    return 'error';
+  } catch (reportError) {
+    bugReportLogger.error('Failed to send crash report', { error: reportError });
+    return 'error';
+  }
 }
 
 /**
