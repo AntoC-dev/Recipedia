@@ -477,14 +477,18 @@ describe('RecipeDatabase', () => {
         expect(recipesAfter).not.toBe(recipesBefore);
 
         recipesAfter.forEach(recipe => {
-          const hasDeletedIngredient = recipe.ingredients.some(i => i.id === ingredientToDelete!.id);
+          const hasDeletedIngredient = recipe.ingredients.some(
+            i => i.id === ingredientToDelete!.id
+          );
           expect(hasDeletedIngredient).toBe(false);
         });
       });
 
       test('deleteTag should update recipes in database (not just cache)', async () => {
         const tagToDelete = testTags[0];
-        const recipeWithTag = db.get_recipes().find(r => r.tags.some(t => t.id === tagToDelete!.id));
+        const recipeWithTag = db
+          .get_recipes()
+          .find(r => r.tags.some(t => t.id === tagToDelete!.id));
 
         expect(recipeWithTag).toBeDefined();
 
@@ -511,7 +515,9 @@ describe('RecipeDatabase', () => {
         const recipesReloaded = await db['getAllRecipes']();
 
         recipesReloaded.forEach(recipe => {
-          const hasDeletedIngredient = recipe.ingredients.some(i => i.id === ingredientToDelete!.id);
+          const hasDeletedIngredient = recipe.ingredients.some(
+            i => i.id === ingredientToDelete!.id
+          );
           expect(hasDeletedIngredient).toBe(false);
         });
       });
@@ -1071,10 +1077,12 @@ describe('RecipeDatabase', () => {
       expect(await db.deleteRecipe({ ...testRecipes[9]!, id: undefined })).toEqual(true);
       expect(db.get_recipes()).not.toContainEqual(testRecipes[9]);
 
-      expect(await db.deleteRecipe({ ...testRecipes[2]!, id: undefined, image_Source: '' })).toEqual(
+      expect(
+        await db.deleteRecipe({ ...testRecipes[2]!, id: undefined, image_Source: '' })
+      ).toEqual(false);
+      expect(await db.deleteRecipe({ ...testRecipes[2]!, id: undefined, title: '' })).toEqual(
         false
       );
-      expect(await db.deleteRecipe({ ...testRecipes[2]!, id: undefined, title: '' })).toEqual(false);
       expect(await db.deleteRecipe({ ...testRecipes[2]!, id: undefined, description: '' })).toEqual(
         false
       );
@@ -1091,7 +1099,9 @@ describe('RecipeDatabase', () => {
         true
       );
       expect(db.get_recipes()).not.toContainEqual(testRecipes[5]);
-      expect(await db.deleteRecipe({ ...testRecipes[6]!, id: undefined, season: [] })).toEqual(true);
+      expect(await db.deleteRecipe({ ...testRecipes[6]!, id: undefined, season: [] })).toEqual(
+        true
+      );
       expect(db.get_recipes()).not.toContainEqual(testRecipes[6]);
       expect(await db.deleteRecipe({ ...testRecipes[7]!, id: undefined, preparation: [] })).toEqual(
         true

@@ -672,7 +672,9 @@ describe('useRecipeIngredients', () => {
         });
 
         await waitFor(() => {
-          expect(result.current.form.form.getValues('recipeIngredients')[0]!.name).toBe('Spaghetti');
+          expect(result.current.form.form.getValues('recipeIngredients')[0]!.name).toBe(
+            'Spaghetti'
+          );
         });
 
         expect(result.current.dialogs.validationQueue).toBeNull();
@@ -713,7 +715,9 @@ describe('useRecipeIngredients', () => {
         });
 
         await waitFor(() => {
-          expect(result.current.form.form.getValues('recipeIngredients')[0]!.name).toBe('Spaghetti');
+          expect(result.current.form.form.getValues('recipeIngredients')[0]!.name).toBe(
+            'Spaghetti'
+          );
         });
 
         expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);

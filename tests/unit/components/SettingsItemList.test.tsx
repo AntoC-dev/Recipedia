@@ -246,8 +246,8 @@ describe('SettingsItemList Component', () => {
       fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), 'soup');
 
       expect(
-        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[0]!.id}::SettingsItemCard::Item`).props
-          .children
+        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[0]!.id}::SettingsItemCard::Item`)
+          .props.children
       ).toEqual(JSON.stringify(mockTags[0]));
       expect(
         queryByTestId(`${defaultProps.testIdPrefix}::${mockTags[1]!.id}::SettingsItemCard::Item`)
@@ -287,8 +287,8 @@ describe('SettingsItemList Component', () => {
       fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), 'ital');
 
       expect(
-        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[1]!.id}::SettingsItemCard::Item`).props
-          .children
+        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[1]!.id}::SettingsItemCard::Item`)
+          .props.children
       ).toEqual(JSON.stringify(mockTags[1]));
     });
   });

@@ -566,11 +566,7 @@ export function runSaveNavigationReducer(): {
 }
 
 type RouteName =
-  | 'RecipeView'
-  | 'RecipeEdit'
-  | 'RecipeAddManual'
-  | 'RecipeAddOcr'
-  | 'RecipeAddScrape';
+  'RecipeView' | 'RecipeEdit' | 'RecipeAddManual' | 'RecipeAddOcr' | 'RecipeAddScrape';
 
 export function makeRoute<R extends RouteName>(
   name: R,

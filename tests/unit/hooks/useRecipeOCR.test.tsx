@@ -1078,7 +1078,9 @@ describe('useRecipeOCR', () => {
           await result.current.ocr.fillOneField('image.jpg', 'ingredientQuantities');
         });
 
-        expect(result.current.form.form.getValues('recipeIngredients')![0]!.quantity).toBe(expected);
+        expect(result.current.form.form.getValues('recipeIngredients')![0]!.quantity).toBe(
+          expected
+        );
       }
     );
 

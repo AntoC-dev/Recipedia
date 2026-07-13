@@ -192,7 +192,9 @@ describe('useValidationWorkflow with real DB', () => {
       );
 
       expect(result.current.validationState?.ingredientsToValidate).toHaveLength(1);
-      expect(result.current.validationState?.ingredientsToValidate[0]!.similarItems).toHaveLength(0);
+      expect(result.current.validationState?.ingredientsToValidate[0]!.similarItems).toHaveLength(
+        0
+      );
     });
 
     test('brand new tag with empty DB routes to reviewing', async () => {

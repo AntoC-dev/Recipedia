@@ -179,7 +179,10 @@ describe('ValidationQueue', () => {
     });
 
     test('moves to next ingredient after validation', async () => {
-      const { getByTestId } = renderQueueIngredients([sampleIngredients[0]!, sampleIngredients[1]!]);
+      const { getByTestId } = renderQueueIngredients([
+        sampleIngredients[0]!,
+        sampleIngredients[1]!,
+      ]);
 
       expect(
         getByTestId(

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FiltersSelectionProps } from '@components/organisms/FiltersSelection';
 import { Button, Text, View } from 'react-native';
 
@@ -38,11 +38,6 @@ function FiltersSelectionMock({
   screenFocused,
 }: FiltersSelectionProps) {
   const [localFilters, setLocalFilters] = useState<string[]>([...globalCurrentFilters]);
-
-  // Sync with global state
-  useEffect(() => {
-    setLocalFilters([...globalCurrentFilters]);
-  }, []);
 
   return (
     <View>
