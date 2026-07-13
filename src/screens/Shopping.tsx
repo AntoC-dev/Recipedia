@@ -129,7 +129,7 @@ export function Shopping() {
       if (isDialogOpenRef.current) {
         closeDialog();
       } else if (list.length > 2) {
-        setIngredientDataForDialog(list[2]);
+        setIngredientDataForDialog(list[2]!);
         setIsDialogOpen(true);
         isDialogOpenRef.current = true;
       }
@@ -225,7 +225,7 @@ export function Shopping() {
    */
   function updateShoppingList(ingredientName: string) {
     shoppingLogger.debug('Toggling ingredient purchase status', { ingredient: ingredientName });
-    togglePurchased(ingredientName);
+    void togglePurchased(ingredientName);
   }
 
   function showClearConfirmation() {
@@ -343,7 +343,7 @@ export function Shopping() {
         confirmText={t('confirm')}
         cancelText={t('cancel')}
         testId={screenId + '::ClearConfirmation'}
-        onConfirm={clearShoppingList}
+        onConfirm={() => void clearShoppingList()}
         onClose={closeClearConfirmation}
       />
       {shoppingList.length > 0 && (

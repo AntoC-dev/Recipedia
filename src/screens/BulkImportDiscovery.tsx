@@ -252,7 +252,7 @@ export function BulkImportDiscovery() {
           <DiscoveryFooter
             error={error}
             selectedCount={selectedCount}
-            onContinue={handleContinue}
+            onContinue={() => void handleContinue()}
             testID={screenId}
           />
         </View>

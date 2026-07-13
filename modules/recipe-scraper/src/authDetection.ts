@@ -60,7 +60,7 @@ export function detectAuthRequired(
 
   const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
   if (titleMatch) {
-    const title = titleMatch[1].toLowerCase();
+    const title = titleMatch[1]!.toLowerCase();
     for (const keyword of AUTH_TITLE_KEYWORDS) {
       if (title.includes(keyword)) {
         return authErrorResult(host);

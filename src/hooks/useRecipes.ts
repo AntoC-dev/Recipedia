@@ -100,7 +100,7 @@ export function useRecipes() {
     try {
       for (let i = 0; i < recipesToScale.length; i++) {
         const scaledRecipe = RecipeDatabase.scaleRecipeToPersons(
-          recipesToScale[i],
+          recipesToScale[i]!,
           newDefaultPersons
         );
         await db.scaleAndUpdateRecipe(scaledRecipe);

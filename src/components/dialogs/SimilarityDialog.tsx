@@ -390,8 +390,9 @@ export function SimilarityDialog({ testId, isVisible, onClose, item }: Similarit
                   value: {
                     name: item.newItemName,
                   },
-                  onConfirmIngredient: (mode: DialogMode, newItem: ingredientTableElement) =>
-                    handleItemDialogConfirm(mode, newItem),
+                  onConfirmIngredient: (mode: DialogMode, newItem: ingredientTableElement) => {
+                    void handleItemDialogConfirm(mode, newItem);
+                  },
                 }
               : {
                   type: item.type,
@@ -399,8 +400,9 @@ export function SimilarityDialog({ testId, isVisible, onClose, item }: Similarit
                     id: -1,
                     name: item.newItemName,
                   },
-                  onConfirmTag: (mode: DialogMode, newItem: tagTableElement) =>
-                    handleItemDialogConfirm(mode, newItem),
+                  onConfirmTag: (mode: DialogMode, newItem: tagTableElement) => {
+                    void handleItemDialogConfirm(mode, newItem);
+                  },
                 }
           }
         />

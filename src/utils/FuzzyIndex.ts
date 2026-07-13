@@ -206,7 +206,7 @@ export function buildItemIndex<T>(corpus: T[], config: ItemIndexConfig<T>): Item
   const normalizedNames: string[] = new Array(corpus.length);
   const indexedNames: string[] = new Array(corpus.length);
   for (let i = 0; i < corpus.length; i++) {
-    const name = preprocess(config.getName(corpus[i]));
+    const name = preprocess(config.getName(corpus[i]!));
     indexedNames[i] = name;
     normalizedNames[i] = normalizeKey(name);
   }

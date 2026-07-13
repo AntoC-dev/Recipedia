@@ -57,7 +57,7 @@ export function LanguageSettings({ navigation }: LanguageSettingsProp) {
       const savedLanguage = await getLanguage();
       setCurrentLocale(savedLanguage);
     };
-    loadLanguage();
+    void loadLanguage();
   }, []);
 
   const handleLanguageChange = async (locale: string) => {
@@ -74,7 +74,10 @@ export function LanguageSettings({ navigation }: LanguageSettingsProp) {
     <ScreenWrapper>
       <AppBar title={t('language')} onGoBack={() => navigation.goBack()} testID={languageTestId} />
 
-      <RadioButton.Group onValueChange={handleLanguageChange} value={currentLocale}>
+      <RadioButton.Group
+        onValueChange={value => void handleLanguageChange(value)}
+        value={currentLocale}
+      >
         <List.Section>
           <FlatList
             data={availableLocales}
@@ -86,7 +89,7 @@ export function LanguageSettings({ navigation }: LanguageSettingsProp) {
                   testID={languageTestId + `::Item::${index}`}
                   title={getLocaleName(locale)}
                   left={() => <RadioButton value={locale} />}
-                  onPress={() => handleLanguageChange(locale)}
+                  onPress={() => void handleLanguageChange(locale)}
                 />
               </View>
             )}

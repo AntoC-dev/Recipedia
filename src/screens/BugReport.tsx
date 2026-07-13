@@ -158,7 +158,7 @@ export function BugReport() {
           <Button
             testID={screenTestId + '::Screenshots::AddButton'}
             mode='outlined'
-            onPress={handleAddScreenshots}
+            onPress={() => void handleAddScreenshots()}
             style={styles.addButton}
           >
             {t('bugReport.addScreenshot')}
@@ -168,7 +168,7 @@ export function BugReport() {
         <Button
           testID={screenTestId + '::Send::Button'}
           mode='contained'
-          onPress={handleSubmit(onSubmit)}
+          onPress={() => void handleSubmit(onSubmit)()}
           disabled={!isValid}
           style={styles.screenshotsSection}
         >

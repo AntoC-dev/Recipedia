@@ -104,7 +104,7 @@ export function DefaultPersonsSettings({ navigation }: DefaultPersonsSettingsPro
         <Button
           testID={screenTestId + '::Save'}
           mode='contained'
-          onPress={handleSave}
+          onPress={() => void handleSave()}
           style={styles.button}
           disabled={isLoading}
         >

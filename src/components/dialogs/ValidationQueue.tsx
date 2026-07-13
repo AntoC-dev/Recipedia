@@ -62,6 +62,7 @@ export function ValidationQueue({
   if (queue.length === 0) return null;
 
   const currentItem = queue[0];
+  if (!currentItem) return null;
   const itemName = currentItem.name ?? '';
   const similarItem = currentItem.similarItems[0] as
     tagTableElement | ingredientTableElement | undefined;

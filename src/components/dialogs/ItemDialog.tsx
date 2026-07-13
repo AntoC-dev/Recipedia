@@ -101,7 +101,7 @@ export type ItemIngredientType = {
   /** Current ingredient data (may have optional fields for new/incomplete ingredients) */
   value: FormIngredientElement;
   /** Callback fired when ingredient operation is confirmed */
-  onConfirmIngredient: (mode: DialogMode, newItem: ingredientTableElement) => void;
+  onConfirmIngredient: (mode: DialogMode, newItem: ingredientTableElement) => void | Promise<void>;
 };
 
 /** Configuration for tag dialogs */
@@ -110,7 +110,7 @@ export type ItemTagType = {
   /** Current tag data */
   value: tagTableElement;
   /** Callback fired when tag operation is confirmed */
-  onConfirmTag: (mode: DialogMode, newItem: tagTableElement) => void;
+  onConfirmTag: (mode: DialogMode, newItem: tagTableElement) => void | Promise<void>;
 };
 
 /**
@@ -238,7 +238,7 @@ export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialo
   const onSubmit = (data: ItemDialogFormValues) => {
     switch (item.type) {
       case 'Ingredient':
-        item.onConfirmIngredient(mode, {
+        void item.onConfirmIngredient(mode, {
           id: item.value.id,
           name: data.name,
           type: data.type as ingredientType,
@@ -247,7 +247,7 @@ export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialo
         });
         break;
       case 'Tag':
-        item.onConfirmTag(mode, { id: item.value.id, name: data.name });
+        void item.onConfirmTag(mode, { id: item.value.id, name: data.name });
         break;
       default:
         uiLogger.error('Unreachable code in ItemDialog');
@@ -258,10 +258,10 @@ export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialo
   const handleDeleteConfirm = () => {
     switch (item.type) {
       case 'Ingredient':
-        item.onConfirmIngredient(mode, item.value as ingredientTableElement);
+        void item.onConfirmIngredient(mode, item.value as ingredientTableElement);
         break;
       case 'Tag':
-        item.onConfirmTag(mode, item.value as tagTableElement);
+        void item.onConfirmTag(mode, item.value as tagTableElement);
         break;
       default:
         uiLogger.error('Unreachable code in ItemDialog');
@@ -395,7 +395,9 @@ export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialo
             <Button
               testID={modalTestId + '::ConfirmButton'}
               mode='contained'
-              onPress={mode === 'delete' ? handleDeleteConfirm : handleSubmit(onSubmit)}
+              onPress={() =>
+                void (mode === 'delete' ? handleDeleteConfirm : handleSubmit(onSubmit))()
+              }
               disabled={isConfirmDisabled}
             >
               {confirmButtonText}

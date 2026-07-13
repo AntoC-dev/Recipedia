@@ -96,23 +96,25 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
       return;
     }
 
-    const id = setTimeout(async () => {
-      try {
-        await loadFirstLaunchDataset();
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        const fullDetails =
-          error instanceof Error
-            ? `${error.message}${error.stack ? `\n${error.stack}` : ''}`
-            : typeof error === 'object'
-              ? JSON.stringify(error, null, 2)
-              : String(error);
-        appLogger.error('Dataset loading failed - app will work without initial data', {
-          error: fullDetails,
-        });
-        setInitErrors(prev => [...prev, errorMessage]);
-        setDatasetFailed(true);
-      }
+    const id = setTimeout(() => {
+      void (async () => {
+        try {
+          await loadFirstLaunchDataset();
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          const fullDetails =
+            error instanceof Error
+              ? `${error.message}${error.stack ? `\n${error.stack}` : ''}`
+              : typeof error === 'object'
+                ? JSON.stringify(error, null, 2)
+                : String(error);
+          appLogger.error('Dataset loading failed - app will work without initial data', {
+            error: fullDetails,
+          });
+          setInitErrors(prev => [...prev, errorMessage]);
+          setDatasetFailed(true);
+        }
+      })();
     }, 0);
     return () => clearTimeout(id);
   }, [isDataLoaded]);
@@ -311,7 +313,7 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
           onDismiss={dismissInitErrors}
           testID={testId + '::InitErrorDialog'}
         >
-          <Dialog.Icon icon={Icons.warningIcon} />
+          <Dialog.Icon icon={Icons.alertWithCircle} />
           <Dialog.Title>{t('welcome.datasetError.title')}</Dialog.Title>
           <Dialog.Content>
             <Text variant='bodyMedium'>{t('welcome.datasetError.message')}</Text>

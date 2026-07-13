@@ -147,7 +147,7 @@ export function useValidationWorkflow(
       const recipesWithIngredients = validatedRecipes.filter(r => r.ingredients.length > 0);
 
       const allSkipped = recipesRef.current
-        .filter((_, i) => validatedRecipes[i].ingredients.length === 0)
+        .filter((_, i) => validatedRecipes[i]!.ingredients.length === 0)
         .map(r => ({ title: r.title, sourceUrl: r.sourceUrl }));
 
       setSkippedRecipes(allSkipped);
@@ -246,11 +246,11 @@ export function useValidationWorkflow(
       } else if (hasItemsToReview) {
         setPhase('reviewing');
       } else {
-        saveRecipesRef.current(state);
+        void saveRecipesRef.current(state);
       }
     };
 
-    runInit();
+    void runInit();
   }, [selectedRecipes]);
 
   /**
@@ -293,7 +293,7 @@ export function useValidationWorkflow(
       setPhase('reviewing');
     } else {
       const state = validationStateRef.current;
-      if (state) saveRecipesRef.current(state);
+      if (state) void saveRecipesRef.current(state);
     }
   };
 
@@ -306,7 +306,7 @@ export function useValidationWorkflow(
       bulkImportLogger.error('Start import called but validation state is null');
       return;
     }
-    saveRecipesRef.current(state);
+    void saveRecipesRef.current(state);
   };
 
   const progress = validationState ? getValidationProgress(validationState) : null;

@@ -35,7 +35,13 @@ export function BottomActionButton({
         backgroundColor: colors.background,
       }}
     >
-      <Button testID={testId} mode='contained' icon={icon} onPress={onPress} disabled={disabled}>
+      <Button
+        testID={testId}
+        mode='contained'
+        icon={icon}
+        onPress={() => void onPress()}
+        disabled={disabled}
+      >
         {label}
       </Button>
     </View>

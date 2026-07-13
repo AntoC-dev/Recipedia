@@ -110,7 +110,7 @@ const DEFAULT_PATTERNS: IgnoredIngredientPatterns = { prefixes: [], exactMatches
  */
 function extractParentheticalNote(text: string): string | undefined {
   const match = text.match(/\s*\(([^)]+)\)/);
-  return match ? match[1].trim() : undefined;
+  return match ? match[1]!.trim() : undefined;
 }
 
 /**
@@ -142,8 +142,8 @@ export function parseIngredientString(
     };
   }
 
-  const firstWord = words[0];
-  const secondWord = words[1];
+  const firstWord = words[0]!;
+  const secondWord = words[1]!;
   const isFraction = secondWord.includes('/');
 
   const candidateQuantity = isFraction ? `${firstWord} ${secondWord}` : firstWord;
@@ -165,7 +165,7 @@ export function parseIngredientString(
   }
 
   if (remainingWords.length === 1) {
-    const rawWord = remainingWords[0];
+    const rawWord = remainingWords[0]!;
     const note = extractParentheticalNote(rawWord);
     return {
       success: true,
@@ -235,7 +235,7 @@ export function convertIngredients(
     const skipped: string[] = [];
 
     for (let i = 0; i < parsedIngredients.length; i++) {
-      const p = parsedIngredients[i];
+      const p = parsedIngredients[i]!;
       if (!p.quantity && isUnparseableIngredient(p.name, patterns)) {
         skipped.push(p.name);
       } else {

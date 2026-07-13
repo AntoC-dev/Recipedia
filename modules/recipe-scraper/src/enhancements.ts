@@ -212,7 +212,7 @@ export function cleanDescription(
 
     let cleaned = description.toLowerCase();
     for (const ing of ingredients) {
-        const name = ing.toLowerCase().split('(')[0].trim();
+        const name = ing.toLowerCase().split('(')[0]!.trim();
         if (name) {
             cleaned = cleaned.replace(name, '');
         }
@@ -242,7 +242,7 @@ export function cleanKeywords(
 
     const ingredientNames = new Set<string>();
     for (const ing of ingredients) {
-        const name = ing.toLowerCase().split('(')[0].trim();
+        const name = ing.toLowerCase().split('(')[0]!.trim();
         if (name) {
             ingredientNames.add(name);
         }
@@ -280,7 +280,7 @@ export function extractStructuredIngredients(
     if (!ingListMatch) return null;
 
     const results: ParsedIngredient[] = [];
-    const ingListHtml = ingListMatch[1];
+    const ingListHtml = ingListMatch[1]!;
 
     // Extract main ingredients from list items.
     // Structure: <li><span class="bold">{qty}</span><span>{name + nested badges/notes}</span></li>
@@ -288,14 +288,14 @@ export function extractStructuredIngredients(
     // we flatten its full text so downstream parenthetical-note extraction can recover them.
     const liMatches = ingListHtml.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi);
     for (const liMatch of liMatches) {
-        const liContent = liMatch[1];
+        const liContent = liMatch[1]!;
 
         const qtyMatch = liContent.match(/<span[^>]*class=["'][^"']*\bbold\b[^"']*["'][^>]*>([\s\S]*?)<\/span>/i);
         if (!qtyMatch || qtyMatch.index === undefined) {
             return null;
         }
 
-        const qtyUnit = stripHtml(qtyMatch[1]).trim();
+        const qtyUnit = stripHtml(qtyMatch[1]!).trim();
         const afterQty = liContent.slice(qtyMatch.index + qtyMatch[0].length);
         const name = stripHtml(afterQty).replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim();
 
@@ -316,11 +316,11 @@ export function extractStructuredIngredients(
         /<ul[^>]*class=["'][^"']*kitchen-list[^"']*["'][^>]*>([\s\S]*?)<\/ul>/i
     );
     if (kitchenListMatch) {
-        const kitchenHtml = kitchenListMatch[1];
+        const kitchenHtml = kitchenListMatch[1]!;
         const kitchenLiMatches = kitchenHtml.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi);
 
         for (const liMatch of kitchenLiMatches) {
-            const text = stripHtml(liMatch[1]).trim();
+            const text = stripHtml(liMatch[1]!).trim();
             if (text) {
                 const [quantity, unit, name] = parseKitchenItem(text);
                 results.push({quantity, unit, name});
@@ -341,9 +341,9 @@ export function parseKitchenItem(text: string): [string, string, string] {
     // Try to extract quantity and unit from start
     const match = text.match(/^([\d.,/]+)\s*(\S+)\s+(.+)$/);
     if (match) {
-        const quantity = match[1].replace(',', '.');
-        const unit = match[2];
-        const name = cleanIngredientName(match[3]);
+        const quantity = match[1]!.replace(',', '.');
+        const unit = match[2]!;
+        const name = cleanIngredientName(match[3]!);
         return [quantity, unit, name];
     }
 
@@ -361,8 +361,8 @@ export function splitQuantityUnit(text: string): [string, string] {
 
     const match = text.match(/^([\d.,/]+)\s*(.*)$/);
     if (match) {
-        const quantity = match[1].replace(',', '.');
-        const unit = match[2].trim();
+        const quantity = match[1]!.replace(',', '.');
+        const unit = match[2]!.trim();
         return [quantity, unit];
     }
 
@@ -438,7 +438,7 @@ export function extractStructuredInstructions(
     const results: ParsedInstruction[] = [];
 
     for (let i = 0; i < stepStarts.length; i++) {
-        const stepStart = stepStarts[i];
+        const stepStart = stepStarts[i]!;
         // Extract content from this step to the next step (or 1000 chars if last)
         const nextStepStart = stepStarts[i + 1];
         const stepEnd = nextStepStart !== undefined
@@ -471,7 +471,7 @@ function extractStepTitle(stepHtml: string): string | null {
     for (const pattern of patterns) {
         const match = stepHtml.match(pattern);
         if (match) {
-            let title = stripHtml(match[1]).trim();
+            let title = stripHtml(match[1]!).trim();
             // Remove leading patterns like "1. ", "Étape 1:", "Step 2 -"
             title = title.replace(
                 /^(\d+[.:\s-]+|[Éé]tape\s*\d*[.:\s-]*|Step\s*\d*[.:\s-]*)/i,
@@ -493,7 +493,7 @@ function extractStepInstructions(stepHtml: string): string[] {
     const liMatches = stepHtml.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi);
 
     for (const match of liMatches) {
-        const text = stripHtml(match[1]).trim();
+        const text = stripHtml(match[1]!).trim();
         if (text) {
             instructions.push(text);
         }
@@ -547,7 +547,7 @@ export function findAllKcalInHtml(html: string): number[] {
     const results: number[] = [];
 
     for (const match of html.matchAll(regex)) {
-        const value = extractNumericValue(match[1]);
+        const value = extractNumericValue(match[1]!);
         if (value > 0 && !seen.has(value)) {
             seen.add(value);
             results.push(value);
@@ -649,7 +649,7 @@ export function extractKcalFromSection(sectionHtml: string): number {
             const textOnly = afterLabel.replace(/<[^>]*>/g, ' ');
             const numMatch = textOnly.match(/(\d+[\d.,]*)/);
             if (numMatch) {
-                return extractNumericValue(numMatch[1]);
+                return extractNumericValue(numMatch[1]!);
             }
         }
     }
@@ -697,7 +697,7 @@ export function extractImageFromJsonLd(html: string): string | null {
     if (!scriptMatch) return null;
 
     try {
-        const data = JSON.parse(scriptMatch[1]);
+        const data = JSON.parse(scriptMatch[1]!);
         const recipe = findRecipeInJsonLd(data);
 
         if (!recipe || !('image' in recipe)) return null;

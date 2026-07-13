@@ -311,8 +311,8 @@ export abstract class BaseRecipeProvider implements RecipeProvider {
     for (let j = 0; j < results.length; j++) {
       if (state.reachedMaxRecipes) break;
 
-      const result = results[j];
-      const categoryUrl = batch[j];
+      const result = results[j]!;
+      const categoryUrl = batch[j]!;
       state.categoriesScanned++;
 
       if (result.status === 'fulfilled') {
@@ -455,8 +455,8 @@ export abstract class BaseRecipeProvider implements RecipeProvider {
       const results = await this.fetchCategoryBatch(batch, signal);
 
       for (let j = 0; j < results.length; j++) {
-        const result = results[j];
-        const categoryUrl = batch[j];
+        const result = results[j]!;
+        const categoryUrl = batch[j]!;
 
         if (result.status === 'fulfilled' && result.value.links.length > 0) {
           recovered++;

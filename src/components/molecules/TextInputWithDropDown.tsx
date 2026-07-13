@@ -194,7 +194,7 @@ export function TextInputWithDropDown({
     : [];
 
   const isExactMatch =
-    filteredItems.length === 1 && filteredItems[0].toLowerCase() === textInput.toLowerCase();
+    filteredItems.length === 1 && filteredItems[0]!.toLowerCase() === textInput.toLowerCase();
 
   const shouldShowDropdown =
     showDropdown && !hideDropdown && filteredItems.length > 0 && !isExactMatch;

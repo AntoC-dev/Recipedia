@@ -71,7 +71,7 @@ export const DefaultPersonsProvider = ({ children }: { children: React.ReactNode
   const [defaultPersons, setDefaultPersonsState] = useState(() => getDefaultPersonsSync());
 
   useEffect(() => {
-    getDefaultPersons().then(value => {
+    void getDefaultPersons().then(value => {
       setDefaultPersonsState(value);
     });
   }, []);

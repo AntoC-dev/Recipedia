@@ -265,9 +265,9 @@ export async function downloadImageToCache(remoteUrl: string): Promise<string> {
   fileSystemLogger.info('Starting image download', { remoteUrl });
 
   try {
-    const urlWithoutQuery = remoteUrl.split('?')[0];
+    const urlWithoutQuery = remoteUrl.split('?')[0]!;
     const extensionMatch = urlWithoutQuery.match(/\.(jpe?g|png|webp|gif)$/i);
-    const extension = extensionMatch ? extensionMatch[1].toLowerCase() : 'jpg';
+    const extension = extensionMatch ? extensionMatch[1]!.toLowerCase() : 'jpg';
     const filename = `scraped_${Date.now()}.${extension}`;
     const localFile = new File(APP_CACHE, filename);
 
@@ -311,7 +311,7 @@ export async function downloadImageToCache(remoteUrl: string): Promise<string> {
 export function saveRecipeImage(cacheFileUri: string, recName: string): string {
   try {
     const extensionParts = cacheFileUri.split('.');
-    const extension = extensionParts[extensionParts.length - 1].split('?')[0] || 'jpg';
+    const extension = extensionParts[extensionParts.length - 1]!.split('?')[0] || 'jpg';
     const imgName = sanitizeFilename(recName) + '_' + Crypto.randomUUID() + '.' + extension;
     const imgFile = new File(APP_DIR, imgName);
 

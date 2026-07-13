@@ -538,7 +538,7 @@ export function fisherYatesShuffle<T>(arrayToShuffle: T[], numberOfElementsWante
   const shuffled = [...arrayToShuffle]; // Create a copy to avoid mutating the original array
   for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1)); // Pick a random index
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; // Swap elements
+    [shuffled[i], shuffled[j]] = [shuffled[j]!, shuffled[i]!]; // Swap elements
   }
   if (numberOfElementsWanted === undefined || numberOfElementsWanted >= arrayToShuffle.length) {
     return shuffled;

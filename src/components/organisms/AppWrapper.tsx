@@ -43,7 +43,7 @@ export default function AppWrapper() {
 
   useEffect(() => {
     deleteOldLogFiles();
-    isFirstLaunch().then(isFirst => {
+    void isFirstLaunch().then(isFirst => {
       if (isFirst) {
         appLogger.info('First launch detected - showing welcome screen');
         setMode(AppMode.Welcome);
@@ -64,7 +64,7 @@ export default function AppWrapper() {
     await clearMenu();
     tutorialLogger.info('App launch - resetting menu');
     setMode(AppMode.Ready);
-    markAsLaunched();
+    await markAsLaunched();
   };
 
   /**
@@ -95,7 +95,7 @@ export default function AppWrapper() {
    * Calls handleAppLaunch to perform standard initialization.
    */
   const handleSkipWelcome = () => {
-    handleAppLaunch();
+    void handleAppLaunch();
     appLogger.info('Welcome skipped - proceeding to main app');
   };
 
@@ -106,13 +106,18 @@ export default function AppWrapper() {
    * is completed. Performs same initialization as normal app launch.
    */
   const handleTutorialComplete = () => {
-    handleAppLaunch();
+    void handleAppLaunch();
     appLogger.info('Tutorial completed successfully');
   };
 
   switch (mode) {
     case AppMode.Welcome:
-      return <WelcomeScreen onStartTutorial={handleStartTutorial} onSkip={handleSkipWelcome} />;
+      return (
+        <WelcomeScreen
+          onStartTutorial={() => void handleStartTutorial()}
+          onSkip={handleSkipWelcome}
+        />
+      );
 
     case AppMode.Tutorial:
       return (

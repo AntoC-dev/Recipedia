@@ -66,7 +66,7 @@ export type ParametersContextType = {
  */
 export const DarkModeContext = React.createContext<ParametersContextType>({
   isDarkMode: false,
-  toggleDarkMode: async () => {
+  toggleDarkMode: () => {
     // Default implementation - overridden by provider
   },
 });

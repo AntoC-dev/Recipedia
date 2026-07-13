@@ -59,14 +59,14 @@ export function TutorialTooltip() {
    */
   const navigateToStep = (
     screen: ReturnType<typeof getNextTutorialScreen>,
-    moveStep: () => void
+    moveStep: () => void | Promise<void>
   ) => {
     if (!screen) {
       return;
     }
     navigation.navigate(screen);
     if (screen !== SELF_ADVANCING_TUTORIAL_SCREEN) {
-      moveStep();
+      void moveStep();
     }
   };
 
@@ -124,7 +124,7 @@ export function TutorialTooltip() {
           <Button
             testID={testId + '::Skip'}
             mode='text'
-            onPress={stop}
+            onPress={() => void stop()}
             textColor={colors.outline}
             compact
           >

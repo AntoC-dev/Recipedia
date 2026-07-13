@@ -70,8 +70,8 @@ export async function forEachChunk<T>(
   chunkSize: number = DEFAULT_CHUNK_SIZE
 ): Promise<void> {
   const chunks = chunkArray(items, chunkSize);
-  for (let i = 0; i < chunks.length; i++) {
-    await handler(chunks[i], i);
+  for (const [i, chunk] of chunks.entries()) {
+    await handler(chunk, i);
     if (i < chunks.length - 1) {
       await yieldToEventLoop();
     }

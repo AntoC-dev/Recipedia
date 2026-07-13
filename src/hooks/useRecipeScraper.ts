@@ -231,7 +231,7 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
           setIsLoading(false);
           return {
             success: false,
-            error: t(SCRAPER_ERROR_I18N_KEYS[ScraperErrorTypes.AuthenticationRequired]),
+            error: t(SCRAPER_ERROR_I18N_KEYS[ScraperErrorTypes.AuthenticationRequired]!),
           };
         }
       }
@@ -258,7 +258,7 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
       setIsLoading(false);
       return result;
     } catch (err) {
-      const errorMessage = t(SCRAPER_ERROR_I18N_KEYS[ScraperErrorTypes.ConnectionError]);
+      const errorMessage = t(SCRAPER_ERROR_I18N_KEYS[ScraperErrorTypes.ConnectionError]!);
       uiLogger.error('Unexpected error during scraping', { url, error: serializeError(err) });
       setError(errorMessage);
       setIsLoading(false);
@@ -287,7 +287,7 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
       setIsLoading(false);
       return result;
     } catch (err) {
-      const errorMessage = t(SCRAPER_ERROR_I18N_KEYS[ScraperErrorTypes.ConnectionError]);
+      const errorMessage = t(SCRAPER_ERROR_I18N_KEYS[ScraperErrorTypes.ConnectionError]!);
       uiLogger.error('Unexpected error during authenticated scraping', {
         url,
         error: serializeError(err),

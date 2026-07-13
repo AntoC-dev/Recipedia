@@ -156,7 +156,7 @@ export function addOrMergeIngredientMatches(
       } else {
         updated[existingIndex] = {
           ...ingredient,
-          quantity: ingredient.quantity || existing.quantity || '',
+          quantity: ingredient.quantity || existing?.quantity || '',
         };
       }
     }

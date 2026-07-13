@@ -64,7 +64,7 @@ export type AlertProps = {
   /** Callback fired when dialog is dismissed */
   onClose: () => void;
   /** Optional callback fired when confirm button is pressed */
-  onConfirm?: () => void;
+  onConfirm?: () => void | Promise<void>;
   /** Optional callback fired when cancel button is pressed */
   onCancel?: () => void;
   /** Optional style applied to the dialog surface (e.g. to offset its position) */
@@ -95,7 +95,7 @@ export function Alert({
 
   const handleConfirm = () => {
     handleDismiss();
-    onConfirm?.();
+    void onConfirm?.();
   };
 
   const handleCancel = () => {
