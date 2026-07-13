@@ -34,6 +34,10 @@ module.exports = defineConfig([
                 ecmaFeatures: {
                     jsx: true,
                 },
+                // Enable type-aware linting (uses the nearest tsconfig).
+                // Required by rules such as no-floating-promises.
+                projectService: true,
+                tsconfigRootDir: __dirname,
             },
             globals: {
                 // Node/RN/Expo globals (__DEV__, console, process, timers, …) come
@@ -54,10 +58,15 @@ module.exports = defineConfig([
             ],
             '@typescript-eslint/no-explicit-any': 'warn',
 
+            // Type-aware correctness rules (require projectService above)
+            '@typescript-eslint/no-floating-promises': 'error',
+            '@typescript-eslint/no-misused-promises': 'error',
+            '@typescript-eslint/await-thenable': 'error',
+
             'react/prop-types': 'off',
             'react/react-in-jsx-scope': 'off',
             'react-hooks/rules-of-hooks': 'error',
-            'react-hooks/exhaustive-deps': 'off',
+            'react-hooks/exhaustive-deps': 'warn',
 
             'react-native/no-unused-styles': 'error',
             'react-native/split-platform-components': 'error',
