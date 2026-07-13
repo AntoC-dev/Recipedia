@@ -63,13 +63,11 @@ export function createMockRecipeProp(
       const baseRecipe = recipe ?? defaultTestRecipe;
       const scrapedData: ScrapedRecipeData = {
         ...baseRecipe,
-        ingredients: baseRecipe.ingredients.map(
-          (ing): FormIngredientElement => ({
-            name: ing.name,
-            quantity: ing.quantity,
-            unit: ing.unit,
-          })
-        ),
+        ingredients: baseRecipe.ingredients.map((ing): FormIngredientElement => ({
+          name: ing.name,
+          quantity: ing.quantity,
+          unit: ing.unit,
+        })),
       };
       return {
         mode: 'addFromScrape',

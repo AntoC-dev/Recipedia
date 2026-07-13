@@ -70,8 +70,9 @@ function createTestWrapper(defaults?: Partial<RecipeFormInput>) {
       mode: 'onTouched',
       defaultValues: buildFormDefaults(defaults),
     });
-    // eslint-disable-next-line react-compiler/react-compiler
-    formRef.current = form;
+    React.useEffect(() => {
+      formRef.current = form;
+    });
     return (
       <FormProvider {...form}>
         <IngredientArrayActionsProvider>{children}</IngredientArrayActionsProvider>

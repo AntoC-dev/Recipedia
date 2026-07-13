@@ -8,7 +8,7 @@
  * rather than the production code so the production module can be deleted.
  */
 
-import React, { ReactNode, useRef } from 'react';
+import React, { ReactNode, useState } from 'react';
 import { FormProvider, useForm, UseFormReturn, useFormContext } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ingredientTableElement, recipeTableElement } from '@customTypes/DatabaseElementTypes';
@@ -84,13 +84,12 @@ export interface RecipeFormProviderProps {
 export function RecipeFormProvider({ props, children }: RecipeFormProviderProps) {
   const initStateFromProp = hasRecipeFromProps(props);
   const initStateFromScrape = hasScrapedDataFromProps(props);
-  const defaultValuesRef = useRef<RecipeFormInput | null>(null);
-  if (defaultValuesRef.current === null) {
-    defaultValuesRef.current = buildDefaultValues(props, initStateFromProp, initStateFromScrape);
-  }
+  const [defaultValues] = useState<RecipeFormInput>(() =>
+    buildDefaultValues(props, initStateFromProp, initStateFromScrape)
+  );
   const form = useForm<RecipeFormInput>({
     resolver: recipeFormResolver,
-    defaultValues: defaultValuesRef.current,
+    defaultValues,
     mode: 'onTouched',
   });
   return <FormProvider {...form}>{children}</FormProvider>;

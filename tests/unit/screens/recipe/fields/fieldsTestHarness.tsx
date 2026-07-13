@@ -38,8 +38,9 @@ export function renderWithForm<P extends { form: Form }>(
   const formRef: { current: Form | null } = { current: null };
   function TestHost() {
     const form = useTestForm(defaults);
-    // eslint-disable-next-line react-compiler/react-compiler
-    formRef.current = form;
+    React.useEffect(() => {
+      formRef.current = form;
+    });
     const built = buildProps(form);
     return (
       <FormProvider {...form}>
