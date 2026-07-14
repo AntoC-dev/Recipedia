@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_MCP_PAT}"
+      }
+    },
+    "maestro": {
+      "type": "stdio",
+      "command": "maestro",
+      "args": ["mcp"],
+      "env": {}
+    }
+  }
+}

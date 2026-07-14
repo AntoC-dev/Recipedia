@@ -1,1 +1,3 @@
+node scripts/sync-cursor.mjs
+git add .cursor
 npx lint-staged
