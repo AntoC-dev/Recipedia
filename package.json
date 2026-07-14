@@ -77,7 +77,7 @@
   "dependencies": {
     "@babel/core": "^7.29.0",
     "@expo/vector-icons": "^15.0.3",
-    "@hookform/resolvers": "5.2.2",
+    "@hookform/resolvers": "5.4.0",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/slider": "5.2.0",
     "@react-native-ml-kit/text-recognition": "~1.5.2",
