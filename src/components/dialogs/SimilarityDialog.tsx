@@ -296,7 +296,7 @@ export function SimilarityDialog({ testId, isVisible, onClose, item }: Similarit
 
   return (
     <Portal>
-      <Dialog visible={isVisible && !showPicker && !pickedItem} onDismiss={handleDismiss}>
+      <Dialog visible={isVisible && !showPicker && !pickedItem} onDismiss={handleDismiss} dismissable={false}>
         <Dialog.Title testID={`${modalTestId}::Title`}>{title}</Dialog.Title>
         <Dialog.Content>
           <Text testID={`${modalTestId}::Content`} variant='bodyMedium'>
