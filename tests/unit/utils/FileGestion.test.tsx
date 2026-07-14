@@ -665,6 +665,41 @@ describe('copyDatasetImages', () => {
     });
   });
 
+  test('skips assets that resolve without a localUri', async () => {
+    setMockDatasetType('test');
+
+    const mockAssets = [
+      createMockAsset('image1', 'jpg', ''),
+      createMockAsset('image2', 'jpg', '/asset/path/image2.jpg'),
+    ];
+    setupFromModuleSequence(mockAssets);
+
+    await copyDatasetImages();
+
+    expect(mockFileCopy).toHaveBeenCalledTimes(1);
+    expect(mockFileCopy).toHaveBeenCalledWith(
+      '/asset/path/image2.jpg',
+      expect.objectContaining({ uri: defaultDocumentsPath + 'image2.jpg' })
+    );
+  });
+
+  test('continues when copying an individual asset file throws', async () => {
+    setMockDatasetType('test');
+
+    const mockAssets = [
+      createMockAsset('image1', 'jpg', '/asset/path/image1.jpg'),
+      createMockAsset('image2', 'jpg', '/asset/path/image2.jpg'),
+    ];
+    setupFromModuleSequence(mockAssets);
+    mockFileCopy.mockImplementationOnce(() => {
+      throw new Error('copy failed');
+    });
+
+    await expect(copyDatasetImages()).resolves.toBeUndefined();
+
+    expect(mockFileCopy).toHaveBeenCalledTimes(2);
+  });
+
   test('calls fromModule with each module ID from the image set', async () => {
     setMockDatasetType('test');
     const { testRecipesImages } = require('@utils/Constants');

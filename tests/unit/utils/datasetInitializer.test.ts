@@ -1,4 +1,5 @@
 import { loadFirstLaunchDataset } from '@utils/datasetInitializer';
+import { DEFAULT_CHUNK_SIZE } from '@utils/chunk';
 import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { copyDatasetImages, transformDatasetRecipeImages } from '@utils/FileGestion';
 import { getDataset } from '@utils/DatasetLoader';
@@ -133,6 +134,40 @@ describe('loadFirstLaunchDataset', () => {
     expect(getDataset).toHaveBeenCalledWith('fr');
 
     (i18n as any).language = 'en';
+  });
+
+  test('chunks recipe scaling and insertion across default-size batches', async () => {
+    const total = DEFAULT_CHUNK_SIZE * 2 + 1;
+    const manyRecipes = Array.from({ length: total }, (_, i) => ({
+      id: i + 1,
+      title: `Recipe ${i}`,
+      ingredients: [],
+      tags: [],
+      persons: 2,
+      time: 30,
+      preparation: [],
+      image_Source: '',
+      description: '',
+      season: [],
+    }));
+    (getDataset as jest.Mock).mockReturnValue({
+      ingredients: [{ id: 1, name: 'Carrot', unit: 'g', type: 'vegetable', season: [] }],
+      tags: [{ id: 1, name: 'Italian' }],
+      recipes: manyRecipes,
+    });
+
+    await loadFirstLaunchDataset();
+
+    const db = getDbInstance();
+    expect(RecipeDatabase.scaleRecipeToPersons).toHaveBeenCalledTimes(total);
+    expect(db.addMultipleRecipes).toHaveBeenCalledTimes(3);
+    const insertedCount = db.addMultipleRecipes.mock.calls.reduce(
+      (sum: number, call: unknown[]) => sum + (call[0] as unknown[]).length,
+      0
+    );
+    expect(insertedCount).toBe(total);
+    expect((db.addMultipleRecipes.mock.calls[0][0] as unknown[]).length).toBe(DEFAULT_CHUNK_SIZE);
+    expect((db.addMultipleRecipes.mock.calls[2][0] as unknown[]).length).toBe(1);
   });
 
   test('calls transformDatasetRecipeImages before scaling recipes', async () => {
