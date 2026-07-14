@@ -40,6 +40,7 @@ import { productionRecipesImages, testRecipesImages } from '@utils/Constants';
 import { getDatasetType } from '@utils/DatasetLoader';
 import { fileSystemLogger } from '@utils/logger';
 import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
+import { forEachChunk } from '@utils/chunk';
 
 const DIRECTORY_NAME = Constants.expoConfig?.name || pkg.name;
 const APP_DIR = new Directory(Paths.document, DIRECTORY_NAME);
@@ -393,68 +394,71 @@ export async function copyDatasetImages(): Promise<void> {
   });
 
   try {
-    // Force download of all assets to ensure they exist on local storage.
-    // expo-asset may mark bundled Android images as "downloaded" without
-    // extracting them to the file system — resetting the flag ensures the
-    // native module copies each asset from APK resources to cache.
-    const assetModules = (
-      await Promise.all(
-        imageSet.map(async moduleId => {
-          try {
-            const asset = Asset.fromModule(moduleId);
-            asset.downloaded = false;
+    // Download + copy the image set in chunks, yielding to the event loop
+    // between chunks. This bounds peak asset-download concurrency and stops the
+    // 1200-image copy from monopolising the JS thread during first launch.
+    let loadedCount = 0;
 
-            await asset.downloadAsync();
-            return asset;
-          } catch (err) {
-            fileSystemLogger.warn('Failed to load individual asset', { moduleId, error: err });
-            return null;
-          }
-        })
-      )
-    ).filter((asset): asset is Asset => asset !== null);
+    await forEachChunk(imageSet, async chunk => {
+      // Force download of each asset to ensure it exists on local storage.
+      // expo-asset may mark bundled Android images as "downloaded" without
+      // extracting them to the file system — resetting the flag ensures the
+      // native module copies each asset from APK resources to cache.
+      const assetModules = (
+        await Promise.all(
+          chunk.map(async moduleId => {
+            try {
+              const asset = Asset.fromModule(moduleId);
+              asset.downloaded = false;
 
-    if (assetModules.length === 0 && imageSet.length > 0) {
+              await asset.downloadAsync();
+              return asset;
+            } catch (err) {
+              fileSystemLogger.warn('Failed to load individual asset', { moduleId, error: err });
+              return null;
+            }
+          })
+        )
+      ).filter((asset): asset is Asset => asset !== null);
+
+      loadedCount += assetModules.length;
+
+      for (const asset of assetModules) {
+        if (!asset.localUri) {
+          fileSystemLogger.warn('Asset missing localUri, skipping', { assetName: asset.name });
+          continue;
+        }
+
+        const destFile = new File(APP_DIR, asset.name + '.' + asset.type);
+
+        if (destFile.exists) {
+          fileSystemLogger.debug('Asset file already exists, skipping', {
+            assetName: asset.name,
+          });
+          continue;
+        }
+
+        try {
+          const sourceFile = new File(asset.localUri);
+          sourceFile.copySync(destFile);
+        } catch (copyError) {
+          fileSystemLogger.warn('Failed to copy individual asset file', {
+            assetName: asset.name,
+            error: copyError,
+          });
+        }
+      }
+    });
+
+    if (loadedCount === 0 && imageSet.length > 0) {
       throw new Error(
         `Failed to load any ${datasetType} assets out of ${imageSet.length}. Check if assets are bundled correctly.`
       );
     }
 
-    fileSystemLogger.info('Assets loaded', {
-      datasetType,
-      requestedCount: imageSet.length,
-      loadedCount: assetModules.length,
-    });
-
-    for (const asset of assetModules) {
-      if (!asset.localUri) {
-        fileSystemLogger.warn('Asset missing localUri, skipping', { assetName: asset.name });
-        continue;
-      }
-
-      const destFile = new File(APP_DIR, asset.name + '.' + asset.type);
-
-      if (destFile.exists) {
-        fileSystemLogger.debug('Asset file already exists, skipping', {
-          assetName: asset.name,
-        });
-        continue;
-      }
-
-      try {
-        const sourceFile = new File(asset.localUri);
-        sourceFile.copySync(destFile);
-      } catch (copyError) {
-        fileSystemLogger.warn('Failed to copy individual asset file', {
-          assetName: asset.name,
-          error: copyError,
-        });
-      }
-    }
-
     fileSystemLogger.info('Dataset images operation completed', {
       datasetType,
-      successCount: assetModules.length,
+      successCount: loadedCount,
     });
   } catch (error) {
     fileSystemLogger.error('Failed to copy dataset images', { datasetType, error });

@@ -20,6 +20,7 @@ import { getDataset } from '@utils/DatasetLoader';
 import i18n, { SupportedLanguage } from '@utils/i18n';
 import { getDefaultPersons } from '@utils/settings';
 import { databaseLogger } from '@utils/logger';
+import { forEachChunk, mapInChunks } from '@utils/chunk';
 
 /**
  * Loads the full first-launch dataset into the database.
@@ -58,20 +59,20 @@ export async function loadFirstLaunchDataset(): Promise<void> {
   await db.addMultipleIngredients(dataset.ingredients);
   await db.addMultipleTags(dataset.tags);
 
-  const recipesWithImages = transformDatasetRecipeImages(dataset.recipes);
-
   databaseLogger.info('Pre-scaling recipes to default persons count', {
     defaultPersons,
-    totalRecipes: recipesWithImages.length,
+    totalRecipes: dataset.recipes.length,
   });
 
-  const scaledRecipes = recipesWithImages.map(recipe =>
-    RecipeDatabase.scaleRecipeToPersons(recipe, defaultPersons)
+  const scaledRecipes = await mapInChunks(dataset.recipes, chunk =>
+    transformDatasetRecipeImages(chunk).map(recipe =>
+      RecipeDatabase.scaleRecipeToPersons(recipe, defaultPersons)
+    )
   );
 
   databaseLogger.info('Recipes pre-scaled successfully');
 
-  await db.addMultipleRecipes(scaledRecipes);
+  await forEachChunk(scaledRecipes, chunk => db.addMultipleRecipes(chunk));
 
   databaseLogger.info('Dataset loaded successfully in background', {
     ingredientsCount: dataset.ingredients.length,
