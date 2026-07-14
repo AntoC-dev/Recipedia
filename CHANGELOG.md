@@ -1,3 +1,14 @@
+## [2.42.0](https://github.com/AntoC-dev/Recipedia/compare/v2.41.0...v2.42.0) (2026-07-14)
+
+### Features
+
+* **bug-report:** add reportCrash helper for automatic crash reports ([bb4d2ae](https://github.com/AntoC-dev/Recipedia/commit/bb4d2aeba584748cec33ce7f14226ca41265a6e7))
+
+### Bug Fixes
+
+* **app:** add error boundaries with crash report + retry ([#352](https://github.com/AntoC-dev/Recipedia/issues/352)) ([0f4ec84](https://github.com/AntoC-dev/Recipedia/commit/0f4ec84ba4fc0f9ee8f9044d57c99f1a51c2863c))
+* **app:** add error boundaries with crash report + retry ([#352](https://github.com/AntoC-dev/Recipedia/issues/352)) ([#416](https://github.com/AntoC-dev/Recipedia/issues/416)) ([7d8bf1a](https://github.com/AntoC-dev/Recipedia/commit/7d8bf1ab998f6f764a732125159b4395027e2560))
+
 ## [2.41.0](https://github.com/AntoC-dev/Recipedia/compare/v2.40.2...v2.41.0) (2026-07-14)
 
 ### Features
