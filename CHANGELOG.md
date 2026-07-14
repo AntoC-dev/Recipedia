@@ -1,3 +1,11 @@
+## [2.41.0](https://github.com/AntoC-dev/Recipedia/compare/v2.40.2...v2.41.0) (2026-07-14)
+
+### Features
+
+* **bulk-import:** dismiss recipes from discovery ([6bb1d31](https://github.com/AntoC-dev/Recipedia/commit/6bb1d31d67968feed28b1f6e4ddc0338a4ca28fd)), closes [#326](https://github.com/AntoC-dev/Recipedia/issues/326)
+* **bulk-import:** dismiss recipes from discovery ([#405](https://github.com/AntoC-dev/Recipedia/issues/405)) ([411407d](https://github.com/AntoC-dev/Recipedia/commit/411407dd018a683185cd40e6892b180db2208516)), closes [#326](https://github.com/AntoC-dev/Recipedia/issues/326)
+* **time:** add epochMillis wall-clock seam ([97485ac](https://github.com/AntoC-dev/Recipedia/commit/97485ac9873e762145a19865103c90f62e5ac57a)), closes [#403](https://github.com/AntoC-dev/Recipedia/issues/403)
+
 ## [2.40.2](https://github.com/AntoC-dev/Recipedia/compare/v2.40.1...v2.40.2) (2026-07-12)
 
 ### Bug Fixes
