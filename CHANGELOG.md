@@ -1,3 +1,10 @@
+## [2.42.1](https://github.com/AntoC-dev/Recipedia/compare/v2.42.0...v2.42.1) (2026-07-14)
+
+### Performance Improvements
+
+* **seed:** chunk + yield first-launch dataset seed to avoid CPU burst ([130ed59](https://github.com/AntoC-dev/Recipedia/commit/130ed5953921a36d57956b9720f2762eb994e5d7)), closes [#409](https://github.com/AntoC-dev/Recipedia/issues/409)
+* **seed:** chunk + yield first-launch dataset seed to avoid CPU burst ([#422](https://github.com/AntoC-dev/Recipedia/issues/422)) ([3ed241e](https://github.com/AntoC-dev/Recipedia/commit/3ed241ea49f6768609ead7c2d51111dffcfe2f60)), closes [#419](https://github.com/AntoC-dev/Recipedia/issues/419)
+
 ## [2.42.0](https://github.com/AntoC-dev/Recipedia/compare/v2.41.0...v2.42.0) (2026-07-14)
 
 ### Features
