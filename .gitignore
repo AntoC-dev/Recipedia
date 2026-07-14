@@ -55,12 +55,11 @@ ios/*
 .windsurf/
 
 
-# Claude
-CLAUDE.md
-CLAUDE_MODULE.md
+# Claude — agent env is shared; personal settings/secrets stay local
 .claude/*
+!.claude/agents/
+!.claude/skills/
 **/__pycache__/
 
 
 TODO.md
-AGENTS.md
