@@ -73,6 +73,11 @@ import { BugReport } from '@screens/BugReport';
 import { Stack } from '@customTypes/ScreenTypes';
 import { BottomTabs } from '@navigation/BottomTabs';
 import { navigationLogger } from '@utils/logger';
+import { withErrorBoundary } from '@components/organisms/ErrorBoundary';
+
+const GuardedBulkImportDiscovery = withErrorBoundary(BulkImportDiscovery);
+const GuardedRecipeAddOcr = withErrorBoundary(RecipeAddOcr);
+const GuardedRecipeAddScrape = withErrorBoundary(RecipeAddScrape);
 
 /**
  * RootNavigator component - Main app navigation container
@@ -101,15 +106,15 @@ export function RootNavigator() {
       <Stack.Screen name='RecipeView' component={RecipeView} />
       <Stack.Screen name='RecipeEdit' component={RecipeEdit} />
       <Stack.Screen name='RecipeAddManual' component={RecipeAddManual} />
-      <Stack.Screen name='RecipeAddOcr' component={RecipeAddOcr} />
-      <Stack.Screen name='RecipeAddScrape' component={RecipeAddScrape} />
+      <Stack.Screen name='RecipeAddOcr' component={GuardedRecipeAddOcr} />
+      <Stack.Screen name='RecipeAddScrape' component={GuardedRecipeAddScrape} />
       <Stack.Screen name='LanguageSettings' component={LanguageSettings} />
       <Stack.Screen name='DefaultPersonsSettings' component={DefaultPersonsSettings} />
       <Stack.Screen name='IngredientsSettings' component={IngredientsSettings} />
       <Stack.Screen name='TagsSettings' component={TagsSettings} />
       <Stack.Screen name='BulkImportSettings' component={BulkImportSettings} />
       <Stack.Screen name='DismissedRecipesSettings' component={DismissedRecipesSettings} />
-      <Stack.Screen name='BulkImportDiscovery' component={BulkImportDiscovery} />
+      <Stack.Screen name='BulkImportDiscovery' component={GuardedBulkImportDiscovery} />
       <Stack.Screen name='BulkImportValidation' component={BulkImportValidation} />
       <Stack.Screen name='BugReport' component={BugReport} />
     </Stack.Navigator>

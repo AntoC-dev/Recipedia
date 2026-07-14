@@ -12,12 +12,14 @@ import months from './months';
 import onboarding from './onboarding';
 import bulkImport from './bulkImport';
 import bugReport from './bugReport';
+import errorBoundary from './errorBoundary';
 
 export default {
   ...common,
   ...parameters,
   bulkImport,
   bugReport,
+  errorBoundary,
   ...seasons,
   ...months,
   ...recipe,

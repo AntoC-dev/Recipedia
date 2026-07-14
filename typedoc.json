@@ -86,5 +86,14 @@
     "notExported": false,
     "invalidLink": true,
     "notDocumented": false
+  },
+  "externalSymbolLinkMappings": {
+    "@types/react": {
+      "React.Component.setState": "https://react.dev/reference/react/Component#setstate",
+      "React.Component.render": "https://react.dev/reference/react/Component#render",
+      "React.ComponentLifecycle.componentDidMount": "https://react.dev/reference/react/Component#componentdidmount",
+      "React.NewLifecycle.getSnapshotBeforeUpdate": "https://react.dev/reference/react/Component#getsnapshotbeforeupdate",
+      "React.StaticLifecycle.getDerivedStateFromProps": "https://react.dev/reference/react/Component#static-getderivedstatefromprops"
+    }
   }
 }

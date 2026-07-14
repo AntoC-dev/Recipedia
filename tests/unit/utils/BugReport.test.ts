@@ -1,10 +1,12 @@
 import {
+  buildCrashDescription,
   buildEmailBody,
   buildEmailSubject,
   deleteOldLogFiles,
   getRecentLogFiles,
   isMailAvailable,
   pickScreenshots,
+  reportCrash,
   sendBugReport,
 } from '@utils/BugReport';
 import { mockDirectoryList, mockFileExists } from '@mocks/deps/expo-file-system-mock';
@@ -231,6 +233,85 @@ describe('BugReport utils', () => {
       mockExpoConstants.expoConfig = originalExpoConfig;
       const callArgs = mockComposeAsync.mock.calls[0][0];
       expect(callArgs.subject).toContain('N/A');
+    });
+  });
+
+  describe('buildCrashDescription', () => {
+    it('includes the error message', () => {
+      const description = buildCrashDescription(new Error('boom while rendering'), null);
+      expect(description).toContain('boom while rendering');
+    });
+
+    it('includes the component stack when provided', () => {
+      const description = buildCrashDescription(
+        new Error('boom'),
+        '\n    in RecipeCard\n    in Screen'
+      );
+      expect(description).toContain('in RecipeCard');
+    });
+
+    it('remains a non-empty string when the component stack is null', () => {
+      const description = buildCrashDescription(new Error('boom'), null);
+      expect(description.length).toBeGreaterThan(0);
+    });
+
+    it('falls back to a generic message when the error message is empty', () => {
+      const description = buildCrashDescription(new Error(''), null);
+      expect(description).toContain('Unknown error');
+    });
+  });
+
+  describe('reportCrash', () => {
+    beforeEach(() => {
+      mockComposeAsync.mockResolvedValue({ status: 'sent' });
+      mockFileExists.mockReturnValue(false);
+    });
+
+    it('returns mail_unavailable and skips the composer when mail is unavailable', async () => {
+      mockIsAvailableAsync.mockResolvedValue(false);
+
+      const outcome = await reportCrash(new Error('boom'), null);
+
+      expect(outcome).toBe('mail_unavailable');
+      expect(mockComposeAsync).not.toHaveBeenCalled();
+    });
+
+    it('sends a report containing the crash details when mail is available', async () => {
+      mockIsAvailableAsync.mockResolvedValue(true);
+
+      const outcome = await reportCrash(new Error('render exploded'), '\n    in RecipeCard');
+
+      expect(outcome).toBe('sent');
+      const body = mockComposeAsync.mock.calls[0][0].body;
+      expect(body).toContain('render exploded');
+      expect(body).toContain('in RecipeCard');
+    });
+
+    it('returns cancelled when the user dismisses the composer', async () => {
+      mockIsAvailableAsync.mockResolvedValue(true);
+      mockComposeAsync.mockResolvedValue({ status: 'cancelled' });
+
+      const outcome = await reportCrash(new Error('boom'), null);
+
+      expect(outcome).toBe('cancelled');
+    });
+
+    it('returns error when the composer neither sends nor is cancelled', async () => {
+      mockIsAvailableAsync.mockResolvedValue(true);
+      mockComposeAsync.mockResolvedValue({ status: 'saved' });
+
+      const outcome = await reportCrash(new Error('boom'), null);
+
+      expect(outcome).toBe('error');
+    });
+
+    it('returns error when the composer throws', async () => {
+      mockIsAvailableAsync.mockResolvedValue(true);
+      mockComposeAsync.mockRejectedValue(new Error('mail failed'));
+
+      const outcome = await reportCrash(new Error('boom'), null);
+
+      expect(outcome).toBe('error');
     });
   });
 
