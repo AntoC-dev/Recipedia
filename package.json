@@ -149,7 +149,7 @@
     "@semantic-release/commit-analyzer": "^13.0.0",
     "@semantic-release/git": "^10.0.1",
     "@semantic-release/github": "^10.0.5",
-    "@semantic-release/npm": "13.1.2",
+    "@semantic-release/npm": "13.1.5",
     "@semantic-release/release-notes-generator": "^14.0.1",
     "@testing-library/react-native": "13.3.3",
     "@types/better-sqlite3": "^7.6.12",
@@ -180,7 +180,7 @@
     "prettier": "^3.9.5",
     "pyodide": "0.28.3",
     "reassure": "1.5.1",
-    "semantic-release": "25.0.2",
+    "semantic-release": "25.0.7",
     "typedoc": "0.28.19",
     "typescript": "6.0.3",
     "varvara-typedoc-theme": "0.3.8"
