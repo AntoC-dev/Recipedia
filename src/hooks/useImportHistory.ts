@@ -9,6 +9,7 @@
  */
 
 import { RecipeDatabase } from '@utils/RecipeDatabase';
+import { dismissedRecipeTableElement } from '@customTypes/DatabaseElementTypes';
 
 /**
  * Provides imperative access to bulk import URL history.
@@ -18,7 +19,8 @@ import { RecipeDatabase } from '@utils/RecipeDatabase';
  * history changes.
  *
  * @returns Object containing `getImportedSourceUrls`, `getSeenUrls`,
- *   `markUrlsAsSeen` and `removeFromSeenHistory`
+ *   `markUrlsAsSeen`, `removeFromSeenHistory`, `getDismissedUrls`,
+ *   `getDismissedRecipes`, `markRecipesAsDismissed` and `restoreDismissedRecipes`
  */
 export function useImportHistory() {
   const db = RecipeDatabase.getInstance();
@@ -39,10 +41,33 @@ export function useImportHistory() {
     await db.removeFromSeenHistory(providerId, urls);
   };
 
+  const getDismissedUrls = (providerId: string): Set<string> => {
+    return db.getDismissedUrls(providerId);
+  };
+
+  const getDismissedRecipes = (providerId?: string): dismissedRecipeTableElement[] => {
+    return db.getDismissedRecipes(providerId);
+  };
+
+  const markRecipesAsDismissed = async (
+    providerId: string,
+    recipes: { url: string; title: string; imageUrl?: string }[]
+  ): Promise<void> => {
+    await db.markRecipesAsDismissed(providerId, recipes);
+  };
+
+  const restoreDismissedRecipes = async (providerId: string, urls: string[]): Promise<void> => {
+    await db.restoreDismissedRecipes(providerId, urls);
+  };
+
   return {
     getImportedSourceUrls,
     getSeenUrls,
     markUrlsAsSeen,
     removeFromSeenHistory,
+    getDismissedUrls,
+    getDismissedRecipes,
+    markRecipesAsDismissed,
+    restoreDismissedRecipes,
   };
 }

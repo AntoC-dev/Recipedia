@@ -5,8 +5,10 @@ import {
   computeBufferBounds,
   computeVisibleBounds,
   getBufferRecipesNeedingFetch,
+  groupDismissedRecipesByProvider,
 } from '@utils/BulkImportUtils';
 import { DiscoveredRecipe } from '@customTypes/BulkImportTypes';
+import { dismissedRecipeTableElement } from '@customTypes/DatabaseElementTypes';
 
 const createRecipe = (url: string, title: string): DiscoveredRecipe => ({
   url,
@@ -18,6 +20,20 @@ const createRecipeWithoutImage = (url: string): DiscoveredRecipe => ({
   url,
   title: url,
 });
+
+const createDismissed = (
+  providerId: string,
+  recipeUrl: string,
+  title: string
+): dismissedRecipeTableElement => ({
+  providerId,
+  recipeUrl,
+  title,
+  imageUrl: '',
+  dismissedAt: 0,
+});
+
+const upperCaseName = (providerId: string) => providerId.toUpperCase();
 
 describe('BulkImportUtils', () => {
   describe('buildDiscoveryListData', () => {
@@ -334,6 +350,58 @@ describe('BulkImportUtils', () => {
 
       expect(controller.signal.aborted).toBe(true);
       expect(controllers.has('gone')).toBe(false);
+    });
+  });
+
+  describe('groupDismissedRecipesByProvider', () => {
+    test('returns empty array for no recipes', () => {
+      expect(groupDismissedRecipesByProvider([], upperCaseName)).toEqual([]);
+    });
+
+    test('groups recipes of the same provider together', () => {
+      const recipes = [
+        createDismissed('hellofresh', 'url-1', 'Recipe 1'),
+        createDismissed('hellofresh', 'url-2', 'Recipe 2'),
+      ];
+
+      const groups = groupDismissedRecipesByProvider(recipes, upperCaseName);
+
+      expect(groups).toHaveLength(1);
+      expect(groups[0].providerId).toBe('hellofresh');
+      expect(groups[0].recipes).toHaveLength(2);
+    });
+
+    test('resolves the provider display name', () => {
+      const recipes = [createDismissed('hellofresh', 'url-1', 'Recipe 1')];
+
+      const groups = groupDismissedRecipesByProvider(recipes, upperCaseName);
+
+      expect(groups[0].providerName).toBe('HELLOFRESH');
+    });
+
+    test('creates one group per provider in first-encountered order', () => {
+      const recipes = [
+        createDismissed('quitoque', 'url-1', 'Recipe 1'),
+        createDismissed('hellofresh', 'url-2', 'Recipe 2'),
+        createDismissed('quitoque', 'url-3', 'Recipe 3'),
+      ];
+
+      const groups = groupDismissedRecipesByProvider(recipes, upperCaseName);
+
+      expect(groups.map(g => g.providerId)).toEqual(['quitoque', 'hellofresh']);
+      expect(groups[0].recipes).toHaveLength(2);
+      expect(groups[1].recipes).toHaveLength(1);
+    });
+
+    test('preserves input order within a group', () => {
+      const recipes = [
+        createDismissed('hellofresh', 'url-1', 'First'),
+        createDismissed('hellofresh', 'url-2', 'Second'),
+      ];
+
+      const groups = groupDismissedRecipesByProvider(recipes, upperCaseName);
+
+      expect(groups[0].recipes.map(r => r.title)).toEqual(['First', 'Second']);
     });
   });
 });

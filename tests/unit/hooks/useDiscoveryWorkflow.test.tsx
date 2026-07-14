@@ -1024,4 +1024,199 @@ describe('useDiscoveryWorkflow', () => {
       expect(result.current.allSelected).toBe(false);
     });
   });
+
+  describe('dismiss recipe', () => {
+    it('dismissRecipe keeps the recipe visible and flags it', async () => {
+      const provider = createMockProvider();
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+
+      await waitFor(() => {
+        expect(result.current.recipes).toHaveLength(2);
+      });
+
+      const target = result.current.recipes[0];
+      act(() => {
+        result.current.dismissRecipe(target);
+      });
+
+      expect(result.current.recipes).toHaveLength(2);
+      expect(result.current.isDismissed(target.url)).toBe(true);
+    });
+
+    it('dismissRecipe does not persist until committed', async () => {
+      const provider = createMockProvider();
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+
+      await waitFor(() => {
+        expect(result.current.recipes).toHaveLength(2);
+      });
+
+      act(() => {
+        result.current.dismissRecipe(result.current.recipes[0]);
+      });
+
+      expect(database.getDismissedUrls('mock').has('https://example.com/recipe-1')).toBe(false);
+    });
+
+    it('dismissRecipe clears the recipe from the selection', async () => {
+      const provider = createMockProvider();
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+
+      await waitFor(() => {
+        expect(result.current.recipes).toHaveLength(2);
+      });
+
+      act(() => {
+        result.current.selectRecipe('https://example.com/recipe-1');
+      });
+      expect(result.current.selectedCount).toBe(1);
+
+      act(() => {
+        result.current.dismissRecipe(result.current.recipes[0]);
+      });
+
+      expect(result.current.selectedCount).toBe(0);
+    });
+
+    it('restoreRecipe clears the pending dismissal flag', async () => {
+      const provider = createMockProvider();
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+
+      await waitFor(() => {
+        expect(result.current.recipes).toHaveLength(2);
+      });
+
+      const target = result.current.recipes[0];
+      act(() => {
+        result.current.dismissRecipe(target);
+      });
+      expect(result.current.isDismissed(target.url)).toBe(true);
+
+      act(() => {
+        result.current.restoreRecipe(target);
+      });
+
+      expect(result.current.isDismissed(target.url)).toBe(false);
+    });
+
+    it('commitDismissals persists every pending dismissal', async () => {
+      const provider = createMockProvider();
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+
+      await waitFor(() => {
+        expect(result.current.recipes).toHaveLength(2);
+      });
+
+      act(() => {
+        result.current.dismissRecipe(result.current.recipes[0]);
+      });
+
+      await act(async () => {
+        await result.current.commitDismissals();
+      });
+
+      expect(database.getDismissedUrls('mock').has('https://example.com/recipe-1')).toBe(true);
+    });
+
+    it('commitDismissals persists the imageUrl of the recipe passed to dismissRecipe', async () => {
+      const provider = createMockProvider();
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+
+      await waitFor(() => {
+        expect(result.current.recipes).toHaveLength(2);
+      });
+
+      const enrichedRecipe = {
+        ...result.current.recipes[0],
+        imageUrl: 'https://example.com/lazily-loaded.jpg',
+      };
+      act(() => {
+        result.current.dismissRecipe(enrichedRecipe);
+      });
+
+      await act(async () => {
+        await result.current.commitDismissals();
+      });
+
+      const dismissed = database.getDismissedRecipes('mock');
+      expect(dismissed[0].recipeUrl).toBe('https://example.com/recipe-1');
+      expect(dismissed[0].imageUrl).toBe('https://example.com/lazily-loaded.jpg');
+    });
+
+    it('commitDismissals is a no-op when nothing is pending', async () => {
+      const provider = createMockProvider();
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+
+      await waitFor(() => {
+        expect(result.current.recipes).toHaveLength(2);
+      });
+
+      await act(async () => {
+        await result.current.commitDismissals();
+      });
+
+      expect(database.getDismissedRecipes('mock')).toHaveLength(0);
+    });
+
+    it('toggleSelectAll ignores pending-dismissed recipes', async () => {
+      const provider = createMockProvider();
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+
+      await waitFor(() => {
+        expect(result.current.recipes).toHaveLength(2);
+      });
+
+      act(() => {
+        result.current.dismissRecipe(result.current.recipes[0]);
+      });
+
+      act(() => {
+        result.current.toggleSelectAll();
+      });
+
+      expect(result.current.selectedCount).toBe(1);
+      expect(result.current.isSelected('https://example.com/recipe-1')).toBe(false);
+      expect(result.current.isSelected('https://example.com/recipe-2')).toBe(true);
+    });
+
+    it('allSelected is true when every selectable recipe is selected and one is dismissed', async () => {
+      const provider = createMockProvider();
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+
+      await waitFor(() => {
+        expect(result.current.recipes).toHaveLength(2);
+      });
+
+      act(() => {
+        result.current.dismissRecipe(result.current.recipes[0]);
+      });
+
+      act(() => {
+        result.current.toggleSelectAll();
+      });
+
+      expect(result.current.allSelected).toBe(true);
+    });
+
+    it('toggleSelectAll selects nothing and allSelected stays false when every recipe is dismissed', async () => {
+      const provider = createMockProvider();
+      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+
+      await waitFor(() => {
+        expect(result.current.recipes).toHaveLength(2);
+      });
+
+      act(() => {
+        result.current.dismissRecipe(result.current.recipes[0]);
+        result.current.dismissRecipe(result.current.recipes[1]);
+      });
+
+      act(() => {
+        result.current.toggleSelectAll();
+      });
+
+      expect(result.current.selectedCount).toBe(0);
+      expect(result.current.allSelected).toBe(false);
+    });
+  });
 });

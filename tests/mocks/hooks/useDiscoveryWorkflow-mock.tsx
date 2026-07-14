@@ -100,9 +100,17 @@ export function resetMockDiscoveryState() {
   mockToggleSelectAll.mockClear();
   mockParseSelectedRecipes.mockClear().mockResolvedValue([]);
   mockAbort.mockClear();
+  mockIsDismissed.mockReturnValue(false);
+  mockDismissRecipe.mockClear();
+  mockRestoreRecipe.mockClear();
+  mockCommitDismissals.mockClear();
 }
 
 export const mockMarkUrlsAsSeen = jest.fn();
+export const mockIsDismissed = jest.fn().mockReturnValue(false);
+export const mockDismissRecipe = jest.fn();
+export const mockRestoreRecipe = jest.fn();
+export const mockCommitDismissals = jest.fn();
 
 export function useDiscoveryWorkflowMock() {
   return {
@@ -119,11 +127,15 @@ export function useDiscoveryWorkflowMock() {
     parsingProgress: mockParsingProgressState,
     error: mockError,
     isSelected: mockIsSelected,
+    isDismissed: mockIsDismissed,
     selectRecipe: mockSelectRecipe,
     unselectRecipe: mockUnselectRecipe,
     toggleSelectAll: mockToggleSelectAll,
     parseSelectedRecipes: mockParseSelectedRecipes,
     abort: mockAbort,
     markUrlsAsSeen: mockMarkUrlsAsSeen,
+    dismissRecipe: mockDismissRecipe,
+    restoreRecipe: mockRestoreRecipe,
+    commitDismissals: mockCommitDismissals,
   };
 }

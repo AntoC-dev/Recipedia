@@ -87,6 +87,7 @@ Key points:
 | `MenuTable` | `menuTableElement` | User's weekly cooking menu |
 | `PurchasedIngredientsTable` | `purchasedIngredientElement` | Purchase state for shopping list items |
 | `ImportHistoryTable` | `importHistoryTableElement` | Records of previously discovered bulk-import recipes |
+| `DismissedRecipesTable` | `dismissedRecipeTableElement` | Recipes permanently dismissed from bulk-import discovery |
 
 All table and column name constants live in `src/customTypes/DatabaseElementTypes.tsx`.
 
@@ -146,7 +147,7 @@ Hooks that subscribe to `RecipeDatabase` slices:
 | `useTags` | `tags` | Tag CRUD and random tag suggestions |
 | `useMenu` | `menu`, `purchased` | Menu management and purchase state |
 | `useShopping` | `menu`, `purchased` | Derived shopping list (read-only, no mutations) |
-| `useImportHistory` | — | Import history records |
+| `useImportHistory` | — | Import history and dismissed-recipe records |
 
 ---
 

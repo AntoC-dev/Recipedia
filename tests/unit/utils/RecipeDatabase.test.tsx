@@ -2403,4 +2403,147 @@ describe('RecipeDatabase', () => {
       expect(db.get_recipes()).toBeDefined();
     });
   });
+
+  describe('Dismissed recipes', () => {
+    const db = RecipeDatabase.getInstance();
+
+    beforeEach(async () => {
+      await db.init();
+    });
+
+    afterEach(async () => {
+      await db.closeAndReset();
+    });
+
+    test('getDismissedUrls is empty initially', () => {
+      expect(db.getDismissedUrls('hellofresh').size).toBe(0);
+    });
+
+    test('markRecipesAsDismissed stores the URL', async () => {
+      await db.markRecipesAsDismissed('hellofresh', [
+        { url: 'https://hellofresh.com/recipe-1', title: 'Recipe 1' },
+      ]);
+
+      expect(db.getDismissedUrls('hellofresh').has('https://hellofresh.com/recipe-1')).toBe(true);
+    });
+
+    test('getDismissedRecipes returns records with titles', async () => {
+      await db.markRecipesAsDismissed('hellofresh', [
+        { url: 'https://hellofresh.com/recipe-1', title: 'Recipe 1' },
+      ]);
+
+      const dismissed = db.getDismissedRecipes('hellofresh');
+      expect(dismissed).toHaveLength(1);
+      expect(dismissed[0].title).toBe('Recipe 1');
+      expect(dismissed[0].recipeUrl).toBe('https://hellofresh.com/recipe-1');
+    });
+
+    test('getDismissedRecipes sorts most-recently-dismissed first', async () => {
+      await db.markRecipesAsDismissed('hellofresh', [
+        { url: 'https://hellofresh.com/old', title: 'Old' },
+      ]);
+      await new Promise(resolve => setTimeout(resolve, 5));
+      await db.markRecipesAsDismissed('hellofresh', [
+        { url: 'https://hellofresh.com/new', title: 'New' },
+      ]);
+
+      const dismissed = db.getDismissedRecipes('hellofresh');
+      expect(dismissed[0].title).toBe('New');
+      expect(dismissed[1].title).toBe('Old');
+    });
+
+    test('does not duplicate an already dismissed URL', async () => {
+      const recipe = { url: 'https://hellofresh.com/recipe-1', title: 'Recipe 1' };
+      await db.markRecipesAsDismissed('hellofresh', [recipe]);
+      await db.markRecipesAsDismissed('hellofresh', [recipe]);
+
+      expect(db.getDismissedRecipes('hellofresh')).toHaveLength(1);
+    });
+
+    test('scopes dismissed URLs by provider', async () => {
+      await db.markRecipesAsDismissed('hellofresh', [
+        { url: 'https://hellofresh.com/recipe-1', title: 'HF' },
+      ]);
+      await db.markRecipesAsDismissed('quitoque', [
+        { url: 'https://quitoque.fr/recipe-1', title: 'QT' },
+      ]);
+
+      expect(db.getDismissedUrls('hellofresh').size).toBe(1);
+      expect(db.getDismissedUrls('quitoque').size).toBe(1);
+      expect(db.getDismissedUrls('hellofresh').has('https://quitoque.fr/recipe-1')).toBe(false);
+    });
+
+    test('restoreDismissedRecipes removes the URL', async () => {
+      const url = 'https://hellofresh.com/recipe-1';
+      await db.markRecipesAsDismissed('hellofresh', [{ url, title: 'Recipe 1' }]);
+
+      await db.restoreDismissedRecipes('hellofresh', [url]);
+
+      expect(db.getDismissedUrls('hellofresh').has(url)).toBe(false);
+      expect(db.getDismissedRecipes('hellofresh')).toHaveLength(0);
+    });
+
+    test('markRecipesAsDismissed with empty array is a no-op', async () => {
+      await db.markRecipesAsDismissed('hellofresh', []);
+
+      expect(db.getDismissedRecipes('hellofresh')).toHaveLength(0);
+    });
+
+    test('restoreDismissedRecipes with empty array is a no-op', async () => {
+      const url = 'https://hellofresh.com/recipe-1';
+      await db.markRecipesAsDismissed('hellofresh', [{ url, title: 'Recipe 1' }]);
+
+      await db.restoreDismissedRecipes('hellofresh', []);
+
+      expect(db.getDismissedUrls('hellofresh').has(url)).toBe(true);
+    });
+
+    test('getDismissedRecipes without a provider returns records from every provider', async () => {
+      await db.markRecipesAsDismissed('hellofresh', [
+        { url: 'https://hellofresh.com/recipe-1', title: 'HF' },
+      ]);
+      await db.markRecipesAsDismissed('quitoque', [
+        { url: 'https://quitoque.fr/recipe-1', title: 'QT' },
+      ]);
+
+      const dismissed = db.getDismissedRecipes();
+
+      expect(dismissed).toHaveLength(2);
+      expect(dismissed.map(r => r.providerId).sort()).toEqual(['hellofresh', 'quitoque']);
+    });
+
+    test('markRecipesAsDismissed stores the provided image URL', async () => {
+      await db.markRecipesAsDismissed('hellofresh', [
+        {
+          url: 'https://hellofresh.com/recipe-1',
+          title: 'Recipe 1',
+          imageUrl: 'https://hellofresh.com/image-1.jpg',
+        },
+      ]);
+
+      expect(db.getDismissedRecipes('hellofresh')[0].imageUrl).toBe(
+        'https://hellofresh.com/image-1.jpg'
+      );
+    });
+
+    test('markRecipesAsDismissed defaults a missing image URL to an empty string', async () => {
+      await db.markRecipesAsDismissed('hellofresh', [
+        { url: 'https://hellofresh.com/recipe-1', title: 'Recipe 1' },
+      ]);
+
+      expect(db.getDismissedRecipes('hellofresh')[0].imageUrl).toBe('');
+    });
+
+    test('restoreDismissedRecipes only removes the provided URLs', async () => {
+      await db.markRecipesAsDismissed('hellofresh', [
+        { url: 'https://hellofresh.com/recipe-1', title: 'Recipe 1' },
+        { url: 'https://hellofresh.com/recipe-2', title: 'Recipe 2' },
+      ]);
+
+      await db.restoreDismissedRecipes('hellofresh', ['https://hellofresh.com/recipe-1']);
+
+      expect(db.getDismissedUrls('hellofresh').has('https://hellofresh.com/recipe-1')).toBe(false);
+      expect(db.getDismissedUrls('hellofresh').has('https://hellofresh.com/recipe-2')).toBe(true);
+    });
+  });
 });

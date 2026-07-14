@@ -213,6 +213,32 @@ describe('Parameters Screen', () => {
     expect(mockNavigate).toHaveBeenCalledWith('TagsSettings');
   });
 
+  test('navigates to bulk import provider selection when pressed', async () => {
+    const { getByTestId } = renderParameters();
+
+    await waitFor(() => {
+      expect(getByTestId('Parameters::Section::Import::FromWebsite::Item')).toBeTruthy();
+    });
+
+    fireEvent.press(getByTestId('Parameters::Section::Import::FromWebsite::Item'));
+
+    expect(mockNavigate).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).toHaveBeenCalledWith('BulkImportSettings');
+  });
+
+  test('navigates to dismissed recipes management when pressed', async () => {
+    const { getByTestId } = renderParameters();
+
+    await waitFor(() => {
+      expect(getByTestId('Parameters::Section::Import::DismissedRecipes::Item')).toBeTruthy();
+    });
+
+    fireEvent.press(getByTestId('Parameters::Section::Import::DismissedRecipes::Item'));
+
+    expect(mockNavigate).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).toHaveBeenCalledWith('DismissedRecipesSettings');
+  });
+
   test('displays default persons from context', async () => {
     const { getByTestId } = renderParameters();
 

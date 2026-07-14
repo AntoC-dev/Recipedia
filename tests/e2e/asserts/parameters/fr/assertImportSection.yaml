@@ -25,6 +25,10 @@ appId: "com.recipedia"
           id: "Parameters::Section::Import::FromWebsite::Item"
           text: "Importer depuis un service, Importer toutes les recettes depuis les services supportés"
           label: "Import item with icon on iOS"
+      - assertVisible:
+          id: "Parameters::Section::Import::DismissedRecipes::Item"
+          text: "Recettes masquées, Recettes masquées de l'import en masse"
+          label: "Dismissed recipes item with icon on iOS"
 
 - runFlow:
     when:
@@ -34,3 +38,7 @@ appId: "com.recipedia"
           id: "Parameters::Section::Import::FromWebsite::Item"
           text: "Importer depuis un service, Importer toutes les recettes depuis les services supportés"
           label: "Import item on Android"
+      - assertVisible:
+          id: "Parameters::Section::Import::DismissedRecipes::Item"
+          text: "Recettes masquées, Recettes masquées de l'import en masse"
+          label: "Dismissed recipes item on Android"

@@ -96,12 +96,16 @@ export function BulkImportDiscovery() {
     parsingProgress,
     error,
     isSelected,
+    isDismissed,
     selectRecipe,
     unselectRecipe,
     toggleSelectAll,
     parseSelectedRecipes,
     abort,
     markUrlsAsSeen,
+    dismissRecipe,
+    restoreRecipe,
+    commitDismissals,
   } = useDiscoveryWorkflow(provider, providerId);
 
   const { imageMap } = useVisibleImageLoader({
@@ -168,22 +172,26 @@ export function BulkImportDiscovery() {
         testId={`${screenId}::${item.key}`}
         recipe={item.recipe}
         isSelected={isSelected(item.recipe.url)}
+        isDismissed={isDismissed(item.recipe.url)}
         onSelected={() => selectRecipe(item.recipe.url)}
         onUnselected={() => unselectRecipe(item.recipe.url)}
+        onDismiss={() => dismissRecipe(item.recipe)}
+        onRestore={() => restoreRecipe(item.recipe)}
       />
     );
   };
 
   /**
    * Handles the continue action after recipe selection.
-   * Aborts discovery if still running, marks discovered URLs as seen,
-   * parses selected recipes, and navigates to the validation screen if successful.
+   * Aborts discovery if still running, persists any pending dismissals, marks
+   * discovered URLs as seen, parses selected recipes, and navigates to the
+   * validation screen if successful.
    */
   const handleContinue = async () => {
     if (isDiscovering) {
       abort();
     }
-    await markUrlsAsSeen();
+    await Promise.all([commitDismissals(), markUrlsAsSeen()]);
     const convertedRecipes = await parseSelectedRecipes();
     if (convertedRecipes) {
       navigation.navigate('BulkImportValidation', {

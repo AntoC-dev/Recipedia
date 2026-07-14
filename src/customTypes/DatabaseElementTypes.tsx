@@ -313,6 +313,53 @@ export const importHistoryColumnsEncoding: databaseColumnType[] = [
   { colName: importHistoryColumnsNames.lastSeenAt, type: encodedType.INTEGER },
 ];
 
+/** Dismissed recipes table name for permanently hidden bulk-import recipes */
+export const dismissedRecipesTableName = 'DismissedRecipesTable';
+
+/**
+ * Dismissed recipe record for recipes the user chose to never see again.
+ * Filtered out of every future bulk-import discovery run for the provider.
+ */
+export type dismissedRecipeTableElement = {
+  /** Optional database ID (undefined for new records) */
+  id?: number;
+  /** Provider identifier (e.g., 'hellofresh') */
+  providerId: string;
+  /** Full recipe URL from the provider */
+  recipeUrl: string;
+  /** Recipe title (denormalized so the manage list needs no re-discovery) */
+  title: string;
+  /** Recipe thumbnail URL (empty string when unavailable) */
+  imageUrl: string;
+  /** Timestamp when the recipe was dismissed (Unix ms) */
+  dismissedAt: number;
+};
+
+export type encodedDismissedRecipeElement = {
+  ID: number;
+  PROVIDER_ID: string;
+  RECIPE_URL: string;
+  TITLE: string;
+  IMAGE_URL: string;
+  DISMISSED_AT: number;
+};
+
+export enum dismissedRecipesColumnsNames {
+  providerId = 'PROVIDER_ID',
+  recipeUrl = 'RECIPE_URL',
+  title = 'TITLE',
+  imageUrl = 'IMAGE_URL',
+  dismissedAt = 'DISMISSED_AT',
+}
+
+export const dismissedRecipesColumnsEncoding: databaseColumnType[] = [
+  { colName: dismissedRecipesColumnsNames.providerId, type: encodedType.TEXT },
+  { colName: dismissedRecipesColumnsNames.recipeUrl, type: encodedType.TEXT },
+  { colName: dismissedRecipesColumnsNames.title, type: encodedType.TEXT },
+  { colName: dismissedRecipesColumnsNames.imageUrl, type: encodedType.TEXT },
+  { colName: dismissedRecipesColumnsNames.dismissedAt, type: encodedType.INTEGER },
+];
+
 /** Menu table name for tracking recipes in the weekly menu */
 export const menuTableName = 'MenuTable';
 

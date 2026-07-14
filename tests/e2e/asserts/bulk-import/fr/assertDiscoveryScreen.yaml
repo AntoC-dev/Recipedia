@@ -47,3 +47,8 @@ appId: "com.recipedia"
     id: "BulkImportDiscovery::ContinueButton"
     text: "Continuer"
     label: "Continue button displays correct text (French)"
+
+- assertVisible:
+    id: "BulkImportDiscovery::fresh-0::DismissButton-text"
+    text: "Ne plus afficher"
+    label: "First fresh recipe dismiss button displays correct text (French)"

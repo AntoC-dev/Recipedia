@@ -43,6 +43,20 @@ export default {
     fetchingRecipes: 'Fetching recipe {{current}} of {{total}}...',
     newRecipes: 'New recipes ({{count}})',
     previouslySeen: 'Previously seen ({{count}})',
+    dismiss: 'Never show again',
+    dismissAccessibility: 'Never show this recipe again',
+    restoreAccessibility: 'Keep showing this recipe',
+    undo: 'Undo',
+  },
+
+  dismissed: {
+    title: 'Dismissed recipes',
+    manage: 'Recipes hidden from bulk import',
+    empty: 'No dismissed recipes',
+    emptyDescription: 'Recipes you hide during discovery appear here so you can restore them.',
+    restore: 'Restore',
+    count: '{{count}} dismissed recipe',
+    countPlural: '{{count}} dismissed recipes',
   },
 
   validation: {

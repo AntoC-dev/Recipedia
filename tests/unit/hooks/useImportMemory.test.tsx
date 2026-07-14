@@ -75,6 +75,32 @@ describe('useImportMemory', () => {
 
       expect(result.current.getMemoryStatus(url)).toBe('imported');
     });
+
+    test('returns dismissed for URLs of dismissed recipes', async () => {
+      const url = 'https://hellofresh.com/dismissed-recipe';
+      await database.markRecipesAsDismissed('hellofresh', [{ url, title: 'Dismissed Recipe' }]);
+
+      const { result } = renderHook(() => useImportMemory('hellofresh'));
+
+      expect(result.current.getMemoryStatus(url)).toBe('dismissed');
+    });
+
+    test('dismissed takes precedence over imported and seen', async () => {
+      const url = 'https://hellofresh.com/recipe-all';
+      await database.markUrlsAsSeen('hellofresh', [url]);
+      await database.addRecipe({
+        ...testRecipes[0],
+        id: undefined,
+        title: 'All Recipe',
+        sourceUrl: url,
+        sourceProvider: 'hellofresh',
+      });
+      await database.markRecipesAsDismissed('hellofresh', [{ url, title: 'All Recipe' }]);
+
+      const { result } = renderHook(() => useImportMemory('hellofresh'));
+
+      expect(result.current.getMemoryStatus(url)).toBe('dismissed');
+    });
   });
 
   describe('processDiscoveredRecipes', () => {
@@ -190,6 +216,40 @@ describe('useImportMemory', () => {
       const processed = result.current.processDiscoveredRecipes([], false);
 
       expect(processed).toEqual([]);
+    });
+
+    test('always filters out dismissed recipes when hideImported is true', async () => {
+      await database.markRecipesAsDismissed('hellofresh', [
+        { url: 'https://hellofresh.com/recipe-1', title: 'Dismissed Recipe' },
+      ]);
+
+      const recipes = [
+        createRecipe('https://hellofresh.com/recipe-1', 'Dismissed Recipe'),
+        createRecipe('https://hellofresh.com/recipe-2', 'Fresh Recipe'),
+      ];
+
+      const { result } = renderHook(() => useImportMemory('hellofresh'));
+      const processed = result.current.processDiscoveredRecipes(recipes, true);
+
+      expect(processed).toHaveLength(1);
+      expect(processed[0].title).toBe('Fresh Recipe');
+    });
+
+    test('always filters out dismissed recipes even when hideImported is false', async () => {
+      await database.markRecipesAsDismissed('hellofresh', [
+        { url: 'https://hellofresh.com/recipe-1', title: 'Dismissed Recipe' },
+      ]);
+
+      const recipes = [
+        createRecipe('https://hellofresh.com/recipe-1', 'Dismissed Recipe'),
+        createRecipe('https://hellofresh.com/recipe-2', 'Fresh Recipe'),
+      ];
+
+      const { result } = renderHook(() => useImportMemory('hellofresh'));
+      const processed = result.current.processDiscoveredRecipes(recipes, false);
+
+      expect(processed).toHaveLength(1);
+      expect(processed[0].title).toBe('Fresh Recipe');
     });
   });
 

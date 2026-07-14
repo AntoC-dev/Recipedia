@@ -9,6 +9,54 @@
  */
 
 import { DiscoveredRecipe, DiscoveryListItem } from '@customTypes/BulkImportTypes';
+import { dismissedRecipeTableElement } from '@customTypes/DatabaseElementTypes';
+
+/**
+ * A group of dismissed recipes belonging to a single provider.
+ */
+export interface DismissedRecipeGroup {
+  /** Provider identifier (e.g., 'hellofresh') */
+  providerId: string;
+  /** Human-readable provider name for the group header */
+  providerName: string;
+  /** Dismissed recipes for this provider, preserving input order */
+  recipes: dismissedRecipeTableElement[];
+}
+
+/**
+ * Groups dismissed recipes by their source provider.
+ *
+ * Providers appear in the order they are first encountered in `recipes`, and the
+ * recipes within each group keep their input order, so passing a newest-first
+ * list yields newest-first groups and members.
+ *
+ * @param recipes - Dismissed recipe records to group
+ * @param resolveProviderName - Maps a provider id to its display name (falls back to the id)
+ * @returns One group per provider, in first-encountered order
+ */
+export function groupDismissedRecipesByProvider(
+  recipes: dismissedRecipeTableElement[],
+  resolveProviderName: (providerId: string) => string
+): DismissedRecipeGroup[] {
+  const groups: DismissedRecipeGroup[] = [];
+  const groupByProviderId = new Map<string, DismissedRecipeGroup>();
+
+  for (const recipe of recipes) {
+    let group = groupByProviderId.get(recipe.providerId);
+    if (!group) {
+      group = {
+        providerId: recipe.providerId,
+        providerName: resolveProviderName(recipe.providerId),
+        recipes: [],
+      };
+      groupByProviderId.set(recipe.providerId, group);
+      groups.push(group);
+    }
+    group.recipes.push(recipe);
+  }
+
+  return groups;
+}
 
 /**
  * Represents the visible range boundaries in the recipe list

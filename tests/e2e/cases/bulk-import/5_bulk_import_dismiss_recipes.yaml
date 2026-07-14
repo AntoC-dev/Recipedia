@@ -1,0 +1,121 @@
+name: "5 - Bulk Import Dismiss Recipes (French)"
+appId: "com.recipedia"
+tags:
+  - bulk-import
+---
+- runFlow:
+    file: "../../flows/parameters/language/switchToFrench.yaml"
+    label: "Setup - Switch to French language"
+
+- runFlow:
+    file: "../../flows/bulk-import/navigateToBulkImport.yaml"
+    label: "Setup - Navigate to Bulk Import from Parameters"
+
+- runFlow:
+    file: "../../flows/bulk-import/selectProvider.yaml"
+    env:
+      PROVIDER_ID: "hellofresh"
+    label: "Setup - Select HelloFresh provider"
+
+- extendedWaitUntil:
+    visible:
+      id: "BulkImportDiscovery::(fresh|seen)-0"
+    timeout: 120000
+    label: "Wait - For first recipe to appear"
+
+- tapOn:
+    id: "BulkImportDiscovery::(fresh|seen)-0::DismissButton"
+    label: "Action - Dismiss first recipe"
+
+- assertVisible:
+    id: "BulkImportDiscovery::(fresh|seen)-0::RestoreButton-text"
+    text: "Annuler"
+    label: "Assert - Dismissed recipe shows restore button with undo label"
+
+- assertVisible:
+    id: "BulkImportDiscovery::(fresh|seen)-0::Checkbox"
+    enabled: false
+    label: "Assert - Dismissed recipe checkbox is disabled"
+
+- tapOn:
+    id: "BulkImportDiscovery::(fresh|seen)-0::RestoreButton"
+    label: "Action - Undo dismissal before committing"
+
+- assertVisible:
+    id: "BulkImportDiscovery::(fresh|seen)-0::DismissButton-text"
+    text: "Ne plus afficher"
+    label: "Assert - Restored recipe shows dismiss button again"
+
+- tapOn:
+    id: "BulkImportDiscovery::(fresh|seen)-0::DismissButton"
+    label: "Action - Dismiss first recipe again"
+
+- tapOn:
+    id: "BulkImportDiscovery::(fresh|seen)-1"
+    label: "Action - Select second recipe so Continue is enabled"
+
+- assertVisible:
+    id: "BulkImportDiscovery::ContinueButton"
+    enabled: true
+    label: "Verify - Continue button is enabled"
+
+- tapOn:
+    id: "BulkImportDiscovery::ContinueButton"
+    label: "Action - Continue to validation (commits the dismissal)"
+
+- extendedWaitUntil:
+    visible:
+      id: "BulkImportValidation::AppBar::Title"
+    timeout: 200000
+    label: "Wait - For validation screen"
+
+- launchApp:
+    label: "Cleanup - Restart app to reach a clean home state"
+
+- extendedWaitUntil:
+    visible:
+      id: "Home::RecipeRecommendation::random::Carousel::Card::0::Cover"
+    timeout: 120000
+    label: "Wait - For home screen to be visible"
+
+- tapOn:
+    id: "BottomTabs::Parameters"
+    label: "Verification - Navigate to Parameters screen"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "Parameters::Section::Import::DismissedRecipes::Item"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Verification - Scroll to Dismissed recipes item"
+
+- tapOn:
+    id: "Parameters::Section::Import::DismissedRecipes::Item"
+    label: "Verification - Open Dismissed recipes settings"
+
+- runFlow:
+    file: "../../asserts/bulk-import/fr/assertDismissedSettingsScreen.yaml"
+    label: "Assert - Verify dismissed recipes settings screen"
+
+- tapOn:
+    id: "DismissedRecipesSettings::hellofresh"
+    label: "Verification - Expand HelloFresh accordion"
+
+- assertVisible:
+    id: "DismissedRecipesSettings::hellofresh::0::Title"
+    label: "Verify - Dismissed recipe title is displayed"
+
+- assertVisible:
+    id: "DismissedRecipesSettings::hellofresh::0::RestoreButton"
+    label: "Verify - Dismissed recipe restore button is displayed"
+
+- tapOn:
+    id: "DismissedRecipesSettings::hellofresh::0::RestoreButton"
+    label: "Cleanup - Restore the dismissed recipe"
+
+- runFlow:
+    file: "../../asserts/bulk-import/fr/assertDismissedEmpty.yaml"
+    label: "Cleanup - Verify dismissed recipes list is now empty"

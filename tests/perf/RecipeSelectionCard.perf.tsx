@@ -37,8 +37,11 @@ function RecipeSelectionCardWrapper({
       testId='PerfTest::Card'
       recipe={recipe}
       isSelected={isSelected}
+      isDismissed={false}
       onSelected={() => setIsSelected(true)}
       onUnselected={() => setIsSelected(false)}
+      onDismiss={() => {}}
+      onRestore={() => {}}
     />
   );
 }
@@ -62,6 +65,7 @@ function BatchCardsWrapper({
           testId={`PerfTest::Card::${index}`}
           recipe={recipe}
           isSelected={selectedUrls.has(recipe.url)}
+          isDismissed={false}
           onSelected={() => setSelectedUrls(prev => new Set(prev).add(recipe.url))}
           onUnselected={() => {
             setSelectedUrls(prev => {
@@ -70,6 +74,8 @@ function BatchCardsWrapper({
               return next;
             });
           }}
+          onDismiss={() => {}}
+          onRestore={() => {}}
         />
       ))}
     </View>

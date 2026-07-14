@@ -1,0 +1,14 @@
+name: "5 - Bulk Import Dismiss Recipes (French)"
+appId: "com.recipedia"
+tags:
+  - bulk-import
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../5_bulk_import_dismiss_recipes.yaml"
+          label: "Run 5 - Bulk Import Dismiss Recipes (French)"

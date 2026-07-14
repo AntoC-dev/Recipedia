@@ -25,6 +25,10 @@ appId: "com.recipedia"
           id: "Parameters::Section::Import::FromWebsite::Item"
           text: "Import from meal kit service, Import all recipes from supported services"
           label: "Import item with icon on iOS"
+      - assertVisible:
+          id: "Parameters::Section::Import::DismissedRecipes::Item"
+          text: "Dismissed recipes, Recipes hidden from bulk import"
+          label: "Dismissed recipes item with icon on iOS"
 
 - runFlow:
     when:
@@ -34,3 +38,7 @@ appId: "com.recipedia"
           id: "Parameters::Section::Import::FromWebsite::Item"
           text: "Import from meal kit service, Import all recipes from supported services"
           label: "Import item on Android"
+      - assertVisible:
+          id: "Parameters::Section::Import::DismissedRecipes::Item"
+          text: "Dismissed recipes, Recipes hidden from bulk import"
+          label: "Dismissed recipes item on Android"
