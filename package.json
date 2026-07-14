@@ -87,7 +87,7 @@
     "@react-navigation/stack": "~6.3.17",
     "@shopify/flash-list": "2.0.2",
     "eslint-config-expo": "~56.0.4",
-    "expo": "~56.0.14",
+    "expo": "~56.0.15",
     "expo-asset": "~56.0.17",
     "expo-background-task": "~56.0.20",
     "expo-build-properties": "~56.0.21",
