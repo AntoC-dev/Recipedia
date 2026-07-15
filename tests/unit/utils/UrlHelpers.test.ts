@@ -267,6 +267,34 @@ describe('UrlHelpers', () => {
       expect(result).toBe('https://example.com/array-object.jpg');
     });
 
+    test('returns null when image object url is an empty string', () => {
+      const html = `
+        <html>
+          <script type="application/ld+json">
+            {"@type": "Recipe", "image": {"@type": "ImageObject", "url": ""}}
+          </script>
+        </html>
+      `;
+
+      const result = extractImageFromJsonLd(html);
+
+      expect(result).toBeNull();
+    });
+
+    test('returns null when image object url is not a string', () => {
+      const html = `
+        <html>
+          <script type="application/ld+json">
+            {"@type": "Recipe", "image": {"@type": "ImageObject", "url": 12345}}
+          </script>
+        </html>
+      `;
+
+      const result = extractImageFromJsonLd(html);
+
+      expect(result).toBeNull();
+    });
+
     test('returns null when no JSON-LD present', () => {
       const html = '<html><body>No JSON-LD here</body></html>';
 

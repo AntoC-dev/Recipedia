@@ -92,7 +92,7 @@ function ReviewRow({
   }
 
   const { item, sectionType } = flatItem;
-  const itemName = item.name!;
+  const itemName = item.name ?? '';
   const suggestedMatch = item.similarItems[0];
   const itemTestID = `${listTestID}::${sectionType}::${itemName}`;
 

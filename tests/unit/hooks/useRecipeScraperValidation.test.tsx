@@ -406,6 +406,77 @@ describe('useRecipeScraperValidation', () => {
     });
   });
 
+  test('tag onValidated does not throw when recipeTags form value is undefined', async () => {
+    const unknownTagName = 'UnknownTag';
+    const wrapper = createWrapper([], [createMockTag(unknownTagName)]);
+
+    const { result } = renderHook(
+      () => {
+        useRecipeScraperValidation();
+        return {
+          dialogs: useRecipeDialogs(),
+          form: useRecipeForm(),
+        };
+      },
+      { wrapper }
+    );
+
+    await waitFor(() => {
+      expect(result.current.dialogs.validationQueue).not.toBeNull();
+    });
+
+    act(() => {
+      result.current.form.form.setValue('recipeTags', undefined as never);
+    });
+
+    const queue = result.current.dialogs.validationQueue as TagValidationProps;
+
+    act(() => {
+      queue.onValidated(
+        { id: 0, name: unknownTagName, similarItems: [] },
+        { id: 42, name: unknownTagName }
+      );
+    });
+
+    await waitFor(() => {
+      expect(result.current.form.form.getValues('recipeTags')).toEqual([]);
+    });
+  });
+
+  test('tag onDismissed does not throw when recipeTags form value is undefined', async () => {
+    const unknownTagName = 'UnknownTag';
+    const wrapper = createWrapper([], [createMockTag(unknownTagName)]);
+
+    const { result } = renderHook(
+      () => {
+        useRecipeScraperValidation();
+        return {
+          dialogs: useRecipeDialogs(),
+          form: useRecipeForm(),
+        };
+      },
+      { wrapper }
+    );
+
+    await waitFor(() => {
+      expect(result.current.dialogs.validationQueue).not.toBeNull();
+    });
+
+    act(() => {
+      result.current.form.form.setValue('recipeTags', undefined as never);
+    });
+
+    const queue = result.current.dialogs.validationQueue as TagValidationProps;
+
+    act(() => {
+      queue.onDismissed?.({ id: 0, name: unknownTagName, similarItems: [] });
+    });
+
+    await waitFor(() => {
+      expect(result.current.form.form.getValues('recipeTags')).toEqual([]);
+    });
+  });
+
   test('starts ingredient validation after tag queue completes when both need validation', async () => {
     const unknownIngredientName = 'UnknownIngredient';
     const unknownTagName = 'UnknownTag';

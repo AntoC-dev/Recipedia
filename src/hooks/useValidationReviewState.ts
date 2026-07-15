@@ -134,10 +134,12 @@ export function useValidationReviewState(
   );
 
   const ingredients: IngredientReviewItem[] = sortAlphabetically(
-    ingredientItems.map(ing => ({
-      ...ing,
-      reviewState: getState('Ingredient', ing.name!),
-    }))
+    ingredientItems
+      .filter((ing): ing is IngredientWithSimilarity & { name: string } => ing.name !== undefined)
+      .map(ing => ({
+        ...ing,
+        reviewState: getState('Ingredient', ing.name),
+      }))
   );
 
   const allResolved =
