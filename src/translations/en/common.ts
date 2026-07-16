@@ -40,6 +40,10 @@ export default {
   minutes: 'minutes',
   hours: 'hours',
 
+  // Accessibility labels
+  imageButton: 'Image',
+  imageButtonNumbered: 'Image {{number}}',
+
   // Home screen recommendations
   recommendations: {
     randomSelection: 'Random Selection',

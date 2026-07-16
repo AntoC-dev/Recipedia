@@ -58,6 +58,8 @@ export function i18nMock() {
     fruits: 'filters.fruits',
     meat: 'filters.meat',
     searchRecipeTitle: 'searchRecipeTitle',
+    imageButton: 'Image',
+    imageButtonNumbered: 'Image {{number}}',
 
     'recipe.nutrition.title': 'recipe.nutrition.title',
     'recipe.nutrition.titleSimple': 'recipe.nutrition.titleSimple',

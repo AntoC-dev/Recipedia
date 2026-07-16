@@ -40,6 +40,7 @@ import { squareButtonStyles, viewInsideButtonCentered } from '@styles/buttons';
 
 import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { CustomImage } from '@components/atomic/CustomImage';
+import { useI18n } from '@utils/i18n';
 
 /** Props for recipe type button */
 export type propIsRecipe = { type: 'recipe'; recipe: recipeTableElement };
@@ -58,6 +59,8 @@ export type SquareButtonProps = {
   onPressFunction: () => void;
   /** Unique identifier for testing and accessibility */
   testID: string;
+  /** Screen-reader label; defaults to the recipe title, or a generic image label */
+  accessibilityLabel?: string;
 } & (propIsRecipe | propIsImg);
 
 /**
@@ -67,18 +70,25 @@ export type SquareButtonProps = {
  * @returns JSX element representing a square image button
  */
 export function SquareButton(buttonProps: SquareButtonProps) {
+  const { t } = useI18n();
   let img: string;
+  let defaultLabel: string;
   switch (buttonProps.type) {
     case 'recipe':
       img = buttonProps.recipe.image_Source;
+      defaultLabel = buttonProps.recipe.title;
       break;
     case 'image':
       img = buttonProps.imgSrc;
+      defaultLabel = t('imageButton');
       break;
   }
 
   return (
     <Pressable
+      testID={buttonProps.testID}
+      accessibilityRole={'button'}
+      accessibilityLabel={buttonProps.accessibilityLabel ?? defaultLabel}
       style={squareButtonStyles(buttonProps.side).squareButton}
       onPress={buttonProps.onPressFunction}
     >

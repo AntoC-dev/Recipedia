@@ -92,12 +92,15 @@ export function RecipeCard({ testId, size, recipe }: RecipeCardProps) {
           borderTopRightRadius: radius,
         }}
       />
-      <Card.Title
+      <Text
         testID={testId + '::Title'}
-        title={recipe.title}
-        titleNumberOfLines={2}
-        titleVariant={size === 'small' ? 'labelLarge' : 'titleMedium'}
-      />
+        accessible={true}
+        variant={size === 'small' ? 'labelLarge' : 'titleMedium'}
+        numberOfLines={2}
+        style={{ padding: padding.medium }}
+      >
+        {recipe.title}
+      </Text>
       {size === 'medium' && (
         <View>
           <Card.Content style={{ padding: padding.medium }}>

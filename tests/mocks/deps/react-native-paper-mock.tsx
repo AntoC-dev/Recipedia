@@ -127,6 +127,7 @@ export const Text: React.FC<any> = props => (
     testID={props.testID}
     style={props.style}
     numberOfLines={props.numberOfLines}
+    accessible={props.accessible}
     {...{ variant: props.variant }}
   >
     {props.children}
@@ -201,7 +202,9 @@ export const Card: React.FC<any> & {
     testID={props.testID}
     style={props.style}
     onPress={props.onPress}
-    accessible={true}
+    accessible={props.accessible}
+    accessibilityRole={props.accessibilityRole}
+    accessibilityLabel={props.accessibilityLabel}
   >
     <View>{props.children}</View>
   </TouchableOpacity>

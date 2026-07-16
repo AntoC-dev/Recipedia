@@ -39,6 +39,10 @@ export default {
   minutes: 'minutes',
   hours: 'heures',
 
+  // Accessibility labels
+  imageButton: 'Image',
+  imageButtonNumbered: 'Image {{number}}',
+
   // Home screen recommendations
   recommendations: {
     randomSelection: 'Sélection aléatoire',
