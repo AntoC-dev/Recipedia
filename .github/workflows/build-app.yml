@@ -77,6 +77,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: '24'
+          cache: 'npm'
 
       - name: Install dependencies (for cache miss)
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
