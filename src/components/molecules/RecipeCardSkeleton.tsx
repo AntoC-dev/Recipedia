@@ -39,5 +39,3 @@ const styles = StyleSheet.create({
     borderRadius: padding.medium,
   },
 });
-
-export default RecipeCardSkeleton;

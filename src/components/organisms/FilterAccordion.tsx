@@ -222,5 +222,3 @@ export function FilterAccordion({
     </List.AccordionGroup>
   );
 }
-
-export default FilterAccordion;

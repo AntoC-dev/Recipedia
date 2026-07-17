@@ -54,5 +54,3 @@ const styles = StyleSheet.create({
     marginBottom: padding.small,
   },
 });
-
-export default DiscoveryFooter;

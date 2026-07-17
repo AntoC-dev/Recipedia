@@ -219,6 +219,3 @@ export class HelloFreshProvider extends BaseRecipeProvider {
     return title.charAt(0).toUpperCase() + title.slice(1);
   }
 }
-
-/** Singleton instance of HelloFresh provider */
-export const helloFreshProvider = new HelloFreshProvider();

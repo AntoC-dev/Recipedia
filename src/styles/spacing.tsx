@@ -157,17 +157,3 @@ export const screenViews = StyleSheet.create({
     flexDirection: 'row',
   },
 });
-
-/**
- * Dynamic scroll view style generator with responsive margins
- * Creates scroll container styles with device-scaled bottom margins
- *
- * @param margin - Margin value in pixels to be scaled with remValue
- * @returns EStyleSheet object with responsive margin
- */
-export const scrollView = (margin: number) =>
-  EStyleSheet.create({
-    view: {
-      marginBottom: margin * remValue,
-    },
-  });

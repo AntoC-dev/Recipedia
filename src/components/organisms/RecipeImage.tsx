@@ -109,4 +109,3 @@ const styles = StyleSheet.create({
     right: padding.small,
   },
 });
-export default RecipeImage;

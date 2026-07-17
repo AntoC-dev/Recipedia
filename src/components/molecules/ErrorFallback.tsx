@@ -126,5 +126,3 @@ const styles = StyleSheet.create({
     maxWidth: 440,
   },
 });
-
-export default ErrorFallback;

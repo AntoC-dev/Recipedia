@@ -80,5 +80,3 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
 });
-
-export default NutritionRow;

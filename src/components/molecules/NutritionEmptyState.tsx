@@ -41,5 +41,3 @@ export function NutritionEmptyState({
     </View>
   );
 }
-
-export default NutritionEmptyState;

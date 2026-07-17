@@ -137,5 +137,3 @@ const styles = StyleSheet.create({
     borderRadius: progressBarHeight / 2,
   },
 });
-
-export default LoadingOverlay;

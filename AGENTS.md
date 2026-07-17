@@ -16,10 +16,11 @@ Guidance for AI coding agents in this repo — Claude Code, Cursor, and any tool
 - `npm run test:perf` — Reassure render benchmarks
 
 ### Quality
-- `npm run quality` — full suite: lint + format:check + typecheck + expo:doctor
+- `npm run quality` — full suite: lint + format:check + typecheck + knip + expo:doctor
 - `npm run lint:fix` — auto-fix lint
 - `npm run format` — Prettier
 - `npm run typecheck` — TypeScript
+- `npm run knip` — dead-code check (unused files/exports/types); CI-gated, config in `knip.json`
 - `npm run security:audit` — security audit
 
 ### Build

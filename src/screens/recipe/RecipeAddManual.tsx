@@ -32,5 +32,3 @@ export function RecipeAddManual({ navigation }: RecipeAddManualProps) {
     />
   );
 }
-
-export default RecipeAddManual;

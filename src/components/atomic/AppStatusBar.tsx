@@ -12,5 +12,3 @@ export function AppStatusBar() {
 
   return <StatusBar style={isDarkMode ? 'light' : 'dark'} animated={true} />;
 }
-
-export default AppStatusBar;

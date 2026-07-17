@@ -193,5 +193,3 @@ export class QuitoqueProvider extends BaseRecipeProvider {
     return title.charAt(0).toUpperCase() + title.slice(1);
   }
 }
-
-export const quitoqueProvider = new QuitoqueProvider();

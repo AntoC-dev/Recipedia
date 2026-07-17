@@ -146,5 +146,3 @@ export function TutorialTooltip() {
     </Card>
   );
 }
-
-export default TutorialTooltip;

@@ -95,5 +95,3 @@ const styles = StyleSheet.create({
     marginLeft: padding.small,
   },
 });
-
-export default ProviderLogo;

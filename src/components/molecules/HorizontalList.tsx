@@ -125,5 +125,3 @@ export function HorizontalList(props: HorizontalListProps) {
     </View>
   );
 }
-
-export default HorizontalList;

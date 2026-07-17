@@ -64,5 +64,3 @@ export function NutritionEditForm({
     </View>
   );
 }
-
-export default NutritionEditForm;

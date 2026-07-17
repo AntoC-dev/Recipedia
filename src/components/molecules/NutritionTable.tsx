@@ -237,5 +237,3 @@ export function NutritionTable({
     </View>
   );
 }
-
-export default NutritionTable;

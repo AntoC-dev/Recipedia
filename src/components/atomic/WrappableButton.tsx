@@ -53,5 +53,3 @@ export function WrappableButton({
     </TouchableOpacity>
   );
 }
-
-export default WrappableButton;

@@ -156,5 +156,3 @@ export function RecipeNutrition({
     </View>
   );
 }
-
-export default RecipeNutrition;

@@ -82,5 +82,3 @@ export function RoundButton({ icon, onPressFunction, testID, label, style }: Rou
     </View>
   );
 }
-
-export default RoundButton;

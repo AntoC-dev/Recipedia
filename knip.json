@@ -1,0 +1,25 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": [
+    "App.tsx",
+    "src/navigation/**/*.{ts,tsx}",
+    "modules/**/*.{ts,tsx}",
+    "tests/**/*.{ts,tsx}"
+  ],
+  "project": ["src/**/*.{ts,tsx}"],
+  "ignoreExportsUsedInFile": true,
+  "rules": {
+    "files": "error",
+    "exports": "error",
+    "types": "error",
+    "nsExports": "error",
+    "nsTypes": "error",
+    "enumMembers": "off",
+    "duplicates": "off",
+    "dependencies": "off",
+    "devDependencies": "off",
+    "unlisted": "off",
+    "unresolved": "off",
+    "binaries": "off"
+  }
+}

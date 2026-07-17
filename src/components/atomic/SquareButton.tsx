@@ -98,5 +98,3 @@ export function SquareButton(buttonProps: SquareButtonProps) {
     </Pressable>
   );
 }
-
-export default SquareButton;

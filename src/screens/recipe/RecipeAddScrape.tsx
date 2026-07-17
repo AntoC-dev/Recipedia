@@ -9,13 +9,14 @@
  * @module screens/recipe/RecipeAddScrape
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { StackScreenParamList } from '@customTypes/ScreenTypes';
 import type { AddFromScrapeProp } from '@customTypes/RecipeNavigationTypes';
 import { useRecipeScraperValidation } from '@hooks/useRecipeScraperValidation';
 import { useRandomTagSuggestions } from '@hooks/useRandomTagSuggestions';
 import { RecipeFormScreen } from '@screens/recipe/RecipeFormScreen';
+import { scraperLogger } from '@utils/logger';
 
 export type RecipeAddScrapeProps = NativeStackScreenProps<StackScreenParamList, 'RecipeAddScrape'>;
 
@@ -30,6 +31,9 @@ function ScrapeFeatureSlot() {
 
 export function RecipeAddScrape({ route, navigation }: RecipeAddScrapeProps) {
   const { scrapedData, sourceUrl } = route.params;
+  useEffect(() => {
+    scraperLogger.info('Opening scrape add-recipe flow', { sourceUrl });
+  }, [sourceUrl]);
   const routeProps: AddFromScrapeProp = {
     mode: 'addFromScrape',
     scrapedData,
@@ -49,5 +53,3 @@ export function RecipeAddScrape({ route, navigation }: RecipeAddScrapeProps) {
     />
   );
 }
-
-export default RecipeAddScrape;

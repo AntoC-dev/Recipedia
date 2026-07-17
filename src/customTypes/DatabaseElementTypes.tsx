@@ -410,15 +410,6 @@ export const menuColumnsEncoding: databaseColumnType[] = [
 /** Purchased ingredients table - lightweight table to persist purchase state */
 export const purchasedIngredientsTableName = 'PurchasedIngredientsTable';
 
-/**
- * Tracks which ingredients have been purchased.
- * Ingredient name is the primary key - simple key-value storage.
- */
-export type purchasedIngredientElement = {
-  ingredientName: string;
-  purchased: boolean;
-};
-
 export type encodedPurchasedIngredientElement = {
   INGREDIENT_NAME: string;
   PURCHASED: number;

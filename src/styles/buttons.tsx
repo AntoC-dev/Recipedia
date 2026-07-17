@@ -105,19 +105,6 @@ export const viewButtonStyles = EStyleSheet.create({
   },
 });
 
-export const pressButtonStyle = (pressed: boolean) =>
-  EStyleSheet.create({
-    pressButton: {
-      backgroundColor: pressed ? palette.progressGrey : palette.backgroundColor,
-    },
-  });
-
-export const wrappingButtonWithPressed = (pressed: boolean) =>
-  EStyleSheet.flatten([
-    viewButtonStyles.wrappingListOfButton,
-    pressButtonStyle(pressed).pressButton,
-  ]);
-
 export const viewInsideButtonCentered = EStyleSheet.flatten([
   viewButtonStyles.viewInsideButtons,
   viewButtonStyles.centeredView,

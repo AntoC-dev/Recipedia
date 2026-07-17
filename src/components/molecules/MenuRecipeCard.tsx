@@ -126,5 +126,3 @@ const styles = StyleSheet.create({
     textDecorationLine: 'line-through',
   },
 });
-
-export default MenuRecipeCard;
