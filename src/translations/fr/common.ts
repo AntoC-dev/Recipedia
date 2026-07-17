@@ -34,6 +34,7 @@ export default {
   errorOccurred: 'Une erreur est survenue',
   tryAgain: 'Veuillez réessayer',
   failedToAddRecipe: 'Impossible d\'ajouter la recette "{{recipeName}}"',
+  failedToEditRecipe: 'Impossible d\'enregistrer la recette "{{recipeName}}"',
 
   // Time units
   minutes: 'minutes',

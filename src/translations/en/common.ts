@@ -35,6 +35,7 @@ export default {
   errorOccurred: 'An error occurred',
   tryAgain: 'Please try again',
   failedToAddRecipe: 'Failed to add recipe "{{recipeName}}"',
+  failedToEditRecipe: 'Failed to save recipe "{{recipeName}}"',
 
   // Time units
   minutes: 'minutes',
