@@ -122,5 +122,3 @@ const styles = StyleSheet.create({
     padding: padding.verySmall,
   },
 });
-
-export default ImageThumbnail;

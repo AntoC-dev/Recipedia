@@ -186,5 +186,3 @@ function RecipeTextEditablePart(
     </View>
   );
 }
-
-export default RecipeText;

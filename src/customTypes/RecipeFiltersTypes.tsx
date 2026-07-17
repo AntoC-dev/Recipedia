@@ -47,23 +47,7 @@
  * ```
  */
 
-import { ComputedShoppingItem, ingredientType, recipeTableElement } from './DatabaseElementTypes';
-
-/** Current month for seasonal filtering (1-12) */
-export const currentMonth = new Date().getMonth() + 1;
-
-/**
- * Interface for filter state access and modification
- * Provides a consistent API for managing filter operations
- */
-export type filtersAccessAndModifiers = {
-  /** Current filter state mapping filter types to selected values */
-  filtersState: Map<TListFilter, string[]>;
-  /** Function to add a value to a specific filter */
-  addFilter: (filter: TListFilter, value: string) => void;
-  /** Function to remove a value from a specific filter */
-  removeFilter: (filter: TListFilter, value: string) => void;
-};
+import { ingredientType, recipeTableElement } from './DatabaseElementTypes';
 
 /**
  * Non-ingredient filter types with translation key mapping
@@ -89,17 +73,6 @@ export const listFilter = { ...nonIngredientFilters, ...ingredientType } as cons
 export type TListFilter = (typeof listFilter)[keyof typeof listFilter];
 
 /**
- * Shopping list data structure organized by category
- * Used for sectioned display in shopping list interface
- */
-export type ShoppingAppliedToDatabase = {
-  /** Category title (filter type) */
-  title: TListFilter;
-  /** Array of shopping list items in this category */
-  data: ComputedShoppingItem[];
-};
-
-/**
  * Filter data structure for UI components
  * Used for accordion-style filter selection interfaces
  */
@@ -108,17 +81,6 @@ export type FiltersAppliedToDatabase = {
   title: TListFilter;
   /** Array of available filter values */
   data: string[];
-};
-
-/**
- * Props interface for shopping list components
- * Provides shopping list data and update functionality
- */
-export type propsForShopping = {
-  /** Array of shopping list items */
-  ingList: ComputedShoppingItem[];
-  /** Function to update ingredient purchase status */
-  updateIngredientFromShopping: (ingredientName: string) => void;
 };
 
 /** Type alias for ingredient category values */

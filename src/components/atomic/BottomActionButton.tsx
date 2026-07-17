@@ -41,5 +41,3 @@ export function BottomActionButton({
     </View>
   );
 }
-
-export default BottomActionButton;

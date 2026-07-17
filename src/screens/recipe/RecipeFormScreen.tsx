@@ -613,5 +613,3 @@ function RecipeFormBody({
     </ScreenWrapper>
   );
 }
-
-export default RecipeFormScreen;

@@ -138,5 +138,3 @@ export function DatabasePickerDialog<T extends { name: string }>({
     </Portal>
   );
 }
-
-export default DatabasePickerDialog;

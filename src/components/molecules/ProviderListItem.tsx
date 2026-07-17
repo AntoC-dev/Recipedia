@@ -59,5 +59,3 @@ export function ProviderListItem({ provider, onPress, testID }: ProviderListItem
     </View>
   );
 }
-
-export default ProviderListItem;

@@ -44,5 +44,3 @@ export const FilterToggleButton = forwardRef<View, FilterToggleButtonProps>(
     );
   }
 );
-
-export default FilterToggleButton;

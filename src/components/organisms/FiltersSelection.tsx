@@ -227,5 +227,3 @@ export function FiltersSelection({
     </>
   );
 }
-
-export default FiltersSelection;

@@ -77,5 +77,3 @@ export function RecipeAddOcr({ route, navigation }: RecipeAddOcrProps) {
     />
   );
 }
-
-export default RecipeAddOcr;

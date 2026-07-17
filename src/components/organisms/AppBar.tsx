@@ -79,5 +79,3 @@ export function AppBar({
     </Appbar.Header>
   );
 }
-
-export default AppBar;

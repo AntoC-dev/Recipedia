@@ -43,5 +43,3 @@ export function ScreenWrapper({
     </SafeAreaView>
   );
 }
-
-export default ScreenWrapper;

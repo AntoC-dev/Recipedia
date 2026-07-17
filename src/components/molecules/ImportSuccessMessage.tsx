@@ -141,5 +141,3 @@ const styles = StyleSheet.create({
     marginTop: padding.large,
   },
 });
-
-export default ImportSuccessMessage;

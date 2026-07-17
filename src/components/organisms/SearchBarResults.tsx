@@ -101,5 +101,3 @@ export function SearchBarResults({
     </List.Section>
   );
 }
-
-export default SearchBarResults;

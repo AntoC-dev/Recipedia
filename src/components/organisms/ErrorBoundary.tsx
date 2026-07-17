@@ -110,5 +110,3 @@ export function withErrorBoundary<P extends object>(
   Guarded.displayName = `withErrorBoundary(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`;
   return Guarded;
 }
-
-export default ErrorBoundary;

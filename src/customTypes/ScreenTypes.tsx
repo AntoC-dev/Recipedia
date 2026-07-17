@@ -144,18 +144,6 @@ export type TabScreenNavigation = NavigationProp<TabScreenParamList>;
 /** Props for Home tab screen component */
 export type HomeScreenProp = BottomTabScreenProps<TabScreenParamList, 'Home'>;
 
-/** Props for Search tab screen component */
-export type SearchScreenProp = BottomTabScreenProps<TabScreenParamList, 'Search'>;
-
-/** Props for Menu tab screen component */
-export type MenuScreenProp = BottomTabScreenProps<TabScreenParamList, 'Menu'>;
-
-/** Props for Shopping tab screen component */
-export type ShoppingScreenProp = BottomTabScreenProps<TabScreenParamList, 'Shopping'>;
-
-/** Props for Parameters tab screen component */
-export type ParametersScreenProp = BottomTabScreenProps<TabScreenParamList, 'Parameters'>;
-
 // =============================================================================
 // STACK SCREEN PROP TYPES
 // =============================================================================
@@ -167,22 +155,4 @@ export type LanguageSettingsProp = NativeStackScreenProps<StackScreenParamList, 
 export type DefaultPersonsSettingsProp = NativeStackScreenProps<
   StackScreenParamList,
   'DefaultPersonsSettings'
->;
-
-/** Props for Ingredients Settings stack screen component */
-export type IngredientsSettingProp = NativeStackScreenProps<
-  StackScreenParamList,
-  'IngredientsSettings'
->;
-
-/** Props for Tags Settings stack screen component */
-export type TagsSettingsProp = NativeStackScreenProps<StackScreenParamList, 'TagsSettings'>;
-
-/** Props for Bug Report stack screen component */
-export type BugReportScreenProp = NativeStackScreenProps<StackScreenParamList, 'BugReport'>;
-
-/** Props for Dismissed Recipes Settings stack screen component */
-export type DismissedRecipesSettingsProp = NativeStackScreenProps<
-  StackScreenParamList,
-  'DismissedRecipesSettings'
 >;

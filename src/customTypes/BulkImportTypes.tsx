@@ -251,26 +251,6 @@ export interface SkippedRecipeInfo {
 }
 
 /**
- * Mapping between an imported ingredient name and its validated database entry
- */
-export interface IngredientMapping {
-  /** Original ingredient name from the import */
-  originalName: string;
-  /** Validated ingredient from the database */
-  validatedIngredient: ingredientTableElement;
-}
-
-/**
- * Mapping between an imported tag name and its validated database entry
- */
-export interface TagMapping {
-  /** Original tag name from the import */
-  originalName: string;
-  /** Validated tag from the database */
-  validatedTag: tagTableElement;
-}
-
-/**
  * State for batch validation of imported recipes
  *
  * Tracks the validation progress for ingredients and tags across
@@ -289,20 +269,6 @@ export interface BatchValidationState {
   ingredientsToValidate: IngredientWithSimilarity[];
   /** Tags requiring user validation (pre-computed similarity, sorted: new first) */
   tagsToValidate: TagWithSimilarity[];
-}
-
-/**
- * Overall progress tracking for the import workflow
- */
-export interface ImportProgress {
-  /** Current phase of the import process */
-  phase: 'discovery' | 'selection' | 'validation' | 'importing' | 'complete';
-  /** Current item index being processed */
-  current: number;
-  /** Total number of items to process */
-  total: number;
-  /** Optional status message for display */
-  message?: string;
 }
 
 /**

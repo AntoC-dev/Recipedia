@@ -142,18 +142,3 @@ export const palette = {
   ratingColor: '#ebc307',
   progressGrey: '#C1C1C1',
 };
-
-/**
- * Camera interface color palette for OCR and image capture features
- * Provides optimized colors for camera overlay, controls, and selection elements
- * with high contrast for visibility in various lighting conditions
- */
-export const cameraPalette = {
-  statusBarColor: '#000000ff',
-  overlayColor: '#212121ff',
-  buttonsColor: '#ffffffff',
-  backgroundColor: '#303030ff',
-  selectorBorderColor: '#b7b6b280',
-  selectorColor: '#b7b6b280',
-  cornersColor: '#fffdfbff',
-};

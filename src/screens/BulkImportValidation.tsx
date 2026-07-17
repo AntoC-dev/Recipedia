@@ -207,5 +207,3 @@ const styles = StyleSheet.create({
     marginVertical: padding.medium,
   },
 });
-
-export default BulkImportValidation;

@@ -346,5 +346,3 @@ const styles = StyleSheet.create({
     padding: padding.small,
   },
 });
-
-export default ValidationReviewList;

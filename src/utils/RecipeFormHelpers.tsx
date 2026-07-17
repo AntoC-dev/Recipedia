@@ -80,36 +80,6 @@ export const TITLE_STYLE_CONFIG: ModeConfig<'headline' | 'title'> = {
 };
 
 /**
- * Configuration mapping recipe modes to ingredient component modes
- *
- * - readOnly: Display-only mode
- * - edit/addManual/addScrape: Editable mode with inline editing
- * - addOCR: Add mode with OCR button option
- */
-export const INGREDIENT_MODE_CONFIG: ModeConfig<'readOnly' | 'editable' | 'add'> = {
-  [recipeStateType.readOnly]: 'readOnly',
-  [recipeStateType.edit]: 'editable',
-  [recipeStateType.addManual]: 'editable',
-  [recipeStateType.addOCR]: 'add',
-  [recipeStateType.addScrape]: 'editable',
-};
-
-/**
- * Configuration mapping recipe modes to preparation component modes
- *
- * - readOnly: Display-only mode
- * - edit/addManual/addScrape: Editable mode with step editing
- * - addOCR: Add mode with OCR button option
- */
-export const PREPARATION_MODE_CONFIG: ModeConfig<'readOnly' | 'editable' | 'add'> = {
-  [recipeStateType.readOnly]: 'readOnly',
-  [recipeStateType.edit]: 'editable',
-  [recipeStateType.addManual]: 'editable',
-  [recipeStateType.addOCR]: 'add',
-  [recipeStateType.addScrape]: 'editable',
-};
-
-/**
  * Converts navigation prop mode string to internal recipe state type
  *
  * @param mode - The mode string from navigation parameters

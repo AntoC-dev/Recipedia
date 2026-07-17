@@ -79,5 +79,3 @@ export function ConfirmationDialog({
     </Portal>
   );
 }
-
-export default ConfirmationDialog;

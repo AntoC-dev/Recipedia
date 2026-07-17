@@ -275,5 +275,3 @@ export function RecipeView({ route, navigation }: RecipeViewProps) {
     </ScreenWrapper>
   );
 }
-
-export default RecipeView;

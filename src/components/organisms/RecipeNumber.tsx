@@ -188,5 +188,3 @@ function RecipeNumberEditablePart(
     </View>
   );
 }
-
-export default RecipeNumber;

@@ -408,5 +408,3 @@ export function SimilarityDialog({ testId, isVisible, onClose, item }: Similarit
     </Portal>
   );
 }
-
-export default SimilarityDialog;

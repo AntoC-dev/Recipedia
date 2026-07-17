@@ -99,5 +99,3 @@ const styles = StyleSheet.create({
     marginTop: padding.medium,
   },
 });
-
-export default ImportSkippedWarning;

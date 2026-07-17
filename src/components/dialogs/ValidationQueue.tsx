@@ -145,5 +145,3 @@ export function ValidationQueue({
     />
   );
 }
-
-export default ValidationQueue;
