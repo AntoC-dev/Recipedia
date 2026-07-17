@@ -1,3 +1,9 @@
+## [2.43.0](https://github.com/AntoC-dev/Recipedia/compare/v2.42.2...v2.43.0) (2026-07-17)
+
+### Features
+
+* **logging:** wire idle loggers into screens and scrape flow ([d54fa1b](https://github.com/AntoC-dev/Recipedia/commit/d54fa1b2218fce2cb35f766bedbc3c9f62118c81))
+
 ## [2.42.2](https://github.com/AntoC-dev/Recipedia/compare/v2.42.1...v2.42.2) (2026-07-17)
 
 ### Bug Fixes
