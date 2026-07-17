@@ -90,9 +90,8 @@ export async function fetchHtml(url: string, signal?: AbortSignal): Promise<Fetc
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
 
-  const combinedSignal = signal
-    ? combineAbortSignals(signal, controller.signal)
-    : controller.signal;
+  const combined = signal ? combineAbortSignals(signal, controller.signal) : null;
+  const combinedSignal = combined ? combined.signal : controller.signal;
 
   try {
     const response = await fetch(url, {
@@ -116,6 +115,7 @@ export async function fetchHtml(url: string, signal?: AbortSignal): Promise<Fetc
     return { html, finalUrl };
   } finally {
     clearTimeout(timeoutId);
+    combined?.cleanup();
   }
 }
 
@@ -172,19 +172,35 @@ export function extractImageFromJsonLd(html: string): string | null {
 }
 
 /**
- * Combines two abort signals into one
+ * Combines two abort signals into one.
+ *
+ * The returned `cleanup` function removes the abort listeners registered on
+ * `signal1`/`signal2` and must be called once the combined signal is no longer
+ * needed, otherwise the listeners leak on every call.
+ *
+ * @param signal1 - First abort signal to observe
+ * @param signal2 - Second abort signal to observe
+ * @returns The combined signal and a `cleanup` function to detach listeners
  */
-function combineAbortSignals(signal1: AbortSignal, signal2: AbortSignal): AbortSignal {
+function combineAbortSignals(
+  signal1: AbortSignal,
+  signal2: AbortSignal
+): { signal: AbortSignal; cleanup: () => void } {
   const controller = new AbortController();
 
   const abort = () => controller.abort();
 
-  signal1.addEventListener('abort', abort);
-  signal2.addEventListener('abort', abort);
+  const cleanup = () => {
+    signal1.removeEventListener('abort', abort);
+    signal2.removeEventListener('abort', abort);
+  };
+
+  signal1.addEventListener('abort', abort, { once: true });
+  signal2.addEventListener('abort', abort, { once: true });
 
   if (signal1.aborted || signal2.aborted) {
     controller.abort();
   }
 
-  return controller.signal;
+  return { signal: controller.signal, cleanup };
 }
