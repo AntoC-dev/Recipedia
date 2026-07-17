@@ -2,6 +2,8 @@ import { fireEvent, render } from '@testing-library/react-native';
 import { HorizontalList } from '@components/molecules/HorizontalList';
 import React from 'react';
 
+jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
+
 describe('HorizontalList', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -84,6 +86,13 @@ describe('HorizontalList', () => {
       fireEvent.press(getByTestId('test-list::List#0::SquareButton').parent!);
 
       expect(onPress).toHaveBeenCalledWith('https://example.com/img1.jpg');
+    });
+
+    test('gives each image button a numbered accessibility label', () => {
+      const { getByTestId } = render(<HorizontalList {...imageProps} />);
+
+      expect(getByTestId('test-list::List#0').props.accessibilityLabel).toBe('Image 1');
+      expect(getByTestId('test-list::List#1').props.accessibilityLabel).toBe('Image 2');
     });
 
     test('handles empty array', () => {

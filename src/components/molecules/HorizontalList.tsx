@@ -49,6 +49,7 @@ import { smallCardWidth, viewButtonStyles } from '@styles/buttons';
 import React from 'react';
 import { View } from 'react-native';
 import { TagButton } from '@components/atomic/TagButton';
+import { useI18n } from '@utils/i18n';
 
 /** Props for Tag mode */
 export type TagProp = {
@@ -86,6 +87,7 @@ export type HorizontalListProps = {
  * @returns JSX element representing a multi-line wrapping list of tags or images
  */
 export function HorizontalList(props: HorizontalListProps) {
+  const { t } = useI18n();
   /**
    * Renders individual list items based on the content type
    * @param item - The item data to render
@@ -107,6 +109,7 @@ export function HorizontalList(props: HorizontalListProps) {
             testID={props.testID + `::List#${index}`}
             side={smallCardWidth}
             imgSrc={item}
+            accessibilityLabel={t('imageButtonNumbered', { number: index + 1 })}
             onPressFunction={() => props.onPress?.(item)}
             type={'image'}
           />

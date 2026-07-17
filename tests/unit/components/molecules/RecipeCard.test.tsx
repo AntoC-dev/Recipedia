@@ -51,11 +51,11 @@ describe('RecipeCard Component', () => {
     expect(getByTestId(`${testId}::Cover::Source`).props.children).toEqual(
       recipe.image_Source.length > 0 ? recipe.image_Source : 'no-image'
     );
-    expect(getByTestId(`${testId}::Title::TitleText`).props.children).toEqual(recipe.title);
-    expect(getByTestId(`${testId}::Title::TitleText`).props.numberOfLines).toEqual(2);
+    expect(getByTestId(`${testId}::Title`).props.children).toEqual(recipe.title);
+    expect(getByTestId(`${testId}::Title`).props.numberOfLines).toEqual(2);
 
     const expectedVariant = size === 'small' ? 'labelLarge' : 'titleMedium';
-    expect(getByTestId(`${testId}::Title::TitleVariant`).props.children).toEqual(expectedVariant);
+    expect(getByTestId(`${testId}::Title`).props.variant).toEqual(expectedVariant);
 
     if (size === 'medium') {
       const expectedTags = recipe.tags.map(tag => tag.name).join(', ');
@@ -84,6 +84,19 @@ describe('RecipeCard Component', () => {
     const { getByTestId, queryByTestId } = renderRecipeCard({ size: 'medium' });
 
     assertRecipeDataDisplay(getByTestId, queryByTestId, 'medium');
+  });
+
+  test('exposes each card field as its own accessible element', () => {
+    const { getByTestId } = renderRecipeCard({ size: 'medium' });
+
+    const card = getByTestId(`test-recipe-card::${sampleRecipe.title}`);
+    expect(card.props.accessible).toBe(false);
+
+    expect(getByTestId('test-recipe-card::Title').props.accessible).toBe(true);
+    expect(getByTestId('test-recipe-card::Title').props.children).toBe(sampleRecipe.title);
+    expect(getByTestId('test-recipe-card::Content').props.accessible).toBe(true);
+    expect(getByTestId('test-recipe-card::PrepTime').props.accessible).toBe(true);
+    expect(getByTestId('test-recipe-card::Persons').props.accessible).toBe(true);
   });
 
   test('navigates to Recipe screen when card is pressed', () => {
