@@ -1,3 +1,10 @@
+## [2.42.2](https://github.com/AntoC-dev/Recipedia/compare/v2.42.1...v2.42.2) (2026-07-17)
+
+### Bug Fixes
+
+* **a11y:** expose RecipeCard, SquareButton and HorizontalList to screen readers ([cc1f210](https://github.com/AntoC-dev/Recipedia/commit/cc1f2105c8475f826eee0dd576743f599ed6e30d))
+* **a11y:** expose RecipeCard, SquareButton and HorizontalList to screen readers ([#421](https://github.com/AntoC-dev/Recipedia/issues/421)) ([fa3227c](https://github.com/AntoC-dev/Recipedia/commit/fa3227c4020c069d548cad95d5f2ec6460249672))
+
 ## [2.42.1](https://github.com/AntoC-dev/Recipedia/compare/v2.42.0...v2.42.1) (2026-07-14)
 
 ### Performance Improvements
