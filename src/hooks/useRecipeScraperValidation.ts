@@ -8,7 +8,7 @@
  * @module useRecipeScraperValidation
  */
 
-import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import {
   deduplicateIngredientsByName,
   removeTagByName,
@@ -48,9 +48,7 @@ export function useRecipeScraperValidation(): void {
   const { findSimilarTags } = useTags();
   const { findSimilarIngredients } = useIngredients();
 
-  const setRecipeTags = makeFormSetter(form, 'recipeTags') as unknown as Dispatch<
-    SetStateAction<tagTableElement[]>
-  >;
+  const setRecipeTags = makeFormSetter(form, 'recipeTags');
 
   const hasRunRef = useRef(false);
   const pendingIngredientsRef = useRef<FormIngredientElement[] | null>(null);
@@ -77,9 +75,9 @@ export function useRecipeScraperValidation(): void {
     validateAndQueueTags(
       tags,
       findSimilarTags,
-      tag => setRecipeTags(prev => replaceMatchingTags(prev, [tag])),
+      tag => setRecipeTags(prev => replaceMatchingTags(prev ?? [], [tag])),
       setValidationQueue,
-      tag => setRecipeTags(prev => removeTagByName(prev, tag.name))
+      tag => setRecipeTags(prev => removeTagByName(prev ?? [], tag.name))
     );
   };
 

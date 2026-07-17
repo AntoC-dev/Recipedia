@@ -77,6 +77,16 @@ describe('ValidationQueue', () => {
       expect(mockOnComplete).toHaveBeenCalledTimes(1);
       expect(mockOnValidated).not.toHaveBeenCalled();
     });
+
+    test('passes empty string newItemName when ingredient has no name', () => {
+      const { getByTestId } = renderQueueIngredients([{ unit: 'g', season: [], similarItems: [] }]);
+
+      expect(
+        getByTestId(
+          'test-validation::ValidationQueue::Ingredient::SimilarityDialog::Mock::item.newItemName'
+        ).props.children
+      ).toBe('');
+    });
   });
 
   describe('Tag Validation Flow', () => {

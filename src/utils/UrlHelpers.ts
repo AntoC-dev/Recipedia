@@ -161,8 +161,8 @@ export function extractImageFromJsonLd(html: string): string | null {
       if (imgUrl && !isPlaceholderImageUrl(imgUrl)) return imgUrl;
     }
     if (typeof image === 'object' && image !== null) {
-      const imgUrl = (image as Record<string, unknown>).url as string | undefined;
-      if (imgUrl && !isPlaceholderImageUrl(imgUrl)) return imgUrl;
+      const imgUrl = (image as Record<string, unknown>).url;
+      if (typeof imgUrl === 'string' && imgUrl && !isPlaceholderImageUrl(imgUrl)) return imgUrl;
     }
 
     return null;

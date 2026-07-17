@@ -167,11 +167,11 @@ describe('RecipeSelectionCard Performance', () => {
       };
 
       await measureRenders(<BatchCardsWrapper count={50} memoryStatus='fresh' />, {
-        runs: 10,
-        ...HEAVY_WARMUP,
+        runs: 30,
+        warmupRuns: 5,
         scenario,
       });
-    });
+    }, 120000);
 
     test('100 fresh cards initial render', async () => {
       await measureRenders(<BatchCardsWrapper count={100} memoryStatus='fresh' />, {
@@ -188,10 +188,10 @@ describe('RecipeSelectionCard Performance', () => {
       };
 
       await measureRenders(<BatchCardsWrapper count={100} memoryStatus='fresh' />, {
-        runs: 5,
-        ...HEAVY_WARMUP,
+        runs: 10,
+        warmupRuns: 5,
         scenario,
       });
-    }, 30000);
+    }, 120000);
   });
 });
