@@ -2546,4 +2546,95 @@ describe('RecipeDatabase', () => {
       expect(db.getDismissedUrls('hellofresh').has('https://hellofresh.com/recipe-2')).toBe(true);
     });
   });
+
+  describe('subscribe / unsubscribe', () => {
+    const db = RecipeDatabase.getInstance();
+
+    beforeEach(async () => {
+      await db.init();
+    });
+
+    afterEach(async () => {
+      await db.closeAndReset();
+    });
+
+    test('notifies a subscribed callback when the slice mutates', async () => {
+      const callback = jest.fn();
+      db.subscribe('tags', callback);
+
+      await db.addTag(testTags[0]);
+
+      expect(callback).toHaveBeenCalledTimes(1);
+    });
+
+    test('stops notifying after the returned unsubscribe is called', async () => {
+      const callback = jest.fn();
+      const unsubscribe = db.subscribe('tags', callback);
+
+      await db.addTag(testTags[0]);
+      unsubscribe();
+      await db.addTag(testTags[1]);
+
+      expect(callback).toHaveBeenCalledTimes(1);
+    });
+
+    test('only notifies callbacks for the mutated slice', async () => {
+      const tagsCallback = jest.fn();
+      const ingredientsCallback = jest.fn();
+      db.subscribe('tags', tagsCallback);
+      db.subscribe('ingredients', ingredientsCallback);
+
+      await db.addTag(testTags[0]);
+
+      expect(tagsCallback).toHaveBeenCalledTimes(1);
+      expect(ingredientsCallback).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('getInstance', () => {
+    afterEach(async () => {
+      await RecipeDatabase.resetInstance();
+    });
+
+    test('returns the same instance across repeated calls', () => {
+      expect(RecipeDatabase.getInstance()).toBe(RecipeDatabase.getInstance());
+    });
+  });
+
+  describe('resetInstance', () => {
+    afterEach(async () => {
+      await RecipeDatabase.resetInstance();
+    });
+
+    test('builds a fresh instance on the next getInstance', async () => {
+      const first = RecipeDatabase.getInstance();
+      await first.init();
+
+      await RecipeDatabase.resetInstance();
+      const second = RecipeDatabase.getInstance();
+
+      expect(second).not.toBe(first);
+    });
+
+    test('tears down the stale instance so it no longer fires notifications', async () => {
+      const first = RecipeDatabase.getInstance();
+      await first.init();
+      const staleCallback = jest.fn();
+      first.subscribe('tags', staleCallback);
+
+      await RecipeDatabase.resetInstance();
+
+      const second = RecipeDatabase.getInstance();
+      await second.init();
+      await second.addTag(testTags[0]);
+
+      expect(staleCallback).not.toHaveBeenCalled();
+    });
+
+    test('is a no-op when no instance exists', async () => {
+      await RecipeDatabase.resetInstance();
+
+      await expect(RecipeDatabase.resetInstance()).resolves.toBeUndefined();
+    });
+  });
 });
