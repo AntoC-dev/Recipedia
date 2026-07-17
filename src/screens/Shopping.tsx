@@ -68,6 +68,7 @@ import { RoundButton } from '@components/atomic/RoundButton';
 import { TUTORIAL_DEMO_INTERVAL, TUTORIAL_STEPS } from '@utils/Constants';
 import { padding } from '@styles/spacing';
 import { formatQuantityForDisplay } from '@utils/Quantity';
+import { shoppingLogger } from '@utils/logger';
 
 /** Type for dialog data containing ingredient and recipe information */
 type ingredientDataForDialog = Pick<ComputedShoppingItem, 'name' | 'recipeTitles'>;
@@ -223,6 +224,7 @@ export function Shopping() {
    * Toggles purchase status of an ingredient by name
    */
   function updateShoppingList(ingredientName: string) {
+    shoppingLogger.debug('Toggling ingredient purchase status', { ingredient: ingredientName });
     togglePurchased(ingredientName);
   }
 
@@ -235,6 +237,7 @@ export function Shopping() {
   }
 
   async function clearShoppingList() {
+    shoppingLogger.info('Clearing shopping list', { itemCount: shoppingList.length });
     await clearMenu();
     setIsConfirmationDialogOpen(false);
   }

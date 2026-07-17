@@ -71,6 +71,7 @@ import { DarkModeContext } from '@context/DarkModeContext';
 import { Icons } from '@assets/Icons';
 import Constants from 'expo-constants';
 import { TUTORIAL_STEPS } from '@utils/Constants';
+import { parametersLogger } from '@utils/logger';
 
 /**
  * Parameters screen component - Main app settings and configuration hub
@@ -89,6 +90,11 @@ export function Parameters() {
   const copilotData = useSafeCopilot();
 
   const { navigate } = useNavigation<StackScreenNavigation>();
+
+  const handleDarkModeToggle = () => {
+    parametersLogger.info('Toggled dark mode', { enabled: !isDarkMode });
+    toggleDarkMode();
+  };
 
   // Navigate to language selection screen
   const handleLanguagePress = () => {
@@ -184,7 +190,7 @@ export function Parameters() {
               <Switch
                 testID={darkModeId + '::Switch'}
                 value={isDarkMode}
-                onValueChange={toggleDarkMode}
+                onValueChange={handleDarkModeToggle}
               />
             )}
           />

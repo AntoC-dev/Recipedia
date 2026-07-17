@@ -28,6 +28,7 @@ import {
   ScrapedNutrients,
   ScrapedRecipe,
 } from '@app/modules/recipe-scraper';
+import { scrapedRecipeLogger } from '@utils/logger';
 
 const DEFAULT_PORTION_WEIGHT_GRAMS = 100;
 const SODIUM_MG_THRESHOLD = 10;
@@ -409,6 +410,20 @@ export function convertScrapedRecipe(
     scraped.ingredientGroups,
     ignoredPatterns
   );
+
+  if (skipped.length > 0) {
+    scrapedRecipeLogger.warn('Skipped unparseable ingredients during scrape conversion', {
+      title: scraped.title,
+      count: skipped.length,
+      skipped,
+    });
+  }
+
+  scrapedRecipeLogger.info('Converted scraped recipe', {
+    title: scraped.title,
+    ingredientCount: ingredients.length,
+    skippedCount: skipped.length,
+  });
 
   return {
     title: scraped.title ?? '',

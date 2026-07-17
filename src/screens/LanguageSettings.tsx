@@ -38,6 +38,7 @@ import { useI18n } from '@utils/i18n';
 import { getLanguage, setLanguage } from '@utils/settings';
 import { LanguageSettingsProp } from '@customTypes/ScreenTypes';
 import { AppBar } from '@components/organisms/AppBar';
+import { languageSettingsLogger } from '@utils/logger';
 
 /**
  * LanguageSettings screen component - Language selection interface
@@ -60,6 +61,7 @@ export function LanguageSettings({ navigation }: LanguageSettingsProp) {
   }, []);
 
   const handleLanguageChange = async (locale: string) => {
+    languageSettingsLogger.info('User changed app language', { from: currentLocale, to: locale });
     // Update both AsyncStorage and i18n
     await setLanguage(locale);
     setCurrentLocale(locale);
