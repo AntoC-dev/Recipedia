@@ -1,3 +1,12 @@
+## [2.44.2](https://github.com/AntoC-dev/Recipedia/compare/v2.44.1...v2.44.2) (2026-07-18)
+
+### Bug Fixes
+
+* **ci:** green up main — chaquopy python setup, strict test types, expo-doctor knip conflict ([#446](https://github.com/AntoC-dev/Recipedia/issues/446)) ([835b9e5](https://github.com/AntoC-dev/Recipedia/commit/835b9e5e23a8eaab0e92ecb821994e934571ae10))
+* **ci:** rename knip script to knip:check to satisfy expo-doctor ([eff632a](https://github.com/AntoC-dev/Recipedia/commit/eff632a2c60f3a82a1bcceaf597da6c2b0d6c99e))
+* **ci:** setup python3.13 for chaquopy in all android builds ([7b0db3a](https://github.com/AntoC-dev/Recipedia/commit/7b0db3a76754b4eee6f47c56625c5042751c03d3))
+* **tests:** satisfy noUncheckedIndexedAccess in recipe tests ([097aed9](https://github.com/AntoC-dev/Recipedia/commit/097aed9c634a1bab4f5528b9c80a04d6dfb31a33))
+
 ## [2.44.1](https://github.com/AntoC-dev/Recipedia/compare/v2.44.0...v2.44.1) (2026-07-18)
 
 ### Bug Fixes
