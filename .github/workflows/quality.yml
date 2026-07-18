@@ -114,7 +114,7 @@ jobs:
         with:
           node-version: '24'
       - name: Run Knip
-        run: npm run knip
+        run: npm run knip:check
 
   expo-doctor:
     name: Expo Configuration Check

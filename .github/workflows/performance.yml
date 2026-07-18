@@ -68,6 +68,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Setup Python for Chaquopy
+        uses: ./.github/actions/setup-chaquopy-python
+
       - name: Setup Android build environment
         uses: ./.github/actions/setup-android-build
         with:

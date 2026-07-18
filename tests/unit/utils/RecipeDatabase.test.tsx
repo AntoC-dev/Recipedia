@@ -2572,7 +2572,7 @@ describe('RecipeDatabase', () => {
       const callback = jest.fn();
       db.subscribe('tags', callback);
 
-      await db.addTag(testTags[0]);
+      await db.addTag(testTags[0]!);
 
       expect(callback).toHaveBeenCalledTimes(1);
     });
@@ -2581,9 +2581,9 @@ describe('RecipeDatabase', () => {
       const callback = jest.fn();
       const unsubscribe = db.subscribe('tags', callback);
 
-      await db.addTag(testTags[0]);
+      await db.addTag(testTags[0]!);
       unsubscribe();
-      await db.addTag(testTags[1]);
+      await db.addTag(testTags[1]!);
 
       expect(callback).toHaveBeenCalledTimes(1);
     });
@@ -2594,7 +2594,7 @@ describe('RecipeDatabase', () => {
       db.subscribe('tags', tagsCallback);
       db.subscribe('ingredients', ingredientsCallback);
 
-      await db.addTag(testTags[0]);
+      await db.addTag(testTags[0]!);
 
       expect(tagsCallback).toHaveBeenCalledTimes(1);
       expect(ingredientsCallback).not.toHaveBeenCalled();
@@ -2636,7 +2636,7 @@ describe('RecipeDatabase', () => {
 
       const second = RecipeDatabase.getInstance();
       await second.init();
-      await second.addTag(testTags[0]);
+      await second.addTag(testTags[0]!);
 
       expect(staleCallback).not.toHaveBeenCalled();
     });

@@ -492,7 +492,7 @@ describe('RecipeEdit', () => {
         .spyOn(dbInstance, 'editRecipe')
         .mockRejectedValue(new Error('DB write failed'));
 
-      const route: EditRecipeProp = { mode: 'edit', recipe: { ...testRecipes[0] } };
+      const route: EditRecipeProp = { mode: 'edit', recipe: { ...testRecipes[0]! } };
       const { getByTestId } = await renderRoute(route);
 
       fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Failing Save Title');
@@ -517,7 +517,7 @@ describe('RecipeEdit', () => {
         .spyOn(dbInstance, 'editRecipe')
         .mockRejectedValue('plain string failure');
 
-      const route: EditRecipeProp = { mode: 'edit', recipe: { ...testRecipes[0] } };
+      const route: EditRecipeProp = { mode: 'edit', recipe: { ...testRecipes[0]! } };
       const { getByTestId } = await renderRoute(route);
 
       fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Non Error Save Title');
@@ -1098,7 +1098,7 @@ describe('RecipeEdit', () => {
     });
 
     test('completes the save without an error dialog when the post-save form sync throws', async () => {
-      const savedRecipe = { ...testRecipes[0] };
+      const savedRecipe = { ...testRecipes[0]! };
       Object.defineProperty(savedRecipe, 'image_Source', {
         get() {
           throw new Error('form sync boom');
@@ -1106,7 +1106,7 @@ describe('RecipeEdit', () => {
       });
       const editRecipeSpy = jest.spyOn(dbInstance, 'editRecipe').mockResolvedValue(savedRecipe);
 
-      const { getByTestId } = await renderRoute({ mode: 'edit', recipe: { ...testRecipes[0] } });
+      const { getByTestId } = await renderRoute({ mode: 'edit', recipe: { ...testRecipes[0]! } });
 
       fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Synced Title');
       fireEvent.press(getByTestId('Recipe::AppBar::Validate'));

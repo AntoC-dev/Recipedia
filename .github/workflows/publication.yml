@@ -40,6 +40,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Setup Python for Chaquopy
+        if: matrix.platform == 'android'
+        uses: ./.github/actions/setup-chaquopy-python
+
       - name: Setup Android build environment
         if: matrix.platform == 'android'
         uses: ./.github/actions/setup-android-build
