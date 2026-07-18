@@ -486,6 +486,52 @@ describe('RecipeEdit', () => {
 
       editRecipeSpy.mockRestore();
     });
+
+    test('shows an error dialog when editRecipe throws unexpectedly', async () => {
+      const editRecipeSpy = jest
+        .spyOn(dbInstance, 'editRecipe')
+        .mockRejectedValue(new Error('DB write failed'));
+
+      const route: EditRecipeProp = { mode: 'edit', recipe: { ...testRecipes[0] } };
+      const { getByTestId } = await renderRoute(route);
+
+      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Failing Save Title');
+      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+
+      await waitFor(() => {
+        expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
+      });
+      expect(getByTestId('Recipe::Alert::Title').props.children).toBe('error');
+      expect(getByTestId('Recipe::Alert::Content').props.children).toContain('failedToEditRecipe');
+      expect(getByTestId('Recipe::Alert::Content').props.children).toContain('DB write failed');
+      expect(mockNavigation.dispatch).not.toHaveBeenCalled();
+
+      fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
+      expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(false);
+
+      editRecipeSpy.mockRestore();
+    });
+
+    test('error dialog stringifies a non-Error rejection from editRecipe', async () => {
+      const editRecipeSpy = jest
+        .spyOn(dbInstance, 'editRecipe')
+        .mockRejectedValue('plain string failure');
+
+      const route: EditRecipeProp = { mode: 'edit', recipe: { ...testRecipes[0] } };
+      const { getByTestId } = await renderRoute(route);
+
+      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Non Error Save Title');
+      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+
+      await waitFor(() => {
+        expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
+      });
+      expect(getByTestId('Recipe::Alert::Content').props.children).toContain(
+        'plain string failure'
+      );
+
+      editRecipeSpy.mockRestore();
+    });
   });
 
   describe('validation errors', () => {
@@ -1047,6 +1093,28 @@ describe('RecipeEdit', () => {
       });
 
       expect(mockNavigation.dispatch).not.toHaveBeenCalled();
+
+      editRecipeSpy.mockRestore();
+    });
+
+    test('completes the save without an error dialog when the post-save form sync throws', async () => {
+      const savedRecipe = { ...testRecipes[0] };
+      Object.defineProperty(savedRecipe, 'image_Source', {
+        get() {
+          throw new Error('form sync boom');
+        },
+      });
+      const editRecipeSpy = jest.spyOn(dbInstance, 'editRecipe').mockResolvedValue(savedRecipe);
+
+      const { getByTestId } = await renderRoute({ mode: 'edit', recipe: { ...testRecipes[0] } });
+
+      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Synced Title');
+      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+
+      await waitFor(() => {
+        expect(mockNavigation.dispatch).toHaveBeenCalled();
+      });
+      expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(false);
 
       editRecipeSpy.mockRestore();
     });

@@ -271,6 +271,19 @@ function RecipeFormBody({
   const validationButtonConfig = getValidationButtonConfig(stackMode, t);
   const isEditMode = mode === 'edit';
 
+  /** Surfaces a save-failure dialog carrying the localized message and the underlying error text. */
+  const showSaveErrorDialog = (messageKey: string, recipeName: string, error: unknown) => {
+    dialogs.showValidationDialog({
+      title: t('error'),
+      content:
+        t(messageKey, { recipeName }) +
+        '\n\n' +
+        (error instanceof Error ? error.message : String(error)),
+      confirmText: t('ok'),
+      onConfirm: () => dialogs.hideValidationDialog(),
+    });
+  };
+
   /**
    * Runs the zod resolver via `handleSubmit`. On failure, force-touches every
    * field, collects the missing-element messages, and opens the validation
@@ -324,18 +337,24 @@ function RecipeFormBody({
       if (!isRecipeEqual(originalRecipe, scaledRecipe)) {
         savedRecipe = await editRecipe(scaledRecipe);
         scaledFromServings = getServingsScaledFrom(recipeToEdit.persons, defaultPersons);
-        form.reset(
-          { ...form.getValues(), recipeImage: savedRecipe.image_Source },
-          { keepTouched: true, keepSubmitCount: true }
-        );
-
         baselineRef.current = savedRecipe;
+        try {
+          form.reset(
+            { ...form.getValues(), recipeImage: savedRecipe.image_Source },
+            { keepTouched: true, keepSubmitCount: true }
+          );
+        } catch (resetError) {
+          recipeLogger.warn('Form re-sync after edit save failed; recipe already persisted', {
+            error: resetError,
+          });
+        }
       }
 
       clearCache();
       onSaveSuccess(savedRecipe, scaledFromServings);
     } catch (error) {
       recipeLogger.error('editValidation failed with unexpected error', { error });
+      showSaveErrorDialog('failedToEditRecipe', form.getValues('recipeTitle'), error);
     }
   }
 
@@ -369,22 +388,15 @@ function RecipeFormBody({
           title: t('addAnyway'),
           content: t('addedToDatabase', { recipeName: recipeToAdd.title }),
           confirmText: t('understood'),
-          onConfirm: () => onSaveSuccess(scaledRecipe),
+          onConfirm: () =>
+            onSaveSuccess(scaledRecipe, getServingsScaledFrom(recipeToAdd.persons, defaultPersons)),
         });
       } catch (error) {
         validationLogger.error('Failed to validate and add recipe to database', {
           recipeTitle: form.getValues('recipeTitle'),
           error,
         });
-        dialogs.showValidationDialog({
-          title: t('error'),
-          content:
-            t('failedToAddRecipe', { recipeName: recipeToAdd.title }) +
-            '\n\n' +
-            (error instanceof Error ? error.message : String(error)),
-          confirmText: t('ok'),
-          onConfirm: () => dialogs.hideValidationDialog(),
-        });
+        showSaveErrorDialog('failedToAddRecipe', recipeToAdd.title, error);
       }
     };
 

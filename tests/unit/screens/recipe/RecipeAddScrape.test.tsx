@@ -1,8 +1,10 @@
-import { fireEvent, waitFor } from '@testing-library/react-native';
+import React from 'react';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { AddFromScrapeProp } from '@customTypes/RecipeNavigationTypes';
 import * as FileGestion from '@utils/FileGestion';
+import { RecipeFormScreen } from '@screens/recipe/RecipeFormScreen';
 
 import { renderRoute, setupDb, teardownDb } from './recipeTestHelpers';
 
@@ -103,6 +105,121 @@ describe('RecipeAddScrape', () => {
       expect(clearCacheMock.mock.invocationCallOrder[0]).toBeGreaterThan(
         addRecipeSpy.mock.invocationCallOrder[0]
       );
+
+      addRecipeSpy.mockRestore();
+    });
+
+    test('forwards the entered serving count as scaledFromServings to onSaveSuccess', async () => {
+      const onSaveSuccess = jest.fn();
+
+      const scrapedRoute: AddFromScrapeProp = {
+        mode: 'addFromScrape',
+        sourceUrl: 'https://example.com/scaled',
+        scrapedData: {
+          image_Source: 'scaled-test.jpg',
+          title: 'Unique Scaled Serving Recipe ABC',
+          description: 'A test recipe',
+          persons: 8,
+          time: 30,
+          ingredients: [{ ...testIngredients[0], quantity: '200' }],
+          preparation: [{ title: 'Step 1', description: 'Test step' }],
+          tags: [],
+        },
+      };
+
+      const { getByTestId } = render(
+        <RecipeFormScreen
+          mode='addFromScrape'
+          routeProps={scrapedRoute}
+          onSaveSuccess={onSaveSuccess}
+          onGoBack={jest.fn()}
+          onCancel={jest.fn()}
+        />
+      );
+
+      fireEvent.press(getByTestId('Recipe::BottomActionButton'));
+
+      await waitFor(() => {
+        expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
+      });
+
+      fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
+
+      expect(onSaveSuccess).toHaveBeenCalledWith(expect.objectContaining({ persons: 4 }), 8);
+    });
+
+    test('omits scaledFromServings to onSaveSuccess when serving count stays at the default', async () => {
+      const onSaveSuccess = jest.fn();
+
+      const scrapedRoute: AddFromScrapeProp = {
+        mode: 'addFromScrape',
+        sourceUrl: 'https://example.com/default',
+        scrapedData: {
+          image_Source: 'default-test.jpg',
+          title: 'Unique Default Serving Recipe DEF',
+          description: 'A test recipe',
+          persons: 4,
+          time: 30,
+          ingredients: [{ ...testIngredients[0], quantity: '100' }],
+          preparation: [{ title: 'Step 1', description: 'Test step' }],
+          tags: [],
+        },
+      };
+
+      const { getByTestId } = render(
+        <RecipeFormScreen
+          mode='addFromScrape'
+          routeProps={scrapedRoute}
+          onSaveSuccess={onSaveSuccess}
+          onGoBack={jest.fn()}
+          onCancel={jest.fn()}
+        />
+      );
+
+      fireEvent.press(getByTestId('Recipe::BottomActionButton'));
+
+      await waitFor(() => {
+        expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
+      });
+
+      fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
+
+      expect(onSaveSuccess).toHaveBeenCalledWith(
+        expect.objectContaining({ persons: 4 }),
+        undefined
+      );
+    });
+
+    test('shows an error dialog when addRecipe throws in the add flow', async () => {
+      const addRecipeSpy = jest
+        .spyOn(dbInstance, 'addRecipe')
+        .mockRejectedValue(new Error('add write failed'));
+
+      const scrapedRoute: AddFromScrapeProp = {
+        mode: 'addFromScrape',
+        sourceUrl: 'https://example.com/failing',
+        scrapedData: {
+          image_Source: 'failing-test.jpg',
+          title: 'Unique Failing Add Recipe GHI',
+          description: 'A test recipe',
+          persons: 4,
+          time: 30,
+          ingredients: [{ ...testIngredients[0], quantity: '100' }],
+          preparation: [{ title: 'Step 1', description: 'Test step' }],
+          tags: [],
+        },
+      };
+
+      const { getByTestId } = await renderRoute(scrapedRoute);
+
+      fireEvent.press(getByTestId('Recipe::BottomActionButton'));
+
+      await waitFor(() => {
+        expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
+      });
+      expect(getByTestId('Recipe::Alert::Title').props.children).toBe('error');
+      expect(getByTestId('Recipe::Alert::Content').props.children).toContain('failedToAddRecipe');
+      expect(getByTestId('Recipe::Alert::Content').props.children).toContain('add write failed');
 
       addRecipeSpy.mockRestore();
     });
