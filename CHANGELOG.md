@@ -1,3 +1,13 @@
+## [2.44.0](https://github.com/AntoC-dev/Recipedia/compare/v2.43.2...v2.44.0) (2026-07-18)
+
+### Features
+
+* **lint:** enable type-aware eslint rules and stricter typescript ([fffc984](https://github.com/AntoC-dev/Recipedia/commit/fffc984a96e22374786c4ede83e7a091e01959c9))
+
+### Bug Fixes
+
+* **types:** satisfy type-aware eslint and strict tsconfig in src ([9f8fef3](https://github.com/AntoC-dev/Recipedia/commit/9f8fef3ae3245f46ba06bf9169cf464f67c9268e)), closes [#322](https://github.com/AntoC-dev/Recipedia/issues/322)
+
 ## [2.43.2](https://github.com/AntoC-dev/Recipedia/compare/v2.43.1...v2.43.2) (2026-07-18)
 
 ### Bug Fixes
