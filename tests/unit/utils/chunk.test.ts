@@ -71,7 +71,7 @@ describe('forEachChunk', () => {
       [1, 2, 3, 4],
       async chunk => {
         await Promise.resolve();
-        order.push(chunk[0]);
+        order.push(chunk[0]!);
       },
       2
     );

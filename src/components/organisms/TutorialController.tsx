@@ -70,7 +70,7 @@ function TutorialManager({ onComplete }: Pick<TutorialProviderProps, 'onComplete
     hasAutoStartedRef.current = true;
     tutorialLogger.info('Starting tutorial on next tick');
     const timer = setTimeout(() => {
-      startRef.current();
+      void startRef.current();
     }, TUTORIAL_AUTO_START_DELAY);
 
     return () => {

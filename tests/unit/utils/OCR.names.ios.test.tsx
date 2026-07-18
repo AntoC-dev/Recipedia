@@ -40,8 +40,8 @@ describe('recognizeIngredientNames on iOS', () => {
 
       expect(result).toHaveLength(hellofreshExpectedIosNames.length);
       hellofreshExpectedIosNames.forEach(({ name, unit }, i) => {
-        expect(result[i].name).toBe(name);
-        expect(result[i].unit).toBe(unit);
+        expect(result[i]!.name).toBe(name);
+        expect(result[i]!.unit).toBe(unit);
       });
     });
   });
@@ -54,8 +54,8 @@ describe('recognizeIngredientNames on iOS', () => {
 
       expect(result).toHaveLength(quitoqueV1ExpectedIosNames.length);
       quitoqueV1ExpectedIosNames.forEach(({ name, unit }, i) => {
-        expect(result[i].name).toBe(name);
-        expect(result[i].unit).toBe(unit);
+        expect(result[i]!.name).toBe(name);
+        expect(result[i]!.unit).toBe(unit);
       });
     });
 
@@ -78,8 +78,8 @@ describe('recognizeIngredientNames on iOS', () => {
 
       expect(result).toHaveLength(quitoqueV2ExpectedIosNames.length);
       quitoqueV2ExpectedIosNames.forEach(({ name, unit }, i) => {
-        expect(result[i].name).toBe(name);
-        expect(result[i].unit).toBe(unit);
+        expect(result[i]!.name).toBe(name);
+        expect(result[i]!.unit).toBe(unit);
       });
     });
 
@@ -101,8 +101,8 @@ describe('recognizeIngredientNames on iOS', () => {
 
       expect(result).toHaveLength(quitoqueV3ExpectedIosNames.length);
       quitoqueV3ExpectedIosNames.forEach(({ name, unit }, i) => {
-        expect(result[i].name).toBe(name);
-        expect(result[i].unit).toBe(unit);
+        expect(result[i]!.name).toBe(name);
+        expect(result[i]!.unit).toBe(unit);
       });
     });
   });
@@ -208,8 +208,8 @@ describe('recognizeIngredientNames on iOS', () => {
     const result = await recognizeIngredientNames('file://test.jpg');
 
     expect(result).toHaveLength(1);
-    expect(result[0].name).toBe('Carrot');
-    expect(result[0].unit).toBe('');
+    expect(result[0]!.name).toBe('Carrot');
+    expect(result[0]!.unit).toBe('');
   });
 
   test('ingredient with unit in parentheses has name and unit separated', async () => {
@@ -221,8 +221,8 @@ describe('recognizeIngredientNames on iOS', () => {
     const result = await recognizeIngredientNames('file://test.jpg');
 
     expect(result).toHaveLength(1);
-    expect(result[0].name).toBe('Flour');
-    expect(result[0].unit).toBe('g');
+    expect(result[0]!.name).toBe('Flour');
+    expect(result[0]!.unit).toBe('g');
   });
 
   test('handles iOS multi-line blocks with ingredient names across lines', async () => {
@@ -243,9 +243,9 @@ describe('recognizeIngredientNames on iOS', () => {
     const result = await recognizeIngredientNames('file://test.jpg');
 
     expect(result).toHaveLength(2);
-    expect(result[0].name).toBe('Carrot');
-    expect(result[1].name).toBe('Potato');
-    expect(result[1].unit).toBe('g');
+    expect(result[0]!.name).toBe('Carrot');
+    expect(result[1]!.name).toBe('Potato');
+    expect(result[1]!.unit).toBe('g');
   });
 
   test('handles ingredient with multiple parenthetical notes', async () => {
@@ -257,8 +257,8 @@ describe('recognizeIngredientNames on iOS', () => {
     const result = await recognizeIngredientNames('file://test.jpg');
 
     expect(result).toHaveLength(1);
-    expect(result[0].unit).toBe('g égoutté');
-    expect(result[0].name).toContain('conserve');
-    expect(result[0].name).toContain('Bio');
+    expect(result[0]!.unit).toBe('g égoutté');
+    expect(result[0]!.name).toContain('conserve');
+    expect(result[0]!.name).toContain('Bio');
   });
 });

@@ -178,7 +178,7 @@ export function ModalImageSelect({
         >
           <RoundButton
             testID={modalTestID + '::Camera'}
-            onPressFunction={takePhotoInModal}
+            onPressFunction={() => void takePhotoInModal()}
             size={'medium'}
             icon={Icons.cameraIcon}
             label={t(ocrTranslationsPrefix + 'photo')}
@@ -188,7 +188,7 @@ export function ModalImageSelect({
           />
           <RoundButton
             testID={modalTestID + '::Gallery'}
-            onPressFunction={pickImageInModal}
+            onPressFunction={() => void pickImageInModal()}
             size={'medium'}
             icon={Icons.galleryIcon}
             label={t(ocrTranslationsPrefix + 'gallery')}

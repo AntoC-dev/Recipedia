@@ -436,8 +436,8 @@ describe('useRecipeIngredients', () => {
           );
         });
 
-        expect(result.current.form.form.getValues('recipeIngredients')[0].quantity).toBe('300');
-        expect(result.current.form.form.getValues('recipeIngredients')[0].name).toBe('Flour');
+        expect(result.current.form.form.getValues('recipeIngredients')[0]!.quantity).toBe('300');
+        expect(result.current.form.form.getValues('recipeIngredients')[0]!.name).toBe('Flour');
       });
 
       test('updates unit without triggering validation', async () => {
@@ -465,8 +465,8 @@ describe('useRecipeIngredients', () => {
           );
         });
 
-        expect(result.current.form.form.getValues('recipeIngredients')[0].unit).toBe('kg');
-        expect(result.current.form.form.getValues('recipeIngredients')[0].name).toBe('Flour');
+        expect(result.current.form.form.getValues('recipeIngredients')[0]!.unit).toBe('kg');
+        expect(result.current.form.form.getValues('recipeIngredients')[0]!.name).toBe('Flour');
       });
 
       test('resolves an unresolved row against the database when the committed name is unchanged', async () => {
@@ -504,9 +504,9 @@ describe('useRecipeIngredients', () => {
 
         await waitFor(() => {
           const row = result.current.form.form.getValues('recipeIngredients')[0];
-          expect(row.type).toBe(ingredientType.baking);
-          expect(row.season).toBeDefined();
-          expect(row.id).toBe(9);
+          expect(row!.type).toBe(ingredientType.baking);
+          expect(row!.season).toBeDefined();
+          expect(row!.id).toBe(9);
         });
       });
 
@@ -562,7 +562,7 @@ describe('useRecipeIngredients', () => {
           )._formState.errors;
           expect(rawErrorsAfter.recipeIngredients?.[0]?.quantity).toBeUndefined();
         });
-        expect(result.current.form.form.getValues('recipeIngredients')[0].quantity).toBe('250');
+        expect(result.current.form.form.getValues('recipeIngredients')[0]!.quantity).toBe('250');
       });
 
       test('logs warning for negative index', async () => {
@@ -672,7 +672,9 @@ describe('useRecipeIngredients', () => {
         });
 
         await waitFor(() => {
-          expect(result.current.form.form.getValues('recipeIngredients')[0].name).toBe('Spaghetti');
+          expect(result.current.form.form.getValues('recipeIngredients')[0]!.name).toBe(
+            'Spaghetti'
+          );
         });
 
         expect(result.current.dialogs.validationQueue).toBeNull();
@@ -713,7 +715,9 @@ describe('useRecipeIngredients', () => {
         });
 
         await waitFor(() => {
-          expect(result.current.form.form.getValues('recipeIngredients')[0].name).toBe('Spaghetti');
+          expect(result.current.form.form.getValues('recipeIngredients')[0]!.name).toBe(
+            'Spaghetti'
+          );
         });
 
         expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
@@ -760,10 +764,10 @@ describe('useRecipeIngredients', () => {
         const queue = result.current.dialogs.validationQueue as IngredientValidationProps;
 
         act(() => {
-          queue.onValidated(queue.items[0], spaghettiIngredient);
+          queue.onValidated(queue.items[0]!, spaghettiIngredient);
         });
 
-        expect(result.current.form.form.getValues('recipeIngredients')[0].name).toBe('Spaghetti');
+        expect(result.current.form.form.getValues('recipeIngredients')[0]!.name).toBe('Spaghetti');
         expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
       });
 
@@ -804,9 +808,9 @@ describe('useRecipeIngredients', () => {
         const ingredients = result.current.form.form.getValues('recipeIngredients');
         expect(ingredients).toHaveLength(2);
         // Merged Flour lands at the lower of the two indices (the surviving slot)
-        expect(ingredients[0].name).toBe('Flour');
-        expect(ingredients[0].quantity).toBe('350');
-        expect(ingredients[1].name).toBe('Sugar');
+        expect(ingredients[0]!.name).toBe('Flour');
+        expect(ingredients[0]!.quantity).toBe('350');
+        expect(ingredients[1]!.name).toBe('Sugar');
       });
 
       test('removes ingredient when validation dialog is dismissed', async () => {
@@ -850,7 +854,7 @@ describe('useRecipeIngredients', () => {
         const queue = result.current.dialogs.validationQueue as IngredientValidationProps;
 
         act(() => {
-          queue.onDismissed?.(queue.items[0]);
+          queue.onDismissed?.(queue.items[0]!);
         });
 
         expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(2);
@@ -890,7 +894,7 @@ describe('useRecipeIngredients', () => {
         });
 
         expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(4);
-        expect(result.current.form.form.getValues('recipeIngredients')[3].name).toBe('Butter');
+        expect(result.current.form.form.getValues('recipeIngredients')[3]!.name).toBe('Butter');
       });
 
       test('merges quantity for existing ingredient with same unit', async () => {
@@ -922,7 +926,7 @@ describe('useRecipeIngredients', () => {
         });
 
         expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
-        expect(result.current.form.form.getValues('recipeIngredients')[0].quantity).toBe('300');
+        expect(result.current.form.form.getValues('recipeIngredients')[0]!.quantity).toBe('300');
       });
 
       test('replaces ingredient when same name but different unit', async () => {
@@ -954,8 +958,8 @@ describe('useRecipeIngredients', () => {
         });
 
         expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
-        expect(result.current.form.form.getValues('recipeIngredients')[0].unit).toBe('kg');
-        expect(result.current.form.form.getValues('recipeIngredients')[0].quantity).toBe('0.5');
+        expect(result.current.form.form.getValues('recipeIngredients')[0]!.unit).toBe('kg');
+        expect(result.current.form.form.getValues('recipeIngredients')[0]!.quantity).toBe('0.5');
       });
 
       test('case-insensitive name matching for merge', async () => {
@@ -987,7 +991,7 @@ describe('useRecipeIngredients', () => {
         });
 
         expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
-        expect(result.current.form.form.getValues('recipeIngredients')[0].quantity).toBe('300');
+        expect(result.current.form.form.getValues('recipeIngredients')[0]!.quantity).toBe('300');
       });
 
       test('preserves type and season from validated ingredient when merging with FormIngredient', async () => {
@@ -1023,9 +1027,9 @@ describe('useRecipeIngredients', () => {
         });
 
         const merged = result.current.form.form.getValues('recipeIngredients')[0];
-        expect(merged.quantity).toBe('300');
-        expect(merged.type).toBe(ingredientType.cereal);
-        expect(merged.season).toEqual(['1', '2', '3']);
+        expect(merged!.quantity).toBe('300');
+        expect(merged!.type).toBe(ingredientType.cereal);
+        expect(merged!.season).toEqual(['1', '2', '3']);
       });
 
       test('merges names that differ only by leading/trailing whitespace', async () => {
@@ -1068,7 +1072,7 @@ describe('useRecipeIngredients', () => {
         });
 
         expect(result.current.form.form.getValues('recipeIngredients')!).toHaveLength(1);
-        expect(result.current.form.form.getValues('recipeIngredients')![0].quantity).toBe('150');
+        expect(result.current.form.form.getValues('recipeIngredients')![0]!.quantity).toBe('150');
       });
 
       test('merges names that differ only by NFC equivalence (decomposed vs precomposed é)', async () => {
@@ -1115,7 +1119,7 @@ describe('useRecipeIngredients', () => {
         });
 
         expect(result.current.form.form.getValues('recipeIngredients')!).toHaveLength(1);
-        expect(result.current.form.form.getValues('recipeIngredients')![0].quantity).toBe('150');
+        expect(result.current.form.form.getValues('recipeIngredients')![0]!.quantity).toBe('150');
       });
 
       test('does NOT merge unrelated names that happen to share a token', async () => {
@@ -1189,8 +1193,8 @@ describe('useRecipeIngredients', () => {
         });
 
         expect(result.current.form.form.getValues('recipeIngredients')!).toHaveLength(1);
-        expect(result.current.form.form.getValues('recipeIngredients')![0].unit).toBe('g');
-        expect(result.current.form.form.getValues('recipeIngredients')![0].quantity).toBe('200');
+        expect(result.current.form.form.getValues('recipeIngredients')![0]!.unit).toBe('g');
+        expect(result.current.form.form.getValues('recipeIngredients')![0]!.quantity).toBe('200');
       });
 
       test('merges names that differ only by internal whitespace', async () => {
@@ -1235,7 +1239,7 @@ describe('useRecipeIngredients', () => {
         });
 
         expect(result.current.form.form.getValues('recipeIngredients')!).toHaveLength(1);
-        expect(result.current.form.form.getValues('recipeIngredients')![0].quantity).toBe('250');
+        expect(result.current.form.form.getValues('recipeIngredients')![0]!.quantity).toBe('250');
       });
 
       test('handles existing ingredient with undefined name gracefully', async () => {
@@ -1321,8 +1325,8 @@ describe('useRecipeIngredients', () => {
           );
         });
 
-        expect(result.current.form.form.getValues('recipeIngredients')[0].quantity).toBe('300');
-        expect(result.current.form.form.getValues('recipeIngredients')[0].note).toBe(
+        expect(result.current.form.form.getValues('recipeIngredients')[0]!.quantity).toBe('300');
+        expect(result.current.form.form.getValues('recipeIngredients')[0]!.note).toBe(
           'for the sauce'
         );
       });
@@ -1350,7 +1354,7 @@ describe('useRecipeIngredients', () => {
           );
         });
 
-        expect(result.current.form.form.getValues('recipeIngredients')[0].note).toBe(
+        expect(result.current.form.form.getValues('recipeIngredients')[0]!.note).toBe(
           'for the filling'
         );
       });
@@ -1378,7 +1382,7 @@ describe('useRecipeIngredients', () => {
           );
         });
 
-        expect(result.current.form.form.getValues('recipeIngredients')[0].note).toBe('');
+        expect(result.current.form.form.getValues('recipeIngredients')[0]!.note).toBe('');
       });
 
       test('adds note to ingredient without one', async () => {
@@ -1404,7 +1408,7 @@ describe('useRecipeIngredients', () => {
           );
         });
 
-        expect(result.current.form.form.getValues('recipeIngredients')[1].note).toBe(
+        expect(result.current.form.form.getValues('recipeIngredients')[1]!.note).toBe(
           'for the topping'
         );
       });
@@ -1471,16 +1475,16 @@ describe('useRecipeIngredients', () => {
           );
         });
 
-        expect(result.current.form.form.getValues('recipeIngredients')[0].quantity).toBe('200');
-        expect(result.current.form.form.getValues('recipeIngredients')[0].note).toBe(
+        expect(result.current.form.form.getValues('recipeIngredients')[0]!.quantity).toBe('200');
+        expect(result.current.form.form.getValues('recipeIngredients')[0]!.note).toBe(
           'for the dough'
         );
-        expect(result.current.form.form.getValues('recipeIngredients')[1].quantity).toBe('100');
-        expect(result.current.form.form.getValues('recipeIngredients')[1].note).toBe(
+        expect(result.current.form.form.getValues('recipeIngredients')[1]!.quantity).toBe('100');
+        expect(result.current.form.form.getValues('recipeIngredients')[1]!.note).toBe(
           'for the topping'
         );
-        expect(result.current.form.form.getValues('recipeIngredients')[2].quantity).toBe('2');
-        expect(result.current.form.form.getValues('recipeIngredients')[2].note).toBe('a pinch');
+        expect(result.current.form.form.getValues('recipeIngredients')[2]!.quantity).toBe('2');
+        expect(result.current.form.form.getValues('recipeIngredients')[2]!.note).toBe('a pinch');
       });
     });
 
@@ -1528,12 +1532,12 @@ describe('useRecipeIngredients', () => {
         });
 
         expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(2);
-        expect(result.current.form.form.getValues('recipeIngredients')[0].quantity).toBe('200');
-        expect(result.current.form.form.getValues('recipeIngredients')[0].note).toBe(
+        expect(result.current.form.form.getValues('recipeIngredients')[0]!.quantity).toBe('200');
+        expect(result.current.form.form.getValues('recipeIngredients')[0]!.note).toBe(
           'for the sauce'
         );
-        expect(result.current.form.form.getValues('recipeIngredients')[1].quantity).toBe('100');
-        expect(result.current.form.form.getValues('recipeIngredients')[1].note).toBe(
+        expect(result.current.form.form.getValues('recipeIngredients')[1]!.quantity).toBe('100');
+        expect(result.current.form.form.getValues('recipeIngredients')[1]!.note).toBe(
           'for the filling'
         );
       });
@@ -1566,8 +1570,8 @@ describe('useRecipeIngredients', () => {
         });
 
         expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
-        expect(result.current.form.form.getValues('recipeIngredients')[0].quantity).toBe('300');
-        expect(result.current.form.form.getValues('recipeIngredients')[0].note).toBe(
+        expect(result.current.form.form.getValues('recipeIngredients')[0]!.quantity).toBe('300');
+        expect(result.current.form.form.getValues('recipeIngredients')[0]!.note).toBe(
           'for the sauce'
         );
       });
@@ -1613,8 +1617,8 @@ describe('useRecipeIngredients', () => {
         });
 
         expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
-        expect(result.current.form.form.getValues('recipeIngredients')[0].quantity).toBe('300');
-        expect(result.current.form.form.getValues('recipeIngredients')[0].note).toBe(
+        expect(result.current.form.form.getValues('recipeIngredients')[0]!.quantity).toBe('300');
+        expect(result.current.form.form.getValues('recipeIngredients')[0]!.note).toBe(
           'for the filling'
         );
       });
@@ -1645,8 +1649,8 @@ describe('useRecipeIngredients', () => {
           });
         });
 
-        expect(result.current.form.form.getValues('recipeIngredients')[0].quantity).toBe('300');
-        expect(result.current.form.form.getValues('recipeIngredients')[0].note).toBe(
+        expect(result.current.form.form.getValues('recipeIngredients')[0]!.quantity).toBe('300');
+        expect(result.current.form.form.getValues('recipeIngredients')[0]!.note).toBe(
           'for the sauce'
         );
       });
@@ -1678,8 +1682,8 @@ describe('useRecipeIngredients', () => {
           });
         });
 
-        expect(result.current.form.form.getValues('recipeIngredients')[0].unit).toBe('kg');
-        expect(result.current.form.form.getValues('recipeIngredients')[0].note).toBe(
+        expect(result.current.form.form.getValues('recipeIngredients')[0]!.unit).toBe('kg');
+        expect(result.current.form.form.getValues('recipeIngredients')[0]!.note).toBe(
           'for the bread'
         );
       });
@@ -1723,19 +1727,19 @@ describe('useRecipeIngredients', () => {
         });
 
         const ingredients = result.current.form.form.getValues('recipeIngredients');
-        expect(ingredients[0].id).toBe(10);
-        expect(ingredients[0].name).toBe('Olive Oil');
-        expect(ingredients[0].type).toBe(ingredientType.oilAndFat);
-        expect(ingredients[0].quantity).toBe('2');
-        expect(ingredients[0].unit).toBe('ml');
+        expect(ingredients[0]!.id).toBe(10);
+        expect(ingredients[0]!.name).toBe('Olive Oil');
+        expect(ingredients[0]!.type).toBe(ingredientType.oilAndFat);
+        expect(ingredients[0]!.quantity).toBe('2');
+        expect(ingredients[0]!.unit).toBe('ml');
 
-        expect(ingredients[1].name).toBe('Salt');
+        expect(ingredients[1]!.name).toBe('Salt');
 
-        expect(ingredients[2].id).toBe(10);
-        expect(ingredients[2].name).toBe('Olive Oil');
-        expect(ingredients[2].type).toBe(ingredientType.oilAndFat);
-        expect(ingredients[2].quantity).toBe('');
-        expect(ingredients[2].unit).toBe('ml');
+        expect(ingredients[2]!.id).toBe(10);
+        expect(ingredients[2]!.name).toBe('Olive Oil');
+        expect(ingredients[2]!.type).toBe(ingredientType.oilAndFat);
+        expect(ingredients[2]!.quantity).toBe('');
+        expect(ingredients[2]!.unit).toBe('ml');
       });
 
       test('preserves notes from original FormIngredients', async () => {
@@ -1772,8 +1776,8 @@ describe('useRecipeIngredients', () => {
         });
 
         const ingredients = result.current.form.form.getValues('recipeIngredients');
-        expect(ingredients[0].note).toBe('white or cider');
-        expect(ingredients[1].note).toBe('balsamic');
+        expect(ingredients[0]!.note).toBe('white or cider');
+        expect(ingredients[1]!.note).toBe('balsamic');
       });
 
       test('handles case-insensitive matching', async () => {
@@ -1810,8 +1814,8 @@ describe('useRecipeIngredients', () => {
         });
 
         const ingredients = result.current.form.form.getValues('recipeIngredients');
-        expect(ingredients[0].id).toBe(10);
-        expect(ingredients[1].id).toBe(10);
+        expect(ingredients[0]!.id).toBe(10);
+        expect(ingredients[1]!.id).toBe(10);
       });
 
       test('does not affect non-matching ingredients', async () => {
@@ -1842,9 +1846,9 @@ describe('useRecipeIngredients', () => {
           });
         });
 
-        expect(result.current.form.form.getValues('recipeIngredients')[0].name).toBe('Flour');
-        expect(result.current.form.form.getValues('recipeIngredients')[1].name).toBe('Sugar');
-        expect(result.current.form.form.getValues('recipeIngredients')[2].name).toBe('Milk');
+        expect(result.current.form.form.getValues('recipeIngredients')[0]!.name).toBe('Flour');
+        expect(result.current.form.form.getValues('recipeIngredients')[1]!.name).toBe('Sugar');
+        expect(result.current.form.form.getValues('recipeIngredients')[2]!.name).toBe('Milk');
       });
 
       test('preserves object identity for non-matching rows so UI subscribers do not re-render', async () => {
@@ -1886,8 +1890,8 @@ describe('useRecipeIngredients', () => {
         });
 
         const saltAfter = result.current.fieldArray.fields[1];
-        expect(saltAfter.id).toBe(saltBefore.id);
-        expect(saltAfter.name).toBe('Salt');
+        expect(saltAfter!.id).toBe(saltBefore!.id);
+        expect(saltAfter!.name).toBe('Salt');
       });
     });
 
@@ -1917,8 +1921,8 @@ describe('useRecipeIngredients', () => {
           );
         });
 
-        expect(result.current.form.form.getValues('recipeIngredients')[0].name).toBe('Flour');
-        expect(result.current.form.form.getValues('recipeIngredients')[0].quantity).toBe('200');
+        expect(result.current.form.form.getValues('recipeIngredients')[0]!.name).toBe('Flour');
+        expect(result.current.form.form.getValues('recipeIngredients')[0]!.quantity).toBe('200');
       });
 
       test('updates ingredient type from database match', async () => {
@@ -2005,9 +2009,9 @@ describe('useRecipeIngredients', () => {
 
         await waitFor(() => {
           const updated = result.current.form.form.getValues('recipeIngredients')[0];
-          expect(updated.name).toBe('Spaghetti');
-          expect(updated.unit).toBe(spaghettiIngredient.unit);
-          expect(updated.quantity ?? '').toBe(spaghettiIngredient.quantity ?? '');
+          expect(updated!.name).toBe('Spaghetti');
+          expect(updated!.unit).toBe(spaghettiIngredient.unit);
+          expect(updated!.quantity ?? '').toBe(spaghettiIngredient.quantity ?? '');
         });
       });
 
@@ -2047,9 +2051,9 @@ describe('useRecipeIngredients', () => {
 
         await waitFor(() => {
           const updated = result.current.form.form.getValues('recipeIngredients')[0];
-          expect(updated.name).toBe('Spaghetti');
-          expect(updated.unit).toBe('kg');
-          expect(updated.quantity).toBe('350');
+          expect(updated!.name).toBe('Spaghetti');
+          expect(updated!.unit).toBe('kg');
+          expect(updated!.quantity).toBe('350');
         });
       });
     });
@@ -2231,16 +2235,16 @@ describe('useRecipeIngredients', () => {
         act(() => {
           result.current.ingredients.editIngredients(
             0,
-            `${originalIngredient.quantity}@@${originalIngredient.unit}--${originalIngredient.name}`,
+            `${originalIngredient!.quantity}@@${originalIngredient!.unit}--${originalIngredient!.name}`,
             makeFormApplyPatch(result.current.form.form)
           );
         });
 
         await waitFor(() => {
           const updated = result.current.form.form.getValues('recipeIngredients')[0];
-          expect(updated.name).toBe(originalIngredient.name);
-          expect(updated.quantity).toBe(originalIngredient.quantity);
-          expect(updated.unit).toBe(originalIngredient.unit);
+          expect(updated!.name).toBe(originalIngredient!.name);
+          expect(updated!.quantity).toBe(originalIngredient!.quantity);
+          expect(updated!.unit).toBe(originalIngredient!.unit);
         });
       });
 
@@ -2282,10 +2286,10 @@ describe('useRecipeIngredients', () => {
         });
 
         await waitFor(() => {
-          expect(result.current.form.form.getValues('recipeIngredients')[0].quantity).toBe('300');
+          expect(result.current.form.form.getValues('recipeIngredients')[0]!.quantity).toBe('300');
         });
 
-        expect(result.current.form.form.getValues('recipeIngredients')[0].id).toBe(42);
+        expect(result.current.form.form.getValues('recipeIngredients')[0]!.id).toBe(42);
       });
     });
   });

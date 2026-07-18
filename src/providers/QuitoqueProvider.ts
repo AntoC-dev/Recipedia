@@ -105,7 +105,7 @@ export class QuitoqueProvider extends BaseRecipeProvider {
     let match;
 
     while ((match = PAGINATION_REGEX.exec(html)) !== null) {
-      const pageNum = parseInt(match[1], 10);
+      const pageNum = parseInt(match[1]!, 10);
       if (!isNaN(pageNum) && pageNum > maxPage) {
         maxPage = pageNum;
       }
@@ -131,7 +131,7 @@ export class QuitoqueProvider extends BaseRecipeProvider {
 
     let match;
     while ((match = RECIPE_URL_REGEX.exec(html)) !== null) {
-      const path = match[1];
+      const path = match[1]!;
 
       if (!RECIPE_PATH_PATTERN.test(path)) {
         continue;

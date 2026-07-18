@@ -191,7 +191,7 @@ describe('BatchValidation', () => {
       const state = initializeBatchValidation(recipes);
 
       expect(state.ingredientsToValidate).toHaveLength(1);
-      expect(state.ingredientsToValidate[0].name).toBe('Chicken');
+      expect(state.ingredientsToValidate[0]!.name).toBe('Chicken');
     });
 
     it('preserves ingredient original data in validation items', () => {
@@ -212,7 +212,7 @@ describe('BatchValidation', () => {
       const state = initializeBatchValidation(recipes);
 
       expect(state.tagsToValidate).toHaveLength(1);
-      expect(state.tagsToValidate[0].name).toBe('MyTag');
+      expect(state.tagsToValidate[0]!.name).toBe('MyTag');
     });
 
     it('starts with empty mappings (similarity handled by ValidationQueue)', () => {
@@ -324,8 +324,8 @@ describe('BatchValidation', () => {
       const validatedRecipes = applyMappingsToRecipes(recipes, state, 4);
 
       expect(validatedRecipes).toHaveLength(1);
-      expect(validatedRecipes[0].ingredients[0].name).toBe('Chicken');
-      expect(validatedRecipes[0].tags[0].name).toBe('Italian');
+      expect(validatedRecipes[0]!.ingredients[0]!.name).toBe('Chicken');
+      expect(validatedRecipes[0]!.tags[0]!.name).toBe('Italian');
     });
 
     it('preserves quantity and unit from original import', () => {
@@ -345,8 +345,8 @@ describe('BatchValidation', () => {
 
       const validatedRecipes = applyMappingsToRecipes(recipes, state, 4);
 
-      expect(validatedRecipes[0].ingredients[0].quantity).toBe('500');
-      expect(validatedRecipes[0].ingredients[0].unit).toBe('kg');
+      expect(validatedRecipes[0]!.ingredients[0]!.quantity).toBe('500');
+      expect(validatedRecipes[0]!.ingredients[0]!.unit).toBe('kg');
     });
 
     it('uses mapped ingredient properties for unmapped fields', () => {
@@ -364,7 +364,7 @@ describe('BatchValidation', () => {
 
       const validatedRecipes = applyMappingsToRecipes(recipes, state, 4);
 
-      expect(validatedRecipes[0].ingredients[0].type).toBe(ingredientType.meat);
+      expect(validatedRecipes[0]!.ingredients[0]!.type).toBe(ingredientType.meat);
     });
 
     it('skips unmapped ingredients', () => {
@@ -373,7 +373,7 @@ describe('BatchValidation', () => {
 
       const validatedRecipes = applyMappingsToRecipes(recipes, state, 4);
 
-      expect(validatedRecipes[0].ingredients).toHaveLength(0);
+      expect(validatedRecipes[0]!.ingredients).toHaveLength(0);
     });
 
     it('skips unmapped tags', () => {
@@ -393,7 +393,7 @@ describe('BatchValidation', () => {
 
       const validatedRecipes = applyMappingsToRecipes(recipes, state, 4);
 
-      expect(validatedRecipes[0].tags).toHaveLength(0);
+      expect(validatedRecipes[0]!.tags).toHaveLength(0);
     });
 
     it('preserves recipe metadata', () => {
@@ -414,10 +414,10 @@ describe('BatchValidation', () => {
 
       const validatedRecipes = applyMappingsToRecipes(recipes, state, 4);
 
-      expect(validatedRecipes[0].title).toBe('Test Recipe');
-      expect(validatedRecipes[0].description).toBe('Test Recipe description');
-      expect(validatedRecipes[0].persons).toBe(4);
-      expect(validatedRecipes[0].time).toBe(30);
+      expect(validatedRecipes[0]!.title).toBe('Test Recipe');
+      expect(validatedRecipes[0]!.description).toBe('Test Recipe description');
+      expect(validatedRecipes[0]!.persons).toBe(4);
+      expect(validatedRecipes[0]!.time).toBe(30);
     });
 
     it('handles multiple recipes', () => {
@@ -449,8 +449,8 @@ describe('BatchValidation', () => {
       const validatedRecipes = applyMappingsToRecipes(recipes, state, 4);
 
       expect(validatedRecipes).toHaveLength(2);
-      expect(validatedRecipes[0].title).toBe('Recipe 1');
-      expect(validatedRecipes[1].title).toBe('Recipe 2');
+      expect(validatedRecipes[0]!.title).toBe('Recipe 1');
+      expect(validatedRecipes[1]!.title).toBe('Recipe 2');
     });
 
     it('uses defaultPersons instead of recipe persons', () => {
@@ -474,7 +474,7 @@ describe('BatchValidation', () => {
 
       const validatedRecipes = applyMappingsToRecipes(recipes, state, 4);
 
-      expect(validatedRecipes[0].persons).toBe(4);
+      expect(validatedRecipes[0]!.persons).toBe(4);
     });
 
     it('scales ingredient quantities when recipe.persons differs from defaultPersons (ratio > 1)', () => {
@@ -497,7 +497,7 @@ describe('BatchValidation', () => {
 
       const validatedRecipes = applyMappingsToRecipes(recipes, state, 4);
 
-      expect(validatedRecipes[0].ingredients[0].quantity).toBe('200');
+      expect(validatedRecipes[0]!.ingredients[0]!.quantity).toBe('200');
     });
 
     it('scales ingredient quantities when recipe.persons differs from defaultPersons (ratio < 1)', () => {
@@ -520,7 +520,7 @@ describe('BatchValidation', () => {
 
       const validatedRecipes = applyMappingsToRecipes(recipes, state, 2);
 
-      expect(validatedRecipes[0].ingredients[0].quantity).toBe('50');
+      expect(validatedRecipes[0]!.ingredients[0]!.quantity).toBe('50');
     });
 
     it('does not scale when recipe.persons equals defaultPersons', () => {
@@ -543,7 +543,7 @@ describe('BatchValidation', () => {
 
       const validatedRecipes = applyMappingsToRecipes(recipes, state, 4);
 
-      expect(validatedRecipes[0].ingredients[0].quantity).toBe('100');
+      expect(validatedRecipes[0]!.ingredients[0]!.quantity).toBe('100');
     });
 
     it('does not scale when recipe.persons is 0', () => {
@@ -566,7 +566,7 @@ describe('BatchValidation', () => {
 
       const validatedRecipes = applyMappingsToRecipes(recipes, state, 4);
 
-      expect(validatedRecipes[0].ingredients[0].quantity).toBe('100');
+      expect(validatedRecipes[0]!.ingredients[0]!.quantity).toBe('100');
     });
 
     it('preserves null/empty quantity when scaling', () => {
@@ -589,7 +589,7 @@ describe('BatchValidation', () => {
 
       const validatedRecipes = applyMappingsToRecipes(recipes, state, 4);
 
-      expect(validatedRecipes[0].ingredients[0].quantity).toBe('');
+      expect(validatedRecipes[0]!.ingredients[0]!.quantity).toBe('');
     });
 
     it('scales across multiple ingredients in same recipe', () => {
@@ -627,8 +627,8 @@ describe('BatchValidation', () => {
 
       const validatedRecipes = applyMappingsToRecipes(recipes, state, 4);
 
-      expect(validatedRecipes[0].ingredients[0].quantity).toBe('200');
-      expect(validatedRecipes[0].ingredients[1].quantity).toBe('400');
+      expect(validatedRecipes[0]!.ingredients[0]!.quantity).toBe('200');
+      expect(validatedRecipes[0]!.ingredients[1]!.quantity).toBe('400');
     });
 
     it('scales quantities independently per recipe when multiple recipes have different person counts', () => {
@@ -653,8 +653,8 @@ describe('BatchValidation', () => {
 
       const validatedRecipes = applyMappingsToRecipes([recipe1, recipe2], state, 4);
 
-      expect(validatedRecipes[0].ingredients[0].quantity).toBe('200');
-      expect(validatedRecipes[1].ingredients[0].quantity).toBe('100');
+      expect(validatedRecipes[0]!.ingredients[0]!.quantity).toBe('200');
+      expect(validatedRecipes[1]!.ingredients[0]!.quantity).toBe('100');
     });
 
     it('scales with a non-integer ratio (factor 1.5)', () => {
@@ -677,7 +677,7 @@ describe('BatchValidation', () => {
 
       const validatedRecipes = applyMappingsToRecipes(recipes, state, 3);
 
-      expect(validatedRecipes[0].ingredients[0].quantity).toBe('150');
+      expect(validatedRecipes[0]!.ingredients[0]!.quantity).toBe('150');
     });
 
     it('falls back to mappedIngredient.quantity when ing.quantity is empty, and scales that fallback', () => {
@@ -700,7 +700,7 @@ describe('BatchValidation', () => {
 
       const validatedRecipes = applyMappingsToRecipes(recipes, state, 4);
 
-      expect(validatedRecipes[0].ingredients[0].quantity).toBe('160');
+      expect(validatedRecipes[0]!.ingredients[0]!.quantity).toBe('160');
     });
 
     it('preserves quantity as-is when recipe.persons is 0', () => {
@@ -723,7 +723,7 @@ describe('BatchValidation', () => {
 
       const validatedRecipes = applyMappingsToRecipes(recipes, state, 4);
 
-      expect(validatedRecipes[0].ingredients[0].quantity).toBe('100');
+      expect(validatedRecipes[0]!.ingredients[0]!.quantity).toBe('100');
     });
   });
 

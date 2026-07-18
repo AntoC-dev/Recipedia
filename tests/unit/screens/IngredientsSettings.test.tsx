@@ -153,18 +153,18 @@ describe('IngredientsSettings Screen', () => {
       expect(getByTestId('IngredientsSettings::ItemDialog::Item')).toBeTruthy();
     });
 
-    dialogIsOpen(sortedDataset[0], 'edit', getByTestId);
+    dialogIsOpen(sortedDataset[0]!, 'edit', getByTestId);
 
     fireEvent.press(getByTestId('IngredientsSettings::ItemDialog::Item::OnConfirm'));
 
     await waitFor(() => {
       expect(
-        db.get_ingredients().find(ingredient => isIngredientEqual(ingredient, sortedDataset[0]))
+        db.get_ingredients().find(ingredient => isIngredientEqual(ingredient, sortedDataset[0]!))
       ).toBeUndefined();
     });
     const newIngredient = db
       .get_ingredients()
-      .find(ingredient => ingredient.id === sortedDataset[0].id);
+      .find(ingredient => ingredient.id === sortedDataset[0]!.id);
     expect(newIngredient?.name).toEqual('New Value');
   });
 
@@ -176,7 +176,7 @@ describe('IngredientsSettings Screen', () => {
       expect(getByTestId('IngredientsSettings::ItemDialog::Item')).toBeTruthy();
     });
 
-    dialogIsOpen(sortedDataset[0], 'delete', getByTestId);
+    dialogIsOpen(sortedDataset[0]!, 'delete', getByTestId);
 
     fireEvent.press(getByTestId('IngredientsSettings::ItemDialog::Item::OnConfirm'));
 
@@ -184,7 +184,7 @@ describe('IngredientsSettings Screen', () => {
       expect(db.get_ingredients().length).toEqual(sortedDataset.length - 1);
     });
     expect(
-      db.get_ingredients().find(ingredient => isIngredientEqual(ingredient, sortedDataset[0]))
+      db.get_ingredients().find(ingredient => isIngredientEqual(ingredient, sortedDataset[0]!))
     ).toBeUndefined();
   });
 });

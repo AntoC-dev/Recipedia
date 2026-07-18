@@ -70,7 +70,7 @@ export function intInRange(index: number, salt: number, min: number, max: number
  * @returns One element of `pool`.
  */
 export function pickByIndex<T>(pool: readonly T[], index: number, salt: number): T {
-  return pool[hashIndex(index, salt) % pool.length];
+  return pool[hashIndex(index, salt) % pool.length]!;
 }
 
 // Per-field salts. Only distinctness matters (it's what decorrelates fields in
@@ -306,7 +306,7 @@ const TITLE_DISHES: readonly string[] = [
  * @returns An array of month-number strings (subset of `1`–`12`).
  */
 export function buildSeason(index: number): string[] {
-  return [...SEASON_PROFILES[hashIndex(index, SALT_SEASON) % SEASON_PROFILES.length]];
+  return [...SEASON_PROFILES[hashIndex(index, SALT_SEASON) % SEASON_PROFILES.length]!];
 }
 
 /**
@@ -335,14 +335,14 @@ export function generatePerformanceIngredients(
   for (let i = 0; i < count; i++) {
     const type =
       i < ALL_INGREDIENT_TYPES.length
-        ? ALL_INGREDIENT_TYPES[i]
+        ? ALL_INGREDIENT_TYPES[i]!
         : pickByIndex(ALL_INGREDIENT_TYPES, i, SALT_TYPE);
     const part = pickByIndex(INGREDIENT_NAME_PARTS, i, SALT_PART);
     const base = INGREDIENT_NAME_BASES[i % INGREDIENT_NAME_BASES.length];
     ingredients.push({
       id: startId + i,
       name: `${part} ${base} ${startId + i}`,
-      unit: UNITS_BY_TYPE[type],
+      unit: UNITS_BY_TYPE[type]!,
       type,
       season: buildSeason(i),
     });
@@ -427,7 +427,7 @@ function drawDistinct<T extends { id?: number }>(
   const seen = new Set<number>();
   const start = hashIndex(index, startSalt) % pool.length;
   for (let k = 0; k < pool.length && drawn.length < wanted; k++) {
-    const source = pool[(start + k * POOL_STRIDE) % pool.length];
+    const source = pool[(start + k * POOL_STRIDE) % pool.length]!;
     if (source.id === undefined || seen.has(source.id)) {
       continue;
     }
@@ -503,7 +503,7 @@ export function generatePerformanceRecipes(
 
     const recipe: recipeTableElement = {
       id,
-      image_Source: imagePool[i % imagePool.length],
+      image_Source: imagePool[i % imagePool.length]!,
       title,
       description: `A deterministic performance recipe (#${id}) combining ${ingredients.length} ingredients.`,
       tags,

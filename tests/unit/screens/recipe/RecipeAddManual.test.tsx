@@ -307,7 +307,7 @@ describe('RecipeAddManual', () => {
     test('shows similar recipe warning when adding duplicate', async () => {
       const { getByTestId } = await renderRoute(mockRouteAddManually);
 
-      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), testRecipes[0].title);
+      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), testRecipes[0]!.title);
       fireEvent.press(getByTestId('RecipeDescription::SetTextToEdit'), 'Test description');
       fireEvent.press(getByTestId('RecipePersons::SetTextToEdit'), '4');
       fireEvent.press(getByTestId('RecipeTime::SetTextToEdit'), '30');
@@ -322,7 +322,7 @@ describe('RecipeAddManual', () => {
     });
 
     test('shows similarity dialog when a similar recipe already exists', async () => {
-      const existingTitle = testRecipes[0].title;
+      const existingTitle = testRecipes[0]!.title;
 
       const { getByTestId } = await renderRoute(mockRouteAddManually);
 

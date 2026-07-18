@@ -10,8 +10,7 @@ export const iconsSize = {
   large: 40 * remValue,
 };
 
-// TODO nice but linter doesn't yell if we use a value that doesn't exist
-export const Icons: Record<string, dictionaryIcons> = {
+export const Icons = {
   checkboxBlankIcon: 'checkbox-blank-outline',
   checkboxFillIcon: 'checkbox-marked',
   plusIcon: 'plus',
@@ -67,5 +66,5 @@ export const Icons: Record<string, dictionaryIcons> = {
   copy: 'content-copy',
   checkWithCircle: 'check-circle-outline',
   alertWithCircle: 'alert-circle-outline',
-} as const;
-export type IconName = keyof typeof Icons;
+} as const satisfies Record<string, dictionaryIcons>;
+export type IconName = dictionaryIcons;

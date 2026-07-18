@@ -268,7 +268,7 @@ function VerticalBottomButtons() {
                 {
                   icon: Icons.galleryIcon,
                   label: t('fab.pickFromGallery'),
-                  onPress: () => pickImageAndOpenNewRecipe(),
+                  onPress: () => void pickImageAndOpenNewRecipe(),
                   ...fabTestProps(FAB_TEST_IDS.gallery),
                   style: { borderRadius: 999 },
                   size: 'medium',
@@ -276,7 +276,7 @@ function VerticalBottomButtons() {
                 {
                   icon: Icons.cameraIcon,
                   label: t('fab.takePhoto'),
-                  onPress: () => takePhotoAndOpenNewRecipe(),
+                  onPress: () => void takePhotoAndOpenNewRecipe(),
                   ...fabTestProps(FAB_TEST_IDS.camera),
                   style: { borderRadius: 999 },
                   size: 'medium',
@@ -296,7 +296,7 @@ function VerticalBottomButtons() {
             testId={testID}
             isVisible={urlDialogVisible}
             onClose={handleCloseUrlDialog}
-            onSubmit={handleUrlSubmit}
+            onSubmit={url => void handleUrlSubmit(url)}
             isLoading={isScrapingLoading}
             error={scrapingError}
           />
@@ -305,7 +305,7 @@ function VerticalBottomButtons() {
             isVisible={authDialogVisible}
             host={authRequired?.host ?? ''}
             onClose={handleCloseAuthDialog}
-            onSubmit={handleAuthSubmit}
+            onSubmit={(username, password) => void handleAuthSubmit(username, password)}
             isLoading={isScrapingLoading}
             error={scrapingError}
           />

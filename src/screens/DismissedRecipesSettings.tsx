@@ -95,7 +95,7 @@ export function DismissedRecipesSettings() {
                       key={recipe.recipeUrl}
                       testIdPrefix={`${groupId}::${index}`}
                       recipe={recipe}
-                      onRestore={() => handleRestore(recipe)}
+                      onRestore={() => void handleRestore(recipe)}
                     />
                   ))}
                 </List.Accordion>

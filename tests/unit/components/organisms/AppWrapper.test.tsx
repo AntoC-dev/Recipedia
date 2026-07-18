@@ -191,8 +191,8 @@ describe('AppWrapper Component', () => {
     await database.addMultipleIngredients(testIngredients);
     await database.addMultipleTags(testTags);
     await database.addMultipleRecipes(testRecipes);
-    await database.addRecipeToMenu(testRecipes[0]);
-    await database.addRecipeToMenu(testRecipes[1]);
+    await database.addRecipeToMenu(testRecipes[0]!);
+    await database.addRecipeToMenu(testRecipes[1]!);
     expect(database.get_menu().length).toBeGreaterThan(0);
 
     const { getByTestId, queryByTestId } = render(<AppWrapper />);

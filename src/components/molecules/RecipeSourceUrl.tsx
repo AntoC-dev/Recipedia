@@ -63,7 +63,7 @@ export function RecipeSourceUrl({
         <IconButton
           icon={Icons.copy}
           size={20}
-          onPress={handleCopy}
+          onPress={() => void handleCopy()}
           testID={`${testID}::CopyButton`}
         />
       </View>

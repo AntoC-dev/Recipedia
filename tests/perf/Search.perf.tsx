@@ -92,7 +92,7 @@ describe('Search Screen Performance', () => {
     const scenario = async () => {
       const recipes = database.get_recipes();
       if (recipes.length > 0) {
-        await database.deleteRecipe(recipes[0]);
+        await database.deleteRecipe(recipes[0]!);
       }
     };
 
@@ -103,10 +103,10 @@ describe('Search Screen Performance', () => {
     const scenario = async () => {
       const recipes = database.get_recipes();
       if (recipes.length > 0) {
-        const recipe = recipes[0];
+        const recipe = recipes[0]!;
         await database.editRecipe({
           ...recipe,
-          title: recipe.title + ' (edited)',
+          title: recipe!.title + ' (edited)',
         });
       }
     };

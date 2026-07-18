@@ -156,7 +156,7 @@ export function RecipeView({ route, navigation }: RecipeViewProps) {
       <AppBar
         testID={RECIPE_TEST_ID}
         onGoBack={() => navigation.goBack()}
-        onDelete={onDelete}
+        onDelete={() => void onDelete()}
         onEdit={onEdit}
       />
 

@@ -179,8 +179,8 @@ describe('Recipe Scraper Integration', () => {
     it('has parsed instructions with titled sections', () => {
       expect(recipe.parsedInstructions).not.toBeNull();
       expect(recipe.parsedInstructions).toHaveLength(2);
-      expect(recipe.parsedInstructions![0].title).toBe('Le camembert rôti');
-      expect(recipe.parsedInstructions![1].title).toBe('Les mouillettes');
+      expect(recipe.parsedInstructions![0]!.title).toBe('Le camembert rôti');
+      expect(recipe.parsedInstructions![1]!.title).toBe('Les mouillettes');
     });
 
     it('has nutrition data with servingSize', () => {

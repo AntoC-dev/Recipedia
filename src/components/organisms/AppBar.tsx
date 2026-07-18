@@ -71,7 +71,7 @@ export function AppBar({
       {isEditing && onValidate && (
         <Appbar.Action
           icon={Icons.checkIcon}
-          onPress={onValidate}
+          onPress={() => void onValidate()}
           testID={testId + '::Validate'}
           color={colors.onPrimaryContainer}
         />

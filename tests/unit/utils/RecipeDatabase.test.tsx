@@ -47,19 +47,19 @@ describe('RecipeDatabase', () => {
       test('should return false when only recipes table has data', async () => {
         await db.addMultipleIngredients(testIngredients);
         await db.addMultipleTags(testTags);
-        await db.addRecipe(testRecipes[0]);
+        await db.addRecipe(testRecipes[0]!);
 
         expect(db.isDatabaseEmpty()).toBe(false);
       });
 
       test('should return false when only ingredients table has data', async () => {
-        await db.addIngredient(testIngredients[0]);
+        await db.addIngredient(testIngredients[0]!);
 
         expect(db.isDatabaseEmpty()).toBe(false);
       });
 
       test('should return false when only tags table has data', async () => {
-        await db.addTag(testTags[0]);
+        await db.addTag(testTags[0]!);
 
         expect(db.isDatabaseEmpty()).toBe(false);
       });
@@ -85,8 +85,8 @@ describe('RecipeDatabase', () => {
       });
 
       test('should return false when only two tables have data', async () => {
-        await db.addIngredient(testIngredients[0]);
-        await db.addTag(testTags[0]);
+        await db.addIngredient(testIngredients[0]!);
+        await db.addTag(testTags[0]!);
 
         expect(db.isDatabaseEmpty()).toBe(false);
       });
@@ -100,16 +100,16 @@ describe('RecipeDatabase', () => {
     });
 
     test('Find functions return undefined when the array are empty', () => {
-      expect(db.find_recipe(testRecipes[0])).toBeUndefined();
-      expect(db.find_ingredient(testIngredients[0])).toBeUndefined();
-      expect(db.find_tag(testTags[0])).toBeUndefined();
-      expect(db.find_tag(testTags[0])).toBeUndefined();
+      expect(db.find_recipe(testRecipes[0]!)).toBeUndefined();
+      expect(db.find_ingredient(testIngredients[0]!)).toBeUndefined();
+      expect(db.find_tag(testTags[0]!)).toBeUndefined();
+      expect(db.find_tag(testTags[0]!)).toBeUndefined();
     });
 
     test('Add and retrieve a single tag', async () => {
       for (let i = 0; i < testTags.length; i++) {
         const newTag = testTags[i];
-        await db.addTag(newTag);
+        await db.addTag(newTag!);
         const tags = db.get_tags();
 
         expect(tags.length).toBe(i + 1);
@@ -120,7 +120,7 @@ describe('RecipeDatabase', () => {
       const tags = db.get_tags();
 
       expect(tags.length).toBe(testTags.length + 1);
-      expect(tags[tags.length - 1].name).toEqual("Tag with a' inside it");
+      expect(tags[tags.length - 1]!.name).toEqual("Tag with a' inside it");
 
       // TODO found a test for update
 
@@ -175,7 +175,7 @@ describe('RecipeDatabase', () => {
     test('Add and retrieve a single ingredient', async () => {
       for (let i = 0; i < testIngredients.length; i++) {
         const newIngredient = testIngredients[i];
-        await db.addIngredient(newIngredient);
+        await db.addIngredient(newIngredient!);
         const ingredient = db.get_ingredients();
 
         expect(ingredient.length).toEqual(i + 1);
@@ -272,7 +272,7 @@ describe('RecipeDatabase', () => {
 
     test('Add and retrieve a single recipe', async () => {
       for (let i = 0; i < testRecipes.length; i++) {
-        await db.addRecipe(testRecipes[i]);
+        await db.addRecipe(testRecipes[i]!);
         const recipes = db.get_recipes();
 
         expect(recipes.length).toBe(i + 1);
@@ -319,44 +319,44 @@ describe('RecipeDatabase', () => {
     });
 
     test('Remove a tag and ensure it is deleted', async () => {
-      expect(await db.deleteTag(testTags[12])).toEqual(true);
+      expect(await db.deleteTag(testTags[12]!)).toEqual(true);
       expect(db.get_tags()).not.toContainEqual(testTags[12]);
 
-      expect(await db.deleteTag(testTags[12])).toEqual(false);
+      expect(await db.deleteTag(testTags[12]!)).toEqual(false);
 
-      expect(await db.deleteTag({ ...testTags[15], id: undefined })).toEqual(true);
+      expect(await db.deleteTag({ ...testTags[15]!, id: undefined })).toEqual(true);
       expect(db.get_tags()).not.toContainEqual(testTags[15]);
 
-      expect(await db.deleteTag({ ...testTags[2], id: undefined, name: '' })).toEqual(false);
+      expect(await db.deleteTag({ ...testTags[2]!, id: undefined, name: '' })).toEqual(false);
 
       expect(db.get_tags()).toContainEqual(testTags[2]);
     });
 
     test('Remove an ingredient and ensure it is deleted', async () => {
-      expect(await db.deleteIngredient(testIngredients[30])).toEqual(true);
+      expect(await db.deleteIngredient(testIngredients[30]!)).toEqual(true);
       expect(db.get_ingredients()).not.toContainEqual(testIngredients[30]);
 
-      expect(await db.deleteIngredient(testIngredients[30])).toEqual(false);
+      expect(await db.deleteIngredient(testIngredients[30]!)).toEqual(false);
 
-      expect(await db.deleteIngredient({ ...testIngredients[21], id: undefined })).toEqual(true);
+      expect(await db.deleteIngredient({ ...testIngredients[21]!, id: undefined })).toEqual(true);
       expect(db.get_ingredients()).not.toContainEqual(testIngredients[21]);
 
       expect(
-        await db.deleteIngredient({ ...testIngredients[11], id: undefined, name: '' })
+        await db.deleteIngredient({ ...testIngredients[11]!, id: undefined, name: '' })
       ).toEqual(false);
       expect(
-        await db.deleteIngredient({ ...testIngredients[11], id: undefined, unit: '' })
+        await db.deleteIngredient({ ...testIngredients[11]!, id: undefined, unit: '' })
       ).toEqual(false);
       expect(
         await db.deleteIngredient({
-          ...testIngredients[11],
+          ...testIngredients[11]!,
           id: undefined,
           type: ingredientType.cereal,
         })
       ).toEqual(false);
       expect(
         await db.deleteIngredient({
-          ...testIngredients[11],
+          ...testIngredients[11]!,
           id: undefined,
           name: '',
           unit: '',
@@ -366,18 +366,18 @@ describe('RecipeDatabase', () => {
       // Ingredient should still be in the list since delete returned false
 
       expect(
-        await db.deleteIngredient({ ...testIngredients[11], id: undefined, quantity: '' })
+        await db.deleteIngredient({ ...testIngredients[11]!, id: undefined, quantity: '' })
       ).toEqual(true);
       expect(db.get_ingredients()).not.toContainEqual(testIngredients[11]);
 
       expect(
-        await db.deleteIngredient({ ...testIngredients[32], id: undefined, season: [] })
+        await db.deleteIngredient({ ...testIngredients[32]!, id: undefined, season: [] })
       ).toEqual(true);
       expect(db.get_ingredients()).not.toContainEqual(testIngredients[32]);
     });
 
     test('editTag should update tag', async () => {
-      const tagToEdit = { ...testTags[0], name: 'UpdatedTag' };
+      const tagToEdit = { ...testTags[0]!, name: 'UpdatedTag' };
       expect(await db.editTag(tagToEdit)).toBe(true);
 
       const updated = db.get_tags().find(t => t.id === tagToEdit.id);
@@ -385,7 +385,7 @@ describe('RecipeDatabase', () => {
     });
 
     test('editTag with missing ID should return false and not update', async () => {
-      const tagToEdit = { ...testTags[0], id: undefined, name: 'ShouldNotUpdate' };
+      const tagToEdit = { ...testTags[0]!, id: undefined, name: 'ShouldNotUpdate' };
 
       expect(await db.editTag(tagToEdit)).toBe(false);
 
@@ -394,7 +394,7 @@ describe('RecipeDatabase', () => {
     });
 
     test('editIngredient should update ingredient', async () => {
-      const ingredientToEdit = { ...testIngredients[0], name: 'UpdatedIngredient' };
+      const ingredientToEdit = { ...testIngredients[0]!, name: 'UpdatedIngredient' };
 
       expect(await db.editIngredient(ingredientToEdit)).toBe(true);
 
@@ -403,7 +403,7 @@ describe('RecipeDatabase', () => {
     });
 
     test('editIngredient with missing ID should return false and not update', async () => {
-      const ingredientToEdit = { ...testIngredients[0], id: undefined, name: 'ShouldNotUpdate' };
+      const ingredientToEdit = { ...testIngredients[0]!, id: undefined, name: 'ShouldNotUpdate' };
 
       expect(await db.editIngredient(ingredientToEdit)).toBe(false);
 
@@ -415,7 +415,7 @@ describe('RecipeDatabase', () => {
       test('editTag should refresh recipes from database', async () => {
         const recipesBefore = db.get_recipes();
         const firstRecipe = recipesBefore[0];
-        const tagToEdit = { ...testTags[0], name: 'UpdatedTagName' };
+        const tagToEdit = { ...testTags[0]!, name: 'UpdatedTagName' };
 
         await db.editTag(tagToEdit);
 
@@ -423,7 +423,7 @@ describe('RecipeDatabase', () => {
         expect(recipesAfter).not.toBe(recipesBefore);
         expect(recipesAfter.length).toBe(recipesBefore.length);
 
-        const updatedRecipe = recipesAfter.find(r => r.id === firstRecipe.id);
+        const updatedRecipe = recipesAfter.find(r => r.id === firstRecipe!.id);
         expect(updatedRecipe).toBeDefined();
         if (updatedRecipe && updatedRecipe.tags.some(t => t.id === tagToEdit.id)) {
           const updatedTag = updatedRecipe.tags.find(t => t.id === tagToEdit.id);
@@ -435,13 +435,13 @@ describe('RecipeDatabase', () => {
         const recipesBefore = db.get_recipes();
         const tagToDelete = testTags[0];
 
-        await db.deleteTag(tagToDelete);
+        await db.deleteTag(tagToDelete!);
 
         const recipesAfter = db.get_recipes();
         expect(recipesAfter).not.toBe(recipesBefore);
 
         recipesAfter.forEach(recipe => {
-          const hasDeletedTag = recipe.tags.some(t => t.id === tagToDelete.id);
+          const hasDeletedTag = recipe.tags.some(t => t.id === tagToDelete!.id);
           expect(hasDeletedTag).toBe(false);
         });
       });
@@ -449,7 +449,7 @@ describe('RecipeDatabase', () => {
       test('editIngredient should refresh recipes from database', async () => {
         const recipesBefore = db.get_recipes();
         const firstRecipe = recipesBefore[0];
-        const ingredientToEdit = { ...testIngredients[0], name: 'UpdatedIngredientName' };
+        const ingredientToEdit = { ...testIngredients[0]!, name: 'UpdatedIngredientName' };
 
         await db.editIngredient(ingredientToEdit);
 
@@ -457,7 +457,7 @@ describe('RecipeDatabase', () => {
         expect(recipesAfter).not.toBe(recipesBefore);
         expect(recipesAfter.length).toBe(recipesBefore.length);
 
-        const updatedRecipe = recipesAfter.find(r => r.id === firstRecipe.id);
+        const updatedRecipe = recipesAfter.find(r => r.id === firstRecipe!.id);
         expect(updatedRecipe).toBeDefined();
         if (updatedRecipe && updatedRecipe.ingredients.some(i => i.id === ingredientToEdit.id)) {
           const updatedIngredient = updatedRecipe.ingredients.find(
@@ -471,29 +471,33 @@ describe('RecipeDatabase', () => {
         const recipesBefore = db.get_recipes();
         const ingredientToDelete = testIngredients[0];
 
-        await db.deleteIngredient(ingredientToDelete);
+        await db.deleteIngredient(ingredientToDelete!);
 
         const recipesAfter = db.get_recipes();
         expect(recipesAfter).not.toBe(recipesBefore);
 
         recipesAfter.forEach(recipe => {
-          const hasDeletedIngredient = recipe.ingredients.some(i => i.id === ingredientToDelete.id);
+          const hasDeletedIngredient = recipe.ingredients.some(
+            i => i.id === ingredientToDelete!.id
+          );
           expect(hasDeletedIngredient).toBe(false);
         });
       });
 
       test('deleteTag should update recipes in database (not just cache)', async () => {
         const tagToDelete = testTags[0];
-        const recipeWithTag = db.get_recipes().find(r => r.tags.some(t => t.id === tagToDelete.id));
+        const recipeWithTag = db
+          .get_recipes()
+          .find(r => r.tags.some(t => t.id === tagToDelete!.id));
 
         expect(recipeWithTag).toBeDefined();
 
-        await db.deleteTag(tagToDelete);
+        await db.deleteTag(tagToDelete!);
 
         const recipesReloaded = await db['getAllRecipes']();
 
         recipesReloaded.forEach(recipe => {
-          const hasDeletedTag = recipe.tags.some(t => t.id === tagToDelete.id);
+          const hasDeletedTag = recipe.tags.some(t => t.id === tagToDelete!.id);
           expect(hasDeletedTag).toBe(false);
         });
       });
@@ -502,23 +506,25 @@ describe('RecipeDatabase', () => {
         const ingredientToDelete = testIngredients[0];
         const recipeWithIngredient = db
           .get_recipes()
-          .find(r => r.ingredients.some(i => i.id === ingredientToDelete.id));
+          .find(r => r.ingredients.some(i => i.id === ingredientToDelete!.id));
 
         expect(recipeWithIngredient).toBeDefined();
 
-        await db.deleteIngredient(ingredientToDelete);
+        await db.deleteIngredient(ingredientToDelete!);
 
         const recipesReloaded = await db['getAllRecipes']();
 
         recipesReloaded.forEach(recipe => {
-          const hasDeletedIngredient = recipe.ingredients.some(i => i.id === ingredientToDelete.id);
+          const hasDeletedIngredient = recipe.ingredients.some(
+            i => i.id === ingredientToDelete!.id
+          );
           expect(hasDeletedIngredient).toBe(false);
         });
       });
     });
 
     test('editRecipe should update recipe', async () => {
-      const recipeToEdit = { ...testRecipes[0], title: 'UpdatedRecipe' };
+      const recipeToEdit = { ...testRecipes[0]!, title: 'UpdatedRecipe' };
 
       expect(await db.editRecipe(recipeToEdit)).toMatchObject(recipeToEdit);
 
@@ -527,7 +533,7 @@ describe('RecipeDatabase', () => {
     });
 
     test('editRecipe with missing ID throws and does not update', async () => {
-      const recipeToEdit = { ...testRecipes[0], id: undefined, title: 'ShouldNotUpdate' };
+      const recipeToEdit = { ...testRecipes[0]!, id: undefined, title: 'ShouldNotUpdate' };
 
       await expect(db.editRecipe(recipeToEdit)).rejects.toThrow();
 
@@ -540,18 +546,18 @@ describe('RecipeDatabase', () => {
         const originalRecipes = [...db.get_recipes()];
 
         const updatedRecipes = [
-          { ...testRecipes[0], title: 'Updated Spaghetti Bolognese' },
-          { ...testRecipes[1], title: 'Updated Chicken Tacos' },
-          { ...testRecipes[2], title: 'Updated Classic Pancakes' },
+          { ...testRecipes[0]!, title: 'Updated Spaghetti Bolognese' },
+          { ...testRecipes[1]!, title: 'Updated Chicken Tacos' },
+          { ...testRecipes[2]!, title: 'Updated Classic Pancakes' },
         ];
 
         db.update_multiple_recipes(updatedRecipes);
 
         const currentRecipes = db.get_recipes();
 
-        expect(currentRecipes[0].title).toEqual('Updated Spaghetti Bolognese');
-        expect(currentRecipes[1].title).toEqual('Updated Chicken Tacos');
-        expect(currentRecipes[2].title).toEqual('Updated Classic Pancakes');
+        expect(currentRecipes[0]!.title).toEqual('Updated Spaghetti Bolognese');
+        expect(currentRecipes[1]!.title).toEqual('Updated Chicken Tacos');
+        expect(currentRecipes[2]!.title).toEqual('Updated Classic Pancakes');
 
         for (let i = 3; i < currentRecipes.length; i++) {
           expect(currentRecipes[i]).toEqual(originalRecipes[i]);
@@ -560,13 +566,13 @@ describe('RecipeDatabase', () => {
 
       test('should handle non-existent recipe IDs gracefully', () => {
         const updatedRecipes = [
-          { ...testRecipes[0], title: 'Updated Existing Recipe' },
-          { ...testRecipes[0], id: 999, title: 'Non-existent Recipe' },
+          { ...testRecipes[0]!, title: 'Updated Existing Recipe' },
+          { ...testRecipes[0]!, id: 999, title: 'Non-existent Recipe' },
         ];
 
         db.update_multiple_recipes(updatedRecipes);
 
-        expect(db.get_recipes()[0].title).toBe('Updated Existing Recipe');
+        expect(db.get_recipes()[0]!.title).toBe('Updated Existing Recipe');
         // Non-existent recipe should be ignored without throwing
       });
 
@@ -584,38 +590,38 @@ describe('RecipeDatabase', () => {
         const originalRecipe = testRecipes[0];
         const newPersonsCount = 6;
 
-        const scaledRecipe = RecipeDatabase.scaleRecipeToPersons(originalRecipe, newPersonsCount);
+        const scaledRecipe = RecipeDatabase.scaleRecipeToPersons(originalRecipe!, newPersonsCount);
 
         expect(scaledRecipe.persons).toEqual(newPersonsCount);
-        expect(scaledRecipe.ingredients.length).toEqual(originalRecipe.ingredients.length);
+        expect(scaledRecipe.ingredients.length).toEqual(originalRecipe!.ingredients.length);
 
         for (let j = 0; j < scaledRecipe.ingredients.length; j++) {
-          const originalIng = originalRecipe.ingredients[j];
+          const originalIng = originalRecipe!.ingredients[j];
           const scaledIng = scaledRecipe.ingredients[j];
 
-          expect(scaledIng.id).toEqual(originalIng.id);
-          expect(scaledIng.name).toEqual(originalIng.name);
-          expect(scaledIng.unit).toEqual(originalIng.unit);
-          expect(scaledIng.type).toEqual(originalIng.type);
+          expect(scaledIng!.id).toEqual(originalIng!.id);
+          expect(scaledIng!.name).toEqual(originalIng!.name);
+          expect(scaledIng!.unit).toEqual(originalIng!.unit);
+          expect(scaledIng!.type).toEqual(originalIng!.type);
 
-          const scaleFactor = newPersonsCount / originalRecipe.persons;
-          const expectedQuantity = (parseFloat(originalIng.quantity as string) * scaleFactor)
+          const scaleFactor = newPersonsCount / originalRecipe!.persons;
+          const expectedQuantity = (parseFloat(originalIng!.quantity as string) * scaleFactor)
             .toString()
             .replace('.', ',');
-          expect(scaledIng.quantity).toBe(expectedQuantity);
+          expect(scaledIng!.quantity).toBe(expectedQuantity);
         }
 
-        expect(scaledRecipe.id).toBe(originalRecipe.id);
-        expect(scaledRecipe.title).toBe(originalRecipe.title);
-        expect(scaledRecipe.description).toBe(originalRecipe.description);
-        expect(scaledRecipe.tags).toEqual(originalRecipe.tags);
-        expect(scaledRecipe.season).toEqual(originalRecipe.season);
-        expect(scaledRecipe.preparation).toEqual(originalRecipe.preparation);
-        expect(scaledRecipe.time).toBe(originalRecipe.time);
+        expect(scaledRecipe.id).toBe(originalRecipe!.id);
+        expect(scaledRecipe.title).toBe(originalRecipe!.title);
+        expect(scaledRecipe.description).toBe(originalRecipe!.description);
+        expect(scaledRecipe.tags).toEqual(originalRecipe!.tags);
+        expect(scaledRecipe.season).toEqual(originalRecipe!.season);
+        expect(scaledRecipe.preparation).toEqual(originalRecipe!.preparation);
+        expect(scaledRecipe.time).toBe(originalRecipe!.time);
       });
 
       test('should return unchanged recipe if persons is 0', () => {
-        const recipe = { ...testRecipes[0], persons: 0 };
+        const recipe = { ...testRecipes[0]!, persons: 0 };
 
         const scaledRecipe = RecipeDatabase.scaleRecipeToPersons(recipe, 4);
 
@@ -625,14 +631,14 @@ describe('RecipeDatabase', () => {
       test('should return unchanged recipe if target persons equals current persons', () => {
         const recipe = testRecipes[0];
 
-        const scaledRecipe = RecipeDatabase.scaleRecipeToPersons(recipe, recipe.persons);
+        const scaledRecipe = RecipeDatabase.scaleRecipeToPersons(recipe!, recipe!.persons);
 
         expect(scaledRecipe).toEqual(recipe);
       });
 
       test('should handle recipes without ingredients', () => {
         const recipe = {
-          ...testRecipes[0],
+          ...testRecipes[0]!,
           persons: 2,
           ingredients: [],
         };
@@ -645,11 +651,11 @@ describe('RecipeDatabase', () => {
 
       test('should handle non-numeric quantities', () => {
         const recipe = {
-          ...testRecipes[0],
+          ...testRecipes[0]!,
           persons: 2,
           ingredients: [
             {
-              ...testRecipes[0].ingredients[0],
+              ...testRecipes[0]!.ingredients[0]!,
               quantity: 'a pinch',
             },
           ],
@@ -658,7 +664,7 @@ describe('RecipeDatabase', () => {
         const scaledRecipe = RecipeDatabase.scaleRecipeToPersons(recipe, 4);
 
         expect(scaledRecipe.persons).toBe(4);
-        expect(scaledRecipe.ingredients[0].quantity).toBe('a pinch');
+        expect(scaledRecipe.ingredients[0]!.quantity).toBe('a pinch');
       });
     });
 
@@ -667,30 +673,30 @@ describe('RecipeDatabase', () => {
         const originalRecipe = db.get_recipes()[0];
         const newPersons = 6;
 
-        const scaledRecipe = RecipeDatabase.scaleRecipeToPersons(originalRecipe, newPersons);
+        const scaledRecipe = RecipeDatabase.scaleRecipeToPersons(originalRecipe!, newPersons);
         await db.scaleAndUpdateRecipe(scaledRecipe);
 
-        const updatedRecipe = db.get_recipes().find(r => r.id === originalRecipe.id);
+        const updatedRecipe = db.get_recipes().find(r => r.id === originalRecipe!.id);
 
         expect(updatedRecipe).toBeDefined();
         expect(updatedRecipe?.persons).toBe(newPersons);
-        expect(updatedRecipe?.ingredients.length).toBe(originalRecipe.ingredients.length);
+        expect(updatedRecipe?.ingredients.length).toBe(originalRecipe!.ingredients.length);
 
         for (let i = 0; i < updatedRecipe!.ingredients.length; i++) {
-          const originalIng = originalRecipe.ingredients[i];
+          const originalIng = originalRecipe!.ingredients[i];
           const updatedIng = updatedRecipe!.ingredients[i];
 
-          const scaleFactor = newPersons / originalRecipe.persons;
-          const expectedQuantity = (parseFloat(originalIng.quantity as string) * scaleFactor)
+          const scaleFactor = newPersons / originalRecipe!.persons;
+          const expectedQuantity = (parseFloat(originalIng!.quantity as string) * scaleFactor)
             .toString()
             .replace('.', ',');
 
-          expect(updatedIng.quantity).toBe(expectedQuantity);
+          expect(updatedIng!.quantity).toBe(expectedQuantity);
         }
       });
 
       test('should throw error when recipe has no ID', async () => {
-        const recipeWithoutId = { ...testRecipes[0], id: undefined };
+        const recipeWithoutId = { ...testRecipes[0]!, id: undefined };
 
         await expect(db.scaleAndUpdateRecipe(recipeWithoutId)).rejects.toThrow(
           'Recipe must have an ID to update'
@@ -701,7 +707,7 @@ describe('RecipeDatabase', () => {
         const originalRecipe = db.get_recipes()[0];
         const recipesBefore = [...db.get_recipes()];
 
-        const scaledRecipe = RecipeDatabase.scaleRecipeToPersons(originalRecipe, 8);
+        const scaledRecipe = RecipeDatabase.scaleRecipeToPersons(originalRecipe!, 8);
         await db.scaleAndUpdateRecipe(scaledRecipe);
 
         const recipesAfter = db.get_recipes();
@@ -709,13 +715,13 @@ describe('RecipeDatabase', () => {
         expect(recipesAfter).not.toBe(recipesBefore);
         expect(recipesAfter.length).toBe(recipesBefore.length);
 
-        const updated = recipesAfter.find(r => r.id === originalRecipe.id);
+        const updated = recipesAfter.find(r => r.id === originalRecipe!.id);
         expect(updated?.persons).toBe(8);
       });
 
       test('should handle recipe with no ingredients', async () => {
         const recipeWithNoIngredients = {
-          ...testRecipes[0],
+          ...testRecipes[0]!,
           id: undefined,
           ingredients: [],
           persons: 2,
@@ -736,7 +742,7 @@ describe('RecipeDatabase', () => {
 
       test('rejects and leaves the recipe untouched when a tag is unresolved', async () => {
         const originalRecipe = db.get_recipes()[0];
-        const scaledRecipe = RecipeDatabase.scaleRecipeToPersons(originalRecipe, 6);
+        const scaledRecipe = RecipeDatabase.scaleRecipeToPersons(originalRecipe!, 6);
         const scaledWithUnresolvedTag = {
           ...scaledRecipe,
           tags: [...scaledRecipe.tags, { name: 'Unresolved Tag' }],
@@ -746,14 +752,14 @@ describe('RecipeDatabase', () => {
           /tag not found/i
         );
 
-        const reloaded = db.get_recipes().find(r => r.id === originalRecipe.id);
-        expect(reloaded?.tags).toEqual(originalRecipe.tags);
-        expect(reloaded?.persons).toBe(originalRecipe.persons);
+        const reloaded = db.get_recipes().find(r => r.id === originalRecipe!.id);
+        expect(reloaded?.tags).toEqual(originalRecipe!.tags);
+        expect(reloaded?.persons).toBe(originalRecipe!.persons);
       });
 
       test('rejects and leaves the recipe untouched when an ingredient is unresolved', async () => {
         const originalRecipe = db.get_recipes()[0];
-        const scaledRecipe = RecipeDatabase.scaleRecipeToPersons(originalRecipe, 6);
+        const scaledRecipe = RecipeDatabase.scaleRecipeToPersons(originalRecipe!, 6);
         const scaledWithUnresolvedIngredient = {
           ...scaledRecipe,
           ingredients: [
@@ -772,9 +778,9 @@ describe('RecipeDatabase', () => {
           /ingredient not found/i
         );
 
-        const reloaded = db.get_recipes().find(r => r.id === originalRecipe.id);
-        expect(reloaded?.ingredients).toEqual(originalRecipe.ingredients);
-        expect(reloaded?.persons).toBe(originalRecipe.persons);
+        const reloaded = db.get_recipes().find(r => r.id === originalRecipe!.id);
+        expect(reloaded?.ingredients).toEqual(originalRecipe!.ingredients);
+        expect(reloaded?.persons).toBe(originalRecipe!.persons);
       });
     });
 
@@ -791,7 +797,7 @@ describe('RecipeDatabase', () => {
 
     describe('RecipeDatabase findSimilarRecipes tests', () => {
       // Change the id just like we would add a recipe in a new id
-      const datasetRecipe = testRecipes[0];
+      const datasetRecipe = testRecipes[0]!;
       const baseRecipe: recipeTableElement = {
         ...datasetRecipe,
         id: testRecipes.length + 2,
@@ -799,7 +805,7 @@ describe('RecipeDatabase', () => {
 
       function createCopyOfBaseRecipe() {
         const copyIngredients = new Array<ingredientTableElement>();
-        for (const ing of datasetRecipe.ingredients) {
+        for (const ing of datasetRecipe!.ingredients) {
           copyIngredients.push({ ...ing });
         }
         return { ...baseRecipe, ingredients: copyIngredients };
@@ -833,8 +839,8 @@ describe('RecipeDatabase', () => {
       test('should find a recipe with a very similar title and ingredients', () => {
         const recipeToTest: recipeTableElement = createCopyOfBaseRecipe();
         recipeToTest.title = 'Spageti Bolognes';
-        recipeToTest.ingredients[1].quantity = (
-          Number(recipeToTest.ingredients[1].quantity) - 1
+        recipeToTest.ingredients[1]!.quantity = (
+          Number(recipeToTest.ingredients[1]!.quantity) - 1
         ).toString(); // Slightly less
 
         const similar = db.findSimilarRecipes(recipeToTest);
@@ -844,7 +850,7 @@ describe('RecipeDatabase', () => {
 
       test('should not find a recipe with a different title', () => {
         const recipeToTest: recipeTableElement = createCopyOfBaseRecipe();
-        recipeToTest.title = testRecipes[1].title;
+        recipeToTest.title = testRecipes[1]!.title;
 
         const similar = db.findSimilarRecipes(recipeToTest);
         expect(similar.length).toBe(0);
@@ -852,7 +858,7 @@ describe('RecipeDatabase', () => {
 
       test('should not find a recipe with different ingredients', () => {
         const recipeToTest: recipeTableElement = createCopyOfBaseRecipe();
-        recipeToTest.ingredients = testRecipes[6].ingredients;
+        recipeToTest.ingredients = testRecipes[6]!.ingredients;
 
         const similar = db.findSimilarRecipes(recipeToTest);
         expect(similar.length).toBe(0);
@@ -895,7 +901,7 @@ describe('RecipeDatabase', () => {
       });
 
       test('should not return the same recipe instance when comparing', () => {
-        const similar = db.findSimilarRecipes(testRecipes[0]);
+        const similar = db.findSimilarRecipes(testRecipes[0]!);
         expect(similar.length).toBe(0);
       });
 
@@ -926,8 +932,8 @@ describe('RecipeDatabase', () => {
         {
           const recipeToTest: recipeTableElement = createCopyOfBaseRecipe();
           const quantityPerPerson =
-            Number(recipeToTest.ingredients[0].quantity) / recipeToTest.persons;
-          recipeToTest.ingredients[0].quantity = (
+            Number(recipeToTest.ingredients[0]!.quantity) / recipeToTest.persons;
+          recipeToTest.ingredients[0]!.quantity = (
             recipeToTest.persons *
             (quantityPerPerson * 1.2 + 1)
           ).toString();
@@ -938,8 +944,8 @@ describe('RecipeDatabase', () => {
         {
           const recipeToTest: recipeTableElement = createCopyOfBaseRecipe();
           const quantityPerPerson =
-            Number(recipeToTest.ingredients[0].quantity) / recipeToTest.persons;
-          recipeToTest.ingredients[0].quantity = (
+            Number(recipeToTest.ingredients[0]!.quantity) / recipeToTest.persons;
+          recipeToTest.ingredients[0]!.quantity = (
             recipeToTest.persons *
             (Math.round(quantityPerPerson / 1.2) - 1)
           ).toString();
@@ -953,8 +959,8 @@ describe('RecipeDatabase', () => {
         {
           const recipeToTest: recipeTableElement = createCopyOfBaseRecipe();
           const quantityPerPerson =
-            Number(recipeToTest.ingredients[0].quantity) / recipeToTest.persons;
-          recipeToTest.ingredients[0].quantity = (
+            Number(recipeToTest.ingredients[0]!.quantity) / recipeToTest.persons;
+          recipeToTest.ingredients[0]!.quantity = (
             recipeToTest.persons *
             (quantityPerPerson * 1.2 - 1)
           ).toString();
@@ -966,8 +972,8 @@ describe('RecipeDatabase', () => {
         {
           const recipeToTest: recipeTableElement = createCopyOfBaseRecipe();
           const quantityPerPerson =
-            Number(recipeToTest.ingredients[0].quantity) / recipeToTest.persons;
-          recipeToTest.ingredients[0].quantity = (
+            Number(recipeToTest.ingredients[0]!.quantity) / recipeToTest.persons;
+          recipeToTest.ingredients[0]!.quantity = (
             recipeToTest.persons *
             quantityPerPerson *
             1.2
@@ -980,8 +986,8 @@ describe('RecipeDatabase', () => {
         {
           const recipeToTest: recipeTableElement = createCopyOfBaseRecipe();
           const quantityPerPerson =
-            Number(recipeToTest.ingredients[0].quantity) / recipeToTest.persons;
-          recipeToTest.ingredients[0].quantity = (
+            Number(recipeToTest.ingredients[0]!.quantity) / recipeToTest.persons;
+          recipeToTest.ingredients[0]!.quantity = (
             recipeToTest.persons * Math.round(quantityPerPerson / 1.2)
           ).toString();
 
@@ -992,8 +998,8 @@ describe('RecipeDatabase', () => {
         {
           const recipeToTest: recipeTableElement = createCopyOfBaseRecipe();
           const quantityPerPerson =
-            Number(recipeToTest.ingredients[0].quantity) / recipeToTest.persons;
-          recipeToTest.ingredients[0].quantity = (
+            Number(recipeToTest.ingredients[0]!.quantity) / recipeToTest.persons;
+          recipeToTest.ingredients[0]!.quantity = (
             recipeToTest.persons *
             (Math.round(quantityPerPerson / 1.2) + 1)
           ).toString();
@@ -1042,16 +1048,16 @@ describe('RecipeDatabase', () => {
           persons: 2,
           preparation: new Array(),
           season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-          tags: new Array(testTags[3]),
+          tags: new Array(testTags[3]!),
           time: 20,
           title: 'A real title',
         })
       ).toBe(false);
 
-      expect(db.isRecipeExist({ ...testRecipes[7], title: '', id: undefined })).toBe(false);
+      expect(db.isRecipeExist({ ...testRecipes[7]!, title: '', id: undefined })).toBe(false);
 
-      expect(db.isRecipeExist({ ...testRecipes[5], id: undefined })).toBe(true);
-      expect(db.isRecipeExist(testRecipes[0])).toBe(true);
+      expect(db.isRecipeExist({ ...testRecipes[5]!, id: undefined })).toBe(true);
+      expect(db.isRecipeExist(testRecipes[0]!)).toBe(true);
     });
 
     test('Reset database clears all data', async () => {
@@ -1063,62 +1069,66 @@ describe('RecipeDatabase', () => {
     });
 
     test('Remove a recipe and ensure it is deleted', async () => {
-      expect(await db.deleteRecipe(testRecipes[4])).toEqual(true);
+      expect(await db.deleteRecipe(testRecipes[4]!)).toEqual(true);
       expect(db.get_recipes()).not.toContainEqual(testRecipes[4]);
 
-      expect(await db.deleteRecipe(testRecipes[4])).toEqual(false);
+      expect(await db.deleteRecipe(testRecipes[4]!)).toEqual(false);
 
-      expect(await db.deleteRecipe({ ...testRecipes[9], id: undefined })).toEqual(true);
+      expect(await db.deleteRecipe({ ...testRecipes[9]!, id: undefined })).toEqual(true);
       expect(db.get_recipes()).not.toContainEqual(testRecipes[9]);
 
-      expect(await db.deleteRecipe({ ...testRecipes[2], id: undefined, image_Source: '' })).toEqual(
+      expect(
+        await db.deleteRecipe({ ...testRecipes[2]!, id: undefined, image_Source: '' })
+      ).toEqual(false);
+      expect(await db.deleteRecipe({ ...testRecipes[2]!, id: undefined, title: '' })).toEqual(
         false
       );
-      expect(await db.deleteRecipe({ ...testRecipes[2], id: undefined, title: '' })).toEqual(false);
-      expect(await db.deleteRecipe({ ...testRecipes[2], id: undefined, description: '' })).toEqual(
+      expect(await db.deleteRecipe({ ...testRecipes[2]!, id: undefined, description: '' })).toEqual(
         false
       );
       expect(db.get_recipes()).toContainEqual(testRecipes[2]);
 
-      expect(await db.deleteRecipe({ ...testRecipes[2], id: undefined, tags: [] })).toEqual(true);
+      expect(await db.deleteRecipe({ ...testRecipes[2]!, id: undefined, tags: [] })).toEqual(true);
       expect(db.get_recipes()).not.toContainEqual(testRecipes[2]);
 
-      expect(await db.deleteRecipe({ ...testRecipes[3], id: undefined, persons: -1 })).toEqual(
+      expect(await db.deleteRecipe({ ...testRecipes[3]!, id: undefined, persons: -1 })).toEqual(
         true
       );
       expect(db.get_recipes()).not.toContainEqual(testRecipes[3]);
-      expect(await db.deleteRecipe({ ...testRecipes[5], id: undefined, ingredients: [] })).toEqual(
+      expect(await db.deleteRecipe({ ...testRecipes[5]!, id: undefined, ingredients: [] })).toEqual(
         true
       );
       expect(db.get_recipes()).not.toContainEqual(testRecipes[5]);
-      expect(await db.deleteRecipe({ ...testRecipes[6], id: undefined, season: [] })).toEqual(true);
+      expect(await db.deleteRecipe({ ...testRecipes[6]!, id: undefined, season: [] })).toEqual(
+        true
+      );
       expect(db.get_recipes()).not.toContainEqual(testRecipes[6]);
-      expect(await db.deleteRecipe({ ...testRecipes[7], id: undefined, preparation: [] })).toEqual(
+      expect(await db.deleteRecipe({ ...testRecipes[7]!, id: undefined, preparation: [] })).toEqual(
         true
       );
       expect(db.get_recipes()).not.toContainEqual(testRecipes[7]);
-      expect(await db.deleteRecipe({ ...testRecipes[8], id: undefined, time: -1 })).toEqual(true);
+      expect(await db.deleteRecipe({ ...testRecipes[8]!, id: undefined, time: -1 })).toEqual(true);
       expect(db.get_recipes()).not.toContainEqual(testRecipes[8]);
     });
 
     // TODO to be upgrade with database deleting (not implemented yet)
     test('delete tmp', async () => {
       const oldTags = [...db.get_tags()]; // TODO to replace by getAll ...
-      db.remove_tag(testTags[0]);
+      db.remove_tag(testTags[0]!);
       const newTags = db.get_tags(); // TODO to replace by getAll ...
       expect(newTags).not.toContain(testTags[0]);
       expect(newTags).not.toEqual(oldTags);
       expect(oldTags).toEqual(expect.arrayContaining(newTags));
 
       const oldIngredients = [...db.get_ingredients()]; // TODO to replace by getAll ...
-      db.remove_ingredient(testIngredients[0]);
+      db.remove_ingredient(testIngredients[0]!);
       const newIngredients = db.get_ingredients(); // TODO to replace by getAll ...
       expect(newIngredients).not.toContain(testIngredients[0]);
       expect(newIngredients).not.toEqual(oldIngredients);
       expect(oldIngredients).toEqual(expect.arrayContaining(newIngredients));
 
       const oldRecipes = [...db.get_recipes()]; // TODO to replace by getAll ...
-      db.remove_recipe(testRecipes[0]);
+      db.remove_recipe(testRecipes[0]!);
       const newRecipes = db.get_recipes();
       expect(newRecipes).not.toContain(testRecipes[0]);
       expect(newRecipes).not.toEqual(oldRecipes);
@@ -1219,7 +1229,7 @@ describe('RecipeDatabase', () => {
 
       test('should store and retrieve recipes with nutrition data correctly', async () => {
         const recipeWithNutrition: recipeTableElement = {
-          ...testRecipes[0],
+          ...testRecipes[0]!,
           nutrition: testNutrition,
         };
 
@@ -1233,7 +1243,7 @@ describe('RecipeDatabase', () => {
 
       test('should store and retrieve recipes without nutrition data correctly', async () => {
         const recipeWithoutNutrition: recipeTableElement = {
-          ...testRecipes[1],
+          ...testRecipes[1]!,
           nutrition: undefined,
         };
 
@@ -1247,7 +1257,7 @@ describe('RecipeDatabase', () => {
 
       test('should update recipe nutrition data correctly', async () => {
         const originalRecipe: recipeTableElement = {
-          ...testRecipes[2],
+          ...testRecipes[2]!,
           nutrition: undefined,
         };
 
@@ -1269,7 +1279,7 @@ describe('RecipeDatabase', () => {
 
       test('should remove nutrition data when updated to undefined', async () => {
         const recipeWithNutrition: recipeTableElement = {
-          ...testRecipes[0],
+          ...testRecipes[0]!,
           nutrition: testNutrition,
         };
 
@@ -1291,7 +1301,7 @@ describe('RecipeDatabase', () => {
 
       test('should preserve nutrition data through database operations', async () => {
         const recipeWithNutrition: recipeTableElement = {
-          ...testRecipes[0],
+          ...testRecipes[0]!,
           nutrition: testNutrition,
         };
 
@@ -1323,7 +1333,7 @@ describe('RecipeDatabase', () => {
         };
 
         const recipeWithPrecisionNutrition: recipeTableElement = {
-          ...testRecipes[0],
+          ...testRecipes[0]!,
           nutrition: precisionNutrition,
         };
 
@@ -1367,7 +1377,7 @@ describe('RecipeDatabase', () => {
         );
 
         const recipeWithTempImage = {
-          ...testRecipes[0],
+          ...testRecipes[0]!,
           id: undefined,
           image_Source: 'file:///cache/ImageManipulator/temp-image.jpg',
         };
@@ -1376,7 +1386,7 @@ describe('RecipeDatabase', () => {
 
         expect(FileGestionMock.saveRecipeImage).toHaveBeenCalledWith(
           'file:///cache/ImageManipulator/temp-image.jpg',
-          testRecipes[0].title
+          testRecipes[0]!.title
         );
       });
 
@@ -1384,7 +1394,7 @@ describe('RecipeDatabase', () => {
         const initialCallCount = FileGestionMock.saveRecipeImage.mock.calls.length;
 
         const recipeWithPermanentImage = {
-          ...testRecipes[0],
+          ...testRecipes[0]!,
           id: undefined,
           image_Source: 'file:///documents/Recipedia/existing_image.jpg',
         };
@@ -1398,7 +1408,7 @@ describe('RecipeDatabase', () => {
 
     describe('editRecipe', () => {
       it('saves temporary image to permanent storage when editing recipe', async () => {
-        await db.addRecipe({ ...testRecipes[0], id: undefined });
+        await db.addRecipe({ ...testRecipes[0]!, id: undefined });
         const addedRecipe = db.get_recipes()[0];
 
         jest.clearAllMocks();
@@ -1407,7 +1417,7 @@ describe('RecipeDatabase', () => {
         );
 
         const editedRecipe = {
-          ...addedRecipe,
+          ...addedRecipe!,
           image_Source: 'file:///cache/ImageManipulator/new-image.jpg',
         };
 
@@ -1420,7 +1430,7 @@ describe('RecipeDatabase', () => {
       });
 
       it('returns recipe with image_Source set to the permanent URI from saveRecipeImage', async () => {
-        await db.addRecipe({ ...testRecipes[0], id: undefined });
+        await db.addRecipe({ ...testRecipes[0]!, id: undefined });
         const addedRecipe = db.get_recipes()[0];
 
         jest.clearAllMocks();
@@ -1428,7 +1438,7 @@ describe('RecipeDatabase', () => {
         FileGestionMock.saveRecipeImage.mockResolvedValue(permanentUri);
 
         const result = await db.editRecipe({
-          ...addedRecipe,
+          ...addedRecipe!,
           image_Source: 'file:///cache/ImageManipulator/temp.jpg',
         });
 
@@ -1436,14 +1446,14 @@ describe('RecipeDatabase', () => {
       });
 
       it('does not save permanent URI image when editing recipe', async () => {
-        await db.addRecipe({ ...testRecipes[0], id: undefined });
+        await db.addRecipe({ ...testRecipes[0]!, id: undefined });
         const addedRecipe = db.get_recipes()[0];
 
         jest.clearAllMocks();
         const initialCallCount = FileGestionMock.saveRecipeImage.mock.calls.length;
 
         const editedRecipe = {
-          ...addedRecipe,
+          ...addedRecipe!,
           description: 'Updated description',
         };
 
@@ -1469,17 +1479,17 @@ describe('RecipeDatabase', () => {
 
       it('deletes recipe correctly when image URI is provided as full path', async () => {
         const recipeToAdd = {
-          ...testRecipes[0],
+          ...testRecipes[0]!,
           id: undefined,
         };
         await db.addRecipe(recipeToAdd);
 
         const addedRecipe = db.get_recipes()[0];
         expect(addedRecipe).toBeDefined();
-        expect(addedRecipe.image_Source).toContain('file:///');
+        expect(addedRecipe!.image_Source).toContain('file:///');
 
         const initialRecipeCount = db.get_recipes().length;
-        const deleteSuccess = await db.deleteRecipe(addedRecipe);
+        const deleteSuccess = await db.deleteRecipe(addedRecipe!);
 
         expect(deleteSuccess).toBe(true);
         expect(db.get_recipes().length).toBe(initialRecipeCount - 1);
@@ -1487,7 +1497,7 @@ describe('RecipeDatabase', () => {
 
       it('deletes recipe correctly when searching with filename instead of full URI', async () => {
         const recipeToAdd = {
-          ...testRecipes[0],
+          ...testRecipes[0]!,
           id: undefined,
         };
         await db.addRecipe(recipeToAdd);
@@ -1496,8 +1506,8 @@ describe('RecipeDatabase', () => {
         const initialRecipeCount = db.get_recipes().length;
 
         const recipeWithFilename = {
-          ...addedRecipe,
-          image_Source: testRecipes[0].image_Source,
+          ...addedRecipe!,
+          image_Source: testRecipes[0]!.image_Source,
         };
 
         const deleteSuccess = await db.deleteRecipe(recipeWithFilename);
@@ -1511,25 +1521,25 @@ describe('RecipeDatabase', () => {
           .mockResolvedValueOnce('file:///documents/Recipedia/recipe1.jpg')
           .mockResolvedValueOnce('file:///documents/Recipedia/recipe2.jpg');
 
-        const recipe1 = { ...testRecipes[0], id: undefined };
-        const recipe2 = { ...testRecipes[1], id: undefined };
+        const recipe1 = { ...testRecipes[0]!, id: undefined };
+        const recipe2 = { ...testRecipes[1]!, id: undefined };
 
         await db.addRecipe(recipe1);
         await db.addRecipe(recipe2);
 
         const recipes = db.get_recipes();
         expect(recipes.length).toBe(2);
-        expect(recipes[0].image_Source).toContain('file:///');
-        expect(recipes[1].image_Source).toContain('file:///');
+        expect(recipes[0]!.image_Source).toContain('file:///');
+        expect(recipes[1]!.image_Source).toContain('file:///');
 
         const recipeToDelete = recipes[0];
-        const deleteSuccess = await db.deleteRecipe(recipeToDelete);
+        const deleteSuccess = await db.deleteRecipe(recipeToDelete!);
 
         expect(deleteSuccess).toBe(true);
         const remainingRecipes = db.get_recipes();
         expect(remainingRecipes.length).toBe(1);
-        expect(remainingRecipes[0].title).toBe(recipe2.title);
-        expect(remainingRecipes[0].image_Source).not.toBe(recipeToDelete.image_Source);
+        expect(remainingRecipes[0]!.title).toBe(recipe2.title);
+        expect(remainingRecipes[0]!.image_Source).not.toBe(recipeToDelete!.image_Source);
       });
     });
 
@@ -1538,24 +1548,24 @@ describe('RecipeDatabase', () => {
         FileGestionMock.saveRecipeImage.mockResolvedValueOnce(
           'file:///documents/Recipedia/recipe_img.jpg'
         );
-        await db.addRecipe({ ...testRecipes[0], id: undefined });
+        await db.addRecipe({ ...testRecipes[0]!, id: undefined });
         const addedRecipe = db.get_recipes()[0];
         jest.clearAllMocks();
 
-        await db.deleteRecipe(addedRecipe);
+        await db.deleteRecipe(addedRecipe!);
 
-        expect(FileGestionMock.deleteFile).toHaveBeenCalledWith(addedRecipe.image_Source);
+        expect(FileGestionMock.deleteFile).toHaveBeenCalledWith(addedRecipe!.image_Source);
       });
 
       test('does not delete image file when image_Source is empty', async () => {
         FileGestionMock.saveRecipeImage.mockResolvedValueOnce(
           'file:///documents/Recipedia/recipe_img.jpg'
         );
-        await db.addRecipe({ ...testRecipes[0], id: undefined });
+        await db.addRecipe({ ...testRecipes[0]!, id: undefined });
         const addedRecipe = db.get_recipes()[0];
         jest.clearAllMocks();
 
-        await db.deleteRecipe({ ...addedRecipe, image_Source: '' });
+        await db.deleteRecipe({ ...addedRecipe!, image_Source: '' });
 
         expect(FileGestionMock.deleteFile).not.toHaveBeenCalled();
       });
@@ -1564,11 +1574,11 @@ describe('RecipeDatabase', () => {
         FileGestionMock.saveRecipeImage.mockResolvedValueOnce(
           'file:///documents/Recipedia/recipe_img.jpg'
         );
-        await db.addRecipe({ ...testRecipes[0], id: undefined });
+        await db.addRecipe({ ...testRecipes[0]!, id: undefined });
         const addedRecipe = db.get_recipes()[0];
         jest.clearAllMocks();
 
-        await db.deleteRecipe({ ...addedRecipe, image_Source: '/cache/temp.jpg' });
+        await db.deleteRecipe({ ...addedRecipe!, image_Source: '/cache/temp.jpg' });
 
         expect(FileGestionMock.deleteFile).not.toHaveBeenCalled();
       });
@@ -1577,11 +1587,11 @@ describe('RecipeDatabase', () => {
         FileGestionMock.saveRecipeImage.mockResolvedValueOnce(
           'file:///documents/Recipedia/recipe_img.jpg'
         );
-        await db.addRecipe({ ...testRecipes[0], id: undefined });
+        await db.addRecipe({ ...testRecipes[0]!, id: undefined });
         jest.clearAllMocks();
 
         const nonExistentRecipe: recipeTableElement = {
-          ...testRecipes[0],
+          ...testRecipes[0]!,
           id: 99999,
         };
         await db.deleteRecipe(nonExistentRecipe);
@@ -1606,7 +1616,7 @@ describe('RecipeDatabase', () => {
       await db.addMultipleTags(testTags);
 
       const recipeWithMissingIngredients = {
-        ...testRecipes[0],
+        ...testRecipes[0]!,
         id: undefined,
       };
 
@@ -1619,9 +1629,9 @@ describe('RecipeDatabase', () => {
       await db.addMultipleTags(testTags);
 
       const recipeWithMultipleMissingIngredients = {
-        ...testRecipes[0],
+        ...testRecipes[0]!,
         id: undefined,
-        ingredients: [testIngredients[0], testIngredients[1], testIngredients[2]],
+        ingredients: [testIngredients[0]!, testIngredients[1]!, testIngredients[2]!],
       };
 
       await expect(db.addRecipe(recipeWithMultipleMissingIngredients)).rejects.toThrow(
@@ -1633,7 +1643,7 @@ describe('RecipeDatabase', () => {
       await db.addMultipleIngredients(testIngredients);
 
       const recipeWithMissingTags = {
-        ...testRecipes[0],
+        ...testRecipes[0]!,
         id: undefined,
       };
 
@@ -1646,9 +1656,9 @@ describe('RecipeDatabase', () => {
       await db.addMultipleIngredients(testIngredients);
 
       const recipeWithMultipleMissingTags = {
-        ...testRecipes[0],
+        ...testRecipes[0]!,
         id: undefined,
-        tags: [testTags[0], testTags[1], testTags[2]],
+        tags: [testTags[0]!, testTags[1]!, testTags[2]!],
       };
 
       await expect(db.addRecipe(recipeWithMultipleMissingTags)).rejects.toThrow(
@@ -1661,7 +1671,7 @@ describe('RecipeDatabase', () => {
       await db.addMultipleTags(testTags);
 
       const recipe = {
-        ...testRecipes[0],
+        ...testRecipes[0]!,
         id: undefined,
       };
 
@@ -1674,7 +1684,7 @@ describe('RecipeDatabase', () => {
       await db.addMultipleTags(testTags);
 
       const recipeWithBadIngredient = {
-        ...testRecipes[0],
+        ...testRecipes[0]!,
         id: undefined,
         title: 'Bad Recipe',
         ingredients: [
@@ -1688,7 +1698,7 @@ describe('RecipeDatabase', () => {
         ],
       };
 
-      const validRecipe = { ...testRecipes[1], id: undefined };
+      const validRecipe = { ...testRecipes[1]!, id: undefined };
 
       await db.addMultipleRecipes([recipeWithBadIngredient, validRecipe]);
 
@@ -1700,13 +1710,13 @@ describe('RecipeDatabase', () => {
       await db.addMultipleTags(testTags);
 
       const recipeWithBadTag = {
-        ...testRecipes[0],
+        ...testRecipes[0]!,
         id: undefined,
         title: 'Bad Tag Recipe',
         tags: [{ name: 'Nonexistent Tag' }],
       };
 
-      const validRecipe = { ...testRecipes[1], id: undefined };
+      const validRecipe = { ...testRecipes[1]!, id: undefined };
 
       await db.addMultipleRecipes([recipeWithBadTag, validRecipe]);
 
@@ -1718,8 +1728,8 @@ describe('RecipeDatabase', () => {
       await db.addMultipleTags(testTags);
 
       const validRecipes = [
-        { ...testRecipes[0], id: undefined },
-        { ...testRecipes[1], id: undefined },
+        { ...testRecipes[0]!, id: undefined },
+        { ...testRecipes[1]!, id: undefined },
       ];
 
       await db.addMultipleRecipes(validRecipes);
@@ -1730,7 +1740,7 @@ describe('RecipeDatabase', () => {
     test('addMultipleRecipes returns empty skipped when all recipes fail', async () => {
       const recipesWithNoIngredients = [
         {
-          ...testRecipes[0],
+          ...testRecipes[0]!,
           id: undefined,
           ingredients: [
             {
@@ -1767,22 +1777,22 @@ describe('RecipeDatabase', () => {
     test('throws when an edited recipe contains an unpersisted tag', async () => {
       const existing = db.get_recipes()[0];
       const edited = {
-        ...existing,
-        tags: [...existing.tags, { id: -1, name: 'Unpersisted Tag' }],
+        ...existing!,
+        tags: [...existing!.tags, { id: -1, name: 'Unpersisted Tag' }],
       };
 
       await expect(db.editRecipe(edited)).rejects.toThrow(/Tags not found in database:/);
 
-      const reloaded = db.get_recipes().find(r => r.id === existing.id);
-      expect(reloaded?.tags).toEqual(existing.tags);
+      const reloaded = db.get_recipes().find(r => r.id === existing!.id);
+      expect(reloaded?.tags).toEqual(existing!.tags);
     });
 
     test('throws when an edited recipe contains an unpersisted ingredient', async () => {
       const existing = db.get_recipes()[0];
       const edited = {
-        ...existing,
+        ...existing!,
         ingredients: [
-          ...existing.ingredients,
+          ...existing!.ingredients,
           {
             id: -1,
             name: 'Unpersisted Ingredient',
@@ -1796,20 +1806,20 @@ describe('RecipeDatabase', () => {
 
       await expect(db.editRecipe(edited)).rejects.toThrow(/Ingredients not found in database:/);
 
-      const reloaded = db.get_recipes().find(r => r.id === existing.id);
-      expect(reloaded?.ingredients).toEqual(existing.ingredients);
+      const reloaded = db.get_recipes().find(r => r.id === existing!.id);
+      expect(reloaded?.ingredients).toEqual(existing!.ingredients);
     });
 
     test('edits successfully when all tags and ingredients are persisted', async () => {
       const existing = db.get_recipes()[0];
-      const edited = { ...existing, title: 'Verified Edit' };
+      const edited = { ...existing!, title: 'Verified Edit' };
 
       await expect(db.editRecipe(edited)).resolves.toMatchObject({ title: 'Verified Edit' });
 
-      const reloaded = db.get_recipes().find(r => r.id === existing.id);
+      const reloaded = db.get_recipes().find(r => r.id === existing!.id);
       expect(reloaded?.title).toBe('Verified Edit');
-      expect(reloaded?.tags).toEqual(existing.tags);
-      expect(reloaded?.ingredients).toEqual(existing.ingredients);
+      expect(reloaded?.tags).toEqual(existing!.tags);
+      expect(reloaded?.ingredients).toEqual(existing!.ingredients);
     });
   });
 
@@ -1841,7 +1851,7 @@ describe('RecipeDatabase', () => {
       await db.addMultipleTags(testTags);
       const persisted = db.get_tags()[0];
 
-      expect(getEncodeTagForRecipe()({ name: persisted.name })).toBe(persisted.id?.toString());
+      expect(getEncodeTagForRecipe()({ name: persisted!.name })).toBe(persisted!.id?.toString());
     });
 
     test('encodeIngredient throws when the ingredient cannot be resolved', () => {
@@ -1860,8 +1870,8 @@ describe('RecipeDatabase', () => {
       await db.addMultipleIngredients(testIngredients);
       const persisted = db.get_ingredients()[0];
 
-      expect(getEncodeIngredient()({ ...persisted, id: undefined, quantity: '200' })).toBe(
-        `${persisted.id}--200`
+      expect(getEncodeIngredient()({ ...persisted!, id: undefined, quantity: '200' })).toBe(
+        `${persisted!.id}--200`
       );
     });
 
@@ -1870,8 +1880,8 @@ describe('RecipeDatabase', () => {
       const persisted = db.get_ingredients()[0];
 
       expect(
-        getEncodeIngredient()({ ...persisted, id: undefined, quantity: '200', note: 'For sauce' })
-      ).toBe(`${persisted.id}--200%%For sauce`);
+        getEncodeIngredient()({ ...persisted!, id: undefined, quantity: '200', note: 'For sauce' })
+      ).toBe(`${persisted!.id}--200%%For sauce`);
     });
   });
 
@@ -1895,30 +1905,30 @@ describe('RecipeDatabase', () => {
       });
 
       test('returns menu items after adding recipes', async () => {
-        await db.addRecipeToMenu(db.get_recipes()[0]);
+        await db.addRecipeToMenu(db.get_recipes()[0]!);
 
         const menu = db.get_menu();
         expect(menu.length).toBe(1);
-        expect(menu[0].recipeTitle).toBe(testRecipes[0].title);
+        expect(menu[0]!.recipeTitle).toBe(testRecipes[0]!.title);
       });
     });
 
     describe('addRecipeToMenu', () => {
       test('adds recipe to menu successfully', async () => {
         const recipe = db.get_recipes()[0];
-        await db.addRecipeToMenu(recipe);
+        await db.addRecipeToMenu(recipe!);
 
         const menu = db.get_menu();
         expect(menu.length).toBe(1);
-        expect(menu[0].recipeId).toBe(recipe.id);
-        expect(menu[0].recipeTitle).toBe(recipe.title);
-        expect(menu[0].imageSource).toBe(recipe.image_Source);
-        expect(menu[0].isCooked).toBe(false);
-        expect(menu[0].count).toBe(1);
+        expect(menu[0]!.recipeId).toBe(recipe!.id);
+        expect(menu[0]!.recipeTitle).toBe(recipe!.title);
+        expect(menu[0]!.imageSource).toBe(recipe!.image_Source);
+        expect(menu[0]!.isCooked).toBe(false);
+        expect(menu[0]!.count).toBe(1);
       });
 
       test('does not add recipe without ID', async () => {
-        const recipeWithoutId: recipeTableElement = { ...testRecipes[0], id: undefined };
+        const recipeWithoutId: recipeTableElement = { ...testRecipes[0]!, id: undefined };
         await db.addRecipeToMenu(recipeWithoutId);
 
         expect(db.get_menu().length).toBe(0);
@@ -1926,64 +1936,64 @@ describe('RecipeDatabase', () => {
 
       test('increments count when adding same recipe twice', async () => {
         const recipe = db.get_recipes()[0];
-        await db.addRecipeToMenu(recipe);
-        await db.addRecipeToMenu(recipe);
+        await db.addRecipeToMenu(recipe!);
+        await db.addRecipeToMenu(recipe!);
 
         const menu = db.get_menu();
         expect(menu.length).toBe(1);
-        expect(menu[0].count).toBe(2);
+        expect(menu[0]!.count).toBe(2);
       });
 
       test('increments count when adding same recipe multiple times', async () => {
         const recipe = db.get_recipes()[0];
-        await db.addRecipeToMenu(recipe);
-        await db.addRecipeToMenu(recipe);
-        await db.addRecipeToMenu(recipe);
+        await db.addRecipeToMenu(recipe!);
+        await db.addRecipeToMenu(recipe!);
+        await db.addRecipeToMenu(recipe!);
 
         const menu = db.get_menu();
         expect(menu.length).toBe(1);
-        expect(menu[0].count).toBe(3);
+        expect(menu[0]!.count).toBe(3);
       });
 
       test('adds different recipes as separate menu items', async () => {
         const recipe1 = db.get_recipes()[0];
         const recipe2 = db.get_recipes()[1];
-        await db.addRecipeToMenu(recipe1);
-        await db.addRecipeToMenu(recipe2);
+        await db.addRecipeToMenu(recipe1!);
+        await db.addRecipeToMenu(recipe2!);
 
         const menu = db.get_menu();
         expect(menu.length).toBe(2);
-        expect(menu[0].recipeId).toBe(recipe1.id);
-        expect(menu[1].recipeId).toBe(recipe2.id);
+        expect(menu[0]!.recipeId).toBe(recipe1!.id);
+        expect(menu[1]!.recipeId).toBe(recipe2!.id);
       });
     });
 
     describe('toggleMenuItemCooked', () => {
       test('toggles cooked status from false to true', async () => {
         const recipe = db.get_recipes()[0];
-        await db.addRecipeToMenu(recipe);
+        await db.addRecipeToMenu(recipe!);
         const menuItem = db.get_menu()[0];
 
-        expect(menuItem.isCooked).toBe(false);
+        expect(menuItem!.isCooked).toBe(false);
 
-        const result = await db.toggleMenuItemCooked(menuItem.id!);
+        const result = await db.toggleMenuItemCooked(menuItem!.id!);
 
         expect(result).toBe(true);
-        expect(db.get_menu()[0].isCooked).toBe(true);
+        expect(db.get_menu()[0]!.isCooked).toBe(true);
       });
 
       test('toggles cooked status from true to false', async () => {
         const recipe = db.get_recipes()[0];
-        await db.addRecipeToMenu(recipe);
+        await db.addRecipeToMenu(recipe!);
         const menuItem = db.get_menu()[0];
 
-        await db.toggleMenuItemCooked(menuItem.id!);
-        expect(db.get_menu()[0].isCooked).toBe(true);
+        await db.toggleMenuItemCooked(menuItem!.id!);
+        expect(db.get_menu()[0]!.isCooked).toBe(true);
 
-        const result = await db.toggleMenuItemCooked(menuItem.id!);
+        const result = await db.toggleMenuItemCooked(menuItem!.id!);
 
         expect(result).toBe(true);
-        expect(db.get_menu()[0].isCooked).toBe(false);
+        expect(db.get_menu()[0]!.isCooked).toBe(false);
       });
 
       test('returns false for non-existent menu item', async () => {
@@ -1996,10 +2006,10 @@ describe('RecipeDatabase', () => {
     describe('removeFromMenu', () => {
       test('removes menu item when count is 1', async () => {
         const recipe = db.get_recipes()[0];
-        await db.addRecipeToMenu(recipe);
+        await db.addRecipeToMenu(recipe!);
         const menuItem = db.get_menu()[0];
 
-        const result = await db.removeFromMenu(menuItem.id!);
+        const result = await db.removeFromMenu(menuItem!.id!);
 
         expect(result).toBe(true);
         expect(db.get_menu().length).toBe(0);
@@ -2007,35 +2017,35 @@ describe('RecipeDatabase', () => {
 
       test('decrements count when count is greater than 1', async () => {
         const recipe = db.get_recipes()[0];
-        await db.addRecipeToMenu(recipe);
-        await db.addRecipeToMenu(recipe);
+        await db.addRecipeToMenu(recipe!);
+        await db.addRecipeToMenu(recipe!);
         const menuItem = db.get_menu()[0];
 
-        expect(menuItem.count).toBe(2);
+        expect(menuItem!.count).toBe(2);
 
-        const result = await db.removeFromMenu(menuItem.id!);
+        const result = await db.removeFromMenu(menuItem!.id!);
 
         expect(result).toBe(true);
         expect(db.get_menu().length).toBe(1);
-        expect(db.get_menu()[0].count).toBe(1);
+        expect(db.get_menu()[0]!.count).toBe(1);
       });
 
       test('decrements count multiple times before removing', async () => {
         const recipe = db.get_recipes()[0];
-        await db.addRecipeToMenu(recipe);
-        await db.addRecipeToMenu(recipe);
-        await db.addRecipeToMenu(recipe);
+        await db.addRecipeToMenu(recipe!);
+        await db.addRecipeToMenu(recipe!);
+        await db.addRecipeToMenu(recipe!);
         const menuItem = db.get_menu()[0];
 
-        expect(menuItem.count).toBe(3);
+        expect(menuItem!.count).toBe(3);
 
-        await db.removeFromMenu(menuItem.id!);
-        expect(db.get_menu()[0].count).toBe(2);
+        await db.removeFromMenu(menuItem!.id!);
+        expect(db.get_menu()[0]!.count).toBe(2);
 
-        await db.removeFromMenu(menuItem.id!);
-        expect(db.get_menu()[0].count).toBe(1);
+        await db.removeFromMenu(menuItem!.id!);
+        expect(db.get_menu()[0]!.count).toBe(1);
 
-        await db.removeFromMenu(menuItem.id!);
+        await db.removeFromMenu(menuItem!.id!);
         expect(db.get_menu().length).toBe(0);
       });
 
@@ -2048,8 +2058,8 @@ describe('RecipeDatabase', () => {
 
     describe('clearMenu', () => {
       test('clears all menu items', async () => {
-        await db.addRecipeToMenu(db.get_recipes()[0]);
-        await db.addRecipeToMenu(db.get_recipes()[1]);
+        await db.addRecipeToMenu(db.get_recipes()[0]!);
+        await db.addRecipeToMenu(db.get_recipes()[1]!);
 
         expect(db.get_menu().length).toBe(2);
 
@@ -2070,32 +2080,32 @@ describe('RecipeDatabase', () => {
     describe('isRecipeInMenu', () => {
       test('returns true when recipe is in menu', async () => {
         const recipe = db.get_recipes()[0];
-        await db.addRecipeToMenu(recipe);
+        await db.addRecipeToMenu(recipe!);
 
-        expect(db.isRecipeInMenu(recipe.id!)).toBe(true);
+        expect(db.isRecipeInMenu(recipe!.id!)).toBe(true);
       });
 
       test('returns false when recipe is not in menu', () => {
         const recipe = db.get_recipes()[0];
 
-        expect(db.isRecipeInMenu(recipe.id!)).toBe(false);
+        expect(db.isRecipeInMenu(recipe!.id!)).toBe(false);
       });
 
       test('returns false after recipe is removed from menu', async () => {
         const recipe = db.get_recipes()[0];
-        await db.addRecipeToMenu(recipe);
+        await db.addRecipeToMenu(recipe!);
         const menuItem = db.get_menu()[0];
-        await db.removeFromMenu(menuItem.id!);
+        await db.removeFromMenu(menuItem!.id!);
 
-        expect(db.isRecipeInMenu(recipe.id!)).toBe(false);
+        expect(db.isRecipeInMenu(recipe!.id!)).toBe(false);
       });
     });
 
     describe('Menu persistence', () => {
       test('menu items persist after re-initialization', async () => {
         const recipe = db.get_recipes()[0];
-        await db.addRecipeToMenu(recipe);
-        await db.addRecipeToMenu(recipe);
+        await db.addRecipeToMenu(recipe!);
+        await db.addRecipeToMenu(recipe!);
 
         await db.closeAndReset();
         await db.init();
@@ -2108,12 +2118,12 @@ describe('RecipeDatabase', () => {
 
       test('cooked status persists correctly', async () => {
         const recipe = db.get_recipes()[0];
-        await db.addRecipeToMenu(recipe);
+        await db.addRecipeToMenu(recipe!);
         const menuItem = db.get_menu()[0];
-        await db.toggleMenuItemCooked(menuItem.id!);
+        await db.toggleMenuItemCooked(menuItem!.id!);
 
         const menu = db.get_menu();
-        expect(menu[0].isCooked).toBe(true);
+        expect(menu[0]!.isCooked).toBe(true);
       });
     });
   });
@@ -2202,9 +2212,9 @@ describe('RecipeDatabase', () => {
 
     test('preserves ingredient notes when adding and retrieving recipe', async () => {
       const recipeWithNotes: recipeTableElement = {
-        ...testRecipes[0],
+        ...testRecipes[0]!,
         id: undefined,
-        ingredients: testRecipes[0].ingredients.map((ing, index) => ({
+        ingredients: testRecipes[0]!.ingredients.map((ing, index) => ({
           ...ing,
           note: index === 0 ? 'for the sauce' : index === 1 ? 'melted' : undefined,
         })),
@@ -2213,16 +2223,16 @@ describe('RecipeDatabase', () => {
       await db.addRecipe(recipeWithNotes);
       const retrievedRecipe = db.get_recipes()[0];
 
-      expect(retrievedRecipe.ingredients[0].note).toBe('for the sauce');
-      expect(retrievedRecipe.ingredients[1].note).toBe('melted');
-      expect(retrievedRecipe.ingredients[2].note).toBeUndefined();
+      expect(retrievedRecipe!.ingredients[0]!.note).toBe('for the sauce');
+      expect(retrievedRecipe!.ingredients[1]!.note).toBe('melted');
+      expect(retrievedRecipe!.ingredients[2]!.note).toBeUndefined();
     });
 
     test('handles multiple ingredients with mixed notes', async () => {
       const recipeWithMixedNotes: recipeTableElement = {
-        ...testRecipes[0],
+        ...testRecipes[0]!,
         id: undefined,
-        ingredients: testRecipes[0].ingredients.map((ing, index) => ({
+        ingredients: testRecipes[0]!.ingredients.map((ing, index) => ({
           ...ing,
           note: index % 2 === 0 ? `note ${index}` : undefined,
         })),
@@ -2231,7 +2241,7 @@ describe('RecipeDatabase', () => {
       await db.addRecipe(recipeWithMixedNotes);
       const retrievedRecipe = db.get_recipes()[0];
 
-      retrievedRecipe.ingredients.forEach((ing, index) => {
+      retrievedRecipe!.ingredients.forEach((ing, index) => {
         if (index % 2 === 0) {
           expect(ing.note).toBe(`note ${index}`);
         } else {
@@ -2242,9 +2252,9 @@ describe('RecipeDatabase', () => {
 
     test('handles empty string note (treated as no note)', async () => {
       const recipeWithEmptyNote: recipeTableElement = {
-        ...testRecipes[0],
+        ...testRecipes[0]!,
         id: undefined,
-        ingredients: testRecipes[0].ingredients.map((ing, index) => ({
+        ingredients: testRecipes[0]!.ingredients.map((ing, index) => ({
           ...ing,
           note: index === 0 ? '' : undefined,
         })),
@@ -2253,15 +2263,15 @@ describe('RecipeDatabase', () => {
       await db.addRecipe(recipeWithEmptyNote);
       const retrievedRecipe = db.get_recipes()[0];
 
-      expect(retrievedRecipe.ingredients[0].note).toBeUndefined();
+      expect(retrievedRecipe!.ingredients[0]!.note).toBeUndefined();
     });
 
     test('handles note with special characters', async () => {
       const specialNote = 'for the "special" sauce (organic)';
       const recipeWithSpecialNote: recipeTableElement = {
-        ...testRecipes[0],
+        ...testRecipes[0]!,
         id: undefined,
-        ingredients: testRecipes[0].ingredients.map((ing, index) => ({
+        ingredients: testRecipes[0]!.ingredients.map((ing, index) => ({
           ...ing,
           note: index === 0 ? specialNote : undefined,
         })),
@@ -2270,15 +2280,15 @@ describe('RecipeDatabase', () => {
       await db.addRecipe(recipeWithSpecialNote);
       const retrievedRecipe = db.get_recipes()[0];
 
-      expect(retrievedRecipe.ingredients[0].note).toBe(specialNote);
+      expect(retrievedRecipe!.ingredients[0]!.note).toBe(specialNote);
     });
 
     test('handles note with unicode characters', async () => {
       const unicodeNote = '🌶️ spicy à volonté';
       const recipeWithUnicodeNote: recipeTableElement = {
-        ...testRecipes[0],
+        ...testRecipes[0]!,
         id: undefined,
-        ingredients: testRecipes[0].ingredients.map((ing, index) => ({
+        ingredients: testRecipes[0]!.ingredients.map((ing, index) => ({
           ...ing,
           note: index === 0 ? unicodeNote : undefined,
         })),
@@ -2287,15 +2297,15 @@ describe('RecipeDatabase', () => {
       await db.addRecipe(recipeWithUnicodeNote);
       const retrievedRecipe = db.get_recipes()[0];
 
-      expect(retrievedRecipe.ingredients[0].note).toBe(unicodeNote);
+      expect(retrievedRecipe!.ingredients[0]!.note).toBe(unicodeNote);
     });
 
     test('preserves notes after database re-initialization', async () => {
       const noteValue = 'persistent note';
       const recipeWithNote: recipeTableElement = {
-        ...testRecipes[0],
+        ...testRecipes[0]!,
         id: undefined,
-        ingredients: testRecipes[0].ingredients.map((ing, index) => ({
+        ingredients: testRecipes[0]!.ingredients.map((ing, index) => ({
           ...ing,
           note: index === 0 ? noteValue : undefined,
         })),
@@ -2310,15 +2320,15 @@ describe('RecipeDatabase', () => {
       await db.addRecipe(recipeWithNote);
 
       const retrievedRecipe = db.get_recipes()[0];
-      expect(retrievedRecipe.ingredients[0].note).toBe(noteValue);
+      expect(retrievedRecipe!.ingredients[0]!.note).toBe(noteValue);
     });
 
     test('preserves notes when editing recipe', async () => {
       const initialNote = 'initial note';
       const recipeWithNote: recipeTableElement = {
-        ...testRecipes[0],
+        ...testRecipes[0]!,
         id: undefined,
-        ingredients: testRecipes[0].ingredients.map((ing, index) => ({
+        ingredients: testRecipes[0]!.ingredients.map((ing, index) => ({
           ...ing,
           note: index === 0 ? initialNote : undefined,
         })),
@@ -2329,8 +2339,8 @@ describe('RecipeDatabase', () => {
 
       const updatedNote = 'updated note';
       const editedRecipe: recipeTableElement = {
-        ...addedRecipe,
-        ingredients: addedRecipe.ingredients.map((ing, index) => ({
+        ...addedRecipe!,
+        ingredients: addedRecipe!.ingredients.map((ing, index) => ({
           ...ing,
           note: index === 0 ? updatedNote : undefined,
         })),
@@ -2339,14 +2349,14 @@ describe('RecipeDatabase', () => {
       await db.editRecipe(editedRecipe);
       const retrievedRecipe = db.get_recipes()[0];
 
-      expect(retrievedRecipe.ingredients[0].note).toBe(updatedNote);
+      expect(retrievedRecipe!.ingredients[0]!.note).toBe(updatedNote);
     });
 
     test('can remove note when editing recipe', async () => {
       const recipeWithNote: recipeTableElement = {
-        ...testRecipes[0],
+        ...testRecipes[0]!,
         id: undefined,
-        ingredients: testRecipes[0].ingredients.map((ing, index) => ({
+        ingredients: testRecipes[0]!.ingredients.map((ing, index) => ({
           ...ing,
           note: index === 0 ? 'to be removed' : undefined,
         })),
@@ -2355,11 +2365,11 @@ describe('RecipeDatabase', () => {
       await db.addRecipe(recipeWithNote);
       const addedRecipe = db.get_recipes()[0];
 
-      expect(addedRecipe.ingredients[0].note).toBe('to be removed');
+      expect(addedRecipe!.ingredients[0]!.note).toBe('to be removed');
 
       const editedRecipe: recipeTableElement = {
-        ...addedRecipe,
-        ingredients: addedRecipe.ingredients.map(ing => ({
+        ...addedRecipe!,
+        ingredients: addedRecipe!.ingredients.map(ing => ({
           ...ing,
           note: undefined,
         })),
@@ -2368,7 +2378,7 @@ describe('RecipeDatabase', () => {
       await db.editRecipe(editedRecipe);
       const retrievedRecipe = db.get_recipes()[0];
 
-      expect(retrievedRecipe.ingredients[0].note).toBeUndefined();
+      expect(retrievedRecipe!.ingredients[0]!.note).toBeUndefined();
     });
   });
 
@@ -2434,8 +2444,8 @@ describe('RecipeDatabase', () => {
 
       const dismissed = db.getDismissedRecipes('hellofresh');
       expect(dismissed).toHaveLength(1);
-      expect(dismissed[0].title).toBe('Recipe 1');
-      expect(dismissed[0].recipeUrl).toBe('https://hellofresh.com/recipe-1');
+      expect(dismissed[0]!.title).toBe('Recipe 1');
+      expect(dismissed[0]!.recipeUrl).toBe('https://hellofresh.com/recipe-1');
     });
 
     test('getDismissedRecipes sorts most-recently-dismissed first', async () => {
@@ -2448,8 +2458,8 @@ describe('RecipeDatabase', () => {
       ]);
 
       const dismissed = db.getDismissedRecipes('hellofresh');
-      expect(dismissed[0].title).toBe('New');
-      expect(dismissed[1].title).toBe('Old');
+      expect(dismissed[0]!.title).toBe('New');
+      expect(dismissed[1]!.title).toBe('Old');
     });
 
     test('does not duplicate an already dismissed URL', async () => {
@@ -2521,7 +2531,7 @@ describe('RecipeDatabase', () => {
         },
       ]);
 
-      expect(db.getDismissedRecipes('hellofresh')[0].imageUrl).toBe(
+      expect(db.getDismissedRecipes('hellofresh')[0]!.imageUrl).toBe(
         'https://hellofresh.com/image-1.jpg'
       );
     });
@@ -2531,7 +2541,7 @@ describe('RecipeDatabase', () => {
         { url: 'https://hellofresh.com/recipe-1', title: 'Recipe 1' },
       ]);
 
-      expect(db.getDismissedRecipes('hellofresh')[0].imageUrl).toBe('');
+      expect(db.getDismissedRecipes('hellofresh')[0]!.imageUrl).toBe('');
     });
 
     test('restoreDismissedRecipes only removes the provided URLs', async () => {

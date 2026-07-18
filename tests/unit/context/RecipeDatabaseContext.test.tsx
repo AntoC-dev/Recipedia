@@ -175,7 +175,7 @@ describe('focused database hooks', () => {
       });
 
       const invalidRecipe = {
-        ...testRecipes[0],
+        ...testRecipes[0]!,
         id: undefined,
         persons: 0,
         title: 'Invalid Recipe Test',
@@ -209,21 +209,21 @@ describe('focused database hooks', () => {
       });
 
       const recipeBefore = result.current.recipes[0];
-      const ingredientBefore = recipeBefore.ingredients[0];
-      const oldPersons = recipeBefore.persons;
+      const ingredientBefore = recipeBefore!.ingredients[0];
+      const oldPersons = recipeBefore!.persons;
       const newPersons = 8;
 
       await result.current.scaleAllRecipesForNewDefaultPersons(newPersons);
 
       await waitFor(() => {
-        const recipeAfter = result.current.recipes.find(r => r.id === recipeBefore.id);
+        const recipeAfter = result.current.recipes.find(r => r.id === recipeBefore!.id);
         const ingredientAfter = recipeAfter?.ingredients.find(
-          ing => ing.id === ingredientBefore.id
+          ing => ing.id === ingredientBefore!.id
         );
 
-        if (ingredientBefore.quantity && ingredientAfter?.quantity) {
+        if (ingredientBefore!.quantity && ingredientAfter?.quantity) {
           const expectedQuantity = (
-            (parseFloat(ingredientBefore.quantity.replace(',', '.')) * newPersons) /
+            (parseFloat(ingredientBefore!.quantity.replace(',', '.')) * newPersons) /
             oldPersons
           )
             .toString()
@@ -257,7 +257,7 @@ describe('focused database hooks', () => {
       });
 
       const importedRecipe = {
-        ...testRecipes[0],
+        ...testRecipes[0]!,
         id: undefined,
         title: 'Imported Recipe',
         sourceUrl: 'https://hellofresh.com/recipe-123',
@@ -279,14 +279,14 @@ describe('focused database hooks', () => {
       });
 
       const hellofreshRecipe = {
-        ...testRecipes[0],
+        ...testRecipes[0]!,
         id: undefined,
         title: 'HelloFresh Recipe',
         sourceUrl: 'https://hellofresh.com/recipe-1',
         sourceProvider: 'hellofresh',
       };
       const marmitonRecipe = {
-        ...testRecipes[0],
+        ...testRecipes[0]!,
         id: undefined,
         title: 'Marmiton Recipe',
         sourceUrl: 'https://marmiton.org/recipe-1',
@@ -414,7 +414,7 @@ describe('focused database hooks', () => {
       });
 
       const recipe = result.current.recipes[0];
-      await result.current.addRecipeToMenu(recipe);
+      await result.current.addRecipeToMenu(recipe!);
 
       await waitFor(() => {
         expect(result.current.menu.length).toBe(1);
@@ -425,7 +425,7 @@ describe('focused database hooks', () => {
       });
 
       const ingredientNames = result.current.shopping.map(item => item.name);
-      recipe.ingredients.forEach(ingredient => {
+      recipe!.ingredients.forEach(ingredient => {
         expect(ingredientNames).toContain(ingredient.name);
       });
     });
@@ -438,7 +438,7 @@ describe('focused database hooks', () => {
       });
 
       const recipe = result.current.recipes[0];
-      await result.current.addRecipeToMenu(recipe);
+      await result.current.addRecipeToMenu(recipe!);
 
       await waitFor(() => {
         expect(result.current.menu.length).toBe(1);
@@ -449,10 +449,10 @@ describe('focused database hooks', () => {
       });
 
       const menuItem = result.current.menu[0];
-      await result.current.toggleMenuItemCooked(menuItem.id!);
+      await result.current.toggleMenuItemCooked(menuItem!.id!);
 
       await waitFor(() => {
-        expect(result.current.menu[0].isCooked).toBe(true);
+        expect(result.current.menu[0]!.isCooked).toBe(true);
       });
 
       await waitFor(() => {
@@ -467,13 +467,13 @@ describe('focused database hooks', () => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
-      await result.current.addRecipeToMenu(result.current.recipes[0]);
+      await result.current.addRecipeToMenu(result.current.recipes[0]!);
 
       await waitFor(() => {
         expect(result.current.menu.length).toBe(1);
       });
 
-      await result.current.addRecipeToMenu(result.current.recipes[1]);
+      await result.current.addRecipeToMenu(result.current.recipes[1]!);
 
       await waitFor(() => {
         expect(result.current.menu.length).toBe(2);
@@ -497,7 +497,7 @@ describe('focused database hooks', () => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
-      await result.current.addRecipeToMenu(result.current.recipes[0]);
+      await result.current.addRecipeToMenu(result.current.recipes[0]!);
 
       await waitFor(() => {
         expect(result.current.menu.length).toBe(1);
@@ -507,8 +507,8 @@ describe('focused database hooks', () => {
         expect(result.current.shopping.length).toBeGreaterThan(0);
       });
 
-      const ingredientName = result.current.shopping[0].name;
-      expect(result.current.shopping[0].purchased).toBe(false);
+      const ingredientName = result.current.shopping[0]!.name;
+      expect(result.current.shopping[0]!.purchased).toBe(false);
 
       await result.current.togglePurchased(ingredientName);
 
@@ -525,13 +525,13 @@ describe('focused database hooks', () => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
-      await result.current.addRecipeToMenu(result.current.recipes[0]);
+      await result.current.addRecipeToMenu(result.current.recipes[0]!);
 
       await waitFor(() => {
         expect(result.current.shopping.length).toBeGreaterThan(0);
       });
 
-      const ingredientName = result.current.shopping[0].name;
+      const ingredientName = result.current.shopping[0]!.name;
       await result.current.togglePurchased(ingredientName);
 
       await waitFor(() => {
@@ -556,15 +556,15 @@ describe('focused database hooks', () => {
       });
 
       const recipe = result.current.recipes[0];
-      expect(result.current.isRecipeInMenu(recipe.id!)).toBe(false);
+      expect(result.current.isRecipeInMenu(recipe!.id!)).toBe(false);
 
-      await result.current.addRecipeToMenu(recipe);
+      await result.current.addRecipeToMenu(recipe!);
 
       await waitFor(() => {
         expect(result.current.menu.length).toBe(1);
       });
 
-      expect(result.current.isRecipeInMenu(recipe.id!)).toBe(true);
+      expect(result.current.isRecipeInMenu(recipe!.id!)).toBe(true);
     });
   });
 
@@ -574,7 +574,7 @@ describe('focused database hooks', () => {
 
       await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
-      const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
+      const recipe = result.current.recipes.find(r => r.id === testRecipes[0]!.id)!;
       const previousImageUri = recipe.image_Source;
 
       await result.current.editRecipe({ ...recipe, image_Source: 'file:///documents/new.jpg' });
@@ -587,7 +587,7 @@ describe('focused database hooks', () => {
 
       await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
-      const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
+      const recipe = result.current.recipes.find(r => r.id === testRecipes[0]!.id)!;
 
       await result.current.editRecipe({ ...recipe });
 
@@ -599,7 +599,7 @@ describe('focused database hooks', () => {
 
       await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
-      const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
+      const recipe = result.current.recipes.find(r => r.id === testRecipes[0]!.id)!;
       const newImageUri = 'file:///documents/new.jpg';
 
       const savedRecipe = await result.current.editRecipe({ ...recipe, image_Source: newImageUri });
@@ -612,7 +612,7 @@ describe('focused database hooks', () => {
 
       await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
-      const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
+      const recipe = result.current.recipes.find(r => r.id === testRecipes[0]!.id)!;
       (isTemporaryImageUri as jest.Mock).mockImplementation(
         (uri: string) => uri === recipe.image_Source
       );
@@ -630,7 +630,7 @@ describe('focused database hooks', () => {
 
       await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
-      const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
+      const recipe = result.current.recipes.find(r => r.id === testRecipes[0]!.id)!;
 
       await expect(result.current.editRecipe({ ...recipe, id: undefined })).rejects.toThrow();
     });
@@ -640,7 +640,7 @@ describe('focused database hooks', () => {
 
       await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
-      const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
+      const recipe = result.current.recipes.find(r => r.id === testRecipes[0]!.id)!;
       const newImageUri = 'file:///documents/new.jpg';
 
       await result.current.editRecipe({ ...recipe, image_Source: newImageUri });
@@ -656,7 +656,7 @@ describe('focused database hooks', () => {
 
       await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
-      const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
+      const recipe = result.current.recipes.find(r => r.id === testRecipes[0]!.id)!;
       await result.current.deleteRecipe(recipe);
 
       expect(deleteFile).toHaveBeenCalledWith(recipe.image_Source);
@@ -667,7 +667,7 @@ describe('focused database hooks', () => {
 
       await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
-      const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
+      const recipe = result.current.recipes.find(r => r.id === testRecipes[0]!.id)!;
       await result.current.deleteRecipe({ ...recipe, image_Source: '' });
 
       expect(deleteFile).not.toHaveBeenCalled();
@@ -678,7 +678,7 @@ describe('focused database hooks', () => {
 
       await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
-      const recipe = result.current.recipes.find(r => r.id === testRecipes[0].id)!;
+      const recipe = result.current.recipes.find(r => r.id === testRecipes[0]!.id)!;
       const { isTemporaryImageUri } = require('@utils/FileGestion');
       isTemporaryImageUri.mockReturnValueOnce(true);
       await result.current.deleteRecipe({ ...recipe, image_Source: '/cache/temp.jpg' });
@@ -693,7 +693,7 @@ describe('focused database hooks', () => {
 
       const initialCount = result.current.recipes.length;
       const recipe = result.current.recipes[0];
-      await result.current.deleteRecipe(recipe);
+      await result.current.deleteRecipe(recipe!);
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBe(initialCount - 1);
@@ -706,7 +706,7 @@ describe('focused database hooks', () => {
       await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
       const recipe = result.current.recipes[0];
-      const deleteResult = await result.current.deleteRecipe(recipe);
+      const deleteResult = await result.current.deleteRecipe(recipe!);
 
       expect(deleteResult).toBeDefined();
     });
@@ -720,7 +720,7 @@ describe('focused database hooks', () => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
-      await result.current.addRecipeToMenu(result.current.recipes[0]);
+      await result.current.addRecipeToMenu(result.current.recipes[0]!);
 
       await waitFor(() => {
         expect(result.current.menu.length).toBe(1);

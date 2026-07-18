@@ -109,8 +109,8 @@ export async function* parseSelectedRecipes(
     );
 
     for (let j = 0; j < results.length; j++) {
-      const originalRecipe = batch[j];
-      const result = results[j];
+      const originalRecipe = batch[j]!;
+      const result = results[j]!;
       processedCount++;
 
       if (result.status === 'fulfilled') {

@@ -34,7 +34,7 @@ const orderedTutorialSteps: readonly TutorialStepConfig[] = Object.values(TUTORI
  * @returns True when order matches the first step
  */
 export function isFirstTutorialStep(order: number): boolean {
-  return order === orderedTutorialSteps[0].order;
+  return order === orderedTutorialSteps[0]!.order;
 }
 
 /**
@@ -44,7 +44,7 @@ export function isFirstTutorialStep(order: number): boolean {
  * @returns True when order matches the last step
  */
 export function isLastTutorialStep(order: number): boolean {
-  return order === orderedTutorialSteps[orderedTutorialSteps.length - 1].order;
+  return order === orderedTutorialSteps[orderedTutorialSteps.length - 1]!.order;
 }
 
 /**

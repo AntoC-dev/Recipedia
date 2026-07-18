@@ -96,8 +96,8 @@ describe('RecipeScraperConverter', () => {
       );
 
       expect(steps).toHaveLength(6);
-      expect(steps[0].title).toBe('');
-      expect(steps[0].description).toContain('carotte');
+      expect(steps[0]!.title).toBe('');
+      expect(steps[0]!.description).toContain('carotte');
     });
 
     it('converts nutrition per-serving to per-100g', () => {
@@ -172,9 +172,9 @@ describe('RecipeScraperConverter', () => {
       );
 
       expect(steps).toHaveLength(6);
-      expect(steps[0].title).toBe('');
-      expect(steps[0].description).toContain('oignons');
-      expect(steps[5].description).toContain('ketchup et moutarde');
+      expect(steps[0]!.title).toBe('');
+      expect(steps[0]!.description).toContain('oignons');
+      expect(steps[5]!.description).toContain('ketchup et moutarde');
     });
 
     it('returns undefined nutrition for empty nutrients object', () => {
@@ -251,11 +251,11 @@ describe('RecipeScraperConverter', () => {
       );
 
       expect(steps).toHaveLength(2);
-      expect(steps[0].title).toBe('Le camembert rôti');
-      expect(steps[0].description).toContain('200°C');
-      expect(steps[1].title).toBe('Les mouillettes');
-      expect(steps[1].description).toContain('mouillettes');
-      expect(steps[1].description).toContain('salade');
+      expect(steps[0]!.title).toBe('Le camembert rôti');
+      expect(steps[0]!.description).toContain('200°C');
+      expect(steps[1]!.title).toBe('Les mouillettes');
+      expect(steps[1]!.description).toContain('mouillettes');
+      expect(steps[1]!.description).toContain('salade');
     });
 
     it('converts nutrition per-serving to per-100g', () => {
@@ -533,9 +533,9 @@ describe('RecipeScraperConverter', () => {
       expect(result.ingredients).toHaveLength(3);
       expect(result.skipped).toHaveLength(0);
 
-      expect(result.ingredients[0].name).toBe('Semoule');
-      expect(result.ingredients[1].name).toBe('Carotte');
-      expect(result.ingredients[2].name).toBe('Tomato');
+      expect(result.ingredients[0]!.name).toBe('Semoule');
+      expect(result.ingredients[1]!.name).toBe('Carotte');
+      expect(result.ingredients[2]!.name).toBe('Tomato');
     });
 
     it('separates skipped ingredients from parsed ones', () => {
@@ -549,8 +549,8 @@ describe('RecipeScraperConverter', () => {
       expect(result.ingredients).toHaveLength(2);
       expect(result.skipped).toHaveLength(2);
 
-      expect(result.ingredients[0].name).toBe('Flour');
-      expect(result.ingredients[1].name).toBe('Sugar');
+      expect(result.ingredients[0]!.name).toBe('Flour');
+      expect(result.ingredients[1]!.name).toBe('Sugar');
       expect(result.skipped).toContain('selon le goût Sel');
       expect(result.skipped).toContain('to taste Pepper');
     });
@@ -564,7 +564,7 @@ describe('RecipeScraperConverter', () => {
       );
 
       expect(result.ingredients).toHaveLength(1);
-      expect(result.ingredients[0].name).toBe('Flour');
+      expect(result.ingredients[0]!.name).toBe('Flour');
       expect(result.skipped).toContain('huile de cuisson');
       expect(result.skipped).toContain('huile végétale');
       expect(result.skipped).toContain('cooking oil');
@@ -580,7 +580,7 @@ describe('RecipeScraperConverter', () => {
       );
 
       expect(result.ingredients).toHaveLength(1);
-      expect(result.ingredients[0].name).toBe('Flour');
+      expect(result.ingredients[0]!.name).toBe('Flour');
       expect(result.skipped).toContain('butter');
       expect(result.skipped).toContain('beurre');
     });
@@ -594,10 +594,10 @@ describe('RecipeScraperConverter', () => {
       );
 
       expect(result.ingredients).toHaveLength(2);
-      expect(result.ingredients[0].name).toBe('butter');
-      expect(result.ingredients[0].quantity).toBe('2');
-      expect(result.ingredients[1].name).toBe('beurre');
-      expect(result.ingredients[1].quantity).toBe('50');
+      expect(result.ingredients[0]!.name).toBe('butter');
+      expect(result.ingredients[0]!.quantity).toBe('2');
+      expect(result.ingredients[1]!.name).toBe('beurre');
+      expect(result.ingredients[1]!.quantity).toBe('50');
       expect(result.skipped).toHaveLength(0);
     });
 
@@ -628,8 +628,8 @@ describe('RecipeScraperConverter', () => {
         );
 
         expect(result.ingredients).toHaveLength(1);
-        expect(result.ingredients[0].name).toBe('huile de cuisson');
-        expect(result.ingredients[0].quantity).toBe('2');
+        expect(result.ingredients[0]!.name).toBe('huile de cuisson');
+        expect(result.ingredients[0]!.quantity).toBe('2');
         expect(result.skipped).toHaveLength(0);
       });
 
@@ -654,8 +654,8 @@ describe('RecipeScraperConverter', () => {
         );
 
         expect(result.ingredients).toHaveLength(1);
-        expect(result.ingredients[0].name).toBe("huile d'olive");
-        expect(result.ingredients[0].quantity).toBe('4');
+        expect(result.ingredients[0]!.name).toBe("huile d'olive");
+        expect(result.ingredients[0]!.quantity).toBe('4');
         expect(result.skipped).toHaveLength(0);
       });
 
@@ -672,8 +672,8 @@ describe('RecipeScraperConverter', () => {
         );
 
         expect(result.ingredients).toHaveLength(2);
-        expect(result.ingredients[0].name).toBe("huile d'olive");
-        expect(result.ingredients[1].name).toBe('flour');
+        expect(result.ingredients[0]!.name).toBe("huile d'olive");
+        expect(result.ingredients[1]!.name).toBe('flour');
         expect(result.skipped).toContain("huile d'olive");
       });
 
@@ -686,7 +686,7 @@ describe('RecipeScraperConverter', () => {
         );
 
         expect(result.ingredients).toHaveLength(1);
-        expect(result.ingredients[0].name).toBe('tomato');
+        expect(result.ingredients[0]!.name).toBe('tomato');
         expect(result.skipped).toHaveLength(0);
       });
 
@@ -718,10 +718,10 @@ describe('RecipeScraperConverter', () => {
         );
 
         expect(result.ingredients).toHaveLength(2);
-        expect(result.ingredients[0].name).toBe('butter');
-        expect(result.ingredients[0].quantity).toBe('2');
-        expect(result.ingredients[1].name).toBe('beurre');
-        expect(result.ingredients[1].quantity).toBe('50');
+        expect(result.ingredients[0]!.name).toBe('butter');
+        expect(result.ingredients[0]!.quantity).toBe('2');
+        expect(result.ingredients[1]!.name).toBe('beurre');
+        expect(result.ingredients[1]!.quantity).toBe('50');
         expect(result.skipped).toHaveLength(0);
       });
     });
@@ -791,7 +791,7 @@ describe('RecipeScraperConverter', () => {
     it('filters out empty strings', () => {
       const tags = convertTags(['Valid', '', '  '], []);
       expect(tags).toHaveLength(1);
-      expect(tags[0].name).toBe('Valid');
+      expect(tags[0]!.name).toBe('Valid');
     });
   });
 
@@ -834,17 +834,17 @@ describe('RecipeScraperConverter', () => {
       );
 
       expect(steps).toHaveLength(3);
-      expect(steps[0].title).toBe('');
-      expect(steps[0].description).toBe('First step');
-      expect(steps[1].description).toBe('Second step');
+      expect(steps[0]!.title).toBe('');
+      expect(steps[0]!.description).toBe('First step');
+      expect(steps[1]!.description).toBe('Second step');
     });
 
     it('falls back to instructions string when instructionsList is empty', () => {
       const steps = convertPreparation('1. First step\n2. Second step', [], null);
 
       expect(steps).toHaveLength(2);
-      expect(steps[0].description).toBe('First step');
-      expect(steps[1].description).toBe('Second step');
+      expect(steps[0]!.description).toBe('First step');
+      expect(steps[1]!.description).toBe('Second step');
     });
 
     it('falls back to instructions string when instructionsList is null', () => {
@@ -860,9 +860,9 @@ describe('RecipeScraperConverter', () => {
         null
       );
 
-      expect(steps[0].description).toBe('Mix ingredients');
-      expect(steps[1].description).toBe('Bake for 30 min');
-      expect(steps[2].description).toBe('Serve');
+      expect(steps[0]!.description).toBe('Mix ingredients');
+      expect(steps[1]!.description).toBe('Bake for 30 min');
+      expect(steps[2]!.description).toBe('Serve');
     });
 
     it('filters out empty lines', () => {
@@ -874,7 +874,7 @@ describe('RecipeScraperConverter', () => {
     it('trims whitespace from instructionsList items', () => {
       const steps = convertPreparation('', ['  Step with spaces  '], null);
 
-      expect(steps[0].description).toBe('Step with spaces');
+      expect(steps[0]!.description).toBe('Step with spaces');
     });
 
     it('groups parsedInstructions by title and joins descriptions', () => {
@@ -885,10 +885,10 @@ describe('RecipeScraperConverter', () => {
       const steps = convertPreparation('', null, parsedInstructions);
 
       expect(steps).toHaveLength(2);
-      expect(steps[0].title).toBe('Le camembert rôti');
-      expect(steps[0].description).toBe('Préchauffez le four\nEnfournez');
-      expect(steps[1].title).toBe('Les mouillettes');
-      expect(steps[1].description).toBe('Coupez le pain\nTartinez');
+      expect(steps[0]!.title).toBe('Le camembert rôti');
+      expect(steps[0]!.description).toBe('Préchauffez le four\nEnfournez');
+      expect(steps[1]!.title).toBe('Les mouillettes');
+      expect(steps[1]!.description).toBe('Coupez le pain\nTartinez');
     });
 
     it('uses empty string for parsedInstructions without titles', () => {
@@ -899,10 +899,10 @@ describe('RecipeScraperConverter', () => {
       const steps = convertPreparation('', null, parsedInstructions);
 
       expect(steps).toHaveLength(2);
-      expect(steps[0].title).toBe('');
-      expect(steps[0].description).toBe('Step one\nStep two');
-      expect(steps[1].title).toBe('');
-      expect(steps[1].description).toBe('Step three');
+      expect(steps[0]!.title).toBe('');
+      expect(steps[0]!.description).toBe('Step one\nStep two');
+      expect(steps[1]!.title).toBe('');
+      expect(steps[1]!.description).toBe('Step three');
     });
   });
 

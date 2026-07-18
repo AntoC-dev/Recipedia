@@ -159,8 +159,8 @@ describe('QuitoqueProvider', () => {
       const results = provider.extractRecipeLinksFromHtml(html);
 
       expect(results).toHaveLength(2);
-      expect(results[0].url).toBe('https://www.quitoque.fr/recettes/poulet-roti-aux-herbes');
-      expect(results[1].url).toBe('https://www.quitoque.fr/recettes/pizza-margherita');
+      expect(results[0]!.url).toBe('https://www.quitoque.fr/recettes/poulet-roti-aux-herbes');
+      expect(results[1]!.url).toBe('https://www.quitoque.fr/recettes/pizza-margherita');
     });
 
     it('extracts titles from URL slugs', () => {
@@ -168,7 +168,7 @@ describe('QuitoqueProvider', () => {
 
       const results = provider.extractRecipeLinksFromHtml(html);
 
-      expect(results[0].title).toBe('Poulet tikka masala');
+      expect(results[0]!.title).toBe('Poulet tikka masala');
     });
 
     it('capitalizes first letter of title', () => {
@@ -176,7 +176,7 @@ describe('QuitoqueProvider', () => {
 
       const results = provider.extractRecipeLinksFromHtml(html);
 
-      expect(results[0].title?.charAt(0)).toBe('S');
+      expect(results[0]!.title?.charAt(0)).toBe('S');
     });
 
     it('deduplicates recipe URLs', () => {
@@ -200,7 +200,7 @@ describe('QuitoqueProvider', () => {
       const results = provider.extractRecipeLinksFromHtml(html);
 
       expect(results).toHaveLength(1);
-      expect(results[0].url).toContain('poulet-roti-aux-herbes');
+      expect(results[0]!.url).toContain('poulet-roti-aux-herbes');
     });
   });
 

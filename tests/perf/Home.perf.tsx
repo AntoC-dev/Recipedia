@@ -93,7 +93,7 @@ describe('Home Screen Performance', () => {
     const scenario = async () => {
       const recipes = database.get_recipes();
       if (recipes.length > 0) {
-        await database.deleteRecipe(recipes[0]);
+        await database.deleteRecipe(recipes[0]!);
       }
     };
 

@@ -75,8 +75,8 @@ describe('Shopping Screen', () => {
     await database.addMultipleIngredients(testIngredients);
     await database.addMultipleTags(testTags);
     await database.addMultipleRecipes(testRecipes);
-    await database.addRecipeToMenu(testRecipes[8]);
-    await database.addRecipeToMenu(testRecipes[3]);
+    await database.addRecipeToMenu(testRecipes[8]!);
+    await database.addRecipeToMenu(testRecipes[3]!);
   });
 
   afterEach(async () => await database.closeAndReset());

@@ -59,14 +59,14 @@ describe('ValidationQueue', () => {
     });
 
     test('renders SimilarityDialog when tags are present', () => {
-      const { getByTestId } = renderQueueTags([sampleTags[0]]);
+      const { getByTestId } = renderQueueTags([sampleTags[0]!]);
       expect(
         getByTestId('test-validation::ValidationQueue::Tag::SimilarityDialog::Mock')
       ).toBeTruthy();
     });
 
     test('renders SimilarityDialog when ingredients are present', () => {
-      const { getByTestId } = renderQueueIngredients([sampleIngredients[0]]);
+      const { getByTestId } = renderQueueIngredients([sampleIngredients[0]!]);
       expect(
         getByTestId('test-validation::ValidationQueue::Ingredient::SimilarityDialog::Mock')
       ).toBeTruthy();
@@ -91,7 +91,7 @@ describe('ValidationQueue', () => {
 
   describe('Tag Validation Flow', () => {
     test('shows SimilarityDialog with correct tag props', () => {
-      const { getByTestId } = renderQueueTags([sampleTags[0]]);
+      const { getByTestId } = renderQueueTags([sampleTags[0]!]);
       expect(
         getByTestId('test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.type')
           .props.children
@@ -104,7 +104,7 @@ describe('ValidationQueue', () => {
     });
 
     test('calls onValidated when tag is confirmed', () => {
-      const { getByTestId } = renderQueueTags([sampleTags[0]]);
+      const { getByTestId } = renderQueueTags([sampleTags[0]!]);
 
       fireEvent.press(
         getByTestId('test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.onConfirm')
@@ -114,7 +114,7 @@ describe('ValidationQueue', () => {
     });
 
     test('moves to next tag after validation', async () => {
-      const { getByTestId } = renderQueueTags([sampleTags[0], sampleTags[1]]);
+      const { getByTestId } = renderQueueTags([sampleTags[0]!, sampleTags[1]!]);
 
       expect(
         getByTestId(
@@ -136,7 +136,7 @@ describe('ValidationQueue', () => {
     });
 
     test('calls onComplete when all tags are processed', async () => {
-      const { getByTestId } = renderQueueTags([sampleTags[0]]);
+      const { getByTestId } = renderQueueTags([sampleTags[0]!]);
 
       fireEvent.press(
         getByTestId('test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.onConfirm')
@@ -150,7 +150,7 @@ describe('ValidationQueue', () => {
 
   describe('Ingredient Validation Flow', () => {
     test('shows SimilarityDialog with correct ingredient props', () => {
-      const { getByTestId } = renderQueueIngredients([sampleIngredients[0]]);
+      const { getByTestId } = renderQueueIngredients([sampleIngredients[0]!]);
 
       expect(
         getByTestId(
@@ -165,7 +165,7 @@ describe('ValidationQueue', () => {
     });
 
     test('preserves quantity from original and uses DB unit when validated', () => {
-      const { getByTestId } = renderQueueIngredients([sampleIngredients[0]]);
+      const { getByTestId } = renderQueueIngredients([sampleIngredients[0]!]);
 
       fireEvent.press(
         getByTestId(
@@ -179,7 +179,10 @@ describe('ValidationQueue', () => {
     });
 
     test('moves to next ingredient after validation', async () => {
-      const { getByTestId } = renderQueueIngredients([sampleIngredients[0], sampleIngredients[1]]);
+      const { getByTestId } = renderQueueIngredients([
+        sampleIngredients[0]!,
+        sampleIngredients[1]!,
+      ]);
 
       expect(
         getByTestId(
@@ -203,7 +206,7 @@ describe('ValidationQueue', () => {
     });
 
     test('calls onComplete when all ingredients are processed', async () => {
-      const { getByTestId } = renderQueueIngredients([sampleIngredients[0]]);
+      const { getByTestId } = renderQueueIngredients([sampleIngredients[0]!]);
 
       fireEvent.press(
         getByTestId(
@@ -276,7 +279,7 @@ describe('ValidationQueue', () => {
 
   describe('Dialog Interaction', () => {
     test('hides dialog and moves to next when onDismiss is called', async () => {
-      const { getByTestId } = renderQueueTags([sampleTags[0], sampleTags[1]]);
+      const { getByTestId } = renderQueueTags([sampleTags[0]!, sampleTags[1]!]);
 
       expect(
         getByTestId(
@@ -300,7 +303,7 @@ describe('ValidationQueue', () => {
     });
 
     test('passes correct testId to SimilarityDialog', () => {
-      const { getByTestId } = renderQueueTags([sampleTags[0]], 'custom-test-id');
+      const { getByTestId } = renderQueueTags([sampleTags[0]!], 'custom-test-id');
 
       expect(
         getByTestId('custom-test-id::ValidationQueue::Tag::SimilarityDialog::Mock')
@@ -373,7 +376,7 @@ describe('ValidationQueue', () => {
     });
 
     test('passes no similarItem when item has empty similarItems', () => {
-      const { getByTestId } = renderQueueIngredients([sampleIngredients[0]]);
+      const { getByTestId } = renderQueueIngredients([sampleIngredients[0]!]);
 
       const similarItemText = getByTestId(
         'test-validation::ValidationQueue::Ingredient::SimilarityDialog::Mock::item.similarItem'
@@ -383,7 +386,7 @@ describe('ValidationQueue', () => {
     });
 
     test('passes no similarItem for tags with no pre-computed match', () => {
-      const { getByTestId } = renderQueueTags([sampleTags[0]]);
+      const { getByTestId } = renderQueueTags([sampleTags[0]!]);
 
       const similarItemText = getByTestId(
         'test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.similarItem'

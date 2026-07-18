@@ -93,7 +93,7 @@ describe('Menu and Shopping Pipeline', () => {
       const { result } = renderMenuAndShopping();
 
       await act(async () => {
-        await result.current.menu.addRecipeToMenu(addedRecipe);
+        await result.current.menu.addRecipeToMenu(addedRecipe!);
       });
 
       await waitFor(() => {
@@ -113,7 +113,7 @@ describe('Menu and Shopping Pipeline', () => {
       const { result } = renderMenuAndShopping();
 
       await act(async () => {
-        await result.current.menu.addRecipeToMenu(addedRecipe);
+        await result.current.menu.addRecipeToMenu(addedRecipe!);
       });
 
       await waitFor(() => {
@@ -132,7 +132,7 @@ describe('Menu and Shopping Pipeline', () => {
       const { result } = renderMenuAndShopping();
 
       await act(async () => {
-        await result.current.menu.addRecipeToMenu(addedRecipe);
+        await result.current.menu.addRecipeToMenu(addedRecipe!);
       });
 
       await waitFor(() => {
@@ -150,7 +150,7 @@ describe('Menu and Shopping Pipeline', () => {
       const { result } = renderMenuAndShopping();
 
       await act(async () => {
-        await result.current.menu.addRecipeToMenu(addedRecipe);
+        await result.current.menu.addRecipeToMenu(addedRecipe!);
       });
 
       await waitFor(() => {
@@ -158,12 +158,12 @@ describe('Menu and Shopping Pipeline', () => {
       });
 
       await act(async () => {
-        await result.current.menu.addRecipeToMenu(addedRecipe);
+        await result.current.menu.addRecipeToMenu(addedRecipe!);
       });
 
       await waitFor(() => {
         const menuItem = result.current.menu.menu[0];
-        expect(menuItem.count).toBe(2);
+        expect(menuItem!.count).toBe(2);
       });
 
       const pastaItem = result.current.shopping.shopping.find(item => item.name === 'Pasta');
@@ -178,7 +178,7 @@ describe('Menu and Shopping Pipeline', () => {
 
       const { result } = renderMenuAndShopping();
 
-      expect(result.current.menu.isRecipeInMenu(addedRecipe.id!)).toBe(false);
+      expect(result.current.menu.isRecipeInMenu(addedRecipe!.id!)).toBe(false);
     });
 
     test('returns true after the recipe is added', async () => {
@@ -188,14 +188,14 @@ describe('Menu and Shopping Pipeline', () => {
       const { result } = renderMenuAndShopping();
 
       await act(async () => {
-        await result.current.menu.addRecipeToMenu(addedRecipe);
+        await result.current.menu.addRecipeToMenu(addedRecipe!);
       });
 
       await waitFor(() => {
         expect(result.current.menu.menu).toHaveLength(1);
       });
 
-      expect(result.current.menu.isRecipeInMenu(addedRecipe.id!)).toBe(true);
+      expect(result.current.menu.isRecipeInMenu(addedRecipe!.id!)).toBe(true);
     });
 
     test('returns false after the recipe is removed', async () => {
@@ -205,14 +205,14 @@ describe('Menu and Shopping Pipeline', () => {
       const { result } = renderMenuAndShopping();
 
       await act(async () => {
-        await result.current.menu.addRecipeToMenu(addedRecipe);
+        await result.current.menu.addRecipeToMenu(addedRecipe!);
       });
 
       await waitFor(() => {
         expect(result.current.menu.menu).toHaveLength(1);
       });
 
-      const menuId = result.current.menu.menu[0].id!;
+      const menuId = result.current.menu.menu[0]!.id!;
 
       await act(async () => {
         await result.current.menu.removeFromMenu(menuId);
@@ -222,7 +222,7 @@ describe('Menu and Shopping Pipeline', () => {
         expect(result.current.menu.menu).toHaveLength(0);
       });
 
-      expect(result.current.menu.isRecipeInMenu(addedRecipe.id!)).toBe(false);
+      expect(result.current.menu.isRecipeInMenu(addedRecipe!.id!)).toBe(false);
     });
   });
 
@@ -234,14 +234,14 @@ describe('Menu and Shopping Pipeline', () => {
       const { result } = renderMenuAndShopping();
 
       await act(async () => {
-        await result.current.menu.addRecipeToMenu(addedRecipe);
+        await result.current.menu.addRecipeToMenu(addedRecipe!);
       });
 
       await waitFor(() => {
         expect(result.current.shopping.shopping).toHaveLength(3);
       });
 
-      const menuId = result.current.menu.menu[0].id!;
+      const menuId = result.current.menu.menu[0]!.id!;
 
       await act(async () => {
         await result.current.menu.removeFromMenu(menuId);
@@ -293,14 +293,14 @@ describe('Menu and Shopping Pipeline', () => {
       const { result } = renderMenuAndShopping();
 
       await act(async () => {
-        await result.current.menu.addRecipeToMenu(addedRecipe);
+        await result.current.menu.addRecipeToMenu(addedRecipe!);
       });
 
       await waitFor(() => {
         expect(result.current.shopping.shopping).toHaveLength(3);
       });
 
-      const menuId = result.current.menu.menu[0].id!;
+      const menuId = result.current.menu.menu[0]!.id!;
 
       await act(async () => {
         await result.current.menu.toggleMenuItemCooked(menuId);
@@ -318,14 +318,14 @@ describe('Menu and Shopping Pipeline', () => {
       const { result } = renderMenuAndShopping();
 
       await act(async () => {
-        await result.current.menu.addRecipeToMenu(addedRecipe);
+        await result.current.menu.addRecipeToMenu(addedRecipe!);
       });
 
       await waitFor(() => {
         expect(result.current.menu.menu).toHaveLength(1);
       });
 
-      const menuId = result.current.menu.menu[0].id!;
+      const menuId = result.current.menu.menu[0]!.id!;
 
       await act(async () => {
         await result.current.menu.toggleMenuItemCooked(menuId);
@@ -474,13 +474,13 @@ describe('Menu and Shopping Pipeline', () => {
       const { result } = renderMenuAndShopping();
 
       await act(async () => {
-        await result.current.menu.addRecipeToMenu(addedRecipe);
-        await result.current.menu.addRecipeToMenu(addedRecipe);
+        await result.current.menu.addRecipeToMenu(addedRecipe!);
+        await result.current.menu.addRecipeToMenu(addedRecipe!);
       });
 
       await waitFor(() => {
         const menuItem = result.current.menu.menu[0];
-        expect(menuItem.count).toBe(2);
+        expect(menuItem!.count).toBe(2);
       });
 
       const oliveOilItem = result.current.shopping.shopping.find(item => item.name === 'Olive Oil');
@@ -494,14 +494,14 @@ describe('Menu and Shopping Pipeline', () => {
       const { result } = renderMenuAndShopping();
 
       await act(async () => {
-        await result.current.menu.addRecipeToMenu(addedRecipe);
-        await result.current.menu.addRecipeToMenu(addedRecipe);
-        await result.current.menu.addRecipeToMenu(addedRecipe);
+        await result.current.menu.addRecipeToMenu(addedRecipe!);
+        await result.current.menu.addRecipeToMenu(addedRecipe!);
+        await result.current.menu.addRecipeToMenu(addedRecipe!);
       });
 
       await waitFor(() => {
         const menuItem = result.current.menu.menu[0];
-        expect(menuItem.count).toBe(3);
+        expect(menuItem!.count).toBe(3);
       });
 
       const tomatoItem = result.current.shopping.shopping.find(item => item.name === 'Tomato');
@@ -517,7 +517,7 @@ describe('Menu and Shopping Pipeline', () => {
       const { result } = renderMenuAndShopping();
 
       await act(async () => {
-        await result.current.menu.addRecipeToMenu(addedRecipe);
+        await result.current.menu.addRecipeToMenu(addedRecipe!);
       });
 
       await waitFor(() => {
@@ -541,7 +541,7 @@ describe('Menu and Shopping Pipeline', () => {
       const { result } = renderMenuAndShopping();
 
       await act(async () => {
-        await result.current.menu.addRecipeToMenu(addedRecipe);
+        await result.current.menu.addRecipeToMenu(addedRecipe!);
       });
 
       await waitFor(() => {
@@ -574,7 +574,7 @@ describe('Menu and Shopping Pipeline', () => {
       const { result } = renderMenuAndShopping();
 
       await act(async () => {
-        await result.current.menu.addRecipeToMenu(addedRecipe);
+        await result.current.menu.addRecipeToMenu(addedRecipe!);
       });
 
       await waitFor(() => {
@@ -605,7 +605,7 @@ describe('Menu and Shopping Pipeline', () => {
       const { result } = renderMenuAndShopping();
 
       await act(async () => {
-        await result.current.menu.addRecipeToMenu(addedRecipe);
+        await result.current.menu.addRecipeToMenu(addedRecipe!);
       });
 
       await waitFor(() => {
@@ -639,7 +639,7 @@ describe('Menu and Shopping Pipeline', () => {
       const { result } = renderMenuAndShopping();
 
       await act(async () => {
-        await result.current.menu.addRecipeToMenu(addedRecipe);
+        await result.current.menu.addRecipeToMenu(addedRecipe!);
       });
 
       await waitFor(() => {
@@ -720,7 +720,7 @@ describe('Menu and Shopping Pipeline', () => {
       const { result } = renderMenuAndShopping();
 
       await act(async () => {
-        await result.current.menu.addRecipeToMenu(addedRecipe);
+        await result.current.menu.addRecipeToMenu(addedRecipe!);
       });
 
       await waitFor(() => {
@@ -741,7 +741,7 @@ describe('Menu and Shopping Pipeline', () => {
       });
 
       await act(async () => {
-        await result.current.menu.addRecipeToMenu(addedRecipe);
+        await result.current.menu.addRecipeToMenu(addedRecipe!);
       });
 
       await waitFor(() => {

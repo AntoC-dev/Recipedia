@@ -277,7 +277,7 @@ describe('useRecipeOCR', () => {
       });
 
       expect(result.current.form.form.getValues('recipePreparation')).toHaveLength(2);
-      expect(result.current.form.form.getValues('recipePreparation')[0].title).toBe('Step 1');
+      expect(result.current.form.form.getValues('recipePreparation')[0]!.title).toBe('Step 1');
     });
 
     test('fills nutrition field with defaults for missing values', async () => {
@@ -759,7 +759,7 @@ describe('useRecipeOCR', () => {
         await result.current.ocr.fillOneField('image.jpg', 'ingredientQuantities');
       });
 
-      expect(result.current.form.form.getValues('recipeIngredients')[0].quantity).toBe('350');
+      expect(result.current.form.form.getValues('recipeIngredients')[0]!.quantity).toBe('350');
     });
 
     test('ingredientQuantities count mismatch still pairs by position up to min(len)', async () => {
@@ -783,7 +783,7 @@ describe('useRecipeOCR', () => {
         await result.current.ocr.fillOneField('image.jpg', 'ingredientQuantities');
       });
 
-      expect(result.current.form.form.getValues('recipeIngredients')[0].quantity).toBe('100');
+      expect(result.current.form.form.getValues('recipeIngredients')[0]!.quantity).toBe('100');
     });
 
     test('ingredientNames OCR processes each name exactly once (no duplicate runs)', async () => {
@@ -1078,7 +1078,9 @@ describe('useRecipeOCR', () => {
           await result.current.ocr.fillOneField('image.jpg', 'ingredientQuantities');
         });
 
-        expect(result.current.form.form.getValues('recipeIngredients')![0].quantity).toBe(expected);
+        expect(result.current.form.form.getValues('recipeIngredients')![0]!.quantity).toBe(
+          expected
+        );
       }
     );
 
@@ -1105,7 +1107,7 @@ describe('useRecipeOCR', () => {
           await result.current.ocr.fillOneField('image.jpg', 'ingredientQuantities');
         });
 
-        expect(result.current.form.form.getValues('recipeIngredients')![0].quantity).toBe('');
+        expect(result.current.form.form.getValues('recipeIngredients')![0]!.quantity).toBe('');
       }
     );
   });

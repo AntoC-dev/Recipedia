@@ -74,9 +74,9 @@ export function Search() {
     }
     hasSelfAdvancedRef.current = true;
     if (currentStepOrder < stepOrder) {
-      copilotData.goToNext();
+      void copilotData.goToNext();
     } else {
-      copilotData.goToPrev();
+      void copilotData.goToPrev();
     }
   }, [copilotData, screenFocused, toggleButtonTop, currentStepOrder, stepOrder]);
 

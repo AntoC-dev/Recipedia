@@ -79,7 +79,7 @@ describe('RecipeRecommendation Component', () => {
   });
 
   test('handles single recipe correctly', () => {
-    const singleRecipe = [testRecipes[0]];
+    const singleRecipe = [testRecipes[0]!];
     const props = { ...defaultProps, carouselProps: singleRecipe };
     const { getByTestId } = renderRecipeRecommendation(props);
 
@@ -93,7 +93,7 @@ describe('RecipeRecommendation Component', () => {
 
   test('handles large recipe collections correctly', () => {
     const largeRecipeCollection = Array.from({ length: 50 }, (_, index) => ({
-      ...testRecipes[0],
+      ...testRecipes[0]!,
       id: index + 1,
       title: `Recipe ${index + 1}`,
       description: `Description for recipe ${index + 1}`,
@@ -122,7 +122,7 @@ describe('RecipeRecommendation Component', () => {
 
   test('preserves recipe data integrity through props', () => {
     const complexRecipe = {
-      ...testRecipes[6],
+      ...testRecipes[6]!,
       title: 'Complex Recipe with Special Characters: é, ñ, 中文',
       description: 'Description with "quotes" and special chars: @#$%^&*()',
     };
@@ -141,7 +141,7 @@ describe('RecipeRecommendation Component', () => {
     const newProps = {
       testId: 'test-recommendation',
       titleRecommendation: 'Updated Recommendations',
-      carouselProps: [testRecipes[1]],
+      carouselProps: [testRecipes[1]!],
     };
     rerender(<RecipeRecommendation {...newProps} />);
 
@@ -153,7 +153,7 @@ describe('RecipeRecommendation Component', () => {
 
     const renderConfigs = [
       { title: 'Config 1', recipes: mockRecipes },
-      { title: 'Config 2', recipes: [testRecipes[0]] },
+      { title: 'Config 2', recipes: [testRecipes[0]!] },
       { title: 'Config 3', recipes: [] },
       { title: 'Config 4', recipes: mockRecipes },
     ];

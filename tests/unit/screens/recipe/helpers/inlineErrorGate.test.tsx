@@ -43,8 +43,9 @@ function renderHostedProbe(defaults?: Partial<RecipeFormInput>) {
         ...defaults,
       },
     });
-    // eslint-disable-next-line react-compiler/react-compiler
-    formRef.current = form;
+    React.useEffect(() => {
+      formRef.current = form;
+    });
     return (
       <FormProvider {...form}>
         <Probe name='recipeTitle' />

@@ -125,7 +125,7 @@ export class SchemaRecipeParser {
     };
   }
 
-  private asString(value: JsonValue): string | null {
+  private asString(value: JsonValue | undefined): string | null {
     return typeof value === 'string' ? value : null;
   }
 
@@ -206,7 +206,7 @@ export class SchemaRecipeParser {
     return null;
   }
 
-  private parseISO8601Duration(value: JsonValue): number | null {
+  private parseISO8601Duration(value: JsonValue | undefined): number | null {
     if (typeof value !== 'string') return null;
 
     const match = value.match(/P(?:(\d+)D)?T?(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/i);
@@ -295,7 +295,7 @@ export class SchemaRecipeParser {
     return null;
   }
 
-  private extractStringOrFirst(value: JsonValue): string | null {
+  private extractStringOrFirst(value: JsonValue | undefined): string | null {
     if (typeof value === 'string') {
       return value;
     }

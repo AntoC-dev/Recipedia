@@ -412,7 +412,7 @@ function RecipeFormBody({
           similarRecipes.map(r => r.title).join(separator),
         confirmText: t('addAnyway'),
         cancelText: t('cancel'),
-        onConfirm: addRecipeToDatabase,
+        onConfirm: () => void addRecipeToDatabase(),
       });
     }
   }
@@ -615,7 +615,7 @@ function RecipeFormBody({
         <ModalImageSelect
           arrImg={imgList}
           autoSelect={modalAutoSelect}
-          onSelectFunction={handleModalSelect}
+          onSelectFunction={img => void handleModalSelect(img)}
           onDismissFunction={handleModalDismiss}
           onImagesUpdated={handleModalImagesUpdated}
         />

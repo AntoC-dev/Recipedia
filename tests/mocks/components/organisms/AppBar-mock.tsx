@@ -16,19 +16,19 @@ export function appBarMock({
   return (
     <View testID={testId}>
       {isEditing ? (
-        <Button testID={testId + '::Cancel'} onPress={() => onCancel?.()} title="Cancel" />
+        <Button testID={testId + '::Cancel'} onPress={() => onCancel?.()} title='Cancel' />
       ) : (
-        <Button testID={testId + '::BackButton'} onPress={onGoBack} title="Back" />
+        <Button testID={testId + '::BackButton'} onPress={onGoBack} title='Back' />
       )}
       {title && (
         <View>
           <Text testID={testId + '::Title'}>{title}</Text>
         </View>
       )}
-      {onDelete && <Button testID={testId + '::Delete'} onPress={onDelete} title="Delete" />}
-      {onEdit && <Button testID={testId + '::Edit'} onPress={onEdit} title="Edit" />}
+      {onDelete && <Button testID={testId + '::Delete'} onPress={onDelete} title='Delete' />}
+      {onEdit && <Button testID={testId + '::Edit'} onPress={onEdit} title='Edit' />}
       {isEditing && onValidate && (
-        <Button testID={testId + '::Validate'} onPress={onValidate} title="Validate" />
+        <Button testID={testId + '::Validate'} onPress={onValidate} title='Validate' />
       )}
     </View>
   );

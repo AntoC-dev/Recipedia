@@ -103,7 +103,7 @@ describe('RecipeAddScrape', () => {
       });
 
       expect(clearCacheMock.mock.invocationCallOrder[0]).toBeGreaterThan(
-        addRecipeSpy.mock.invocationCallOrder[0]
+        addRecipeSpy.mock.invocationCallOrder[0]!
       );
 
       addRecipeSpy.mockRestore();

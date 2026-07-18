@@ -212,7 +212,7 @@ export function buildRecipeImageProps({
   return {
     imgUri: recipeImage,
     openModal: openModalForField,
-    buttonIcon: IMAGE_BUTTON_CONFIG[stackMode],
+    buttonIcon: IMAGE_BUTTON_CONFIG[stackMode]!,
   };
 }
 

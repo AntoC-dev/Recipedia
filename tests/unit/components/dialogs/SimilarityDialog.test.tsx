@@ -22,10 +22,10 @@ describe('SimilarityDialog', () => {
   const mockOnUseExisting = jest.fn();
   const mockOnDismiss = jest.fn();
 
-  const similarIngredient: ingredientTableElement = testIngredients[0];
-  const similarTag: tagTableElement = testTags[0];
-  const otherIngredient: ingredientTableElement = testIngredients[1];
-  const otherTag: tagTableElement = testTags[1];
+  const similarIngredient: ingredientTableElement = testIngredients[0]!;
+  const similarTag: tagTableElement = testTags[0]!;
+  const otherIngredient: ingredientTableElement = testIngredients[1]!;
+  const otherTag: tagTableElement = testTags[1]!;
 
   beforeEach(async () => {
     await database.init();

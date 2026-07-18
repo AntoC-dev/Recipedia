@@ -59,7 +59,7 @@ describe('RecipeFormTagsPipeline (real useTags + real RecipeDatabase)', () => {
         expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(1);
       });
 
-      expect(result.current.form.form.getValues('recipeTags')![0].name).toBe('Italian');
+      expect(result.current.form.form.getValues('recipeTags')![0]!.name).toBe('Italian');
       expect(result.current.dialogs.validationQueue).toBeNull();
     });
   });
@@ -183,7 +183,7 @@ describe('RecipeFormTagsPipeline (real useTags + real RecipeDatabase)', () => {
       });
 
       expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(1);
-      expect(result.current.form.form.getValues('recipeTags')![0].name).toBe('Vegan');
+      expect(result.current.form.form.getValues('recipeTags')![0]!.name).toBe('Vegan');
     });
   });
 });

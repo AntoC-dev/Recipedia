@@ -26,7 +26,7 @@ describe('SettingsItemCard Component', () => {
     const defaultProps: SettingsItemCardProps<ingredientTableElement> = {
       type: 'ingredient',
       testIdPrefix: `${testIDProp}::10`,
-      item: testIngredients[9],
+      item: testIngredients[9]!,
       onEdit: mockOnEdit,
       onDelete: mockOnDelete,
     };
@@ -79,7 +79,7 @@ describe('SettingsItemCard Component', () => {
     const defaultProps: SettingsItemCardProps<tagTableElement> = {
       type: 'tag',
       testIdPrefix: `${testIDProp}::14`,
-      item: testTags[13],
+      item: testTags[13]!,
       onEdit: mockOnEdit,
       onDelete: mockOnDelete,
     };

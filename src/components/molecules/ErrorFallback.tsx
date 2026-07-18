@@ -87,7 +87,7 @@ export function ErrorFallback({
           mode='contained'
           buttonColor={colors.errorContainer}
           textColor={colors.onErrorContainer}
-          onPress={handleReport}
+          onPress={() => void handleReport?.()}
           loading={reporting}
           disabled={reporting}
           style={styles.action}

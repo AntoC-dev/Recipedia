@@ -123,14 +123,14 @@ describe('TagsSettings Screen', () => {
       expect(getByTestId('TagsSettings::ItemDialog::Item')).toBeTruthy();
     });
 
-    dialogIsOpen(sortedDataset[0], 'edit', getByTestId);
+    dialogIsOpen(sortedDataset[0]!, 'edit', getByTestId);
 
     fireEvent.press(getByTestId('TagsSettings::ItemDialog::Item::OnConfirm'));
 
     await waitFor(() => {
-      expect(db.get_tags().find(tag => isTagEqual(tag, sortedDataset[0]))).toBeUndefined();
+      expect(db.get_tags().find(tag => isTagEqual(tag, sortedDataset[0]!))).toBeUndefined();
     });
-    const newTag = db.get_tags().find(tag => tag.id === sortedDataset[0].id);
+    const newTag = db.get_tags().find(tag => tag.id === sortedDataset[0]!.id);
     expect(newTag?.name).toEqual('New Value');
   });
 
@@ -142,13 +142,13 @@ describe('TagsSettings Screen', () => {
       expect(getByTestId('TagsSettings::ItemDialog::Item')).toBeTruthy();
     });
 
-    dialogIsOpen(sortedDataset[0], 'delete', getByTestId);
+    dialogIsOpen(sortedDataset[0]!, 'delete', getByTestId);
 
     fireEvent.press(getByTestId('TagsSettings::ItemDialog::Item::OnConfirm'));
 
     await waitFor(() => {
       expect(db.get_tags().length).toEqual(sortedDataset.length - 1);
     });
-    expect(db.get_tags().find(tag => isTagEqual(tag, sortedDataset[0]))).toBeUndefined();
+    expect(db.get_tags().find(tag => isTagEqual(tag, sortedDataset[0]!))).toBeUndefined();
   });
 });

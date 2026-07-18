@@ -64,12 +64,6 @@ jobs:
           node-version: '24'
       - name: Run ESLint
         run: npm run lint
-      - name: Upload ESLint results
-        uses: actions/upload-artifact@v7
-        with:
-          name: eslint-results
-          path: eslint-results.json
-          retention-days: 7
 
   formatting:
     name: Code Formatting

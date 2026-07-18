@@ -156,7 +156,7 @@ describe('useValidationWorkflow with real DB', () => {
 
       expect(result.current.validationState?.ingredientsToValidate).toHaveLength(1);
       const fuzzyItem = result.current.validationState!.ingredientsToValidate[0];
-      expect(fuzzyItem.similarItems.length).toBeGreaterThan(0);
+      expect(fuzzyItem!.similarItems.length).toBeGreaterThan(0);
     });
 
     test('fuzzy-only tag match routes to reviewing phase', async () => {
@@ -175,7 +175,7 @@ describe('useValidationWorkflow with real DB', () => {
 
       expect(result.current.validationState?.tagsToValidate).toHaveLength(1);
       const fuzzyTag = result.current.validationState!.tagsToValidate[0];
-      expect(fuzzyTag.similarItems.length).toBeGreaterThan(0);
+      expect(fuzzyTag!.similarItems.length).toBeGreaterThan(0);
     });
   });
 
@@ -192,7 +192,9 @@ describe('useValidationWorkflow with real DB', () => {
       );
 
       expect(result.current.validationState?.ingredientsToValidate).toHaveLength(1);
-      expect(result.current.validationState?.ingredientsToValidate[0].similarItems).toHaveLength(0);
+      expect(result.current.validationState?.ingredientsToValidate[0]!.similarItems).toHaveLength(
+        0
+      );
     });
 
     test('brand new tag with empty DB routes to reviewing', async () => {
@@ -209,7 +211,7 @@ describe('useValidationWorkflow with real DB', () => {
       );
 
       expect(result.current.validationState?.tagsToValidate).toHaveLength(1);
-      expect(result.current.validationState?.tagsToValidate[0].similarItems).toHaveLength(0);
+      expect(result.current.validationState?.tagsToValidate[0]!.similarItems).toHaveLength(0);
     });
   });
 
@@ -238,7 +240,7 @@ describe('useValidationWorkflow with real DB', () => {
 
       const savedRecipes = db.get_recipes();
       expect(savedRecipes).toHaveLength(1);
-      expect(savedRecipes[0].title).toBe('Pasta');
+      expect(savedRecipes[0]!.title).toBe('Pasta');
       expect(result.current.importedCount).toBe(1);
     });
 

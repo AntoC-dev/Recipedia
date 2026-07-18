@@ -156,20 +156,20 @@ describe('useVisibleImageLoader', () => {
     });
     expect(result.current.pendingCount).toBe(2);
 
-    resolvers[0]();
+    resolvers[0]!();
 
     await waitFor(() => {
       expect(fetchImageUrl).toHaveBeenCalledTimes(3);
     });
 
-    resolvers[1]();
-    resolvers[2]();
+    resolvers[1]!();
+    resolvers[2]!();
 
     await waitFor(() => {
       expect(fetchImageUrl).toHaveBeenCalledTimes(4);
     });
 
-    resolvers[3]();
+    resolvers[3]!();
 
     await waitFor(() => {
       expect(result.current.pendingCount).toBe(0);
@@ -199,11 +199,11 @@ describe('useVisibleImageLoader', () => {
     await waitFor(() => {
       expect(signals).toHaveLength(1);
     });
-    expect(signals[0].aborted).toBe(false);
+    expect(signals[0]!.aborted).toBe(false);
 
     unmount();
 
-    expect(signals[0].aborted).toBe(true);
+    expect(signals[0]!.aborted).toBe(true);
   });
 
   test('cancels out-of-bounds fetches and drops a result that resolves after abort', async () => {

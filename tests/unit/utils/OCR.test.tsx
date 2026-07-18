@@ -1697,13 +1697,13 @@ describe('OCR Utility Functions', () => {
       const result = parseIngredientsNoHeader(lines);
 
       expect(result).toHaveLength(3);
-      expect(result[0].name).toBe('Flour');
-      expect(result[0].quantityPerPersons[0].quantity).toBe('200');
-      expect(result[0].unit).toBe('g');
-      expect(result[1].name).toBe('Sugar');
-      expect(result[1].quantityPerPersons[0].quantity).toBe('100');
-      expect(result[2].name).toBe('Salt');
-      expect(result[2].quantityPerPersons[0].quantity).toBe('5');
+      expect(result[0]!.name).toBe('Flour');
+      expect(result[0]!.quantityPerPersons[0]!.quantity).toBe('200');
+      expect(result[0]!.unit).toBe('g');
+      expect(result[1]!.name).toBe('Sugar');
+      expect(result[1]!.quantityPerPersons[0]!.quantity).toBe('100');
+      expect(result[2]!.name).toBe('Salt');
+      expect(result[2]!.quantityPerPersons[0]!.quantity).toBe('5');
     });
 
     test('iOS format: quantities first half start with digit — halves swapped', () => {
@@ -1711,12 +1711,12 @@ describe('OCR Utility Functions', () => {
       const result = parseIngredientsNoHeader(lines);
 
       expect(result).toHaveLength(2);
-      expect(result[0].name).toBe('Flour');
-      expect(result[0].quantityPerPersons[0].quantity).toBe('200');
-      expect(result[0].unit).toBe('g');
-      expect(result[1].name).toBe('Water');
-      expect(result[1].quantityPerPersons[0].quantity).toBe('100');
-      expect(result[1].unit).toBe('ml');
+      expect(result[0]!.name).toBe('Flour');
+      expect(result[0]!.quantityPerPersons[0]!.quantity).toBe('200');
+      expect(result[0]!.unit).toBe('g');
+      expect(result[1]!.name).toBe('Water');
+      expect(result[1]!.quantityPerPersons[0]!.quantity).toBe('100');
+      expect(result[1]!.unit).toBe('ml');
     });
 
     test('odd number of lines: mid=1 produces 1 paired ingredient without crashing', () => {
@@ -1724,9 +1724,9 @@ describe('OCR Utility Functions', () => {
       const result = parseIngredientsNoHeader(lines);
 
       expect(result).toHaveLength(1);
-      expect(result[0].name).toBe('Butter');
-      expect(result[0].quantityPerPersons[0].quantity).toBe('50');
-      expect(result[0].unit).toBe('g');
+      expect(result[0]!.name).toBe('Butter');
+      expect(result[0]!.quantityPerPersons[0]!.quantity).toBe('50');
+      expect(result[0]!.unit).toBe('g');
     });
   });
 });

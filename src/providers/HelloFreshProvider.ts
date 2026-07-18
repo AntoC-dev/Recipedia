@@ -155,7 +155,7 @@ export class HelloFreshProvider extends BaseRecipeProvider {
 
     let match;
     while ((match = RECIPE_URL_REGEX.exec(html)) !== null) {
-      const matchedUrl = match[1];
+      const matchedUrl = match[1]!;
       const fullUrl = matchedUrl.startsWith('http') ? matchedUrl : this.currentBaseUrl + matchedUrl;
 
       if (!seenUrls.has(fullUrl)) {
@@ -185,7 +185,7 @@ export class HelloFreshProvider extends BaseRecipeProvider {
 
     let match;
     while ((match = CATEGORY_URL_REGEX.exec(html)) !== null) {
-      const matchedUrl = match[1];
+      const matchedUrl = match[1]!;
       const fullUrl = matchedUrl.startsWith('http') ? matchedUrl : baseUrl + matchedUrl;
 
       const path = fullUrl.replace(/^https?:\/\/[^/]+/, '');

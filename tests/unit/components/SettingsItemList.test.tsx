@@ -13,9 +13,9 @@ jest.mock('@components/molecules/SettingsItemCard', () => ({
 }));
 
 describe('SettingsItemList Component', () => {
-  const mockTags = [testTags[7], testTags[0], testTags[8]];
+  const mockTags = [testTags[7]!, testTags[0]!, testTags[8]!];
 
-  const mockIngredients = [testIngredients[1], testIngredients[4]];
+  const mockIngredients = [testIngredients[1]!, testIngredients[4]!];
 
   const mockOnEdit = jest.fn();
   const mockOnDelete = jest.fn();
@@ -50,7 +50,7 @@ describe('SettingsItemList Component', () => {
 
       fireEvent.press(
         getByTestId(
-          `${defaultProps.testIdPrefix}::${mockIngredients[0].id}::SettingsItemCard::OnEdit`
+          `${defaultProps.testIdPrefix}::${mockIngredients[0]!.id}::SettingsItemCard::OnEdit`
         )
       );
 
@@ -62,7 +62,7 @@ describe('SettingsItemList Component', () => {
 
       fireEvent.press(
         getByTestId(
-          `${defaultProps.testIdPrefix}::${mockIngredients[0].id}::SettingsItemCard::OnDelete`
+          `${defaultProps.testIdPrefix}::${mockIngredients[0]!.id}::SettingsItemCard::OnDelete`
         )
       );
 
@@ -80,12 +80,12 @@ describe('SettingsItemList Component', () => {
 
       expect(
         getByTestId(
-          `${defaultProps.testIdPrefix}::${mockIngredients[0].id}::SettingsItemCard::Item`
+          `${defaultProps.testIdPrefix}::${mockIngredients[0]!.id}::SettingsItemCard::Item`
         )
       ).toBeTruthy();
       expect(
         getByTestId(
-          `${defaultProps.testIdPrefix}::${mockIngredients[1].id}::SettingsItemCard::Item`
+          `${defaultProps.testIdPrefix}::${mockIngredients[1]!.id}::SettingsItemCard::Item`
         )
       ).toBeTruthy();
     });
@@ -97,12 +97,12 @@ describe('SettingsItemList Component', () => {
 
       expect(
         getByTestId(
-          `${defaultProps.testIdPrefix}::${mockIngredients[0].id}::SettingsItemCard::Item`
+          `${defaultProps.testIdPrefix}::${mockIngredients[0]!.id}::SettingsItemCard::Item`
         ).props.children
       ).toEqual(JSON.stringify(mockIngredients[0]));
       expect(
         queryByTestId(
-          `${defaultProps.testIdPrefix}::${mockIngredients[1].id}::SettingsItemCard::Item`
+          `${defaultProps.testIdPrefix}::${mockIngredients[1]!.id}::SettingsItemCard::Item`
         )
       ).toBeNull();
     });
@@ -114,7 +114,7 @@ describe('SettingsItemList Component', () => {
 
       expect(
         queryByTestId(
-          `${defaultProps.testIdPrefix}::${mockIngredients[0].id}::SettingsItemCard::Item`
+          `${defaultProps.testIdPrefix}::${mockIngredients[0]!.id}::SettingsItemCard::Item`
         )
       ).toBeNull();
     });
@@ -127,12 +127,12 @@ describe('SettingsItemList Component', () => {
 
       expect(
         getByTestId(
-          `${defaultProps.testIdPrefix}::${mockIngredients[0].id}::SettingsItemCard::Item`
+          `${defaultProps.testIdPrefix}::${mockIngredients[0]!.id}::SettingsItemCard::Item`
         )
       ).toBeTruthy();
       expect(
         getByTestId(
-          `${defaultProps.testIdPrefix}::${mockIngredients[1].id}::SettingsItemCard::Item`
+          `${defaultProps.testIdPrefix}::${mockIngredients[1]!.id}::SettingsItemCard::Item`
         )
       ).toBeTruthy();
     });
@@ -144,20 +144,20 @@ describe('SettingsItemList Component', () => {
 
       expect(
         getByTestId(
-          `${defaultProps.testIdPrefix}::${mockIngredients[1].id}::SettingsItemCard::Item`
+          `${defaultProps.testIdPrefix}::${mockIngredients[1]!.id}::SettingsItemCard::Item`
         ).props.children
       ).toEqual(JSON.stringify(mockIngredients[1]));
       expect(
         queryByTestId(
-          `${defaultProps.testIdPrefix}::${mockIngredients[0].id}::SettingsItemCard::Item`
+          `${defaultProps.testIdPrefix}::${mockIngredients[0]!.id}::SettingsItemCard::Item`
         )
       ).toBeNull();
     });
 
     test('uses item name as key when id is missing', () => {
       const noIdIngredients: ingredientTableElement[] = [
-        { ...mockIngredients[0], id: undefined as any },
-        { ...mockIngredients[1], id: undefined as any },
+        { ...mockIngredients[0]!, id: undefined as any },
+        { ...mockIngredients[1]!, id: undefined as any },
       ];
       const props: SettingsItemListProps<ingredientTableElement> = {
         ...defaultProps,
@@ -168,12 +168,12 @@ describe('SettingsItemList Component', () => {
 
       expect(
         getByTestId(
-          `${defaultProps.testIdPrefix}::${noIdIngredients[0].name}::SettingsItemCard::Item`
+          `${defaultProps.testIdPrefix}::${noIdIngredients[0]!.name}::SettingsItemCard::Item`
         )
       ).toBeTruthy();
       expect(
         getByTestId(
-          `${defaultProps.testIdPrefix}::${noIdIngredients[1].name}::SettingsItemCard::Item`
+          `${defaultProps.testIdPrefix}::${noIdIngredients[1]!.name}::SettingsItemCard::Item`
         )
       ).toBeTruthy();
     });
@@ -204,7 +204,7 @@ describe('SettingsItemList Component', () => {
       const { getByTestId } = render(<SettingsItemList {...defaultProps} />);
 
       fireEvent.press(
-        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[0].id}::SettingsItemCard::OnEdit`)
+        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[0]!.id}::SettingsItemCard::OnEdit`)
       );
 
       expect(mockOnEdit).toHaveBeenCalledWith(defaultProps.items[0]);
@@ -214,7 +214,7 @@ describe('SettingsItemList Component', () => {
       const { getByTestId } = render(<SettingsItemList {...defaultProps} />);
 
       fireEvent.press(
-        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[0].id}::SettingsItemCard::OnDelete`)
+        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[0]!.id}::SettingsItemCard::OnDelete`)
       );
 
       expect(mockOnDelete).toHaveBeenCalledWith(defaultProps.items[0]);
@@ -230,13 +230,13 @@ describe('SettingsItemList Component', () => {
       const { getByTestId } = render(<SettingsItemList {...defaultProps} />);
 
       expect(
-        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[0].id}::SettingsItemCard::Item`)
+        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[0]!.id}::SettingsItemCard::Item`)
       ).toBeTruthy();
       expect(
-        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[1].id}::SettingsItemCard::Item`)
+        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[1]!.id}::SettingsItemCard::Item`)
       ).toBeTruthy();
       expect(
-        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[2].id}::SettingsItemCard::Item`)
+        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[2]!.id}::SettingsItemCard::Item`)
       ).toBeTruthy();
     });
 
@@ -246,11 +246,11 @@ describe('SettingsItemList Component', () => {
       fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), 'soup');
 
       expect(
-        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[0].id}::SettingsItemCard::Item`).props
-          .children
+        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[0]!.id}::SettingsItemCard::Item`)
+          .props.children
       ).toEqual(JSON.stringify(mockTags[0]));
       expect(
-        queryByTestId(`${defaultProps.testIdPrefix}::${mockTags[1].id}::SettingsItemCard::Item`)
+        queryByTestId(`${defaultProps.testIdPrefix}::${mockTags[1]!.id}::SettingsItemCard::Item`)
       ).toBeNull();
     });
 
@@ -260,7 +260,7 @@ describe('SettingsItemList Component', () => {
       fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), 'xyz');
 
       expect(
-        queryByTestId(`${defaultProps.testIdPrefix}::${mockTags[0].id}::SettingsItemCard::Item`)
+        queryByTestId(`${defaultProps.testIdPrefix}::${mockTags[0]!.id}::SettingsItemCard::Item`)
       ).toBeNull();
     });
 
@@ -271,13 +271,13 @@ describe('SettingsItemList Component', () => {
       fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), '');
 
       expect(
-        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[0].id}::SettingsItemCard::Item`)
+        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[0]!.id}::SettingsItemCard::Item`)
       ).toBeTruthy();
       expect(
-        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[1].id}::SettingsItemCard::Item`)
+        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[1]!.id}::SettingsItemCard::Item`)
       ).toBeTruthy();
       expect(
-        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[2].id}::SettingsItemCard::Item`)
+        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[2]!.id}::SettingsItemCard::Item`)
       ).toBeTruthy();
     });
 
@@ -287,8 +287,8 @@ describe('SettingsItemList Component', () => {
       fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), 'ital');
 
       expect(
-        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[1].id}::SettingsItemCard::Item`).props
-          .children
+        getByTestId(`${defaultProps.testIdPrefix}::${mockTags[1]!.id}::SettingsItemCard::Item`)
+          .props.children
       ).toEqual(JSON.stringify(mockTags[1]));
     });
   });

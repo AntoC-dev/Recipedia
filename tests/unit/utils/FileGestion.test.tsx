@@ -356,7 +356,7 @@ describe('FileGestion Utility', () => {
     saveRecipeImage('/temp/image.jpg', 'My Recipe');
 
     const copyCallOrder = mockFileCopy.mock.invocationCallOrder[0];
-    const deleteCallOrder = mockFileDelete.mock.invocationCallOrder[0];
+    const deleteCallOrder = mockFileDelete.mock.invocationCallOrder[0]!;
     expect(copyCallOrder).toBeLessThan(deleteCallOrder);
   });
 
@@ -631,7 +631,7 @@ describe('copyDatasetImages', () => {
       createMockAsset('image2', 'jpg', '/asset/path/image2.jpg'),
     ];
     // Make first one fail
-    mockAssets[0].downloadAsync.mockRejectedValue(new Error('Download failed'));
+    mockAssets[0]!.downloadAsync.mockRejectedValue(new Error('Download failed'));
 
     mockAssetFromModule
       .mockReturnValueOnce(mockAssets[0])
@@ -916,7 +916,7 @@ describe('transformDatasetRecipeImages', () => {
 
     const result = transformDatasetRecipeImages(recipes);
 
-    expect(result[0].image_Source).toBe(defaultDocumentsPath + 'spaghetti_bolognese.webp');
+    expect(result[0]!.image_Source).toBe(defaultDocumentsPath + 'spaghetti_bolognese.webp');
   });
 
   test('transforms multiple recipes', () => {
@@ -949,8 +949,8 @@ describe('transformDatasetRecipeImages', () => {
 
     const result = transformDatasetRecipeImages(recipes);
 
-    expect(result[0].image_Source).toBe(defaultDocumentsPath + 'image1.png');
-    expect(result[1].image_Source).toBe(defaultDocumentsPath + 'image2.jpg');
+    expect(result[0]!.image_Source).toBe(defaultDocumentsPath + 'image1.png');
+    expect(result[1]!.image_Source).toBe(defaultDocumentsPath + 'image2.jpg');
   });
 
   test('preserves all other recipe properties', () => {
@@ -983,14 +983,14 @@ describe('transformDatasetRecipeImages', () => {
 
     const result = transformDatasetRecipeImages(recipes);
 
-    expect(result[0].id).toBe(1);
-    expect(result[0].title).toBe('Test Recipe');
-    expect(result[0].description).toBe('Test description');
-    expect(result[0].preparation).toEqual([{ title: 'Step 1', description: 'Test step' }]);
-    expect(result[0].tags).toEqual([{ id: 1, name: 'Test Tag' }]);
-    expect(result[0].season).toEqual(['1', '2', '3']);
-    expect(result[0].time).toBe(45);
-    expect(result[0].nutrition).toEqual({
+    expect(result[0]!.id).toBe(1);
+    expect(result[0]!.title).toBe('Test Recipe');
+    expect(result[0]!.description).toBe('Test description');
+    expect(result[0]!.preparation).toEqual([{ title: 'Step 1', description: 'Test step' }]);
+    expect(result[0]!.tags).toEqual([{ id: 1, name: 'Test Tag' }]);
+    expect(result[0]!.season).toEqual(['1', '2', '3']);
+    expect(result[0]!.time).toBe(45);
+    expect(result[0]!.nutrition).toEqual({
       energyKcal: 200,
       energyKj: 840,
       fat: 5,
@@ -1002,7 +1002,7 @@ describe('transformDatasetRecipeImages', () => {
       salt: 1,
       portionWeight: 100,
     });
-    expect(result[0].persons).toBe(4);
+    expect(result[0]!.persons).toBe(4);
   });
 
   test('handles empty array', () => {
@@ -1029,7 +1029,7 @@ describe('transformDatasetRecipeImages', () => {
 
     const result = transformDatasetRecipeImages(recipes);
 
-    expect(result[0].image_Source).toBe(defaultDocumentsPath);
+    expect(result[0]!.image_Source).toBe(defaultDocumentsPath);
   });
 
   test('does not mutate original recipes array', () => {
@@ -1048,9 +1048,9 @@ describe('transformDatasetRecipeImages', () => {
       },
     ];
 
-    const originalImageSource = recipes[0].image_Source;
+    const originalImageSource = recipes[0]!.image_Source;
     transformDatasetRecipeImages(recipes);
 
-    expect(recipes[0].image_Source).toBe(originalImageSource);
+    expect(recipes[0]!.image_Source).toBe(originalImageSource);
   });
 });

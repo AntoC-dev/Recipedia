@@ -137,7 +137,7 @@ export function useDiscoveryWorkflow(
       }
     };
 
-    runDiscovery();
+    void runDiscovery();
 
     return () => {
       abortController.abort();

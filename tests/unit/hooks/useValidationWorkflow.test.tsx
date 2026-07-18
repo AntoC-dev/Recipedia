@@ -421,7 +421,7 @@ describe('useValidationWorkflow', () => {
         expect(result.current.phase).toBe('importing');
       });
 
-      expect(mockOnImportComplete).toHaveBeenCalledWith([recipes[0].sourceUrl]);
+      expect(mockOnImportComplete).toHaveBeenCalledWith([recipes[0]!.sourceUrl]);
 
       await act(async () => {
         resolveCallback!();
@@ -478,8 +478,8 @@ describe('useValidationWorkflow', () => {
       });
 
       expect(mockOnImportComplete).toHaveBeenCalledWith([
-        recipes[0].sourceUrl,
-        recipes[1].sourceUrl,
+        recipes[0]!.sourceUrl,
+        recipes[1]!.sourceUrl,
       ]);
     });
   });
@@ -854,8 +854,8 @@ describe('useValidationWorkflow', () => {
       );
 
       expect(result.current.skippedRecipes).toHaveLength(1);
-      expect(result.current.skippedRecipes[0].title).toBe('Skipped Recipe');
-      expect(result.current.skippedRecipes[0].sourceUrl).toBe(skippedRecipe.sourceUrl);
+      expect(result.current.skippedRecipes[0]!.title).toBe('Skipped Recipe');
+      expect(result.current.skippedRecipes[0]!.sourceUrl).toBe(skippedRecipe.sourceUrl);
     });
 
     test('acknowledgeWarning transitions to reviewing when items need validation', async () => {
@@ -990,7 +990,7 @@ describe('useValidationWorkflow', () => {
       });
 
       expect(result.current.skippedRecipes).toHaveLength(1);
-      expect(result.current.skippedRecipes[0].title).toBe('Recipe Without Match');
+      expect(result.current.skippedRecipes[0]!.title).toBe('Recipe Without Match');
     });
 
     test('skippedRecipes is empty when all recipes have valid ingredients', async () => {

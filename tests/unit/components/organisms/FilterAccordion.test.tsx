@@ -47,14 +47,14 @@ describe('FilterAccordion Component', () => {
   ) => {
     for (let i = 0; i < expected.length; ++i) {
       const accordionTestId = `${testId}::FilterAccordion::Accordion::${i}`;
-      expect(getByTestId(`${accordionTestId}::Title`).props.children).toEqual(expected[i].title);
-      for (let j = 0; j < expected[i].data.length; ++j) {
+      expect(getByTestId(`${accordionTestId}::Title`).props.children).toEqual(expected[i]!.title);
+      for (let j = 0; j < expected[i]!.data.length; ++j) {
         const itemTestId = `${accordionTestId}::Item::${j}`;
-        const filterType = expected[i].title;
+        const filterType = expected[i]!.title;
         const shouldTranslate =
           filterType === nonIngredientFilters.prepTime ||
           filterType === nonIngredientFilters.inSeason;
-        const expectedText = shouldTranslate ? t(expected[i].data[j]) : expected[i].data[j];
+        const expectedText = shouldTranslate ? t(expected[i]!.data[j]) : expected[i]!.data[j];
         expect(getByTestId(itemTestId + '::Title').props.children).toEqual(expectedText);
         expect(getByTestId(itemTestId + '::CheckBox::Status').props.children).toEqual('unchecked');
       }
@@ -92,7 +92,7 @@ describe('FilterAccordion Component', () => {
 
   test('handles filter deselection when filter is already selected', () => {
     const filtersWithSelection = createFiltersStateWithItems(nonIngredientFilters.tags, [
-      sampleTags[0],
+      sampleTags[0]!,
     ]);
 
     const { getByTestId } = renderFilterAccordion({ filtersState: filtersWithSelection });
@@ -106,7 +106,7 @@ describe('FilterAccordion Component', () => {
   });
 
   test('displays multiple selected filters correctly across different sections', () => {
-    const selectedTags = [sampleTags[0], sampleTags[1]];
+    const selectedTags = [sampleTags[0]!, sampleTags[1]!];
     const complexFiltersState = new Map<TListFilter, string[]>();
     complexFiltersState.set(nonIngredientFilters.tags, selectedTags);
     complexFiltersState.set(nonIngredientFilters.recipeTitleInclude, ['Spaghetti']);

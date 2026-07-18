@@ -101,7 +101,7 @@ describe('computeShoppingList', () => {
     const recipe = makeRecipe(1, 'Pasta', [makeIngredient('flour', '200', 'g')]);
     const result = computeShoppingList([makeMenuItem(1, { count: 3 })], [recipe], noPurchased);
 
-    expect(result[0].quantity).toBe('600');
+    expect(result[0]!.quantity).toBe('600');
   });
 
   test('sums same ingredient quantity across two recipes', () => {
@@ -114,7 +114,7 @@ describe('computeShoppingList', () => {
     );
 
     expect(result).toHaveLength(1);
-    expect(result[0].quantity).toBe('350');
+    expect(result[0]!.quantity).toBe('350');
   });
 
   test('sums same ingredient across recipes when quantity formats are mixed', () => {
@@ -127,15 +127,15 @@ describe('computeShoppingList', () => {
     );
 
     expect(result).toHaveLength(1);
-    expect(result[0].quantity).toBe('300');
-    expect(result[0].unit).toBe('g');
+    expect(result[0]!.quantity).toBe('300');
+    expect(result[0]!.unit).toBe('g');
   });
 
   test('multiplies a numeric quantity parsed from mixed input by count', () => {
     const recipe = makeRecipe(1, 'Pasta', [makeIngredient('flour', '100 g', 'g')]);
     const result = computeShoppingList([makeMenuItem(1, { count: 3 })], [recipe], noPurchased);
 
-    expect(result[0].quantity).toBe('300');
+    expect(result[0]!.quantity).toBe('300');
   });
 
   test('keeps quantity empty when same ingredient lacks quantity in two recipes', () => {
@@ -148,14 +148,14 @@ describe('computeShoppingList', () => {
     );
 
     expect(result).toHaveLength(1);
-    expect(result[0].quantity).toBe('');
+    expect(result[0]!.quantity).toBe('');
   });
 
   test('keeps quantity empty when an unquantified ingredient has count greater than one', () => {
     const recipe = makeRecipe(1, 'Soup', [makeIngredient('salt', '', 'pinch')]);
     const result = computeShoppingList([makeMenuItem(1, { count: 3 })], [recipe], noPurchased);
 
-    expect(result[0].quantity).toBe('');
+    expect(result[0]!.quantity).toBe('');
   });
 
   test('sums decimal quantities without floating point artifacts', () => {
@@ -167,7 +167,7 @@ describe('computeShoppingList', () => {
       noPurchased
     );
 
-    expect(result[0].quantity).toBe('0.3');
+    expect(result[0]!.quantity).toBe('0.3');
   });
 
   test('accumulates both recipe titles when ingredient appears in two recipes', () => {
@@ -179,14 +179,14 @@ describe('computeShoppingList', () => {
       noPurchased
     );
 
-    expect(result[0].recipeTitles).toEqual(['Pasta', 'Cake']);
+    expect(result[0]!.recipeTitles).toEqual(['Pasta', 'Cake']);
   });
 
   test('does not duplicate recipe title when same recipe appears twice', () => {
     const recipe = makeRecipe(1, 'Pasta', [makeIngredient('flour', '200', 'g')]);
     const result = computeShoppingList([makeMenuItem(1), makeMenuItem(1)], [recipe], noPurchased);
 
-    expect(result[0].recipeTitles).toEqual(['Pasta']);
+    expect(result[0]!.recipeTitles).toEqual(['Pasta']);
   });
 
   test('marks ingredient as purchased when present in purchased map', () => {
@@ -194,14 +194,14 @@ describe('computeShoppingList', () => {
     const purchased = new Map([['flour', true]]);
     const result = computeShoppingList([makeMenuItem(1)], [recipe], purchased);
 
-    expect(result[0].purchased).toBe(true);
+    expect(result[0]!.purchased).toBe(true);
   });
 
   test('marks ingredient as not purchased when absent from purchased map', () => {
     const recipe = makeRecipe(1, 'Pasta', [makeIngredient('flour', '200', 'g')]);
     const result = computeShoppingList([makeMenuItem(1)], [recipe], noPurchased);
 
-    expect(result[0].purchased).toBe(false);
+    expect(result[0]!.purchased).toBe(false);
   });
 
   test('handles ingredient without quantity', () => {
@@ -212,7 +212,7 @@ describe('computeShoppingList', () => {
     const recipe = makeRecipe(1, 'Soup', [ingredient as any]);
     const result = computeShoppingList([makeMenuItem(1)], [recipe], noPurchased);
 
-    expect(result[0].quantity).toBe('');
+    expect(result[0]!.quantity).toBe('');
   });
 
   test('excludes cooked items while including uncoooked items in mixed menu', () => {
@@ -225,16 +225,16 @@ describe('computeShoppingList', () => {
     );
 
     expect(result).toHaveLength(1);
-    expect(result[0].name).toBe('carrot');
+    expect(result[0]!.name).toBe('carrot');
   });
 
   test('returned items are independent objects - mutations do not cross calls', () => {
     const recipe = makeRecipe(1, 'Pasta', [makeIngredient('flour', '200', 'g')]);
     const firstResult = computeShoppingList([makeMenuItem(1)], [recipe], noPurchased);
-    firstResult[0].recipeTitles.push('mutated');
+    firstResult[0]!.recipeTitles.push('mutated');
 
     const secondResult = computeShoppingList([makeMenuItem(1)], [recipe], noPurchased);
-    expect(secondResult[0].recipeTitles).toEqual(['Pasta']);
+    expect(secondResult[0]!.recipeTitles).toEqual(['Pasta']);
   });
 
   test('uses count of 1 when menu item count is undefined', () => {
@@ -242,7 +242,7 @@ describe('computeShoppingList', () => {
     const menuItemWithoutCount = { ...makeMenuItem(1), count: undefined } as any;
     const result = computeShoppingList([menuItemWithoutCount], [recipe], noPurchased);
 
-    expect(result[0].quantity).toBe('200');
+    expect(result[0]!.quantity).toBe('200');
   });
 
   test('uses empty string for unit when ingredient unit is undefined', () => {
@@ -251,6 +251,6 @@ describe('computeShoppingList', () => {
     const recipe = makeRecipe(1, 'Soup', [ingredient as any]);
     const result = computeShoppingList([makeMenuItem(1)], [recipe], noPurchased);
 
-    expect(result[0].unit).toBe('');
+    expect(result[0]!.unit).toBe('');
   });
 });

@@ -198,7 +198,7 @@ export function checkTags(
         JSON.stringify(newValueExpected?.map(tag => tag.name))
       );
       expect(getByTestId('RecipeTags::RandomTags').props.children).not.toEqual(
-        testRecipes[6].tags.map(tag => tag.name)
+        testRecipes[6]!.tags.map(tag => tag.name)
       );
       expect(getByTestId('RecipeTags::AddNewTag').props.children).toBeTruthy();
       expect(getByTestId('RecipeTags::RemoveTag').props.children).toBeTruthy();
@@ -562,15 +562,11 @@ export function runSaveNavigationReducer(): {
   };
   const action = (reducer as (s: typeof state) => { payload: { routes: SavedViewRoute[] } })(state);
   const routes = action.payload.routes;
-  return { routes, savedView: routes[routes.length - 1] };
+  return { routes, savedView: routes[routes.length - 1]! };
 }
 
 type RouteName =
-  | 'RecipeView'
-  | 'RecipeEdit'
-  | 'RecipeAddManual'
-  | 'RecipeAddOcr'
-  | 'RecipeAddScrape';
+  'RecipeView' | 'RecipeEdit' | 'RecipeAddManual' | 'RecipeAddOcr' | 'RecipeAddScrape';
 
 export function makeRoute<R extends RouteName>(
   name: R,

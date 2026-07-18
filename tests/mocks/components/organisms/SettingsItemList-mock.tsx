@@ -15,10 +15,10 @@ export function settingsItemListMock<T extends SettingsItem>({
     <View>
       <Text testID={dialogTestID + '::Type'}>{type}</Text>
       <Text testID={dialogTestID + '::Items'}>{JSON.stringify(items)}</Text>
-      <Button testID={dialogTestID + '::OnEdit'} onPress={() => onEdit(items[0])} title='Edit' />
+      <Button testID={dialogTestID + '::OnEdit'} onPress={() => onEdit(items[0]!)} title='Edit' />
       <Button
         testID={dialogTestID + '::OnDelete'}
-        onPress={() => onDelete(items[0])}
+        onPress={() => onDelete(items[0]!)}
         title='Delete'
       />
     </View>

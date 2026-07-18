@@ -254,7 +254,7 @@ function retrieveNumbersFromArrayOfStrings(str: string[]): number[] {
  * @returns Extracted number or NaN if no valid number found
  */
 function retrieveNumberFromString(str: string): number {
-  return Number(str.split(' ')[0].replace(allNonDigitCharacter, ''));
+  return Number((str.split(' ')[0] ?? '').replace(allNonDigitCharacter, ''));
 }
 
 /**
@@ -265,7 +265,7 @@ function retrieveNumberFromString(str: string): number {
  */
 function extractingNumberOrArray(ocr: string[]) {
   const result = retrieveNumbersFromArrayOfStrings(ocr);
-  return result.length > 1 ? result : result[0];
+  return result.length > 1 ? result : (result[0] ?? NaN);
 }
 
 /**
@@ -295,8 +295,8 @@ function tranformOCRInOneNumber(
       const personsAndTime = [];
       for (let i = 0; i < personsArray.length; i++) {
         personsAndTime.push({
-          person: retrieveNumberFromString(personsArray[i]),
-          time: retrieveNumberFromString(timeArray[i]),
+          person: retrieveNumberFromString(personsArray[i]!),
+          time: retrieveNumberFromString(timeArray[i]!),
         });
       }
       return personsAndTime;
@@ -329,7 +329,7 @@ function tranformOCRInPreparation(ocr: TextRecognitionResult): preparationStepEl
   const pendingStepNumbers: number[] = [];
 
   for (let i = 0; i < ocr.blocks.length; i++) {
-    const block = ocr.blocks[i];
+    const block = ocr.blocks[i]!;
     const text = block.text.trim();
     if (!text) {
       continue;
@@ -414,19 +414,19 @@ function startsWithTimeValue(text: string): boolean {
  */
 function parseStepContent(text: string): { title: string; description: string } {
   const lines = text.split('\n');
-  const firstLine = lines[0];
+  const firstLine = lines[0] ?? '';
   const remainingLines = lines.slice(1);
 
   const titleMatch = firstLine.match(/^\d+\.?\s*(.+)$/);
 
   if (titleMatch && remainingLines.length === 0) {
     return {
-      title: formatTitle(titleMatch[1]),
+      title: formatTitle(titleMatch[1] ?? ''),
       description: '',
     };
   } else if (titleMatch && remainingLines.length > 0) {
     return {
-      title: formatTitle(titleMatch[1]),
+      title: formatTitle(titleMatch[1] ?? ''),
       description: formatDescription(remainingLines.join('\n')),
     };
   } else {
@@ -885,7 +885,7 @@ function isIngredientSuspicious(quantity: string, unit: string): boolean {
 function isSuspiciousGroup(group: groupType, ingredients: ingredientObject[]): number {
   for (let i = 0; i < ingredients.length; i++) {
     const quantityStr = group.quantity[i] || '';
-    if (isIngredientSuspicious(quantityStr, ingredients[i].unit)) {
+    if (isIngredientSuspicious(quantityStr, ingredients[i]!.unit)) {
       return i;
     }
   }
@@ -917,7 +917,7 @@ function canMergeIngredients(
     i < firstGroup.quantity.length && i < ingredients.length;
     i++
   ) {
-    if (isIngredientSuspicious(firstGroup.quantity[i], ingredients[i].unit)) {
+    if (isIngredientSuspicious(firstGroup.quantity[i]!, ingredients[i]!.unit)) {
       return false;
     }
   }
@@ -939,7 +939,7 @@ function mergeAdjacentIngredients(ingredients: ingredientObject[], index: number
   const current = ingredients[index];
   const next = ingredients[index + 1];
 
-  if (!next) {
+  if (!current || !next) {
     return false;
   }
 
@@ -966,7 +966,7 @@ function adjustForSuspiciousData(groups: groupType[], ingredients: ingredientObj
     return;
   }
 
-  const firstGroup = groups[0];
+  const firstGroup = groups[0]!;
   let indexFirstSuspicious = isSuspiciousGroup(firstGroup, ingredients);
 
   while (indexFirstSuspicious > -1) {
@@ -987,7 +987,7 @@ function adjustForSuspiciousData(groups: groupType[], ingredients: ingredientObj
   // Remove remaining suspicious groups (after index 0)
   let groupIndex = 1;
   while (groupIndex < groups.length) {
-    if (isSuspiciousGroup(groups[groupIndex], ingredients) === -1) {
+    if (isSuspiciousGroup(groups[groupIndex]!, ingredients) === -1) {
       groupIndex++;
     } else {
       groups.splice(groupIndex, 1);
@@ -1007,10 +1007,10 @@ function adjustForSuspiciousData(groups: groupType[], ingredients: ingredientObj
 function assignQuantitiesToIngredients(groups: groupType[], ingredients: ingredientObject[]): void {
   groups.forEach(g => {
     const personsMatch = g.person.match(/(\d+)\s*p\s*$/i);
-    const persons = personsMatch ? parseInt(personsMatch[1]) : NaN;
+    const persons = personsMatch ? parseInt(personsMatch[1]!) : NaN;
 
     for (let i = 0; i < ingredients.length; i++) {
-      ingredients[i].quantityPerPersons.push({
+      ingredients[i]!.quantityPerPersons.push({
         persons,
         quantity: g.quantity[i] ?? '',
       });
@@ -1206,7 +1206,7 @@ export async function extractFieldFromImage(
           } else {
             idQuantityToSearch = 0;
             ocrPersonsCount = (ocrResult[idQuantityToSearch] as ingredientObject)
-              .quantityPerPersons[idQuantityToSearch].persons;
+              .quantityPerPersons[idQuantityToSearch]!.persons;
             warn(
               `Couldn't find exact match for persons (${currentState.recipePersons}) in ingredient. Using ${ocrPersonsCount} and scaling to ${targetPersonsCount}.`
             );
@@ -1215,7 +1215,7 @@ export async function extractFieldFromImage(
           idQuantityToSearch = 0;
           ocrPersonsCount = (ocrResult[idQuantityToSearch] as ingredientObject).quantityPerPersons[
             idQuantityToSearch
-          ].persons;
+          ]!.persons;
           targetPersonsCount = ocrPersonsCount;
           warn(
             `Couldn't find exact match for persons in ingredient. Using first available : ${ocrPersonsCount}.`
@@ -1230,7 +1230,7 @@ export async function extractFieldFromImage(
                 name: ingredient.name,
                 unit: ingredient.unit,
                 quantity: scaleQuantityForPersons(
-                  ingredient.quantityPerPersons[idQuantityToSearch].quantity,
+                  ingredient.quantityPerPersons[idQuantityToSearch]!.quantity,
                   ocrPersonsCount,
                   targetPersonsCount
                 ),
@@ -1303,23 +1303,23 @@ export function parseIngredientsNoHeader(lines: string[]): ingredientObject[] {
   let nameLines = lines.slice(0, mid);
   let quantityLines = lines.slice(mid);
 
-  if (nameLines.length > 0 && numberAtFirstIndex.test(nameLines[0])) {
+  if (nameLines.length > 0 && numberAtFirstIndex.test(nameLines[0]!)) {
     [nameLines, quantityLines] = [quantityLines, nameLines];
   }
 
   const result: ingredientObject[] = [];
 
   for (let i = 0; i < Math.min(nameLines.length, quantityLines.length); i++) {
-    const [quantity, unit] = quantityLines[i].split(' ');
+    const [quantity, unit] = quantityLines[i]!.split(' ');
     const quantityPerPersons: ingredientQuantityPerPersons[] = [
       {
         persons: -1,
-        quantity: quantity,
+        quantity: quantity ?? '',
       },
     ];
 
     result.push({
-      name: nameLines[i],
+      name: nameLines[i]!,
       unit: unit ?? '',
       quantityPerPersons: quantityPerPersons,
     });
@@ -1474,6 +1474,7 @@ function getIngredientOcrTerms(language: string): IngredientOcrTerms | undefined
     ocrLogger.error('i18n ingredient OCR terms failed', { error });
     return undefined;
   }
+  return undefined;
 }
 
 /**
@@ -1525,7 +1526,7 @@ function findAndMergePer100gLines(lines: string[], nutritionTerms: NutritionTerm
   const per100gIndex = buildPhraseIndex(per100gTerms, OCR_FUZZY_THRESHOLD);
 
   for (let i = 0; i < lines.length; i++) {
-    const normalizedLine = normalizeOcrErrors(lines[i].toLowerCase());
+    const normalizedLine = normalizeOcrErrors(lines[i]!.toLowerCase());
     if (fuzzyHasMatch(per100gIndex, normalizedLine)) {
       let endIndex = i;
 
@@ -1681,7 +1682,7 @@ function duplicateEnergyLabelIfNeeded(
   let firstEnergyIndex = -1;
 
   for (let i = 0; i < labelsWithPossibleDuplicate.length; i++) {
-    const lower = labelsWithPossibleDuplicate[i].toLowerCase();
+    const lower = labelsWithPossibleDuplicate[i]!.toLowerCase();
     if (fuzzyHasMatch(kcalIndex, lower) || fuzzyHasMatch(kjIndex, lower)) {
       energyLabelCount++;
       firstEnergyIndex = i;
@@ -1689,7 +1690,7 @@ function duplicateEnergyLabelIfNeeded(
   }
 
   if (energyLabelCount === 1) {
-    const duplicatedEnergyLabel = labelsWithPossibleDuplicate[firstEnergyIndex];
+    const duplicatedEnergyLabel = labelsWithPossibleDuplicate[firstEnergyIndex]!;
     labelsWithPossibleDuplicate.splice(firstEnergyIndex + 1, 0, duplicatedEnergyLabel);
   }
 
@@ -1719,7 +1720,7 @@ function parseNutritionLabelsAndValues(
   const energyJoulKey: OcrKeys = 'energyKj';
 
   for (let i = 0; i < nutritionLabels.length; i++) {
-    const label = nutritionLabels[i].toLowerCase();
+    const label = nutritionLabels[i]!.toLowerCase();
     const value = nutritionValues[i]?.toLowerCase() || '';
 
     let labelKey: OcrKeys | undefined;

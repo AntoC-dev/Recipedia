@@ -104,7 +104,7 @@ export const SeasonFilterProvider = ({ children }: { children: React.ReactNode }
   const setSeasonFilterContext = () => {
     const newSeasonFilter = !seasonFilter;
     setSeasonFilterState(newSeasonFilter);
-    setSeasonFilter(newSeasonFilter);
+    void setSeasonFilter(newSeasonFilter);
   };
 
   return (

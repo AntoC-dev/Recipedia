@@ -243,7 +243,7 @@ describe('useRecipeTags', () => {
       });
 
       expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(1);
-      expect(result.current.form.form.getValues('recipeTags')![0].name).toBe('Dinner');
+      expect(result.current.form.form.getValues('recipeTags')![0]!.name).toBe('Dinner');
     });
 
     test('does nothing for non-existing tag', async () => {

@@ -55,9 +55,9 @@ describe('Shopping Screen Performance', () => {
     const scenario = async () => {
       const recipes = database.get_recipes();
       if (recipes.length > 0) {
-        await database.addRecipeToMenu(recipes[0]);
-        await database.addRecipeToMenu(recipes[1]);
-        await database.addRecipeToMenu(recipes[2]);
+        await database.addRecipeToMenu(recipes[0]!);
+        await database.addRecipeToMenu(recipes[1]!);
+        await database.addRecipeToMenu(recipes[2]!);
       }
     };
 
@@ -68,7 +68,7 @@ describe('Shopping Screen Performance', () => {
     const scenario = async () => {
       const recipes = database.get_recipes();
       if (recipes.length > 0) {
-        await database.addRecipeToMenu(recipes[0]);
+        await database.addRecipeToMenu(recipes[0]!);
       }
     };
 
@@ -78,7 +78,7 @@ describe('Shopping Screen Performance', () => {
   test('re-render after toggling purchase status', async () => {
     const recipes = database.get_recipes();
     if (recipes.length > 0) {
-      await database.addRecipeToMenu(recipes[0]);
+      await database.addRecipeToMenu(recipes[0]!);
     }
 
     const scenario = async () => {
@@ -90,7 +90,7 @@ describe('Shopping Screen Performance', () => {
       if (shopping.length > 0) {
         const item = shopping[0];
         const purchased = database.get_purchasedIngredients();
-        await database.setPurchased(item.name, !purchased.get(item.name));
+        await database.setPurchased(item!.name, !purchased.get(item!.name));
       }
     };
 
@@ -100,8 +100,8 @@ describe('Shopping Screen Performance', () => {
   test('re-render after clearing purchased states', async () => {
     const recipes = database.get_recipes();
     if (recipes.length > 0) {
-      await database.addRecipeToMenu(recipes[0]);
-      await database.addRecipeToMenu(recipes[1]);
+      await database.addRecipeToMenu(recipes[0]!);
+      await database.addRecipeToMenu(recipes[1]!);
     }
 
     const scenario = async () => {
@@ -116,7 +116,7 @@ describe('Shopping Screen Performance', () => {
       const recipes = database.get_recipes();
       if (recipes.length >= 10) {
         for (let i = 0; i < 10; i++) {
-          await database.addRecipeToMenu(recipes[i]);
+          await database.addRecipeToMenu(recipes[i]!);
         }
       }
     };
@@ -127,7 +127,7 @@ describe('Shopping Screen Performance', () => {
   test('re-render after pressing clear button via UI', async () => {
     const recipes = database.get_recipes();
     if (recipes.length > 0) {
-      await database.addRecipeToMenu(recipes[0]);
+      await database.addRecipeToMenu(recipes[0]!);
     }
 
     const scenario = async () => {
@@ -143,14 +143,14 @@ describe('Shopping Screen Performance', () => {
   test('re-render after deleting recipe that was in shopping list', async () => {
     const recipes = database.get_recipes();
     if (recipes.length > 0) {
-      await database.addRecipeToMenu(recipes[0]);
-      await database.addRecipeToMenu(recipes[1]);
+      await database.addRecipeToMenu(recipes[0]!);
+      await database.addRecipeToMenu(recipes[1]!);
     }
 
     const scenario = async () => {
       const currentRecipes = database.get_recipes();
       if (currentRecipes.length > 0) {
-        await database.deleteRecipe(currentRecipes[0]);
+        await database.deleteRecipe(currentRecipes[0]!);
       }
     };
 

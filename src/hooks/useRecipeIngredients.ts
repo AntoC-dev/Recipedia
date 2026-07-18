@@ -73,7 +73,7 @@ export function parseIngredientString(ingredientStr: string): {
   name: string;
   note: string;
 } {
-  const [unitAndQuantity, nameAndNote] = ingredientStr.split(textSeparator);
+  const [unitAndQuantity = '', nameAndNote] = ingredientStr.split(textSeparator);
   const [quantity, unit] = unitAndQuantity.split(unitySeparator);
 
   const [name, note] = nameAndNote?.includes(noteSeparator)
@@ -277,7 +277,7 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
     if (duplicateIndex === -1) {
       return { kind: 'replace', index, row: ingredient };
     }
-    const existing = current[duplicateIndex];
+    const existing = current[duplicateIndex]!;
     const merged =
       existing.unit === ingredient.unit
         ? {
@@ -368,7 +368,7 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
       applyPatch({ kind: 'replace', index, row: nextRow });
     };
 
-    const currentRow = recipeIngredients[index];
+    const currentRow = recipeIngredients[index]!;
     const nameChanged = currentRow.name !== newName;
     const isResolved = !!(currentRow as ingredientTableElement).type;
     if (newName && newName.trim().length > 0 && (nameChanged || !isResolved)) {

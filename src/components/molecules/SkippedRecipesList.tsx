@@ -74,7 +74,7 @@ export function SkippedRecipesList({
               right={() => (
                 <IconButton
                   icon={Icons.copy}
-                  onPress={() => handleCopy(item.sourceUrl)}
+                  onPress={() => void handleCopy(item.sourceUrl)}
                   testID={`${testID}::Item::${index}::CopyButton`}
                 />
               )}

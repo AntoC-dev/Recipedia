@@ -66,7 +66,7 @@ export function refreshSimilarityFor<
   setItems(prev => {
     const idx = prev.findIndex(item => item.name !== undefined && namesMatch(item.name, itemName));
     if (idx === -1) return prev;
-    const target = prev[idx];
+    const target = prev[idx]!;
     const targetName = target.name as string;
     const newSimilar = finder(targetName).filter(s => !namesMatch(s.name, targetName));
     const next = [...prev];

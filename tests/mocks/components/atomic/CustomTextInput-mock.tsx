@@ -5,7 +5,7 @@ import {
   TextInputEndEditingEventData,
   TextStyle,
 } from 'react-native';
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { CustomTextInputProps } from '@components/atomic/CustomTextInput';
 
 export function CustomTextInputMock({
@@ -23,10 +23,10 @@ export function CustomTextInputMock({
   onLayout,
 }: CustomTextInputProps) {
   const [displayValue, setDisplayValue] = useState(value ?? '');
-  const prevValueRef = useRef(value);
+  const [prevValue, setPrevValue] = useState(value);
 
-  if (value !== prevValueRef.current) {
-    prevValueRef.current = value;
+  if (value !== prevValue) {
+    setPrevValue(value);
     setDisplayValue(value ?? '');
   }
 

@@ -137,7 +137,7 @@ export function extractImageFromJsonLd(html: string): string | null {
       return null;
     }
 
-    const jsonLd = JSON.parse(jsonLdMatch[1]);
+    const jsonLd = JSON.parse(jsonLdMatch[1]!);
 
     // Find Recipe object: direct, in @graph, or in root-level array
     let recipe: Record<string, unknown> | undefined;

@@ -59,9 +59,9 @@ describe('RecipeTags Component', () => {
       type: 'addOrEdit',
       editType: 'edit',
       tagsList: new Array<string>(
-        sampleTags[sampleTags.length - 1],
-        sampleTags[sampleTags.length - 2],
-        sampleTags[sampleTags.length - 3]
+        sampleTags[sampleTags.length - 1]!,
+        sampleTags[sampleTags.length - 2]!,
+        sampleTags[sampleTags.length - 3]!
       ),
       randomTags: randomTags,
       addNewTag: addNewTagMock,

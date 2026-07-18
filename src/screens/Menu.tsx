@@ -76,8 +76,8 @@ export function Menu() {
                   key={item.id}
                   testId={`${screenId}::MenuItem::${index + 1}`}
                   menuItem={item}
-                  onToggleCooked={() => item.id && handleToggleCooked(item.id)}
-                  onRemove={() => item.id && handleRemove(item.id)}
+                  onToggleCooked={() => void (item.id && handleToggleCooked(item.id))}
+                  onRemove={() => void (item.id && handleRemove(item.id))}
                 />
               ))}
             </List.Section>
@@ -95,8 +95,8 @@ export function Menu() {
                   key={item.id}
                   testId={`${screenId}::MenuItem::${toCookItems.length + index + 1}`}
                   menuItem={item}
-                  onToggleCooked={() => item.id && handleToggleCooked(item.id)}
-                  onRemove={() => item.id && handleRemove(item.id)}
+                  onToggleCooked={() => void (item.id && handleToggleCooked(item.id))}
+                  onRemove={() => void (item.id && handleRemove(item.id))}
                 />
               ))}
             </List.Section>

@@ -62,7 +62,9 @@ describe('buildDefaultsFromScrape', () => {
   test('keeps provided fields and falls back on the missing ones for a partial payload', () => {
     const result = buildDefaultsFromScrape({
       title: 'Only Title',
-      ingredients: [{ name: 'Egg', unit: '', quantity: '2', type: ingredientType.dairy, season: [] }],
+      ingredients: [
+        { name: 'Egg', unit: '', quantity: '2', type: ingredientType.dairy, season: [] },
+      ],
     });
     expect(result.recipeTitle).toBe('Only Title');
     expect(result.recipeIngredients).toHaveLength(1);

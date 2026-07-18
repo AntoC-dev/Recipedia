@@ -415,7 +415,7 @@ describe('useValidationReviewState', () => {
 
       expect(findTags).not.toHaveBeenCalled();
       result.current.tags.forEach((tag, i) => {
-        expect(tag.similarItems).toBe(before[i].similarItems);
+        expect(tag.similarItems).toBe(before[i]!.similarItems);
       });
     });
 
@@ -435,7 +435,7 @@ describe('useValidationReviewState', () => {
 
       expect(findIngs).not.toHaveBeenCalled();
       result.current.ingredients.forEach((ing, i) => {
-        expect(ing.similarItems).toBe(before[i].similarItems);
+        expect(ing.similarItems).toBe(before[i]!.similarItems);
       });
     });
 
@@ -479,8 +479,8 @@ describe('useValidationReviewState', () => {
     test('returns true when all items are resolved or skipped', () => {
       const { result } = renderHook(() =>
         useValidationReviewState(
-          [mockTags[0]],
-          [mockIngredients[0]],
+          [mockTags[0]!],
+          [mockIngredients[0]!],
           createFindSimilarTags(),
           createFindSimilarIngredients()
         )
@@ -811,8 +811,8 @@ describe('useValidationReviewState', () => {
     test('returns tag and ingredient mappings for resolved items', () => {
       const { result } = renderHook(() =>
         useValidationReviewState(
-          [mockTags[0]],
-          [mockIngredients[0]],
+          [mockTags[0]!],
+          [mockIngredients[0]!],
           createFindSimilarTags(),
           createFindSimilarIngredients()
         )
@@ -903,7 +903,7 @@ describe('useValidationReviewState', () => {
 
       expect(captured).not.toBe(original);
       expect(captured[0]).toBe(original[0]);
-      expect(captured[1].similarItems).toEqual(newSimilar);
+      expect(captured[1]!.similarItems).toEqual(newSimilar);
     });
 
     test('filters self-match out of the refreshed similar list', () => {
@@ -917,7 +917,7 @@ describe('useValidationReviewState', () => {
       const otherMatch: Match = { id: 2, name: 'Italian Fresh' };
       refreshSimilarityFor(setItems, () => [selfMatch, otherMatch], 'Italian');
 
-      expect(captured[0].similarItems).toEqual([otherMatch]);
+      expect(captured[0]!.similarItems).toEqual([otherMatch]);
     });
 
     test('skips items without a name when scanning', () => {
@@ -931,7 +931,7 @@ describe('useValidationReviewState', () => {
       refreshSimilarityFor(setItems, () => newSimilar, 'Italian');
 
       expect(captured[0]).toBe(original[0]);
-      expect(captured[1].similarItems).toEqual(newSimilar);
+      expect(captured[1]!.similarItems).toEqual(newSimilar);
     });
   });
 });

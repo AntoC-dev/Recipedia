@@ -701,7 +701,7 @@ export class RecipeDatabase {
         const reason =
           result.reason instanceof Error ? result.reason.message : String(result.reason);
         databaseLogger.warn('Skipping recipe due to validation error', {
-          recipeTitle: recs[i].title,
+          recipeTitle: recs[i]!.title,
           reason,
         });
       }
@@ -850,12 +850,12 @@ export class RecipeDatabase {
           const randomId = Math.floor(Math.random() * this._tags.length);
 
           for (let i = 0; i < res.length && !skipElem; i++) {
-            if (isTagEqual(res[i], this._tags[randomId])) {
+            if (isTagEqual(res[i]!, this._tags[randomId]!)) {
               skipElem = true;
             }
           }
           if (!skipElem) {
-            res.push(this._tags[randomId]);
+            res.push(this._tags[randomId]!);
           }
         }
         return res;
@@ -2300,7 +2300,7 @@ export class RecipeDatabase {
         temporaryUri: imageUri,
         recipeTitle,
       });
-      const permanentUri = await saveRecipeImage(imageUri, recipeTitle);
+      const permanentUri = saveRecipeImage(imageUri, recipeTitle);
       databaseLogger.info('Recipe image saved to permanent storage', {
         permanentUri,
       });
@@ -2928,8 +2928,8 @@ export class RecipeDatabase {
     }
 
     for (let i = 0; i < ingredients1.length; i++) {
-      const ing1 = ingredients1[i];
-      const ing2 = ingredients2[i];
+      const ing1 = ingredients1[i]!;
+      const ing2 = ingredients2[i]!;
 
       if (ing1.name !== ing2.name) {
         return false;

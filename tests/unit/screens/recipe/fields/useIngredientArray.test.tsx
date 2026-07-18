@@ -70,8 +70,9 @@ function createTestWrapper(defaults?: Partial<RecipeFormInput>) {
       mode: 'onTouched',
       defaultValues: buildFormDefaults(defaults),
     });
-    // eslint-disable-next-line react-compiler/react-compiler
-    formRef.current = form;
+    React.useEffect(() => {
+      formRef.current = form;
+    });
     return (
       <FormProvider {...form}>
         <IngredientArrayActionsProvider>{children}</IngredientArrayActionsProvider>
@@ -133,7 +134,7 @@ describe('useIngredientArray', () => {
       });
 
       expect(formRef.current!.getValues('recipeIngredients')).toHaveLength(1);
-      expect(formRef.current!.getValues('recipeIngredients')![0].name).toBe('');
+      expect(formRef.current!.getValues('recipeIngredients')![0]!.name).toBe('');
     });
 
     test('increments rowCount by one', () => {
@@ -158,7 +159,7 @@ describe('useIngredientArray', () => {
       });
 
       expect(formRef.current!.getValues('recipeIngredients')).toHaveLength(1);
-      expect(formRef.current!.getValues('recipeIngredients')![0].name).toBe('Sugar');
+      expect(formRef.current!.getValues('recipeIngredients')![0]!.name).toBe('Sugar');
     });
 
     test('removing the last row leaves an empty array', () => {
@@ -181,7 +182,7 @@ describe('useIngredientArray', () => {
       });
 
       expect(formRef.current!.getValues('recipeIngredients')).toHaveLength(1);
-      expect(formRef.current!.getValues('recipeIngredients')![0].name).toBe('Flour');
+      expect(formRef.current!.getValues('recipeIngredients')![0]!.name).toBe('Flour');
     });
   });
 
@@ -254,8 +255,8 @@ describe('useIngredientArray', () => {
         result.current.actions.applyPatch({ kind: 'replace', index: 0, row: updatedRow as never });
       });
 
-      expect(formRef.current!.getValues('recipeIngredients')![0].quantity).toBe('500');
-      expect(formRef.current!.getValues('recipeIngredients')![1].name).toBe('Sugar');
+      expect(formRef.current!.getValues('recipeIngredients')![0]!.quantity).toBe('500');
+      expect(formRef.current!.getValues('recipeIngredients')![1]!.name).toBe('Sugar');
     });
 
     test('merge patch collapses two rows and decrements the count by one', () => {
@@ -273,7 +274,7 @@ describe('useIngredientArray', () => {
       });
 
       expect(formRef.current!.getValues('recipeIngredients')).toHaveLength(1);
-      expect(formRef.current!.getValues('recipeIngredients')![0].quantity).toBe('300');
+      expect(formRef.current!.getValues('recipeIngredients')![0]!.quantity).toBe('300');
     });
 
     test('remove patch removes exactly the specified row', () => {
@@ -285,7 +286,7 @@ describe('useIngredientArray', () => {
       });
 
       expect(formRef.current!.getValues('recipeIngredients')).toHaveLength(1);
-      expect(formRef.current!.getValues('recipeIngredients')![0].name).toBe('Sugar');
+      expect(formRef.current!.getValues('recipeIngredients')![0]!.name).toBe('Sugar');
     });
 
     test('append patch adds a new row at the end of the array', () => {
@@ -298,7 +299,7 @@ describe('useIngredientArray', () => {
       });
 
       expect(formRef.current!.getValues('recipeIngredients')).toHaveLength(2);
-      expect(formRef.current!.getValues('recipeIngredients')![1].name).toBe('Butter');
+      expect(formRef.current!.getValues('recipeIngredients')![1]!.name).toBe('Butter');
     });
   });
 

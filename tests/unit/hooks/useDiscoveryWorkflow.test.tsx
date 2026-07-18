@@ -334,7 +334,7 @@ describe('useDiscoveryWorkflow', () => {
 
       expect(parseResult).toBeTruthy();
       expect(parseResult!.length).toBe(1);
-      expect(parseResult![0].title).toBe('Recipe 1');
+      expect(parseResult![0]!.title).toBe('Recipe 1');
       expect(result.current.phase).toBe('parsing');
     });
 
@@ -393,7 +393,7 @@ describe('useDiscoveryWorkflow', () => {
         expect(result.current.recipesWithImages.length).toBeGreaterThan(0);
       });
 
-      expect(result.current.recipesWithImages[0].imageUrl).toBeDefined();
+      expect(result.current.recipesWithImages[0]!.imageUrl).toBeDefined();
     });
   });
 
@@ -1034,7 +1034,7 @@ describe('useDiscoveryWorkflow', () => {
         expect(result.current.recipes).toHaveLength(2);
       });
 
-      const target = result.current.recipes[0];
+      const target = result.current.recipes[0]!;
       act(() => {
         result.current.dismissRecipe(target);
       });
@@ -1052,7 +1052,7 @@ describe('useDiscoveryWorkflow', () => {
       });
 
       act(() => {
-        result.current.dismissRecipe(result.current.recipes[0]);
+        result.current.dismissRecipe(result.current.recipes[0]!);
       });
 
       expect(database.getDismissedUrls('mock').has('https://example.com/recipe-1')).toBe(false);
@@ -1072,7 +1072,7 @@ describe('useDiscoveryWorkflow', () => {
       expect(result.current.selectedCount).toBe(1);
 
       act(() => {
-        result.current.dismissRecipe(result.current.recipes[0]);
+        result.current.dismissRecipe(result.current.recipes[0]!);
       });
 
       expect(result.current.selectedCount).toBe(0);
@@ -1086,7 +1086,7 @@ describe('useDiscoveryWorkflow', () => {
         expect(result.current.recipes).toHaveLength(2);
       });
 
-      const target = result.current.recipes[0];
+      const target = result.current.recipes[0]!;
       act(() => {
         result.current.dismissRecipe(target);
       });
@@ -1108,7 +1108,7 @@ describe('useDiscoveryWorkflow', () => {
       });
 
       act(() => {
-        result.current.dismissRecipe(result.current.recipes[0]);
+        result.current.dismissRecipe(result.current.recipes[0]!);
       });
 
       await act(async () => {
@@ -1127,7 +1127,7 @@ describe('useDiscoveryWorkflow', () => {
       });
 
       const enrichedRecipe = {
-        ...result.current.recipes[0],
+        ...result.current.recipes[0]!,
         imageUrl: 'https://example.com/lazily-loaded.jpg',
       };
       act(() => {
@@ -1139,8 +1139,8 @@ describe('useDiscoveryWorkflow', () => {
       });
 
       const dismissed = database.getDismissedRecipes('mock');
-      expect(dismissed[0].recipeUrl).toBe('https://example.com/recipe-1');
-      expect(dismissed[0].imageUrl).toBe('https://example.com/lazily-loaded.jpg');
+      expect(dismissed[0]!.recipeUrl).toBe('https://example.com/recipe-1');
+      expect(dismissed[0]!.imageUrl).toBe('https://example.com/lazily-loaded.jpg');
     });
 
     it('commitDismissals is a no-op when nothing is pending', async () => {
@@ -1167,7 +1167,7 @@ describe('useDiscoveryWorkflow', () => {
       });
 
       act(() => {
-        result.current.dismissRecipe(result.current.recipes[0]);
+        result.current.dismissRecipe(result.current.recipes[0]!);
       });
 
       act(() => {
@@ -1188,7 +1188,7 @@ describe('useDiscoveryWorkflow', () => {
       });
 
       act(() => {
-        result.current.dismissRecipe(result.current.recipes[0]);
+        result.current.dismissRecipe(result.current.recipes[0]!);
       });
 
       act(() => {
@@ -1207,8 +1207,8 @@ describe('useDiscoveryWorkflow', () => {
       });
 
       act(() => {
-        result.current.dismissRecipe(result.current.recipes[0]);
-        result.current.dismissRecipe(result.current.recipes[1]);
+        result.current.dismissRecipe(result.current.recipes[0]!);
+        result.current.dismissRecipe(result.current.recipes[1]!);
       });
 
       act(() => {

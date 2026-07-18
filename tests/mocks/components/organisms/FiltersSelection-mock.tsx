@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FiltersSelectionProps } from '@components/organisms/FiltersSelection';
 import { Button, Text, View } from 'react-native';
 
@@ -39,11 +39,6 @@ function FiltersSelectionMock({
 }: FiltersSelectionProps) {
   const [localFilters, setLocalFilters] = useState<string[]>([...globalCurrentFilters]);
 
-  // Sync with global state
-  useEffect(() => {
-    setLocalFilters([...globalCurrentFilters]);
-  }, []);
-
   return (
     <View>
       <Text testID={testId + '::Filters'}>{JSON.stringify(localFilters)}</Text>
@@ -54,8 +49,8 @@ function FiltersSelectionMock({
           // Add the next filter in sequence
           if (addFilterCalls < mockFilters.length) {
             const filterToAdd = mockFilters[addFilterCalls];
-            if (!globalCurrentFilters.includes(filterToAdd)) {
-              globalCurrentFilters.push(filterToAdd);
+            if (!globalCurrentFilters.includes(filterToAdd!)) {
+              globalCurrentFilters.push(filterToAdd!);
               setLocalFilters([...globalCurrentFilters]);
             }
             addFilterCalls++;

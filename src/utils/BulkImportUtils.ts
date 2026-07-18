@@ -149,7 +149,7 @@ export function getBufferRecipesNeedingFetch(
   const bufferRecipes: DiscoveredRecipe[] = [];
 
   for (let i = bufferBounds.start; i <= bufferBounds.end; i++) {
-    const recipe = recipes[i];
+    const recipe = recipes[i]!;
     if (
       !recipe.imageUrl &&
       !visibleUrls.has(recipe.url) &&
