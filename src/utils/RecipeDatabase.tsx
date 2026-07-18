@@ -114,7 +114,7 @@ export type StoreSlice = 'recipes' | 'ingredients' | 'tags' | 'menu' | 'purchase
  * ```
  */
 export class RecipeDatabase {
-  static #instance: RecipeDatabase;
+  static #instance: RecipeDatabase | undefined;
 
   protected _databaseName: string;
   protected _dbConnection: SQLite.SQLiteDatabase;
@@ -185,11 +185,26 @@ export class RecipeDatabase {
    * ```
    */
   public static getInstance(): RecipeDatabase {
-    if (!RecipeDatabase.#instance) {
-      RecipeDatabase.#instance = new RecipeDatabase();
-    }
+    return (RecipeDatabase.#instance ??= new RecipeDatabase());
+  }
 
-    return RecipeDatabase.#instance;
+  /**
+   * Tears down the singleton instance completely.
+   *
+   * Closes the database connection, clears every registered store listener, and
+   * discards the cached singleton so the next {@link getInstance} call builds a
+   * fresh instance. Call this when the app reinitializes its data layer (e.g. a
+   * settings reset or full data wipe) to guarantee no stale instance keeps its
+   * listeners registered and firing store notifications alongside the new one.
+   *
+   * @returns Promise that resolves once teardown is complete. No-op if no
+   * instance currently exists.
+   */
+  public static async resetInstance(): Promise<void> {
+    if (RecipeDatabase.#instance) {
+      await RecipeDatabase.#instance.closeAndReset();
+      RecipeDatabase.#instance = undefined;
+    }
   }
 
   /**
