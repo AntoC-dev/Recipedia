@@ -23,7 +23,7 @@
  * init();
  *
  * // Save a recipe image
- * const imageName = saveRecipeImage(tempUri, "Chocolate Cake");
+ * const imageName = await saveRecipeImage(tempUri, "Chocolate Cake");
  *
  * // Clear cache
  * clearCache();
@@ -308,7 +308,7 @@ export async function downloadImageToCache(remoteUrl: string): Promise<string> {
  * // Returns: "file:///documents/Recipedia/chocolate_cake_<uuid>.jpg"
  * ```
  */
-export function saveRecipeImage(cacheFileUri: string, recName: string): string {
+export async function saveRecipeImage(cacheFileUri: string, recName: string): Promise<string> {
   try {
     const extensionParts = cacheFileUri.split('.');
     const extension = extensionParts[extensionParts.length - 1]!.split('?')[0] || 'jpg';
@@ -316,7 +316,7 @@ export function saveRecipeImage(cacheFileUri: string, recName: string): string {
     const imgFile = new File(APP_DIR, imgName);
 
     const sourceFile = new File(cacheFileUri);
-    sourceFile.copySync(imgFile);
+    await sourceFile.copy(imgFile);
     try {
       sourceFile.delete();
     } catch {
@@ -423,31 +423,33 @@ export async function copyDatasetImages(): Promise<void> {
 
       loadedCount += assetModules.length;
 
-      for (const asset of assetModules) {
-        if (!asset.localUri) {
-          fileSystemLogger.warn('Asset missing localUri, skipping', { assetName: asset.name });
-          continue;
-        }
+      await Promise.all(
+        assetModules.map(async asset => {
+          if (!asset.localUri) {
+            fileSystemLogger.warn('Asset missing localUri, skipping', { assetName: asset.name });
+            return;
+          }
 
-        const destFile = new File(APP_DIR, asset.name + '.' + asset.type);
+          const destFile = new File(APP_DIR, asset.name + '.' + asset.type);
 
-        if (destFile.exists) {
-          fileSystemLogger.debug('Asset file already exists, skipping', {
-            assetName: asset.name,
-          });
-          continue;
-        }
+          if (destFile.exists) {
+            fileSystemLogger.debug('Asset file already exists, skipping', {
+              assetName: asset.name,
+            });
+            return;
+          }
 
-        try {
-          const sourceFile = new File(asset.localUri);
-          sourceFile.copySync(destFile);
-        } catch (copyError) {
-          fileSystemLogger.warn('Failed to copy individual asset file', {
-            assetName: asset.name,
-            error: copyError,
-          });
-        }
-      }
+          try {
+            const sourceFile = new File(asset.localUri);
+            await sourceFile.copy(destFile);
+          } catch (copyError) {
+            fileSystemLogger.warn('Failed to copy individual asset file', {
+              assetName: asset.name,
+              error: copyError,
+            });
+          }
+        })
+      );
     });
 
     if (loadedCount === 0 && imageSet.length > 0) {
