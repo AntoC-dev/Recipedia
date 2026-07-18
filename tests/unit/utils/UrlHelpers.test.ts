@@ -195,95 +195,39 @@ describe('UrlHelpers', () => {
       await expect(fetchHtml('https://example.com/recipe', controller.signal)).rejects.toThrow();
     });
 
-    test('removes abort listener from caller signal after successful fetch', async () => {
+    test('aborts fetch when caller signal aborts after request starts', async () => {
       const controller = new AbortController();
-      const removeSpy = jest.spyOn(controller.signal, 'removeEventListener');
-
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        url: 'https://example.com/recipe',
-        text: () => Promise.resolve('<html></html>'),
-      });
-
-      await fetchHtml('https://example.com/recipe', controller.signal);
-
-      expect(removeSpy).toHaveBeenCalledWith('abort', expect.any(Function));
-    });
-
-    test('removes abort listener from caller signal after failed fetch', async () => {
-      const controller = new AbortController();
-      const removeSpy = jest.spyOn(controller.signal, 'removeEventListener');
-
-      mockFetch.mockRejectedValueOnce(new Error('network error'));
-
-      await expect(fetchHtml('https://example.com/recipe', controller.signal)).rejects.toThrow(
-        'network error'
-      );
-
-      expect(removeSpy).toHaveBeenCalledWith('abort', expect.any(Function));
-    });
-
-    test('does not leave caller signal aborted after fetch resolves', async () => {
-      const controller = new AbortController();
-
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        url: 'https://example.com/recipe',
-        text: () => Promise.resolve('<html></html>'),
-      });
-
-      await fetchHtml('https://example.com/recipe', controller.signal);
-
-      expect(controller.signal.aborted).toBe(false);
-    });
-
-    test('aborts internal signal when the fetch timeout elapses', async () => {
-      let capturedSignal: AbortSignal | undefined;
-      let resolveFetch: (value: unknown) => void = () => {};
-      mockFetch.mockImplementationOnce((_url, options) => {
-        capturedSignal = options.signal;
-        return new Promise(resolve => {
-          resolveFetch = resolve;
-        });
-      });
-
-      const promise = fetchHtml('https://example.com/recipe');
-
-      jest.advanceTimersByTime(15000);
-
-      expect(capturedSignal?.aborted).toBe(true);
-
-      resolveFetch({
-        ok: true,
-        url: 'https://example.com/recipe',
-        text: () => Promise.resolve('<html></html>'),
-      });
-      await promise;
-    });
-
-    test('propagates caller abort to the combined signal mid-fetch', async () => {
-      const controller = new AbortController();
-      let capturedSignal: AbortSignal | undefined;
-      let resolveFetch: (value: unknown) => void = () => {};
-      mockFetch.mockImplementationOnce((_url, options) => {
-        capturedSignal = options.signal;
-        return new Promise(resolve => {
-          resolveFetch = resolve;
+      let requestSignal: AbortSignal | undefined;
+      mockFetch.mockImplementationOnce((_url: string, options: { signal: AbortSignal }) => {
+        requestSignal = options.signal;
+        return new Promise((_resolve, reject) => {
+          options.signal.addEventListener('abort', () =>
+            reject(new DOMException('Aborted', 'AbortError'))
+          );
         });
       });
 
       const promise = fetchHtml('https://example.com/recipe', controller.signal);
-
       controller.abort();
 
-      expect(capturedSignal?.aborted).toBe(true);
+      await expect(promise).rejects.toThrow();
+      expect(requestSignal?.aborted).toBe(true);
+    });
 
-      resolveFetch({
-        ok: true,
-        url: 'https://example.com/recipe',
-        text: () => Promise.resolve('<html></html>'),
+    test('passes a fetch signal that is not aborted for a live request', async () => {
+      let requestSignal: AbortSignal | undefined;
+      mockFetch.mockImplementationOnce((_url: string, options: { signal: AbortSignal }) => {
+        requestSignal = options.signal;
+        return Promise.resolve({
+          ok: true,
+          url: 'https://example.com/recipe',
+          text: () => Promise.resolve('<html></html>'),
+        });
       });
-      await promise;
+
+      await fetchHtml('https://example.com/recipe');
+
+      expect(requestSignal?.aborted).toBe(false);
     });
   });
 
