@@ -1,3 +1,10 @@
+## [2.43.2](https://github.com/AntoC-dev/Recipedia/compare/v2.43.1...v2.43.2) (2026-07-18)
+
+### Bug Fixes
+
+* **recipe:** surface silent save/reset failures in RecipeFormScreen ([5190f08](https://github.com/AntoC-dev/Recipedia/commit/5190f08299471a4cf17646a9231ef93c27ac80e7)), closes [#343](https://github.com/AntoC-dev/Recipedia/issues/343)
+* **recipe:** surface silent save/reset failures in RecipeFormScreen ([#427](https://github.com/AntoC-dev/Recipedia/issues/427)) ([4ce3906](https://github.com/AntoC-dev/Recipedia/commit/4ce3906d4ec2e0dee2f484fb7a2a243135b55b6b)), closes [#343](https://github.com/AntoC-dev/Recipedia/issues/343)
+
 ## [2.43.1](https://github.com/AntoC-dev/Recipedia/compare/v2.43.0...v2.43.1) (2026-07-18)
 
 ### Bug Fixes
