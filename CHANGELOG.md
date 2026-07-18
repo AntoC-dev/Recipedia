@@ -1,3 +1,10 @@
+## [2.43.1](https://github.com/AntoC-dev/Recipedia/compare/v2.43.0...v2.43.1) (2026-07-18)
+
+### Bug Fixes
+
+* **database:** add singleton teardown for RecipeDatabase ([#351](https://github.com/AntoC-dev/Recipedia/issues/351)) ([750732c](https://github.com/AntoC-dev/Recipedia/commit/750732c9d29c638fe6707c266ac45fd892b57c2d)), closes [#instance](https://github.com/AntoC-dev/Recipedia/issues/instance) [#instance](https://github.com/AntoC-dev/Recipedia/issues/instance)
+* **database:** add singleton teardown for RecipeDatabase ([#351](https://github.com/AntoC-dev/Recipedia/issues/351)) ([#430](https://github.com/AntoC-dev/Recipedia/issues/430)) ([651904e](https://github.com/AntoC-dev/Recipedia/commit/651904e8cbcaec9933038a0425c8d5a6dfbdc3c4))
+
 ## [2.43.0](https://github.com/AntoC-dev/Recipedia/compare/v2.42.2...v2.43.0) (2026-07-17)
 
 ### Features
