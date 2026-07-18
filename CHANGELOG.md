@@ -1,3 +1,10 @@
+## [2.44.1](https://github.com/AntoC-dev/Recipedia/compare/v2.44.0...v2.44.1) (2026-07-18)
+
+### Bug Fixes
+
+* **url:** remove leaked abort listeners in combineAbortSignals ([f04c452](https://github.com/AntoC-dev/Recipedia/commit/f04c452f22496edbbcbb3b92fad4f66053e85c8e))
+* **url:** remove leaked abort listeners in combineAbortSignals ([#431](https://github.com/AntoC-dev/Recipedia/issues/431)) ([51237d7](https://github.com/AntoC-dev/Recipedia/commit/51237d7d4f46d496d50d21c45adb4b04353ce1cb)), closes [#345](https://github.com/AntoC-dev/Recipedia/issues/345)
+
 ## [2.44.0](https://github.com/AntoC-dev/Recipedia/compare/v2.43.2...v2.44.0) (2026-07-18)
 
 ### Features
