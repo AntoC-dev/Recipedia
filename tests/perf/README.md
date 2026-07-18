@@ -58,15 +58,15 @@ a specific screen instead of one averaged blob.
   `tests/e2e/cases/performance/network/` (`bulk_import.yaml` imports 100 recipes
   from HelloFresh)
 - Metric: **mean UI FPS** (what `flashlight test` actually writes — it emits no
-  "score"), per screen, vs `tests/e2e/performance-budgets.json` +
-  `check-perf-budget.mjs`.
-- Failure model (deliberately asymmetric):
-  - a **missing result** (flow produced no output) is a **hard failure** — the
-    flow broke
-  - an FPS drop below `minFps` or `>regressionTolerancePct` below `referenceFps`
-    is a **warning only** — single-run device FPS is too noisy to hard-gate on;
-    the deterministic hard gate is Reassure
-  - FPS is **collect-only until calibrated** (`FLASHLIGHT_CALIBRATE=1`)
+  "score"), per screen. (Flashlight's `time` is the `--duration` sampling
+  window, not flow duration, so it is **not** used as a startup-time metric —
+  see #445.)
+- Trend + regressions: `.github/scripts/flashlight-benchmark.mjs` reduces the
+  results to `fps.json`; **github-action-benchmark** stores the history on the
+  `perf-data` branch, renders the trend charts (published to the docs site under
+  `/perf/`), and **comments on the commit** when a screen drops beyond
+  `alert-threshold`. Regressions warn, never fail — single-run device FPS is too
+  noisy to hard-gate; the deterministic hard gate is Reassure.
 - CI runs the same per-screen cases in two places:
   - **Per PR — smoke (blocking):** `build-test.yml` →
     `e2e-tests-android-performance` runs the `performance` suite
@@ -77,17 +77,10 @@ a specific screen instead of one averaged blob.
     suite flaked. A flow that fails after its retry **blocks the merge**.
   - **Weekly + manual — FPS profiling:** `performance.yml` (Thursday 02:00 UTC —
     Monday avoided for Dependabot) runs Flashlight (3 iterations to average out
-    noise), reports per-screen FPS, warns on regressions, hard-fails only on a
-    broken flow. Single emulator, screens **sequential** (seed once via
-    `00_seed`, warm screens reuse it — not parallelised). Each screen writes its
-    **own separate report** (`perf-reports/<screen>.html`); the gate writes a
-    merged FPS table to the Actions run summary.
-
-Calibrate reference FPS once on a known-good run:
-
-```bash
-FLASHLIGHT_CALIBRATE=1 node .github/scripts/check-perf-budget.mjs perf-results
-```
+    noise) and publishes the per-screen FPS trend. Single emulator, screens
+    **sequential** (seed once via `00_seed`, warm screens reuse it — not
+    parallelised). Each screen writes its **own separate report**
+    (`perf-reports/<screen>.html`).
 
 ## Layer 3 — Bundle size (every PR)
 
@@ -102,7 +95,7 @@ BUNDLE_CALIBRATE=1 node .github/scripts/check-bundle-size.mjs dist-bundle
 
 ## CI gate scripts
 
-The three gate scripts under `.github/scripts/` are unit-tested:
+The perf CI scripts under `.github/scripts/` are unit-tested:
 
 ```bash
 npm run test:scripts   # node --test .github/scripts/*.test.mjs
@@ -116,6 +109,7 @@ npm run test:scripts   # node --test .github/scripts/*.test.mjs
 - `tests/e2e/performance.yaml` — Maestro suite config driving the PR smoke; its
   `flowsOrder` names must match each screen case's `name:` field
 - `tests/e2e/flows/performance/` — reusable per-screen Maestro flows
-- `tests/e2e/performance-budgets.json` — Flashlight per-screen budgets
+- `.github/scripts/flashlight-benchmark.mjs` — reduces Flashlight results to
+  github-action-benchmark input (`fps.json`)
 - `tests/perf/bundle-size-budget.json` — JS bundle budget
 - `src/assets/datasets/performance/` — power-user seed dataset + generator

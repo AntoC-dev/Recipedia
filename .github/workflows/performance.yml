@@ -103,6 +103,10 @@ jobs:
     name: Run Flashlight Performance Tests
     needs: build-performance-apk
     runs-on: ubuntu-latest
+    # Needs write access to append the run to the perf-data history branch and to
+    # post a commit comment when a regression is detected.
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -160,10 +164,30 @@ jobs:
           # file (run as one shell) — see run-perf-screens.sh.
           script: bash .github/scripts/run-perf-screens.sh "${{ steps.find-apk.outputs.apk_path }}"
 
-      # A broken flow (no result) fails; FPS regressions only warn (single-run
-      # device FPS is too noisy to hard-gate). Writes the merged FPS table to the UI.
-      - name: Gate on per-screen performance budgets
-        run: node .github/scripts/check-perf-budget.mjs perf-results
+      # Trend tracking via github-action-benchmark: it stores per-screen mean FPS
+      # history on the perf-data branch, renders the trend charts, and comments on
+      # the commit when a screen regresses. Scheduled runs only, for one clean
+      # weekly point per commit. Regressions warn (comment) but never fail the build
+      # — single-run emulator FPS is too noisy to hard-gate; Reassure is the
+      # deterministic gate.
+      - name: Emit benchmark input
+        if: github.event_name == 'schedule'
+        run: node .github/scripts/flashlight-benchmark.mjs perf-results perf-bench
+
+      - name: Publish screen-FPS trend
+        if: github.event_name == 'schedule'
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          name: Screen FPS
+          tool: customBiggerIsBetter
+          output-file-path: perf-bench/fps.json
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          gh-pages-branch: perf-data
+          benchmark-data-dir-path: dev/bench
+          auto-push: true
+          comment-on-alert: true
+          fail-on-alert: false
+          alert-threshold: '115%'
 
       - name: Upload performance reports
         if: always()
