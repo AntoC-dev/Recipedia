@@ -83,6 +83,10 @@ jobs:
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci
 
+      - name: Setup Python for Chaquopy
+        if: inputs.platform == 'android'
+        uses: ./.github/actions/setup-chaquopy-python
+
       - name: Build decision summary
         if: env.EXPO_TOKEN != ''
         env:

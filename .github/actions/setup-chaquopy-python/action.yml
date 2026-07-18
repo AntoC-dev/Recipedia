@@ -1,0 +1,10 @@
+name: 'Setup Python for Chaquopy'
+description: 'Install the Python version pinned in .python-version so Chaquopy (buildPython) resolves during Android builds'
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version-file: '.python-version'
+        cache: 'pip'
