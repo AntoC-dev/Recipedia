@@ -1,3 +1,10 @@
+## [2.44.4](https://github.com/AntoC-dev/Recipedia/compare/v2.44.3...v2.44.4) (2026-07-19)
+
+### Bug Fixes
+
+* **ci:** make E2E artifact merge resilient to cache miss ([3f3cf49](https://github.com/AntoC-dev/Recipedia/commit/3f3cf49bee275708fa602b6c0c1e945887cd626c))
+* **ci:** make E2E artifact merge resilient to cache miss ([#451](https://github.com/AntoC-dev/Recipedia/issues/451)) ([5531a26](https://github.com/AntoC-dev/Recipedia/commit/5531a266057c8760b88952d68961a76c7345ada6))
+
 ## [2.44.3](https://github.com/AntoC-dev/Recipedia/compare/v2.44.2...v2.44.3) (2026-07-19)
 
 ### Performance Improvements
