@@ -1,3 +1,10 @@
+## [2.44.3](https://github.com/AntoC-dev/Recipedia/compare/v2.44.2...v2.44.3) (2026-07-19)
+
+### Performance Improvements
+
+* **ci:** publish per-screen FPS trend, drop dormant budget gate ([44d9394](https://github.com/AntoC-dev/Recipedia/commit/44d939439f61b373e42aa2179e81e7c11737ce96)), closes [#445](https://github.com/AntoC-dev/Recipedia/issues/445) [#447](https://github.com/AntoC-dev/Recipedia/issues/447)
+* **ci:** publish per-screen FPS trend, drop dormant budget gate ([#450](https://github.com/AntoC-dev/Recipedia/issues/450)) ([415118b](https://github.com/AntoC-dev/Recipedia/commit/415118b41d520c8605a1bd695bcb8d3482ec09c2)), closes [#445](https://github.com/AntoC-dev/Recipedia/issues/445) [#445](https://github.com/AntoC-dev/Recipedia/issues/445) [435/#436](https://github.com/435/Recipedia/issues/436)
+
 ## [2.44.2](https://github.com/AntoC-dev/Recipedia/compare/v2.44.1...v2.44.2) (2026-07-18)
 
 ### Bug Fixes
