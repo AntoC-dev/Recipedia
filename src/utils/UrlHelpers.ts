@@ -87,36 +87,28 @@ export interface FetchHtmlResult {
  * @throws Error if fetch fails or times out
  */
 export async function fetchHtml(url: string, signal?: AbortSignal): Promise<FetchHtmlResult> {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  const timeoutSignal = AbortSignal.timeout(FETCH_TIMEOUT_MS);
+  const combinedSignal = signal ? AbortSignal.any([signal, timeoutSignal]) : timeoutSignal;
 
-  const combined = signal ? combineAbortSignals(signal, controller.signal) : null;
-  const combinedSignal = combined ? combined.signal : controller.signal;
+  const response = await fetch(url, {
+    signal: combinedSignal,
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (compatible; RecipediaApp/1.0; +https://github.com/recipedia)',
+      Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      'Accept-Language': 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7',
+    },
+  });
 
-  try {
-    const response = await fetch(url, {
-      signal: combinedSignal,
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; RecipediaApp/1.0; +https://github.com/recipedia)',
-        Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    const html = await response.text();
-    const finalUrl = response.url ?? url;
-
-    uiLogger.debug('fetchHtml', { finalUrl, htmlLength: html.length });
-
-    return { html, finalUrl };
-  } finally {
-    clearTimeout(timeoutId);
-    combined?.cleanup();
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
   }
+
+  const html = await response.text();
+  const finalUrl = response.url ?? url;
+
+  uiLogger.debug('fetchHtml', { finalUrl, htmlLength: html.length });
+
+  return { html, finalUrl };
 }
 
 /**
@@ -169,38 +161,4 @@ export function extractImageFromJsonLd(html: string): string | null {
   } catch {
     return null;
   }
-}
-
-/**
- * Combines two abort signals into one.
- *
- * The returned `cleanup` function removes the abort listeners registered on
- * `signal1`/`signal2` and must be called once the combined signal is no longer
- * needed, otherwise the listeners leak on every call.
- *
- * @param signal1 - First abort signal to observe
- * @param signal2 - Second abort signal to observe
- * @returns The combined signal and a `cleanup` function to detach listeners
- */
-function combineAbortSignals(
-  signal1: AbortSignal,
-  signal2: AbortSignal
-): { signal: AbortSignal; cleanup: () => void } {
-  const controller = new AbortController();
-
-  const abort = () => controller.abort();
-
-  const cleanup = () => {
-    signal1.removeEventListener('abort', abort);
-    signal2.removeEventListener('abort', abort);
-  };
-
-  signal1.addEventListener('abort', abort, { once: true });
-  signal2.addEventListener('abort', abort, { once: true });
-
-  if (signal1.aborted || signal2.aborted) {
-    controller.abort();
-  }
-
-  return { signal: controller.signal, cleanup };
 }
