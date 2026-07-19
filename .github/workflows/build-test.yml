@@ -335,7 +335,7 @@ jobs:
         run: |
           mkdir -p merged-reports
           if find junit-reports -name '*.xml' -type f 2>/dev/null | grep -q .; then
-            npx jrm merged-reports/report.xml "junit-reports/**/*.xml"
+            npx --yes junit-report-merger@9.0.3 merged-reports/report.xml "junit-reports/**/*.xml"
           else
             echo "No JUnit reports to merge"
           fi
