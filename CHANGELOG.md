@@ -1,3 +1,10 @@
+## [2.45.0](https://github.com/AntoC-dev/Recipedia/compare/v2.44.4...v2.45.0) (2026-07-19)
+
+### Features
+
+* **ui:** theme Android nav bar and iOS root view via expo-system-ui ([a50955b](https://github.com/AntoC-dev/Recipedia/commit/a50955b1598cbf14b0959b7aafc3d68cef468373))
+* **ui:** theme Android nav bar and iOS root view via expo-system-ui ([#457](https://github.com/AntoC-dev/Recipedia/issues/457)) ([c2a9f54](https://github.com/AntoC-dev/Recipedia/commit/c2a9f54f6161526e92e283d666126fa8da05b6dc))
+
 ## [2.44.4](https://github.com/AntoC-dev/Recipedia/compare/v2.44.3...v2.44.4) (2026-07-19)
 
 ### Bug Fixes
