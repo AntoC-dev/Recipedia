@@ -80,7 +80,8 @@
   "excludeNotDocumented": false,
   "excludeReferences": true,
   "navigationLinks": {
-    "GitHub": "https://github.com/AntoC-dev/Recipedia"
+    "GitHub": "https://github.com/AntoC-dev/Recipedia",
+    "Performance": "https://antoc-dev.github.io/Recipedia/perf/"
   },
   "validation": {
     "notExported": false,
