@@ -86,8 +86,15 @@ updates:
       - dependency-name: "@types/node"
         update-types: ["version-update:semver-major"]
 
+  # Covers both workflow files (.github/workflows) and the composite actions
+  # under .github/actions/*. Dependabot's github-actions updater does NOT scan
+  # composite action.yml files unless their directory is listed explicitly, so
+  # the "/" entry alone left setup-android-build / setup-ios-build /
+  # setup-chaquopy-python pinned to Node20-era action versions.
   - package-ecosystem: "github-actions"
-    directory: "/"
+    directories:
+      - "/"
+      - "/.github/actions/*"
     schedule:
       interval: "weekly"
       day: "monday"
