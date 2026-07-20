@@ -5,6 +5,8 @@ Each handler implements site-specific login logic.
 """
 
 from typing import Optional
+
+from logger import _log_debug
 from .base import LoginHandler
 from .quitoque import QuitoqueLoginHandler
 
@@ -19,7 +21,9 @@ def get_handler(host: str) -> Optional[LoginHandler]:
     host_lower = host.lower().replace('www.', '')
     handler_class = HANDLERS.get(host_lower)
     if handler_class:
+        _log_debug(f"Auth handler resolved for host: {host_lower}")
         return handler_class()
+    _log_debug(f"No auth handler for host: {host_lower}")
     return None
 
 

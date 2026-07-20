@@ -118,11 +118,13 @@ def scrape_recipe_from_html(html: str, url: str, wild_mode: bool = True, final_u
 def get_supported_hosts() -> str:
     try:
         hosts = list(SCRAPERS.keys())
+        _log_info(f"get_supported_hosts: {len(hosts)} hosts")
         return json.dumps({
             "success": True,
             "data": hosts
         }, ensure_ascii=False)
     except Exception as e:
+        _log_error(f"get_supported_hosts failed: {type(e).__name__}: {e}", e)
         return json.dumps({
             "success": False,
             "error": {"type": type(e).__name__, "message": str(e)}
@@ -131,11 +133,13 @@ def get_supported_hosts() -> str:
 def is_host_supported(host: str) -> str:
     try:
         supported = host.lower() in (h.lower() for h in SCRAPERS.keys())
+        _log_info(f"is_host_supported: host={host}, supported={supported}")
         return json.dumps({
             "success": True,
             "data": supported
         }, ensure_ascii=False)
     except Exception as e:
+        _log_error(f"is_host_supported failed for host={host}: {type(e).__name__}: {e}", e)
         return json.dumps({
             "success": False,
             "error": {"type": type(e).__name__, "message": str(e)}
@@ -184,6 +188,9 @@ def _extract_all_data(scraper) -> Dict[str, Any]:
         "links": _safe_call(scraper.links),
     }
 
+def _method_name(method) -> str:
+    return getattr(method, '__name__', repr(method))
+
 def _safe_call(method) -> Optional[Any]:
     try:
         result = method()
@@ -194,7 +201,8 @@ def _safe_call(method) -> Optional[Any]:
         if result == "":
             return None
         return result
-    except Exception:
+    except Exception as e:
+        _log_debug(f"_safe_call({_method_name(method)}) returned no data: {type(e).__name__}: {e}")
         return None
 
 def _safe_call_numeric(method) -> Optional[int]:
@@ -205,7 +213,8 @@ def _safe_call_numeric(method) -> Optional[int]:
         if isinstance(result, (int, float)):
             return int(result)
         return None
-    except Exception:
+    except Exception as e:
+        _log_debug(f"_safe_call_numeric({_method_name(method)}) returned no data: {type(e).__name__}: {e}")
         return None
 
 def _safe_call_ingredient_groups(scraper) -> Optional[List[Dict[str, Any]]]:
@@ -220,13 +229,15 @@ def _safe_call_ingredient_groups(scraper) -> Optional[List[Dict[str, Any]]]:
             }
             for group in groups
         ]
-    except Exception:
+    except Exception as e:
+        _log_debug(f"_safe_call_ingredient_groups returned no data: {type(e).__name__}: {e}")
         return None
 
 def _detect_auth_required(html: str, final_url: str, original_url: str) -> Optional[AuthenticationRequiredError]:
     try:
         host = urlparse(original_url).netloc.replace('www.', '')
-    except Exception:
+    except Exception as e:
+        _log_warn(f"_detect_auth_required: failed to parse host from {original_url}: {e}")
         host = ''
 
     try:
@@ -234,8 +245,8 @@ def _detect_auth_required(html: str, final_url: str, original_url: str) -> Optio
         for pattern in AUTH_URL_PATTERNS:
             if pattern in final_path:
                 return AuthenticationRequiredError(host)
-    except Exception:
-        pass
+    except Exception as e:
+        _log_warn(f"_detect_auth_required: failed to parse path from {final_url}: {e}")
 
     import re
     title_match = re.search(r'<title[^>]*>([^<]+)</title>', html, re.IGNORECASE)

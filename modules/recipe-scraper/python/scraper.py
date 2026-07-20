@@ -13,38 +13,10 @@ Requires: recipe-scrapers[online]>=15.0.0
 import html
 import json
 import re
-import sys
-import traceback
 from typing import Any, Optional, List, Dict
 from urllib.parse import urlparse
 
-
-# Debug logging - prints to stdout which is captured by native code
-DEBUG = True
-
-
-def _log(level: str, message: str) -> None:
-    """Log a message with level prefix. Captured by iOS/Android native code."""
-    if DEBUG or level in ('ERROR', 'WARN'):
-        print(f"[PyScraper:{level}] {message}", file=sys.stderr)
-
-
-def _log_debug(message: str) -> None:
-    _log('DEBUG', message)
-
-
-def _log_info(message: str) -> None:
-    _log('INFO', message)
-
-
-def _log_warn(message: str) -> None:
-    _log('WARN', message)
-
-
-def _log_error(message: str, exc: Optional[Exception] = None) -> None:
-    _log('ERROR', message)
-    if exc and DEBUG:
-        _log('ERROR', f"Traceback:\n{traceback.format_exc()}")
+from logger import _log_debug, _log_info, _log_warn, _log_error
 
 
 # Import dependencies with detailed error logging
@@ -278,11 +250,13 @@ def get_supported_hosts() -> str:
     """
     try:
         hosts = list(SCRAPERS.keys())
+        _log_info(f"get_supported_hosts: {len(hosts)} hosts")
         return json.dumps({
             "success": True,
             "data": hosts
         }, ensure_ascii=False)
     except Exception as e:
+        _log_error(f"get_supported_hosts failed: {type(e).__name__}: {e}", e)
         return json.dumps({
             "success": False,
             "error": {"type": type(e).__name__, "message": str(e)}
@@ -301,11 +275,13 @@ def is_host_supported(host: str) -> str:
     """
     try:
         supported = host.lower() in (h.lower() for h in SCRAPERS.keys())
+        _log_info(f"is_host_supported: host={host}, supported={supported}")
         return json.dumps({
             "success": True,
             "data": supported
         }, ensure_ascii=False)
     except Exception as e:
+        _log_error(f"is_host_supported failed for host={host}: {type(e).__name__}: {e}", e)
         return json.dumps({
             "success": False,
             "error": {"type": type(e).__name__, "message": str(e)}
@@ -361,6 +337,11 @@ def _extract_all_data(scraper) -> Dict[str, Any]:
     }
 
 
+def _method_name(method) -> str:
+    """Best-effort readable name for a bound scraper method, for log messages."""
+    return getattr(method, '__name__', repr(method))
+
+
 def _safe_call(method) -> Optional[Any]:
     """
     Safely call a scraper method, returning None on failure.
@@ -377,7 +358,8 @@ def _safe_call(method) -> Optional[Any]:
         if result == "":
             return None
         return result
-    except Exception:
+    except Exception as e:
+        _log_debug(f"_safe_call({_method_name(method)}) returned no data: {type(e).__name__}: {e}")
         return None
 
 
@@ -394,7 +376,8 @@ def _safe_call_numeric(method) -> Optional[int]:
         if isinstance(result, (int, float)):
             return int(result)
         return None
-    except Exception:
+    except Exception as e:
+        _log_debug(f"_safe_call_numeric({_method_name(method)}) returned no data: {type(e).__name__}: {e}")
         return None
 
 
@@ -413,7 +396,8 @@ def _safe_call_ingredient_groups(scraper) -> Optional[List[Dict[str, Any]]]:
             }
             for group in groups
         ]
-    except Exception:
+    except Exception as e:
+        _log_debug(f"_safe_call_ingredient_groups returned no data: {type(e).__name__}: {e}")
         return None
 
 
@@ -435,7 +419,8 @@ def _detect_auth_required(html: str, final_url: str, original_url: str) -> Optio
     """
     try:
         host = urlparse(original_url).netloc.replace('www.', '')
-    except Exception:
+    except Exception as e:
+        _log_warn(f"_detect_auth_required: failed to parse host from {original_url}: {e}")
         host = ''
 
     try:
@@ -443,8 +428,8 @@ def _detect_auth_required(html: str, final_url: str, original_url: str) -> Optio
         for pattern in AUTH_URL_PATTERNS:
             if pattern in final_path:
                 return AuthenticationRequiredError(host)
-    except Exception:
-        pass
+    except Exception as e:
+        _log_warn(f"_detect_auth_required: failed to parse path from {final_url}: {e}")
 
     title_match = re.search(r'<title[^>]*>([^<]+)</title>', html, re.IGNORECASE)
     if title_match:
@@ -476,6 +461,7 @@ def scrape_recipe_authenticated(url: str, username: str, password: str, wild_mod
     Returns:
         JSON string with success/error result containing all recipe data.
     """
+    _log_info(f"scrape_recipe_authenticated called: url={url}, wild_mode={wild_mode}")
     try:
         host = urlparse(url).netloc.replace('www.', '')
 
@@ -483,6 +469,7 @@ def scrape_recipe_authenticated(url: str, username: str, password: str, wild_mod
         handler = get_handler(host)
 
         if not handler:
+            _log_warn(f"No auth handler registered for host: {host}")
             return json.dumps({
                 "success": False,
                 "error": {
@@ -494,7 +481,9 @@ def scrape_recipe_authenticated(url: str, username: str, password: str, wild_mod
 
         session = requests.Session()
 
+        _log_debug(f"Attempting login for host: {host}")
         if not handler.login(session, username, password):
+            _log_warn(f"Login failed for host: {host}")
             return json.dumps({
                 "success": False,
                 "error": {
@@ -504,18 +493,23 @@ def scrape_recipe_authenticated(url: str, username: str, password: str, wild_mod
                 }
             }, ensure_ascii=False)
 
+        _log_debug(f"Login succeeded, fetching authenticated page: {url}")
         response = session.get(url, headers={'User-Agent': 'Mozilla/5.0'}, allow_redirects=True, timeout=30)
         response.raise_for_status()
+        _log_debug(f"Fetched {len(response.text)} bytes, status={response.status_code}")
 
         html_content = response.text
         scraper = scrape_html(html=html_content, org_url=url, supported_only=not wild_mode)
+        data = _extract_all_data(scraper)
+        _log_info(f"Authenticated scrape successful: title='{data.get('title', 'N/A')}'")
         return json.dumps({
             "success": True,
-            "data": _extract_all_data(scraper),
+            "data": data,
             "html": html_content
         }, ensure_ascii=False)
 
     except Exception as e:
+        _log_error(f"scrape_recipe_authenticated failed: {type(e).__name__}: {e}", e)
         return json.dumps({
             "success": False,
             "error": {"type": type(e).__name__, "message": str(e)}
@@ -531,11 +525,14 @@ def get_supported_auth_hosts() -> str:
     """
     try:
         from auth import get_supported_hosts as auth_hosts
+        hosts = auth_hosts()
+        _log_info(f"get_supported_auth_hosts: {len(hosts)} hosts")
         return json.dumps({
             "success": True,
-            "data": auth_hosts()
+            "data": hosts
         }, ensure_ascii=False)
     except Exception as e:
+        _log_error(f"get_supported_auth_hosts failed: {type(e).__name__}: {e}", e)
         return json.dumps({
             "success": False,
             "error": {"type": type(e).__name__, "message": str(e)}
