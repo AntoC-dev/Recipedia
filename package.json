@@ -181,7 +181,7 @@
     "prettier": "^3.9.5",
     "pyodide": "0.28.3",
     "reassure": "1.5.1",
-    "semantic-release": "25.0.7",
+    "semantic-release": "25.0.8",
     "typedoc": "0.28.19",
     "typescript": "6.0.3",
     "varvara-typedoc-theme": "0.3.8"
