@@ -290,6 +290,7 @@ export const Searchbar: React.FC<any> = props => (
       onFocus={props.onFocus}
       onBlur={props.onBlur}
       onSubmitEditing={props.onSubmitEditing}
+      returnKeyType={props.returnKeyType}
     />
     <RNText testID={props.testID + '::Placeholder'}>{props.placeholder}</RNText>
     <View testID={props.testID + '::RightContainer'}>
