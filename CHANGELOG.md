@@ -1,3 +1,10 @@
+## [2.46.0](https://github.com/AntoC-dev/Recipedia/compare/v2.45.0...v2.46.0) (2026-07-21)
+
+### Features
+
+* **scraper:** add structured logging across recipe-scraper module ([b23ba38](https://github.com/AntoC-dev/Recipedia/commit/b23ba382bdc7de35085e0116d46222587c87eba0)), closes [#321](https://github.com/AntoC-dev/Recipedia/issues/321)
+* **scraper:** structured logging + build-warning hygiene ([#321](https://github.com/AntoC-dev/Recipedia/issues/321)) ([#459](https://github.com/AntoC-dev/Recipedia/issues/459)) ([6c654b6](https://github.com/AntoC-dev/Recipedia/commit/6c654b62a9cf63892b3e1c286a97885ec2cb6c23))
+
 ## [2.45.0](https://github.com/AntoC-dev/Recipedia/compare/v2.44.4...v2.45.0) (2026-07-19)
 
 ### Features
