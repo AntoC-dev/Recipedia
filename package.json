@@ -175,7 +175,7 @@
     "jest-expo": "56.0.5",
     "jest-junit": "^16.0.0",
     "knip": "6.27.0",
-    "lint-staged": "16.1.5",
+    "lint-staged": "16.4.0",
     "metro-react-native-babel-preset": "~0.77.0",
     "patch-package": "^8.0.1",
     "prettier": "^3.9.5",
