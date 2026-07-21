@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: '24'
           cache: 'npm'
@@ -42,7 +42,7 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
           fail-on-cache-miss: true
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: '24'
       - name: Validate commit messages
@@ -59,7 +59,7 @@ jobs:
         with:
           path: node_modules
           key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: '24'
       - name: Run ESLint
@@ -76,7 +76,7 @@ jobs:
         with:
           path: node_modules
           key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: '24'
       - name: Check Prettier formatting
@@ -93,7 +93,7 @@ jobs:
         with:
           path: node_modules
           key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: '24'
       - name: Run TypeScript check
@@ -110,7 +110,7 @@ jobs:
         with:
           path: node_modules
           key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: '24'
       - name: Run Knip
@@ -127,7 +127,7 @@ jobs:
         with:
           path: node_modules
           key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: '24'
       - name: Run Expo Doctor
@@ -144,7 +144,7 @@ jobs:
         with:
           path: node_modules
           key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: '24'
       - name: Security audit
@@ -156,7 +156,7 @@ jobs:
     needs: install
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: '24'
       - name: Test CI gate scripts
@@ -173,7 +173,7 @@ jobs:
         with:
           path: node_modules
           key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: '24'
       - name: Build documentation
