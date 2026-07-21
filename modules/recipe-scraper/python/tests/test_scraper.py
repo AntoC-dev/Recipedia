@@ -7,10 +7,13 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from scraper import (
     scrape_recipe_from_html,
+    scrape_recipe_authenticated,
     get_supported_hosts,
+    get_supported_auth_hosts,
     is_host_supported,
     _safe_call,
     _safe_call_numeric,
+    _method_name,
     _detect_auth_required,
     _has_recipe_schema,
     _strip_large_scripts,
@@ -174,6 +177,15 @@ class TestSafeCall:
         result = _safe_call(raise_error)
         assert result is None
 
+    def test_logs_debug_on_exception(self, capsys):
+        def raise_error():
+            raise ValueError("boom")
+
+        _safe_call(raise_error)
+        captured = capsys.readouterr()
+        assert "_safe_call" in captured.err
+        assert "boom" in captured.err
+
     def test_returns_none_for_empty_string(self):
         result = _safe_call(lambda: "")
         assert result is None
@@ -203,6 +215,15 @@ class TestSafeCallNumeric:
         result = _safe_call_numeric(raise_error)
         assert result is None
 
+    def test_logs_debug_on_exception(self, capsys):
+        def raise_error():
+            raise ValueError("boom")
+
+        _safe_call_numeric(raise_error)
+        captured = capsys.readouterr()
+        assert "_safe_call_numeric" in captured.err
+        assert "boom" in captured.err
+
     def test_returns_none_for_none(self):
         result = _safe_call_numeric(lambda: None)
         assert result is None
@@ -210,6 +231,21 @@ class TestSafeCallNumeric:
     def test_returns_none_for_string(self):
         result = _safe_call_numeric(lambda: "not a number")
         assert result is None
+
+
+class TestMethodName:
+    def test_uses_dunder_name(self):
+        def some_method():
+            return None
+
+        assert _method_name(some_method) == "some_method"
+
+    def test_falls_back_to_repr(self):
+        class NoName:
+            def __repr__(self):
+                return "<no-name-callable>"
+
+        assert _method_name(NoName()) == "<no-name-callable>"
 
 
 LOGIN_PAGE_HTML = """
@@ -468,6 +504,47 @@ class TestLogging:
         captured = capsys.readouterr()
         assert "ERROR" in captured.err
         assert "test exception" in captured.err
+
+
+class TestHostQueryLogging:
+    def test_get_supported_hosts_logs_count(self, capsys):
+        get_supported_hosts()
+        captured = capsys.readouterr()
+        assert "get_supported_hosts" in captured.err
+
+    def test_is_host_supported_logs_result(self, capsys):
+        is_host_supported("allrecipes.com")
+        captured = capsys.readouterr()
+        assert "is_host_supported" in captured.err
+        assert "allrecipes.com" in captured.err
+
+    def test_get_supported_auth_hosts_logs_count(self, capsys):
+        get_supported_auth_hosts()
+        captured = capsys.readouterr()
+        assert "get_supported_auth_hosts" in captured.err
+
+
+class TestScrapeAuthenticatedLogging:
+    def test_unsupported_host_logs_warning(self, capsys):
+        result = json.loads(
+            scrape_recipe_authenticated("https://example.com/recipe", "user", "pass")
+        )
+        captured = capsys.readouterr()
+        assert result["success"] is False
+        assert result["error"]["type"] == "UnsupportedAuthSite"
+        assert "No auth handler" in captured.err
+
+    def test_logs_entry_on_call(self, capsys):
+        scrape_recipe_authenticated("https://example.com/recipe", "user", "pass")
+        captured = capsys.readouterr()
+        assert "scrape_recipe_authenticated called" in captured.err
+
+
+class TestDetectAuthRequiredLogging:
+    def test_logs_warning_on_unparseable_final_url(self, capsys):
+        _detect_auth_required("<html></html>", "http://[::bad", "https://example.com/recipe")
+        captured = capsys.readouterr()
+        assert "_detect_auth_required" in captured.err
 
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"

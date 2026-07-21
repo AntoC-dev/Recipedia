@@ -122,6 +122,13 @@ android {
     abortOnError false
   }
 
+  // Guardrail: keep this module's own Kotlin warning-free. Scoped to our
+  // sources only (RecipeScraperModule.kt) — upstream Expo/RN deprecations are
+  // compiled in their own modules and are unaffected.
+  kotlinOptions {
+    allWarningsAsErrors = true
+  }
+
   sourceSets {
     main {
       // Single source of truth for Python: shared with iOS Pyodide bundle.
