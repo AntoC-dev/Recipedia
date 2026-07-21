@@ -31,25 +31,29 @@ tags:
     text: "Ca"
     label: "Assert - Verify search bar shows 'Ca'"
 
-- tapOn:
-    id: "SearchScreen::SearchBarResults::Item::0"
-    label: "Action - Tap on first element to close the keyboard"
-
 - runFlow:
-    file: "../../flows/waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to close"
+    file: "../../flows/search/dismissKeyboardKeepDropdown.yaml"
+    label: "Swipe-dismiss keyboard, keep dropdown open"
 
 - runFlow:
     file: "../../asserts/search/searchbar/searchBarFilteredOnCa.yaml"
-    label: "Assert - Verify search bar dropdown shows filtered results for 'Ca'"
+    label: "Assert - Verify search bar dropdown shows filtered results for 'Ca' (keyboard closed)"
 
 - tapOn:
     id: "SearchScreen::SearchBar"
-    label: "Action - Focus on search bar again"
+    label: "Action - Refocus search bar to bring keyboard back for commit"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
 - runFlow:
     file: "../../flows/search/commitTypedSearch.yaml"
     label: "Commit typed search, keep filter"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to dismiss"
 
 - extendedWaitUntil:
     visible:

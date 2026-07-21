@@ -1,16 +1,12 @@
 appId: "com.recipedia"
 ---
-# On Android under SDK 56 the first tap on a suggestion is consumed by the IME
-# dismissal and its onPress never fires; a second tap (keyboard already gone)
-# selects the suggestion, closes the dropdown and reveals the recipe grid.
+# keyboardShouldPersistTaps='handled' on the suggestions list means a single
+# tap selects the suggestion directly: fills the search bar with its title,
+# closes the dropdown and reveals the recipe grid. No second tap needed.
 - tapOn:
     id: "SearchScreen::SearchBarResults::Item::0"
-    label: "First tap only dismisses the keyboard"
+    label: "Single tap selects the top suggestion, closes the dropdown and reveals the grid"
 
 - runFlow:
     file: "../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
-
-- tapOn:
-    id: "SearchScreen::SearchBarResults::Item::0"
-    label: "Second tap selects the suggestion, closes the dropdown and reveals the grid"
