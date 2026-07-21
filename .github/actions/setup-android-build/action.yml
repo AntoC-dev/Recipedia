@@ -27,7 +27,7 @@ runs:
         echo "/usr/lib/ccache" >> $GITHUB_PATH
 
     - name: Cache ccache
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: ~/.ccache
         key: ${{ runner.os }}-ccache-${{ hashFiles('package-lock.json') }}
@@ -45,7 +45,7 @@ runs:
         gradle-home-cache-cleanup: true
 
     - name: Cache global Expo artifacts
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: ~/.expo
         key: ${{ runner.os }}-expo-${{ hashFiles('package-lock.json') }}
@@ -53,7 +53,7 @@ runs:
           ${{ runner.os }}-expo-
 
     - name: Cache Expo prebuild (Android native)
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: android
         key: ${{ runner.os }}-expo-prebuild-android-${{ hashFiles('app.json', 'app.config.ts', 'package-lock.json', 'plugins/**', 'modules/**') }}
