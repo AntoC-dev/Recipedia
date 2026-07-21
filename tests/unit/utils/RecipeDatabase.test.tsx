@@ -1974,17 +1974,17 @@ describe('RecipeDatabase', () => {
       });
 
       test('clears purchased ingredients when the last remaining menu item is marked cooked', async () => {
-        const recipe = db.get_recipes()[0];
+        const recipe = db.get_recipes()[0]!;
         await db.addRecipeToMenu(recipe);
-        const menuItem = db.get_menu()[0];
+        const menuItem = db.get_menu()[0]!;
 
-        await db.setPurchased(recipe.ingredients[0].name, true);
-        expect(db.get_purchasedIngredients().get(recipe.ingredients[0].name)).toBe(true);
+        await db.setPurchased(recipe.ingredients[0]!.name, true);
+        expect(db.get_purchasedIngredients().get(recipe.ingredients[0]!.name)).toBe(true);
 
         const result = await db.toggleMenuItemCooked(menuItem.id!);
 
         expect(result).toBe(true);
-        expect(db.get_menu()[0].isCooked).toBe(true);
+        expect(db.get_menu()[0]!.isCooked).toBe(true);
         expect(db.get_purchasedIngredients().size).toBe(0);
       });
 

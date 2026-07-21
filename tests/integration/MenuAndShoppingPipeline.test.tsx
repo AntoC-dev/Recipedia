@@ -346,7 +346,7 @@ describe('Menu and Shopping Pipeline', () => {
 
     test('cooking the last remaining menu item clears stale purchased state for the next shopping cycle', async () => {
       await database.addRecipe(pastaRecipe);
-      const addedRecipe = database.get_recipes()[0];
+      const addedRecipe = database.get_recipes()[0]!;
 
       const { result } = renderMenuAndShopping();
 
@@ -368,7 +368,7 @@ describe('Menu and Shopping Pipeline', () => {
         ).toBe(true);
       });
 
-      const menuId = result.current.menu.menu[0].id!;
+      const menuId = result.current.menu.menu[0]!.id!;
 
       await act(async () => {
         await result.current.menu.toggleMenuItemCooked(menuId);
