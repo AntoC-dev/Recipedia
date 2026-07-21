@@ -129,6 +129,7 @@ export function SearchBar({
             onPress={() => {
               setSearchPhrase('');
               updateSearchString('');
+              Keyboard.dismiss();
             }}
           />
         )

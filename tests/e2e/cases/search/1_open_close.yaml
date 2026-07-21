@@ -11,23 +11,46 @@ tags:
     id: "SearchScreen::SearchBar"
     label: "Action - Focus on search bar to open dropdown"
 
-# Ensure the keyboard is open
-- inputText: " "
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
+- inputText: "Ca"
 
 - waitForAnimationToEnd:
-    label: "Wait for screen to finish opening"
-
-- tapOn:
-    id: "SearchScreen::SearchBarResults::Item::0"
-    label: "Action - Tap on first element to close the keyboard"
+    label: "Wait for keyboard to finish typing"
 
 - runFlow:
-    file: "../../asserts/search/searchbar/searchBarNotFiltered.yaml"
-    label: "Assert - Verify search bar dropdown shows all recipes"
+    file: "../../flows/search/dismissKeyboardKeepDropdown.yaml"
+    label: "Swipe-dismiss keyboard, keep dropdown open"
+
+- runFlow:
+    file: "../../asserts/search/searchbar/searchBarFilteredOnCa.yaml"
+    label: "Assert - Verify dropdown filtered on 'Ca' (keyboard closed)"
 
 - tapOn:
     id: "SearchScreen::SearchBar::RightIcon"
-    label: "Action - Close dropdown by tapping close icon"
+    label: "Action - Tap clear icon: clears text but keeps search focused"
+
+- runFlow:
+    file: "../../asserts/search/searchbar/searchBarNotFiltered.yaml"
+    label: "Assert - Clear icon cleared the text; dropdown shows all recipes again, still focused (keyboard closed)"
+
+- tapOn:
+    id: "SearchScreen::SearchBar"
+    label: "Action - Refocus search bar to bring keyboard back for commit"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
+- runFlow:
+    file: "../../flows/search/commitTypedSearch.yaml"
+    label: "Commit empty search to close dropdown and dismiss keyboard"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to dismiss"
 
 - runFlow:
     file: "../../asserts/search/en/assertSearchScreen.yaml"

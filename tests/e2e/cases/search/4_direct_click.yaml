@@ -11,29 +11,34 @@ tags:
     id: "SearchScreen::SearchBar"
     label: "Action - Focus on search bar"
 
-# Ensure the keyboard is open
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
+# Space matches every (two-word) recipe title, so the dropdown stays unfiltered
 - inputText: " "
 
 - waitForAnimationToEnd:
-    label: "Wait for screen to finish opening"
-
-- tapOn:
-    id: "SearchScreen::SearchBarResults::Item::0"
-    label: "Action - Tap on first element to close the keyboard"
+    label: "Wait for keyboard to finish typing"
 
 - runFlow:
-    file: "../../flows/waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to close"
+    file: "../../flows/search/dismissKeyboardKeepDropdown.yaml"
+    label: "Swipe-dismiss keyboard, keep dropdown open"
+
 - extendedWaitUntil:
     visible:
       id: "SearchScreen::SearchBarResults::Item::4"
     timeout: 3000
-    label: "Wait for element to tap to be displayed"
+    label: "Wait for element to tap to be displayed (keyboard closed)"
 
 - tapOn:
     id: "SearchScreen::SearchBarResults::Item::4"
     retryTapIfNoChange: false
-    label: "Action - Click directly on Lentil Curry (item 4) from dropdown"
+    label: "Action - Single tap directly selects Lentil Curry (item 4) from dropdown"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to dismiss"
 
 - runFlow:
     file: "../../asserts/search/en/searchScreenFilteredOnLentilCury.yaml"

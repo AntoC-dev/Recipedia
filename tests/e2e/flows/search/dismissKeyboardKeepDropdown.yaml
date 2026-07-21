@@ -1,0 +1,16 @@
+appId: "com.recipedia"
+---
+# Swipe (not a tap, not hideKeyboard - unreliable on iOS) dismisses the
+# keyboard via the Search screen FlashList's keyboardDismissMode='on-drag'.
+# This never touches searchBarClicked, so the dropdown stays open and the
+# filter is untouched. Even at the top of the list, this short downward drag
+# just registers the gesture and dismisses the keyboard - it doesn't scroll
+# the top items away.
+- swipe:
+    direction: DOWN
+    duration: 300
+    label: "Swipe down to dismiss keyboard while keeping dropdown open"
+
+- runFlow:
+    file: "../waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to dismiss"

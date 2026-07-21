@@ -11,45 +11,94 @@ tags:
     id: "SearchScreen::SearchBar"
     label: "Action - Focus on search bar"
 
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
 - inputText: "P"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to finish typing"
+
+- runFlow:
+    file: "../../flows/search/dismissKeyboardKeepDropdown.yaml"
+    label: "Swipe-dismiss keyboard, keep dropdown open"
 
 - runFlow:
     file: "../../asserts/search/searchbar/searchBarFilteredOnP.yaml"
-    label: "Assert - Verify dropdown filtered on 'P'"
+    label: "Assert - Verify dropdown filtered on 'P' (keyboard closed)"
+
+- tapOn:
+    id: "SearchScreen::SearchBar"
+    label: "Action - Refocus search bar"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
 - inputText: "a"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to finish typing"
+
+- runFlow:
+    file: "../../flows/search/dismissKeyboardKeepDropdown.yaml"
+    label: "Swipe-dismiss keyboard, keep dropdown open"
+
 - runFlow:
     file: "../../asserts/search/searchbar/searchBarFilteredOnPa.yaml"
-    label: "Assert - Verify dropdown filtered on 'Pa'"
+    label: "Assert - Verify dropdown filtered on 'Pa' (keyboard closed)"
+
+- tapOn:
+    id: "SearchScreen::SearchBar"
+    label: "Action - Refocus search bar"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
 - pressKey: "backspace"
 
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to finish editing"
+
+- runFlow:
+    file: "../../flows/search/dismissKeyboardKeepDropdown.yaml"
+    label: "Swipe-dismiss keyboard, keep dropdown open"
+
 - runFlow:
     file: "../../asserts/search/searchbar/searchBarFilteredOnP.yaml"
-    label: "Assert - Verify dropdown filtered back to 'P'"
+    label: "Assert - Verify dropdown filtered back to 'P' (keyboard closed)"
+
+- tapOn:
+    id: "SearchScreen::SearchBar"
+    label: "Action - Refocus search bar"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
 
 - inputText: "i"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard to finish typing"
 
-- tapOn:
-    id: "SearchScreen::SearchBarResults::Item::0"
-    label: "Action - Tap on first element to close the keyboard"
-
 - runFlow:
-    file: "../../flows/waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to close"
+    file: "../../flows/search/dismissKeyboardKeepDropdown.yaml"
+    label: "Swipe-dismiss keyboard, keep dropdown open"
 
 - runFlow:
     file: "../../asserts/search/searchbar/searchBarFilteredOnPi.yaml"
-    label: "Assert - Verify dropdown filtered on 'Pi'"
+    label: "Assert - Verify dropdown filtered on 'Pi' (keyboard closed)"
 
 - tapOn:
     id: "SearchScreen::SearchBarResults::Item::0"
     retryTapIfNoChange: false
-    label: "Action - Select first item (Margherita Pizza) from dropdown"
+    label: "Action - Single tap selects Margherita Pizza from dropdown"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to dismiss"
 
 - runFlow:
     file: "../../asserts/search/en/searchScreenFilteredOnPizza.yaml"
