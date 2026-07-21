@@ -193,6 +193,7 @@ export function Search() {
       <FlashList
         ref={flashListRef}
         keyboardDismissMode='on-drag'
+        keyboardShouldPersistTaps='handled'
         data={addingFilterMode || searchBarClicked ? [] : filteredRecipes}
         keyExtractor={getRecipeKey}
         numColumns={2}

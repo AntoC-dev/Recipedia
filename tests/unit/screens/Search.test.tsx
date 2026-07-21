@@ -591,6 +591,13 @@ describe('Search Screen', () => {
     const { FlatList } = require('react-native');
     expectKeyboardDismissesOnDrag(UNSAFE_getAllByType, FlatList);
   });
+
+  test('recipe list delivers a suggestion tap on the first press while the keyboard is open', async () => {
+    const { UNSAFE_getAllByType } = await renderSearchComponent();
+    const { FlatList } = require('react-native');
+    const lists = UNSAFE_getAllByType(FlatList);
+    expect(lists.some(node => node.props.keyboardShouldPersistTaps === 'handled')).toBe(true);
+  });
 });
 
 describe('Search Screen - empty state', () => {
