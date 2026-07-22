@@ -6,7 +6,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeTitle::Text"
-    text: "Hamburger maison"
+    text: "Hamburger maison : la meilleure recette"
     label: "Title text is displayed"
 
 - waitForAnimationToEnd
