@@ -10,7 +10,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   ingredientTableElement,
-  recipeTableElement,
+  RecipeDraft,
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
 import {
@@ -112,7 +112,7 @@ export interface UseValidationWorkflowReturn {
  */
 export function useValidationWorkflow(
   selectedRecipes: ConvertedImportRecipe[],
-  addMultipleRecipes: (recipes: recipeTableElement[]) => Promise<void>,
+  addMultipleRecipes: (recipes: RecipeDraft[]) => Promise<void>,
   defaultPersons: number,
   findSimilarTags: (name: string) => tagTableElement[],
   findSimilarIngredients: (name: string) => ingredientTableElement[],

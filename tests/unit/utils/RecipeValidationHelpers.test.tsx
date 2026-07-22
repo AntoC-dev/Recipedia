@@ -21,6 +21,7 @@ import {
   FormIngredientElement,
   ingredientTableElement,
   ingredientType,
+  TagDraft,
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
 
@@ -41,7 +42,7 @@ describe('RecipeValidationHelpers', () => {
     test('returns exact match in exactMatches and empty needsValidation for exact match tag', () => {
       mockFindSimilarTags.mockReturnValue([dbTags[0]]);
 
-      const inputTags: tagTableElement[] = [{ name: 'Vegetarian' }];
+      const inputTags: TagDraft[] = [{ name: 'Vegetarian' }];
       const result = processTagsForValidation(inputTags, mockFindSimilarTags);
 
       expect(result.exactMatches).toEqual([dbTags[0]]);
@@ -52,7 +53,7 @@ describe('RecipeValidationHelpers', () => {
     test('returns tag in needsValidation and empty exactMatches for non-exact match', () => {
       mockFindSimilarTags.mockReturnValue([dbTags[0]]);
 
-      const inputTags: tagTableElement[] = [{ name: 'Vegan' }];
+      const inputTags: TagDraft[] = [{ name: 'Vegan' }];
       const result = processTagsForValidation(inputTags, mockFindSimilarTags);
 
       expect(result.exactMatches).toEqual([]);
@@ -65,7 +66,7 @@ describe('RecipeValidationHelpers', () => {
     test('handles exact match case-insensitively', () => {
       mockFindSimilarTags.mockReturnValue([dbTags[0]]);
 
-      const inputTags: tagTableElement[] = [{ name: 'VEGETARIAN' }];
+      const inputTags: TagDraft[] = [{ name: 'VEGETARIAN' }];
       const result = processTagsForValidation(inputTags, mockFindSimilarTags);
 
       expect(result.exactMatches).toEqual([dbTags[0]]);
@@ -78,7 +79,7 @@ describe('RecipeValidationHelpers', () => {
         .mockReturnValueOnce([dbTags[1]])
         .mockReturnValueOnce([]);
 
-      const inputTags: tagTableElement[] = [
+      const inputTags: TagDraft[] = [
         { name: 'Vegetarian' },
         { name: 'Vegan' },
         { name: 'Gluten-Free' },
@@ -105,7 +106,7 @@ describe('RecipeValidationHelpers', () => {
     test('handles no similar tags found', () => {
       mockFindSimilarTags.mockReturnValue([]);
 
-      const inputTags: tagTableElement[] = [{ name: 'NewTag' }];
+      const inputTags: TagDraft[] = [{ name: 'NewTag' }];
       const result = processTagsForValidation(inputTags, mockFindSimilarTags);
 
       expect(result.exactMatches).toEqual([]);
@@ -117,7 +118,7 @@ describe('RecipeValidationHelpers', () => {
       test('attaches empty similarItems array when no similar tags found', () => {
         mockFindSimilarTags.mockReturnValue([]);
 
-        const inputTags: tagTableElement[] = [{ name: 'NewTag' }];
+        const inputTags: TagDraft[] = [{ name: 'NewTag' }];
         const result = processTagsForValidation(inputTags, mockFindSimilarTags);
 
         expect(result.needsValidation).toHaveLength(1);
@@ -128,7 +129,7 @@ describe('RecipeValidationHelpers', () => {
         const similarResults = [dbTags[0], dbTags[1]];
         mockFindSimilarTags.mockReturnValue(similarResults);
 
-        const inputTags: tagTableElement[] = [{ name: 'Veg' }];
+        const inputTags: TagDraft[] = [{ name: 'Veg' }];
         const result = processTagsForValidation(inputTags, mockFindSimilarTags);
 
         expect(result.needsValidation).toHaveLength(1);
@@ -140,7 +141,7 @@ describe('RecipeValidationHelpers', () => {
           .mockReturnValueOnce([dbTags[0]])
           .mockReturnValueOnce([dbTags[1], dbTags[2]]);
 
-        const inputTags: tagTableElement[] = [{ name: 'Veg' }, { name: 'Fast' }];
+        const inputTags: TagDraft[] = [{ name: 'Veg' }, { name: 'Fast' }];
         const result = processTagsForValidation(inputTags, mockFindSimilarTags);
 
         expect(result.needsValidation).toHaveLength(2);
@@ -151,7 +152,7 @@ describe('RecipeValidationHelpers', () => {
       test('preserves original tag properties alongside similarItems', () => {
         mockFindSimilarTags.mockReturnValue([dbTags[0]]);
 
-        const inputTags: tagTableElement[] = [{ id: 99, name: 'CustomTag' }];
+        const inputTags: TagDraft[] = [{ id: 99, name: 'CustomTag' }];
         const result = processTagsForValidation(inputTags, mockFindSimilarTags);
 
         expect(result.needsValidation[0]!.id).toBe(99);
@@ -167,7 +168,7 @@ describe('RecipeValidationHelpers', () => {
           .mockReturnValueOnce([])
           .mockReturnValueOnce([dbTags[1]]);
 
-        const inputTags: tagTableElement[] = [
+        const inputTags: TagDraft[] = [
           { name: 'HasMatch1' },
           { name: 'NoMatch' },
           { name: 'HasMatch2' },
@@ -187,7 +188,7 @@ describe('RecipeValidationHelpers', () => {
       test('maintains relative order within same group (no matches)', () => {
         mockFindSimilarTags.mockReturnValue([]);
 
-        const inputTags: tagTableElement[] = [
+        const inputTags: TagDraft[] = [
           { name: 'First' },
           { name: 'Second' },
           { name: 'Third' },
@@ -203,7 +204,7 @@ describe('RecipeValidationHelpers', () => {
       test('maintains relative order within same group (with matches)', () => {
         mockFindSimilarTags.mockReturnValue([dbTags[0]]);
 
-        const inputTags: tagTableElement[] = [
+        const inputTags: TagDraft[] = [
           { name: 'First' },
           { name: 'Second' },
           { name: 'Third' },
@@ -219,7 +220,7 @@ describe('RecipeValidationHelpers', () => {
       test('handles all items having similar matches', () => {
         mockFindSimilarTags.mockReturnValue([dbTags[0]]);
 
-        const inputTags: tagTableElement[] = [{ name: 'Tag1' }, { name: 'Tag2' }];
+        const inputTags: TagDraft[] = [{ name: 'Tag1' }, { name: 'Tag2' }];
 
         const result = processTagsForValidation(inputTags, mockFindSimilarTags);
 
@@ -230,7 +231,7 @@ describe('RecipeValidationHelpers', () => {
       test('handles all items having no similar matches', () => {
         mockFindSimilarTags.mockReturnValue([]);
 
-        const inputTags: tagTableElement[] = [{ name: 'Tag1' }, { name: 'Tag2' }];
+        const inputTags: TagDraft[] = [{ name: 'Tag1' }, { name: 'Tag2' }];
 
         const result = processTagsForValidation(inputTags, mockFindSimilarTags);
 
@@ -245,7 +246,7 @@ describe('RecipeValidationHelpers', () => {
           .mockReturnValueOnce([])
           .mockReturnValueOnce([dbTags[2]]);
 
-        const inputTags: tagTableElement[] = [
+        const inputTags: TagDraft[] = [
           { name: 'Vegetarian' },
           { name: 'SimilarToItalian' },
           { name: 'BrandNew' },
@@ -265,7 +266,7 @@ describe('RecipeValidationHelpers', () => {
       test('handles single item without similar matches', () => {
         mockFindSimilarTags.mockReturnValue([]);
 
-        const inputTags: tagTableElement[] = [{ name: 'SingleTag' }];
+        const inputTags: TagDraft[] = [{ name: 'SingleTag' }];
 
         const result = processTagsForValidation(inputTags, mockFindSimilarTags);
 
@@ -277,7 +278,7 @@ describe('RecipeValidationHelpers', () => {
       test('handles single item with similar matches', () => {
         mockFindSimilarTags.mockReturnValue([dbTags[0], dbTags[1]]);
 
-        const inputTags: tagTableElement[] = [{ name: 'SingleTag' }];
+        const inputTags: TagDraft[] = [{ name: 'SingleTag' }];
 
         const result = processTagsForValidation(inputTags, mockFindSimilarTags);
 
@@ -317,7 +318,7 @@ describe('RecipeValidationHelpers', () => {
     test('returns exact match in exactMatches with merged quantity/unit', () => {
       mockFindSimilarIngredients.mockReturnValue([dbIngredients[0]]);
 
-      const inputIngredients: ingredientTableElement[] = [
+      const inputIngredients: FormIngredientElement[] = [
         {
           name: 'Tomato Sauce',
           quantity: '300',
@@ -342,7 +343,7 @@ describe('RecipeValidationHelpers', () => {
     test('preserves OCR quantity and unit for exact match', () => {
       mockFindSimilarIngredients.mockReturnValue([dbIngredients[1]]);
 
-      const inputIngredients: ingredientTableElement[] = [
+      const inputIngredients: FormIngredientElement[] = [
         {
           name: 'Parmesan',
           quantity: '100',
@@ -370,7 +371,7 @@ describe('RecipeValidationHelpers', () => {
     test('uses database defaults when OCR quantity/unit are missing', () => {
       mockFindSimilarIngredients.mockReturnValue([dbIngredients[1]]);
 
-      const inputIngredients: ingredientTableElement[] = [
+      const inputIngredients: FormIngredientElement[] = [
         {
           name: 'Parmesan',
           quantity: '',
@@ -395,7 +396,7 @@ describe('RecipeValidationHelpers', () => {
     test('returns ingredient in needsValidation for non-exact match', () => {
       mockFindSimilarIngredients.mockReturnValue([dbIngredients[0]]);
 
-      const inputIngredients: ingredientTableElement[] = [
+      const inputIngredients: FormIngredientElement[] = [
         {
           name: 'Tomato',
           quantity: '100',
@@ -416,7 +417,7 @@ describe('RecipeValidationHelpers', () => {
     test('handles exact match case-insensitively', () => {
       mockFindSimilarIngredients.mockReturnValue([dbIngredients[0]]);
 
-      const inputIngredients: ingredientTableElement[] = [
+      const inputIngredients: FormIngredientElement[] = [
         {
           name: 'TOMATO SAUCE',
           quantity: '250',
@@ -444,7 +445,7 @@ describe('RecipeValidationHelpers', () => {
         .mockReturnValueOnce([dbIngredients[1]])
         .mockReturnValueOnce([]);
 
-      const inputIngredients: ingredientTableElement[] = [
+      const inputIngredients: FormIngredientElement[] = [
         {
           name: 'Tomato Sauce',
           quantity: '150',
@@ -495,7 +496,7 @@ describe('RecipeValidationHelpers', () => {
     test('handles no similar ingredients found', () => {
       mockFindSimilarIngredients.mockReturnValue([]);
 
-      const inputIngredients: ingredientTableElement[] = [
+      const inputIngredients: FormIngredientElement[] = [
         {
           name: 'NewIngredient',
           quantity: '100',
@@ -516,7 +517,7 @@ describe('RecipeValidationHelpers', () => {
       test('attaches empty similarItems array when no similar ingredients found', () => {
         mockFindSimilarIngredients.mockReturnValue([]);
 
-        const inputIngredients: ingredientTableElement[] = [
+        const inputIngredients: FormIngredientElement[] = [
           {
             name: 'NewIngredient',
             quantity: '100',
@@ -538,7 +539,7 @@ describe('RecipeValidationHelpers', () => {
       test('attaches similar ingredients to needsValidation items', () => {
         mockFindSimilarIngredients.mockReturnValue([dbIngredients[0], dbIngredients[1]]);
 
-        const inputIngredients: ingredientTableElement[] = [
+        const inputIngredients: FormIngredientElement[] = [
           {
             name: 'Tom',
             quantity: '100',
@@ -565,7 +566,7 @@ describe('RecipeValidationHelpers', () => {
           .mockReturnValueOnce([dbIngredients[0]])
           .mockReturnValueOnce([dbIngredients[1]]);
 
-        const inputIngredients: ingredientTableElement[] = [
+        const inputIngredients: FormIngredientElement[] = [
           { name: 'Tom', quantity: '100', unit: 'ml', type: ingredientType.vegetable, season: [] },
           { name: 'Parm', quantity: '50', unit: 'g', type: ingredientType.cheese, season: [] },
         ];
@@ -583,7 +584,7 @@ describe('RecipeValidationHelpers', () => {
       test('preserves original ingredient properties alongside similarItems', () => {
         mockFindSimilarIngredients.mockReturnValue([dbIngredients[0]]);
 
-        const inputIngredients: ingredientTableElement[] = [
+        const inputIngredients: FormIngredientElement[] = [
           {
             id: 99,
             name: 'CustomIng',
@@ -617,7 +618,7 @@ describe('RecipeValidationHelpers', () => {
           .mockReturnValueOnce([])
           .mockReturnValueOnce([dbIngredients[1]]);
 
-        const inputIngredients: ingredientTableElement[] = [
+        const inputIngredients: FormIngredientElement[] = [
           {
             name: 'HasMatch1',
             quantity: '1',
@@ -652,7 +653,7 @@ describe('RecipeValidationHelpers', () => {
       test('maintains relative order within same group (no matches)', () => {
         mockFindSimilarIngredients.mockReturnValue([]);
 
-        const inputIngredients: ingredientTableElement[] = [
+        const inputIngredients: FormIngredientElement[] = [
           { name: 'First', quantity: '1', unit: 'g', type: ingredientType.vegetable, season: [] },
           { name: 'Second', quantity: '2', unit: 'g', type: ingredientType.vegetable, season: [] },
           { name: 'Third', quantity: '3', unit: 'g', type: ingredientType.vegetable, season: [] },
@@ -671,7 +672,7 @@ describe('RecipeValidationHelpers', () => {
       test('maintains relative order within same group (with matches)', () => {
         mockFindSimilarIngredients.mockReturnValue([dbIngredients[0]]);
 
-        const inputIngredients: ingredientTableElement[] = [
+        const inputIngredients: FormIngredientElement[] = [
           { name: 'First', quantity: '1', unit: 'g', type: ingredientType.vegetable, season: [] },
           { name: 'Second', quantity: '2', unit: 'g', type: ingredientType.vegetable, season: [] },
           { name: 'Third', quantity: '3', unit: 'g', type: ingredientType.vegetable, season: [] },
@@ -690,7 +691,7 @@ describe('RecipeValidationHelpers', () => {
       test('handles all items having similar matches', () => {
         mockFindSimilarIngredients.mockReturnValue([dbIngredients[0]]);
 
-        const inputIngredients: ingredientTableElement[] = [
+        const inputIngredients: FormIngredientElement[] = [
           { name: 'Ing1', quantity: '1', unit: 'g', type: ingredientType.vegetable, season: [] },
           { name: 'Ing2', quantity: '2', unit: 'g', type: ingredientType.vegetable, season: [] },
         ];
@@ -707,7 +708,7 @@ describe('RecipeValidationHelpers', () => {
       test('handles all items having no similar matches', () => {
         mockFindSimilarIngredients.mockReturnValue([]);
 
-        const inputIngredients: ingredientTableElement[] = [
+        const inputIngredients: FormIngredientElement[] = [
           { name: 'Ing1', quantity: '1', unit: 'g', type: ingredientType.vegetable, season: [] },
           { name: 'Ing2', quantity: '2', unit: 'g', type: ingredientType.vegetable, season: [] },
         ];
@@ -728,7 +729,7 @@ describe('RecipeValidationHelpers', () => {
           .mockReturnValueOnce([])
           .mockReturnValueOnce([dbIngredients[0]]);
 
-        const inputIngredients: ingredientTableElement[] = [
+        const inputIngredients: FormIngredientElement[] = [
           {
             name: 'Tomato Sauce',
             quantity: '100',
@@ -775,7 +776,7 @@ describe('RecipeValidationHelpers', () => {
       test('handles single item without similar matches', () => {
         mockFindSimilarIngredients.mockReturnValue([]);
 
-        const inputIngredients: ingredientTableElement[] = [
+        const inputIngredients: FormIngredientElement[] = [
           {
             name: 'SingleIng',
             quantity: '100',
@@ -798,7 +799,7 @@ describe('RecipeValidationHelpers', () => {
       test('handles single item with similar matches', () => {
         mockFindSimilarIngredients.mockReturnValue([dbIngredients[0], dbIngredients[1]]);
 
-        const inputIngredients: ingredientTableElement[] = [
+        const inputIngredients: FormIngredientElement[] = [
           {
             name: 'SingleIng',
             quantity: '100',
@@ -827,7 +828,7 @@ describe('RecipeValidationHelpers', () => {
         .mockReturnValueOnce([dbIngredients[0]])
         .mockReturnValueOnce([dbIngredients[1]]);
 
-      const inputIngredients: ingredientTableElement[] = [
+      const inputIngredients: FormIngredientElement[] = [
         {
           name: 'Tomato Sauce',
           quantity: '150',
@@ -864,7 +865,7 @@ describe('RecipeValidationHelpers', () => {
     test('skips ingredients with empty names', () => {
       mockFindSimilarIngredients.mockReturnValue([dbIngredients[0]]);
 
-      const inputIngredients: ingredientTableElement[] = [
+      const inputIngredients: FormIngredientElement[] = [
         {
           name: '',
           quantity: '100',
@@ -884,7 +885,7 @@ describe('RecipeValidationHelpers', () => {
     test('preserves note from scraped ingredient in exact match', () => {
       mockFindSimilarIngredients.mockReturnValue([dbIngredients[0]]);
 
-      const inputIngredients: ingredientTableElement[] = [
+      const inputIngredients: FormIngredientElement[] = [
         {
           name: 'Tomato Sauce',
           quantity: '300',
@@ -905,7 +906,7 @@ describe('RecipeValidationHelpers', () => {
     test('preserves note as undefined when not provided', () => {
       mockFindSimilarIngredients.mockReturnValue([dbIngredients[0]]);
 
-      const inputIngredients: ingredientTableElement[] = [
+      const inputIngredients: FormIngredientElement[] = [
         {
           name: 'Tomato Sauce',
           quantity: '300',
@@ -924,7 +925,7 @@ describe('RecipeValidationHelpers', () => {
     test('uses database unit instead of scraped unit', () => {
       mockFindSimilarIngredients.mockReturnValue([dbIngredients[1]]);
 
-      const inputIngredients: ingredientTableElement[] = [
+      const inputIngredients: FormIngredientElement[] = [
         {
           name: 'Parmesan',
           quantity: '2',
@@ -944,16 +945,22 @@ describe('RecipeValidationHelpers', () => {
 
   describe('filterOutExistingTags', () => {
     test('filters out tags that exist in current list', () => {
-      const newTags: tagTableElement[] = [{ name: 'Vegan' }, { name: 'Quick' }];
+      const newTags: tagTableElement[] = [
+        { id: 2, name: 'Vegan' },
+        { id: 3, name: 'Quick' },
+      ];
       const existingTags: tagTableElement[] = [{ id: 1, name: 'Quick' }];
 
       const result = filterOutExistingTags(newTags, existingTags);
 
-      expect(result).toEqual([{ name: 'Vegan' }]);
+      expect(result).toEqual([{ id: 2, name: 'Vegan' }]);
     });
 
     test('returns all tags when none exist', () => {
-      const newTags: tagTableElement[] = [{ name: 'Vegan' }, { name: 'Quick' }];
+      const newTags: tagTableElement[] = [
+        { id: 2, name: 'Vegan' },
+        { id: 3, name: 'Quick' },
+      ];
       const existingTags: tagTableElement[] = [];
 
       const result = filterOutExistingTags(newTags, existingTags);
@@ -962,7 +969,7 @@ describe('RecipeValidationHelpers', () => {
     });
 
     test('returns empty array when all tags exist', () => {
-      const newTags: tagTableElement[] = [{ name: 'Vegan' }];
+      const newTags: tagTableElement[] = [{ id: 2, name: 'Vegan' }];
       const existingTags: tagTableElement[] = [{ id: 1, name: 'Vegan' }];
 
       const result = filterOutExistingTags(newTags, existingTags);
@@ -971,7 +978,7 @@ describe('RecipeValidationHelpers', () => {
     });
 
     test('handles case-insensitive comparison', () => {
-      const newTags: tagTableElement[] = [{ name: 'VEGAN' }];
+      const newTags: tagTableElement[] = [{ id: 2, name: 'VEGAN' }];
       const existingTags: tagTableElement[] = [{ id: 1, name: 'vegan' }];
 
       const result = filterOutExistingTags(newTags, existingTags);
@@ -1195,7 +1202,7 @@ describe('RecipeValidationHelpers', () => {
 
   describe('addOrMergeIngredientMatches — different unit branch', () => {
     test('preserves existing quantity when incoming has no quantity (different unit)', () => {
-      const current: ingredientTableElement[] = [
+      const current: FormIngredientElement[] = [
         {
           name: 'riz basmati  Bio',
           quantity: '200',
@@ -1206,6 +1213,7 @@ describe('RecipeValidationHelpers', () => {
       ];
       const incoming: ingredientTableElement[] = [
         {
+          id: 1,
           name: 'Riz basmati Bio',
           quantity: '',
           unit: 'g',
@@ -1223,7 +1231,7 @@ describe('RecipeValidationHelpers', () => {
     });
 
     test('preserves existing quantity when incoming quantity is undefined (different unit)', () => {
-      const current: ingredientTableElement[] = [
+      const current: FormIngredientElement[] = [
         {
           name: 'Carotte',
           quantity: '3',
@@ -1234,6 +1242,7 @@ describe('RecipeValidationHelpers', () => {
       ];
       const incoming: ingredientTableElement[] = [
         {
+          id: 1,
           name: 'Carotte',
           unit: 'g',
           type: ingredientType.vegetable,
@@ -1249,7 +1258,7 @@ describe('RecipeValidationHelpers', () => {
     });
 
     test('uses incoming quantity when provided (different unit)', () => {
-      const current: ingredientTableElement[] = [
+      const current: FormIngredientElement[] = [
         {
           name: 'Sugar',
           quantity: '100',
@@ -1260,6 +1269,7 @@ describe('RecipeValidationHelpers', () => {
       ];
       const incoming: ingredientTableElement[] = [
         {
+          id: 1,
           name: 'Sugar',
           quantity: '2',
           unit: 'tbsp',
@@ -1276,7 +1286,7 @@ describe('RecipeValidationHelpers', () => {
     });
 
     test('replaces by namesMatch (whitespace + NFC normalized)', () => {
-      const current: ingredientTableElement[] = [
+      const current: FormIngredientElement[] = [
         {
           name: 'riz basmati  Bio',
           quantity: '200',
@@ -1287,6 +1297,7 @@ describe('RecipeValidationHelpers', () => {
       ];
       const incoming: ingredientTableElement[] = [
         {
+          id: 1,
           name: 'Riz basmati Bio',
           quantity: '50',
           unit: 'g',
@@ -1511,7 +1522,7 @@ describe('RecipeValidationHelpers', () => {
     const currentTags: tagTableElement[] = [{ id: 1, name: 'Italian' }];
 
     test('adds tag when not duplicate', () => {
-      const newTags: tagTableElement[] = [{ name: 'Vegan' }];
+      const newTags: tagTableElement[] = [{ id: 2, name: 'Vegan' }];
 
       const result = addNonDuplicateByName(currentTags, newTags);
 
@@ -1520,7 +1531,7 @@ describe('RecipeValidationHelpers', () => {
     });
 
     test('does not add duplicate tag', () => {
-      const newTags: tagTableElement[] = [{ name: 'Italian' }];
+      const newTags: tagTableElement[] = [{ id: 2, name: 'Italian' }];
 
       const result = addNonDuplicateByName(currentTags, newTags);
 
@@ -1528,7 +1539,7 @@ describe('RecipeValidationHelpers', () => {
     });
 
     test('handles case-insensitive duplicate detection', () => {
-      const newTags: tagTableElement[] = [{ name: 'ITALIAN' }];
+      const newTags: tagTableElement[] = [{ id: 2, name: 'ITALIAN' }];
 
       const result = addNonDuplicateByName(currentTags, newTags);
 
@@ -1536,7 +1547,10 @@ describe('RecipeValidationHelpers', () => {
     });
 
     test('adds multiple non-duplicate tags', () => {
-      const newTags: tagTableElement[] = [{ name: 'Vegan' }, { name: 'Quick' }];
+      const newTags: tagTableElement[] = [
+        { id: 2, name: 'Vegan' },
+        { id: 3, name: 'Quick' },
+      ];
 
       const result = addNonDuplicateByName(currentTags, newTags);
 
@@ -1545,9 +1559,9 @@ describe('RecipeValidationHelpers', () => {
 
     test('filters out duplicates from batch', () => {
       const newTags: tagTableElement[] = [
-        { name: 'Vegan' },
-        { name: 'Italian' },
-        { name: 'Quick' },
+        { id: 2, name: 'Vegan' },
+        { id: 3, name: 'Italian' },
+        { id: 4, name: 'Quick' },
       ];
 
       const result = addNonDuplicateByName(currentTags, newTags);
@@ -1558,7 +1572,7 @@ describe('RecipeValidationHelpers', () => {
     });
 
     test('handles empty current array', () => {
-      const newTags: tagTableElement[] = [{ name: 'Vegan' }];
+      const newTags: tagTableElement[] = [{ id: 2, name: 'Vegan' }];
 
       const result = addNonDuplicateByName([], newTags);
 
@@ -1958,11 +1972,11 @@ describe('RecipeValidationHelpers', () => {
 
   describe('addOrMergeIngredientMatches — string conversion when quantities are undefined', () => {
     test('converts summed quantity to string when existing quantity is undefined', () => {
-      const current: ingredientTableElement[] = [
+      const current: FormIngredientElement[] = [
         { name: 'Salt', unit: 'tsp', type: ingredientType.spice, season: [] },
       ];
       const incoming: ingredientTableElement[] = [
-        { name: 'Salt', quantity: '2', unit: 'tsp', type: ingredientType.spice, season: [] },
+        { id: 1, name: 'Salt', quantity: '2', unit: 'tsp', type: ingredientType.spice, season: [] },
       ];
 
       const result = addOrMergeIngredientMatches(current, incoming);
@@ -1972,11 +1986,11 @@ describe('RecipeValidationHelpers', () => {
     });
 
     test('converts summed quantity to string when incoming quantity is undefined', () => {
-      const current: ingredientTableElement[] = [
+      const current: FormIngredientElement[] = [
         { name: 'Pepper', quantity: '3', unit: 'tsp', type: ingredientType.spice, season: [] },
       ];
       const incoming: ingredientTableElement[] = [
-        { name: 'Pepper', unit: 'tsp', type: ingredientType.spice, season: [] },
+        { id: 1, name: 'Pepper', unit: 'tsp', type: ingredientType.spice, season: [] },
       ];
 
       const result = addOrMergeIngredientMatches(current, incoming);
@@ -2004,7 +2018,7 @@ describe('RecipeValidationHelpers', () => {
     test('calls onMatch for each exact match', () => {
       mockFindSimilarTags.mockReturnValue([dbTags[0]]);
 
-      const tags: tagTableElement[] = [{ name: 'Vegetarian' }];
+      const tags: tagTableElement[] = [{ id: 1, name: 'Vegetarian' }];
       validateAndQueueTags(tags, mockFindSimilarTags, mockOnMatch, mockSetQueue);
 
       expect(mockOnMatch).toHaveBeenCalledTimes(1);
@@ -2014,7 +2028,7 @@ describe('RecipeValidationHelpers', () => {
     test('does not call setQueue when all items are exact matches', () => {
       mockFindSimilarTags.mockReturnValue([dbTags[0]]);
 
-      const tags: tagTableElement[] = [{ name: 'Vegetarian' }];
+      const tags: tagTableElement[] = [{ id: 1, name: 'Vegetarian' }];
       validateAndQueueTags(tags, mockFindSimilarTags, mockOnMatch, mockSetQueue);
 
       expect(mockSetQueue).not.toHaveBeenCalled();
@@ -2023,7 +2037,7 @@ describe('RecipeValidationHelpers', () => {
     test('calls setQueue with fuzzy matches when findSimilarTags returns similar but not exact', () => {
       mockFindSimilarTags.mockReturnValue([dbTags[0]]);
 
-      const tags: tagTableElement[] = [{ name: 'Vegan' }];
+      const tags: tagTableElement[] = [{ id: 2, name: 'Vegan' }];
       validateAndQueueTags(tags, mockFindSimilarTags, mockOnMatch, mockSetQueue);
 
       expect(mockSetQueue).toHaveBeenCalledTimes(1);
@@ -2036,7 +2050,10 @@ describe('RecipeValidationHelpers', () => {
     test('does not call setQueue when no items need validation', () => {
       mockFindSimilarTags.mockReturnValueOnce([dbTags[0]]).mockReturnValueOnce([dbTags[1]]);
 
-      const tags: tagTableElement[] = [{ name: 'Vegetarian' }, { name: 'Italian' }];
+      const tags: tagTableElement[] = [
+        { id: 1, name: 'Vegetarian' },
+        { id: 2, name: 'Italian' },
+      ];
       validateAndQueueTags(tags, mockFindSimilarTags, mockOnMatch, mockSetQueue);
 
       expect(mockSetQueue).not.toHaveBeenCalled();
@@ -2046,7 +2063,7 @@ describe('RecipeValidationHelpers', () => {
     test('passes onDismissed to queue config when provided', () => {
       mockFindSimilarTags.mockReturnValue([dbTags[0]]);
 
-      const tags: tagTableElement[] = [{ name: 'Vegan' }];
+      const tags: tagTableElement[] = [{ id: 2, name: 'Vegan' }];
       validateAndQueueTags(tags, mockFindSimilarTags, mockOnMatch, mockSetQueue, mockOnDismissed);
 
       const queueConfig = mockSetQueue.mock.calls[0][0];
@@ -2056,7 +2073,7 @@ describe('RecipeValidationHelpers', () => {
     test('does not include onDismissed in queue config when not provided', () => {
       mockFindSimilarTags.mockReturnValue([dbTags[0]]);
 
-      const tags: tagTableElement[] = [{ name: 'Vegan' }];
+      const tags: tagTableElement[] = [{ id: 2, name: 'Vegan' }];
       validateAndQueueTags(tags, mockFindSimilarTags, mockOnMatch, mockSetQueue);
 
       const queueConfig = mockSetQueue.mock.calls[0][0];
@@ -2066,7 +2083,7 @@ describe('RecipeValidationHelpers', () => {
     test('queue onValidated callback calls onMatch with the validated tag', () => {
       mockFindSimilarTags.mockReturnValue([dbTags[0]]);
 
-      const tags: tagTableElement[] = [{ name: 'Vegan' }];
+      const tags: tagTableElement[] = [{ id: 2, name: 'Vegan' }];
       validateAndQueueTags(tags, mockFindSimilarTags, mockOnMatch, mockSetQueue);
 
       const queueConfig = mockSetQueue.mock.calls[0][0];
@@ -2087,7 +2104,10 @@ describe('RecipeValidationHelpers', () => {
     test('calls onMatch for exact matches and queues fuzzy matches', () => {
       mockFindSimilarTags.mockReturnValueOnce([dbTags[0]]).mockReturnValueOnce([dbTags[1]]);
 
-      const tags: tagTableElement[] = [{ name: 'Vegetarian' }, { name: 'Vegan' }];
+      const tags: tagTableElement[] = [
+        { id: 1, name: 'Vegetarian' },
+        { id: 2, name: 'Vegan' },
+      ];
       validateAndQueueTags(tags, mockFindSimilarTags, mockOnMatch, mockSetQueue);
 
       expect(mockOnMatch).toHaveBeenCalledTimes(1);

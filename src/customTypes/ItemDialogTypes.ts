@@ -6,11 +6,7 @@
  * independently of the component.
  */
 
-import {
-  FormIngredientElement,
-  ingredientType,
-  tagTableElement,
-} from '@customTypes/DatabaseElementTypes';
+import { FormIngredientElement, ingredientType, TagDraft } from '@customTypes/DatabaseElementTypes';
 
 /**
  * Minimal structural type covering both item configurations accepted by the dialog.
@@ -18,7 +14,7 @@ import {
  * to prevent a circular dependency with the component file.
  */
 type ItemProp =
-  { type: 'Ingredient'; value: FormIngredientElement } | { type: 'Tag'; value: tagTableElement };
+  { type: 'Ingredient'; value: FormIngredientElement } | { type: 'Tag'; value: TagDraft };
 
 /**
  * Unified RHF form value shape covering both Tag and Ingredient dialogs.

@@ -1980,7 +1980,7 @@ describe('useRecipeIngredients', () => {
         const recipeWithEmptyRow: recipeTableElement = {
           ...recipeWithIngredients,
           ingredients: [
-            { name: '', unit: '', quantity: '', type: ingredientType.cereal, season: [] },
+            { id: 1, name: '', unit: '', quantity: '', type: ingredientType.cereal, season: [] },
           ],
         };
 

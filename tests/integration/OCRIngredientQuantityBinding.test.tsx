@@ -10,6 +10,7 @@ import RecipeDatabase from '@utils/RecipeDatabase';
 import { normalizeKey } from '@utils/NutritionUtils';
 import {
   FormIngredientElement,
+  IngredientDraft,
   ingredientTableElement,
   ingredientType,
 } from '@customTypes/DatabaseElementTypes';
@@ -79,7 +80,7 @@ function FormDrivenApplyPatchRegistrar({ children }: { children: React.ReactNode
 
 const mockRecognize = TextRecognition.recognize as jest.Mock;
 
-const seededIngredients: ingredientTableElement[] = [
+const seededIngredients: IngredientDraft[] = [
   'Carotte',
   'Cumin',
   'Merguez',

@@ -1,6 +1,6 @@
-import { ingredientTableElement, ingredientType } from '@customTypes/DatabaseElementTypes';
+import { IngredientDraft, ingredientType } from '@customTypes/DatabaseElementTypes';
 
-export const englishIngredients: ingredientTableElement[] = [
+export const englishIngredients: IngredientDraft[] = [
   {
     name: 'Carrot',
     unit: '',

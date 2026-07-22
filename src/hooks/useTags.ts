@@ -10,7 +10,7 @@
 
 import { useSyncExternalStore } from 'react';
 import { RecipeDatabase } from '@utils/RecipeDatabase';
-import { tagTableElement } from '@customTypes/DatabaseElementTypes';
+import { TagDraft, tagTableElement } from '@customTypes/DatabaseElementTypes';
 import {
   DetailedSearchResult,
   ITEM_FUZZY,
@@ -39,7 +39,7 @@ export function useTags() {
     () => db.get_tags()
   );
 
-  const addTag = async (tag: tagTableElement): Promise<tagTableElement> => {
+  const addTag = async (tag: TagDraft): Promise<tagTableElement> => {
     return db.addTag(tag);
   };
 
@@ -67,7 +67,7 @@ export function useTags() {
     return db.searchRandomlyTags(count);
   };
 
-  const addMultipleTags = async (tagsToAdd: tagTableElement[]): Promise<void> => {
+  const addMultipleTags = async (tagsToAdd: TagDraft[]): Promise<void> => {
     await db.addMultipleTags(tagsToAdd);
   };
 

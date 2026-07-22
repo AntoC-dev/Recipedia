@@ -5,12 +5,15 @@ import {
   recipeTableElement,
 } from '@customTypes/DatabaseElementTypes';
 
+let nextIngredientId = 1;
+
 const makeIngredient = (
   name: string,
   quantity: string,
   unit: string,
   type = ingredientType.vegetable
 ) => ({
+  id: nextIngredientId++,
   name,
   quantity,
   unit,
@@ -39,6 +42,7 @@ const makeMenuItem = (
   recipeId: number,
   options: { count?: number; isCooked?: boolean } = {}
 ): menuTableElement => ({
+  id: recipeId,
   recipeId,
   recipeTitle: '',
   imageSource: '',

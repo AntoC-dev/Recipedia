@@ -812,6 +812,7 @@ describe('FilterFunctions', () => {
       const tags = database.get_tags();
 
       const nonExistingGrain: ingredientTableElement = {
+        id: 99999,
         name: 'NonExistentGrainCandidate',
         unit: 'g',
         type: ingredientType.cereal,

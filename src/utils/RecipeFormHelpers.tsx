@@ -17,8 +17,9 @@ import {
   extractTagsName,
   nutritionTableElement,
   recipeColumnsNames,
+  RecipeDraft,
   recipeTableElement,
-  tagTableElement,
+  TagDraft,
 } from '@customTypes/DatabaseElementTypes';
 import { RecipePropType } from '@customTypes/RecipeNavigationTypes';
 import { defaultValueNumber } from '@utils/Constants';
@@ -138,10 +139,7 @@ export function hasScrapedDataFromProps(
  * @param defaultPersons - The default person count for normalization
  * @returns Recipe with scaled ingredient quantities and normalized persons
  */
-export function scaleRecipeForSave(
-  recipe: recipeTableElement,
-  defaultPersons: number
-): recipeTableElement {
+export function scaleRecipeForSave(recipe: RecipeDraft, defaultPersons: number): RecipeDraft {
   if (recipe.persons === defaultPersons || recipe.persons <= 0) {
     return recipe;
   }
@@ -370,7 +368,7 @@ export function buildRecipeDescriptionProps({
  * @returns Props object for RecipeTags component
  */
 export interface RecipeTagsPropsInput extends BaseFieldInput {
-  recipeTags: tagTableElement[];
+  recipeTags: TagDraft[];
   randomTags: string[];
   addTag: (newTag: string) => void;
   removeTag: (tagName: string) => void;

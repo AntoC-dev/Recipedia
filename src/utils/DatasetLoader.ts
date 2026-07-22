@@ -8,11 +8,7 @@
  * @module DatasetLoader
  */
 
-import {
-  ingredientTableElement,
-  recipeTableElement,
-  tagTableElement,
-} from '@customTypes/DatabaseElementTypes';
+import { IngredientDraft, RecipeDraft, TagDraft } from '@customTypes/DatabaseElementTypes';
 import { appLogger } from '@utils/logger';
 import { DEFAULT_LANGUAGE, SupportedLanguage } from '@utils/i18n';
 
@@ -34,9 +30,9 @@ import { performanceRecipes } from '@assets/datasets/performance/recipes';
  * A complete set of seed data for one dataset variant.
  */
 export interface DatasetCollection {
-  ingredients: ingredientTableElement[];
-  tags: tagTableElement[];
-  recipes: recipeTableElement[];
+  ingredients: IngredientDraft[];
+  tags: TagDraft[];
+  recipes: RecipeDraft[];
 }
 
 /**

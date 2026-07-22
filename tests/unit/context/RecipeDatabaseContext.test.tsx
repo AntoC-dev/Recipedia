@@ -625,16 +625,6 @@ describe('focused database hooks', () => {
       );
     });
 
-    test('propagates error thrown by db when recipe has no ID', async () => {
-      const { result } = renderHook(() => useAllHooks());
-
-      await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
-
-      const recipe = result.current.recipes.find(r => r.id === testRecipes[0]!.id)!;
-
-      await expect(result.current.editRecipe({ ...recipe, id: undefined })).rejects.toThrow();
-    });
-
     test('deleteFile is called with the previous URI, not the new one', async () => {
       const { result } = renderHook(() => useAllHooks());
 

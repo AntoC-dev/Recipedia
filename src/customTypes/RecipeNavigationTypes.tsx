@@ -11,6 +11,7 @@ import {
   FormIngredientElement,
   nutritionTableElement,
   recipeTableElement,
+  TagDraft,
 } from '@customTypes/DatabaseElementTypes';
 
 /**
@@ -85,8 +86,12 @@ export interface AddFromPicProp extends BaseRecipeProp {
  * Type for scraped recipe data passed to the Recipe screen.
  * Uses FormIngredientElement[] for ingredients since they need validation.
  */
-export type ScrapedRecipeData = Omit<Partial<recipeTableElement>, 'ingredients' | 'nutrition'> & {
+export type ScrapedRecipeData = Omit<
+  Partial<recipeTableElement>,
+  'ingredients' | 'nutrition' | 'tags'
+> & {
   ingredients?: FormIngredientElement[];
+  tags?: TagDraft[];
   nutrition?: nutritionTableElement;
 };
 

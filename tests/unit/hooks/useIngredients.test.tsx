@@ -1,9 +1,9 @@
 import { renderHook, act } from '@testing-library/react-native';
 import { useIngredients } from '@hooks/useIngredients';
 import RecipeDatabase from '@utils/RecipeDatabase';
-import { ingredientTableElement, ingredientType } from '@customTypes/DatabaseElementTypes';
+import { IngredientDraft, ingredientType } from '@customTypes/DatabaseElementTypes';
 
-const makeIngredient = (name: string): ingredientTableElement => ({
+const makeIngredient = (name: string): IngredientDraft => ({
   name,
   unit: 'g',
   type: ingredientType.vegetable,

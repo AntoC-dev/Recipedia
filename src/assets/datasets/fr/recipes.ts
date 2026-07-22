@@ -1,6 +1,6 @@
-import { ingredientType, recipeTableElement } from '@customTypes/DatabaseElementTypes';
+import { ingredientType, RecipeDraft } from '@customTypes/DatabaseElementTypes';
 
-export const frenchRecipes: recipeTableElement[] = [
+export const frenchRecipes: RecipeDraft[] = [
   {
     image_Source: 'spaghetti_bolognaise.webp',
     title: 'Spaghetti Bolognaise',

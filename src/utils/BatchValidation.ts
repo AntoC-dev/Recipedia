@@ -10,6 +10,7 @@
 import {
   FormIngredientElement,
   ingredientTableElement,
+  TagDraft,
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
 import {
@@ -33,10 +34,10 @@ import { scaleQuantityForPersons } from '@utils/Quantity';
  */
 export function collectUniqueItems(recipes: ConvertedImportRecipe[]): {
   uniqueIngredients: Map<string, FormIngredientElement>;
-  uniqueTags: Map<string, tagTableElement>;
+  uniqueTags: Map<string, TagDraft>;
 } {
   const uniqueIngredients = new Map<string, FormIngredientElement>();
-  const uniqueTags = new Map<string, tagTableElement>();
+  const uniqueTags = new Map<string, TagDraft>();
 
   for (const recipe of recipes) {
     for (const ing of recipe.ingredients) {

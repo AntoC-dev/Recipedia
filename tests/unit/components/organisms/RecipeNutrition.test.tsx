@@ -14,7 +14,6 @@ jest.mock('@components/molecules/NutritionEmptyState', () =>
 );
 
 const mockNutrition: nutritionTableElement = {
-  id: 1,
   energyKcal: 250,
   energyKj: 1046,
   fat: 15.0,

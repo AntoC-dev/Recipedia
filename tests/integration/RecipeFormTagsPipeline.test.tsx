@@ -5,12 +5,12 @@ import { RecipeFormProvider, useRecipeForm } from '@test-helpers/recipeFormTestP
 import { RecipeDialogsProvider, useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { createMockRecipeProp } from '@test-helpers/recipeHookTestWrapper';
 import RecipeDatabase from '@utils/RecipeDatabase';
-import { tagTableElement } from '@customTypes/DatabaseElementTypes';
+import { TagDraft } from '@customTypes/DatabaseElementTypes';
 
-const italianTag: tagTableElement = { name: 'Italian', id: undefined };
-const quickMealsTag: tagTableElement = { name: 'Quick Meals', id: undefined };
+const italianTag: TagDraft = { name: 'Italian' };
+const quickMealsTag: TagDraft = { name: 'Quick Meals' };
 
-const seededTags: tagTableElement[] = [italianTag, quickMealsTag];
+const seededTags: TagDraft[] = [italianTag, quickMealsTag];
 
 function createWrapper() {
   const props = createMockRecipeProp('addManually');

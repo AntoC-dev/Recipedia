@@ -34,7 +34,7 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { useNavigation } from '@react-navigation/native';
-import { tagTableElement } from '@customTypes/DatabaseElementTypes';
+import { TagDraft, tagTableElement, withId } from '@customTypes/DatabaseElementTypes';
 import { SettingsItemList } from '@components/organisms/SettingsItemList';
 import { AppBar } from '@components/organisms/AppBar';
 import { BottomActionButton } from '@components/atomic/BottomActionButton';
@@ -62,7 +62,7 @@ export function TagsSettings() {
 
   const [dialogVisible, setDialogVisible] = useState(false);
   const [dialogMode, setDialogMode] = useState<DialogMode>('add');
-  const [currentTag, setCurrentTag] = useState<tagTableElement>({ name: '' });
+  const [currentTag, setCurrentTag] = useState<TagDraft>({ name: '' });
 
   const testId = 'TagsSettings';
 
@@ -83,7 +83,7 @@ export function TagsSettings() {
     }
   };
 
-  const handleAddtag = async (newTag: tagTableElement) => {
+  const handleAddtag = async (newTag: TagDraft) => {
     await addTag(newTag);
   };
 
@@ -112,17 +112,24 @@ export function TagsSettings() {
   };
 
   // Dialog action handlers
-  const handleDialogConfirm = async (mode: DialogMode, newTag: tagTableElement) => {
-    switch (mode) {
-      case 'add':
-        await handleAddtag(newTag);
-        break;
-      case 'edit':
-        await handleEditTag(newTag);
-        break;
-      case 'delete':
-        await handleDeleteTag(newTag);
-        break;
+  const handleDialogConfirm = async (mode: DialogMode, newTag: TagDraft) => {
+    if (mode === 'add') {
+      await handleAddtag(newTag);
+      closeDialog();
+      return;
+    }
+    if (newTag.id === undefined) {
+      tagsSettingsLogger.error('Cannot edit or delete a tag without a persisted id', {
+        tagName: newTag.name,
+      });
+      closeDialog();
+      return;
+    }
+    const persistedTag = withId<tagTableElement>(newTag, newTag.id);
+    if (mode === 'edit') {
+      await handleEditTag(persistedTag);
+    } else {
+      await handleDeleteTag(persistedTag);
     }
     closeDialog();
   };

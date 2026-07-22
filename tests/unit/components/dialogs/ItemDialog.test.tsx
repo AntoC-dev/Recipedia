@@ -6,6 +6,7 @@ import {
   FormIngredientElement,
   ingredientTableElement,
   ingredientType,
+  TagDraft,
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
 
@@ -463,7 +464,7 @@ describe('ItemDialog Component', () => {
     });
 
     test('enables confirm button when ingredient has empty unit in add mode', () => {
-      const ingredientWithoutUnit: ingredientTableElement = {
+      const ingredientWithoutUnit: FormIngredientElement = {
         name: 'Test Ingredient',
         type: ingredientType.fruit,
         unit: '',
@@ -548,7 +549,7 @@ describe('ItemDialog Component', () => {
     });
 
     test('disables confirm button when ingredient has empty name', () => {
-      const invalidIngredient: ingredientTableElement = {
+      const invalidIngredient: FormIngredientElement = {
         name: '',
         type: ingredientType.fruit,
         unit: 'kg',
@@ -575,7 +576,7 @@ describe('ItemDialog Component', () => {
     });
 
     test('enables confirm button when ingredient has valid data in add mode', () => {
-      const validIngredient: ingredientTableElement = {
+      const validIngredient: FormIngredientElement = {
         name: 'Test Ingredient',
         type: ingredientType.fruit,
         unit: 'kg',
@@ -647,7 +648,7 @@ describe('ItemDialog Component', () => {
     });
 
     test('enables confirm button in delete mode regardless of type or unit', () => {
-      const invalidIngredient: ingredientTableElement = {
+      const invalidIngredient: FormIngredientElement = {
         name: 'Test Ingredient',
         type: ingredientType.cereal,
         unit: '',
@@ -677,7 +678,7 @@ describe('ItemDialog Component', () => {
 
   describe('validation for tags', () => {
     test('disables confirm button when tag has empty name in add mode', () => {
-      const invalidTag: tagTableElement = {
+      const invalidTag: TagDraft = {
         name: '',
       };
 
@@ -701,7 +702,7 @@ describe('ItemDialog Component', () => {
     });
 
     test('enables confirm button when tag has valid name in add mode', () => {
-      const validTag: tagTableElement = {
+      const validTag: TagDraft = {
         name: 'Test Tag',
       };
 
@@ -811,14 +812,14 @@ describe('ItemDialog Component', () => {
     });
 
     test('updates ingredient state when dialog reopens with different ingredient', () => {
-      const firstIngredient: ingredientTableElement = {
+      const firstIngredient: FormIngredientElement = {
         name: 'First Ingredient',
         type: ingredientType.fruit,
         unit: 'kg',
         season: ['1', '2'],
       };
 
-      const secondIngredient: ingredientTableElement = {
+      const secondIngredient: FormIngredientElement = {
         name: 'Second Ingredient',
         type: ingredientType.vegetable,
         unit: 'pieces',

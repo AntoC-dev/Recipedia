@@ -20,6 +20,7 @@ import {
   nutritionTableElement,
   preparationStepElement,
   recipeTableElement,
+  TagDraft,
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
 import { IgnoredIngredientPatterns } from '@utils/RecipeScraperConverter';
@@ -186,7 +187,7 @@ export interface FullyDiscoveredRecipe {
   /** List of parsed ingredients */
   ingredients: FormIngredientElement[];
   /** List of recipe tags/categories */
-  tags: tagTableElement[];
+  tags: TagDraft[];
   /** List of preparation steps */
   preparation: preparationStepElement[];
   /** Nutritional information */
@@ -227,7 +228,7 @@ export interface ConvertedImportRecipe {
   /** List of ingredients */
   ingredients: FormIngredientElement[];
   /** List of tags/categories */
-  tags: tagTableElement[];
+  tags: TagDraft[];
   /** List of preparation steps */
   preparation: preparationStepElement[];
   /** Nutritional information */
@@ -260,7 +261,7 @@ export interface BatchValidationState {
   /** Map of unique ingredients by normalized name */
   uniqueIngredients: Map<string, FormIngredientElement>;
   /** Map of unique tags by normalized name */
-  uniqueTags: Map<string, tagTableElement>;
+  uniqueTags: Map<string, TagDraft>;
   /** Map of ingredient names to their validated database entries */
   ingredientMappings: Map<string, ingredientTableElement>;
   /** Map of tag names to their validated database entries */

@@ -32,6 +32,7 @@ function SearchWrapper() {
 }
 
 const testRecipe: recipeTableElement = {
+  id: 1,
   title: 'Performance Test Recipe',
   description: 'A test recipe for performance testing',
   ingredients: [],

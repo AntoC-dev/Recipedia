@@ -12,6 +12,7 @@
 import * as SQLite from 'expo-sqlite';
 import {
   coreIngredientElement,
+  Draft,
   dismissedRecipeTableElement,
   dismissedRecipesColumnsEncoding,
   dismissedRecipesColumnsNames,
@@ -24,16 +25,18 @@ import {
   encodedRecipeElement,
   encodedTagElement,
   importHistoryColumnsEncoding,
+  importHistoryColumnsNames,
   importHistoryTableElement,
   importHistoryTableName,
+  IngredientDraft,
   ingredientColumnsEncoding,
   ingredientsColumnsNames,
   ingredientsTableName,
   ingredientTableElement,
   ingredientType,
   isIngredientEqual,
-  isRecipePartiallyEqual,
   isTagEqual,
+  TagDraft,
   menuColumnsEncoding,
   menuColumnsNames,
   menuTableElement,
@@ -46,6 +49,7 @@ import {
   recipeColumnsEncoding,
   recipeColumnsNames,
   recipeDatabaseName,
+  RecipeDraft,
   recipeTableElement,
   recipeTableName,
   tagColumnsEncoding,
@@ -54,13 +58,7 @@ import {
   tagTableName,
 } from '@customTypes/DatabaseElementTypes';
 import { TableManipulation } from './TableManipulation';
-import {
-  ALL_MONTHS,
-  ALL_MONTHS_ENCODED,
-  EncodingSeparator,
-  noteSeparator,
-  textSeparator,
-} from '@styles/typography';
+import { ALL_MONTHS, EncodingSeparator, noteSeparator, textSeparator } from '@styles/typography';
 import {
   constructImageUri,
   deleteFile,
@@ -85,6 +83,16 @@ const RECIPE_TITLE_FUZZY = 0.3;
  * callbacks are triggered on each mutation.
  */
 export type StoreSlice = 'recipes' | 'ingredients' | 'tags' | 'menu' | 'purchased';
+
+/**
+ * A recipe whose embedded tags and ingredients have been resolved to persisted
+ * master rows (each carrying its database `id`), ready for encoding and
+ * insertion. The recipe's own `id` presence is preserved from the input draft.
+ */
+type PreparedRecipe<T extends RecipeDraft = RecipeDraft> = Omit<T, 'tags' | 'ingredients'> & {
+  tags: tagTableElement[];
+  ingredients: ingredientTableElement[];
+};
 
 /**
  * RecipeDatabase - Singleton class for managing recipe data storage and operations
@@ -231,10 +239,7 @@ export class RecipeDatabase {
    * // scaledRecipe.ingredients[0].quantity === "200"
    * ```
    */
-  public static scaleRecipeToPersons(
-    recipe: recipeTableElement,
-    targetPersons: number
-  ): recipeTableElement {
+  public static scaleRecipeToPersons<T extends RecipeDraft>(recipe: T, targetPersons: number): T {
     if (!recipe.persons || recipe.persons <= 0 || recipe.persons === targetPersons) {
       return recipe;
     }
@@ -344,7 +349,6 @@ export class RecipeDatabase {
     ]);
 
     await this.migrateAddSourceColumns();
-    await this.migrateWildcardSeasons();
 
     const [
       ingredients,
@@ -426,7 +430,7 @@ export class RecipeDatabase {
    * console.log(`Ingredient added with ID: ${ingredient.id}`);
    * ```
    */
-  public async addIngredient(ingredient: ingredientTableElement): Promise<ingredientTableElement> {
+  public async addIngredient(ingredient: IngredientDraft): Promise<ingredientTableElement> {
     const ingToAdd = this.encodeIngredientForDb(ingredient);
     const dbRes = await this._ingredientsTable.insertElement(ingToAdd, this._dbConnection);
 
@@ -470,7 +474,7 @@ export class RecipeDatabase {
    * console.log(`Tag added with ID: ${tag.id}`);
    * ```
    */
-  public async addTag(newTag: tagTableElement): Promise<tagTableElement> {
+  public async addTag(newTag: TagDraft): Promise<tagTableElement> {
     const tagToAdd = this.encodeTagForDb(newTag);
     const dbRes = await this._tagsTable.insertElement(tagToAdd, this._dbConnection);
 
@@ -527,7 +531,7 @@ export class RecipeDatabase {
    * ]);
    * ```
    */
-  public async addMultipleIngredients(ingredients: ingredientTableElement[]) {
+  public async addMultipleIngredients(ingredients: IngredientDraft[]) {
     if (ingredients.length === 0) return;
 
     const encodedIngredients = ingredients.map(ing => this.encodeIngredientForDb(ing));
@@ -582,7 +586,7 @@ export class RecipeDatabase {
    * ]);
    * ```
    */
-  public async addMultipleTags(tags: tagTableElement[]) {
+  public async addMultipleTags(tags: TagDraft[]) {
     if (tags.length === 0) {
       return;
     }
@@ -625,7 +629,8 @@ export class RecipeDatabase {
    * adding them automatically if they don't exist.
    *
    * @param rec - The recipe object to add
-   * @returns Promise that resolves when the recipe is added
+   * @returns The persisted recipe, decoded from the database with its assigned id
+   * @throws Error if the database insertion or the post-insert lookup fails
    *
    * @example
    * ```typescript
@@ -642,7 +647,7 @@ export class RecipeDatabase {
    * });
    * ```
    */
-  public async addRecipe(rec: recipeTableElement) {
+  public async addRecipe(rec: RecipeDraft): Promise<recipeTableElement> {
     const recipe = await this.prepareRecipe(rec);
 
     const recipeConverted = this.encodeRecipe(recipe);
@@ -658,7 +663,7 @@ export class RecipeDatabase {
       databaseLogger.error('Failed to add recipe - database insertion failed', {
         recipeTitle: recipe.title,
       });
-      return;
+      throw new Error(`Failed to add recipe "${recipe.title}" to database`);
     }
     const dbRecipe = await this._recipesTable.searchElementById<encodedRecipeElement>(
       dbRes,
@@ -669,18 +674,19 @@ export class RecipeDatabase {
         recipeTitle: recipeConverted.TITLE,
         dbResult: dbRes,
       });
-    } else {
-      const decodedRecipe = await this.decodeRecipe(dbRecipe);
-      this.add_recipes(decodedRecipe);
-      this._recipes = [...this._recipes];
-      this.notify('recipes');
-      databaseLogger.info('Recipe added to cache successfully', {
-        recipeTitle: decodedRecipe.title,
-        recipeId: decodedRecipe.id,
-        recipeCacheCountAfter: this._recipes.length,
-        cachedRecipeTitles: this._recipes.map(r => r.title),
-      });
+      throw new Error(`Failed to retrieve recipe "${recipe.title}" after insertion`);
     }
+    const decodedRecipe = await this.decodeRecipe(dbRecipe);
+    this.add_recipes(decodedRecipe);
+    this._recipes = [...this._recipes];
+    this.notify('recipes');
+    databaseLogger.info('Recipe added to cache successfully', {
+      recipeTitle: decodedRecipe.title,
+      recipeId: decodedRecipe.id,
+      recipeCacheCountAfter: this._recipes.length,
+      cachedRecipeTitles: this._recipes.map(r => r.title),
+    });
+    return decodedRecipe;
   }
 
   /**
@@ -691,7 +697,7 @@ export class RecipeDatabase {
    *
    * @param recs - Array of recipes to add
    */
-  public async addMultipleRecipes(recs: recipeTableElement[]): Promise<void> {
+  public async addMultipleRecipes(recs: RecipeDraft[]): Promise<void> {
     if (recs.length === 0) return;
 
     const prepareRecipeResult = await Promise.allSettled(recs.map(rec => this.prepareRecipe(rec)));
@@ -708,7 +714,7 @@ export class RecipeDatabase {
     });
 
     const prepared = prepareRecipeResult
-      .filter((r): r is PromiseFulfilledResult<recipeTableElement> => r.status === 'fulfilled')
+      .filter((r): r is PromiseFulfilledResult<PreparedRecipe> => r.status === 'fulfilled')
       .map(r => r.value);
 
     if (prepared.length === 0) {
@@ -728,16 +734,11 @@ export class RecipeDatabase {
    * temporary image to permanent storage before persisting the update, then
    * refreshes the in-memory cache and notifies `recipes` subscribers.
    *
-   * @param recipe - The recipe to update. Must have a valid `id`.
+   * @param recipe - The existing recipe to update, carrying its persisted `id`.
    * @returns The prepared recipe object with verified tags and ingredients.
-   * @throws Error if `recipe.id` is undefined.
    * @throws Error if any tags or ingredients are not found in the database.
    */
-  public async editRecipe(recipe: recipeTableElement) {
-    if (recipe.id === undefined) {
-      throw new Error(`Cannot edit recipe without ID: ${recipe.title}`);
-    }
-
+  public async editRecipe(recipe: RecipeDraft & { id: number }): Promise<recipeTableElement> {
     const preparedRecipe = await this.prepareRecipe(recipe);
 
     const updateMap = this.constructUpdateRecipeStructure(this.encodeRecipe(preparedRecipe));
@@ -772,12 +773,6 @@ export class RecipeDatabase {
    * @returns `true` if the update succeeded, `false` otherwise.
    */
   public async editIngredient(ingredient: ingredientTableElement) {
-    if (ingredient.id === undefined) {
-      databaseLogger.warn('Cannot edit ingredient - missing ID', {
-        ingredientName: ingredient.name,
-      });
-      return false;
-    }
     const updateMap = this.constructUpdateIngredientStructure(ingredient);
     const success = await this._ingredientsTable.editElementById(
       ingredient.id,
@@ -805,10 +800,6 @@ export class RecipeDatabase {
    * @returns `true` if the update succeeded, `false` otherwise.
    */
   public async editTag(tag: tagTableElement) {
-    if (tag.id === undefined) {
-      databaseLogger.warn('Cannot edit tag - missing ID', { tagName: tag.name });
-      return false;
-    }
     const updateMap = this.constructUpdateTagStructure(tag);
     const success = await this._tagsTable.editElementById(tag.id, updateMap, this._dbConnection);
     if (success) {
@@ -907,19 +898,11 @@ export class RecipeDatabase {
    * - Removes any corresponding menu entry.
    * - Removes the recipe URL from the seen-history if it originated from a provider.
    *
-   * @param recipe - The recipe to delete. Matched by `id` if present, otherwise by title/description/image.
+   * @param recipe - The persisted recipe to delete, matched by its `id`.
    * @returns `true` if the recipe was deleted, `false` otherwise.
    */
   public async deleteRecipe(recipe: recipeTableElement): Promise<boolean> {
-    let recipeDeleted: boolean;
-    if (recipe.id !== undefined) {
-      recipeDeleted = await this._recipesTable.deleteElementById(recipe.id, this._dbConnection);
-    } else {
-      recipeDeleted = await this._recipesTable.deleteElement(
-        this._dbConnection,
-        this.constructSearchRecipeStructure(recipe)
-      );
-    }
+    const recipeDeleted = await this._recipesTable.deleteElementById(recipe.id, this._dbConnection);
     if (recipeDeleted) {
       this.remove_recipe(recipe);
       this._recipes = [...this._recipes];
@@ -929,11 +912,9 @@ export class RecipeDatabase {
         deleteFile(recipe.image_Source);
       }
 
-      if (recipe.id !== undefined) {
-        const menuItem = this._menu.find(item => item.recipeId === recipe.id);
-        if (menuItem && menuItem.id !== undefined) {
-          await this.removeFromMenu(menuItem.id);
-        }
+      const menuItem = this._menu.find(item => item.recipeId === recipe.id);
+      if (menuItem) {
+        await this.removeFromMenu(menuItem.id);
       }
 
       if (recipe.sourceUrl && recipe.sourceProvider) {
@@ -954,18 +935,10 @@ export class RecipeDatabase {
    * @returns `true` if the ingredient was deleted, `false` otherwise.
    */
   public async deleteIngredient(ingredient: ingredientTableElement): Promise<boolean> {
-    let ingredientDeleted: boolean;
-    if (ingredient.id !== undefined) {
-      ingredientDeleted = await this._ingredientsTable.deleteElementById(
-        ingredient.id,
-        this._dbConnection
-      );
-    } else {
-      ingredientDeleted = await this._ingredientsTable.deleteElement(
-        this._dbConnection,
-        this.constructSearchIngredientStructure(ingredient)
-      );
-    }
+    const ingredientDeleted = await this._ingredientsTable.deleteElementById(
+      ingredient.id,
+      this._dbConnection
+    );
     if (ingredientDeleted) {
       this.remove_ingredient(ingredient);
       this._ingredients = [...this._ingredients];
@@ -1000,15 +973,7 @@ export class RecipeDatabase {
    * @returns `true` if the tag was deleted, `false` otherwise.
    */
   public async deleteTag(tag: tagTableElement): Promise<boolean> {
-    let tagDeleted: boolean;
-    if (tag.id !== undefined) {
-      tagDeleted = await this._tagsTable.deleteElementById(tag.id, this._dbConnection);
-    } else {
-      tagDeleted = await this._tagsTable.deleteElement(
-        this._dbConnection,
-        this.constructSearchTagStructure(tag)
-      );
-    }
+    const tagDeleted = await this._tagsTable.deleteElementById(tag.id, this._dbConnection);
     if (tagDeleted) {
       this.remove_tag(tag);
       this._tags = [...this._tags];
@@ -1108,11 +1073,10 @@ export class RecipeDatabase {
   /**
    * Removes a recipe from the in-memory cache without touching the database.
    *
-   * Matches by `id` when present, otherwise uses partial equality. Logs a warning
-   * if the recipe is not found in the cache. Prefer {@link deleteRecipe} for full
-   * persistence including cascaded cleanup.
+   * Matches by `id`. Logs a warning if the recipe is not found in the cache.
+   * Prefer {@link deleteRecipe} for full persistence including cascaded cleanup.
    *
-   * @param recipe - The recipe to remove from the cache.
+   * @param recipe - The persisted recipe to remove from the cache.
    */
   public remove_recipe(recipe: recipeTableElement) {
     const foundRecipe = this.find_recipe(recipe);
@@ -1227,22 +1191,13 @@ export class RecipeDatabase {
   }
 
   /**
-   * Looks up a recipe in the in-memory cache.
+   * Looks up a recipe in the in-memory cache by its `id`.
    *
-   * Uses strict `id` equality when the recipe has an `id`; falls back to
-   * partial structural equality ({@link isRecipePartiallyEqual}) otherwise.
-   *
-   * @param recipeToFind - Recipe to search for.
+   * @param recipeToFind - Persisted recipe to search for.
    * @returns The matching cached recipe, or `undefined` if not found.
    */
   public find_recipe(recipeToFind: recipeTableElement): recipeTableElement | undefined {
-    let findFunc: (element: recipeTableElement) => boolean;
-    if (recipeToFind.id !== undefined) {
-      findFunc = (element: recipeTableElement) => element.id === recipeToFind.id;
-    } else {
-      findFunc = (element: recipeTableElement) => isRecipePartiallyEqual(element, recipeToFind);
-    }
-    return this._recipes.find(element => findFunc(element));
+    return this._recipes.find(element => element.id === recipeToFind.id);
   }
 
   /**
@@ -1254,7 +1209,7 @@ export class RecipeDatabase {
    * @param ingToFind - Ingredient to search for.
    * @returns The matching cached ingredient, or `undefined` if not found.
    */
-  public find_ingredient(ingToFind: ingredientTableElement): ingredientTableElement | undefined {
+  public find_ingredient(ingToFind: IngredientDraft): ingredientTableElement | undefined {
     let findFunc: (element: ingredientTableElement) => boolean;
     if (ingToFind.id !== undefined) {
       findFunc = (element: ingredientTableElement) => element.id === ingToFind.id;
@@ -1273,7 +1228,7 @@ export class RecipeDatabase {
    * @param tagToSearch - Tag to search for.
    * @returns The matching cached tag, or `undefined` if not found.
    */
-  public find_tag(tagToSearch: tagTableElement): tagTableElement | undefined {
+  public find_tag(tagToSearch: TagDraft): tagTableElement | undefined {
     let findFunc: (element: tagTableElement) => boolean;
     if (tagToSearch.id !== undefined) {
       findFunc = (element: tagTableElement) => element.id === tagToSearch.id;
@@ -1308,18 +1263,11 @@ export class RecipeDatabase {
    * If the recipe is already in the menu, increments its count.
    * Otherwise, it adds the recipe to the menu table with count = 1.
    *
-   * @param recipe - The recipe to add to the menu
+   * @param recipe - The persisted recipe to add to the menu
    */
   public async addRecipeToMenu(recipe: recipeTableElement): Promise<void> {
-    if (!recipe.id) {
-      databaseLogger.warn('Cannot add recipe to menu - missing ID', {
-        recipeTitle: recipe.title,
-      });
-      return;
-    }
-
     const existingMenuItem = this._menu.find(item => item.recipeId === recipe.id);
-    if (existingMenuItem && existingMenuItem.id) {
+    if (existingMenuItem) {
       const newCount = existingMenuItem.count + 1;
       await this._menuTable.editElementById(
         existingMenuItem.id,
@@ -1336,7 +1284,7 @@ export class RecipeDatabase {
       return;
     }
 
-    const menuItem: menuTableElement = {
+    const menuItem: Draft<menuTableElement> = {
       recipeId: recipe.id,
       recipeTitle: recipe.title,
       imageSource: recipe.image_Source,
@@ -1513,8 +1461,11 @@ export class RecipeDatabase {
    * Takes a pre-scaled recipe object and updates it in the database.
    * This method is used for individual recipe updates during progressive scaling operations.
    *
-   * @param scaledRecipe - The recipe object that has already been scaled to target persons
-   * @throws Error if recipe doesn't have an ID or update fails
+   * @param scaledRecipe - The recipe to persist, already scaled to target
+   *   persons. Carries its database `id`; its embedded tags/ingredients are
+   *   normally already resolved, but any unresolved one causes {@link encodeRecipe}
+   *   to throw before the row is touched.
+   * @throws Error if a tag/ingredient cannot be resolved, or if the update fails
    *
    * @example
    * ```typescript
@@ -1523,14 +1474,7 @@ export class RecipeDatabase {
    * await db.scaleAndUpdateRecipe(scaledRecipe);
    * ```
    */
-  public async scaleAndUpdateRecipe(scaledRecipe: recipeTableElement): Promise<void> {
-    if (!scaledRecipe.id) {
-      databaseLogger.error('Cannot update recipe without ID', {
-        recipeTitle: scaledRecipe.title,
-      });
-      throw new Error('Recipe must have an ID to update');
-    }
-
+  public async scaleAndUpdateRecipe(scaledRecipe: RecipeDraft & { id: number }): Promise<void> {
     const updateMap = this.constructUpdateRecipeStructure(this.encodeRecipe(scaledRecipe));
     databaseLogger.debug('Updating scaled recipe', {
       recipeId: scaledRecipe.id,
@@ -1552,7 +1496,9 @@ export class RecipeDatabase {
       throw new Error(`Failed to update recipe ${scaledRecipe.id}`);
     }
 
-    this.update_recipe(scaledRecipe);
+    // Reached only after a successful encode, so every embedded tag/ingredient
+    // resolved to a persisted row; the scaled input itself comes from the cache.
+    this.update_recipe(scaledRecipe as recipeTableElement);
     this._recipes = [...this._recipes];
     this.notify('recipes');
     databaseLogger.debug('Recipe updated successfully', { recipeId: scaledRecipe.id });
@@ -1573,7 +1519,7 @@ export class RecipeDatabase {
    * console.log(`Found ${similar.length} similar recipes`);
    * ```
    */
-  public findSimilarRecipes(recipeToCompare: recipeTableElement): recipeTableElement[] {
+  public findSimilarRecipes(recipeToCompare: RecipeDraft): recipeTableElement[] {
     databaseLogger.info('findSimilarRecipes called', {
       recipeTitle: recipeToCompare.title,
       recipePersons: recipeToCompare.persons,
@@ -1587,7 +1533,7 @@ export class RecipeDatabase {
       ingredientType.oilAndFat,
     ];
 
-    const processIngredients = (recipe: recipeTableElement) => {
+    const processIngredients = (recipe: RecipeDraft) => {
       if (recipe.persons === undefined || recipe.persons === 0) {
         return [];
       }
@@ -1738,9 +1684,7 @@ export class RecipeDatabase {
     );
 
     if (success) {
-      for (const entry of newEntries) {
-        this._importHistory.push(entry as importHistoryTableElement);
-      }
+      this._importHistory.push(...newEntries);
     } else {
       databaseLogger.error('Failed to mark URLs as seen', { providerId, count: newEntries.length });
     }
@@ -1763,15 +1707,11 @@ export class RecipeDatabase {
       count: urls.length,
     });
 
-    for (const url of urls) {
-      const historyEntry = this._importHistory.find(
-        h => h.providerId === providerId && h.recipeUrl === url
-      );
-
-      if (historyEntry?.id) {
-        await this._importHistoryTable.deleteElementById(historyEntry.id, this._dbConnection);
-      }
-    }
+    const conditions = new Map<string, string | string[]>([
+      [importHistoryColumnsNames.providerId, providerId],
+      [importHistoryColumnsNames.recipeUrl, urls],
+    ]);
+    await this._importHistoryTable.deleteElement(this._dbConnection, conditions);
 
     this._importHistory = this._importHistory.filter(
       h => !(h.providerId === providerId && urls.includes(h.recipeUrl))
@@ -1852,9 +1792,7 @@ export class RecipeDatabase {
     );
 
     if (success) {
-      for (const entry of newEntries) {
-        this._dismissedRecipes.push(entry as dismissedRecipeTableElement);
-      }
+      this._dismissedRecipes.push(...newEntries);
     } else {
       databaseLogger.error('Failed to dismiss recipes', { providerId, count: newEntries.length });
     }
@@ -1900,12 +1838,13 @@ export class RecipeDatabase {
    * @returns Prepared recipe ready for encoding and insertion
    * @throws Error if any tags or ingredients are not found in the database
    */
-  private async prepareRecipe(rec: recipeTableElement): Promise<recipeTableElement> {
-    const recipe = { ...rec };
-    recipe.tags = this.verifyTagsExist(rec.tags);
-    recipe.ingredients = this.verifyIngredientsExist(rec.ingredients);
-    recipe.image_Source = await this.prepareRecipeImage(recipe.image_Source, recipe.title);
-    return recipe;
+  private async prepareRecipe<T extends RecipeDraft>(rec: T): Promise<PreparedRecipe<T>> {
+    return {
+      ...rec,
+      tags: this.verifyTagsExist(rec.tags),
+      ingredients: this.verifyIngredientsExist(rec.ingredients),
+      image_Source: await this.prepareRecipeImage(rec.image_Source, rec.title),
+    };
   }
 
   /**
@@ -1914,7 +1853,7 @@ export class RecipeDatabase {
    * @param recipes - Already-validated and prepared recipes to insert
    * @throws Error if the batch database insertion fails
    */
-  private async insertAndCacheRecipes(recipes: recipeTableElement[]): Promise<void> {
+  private async insertAndCacheRecipes(recipes: RecipeDraft[]): Promise<void> {
     const encodedRecipes = recipes.map(recipe => this.encodeRecipe(recipe));
     databaseLogger.debug('Batch adding recipes to database', { count: recipes.length });
 
@@ -2131,7 +2070,7 @@ export class RecipeDatabase {
    * @returns Array of tags with database IDs
    * @throws Error if any tags are not found in the database, listing all missing tags
    */
-  private verifyTagsExist(tags: tagTableElement[]): tagTableElement[] {
+  private verifyTagsExist(tags: TagDraft[]): tagTableElement[] {
     const result: tagTableElement[] = [];
     const missing: string[] = [];
 
@@ -2168,7 +2107,7 @@ export class RecipeDatabase {
    * @returns Array of ingredients with database IDs, recipe-specific quantities, and notes
    * @throws Error if any ingredients are not found in the database, listing all missing ingredients
    */
-  private verifyIngredientsExist(ingredients: ingredientTableElement[]): ingredientTableElement[] {
+  private verifyIngredientsExist(ingredients: IngredientDraft[]): ingredientTableElement[] {
     const result: ingredientTableElement[] = [];
     const missing: string[] = [];
 
@@ -2194,58 +2133,6 @@ export class RecipeDatabase {
   }
 
   /**
-   * Constructs a Map structure for searching recipes in the database
-   *
-   * Creates a search criteria Map using key recipe fields (title, description, image)
-   * for database query operations when searching without an ID.
-   *
-   * @private
-   * @param recipe - The recipe data to construct search criteria from
-   * @returns Map with column names as keys and search values
-   */
-  private constructSearchRecipeStructure(recipe: recipeTableElement): Map<string, string | number> {
-    return new Map<string, string | number>([
-      [recipeColumnsNames.title, recipe.title],
-      [recipeColumnsNames.description, recipe.description],
-      [recipeColumnsNames.image, extractFilenameFromUri(recipe.image_Source)],
-    ]);
-  }
-
-  /**
-   * Constructs a Map structure for searching ingredients in the database
-   *
-   * Creates a search criteria Map using key ingredient fields (name, unit, type)
-   * for database query operations when searching without an ID.
-   *
-   * @private
-   * @param ingredient - The ingredient data to construct search criteria from
-   * @returns Map with column names as keys and search values
-   */
-  private constructSearchIngredientStructure(
-    ingredient: ingredientTableElement
-  ): Map<string, string | number> {
-    return new Map<string, string>([
-      [ingredientsColumnsNames.ingredient, ingredient.name],
-      [ingredientsColumnsNames.unit, ingredient.unit],
-      [ingredientsColumnsNames.type, ingredient.type],
-    ]);
-  }
-
-  /**
-   * Constructs a Map structure for searching tags in the database
-   *
-   * Creates a search criteria Map using the tag name for database query
-   * operations when searching without an ID.
-   *
-   * @private
-   * @param tag - The tag data to construct search criteria from
-   * @returns Map with column names as keys and search values
-   */
-  private constructSearchTagStructure(tag: tagTableElement): Map<string, string | number> {
-    return new Map<string, string | number>([[tagsColumnsNames.name, tag.name]]);
-  }
-
-  /**
    * Encodes a recipe object for database storage
    *
    * Converts a recipe from the application format to the database storage format,
@@ -2256,7 +2143,7 @@ export class RecipeDatabase {
    * @param recToEncode - The recipe object to encode for database storage
    * @returns Encoded recipe element ready for database insertion/update
    */
-  private encodeRecipe(recToEncode: recipeTableElement): encodedRecipeElement {
+  private encodeRecipe(recToEncode: RecipeDraft): encodedRecipeElement {
     return {
       ID: recToEncode.id ? recToEncode.id : 0,
       IMAGE_SOURCE: extractFilenameFromUri(recToEncode.image_Source),
@@ -2387,7 +2274,7 @@ export class RecipeDatabase {
    * // With note
    * encodeIngredient({id: 1, quantity: "200", note: "For the sauce", ...}) // "1--200%%For the sauce"
    */
-  private encodeIngredient(ingredientToEncode: ingredientTableElement): string {
+  private encodeIngredient(ingredientToEncode: IngredientDraft): string {
     const quantity = ingredientToEncode.quantity ? ingredientToEncode.quantity.toString() : '';
     const note = ingredientToEncode.note || '';
     let idForEncoding = ingredientToEncode.id;
@@ -2493,7 +2380,7 @@ export class RecipeDatabase {
    * Input: {id: 1, name: "Flour", unit: "g", type: "grain", season: ["1","2","3","12"]}
    * Output: {"ID":1,"INGREDIENT":"Flour","UNIT":"g", "TYPE":"grain", "SEASON":"1__2__3__12"}
    */
-  private encodeIngredientForDb(ingredient: ingredientTableElement): encodedIngredientElement {
+  private encodeIngredientForDb(ingredient: IngredientDraft): encodedIngredientElement {
     return {
       ID: ingredient.id ? ingredient.id : 0,
       INGREDIENT: ingredient.name,
@@ -2517,7 +2404,7 @@ export class RecipeDatabase {
    * Input: {id: 1, name: "Dessert"}
    * Output: {"ID":1,"NAME":"Dessert"}
    */
-  private encodeTagForDb(tag: tagTableElement): encodedTagElement {
+  private encodeTagForDb(tag: TagDraft): encodedTagElement {
     return {
       ID: tag.id ? tag.id : 0,
       NAME: tag.name,
@@ -2599,7 +2486,7 @@ export class RecipeDatabase {
    * @returns String representation of the tag's database ID
    * @throws Error if the tag cannot be resolved in the database
    */
-  private encodeTagForRecipe(tag: tagTableElement): string {
+  private encodeTagForRecipe(tag: TagDraft): string {
     if (tag.id !== undefined) {
       return tag.id.toString();
     }
@@ -2696,7 +2583,8 @@ export class RecipeDatabase {
    */
   private encodeNutrition(nutrition: nutritionTableElement): string {
     return [
-      nutrition.id || 0,
+      // Leading slot preserves the historical encoding layout (was a row id).
+      0,
       nutrition.energyKcal,
       nutrition.energyKj,
       nutrition.fat,
@@ -2736,7 +2624,6 @@ export class RecipeDatabase {
     }
 
     return {
-      id: Number(parts[0]) || undefined,
       energyKcal: Number(parts[1]),
       energyKj: Number(parts[2]),
       fat: Number(parts[3]),
@@ -2853,9 +2740,9 @@ export class RecipeDatabase {
    * @param menu - The menu item in application format
    * @returns Encoded menu item ready for database storage
    */
-  private encodeMenu(menu: menuTableElement): encodedMenuElement {
+  private encodeMenu(menu: Draft<menuTableElement>): encodedMenuElement {
     return {
-      ID: menu.id ? menu.id : 0,
+      ID: 0,
       RECIPE_ID: menu.recipeId,
       RECIPE_TITLE: menu.recipeTitle,
       IMAGE_SOURCE: menu.imageSource,
@@ -2985,32 +2872,6 @@ export class RecipeDatabase {
   }
 
   /**
-   * Migrates wildcard '*' season values to explicit month lists in the ingredients table.
-   *
-   * Converts SEASON = '*' to '1__2__3__4__5__6__7__8__9__10__11__12'.
-   * Idempotent — safe to run on every startup.
-   *
-   * TODO: Remove this migration once all users have updated past this version.
-   *
-   * @private
-   */
-  private async migrateWildcardSeasons(): Promise<void> {
-    const result = await this._dbConnection.runAsync(
-      `UPDATE "${ingredientsTableName}"
-             SET "${ingredientsColumnsNames.season}" = ?
-             WHERE "${ingredientsColumnsNames.season}" = '*'`,
-      [ALL_MONTHS_ENCODED]
-    );
-    if (result.changes > 0) {
-      databaseLogger.info('Migrated wildcard seasons to explicit months', {
-        ingredientsUpdated: result.changes,
-      });
-    } else {
-      databaseLogger.debug('Wildcard season migration: no wildcards found');
-    }
-  }
-
-  /**
    * Retrieves all import history records from the database
    *
    * @private
@@ -3035,7 +2896,6 @@ export class RecipeDatabase {
    */
   private decodeImportHistory(encoded: encodedImportHistoryElement): importHistoryTableElement {
     return {
-      id: encoded.ID,
       providerId: encoded.PROVIDER_ID,
       recipeUrl: encoded.RECIPE_URL,
       lastSeenAt: encoded.LAST_SEEN_AT,
@@ -3049,7 +2909,7 @@ export class RecipeDatabase {
    */
   private encodeImportHistory(history: importHistoryTableElement): encodedImportHistoryElement {
     return {
-      ID: history.id || 0,
+      ID: 0,
       PROVIDER_ID: history.providerId,
       RECIPE_URL: history.recipeUrl,
       LAST_SEEN_AT: history.lastSeenAt,
@@ -3083,7 +2943,6 @@ export class RecipeDatabase {
     encoded: encodedDismissedRecipeElement
   ): dismissedRecipeTableElement {
     return {
-      id: encoded.ID,
       providerId: encoded.PROVIDER_ID,
       recipeUrl: encoded.RECIPE_URL,
       title: encoded.TITLE,
@@ -3101,7 +2960,7 @@ export class RecipeDatabase {
     dismissed: dismissedRecipeTableElement
   ): encodedDismissedRecipeElement {
     return {
-      ID: dismissed.id || 0,
+      ID: 0,
       PROVIDER_ID: dismissed.providerId,
       RECIPE_URL: dismissed.recipeUrl,
       TITLE: dismissed.title,

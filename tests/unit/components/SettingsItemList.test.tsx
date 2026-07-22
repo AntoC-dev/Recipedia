@@ -153,30 +153,6 @@ describe('SettingsItemList Component', () => {
         )
       ).toBeNull();
     });
-
-    test('uses item name as key when id is missing', () => {
-      const noIdIngredients: ingredientTableElement[] = [
-        { ...mockIngredients[0]!, id: undefined as any },
-        { ...mockIngredients[1]!, id: undefined as any },
-      ];
-      const props: SettingsItemListProps<ingredientTableElement> = {
-        ...defaultProps,
-        items: noIdIngredients,
-      };
-
-      const { getByTestId } = render(<SettingsItemList {...props} />);
-
-      expect(
-        getByTestId(
-          `${defaultProps.testIdPrefix}::${noIdIngredients[0]!.name}::SettingsItemCard::Item`
-        )
-      ).toBeTruthy();
-      expect(
-        getByTestId(
-          `${defaultProps.testIdPrefix}::${noIdIngredients[1]!.name}::SettingsItemCard::Item`
-        )
-      ).toBeTruthy();
-    });
   });
 
   describe('tag', () => {

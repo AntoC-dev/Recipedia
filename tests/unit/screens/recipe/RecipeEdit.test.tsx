@@ -277,6 +277,7 @@ describe('RecipeEdit', () => {
       const newPropEdit: EditRecipeProp = {
         ...mockRouteEdit,
         recipe: {
+          id: mockRouteEdit.recipe.id,
           image_Source: mockRouteEdit.recipe.image_Source,
           title: 'New Recipe Title',
           description: 'New Recipe Description',

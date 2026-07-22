@@ -4,7 +4,6 @@ import React from 'react';
 import { dismissedRecipeTableElement } from '@customTypes/DatabaseElementTypes';
 
 const mockRecipe: dismissedRecipeTableElement = {
-  id: 1,
   providerId: 'hellofresh',
   recipeUrl: 'https://hellofresh.com/recipe-1',
   title: 'Dismissed Recipe',

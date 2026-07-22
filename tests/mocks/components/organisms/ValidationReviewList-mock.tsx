@@ -20,7 +20,9 @@ export function validationReviewListMock({
       <Button
         testID={`${testId}::onImport`}
         onPress={() => {
-          const tagMappings = new Map(rawTags.map(t => [normalizeKey(t.name), t]));
+          const tagMappings = new Map(
+            rawTags.map(t => [normalizeKey(t.name), { id: t.id ?? 0, name: t.name }])
+          );
           const ingredientMappings = new Map(
             rawIngredients
               .filter(i => !!i.name)

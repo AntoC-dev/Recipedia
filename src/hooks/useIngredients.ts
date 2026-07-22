@@ -10,7 +10,11 @@
 
 import { useSyncExternalStore } from 'react';
 import { RecipeDatabase } from '@utils/RecipeDatabase';
-import { ingredientTableElement, ingredientType } from '@customTypes/DatabaseElementTypes';
+import {
+  IngredientDraft,
+  ingredientTableElement,
+  ingredientType,
+} from '@customTypes/DatabaseElementTypes';
 import {
   DetailedSearchResult,
   ITEM_FUZZY,
@@ -44,9 +48,7 @@ export function useIngredients() {
     () => db.get_ingredients()
   );
 
-  const addIngredient = async (
-    ingredient: ingredientTableElement
-  ): Promise<ingredientTableElement> => {
+  const addIngredient = async (ingredient: IngredientDraft): Promise<ingredientTableElement> => {
     return db.addIngredient(ingredient);
   };
 
@@ -72,9 +74,7 @@ export function useIngredients() {
     return db.getRandomIngredientsByType(type, count);
   };
 
-  const addMultipleIngredients = async (
-    ingredientsToAdd: ingredientTableElement[]
-  ): Promise<void> => {
+  const addMultipleIngredients = async (ingredientsToAdd: IngredientDraft[]): Promise<void> => {
     await db.addMultipleIngredients(ingredientsToAdd);
   };
 

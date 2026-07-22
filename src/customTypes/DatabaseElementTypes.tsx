@@ -67,6 +67,34 @@ export const recipeTableName = 'RecipesTable';
 export const ingredientsTableName = 'IngredientsTable';
 export const tagTableName = 'TagsTable';
 
+/**
+ * Draft variant of a persisted DB element: the same shape without the
+ * database-assigned `id`.
+ *
+ * Represents a record built in memory but not yet inserted. The database
+ * assigns `id` on insert, producing the full persisted type. Use this for
+ * insert inputs so that persisted reads keep a guaranteed, non-optional `id`.
+ *
+ * @typeParam T - A persisted element type whose `id` is a required `number`
+ */
+export type Draft<T extends { id: number }> = Omit<T, 'id'>;
+
+/**
+ * Attaches a database-assigned `id` to a {@link Draft}, producing the persisted
+ * element.
+ *
+ * Use this instead of inlining `{ ...draft, id }` after an insert returns the
+ * new row id.
+ *
+ * @typeParam T - A persisted element type whose `id` is a required `number`
+ * @param draft - The draft to promote
+ * @param id - The database-assigned id to attach
+ * @returns The persisted element with its `id` set
+ */
+export function withId<T extends { id: number }>(draft: Draft<T>, id: number): T {
+  return { ...draft, id } as T;
+}
+
 /** SQLite data type enumeration */
 export enum encodedType {
   INTEGER = 'INTEGER',
@@ -103,8 +131,8 @@ export enum recipeColumnsNames {
  * Represents a fully decoded recipe with all related data
  */
 export type recipeTableElement = {
-  /** Optional database ID (undefined for new recipes) */
-  id?: number;
+  /** Database ID assigned on insert. Always present on persisted recipes. */
+  id: number;
   /** Path or URI to recipe image */
   image_Source: string;
   /** Recipe title/name */
@@ -129,6 +157,21 @@ export type recipeTableElement = {
   sourceUrl?: string;
   /** Provider ID from bulk import (e.g., 'hellofresh') */
   sourceProvider?: string;
+};
+
+/**
+ * A recipe payload that may not yet be persisted.
+ *
+ * `id` is present when editing an existing recipe and absent for a brand-new
+ * one. Its embedded ingredients and tags are drafts too: a recipe built from a
+ * form, OCR, scraper, or seed data may reference ingredients/tags not yet
+ * resolved to master rows. Snapshot/insert/update pipelines accept this shape;
+ * persisted reads return the id-required {@link recipeTableElement}.
+ */
+export type RecipeDraft = Omit<Draft<recipeTableElement>, 'ingredients' | 'tags'> & {
+  id?: number;
+  ingredients: IngredientDraft[];
+  tags: TagDraft[];
 };
 
 export type encodedRecipeElement = {
@@ -165,8 +208,12 @@ export const recipeColumnsEncoding: databaseColumnType[] = [
  * Supports both database storage and recipe usage
  */
 export type ingredientTableElement = {
-  /** Optional database ID (undefined for new ingredients) */
-  id?: number;
+  /**
+   * Database ID from the master ingredients table. Always present on persisted
+   * reads (the decoder resolves every occurrence to its master row). Absent only
+   * on an {@link IngredientDraft} not yet inserted/resolved.
+   */
+  id: number;
   /** Ingredient name */
   name: string;
   /** Unit of measurement (cups, grams, pieces, etc.) */
@@ -191,6 +238,15 @@ export type ingredientTableElement = {
  * When confirmed/validated, convert to ingredientTableElement
  */
 export type FormIngredientElement = Partial<ingredientTableElement>;
+
+/**
+ * An ingredient occurrence that may not yet be resolved to a master row.
+ *
+ * `id` is present when the occurrence already maps to a master ingredient and
+ * absent for a newly typed one (form input, OCR, scraper, seed data). Persisted
+ * reads return the id-required {@link ingredientTableElement}.
+ */
+export type IngredientDraft = Draft<ingredientTableElement> & { id?: number };
 
 export type coreIngredientElement = Pick<ingredientTableElement, 'name'> & {
   quantityPerPerson: number | undefined;
@@ -219,8 +275,6 @@ export const ingredientColumnsEncoding: databaseColumnType[] = [
 ];
 
 export type nutritionTableElement = {
-  /** Optional database ID (undefined for new nutrition data) */
-  id?: number;
   /** Energy in kcal per 100g */
   energyKcal: number;
   /** Energy in kJ per 100g */
@@ -257,11 +311,23 @@ export type preparationStepElement = {
  * Simple tag data structure for recipe categorization
  */
 export type tagTableElement = {
-  /** Optional database ID (undefined for new tags) */
-  id?: number;
+  /**
+   * Database ID from the tags table. Always present on persisted reads. Absent
+   * only on a {@link TagDraft} not yet matched to or created in the master table.
+   */
+  id: number;
   /** Tag name/label */
   name: string;
 };
+
+/**
+ * A tag that may not yet exist in the master table.
+ *
+ * `id` is present when the tag already maps to a master row and absent for one
+ * freshly typed into the recipe form or shipped in seed data. Persisted reads
+ * return the id-required {@link tagTableElement}.
+ */
+export type TagDraft = Draft<tagTableElement> & { id?: number };
 
 export enum tagsColumnsNames {
   name = 'NAME',
@@ -284,8 +350,6 @@ export const importHistoryTableName = 'ImportHistoryTable';
  * Used to show visual indicators for previously seen recipes during bulk import
  */
 export type importHistoryTableElement = {
-  /** Optional database ID (undefined for new records) */
-  id?: number;
   /** Provider identifier (e.g., 'hellofresh') */
   providerId: string;
   /** Full recipe URL from the provider */
@@ -321,8 +385,6 @@ export const dismissedRecipesTableName = 'DismissedRecipesTable';
  * Filtered out of every future bulk-import discovery run for the provider.
  */
 export type dismissedRecipeTableElement = {
-  /** Optional database ID (undefined for new records) */
-  id?: number;
   /** Provider identifier (e.g., 'hellofresh') */
   providerId: string;
   /** Full recipe URL from the provider */
@@ -368,8 +430,8 @@ export const menuTableName = 'MenuTable';
  * The menu is the single source of truth - the shopping list is generated from it.
  */
 export type menuTableElement = {
-  /** Optional database ID (undefined for new menu items) */
-  id?: number;
+  /** Database ID assigned on insert. Always present on persisted menu items. */
+  id: number;
   /** Recipe ID from the recipes table */
   recipeId: number;
   /** Recipe title (denormalized for quick display) */
@@ -455,7 +517,7 @@ export function extractIngredientsNameWithQuantity(
   );
 }
 
-export function extractTagsName(tags: tagTableElement[]): string[] {
+export function extractTagsName(tags: TagDraft[]): string[] {
   const result: string[] = [];
   tags.forEach(element => {
     result.push(element.name);
@@ -464,18 +526,7 @@ export function extractTagsName(tags: tagTableElement[]): string[] {
   return result;
 }
 
-export function isRecipePartiallyEqual(
-  recipe1: recipeTableElement,
-  recipe2: recipeTableElement
-): boolean {
-  return (
-    recipe1.image_Source === recipe2.image_Source &&
-    recipe1.title === recipe2.title &&
-    recipe1.description === recipe2.description
-  );
-}
-
-export function isRecipeEqual(recipe1: recipeTableElement, recipe2: recipeTableElement): boolean {
+export function isRecipeEqual(recipe1: RecipeDraft, recipe2: RecipeDraft): boolean {
   return (
     recipe1.image_Source === recipe2.image_Source &&
     recipe1.title === recipe2.title &&
@@ -502,7 +553,7 @@ export function isIngredientEqual(
   );
 }
 
-export function isTagEqual(tag1: tagTableElement, tag2: tagTableElement): boolean {
+export function isTagEqual(tag1: TagDraft, tag2: TagDraft): boolean {
   return tag1.name === tag2.name;
 }
 

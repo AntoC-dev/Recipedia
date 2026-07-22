@@ -40,9 +40,6 @@ export const noteSeparator = '%%';
 /** All calendar months as string values (1-12) */
 export const ALL_MONTHS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'] as const;
 
-/** All months pre-encoded for database storage */
-export const ALL_MONTHS_ENCODED = ALL_MONTHS.join(EncodingSeparator);
-
 /** Regular expression to replace all newline characters */
 export const replaceAllBackToLine = /\n/g;
 

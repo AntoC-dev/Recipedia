@@ -7,12 +7,14 @@ import {
   ingredientTableElement,
   ingredientType,
   isIngredientEqual,
+  IngredientDraft,
   isRecipeEqual,
-  isRecipePartiallyEqual,
   isTagEqual,
   recipeTableElement,
+  TagDraft,
   tagTableElement,
-} from '@customTypes//DatabaseElementTypes';
+  withId,
+} from '@customTypes/DatabaseElementTypes';
 import { testRecipes } from '@test-data/recipesDataset';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
@@ -21,6 +23,7 @@ describe('DatabaseElementTypes Helper Functions', () => {
   test('arrayOfType filters ingredients by type', () => {
     const ingredients: ingredientTableElement[] = [
       {
+        id: 1,
         name: 'Sugar',
         unit: 'g',
         quantity: '100',
@@ -28,6 +31,7 @@ describe('DatabaseElementTypes Helper Functions', () => {
         season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
       },
       {
+        id: 2,
         name: 'Flour',
         unit: 'g',
         quantity: '200',
@@ -35,6 +39,7 @@ describe('DatabaseElementTypes Helper Functions', () => {
         season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
       },
       {
+        id: 3,
         name: 'Spaghetti',
         unit: 'g',
         quantity: '200',
@@ -101,6 +106,7 @@ describe('DatabaseElementTypes Helper Functions', () => {
 
   test('extractIngredientsNameWithQuantity formats ingredient names correctly', () => {
     const monoIngredient = new Array<ingredientTableElement>({
+      id: 1,
       name: 'Sugar',
       unit: 'g',
       quantity: '100',
@@ -112,6 +118,7 @@ describe('DatabaseElementTypes Helper Functions', () => {
 
     const multiIngredient = new Array<ingredientTableElement>(
       {
+        id: 1,
         name: 'Sugar',
         unit: 'g',
         quantity: '100',
@@ -119,6 +126,7 @@ describe('DatabaseElementTypes Helper Functions', () => {
         season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
       },
       {
+        id: 2,
         name: 'Flour',
         unit: 'g',
         quantity: '200',
@@ -126,6 +134,7 @@ describe('DatabaseElementTypes Helper Functions', () => {
         season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
       },
       {
+        id: 3,
         name: 'Spaghetti',
         unit: 'g',
         quantity: '200',
@@ -141,90 +150,8 @@ describe('DatabaseElementTypes Helper Functions', () => {
   });
 
   test('extractTagsName extracts tag names', () => {
-    const tags = new Array<tagTableElement>({ name: 'Dessert' }, { name: 'Vegan' });
+    const tags = new Array<TagDraft>({ name: 'Dessert' }, { name: 'Vegan' });
     expect(extractTagsName(tags)).toEqual(['Dessert', 'Vegan']);
-  });
-
-  test('isRecipePartiallyEqual correctly identifies closes enough recipes', () => {
-    expect(isRecipePartiallyEqual(testRecipes[0]!, testRecipes[1]!)).toBe(false);
-    expect(isRecipePartiallyEqual(testRecipes[0]!, testRecipes[0]!)).toBe(true);
-
-    let expected: recipeTableElement = { ...testRecipes[0]!, id: 9999 };
-    expect(isRecipePartiallyEqual(testRecipes[0]!, expected)).toBe(true);
-
-    expected = { ...testRecipes[0]!, image_Source: 'Different Image' };
-    expect(isRecipePartiallyEqual(testRecipes[0]!, expected)).toBe(false);
-
-    expected = { ...testRecipes[1]!, image_Source: 'Different Image' };
-    expect(isRecipePartiallyEqual(testRecipes[0]!, expected)).toBe(false);
-
-    expected = { ...testRecipes[0]!, description: 'Different description' };
-    expect(isRecipePartiallyEqual(testRecipes[0]!, expected)).toBe(false);
-
-    expected = { ...testRecipes[0]!, tags: [] };
-    expect(isRecipePartiallyEqual(testRecipes[0]!, expected)).toBe(true);
-
-    expected = { ...testRecipes[0]!, tags: [{ name: 'One' }, { name: 'Two' }] };
-    expect(isRecipePartiallyEqual(testRecipes[0]!, expected)).toBe(true);
-
-    expected = { ...testRecipes[0]!, tags: [...testRecipes[0]!.tags, { name: 'Another one' }] };
-    expect(isRecipePartiallyEqual(testRecipes[0]!, expected)).toBe(true);
-
-    expected = {
-      ...testRecipes[0]!,
-      ingredients: [
-        {
-          name: 'New Ingredient',
-          season: ['never mind'],
-          type: ingredientType.cereal,
-          quantity: '0',
-          unit: 'unit',
-        },
-      ],
-    };
-    expect(isRecipePartiallyEqual(testRecipes[0]!, expected)).toBe(true);
-
-    expected = { ...testRecipes[0]!, ingredients: [] };
-    expect(isRecipePartiallyEqual(testRecipes[0]!, expected)).toBe(true);
-
-    expected = {
-      ...testRecipes[0]!,
-      ingredients: [
-        ...testRecipes[0]!.ingredients,
-        {
-          name: 'New Ingredient',
-          season: ['never mind'],
-          type: ingredientType.cereal,
-          quantity: '0',
-          unit: 'unit',
-        },
-      ],
-    };
-    expect(isRecipePartiallyEqual(testRecipes[0]!, expected)).toBe(true);
-
-    expected = { ...testRecipes[0]!, persons: -1 };
-    expect(isRecipePartiallyEqual(testRecipes[0]!, expected)).toBe(true);
-
-    expected = { ...testRecipes[0]!, season: ['not season'] };
-    expect(isRecipePartiallyEqual(testRecipes[0]!, expected)).toBe(true);
-
-    expected = {
-      ...testRecipes[0]!,
-      preparation: [{ title: 'Different', description: 'A different preparation' }],
-    };
-    expect(isRecipePartiallyEqual(testRecipes[0]!, expected)).toBe(true);
-
-    expected = { ...testRecipes[0]!, preparation: [] };
-    expect(isRecipePartiallyEqual(testRecipes[0]!, expected)).toBe(true);
-
-    expected = {
-      ...testRecipes[0]!,
-      preparation: [
-        ...testRecipes[0]!.preparation,
-        { title: 'New', description: 'A new element in preparation' },
-      ],
-    };
-    expect(isRecipePartiallyEqual(testRecipes[0]!, expected)).toBe(true);
   });
 
   test('isRecipeEqual correctly identifies equal recipes', () => {
@@ -246,16 +173,20 @@ describe('DatabaseElementTypes Helper Functions', () => {
     expected = { ...testRecipes[0]!, tags: [] };
     expect(isRecipeEqual(testRecipes[0]!, expected)).toBe(false);
 
-    expected = { ...testRecipes[0]!, tags: [{ name: 'One' }, { name: 'Two' }] };
+    expected = { ...testRecipes[0]!, tags: [{ id: 1, name: 'One' }, { id: 2, name: 'Two' }] };
     expect(isRecipeEqual(testRecipes[0]!, expected)).toBe(false);
 
-    expected = { ...testRecipes[0]!, tags: [...testRecipes[0]!.tags, { name: 'Another one' }] };
+    expected = {
+      ...testRecipes[0]!,
+      tags: [...testRecipes[0]!.tags, { id: 999, name: 'Another one' }],
+    };
     expect(isRecipeEqual(testRecipes[0]!, expected)).toBe(false);
 
     expected = {
       ...testRecipes[0]!,
       ingredients: [
         {
+          id: 1000,
           name: 'New Ingredient',
           season: ['never mind'],
           type: ingredientType.cereal,
@@ -274,6 +205,7 @@ describe('DatabaseElementTypes Helper Functions', () => {
       ingredients: [
         ...testRecipes[0]!.ingredients,
         {
+          id: 1001,
           name: 'New Ingredient',
           season: ['never mind'],
           type: ingredientType.cereal,
@@ -409,5 +341,36 @@ describe('DatabaseElementTypes Helper Functions', () => {
         'Ingredient "Flour" must have a type before saving'
       );
     });
+  });
+});
+
+describe('withId', () => {
+  test('attaches the id to a tag draft', () => {
+    const draft: TagDraft = { name: 'Dessert' };
+
+    expect(withId<tagTableElement>(draft, 5)).toEqual({ id: 5, name: 'Dessert' });
+  });
+
+  test('attaches the id to an ingredient draft', () => {
+    const draft: IngredientDraft = {
+      name: 'Flour',
+      unit: 'g',
+      type: ingredientType.baking,
+      season: [],
+    };
+
+    expect(withId<ingredientTableElement>(draft, 12)).toEqual({
+      id: 12,
+      name: 'Flour',
+      unit: 'g',
+      type: ingredientType.baking,
+      season: [],
+    });
+  });
+
+  test('overwrites an id already present on the draft', () => {
+    const draft: TagDraft = { id: 1, name: 'Vegan' };
+
+    expect(withId<tagTableElement>(draft, 9).id).toBe(9);
   });
 });
