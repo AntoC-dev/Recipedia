@@ -323,21 +323,9 @@ describe('MenuRecipeCard', () => {
       expect(getByTestId(`${testId}::Title`).props.children).toBe(specialCharMenuItem.recipeTitle);
     });
 
-    test('handles menu item without id', () => {
-      const menuItemWithoutId: menuTableElement = {
-        recipeId: 1,
-        recipeTitle: 'Test Recipe',
-        imageSource: 'test.jpg',
-        isCooked: false,
-        count: 1,
-      };
-      const { getByTestId } = renderMenuRecipeCard({ menuItem: menuItemWithoutId });
-
-      assertBasicElements(getByTestId, menuItemWithoutId);
-    });
-
     test('renders correctly with all edge case combinations', () => {
       const edgeCaseMenuItem: menuTableElement = {
+        id: 1,
         recipeId: 1,
         recipeTitle: '',
         imageSource: '',

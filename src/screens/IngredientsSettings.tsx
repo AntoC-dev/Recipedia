@@ -29,7 +29,12 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { useNavigation } from '@react-navigation/native';
-import { FormIngredientElement, ingredientTableElement } from '@customTypes/DatabaseElementTypes';
+import {
+  FormIngredientElement,
+  IngredientDraft,
+  ingredientTableElement,
+  withId,
+} from '@customTypes/DatabaseElementTypes';
 import { SettingsItemList } from '@components/organisms/SettingsItemList';
 import { AppBar } from '@components/organisms/AppBar';
 import { BottomActionButton } from '@components/atomic/BottomActionButton';
@@ -64,7 +69,7 @@ export function IngredientsSettings() {
 
   const testId = 'IngredientsSettings';
 
-  const handleAddIngredient = async (newIngredient: ingredientTableElement) => {
+  const handleAddIngredient = async (newIngredient: IngredientDraft) => {
     const insertedIngredient = await addIngredient(newIngredient);
     if (!insertedIngredient) {
       ingredientsSettingsLogger.warn('Failed to add ingredient to database', {
@@ -114,21 +119,27 @@ export function IngredientsSettings() {
   };
 
   // Dialog action handlers
-  const handleDialogConfirm = async (mode: DialogMode, newIngredient: ingredientTableElement) => {
-    switch (mode) {
-      case 'add':
-        await handleAddIngredient(newIngredient);
-        break;
-      case 'edit':
-        if (selectedIngredient) {
-          await handleEditIngredient(newIngredient);
+  const handleDialogConfirm = async (mode: DialogMode, newIngredient: IngredientDraft) => {
+    if (mode === 'add') {
+      await handleAddIngredient(newIngredient);
+      setIsDialogOpen(false);
+      return;
+    }
+    if (newIngredient.id === undefined) {
+      ingredientsSettingsLogger.error(
+        'Cannot edit or delete an ingredient without a persisted id',
+        {
+          ingredientName: newIngredient.name,
         }
-        break;
-      case 'delete':
-        if (selectedIngredient) {
-          await handleDeleteIngredient(newIngredient);
-        }
-        break;
+      );
+      setIsDialogOpen(false);
+      return;
+    }
+    const persistedIngredient = withId<ingredientTableElement>(newIngredient, newIngredient.id);
+    if (mode === 'edit') {
+      await handleEditIngredient(persistedIngredient);
+    } else {
+      await handleDeleteIngredient(persistedIngredient);
     }
     setIsDialogOpen(false);
   };

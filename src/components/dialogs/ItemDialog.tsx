@@ -80,9 +80,9 @@ import { useTags } from '@hooks/useTags';
 import { useIngredients } from '@hooks/useIngredients';
 import {
   FormIngredientElement,
-  ingredientTableElement,
+  IngredientDraft,
   ingredientType,
-  tagTableElement,
+  TagDraft,
 } from '@customTypes/DatabaseElementTypes';
 import { useShoppingCategories } from '@hooks/useCategories';
 import { SelectableAccordion } from '@components/molecules/SelectableAccordion';
@@ -101,16 +101,16 @@ export type ItemIngredientType = {
   /** Current ingredient data (may have optional fields for new/incomplete ingredients) */
   value: FormIngredientElement;
   /** Callback fired when ingredient operation is confirmed */
-  onConfirmIngredient: (mode: DialogMode, newItem: ingredientTableElement) => void | Promise<void>;
+  onConfirmIngredient: (mode: DialogMode, newItem: IngredientDraft) => void | Promise<void>;
 };
 
 /** Configuration for tag dialogs */
 export type ItemTagType = {
   type: 'Tag';
   /** Current tag data */
-  value: tagTableElement;
+  value: TagDraft;
   /** Callback fired when tag operation is confirmed */
-  onConfirmTag: (mode: DialogMode, newItem: tagTableElement) => void | Promise<void>;
+  onConfirmTag: (mode: DialogMode, newItem: TagDraft) => void | Promise<void>;
 };
 
 /**
@@ -258,10 +258,10 @@ export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialo
   const handleDeleteConfirm = () => {
     switch (item.type) {
       case 'Ingredient':
-        void item.onConfirmIngredient(mode, item.value as ingredientTableElement);
+        void item.onConfirmIngredient(mode, item.value as IngredientDraft);
         break;
       case 'Tag':
-        void item.onConfirmTag(mode, item.value as tagTableElement);
+        void item.onConfirmTag(mode, item.value as TagDraft);
         break;
       default:
         uiLogger.error('Unreachable code in ItemDialog');

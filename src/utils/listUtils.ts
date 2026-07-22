@@ -14,23 +14,22 @@ import {
 } from '@customTypes/DatabaseElementTypes';
 
 /**
- * Key extractor for recipe list items.
- * Prefers the database ID; falls back to the recipe title when no ID exists (new/unsaved recipes).
+ * Key extractor for recipe list items, keyed on the persisted database id.
  *
  * @param item - Recipe to extract a key from
  * @returns Unique string key for the item
  */
 export function getRecipeKey(item: recipeTableElement): string {
-  return item.id?.toString() ?? item.title;
+  return item.id.toString();
 }
 
 /**
- * Key extractor for settings list items (ingredients and tags).
- * Prefers the database ID; falls back to the item name when no ID exists (new/unsaved items).
+ * Key extractor for settings list items (ingredients and tags), keyed on the
+ * persisted database id. Settings lists only ever render persisted rows.
  *
  * @param item - Ingredient or tag to extract a key from
  * @returns Unique string key for the item
  */
 export function getSettingsItemKey(item: ingredientTableElement | tagTableElement): string {
-  return item.id?.toString() ?? item.name;
+  return item.id.toString();
 }

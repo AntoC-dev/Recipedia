@@ -255,7 +255,7 @@ describe('TagsSettings Screen Performance', () => {
       if (tags.length > 0) {
         const tag = tags[0];
         await database.editTag({
-          ...tag,
+          ...tag!,
           name: tag!.name + ' (edited)',
         });
       }

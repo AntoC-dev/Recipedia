@@ -19,7 +19,7 @@ import {
   FormIngredientElement,
   nutritionTableElement,
   preparationStepElement,
-  tagTableElement,
+  TagDraft,
 } from '@customTypes/DatabaseElementTypes';
 import {
   IngredientGroup,
@@ -72,9 +72,10 @@ export type ConvertedIngredients = {
 
 export type ScrapedRecipeResult = Omit<
   Partial<import('@customTypes/DatabaseElementTypes').recipeTableElement>,
-  'ingredients' | 'nutrition'
+  'ingredients' | 'nutrition' | 'tags'
 > & {
   ingredients: FormIngredientElement[];
+  tags?: TagDraft[];
   skippedIngredients?: string[];
   nutrition?: nutritionTableElement;
 };
@@ -278,8 +279,8 @@ export function parseServings(yields: string | undefined, defaultPersons: number
   return extractFirstInteger(yields) ?? defaultPersons;
 }
 
-export function convertTags(keywords: string[], dietaryRestrictions: string[]): tagTableElement[] {
-  const tags: tagTableElement[] = [];
+export function convertTags(keywords: string[], dietaryRestrictions: string[]): TagDraft[] {
+  const tags: TagDraft[] = [];
 
   const addTagIfNotDuplicate = (name: string) => {
     const trimmed = name.trim();

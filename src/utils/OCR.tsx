@@ -89,32 +89,50 @@ const INGREDIENT_PARSING = {
 } as const;
 
 /** Type representing person count and cooking time extracted from OCR */
-export type personAndTimeObject = { person: number; time: number };
+export type personAndTimeObject = {
+  /** Number of servings the recipe yields */
+  person: number;
+  /** Total preparation time in minutes */
+  time: number;
+};
+/** Field names of {@link personAndTimeObject}, used to drive OCR field extraction. */
 export const keysPersonsAndTimeObject = Object.keys({
   person: 0,
   time: 0,
 } as personAndTimeObject) as (keyof personAndTimeObject)[];
 
 /** Type representing a tag extracted from OCR */
-export type tagObject = { id?: string; name: string };
+export type tagObject = {
+  /** Database ID when the tag already exists, `undefined` for a newly scanned tag */
+  id?: string;
+  /** Tag label as read from the image */
+  name: string;
+};
+/** Field names of {@link tagObject}, used to drive OCR field extraction. */
 export const keysTagObject = Object.keys({
   name: '',
 } as tagObject) as (keyof tagObject)[];
 
 /** Type representing ingredient quantity for a specific number of persons */
 export type ingredientQuantityPerPersons = {
+  /** Serving count this quantity applies to */
   persons: number;
+  /** Quantity as a string to preserve fractional and textual amounts */
   quantity: string;
 };
 
 /** Type representing an ingredient with multiple quantity specifications */
 export type ingredientObject = {
+  /** Ingredient name as read from the image */
   name: string;
+  /** Unit of measurement (g, ml, cups, …) */
   unit: string;
+  /** Quantity broken down per serving count, supporting multi-column labels */
   quantityPerPersons: ingredientQuantityPerPersons[];
   /** Optional usage note from additional parentheticals */
   note?: string;
 };
+/** Field names of {@link ingredientObject} (excluding `note`), used to drive OCR field extraction. */
 export const keysIngredientObject = Object.keys({
   name: '',
   unit: '',

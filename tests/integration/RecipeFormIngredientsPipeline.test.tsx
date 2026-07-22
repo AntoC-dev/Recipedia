@@ -16,6 +16,7 @@ import {
 import RecipeDatabase from '@utils/RecipeDatabase';
 import {
   FormIngredientElement,
+  IngredientDraft,
   ingredientTableElement,
   ingredientType,
 } from '@customTypes/DatabaseElementTypes';
@@ -51,28 +52,28 @@ function makeFormApplyPatch(form: RecipeForm): ApplyIngredientEditPatch {
   };
 }
 
-const tomato: ingredientTableElement = {
+const tomato: IngredientDraft = {
   name: 'Tomato',
   unit: 'g',
   type: ingredientType.vegetable,
   season: [],
 };
 
-const onion: ingredientTableElement = {
+const onion: IngredientDraft = {
   name: 'Onion',
   unit: 'g',
   type: ingredientType.vegetable,
   season: [],
 };
 
-const garlic: ingredientTableElement = {
+const garlic: IngredientDraft = {
   name: 'Garlic',
   unit: 'clove',
   type: ingredientType.condiment,
   season: [],
 };
 
-const seededIngredients: ingredientTableElement[] = [tomato, onion, garlic];
+const seededIngredients: IngredientDraft[] = [tomato, onion, garlic];
 
 function FormDrivenApplyPatchRegistrar({ children }: { children: React.ReactNode }) {
   const { form } = useRecipeForm();
@@ -126,6 +127,7 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
 
       act(() => {
         result.current.ingredientOps.addOrMergeIngredient({
+          id: 1,
           name: 'Tomato',
           unit: 'g',
           quantity: '100',
@@ -144,6 +146,7 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
 
       act(() => {
         result.current.ingredientOps.addOrMergeIngredient({
+          id: 2,
           name: 'Onion',
           unit: 'g',
           quantity: '50',
@@ -154,6 +157,7 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
 
       act(() => {
         result.current.ingredientOps.addOrMergeIngredient({
+          id: 3,
           name: 'Onion',
           unit: 'g',
           quantity: '75',
@@ -171,6 +175,7 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
 
       act(() => {
         result.current.ingredientOps.addOrMergeIngredient({
+          id: 4,
           name: 'Garlic',
           unit: 'clove',
           quantity: '2',
@@ -181,6 +186,7 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
 
       act(() => {
         result.current.ingredientOps.addOrMergeIngredient({
+          id: 5,
           name: 'Garlic',
           unit: 'g',
           quantity: '10',
@@ -199,6 +205,7 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
 
       act(() => {
         result.current.ingredientOps.addOrMergeIngredient({
+          id: 6,
           name: 'Tomato',
           unit: 'g',
           quantity: '100',
@@ -210,6 +217,7 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
 
       act(() => {
         result.current.ingredientOps.addOrMergeIngredient({
+          id: 7,
           name: 'Tomato',
           unit: 'g',
           quantity: '50',
@@ -235,6 +243,7 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
 
       act(() => {
         result.current.ingredientOps.addOrMergeIngredient({
+          id: 8,
           name: 'Onion',
           unit: 'g',
           quantity: '100',

@@ -15,6 +15,7 @@ import { FlashList } from '@shopify/flash-list';
 import {
   FormIngredientElement,
   ingredientTableElement,
+  TagDraft,
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
 import {
@@ -39,7 +40,7 @@ const LIST_BOTTOM_PADDING = 80;
 
 export type ValidationReviewListProps = {
   testID: string;
-  rawTags: tagTableElement[];
+  rawTags: TagDraft[];
   rawIngredients: FormIngredientElement[];
   onImport: (mappings: ResolutionMappings) => void;
   recipeCount: number;

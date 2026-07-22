@@ -2,7 +2,7 @@ import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { useMenu } from '@hooks/useMenu';
 import { useShopping } from '@hooks/useShopping';
 import RecipeDatabase from '@utils/RecipeDatabase';
-import { ingredientType, recipeTableElement } from '@customTypes/DatabaseElementTypes';
+import { ingredientType, RecipeDraft } from '@customTypes/DatabaseElementTypes';
 
 const catalogIngredients = [
   { name: 'Pasta', unit: 'g', type: ingredientType.cereal, season: [] },
@@ -12,7 +12,7 @@ const catalogIngredients = [
   { name: 'Onion', unit: 'g', type: ingredientType.vegetable, season: [] },
 ];
 
-const pastaRecipe: recipeTableElement = {
+const pastaRecipe: RecipeDraft = {
   title: 'Pasta Primavera',
   image_Source: '',
   description: '',
@@ -28,7 +28,7 @@ const pastaRecipe: recipeTableElement = {
   time: 20,
 };
 
-const saladRecipe: recipeTableElement = {
+const saladRecipe: RecipeDraft = {
   title: 'Garden Salad',
   image_Source: '',
   description: '',
@@ -44,7 +44,7 @@ const saladRecipe: recipeTableElement = {
   time: 10,
 };
 
-const soupRecipe: recipeTableElement = {
+const soupRecipe: RecipeDraft = {
   title: 'Tomato Soup',
   image_Source: '',
   description: '',

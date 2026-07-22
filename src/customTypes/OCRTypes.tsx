@@ -1,16 +1,32 @@
 import { default as RecipeTranslations } from '@translations/en/recipe';
 
-/** Type representing nutrition data extracted from OCR */
+/**
+ * Nutrition data extracted from an OCR scan of a nutrition label.
+ *
+ * Every field is optional: OCR may fail to locate a given value on the label,
+ * in which case the field stays `undefined` and the UI leaves it blank. Values
+ * are per 100g unless {@link portionWeight} is used to derive per-portion figures.
+ */
 export type nutritionObject = {
+  /** Energy in kcal per 100g */
   energyKcal?: number;
+  /** Energy in kJ per 100g */
   energyKj?: number;
+  /** Total fats in grams per 100g */
   fat?: number;
+  /** Saturated fats in grams per 100g (subset of total fats) */
   saturatedFat?: number;
+  /** Total carbohydrates in grams per 100g */
   carbohydrates?: number;
+  /** Sugars in grams per 100g (subset of carbohydrates) */
   sugars?: number;
+  /** Dietary fiber in grams per 100g */
   fiber?: number;
+  /** Proteins in grams per 100g */
   protein?: number;
+  /** Salt in grams per 100g */
   salt?: number;
+  /** Portion size in grams, used to convert per-100g values to per-portion */
   portionWeight?: number;
 };
 

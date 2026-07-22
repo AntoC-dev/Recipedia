@@ -10,11 +10,12 @@
 import {
   FormIngredientElement,
   ingredientTableElement,
+  TagDraft,
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
 
 /** A tag that needs validation, with pre-computed similar items from the database */
-export type TagWithSimilarity = tagTableElement & {
+export type TagWithSimilarity = TagDraft & {
   similarItems: tagTableElement[];
 };
 

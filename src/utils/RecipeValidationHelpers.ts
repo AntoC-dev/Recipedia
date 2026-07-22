@@ -14,6 +14,7 @@
 import {
   FormIngredientElement,
   ingredientTableElement,
+  TagDraft,
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
 import { IngredientWithSimilarity, TagWithSimilarity } from '@customTypes/ValidationTypes';
@@ -93,7 +94,7 @@ export function removeIngredientByName(
  * Removes a tag from array by name (case-insensitive).
  * Used when user dismisses a tag during validation.
  */
-export function removeTagByName(tags: tagTableElement[], nameToRemove: string): tagTableElement[] {
+export function removeTagByName(tags: TagDraft[], nameToRemove: string): TagDraft[] {
   return tags.filter(tag => !namesMatch(tag.name, nameToRemove));
 }
 
@@ -169,9 +170,9 @@ export function addOrMergeIngredientMatches(
  * Used by scraper validation to update form tags with database matches.
  */
 export function replaceMatchingTags(
-  current: tagTableElement[],
+  current: TagDraft[],
   exactMatches: tagTableElement[]
-): tagTableElement[] {
+): TagDraft[] {
   const updated = [...current];
   for (const tag of exactMatches) {
     const idx = updated.findIndex(e => namesMatch(e.name, tag.name));
@@ -211,7 +212,7 @@ export function addNonDuplicateByName<T extends { name?: string }>(
  * @returns Object with exactMatches and needsValidation arrays (with similarity info)
  */
 export function processTagsForValidation(
-  tags: tagTableElement[],
+  tags: TagDraft[],
   findSimilarTags: (name: string) => tagTableElement[]
 ): {
   exactMatches: tagTableElement[];
@@ -451,7 +452,7 @@ export function sortAlphabetically<T extends { name?: string }>(items: T[]): T[]
  * @returns Tags with pre-computed similar items
  */
 export function computeTagSimilarity(
-  tags: tagTableElement[],
+  tags: TagDraft[],
   findSimilarTags: (name: string) => tagTableElement[]
 ): TagWithSimilarity[] {
   return tags.map(tag => ({

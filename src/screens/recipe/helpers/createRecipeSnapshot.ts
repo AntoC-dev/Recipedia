@@ -1,5 +1,5 @@
 /**
- * Builds a `recipeTableElement` snapshot from the current form values and a
+ * Builds a {@link RecipeDraft} snapshot from the current form values and a
  * baseline recipe (preserves the persisted `id`, `season`, and
  * `sourceProvider` that aren't form-managed).
  *
@@ -10,11 +10,16 @@
  */
 
 import type { UseFormReturn } from 'react-hook-form';
-import { ingredientTableElement, recipeTableElement } from '@customTypes/DatabaseElementTypes';
+import {
+  ingredientTableElement,
+  RecipeDraft,
+  recipeTableElement,
+} from '@customTypes/DatabaseElementTypes';
 import type { RecipeFormInput } from '@schemas/recipeFormSchema';
 
 /**
- * Returns a fully-populated `recipeTableElement` from the current form state.
+ * Returns a fully-populated {@link RecipeDraft} from the current form state
+ * (`id` present only when editing an existing recipe).
  *
  * The supplied `baseline` carries non-form fields the snapshot must round-trip:
  * - `id`, `season`, `sourceProvider` from the persisted recipe, when available.
@@ -26,13 +31,13 @@ import type { RecipeFormInput } from '@schemas/recipeFormSchema';
  * @param baseline - The most recent persisted recipe, or `null` for fresh adds
  * @param fallbackSourceUrl - Optional source URL used when no baseline exists
  *   (e.g. `addFromScrape` mode)
- * @returns A snapshot of the current form payload as a `recipeTableElement`
+ * @returns A snapshot of the current form payload as a {@link RecipeDraft}
  */
 export function createRecipeSnapshot(
   form: UseFormReturn<RecipeFormInput>,
   baseline: recipeTableElement | null,
   fallbackSourceUrl?: string
-): recipeTableElement {
+): RecipeDraft {
   const values = form.getValues();
   const sourceUrl = baseline?.sourceUrl ?? fallbackSourceUrl;
   return {

@@ -3,10 +3,14 @@ import { testRecipes } from '@test-data/recipesDataset';
 import { testTags } from '@test-data/tagsDataset';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import {
+  encodedImportHistoryElement,
+  IngredientDraft,
   ingredientTableElement,
   ingredientType,
   nutritionTableElement,
+  RecipeDraft,
   recipeTableElement,
+  TagDraft,
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
 import { getRandomRecipes } from '@utils/FilterFunctions';
@@ -324,10 +328,10 @@ describe('RecipeDatabase', () => {
 
       expect(await db.deleteTag(testTags[12]!)).toEqual(false);
 
-      expect(await db.deleteTag({ ...testTags[15]!, id: undefined })).toEqual(true);
+      expect(await db.deleteTag(testTags[15]!)).toEqual(true);
       expect(db.get_tags()).not.toContainEqual(testTags[15]);
 
-      expect(await db.deleteTag({ ...testTags[2]!, id: undefined, name: '' })).toEqual(false);
+      expect(await db.deleteTag({ ...testTags[2]!, id: 900001, name: '' })).toEqual(false);
 
       expect(db.get_tags()).toContainEqual(testTags[2]);
     });
@@ -338,41 +342,36 @@ describe('RecipeDatabase', () => {
 
       expect(await db.deleteIngredient(testIngredients[30]!)).toEqual(false);
 
-      expect(await db.deleteIngredient({ ...testIngredients[21]!, id: undefined })).toEqual(true);
+      expect(await db.deleteIngredient(testIngredients[21]!)).toEqual(true);
       expect(db.get_ingredients()).not.toContainEqual(testIngredients[21]);
 
       expect(
-        await db.deleteIngredient({ ...testIngredients[11]!, id: undefined, name: '' })
+        await db.deleteIngredient({ ...testIngredients[11]!, id: 900002, name: '' })
       ).toEqual(false);
       expect(
-        await db.deleteIngredient({ ...testIngredients[11]!, id: undefined, unit: '' })
+        await db.deleteIngredient({ ...testIngredients[11]!, id: 900003, unit: '' })
       ).toEqual(false);
       expect(
         await db.deleteIngredient({
           ...testIngredients[11]!,
-          id: undefined,
+          id: 900004,
           type: ingredientType.cereal,
         })
       ).toEqual(false);
       expect(
         await db.deleteIngredient({
           ...testIngredients[11]!,
-          id: undefined,
+          id: 900005,
           name: '',
           unit: '',
           type: ingredientType.cereal,
         })
       ).toEqual(false);
-      // Ingredient should still be in the list since delete returned false
 
-      expect(
-        await db.deleteIngredient({ ...testIngredients[11]!, id: undefined, quantity: '' })
-      ).toEqual(true);
+      expect(await db.deleteIngredient(testIngredients[11]!)).toEqual(true);
       expect(db.get_ingredients()).not.toContainEqual(testIngredients[11]);
 
-      expect(
-        await db.deleteIngredient({ ...testIngredients[32]!, id: undefined, season: [] })
-      ).toEqual(true);
+      expect(await db.deleteIngredient(testIngredients[32]!)).toEqual(true);
       expect(db.get_ingredients()).not.toContainEqual(testIngredients[32]);
     });
 
@@ -385,7 +384,7 @@ describe('RecipeDatabase', () => {
     });
 
     test('editTag with missing ID should return false and not update', async () => {
-      const tagToEdit = { ...testTags[0]!, id: undefined, name: 'ShouldNotUpdate' };
+      const tagToEdit = { ...testTags[0]!, id: 900010, name: 'ShouldNotUpdate' };
 
       expect(await db.editTag(tagToEdit)).toBe(false);
 
@@ -403,7 +402,7 @@ describe('RecipeDatabase', () => {
     });
 
     test('editIngredient with missing ID should return false and not update', async () => {
-      const ingredientToEdit = { ...testIngredients[0]!, id: undefined, name: 'ShouldNotUpdate' };
+      const ingredientToEdit = { ...testIngredients[0]!, id: 900011, name: 'ShouldNotUpdate' };
 
       expect(await db.editIngredient(ingredientToEdit)).toBe(false);
 
@@ -530,15 +529,6 @@ describe('RecipeDatabase', () => {
 
       const updated = db.get_recipes().find(r => r.id === recipeToEdit.id);
       expect(updated).toEqual(recipeToEdit);
-    });
-
-    test('editRecipe with missing ID throws and does not update', async () => {
-      const recipeToEdit = { ...testRecipes[0]!, id: undefined, title: 'ShouldNotUpdate' };
-
-      await expect(db.editRecipe(recipeToEdit)).rejects.toThrow();
-
-      const notUpdated = db.get_recipes().find(r => r.title === 'ShouldNotUpdate');
-      expect(notUpdated).toBeUndefined();
     });
 
     describe('update_multiple_recipes', () => {
@@ -693,14 +683,6 @@ describe('RecipeDatabase', () => {
 
           expect(updatedIng!.quantity).toBe(expectedQuantity);
         }
-      });
-
-      test('should throw error when recipe has no ID', async () => {
-        const recipeWithoutId = { ...testRecipes[0]!, id: undefined };
-
-        await expect(db.scaleAndUpdateRecipe(recipeWithoutId)).rejects.toThrow(
-          'Recipe must have an ID to update'
-        );
       });
 
       test('should update recipe in internal state', async () => {
@@ -1026,38 +1008,10 @@ describe('RecipeDatabase', () => {
       await db.closeAndReset();
     });
 
-    test('isRecipeExist return true if the recipe is in the database', () => {
-      expect(
-        db.isRecipeExist({
-          description: '',
-          image_Source: '',
-          ingredients: new Array(),
-          persons: 0,
-          preparation: new Array(),
-          season: new Array(),
-          tags: new Array(),
-          time: 0,
-          title: '',
-        })
-      ).toBe(false);
-      expect(
-        db.isRecipeExist({
-          description: 'A real description',
-          image_Source: '/path/to/an/image',
-          ingredients: new Array(),
-          persons: 2,
-          preparation: new Array(),
-          season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-          tags: new Array(testTags[3]!),
-          time: 20,
-          title: 'A real title',
-        })
-      ).toBe(false);
-
-      expect(db.isRecipeExist({ ...testRecipes[7]!, title: '', id: undefined })).toBe(false);
-
-      expect(db.isRecipeExist({ ...testRecipes[5]!, id: undefined })).toBe(true);
+    test('isRecipeExist matches a cached recipe by id', () => {
       expect(db.isRecipeExist(testRecipes[0]!)).toBe(true);
+      expect(db.isRecipeExist(testRecipes[5]!)).toBe(true);
+      expect(db.isRecipeExist({ ...testRecipes[0]!, id: 999999 })).toBe(false);
     });
 
     test('Reset database clears all data', async () => {
@@ -1074,41 +1028,8 @@ describe('RecipeDatabase', () => {
 
       expect(await db.deleteRecipe(testRecipes[4]!)).toEqual(false);
 
-      expect(await db.deleteRecipe({ ...testRecipes[9]!, id: undefined })).toEqual(true);
+      expect(await db.deleteRecipe(testRecipes[9]!)).toEqual(true);
       expect(db.get_recipes()).not.toContainEqual(testRecipes[9]);
-
-      expect(
-        await db.deleteRecipe({ ...testRecipes[2]!, id: undefined, image_Source: '' })
-      ).toEqual(false);
-      expect(await db.deleteRecipe({ ...testRecipes[2]!, id: undefined, title: '' })).toEqual(
-        false
-      );
-      expect(await db.deleteRecipe({ ...testRecipes[2]!, id: undefined, description: '' })).toEqual(
-        false
-      );
-      expect(db.get_recipes()).toContainEqual(testRecipes[2]);
-
-      expect(await db.deleteRecipe({ ...testRecipes[2]!, id: undefined, tags: [] })).toEqual(true);
-      expect(db.get_recipes()).not.toContainEqual(testRecipes[2]);
-
-      expect(await db.deleteRecipe({ ...testRecipes[3]!, id: undefined, persons: -1 })).toEqual(
-        true
-      );
-      expect(db.get_recipes()).not.toContainEqual(testRecipes[3]);
-      expect(await db.deleteRecipe({ ...testRecipes[5]!, id: undefined, ingredients: [] })).toEqual(
-        true
-      );
-      expect(db.get_recipes()).not.toContainEqual(testRecipes[5]);
-      expect(await db.deleteRecipe({ ...testRecipes[6]!, id: undefined, season: [] })).toEqual(
-        true
-      );
-      expect(db.get_recipes()).not.toContainEqual(testRecipes[6]);
-      expect(await db.deleteRecipe({ ...testRecipes[7]!, id: undefined, preparation: [] })).toEqual(
-        true
-      );
-      expect(db.get_recipes()).not.toContainEqual(testRecipes[7]);
-      expect(await db.deleteRecipe({ ...testRecipes[8]!, id: undefined, time: -1 })).toEqual(true);
-      expect(db.get_recipes()).not.toContainEqual(testRecipes[8]);
     });
 
     // TODO to be upgrade with database deleting (not implemented yet)
@@ -1403,6 +1324,41 @@ describe('RecipeDatabase', () => {
 
         const finalCallCount = FileGestionMock.saveRecipeImage.mock.calls.length;
         expect(finalCallCount).toBe(initialCallCount);
+      });
+
+      it('returns the persisted recipe with a database id', async () => {
+        const persisted = await db.addRecipe({ ...testRecipes[0]!, id: undefined });
+
+        expect(persisted).toBeDefined();
+        expect(typeof persisted!.id).toBe('number');
+        expect(persisted!.title).toBe(testRecipes[0]!.title);
+        expect(db.get_recipes()).toContainEqual(persisted);
+      });
+
+      it('throws and leaves cache untouched when insertion fails', async () => {
+        const recipesTable = db['_recipesTable'];
+        const originalInsertElement = recipesTable.insertElement;
+        recipesTable.insertElement = jest.fn().mockResolvedValue(undefined);
+
+        await expect(db.addRecipe({ ...testRecipes[0]!, id: undefined })).rejects.toThrow(
+          /Failed to add recipe/
+        );
+        expect(db.get_recipes()).toEqual([]);
+
+        recipesTable.insertElement = originalInsertElement;
+      });
+
+      it('throws and leaves cache untouched when lookup fails after insertion', async () => {
+        const recipesTable = db['_recipesTable'];
+        const originalSearchElementById = recipesTable.searchElementById;
+        recipesTable.searchElementById = jest.fn().mockResolvedValue(undefined);
+
+        await expect(db.addRecipe({ ...testRecipes[0]!, id: undefined })).rejects.toThrow(
+          /Failed to retrieve recipe/
+        );
+        expect(db.get_recipes()).toEqual([]);
+
+        recipesTable.searchElementById = originalSearchElementById;
       });
     });
 
@@ -1836,11 +1792,11 @@ describe('RecipeDatabase', () => {
 
     const getEncodeTagForRecipe = () =>
       (
-        db as unknown as { encodeTagForRecipe: (tag: tagTableElement) => string }
+        db as unknown as { encodeTagForRecipe: (tag: TagDraft) => string }
       ).encodeTagForRecipe.bind(db);
     const getEncodeIngredient = () =>
       (
-        db as unknown as { encodeIngredient: (ing: ingredientTableElement) => string }
+        db as unknown as { encodeIngredient: (ing: IngredientDraft) => string }
       ).encodeIngredient.bind(db);
 
     test('encodeTagForRecipe throws when the tag cannot be resolved', () => {
@@ -1885,6 +1841,34 @@ describe('RecipeDatabase', () => {
     });
   });
 
+  describe('Seen history', () => {
+    const db = RecipeDatabase.getInstance();
+
+    beforeEach(async () => {
+      await db.init();
+    });
+
+    afterEach(async () => {
+      await db.closeAndReset();
+    });
+
+    test('removeFromSeenHistory deletes the database row, not just the cache', async () => {
+      const provider = 'hellofresh';
+      const kept = 'https://hellofresh.com/keep';
+      const removed = 'https://hellofresh.com/remove';
+      await db.markUrlsAsSeen(provider, [kept, removed]);
+
+      await db.removeFromSeenHistory(provider, [removed]);
+
+      const rows = (await db['_importHistoryTable'].searchElement<encodedImportHistoryElement>(
+        db['_dbConnection']
+      )) as encodedImportHistoryElement[];
+      const urls = rows.map(row => row.RECIPE_URL);
+      expect(urls).toContain(kept);
+      expect(urls).not.toContain(removed);
+    });
+  });
+
   describe('Menu Operations', () => {
     const db = RecipeDatabase.getInstance();
 
@@ -1925,13 +1909,6 @@ describe('RecipeDatabase', () => {
         expect(menu[0]!.imageSource).toBe(recipe!.image_Source);
         expect(menu[0]!.isCooked).toBe(false);
         expect(menu[0]!.count).toBe(1);
-      });
-
-      test('does not add recipe without ID', async () => {
-        const recipeWithoutId: recipeTableElement = { ...testRecipes[0]!, id: undefined };
-        await db.addRecipeToMenu(recipeWithoutId);
-
-        expect(db.get_menu().length).toBe(0);
       });
 
       test('increments count when adding same recipe twice', async () => {
@@ -2211,7 +2188,7 @@ describe('RecipeDatabase', () => {
     });
 
     test('preserves ingredient notes when adding and retrieving recipe', async () => {
-      const recipeWithNotes: recipeTableElement = {
+      const recipeWithNotes: RecipeDraft = {
         ...testRecipes[0]!,
         id: undefined,
         ingredients: testRecipes[0]!.ingredients.map((ing, index) => ({
@@ -2229,7 +2206,7 @@ describe('RecipeDatabase', () => {
     });
 
     test('handles multiple ingredients with mixed notes', async () => {
-      const recipeWithMixedNotes: recipeTableElement = {
+      const recipeWithMixedNotes: RecipeDraft = {
         ...testRecipes[0]!,
         id: undefined,
         ingredients: testRecipes[0]!.ingredients.map((ing, index) => ({
@@ -2251,7 +2228,7 @@ describe('RecipeDatabase', () => {
     });
 
     test('handles empty string note (treated as no note)', async () => {
-      const recipeWithEmptyNote: recipeTableElement = {
+      const recipeWithEmptyNote: RecipeDraft = {
         ...testRecipes[0]!,
         id: undefined,
         ingredients: testRecipes[0]!.ingredients.map((ing, index) => ({
@@ -2268,7 +2245,7 @@ describe('RecipeDatabase', () => {
 
     test('handles note with special characters', async () => {
       const specialNote = 'for the "special" sauce (organic)';
-      const recipeWithSpecialNote: recipeTableElement = {
+      const recipeWithSpecialNote: RecipeDraft = {
         ...testRecipes[0]!,
         id: undefined,
         ingredients: testRecipes[0]!.ingredients.map((ing, index) => ({
@@ -2285,7 +2262,7 @@ describe('RecipeDatabase', () => {
 
     test('handles note with unicode characters', async () => {
       const unicodeNote = '🌶️ spicy à volonté';
-      const recipeWithUnicodeNote: recipeTableElement = {
+      const recipeWithUnicodeNote: RecipeDraft = {
         ...testRecipes[0]!,
         id: undefined,
         ingredients: testRecipes[0]!.ingredients.map((ing, index) => ({
@@ -2302,7 +2279,7 @@ describe('RecipeDatabase', () => {
 
     test('preserves notes after database re-initialization', async () => {
       const noteValue = 'persistent note';
-      const recipeWithNote: recipeTableElement = {
+      const recipeWithNote: RecipeDraft = {
         ...testRecipes[0]!,
         id: undefined,
         ingredients: testRecipes[0]!.ingredients.map((ing, index) => ({
@@ -2325,7 +2302,7 @@ describe('RecipeDatabase', () => {
 
     test('preserves notes when editing recipe', async () => {
       const initialNote = 'initial note';
-      const recipeWithNote: recipeTableElement = {
+      const recipeWithNote: RecipeDraft = {
         ...testRecipes[0]!,
         id: undefined,
         ingredients: testRecipes[0]!.ingredients.map((ing, index) => ({
@@ -2353,7 +2330,7 @@ describe('RecipeDatabase', () => {
     });
 
     test('can remove note when editing recipe', async () => {
-      const recipeWithNote: recipeTableElement = {
+      const recipeWithNote: RecipeDraft = {
         ...testRecipes[0]!,
         id: undefined,
         ingredients: testRecipes[0]!.ingredients.map((ing, index) => ({

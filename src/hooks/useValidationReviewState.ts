@@ -12,6 +12,7 @@ import React, { useState } from 'react';
 import {
   FormIngredientElement,
   ingredientTableElement,
+  TagDraft,
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
 import {
@@ -88,7 +89,7 @@ export function refreshSimilarityFor<
  * @returns Review state with sorted items, actions, and resolution mappings
  */
 export function useValidationReviewState(
-  rawTags: tagTableElement[],
+  rawTags: TagDraft[],
   rawIngredients: FormIngredientElement[],
   findSimilarTags: (name: string) => tagTableElement[],
   findSimilarIngredients: (name: string) => ingredientTableElement[]
@@ -113,7 +114,7 @@ export function useValidationReviewState(
     computeIngredientSimilarity(rawIngredients, findSimilarIngredients)
   );
 
-  const [pendingTagsIndex] = useState<ItemSearchIndex<tagTableElement>>(() =>
+  const [pendingTagsIndex] = useState<ItemSearchIndex<TagDraft>>(() =>
     buildItemIndex(rawTags, { fuzzy: ITEM_FUZZY, getName: t => t.name })
   );
   const [pendingIngredientsIndex] = useState<

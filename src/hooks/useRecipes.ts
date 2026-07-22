@@ -14,7 +14,7 @@
 
 import { useSyncExternalStore, useState } from 'react';
 import { RecipeDatabase } from '@utils/RecipeDatabase';
-import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
+import { RecipeDraft, recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { deleteFile, isTemporaryImageUri } from '@utils/FileGestion';
 import { databaseLogger } from '@utils/logger';
 
@@ -40,12 +40,12 @@ export function useRecipes() {
   );
   const [scalingProgress, setScalingProgress] = useState<number | undefined>(undefined);
 
-  const addRecipe = async (recipe: recipeTableElement): Promise<void> => {
+  const addRecipe = async (recipe: RecipeDraft): Promise<recipeTableElement> => {
     databaseLogger.debug('useRecipes: addRecipe', { recipeTitle: recipe.title });
-    await db.addRecipe(recipe);
+    return db.addRecipe(recipe);
   };
 
-  const editRecipe = async (recipe: recipeTableElement): Promise<recipeTableElement> => {
+  const editRecipe = async (recipe: RecipeDraft & { id: number }): Promise<recipeTableElement> => {
     databaseLogger.debug('useRecipes: editRecipe', {
       recipeId: recipe.id,
       recipeTitle: recipe.title,
@@ -67,11 +67,11 @@ export function useRecipes() {
     return db.deleteRecipe(recipe);
   };
 
-  const findSimilarRecipes = (recipe: recipeTableElement): recipeTableElement[] => {
+  const findSimilarRecipes = (recipe: RecipeDraft): recipeTableElement[] => {
     return db.findSimilarRecipes(recipe);
   };
 
-  const addMultipleRecipes = async (recipesToAdd: recipeTableElement[]): Promise<void> => {
+  const addMultipleRecipes = async (recipesToAdd: RecipeDraft[]): Promise<void> => {
     databaseLogger.debug('useRecipes: addMultipleRecipes', { count: recipesToAdd.length });
     await db.addMultipleRecipes(recipesToAdd);
   };

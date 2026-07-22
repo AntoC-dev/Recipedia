@@ -327,15 +327,16 @@ function RecipeFormBody({
       recipeLogger.info('Saving edited recipe to database', {
         recipeTitle: form.getValues('recipeTitle'),
       });
+      if (routeProps.mode !== 'edit') return;
+      const originalRecipe = routeProps.recipe;
       const recipeToEdit = buildSnapshot();
-      const originalRecipe = routeProps.mode === 'edit' ? routeProps.recipe : recipeToEdit;
       const defaultPersons = await getDefaultPersons();
       const scaledRecipe = scaleRecipeForSave(recipeToEdit, defaultPersons);
 
-      let savedRecipe = recipeToEdit;
+      let savedRecipe: recipeTableElement = originalRecipe;
       let scaledFromServings: number | undefined;
       if (!isRecipeEqual(originalRecipe, scaledRecipe)) {
-        savedRecipe = await editRecipe(scaledRecipe);
+        savedRecipe = await editRecipe({ ...scaledRecipe, id: originalRecipe.id });
         scaledFromServings = getServingsScaledFrom(recipeToEdit.persons, defaultPersons);
         baselineRef.current = savedRecipe;
         try {
@@ -378,7 +379,7 @@ function RecipeFormBody({
         recipeLogger.info('Saving new recipe to database', {
           recipeTitle: form.getValues('recipeTitle'),
         });
-        await addRecipe(scaledRecipe);
+        const savedRecipe = await addRecipe(scaledRecipe);
         clearCache();
         recipeLogger.info('Recipe add completed successfully', {
           recipeTitle: form.getValues('recipeTitle'),
@@ -389,7 +390,7 @@ function RecipeFormBody({
           content: t('addedToDatabase', { recipeName: recipeToAdd.title }),
           confirmText: t('understood'),
           onConfirm: () =>
-            onSaveSuccess(scaledRecipe, getServingsScaledFrom(recipeToAdd.persons, defaultPersons)),
+            onSaveSuccess(savedRecipe, getServingsScaledFrom(recipeToAdd.persons, defaultPersons)),
         });
       } catch (error) {
         validationLogger.error('Failed to validate and add recipe to database', {

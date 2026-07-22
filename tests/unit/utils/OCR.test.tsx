@@ -6,7 +6,7 @@ import {
   WarningHandler,
 } from '@utils/OCR';
 import { nutritionObject } from '@customTypes/OCRTypes';
-import { recipeColumnsNames, tagTableElement } from '@customTypes/DatabaseElementTypes';
+import { recipeColumnsNames, TagDraft, tagTableElement } from '@customTypes/DatabaseElementTypes';
 import TextRecognition, {
   TextBlock,
   TextLine,
@@ -1134,7 +1134,7 @@ describe('OCR Utility Functions', () => {
         }),
       }),
     };
-    const expectedTags = new Array<tagTableElement>(
+    const expectedTags = new Array<TagDraft>(
       { name: '<650kcal' },
       { name: 'Familial' },
       { name: 'Rapido' }
@@ -1150,7 +1150,7 @@ describe('OCR Utility Functions', () => {
     describe('on extractFieldFromImage', () => {
       test('returns the correct value', async () => {
         mockRecognize.mockResolvedValue(mockResultTags);
-        const tagAlreadyPresent: tagTableElement = { name: 'Existing tags' };
+        const tagAlreadyPresent: tagTableElement = { id: 1, name: 'Existing tags' };
 
         const result = await extractFieldFromImage(
           uriForOCR,
@@ -1163,7 +1163,7 @@ describe('OCR Utility Functions', () => {
         );
 
         expect(result).toEqual({
-          recipeTags: new Array<tagTableElement>(tagAlreadyPresent, ...expectedTags),
+          recipeTags: new Array<TagDraft>(tagAlreadyPresent, ...expectedTags),
         });
       });
     });

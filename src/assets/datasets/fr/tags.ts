@@ -1,6 +1,6 @@
-import { tagTableElement } from '@customTypes/DatabaseElementTypes';
+import { TagDraft } from '@customTypes/DatabaseElementTypes';
 
-export const frenchTags: tagTableElement[] = [
+export const frenchTags: TagDraft[] = [
   { name: 'Petit-déjeuner' },
   { name: 'Déjeuner' },
   { name: 'Dîner' },

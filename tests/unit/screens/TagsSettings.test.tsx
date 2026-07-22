@@ -1,7 +1,7 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import TagsSettings from '@screens/TagsSettings';
-import { isTagEqual, tagTableElement } from '@customTypes/DatabaseElementTypes';
+import { isTagEqual, TagDraft, tagTableElement } from '@customTypes/DatabaseElementTypes';
 import { mockNavigationFunctions } from '@mocks/deps/react-navigation-mock';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
@@ -50,7 +50,7 @@ function dialogIsNotOpen(queryByTestId: QueryByIdType) {
   expect(queryByTestId('TagsSettings::ItemDialog::IsVisible')).toBeNull();
 }
 
-function dialogIsOpen(item: tagTableElement, mode: DialogMode, getByTestId: GetByIdType) {
+function dialogIsOpen(item: TagDraft, mode: DialogMode, getByTestId: GetByIdType) {
   expect(getByTestId('TagsSettings::ItemDialog::IsVisible').props.children).toEqual(true);
   expect(getByTestId('TagsSettings::ItemDialog::Mode').props.children).toEqual(mode);
   expect(getByTestId('TagsSettings::ItemDialog::OnClose')).toBeTruthy();

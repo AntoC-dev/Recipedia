@@ -39,7 +39,7 @@ import pkg from '@app/package.json';
 import { productionRecipesImages, testRecipesImages } from '@utils/Constants';
 import { getDatasetType } from '@utils/DatasetLoader';
 import { fileSystemLogger } from '@utils/logger';
-import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
+import { RecipeDraft } from '@customTypes/DatabaseElementTypes';
 import { forEachChunk } from '@utils/chunk';
 
 const DIRECTORY_NAME = Constants.expoConfig?.name || pkg.name;
@@ -486,7 +486,7 @@ export async function copyDatasetImages(): Promise<void> {
  * // Recipe with image_Source: 'pasta.png' becomes 'file:///documents/Recipedia/pasta.png'
  * ```
  */
-export function transformDatasetRecipeImages(recipes: recipeTableElement[]): recipeTableElement[] {
+export function transformDatasetRecipeImages<T extends RecipeDraft>(recipes: T[]): T[] {
   return recipes.map(recipe => ({
     ...recipe,
     image_Source: APP_DIR.uri + recipe.image_Source,

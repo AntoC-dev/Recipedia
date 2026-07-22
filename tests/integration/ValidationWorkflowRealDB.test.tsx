@@ -4,8 +4,10 @@ import { useIngredients } from '@hooks/useIngredients';
 import { useTags } from '@hooks/useTags';
 import { RecipeDatabase } from '@utils/RecipeDatabase';
 import {
+  IngredientDraft,
   ingredientTableElement,
   ingredientType,
+  TagDraft,
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
 import { ConvertedImportRecipe } from '@customTypes/BulkImportTypes';
@@ -38,11 +40,11 @@ function buildRecipe(
   };
 }
 
-function buildIngredient(name: string): ingredientTableElement {
+function buildIngredient(name: string): IngredientDraft {
   return { name, unit: 'g', type: ingredientType.vegetable, season: [] };
 }
 
-function buildTag(name: string): tagTableElement {
+function buildTag(name: string): TagDraft {
   return { name };
 }
 

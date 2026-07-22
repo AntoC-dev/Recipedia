@@ -59,7 +59,12 @@ import { StyleSheet, View } from 'react-native';
 import { Button, Dialog, Portal, Text } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
 import { databaseLogger } from '@utils/logger';
-import { ingredientTableElement, tagTableElement } from '@customTypes/DatabaseElementTypes';
+import {
+  IngredientDraft,
+  ingredientTableElement,
+  TagDraft,
+  tagTableElement,
+} from '@customTypes/DatabaseElementTypes';
 import { DialogMode, ItemDialog } from './ItemDialog';
 import { DatabasePickerDialog } from './DatabasePickerDialog';
 import { ConfirmationDialog } from './ConfirmationDialog';
@@ -237,17 +242,14 @@ export function SimilarityDialog({ testId, isVisible, onClose, item }: Similarit
    * @async
    * @returns Promise<void> - Resolves when all operations complete
    */
-  const handleItemDialogConfirm = async (
-    mode: DialogMode,
-    newItem: ingredientTableElement | tagTableElement
-  ) => {
+  const handleItemDialogConfirm = async (mode: DialogMode, newItem: IngredientDraft | TagDraft) => {
     if (mode === 'add') {
       try {
         if (item.type === 'Ingredient') {
-          const createdIngredient = await addIngredient(newItem as ingredientTableElement);
+          const createdIngredient = await addIngredient(newItem as IngredientDraft);
           item.onConfirm(createdIngredient);
         } else {
-          const createdTag = await addTag(newItem as tagTableElement);
+          const createdTag = await addTag(newItem as TagDraft);
           item.onConfirm(createdTag);
         }
       } catch (error) {
@@ -390,17 +392,16 @@ export function SimilarityDialog({ testId, isVisible, onClose, item }: Similarit
                   value: {
                     name: item.newItemName,
                   },
-                  onConfirmIngredient: (mode: DialogMode, newItem: ingredientTableElement) => {
+                  onConfirmIngredient: (mode: DialogMode, newItem: IngredientDraft) => {
                     void handleItemDialogConfirm(mode, newItem);
                   },
                 }
               : {
                   type: item.type,
                   value: {
-                    id: -1,
                     name: item.newItemName,
                   },
-                  onConfirmTag: (mode: DialogMode, newItem: tagTableElement) => {
+                  onConfirmTag: (mode: DialogMode, newItem: TagDraft) => {
                     void handleItemDialogConfirm(mode, newItem);
                   },
                 }
