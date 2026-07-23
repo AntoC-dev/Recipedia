@@ -11,37 +11,30 @@ tags:
     id: "SearchScreen::SearchBar"
     label: "Action - Focus on search bar to open dropdown"
 
-# Ensure the keyboard is open
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
+# Space matches every (two-word) recipe title, so the dropdown stays unfiltered
 - inputText: " "
 
 - waitForAnimationToEnd:
-    label: "Wait for screen to finish opening"
-
-- tapOn:
-    id: "SearchScreen::SearchBarResults::Item::0"
-    label: "Action - Tap on first element to close the keyboard"
+    label: "Wait for keyboard to finish typing"
 
 - runFlow:
-    file: "../../flows/waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to close"
+    file: "../../flows/search/dismissKeyboardKeepDropdown.yaml"
+    label: "Swipe-dismiss keyboard, keep dropdown open"
 
 - scrollUntilVisible:
     element:
       text: "Sushi Rolls"
     direction: DOWN
     speed: 40
-    label: "Action - Scroll down in dropdown to bottom recipes"
-
-- waitForAnimationToEnd
+    label: "Action - Scroll down in dropdown to bottom recipes (keyboard closed)"
 
 - assertVisible:
     text: "Sushi Rolls"
     label: "Assert - Verify Sushi Rolls is visible in dropdown"
-
-- waitForAnimationToEnd:
-    label: "Wait for dropdown animation to finish"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -50,16 +43,25 @@ tags:
     speed: 40
     label: "Action - Scroll back to top of the screen"
 
-- waitForAnimationToEnd
-
 - tapOn:
     id: "SearchScreen::SearchBar::RightIcon"
-    label: "Action - Close dropdown by tapping close icon"
+    label: "Action - Tap clear icon: clears text but keeps dropdown open"
 
-- waitForAnimationToEnd:
-    label: "Wait for dropdown animation to finish"
+- tapOn:
+    id: "SearchScreen::SearchBar"
+    label: "Action - Refocus search bar to bring keyboard back for commit"
 
-- waitForAnimationToEnd
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
+- runFlow:
+    file: "../../flows/search/commitTypedSearch.yaml"
+    label: "Commit empty search to close dropdown and dismiss keyboard"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to dismiss"
 
 - scrollUntilVisible:
     element:
@@ -69,8 +71,6 @@ tags:
     timeout: 120000
     centerElement: true
     label: "Scroll to first recipe card"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::RecipeCards::1::Spaghetti Bolognese"

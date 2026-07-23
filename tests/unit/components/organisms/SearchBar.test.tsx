@@ -55,6 +55,12 @@ describe('SearchBar Component', () => {
     assertSearchBar(getByTestId, queryByTestId);
   });
 
+  test('requests a search-labelled keyboard return key', () => {
+    const { getByTestId } = renderSearchBar();
+
+    expect(getByTestId(defaultTestId + '::TextInput').props.returnKeyType).toBe('search');
+  });
+
   test('displays right icon when text is typed', () => {
     const { getByTestId, queryByTestId } = renderSearchBar();
 
@@ -266,7 +272,7 @@ describe('SearchBar Component', () => {
     });
   });
 
-  test('clears search and dismisses keyboard when clear button is pressed', () => {
+  test('clears search and dismisses keyboard while keeping search focused when clear button is pressed', () => {
     const { Keyboard } = require('react-native');
     jest.spyOn(Keyboard, 'dismiss').mockImplementation(() => {});
 
@@ -277,11 +283,12 @@ describe('SearchBar Component', () => {
     const textInput = getByTestId(defaultTestId + '::TextInput');
     expect(textInput.props.value).toBe('test search');
 
+    jest.clearAllMocks();
     fireEvent.press(getByTestId(defaultTestId + '::RightIcon'));
 
     expect(textInput.props.value).toBe('');
     expect(Keyboard.dismiss).toHaveBeenCalled();
-    expect(mockSetSearchBarClicked).toHaveBeenCalledWith(false);
+    expect(mockSetSearchBarClicked).not.toHaveBeenCalled();
     expect(mockUpdateSearchString).toHaveBeenCalledWith('');
   });
 
@@ -358,6 +365,25 @@ describe('SearchBar Component', () => {
 
       expect(textInput.props.value).toBe('');
       expect(queryByTestId(defaultTestId + '::RightIcon')).toBeNull();
+    });
+
+    test('sets text when setText() is called via ref', () => {
+      const clearRef = createRef<SearchBarHandle>();
+      const { getByTestId } = renderSearchBar({
+        ...defaultProps,
+        clearRef,
+      });
+
+      const textInput = getByTestId(defaultTestId + '::TextInput');
+      expect(textInput.props.value).toBe('');
+
+      act(() => {
+        clearRef.current?.setText('Margherita Pizza');
+      });
+
+      expect(textInput.props.value).toBe('Margherita Pizza');
+      expect(getByTestId(defaultTestId + '::RightIcon')).toBeTruthy();
+      expect(mockUpdateSearchString).not.toHaveBeenCalled();
     });
 
     test('works without clearRef provided', () => {

@@ -19,3 +19,5 @@ executionOrder:
     - "8 - Single Filter Application Flow"
     - "9 - Multiple Filters Application Flow"
     - "10 - Filters With Text Search Flow"
+    - "11 - Single Tap Select From Keyboard Flow"
+    - "12 - Search Empty State Flow"

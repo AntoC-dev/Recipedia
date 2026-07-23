@@ -1,4 +1,4 @@
-name: "1 - Search Bar Open/Close Flow"
+name: "12 - Search Empty State Flow"
 appId: "com.recipedia"
 tags:
   - search
@@ -9,13 +9,13 @@ tags:
 
 - tapOn:
     id: "SearchScreen::SearchBar"
-    label: "Action - Focus on search bar to open dropdown"
+    label: "Action - Focus on search bar"
 
 - runFlow:
     file: "../../flows/waitForKeyboard.yaml"
     label: "Wait for keyboard to appear"
 
-- inputText: "Ca"
+- inputText: "zzzzz"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard to finish typing"
@@ -24,17 +24,18 @@ tags:
     file: "../../flows/search/dismissKeyboardKeepDropdown.yaml"
     label: "Swipe-dismiss keyboard, keep dropdown open"
 
-- runFlow:
-    file: "../../asserts/search/searchbar/searchBarFilteredOnCa.yaml"
-    label: "Assert - Verify dropdown filtered on 'Ca' (keyboard closed)"
+- assertVisible:
+    id: "SearchScreen::SearchBarResults::Empty"
+    text: "No recipes found matching your filters"
+    label: "Assert - Empty state item with message is displayed when no recipe title matches (keyboard closed)"
 
 - tapOn:
     id: "SearchScreen::SearchBar::RightIcon"
-    label: "Action - Tap clear icon: clears text but keeps search focused"
+    label: "Action - Tap clear icon: clears the unmatched text but keeps search focused"
 
 - runFlow:
     file: "../../asserts/search/searchbar/searchBarNotFiltered.yaml"
-    label: "Assert - Clear icon cleared the text; dropdown shows all recipes again, still focused (keyboard closed)"
+    label: "Assert - Clearing restores all suggestions, dropdown stays open (keyboard closed)"
 
 - tapOn:
     id: "SearchScreen::SearchBar"
@@ -54,4 +55,4 @@ tags:
 
 - runFlow:
     file: "../../asserts/search/en/assertSearchScreen.yaml"
-    label: "Assert - Verify Search screen is back to normal view"
+    label: "Assert - Verify all recipe cards are visible again"

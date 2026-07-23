@@ -2,6 +2,8 @@ import { fireEvent, render } from '@testing-library/react-native';
 import { SearchBarResults, SearchBarResultsProps } from '@components/organisms/SearchBarResults';
 import React from 'react';
 
+jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
+
 describe('SearchBarResults Component', () => {
   const mockSetSearchBarClicked = jest.fn();
   const mockUpdateSearchString = jest.fn();
@@ -35,6 +37,7 @@ describe('SearchBarResults Component', () => {
     expect(flatList.props.data).toHaveLength(expectedProps.filteredTitles.length);
     expect(flatList.props.data).toEqual(expectedProps.filteredTitles);
     expect(flatList.props.scrollEnabled).toBe(false);
+    expect(flatList.props.keyboardShouldPersistTaps).toBe('handled');
     expect(flatList.props.renderItem).toBeDefined();
 
     expectedProps.filteredTitles.forEach((title, index) => {
@@ -59,6 +62,19 @@ describe('SearchBarResults Component', () => {
     const { getByTestId } = renderSearchBarResults(props);
 
     assertSearchBarResults(getByTestId, props);
+  });
+
+  test('shows an empty message when no titles match', () => {
+    const props: SearchBarResultsProps = { ...defaultProps, filteredTitles: [] };
+    const { getByTestId } = renderSearchBarResults(props);
+
+    expect(getByTestId(`${defaultTestId}::Empty::Title`).props.children).toBe('noRecipesFound');
+  });
+
+  test('hides the empty message when titles are present', () => {
+    const { queryByTestId } = renderSearchBarResults();
+
+    expect(queryByTestId(`${defaultTestId}::Empty`)).toBeNull();
   });
 
   test('handles single item correctly', () => {

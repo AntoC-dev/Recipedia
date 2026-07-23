@@ -1,4 +1,4 @@
-name: "4 - Search Direct Click Flow"
+name: "11 - Single Tap Select From Keyboard Flow"
 appId: "com.recipedia"
 tags:
   - search
@@ -15,26 +15,17 @@ tags:
     file: "../../flows/waitForKeyboard.yaml"
     label: "Wait for keyboard to appear"
 
-# Space matches every (two-word) recipe title, so the dropdown stays unfiltered
-- inputText: " "
+- inputText: "Lentil"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard to finish typing"
 
-- runFlow:
-    file: "../../flows/search/dismissKeyboardKeepDropdown.yaml"
-    label: "Swipe-dismiss keyboard, keep dropdown open"
-
-- extendedWaitUntil:
-    visible:
-      id: "SearchScreen::SearchBarResults::Item::4"
-    timeout: 3000
-    label: "Wait for element to tap to be displayed (keyboard closed)"
-
+# The point of #327: keyboardShouldPersistTaps='handled' means the top
+# suggestion is tapped and selected in one shot, keyboard still up - no
+# dropdown assertion here, no dismissal before the tap.
 - tapOn:
-    id: "SearchScreen::SearchBarResults::Item::4"
-    retryTapIfNoChange: false
-    label: "Action - Single tap directly selects Lentil Curry (item 4) from dropdown"
+    id: "SearchScreen::SearchBarResults::Item::0"
+    label: "Action - Single tap while keyboard is open directly selects Lentil Curry"
 
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"
