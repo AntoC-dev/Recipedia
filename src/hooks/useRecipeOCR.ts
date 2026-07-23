@@ -16,7 +16,12 @@ import {
   preparationStepElement,
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
-import { extractFieldFromImage, OcrModalTarget } from '@utils/OCR';
+import {
+  computeOcrFieldStatus,
+  extractFieldFromImage,
+  OcrFieldStatus,
+  OcrModalTarget,
+} from '@utils/OCR';
 import {
   addNonDuplicateByName,
   addOrMergeIngredientMatches,
@@ -51,8 +56,12 @@ type OcrIngredientList = (ingredientTableElement | FormIngredientElement)[];
 export interface UseRecipeOCRReturn {
   /** Whether OCR extraction is currently in progress */
   isProcessingOcrExtraction: boolean;
-  /** Extracts data from an image for a specific recipe field and updates recipe state */
-  fillOneField: (uri: string, field: OcrModalTarget) => Promise<void>;
+  /**
+   * Extracts data from an image for a specific recipe field, updates recipe
+   * state, and resolves with a non-blocking feedback status the caller can
+   * surface as a snackbar.
+   */
+  fillOneField: (uri: string, field: OcrModalTarget) => Promise<OcrFieldStatus>;
 }
 
 /**
@@ -243,8 +252,10 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
    *
    * @param uri - The image URI to extract data from
    * @param field - The recipe field type to extract
+   * @returns Feedback status (`empty` / `mismatch` / `success`) for the caller
+   *   to surface a snackbar.
    */
-  const fillOneField = async (uri: string, field: OcrModalTarget) => {
+  const fillOneField = async (uri: string, field: OcrModalTarget): Promise<OcrFieldStatus> => {
     ocrLogger.info('OCR extraction started', { field, uri });
     setIsProcessingOcrExtraction(true);
     try {
@@ -293,7 +304,9 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
       }
       if (newFieldData.recipeNutrition) writeNutrition(newFieldData.recipeNutrition);
 
-      ocrLogger.info('OCR extraction completed', { field });
+      const status = computeOcrFieldStatus(field, newFieldData, recipeIngredients.length);
+      ocrLogger.info('OCR extraction completed', { field, status });
+      return status;
     } catch (error) {
       ocrLogger.error('OCR extraction failed', {
         field,

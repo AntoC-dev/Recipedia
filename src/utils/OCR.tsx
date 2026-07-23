@@ -151,6 +151,75 @@ export type WarningHandler = (message: string) => void;
 export type OcrModalTarget = recipeColumnsNames | 'ingredientNames' | 'ingredientQuantities';
 
 /**
+ * Partial recipe slice returned by {@link extractFieldFromImage}, keyed by the
+ * field(s) a given extraction produced. Absent keys mean the field was not
+ * targeted or yielded nothing usable.
+ */
+export type ExtractedFieldData = Partial<{
+  recipeImage: string;
+  recipeTitle: string;
+  recipeDescription: string;
+  recipeTags: tagTableElement[];
+  recipePreparation: preparationStepElement[];
+  recipePersons: number;
+  recipeTime: number;
+  recipeIngredients: FormIngredientElement[];
+  recipeNutrition: nutritionObject;
+  ingredientNames: { name: string; unit: string }[];
+  ingredientQuantities: string[];
+}>;
+
+/**
+ * Non-blocking feedback outcome of an OCR field extraction, so the UI can
+ * surface a snackbar without inspecting the raw payload.
+ *
+ * - `success`: usable data was extracted for the field.
+ * - `empty`: the image yielded no usable data for the requested field.
+ * - `mismatch`: a quantity-only scan whose extracted count does not line up
+ *   with the ingredient rows already on the form, so quantities cannot be
+ *   paired one-to-one.
+ */
+export type OcrFieldStatus = 'empty' | 'mismatch' | 'success';
+
+function hasUsableOcrData(result: ExtractedFieldData): boolean {
+  return Object.values(result).some(value => {
+    if (value === undefined || value === null) return false;
+    if (Array.isArray(value)) return value.length > 0;
+    if (typeof value === 'string') return value.length > 0;
+    return true;
+  });
+}
+
+/**
+ * Derives a non-blocking feedback status from an OCR extraction result.
+ *
+ * `ingredientQuantities` scans are special-cased: an empty payload is `empty`,
+ * and a non-empty payload whose length differs from the ingredient rows
+ * already on the form is `mismatch` (the quantities cannot be paired
+ * one-to-one, including when no rows exist yet). Every other field is `success`
+ * when the payload carries any usable value and `empty` otherwise.
+ *
+ * @param field - The OCR target that was extracted.
+ * @param result - The payload returned by {@link extractFieldFromImage}.
+ * @param currentIngredientCount - Ingredient rows currently on the form, used
+ *   only to validate `ingredientQuantities` alignment.
+ * @returns The feedback status for the extraction.
+ */
+export function computeOcrFieldStatus(
+  field: OcrModalTarget,
+  result: ExtractedFieldData,
+  currentIngredientCount: number
+): OcrFieldStatus {
+  if (field === 'ingredientQuantities') {
+    const quantities = result.ingredientQuantities ?? [];
+    if (quantities.length === 0) return 'empty';
+    if (quantities.length !== currentIngredientCount) return 'mismatch';
+    return 'success';
+  }
+  return hasUsableOcrData(result) ? 'success' : 'empty';
+}
+
+/**
  * Recognizes and extracts text from an image based on the specified recipe field type
  *
  * Uses ML Kit text recognition to extract text from images and processes it according
@@ -1122,21 +1191,7 @@ export async function extractFieldFromImage(
     recipeIngredients: FormIngredientElement[];
   },
   onWarn: WarningHandler = msg => ocrLogger.warn('OCR extraction warning', { message: msg })
-): Promise<
-  Partial<{
-    recipeImage: string;
-    recipeTitle: string;
-    recipeDescription: string;
-    recipeTags: tagTableElement[];
-    recipePreparation: preparationStepElement[];
-    recipePersons: number;
-    recipeTime: number;
-    recipeIngredients: FormIngredientElement[];
-    recipeNutrition: nutritionObject;
-    ingredientNames: { name: string; unit: string }[];
-    ingredientQuantities: string[];
-  }>
-> {
+): Promise<ExtractedFieldData> {
   if (field === 'ingredientNames') {
     const names = await recognizeIngredientNames(uri);
     return { ingredientNames: names };
