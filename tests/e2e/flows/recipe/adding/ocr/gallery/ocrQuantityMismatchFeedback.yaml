@@ -1,0 +1,80 @@
+appId: "com.recipedia"
+---
+# Verifies the quantity-mismatch feedback snackbar, cross-platform.
+#
+# Adds 2 empty ingredient rows, then scans the quantities image (reused
+# tajineMerguez/ingredients_quantities.jpeg, which holds 5 quantities). The
+# extracted quantity count never equals 2 — iOS reads all 5, Android ML Kit
+# under-reads to ~1 — so fillOneField returns "mismatch" and the root snackbar
+# surfaces (verified on both platforms). Only 2 rows are added: the fixed bottom
+# action bar obscures the add button once the list grows, so more rows cannot be
+# added reliably.
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::AddButton::RoundButton"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to the add-ingredient button"
+
+- tapOn:
+    id: "RecipeIngredients::AddButton::RoundButton"
+    label: "Add first empty ingredient row"
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::AddButton::RoundButton"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Re-center the add-ingredient button"
+
+- tapOn:
+    id: "RecipeIngredients::AddButton::RoundButton"
+    label: "Add second empty ingredient row"
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::OpenModalQuantities::RoundButton"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Scroll to ingredient quantities OCR button"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "RecipeIngredients::OpenModalQuantities::RoundButton"
+    label: "Tap on ingredient quantities OCR button"
+
+- addMedia:
+    - "../../../../../../assets/tajineMerguez/ingredients_quantities.jpeg"
+
+- runFlow:
+    file: ../android/selectMostRecentFromModal.yaml
+    label: "Select quantities image from modal for OCR"
+    when:
+      platform: Android
+- runFlow:
+    file: ../iOS/selectMostRecentFromModal.yaml
+    label: "Select quantities image from modal for OCR"
+    when:
+      platform: iOS
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::OcrSnackbar"
+    timeout: 120000
+    label: "Wait for OCR quantity-mismatch snackbar to appear"
+
+- assertVisible:
+    text: "Scanned quantities don't match your ingredients. Please check the values."
+    label: "Assert - quantity-mismatch snackbar message is shown"
+
+- runFlow:
+    file: ../cleanAndResume.yaml
+    label: "Delete quantities image from gallery and return to Recipedia"
