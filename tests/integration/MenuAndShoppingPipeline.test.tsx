@@ -344,6 +344,51 @@ describe('Menu and Shopping Pipeline', () => {
       });
     });
 
+    test('cooking the last remaining menu item clears stale purchased state for the next shopping cycle', async () => {
+      await database.addRecipe(pastaRecipe);
+      const addedRecipe = database.get_recipes()[0]!;
+
+      const { result } = renderMenuAndShopping();
+
+      await act(async () => {
+        await result.current.menu.addRecipeToMenu(addedRecipe);
+      });
+
+      await waitFor(() => {
+        expect(result.current.shopping.shopping).toHaveLength(3);
+      });
+
+      await act(async () => {
+        await result.current.menu.togglePurchased('Pasta');
+      });
+
+      await waitFor(() => {
+        expect(
+          result.current.shopping.shopping.find(item => item.name === 'Pasta')?.purchased
+        ).toBe(true);
+      });
+
+      const menuId = result.current.menu.menu[0]!.id!;
+
+      await act(async () => {
+        await result.current.menu.toggleMenuItemCooked(menuId);
+      });
+
+      await waitFor(() => {
+        expect(result.current.shopping.shopping).toHaveLength(0);
+      });
+
+      await act(async () => {
+        await result.current.menu.toggleMenuItemCooked(menuId);
+      });
+
+      await waitFor(() => {
+        expect(
+          result.current.shopping.shopping.find(item => item.name === 'Pasta')?.purchased
+        ).toBe(false);
+      });
+    });
+
     test('only non-cooked recipes in a mixed menu contribute to shopping list', async () => {
       await database.addMultipleRecipes([pastaRecipe, saladRecipe]);
       const recipes = database.get_recipes();
