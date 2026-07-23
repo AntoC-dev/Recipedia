@@ -1,0 +1,17 @@
+name: "7 - OCR Feedback Snackbar Flow"
+appId: "com.recipedia"
+tags:
+  - ocr
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/recipe/adding/ocr/checkIfCleanIsNeeded.yaml"
+          label: "Setup - Check if clean is needed"
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../7_ocr_feedback_snackbar.yaml"
+          label: "Run 7 - OCR Feedback Snackbar Flow"
