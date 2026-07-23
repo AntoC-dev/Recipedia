@@ -12,6 +12,10 @@ import {
 
 import { setMockIngredients } from '@mocks/hooks/useIngredients-mock';
 import { setMockTags } from '@mocks/hooks/useTags-mock';
+import {
+  resetUseDeferredMountMock,
+  setMockDeferredMountReady,
+} from '@mocks/hooks/useDeferredMount-mock';
 
 jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 
@@ -37,6 +41,10 @@ jest.mock('@hooks/useTags', () => ({
   useTags: require('@mocks/hooks/useTags-mock').useTagsMock,
 }));
 
+jest.mock('@hooks/useDeferredMount', () => ({
+  useDeferredMount: require('@mocks/hooks/useDeferredMount-mock').useDeferredMountMock,
+}));
+
 describe('ItemDialog Component', () => {
   const mockIngredient: ingredientTableElement = {
     id: 1,
@@ -60,6 +68,7 @@ describe('ItemDialog Component', () => {
     jest.useFakeTimers();
     setMockTags([]);
     setMockIngredients([]);
+    resetUseDeferredMountMock();
   });
 
   afterEach(() => {
@@ -104,6 +113,37 @@ describe('ItemDialog Component', () => {
     expect(getByTestId('IngredientDialog::AddModal::Title')).toBeTruthy();
     expect(getByTestId('IngredientDialog::AddModal::CancelButton')).toBeTruthy();
     expect(getByTestId('IngredientDialog::AddModal::ConfirmButton')).toBeTruthy();
+  });
+
+  describe('deferred ingredient form', () => {
+    const props: ItemDialogProps = {
+      testId: 'IngredientDialog',
+      mode: 'add',
+      isVisible: true,
+      onClose: mockOnClose,
+      item: {
+        type: 'Ingredient',
+        value: mockIngredient,
+        onConfirmIngredient: mockOnConfirmIngredient,
+      },
+    };
+
+    test('defers the heavy fields while interactions pend, keeping the name input', () => {
+      setMockDeferredMountReady(false);
+
+      const { getByTestId, queryByTestId } = render(<ItemDialog {...props} />);
+
+      expect(getByTestId('IngredientDialog::AddModal::Name::CustomTextInput')).toBeTruthy();
+      expect(queryByTestId('IngredientDialog::AddModal::TypeAccordion::Title')).toBeNull();
+    });
+
+    test('renders the heavy fields once interactions have settled', () => {
+      setMockDeferredMountReady(true);
+
+      const { getByTestId } = render(<ItemDialog {...props} />);
+
+      expect(getByTestId('IngredientDialog::AddModal::TypeAccordion::Title')).toBeTruthy();
+    });
   });
 
   describe('ingredient dialog ', () => {
