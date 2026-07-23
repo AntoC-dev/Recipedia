@@ -11,5 +11,11 @@ appId: "com.recipedia"
     label: "Wait for gallery to load"
 
 - tapOn:
-    point: "10%,11%"
+    point: "12%,18%"
     label: "Select any photos of the gallery"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "Recents"
+    timeout: 3000
+    label: "Wait for native photo picker to dismiss after selection"
