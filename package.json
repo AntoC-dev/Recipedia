@@ -183,7 +183,7 @@
     "metro-react-native-babel-preset": "~0.77.0",
     "patch-package": "^8.0.1",
     "prettier": "^3.9.5",
-    "pyodide": "0.28.3",
+    "pyodide": "0.29.4",
     "reassure": "1.5.1",
     "semantic-release": "25.0.8",
     "typedoc": "0.28.19",
