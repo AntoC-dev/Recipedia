@@ -1,3 +1,11 @@
+## [2.46.1](https://github.com/AntoC-dev/Recipedia/compare/v2.46.0...v2.46.1) (2026-07-23)
+
+### Bug Fixes
+
+* **#305:** satisfy strict types in shopping reset tests ([4fc79d4](https://github.com/AntoC-dev/Recipedia/commit/4fc79d46f596e97c6dbdcf3c40d2d6fac8035c4b)), closes [#305](https://github.com/AntoC-dev/Recipedia/issues/305)
+* reset purchased items after final cook ([ca3b589](https://github.com/AntoC-dev/Recipedia/commit/ca3b58964d89e4910f700ccbdcc892d6dc6b5fdc))
+* reset purchased items after final cook ([#390](https://github.com/AntoC-dev/Recipedia/issues/390)) ([9877632](https://github.com/AntoC-dev/Recipedia/commit/98776322f9208d25a6752f54d5bd9b4dd58b134e))
+
 ## [2.46.0](https://github.com/AntoC-dev/Recipedia/compare/v2.45.0...v2.46.0) (2026-07-21)
 
 ### Features
