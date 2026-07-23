@@ -38,7 +38,7 @@ tags:
 - runFlow:
     file: "../../asserts/alerts/en/recipeAddedToDatabase.yaml"
     env:
-      RECIPE_NAME: "Hamburger maison"
+      RECIPE_NAME: "Hamburger maison : la meilleure recette"
     label: "Assert - Verify recipe added successfully"
 
 - runFlow:
