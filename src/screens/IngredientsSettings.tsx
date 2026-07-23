@@ -41,6 +41,7 @@ import { BottomActionButton } from '@components/atomic/BottomActionButton';
 import { DialogMode, ItemDialog } from '@components/dialogs/ItemDialog';
 import { ingredientsSettingsLogger } from '@utils/logger';
 import { useIngredients } from '@hooks/useIngredients';
+import { byName } from '@utils/sorting';
 import { useI18n } from '@utils/i18n';
 import { Icons } from '@assets/Icons';
 import { padding } from '@styles/spacing';
@@ -58,9 +59,7 @@ export function IngredientsSettings() {
   const navigation = useNavigation();
   const { t } = useI18n();
 
-  const ingredientsSortedAlphabetically = [...ingredients].sort((a, b) =>
-    a.name.localeCompare(b.name)
-  );
+  const ingredientsSortedAlphabetically = [...ingredients].sort(byName);
 
   // Dialog states
   const [isDialogOpen, setIsDialogOpen] = useState(false);
