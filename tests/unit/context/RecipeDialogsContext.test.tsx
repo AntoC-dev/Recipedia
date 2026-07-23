@@ -253,6 +253,44 @@ describe('RecipeDialogsContext', () => {
     });
   });
 
+  describe('snackbar', () => {
+    test('starts hidden with empty message', () => {
+      const wrapper = createDialogsWrapper();
+      const { result } = renderHook(() => useRecipeDialogs(), { wrapper });
+
+      expect(result.current.snackbar.visible).toBe(false);
+      expect(result.current.snackbar.message).toBe('');
+    });
+
+    test('showSnackbar sets message and makes it visible', () => {
+      const wrapper = createDialogsWrapper();
+      const { result } = renderHook(() => useRecipeDialogs(), { wrapper });
+
+      act(() => {
+        result.current.showSnackbar('No data found');
+      });
+
+      expect(result.current.snackbar.visible).toBe(true);
+      expect(result.current.snackbar.message).toBe('No data found');
+    });
+
+    test('hideSnackbar hides while keeping the message', () => {
+      const wrapper = createDialogsWrapper();
+      const { result } = renderHook(() => useRecipeDialogs(), { wrapper });
+
+      act(() => {
+        result.current.showSnackbar('No data found');
+      });
+
+      act(() => {
+        result.current.hideSnackbar();
+      });
+
+      expect(result.current.snackbar.visible).toBe(false);
+      expect(result.current.snackbar.message).toBe('No data found');
+    });
+  });
+
   describe('error handling', () => {
     test('throws error when useRecipeDialogs is used outside provider', () => {
       const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});

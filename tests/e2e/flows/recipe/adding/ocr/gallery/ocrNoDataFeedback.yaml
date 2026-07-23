@@ -1,0 +1,36 @@
+appId: "com.recipedia"
+---
+# Scans a text-free dish photo (reused tajineMerguez/image.jpg) into the title
+# target. OCR finds no text, so fillOneField returns "empty" and the root
+# snackbar surfaces the no-data message.
+- tapOn:
+    id: "RecipeTitle::OpenModal::RoundButton"
+    label: "Tap on OCR button of recipe title"
+
+- addMedia:
+    - "../../../../../../assets/tajineMerguez/image.jpg"
+
+- runFlow:
+    file: "../android/selectMostRecentFromModal.yaml"
+    label: "Select text-free photo from modal for OCR"
+    when:
+      platform: Android
+- runFlow:
+    file: "../iOS/selectMostRecentFromModal.yaml"
+    label: "Select text-free photo from modal for OCR"
+    when:
+      platform: iOS
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::OcrSnackbar"
+    timeout: 120000
+    label: "Wait for OCR no-data snackbar to appear"
+
+- assertVisible:
+    text: "No recipe data found in the image."
+    label: "Assert - no-data snackbar message is shown"
+
+- runFlow:
+    file: "../cleanAndResume.yaml"
+    label: "Delete photo from gallery and return to Recipedia"

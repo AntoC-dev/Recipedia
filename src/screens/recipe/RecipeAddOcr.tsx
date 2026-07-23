@@ -24,6 +24,7 @@ import { StackScreenParamList } from '@customTypes/ScreenTypes';
 import type { AddFromPicProp } from '@customTypes/RecipeNavigationTypes';
 import { useRecipeOCR } from '@hooks/useRecipeOCR';
 import { useRandomTagSuggestions } from '@hooks/useRandomTagSuggestions';
+import { useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { useI18n } from '@utils/i18n';
 import { LoadingOverlay } from '@components/dialogs/LoadingOverlay';
 import { FeatureHookSlotProps, RecipeFormScreen } from '@screens/recipe/RecipeFormScreen';
@@ -39,6 +40,7 @@ export type RecipeAddOcrProps = NativeStackScreenProps<StackScreenParamList, 'Re
 function OcrFeatureSlot({ setOnSelectOcrField }: FeatureHookSlotProps) {
   const { t } = useI18n();
   const ocr = useRecipeOCR();
+  const { showSnackbar } = useRecipeDialogs();
 
   // setOnSelectOcrField is a stable ref-backed setter. Listing it in deps
   // does not cause re-runs; the effect re-runs only when the OCR hook
@@ -46,9 +48,15 @@ function OcrFeatureSlot({ setOnSelectOcrField }: FeatureHookSlotProps) {
   // the latest `fillOneField` closure is registered.
   useEffect(() => {
     setOnSelectOcrField((croppedUri, target) => {
-      void ocr.fillOneField(croppedUri, target);
+      void ocr
+        .fillOneField(croppedUri, target)
+        .then(status => {
+          if (status === 'empty') showSnackbar(t('ocrFeedback.noData'));
+          else if (status === 'mismatch') showSnackbar(t('ocrFeedback.quantityMismatch'));
+        })
+        .catch(() => undefined);
     });
-  }, [setOnSelectOcrField, ocr]);
+  }, [setOnSelectOcrField, ocr, showSnackbar, t]);
 
   return (
     <LoadingOverlay

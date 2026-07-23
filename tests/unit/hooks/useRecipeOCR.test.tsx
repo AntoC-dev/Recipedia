@@ -69,6 +69,7 @@ function FormDrivenApplyPatchRegistrar({ children }: { children: React.ReactNode
 const mockExtractFieldFromImage = jest.fn();
 
 jest.mock('@utils/OCR', () => ({
+  ...jest.requireActual('@utils/OCR'),
   extractFieldFromImage: (...args: unknown[]) => mockExtractFieldFromImage(...args),
 }));
 
@@ -1110,5 +1111,95 @@ describe('useRecipeOCR', () => {
         expect(result.current.form.form.getValues('recipeIngredients')![0]!.quantity).toBe('');
       }
     );
+  });
+
+  describe('fillOneField feedback status', () => {
+    test('returns success when a field is populated', async () => {
+      mockExtractFieldFromImage.mockResolvedValue({ recipeTitle: 'Extracted Title' });
+
+      const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
+      const { result } = renderHook(() => useTestRecipeOCR(), { wrapper });
+
+      let status;
+      await act(async () => {
+        status = await result.current.fillOneField('image.jpg', recipeColumnsNames.title);
+      });
+
+      expect(status).toBe('success');
+    });
+
+    test('returns empty when extraction yields nothing', async () => {
+      mockExtractFieldFromImage.mockResolvedValue({});
+
+      const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
+      const { result } = renderHook(() => useTestRecipeOCR(), { wrapper });
+
+      let status;
+      await act(async () => {
+        status = await result.current.fillOneField('image.jpg', recipeColumnsNames.title);
+      });
+
+      expect(status).toBe('empty');
+    });
+
+    test('returns empty when no quantities extracted', async () => {
+      mockExtractFieldFromImage.mockResolvedValue({ ingredientQuantities: [] });
+
+      const wrapper = createOcrWrapper(createMockRecipeProp('edit', recipeForOcr));
+      const { result } = renderHook(() => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }), {
+        wrapper,
+      });
+
+      await waitFor(() => {
+        expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
+      });
+
+      let status;
+      await act(async () => {
+        status = await result.current.ocr.fillOneField('image.jpg', 'ingredientQuantities');
+      });
+
+      expect(status).toBe('empty');
+    });
+
+    test('returns mismatch when quantity count differs from ingredient rows', async () => {
+      mockExtractFieldFromImage.mockResolvedValue({ ingredientQuantities: ['100', '200'] });
+
+      const wrapper = createOcrWrapper(createMockRecipeProp('edit', recipeForOcr));
+      const { result } = renderHook(() => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }), {
+        wrapper,
+      });
+
+      await waitFor(() => {
+        expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
+      });
+
+      let status;
+      await act(async () => {
+        status = await result.current.ocr.fillOneField('image.jpg', 'ingredientQuantities');
+      });
+
+      expect(status).toBe('mismatch');
+    });
+
+    test('returns success when quantity count matches ingredient rows', async () => {
+      mockExtractFieldFromImage.mockResolvedValue({ ingredientQuantities: ['350'] });
+
+      const wrapper = createOcrWrapper(createMockRecipeProp('edit', recipeForOcr));
+      const { result } = renderHook(() => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }), {
+        wrapper,
+      });
+
+      await waitFor(() => {
+        expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
+      });
+
+      let status;
+      await act(async () => {
+        status = await result.current.ocr.fillOneField('image.jpg', 'ingredientQuantities');
+      });
+
+      expect(status).toBe('success');
+    });
   });
 });

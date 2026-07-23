@@ -15,3 +15,4 @@ executionOrder:
     - "4 - OCR Quitoque V2 French Flow"
     - "5 - OCR Inline Field Errors Flow"
     - "6 - OCR Image Target Flow"
+    - "7 - OCR Feedback Snackbar Flow"

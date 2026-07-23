@@ -1,6 +1,7 @@
 import { fireEvent, waitFor } from '@testing-library/react-native';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { AddFromPicProp } from '@customTypes/RecipeNavigationTypes';
+import { computeOcrFieldStatus } from '@utils/OCR';
 
 import {
   checkAppbarButtons,
@@ -147,6 +148,61 @@ describe('RecipeAddOcr', () => {
       fireEvent.press(getByTestId('ModalImageSelect::Select'));
 
       await waitFor(() => expect(queryByTestId('ModalImageSelect')).toBeNull());
+    });
+  });
+
+  describe('OCR feedback snackbar', () => {
+    async function selectImageForTitleTarget(getByTestId: (id: string) => unknown) {
+      fireEvent.press(getByTestId('RecipeTitle::OpenModal') as never);
+      await waitFor(() => expect(getByTestId('ModalImageSelect')).toBeTruthy());
+      fireEvent.press(getByTestId('ModalImageSelect::Select') as never);
+    }
+
+    test('shows the no-data snackbar when extraction yields empty', async () => {
+      const { getByTestId } = await renderRoute(mockRouteAddOCR);
+      (computeOcrFieldStatus as jest.Mock).mockReturnValueOnce('empty');
+
+      await selectImageForTitleTarget(getByTestId);
+
+      await waitFor(() => {
+        expect(getByTestId('Recipe::OcrSnackbar::Text').props.children).toBe('ocrFeedback.noData');
+      });
+    });
+
+    test('shows the quantity-mismatch snackbar when counts differ', async () => {
+      const { getByTestId } = await renderRoute(mockRouteAddOCR);
+      (computeOcrFieldStatus as jest.Mock).mockReturnValueOnce('mismatch');
+
+      await selectImageForTitleTarget(getByTestId);
+
+      await waitFor(() => {
+        expect(getByTestId('Recipe::OcrSnackbar::Text').props.children).toBe(
+          'ocrFeedback.quantityMismatch'
+        );
+      });
+    });
+
+    test('shows no snackbar when extraction succeeds', async () => {
+      const { getByTestId, queryByTestId } = await renderRoute(mockRouteAddOCR);
+      (computeOcrFieldStatus as jest.Mock).mockReturnValueOnce('success');
+
+      await selectImageForTitleTarget(getByTestId);
+
+      await waitFor(() => expect(queryByTestId('ModalImageSelect')).toBeNull());
+      expect(queryByTestId('Recipe::OcrSnackbar')).toBeNull();
+    });
+
+    test('dismissing the snackbar hides it', async () => {
+      const { getByTestId, queryByTestId } = await renderRoute(mockRouteAddOCR);
+      (computeOcrFieldStatus as jest.Mock).mockReturnValueOnce('empty');
+
+      await selectImageForTitleTarget(getByTestId);
+
+      await waitFor(() => expect(getByTestId('Recipe::OcrSnackbar')).toBeTruthy());
+
+      fireEvent.press(getByTestId('Recipe::OcrSnackbar::Dismiss'));
+
+      await waitFor(() => expect(queryByTestId('Recipe::OcrSnackbar')).toBeNull());
     });
   });
 });
