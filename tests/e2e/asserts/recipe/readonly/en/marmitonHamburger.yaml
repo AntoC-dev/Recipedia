@@ -6,7 +6,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeTitle::Text"
-    text: "Hamburger maison"
+    text: "Hamburger maison : la meilleure recette"
     label: "Title text is displayed"
 
 - waitForAnimationToEnd
@@ -40,23 +40,28 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeTags::0::Chip"
-    text: "hamburger"
-    label: "First tag 'hamburger' is rendered"
+    text: "hamburger maison"
+    label: "First tag 'hamburger maison' is rendered"
 
 - assertVisible:
     id: "RecipeTags::1::Chip"
-    text: "très facile"
-    label: "Second tag 'très facile' is rendered"
+    text: "hamburger"
+    label: "Second tag 'hamburger' is rendered"
 
 - assertVisible:
     id: "RecipeTags::2::Chip"
-    text: "bon marché"
-    label: "Third tag 'bon marché' is rendered"
+    text: "Très facile"
+    label: "Third tag 'très facile' is rendered"
 
 - assertVisible:
     id: "RecipeTags::3::Chip"
+    text: "Bon marché"
+    label: "Fourth tag 'bon marché' is rendered"
+
+- assertVisible:
+    id: "RecipeTags::4::Chip"
     text: "rapide"
-    label: "Fourth tag 'rapide' is rendered"
+    label: "Fifth tag 'rapide' is rendered"
 
 - waitForAnimationToEnd
 
