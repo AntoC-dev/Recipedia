@@ -1,3 +1,9 @@
+## [2.46.2](https://github.com/AntoC-dev/Recipedia/compare/v2.46.1...v2.46.2) (2026-07-24)
+
+### Bug Fixes
+
+* **e2e:** stabilize iOS OCR gallery photo selection ([6b73484](https://github.com/AntoC-dev/Recipedia/commit/6b73484473cd9095da4a5a25d924e7fb1b91cff5))
+
 ## [2.46.1](https://github.com/AntoC-dev/Recipedia/compare/v2.46.0...v2.46.1) (2026-07-23)
 
 ### Bug Fixes
