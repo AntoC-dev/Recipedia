@@ -149,6 +149,26 @@ Hooks that subscribe to `RecipeDatabase` slices:
 | `useShopping` | `menu`, `purchased` | Derived shopping list (read-only, no mutations) |
 | `useImportHistory` | — | Import history and dismissed-recipe records |
 
+### Idle-time scheduling
+
+`runWhenIdle` / `cancelIdle` (`src/utils/idle.ts`) are the app's primitive for
+non-critical work: they enqueue a callback at React's `scheduler` **idle
+priority**, so it runs only once renders, gestures and transitions have drained
+and yields back if more urgent work arrives. This is deliberately not the DOM
+`requestIdleCallback` — React Native (Hermes / JSC) does not provide it, so a
+wrapper around it would silently degrade to `setTimeout` on device;
+`scheduler` ships with React and behaves uniformly across engines.
+
+`useTags` and `useIngredients` warm their fuzzy search index off the critical
+path with it: `useWarmSearchIndex` (`src/hooks/useWarmSearchIndex.ts`) schedules
+the `buildItemIndex` pass via `runWhenIdle` whenever the corpus reference
+changes, so the `makeItemIndexCache` `WeakMap` is already populated by the time
+the user first searches. The idle primitive is the shared foundation the other
+tracked jank fixes build on — deferred Home recommendation regeneration (#443)
+and Search input pipeline work (#438) consume the same `runWhenIdle`, while
+per-keystroke render responsiveness on those screens is handled separately with
+React 19 `useDeferredValue`.
+
 ---
 
 ## 5. Navigation structure

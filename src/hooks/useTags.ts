@@ -18,6 +18,7 @@ import {
   searchItems,
   searchItemsDetailed,
 } from '@utils/FuzzyIndex';
+import { useWarmSearchIndex } from '@hooks/useWarmSearchIndex';
 
 const getTagsIndex = makeItemIndexCache<tagTableElement>({
   fuzzy: ITEM_FUZZY,
@@ -38,6 +39,8 @@ export function useTags() {
     cb => db.subscribe('tags', cb),
     () => db.get_tags()
   );
+
+  useWarmSearchIndex(getTagsIndex, tags);
 
   const addTag = async (tag: TagDraft): Promise<tagTableElement> => {
     return db.addTag(tag);
