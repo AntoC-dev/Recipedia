@@ -3,9 +3,9 @@
  *
  * Provides a single async function that copies dataset images and inserts
  * the full ingredient, tag and recipe dataset into the RecipeDatabase singleton.
- * Designed to be called once on first launch, inside
- * `InteractionManager.runAfterInteractions`, so the UI renders before the
- * heavy data load begins.
+ * Designed to be called once on first launch, deferred until after the Welcome
+ * screen has painted (via a post-mount timer in `WelcomeScreen`), so the UI
+ * renders before the heavy data load begins.
  *
  * Each `addMultiple*` call triggers `notify()` on the corresponding slice of
  * the RecipeDatabase singleton, so `useSyncExternalStore` hooks automatically
