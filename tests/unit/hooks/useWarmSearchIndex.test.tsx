@@ -1,37 +1,18 @@
 import { act, renderHook } from '@testing-library/react-native';
 import { useWarmSearchIndex } from '@hooks/useWarmSearchIndex';
+import { cancelIdle, flushIdle, runWhenIdle } from '@mocks/utils/idle-mock';
 
-const idleGlobal = globalThis as unknown as {
-  requestIdleCallback?: unknown;
-  cancelIdleCallback?: unknown;
-};
+jest.mock('@utils/idle', () => require('@mocks/utils/idle-mock'));
 
 describe('useWarmSearchIndex', () => {
-  const originalRequest = idleGlobal.requestIdleCallback;
-  const originalCancel = idleGlobal.cancelIdleCallback;
-
-  beforeEach(() => {
-    jest.useFakeTimers();
-    idleGlobal.requestIdleCallback = undefined;
-    idleGlobal.cancelIdleCallback = undefined;
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
-    idleGlobal.requestIdleCallback = originalRequest;
-    idleGlobal.cancelIdleCallback = originalCancel;
-  });
-
-  test('builds the index during idle time for a non-empty corpus', () => {
+  test('schedules an idle build for a non-empty corpus', () => {
     const build = jest.fn();
     const corpus = [{ name: 'Italian' }];
 
     renderHook(() => useWarmSearchIndex(build, corpus));
     expect(build).not.toHaveBeenCalled();
 
-    act(() => {
-      jest.runAllTimers();
-    });
+    act(() => flushIdle());
 
     expect(build).toHaveBeenCalledWith(corpus);
   });
@@ -40,11 +21,9 @@ describe('useWarmSearchIndex', () => {
     const build = jest.fn();
 
     renderHook(() => useWarmSearchIndex(build, []));
+    act(() => flushIdle());
 
-    act(() => {
-      jest.runAllTimers();
-    });
-
+    expect(runWhenIdle).not.toHaveBeenCalled();
     expect(build).not.toHaveBeenCalled();
   });
 
@@ -59,11 +38,9 @@ describe('useWarmSearchIndex', () => {
     );
 
     rerender({ corpus: second });
+    act(() => flushIdle());
 
-    act(() => {
-      jest.runAllTimers();
-    });
-
+    expect(cancelIdle).toHaveBeenCalledTimes(1);
     expect(build).toHaveBeenCalledTimes(1);
     expect(build).toHaveBeenCalledWith(second);
   });
@@ -73,11 +50,57 @@ describe('useWarmSearchIndex', () => {
 
     const { unmount } = renderHook(() => useWarmSearchIndex(build, [{ name: 'Italian' }]));
     unmount();
+    act(() => flushIdle());
 
-    act(() => {
-      jest.runAllTimers();
-    });
-
+    expect(cancelIdle).toHaveBeenCalled();
     expect(build).not.toHaveBeenCalled();
+  });
+
+  test('reschedules the warm with the new builder when the build function changes', () => {
+    const firstBuild = jest.fn();
+    const secondBuild = jest.fn();
+    const corpus = [{ name: 'Italian' }];
+
+    const { rerender } = renderHook(
+      ({ build }: { build: (corpus: { name: string }[]) => void }) =>
+        useWarmSearchIndex(build, corpus),
+      { initialProps: { build: firstBuild } }
+    );
+
+    rerender({ build: secondBuild });
+    act(() => flushIdle());
+
+    expect(cancelIdle).toHaveBeenCalledTimes(1);
+    expect(firstBuild).not.toHaveBeenCalled();
+    expect(secondBuild).toHaveBeenCalledWith(corpus);
+  });
+
+  test('cancels the pending warm and schedules nothing when the corpus becomes empty', () => {
+    const build = jest.fn();
+
+    const { rerender } = renderHook(
+      ({ corpus }: { corpus: { name: string }[] }) => useWarmSearchIndex(build, corpus),
+      { initialProps: { corpus: [{ name: 'Italian' }] as { name: string }[] } }
+    );
+
+    rerender({ corpus: [] });
+    act(() => flushIdle());
+
+    expect(runWhenIdle).toHaveBeenCalledTimes(1);
+    expect(cancelIdle).toHaveBeenCalledTimes(1);
+    expect(build).not.toHaveBeenCalled();
+  });
+
+  test('does not reschedule while the corpus reference is unchanged across re-renders', () => {
+    const build = jest.fn();
+    const corpus = [{ name: 'Italian' }];
+
+    const { rerender } = renderHook(() => useWarmSearchIndex(build, corpus));
+    rerender({});
+    act(() => flushIdle());
+
+    expect(runWhenIdle).toHaveBeenCalledTimes(1);
+    expect(cancelIdle).not.toHaveBeenCalled();
+    expect(build).toHaveBeenCalledTimes(1);
   });
 });
