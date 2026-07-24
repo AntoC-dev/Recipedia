@@ -27,7 +27,7 @@ import { cancelIdle, runWhenIdle } from '@utils/idle';
  * @param build - Corpus-keyed index builder (e.g. a `makeItemIndexCache` getter)
  * @param corpus - Current corpus array; a new reference triggers a fresh warm
  */
-export function useWarmSearchIndex<T>(build: (corpus: T[]) => unknown, corpus: T[]): void {
+export function useWarmSearchIndex<T>(build: (corpus: T[]) => void, corpus: T[]): void {
   useEffect(() => {
     if (corpus.length === 0) {
       return;

@@ -23,6 +23,7 @@ import {
   searchItemsDetailed,
 } from '@utils/FuzzyIndex';
 import { cleanIngredientName } from '@utils/NutritionUtils';
+import { useWarmSearchIndex } from '@hooks/useWarmSearchIndex';
 
 const getIngredientsIndex = makeItemIndexCache<ingredientTableElement>({
   fuzzy: ITEM_FUZZY,
@@ -47,6 +48,8 @@ export function useIngredients() {
     cb => db.subscribe('ingredients', cb),
     () => db.get_ingredients()
   );
+
+  useWarmSearchIndex(getIngredientsIndex, ingredients);
 
   const addIngredient = async (ingredient: IngredientDraft): Promise<ingredientTableElement> => {
     return db.addIngredient(ingredient);
