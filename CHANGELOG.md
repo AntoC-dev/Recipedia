@@ -1,3 +1,14 @@
+## [2.48.0](https://github.com/AntoC-dev/Recipedia/compare/v2.47.1...v2.48.0) (2026-07-25)
+
+### Features
+
+* **search:** keep keyboard open on suggestion tap ([0aa5af5](https://github.com/AntoC-dev/Recipedia/commit/0aa5af59bfcd435ce02abc88d690906b4a16f8fb))
+* **search:** keep keyboard open on suggestion tap ([#473](https://github.com/AntoC-dev/Recipedia/issues/473)) ([aa7a970](https://github.com/AntoC-dev/Recipedia/commit/aa7a9705b6d40fba404b0fd14f53bc7082b753a8))
+
+### Bug Fixes
+
+* **search:** dismiss keyboard on clear icon; update e2e flows for tap-persist ([5e3a4a7](https://github.com/AntoC-dev/Recipedia/commit/5e3a4a7382dc627115cb7d0fe7f0de2ae251812e))
+
 ## [2.47.1](https://github.com/AntoC-dev/Recipedia/compare/v2.47.0...v2.47.1) (2026-07-25)
 
 ### Performance Improvements
