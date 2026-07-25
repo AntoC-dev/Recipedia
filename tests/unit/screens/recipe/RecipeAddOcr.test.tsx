@@ -15,6 +15,7 @@ import {
   checkTime,
   checkTitle,
   defaultUri,
+  mockNavigation,
   renderRoute,
   setupDb,
   teardownDb,
@@ -203,6 +204,72 @@ describe('RecipeAddOcr', () => {
       fireEvent.press(getByTestId('Recipe::OcrSnackbar::Dismiss'));
 
       await waitFor(() => expect(queryByTestId('Recipe::OcrSnackbar')).toBeNull());
+    });
+  });
+
+  test('non-empty route imgUri seeds the shared image gallery', async () => {
+    const routeWithGalleryImage: AddFromPicProp = {
+      mode: 'addFromPic',
+      imgUri: '/pre-existing/gallery.jpg',
+    };
+    const { getByTestId } = await renderRoute(routeWithGalleryImage);
+
+    fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+
+    await waitFor(() => {
+      expect(getByTestId('ModalImageSelect::Images').props.children).toBe(
+        JSON.stringify(['/pre-existing/gallery.jpg'])
+      );
+    });
+  });
+
+  describe('navigation callbacks', () => {
+    test('pressing the back button navigates back', async () => {
+      const { getByTestId } = await renderRoute(mockRouteAddOCR);
+
+      fireEvent.press(getByTestId('Recipe::AppBar::BackButton'));
+
+      expect(mockNavigation.goBack).toHaveBeenCalled();
+    });
+
+    test('selecting an image for a non-image target runs OCR extraction and, on success, confirms addAnyway then navigates back', async () => {
+      const OCR = require('@utils/OCR');
+      (OCR.extractFieldFromImage as jest.Mock).mockResolvedValueOnce({
+        recipeImage: '/path/to/cropped/img',
+        recipeTitle: 'Wholly Unique OCR Save Flow Recipe',
+        recipePersons: 4,
+        recipeTime: 30,
+        recipePreparation: [{ title: 'Step 1', description: 'Cook pasta until al dente' }],
+        recipeIngredients: [{ name: 'Spaghetti', quantity: '100', unit: 'g' }],
+      });
+
+      const { getByTestId } = await renderRoute(mockRouteAddOCR);
+
+      fireEvent.press(getByTestId('RecipeTitle::OpenModal'));
+      await waitFor(() => expect(getByTestId('ModalImageSelect')).toBeTruthy());
+      fireEvent.press(getByTestId('ModalImageSelect::Select'));
+
+      await waitFor(() => {
+        expect(OCR.extractFieldFromImage).toHaveBeenCalled();
+      });
+      await waitFor(() => {
+        expect(getByTestId('RecipeTitle::TextEditable').props.children).toBe(
+          'Wholly Unique OCR Save Flow Recipe'
+        );
+      });
+
+      fireEvent.press(getByTestId('Recipe::BottomActionButton'));
+
+      await waitFor(() => {
+        expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
+      });
+      expect(getByTestId('Recipe::Alert::Title').props.children).toBe('addAnyway');
+
+      fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
+
+      await waitFor(() => {
+        expect(mockNavigation.goBack).toHaveBeenCalled();
+      });
     });
   });
 });

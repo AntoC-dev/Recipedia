@@ -6,7 +6,7 @@ import { AddFromScrapeProp } from '@customTypes/RecipeNavigationTypes';
 import * as FileGestion from '@utils/FileGestion';
 import { RecipeFormScreen } from '@screens/recipe/RecipeFormScreen';
 
-import { renderRoute, setupDb, teardownDb } from './recipeTestHelpers';
+import { mockNavigation, renderRoute, setupDb, teardownDb } from './recipeTestHelpers';
 
 jest.mock('@utils/ImagePicker', () => require('@mocks/utils/ImagePicker-mock').imagePickerMock());
 jest.mock('@utils/OCR', () => require('@mocks/utils/OCR-mock').ocrMock());
@@ -107,6 +107,38 @@ describe('RecipeAddScrape', () => {
       );
 
       addRecipeSpy.mockRestore();
+    });
+
+    test('a successful add flow confirms addAnyway then navigates back', async () => {
+      const scrapedRoute: AddFromScrapeProp = {
+        mode: 'addFromScrape',
+        sourceUrl: 'https://example.com/navigate-back',
+        scrapedData: {
+          image_Source: 'navigate-back-test.jpg',
+          title: 'Wholly Unique Scrape Save Flow Recipe',
+          description: 'A test recipe',
+          persons: 4,
+          time: 30,
+          ingredients: [{ ...testIngredients[0], quantity: '100' }],
+          preparation: [{ title: 'Step 1', description: 'Test step' }],
+          tags: [],
+        },
+      };
+
+      const { getByTestId } = await renderRoute(scrapedRoute);
+
+      fireEvent.press(getByTestId('Recipe::BottomActionButton'));
+
+      await waitFor(() => {
+        expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
+      });
+      expect(getByTestId('Recipe::Alert::Title').props.children).toBe('addAnyway');
+
+      fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
+
+      await waitFor(() => {
+        expect(mockNavigation.goBack).toHaveBeenCalled();
+      });
     });
 
     test('forwards the entered serving count as scaledFromServings to onSaveSuccess', async () => {
@@ -222,6 +254,31 @@ describe('RecipeAddScrape', () => {
       expect(getByTestId('Recipe::Alert::Content').props.children).toContain('add write failed');
 
       addRecipeSpy.mockRestore();
+    });
+  });
+
+  describe('navigation callbacks', () => {
+    test('pressing the back button navigates back', async () => {
+      const scrapedRoute: AddFromScrapeProp = {
+        mode: 'addFromScrape',
+        sourceUrl: 'https://example.com/back-button',
+        scrapedData: {
+          image_Source: 'back-button-test.jpg',
+          title: 'Unique Back Button Scrape Recipe',
+          description: 'A test recipe',
+          persons: 4,
+          time: 30,
+          ingredients: [{ ...testIngredients[0], quantity: '100' }],
+          preparation: [{ title: 'Step 1', description: 'Test step' }],
+          tags: [],
+        },
+      };
+
+      const { getByTestId } = await renderRoute(scrapedRoute);
+
+      fireEvent.press(getByTestId('Recipe::AppBar::BackButton'));
+
+      expect(mockNavigation.goBack).toHaveBeenCalled();
     });
   });
 });

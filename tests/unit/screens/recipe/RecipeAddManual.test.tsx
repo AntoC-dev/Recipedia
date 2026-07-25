@@ -16,6 +16,7 @@ import {
   checkTags,
   checkTime,
   checkTitle,
+  mockNavigation,
   renderRoute,
   setupDb,
   teardownDb,
@@ -197,6 +198,65 @@ describe('RecipeAddManual', () => {
       checkPersons(mockRouteAddManually, getByTestId, queryByTestId, newPersons);
       checkTime(mockRouteAddManually, getByTestId, queryByTestId, newTime);
       checkPreparation(mockRouteAddManually, getByTestId, queryByTestId);
+    });
+  });
+
+  describe('navigation callbacks', () => {
+    test('pressing the back button navigates back', async () => {
+      const { getByTestId } = await renderRoute(mockRouteAddManually);
+
+      fireEvent.press(getByTestId('Recipe::AppBar::BackButton'));
+
+      expect(mockNavigation.goBack).toHaveBeenCalled();
+    });
+
+    test('a successful save confirms addAnyway then navigates back', async () => {
+      const { getByTestId } = await renderRoute(mockRouteAddManually);
+
+      fireEvent.press(
+        getByTestId('RecipeTitle::SetTextToEdit'),
+        'Wholly Unique Manual Save Flow Recipe'
+      );
+      fireEvent.press(getByTestId('RecipePersons::SetTextToEdit'), '4');
+      fireEvent.press(getByTestId('RecipeTime::SetTextToEdit'), '30');
+
+      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+      await waitFor(() => expect(getByTestId('ModalImageSelect')).toBeTruthy());
+      fireEvent.press(getByTestId('ModalImageSelect::Select'));
+      await waitFor(() => {
+        expect(getByTestId('RecipeImage::ImgUri').props.children).toBe('/path/to/cropped/img');
+      });
+
+      fireEvent.press(getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction'));
+      await waitFor(() => expect(getByTestId('RecipeIngredients::0::Row')).toBeTruthy());
+      fireEvent.press(getByTestId('RecipeIngredients::0::OnIngredientChange'), '100@@g--Spaghetti');
+      await waitFor(() => {
+        expect(getByTestId('RecipeIngredients::0::NameInput::Value').props.children).toBe(
+          'Spaghetti'
+        );
+      });
+
+      fireEvent.press(getByTestId('RecipePreparation::AddButton::RoundButton::OnPressFunction'));
+      await waitFor(() =>
+        expect(getByTestId('RecipePreparation::EditableStep::0::Step')).toBeTruthy()
+      );
+      fireEvent.changeText(
+        getByTestId('RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput'),
+        'Cook pasta until al dente'
+      );
+
+      fireEvent.press(getByTestId('Recipe::BottomActionButton'));
+
+      await waitFor(() => {
+        expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
+      });
+      expect(getByTestId('Recipe::Alert::Title').props.children).toBe('addAnyway');
+
+      fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
+
+      await waitFor(() => {
+        expect(mockNavigation.goBack).toHaveBeenCalled();
+      });
     });
   });
 
