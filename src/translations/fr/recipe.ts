@@ -54,6 +54,12 @@ export default {
 
   extractingRecipeData: 'Extraction des données de la recette...',
 
+  ocrFeedback: {
+    noData: 'Aucune donnée de recette trouvée dans l’image.',
+    quantityMismatch:
+      'Les quantités scannées ne correspondent pas à vos ingrédients. Vérifiez les valeurs.',
+  },
+
   editRecipe: 'Modifier la recette',
   deleteRecipe: 'Supprimer la recette',
   recommendation: 'Recommandation',

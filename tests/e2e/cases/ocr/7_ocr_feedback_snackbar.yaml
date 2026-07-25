@@ -1,0 +1,26 @@
+name: "7 - OCR Feedback Snackbar Flow"
+appId: "com.recipedia"
+tags:
+  - ocr
+---
+# Verifies the non-blocking OCR feedback snackbar, cross-platform:
+# - no-data: scanning a text-free photo into the title yields no OCR text, so
+#   fillOneField returns "empty" and the snackbar shows the no-data message.
+# - mismatch: scanning the quantities image against more rows than it can fill
+#   yields a quantity count that never matches the rows, so fillOneField returns
+#   "mismatch" and the snackbar shows the mismatch message.
+- evalScript: ${output.modalImageCounter = 0}
+
+- runFlow:
+    file: "../../flows/recipe/adding/ocr/gallery/ocrImage.yaml"
+    env:
+      RECIPE_NAME: quitoqueV1
+    label: "Setup - Enter OCR add screen with an initial image"
+
+- runFlow:
+    file: "../../flows/recipe/adding/ocr/gallery/ocrNoDataFeedback.yaml"
+    label: "Action - Scan text-free photo into title, expect no-data snackbar"
+
+- runFlow:
+    file: "../../flows/recipe/adding/ocr/gallery/ocrQuantityMismatchFeedback.yaml"
+    label: "Action - Scan quantities against extra rows, expect mismatch snackbar"
