@@ -1,3 +1,10 @@
+## [2.47.0](https://github.com/AntoC-dev/Recipedia/compare/v2.46.2...v2.47.0) (2026-07-25)
+
+### Features
+
+* **recipe:** non-blocking OCR feedback via global snackbar ([#316](https://github.com/AntoC-dev/Recipedia/issues/316)) ([3a09dbc](https://github.com/AntoC-dev/Recipedia/commit/3a09dbc9ae78ae7d8f36faf3727af92d627fa7d3))
+* **recipe:** non-blocking OCR feedback via global snackbar ([#316](https://github.com/AntoC-dev/Recipedia/issues/316)) ([#476](https://github.com/AntoC-dev/Recipedia/issues/476)) ([85c353e](https://github.com/AntoC-dev/Recipedia/commit/85c353e3afc026c5461b4632f4ae69fd3bd4f7e2))
+
 ## [2.46.2](https://github.com/AntoC-dev/Recipedia/compare/v2.46.1...v2.46.2) (2026-07-24)
 
 ### Bug Fixes
