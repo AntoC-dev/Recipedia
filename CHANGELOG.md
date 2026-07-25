@@ -1,3 +1,11 @@
+## [2.47.1](https://github.com/AntoC-dev/Recipedia/compare/v2.47.0...v2.47.1) (2026-07-25)
+
+### Performance Improvements
+
+* **#315:** add scheduler-backed idle scheduling primitive ([33df376](https://github.com/AntoC-dev/Recipedia/commit/33df3768fce00a1e0bb7cfdbf5a9a374fb83f45d)), closes [#315](https://github.com/AntoC-dev/Recipedia/issues/315)
+* **#315:** idle scheduling primitive + warm tag/ingredient search index ([#478](https://github.com/AntoC-dev/Recipedia/issues/478)) ([c801470](https://github.com/AntoC-dev/Recipedia/commit/c80147030a1c9e33ea6e250d3a272058225a301a)), closes [#315](https://github.com/AntoC-dev/Recipedia/issues/315) [#315](https://github.com/AntoC-dev/Recipedia/issues/315) [#438](https://github.com/AntoC-dev/Recipedia/issues/438) [#442](https://github.com/AntoC-dev/Recipedia/issues/442) [#443](https://github.com/AntoC-dev/Recipedia/issues/443) [#313](https://github.com/AntoC-dev/Recipedia/issues/313) [#419](https://github.com/AntoC-dev/Recipedia/issues/419) [443/#313](https://github.com/443/Recipedia/issues/313) [#315](https://github.com/AntoC-dev/Recipedia/issues/315) [#315](https://github.com/AntoC-dev/Recipedia/issues/315) [#438](https://github.com/AntoC-dev/Recipedia/issues/438)
+* **#315:** warm tag/ingredient search index during idle time ([3779fed](https://github.com/AntoC-dev/Recipedia/commit/3779fed05bf3df0685c31557c48bbad939dc4913)), closes [#315](https://github.com/AntoC-dev/Recipedia/issues/315)
+
 ## [2.47.0](https://github.com/AntoC-dev/Recipedia/compare/v2.46.2...v2.47.0) (2026-07-25)
 
 ### Features
