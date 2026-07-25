@@ -109,6 +109,7 @@ export function SearchBar({
       onChangeText={handleChangeText}
       value={searchPhrase}
       autoCorrect={false}
+      returnKeyType={'search'}
       style={{
         margin: padding.medium,
         marginBottom: padding.small,
@@ -127,9 +128,8 @@ export function SearchBar({
             icon={Icons.crossIcon}
             onPress={() => {
               setSearchPhrase('');
-              Keyboard.dismiss();
-              setSearchBarClicked(false);
               updateSearchString('');
+              Keyboard.dismiss();
             }}
           />
         )
