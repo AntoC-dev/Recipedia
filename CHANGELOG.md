@@ -1,3 +1,9 @@
+## [2.48.1](https://github.com/AntoC-dev/Recipedia/compare/v2.48.0...v2.48.1) (2026-07-26)
+
+### Bug Fixes
+
+* **e2e:** settle iOS gallery picker animations before taps ([340eabd](https://github.com/AntoC-dev/Recipedia/commit/340eabde06a21b9ca191d5e6c3bc8e21c8a94334))
+
 ## [2.48.0](https://github.com/AntoC-dev/Recipedia/compare/v2.47.1...v2.48.0) (2026-07-25)
 
 ### Features
