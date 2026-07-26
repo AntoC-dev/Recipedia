@@ -1,0 +1,26 @@
+name: "2 - Filter Page Toggle Flow"
+appId: "com.recipedia"
+tags:
+  - search-filters
+---
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Action - Navigate to Search screen"
+
+- tapOn:
+    id: "SearchScreen::FiltersToggleButtons"
+    label: "Action - Open the filter page"
+
+- extendedWaitUntil:
+    visible:
+      id: "SearchScreen::FilterAccordion::Accordion::0"
+    timeout: 20000
+    label: "Wait for accordions to be displayed"
+
+- runFlow:
+    file: "../../asserts/search/en/filters/filtersViewNoFilter.yaml"
+    label: "Assert - Verify filter view with no filters applied"
+
+- tapOn:
+    id: "SearchScreen::FiltersToggleButtons"
+    label: "Action - Close the filter page"

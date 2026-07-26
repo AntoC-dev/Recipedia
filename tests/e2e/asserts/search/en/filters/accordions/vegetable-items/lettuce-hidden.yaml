@@ -1,5 +1,0 @@
-appId: "com.recipedia"
----
-- assertNotVisible:
-    text: "Lettuce"
-    label: "Lettuce filter is not visible"

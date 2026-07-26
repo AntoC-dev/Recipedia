@@ -1,23 +1,27 @@
 appId: "com.recipedia"
 ---
-# Route to appropriate flow based on STATE
-
-# STATE="filtered": Some items visible (filter applied)
+# Route by STATE to the shared accordion asserts for the Fruit category.
 - runFlow:
     when:
       true: ${STATE == "filtered"}
-    file: "fruit-filtered.yaml"
+    file: "accordionFiltered.yaml"
     env:
+      CATEGORY: "Fruit"
+      ITEM_NAMES: "Avocado"
+      ITEM_COUNT: "1"
       VISIBLE_ITEMS: ${VISIBLE_ITEMS}
 
-# STATE="hidden": Accordion not displayed (no matching items)
 - runFlow:
     when:
       true: ${STATE == "hidden"}
-    file: "fruit-hidden.yaml"
+    file: "accordionHidden.yaml"
+    env:
+      CATEGORY: "Fruit"
 
-# STATE="all": All items visible (no filter applied)
 - runFlow:
     when:
       true: ${STATE == "all"}
-    file: "fruit-all.yaml"
+    file: "accordionAll.yaml"
+    env:
+      CATEGORY: "Fruit"
+      ITEM_COUNT: "1"

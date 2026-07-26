@@ -50,19 +50,8 @@ tags:
     label: "Wait for keyboard animation"
 
 - runFlow:
-    when:
-      platform: Android
-    commands:
-      - hideKeyboard:
-          label: "Dismiss keyboard on Android"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn:
-          id: "Done"
-          label: "Tap Done key to dismiss keyboard on iOS"
+    file: "../../flows/dismissModalKeyboard.yaml"
+    label: "Dismiss modal keyboard (platform-specific)"
 
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"
@@ -107,19 +96,8 @@ tags:
     label: "Wait for keyboard animation"
 
 - runFlow:
-    when:
-      platform: Android
-    commands:
-      - hideKeyboard:
-          label: "Dismiss keyboard on Android"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn:
-          id: "Done"
-          label: "Tap Done key to dismiss keyboard on iOS"
+    file: "../../flows/dismissModalKeyboard.yaml"
+    label: "Dismiss modal keyboard (platform-specific)"
 
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"

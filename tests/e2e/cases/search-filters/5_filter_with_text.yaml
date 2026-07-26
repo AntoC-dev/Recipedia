@@ -1,0 +1,63 @@
+name: "5 - Filters With Text Search Flow"
+appId: "com.recipedia"
+tags:
+  - search-filters
+---
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Action - Navigate to Search screen"
+
+- tapOn:
+    id: "SearchScreen::SearchBar"
+    label: "Action - Open Search Bar"
+
+- inputText:
+    text: "Ca"
+    label: "Action - Input text 'Ca' in the Bar"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- runFlow:
+    file: "../../flows/search/commitTypedSearch.yaml"
+    label: "Commit typed search, keep filter"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to dismiss"
+
+- runFlow:
+    file: "../../asserts/search/en/searchScreenFilteredOnCa.yaml"
+    label: "Assert - Verify filter view with Ca"
+
+- tapOn:
+    id: "SearchScreen::FiltersToggleButtons"
+    label: "Action - Open the filter page"
+
+- tapOn:
+    id: "SearchScreen::FilterAccordion::Accordion::2"
+    label: "Action - Tap on Tags category to select an element inside"
+
+- tapOn:
+    id: "SearchScreen::FilterAccordion::Accordion::2::Item::0"
+    label: "Action - Select tag Chocolate as filter"
+
+- runFlow:
+    file: "../../asserts/search/en/filters/filtersViewFilteredOnCaAndChocolate.yaml"
+    label: "Assert - Verify filter view with Ca and Chocolate"
+
+- tapOn:
+    id: "SearchScreen::FiltersToggleButtons"
+    label: "Action - Close the filter page"
+
+- runFlow:
+    file: "../../asserts/search/en/searchScreenFilteredOnCaAndChocolate.yaml"
+    label: "Assert - Verify search results filtered on Ca and Chocolate"
+
+- tapOn:
+    id: "SearchScreen::FiltersSelection::1::Chip"
+    label: "Action - Remove Chocolate filter"
+
+- tapOn:
+    id: "SearchScreen::FiltersSelection::0::Chip"
+    label: "Action - Remove 'Ca' text filter"

@@ -1,5 +1,0 @@
-appId: "com.recipedia"
----
-- assertNotVisible:
-    text: "Cocoa Powder"
-    label: "Cocoa Powder filter is not visible"

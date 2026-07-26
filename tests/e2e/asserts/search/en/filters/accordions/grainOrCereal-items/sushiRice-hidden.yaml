@@ -1,5 +1,0 @@
-appId: "com.recipedia"
----
-- assertNotVisible:
-    text: "Sushi Rice"
-    label: "Sushi Rice filter is not visible"

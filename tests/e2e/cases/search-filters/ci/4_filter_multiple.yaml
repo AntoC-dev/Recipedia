@@ -1,0 +1,14 @@
+name: "4 - Multiple Filters Application Flow"
+appId: "com.recipedia"
+tags:
+  - search-filters
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../4_filter_multiple.yaml"
+          label: "Run 4 - Multiple Filters Application Flow"

@@ -1,23 +1,27 @@
 appId: "com.recipedia"
 ---
-# Route to appropriate flow based on STATE
-
-# STATE="filtered": Some items visible (filter applied)
+# Route by STATE to the shared accordion asserts for the Cheese category.
 - runFlow:
     when:
       true: ${STATE == "filtered"}
-    file: "cheese-filtered.yaml"
+    file: "accordionFiltered.yaml"
     env:
+      CATEGORY: "Cheese"
+      ITEM_NAMES: "Cheddar Cheese,Mozzarella Cheese,Parmesan Cheese"
+      ITEM_COUNT: "3"
       VISIBLE_ITEMS: ${VISIBLE_ITEMS}
 
-# STATE="hidden": Accordion not displayed (no matching items)
 - runFlow:
     when:
       true: ${STATE == "hidden"}
-    file: "cheese-hidden.yaml"
+    file: "accordionHidden.yaml"
+    env:
+      CATEGORY: "Cheese"
 
-# STATE="all": All items visible (no filter applied)
 - runFlow:
     when:
       true: ${STATE == "all"}
-    file: "cheese-all.yaml"
+    file: "accordionAll.yaml"
+    env:
+      CATEGORY: "Cheese"
+      ITEM_COUNT: "3"

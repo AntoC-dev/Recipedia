@@ -1,5 +1,0 @@
-appId: "com.recipedia"
----
-- assertNotVisible:
-    text: "Breakfast"
-    label: "Breakfast filter is not visible"

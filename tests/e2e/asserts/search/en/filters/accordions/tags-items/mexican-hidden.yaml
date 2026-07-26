@@ -1,5 +1,0 @@
-appId: "com.recipedia"
----
-- assertNotVisible:
-    text: "Mexican"
-    label: "Mexican filter is not visible"

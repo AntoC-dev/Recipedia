@@ -1,0 +1,7 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "Recipe::AppBar::Edit"
+    waitToSettleTimeoutMs: 0
+    retryTapIfNoChange: false
+    label: "Action - Tap on the Edit button to enter edit mode"

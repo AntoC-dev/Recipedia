@@ -1,23 +1,27 @@
 appId: "com.recipedia"
 ---
-# Route to appropriate flow based on STATE
-
-# STATE="filtered": Some items visible (filter applied)
+# Route by STATE to the shared accordion asserts for the Condiment category.
 - runFlow:
     when:
       true: ${STATE == "filtered"}
-    file: "condiment-filtered.yaml"
+    file: "accordionFiltered.yaml"
     env:
+      CATEGORY: "Condiment"
+      ITEM_NAMES: "Nori Sheets,Soy Sauce"
+      ITEM_COUNT: "2"
       VISIBLE_ITEMS: ${VISIBLE_ITEMS}
 
-# STATE="hidden": Accordion not displayed (no matching items)
 - runFlow:
     when:
       true: ${STATE == "hidden"}
-    file: "condiment-hidden.yaml"
+    file: "accordionHidden.yaml"
+    env:
+      CATEGORY: "Condiment"
 
-# STATE="all": All items visible (no filter applied)
 - runFlow:
     when:
       true: ${STATE == "all"}
-    file: "condiment-all.yaml"
+    file: "accordionAll.yaml"
+    env:
+      CATEGORY: "Condiment"
+      ITEM_COUNT: "2"

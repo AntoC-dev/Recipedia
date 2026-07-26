@@ -1,5 +1,0 @@
-appId: "com.recipedia"
----
-- assertNotVisible:
-    text: "Mozzarella Cheese"
-    label: "Mozzarella Cheese filter is not visible"

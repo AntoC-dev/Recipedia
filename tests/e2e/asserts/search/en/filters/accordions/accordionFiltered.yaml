@@ -1,0 +1,84 @@
+appId: "com.recipedia"
+---
+# Generic "filtered" accordion assert: each item in ITEM_NAMES (render order) is
+# asserted visible when its name is in VISIBLE_ITEMS, otherwise asserted absent.
+# Visible items occupy contiguous rendered positions, tracked by output.itemIndex.
+# env: CATEGORY, ITEM_NAMES (comma list), ITEM_COUNT, VISIBLE_ITEMS.
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to ${CATEGORY} accordion"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    label: "${CATEGORY} accordion is displayed"
+
+- assertVisible:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    text: "${CATEGORY}"
+    label: "${CATEGORY} accordion title"
+
+- tapOn:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    label: "Expand ${CATEGORY} accordion"
+
+- evalScript: ${output.itemIndex = 0}
+- evalScript: ${output.i = 0}
+- evalScript: ${output.itemNames = ITEM_NAMES.split(',')}
+- evalScript: ${output.visibleItems = VISIBLE_ITEMS.split(',')}
+
+- repeat:
+    times: ${ITEM_COUNT}
+    commands:
+      - evalScript: ${output.itemName = output.itemNames[output.i]}
+      - evalScript: ${output.itemVisible = output.visibleItems.indexOf(output.itemName) !== -1}
+      - runFlow:
+          when:
+            true: ${output.itemVisible}
+          commands:
+            - waitForAnimationToEnd
+            - scrollUntilVisible:
+                element:
+                  id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::${output.itemIndex}"
+                direction: DOWN
+                speed: 20
+                centerElement: true
+                label: "Scroll to visible ${CATEGORY} item ${output.itemIndex}"
+            - waitForAnimationToEnd
+            - assertVisible:
+                id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::${output.itemIndex}"
+                label: "${output.itemName} filter is visible"
+            - evalScript: ${output.itemIndex = output.itemIndex + 1}
+      - runFlow:
+          when:
+            true: ${!output.itemVisible}
+          commands:
+            - assertNotVisible:
+                text: "${output.itemName}"
+                label: "${output.itemName} filter is not visible"
+      - evalScript: ${output.i = output.i + 1}
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    direction: UP
+    speed: 20
+    centerElement: true
+    label: "Scroll back up to ${CATEGORY} accordion header"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    label: "Collapse ${CATEGORY} accordion"
+
+- evalScript: ${output.accordionIndex = output.accordionIndex + 1}

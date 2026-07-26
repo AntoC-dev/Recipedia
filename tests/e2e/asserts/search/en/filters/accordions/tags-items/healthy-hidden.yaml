@@ -1,5 +1,0 @@
-appId: "com.recipedia"
----
-- assertNotVisible:
-    text: "Healthy"
-    label: "Healthy filter is not visible"
