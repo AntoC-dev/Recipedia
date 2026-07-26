@@ -458,4 +458,216 @@ describe('RecipeIngredientsField', () => {
       'alerts.inlineErrors.titleIngredients'
     );
   });
+
+  describe('read-only mode', () => {
+    test('renders ingredients via the read-only organism without edit affordances', () => {
+      const ingredients = [
+        {
+          id: 1,
+          name: 'flour',
+          quantity: '200',
+          unit: 'g',
+          type: ingredientType.cereal,
+          season: [],
+        },
+      ];
+      const { getByTestId, queryByTestId } = renderWithForm(
+        RecipeIngredientsField,
+        form => ({
+          form,
+          stackMode: recipeStateType.readOnly,
+          openModalForField: jest.fn(),
+          t,
+        }),
+        { recipeIngredients: ingredients }
+      );
+      expect(JSON.parse(getByTestId('RecipeIngredients::Ingredients').props.children)).toEqual(
+        ingredients
+      );
+      expect(
+        queryByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction')
+      ).toBeNull();
+    });
+
+    test('falls back to an empty list when the form value is undefined', () => {
+      const { getByTestId } = renderWithForm(
+        RecipeIngredientsField,
+        form => ({
+          form,
+          stackMode: recipeStateType.readOnly,
+          openModalForField: jest.fn(),
+          t,
+        }),
+        { recipeIngredients: undefined }
+      );
+      expect(JSON.parse(getByTestId('RecipeIngredients::Ingredients').props.children)).toEqual([]);
+    });
+  });
+
+  describe('addOCR mode', () => {
+    test('empty array renders the empty-state block and opens the names OCR modal', () => {
+      const openModalForField = jest.fn();
+      const { getByTestId } = renderWithForm(
+        RecipeIngredientsField,
+        f => ({
+          form: f,
+          stackMode: recipeStateType.addOCR,
+          openModalForField,
+          t,
+        }),
+        { recipeIngredients: [] }
+      );
+      expect(getByTestId('RecipeIngredients::PrefixText').props.children).toBe('ingredients: ');
+      fireEvent.press(
+        getByTestId('RecipeIngredients::OpenModalNames::RoundButton::OnPressFunction')
+      );
+      expect(openModalForField).toHaveBeenCalledWith('ingredientNames');
+    });
+
+    test('empty array manual-add button appends a row through the field array', () => {
+      const { getByTestId, form } = renderWithForm(
+        RecipeIngredientsField,
+        f => ({
+          form: f,
+          stackMode: recipeStateType.addOCR,
+          openModalForField: jest.fn(),
+          t,
+        }),
+        { recipeIngredients: [] }
+      );
+      fireEvent.press(getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction'));
+      expect(form.getValues('recipeIngredients')).toHaveLength(1);
+    });
+
+    test('non-empty array hides the empty-state block and renders the add-tail OCR block', () => {
+      const openModalForField = jest.fn();
+      const ingredients = [
+        {
+          id: 1,
+          name: 'flour',
+          quantity: '200',
+          unit: 'g',
+          type: ingredientType.cereal,
+          season: [],
+        },
+      ];
+      const { getByTestId, queryByTestId, form } = renderWithForm(
+        RecipeIngredientsField,
+        f => ({
+          form: f,
+          stackMode: recipeStateType.addOCR,
+          openModalForField,
+          t,
+        }),
+        { recipeIngredients: ingredients }
+      );
+      expect(
+        queryByTestId('RecipeIngredients::OpenModalNames::RoundButton::OnPressFunction')
+      ).toBeNull();
+      fireEvent.press(
+        getByTestId('RecipeIngredients::OpenModalQuantities::RoundButton::OnPressFunction')
+      );
+      expect(openModalForField).toHaveBeenCalledWith('ingredientQuantities');
+      fireEvent.press(getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction'));
+      expect(form.getValues('recipeIngredients')).toHaveLength(2);
+    });
+  });
+
+  describe('ingredient note dialog', () => {
+    const flourRow = {
+      id: 1,
+      name: 'flour',
+      quantity: '200',
+      unit: 'g',
+      type: ingredientType.cereal,
+      season: [],
+    };
+
+    test('opens for the pressed row prefilled with its name, and cancel closes without saving', async () => {
+      const { getByTestId, queryByTestId, form } = renderWithForm(
+        RecipeIngredientsField,
+        f => ({
+          form: f,
+          stackMode: recipeStateType.edit,
+          openModalForField: jest.fn(),
+          t,
+        }),
+        { recipeIngredients: [flourRow] }
+      );
+      fireEvent.press(getByTestId('RecipeIngredients::0::NoteButton'));
+      expect(getByTestId('RecipeIngredients::NoteDialog::IngredientName').props.children).toBe(
+        'flour'
+      );
+      await act(async () => {
+        fireEvent.press(getByTestId('RecipeIngredients::NoteDialog::CancelButton'));
+      });
+      expect(queryByTestId('RecipeIngredients::NoteDialog::Title')).toBeNull();
+      expect(form.getValues('recipeIngredients.0.note')).toBeUndefined();
+    });
+
+    test('saving writes the trimmed note back onto the focused row and closes the dialog', async () => {
+      const { getByTestId, queryByTestId, form } = renderWithForm(
+        RecipeIngredientsField,
+        f => ({
+          form: f,
+          stackMode: recipeStateType.edit,
+          openModalForField: jest.fn(),
+          t,
+        }),
+        { recipeIngredients: [flourRow] }
+      );
+      fireEvent.press(getByTestId('RecipeIngredients::0::NoteButton'));
+      fireEvent.changeText(
+        getByTestId('RecipeIngredients::NoteDialog::Input::CustomTextInput'),
+        '  for the sauce  '
+      );
+      await act(async () => {
+        fireEvent.press(getByTestId('RecipeIngredients::NoteDialog::SaveButton'));
+      });
+      expect(form.getValues('recipeIngredients.0.note')).toBe('for the sauce');
+      expect(form.getValues('recipeIngredients.0.quantity')).toBe('200');
+      expect(form.getValues('recipeIngredients.0.name')).toBe('flour');
+      expect(queryByTestId('RecipeIngredients::NoteDialog::Title')).toBeNull();
+    });
+
+    test('saving an unnamed row with no unit falls back to blank unit, name and note', async () => {
+      const { getByTestId, queryByTestId, form } = renderWithForm(
+        RecipeIngredientsField,
+        f => ({
+          form: f,
+          stackMode: recipeStateType.edit,
+          openModalForField: jest.fn(),
+          t,
+        }),
+        { recipeIngredients: [{ quantity: '50' }] }
+      );
+      fireEvent.press(getByTestId('RecipeIngredients::0::NoteButton'));
+      await act(async () => {
+        fireEvent.press(getByTestId('RecipeIngredients::NoteDialog::SaveButton'));
+      });
+      expect(queryByTestId('RecipeIngredients::NoteDialog::Title')).toBeNull();
+      expect(form.getValues('recipeIngredients.0.quantity')).toBe('50');
+    });
+
+    test('saving is a no-op once the focused row has been removed before the dialog closes', async () => {
+      const { getByTestId, form } = renderWithForm(
+        RecipeIngredientsField,
+        f => ({
+          form: f,
+          stackMode: recipeStateType.edit,
+          openModalForField: jest.fn(),
+          t,
+        }),
+        { recipeIngredients: [flourRow] }
+      );
+      fireEvent.press(getByTestId('RecipeIngredients::0::NoteButton'));
+      await act(async () => {
+        fireEvent.press(getByTestId('RecipeIngredients::0::OnRemoveIngredient'));
+      });
+      await act(async () => {
+        fireEvent.press(getByTestId('RecipeIngredients::NoteDialog::SaveButton'));
+      });
+      expect(form.getValues('recipeIngredients')).toHaveLength(0);
+    });
+  });
 });

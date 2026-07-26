@@ -157,6 +157,194 @@ describe('BaseRecipeProvider', () => {
     });
   });
 
+  describe('canHandleUrl', () => {
+    it('returns false by default', () => {
+      expect(provider.canHandleUrl('https://www.test-provider.com/recipe1')).toBe(false);
+    });
+  });
+
+  describe('multi-batch category scanning', () => {
+    it('delays between batches and scans all categories when there are more than the concurrency limit', async () => {
+      jest.useRealTimers();
+      jest.spyOn(provider as any, 'delay').mockResolvedValue(undefined);
+
+      provider.setTestCategoryUrls([
+        'https://www.test-provider.com/cat1',
+        'https://www.test-provider.com/cat2',
+        'https://www.test-provider.com/cat3',
+        'https://www.test-provider.com/cat4',
+      ]);
+
+      let lastProgress;
+      for await (const progress of provider.discoverRecipeUrls()) {
+        lastProgress = progress;
+      }
+
+      expect(lastProgress).toMatchObject({
+        phase: 'complete',
+        isComplete: true,
+        totalCategories: 4,
+        categoriesScanned: 4,
+      });
+      expect((provider as any).delay).toHaveBeenCalled();
+    });
+  });
+
+  describe('failed category pages', () => {
+    it('marks the page empty and logs when fetch rejects with an Error', async () => {
+      jest.useRealTimers();
+      jest.spyOn(provider as any, 'delay').mockResolvedValue(undefined);
+      mockFetch.mockRejectedValueOnce(new Error('network down'));
+
+      let lastProgress;
+      for await (const progress of provider.discoverRecipeUrls()) {
+        lastProgress = progress;
+      }
+
+      expect(lastProgress?.recipesFound).toBe(2);
+    });
+
+    it('marks the page empty and logs when fetch rejects with a non-Error value', async () => {
+      jest.useRealTimers();
+      jest.spyOn(provider as any, 'delay').mockResolvedValue(undefined);
+      mockFetch.mockRejectedValueOnce('boom');
+
+      let lastProgress;
+      for await (const progress of provider.discoverRecipeUrls()) {
+        lastProgress = progress;
+      }
+
+      expect(lastProgress?.recipesFound).toBe(2);
+    });
+  });
+
+  describe('empty category pages', () => {
+    it('adds a page with zero links to emptyPages instead of recipes', async () => {
+      jest.useRealTimers();
+
+      provider.setTestCategoryUrls(['https://www.test-provider.com/cat1']);
+      provider.setTestRecipeLinks([]);
+
+      let lastProgress;
+      for await (const progress of provider.discoverRecipeUrls()) {
+        lastProgress = progress;
+      }
+
+      expect(lastProgress?.recipesFound).toBe(0);
+    });
+  });
+
+  describe('retryEmptyPages', () => {
+    it('recovers some empty pages and warns about pages still empty after exhausting retries', async () => {
+      jest.useRealTimers();
+      jest.spyOn(provider as any, 'delay').mockResolvedValue(undefined);
+
+      const cat1 = 'https://www.test-provider.com/cat1';
+      const cat2 = 'https://www.test-provider.com/cat2';
+      const cat3 = 'https://www.test-provider.com/cat3';
+      provider.setTestCategoryUrls([cat1, cat2, cat3]);
+
+      const cat1Responses = ['empty', 'links'];
+      const cat2Responses = ['empty', 'empty', 'empty', 'empty'];
+      const responsesByUrl: Record<string, string[]> = {
+        [cat1]: cat1Responses,
+        [cat2]: cat2Responses,
+        [cat3]: ['links'],
+      };
+
+      mockFetch.mockImplementation((url: string) => {
+        const queue = responsesByUrl[url]!;
+        const html = queue.length > 1 ? queue.shift()! : queue[0]!;
+        return Promise.resolve({ ok: true, text: () => Promise.resolve(html) });
+      });
+
+      (provider as any).extractRecipeLinksFromHtml = (html: string) =>
+        html === 'links'
+          ? [{ url: `https://www.test-provider.com/recipe-${html}-${Math.random()}` }]
+          : [];
+
+      let lastProgress;
+      for await (const progress of provider.discoverRecipeUrls()) {
+        lastProgress = progress;
+      }
+
+      expect(lastProgress?.phase).toBe('complete');
+      expect(lastProgress?.recipesFound).toBe(2);
+    });
+
+    it('stops retrying when the abort signal fires mid-retry', async () => {
+      jest.useRealTimers();
+
+      const controller = new AbortController();
+      const cat1 = 'https://www.test-provider.com/cat1';
+      const cat2 = 'https://www.test-provider.com/cat2';
+      provider.setTestCategoryUrls([cat1, cat2]);
+
+      const responsesByUrl: Record<string, string> = { [cat1]: 'empty', [cat2]: 'links' };
+      mockFetch.mockImplementation((url: string) =>
+        Promise.resolve({ ok: true, text: () => Promise.resolve(responsesByUrl[url]) })
+      );
+      (provider as any).extractRecipeLinksFromHtml = (html: string) =>
+        html === 'links' ? [{ url: 'https://www.test-provider.com/recipeX' }] : [];
+
+      jest.spyOn(provider as any, 'delay').mockImplementation(async () => {
+        controller.abort();
+      });
+
+      let lastProgress;
+      for await (const progress of provider.discoverRecipeUrls({ signal: controller.signal })) {
+        lastProgress = progress;
+      }
+
+      expect(lastProgress?.phase).toBe('complete');
+    });
+
+    it('stops mid-batch inside a retry attempt when the abort signal fires between retried pages', async () => {
+      jest.useRealTimers();
+
+      const controller = new AbortController();
+      const cat1 = 'https://www.test-provider.com/cat1';
+      const cat2 = 'https://www.test-provider.com/cat2';
+      const cat3 = 'https://www.test-provider.com/cat3';
+      provider.setTestCategoryUrls([cat1, cat2, cat3]);
+
+      const responsesByUrl: Record<string, string> = {
+        [cat1]: 'empty',
+        [cat2]: 'empty',
+        [cat3]: 'links',
+      };
+      mockFetch.mockImplementation((url: string) =>
+        Promise.resolve({ ok: true, text: () => Promise.resolve(responsesByUrl[url]) })
+      );
+      (provider as any).extractRecipeLinksFromHtml = (html: string) =>
+        html === 'links' ? [{ url: 'https://www.test-provider.com/recipeX' }] : [];
+
+      let delayCalls = 0;
+      jest.spyOn(provider as any, 'delay').mockImplementation(async () => {
+        delayCalls++;
+        if (delayCalls === 2) {
+          controller.abort();
+        }
+      });
+
+      let lastProgress;
+      for await (const progress of provider.discoverRecipeUrls({ signal: controller.signal })) {
+        lastProgress = progress;
+      }
+
+      expect(lastProgress?.phase).toBe('complete');
+      expect(lastProgress?.recipesFound).toBe(1);
+    });
+  });
+
+  describe('delay', () => {
+    it('resolves to undefined after the given time', async () => {
+      jest.useRealTimers();
+
+      await expect((provider as any).delay(5)).resolves.toBeUndefined();
+    });
+  });
+
   describe('fetchHtml', () => {
     it('returns HTML content on success', async () => {
       const testHtml = '<html><body>Test</body></html>';
