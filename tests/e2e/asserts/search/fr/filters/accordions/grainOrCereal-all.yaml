@@ -4,4 +4,4 @@ appId: "com.recipedia"
     file: "../../../en/filters/accordions/accordionAll.yaml"
     env:
       CATEGORY: "Céréales"
-      ITEM_COUNT: "7"
+      ITEM_COUNT: "6"

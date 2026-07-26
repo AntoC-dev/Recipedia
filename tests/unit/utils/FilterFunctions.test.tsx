@@ -32,6 +32,24 @@ import RecipeDatabase from '@utils/RecipeDatabase';
 
 describe('FilterFunctions', () => {
   const { t } = useI18n();
+
+  const titlesOf = (recipes: recipeTableElement[]): string[] => recipes.map(recipe => recipe.title);
+  const allTitles = titlesOf(testRecipes);
+  const filtersOf = (...entries: [TListFilter, string[]][]): Map<TListFilter, string[]> =>
+    new Map<TListFilter, string[]>(entries);
+  const filterTitles = (filters: Map<TListFilter, string[]>): string[] =>
+    titlesOf(filterFromRecipe(testRecipes, filters, t));
+  const cheeseIngredientNames = testIngredients
+    .filter(ingredient => ingredient.type === listFilter.cheese)
+    .map(ingredient => ingredient.name);
+  const mixedFilters = (): Map<TListFilter, string[]> =>
+    filtersOf(
+      [listFilter.prepTime, [prepTimeValues[3]!]],
+      [listFilter.purchased, ['true', 'false']],
+      [listFilter.cereal, ['Pasta']],
+      [listFilter.tags, ['Quick Meal']]
+    );
+
   test('extractFilteredRecipeDatas extracts and sorts data', () => {
     let [resTitles, resIngredients, resTags] = extractFilteredRecipeDatas(
       Array<recipeTableElement>(testRecipes[0]!)
@@ -201,216 +219,169 @@ describe('FilterFunctions', () => {
     expect(resTags).toEqual(['Asian', 'Breakfast', 'Dessert', 'Quick', 'Vegetarian']);
   });
 
-  test('filterFromRecipe with empty filters return the array given in input', () => {
-    expect(filterFromRecipe(testRecipes, new Map<TListFilter, string[]>(), t)).toEqual(testRecipes);
-  });
-
-  test('filterFromRecipe with empty filters return the array given in input', () => {
-    expect(filterFromRecipe(testRecipes, new Map<TListFilter, string[]>(), t)).toEqual(testRecipes);
+  test('filterFromRecipe with empty filters returns the input array unchanged', () => {
+    expect(filterFromRecipe(testRecipes, filtersOf(), t)).toEqual(testRecipes);
   });
 
   test('filterFromRecipe with only preparation time filters', () => {
-    const filtersTime = new Map<TListFilter, string[]>([
-      [listFilter.prepTime, [prepTimeValues[2]!]],
+    const filters = filtersOf([listFilter.prepTime, [prepTimeValues[2]!]]);
+    const selectedTimes = filters.get(listFilter.prepTime) as string[];
+
+    expect(filterTitles(filters)).toEqual([
+      'Chicken Tacos',
+      'Caesar Salad',
+      'Margherita Pizza',
+      'Pesto Pasta',
     ]);
-    const timeFilterArray = filtersTime.get(listFilter.prepTime) as string[];
 
-    expect(filterFromRecipe(testRecipes, filtersTime, t)).toEqual(
-      Array<recipeTableElement>(testRecipes[1]!, testRecipes[3]!, testRecipes[4]!, testRecipes[7]!)
-    );
+    selectedTimes.push(prepTimeValues[7]!);
+    expect(filterTitles(filters)).toEqual([
+      'Chicken Tacos',
+      'Caesar Salad',
+      'Margherita Pizza',
+      'Chocolate Cake',
+      'Pesto Pasta',
+    ]);
 
-    timeFilterArray.push(prepTimeValues[7]!);
-    expect(filterFromRecipe(testRecipes, filtersTime, t)).toEqual(
-      Array<recipeTableElement>(
-        testRecipes[1]!,
-        testRecipes[3]!,
-        testRecipes[4]!,
-        testRecipes[6]!,
-        testRecipes[7]!
-      )
-    );
+    selectedTimes.push(prepTimeValues[0]!);
+    expect(filterTitles(filters)).toEqual([
+      'Chicken Tacos',
+      'Caesar Salad',
+      'Margherita Pizza',
+      'Chocolate Cake',
+      'Pesto Pasta',
+    ]);
 
-    timeFilterArray.push(prepTimeValues[0]!);
-    expect(filterFromRecipe(testRecipes, filtersTime, t)).toEqual(
-      Array<recipeTableElement>(
-        testRecipes[1]!,
-        testRecipes[3]!,
-        testRecipes[4]!,
-        testRecipes[6]!,
-        testRecipes[7]!
-      )
-    );
+    selectedTimes.push(prepTimeValues[5]!);
+    expect(filterTitles(filters)).toEqual([
+      'Spaghetti Bolognese',
+      'Chicken Tacos',
+      'Caesar Salad',
+      'Margherita Pizza',
+      'Vegetable Soup',
+      'Chocolate Cake',
+      'Pesto Pasta',
+      'Lentil Curry',
+    ]);
 
-    timeFilterArray.push(prepTimeValues[5]!);
-    expect(filterFromRecipe(testRecipes, filtersTime, t)).toEqual(
-      Array<recipeTableElement>(
-        testRecipes[0]!,
-        testRecipes[1]!,
-        testRecipes[3]!,
-        testRecipes[4]!,
-        testRecipes[5]!,
-        testRecipes[6]!,
-        testRecipes[7]!,
-        testRecipes[9]!
-      )
-    );
+    selectedTimes.push(prepTimeValues[3]!);
+    expect(filterTitles(filters)).toEqual([
+      'Spaghetti Bolognese',
+      'Chicken Tacos',
+      'Classic Pancakes',
+      'Caesar Salad',
+      'Margherita Pizza',
+      'Vegetable Soup',
+      'Chocolate Cake',
+      'Pesto Pasta',
+      'Lentil Curry',
+    ]);
 
-    timeFilterArray.push(prepTimeValues[3]!);
-    expect(filterFromRecipe(testRecipes, filtersTime, t)).toEqual(
-      Array<recipeTableElement>(
-        testRecipes[0]!,
-        testRecipes[1]!,
-        testRecipes[2]!,
-        testRecipes[3]!,
-        testRecipes[4]!,
-        testRecipes[5]!,
-        testRecipes[6]!,
-        testRecipes[7]!,
-        testRecipes[9]!
-      )
-    );
+    selectedTimes.push(prepTimeValues[6]!);
+    expect(filterTitles(filters)).toEqual(allTitles);
 
-    timeFilterArray.push(prepTimeValues[6]!);
-    expect(filterFromRecipe(testRecipes, filtersTime, t)).toEqual(testRecipes);
+    selectedTimes.push(prepTimeValues[1]!);
+    expect(filterTitles(filters)).toEqual(allTitles);
 
-    timeFilterArray.push(prepTimeValues[1]!);
-    expect(filterFromRecipe(testRecipes, filtersTime, t)).toEqual(testRecipes);
-
-    timeFilterArray.push(prepTimeValues[4]!);
-    expect(filterFromRecipe(testRecipes, filtersTime, t)).toEqual(testRecipes);
+    selectedTimes.push(prepTimeValues[4]!);
+    expect(filterTitles(filters)).toEqual(allTitles);
   });
 
   test('filterFromRecipe with only season filters', () => {
-    const filtersSeason = new Map<TListFilter, string[]>([[listFilter.inSeason, ['seasonal']]]);
-
-    const expected = filterRecipesByCurrentSeason(testRecipes);
-    const result = filterFromRecipe(testRecipes, filtersSeason, t);
-    expect(result).toEqual(expected);
+    const filters = filtersOf([listFilter.inSeason, ['seasonal']]);
+    expect(filterFromRecipe(testRecipes, filters, t)).toEqual(
+      filterRecipesByCurrentSeason(testRecipes)
+    );
   });
 
   test('filterFromRecipe with only tags filters', () => {
-    const filtersTags = new Map<TListFilter, string[]>([[listFilter.tags, ['not existing']]]);
-    const tagFilterArray = filtersTags.get(listFilter.tags) as string[];
+    const filters = filtersOf([listFilter.tags, ['not existing']]);
 
-    expect(filterFromRecipe(testRecipes, filtersTags, t)).toEqual([]);
+    expect(filterTitles(filters)).toEqual([]);
 
-    tagFilterArray.push(testTags[14]!.name);
-    expect(filterFromRecipe(testRecipes, filtersTags, t)).toEqual(
-      Array<recipeTableElement>(testRecipes[9]!)
-    );
+    addValueToMultimap(filters, listFilter.tags, 'Indian');
+    expect(filterTitles(filters)).toEqual(['Lentil Curry']);
 
-    tagFilterArray.push(testTags[0]!.name);
-    expect(filterFromRecipe(testRecipes, filtersTags, t)).toEqual(
-      Array<recipeTableElement>(testRecipes[0]!, testRecipes[4]!, testRecipes[7]!, testRecipes[9]!)
-    );
+    addValueToMultimap(filters, listFilter.tags, 'Italian');
+    expect(filterTitles(filters)).toEqual([
+      'Spaghetti Bolognese',
+      'Margherita Pizza',
+      'Pesto Pasta',
+      'Lentil Curry',
+    ]);
 
-    for (let i = 1; i < testTags.length - 1; i++) {
-      tagFilterArray.push(testTags[i]!.name);
-    }
-    expect(filterFromRecipe(testRecipes, filtersTags, t)).toEqual(testRecipes);
+    testTags.forEach(tag => addValueToMultimap(filters, listFilter.tags, tag.name));
+    expect(filterTitles(filters)).toEqual(allTitles);
   });
 
   test('filterFromRecipe with only title filters', () => {
-    const filtersTitle = new Map<TListFilter, string[]>([
-      [listFilter.recipeTitleInclude, [testRecipes[7]!.title]],
+    const filters = filtersOf([listFilter.recipeTitleInclude, ['Pesto Pasta']]);
+    const titleFilter = filters.get(listFilter.recipeTitleInclude) as string[];
+
+    expect(filterTitles(filters)).toEqual(['Pesto Pasta']);
+
+    titleFilter.splice(0);
+    titleFilter.push('Tacos');
+    expect(filterTitles(filters)).toEqual(['Chicken Tacos']);
+
+    titleFilter.splice(0);
+    titleFilter.push('e');
+    expect(filterTitles(filters)).toEqual([
+      'Spaghetti Bolognese',
+      'Chicken Tacos',
+      'Classic Pancakes',
+      'Caesar Salad',
+      'Margherita Pizza',
+      'Vegetable Soup',
+      'Chocolate Cake',
+      'Pesto Pasta',
+      'Lentil Curry',
     ]);
-    const titleFilterArray = filtersTitle.get(listFilter.recipeTitleInclude) as string[];
-
-    expect(filterFromRecipe(testRecipes, filtersTitle, t)).toEqual(
-      Array<recipeTableElement>(testRecipes[7]!)
-    );
-
-    titleFilterArray.splice(0);
-    titleFilterArray.push('Tacos');
-    expect(filterFromRecipe(testRecipes, filtersTitle, t)).toEqual(
-      Array<recipeTableElement>(testRecipes[1]!)
-    );
-
-    titleFilterArray.splice(0);
-    titleFilterArray.push('e');
-    expect(filterFromRecipe(testRecipes, filtersTitle, t)).toEqual(
-      Array<recipeTableElement>(
-        testRecipes[0]!,
-        testRecipes[1]!,
-        testRecipes[2]!,
-        testRecipes[3]!,
-        testRecipes[4]!,
-        testRecipes[5]!,
-        testRecipes[6]!,
-        testRecipes[7]!,
-        testRecipes[9]!
-      )
-    );
   });
 
   test('filterFromRecipe with only ingredient type filters', () => {
-    const filtersIngredientType = new Map<TListFilter, string[]>([
-      [
-        listFilter.cheese,
-        testIngredients.filter(ing => ing.type === listFilter.cheese).map(ing => ing.name),
-      ],
+    const filters = filtersOf([listFilter.cheese, cheeseIngredientNames]);
+
+    expect(filterTitles(filters)).toEqual([
+      'Spaghetti Bolognese',
+      'Chicken Tacos',
+      'Caesar Salad',
+      'Margherita Pizza',
+      'Pesto Pasta',
     ]);
 
-    let expectedArr = new Array<recipeTableElement>(
-      testRecipes[0]!,
-      testRecipes[1]!,
-      testRecipes[3]!,
-      testRecipes[4]!,
-      testRecipes[7]!
-    );
+    addValueToMultimap(filters, listFilter.cereal, 'Taco Shells');
+    expect(filterTitles(filters)).toEqual(['Chicken Tacos']);
 
-    expect(filterFromRecipe(testRecipes, filtersIngredientType, t)).toEqual(expectedArr);
-
-    addValueToMultimap(filtersIngredientType, listFilter.cereal, 'Taco Shells');
-    expectedArr = new Array<recipeTableElement>(testRecipes[1]!);
-
-    expect(filterFromRecipe(testRecipes, filtersIngredientType, t)).toEqual(expectedArr);
-
-    addValueToMultimap(filtersIngredientType, listFilter.poultry, 'Chicken Breast');
-    expect(filterFromRecipe(testRecipes, filtersIngredientType, t)).toEqual(expectedArr);
+    addValueToMultimap(filters, listFilter.poultry, 'Chicken Breast');
+    expect(filterTitles(filters)).toEqual(['Chicken Tacos']);
   });
 
-  test('filterFromRecipe with mixed filters (in bonus, addValueToMultimap test)', () => {
-    const filtersMixed = new Map<TListFilter, string[]>([
-      [
-        listFilter.cheese,
-        testIngredients.filter(ing => ing.type === listFilter.cheese).map(ing => ing.name),
-      ],
+  test('filterFromRecipe with mixed filters also exercises addValueToMultimap', () => {
+    const filters = filtersOf([listFilter.cheese, cheeseIngredientNames]);
+
+    expect(filterTitles(filters)).toEqual([
+      'Spaghetti Bolognese',
+      'Chicken Tacos',
+      'Caesar Salad',
+      'Margherita Pizza',
+      'Pesto Pasta',
     ]);
 
-    const expectedArr = new Array<recipeTableElement>(
-      testRecipes[0]!,
-      testRecipes[1]!,
-      testRecipes[3]!,
-      testRecipes[4]!,
-      testRecipes[7]!
-    );
+    addValueToMultimap(filters, listFilter.recipeTitleInclude, 'o');
+    expect(filterTitles(filters)).toEqual(['Spaghetti Bolognese', 'Chicken Tacos', 'Pesto Pasta']);
 
-    expect(filterFromRecipe(testRecipes, filtersMixed, t)).toEqual(expectedArr);
+    addValueToMultimap(filters, listFilter.tags, 'Mexican');
+    expect(filterTitles(filters)).toEqual(['Chicken Tacos']);
 
-    addValueToMultimap(filtersMixed, listFilter.recipeTitleInclude, 'o');
-    expectedArr.splice(2, 2); // This will remove recipesDataset[3] and recipesDataset[4]
-    expect(filterFromRecipe(testRecipes, filtersMixed, t)).toEqual(expectedArr);
-
-    addValueToMultimap(filtersMixed, listFilter.tags, testRecipes[1]!.tags[0]!.name);
-    expectedArr.splice(0, 1);
-    expectedArr.splice(1);
-    expect(filterFromRecipe(testRecipes, filtersMixed, t)).toEqual(expectedArr);
-
-    // Add tag again to cover another branch of addValueToMultimap function
-    addValueToMultimap(filtersMixed, listFilter.tags, testRecipes[1]!.tags[1]!.name);
-    expect(filterFromRecipe(testRecipes, filtersMixed, t)).toEqual(expectedArr);
+    addValueToMultimap(filters, listFilter.tags, 'Lunch');
+    expect(filterTitles(filters)).toEqual(['Chicken Tacos']);
   });
 
   test('removeValueToMultimap shall effectively remove from the multimap the asked value', () => {
     const consoleWarningSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-    const filtersMixed = new Map<TListFilter, string[]>([
-      [listFilter.prepTime, [prepTimeValues[3]!]],
-      [listFilter.purchased, ['true', 'false']],
-      [listFilter.cereal, ['Pasta']],
-      [listFilter.tags, ['Quick Meal']],
-    ]);
+    const filtersMixed = mixedFilters();
 
     const workingFilters = new Map<TListFilter, string[]>(filtersMixed);
     removeValueToMultimap(workingFilters, listFilter.recipeTitleInclude, 'A title');

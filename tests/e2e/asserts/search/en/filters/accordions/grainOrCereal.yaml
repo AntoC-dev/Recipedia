@@ -7,8 +7,8 @@ appId: "com.recipedia"
     file: "accordionFiltered.yaml"
     env:
       CATEGORY: "Cereal"
-      ITEM_NAMES: "Spaghetti,Taco Shells,Flour,Croutons,Pizza Dough,Pasta,Sushi Rice"
-      ITEM_COUNT: "7"
+      ITEM_NAMES: "Spaghetti,Taco Shells,Croutons,Pizza Dough,Pasta,Sushi Rice"
+      ITEM_COUNT: "6"
       VISIBLE_ITEMS: ${VISIBLE_ITEMS}
 
 - runFlow:
@@ -24,4 +24,4 @@ appId: "com.recipedia"
     file: "accordionAll.yaml"
     env:
       CATEGORY: "Cereal"
-      ITEM_COUNT: "7"
+      ITEM_COUNT: "6"
