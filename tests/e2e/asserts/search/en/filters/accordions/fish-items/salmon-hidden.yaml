@@ -1,5 +1,0 @@
-appId: "com.recipedia"
----
-- assertNotVisible:
-    text: "Salmon"
-    label: "Salmon filter is not visible"

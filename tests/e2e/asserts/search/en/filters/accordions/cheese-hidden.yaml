@@ -1,7 +1,0 @@
-appId: "com.recipedia"
----
-# Assert accordion is NOT displayed
-- assertNotVisible:
-    text: "Cheese"
-    label: "Cheese accordion not displayed"
-

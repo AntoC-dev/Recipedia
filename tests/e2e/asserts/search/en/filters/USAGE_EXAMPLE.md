@@ -2,53 +2,53 @@
 
 ## Overview
 
-Each accordion has a **proxy file** that routes to the appropriate
-implementation based on the filter state. These files support **3 distinct
-states** to cover all filtering scenarios.
+Accordion asserts are driven by **3 shared generic files** plus one thin
+**router file per category**. The router routes to the correct generic based on
+the filter `STATE`, passing the category's data (title, item names, item count)
+as env vars. This covers all filtering scenarios with no per-category or
+per-item duplication.
 
 ## Architecture
 
-Each accordion has:
+- **Generic asserts** (shared by every category):
+  - `accordions/accordionAll.yaml` - all items visible (expands, asserts each
+    item, collapses, guards collapse)
+  - `accordions/accordionFiltered.yaml` - only `VISIBLE_ITEMS` visible, every
+    other item asserted absent
+  - `accordions/accordionHidden.yaml` - accordion not displayed
+- **Per-category router**: `accordions/{accordion}.yaml` - routes by `STATE` to
+  the generic above, supplying `CATEGORY`, `ITEM_NAMES`, `ITEM_COUNT`, and
+  forwarding `VISIBLE_ITEMS`.
 
-- **Main proxy file**: `{accordion}.yaml` - Routes to correct implementation
-  based on STATE
-- **All items file**: `{accordion}-all.yaml` - Tests all items visible
-- **Filtered file**: `{accordion}-filtered.yaml` - Tests specific items
-  visible/hidden
-- **Hidden file**: `{accordion}-hidden.yaml` - Tests accordion not displayed
-- **Item files directory**: `{accordion}-items/` - Individual item assertions
-  (for filtered state)
+The caller maintains `output.accordionIndex` (start at 0, each generic
+increments it), so routers are invoked in accordion render order.
 
 ## The 3 States
 
-### 1. **STATE="all"** (Default - No Filtering)
+### 1. `STATE="all"` (Default - No Filtering)
 
-All items in the accordion are visible. This is the default when no filters are
-applied.
+All items in the accordion are visible. Default when no filters are applied.
 
-### 2. **STATE="filtered"** (Active Filtering)
+### 2. `STATE="filtered"` (Active Filtering)
 
-Only specific items are visible. You explicitly list which items should be
-visible in `VISIBLE_ITEMS`.
+Only specific items are visible. List them in `VISIBLE_ITEMS`.
 
-### 3. **STATE="hidden"** (Empty Accordion)
+### 3. `STATE="hidden"` (Empty Accordion)
 
-The accordion itself is not displayed because no items match the current
-filters.
+The accordion is not displayed because no items match the current filters.
 
-## Parameters
+## Parameters (passed to the router)
 
 - `STATE`: `"all"` (default), `"filtered"`, or `"hidden"`
 - `VISIBLE_ITEMS`: Comma-separated list of visible items (only used when
   `STATE="filtered"`)
-- `ACCORDION_INDEX`: The accordion's position (0-18) - has default value per
-  file
+
+`CATEGORY`, `ITEM_NAMES`, and `ITEM_COUNT` are baked into each router — callers
+never pass them.
 
 ## Usage Examples
 
 ### Example 1: All Items Visible (No Filter Active)
-
-**Scenario**: User opens filter page with no active filters.
 
 ```yaml
 - runFlow:
@@ -56,19 +56,10 @@ filters.
     label: 'Assert Cereal accordion with all items visible'
 ```
 
-**What happens**:
-
-1. Proxy routes to `grainOrCereal-all.yaml`
-2. Asserts accordion IS displayed
-3. Expands the accordion
-4. Asserts ALL items are visible (Spaghetti, Taco Shells, Flour, Croutons, Pizza
-   Dough, Pasta, Sushi Rice)
-5. Collapses the accordion
+Router forwards to `accordionAll.yaml`: asserts the accordion is displayed,
+expands it, asserts every item is visible, collapses it, guards the collapse.
 
 ### Example 2: Some Items Visible (Filter Active)
-
-**Scenario**: User filters recipes by "15-20 min" prep time, hiding some
-ingredients.
 
 ```yaml
 - runFlow:
@@ -76,20 +67,13 @@ ingredients.
     env:
       STATE: 'filtered'
       VISIBLE_ITEMS: 'Taco Shells,Croutons,Pizza Dough,Pasta'
-    label: 'Assert Cereal accordion shows only items matching 15-20 min filter'
+    label: 'Assert Cereal accordion shows only items matching filter'
 ```
 
-**What happens**:
-
-1. Proxy routes to `grainOrCereal-filtered.yaml`
-2. Asserts accordion IS displayed
-3. Expands the accordion
-4. For each item, conditionally asserts visible or hidden based on VISIBLE_ITEMS
-5. Collapses the accordion
+Router forwards to `accordionFiltered.yaml`: each item in `VISIBLE_ITEMS` is
+asserted visible (in render order), every other item asserted absent.
 
 ### Example 3: Accordion Hidden (No Matching Items)
-
-**Scenario**: User filters recipes and NO items in this category match.
 
 ```yaml
 - runFlow:
@@ -99,30 +83,14 @@ ingredients.
     label: 'Assert Cereal accordion is not displayed'
 ```
 
-**What happens**:
+Router forwards to `accordionHidden.yaml`: asserts the accordion is not
+displayed.
 
-1. Proxy routes to `grainOrCereal-hidden.yaml`
-2. Asserts accordion is NOT displayed at all
-
-### Example 4: Vegetable Accordion with One Item
-
-**Scenario**: Filter shows only "Romaine Lettuce" in vegetables.
+### Example 4: Mixed States Across Accordions
 
 ```yaml
-- runFlow:
-    file: 'accordions/vegetable.yaml'
-    env:
-      STATE: 'filtered'
-      VISIBLE_ITEMS: 'Romaine Lettuce'
-    label: 'Assert only Romaine Lettuce is visible in Vegetable accordion'
-```
+- evalScript: ${output.accordionIndex = 0}
 
-### Example 5: Complete Filter Test - Multiple Accordions
-
-**Scenario**: Test filter page with mixed states across accordions.
-
-```yaml
-# Cereal: Some items visible
 - runFlow:
     file: 'accordions/grainOrCereal.yaml'
     env:
@@ -130,12 +98,10 @@ ingredients.
       VISIBLE_ITEMS: 'Pasta,Croutons'
     label: 'Assert Cereal filtered state'
 
-# Vegetable: All items visible (default)
 - runFlow:
     file: 'accordions/vegetable.yaml'
     label: 'Assert Vegetable has all items visible'
 
-# Tags: Accordion completely hidden
 - runFlow:
     file: 'accordions/tags.yaml'
     env:
@@ -143,95 +109,44 @@ ingredients.
     label: 'Assert Tags accordion is not displayed'
 ```
 
-## Accordion Index Reference
+## Categories
 
-| Index | Accordion Name             | File Name            | Status |
-| ----- | -------------------------- | -------------------- | ------ |
-| 0     | Cereal                     | grainOrCereal.yaml   | ✅     |
-| 1     | Legumes                    | legumes.yaml         | 📝     |
-| 2     | Vegetable                  | vegetable.yaml       | ✅     |
-| 3     | Plant Protein              | plantProtein.yaml    | 📝     |
-| 4     | Condiment                  | condiment.yaml       | 📝     |
-| 5     | Sauce                      | sauce.yaml           | 📝     |
-| 6     | Meat                       | meat.yaml            | 📝     |
-| 7     | Poultry                    | poultry.yaml         | 📝     |
-| 8     | Fish                       | fish.yaml            | 📝     |
-| 9     | Dairy                      | dairy.yaml           | 📝     |
-| 10    | Cheese                     | cheese.yaml          | 📝     |
-| 11    | Sugar                      | sugar.yaml           | 📝     |
-| 12    | Spice                      | spice.yaml           | 📝     |
-| 13    | Fruit                      | fruit.yaml           | 📝     |
-| 14    | Oil and Fat                | oilAndFat.yaml       | 📝     |
-| 15    | Nuts and Seeds             | nutsAndSeeds.yaml    | 📝     |
-| 16    | Preparation Time           | preparationTime.yaml | 📝     |
-| 17    | Only in-season ingredients | inSeason.yaml        | 📝     |
-| 18    | Tags                       | tags.yaml            | 📝     |
+Each category has a router at `accordions/{accordion}.yaml`:
 
-✅ = Completed | 📝 = To be created
-
-## Real-World Test Case Example
-
-Here's how to use these files in an actual test case:
-
-```yaml
-# tests/e2e/asserts/Search/en/Filters/filtersViewFilteredOn1520Min.yaml
-appId: 'com.recipedia'
----
-# Basic UI checks
-- assertVisible:
-    id: 'SearchScreen::FiltersToggleButtons'
-    label: 'Filter toggle button is displayed'
-
-# Check Cereal accordion (filtered)
-- runFlow:
-    file: 'accordions/grainOrCereal.yaml'
-    env:
-      STATE: 'some'
-      VISIBLE_ITEMS: 'Taco Shells,Croutons,Pizza Dough,Pasta'
-    label: 'Assert filtered Cereal accordion'
-
-# Check Vegetable accordion (filtered)
-- runFlow:
-    file: 'accordions/vegetable.yaml'
-    env:
-      STATE: 'some'
-      VISIBLE_ITEMS: 'Lettuce,Romaine Lettuce'
-    label: 'Assert filtered Vegetable accordion'
-
-# Scroll to Tags
-- scrollUntilVisible:
-    element:
-      id: 'SearchScreen::FilterAccordion::Accordion::18'
-    direction: DOWN
-    label: 'Scroll to Tags accordion'
-
-# Check Tags accordion (filtered)
-- runFlow:
-    file: 'accordions/tags.yaml'
-    env:
-      STATE: 'some'
-      VISIBLE_ITEMS: 'Italian,Lunch,Mexican,Quick Meal,Salad,Healthy'
-    label: 'Assert filtered Tags accordion'
-```
+| Index | Accordion Name             | Router File          |
+| ----- | -------------------------- | -------------------- |
+| 0     | Cereal                     | grainOrCereal.yaml   |
+| 1     | Legumes                    | legumes.yaml         |
+| 2     | Vegetable                  | vegetable.yaml       |
+| 3     | Plant Protein              | plantProtein.yaml    |
+| 4     | Condiment                  | condiment.yaml       |
+| 5     | Sauce                      | sauce.yaml           |
+| 6     | Meat                       | meat.yaml            |
+| 7     | Poultry                    | poultry.yaml         |
+| 8     | Fish                       | fish.yaml            |
+| 9     | Dairy                      | dairy.yaml           |
+| 10    | Cheese                     | cheese.yaml          |
+| 11    | Sugar                      | sugar.yaml           |
+| 12    | Spice                      | spice.yaml           |
+| 13    | Fruit                      | fruit.yaml           |
+| 14    | Oil and Fat                | oilAndFat.yaml       |
+| 15    | Nuts and Seeds             | nutsAndSeeds.yaml    |
+| 16    | Preparation Time           | preparationTime.yaml |
+| 17    | Only in-season ingredients | inSeason.yaml        |
+| 18    | Tags                       | tags.yaml            |
 
 ## Benefits
 
-1. **Crystal Clear Intent**: State explicitly declares what you're testing
-2. **No Duplication**: Write each accordion once, use everywhere
-3. **Easy Maintenance**: Update ingredient lists in one place
-4. **Flexible**: Handles all filtering scenarios
-5. **Auto-management**: Expand/collapse handled automatically
-6. **Type-safe**: Uses testIDs for reliability
+1. **No Duplication**: 3 generics + one thin router per category replace the old
+   per-item leaf files.
+2. **Clear Intent**: `STATE` explicitly declares what you're testing.
+3. **Easy Maintenance**: Update a category's item list in its router only.
+4. **Auto-management**: Expand/collapse and the accordion counter are handled by
+   the generics.
 
-## Creating New Accordion Files
+## Creating a New Accordion Category
 
-To create a new accordion file:
-
-1. Copy `grainOrCereal.yaml` as a template
-2. Update `ACCORDION_INDEX` default value
-3. Update accordion name in all comments and labels
-4. List all items for that accordion category
-5. For each item:
-   - Add `assertVisible` for `STATE="all"`
-   - Add `assertVisible` + `assertNotVisible` pair for `STATE="some"`
-6. Test all 3 states work correctly
+1. Copy `accordions/grainOrCereal.yaml` as a router template.
+2. Set `CATEGORY` to the accordion's visible title.
+3. Set `ITEM_NAMES` (comma list, render order) and `ITEM_COUNT`.
+4. No leaf files needed — the 3 generics do the work.

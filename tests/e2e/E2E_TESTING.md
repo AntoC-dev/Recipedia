@@ -51,7 +51,8 @@ Tests are organized into **test suites**, each with its own configuration file
 at the root of `tests/e2e/`:
 
 - **app-init.yaml** - App launch, onboarding, FAB menu
-- **search.yaml** - Search bar and filters
+- **search.yaml** - Search bar behaviour (open/close, scroll, results, typing)
+- **search-filters.yaml** - Filter page and filter chip behaviour
 - **recipe-view.yaml** - Recipe display and viewing
 - **recipe-create.yaml** - Recipe creation manual entry
 - **ocr.yaml** - OCR-based recipe creation (camera and gallery)
@@ -160,7 +161,8 @@ flow files in the parent directory are used for local runs.
 **Available Suite Configurations**:
 
 - `app-init.yaml` - Application initialization tests
-- `search.yaml` - Search and filtering tests
+- `search.yaml` - Search bar tests
+- `search-filters.yaml` - Filter page and filter chip tests
 - `recipe-view.yaml` - Recipe viewing tests
 - `recipe-create.yaml` - Manual recipe creation tests
 - `ocr.yaml` - OCR-based recipe creation tests
@@ -458,6 +460,7 @@ strategy:
       [
         'app-init',
         'search',
+        'search-filters',
         'recipe-view',
         'recipe-create',
         'shopping',
@@ -1125,8 +1128,11 @@ before and after:
   keyboard is animating
 
 **Modal Dialogs (ItemDialog, NoteEditDialog, UrlInputDialog)**: For single-line
-inputs in modal dialogs, use platform-specific keyboard dismissal. The iOS
-keyboard shows "Done" button (via `returnKeyType="done"` on CustomTextInput):
+inputs in modal dialogs, dismiss the keyboard with the shared
+`flows/dismissModalKeyboard.yaml` flow (same sharing pattern as
+`waitForKeyboardDismiss.yaml`), which holds the platform split — `hideKeyboard`
+on Android, tap the iOS keyboard "Done" key (shown via `returnKeyType="done"` on
+CustomTextInput). Do **not** re-inline the platform blocks in callers:
 
 ```yaml
 # Enter text in modal
@@ -1137,29 +1143,21 @@ keyboard shows "Done" button (via `returnKeyType="done"` on CustomTextInput):
 - waitForAnimationToEnd:
     label: 'Wait for keyboard animation'
 
-# Platform-specific keyboard dismissal
 - runFlow:
-    when:
-      platform: Android
-    commands:
-      - hideKeyboard:
-          label: 'Dismiss keyboard on Android'
+    file: '../../flows/dismissModalKeyboard.yaml' # adjust relative path per caller depth
+    label: 'Dismiss modal keyboard (platform-specific)'
 
 - runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn:
-          id: 'Done'
-          label: 'Tap Done key to dismiss keyboard on iOS'
-
-- waitForAnimationToEnd:
+    file: '../../flows/waitForKeyboardDismiss.yaml'
     label: 'Wait for keyboard to dismiss'
 ```
 
 This approach is more reliable than `pressKey: enter` for iOS modals, where the
 enter key press can be flaky on CI simulators. Android continues to use
-`hideKeyboard` which works reliably.
+`hideKeyboard` which works reliably. The flow is **only** for the plain
+`hideKeyboard`/`Done` dismissal — when the Android and iOS branches also do
+different follow-up work (e.g. selecting an autocomplete item after the keyboard
+hides), keep those asymmetric platform blocks inline.
 
 **Non-Modal Single-Line Inputs**: For inputs on regular screens (not in modals),
 `pressKey: enter` can still be used but may be replaced with the
@@ -1760,6 +1758,40 @@ automatically — see the [CI Retry Mechanism](#ci-retry-mechanism) section.
 **Last Updated**: 2026-07-05
 
 **Key Changes**:
+
+- **Search suite split (`search` + `search-filters`)**: the search suite grew
+  too large/slow as one run, so the five filter-page/filter-chip cases moved to
+  their own `cases/search-filters/` dir (+ `ci/` wrappers) driven by
+  `search-filters.yaml`. `search.yaml` now covers only search-bar behaviour.
+  Added `search-filters` to the Android/iOS CI suite matrices in
+  `.github/workflows/build-test.yml`.
+- **`flows/recipe/tapRecipeEdit.yaml`**: the `Recipe::AppBar::Edit` tap-to-edit
+  block was inlined 12x across `cases/recipe-edit/`; now one shared flow called
+  via `runFlow` (each caller keeps its own descriptive label).
+- **`flows/dismissModalKeyboard.yaml`**: the device-specific modal
+  keyboard-dismiss split (`hideKeyboard` on Android / tap `Done` on iOS) was
+  inlined 40x across 30 case/flow files; extracted to one shared flow (mirrors
+  `commitTypedSearch.yaml`). Asymmetric platform blocks that do extra per-OS
+  follow-up work were left inline.
+- **Generic filter-accordion asserts**
+  (`asserts/search/en/filters/accordions/`): the per-category/per-item assert
+  files (`{cat}-all.yaml`, `{cat}-filtered.yaml`, `{cat}-hidden.yaml`, and ~120
+  `{cat}-items/*` leaves — ~180 files) were replaced by three data-driven
+  generics plus thin per-category routers, cutting the accordion cluster from
+  229 to 47 files:
+  - `accordionAll.yaml` — env `CATEGORY`, `ITEM_COUNT`; `repeat`s over the item
+    count asserting each `Item::${output.i}` visible, then collapse + guard.
+  - `accordionFiltered.yaml` — env `CATEGORY`, `ITEM_NAMES`, `ITEM_COUNT`,
+    `VISIBLE_ITEMS`; `repeat`s over `ITEM_NAMES`, asserting each name visible at
+    the next `output.itemIndex` when present in `VISIBLE_ITEMS`, else absent by
+    text (hidden items are unrendered, so visible items are contiguous from 0).
+  - `accordionHidden.yaml` — env `CATEGORY`; single `assertNotVisible`. Each
+    `{cat}.yaml` router holds that category's data and dispatches by `STATE`
+    (`all`/`filtered`/`hidden`). FR wrappers reuse `accordionAll.yaml` with
+    French titles. Counter contract: callers own `output.accordionIndex`; the
+    generics own `output.i`/`output.itemIndex` and increment `accordionIndex`
+    once per accordion. Note: `runFlow.when` only supports `true:` (no `false:`)
+    — negate in the expression (`true: ${!output.itemVisible}`).
 
 - **Android search-commit via keyboard action key (replaces `pressKey: back`)**:
   The earlier `pressKey: back` Android branch of `commitTypedSearch.yaml` still

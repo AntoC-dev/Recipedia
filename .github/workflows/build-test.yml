@@ -255,7 +255,7 @@ jobs:
       platform: android
       app-artifact: build-apk
       # Forks lack QUITOQUE_*: drop the bulk-import, ocr and web suites
-      suites: ${{ needs.install-and-doctor.outputs.is_internal == 'true' && '["app-init", "bulk-import", "duplicates-ingredient", "duplicates-recipe", "duplicates-tag", "ingredient-dialog", "ingredients-db", "menu", "ocr", "recipe-create", "recipe-readonly", "recipe-edit", "search", "settings", "shopping", "tags-db", "web", "web-edge-cases"]' || '["app-init", "duplicates-ingredient", "duplicates-recipe", "duplicates-tag", "ingredient-dialog", "ingredients-db", "menu", "recipe-create", "recipe-readonly", "recipe-edit", "search", "settings", "shopping", "tags-db", "web-edge-cases"]' }}
+      suites: ${{ needs.install-and-doctor.outputs.is_internal == 'true' && '["app-init", "bulk-import", "duplicates-ingredient", "duplicates-recipe", "duplicates-tag", "ingredient-dialog", "ingredients-db", "menu", "ocr", "recipe-create", "recipe-readonly", "recipe-edit", "search", "search-filters", "settings", "shopping", "tags-db", "web", "web-edge-cases"]' || '["app-init", "duplicates-ingredient", "duplicates-recipe", "duplicates-tag", "ingredient-dialog", "ingredients-db", "menu", "recipe-create", "recipe-readonly", "recipe-edit", "search", "search-filters", "settings", "shopping", "tags-db", "web-edge-cases"]' }}
     secrets:
       QUITOQUE_USERNAME: ${{ secrets.QUITOQUE_USERNAME }}
       QUITOQUE_PASSWORD: ${{ secrets.QUITOQUE_PASSWORD }}
@@ -282,7 +282,7 @@ jobs:
     with:
       platform: ios
       app-artifact: build-ios-app
-      suites: '["app-init", "bulk-import", "duplicates-ingredient", "duplicates-recipe", "duplicates-tag", "ingredient-dialog", "ingredients-db", "menu", "ocr", "recipe-create", "recipe-readonly", "recipe-edit", "search", "settings", "shopping", "tags-db", "web", "web-edge-cases"]'
+      suites: '["app-init", "bulk-import", "duplicates-ingredient", "duplicates-recipe", "duplicates-tag", "ingredient-dialog", "ingredients-db", "menu", "ocr", "recipe-create", "recipe-readonly", "recipe-edit", "search", "search-filters", "settings", "shopping", "tags-db", "web", "web-edge-cases"]'
     secrets:
       QUITOQUE_USERNAME: ${{ secrets.QUITOQUE_USERNAME }}
       QUITOQUE_PASSWORD: ${{ secrets.QUITOQUE_PASSWORD }}

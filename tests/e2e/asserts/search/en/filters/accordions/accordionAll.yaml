@@ -1,0 +1,76 @@
+appId: "com.recipedia"
+---
+# Generic "all items visible" accordion assert (no filter applied).
+# env: CATEGORY = visible accordion title, ITEM_COUNT = number of items.
+# Uses the shared output.accordionIndex counter maintained by the caller.
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to ${CATEGORY} accordion"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    label: "${CATEGORY} accordion is displayed"
+
+- assertVisible:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    text: "${CATEGORY}"
+    label: "${CATEGORY} accordion title"
+
+- tapOn:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    label: "Expand ${CATEGORY} accordion"
+
+- evalScript: ${output.i = 0}
+
+- repeat:
+    times: ${ITEM_COUNT}
+    commands:
+      - waitForAnimationToEnd
+      - scrollUntilVisible:
+          element:
+            id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::${output.i}"
+          direction: DOWN
+          speed: 20
+          centerElement: true
+          label: "Scroll to ${CATEGORY} item ${output.i}"
+      - waitForAnimationToEnd
+      - assertVisible:
+          id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::${output.i}"
+          label: "${CATEGORY} item ${output.i} is visible"
+      - evalScript: ${output.i = output.i + 1}
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    direction: UP
+    speed: 20
+    centerElement: true
+    label: "Scroll back up to ${CATEGORY} accordion header"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    label: "Collapse ${CATEGORY} accordion"
+
+- waitForAnimationToEnd
+
+- assertNotVisible:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"
+    label: "Guard - first ${CATEGORY} item hidden after collapse"
+
+- assertVisible:
+    id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
+    label: "Guard - ${CATEGORY} accordion header still visible"
+
+- evalScript: ${output.accordionIndex = output.accordionIndex + 1}

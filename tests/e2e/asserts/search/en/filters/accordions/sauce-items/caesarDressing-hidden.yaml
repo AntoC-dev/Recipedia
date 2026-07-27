@@ -1,5 +1,0 @@
-appId: "com.recipedia"
----
-- assertNotVisible:
-    text: "Caesar Dressing"
-    label: "Caesar Dressing filter is not visible"

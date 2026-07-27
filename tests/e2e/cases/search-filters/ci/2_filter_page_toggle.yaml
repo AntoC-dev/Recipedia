@@ -1,0 +1,14 @@
+name: "2 - Filter Page Toggle Flow"
+appId: "com.recipedia"
+tags:
+  - search-filters
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../2_filter_page_toggle.yaml"
+          label: "Run 2 - Filter Page Toggle Flow"

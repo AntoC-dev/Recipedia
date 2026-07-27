@@ -1,5 +1,0 @@
-appId: "com.recipedia"
----
-- assertNotVisible:
-    text: "Vegetarian"
-    label: "Vegetarian filter is not visible"

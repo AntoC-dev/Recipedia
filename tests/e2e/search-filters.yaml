@@ -1,0 +1,16 @@
+platform:
+  ios:
+    disableAnimations: true
+  android:
+    disableAnimations: true
+
+flows:
+  - cases/search-filters/ci/*
+
+executionOrder:
+  flowsOrder:
+    - "1 - Filter Removal Flow"
+    - "2 - Filter Page Toggle Flow"
+    - "3 - Single Filter Application Flow"
+    - "4 - Multiple Filters Application Flow"
+    - "5 - Filters With Text Search Flow"

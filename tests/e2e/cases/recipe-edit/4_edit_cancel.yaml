@@ -28,10 +28,8 @@ tags:
     file: "../../asserts/recipe/common/buttonsReadOnly.yaml"
     label: "Assert - Verify read-only mode buttons"
 
-- tapOn:
-    id: "Recipe::AppBar::Edit"
-    waitToSettleTimeoutMs: 0
-    retryTapIfNoChange: false
+- runFlow:
+    file: "../../flows/recipe/tapRecipeEdit.yaml"
     label: "Action - Enter edit mode"
 
 - runFlow:

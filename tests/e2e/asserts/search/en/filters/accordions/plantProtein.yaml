@@ -1,23 +1,27 @@
 appId: "com.recipedia"
 ---
-# Route to appropriate flow based on STATE
-
-# STATE="filtered": Some items visible (filter applied)
+# Route by STATE to the shared accordion asserts for the Plant Protein category.
 - runFlow:
     when:
       true: ${STATE == "filtered"}
-    file: "plantProtein-filtered.yaml"
+    file: "accordionFiltered.yaml"
     env:
+      CATEGORY: "Plant Protein"
+      ITEM_NAMES: "Eggs"
+      ITEM_COUNT: "1"
       VISIBLE_ITEMS: ${VISIBLE_ITEMS}
 
-# STATE="hidden": Accordion not displayed (no matching items)
 - runFlow:
     when:
       true: ${STATE == "hidden"}
-    file: "plantProtein-hidden.yaml"
+    file: "accordionHidden.yaml"
+    env:
+      CATEGORY: "Plant Protein"
 
-# STATE="all": All items visible (no filter applied)
 - runFlow:
     when:
       true: ${STATE == "all"}
-    file: "plantProtein-all.yaml"
+    file: "accordionAll.yaml"
+    env:
+      CATEGORY: "Plant Protein"
+      ITEM_COUNT: "1"

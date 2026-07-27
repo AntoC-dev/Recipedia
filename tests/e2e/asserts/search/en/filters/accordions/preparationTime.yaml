@@ -1,23 +1,27 @@
 appId: "com.recipedia"
 ---
-# Route to appropriate flow based on STATE
-
-# STATE="filtered": Some items visible (filter applied)
+# Route by STATE to the shared accordion asserts for the Preparation Time category.
 - runFlow:
     when:
       true: ${STATE == "filtered"}
-    file: "preparationTime-filtered.yaml"
+    file: "accordionFiltered.yaml"
     env:
+      CATEGORY: "Preparation Time"
+      ITEM_NAMES: "0-5 min,5-10 min,10-15 min,15-20 min,20-30 min,30-45 min,45-60 min,More than 1 hour"
+      ITEM_COUNT: "8"
       VISIBLE_ITEMS: ${VISIBLE_ITEMS}
 
-# STATE="hidden": Accordion not displayed (no matching items)
 - runFlow:
     when:
       true: ${STATE == "hidden"}
-    file: "preparationTime-hidden.yaml"
+    file: "accordionHidden.yaml"
+    env:
+      CATEGORY: "Preparation Time"
 
-# STATE="all": All items visible (no filter applied)
 - runFlow:
     when:
       true: ${STATE == "all"}
-    file: "preparationTime-all.yaml"
+    file: "accordionAll.yaml"
+    env:
+      CATEGORY: "Preparation Time"
+      ITEM_COUNT: "8"

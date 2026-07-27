@@ -1,5 +1,0 @@
-appId: "com.recipedia"
----
-- assertNotVisible:
-    text: "Soy Sauce"
-    label: "Soy Sauce filter is not visible"

@@ -1,23 +1,27 @@
 appId: "com.recipedia"
 ---
-# Route to appropriate flow based on STATE
-
-# STATE="filtered": Some items visible (filter applied)
+# Route by STATE to the shared accordion asserts for the Only in-season ingredients category.
 - runFlow:
     when:
       true: ${STATE == "filtered"}
-    file: "inSeason-filtered.yaml"
+    file: "accordionFiltered.yaml"
     env:
+      CATEGORY: "Only in-season ingredients"
+      ITEM_NAMES: "Only in-season ingredients"
+      ITEM_COUNT: "1"
       VISIBLE_ITEMS: ${VISIBLE_ITEMS}
 
-# STATE="hidden": Accordion not displayed (no matching items)
 - runFlow:
     when:
       true: ${STATE == "hidden"}
-    file: "inSeason-hidden.yaml"
+    file: "accordionHidden.yaml"
+    env:
+      CATEGORY: "Only in-season ingredients"
 
-# STATE="all": All items visible (no filter applied)
 - runFlow:
     when:
       true: ${STATE == "all"}
-    file: "inSeason-all.yaml"
+    file: "accordionAll.yaml"
+    env:
+      CATEGORY: "Only in-season ingredients"
+      ITEM_COUNT: "1"

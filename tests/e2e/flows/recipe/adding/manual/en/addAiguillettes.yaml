@@ -155,19 +155,8 @@ appId: "com.recipedia"
     label: "Wait for the autocomplete list to appear"
 
 - runFlow:
-    when:
-      platform: Android
-    commands:
-      - hideKeyboard:
-          label: "Hide keyboard on Android"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn:
-          id: "Done"
-          label: "Tap Done key to dismiss keyboard on iOS"
+    file: "../../../../../flows/dismissModalKeyboard.yaml"
+    label: "Dismiss modal keyboard (platform-specific)"
 
 - swipe:
     start: "50%,50%"

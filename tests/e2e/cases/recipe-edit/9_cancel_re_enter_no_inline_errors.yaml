@@ -25,10 +25,8 @@ tags:
     timeout: 60000
     label: "Wait for recipe screen to load"
 
-- tapOn:
-    id: "Recipe::AppBar::Edit"
-    waitToSettleTimeoutMs: 0
-    retryTapIfNoChange: false
+- runFlow:
+    file: "../../flows/recipe/tapRecipeEdit.yaml"
     label: "Action - Enter edit mode"
 
 - extendedWaitUntil:
@@ -106,10 +104,8 @@ tags:
     timeout: 60000
     label: "Wait for recipe screen to switch back to read-only mode"
 
-- tapOn:
-    id: "Recipe::AppBar::Edit"
-    waitToSettleTimeoutMs: 0
-    retryTapIfNoChange: false
+- runFlow:
+    file: "../../flows/recipe/tapRecipeEdit.yaml"
     label: "Action - Re-enter edit mode"
 
 - extendedWaitUntil:
