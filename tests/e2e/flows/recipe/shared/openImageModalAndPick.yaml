@@ -9,19 +9,8 @@ appId: "com.recipedia"
     label: "Check camera modal is displayed"
 
 - runFlow:
-    when:
-      platform: Android
-    commands:
-      - tapOn:
-          id: "Modal::Camera::RoundButton"
-          label: "Select camera option on Android"
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn:
-          id: "Modal::Gallery::RoundButton"
-          label: "Select gallery option on iOS (simulator doesn't support camera)"
+    file: "../adding/ocr/pickImageSource.yaml"
+    label: "Select image source (platform-specific)"
 
 - runFlow:
     file: "../adding/ocr/android/takePhoto.yaml"

@@ -64,18 +64,8 @@ tags:
     label: "Assert - Verify ingredient name appears in recipe"
 
 - runFlow:
-    when:
-      platform: Android
-    commands:
-      - pressKey: "ENTER"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn:
-          id: "Done"
-          label: "Tap Done key to dismiss keyboard on iOS"
+    file: "../../flows/confirmInputKeyboard.yaml"
+    label: "Confirm input via keyboard (platform-specific)"
 
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"
@@ -161,14 +151,10 @@ tags:
     label: "Action - Select Fish type"
 
 - runFlow:
-    when:
-      platform: iOS
-    commands:
-      - extendedWaitUntil:
-          visible:
-            text: "radio button, checked"
-          timeout: 30000
-          label: "Wait for item to be checked on iOS"
+    file: "../../flows/waitForCheckSettle.yaml"
+    env:
+      CHECK_TEXT: "radio button, checked"
+    label: "Wait for item to settle after check (platform-specific)"
 
 - scrollUntilVisible:
     element:
@@ -218,14 +204,10 @@ tags:
     label: "Action - Select february for seasonality"
 
 - runFlow:
-    when:
-      platform: iOS
-    commands:
-      - extendedWaitUntil:
-          visible:
-            text: "February"
-          timeout: 30000
-          label: "Wait for item to be checked on iOS"
+    file: "../../flows/waitForCheckSettle.yaml"
+    env:
+      CHECK_TEXT: "February"
+    label: "Wait for item to settle after check (platform-specific)"
 
 - assertVisible:
     id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::ConfirmButton"

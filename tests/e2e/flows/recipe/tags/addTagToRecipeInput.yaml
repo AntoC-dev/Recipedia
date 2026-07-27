@@ -49,18 +49,8 @@ appId: "com.recipedia"
     label: "Verify tag is filled properly"
 
 - runFlow:
-    when:
-      platform: Android
-    commands:
-      - pressKey: enter
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn:
-          id: "Done"
-          label: "Close keyboard on iOS"
+    file: "../../confirmInputKeyboard.yaml"
+    label: "Confirm input via keyboard (platform-specific)"
 
 - runFlow:
     file: "../../waitForKeyboardDismiss.yaml"

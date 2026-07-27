@@ -1,0 +1,27 @@
+appId: "com.recipedia"
+---
+# Dismiss the keyboard via a platform-specific action, parameterised by the iOS
+# return-key label. Android has a universal `hideKeyboard`; iOS has no such
+# command, so it taps the on-screen return key whose accessibility id matches
+# the input's `returnKeyType` (e.g. "Search", "Return", "Done").
+#
+# Pass the iOS key id via the env var KEY:
+#   - runFlow:
+#       file: "../../dismissKeyboardVia.yaml"
+#       env:
+#         KEY: "Search"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "${KEY}"
+          label: "Tap ${KEY} key to dismiss keyboard on iOS"

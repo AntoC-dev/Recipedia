@@ -1,0 +1,17 @@
+appId: "com.recipedia"
+---
+# Validate the picked image without cropping, the platform way. Android confirms
+# the native crop menu; iOS taps the "Choose" button of the photo picker. Both
+# commit the image and dismiss the picker.
+
+- runFlow:
+    file: "android/validateWithoutCropping.yaml"
+    when:
+      platform: Android
+    label: "Validate without cropping on Android"
+
+- runFlow:
+    file: "iOS/validateWithoutCropping.yaml"
+    when:
+      platform: iOS
+    label: "Validate without cropping on iOS"

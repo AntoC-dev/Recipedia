@@ -40,13 +40,8 @@ appId: "com.recipedia"
     label: "Select first image from app modal"
 
 - runFlow:
-    file: ../android/validateWithoutCropping.yaml
-    when:
-      platform: Android
-- runFlow:
-    file: ../iOS/validateWithoutCropping.yaml
-    when:
-      platform: iOS
+    file: ../validateWithoutCropping.yaml
+    label: "Validate without cropping (platform-specific)"
 
 - evalScript: ${output.modalImageCounter = output.modalImageCounter + 1}
 

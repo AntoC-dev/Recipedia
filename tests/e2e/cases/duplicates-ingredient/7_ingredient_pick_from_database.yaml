@@ -46,18 +46,8 @@ tags:
     label: "Wait for keyboard animation"
 
 - runFlow:
-    when:
-      platform: Android
-    commands:
-      - pressKey: "ENTER"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn:
-          id: "Done"
-          label: "Tap Done key to validate the ingredient on iOS"
+    file: "../../flows/confirmInputKeyboard.yaml"
+    label: "Confirm input via keyboard (platform-specific)"
 
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"

@@ -1159,6 +1159,57 @@ enter key press can be flaky on CI simulators. Android continues to use
 different follow-up work (e.g. selecting an autocomplete item after the keyboard
 hides), keep those asymmetric platform blocks inline.
 
+**Sibling shared flows for symmetric platform splits**: the same
+extract-the-split-once pattern applies to other per-OS blocks that accomplish
+the same goal a different way. Wrap them via `runFlow`; do **not** re-inline the
+platform branches. Keep a block inline only when one OS does something the other
+lacks (asymmetric).
+
+- **`flows/dismissKeyboardVia.yaml`** (env `KEY`): plain keyboard dismiss where
+  iOS taps a non-`Done` return key — `hideKeyboard` on Android, tap `${KEY}` on
+  iOS. Use for `returnKeyType` variants like `Search` and `Return`
+  (`dismissModalKeyboard.yaml` remains the `Done` special case).
+
+  ```yaml
+  - runFlow:
+      file: '../../dismissKeyboardVia.yaml' # adjust relative path per caller depth
+      env:
+        KEY: 'Search'
+      label: 'Dismiss keyboard (platform-specific)'
+  ```
+
+- **`flows/confirmInputKeyboard.yaml`**: confirm/commit an input via the
+  keyboard — `pressKey: Enter` on Android, tap the `Done` return key on iOS.
+  Distinct from a plain dismiss, which does not submit on Android.
+
+  ```yaml
+  - runFlow:
+      file: '../../confirmInputKeyboard.yaml' # adjust relative path per caller depth
+      label: 'Confirm input via keyboard (platform-specific)'
+  ```
+
+- **`flows/waitForCheckSettle.yaml`** (env `CHECK_TEXT`): wait for a
+  radio/checkbox selection to settle. iOS animates the checked state in, so it
+  waits for `CHECK_TEXT` to appear (30s); Android updates instantly, so the flow
+  is a no-op there.
+
+  ```yaml
+  - runFlow:
+      file: '../../waitForCheckSettle.yaml' # adjust relative path per caller depth
+      env:
+        CHECK_TEXT: 'radio button, checked'
+      label: 'Wait for item to settle after check (platform-specific)'
+  ```
+
+- **`flows/recipe/adding/ocr/pickImageSource.yaml`**: pick the recipe-image
+  source in the open modal — tap the camera option on Android, the gallery
+  option on iOS (the simulator has no camera).
+
+- **`flows/recipe/adding/ocr/validateWithoutCropping.yaml`**: validate the
+  picked image without cropping — wraps the per-OS
+  `android/validateWithoutCropping.yaml` / `iOS/validateWithoutCropping.yaml`
+  and dispatches by platform.
+
 **Non-Modal Single-Line Inputs**: For inputs on regular screens (not in modals),
 `pressKey: enter` can still be used but may be replaced with the
 platform-specific approach if flakiness is observed.
@@ -1773,6 +1824,20 @@ automatically — see the [CI Retry Mechanism](#ci-retry-mechanism) section.
   inlined 40x across 30 case/flow files; extracted to one shared flow (mirrors
   `commitTypedSearch.yaml`). Asymmetric platform blocks that do extra per-OS
   follow-up work were left inline.
+- **Remaining symmetric platform splits wrapped** (follow-up to the above):
+  extracted the leftover per-OS blocks where both branches reach the same goal a
+  different way, replacing the inline copies with `runFlow`:
+  - `flows/dismissKeyboardVia.yaml` (env `KEY`) — `hideKeyboard` on Android /
+    tap a non-`Done` return key (`Search`, `Return`) on iOS; 5 inline blocks.
+  - `flows/confirmInputKeyboard.yaml` — `pressKey: Enter` on Android / tap
+    `Done` on iOS to commit an input; 7 inline blocks.
+  - `flows/waitForCheckSettle.yaml` (env `CHECK_TEXT`) — iOS waits for the
+    checked state to animate in, Android no-op; 13 inline blocks.
+  - `flows/recipe/adding/ocr/pickImageSource.yaml` — tap camera (Android) /
+    gallery (iOS) source in the image modal; 3 inline blocks.
+  - `flows/recipe/adding/ocr/validateWithoutCropping.yaml` — dispatches to the
+    per-OS crop-validate flows; 3 inline pairs. Asymmetric per-OS blocks (one OS
+    asserts/does something the other lacks) were left inline by design.
 - **Generic filter-accordion asserts**
   (`asserts/search/en/filters/accordions/`): the per-category/per-item assert
   files (`{cat}-all.yaml`, `{cat}-filtered.yaml`, `{cat}-hidden.yaml`, and ~120

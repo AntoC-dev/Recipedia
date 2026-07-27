@@ -51,19 +51,10 @@ appId: "com.recipedia"
     label: "Wait for keyboard animation"
 
 - runFlow:
-    when:
-      platform: Android
-    commands:
-      - hideKeyboard:
-          label: "Dismiss keyboard on Android"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn:
-          id: "Return"
-          label: "Tap Return key to dismiss keyboard on iOS"
+    file: "../../../dismissKeyboardVia.yaml"
+    env:
+      KEY: "Return"
+    label: "Dismiss keyboard (platform-specific)"
 
 - runFlow:
     file: "../../../waitForKeyboardDismiss.yaml"
@@ -83,19 +74,10 @@ appId: "com.recipedia"
     label: "Wait for keyboard animation"
 
 - runFlow:
-    when:
-      platform: Android
-    commands:
-      - hideKeyboard:
-          label: "Dismiss keyboard on Android"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn:
-          id: "Return"
-          label: "Tap Return key to dismiss keyboard on iOS"
+    file: "../../../dismissKeyboardVia.yaml"
+    env:
+      KEY: "Return"
+    label: "Dismiss keyboard (platform-specific)"
 
 - runFlow:
     file: "../../../waitForKeyboardDismiss.yaml"

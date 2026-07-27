@@ -1,0 +1,21 @@
+appId: "com.recipedia"
+---
+# Wait for a selection to settle after tapping a radio/checkbox item. iOS animates
+# the checked state in, so we wait for its accessibility text to appear; Android
+# updates instantly and needs no wait, so this flow is a no-op there.
+#
+# Pass the text that marks the settled state via the env var CHECK_TEXT:
+#   - runFlow:
+#       file: "../../waitForCheckSettle.yaml"
+#       env:
+#         CHECK_TEXT: "radio button, checked"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - extendedWaitUntil:
+          visible:
+            text: "${CHECK_TEXT}"
+          timeout: 30000
+          label: "Wait for item to be checked on iOS"

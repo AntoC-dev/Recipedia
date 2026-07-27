@@ -55,14 +55,10 @@ tags:
     label: "Action - Change type from vegetable to Bread"
 
 - runFlow:
-    when:
-      platform: iOS
-    commands:
-      - extendedWaitUntil:
-          visible:
-            text: "radio button, checked"
-          timeout: 30000
-          label: "Wait for item to be checked on iOS"
+    file: "../../flows/waitForCheckSettle.yaml"
+    env:
+      CHECK_TEXT: "radio button, checked"
+    label: "Wait for item to settle after check (platform-specific)"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::TypeAccordion"
@@ -125,14 +121,10 @@ tags:
     label: "Action - Remove october from seasonality"
 
 - runFlow:
-    when:
-      platform: iOS
-    commands:
-      - extendedWaitUntil:
-          visible:
-            text: "January"
-          timeout: 30000
-          label: "Wait for item to be checked on iOS"
+    file: "../../flows/waitForCheckSettle.yaml"
+    env:
+      CHECK_TEXT: "January"
+    label: "Wait for item to settle after check (platform-specific)"
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::ConfirmButton"

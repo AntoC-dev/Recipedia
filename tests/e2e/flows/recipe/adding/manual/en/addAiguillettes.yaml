@@ -93,18 +93,8 @@ appId: "com.recipedia"
     label: "Wait for keyboard animation"
 
 - runFlow:
-    when:
-      platform: Android
-    commands:
-      - pressKey: enter
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn:
-          id: "Done"
-          label: "Tap Done key to dismiss keyboard on iOS"
+    file: "../../../../confirmInputKeyboard.yaml"
+    label: "Confirm input via keyboard (platform-specific)"
 
 - runFlow:
     file: "../../../../waitForKeyboardDismiss.yaml"
@@ -441,18 +431,8 @@ appId: "com.recipedia"
     label: "Wait for keyboard animation"
 
 - runFlow:
-    when:
-      platform: Android
-    commands:
-      - pressKey: "ENTER"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn:
-          id: "Done"
-          label: "Tap Done key to dismiss keyboard on iOS"
+    file: "../../../../confirmInputKeyboard.yaml"
+    label: "Confirm input via keyboard (platform-specific)"
 
 - runFlow:
     file: "../../../../waitForKeyboardDismiss.yaml"
