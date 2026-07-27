@@ -33,6 +33,7 @@
 
 import React from 'react';
 import { Card, Text, useTheme } from 'react-native-paper';
+import type { TextProps } from 'react-native-paper';
 import { padding, screenWidth } from '@styles/spacing';
 import { View } from 'react-native';
 import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
@@ -52,6 +53,8 @@ export type RecipeCardProps = {
   recipe: recipeTableElement;
 };
 
+const titleLines = 2;
+
 /**
  * RecipeCard component
  *
@@ -60,10 +63,16 @@ export type RecipeCardProps = {
  */
 export function RecipeCard({ testId, size, recipe }: RecipeCardProps) {
   const { navigate } = useNavigation<StackScreenNavigation>();
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   const { t } = useI18n();
-  const cardWidth = screenWidth * (size === 'small' ? 0.35 : 0.45);
+  const isSmallCard = size === 'small';
+  const cardWidth = screenWidth * (isSmallCard ? 0.35 : 0.45);
   const radius = cardWidth / 12;
+  const titleVariant: NonNullable<TextProps<never>['variant']> = isSmallCard
+    ? 'labelLarge'
+    : 'titleMedium';
+  const titleFont = isSmallCard ? fonts.labelLarge : fonts.titleMedium;
+  const titleMinHeight = titleLines * titleFont.lineHeight + 2 * padding.medium;
 
   return (
     <Card
@@ -71,10 +80,8 @@ export function RecipeCard({ testId, size, recipe }: RecipeCardProps) {
       testID={testId + `::${recipe.title}`}
       mode={'outlined'}
       style={{
-        flex: 1,
         margin: padding.small,
         width: cardWidth,
-        justifyContent: 'flex-start',
         backgroundColor: colors.surface,
         borderRadius: radius,
       }}
@@ -95,9 +102,13 @@ export function RecipeCard({ testId, size, recipe }: RecipeCardProps) {
       <Text
         testID={testId + '::Title'}
         accessible={true}
-        variant={size === 'small' ? 'labelLarge' : 'titleMedium'}
-        numberOfLines={2}
-        style={{ padding: padding.medium }}
+        variant={titleVariant}
+        numberOfLines={titleLines}
+        style={{
+          padding: padding.medium,
+          lineHeight: titleFont.lineHeight,
+          minHeight: titleMinHeight,
+        }}
       >
         {recipe.title}
       </Text>

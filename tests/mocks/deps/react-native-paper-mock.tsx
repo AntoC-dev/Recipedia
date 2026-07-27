@@ -355,11 +355,11 @@ export const useTheme = jest.fn(() => ({
     headlineMedium: { fontSize: 20 },
     headlineLarge: { fontSize: 24 },
     titleSmall: { fontSize: 16 },
-    titleMedium: { fontSize: 18 },
+    titleMedium: { fontSize: 16, lineHeight: 24 },
     titleLarge: { fontSize: 20 },
     labelSmall: { fontSize: 10 },
     labelMedium: { fontSize: 12 },
-    labelLarge: { fontSize: 14 },
+    labelLarge: { fontSize: 14, lineHeight: 20 },
   },
 }));
 

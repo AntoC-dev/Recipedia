@@ -1,5 +1,7 @@
 import { fireEvent, render } from '@testing-library/react-native';
+import { StyleSheet } from 'react-native';
 import RecipeCard, { RecipeCardProps } from '@components/molecules/RecipeCard';
+import { padding } from '@styles/spacing';
 import React from 'react';
 import { testRecipes } from '@test-data/recipesDataset';
 import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
@@ -230,6 +232,44 @@ describe('RecipeCard Component', () => {
       assertRecipeDataDisplay(getByTestId, queryByTestId, 'medium', minimalRecipe);
     }
   });
+
+  const titleLineHeightBySize = { small: 20, medium: 24 } as const;
+
+  test.each(['small', 'medium'] as const)(
+    'reserves a fixed two-line title block so %s cards keep a uniform height',
+    size => {
+      const lineHeight = titleLineHeightBySize[size];
+      const shortTitle = renderRecipeCard({ size, recipe: { ...sampleRecipe, title: 'A' } });
+      const longTitle = renderRecipeCard({
+        size,
+        recipe: {
+          ...sampleRecipe,
+          title: 'A Very Long Recipe Title That Wraps Across Exactly Two Full Lines',
+        },
+      });
+
+      const expectedMinHeight = 2 * lineHeight + 2 * padding.medium;
+
+      for (const utils of [shortTitle, longTitle]) {
+        const titleStyle = StyleSheet.flatten(
+          utils.getByTestId('test-recipe-card::Title').props.style
+        );
+        expect(titleStyle.lineHeight).toBe(lineHeight);
+        expect(titleStyle.minHeight).toBe(expectedMinHeight);
+      }
+    }
+  );
+
+  test.each(['small', 'medium'] as const)(
+    'does not stretch the %s card via flex so its border wraps the whole content',
+    size => {
+      const { getByTestId } = renderRecipeCard({ size });
+      const cardStyle = StyleSheet.flatten(
+        getByTestId(`test-recipe-card::${sampleRecipe.title}`).props.style
+      );
+      expect(cardStyle.flex).toBeUndefined();
+    }
+  );
 
   test('handles size prop changes correctly', () => {
     const { getByTestId, queryByTestId, rerender } = renderRecipeCard({
