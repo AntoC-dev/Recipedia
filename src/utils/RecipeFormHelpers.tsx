@@ -33,16 +33,7 @@ import { RecipeNumberProps } from '@components/organisms/RecipeNumber';
 import { RecipeNutritionProps } from '@components/organisms/RecipeNutrition';
 import { RecipeSourceUrlProps } from '@components/molecules/RecipeSourceUrl';
 
-export type {
-  RecipeMode,
-  BaseRecipeProp,
-  ReadRecipeProp,
-  EditRecipeProp,
-  AddManuallyProp,
-  AddFromPicProp,
-  AddFromScrapeProp,
-  RecipePropType,
-} from '@customTypes/RecipeNavigationTypes';
+export type { RecipePropType } from '@customTypes/RecipeNavigationTypes';
 
 /**
  * Generic configuration type mapping all recipe states to a value type
