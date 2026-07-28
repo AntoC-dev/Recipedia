@@ -1,0 +1,7 @@
+appId: "com.recipedia"
+---
+# Assert an accordion category is NOT displayed (no matching items).
+# CATEGORY is the visible accordion title, e.g. "Cheese".
+- assertNotVisible:
+    text: "${CATEGORY}"
+    label: "${CATEGORY} accordion not displayed"

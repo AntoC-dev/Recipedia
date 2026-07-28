@@ -1,27 +1,17 @@
 appId: "com.recipedia"
 ---
-# Route to appropriate flow based on STATE
-
-# STATE="filtered": Some items visible (filter applied)
-# As there is only 1 item for now, nothing to filter
-- runFlow:
-    when:
-      true: ${STATE == "filtered"}
-    env:
-      VISIBLE_ITEMS: ${VISIBLE_ITEMS}
-    commands:
-      - assertVisible:
-          text: "Not visible"
-          label: "Asserting a non-existing bread element because we shouldn't go there"
-
-# STATE="hidden": Accordion not displayed (no matching items)
+# Route by STATE to the shared accordion asserts for the Bread category.
 - runFlow:
     when:
       true: ${STATE == "hidden"}
-    file: "bread-hidden.yaml"
+    file: "accordionHidden.yaml"
+    env:
+      CATEGORY: "Bread"
 
-# STATE="all": All items visible (no filter applied)
 - runFlow:
     when:
       true: ${STATE == "all"}
-    file: "bread-all.yaml"
+    file: "accordionAll.yaml"
+    env:
+      CATEGORY: "Bread"
+      ITEM_COUNT: "1"

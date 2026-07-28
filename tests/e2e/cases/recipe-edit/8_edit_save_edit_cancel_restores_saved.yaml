@@ -25,10 +25,8 @@ tags:
     timeout: 60000
     label: "Wait for recipe screen to load"
 
-- tapOn:
-    id: "Recipe::AppBar::Edit"
-    waitToSettleTimeoutMs: 0
-    retryTapIfNoChange: false
+- runFlow:
+    file: "../../flows/recipe/tapRecipeEdit.yaml"
     label: "Action - Enter first edit pass"
 
 - extendedWaitUntil:
@@ -58,10 +56,8 @@ tags:
     text: "Pesto Pasta Saved"
     label: "Assert - Read-only title reflects saved value"
 
-- tapOn:
-    id: "Recipe::AppBar::Edit"
-    waitToSettleTimeoutMs: 0
-    retryTapIfNoChange: false
+- runFlow:
+    file: "../../flows/recipe/tapRecipeEdit.yaml"
     label: "Action - Re-enter edit mode for the cancel-restores-saved check"
 
 - extendedWaitUntil:

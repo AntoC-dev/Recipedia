@@ -1,5 +1,0 @@
-appId: "com.recipedia"
----
-- assertNotVisible:
-    text: "Only in-season ingredients"
-    label: "Only in-season ingredients filter is not visible"

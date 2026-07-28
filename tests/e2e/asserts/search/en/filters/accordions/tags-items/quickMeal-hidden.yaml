@@ -1,5 +1,0 @@
-appId: "com.recipedia"
----
-- assertNotVisible:
-    text: "Quick Meal"
-    label: "Quick Meal filter is not visible"

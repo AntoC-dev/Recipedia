@@ -1,5 +1,15 @@
 appId: "com.recipedia"
 ---
+- extendedWaitUntil:
+    visible:
+      text: "Recents"
+    timeout: 5000
+    label: "Wait for the native photo picker to present"
+
+- waitForAnimationToEnd:
+    timeout: 3000
+    label: "Let the picker presentation animation settle before tapping"
+
 - tapOn:
     text: "Recents"
     label: "Go to recents photos"
@@ -8,8 +18,22 @@ appId: "com.recipedia"
     visible:
       text: "\\d+ Photo.*"
     timeout: 3000
-    label: "Wait for gallery to load"
+    label: "Wait for gallery grid to load"
+
+- waitForAnimationToEnd:
+    timeout: 3000
+    label: "Let the album grid finish sliding in before tapping a cell"
 
 - tapOn:
-    point: "10%,11%"
-    label: "Select any photos of the gallery"
+    point: "12%,18%"
+    label: "Select first photo of the gallery"
+
+- waitForAnimationToEnd:
+    timeout: 3000
+    label: "Let the selection register before asserting the picker dismissed"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "Recents"
+    timeout: 10000
+    label: "Wait for native photo picker to dismiss after selection"

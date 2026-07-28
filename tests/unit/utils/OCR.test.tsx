@@ -12,6 +12,7 @@ import TextRecognition, {
   TextLine,
   TextRecognitionResult,
 } from '@react-native-ml-kit/text-recognition';
+import i18n from '@utils/i18n';
 
 jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 
@@ -696,6 +697,31 @@ describe('OCR Utility Functions', () => {
 
         expect(result).toEqual({ recipePreparation: expectedPreparationHelloFresh });
       });
+
+      test('warns and returns nothing when no preparation steps are found', async () => {
+        mockRecognize.mockResolvedValue({
+          text: 'some random continuation text.',
+          blocks: [
+            {
+              recognizedLanguages: [],
+              text: 'some random continuation text.',
+              lines: [],
+            },
+          ],
+        });
+
+        const result = await extractFieldFromImage(
+          uriForOCR,
+          recipeColumnsNames.preparation,
+          baseState,
+          mockWarn
+        );
+
+        expect(result).toEqual({});
+        expect(mockWarn).toHaveBeenCalledWith(
+          expect.stringContaining('Expected non empty array of preparation steps')
+        );
+      });
     });
   });
 
@@ -1055,6 +1081,548 @@ describe('OCR Utility Functions', () => {
     });
   });
 
+  describe('on image field', () => {
+    test('on recognizeText logs and returns empty string', async () => {
+      mockRecognize.mockResolvedValue({ text: '', blocks: [] });
+
+      expect(await recognizeText(uriForOCR, recipeColumnsNames.image)).toEqual('');
+    });
+
+    test('on extractFieldFromImage returns recipeImage without calling OCR', async () => {
+      const result = await extractFieldFromImage(
+        uriForOCR,
+        recipeColumnsNames.image,
+        baseState,
+        mockWarn
+      );
+
+      expect(result).toEqual({ recipeImage: uriForOCR });
+      expect(mockRecognize).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('recognizeText error handling', () => {
+    test('returns empty string when TextRecognition.recognize rejects', async () => {
+      mockRecognize.mockRejectedValue(new Error('camera failure'));
+
+      expect(await recognizeText(uriForOCR, recipeColumnsNames.title)).toEqual('');
+    });
+  });
+
+  describe('tranformOCRInOneNumber edge cases', () => {
+    test('returns the persons array when persons and time counts do not match', async () => {
+      mockRecognize.mockResolvedValue({
+        text: '2 pers.\n3 pers.\n25 min',
+        blocks: [createBlock('2 pers.'), createBlock('3 pers.'), createBlock('25 min')],
+      });
+
+      expect(await recognizeText(uriForOCR, recipeColumnsNames.persons)).toEqual([2, 3]);
+    });
+
+    test('logs and returns the default value when neither persons nor time are found', async () => {
+      mockRecognize.mockResolvedValue({
+        text: 'abc\nxyz',
+        blocks: [createBlock('abc'), createBlock('xyz')],
+      });
+
+      expect(await recognizeText(uriForOCR, recipeColumnsNames.time)).toEqual(-1);
+    });
+  });
+
+  describe('tranformOCRInPreparation edge cases', () => {
+    const createPreparationBlock = (text: string): TextBlock => ({
+      recognizedLanguages: [],
+      text,
+      lines: [],
+    });
+
+    test('skips blocks with empty text', async () => {
+      mockRecognize.mockResolvedValue({
+        text: '\n1. Real step',
+        blocks: [createPreparationBlock(''), createPreparationBlock('1. Real step')],
+      });
+
+      const result = await recognizeText(uriForOCR, recipeColumnsNames.preparation);
+
+      expect(result).toEqual([{ title: 'Real step', description: '' }]);
+    });
+
+    test('uses whole text as title when a numbered block has no title-dot separator', async () => {
+      mockRecognize.mockResolvedValue({
+        text: '5\nJust a title',
+        blocks: [createPreparationBlock('5\nJust a title')],
+      });
+
+      const result = await recognizeText(uriForOCR, recipeColumnsNames.preparation);
+
+      expect(result).toEqual([{ title: 'Just a title', description: '' }]);
+    });
+  });
+
+  describe('on ingredients field', () => {
+    describe('on recognizeText', () => {
+      test('parses an Android-style header table with box header, split person suffix and ingredient note', async () => {
+        mockRecognize.mockResolvedValue({
+          text: '',
+          blocks: [
+            createBlock('Dans votre box'),
+            createBlock('Farine (g)'),
+            createBlock('Sucre (cups) (bio)'),
+            createBlock('Sel'),
+            createBlock('2'),
+            createBlock('pers.'),
+            createBlock('200'),
+            createBlock('100'),
+            createBlock('5'),
+            createBlock('3'),
+            createBlock('pers.'),
+            createBlock('300'),
+            createBlock('150'),
+            createBlock('7'),
+          ],
+        });
+
+        const result = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+
+        expect(result).toEqual([
+          {
+            name: 'Farine',
+            unit: 'g',
+            quantityPerPersons: [
+              { persons: 2, quantity: '200' },
+              { persons: 3, quantity: '300' },
+            ],
+          },
+          {
+            name: 'Sucre',
+            unit: 'cups',
+            quantityPerPersons: [
+              { persons: 2, quantity: '100' },
+              { persons: 3, quantity: '150' },
+            ],
+            note: 'bio',
+          },
+          {
+            name: 'Sel',
+            unit: '',
+            quantityPerPersons: [
+              { persons: 2, quantity: '5' },
+              { persons: 3, quantity: '7' },
+            ],
+          },
+        ]);
+      });
+
+      test('merges an ingredient split across two lines and drops the leftover suspicious group', async () => {
+        mockRecognize.mockResolvedValue({
+          text: '',
+          blocks: [
+            createBlock('Poivre'),
+            createBlock('noir (g)'),
+            createBlock('2p'),
+            createBlock('15'),
+            createBlock('100'),
+            createBlock('3p'),
+          ],
+        });
+
+        const result = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+
+        expect(result).toEqual([
+          {
+            name: 'Poivre noir',
+            unit: 'g',
+            quantityPerPersons: [{ persons: 2, quantity: '15' }],
+          },
+        ]);
+      });
+
+      test('gives up merging and keeps raw ingredients when two consecutive suspicious values cannot be merged safely', async () => {
+        mockRecognize.mockResolvedValue({
+          text: '',
+          blocks: [
+            createBlock('X'),
+            createBlock('Y'),
+            createBlock('Z (g)'),
+            createBlock('2p'),
+            createBlock('15'),
+            createBlock('20'),
+            createBlock('100'),
+          ],
+        });
+
+        const result = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+
+        expect(result).toEqual([
+          { name: 'X', unit: '', quantityPerPersons: [{ persons: 2, quantity: '15' }] },
+          { name: 'Y', unit: '', quantityPerPersons: [{ persons: 2, quantity: '20' }] },
+          { name: 'Z', unit: 'g', quantityPerPersons: [{ persons: 2, quantity: '100' }] },
+        ]);
+      });
+
+      test('(iOS) detects reversed block order when markers and quantities appear before ingredient names', async () => {
+        mockRecognize.mockResolvedValue({
+          text: '',
+          blocks: [
+            createBlock('2p'),
+            createBlock('200'),
+            createBlock('100'),
+            createBlock('3p'),
+            createBlock('300'),
+            createBlock('150'),
+            createBlock('Farine (g)'),
+            createBlock('Sucre (cups)'),
+          ],
+        });
+
+        const result = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+
+        expect(result).toEqual([
+          {
+            name: 'Farine',
+            unit: 'g',
+            quantityPerPersons: [
+              { persons: 2, quantity: '200' },
+              { persons: 3, quantity: '300' },
+            ],
+          },
+          {
+            name: 'Sucre',
+            unit: 'cups',
+            quantityPerPersons: [
+              { persons: 2, quantity: '100' },
+              { persons: 3, quantity: '150' },
+            ],
+          },
+        ]);
+      });
+
+      test('(iOS) redistributes quantities when person markers are out of order', async () => {
+        mockRecognize.mockResolvedValue({
+          text: '',
+          blocks: [
+            createBlock('Farine (g)'),
+            createBlock('Sucre (cups)'),
+            createBlock('5p'),
+            createBlock('2005'),
+            createBlock('1005'),
+            createBlock('3p'),
+            createBlock('2003'),
+            createBlock('1003'),
+            createBlock('2p'),
+            createBlock('2002'),
+            createBlock('1002'),
+            createBlock('4p'),
+            createBlock('2004'),
+            createBlock('1004'),
+          ],
+        });
+
+        const result = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+
+        expect(result).toEqual([
+          {
+            name: 'Farine',
+            unit: 'g',
+            quantityPerPersons: [
+              { persons: 2, quantity: '2002' },
+              { persons: 3, quantity: '2003' },
+              { persons: 4, quantity: '2004' },
+              { persons: 5, quantity: '2005' },
+            ],
+          },
+          {
+            name: 'Sucre',
+            unit: 'cups',
+            quantityPerPersons: [
+              { persons: 2, quantity: '1002' },
+              { persons: 3, quantity: '1003' },
+              { persons: 4, quantity: '1004' },
+              { persons: 5, quantity: '1005' },
+            ],
+          },
+        ]);
+      });
+
+      test('falls back to parseIngredientsNoHeader when no person marker is present', async () => {
+        mockRecognize.mockResolvedValue({
+          text: '',
+          blocks: [
+            createBlock('Flour'),
+            createBlock('Sugar'),
+            createBlock('200 g'),
+            createBlock('100 g'),
+          ],
+        });
+
+        const result = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+
+        expect(result).toEqual([
+          { name: 'Flour', unit: 'g', quantityPerPersons: [{ persons: -1, quantity: '200' }] },
+          { name: 'Sugar', unit: 'g', quantityPerPersons: [{ persons: -1, quantity: '100' }] },
+        ]);
+      });
+
+      test('logs and returns an empty array when i18n throws while reading ingredient OCR terms', async () => {
+        jest.spyOn(i18n, 'getResource').mockImplementationOnce(() => {
+          throw new Error('i18n boom');
+        });
+        mockRecognize.mockResolvedValue({
+          text: '',
+          blocks: [createBlock('Farine (g)'), createBlock('2p'), createBlock('200')],
+        });
+
+        const result = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+
+        expect(result).toEqual([
+          { name: 'Farine', unit: 'g', quantityPerPersons: [{ persons: 2, quantity: '200' }] },
+        ]);
+      });
+
+      test('falls back to no box headers or person suffixes when i18n has no ingredient OCR terms', async () => {
+        jest.spyOn(i18n, 'getResource').mockReturnValueOnce(undefined);
+        mockRecognize.mockResolvedValue({
+          text: '',
+          blocks: [createBlock('Farine (g)'), createBlock('2p'), createBlock('200')],
+        });
+
+        const result = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+
+        expect(result).toEqual([
+          { name: 'Farine', unit: 'g', quantityPerPersons: [{ persons: 2, quantity: '200' }] },
+        ]);
+      });
+
+      test('splits a single OCR token containing space-separated quantities', async () => {
+        mockRecognize.mockResolvedValue({
+          text: '',
+          blocks: [
+            createBlock('A (g)'),
+            createBlock('B (g)'),
+            createBlock('2p'),
+            createBlock('200 100'),
+          ],
+        });
+
+        const result = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+
+        expect(result).toEqual([
+          { name: 'A', unit: 'g', quantityPerPersons: [{ persons: 2, quantity: '200' }] },
+          { name: 'B', unit: 'g', quantityPerPersons: [{ persons: 2, quantity: '100' }] },
+        ]);
+      });
+
+      test('pads a group with empty quantities when fewer values than ingredients precede the next marker', async () => {
+        mockRecognize.mockResolvedValue({
+          text: '',
+          blocks: [
+            createBlock('A (g)'),
+            createBlock('B (g)'),
+            createBlock('2p'),
+            createBlock('200'),
+            createBlock('3p'),
+            createBlock('300'),
+            createBlock('400'),
+          ],
+        });
+
+        const result = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+
+        expect(result).toEqual([
+          {
+            name: 'A',
+            unit: 'g',
+            quantityPerPersons: [
+              { persons: 2, quantity: '200' },
+              { persons: 3, quantity: '300' },
+            ],
+          },
+          {
+            name: 'B',
+            unit: 'g',
+            quantityPerPersons: [
+              { persons: 2, quantity: '' },
+              { persons: 3, quantity: '400' },
+            ],
+          },
+        ]);
+      });
+
+      test('(iOS) pads redistributed quantities when the out-of-order slice runs short', async () => {
+        mockRecognize.mockResolvedValue({
+          text: '',
+          blocks: [
+            createBlock('A (g)'),
+            createBlock('B (g)'),
+            createBlock('3p'),
+            createBlock('100'),
+            createBlock('200'),
+            createBlock('2p'),
+            createBlock('300'),
+          ],
+        });
+
+        const result = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+
+        expect(result).toEqual([
+          {
+            name: 'A',
+            unit: 'g',
+            quantityPerPersons: [
+              { persons: 2, quantity: '300' },
+              { persons: 3, quantity: '100' },
+            ],
+          },
+          {
+            name: 'B',
+            unit: 'g',
+            quantityPerPersons: [
+              { persons: 2, quantity: '' },
+              { persons: 3, quantity: '200' },
+            ],
+          },
+        ]);
+      });
+
+      test('cannot merge when the suspicious index points past the collected quantities', async () => {
+        mockRecognize.mockResolvedValue({
+          text: '',
+          blocks: [
+            createBlock('A'),
+            createBlock('B (g)'),
+            createBlock('C (g)'),
+            createBlock('2p'),
+            createBlock('5'),
+            createBlock('100'),
+          ],
+        });
+
+        const result = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+
+        expect(result).toEqual([
+          { name: 'A', unit: '', quantityPerPersons: [{ persons: 2, quantity: '5' }] },
+          { name: 'B', unit: 'g', quantityPerPersons: [{ persons: 2, quantity: '100' }] },
+          { name: 'C', unit: 'g', quantityPerPersons: [{ persons: 2, quantity: '' }] },
+        ]);
+      });
+
+      test('cannot merge when the suspicious ingredient is the last one with no neighbor to merge into', async () => {
+        mockRecognize.mockResolvedValue({
+          text: '',
+          blocks: [
+            createBlock('A (g)'),
+            createBlock('B'),
+            createBlock('2p'),
+            createBlock('100'),
+            createBlock('50'),
+          ],
+        });
+
+        const result = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+
+        expect(result).toEqual([
+          { name: 'A', unit: 'g', quantityPerPersons: [{ persons: 2, quantity: '100' }] },
+          { name: 'B', unit: '', quantityPerPersons: [{ persons: 2, quantity: '50' }] },
+        ]);
+      });
+    });
+
+    describe('on extractFieldFromImage', () => {
+      const mockResultIngredients: TextRecognitionResult = {
+        text: '',
+        blocks: [
+          createBlock('Farine (g)'),
+          createBlock('Sucre (cups) (bio)'),
+          createBlock('Sel'),
+          createBlock('2p'),
+          createBlock('200'),
+          createBlock('100'),
+          createBlock('5'),
+          createBlock('3p'),
+          createBlock('300'),
+          createBlock('150'),
+          createBlock('7'),
+        ],
+      };
+
+      test('scales to the exact matching persons count without warning', async () => {
+        mockRecognize.mockResolvedValue(mockResultIngredients);
+
+        const result = await extractFieldFromImage(
+          uriForOCR,
+          recipeColumnsNames.ingredients,
+          { ...baseState, recipePersons: 3 },
+          mockWarn
+        );
+
+        expect(result).toEqual({
+          recipeIngredients: [
+            { name: 'Farine', unit: 'g', quantity: '300' },
+            { name: 'Sucre', unit: 'cups', quantity: '150', note: 'bio' },
+            { name: 'Sel', unit: '', quantity: '7' },
+          ],
+        });
+        expect(mockWarn).not.toHaveBeenCalled();
+      });
+
+      test('falls back to the first available persons count and scales when no exact match exists', async () => {
+        mockRecognize.mockResolvedValue(mockResultIngredients);
+
+        const result = await extractFieldFromImage(
+          uriForOCR,
+          recipeColumnsNames.ingredients,
+          { ...baseState, recipePersons: 10 },
+          mockWarn
+        );
+
+        expect(result).toEqual({
+          recipeIngredients: [
+            { name: 'Farine', unit: 'g', quantity: '1000' },
+            { name: 'Sucre', unit: 'cups', quantity: '500', note: 'bio' },
+            { name: 'Sel', unit: '', quantity: '25' },
+          ],
+        });
+        expect(mockWarn).toHaveBeenCalledWith(
+          expect.stringContaining("Couldn't find exact match for persons (10)")
+        );
+      });
+
+      test('uses the first available persons count without scaling when recipePersons is not positive', async () => {
+        mockRecognize.mockResolvedValue(mockResultIngredients);
+
+        const result = await extractFieldFromImage(
+          uriForOCR,
+          recipeColumnsNames.ingredients,
+          { ...baseState, recipePersons: 0 },
+          mockWarn
+        );
+
+        expect(result).toEqual({
+          recipeIngredients: [
+            { name: 'Farine', unit: 'g', quantity: '200' },
+            { name: 'Sucre', unit: 'cups', quantity: '100', note: 'bio' },
+            { name: 'Sel', unit: '', quantity: '5' },
+          ],
+        });
+        expect(mockWarn).toHaveBeenCalledWith(
+          expect.stringContaining("Couldn't find exact match for persons in ingredient")
+        );
+      });
+
+      test('warns and returns nothing when no ingredients are found, using the default warning handler', async () => {
+        mockRecognize.mockResolvedValue({ text: '', blocks: [] });
+
+        const result = await extractFieldFromImage(
+          uriForOCR,
+          recipeColumnsNames.ingredients,
+          baseState
+        );
+
+        expect(result).toEqual({});
+      });
+    });
+  });
+
   test('extractFieldFromImage should handle unrecognized field gracefully', async () => {
     const result = await extractFieldFromImage(
       uriForOCR,
@@ -1088,6 +1656,14 @@ describe('OCR Utility Functions', () => {
 
       expect(result.ingredientNames).toEqual([]);
     });
+
+    test('logs and returns an empty array when TextRecognition.recognize rejects', async () => {
+      mockRecognize.mockRejectedValue(new Error('camera failure'));
+
+      const result = await extractFieldFromImage(uriForOCR, 'ingredientNames', baseState, mockWarn);
+
+      expect(result.ingredientNames).toEqual([]);
+    });
   });
 
   describe('on ingredientQuantities field', () => {
@@ -1109,6 +1685,19 @@ describe('OCR Utility Functions', () => {
 
     test('returns empty ingredientQuantities when OCR finds nothing', async () => {
       mockRecognize.mockResolvedValue({ text: '', blocks: [] });
+
+      const result = await extractFieldFromImage(
+        uriForOCR,
+        'ingredientQuantities',
+        baseState,
+        mockWarn
+      );
+
+      expect(result.ingredientQuantities).toEqual([]);
+    });
+
+    test('logs and returns an empty array when TextRecognition.recognize rejects', async () => {
+      mockRecognize.mockRejectedValue(new Error('camera failure'));
 
       const result = await extractFieldFromImage(
         uriForOCR,
@@ -1165,6 +1754,25 @@ describe('OCR Utility Functions', () => {
         expect(result).toEqual({
           recipeTags: new Array<TagDraft>(tagAlreadyPresent, ...expectedTags),
         });
+      });
+
+      test('warns and returns nothing when OCR finds no tag words', async () => {
+        mockRecognize.mockResolvedValue({
+          text: '   ',
+          blocks: [createBlock('   ')],
+        });
+
+        const result = await extractFieldFromImage(
+          uriForOCR,
+          recipeColumnsNames.tags,
+          baseState,
+          mockWarn
+        );
+
+        expect(result).toEqual({});
+        expect(mockWarn).toHaveBeenCalledWith(
+          expect.stringContaining('Expected non empty array of strings for tags')
+        );
       });
     });
   });
@@ -1687,6 +2295,141 @@ describe('OCR Utility Functions', () => {
 
         mockRecognize.mockResolvedValue(mockResultNoMarker);
         expect(await recognizeText(uriForOCR, recipeColumnsNames.nutrition)).toEqual({});
+      });
+
+      test('logs and returns empty object when i18n throws while reading nutrition OCR terms', async () => {
+        jest.spyOn(i18n, 'getResource').mockImplementationOnce(() => {
+          throw new Error('i18n boom');
+        });
+        mockRecognize.mockResolvedValue({
+          text: '',
+          blocks: [createBlock('sel'), createBlock('pour 100g'), createBlock('5g')],
+        });
+
+        expect(await recognizeText(uriForOCR, recipeColumnsNames.nutrition)).toEqual({});
+      });
+
+      test('returns empty object when fewer values than labels are found', async () => {
+        mockRecognize.mockResolvedValue({
+          text: '',
+          blocks: [
+            createBlock('sel'),
+            createBlock('fibres'),
+            createBlock('pour 100g'),
+            createBlock('5g'),
+          ],
+        });
+
+        expect(await recognizeText(uriForOCR, recipeColumnsNames.nutrition)).toEqual({});
+      });
+
+      test('stops collecting values at the per portion column indicator', async () => {
+        mockRecognize.mockResolvedValue({
+          text: '',
+          blocks: [
+            createBlock('sel'),
+            createBlock('pour 100g'),
+            createBlock('5g'),
+            createBlock('Par portion'),
+            createBlock('999g'),
+          ],
+        });
+
+        expect(await recognizeText(uriForOCR, recipeColumnsNames.nutrition)).toEqual({ salt: 5 });
+      });
+
+      test('omits a field whose value is a single character with no unit', async () => {
+        mockRecognize.mockResolvedValue({
+          text: '',
+          blocks: [
+            createBlock('sel'),
+            createBlock('matières grasses'),
+            createBlock('pour 100g'),
+            createBlock('5g'),
+            createBlock('5'),
+          ],
+        });
+
+        expect(await recognizeText(uriForOCR, recipeColumnsNames.nutrition)).toEqual({ salt: 5 });
+      });
+
+      test('omits a field whose value keeps a stray non-digit character after cleanup', async () => {
+        mockRecognize.mockResolvedValue({
+          text: '',
+          blocks: [
+            createBlock('sel'),
+            createBlock('glucides'),
+            createBlock('pour 100g'),
+            createBlock('5g'),
+            createBlock('1,2,3g'),
+          ],
+        });
+
+        expect(await recognizeText(uriForOCR, recipeColumnsNames.nutrition)).toEqual({ salt: 5 });
+      });
+
+      test('omits a field whose value is above the maximum nutrition value', async () => {
+        mockRecognize.mockResolvedValue({
+          text: '',
+          blocks: [
+            createBlock('sel'),
+            createBlock('fibres'),
+            createBlock('pour 100g'),
+            createBlock('5g'),
+            createBlock('99999g'),
+          ],
+        });
+
+        expect(await recognizeText(uriForOCR, recipeColumnsNames.nutrition)).toEqual({ salt: 5 });
+      });
+
+      test('omits a field whose value starts with a letter', async () => {
+        mockRecognize.mockResolvedValue({
+          text: '',
+          blocks: [
+            createBlock('sel'),
+            createBlock('protéines'),
+            createBlock('pour 100g'),
+            createBlock('5g'),
+            createBlock('xyz'),
+          ],
+        });
+
+        expect(await recognizeText(uriForOCR, recipeColumnsNames.nutrition)).toEqual({ salt: 5 });
+      });
+
+      test('assigns the new value to energyKj without swapping when it is not smaller than the existing kcal value', async () => {
+        mockRecognize.mockResolvedValue({
+          text: '',
+          blocks: [
+            createBlock('Energie'),
+            createBlock('pour 100g'),
+            createBlock('200kcal'),
+            createBlock('500kcal'),
+          ],
+        });
+
+        expect(await recognizeText(uriForOCR, recipeColumnsNames.nutrition)).toEqual({
+          energyKcal: 200,
+          energyKj: 500,
+        });
+      });
+
+      test('swaps kj into kcal when a larger duplicate energy value follows an existing kj value', async () => {
+        mockRecognize.mockResolvedValue({
+          text: '',
+          blocks: [
+            createBlock('Energie'),
+            createBlock('pour 100g'),
+            createBlock('1500kcal'),
+            createBlock('2500kcal'),
+          ],
+        });
+
+        expect(await recognizeText(uriForOCR, recipeColumnsNames.nutrition)).toEqual({
+          energyKcal: 1500,
+          energyKj: 2500,
+        });
       });
     });
   });

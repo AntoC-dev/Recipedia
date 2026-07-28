@@ -42,10 +42,8 @@ tags:
     timeout: 5000
     label: "Wait recipe screen to load"
 
-- tapOn:
-    id: "Recipe::AppBar::Edit"
-    waitToSettleTimeoutMs: 0
-    retryTapIfNoChange: false
+- runFlow:
+    file: "../../flows/recipe/tapRecipeEdit.yaml"
     label: "Action - Enter edit mode"
 
 - runFlow:

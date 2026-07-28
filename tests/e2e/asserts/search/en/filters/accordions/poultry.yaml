@@ -1,23 +1,27 @@
 appId: "com.recipedia"
 ---
-# Route to appropriate flow based on STATE
-
-# STATE="filtered": Some items visible (filter applied)
+# Route by STATE to the shared accordion asserts for the Poultry category.
 - runFlow:
     when:
       true: ${STATE == "filtered"}
-    file: "poultry-filtered.yaml"
+    file: "accordionFiltered.yaml"
     env:
+      CATEGORY: "Poultry"
+      ITEM_NAMES: "Chicken Breast"
+      ITEM_COUNT: "1"
       VISIBLE_ITEMS: ${VISIBLE_ITEMS}
 
-# STATE="hidden": Accordion not displayed (no matching items)
 - runFlow:
     when:
       true: ${STATE == "hidden"}
-    file: "poultry-hidden.yaml"
+    file: "accordionHidden.yaml"
+    env:
+      CATEGORY: "Poultry"
 
-# STATE="all": All items visible (no filter applied)
 - runFlow:
     when:
       true: ${STATE == "all"}
-    file: "poultry-all.yaml"
+    file: "accordionAll.yaml"
+    env:
+      CATEGORY: "Poultry"
+      ITEM_COUNT: "1"

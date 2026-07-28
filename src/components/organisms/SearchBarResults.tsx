@@ -47,6 +47,7 @@ import React from 'react';
 import { List } from 'react-native-paper';
 import { FlatList, Keyboard, ListRenderItemInfo } from 'react-native';
 import { padding } from '@styles/spacing';
+import { useI18n } from '@utils/i18n';
 
 /**
  * Props for the SearchBarResults component
@@ -74,6 +75,8 @@ export function SearchBarResults({
   setSearchBarClicked,
   updateSearchString,
 }: SearchBarResultsProps) {
+  const { t } = useI18n();
+
   const renderTitle = ({ item, index }: ListRenderItemInfo<string>) => {
     return (
       <List.Item
@@ -97,6 +100,15 @@ export function SearchBarResults({
         data={filteredTitles}
         renderItem={renderTitle}
         scrollEnabled={false}
+        keyboardShouldPersistTaps={'handled'}
+        ListEmptyComponent={
+          <List.Item
+            testID={testId + '::Empty'}
+            title={t('noRecipesFound')}
+            disabled
+            style={{ padding: padding.veryLarge }}
+          />
+        }
       />
     </List.Section>
   );

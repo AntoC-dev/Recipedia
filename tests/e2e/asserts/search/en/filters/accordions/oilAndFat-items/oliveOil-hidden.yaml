@@ -1,5 +1,0 @@
-appId: "com.recipedia"
----
-- assertNotVisible:
-    text: "Olive Oil"
-    label: "Olive Oil filter is not visible"

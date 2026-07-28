@@ -19,19 +19,8 @@ appId: "com.recipedia"
     label: "Assert - Check that the URL is well entered in the text input"
 
 - runFlow:
-    when:
-      platform: Android
-    commands:
-      - hideKeyboard:
-          label: "Dismiss keyboard on Android"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn:
-          id: "Done"
-          label: "Tap Done key to dismiss keyboard on iOS"
+    file: "../../../../flows/dismissModalKeyboard.yaml"
+    label: "Dismiss modal keyboard (platform-specific)"
 
 - runFlow:
     file: "../../../waitForKeyboardDismiss.yaml"

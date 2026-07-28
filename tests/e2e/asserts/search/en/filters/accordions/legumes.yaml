@@ -1,23 +1,27 @@
 appId: "com.recipedia"
 ---
-# Route to appropriate flow based on STATE
-
-# STATE="filtered": Some items visible (filter applied)
+# Route by STATE to the shared accordion asserts for the Legumes category.
 - runFlow:
     when:
       true: ${STATE == "filtered"}
-    file: "legumes-filtered.yaml"
+    file: "accordionFiltered.yaml"
     env:
+      CATEGORY: "Legumes"
+      ITEM_NAMES: "Red Lentils"
+      ITEM_COUNT: "1"
       VISIBLE_ITEMS: ${VISIBLE_ITEMS}
 
-# STATE="hidden": Accordion not displayed (no matching items)
 - runFlow:
     when:
       true: ${STATE == "hidden"}
-    file: "legumes-hidden.yaml"
+    file: "accordionHidden.yaml"
+    env:
+      CATEGORY: "Legumes"
 
-# STATE="all": All items visible (no filter applied)
 - runFlow:
     when:
       true: ${STATE == "all"}
-    file: "legumes-all.yaml"
+    file: "accordionAll.yaml"
+    env:
+      CATEGORY: "Legumes"
+      ITEM_COUNT: "1"

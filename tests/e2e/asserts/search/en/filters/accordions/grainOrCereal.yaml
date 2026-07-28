@@ -1,23 +1,27 @@
 appId: "com.recipedia"
 ---
-# Route to appropriate flow based on STATE
-
-# STATE="filtered": Some items visible (filter applied)
+# Route by STATE to the shared accordion asserts for the Cereal category.
 - runFlow:
     when:
       true: ${STATE == "filtered"}
-    file: "grainOrCereal-filtered.yaml"
+    file: "accordionFiltered.yaml"
     env:
+      CATEGORY: "Cereal"
+      ITEM_NAMES: "Spaghetti,Taco Shells,Croutons,Pizza Dough,Pasta,Sushi Rice"
+      ITEM_COUNT: "6"
       VISIBLE_ITEMS: ${VISIBLE_ITEMS}
 
-# STATE="hidden": Accordion not displayed (no matching items)
 - runFlow:
     when:
       true: ${STATE == "hidden"}
-    file: "grainOrCereal-hidden.yaml"
+    file: "accordionHidden.yaml"
+    env:
+      CATEGORY: "Cereal"
 
-# STATE="all": All items visible (no filter applied)
 - runFlow:
     when:
       true: ${STATE == "all"}
-    file: "grainOrCereal-all.yaml"
+    file: "accordionAll.yaml"
+    env:
+      CATEGORY: "Cereal"
+      ITEM_COUNT: "6"

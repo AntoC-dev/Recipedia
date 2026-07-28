@@ -13,10 +13,8 @@ tags:
     id: "RecipeImage::Image"
     label: "Assert - Recipe has an image before editing"
 
-- tapOn:
-    id: "Recipe::AppBar::Edit"
-    waitToSettleTimeoutMs: 0
-    retryTapIfNoChange: false
+- runFlow:
+    file: "../../flows/recipe/tapRecipeEdit.yaml"
     label: "Action - Enter edit mode"
 
 - extendedWaitUntil:

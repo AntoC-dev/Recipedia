@@ -1,0 +1,58 @@
+name: "12 - Search Empty State Flow"
+appId: "com.recipedia"
+tags:
+  - search
+---
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Action - Navigate to Search screen"
+
+- tapOn:
+    id: "SearchScreen::SearchBar"
+    label: "Action - Focus on search bar"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
+- inputText: "zzzzz"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard to finish typing"
+
+- runFlow:
+    file: "../../flows/search/dismissKeyboardKeepDropdown.yaml"
+    label: "Swipe-dismiss keyboard, keep dropdown open"
+
+- assertVisible:
+    id: "SearchScreen::SearchBarResults::Empty"
+    text: "No recipes found matching your filters"
+    label: "Assert - Empty state item with message is displayed when no recipe title matches (keyboard closed)"
+
+- tapOn:
+    id: "SearchScreen::SearchBar::RightIcon"
+    label: "Action - Tap clear icon: clears the unmatched text but keeps search focused"
+
+- runFlow:
+    file: "../../asserts/search/searchbar/searchBarNotFiltered.yaml"
+    label: "Assert - Clearing restores all suggestions, dropdown stays open (keyboard closed)"
+
+- tapOn:
+    id: "SearchScreen::SearchBar"
+    label: "Action - Refocus search bar to bring keyboard back for commit"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for keyboard to appear"
+
+- runFlow:
+    file: "../../flows/search/commitTypedSearch.yaml"
+    label: "Commit empty search to close dropdown and dismiss keyboard"
+
+- runFlow:
+    file: "../../flows/waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to dismiss"
+
+- runFlow:
+    file: "../../asserts/search/en/assertSearchScreen.yaml"
+    label: "Assert - Verify all recipe cards are visible again"

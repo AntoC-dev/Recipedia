@@ -1,3 +1,41 @@
+## [2.48.1](https://github.com/AntoC-dev/Recipedia/compare/v2.48.0...v2.48.1) (2026-07-26)
+
+### Bug Fixes
+
+* **e2e:** settle iOS gallery picker animations before taps ([340eabd](https://github.com/AntoC-dev/Recipedia/commit/340eabde06a21b9ca191d5e6c3bc8e21c8a94334))
+
+## [2.48.0](https://github.com/AntoC-dev/Recipedia/compare/v2.47.1...v2.48.0) (2026-07-25)
+
+### Features
+
+* **search:** keep keyboard open on suggestion tap ([0aa5af5](https://github.com/AntoC-dev/Recipedia/commit/0aa5af59bfcd435ce02abc88d690906b4a16f8fb))
+* **search:** keep keyboard open on suggestion tap ([#473](https://github.com/AntoC-dev/Recipedia/issues/473)) ([aa7a970](https://github.com/AntoC-dev/Recipedia/commit/aa7a9705b6d40fba404b0fd14f53bc7082b753a8))
+
+### Bug Fixes
+
+* **search:** dismiss keyboard on clear icon; update e2e flows for tap-persist ([5e3a4a7](https://github.com/AntoC-dev/Recipedia/commit/5e3a4a7382dc627115cb7d0fe7f0de2ae251812e))
+
+## [2.47.1](https://github.com/AntoC-dev/Recipedia/compare/v2.47.0...v2.47.1) (2026-07-25)
+
+### Performance Improvements
+
+* **#315:** add scheduler-backed idle scheduling primitive ([33df376](https://github.com/AntoC-dev/Recipedia/commit/33df3768fce00a1e0bb7cfdbf5a9a374fb83f45d)), closes [#315](https://github.com/AntoC-dev/Recipedia/issues/315)
+* **#315:** idle scheduling primitive + warm tag/ingredient search index ([#478](https://github.com/AntoC-dev/Recipedia/issues/478)) ([c801470](https://github.com/AntoC-dev/Recipedia/commit/c80147030a1c9e33ea6e250d3a272058225a301a)), closes [#315](https://github.com/AntoC-dev/Recipedia/issues/315) [#315](https://github.com/AntoC-dev/Recipedia/issues/315) [#438](https://github.com/AntoC-dev/Recipedia/issues/438) [#442](https://github.com/AntoC-dev/Recipedia/issues/442) [#443](https://github.com/AntoC-dev/Recipedia/issues/443) [#313](https://github.com/AntoC-dev/Recipedia/issues/313) [#419](https://github.com/AntoC-dev/Recipedia/issues/419) [443/#313](https://github.com/443/Recipedia/issues/313) [#315](https://github.com/AntoC-dev/Recipedia/issues/315) [#315](https://github.com/AntoC-dev/Recipedia/issues/315) [#438](https://github.com/AntoC-dev/Recipedia/issues/438)
+* **#315:** warm tag/ingredient search index during idle time ([3779fed](https://github.com/AntoC-dev/Recipedia/commit/3779fed05bf3df0685c31557c48bbad939dc4913)), closes [#315](https://github.com/AntoC-dev/Recipedia/issues/315)
+
+## [2.47.0](https://github.com/AntoC-dev/Recipedia/compare/v2.46.2...v2.47.0) (2026-07-25)
+
+### Features
+
+* **recipe:** non-blocking OCR feedback via global snackbar ([#316](https://github.com/AntoC-dev/Recipedia/issues/316)) ([3a09dbc](https://github.com/AntoC-dev/Recipedia/commit/3a09dbc9ae78ae7d8f36faf3727af92d627fa7d3))
+* **recipe:** non-blocking OCR feedback via global snackbar ([#316](https://github.com/AntoC-dev/Recipedia/issues/316)) ([#476](https://github.com/AntoC-dev/Recipedia/issues/476)) ([85c353e](https://github.com/AntoC-dev/Recipedia/commit/85c353e3afc026c5461b4632f4ae69fd3bd4f7e2))
+
+## [2.46.2](https://github.com/AntoC-dev/Recipedia/compare/v2.46.1...v2.46.2) (2026-07-24)
+
+### Bug Fixes
+
+* **e2e:** stabilize iOS OCR gallery photo selection ([6b73484](https://github.com/AntoC-dev/Recipedia/commit/6b73484473cd9095da4a5a25d924e7fb1b91cff5))
+
 ## [2.46.1](https://github.com/AntoC-dev/Recipedia/compare/v2.46.0...v2.46.1) (2026-07-23)
 
 ### Bug Fixes

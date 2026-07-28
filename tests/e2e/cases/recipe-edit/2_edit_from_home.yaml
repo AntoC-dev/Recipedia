@@ -19,10 +19,8 @@ env:
     file: "../../asserts/recipe/readonly/en/sushiRolls.yaml"
     label: "Assert - Verify Sushi Rolls recipe is displayed correctly"
 
-- tapOn:
-    id: "Recipe::AppBar::Edit"
-    waitToSettleTimeoutMs: 0
-    retryTapIfNoChange: false
+- runFlow:
+    file: "../../flows/recipe/tapRecipeEdit.yaml"
     label: "Action - Tap on the Edit button"
 
 - runFlow:
@@ -61,10 +59,8 @@ env:
       INGREDIENT_QUANTITY_AND_UNIT: "5 pieces"
     label: "Assert - Verify note was NOT saved after cancel"
 
-- tapOn:
-    id: "Recipe::AppBar::Edit"
-    waitToSettleTimeoutMs: 0
-    retryTapIfNoChange: false
+- runFlow:
+    file: "../../flows/recipe/tapRecipeEdit.yaml"
     label: "Action - Re-enter edit mode to add note"
 
 - runFlow:
@@ -111,10 +107,8 @@ env:
     file: "../../asserts/recipe/readonly/en/sushiRollsEmpty.yaml"
     label: "Assert - Verify modified Sushi Rolls recipe without nutrition is displayed correctly"
 
-- tapOn:
-    id: "Recipe::AppBar::Edit"
-    waitToSettleTimeoutMs: 0
-    retryTapIfNoChange: false
+- runFlow:
+    file: "../../flows/recipe/tapRecipeEdit.yaml"
     label: "Action - Re-enter edit mode to edit the note"
 
 - runFlow:

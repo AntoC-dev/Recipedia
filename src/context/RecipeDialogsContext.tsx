@@ -43,6 +43,19 @@ export interface SimilarityDialogState {
   item: SimilarityDialogProps['item'];
 }
 
+/**
+ * State object for the non-blocking feedback snackbar.
+ */
+export interface SnackbarState {
+  visible: boolean;
+  message: string;
+}
+
+const defaultSnackbarState: SnackbarState = {
+  visible: false,
+  message: '',
+};
+
 const defaultSimilarityDialogState: SimilarityDialogState = {
   isVisible: false,
   item: {
@@ -73,6 +86,10 @@ export interface RecipeDialogsContextType {
     React.SetStateAction<TagValidationProps | IngredientValidationProps | null>
   >;
   clearValidationQueue: () => void;
+
+  snackbar: SnackbarState;
+  showSnackbar: (message: string) => void;
+  hideSnackbar: () => void;
 }
 
 const RecipeDialogsContext = createContext<RecipeDialogsContextType | undefined>(undefined);
@@ -94,6 +111,7 @@ export function RecipeDialogsProvider({ children }: { children: ReactNode }) {
   const [validationQueue, setValidationQueue] = useState<
     TagValidationProps | IngredientValidationProps | null
   >(null);
+  const [snackbar, setSnackbar] = useState<SnackbarState>(defaultSnackbarState);
 
   const showValidationDialog = (props: ValidationDialogProps) => {
     setValidationDialogProp(props);
@@ -131,6 +149,14 @@ export function RecipeDialogsProvider({ children }: { children: ReactNode }) {
     setValidationQueue(null);
   };
 
+  const showSnackbar = (message: string) => {
+    setSnackbar({ visible: true, message });
+  };
+
+  const hideSnackbar = () => {
+    setSnackbar(prev => ({ ...prev, visible: false }));
+  };
+
   return (
     <RecipeDialogsContext.Provider
       value={{
@@ -147,6 +173,10 @@ export function RecipeDialogsProvider({ children }: { children: ReactNode }) {
         validationQueue,
         setValidationQueue,
         clearValidationQueue,
+
+        snackbar,
+        showSnackbar,
+        hideSnackbar,
       }}
     >
       {children}

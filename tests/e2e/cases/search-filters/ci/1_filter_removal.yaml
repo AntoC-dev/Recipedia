@@ -1,0 +1,14 @@
+name: "1 - Filter Removal Flow"
+appId: "com.recipedia"
+tags:
+  - search-filters
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../1_filter_removal.yaml"
+          label: "Run 1 - Filter Removal Flow"

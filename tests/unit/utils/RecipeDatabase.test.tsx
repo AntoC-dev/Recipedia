@@ -37,9 +37,7 @@ describe('RecipeDatabase', () => {
       expect(tags).toEqual([]);
       expect(ingredients).toEqual([]);
     });
-    // TODO found a test where the openDatabase fails
-
-    test('Database initialization creates all tables', async () => {
+    test('getRandomRecipes returns an empty array on a freshly initialized database', async () => {
       expect(getRandomRecipes(db.get_recipes(), 1)).toEqual([]);
     });
 
@@ -345,12 +343,12 @@ describe('RecipeDatabase', () => {
       expect(await db.deleteIngredient(testIngredients[21]!)).toEqual(true);
       expect(db.get_ingredients()).not.toContainEqual(testIngredients[21]);
 
-      expect(
-        await db.deleteIngredient({ ...testIngredients[11]!, id: 900002, name: '' })
-      ).toEqual(false);
-      expect(
-        await db.deleteIngredient({ ...testIngredients[11]!, id: 900003, unit: '' })
-      ).toEqual(false);
+      expect(await db.deleteIngredient({ ...testIngredients[11]!, id: 900002, name: '' })).toEqual(
+        false
+      );
+      expect(await db.deleteIngredient({ ...testIngredients[11]!, id: 900003, unit: '' })).toEqual(
+        false
+      );
       expect(
         await db.deleteIngredient({
           ...testIngredients[11]!,
@@ -1791,9 +1789,9 @@ describe('RecipeDatabase', () => {
     });
 
     const getEncodeTagForRecipe = () =>
-      (
-        db as unknown as { encodeTagForRecipe: (tag: TagDraft) => string }
-      ).encodeTagForRecipe.bind(db);
+      (db as unknown as { encodeTagForRecipe: (tag: TagDraft) => string }).encodeTagForRecipe.bind(
+        db
+      );
     const getEncodeIngredient = () =>
       (
         db as unknown as { encodeIngredient: (ing: IngredientDraft) => string }
