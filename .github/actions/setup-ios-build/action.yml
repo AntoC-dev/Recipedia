@@ -20,7 +20,7 @@ runs:
         cache: 'pip'
 
     - name: Cache CocoaPods
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: |
           ios/Pods
@@ -30,7 +30,7 @@ runs:
           ${{ runner.os }}-pods-
 
     - name: Cache Xcode Derived Data
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: ~/Library/Developer/Xcode/DerivedData
         key: ${{ runner.os }}-xcode-deriveddata-${{ hashFiles('**/Podfile.lock', 'package-lock.json') }}
@@ -38,7 +38,7 @@ runs:
           ${{ runner.os }}-xcode-deriveddata-
 
     - name: Cache global Expo artifacts
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: ~/.expo
         key: ${{ runner.os }}-expo-${{ hashFiles('package-lock.json') }}
@@ -46,7 +46,7 @@ runs:
           ${{ runner.os }}-expo-
 
     - name: Cache Expo prebuild (iOS native)
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: ios
         key: ${{ runner.os }}-expo-prebuild-ios-${{ hashFiles('app.json', 'app.config.ts', 'package-lock.json', 'plugins/**', 'modules/**') }}
