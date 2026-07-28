@@ -28,25 +28,32 @@ function versionToCode(version: string): number {
  * simulator) keeps the plain `baseAppId`, identical to Android, so the E2E flows
  * can launch a single shared bundle id.
  *
- * The store build is detected via `EXPO_PUBLIC_DATASET_TYPE === 'production'`,
- * which only the `production` EAS profile sets in its `env` block. This is used
- * instead of `EAS_BUILD_PROFILE` because EAS only injects `EAS_BUILD_PROFILE`
- * into the build job, whereas the bundle id is resolved earlier, when `eas build`
- * evaluates this config to set up credentials — before the job env exists. A
- * build-profile `env` var is applied at config-evaluation time, so it resolves
- * the same bundle id for both local (`eas build --local`) and cloud builds.
+ * The store build is the one that ships the production dataset
+ * (`EXPO_PUBLIC_DATASET_TYPE === 'production'`) and is not an automation build.
+ * Every Maestro/E2E profile sets `EXPO_PUBLIC_DISABLE_ANIMATIONS === 'true'` and
+ * the store `production` profile does not, so that flag discriminates the store
+ * build from the `production-maestro` E2E build (which seeds production data yet
+ * must keep the shared `com.recipedia` id so Maestro can launch it on iOS). This
+ * reuses two existing profile `env` vars instead of adding a dedicated store flag;
+ * the trade-off is that it relies on the invariant that store builds keep
+ * animations on and automation builds turn them off. `EAS_BUILD_PROFILE` can't be
+ * used because EAS only injects it into the build job, after the bundle id is
+ * resolved for credentials. See `tests/e2e/E2E_TESTING.md` → "Production Smoke
+ * Build" for the full rationale.
  *
  * @param baseAppId - The platform-agnostic application id (e.g. `com.recipedia`).
- * @param env - Environment variables to read the dataset type from. Defaults to
- *   `process.env`.
- * @returns The store bundle id (`<baseAppId>.ios`) for production builds,
- *   otherwise `baseAppId`.
+ * @param env - Environment variables to read the dataset type and animation flag
+ *   from. Defaults to `process.env`.
+ * @returns The store bundle id (`<baseAppId>.ios`) for the store build, otherwise
+ *   `baseAppId`.
  */
 export function resolveIosBundleId(
     baseAppId: string,
     env: Record<string, string | undefined> = process.env,
 ): string {
-    const isStoreBuild = env.EXPO_PUBLIC_DATASET_TYPE === 'production';
+    const usesProductionDataset = env.EXPO_PUBLIC_DATASET_TYPE === 'production';
+    const isAutomationBuild = env.EXPO_PUBLIC_DISABLE_ANIMATIONS === 'true';
+    const isStoreBuild = usesProductionDataset && !isAutomationBuild;
     return isStoreBuild ? `${baseAppId}.ios` : baseAppId;
 }
 
@@ -54,7 +61,8 @@ const configuredName = toSlug(pkg.name);
 const appId = `com.${toIdentifierSegment(pkg.name)}`;
 
 // Maestro E2E flows hardcode a single `com.recipedia` shared across platforms,
-// so only the store build carries the `.ios` suffix. See `resolveIosBundleId`.
+// so only the store build (production dataset, animations enabled) carries the
+// `.ios` suffix. See `resolveIosBundleId`.
 const iosAppId = resolveIosBundleId(appId);
 
 const primaryColorLight = '#006D38';
