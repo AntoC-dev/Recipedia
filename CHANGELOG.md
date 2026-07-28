@@ -1,3 +1,10 @@
+## [2.48.2](https://github.com/AntoC-dev/Recipedia/compare/v2.48.1...v2.48.2) (2026-07-28)
+
+### Bug Fixes
+
+* **recipe-card:** contain title in border with uniform card height ([fe7e07d](https://github.com/AntoC-dev/Recipedia/commit/fe7e07d5afc20a13b778227befa688253fe754ab)), closes [#480](https://github.com/AntoC-dev/Recipedia/issues/480)
+* **recipe-card:** contain title in border with uniform card height ([#490](https://github.com/AntoC-dev/Recipedia/issues/490)) ([11faee1](https://github.com/AntoC-dev/Recipedia/commit/11faee1b7f2615102170cfb3a84fb59c9ec6c61c)), closes [#480](https://github.com/AntoC-dev/Recipedia/issues/480) [#480](https://github.com/AntoC-dev/Recipedia/issues/480)
+
 ## [2.48.1](https://github.com/AntoC-dev/Recipedia/compare/v2.48.0...v2.48.1) (2026-07-26)
 
 ### Bug Fixes
