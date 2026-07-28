@@ -8,19 +8,8 @@ appId: "com.recipedia"
     label: "Check camera modal is displayed in French"
 
 - runFlow:
-    when:
-      platform: Android
-    commands:
-      - tapOn:
-          id: "Modal::Camera::RoundButton"
-          label: "Select camera option on Android"
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn:
-          id: "Modal::Gallery::RoundButton"
-          label: "Select gallery option on iOS (simulator doesn't support camera)"
+    file: ../ocr/pickImageSource.yaml
+    label: "Select image source (platform-specific)"
 
 - runFlow:
     file: ../ocr/android/takePhoto.yaml
@@ -38,15 +27,8 @@ appId: "com.recipedia"
     label: "Select camera picture"
 
 - runFlow:
-    file: ../ocr/android/validateWithoutCropping.yaml
-    when:
-      platform: Android
-    label: "Validate without cropping on Android"
-- runFlow:
-    file: ../ocr/iOS/validateWithoutCropping.yaml
-    when:
-      platform: iOS
-    label: "Validate without cropping on iOS"
+    file: ../ocr/validateWithoutCropping.yaml
+    label: "Validate without cropping (platform-specific)"
 
 - extendedWaitUntil:
     notVisible:

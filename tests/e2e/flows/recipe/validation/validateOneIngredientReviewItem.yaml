@@ -48,14 +48,10 @@ appId: "com.recipedia"
     label: "Select Cheese type"
 
 - runFlow:
-    when:
-      platform: iOS
-    commands:
-      - extendedWaitUntil:
-          visible:
-            text: "radio button, checked"
-          timeout: 30000
-          label: "Wait for checked state (iOS)"
+    file: "../../waitForCheckSettle.yaml"
+    env:
+      CHECK_TEXT: "radio button, checked"
+    label: "Wait for item to settle after check (platform-specific)"
 
 - scrollUntilVisible:
     element:

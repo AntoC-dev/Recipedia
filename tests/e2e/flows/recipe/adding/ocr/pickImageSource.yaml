@@ -1,0 +1,21 @@
+appId: "com.recipedia"
+---
+# Pick the recipe-image source in the open camera/gallery modal. Android taps the
+# camera option; iOS taps the gallery option because the simulator has no camera.
+# Both open the OS image picker that follows.
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - tapOn:
+          id: "Modal::Camera::RoundButton"
+          label: "Select camera option on Android"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "Modal::Gallery::RoundButton"
+          label: "Select gallery option on iOS (simulator doesn't support camera)"
