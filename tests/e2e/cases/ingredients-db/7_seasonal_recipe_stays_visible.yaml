@@ -1,0 +1,45 @@
+name: "7 - Seasonal Recipe Stays Visible Flow"
+appId: "com.recipedia"
+tags:
+  - database
+  - ingredients-db
+---
+- runFlow:
+    file: "../../flows/parameters/ingredients/navigateToIngredientsSettings.yaml"
+    label: "Action - Navigate to Ingredients Settings"
+
+- runFlow:
+    file: "../../flows/parameters/ingredients/addSeasonalIngredient.yaml"
+    label: "Action - Create ingredient RecipeIngredient in season all year"
+
+- runFlow:
+    file: "../../flows/parameters/ingredients/returnToHome.yaml"
+    label: "Action - Return to Home screen"
+
+- runFlow:
+    file: "../../flows/recipe/adding/manual/en/createRecipeWithIngredient.yaml"
+    label: "Action - Create minimal recipe with the all-year ingredient"
+
+- runFlow:
+    file: "../../flows/recipe/verifyIngredientInRecipe.yaml"
+    label: "Assert - Verify ingredient appears in recipe"
+
+- tapOn:
+    id: "SearchScreen::FiltersSelection::0::Chip"
+    label: "Action - Remove name filter"
+
+- runFlow:
+    file: "../../flows/filter/applySeasonFilter.yaml"
+    label: "Action - Apply season filter"
+
+- runFlow:
+    file: "../../flows/filter/verifyRecipeInSeasonFilteredList.yaml"
+    label: "Verification - Verify recipe still found with season filter ON"
+
+- tapOn:
+    id: "SearchScreen::FiltersSelection::1::Chip"
+    label: "Action - Remove filter on name"
+
+- tapOn:
+    id: "SearchScreen::FiltersSelection::0::Chip"
+    label: "Action - Remove on-season filter"
