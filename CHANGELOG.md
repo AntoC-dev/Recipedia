@@ -1,3 +1,11 @@
+## [2.48.3](https://github.com/AntoC-dev/Recipedia/compare/v2.48.2...v2.48.3) (2026-07-28)
+
+### Performance Improvements
+
+* **settings:** defer heavy list/dialog render off open transition ([fbadb4d](https://github.com/AntoC-dev/Recipedia/commit/fbadb4da42ba9f9ec9cf1d5dbfdb0276df6dbdd9)), closes [#313](https://github.com/AntoC-dev/Recipedia/issues/313)
+* **settings:** sort ingredient/tag lists via shared Intl.Collator ([716c408](https://github.com/AntoC-dev/Recipedia/commit/716c4086c224c651782b7e99b833d7b6e09c8097)), closes [#313](https://github.com/AntoC-dev/Recipedia/issues/313)
+* **settings:** speed up slow item dialog and ingredient/tag list opens ([#313](https://github.com/AntoC-dev/Recipedia/issues/313)) ([#477](https://github.com/AntoC-dev/Recipedia/issues/477)) ([27c79fe](https://github.com/AntoC-dev/Recipedia/commit/27c79fe97c15bfbf4589d78dfb26a2fb009f972d))
+
 ## [2.48.2](https://github.com/AntoC-dev/Recipedia/compare/v2.48.1...v2.48.2) (2026-07-28)
 
 ### Bug Fixes
