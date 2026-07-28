@@ -1,0 +1,32 @@
+name: "2 - Smoke View Recipe Flow"
+appId: "com.recipedia"
+tags:
+  - smoke
+---
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Navigate to Search screen"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "SearchScreen::RecipeCards::1::Cover"
+    label: "At least one recipe card renders"
+
+- tapOn:
+    id: "SearchScreen::RecipeCards::1::Cover"
+    label: "Open first recipe"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::AppBar"
+    timeout: 30000
+    label: "Recipe screen renders"
+
+- tapOn:
+    id: "Recipe::AppBar::BackButton"
+    label: "Return to Search screen"
+
+- assertVisible:
+    id: "SearchScreen::SearchBar"
+    label: "Back on Search screen"

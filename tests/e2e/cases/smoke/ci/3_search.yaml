@@ -1,0 +1,14 @@
+name: "3 - Smoke Search Flow"
+appId: "com.recipedia"
+tags:
+  - smoke
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../3_search.yaml"
+          label: "Run Smoke Search Flow"
