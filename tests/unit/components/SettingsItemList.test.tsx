@@ -4,12 +4,20 @@ import SettingsItemList, { SettingsItemListProps } from '@components/organisms/S
 import { testTags } from '@test-data/tagsDataset';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { ingredientTableElement, tagTableElement } from '@customTypes/DatabaseElementTypes';
+import {
+  resetUseDeferredMountMock,
+  setMockDeferredMountReady,
+} from '@mocks/hooks/useDeferredMount-mock';
 
 jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 
 jest.mock('@components/molecules/SettingsItemCard', () => ({
   SettingsItemCard: require('@mocks/components/molecules/SettingsItemCard-mock')
     .settingsItemCardMock,
+}));
+
+jest.mock('@hooks/useDeferredMount', () => ({
+  useDeferredMount: require('@mocks/hooks/useDeferredMount-mock').useDeferredMountMock,
 }));
 
 describe('SettingsItemList Component', () => {
@@ -22,6 +30,7 @@ describe('SettingsItemList Component', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    resetUseDeferredMountMock();
   });
 
   describe('ingredient', () => {
@@ -152,6 +161,41 @@ describe('SettingsItemList Component', () => {
           `${defaultProps.testIdPrefix}::${mockIngredients[0]!.id}::SettingsItemCard::Item`
         )
       ).toBeNull();
+    });
+  });
+
+  describe('deferred rendering', () => {
+    const defaultProps: SettingsItemListProps<ingredientTableElement> = {
+      testIdPrefix: 'IngredientList',
+      type: 'ingredient',
+      items: mockIngredients,
+      onEdit: mockOnEdit,
+      onDelete: mockOnDelete,
+    };
+
+    test('defers the list but keeps the search bar while interactions pend', () => {
+      setMockDeferredMountReady(false);
+
+      const { getByTestId, queryByTestId } = render(<SettingsItemList {...defaultProps} />);
+
+      expect(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`)).toBeTruthy();
+      expect(
+        queryByTestId(
+          `${defaultProps.testIdPrefix}::${mockIngredients[0]!.id}::SettingsItemCard::Item`
+        )
+      ).toBeNull();
+    });
+
+    test('renders the list once interactions have settled', () => {
+      setMockDeferredMountReady(true);
+
+      const { getByTestId } = render(<SettingsItemList {...defaultProps} />);
+
+      expect(
+        getByTestId(
+          `${defaultProps.testIdPrefix}::${mockIngredients[0]!.id}::SettingsItemCard::Item`
+        )
+      ).toBeTruthy();
     });
   });
 

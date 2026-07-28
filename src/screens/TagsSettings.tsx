@@ -41,6 +41,7 @@ import { BottomActionButton } from '@components/atomic/BottomActionButton';
 import { DialogMode, ItemDialog } from '@components/dialogs/ItemDialog';
 import { tagsSettingsLogger } from '@utils/logger';
 import { useTags } from '@hooks/useTags';
+import { byName } from '@utils/sorting';
 import { useI18n } from '@utils/i18n';
 import { Icons } from '@assets/Icons';
 import { padding } from '@styles/spacing';
@@ -58,7 +59,7 @@ export function TagsSettings() {
   const navigation = useNavigation();
   const { t } = useI18n();
 
-  const tagsSortedAlphabetically = [...tags].sort((a, b) => a.name.localeCompare(b.name));
+  const tagsSortedAlphabetically = [...tags].sort(byName);
 
   const [dialogVisible, setDialogVisible] = useState(false);
   const [dialogMode, setDialogMode] = useState<DialogMode>('add');

@@ -75,6 +75,7 @@ import { Button, Dialog, HelperText, Portal, Text } from 'react-native-paper';
 import { Controller, Resolver, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useI18n } from '@utils/i18n';
+import { useDeferredMount } from '@hooks/useDeferredMount';
 import { CustomTextInput } from '@components/atomic/CustomTextInput';
 import { useTags } from '@hooks/useTags';
 import { useIngredients } from '@hooks/useIngredients';
@@ -143,6 +144,7 @@ export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialo
   const { findSimilarIngredientsDetailed } = useIngredients();
 
   const isIngredient = item.type === 'Ingredient';
+  const formReady = useDeferredMount();
 
   const { control, handleSubmit, watch, reset, setError, clearErrors, formState } =
     useForm<ItemDialogFormValues>({
@@ -339,7 +341,7 @@ export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialo
                 </HelperText>
               )}
 
-              {isIngredient ? (
+              {isIngredient && formReady ? (
                 <>
                   <Controller
                     control={control}

@@ -44,6 +44,7 @@ import { FlashList } from '@shopify/flash-list';
 import { Searchbar, useTheme } from 'react-native-paper';
 import { padding } from '@styles/spacing';
 import { useI18n } from '@utils/i18n';
+import { useDeferredMount } from '@hooks/useDeferredMount';
 import { getSettingsItemKey } from '@utils/listUtils';
 import {
   SettingsItem,
@@ -78,6 +79,7 @@ export function SettingsItemList<T extends SettingsItem>({
 }: SettingsItemListProps<T>) {
   const { colors } = useTheme();
   const { t } = useI18n();
+  const listReady = useDeferredMount();
   const [searchQuery, setSearchQuery] = useState('');
   const deferredQuery = useDeferredValue(searchQuery);
 
@@ -99,21 +101,23 @@ export function SettingsItemList<T extends SettingsItem>({
           borderRadius: 999,
         }}
       />
-      <FlashList
-        data={filteredItems}
-        keyExtractor={getSettingsItemKey}
-        maintainVisibleContentPosition={{ disabled: true }}
-        contentContainerStyle={{ padding: padding.small }}
-        renderItem={({ item }) => (
-          <SettingsItemCard
-            item={item}
-            testIdPrefix={`${testIdPrefix}::${getSettingsItemKey(item)}`}
-            type={type}
-            onEdit={onEdit}
-            onDelete={onDelete}
-          />
-        )}
-      />
+      {listReady ? (
+        <FlashList
+          data={filteredItems}
+          keyExtractor={getSettingsItemKey}
+          maintainVisibleContentPosition={{ disabled: true }}
+          contentContainerStyle={{ padding: padding.small }}
+          renderItem={({ item }) => (
+            <SettingsItemCard
+              item={item}
+              testIdPrefix={`${testIdPrefix}::${getSettingsItemKey(item)}`}
+              type={type}
+              onEdit={onEdit}
+              onDelete={onDelete}
+            />
+          )}
+        />
+      ) : null}
     </View>
   );
 }
