@@ -1,0 +1,15 @@
+name: "7 - Seasonal Recipe Stays Visible Flow"
+appId: "com.recipedia"
+tags:
+  - database
+  - ingredients-db
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../7_seasonal_recipe_stays_visible.yaml"
+          label: "Run 7 - Seasonal Recipe Stays Visible Flow"

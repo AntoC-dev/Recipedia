@@ -1,0 +1,28 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar"
+    label: "Expand seasonality accordion"
+
+- extendedWaitUntil:
+    visible:
+      id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::ToggleAllButton"
+    timeout: 5000
+    label: "Wait for seasonality accordion to expand"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::ToggleAllButton"
+    label: "Select all months so the ingredient is in season all year"
+
+- waitForAnimationToEnd:
+    label: "Wait for selection animation"
+
+- tapOn:
+    id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar"
+    label: "Collapse seasonality accordion"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "IngredientsSettings::ItemDialog::AddModal::SeasonalityCalendar::ToggleAllButton"
+    timeout: 5000
+    label: "Wait for seasonality accordion to collapse"

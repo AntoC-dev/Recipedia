@@ -9,6 +9,10 @@ appId: "com.recipedia"
     text: "Search"
     label: "Search tab is displayed"
 - assertVisible:
+    id: "BottomTabs::Menu"
+    text: "Menu"
+    label: "Menu tab is displayed"
+- assertVisible:
     id: "BottomTabs::Shopping"
     text: "Shopping"
     label: "Shopping tab is displayed"

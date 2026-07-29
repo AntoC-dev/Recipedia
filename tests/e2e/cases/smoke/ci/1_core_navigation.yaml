@@ -1,0 +1,14 @@
+name: "1 - Smoke Core Navigation Flow"
+appId: "com.recipedia"
+tags:
+  - smoke
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../1_core_navigation.yaml"
+          label: "Run Smoke Core Navigation Flow"

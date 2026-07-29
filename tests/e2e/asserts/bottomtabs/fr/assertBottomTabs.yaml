@@ -9,6 +9,10 @@ appId: "com.recipedia"
     text: "Recherche"
     label: "Search tab is displayed in French"
 - assertVisible:
+    id: "BottomTabs::Menu"
+    text: "Menu"
+    label: "Menu tab is displayed in French"
+- assertVisible:
     id: "BottomTabs::Shopping"
     text: "Courses"
     label: "Shopping tab is displayed in French"

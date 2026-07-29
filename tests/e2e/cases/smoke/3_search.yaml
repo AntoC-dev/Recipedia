@@ -1,0 +1,31 @@
+name: "3 - Smoke Search Flow"
+appId: "com.recipedia"
+tags:
+  - smoke
+---
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Navigate to Search screen"
+
+- tapOn:
+    id: "SearchScreen::SearchBar"
+    label: "Focus search bar to open the suggestion dropdown"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard:
+          label: "Dismiss keyboard on Android (iOS shows none without typed text)"
+
+- assertVisible:
+    id: "SearchScreen::SearchBarResults::Item::0-content"
+    label: "Search suggestions render"
+
+- runFlow:
+    file: "../../flows/search/selectFirstSuggestion.yaml"
+    label: "Select top suggestion to close dropdown and reveal grid"
+
+- assertVisible:
+    id: "SearchScreen::RecipeCards::.*::Cover"
+    label: "Recipe grid renders"

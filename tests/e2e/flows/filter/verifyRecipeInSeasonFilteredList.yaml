@@ -1,0 +1,15 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    file: "../recipe/openTestRecipe.yaml"
+    label: "Navigate to and search for E2E Test Recipe"
+
+- extendedWaitUntil:
+    visible:
+      text: "E2E Test Recipe"
+    timeout: 30000
+    label: "E2E Test Recipe is still visible when season filter is ON (ingredient is in season all year)"
+
+- assertNotVisible:
+    id: "SearchScreen::TextWhenEmpty"
+    label: "Empty-results text is not shown because a matching recipe remains"

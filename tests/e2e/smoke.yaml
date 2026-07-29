@@ -1,0 +1,14 @@
+platform:
+  ios:
+    disableAnimations: true
+  android:
+    disableAnimations: true
+
+flows:
+  - cases/smoke/ci/*
+
+executionOrder:
+  flowsOrder:
+    - "1 - Smoke Core Navigation Flow"
+    - "2 - Smoke View Recipe Flow"
+    - "3 - Smoke Search Flow"

@@ -14,6 +14,8 @@
     "build:prod:ios": "eas build --local --profile production --platform ios --non-interactive",
     "build:perf:android": "eas build --local --profile performance --platform android --non-interactive",
     "build:perf:ios": "eas build --local --profile performance --platform ios --non-interactive",
+    "build:production-maestro:android": "eas build --local --profile production-maestro --platform android --non-interactive",
+    "build:production-maestro:ios": "eas build --local --profile production-maestro --platform ios --non-interactive",
     "build:clean": "rm -rf android/app/build ios/build .expo",
     "install:android": "adb install *.apk && rm -f *.apk",
     "install:ios": "xcrun simctl install booted *.app",

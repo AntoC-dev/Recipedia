@@ -247,6 +247,37 @@ jobs:
     secrets:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
+  # Release build seeded with the *production* dataset (`production-maestro`
+  # profile). Runs only the smoke suite so each build's core flows are validated
+  # against production data + release optimizations — the one gap the test-dataset
+  # suites can't cover. Needs the prod dataset, so no fork fallback; skipped for
+  # dependabot.
+  build-android-production-maestro:
+    name: Build Android APK (Production Smoke)
+    if: needs.install-and-doctor.outputs.is_internal == 'true' && github.actor != 'dependabot[bot]'
+    needs: install-and-doctor
+    uses: ./.github/workflows/build-app.yml
+    with:
+      platform: android
+      build-profile: production-maestro
+      artifact-name: build-apk-production-maestro
+      app-filename: recipedia-production-maestro.apk
+    secrets:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+  build-ios-production-maestro:
+    name: Build iOS App (Production Smoke)
+    if: needs.install-and-doctor.outputs.is_internal == 'true' && github.actor != 'dependabot[bot]'
+    needs: install-and-doctor
+    uses: ./.github/workflows/build-app.yml
+    with:
+      platform: ios
+      build-profile: production-maestro
+      artifact-name: build-ios-app-production-maestro
+      app-filename: Recipedia.app
+    secrets:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
   e2e-tests-android:
     name: E2E Tests (Android)
     needs: [ build-android, install-and-doctor ]
@@ -287,11 +318,35 @@ jobs:
       QUITOQUE_USERNAME: ${{ secrets.QUITOQUE_USERNAME }}
       QUITOQUE_PASSWORD: ${{ secrets.QUITOQUE_PASSWORD }}
 
+  # Smoke suite against the production-dataset release builds (both platforms).
+  # Runs as soon as its build is ready — in parallel with the main E2E matrix —
+  # so a broken build fails fast. (Unlike the performance job, which is delayed to
+  # yield runners; smoke's whole value is early feedback.)
+  e2e-tests-android-production-maestro:
+    name: E2E Smoke Android (Production)
+    if: needs.install-and-doctor.outputs.is_internal == 'true' && github.actor != 'dependabot[bot]'
+    needs: [ build-android-production-maestro, install-and-doctor ]
+    uses: ./.github/workflows/e2e-maestro.yml
+    with:
+      platform: android
+      app-artifact: build-apk-production-maestro
+      suites: '["smoke"]'
+
+  e2e-tests-ios-production-maestro:
+    name: E2E Smoke iOS (Production)
+    if: needs.install-and-doctor.outputs.is_internal == 'true' && github.actor != 'dependabot[bot]'
+    needs: [ build-ios-production-maestro, install-and-doctor ]
+    uses: ./.github/workflows/e2e-maestro.yml
+    with:
+      platform: ios
+      app-artifact: build-ios-app-production-maestro
+      suites: '["smoke"]'
+
   merge-test-artifacts:
     name: Merge E2E Test Artifacts
     if: always()
     runs-on: ubuntu-latest
-    needs: [ e2e-tests-android, e2e-tests-android-performance, e2e-tests-ios ]
+    needs: [ e2e-tests-android, e2e-tests-android-performance, e2e-tests-ios, e2e-tests-android-production-maestro, e2e-tests-ios-production-maestro ]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7

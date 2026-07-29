@@ -1,0 +1,48 @@
+name: "1 - Smoke Core Navigation Flow"
+appId: "com.recipedia"
+tags:
+  - smoke
+---
+- assertVisible:
+    id: "Home::RecipeRecommendation::random::SubHeader"
+    label: "Home screen renders"
+
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Navigate to Search screen"
+
+- runFlow:
+    file: "../../asserts/search/en/assertSearchScreenUI.yaml"
+    label: "Search screen renders"
+
+- tapOn:
+    id: "BottomTabs::Menu"
+    label: "Navigate to Menu screen"
+
+- runFlow:
+    file: "../../asserts/menu/en/assertMenuEmpty.yaml"
+    label: "Menu screen renders"
+
+- tapOn:
+    id: "BottomTabs::Shopping"
+    label: "Navigate to Shopping screen"
+
+- runFlow:
+    file: "../../asserts/shopping/en/assertShoppingEmpty.yaml"
+    label: "Shopping screen renders"
+
+- tapOn:
+    id: "BottomTabs::Parameters"
+    label: "Navigate to Parameters screen"
+
+- runFlow:
+    file: "../../asserts/parameters/en/assertAppearanceSection.yaml"
+    label: "Parameters screen renders"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Return to Home screen"
+
+- assertVisible:
+    id: "Home::RecipeRecommendation::random::SubHeader"
+    label: "Home screen renders again after full tab loop"

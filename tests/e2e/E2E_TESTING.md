@@ -50,6 +50,13 @@ maestro test cases/search/
 Tests are organized into **test suites**, each with its own configuration file
 at the root of `tests/e2e/`:
 
+- **smoke.yaml** - Minimal core-flow sanity: launch, navigate all bottom tabs
+  (incl. Menu), open a recipe, search. Fast guard that each build doesn't crash
+  on the primary journeys; assertions are shallow, locale-agnostic and
+  dataset-agnostic (id-only, no assumptions about seeded recipe names). Runs on
+  the **production-dataset** release build (`production-maestro` EAS profile) so
+  it validates the production seed data + release optimizations — see
+  [Production smoke build](#production-smoke-build)
 - **app-init.yaml** - App launch, onboarding, FAB menu
 - **search.yaml** - Search bar behaviour (open/close, scroll, results, typing)
 - **search-filters.yaml** - Filter page and filter chip behaviour
@@ -160,6 +167,8 @@ flow files in the parent directory are used for local runs.
 
 **Available Suite Configurations**:
 
+- `smoke.yaml` - Minimal core-flow smoke tests (launch, tab nav, view recipe,
+  search)
 - `app-init.yaml` - Application initialization tests
 - `search.yaml` - Search bar tests
 - `search-filters.yaml` - Filter page and filter chip tests
@@ -1561,6 +1570,52 @@ breaking the run and losing state.
 - The committed test YAML MAY keep `launchApp` for CI — the release **test
   build** handles it correctly (unlike the local dev build). Keep it in the
   file; only the local reload is handed to the user.
+
+## Production Smoke Build
+
+Most suites run on the **test-dataset** release build (`maestro` EAS profile).
+The `smoke` suite instead runs on a **production-dataset** release build so each
+CI run also validates that the app boots and its core flows work against the
+real production seed data under release optimizations — the one thing the
+test-dataset suites can't catch.
+
+- **Profile**: `production-maestro` (in `eas.json`) extends `maestro`
+  (installable APK / iOS simulator, `assembleRelease` / Release config — same
+  R8/proguard/ Hermes/shrink as the store build) and overrides
+  `EXPO_PUBLIC_DATASET_TYPE=production`. It inherits
+  `EXPO_PUBLIC_DISABLE_ANIMATIONS=true` from `maestro` via `extends` (no need to
+  re-declare — same as `performance`; this profile is unsigned, so its bundle id
+  resolves at prebuild time with the merged env). `resolveIosBundleId` treats a
+  production-dataset build with animations disabled as **not** a store build, so
+  it keeps the shared `com.recipedia` id (the real store `production` profile
+  ships the production dataset with animations enabled and resolves to
+  `com.recipedia.ios`). No dedicated flag is introduced — the gate reuses two
+  existing profile `env` vars, relying on the invariant that store builds keep
+  animations on and automation builds turn them off. Because
+  `production-maestro` only overrides the dataset (identical release
+  optimizations, same production seed data), the smoke build exercises the same
+  app code as the store build.
+- **Why not the literal store build**: the store artifacts are an Android AAB
+  (not emulator-installable) and an iOS **device** IPA — neither is
+  Maestro-runnable on a CI runner. `production-maestro` reproduces every
+  release-only and prod-dataset crash surface; only AAB packaging + store
+  signing differ, and those are covered by the publish step.
+- **CI jobs** (`build-test.yml`): `build-android-production-maestro` /
+  `build-ios-production-maestro` build the profile, then
+  `e2e-tests-android-production-maestro` / `e2e-tests-ios-production-maestro`
+  run `suites: '["smoke"]'`. Internal-only (needs the prod dataset, so no fork
+  fallback) and skipped for dependabot.
+- **Keep smoke dataset-agnostic**: because the production seed data differs from
+  the test dataset, smoke flows must not assume specific recipe names — target
+  ids/indices (`RecipeCards::1::Cover`) and the suggestion dropdown, never a
+  typed recipe title. This is why smoke has its own cases rather than reusing
+  the test-dataset suites: `recipe-readonly` opens "Chicken Tacos" (absent from
+  the production data) and `app-init`'s `assertHomeScreen` requires the
+  season/grain/ tag recommendation carousels, which depend on the current month
+  and the dataset's variety. Smoke still **reuses** the shared, dataset-agnostic
+  asserts where it can — `1_core_navigation` composes `assertSearchScreenUI`,
+  `assertMenuEmpty`, `assertShoppingEmpty` and `assertAppearanceSection` rather
+  than re-inlining them.
 
 ## CI Retry Mechanism
 
