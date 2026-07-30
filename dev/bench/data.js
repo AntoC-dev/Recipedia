@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1784835719517,
+  "lastUpdate": 1785395371305,
   "repoUrl": "https://github.com/AntoC-dev/Recipedia",
   "entries": {
     "Screen FPS": [
@@ -56,6 +56,63 @@ window.BENCHMARK_DATA = {
           {
             "name": "06_parameters",
             "value": 55.2,
+            "unit": "fps"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "AntoC",
+            "username": "AntoC-dev",
+            "email": "129602681+AntoC-dev@users.noreply.github.com"
+          },
+          "committer": {
+            "name": "GitHub",
+            "username": "web-flow",
+            "email": "noreply@github.com"
+          },
+          "id": "7c73b43d6107bdc6507907c144427325061706a9",
+          "message": "test(e2e): close E2E coverage gaps — smoke, seasonality, Menu (#493)\n\nResolves #323 — the identified E2E coverage gaps.\n\n## What\n- **Smoke suite** (`smoke.yaml`, both platforms): launch → all 5 tabs\n(incl. Menu) → view a recipe → search. Shallow, id-based,\ndataset-agnostic. Runs on a **production-dataset** release build, in\nparallel with the main matrix for fast fail-fast feedback.\n- **Production-maestro EAS profile**: extends `maestro` (installable APK\n/ iOS simulator, Release opts) but seeds the production dataset —\nvalidates the real seed data under release optimizations, the one gap\nthe test-dataset builds can't cover. `resolveIosBundleId` reuses the\nexisting dataset + animations env vars (no new flag) to keep the shared\n`com.recipedia` id so Maestro can launch it on iOS.\n- **Ingredient seasonality**: positive case — an all-year ingredient\nkeeps its recipe visible under the season filter (deterministic\ncomplement to the existing negative case). Adds a reusable\n`selectAllSeasons` flow; leaves shared `addNewIngredient` untouched.\n- **Menu tab**: fixes `# TODO Menu` — the shared bottom-tabs assert\n(en/fr) and app-init nav now cover all 5 tabs.\n- **Visual testing**: evaluated per the issue → **defer** (see\n`VISUAL_TESTING_EVALUATION.md`); baseline matrix + season/date\nnon-determinism make screenshot regression a flakiness sink.\n\n## Commits\n- `test(e2e): cover Menu tab in bottom-tabs navigation`\n- `build(eas): add production-maestro profile for prod-dataset E2E`\n- `test(e2e): add production smoke suite`\n- `test(e2e): cover seasonal recipe stays visible under filter`\n- `docs(e2e): evaluate Maestro visual testing`\n\n## Validation\n- Smoke flows ran green on Android emulator (pre-refactor); the\nreused/simplified pieces are CI-proven.\n- `app.config` gate unit-tested (TDD, 6/6). All YAML/JSON parse clean.\n- Not live-validated: production-maestro CI path (needs a prod-dataset\nbuild) and the dataset-agnostic search rewrite.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)",
+          "timestamp": "2026-07-29T17:54:51Z",
+          "url": "https://github.com/AntoC-dev/Recipedia/commit/7c73b43d6107bdc6507907c144427325061706a9"
+        },
+        "date": 1785395369727,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "00_seed",
+            "value": 59.3,
+            "unit": "fps"
+          },
+          {
+            "name": "01_app_start",
+            "value": 59.5,
+            "unit": "fps"
+          },
+          {
+            "name": "02_home",
+            "value": 59.2,
+            "unit": "fps"
+          },
+          {
+            "name": "03_search",
+            "value": 58.5,
+            "unit": "fps"
+          },
+          {
+            "name": "04_recipe_view",
+            "value": 58.6,
+            "unit": "fps"
+          },
+          {
+            "name": "05_shopping",
+            "value": 58.7,
+            "unit": "fps"
+          },
+          {
+            "name": "06_parameters",
+            "value": 54.9,
             "unit": "fps"
           }
         ]
