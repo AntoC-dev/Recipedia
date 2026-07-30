@@ -1,0 +1,66 @@
+name: 'Check 16 KB page-size alignment'
+description: >-
+  Warns (non-blocking) when any 64-bit native library is not 16 KB ELF-aligned,
+  using Google's official AOSP check_elf_alignment.sh. Mirrors the check Google
+  Play runs at publication, giving early PR feedback before an upload is rejected.
+
+inputs:
+  artifact-path:
+    description: 'Path or glob to the built .apk or .aab to verify'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Verify 16 KB native library alignment
+      shell: bash
+      run: |
+        # No `set -e`: this check is advisory (warning-only), so any
+        # infrastructure failure (fetch, unzip, tooling) must degrade to a
+        # skip-with-warning rather than fail the build.
+        set -uo pipefail
+
+        artifact=$(ls ${{ inputs.artifact-path }} 2>/dev/null | head -1 || true)
+        if [ -z "$artifact" ]; then
+          echo "::warning::16 KB check skipped — no artifact matched '${{ inputs.artifact-path }}'"
+          exit 0
+        fi
+        echo "Verifying 16 KB alignment for: $artifact"
+
+        # Google's official AOSP tool. It does not recurse into archives and
+        # always exits 0, so we extract first and gate on its printed output.
+        script=$(mktemp)
+        if ! curl -fsSL "https://android.googlesource.com/platform/system/extras/+/refs/heads/master/tools/check_elf_alignment.sh?format=TEXT" | base64 -d > "$script"; then
+          echo "::warning::16 KB check skipped — could not fetch check_elf_alignment.sh"
+          exit 0
+        fi
+
+        workdir=$(mktemp -d)
+        if ! unzip -qo "$artifact" -d "$workdir"; then
+          echo "::warning::16 KB check skipped — could not unzip $artifact"
+          exit 0
+        fi
+
+        out=$(mktemp)
+        # Play only gates 64-bit ABIs; 32-bit libs are exempt. APKs use
+        # lib/<abi>, AABs use base/lib/<abi>.
+        found=0
+        for abi in arm64-v8a x86_64; do
+          for base in "$workdir/lib/$abi" "$workdir/base/lib/$abi"; do
+            if [ -d "$base" ]; then
+              found=1
+              bash "$script" "$base" | tee -a "$out" || true
+            fi
+          done
+        done
+
+        if [ "$found" -eq 0 ]; then
+          echo "::warning::16 KB check skipped — no arm64-v8a/x86_64 native libraries found in $artifact"
+          exit 0
+        fi
+
+        if grep -q "UNALIGNED" "$out"; then
+          echo "::warning::Native libraries are not 16 KB aligned — Google Play may reject this build and it can crash on 16 KB-page devices. See the UNALIGNED entries above."
+          exit 0
+        fi
+        echo "✅ All 64-bit native libraries are 16 KB aligned."

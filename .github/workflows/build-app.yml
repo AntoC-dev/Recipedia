@@ -298,6 +298,12 @@ jobs:
             exit 1
           fi
 
+      - name: Verify 16 KB native library alignment
+        if: inputs.platform == 'android'
+        uses: ./.github/actions/check-16kb-alignment
+        with:
+          artifact-path: ${{ inputs.app-filename }}
+
       - name: Upload app
         uses: actions/upload-artifact@v7
         with:
