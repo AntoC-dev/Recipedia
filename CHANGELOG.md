@@ -1,3 +1,10 @@
+## [2.48.4](https://github.com/AntoC-dev/Recipedia/compare/v2.48.3...v2.48.4) (2026-07-30)
+
+### Bug Fixes
+
+* **deps:** bump ml-kit text-recognition to 2.0.0 for 16 KB support ([b000758](https://github.com/AntoC-dev/Recipedia/commit/b000758e60aed249c1eda0a97fee3182002cafcd)), closes [#494](https://github.com/AntoC-dev/Recipedia/issues/494)
+* **deps:** support 16 KB memory page sizes (ML Kit 2.0.0) ([#495](https://github.com/AntoC-dev/Recipedia/issues/495)) ([44030ca](https://github.com/AntoC-dev/Recipedia/commit/44030ca5634b1ccea8b2c4e17b05b904908fc132)), closes [#494](https://github.com/AntoC-dev/Recipedia/issues/494)
+
 ## [2.48.3](https://github.com/AntoC-dev/Recipedia/compare/v2.48.2...v2.48.3) (2026-07-28)
 
 ### Performance Improvements
