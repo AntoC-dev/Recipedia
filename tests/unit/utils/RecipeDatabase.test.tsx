@@ -464,6 +464,21 @@ describe('RecipeDatabase', () => {
         }
       });
 
+      test('editIngredient unit change propagates to recipes that use it', async () => {
+        const targetId = testIngredients[0]!.id;
+        const recipeUsingIngredient = db
+          .get_recipes()
+          .find(r => r.ingredients.some(i => i.id === targetId));
+        expect(recipeUsingIngredient).toBeDefined();
+
+        const ingredientToEdit = { ...testIngredients[0]!, unit: 'kg' };
+        await db.editIngredient(ingredientToEdit);
+
+        const refreshedRecipe = db.get_recipes().find(r => r.id === recipeUsingIngredient!.id);
+        const refreshedIngredient = refreshedRecipe!.ingredients.find(i => i.id === targetId);
+        expect(refreshedIngredient!.unit).toBe('kg');
+      });
+
       test('deleteIngredient should refresh recipes from database', async () => {
         const recipesBefore = db.get_recipes();
         const ingredientToDelete = testIngredients[0];
