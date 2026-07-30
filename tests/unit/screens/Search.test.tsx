@@ -119,6 +119,14 @@ describe('Search Screen', () => {
     mockUseSafeCopilot.mockReturnValue(null);
   });
 
+  test('recipe list forces a persistent vertical scrollbar', async () => {
+    const { getByTestId } = await renderSearchComponent();
+
+    const list = getByTestId('SearchScreen::List');
+    expect(list.props.persistentScrollbar).toBe(true);
+    expect(list.props.showsVerticalScrollIndicator).toBe(true);
+  });
+
   test('renders the tutorial spotlight proxy when copilot is available', async () => {
     mockUseSafeCopilot.mockReturnValue({
       copilotEvents: {},

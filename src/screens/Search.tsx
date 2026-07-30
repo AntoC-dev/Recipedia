@@ -192,8 +192,11 @@ export function Search() {
     <ScreenWrapper testID={screenId} edges={['top', 'left', 'right']}>
       <FlashList
         ref={flashListRef}
+        testID={screenId + '::List'}
         keyboardDismissMode='on-drag'
         keyboardShouldPersistTaps='handled'
+        showsVerticalScrollIndicator={true}
+        persistentScrollbar={true}
         data={addingFilterMode || searchBarClicked ? [] : filteredRecipes}
         keyExtractor={getRecipeKey}
         numColumns={2}
