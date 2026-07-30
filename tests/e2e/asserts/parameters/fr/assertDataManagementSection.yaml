@@ -55,6 +55,6 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "Parameters::Section::Data::Tags::Item"
-    text: "Étiquettes, Gérer les tags de recettes"
+    text: "Étiquettes, Gérer les étiquettes de recettes"
     label: "Tags item"
 
