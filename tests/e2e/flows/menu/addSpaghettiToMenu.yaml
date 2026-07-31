@@ -4,6 +4,19 @@ appId: "com.recipedia"
     id: "BottomTabs::Search"
     label: "Navigate to Search screen"
 
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::RecipeCards::1::Spaghetti Bolognese"
+    direction: UP
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll to Spaghetti Bolognese recipe"
+
+- waitForAnimationToEnd
+
 - tapOn:
     id: "SearchScreen::RecipeCards::1::Spaghetti Bolognese"
     label: "Open Spaghetti Bolognese recipe"
