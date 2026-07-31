@@ -1,3 +1,11 @@
+## [2.48.5](https://github.com/AntoC-dev/Recipedia/compare/v2.48.4...v2.48.5) (2026-07-31)
+
+### Bug Fixes
+
+* **i18n:** use "étiquette" consistently in French tag labels ([821b1fc](https://github.com/AntoC-dev/Recipedia/commit/821b1fcf1b56d957d7394eb30b8b7614571e8a79))
+* miscellaneous UI bugs ([#305](https://github.com/AntoC-dev/Recipedia/issues/305)) ([#496](https://github.com/AntoC-dev/Recipedia/issues/496)) ([4def5d4](https://github.com/AntoC-dev/Recipedia/commit/4def5d4142959d149d49f11d287a01c4218a5fe8)), closes [#390](https://github.com/AntoC-dev/Recipedia/issues/390)
+* **search:** force persistent vertical scrollbar on recipe list ([36cf6c6](https://github.com/AntoC-dev/Recipedia/commit/36cf6c60491b381a8fde73eb067ace735d7a2fb6))
+
 ## [2.48.4](https://github.com/AntoC-dev/Recipedia/compare/v2.48.3...v2.48.4) (2026-07-30)
 
 ### Bug Fixes
