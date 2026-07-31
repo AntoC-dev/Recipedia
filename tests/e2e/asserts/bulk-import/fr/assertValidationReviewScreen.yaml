@@ -7,7 +7,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "BulkImportValidation::TagSectionHeader"
-    text: "Tags \\(\\d+/\\d+\\)"
+    text: "Étiquettes \\(\\d+/\\d+\\)"
     label: "Assert - Tags section header is visible"
 
 - assertVisible:

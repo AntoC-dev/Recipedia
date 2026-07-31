@@ -35,7 +35,7 @@ export default {
     search: {
       title: 'Recherche',
       description:
-        'Recherchez par nom de recette ou utilisez "Ajouter un filtre" pour trouver des recettes par ingrédients, tags, temps de cuisson, et plus.',
+        'Recherchez par nom de recette ou utilisez "Ajouter un filtre" pour trouver des recettes par ingrédients, étiquettes, temps de cuisson, et plus.',
     },
     menu: {
       title: 'Menu',
@@ -50,7 +50,7 @@ export default {
     parameters: {
       title: 'Gérez Votre Contenu',
       description:
-        "Ajustez les paramètres comme la langue, les portions par défaut, et gérez les ingrédients et tags. Mettez à jour les détails comme les saisons d'ingrédients selon vos préférences.",
+        "Ajustez les paramètres comme la langue, les portions par défaut, et gérez les ingrédients et étiquettes. Mettez à jour les détails comme les saisons d'ingrédients selon vos préférences.",
     },
   },
 };
