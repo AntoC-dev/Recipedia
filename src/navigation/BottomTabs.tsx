@@ -44,22 +44,39 @@
  * ```
  */
 
-import { Icon, useTheme } from 'react-native-paper';
+import { BottomNavigation, Icon, useTheme } from 'react-native-paper';
 import { Icons, iconsSize } from '@assets/Icons';
 import React from 'react';
-import { View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { CommonActions } from '@react-navigation/native';
 import { Home } from '@screens/Home';
 import { Menu } from '@screens/Menu';
 import { Shopping } from '@screens/Shopping';
 import { Parameters } from '@screens/Parameters';
-import { padding, screenHeight } from '@styles/spacing';
 import { useI18n } from '@utils/i18n';
 import { Search } from '@screens/Search';
 import { Tab } from '@customTypes/ScreenTypes';
 import { useSafeCopilot } from '@hooks/useSafeCopilot';
+import type { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
 
 const testId = 'BottomTabs';
+
+/**
+ * Resolves the text shown (and announced) for a bottom tab.
+ *
+ * `tabBarLabel` may be a string or a render function; only a string is usable as
+ * plain text, so anything else falls back to the route name. Single source for
+ * both the visible label and the accessibility label so the two cannot diverge.
+ *
+ * @param tabBarLabel - The route's `tabBarLabel` option, if any
+ * @param routeName - Fallback used when no string label is set
+ * @returns The label string for display and accessibility
+ */
+export function resolveTabLabel(
+  tabBarLabel: BottomTabNavigationOptions['tabBarLabel'],
+  routeName: string
+): string {
+  return typeof tabBarLabel === 'string' ? tabBarLabel : routeName;
+}
 
 /**
  * BottomTabs component - Material Design 3 tab navigation
@@ -67,9 +84,8 @@ const testId = 'BottomTabs';
  * @returns JSX element representing the main app tab navigation
  */
 export function BottomTabs() {
-  const { colors, fonts } = useTheme();
+  const { colors } = useTheme();
   const { t } = useI18n();
-  const insets = useSafeAreaInsets();
 
   /**
    * Returns the appropriate icon for active (selected) tab states
@@ -134,106 +150,103 @@ export function BottomTabs() {
   };
 
   return (
-    <>
-      <Tab.Navigator
-        initialRouteName='Home'
-        screenOptions={({ route }) => ({
-          headerShown: false,
-          tabBarIcon: ({ focused, color }) => {
-            // Use different icon variants for focused/unfocused states (MD3 pattern)
-            const iconName = focused
-              ? getActiveIconName(route.name)
-              : getInactiveIconName(route.name);
-            const iconSize = iconsSize.medium;
-
-            return (
-              <View
-                accessible={false} // Allow tabBarTestID to be accessible on iOS
-                style={[
-                  {
-                    paddingHorizontal: padding.medium,
-                    paddingVertical: padding.verySmall,
-                  },
-                  focused
-                    ? {
-                        borderRadius: iconSize * 0.6,
-                        backgroundColor: colors.primaryContainer,
-                      }
-                    : {},
-                ]}
-              >
-                <Icon source={iconName} size={iconSize} color={color} />
-              </View>
-            );
-          },
-          tabBarActiveTintColor: colors.onPrimaryContainer,
-          tabBarInactiveTintColor: colors.onPrimaryContainer,
-          tabBarStyle: {
-            height: screenHeight / 9 + insets.bottom,
-            backgroundColor: colors.surface,
-            elevation: 2,
-            shadowOpacity: 0.1,
-            borderTopWidth: 0,
-            paddingBottom: insets.bottom,
-          },
-          tabBarItemStyle: {
-            paddingVertical: padding.small,
-          },
-          tabBarLabelStyle: fonts.bodyMedium,
-        })}
-      >
-        <Tab.Screen
-          name='Home'
-          component={Home}
-          options={{
-            tabBarLabel: labels.home,
-            tabBarAccessibilityLabel: labels.home,
-            lazy: shouldRenderLazy,
-            tabBarTestID: testId + '::Home',
-          }}
-        />
-        <Tab.Screen
-          name='Search'
-          component={Search}
-          options={{
-            tabBarLabel: labels.search,
-            tabBarAccessibilityLabel: labels.search,
-            lazy: shouldRenderLazy,
-            tabBarTestID: testId + '::Search',
-          }}
-        />
-        <Tab.Screen
-          name='Menu'
-          component={Menu}
-          options={{
-            tabBarLabel: labels.menu,
-            tabBarAccessibilityLabel: labels.menu,
-            lazy: shouldRenderLazy,
-            tabBarTestID: testId + '::Menu',
-          }}
-        />
-        <Tab.Screen
-          name='Shopping'
-          component={Shopping}
-          options={{
-            tabBarLabel: labels.shopping,
-            tabBarAccessibilityLabel: labels.shopping,
-            lazy: shouldRenderLazy,
-            tabBarTestID: testId + '::Shopping',
-          }}
-        />
-        <Tab.Screen
-          name='Parameters'
-          component={Parameters}
-          options={{
-            tabBarLabel: labels.parameters,
-            tabBarAccessibilityLabel: labels.parameters,
-            lazy: shouldRenderLazy,
-            tabBarTestID: testId + '::Parameters',
-          }}
-        />
-      </Tab.Navigator>
-    </>
+    <Tab.Navigator
+      initialRouteName='Home'
+      // During the tutorial (copilot active) keep every tab screen attached:
+      // detaching an inactive screen mid-overlay reparents its native view and
+      // crashes Fabric's Yoga layout. Outside the tutorial, detach normally.
+      detachInactiveScreens={!copilotData}
+      screenOptions={{ headerShown: false }}
+      tabBar={({ navigation, state, descriptors, insets }) => {
+        const getLabel = (route: (typeof state.routes)[number]): string =>
+          resolveTabLabel(descriptors[route.key]?.options.tabBarLabel, route.name);
+        return (
+          <BottomNavigation.Bar
+            navigationState={state}
+            safeAreaInsets={insets}
+            style={{ backgroundColor: colors.surface }}
+            activeColor={colors.onPrimaryContainer}
+            inactiveColor={colors.onPrimaryContainer}
+            activeIndicatorStyle={{ backgroundColor: colors.primaryContainer }}
+            onTabPress={({ route, preventDefault }) => {
+              const event = navigation.emit({
+                type: 'tabPress',
+                target: route.key,
+                canPreventDefault: true,
+              });
+              if (event.defaultPrevented) {
+                preventDefault();
+              } else {
+                navigation.dispatch({
+                  ...CommonActions.navigate(route.name, route.params),
+                  target: state.key,
+                });
+              }
+            }}
+            renderIcon={({ route, focused, color }) => (
+              <Icon
+                source={focused ? getActiveIconName(route.name) : getInactiveIconName(route.name)}
+                size={iconsSize.medium}
+                color={color}
+              />
+            )}
+            getLabelText={({ route }) => getLabel(route)}
+            getTestID={({ route }) => descriptors[route.key]?.options.tabBarButtonTestID}
+            // BottomNavigation.Bar draws two label layers (active/inactive crossfade); on iOS
+            // both are exposed to accessibility and compose into a doubled name ("Home, Home").
+            // An explicit accessibilityLabel collapses each tab to a single leaf, so the visible
+            // label is announced once and stays queryable by E2E.
+            getAccessibilityLabel={({ route }) => getLabel(route)}
+          />
+        );
+      }}
+    >
+      <Tab.Screen
+        name='Home'
+        component={Home}
+        options={{
+          tabBarLabel: labels.home,
+          lazy: shouldRenderLazy,
+          tabBarButtonTestID: testId + '::Home',
+        }}
+      />
+      <Tab.Screen
+        name='Search'
+        component={Search}
+        options={{
+          tabBarLabel: labels.search,
+          lazy: shouldRenderLazy,
+          tabBarButtonTestID: testId + '::Search',
+        }}
+      />
+      <Tab.Screen
+        name='Menu'
+        component={Menu}
+        options={{
+          tabBarLabel: labels.menu,
+          lazy: shouldRenderLazy,
+          tabBarButtonTestID: testId + '::Menu',
+        }}
+      />
+      <Tab.Screen
+        name='Shopping'
+        component={Shopping}
+        options={{
+          tabBarLabel: labels.shopping,
+          lazy: shouldRenderLazy,
+          tabBarButtonTestID: testId + '::Shopping',
+        }}
+      />
+      <Tab.Screen
+        name='Parameters'
+        component={Parameters}
+        options={{
+          tabBarLabel: labels.parameters,
+          lazy: shouldRenderLazy,
+          tabBarButtonTestID: testId + '::Parameters',
+        }}
+      />
+    </Tab.Navigator>
   );
 }
 

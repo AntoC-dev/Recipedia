@@ -29,6 +29,7 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { useNavigation } from '@react-navigation/native';
+import { StackScreenNavigation } from '@customTypes/ScreenTypes';
 import {
   FormIngredientElement,
   IngredientDraft,
@@ -56,7 +57,7 @@ const BUTTON_CONTAINER_HEIGHT = BUTTON_HEIGHT + padding.small * 2;
 
 export function IngredientsSettings() {
   const { ingredients, addIngredient, editIngredient, deleteIngredient } = useIngredients();
-  const navigation = useNavigation();
+  const navigation = useNavigation<StackScreenNavigation>();
   const { t } = useI18n();
 
   const ingredientsSortedAlphabetically = [...ingredients].sort(byName);
