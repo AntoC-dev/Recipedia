@@ -5,7 +5,7 @@ appId: "com.recipedia"
     label: "Assert - Close icon is visible when dropdown open"
 
 - assertVisible:
-    id: "SearchScreen::SearchBarResults::Item::0-content"
+    id: "SearchScreen::Suggestions::Item::0-content"
     label: "First dropdown item is displayed"
 
 - assertVisible:
@@ -13,7 +13,7 @@ appId: "com.recipedia"
     label: "Caesar Salad is displayed in dropdown"
 
 - assertVisible:
-    id: "SearchScreen::SearchBarResults::Item::1-content"
+    id: "SearchScreen::Suggestions::Item::1-content"
     label: "Second dropdown item is displayed"
 
 - assertVisible:
@@ -21,7 +21,7 @@ appId: "com.recipedia"
     label: "Chicken Tacos is displayed in dropdown"
 
 - assertVisible:
-    id: "SearchScreen::SearchBarResults::Item::2-content"
+    id: "SearchScreen::Suggestions::Item::2-content"
     label: "Third dropdown item is displayed"
 
 - assertVisible:
@@ -29,7 +29,7 @@ appId: "com.recipedia"
     label: "Chocolate Cake is displayed in dropdown"
 
 - assertVisible:
-    id: "SearchScreen::SearchBarResults::Item::3-content"
+    id: "SearchScreen::Suggestions::Item::3-content"
     label: "Fourth dropdown item is displayed"
 
 - assertVisible:
@@ -37,7 +37,7 @@ appId: "com.recipedia"
     label: "Classic Pancakes is displayed in dropdown"
 
 - assertVisible:
-    id: "SearchScreen::SearchBarResults::Item::4-content"
+    id: "SearchScreen::Suggestions::Item::4-content"
     label: "Fifth dropdown item is displayed"
 
 - assertVisible:
@@ -45,7 +45,7 @@ appId: "com.recipedia"
     label: "Lentil Curry is displayed in dropdown"
 
 - assertVisible:
-    id: "SearchScreen::SearchBarResults::Item::5-content"
+    id: "SearchScreen::Suggestions::Item::5-content"
     label: "Sixth dropdown item is displayed"
 
 - assertVisible:
@@ -53,7 +53,7 @@ appId: "com.recipedia"
     label: "Margherita Pizza is displayed in dropdown"
 
 - assertVisible:
-    id: "SearchScreen::SearchBarResults::Item::6-content"
+    id: "SearchScreen::Suggestions::Item::6-content"
     label: "Seventh dropdown item is displayed"
 
 - assertVisible:
@@ -61,7 +61,7 @@ appId: "com.recipedia"
     label: "Pesto Pasta is displayed in dropdown"
 
 - assertVisible:
-    id: "SearchScreen::SearchBarResults::Item::7-content"
+    id: "SearchScreen::Suggestions::Item::7-content"
     label: "Eighth dropdown item is displayed"
 
 - assertVisible:
@@ -72,7 +72,7 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::SearchBarResults::Item::9-content"
+      id: "SearchScreen::Suggestions::Item::9-content"
     direction: DOWN
     speed: 40
     centerElement: true
@@ -80,7 +80,7 @@ appId: "com.recipedia"
 - waitForAnimationToEnd
 
 - assertVisible:
-    id: "SearchScreen::SearchBarResults::Item::8-content"
+    id: "SearchScreen::Suggestions::Item::8-content"
     label: "Ninth dropdown item is displayed"
 
 - assertVisible:
@@ -88,7 +88,7 @@ appId: "com.recipedia"
     label: "Sushi Rolls is displayed in dropdown"
 
 - assertVisible:
-    id: "SearchScreen::SearchBarResults::Item::9-content"
+    id: "SearchScreen::Suggestions::Item::9-content"
     label: "Tenth dropdown item is displayed"
 
 - assertVisible:

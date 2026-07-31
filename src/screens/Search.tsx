@@ -16,9 +16,9 @@ import {
   retrieveAllFilters,
 } from '@utils/FilterFunctions';
 import { useI18n } from '@utils/i18n';
-import { Divider, Text } from 'react-native-paper';
+import { Divider, List, Text } from 'react-native-paper';
 import { SearchBar, SearchBarHandle } from '@components/organisms/SearchBar';
-import { SearchBarResults } from '@components/organisms/SearchBarResults';
+import { SearchSuggestionItem } from '@components/molecules/SearchSuggestionItem';
 import { FiltersSelection } from '@components/organisms/FiltersSelection';
 import { padding } from '@styles/spacing';
 import { RecipeCard } from '@components/molecules/RecipeCard';
@@ -122,7 +122,6 @@ export function Search() {
       if (searchBarClicked) {
         Keyboard.dismiss();
         setSearchBarClicked(false);
-        flashListRef.current?.scrollToOffset({ offset: 0, animated: false });
         return true;
       }
       return false;
@@ -150,6 +149,12 @@ export function Search() {
   const selectSearchResult = (title: string) => {
     searchBarClearRef.current?.setText(title);
     updateSearchString(title);
+  };
+
+  const handleSuggestionSelect = (title: string) => {
+    Keyboard.dismiss();
+    setSearchBarClicked(false);
+    selectSearchResult(title);
   };
 
   // Add filter to state
@@ -187,93 +192,109 @@ export function Search() {
 
   const screenId = 'SearchScreen';
   const recipeCardsId = screenId + '::RecipeCards';
+  const suggestionsId = screenId + '::Suggestions';
 
   return (
     <ScreenWrapper testID={screenId} edges={['top', 'left', 'right']}>
-      <FlashList
-        ref={flashListRef}
-        testID={screenId + '::List'}
-        keyboardDismissMode='on-drag'
-        keyboardShouldPersistTaps='handled'
-        showsVerticalScrollIndicator={true}
-        persistentScrollbar={true}
-        data={addingFilterMode || searchBarClicked ? [] : filteredRecipes}
-        keyExtractor={getRecipeKey}
-        numColumns={2}
-        maintainVisibleContentPosition={{ disabled: true }}
-        contentContainerStyle={{ padding: padding.small }}
-        ListHeaderComponent={
-          <View>
-            <SearchBar
-              testId={screenId + '::SearchBar'}
-              searchBarClicked={searchBarClicked}
-              setSearchBarClicked={setSearchBarClicked}
-              updateSearchString={updateSearchString}
-              clearRef={searchBarClearRef}
-            />
-
-            {searchBarClicked ? (
-              <SearchBarResults
-                testId={screenId + '::SearchBarResults'}
-                filteredTitles={filteredTitles}
-                setSearchBarClicked={setSearchBarClicked}
-                updateSearchString={selectSearchResult}
-              />
-            ) : (
-              <View>
-                <FiltersSelection
-                  testId={screenId}
-                  filters={retrieveAllFilters(filtersState)}
-                  addingFilterMode={addingFilterMode}
-                  setAddingAFilter={setAddingFilterMode}
-                  onRemoveFilter={findFilterStringAndRemove}
-                  onToggleButtonTop={setToggleButtonTop}
-                  screenFocused={screenFocused}
-                />
-
-                <Divider testID={screenId + '::Divider'} />
-
-                {addingFilterMode && (
-                  <FilterAccordion
-                    testId={screenId}
-                    tagsList={filteredTags}
-                    ingredientsList={filteredIngredients}
-                    filtersState={filtersState}
-                    addFilter={addAFilterToTheState}
-                    removeFilter={removeAFilterToTheState}
-                  />
-                )}
-              </View>
-            )}
-          </View>
-        }
-        ListEmptyComponent={() => {
-          if (addingFilterMode || searchBarClicked) {
-            return null;
-          }
-          return (
-            <View
-              style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginTop: padding.large,
-              }}
-            >
-              <Text testID={screenId + '::TextWhenEmpty'} variant={'titleMedium'}>
-                {t('noRecipesFound')}
-              </Text>
-            </View>
-          );
-        }}
-        renderItem={({ item }: ListRenderItemInfo<recipeTableElement>) => (
-          <RecipeCard
-            testId={recipeCardsId + `::${getRecipeKey(item)}`}
-            size={'medium'}
-            recipe={item}
+      <View style={{ flex: 1 }}>
+        <View>
+          <SearchBar
+            testId={screenId + '::SearchBar'}
+            searchBarClicked={searchBarClicked}
+            setSearchBarClicked={setSearchBarClicked}
+            updateSearchString={updateSearchString}
+            clearRef={searchBarClearRef}
           />
-        )}
-      />
+
+          {!searchBarClicked && (
+            <>
+              <FiltersSelection
+                testId={screenId}
+                filters={retrieveAllFilters(filtersState)}
+                addingFilterMode={addingFilterMode}
+                setAddingAFilter={setAddingFilterMode}
+                onRemoveFilter={findFilterStringAndRemove}
+                onToggleButtonTop={setToggleButtonTop}
+                screenFocused={screenFocused}
+              />
+              <Divider testID={screenId + '::Divider'} />
+            </>
+          )}
+        </View>
+
+        <View style={{ flex: 1 }}>
+          {searchBarClicked ? (
+            <FlashList
+              key='suggestions'
+              keyboardDismissMode='on-drag'
+              keyboardShouldPersistTaps='handled'
+              data={filteredTitles}
+              keyExtractor={(item, index) => `${index}::${item}`}
+              contentContainerStyle={{ padding: padding.small }}
+              ListEmptyComponent={
+                <List.Item
+                  testID={suggestionsId + '::Empty'}
+                  title={t('noRecipesFound')}
+                  disabled
+                  style={{ padding: padding.veryLarge }}
+                />
+              }
+              renderItem={({ item, index }: ListRenderItemInfo<string>) => (
+                <SearchSuggestionItem
+                  testId={`${suggestionsId}::Item::${index}`}
+                  title={item}
+                  onSelect={() => handleSuggestionSelect(item)}
+                />
+              )}
+            />
+          ) : addingFilterMode ? (
+            <FilterAccordion
+              testId={screenId}
+              tagsList={filteredTags}
+              ingredientsList={filteredIngredients}
+              filtersState={filtersState}
+              addFilter={addAFilterToTheState}
+              removeFilter={removeAFilterToTheState}
+            />
+          ) : (
+            <FlashList
+              key='recipes'
+              ref={flashListRef}
+              testID={screenId + '::List'}
+              keyboardDismissMode='on-drag'
+              keyboardShouldPersistTaps='handled'
+              showsVerticalScrollIndicator={true}
+              persistentScrollbar={true}
+              data={filteredRecipes}
+              keyExtractor={getRecipeKey}
+              numColumns={2}
+              maintainVisibleContentPosition={{ disabled: true }}
+              contentContainerStyle={{ padding: padding.small }}
+              ListEmptyComponent={
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginTop: padding.large,
+                  }}
+                >
+                  <Text testID={screenId + '::TextWhenEmpty'} variant={'titleMedium'}>
+                    {t('noRecipesFound')}
+                  </Text>
+                </View>
+              }
+              renderItem={({ item }: ListRenderItemInfo<recipeTableElement>) => (
+                <RecipeCard
+                  testId={recipeCardsId + `::${getRecipeKey(item)}`}
+                  size={'medium'}
+                  recipe={item}
+                />
+              )}
+            />
+          )}
+        </View>
+      </View>
 
       {copilotData && (
         <CopilotStep text={t('tutorial.search.description')} order={stepOrder} name={'Search'}>

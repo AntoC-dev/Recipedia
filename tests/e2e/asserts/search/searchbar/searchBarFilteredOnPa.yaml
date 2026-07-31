@@ -5,7 +5,7 @@ appId: "com.recipedia"
     label: "Assert - Close icon is visible when dropdown open"
 
 - assertVisible:
-    id: "SearchScreen::SearchBarResults::Item::0-content"
+    id: "SearchScreen::Suggestions::Item::0-content"
     label: "First filtered item is displayed"
 
 - assertVisible:
@@ -13,7 +13,7 @@ appId: "com.recipedia"
     label: "Classic Pancakes is displayed"
 
 - assertVisible:
-    id: "SearchScreen::SearchBarResults::Item::1-content"
+    id: "SearchScreen::Suggestions::Item::1-content"
     label: "Second filtered item is displayed"
 
 - assertVisible:

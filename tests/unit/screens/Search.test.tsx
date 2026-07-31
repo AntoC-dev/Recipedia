@@ -1,4 +1,4 @@
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import { expectKeyboardDismissesOnDrag } from '@test-helpers/expectKeyboardDismissesOnDrag';
 import Search from '@screens/Search';
 import RecipeDatabase from '@utils/RecipeDatabase';
@@ -26,9 +26,9 @@ jest.mock('@components/organisms/FiltersSelection', () => ({
 jest.mock('@components/organisms/SearchBar', () => ({
   SearchBar: require('@mocks/components/organisms/SearchBar-mock').searchBarMock,
 }));
-jest.mock('@components/organisms/SearchBarResults', () => ({
-  SearchBarResults: require('@mocks/components/organisms/SearchBarResults-mock')
-    .searchBarResultsMock,
+jest.mock('@components/molecules/SearchSuggestionItem', () => ({
+  SearchSuggestionItem: require('@mocks/components/molecules/SearchSuggestionItem-mock')
+    .searchSuggestionItemMock,
 }));
 jest.mock('@components/organisms/FilterAccordion', () => ({
   FilterAccordion: require('@mocks/components/organisms/FilterAccordion-mock').filterAccordionMock,
@@ -85,8 +85,8 @@ describe('Search Screen', () => {
     expect(getByTestId('SearchScreen::SearchBar::SearchPhrase').props.children).toEqual('');
     expect(getByTestId('SearchScreen::SearchBar::Clicked').props.children).toEqual('false');
 
-    // Assert SearchBarResults is NOT present when searchBar is not clicked
-    expect(() => getByTestId('SearchScreen::SearchBarResults')).toThrow();
+    // Assert suggestion items are NOT present when searchBar is not clicked
+    expect(() => getByTestId('SearchScreen::Suggestions::Item::0')).toThrow();
 
     // Assert FiltersSelection is present and in correct initial state
     expect(getByTestId('SearchScreen::Filters')).toBeTruthy();
@@ -387,8 +387,8 @@ describe('Search Screen', () => {
     expect(getByTestId('SearchScreen::SearchBar::Clicked').props.children).toEqual('false');
     expect(getByTestId('SearchScreen::SearchBar::SearchPhrase').props.children).toEqual('');
 
-    // Assert components are present before search bar interaction (SearchBarResults not visible when not clicked)
-    expect(() => getByTestId('SearchScreen::SearchBarResults')).toThrow();
+    // Assert components are present before search bar interaction (suggestions not visible when not clicked)
+    expect(() => getByTestId('SearchScreen::Suggestions::Item::0')).toThrow();
     expect(getByTestId('SearchScreen::Filters')).toBeTruthy();
     expect(getByTestId('SearchScreen::AddingFilterMode').props.children).toEqual('false');
     expect(() => getByTestId('SearchScreen::FilterAccordion')).toThrow();
@@ -397,9 +397,8 @@ describe('Search Screen', () => {
     fireEvent.press(getByTestId('SearchScreen::SearchBar::ToggleClicked'));
     expect(getByTestId('SearchScreen::SearchBar::Clicked').props.children).toEqual('true');
 
-    // Assert SearchBarResults remains present when search bar is clicked
-    expect(getByTestId('SearchScreen::SearchBarResults')).toBeTruthy();
-    expect(getByTestId('SearchScreen::SearchBarResults::FilteredTitles')).toBeTruthy();
+    // Assert suggestion items render as list data when search bar is clicked
+    expect(getByTestId('SearchScreen::Suggestions::Item::0')).toBeTruthy();
 
     // Assert FiltersSelection components are HIDDEN when search bar is clicked (!searchBarClicked logic)
     expect(() => getByTestId('SearchScreen::Filters')).toThrow();
@@ -444,8 +443,8 @@ describe('Search Screen', () => {
     expect(getByTestId('SearchScreen::SearchBar::SearchPhrase').props.children).toEqual('');
     expect(getByTestId('SearchScreen::SearchBar::Clicked').props.children).toEqual('false');
 
-    // Assert components are present before search phrase editing (SearchBarResults not visible initially)
-    expect(() => getByTestId('SearchScreen::SearchBarResults')).toThrow();
+    // Assert components are present before search phrase editing (suggestions not visible initially)
+    expect(() => getByTestId('SearchScreen::Suggestions::Item::0')).toThrow();
     expect(getByTestId('SearchScreen::Filters')).toBeTruthy();
     expect(getByTestId('SearchScreen::AddingFilterMode').props.children).toEqual('false');
 
@@ -453,8 +452,8 @@ describe('Search Screen', () => {
     fireEvent.press(getByTestId('SearchScreen::SearchBar::UpdateSearchPhrase'));
     expect(getByTestId('SearchScreen::SearchBar::SearchPhrase').props.children).toEqual('S');
 
-    // Assert components remain present during search (SearchBarResults still not visible during phrase editing)
-    expect(() => getByTestId('SearchScreen::SearchBarResults')).toThrow();
+    // Assert components remain present during search (suggestions still not visible during phrase editing)
+    expect(() => getByTestId('SearchScreen::Suggestions::Item::0')).toThrow();
     expect(getByTestId('SearchScreen::Filters')).toBeTruthy();
     expect(getByTestId('SearchScreen::Divider')).toBeTruthy();
 
@@ -462,7 +461,7 @@ describe('Search Screen', () => {
     expect(getByTestId('SearchScreen::SearchBar::SearchPhrase').props.children).toEqual('Su');
 
     // Assert search phrase is being updated correctly
-    // (Note: SearchBarResults is not visible unless searchBar is clicked)
+    // (Note: suggestions are not visible unless searchBar is clicked)
 
     fireEvent.press(getByTestId('SearchScreen::SearchBar::UpdateSearchPhrase'));
     expect(getByTestId('SearchScreen::SearchBar::SearchPhrase').props.children).toEqual('Sus');
@@ -509,19 +508,21 @@ describe('Search Screen', () => {
     );
   });
 
-  test('SearchBarResults UpdateSearchString updates search phrase', async () => {
+  test('selecting a suggestion updates the search phrase and leaves search mode', async () => {
     const { getByTestId: emptyGetByTestId, rerender } = await renderSearchComponent();
     assertInitialComponentState(emptyGetByTestId);
     const { getByTestId } = await waitAndRerender(rerender, emptyGetByTestId);
 
     fireEvent.press(getByTestId('SearchScreen::SearchBar::ToggleClicked'));
-    expect(getByTestId('SearchScreen::SearchBarResults')).toBeTruthy();
+    const suggestionTitle = getByTestId('SearchScreen::Suggestions::Item::0::Title').props.children;
 
-    fireEvent.press(getByTestId('SearchScreen::SearchBarResults::UpdateSearchString'));
+    fireEvent.press(getByTestId('SearchScreen::Suggestions::Item::0::Select'));
 
     expect(getByTestId('SearchScreen::SearchBar::SearchPhrase').props.children).toEqual(
-      'New string'
+      suggestionTitle
     );
+    expect(() => getByTestId('SearchScreen::Suggestions::Item::0')).toThrow();
+    expect(getByTestId('SearchScreen::Filters')).toBeTruthy();
   });
 
   test('removeAFilterToTheState with recipeTitleInclude clears searchPhrase', async () => {
@@ -579,6 +580,20 @@ describe('Search Screen', () => {
       );
     });
 
+    fireEvent.press(getByTestId('ToggleSeasonFilter'));
+    await waitFor(() => {
+      expect(getByTestId('SearchScreen::FilterAccordion::FiltersState').props.children).toEqual(
+        '{"filterTypes.inSeason":["filterTypes.inSeason"]}'
+      );
+    });
+
+    fireEvent.press(getByTestId('ToggleSeasonFilter'));
+    await waitFor(() => {
+      expect(getByTestId('SearchScreen::FilterAccordion::FiltersState').props.children).toEqual(
+        '{}'
+      );
+    });
+
     fireEvent.press(getByTestId('SearchScreen::FilterAccordion::AddFilter'));
     await waitFor(() => {
       expect(getByTestId('SearchScreen::FilterAccordion::FiltersState').props.children).toEqual(
@@ -605,6 +620,74 @@ describe('Search Screen', () => {
     const { FlatList } = require('react-native');
     const lists = UNSAFE_getAllByType(FlatList);
     expect(lists.some(node => node.props.keyboardShouldPersistTaps === 'handled')).toBe(true);
+  });
+
+  test('shows the filter accordion in place of the recipe grid while adding a filter', async () => {
+    const { getByTestId: emptyGetByTestId, rerender } = await renderSearchComponent();
+    const { getByTestId } = await waitAndRerender(rerender, emptyGetByTestId);
+
+    assertDatabasePopulatedState(getByTestId);
+
+    fireEvent.press(getByTestId('SearchScreen::ToggleAddingFilterMode'));
+
+    expect(getByTestId('SearchScreen::FilterAccordion')).toBeTruthy();
+    expect(() => getByTestId('SearchScreen::RecipeCards::1')).toThrow();
+  });
+
+  test('clearing the search phrase back to empty removes the title filter', async () => {
+    const { getByTestId: emptyGetByTestId, rerender } = await renderSearchComponent();
+    const { getByTestId } = await waitAndRerender(rerender, emptyGetByTestId);
+
+    for (let step = 0; step < 6; step++) {
+      fireEvent.press(getByTestId('SearchScreen::SearchBar::UpdateSearchPhrase'));
+    }
+
+    expect(getByTestId('SearchScreen::SearchBar::SearchPhrase').props.children).toEqual('');
+
+    fireEvent.press(getByTestId('SearchScreen::ToggleAddingFilterMode'));
+    expect(getByTestId('SearchScreen::FilterAccordion::FiltersState').props.children).not.toContain(
+      'recipeTitleInclude'
+    );
+  });
+
+  test('hardware back press only exits search mode while it is active', async () => {
+    const { Keyboard, BackHandler } = require('react-native');
+    const dismissSpy = jest.spyOn(Keyboard, 'dismiss').mockImplementation(() => {});
+    const addEventListenerSpy = jest.spyOn(BackHandler, 'addEventListener');
+
+    const { getByTestId: emptyGetByTestId, rerender } = await renderSearchComponent();
+    const { getByTestId } = await waitAndRerender(rerender, emptyGetByTestId);
+
+    const latestBackHandler = (): (() => boolean) => {
+      const backCalls = addEventListenerSpy.mock.calls.filter(
+        call => call[0] === 'hardwareBackPress'
+      );
+      return backCalls[backCalls.length - 1]![1] as () => boolean;
+    };
+
+    let handledWhileClosed = true;
+    act(() => {
+      handledWhileClosed = latestBackHandler()();
+    });
+    expect(handledWhileClosed).toBe(false);
+    expect(dismissSpy).not.toHaveBeenCalled();
+
+    fireEvent.press(getByTestId('SearchScreen::SearchBar::ToggleClicked'));
+    expect(getByTestId('SearchScreen::Suggestions::Item::0')).toBeTruthy();
+
+    let handledWhileOpen = false;
+    act(() => {
+      handledWhileOpen = latestBackHandler()();
+    });
+    expect(handledWhileOpen).toBe(true);
+    expect(dismissSpy).toHaveBeenCalled();
+    expect(() => getByTestId('SearchScreen::Suggestions::Item::0')).toThrow();
+
+    let handledAfterExit = true;
+    act(() => {
+      handledAfterExit = latestBackHandler()();
+    });
+    expect(handledAfterExit).toBe(false);
   });
 });
 
@@ -642,5 +725,20 @@ describe('Search Screen - empty state', () => {
 
     expect(getByTestId('SearchScreen::TextWhenEmpty')).toBeTruthy();
     expect(() => getByTestId('SearchScreen::RecipeCards::1')).toThrow();
+  });
+
+  test('shows the suggestions empty item when search is active with no matches', async () => {
+    const { getByTestId, rerender } = render(emptyStateComponent);
+    await waitFor(() => expect(getByTestId('SearchScreen')).toBeTruthy());
+
+    await new Promise(resolve => setTimeout(resolve, 100));
+    rerender(emptyStateComponent);
+    await waitFor(() => expect(getByTestId('SearchScreen')).toBeTruthy());
+
+    fireEvent.press(getByTestId('SearchScreen::SearchBar::ToggleClicked'));
+
+    expect(getByTestId('SearchScreen::Suggestions::Empty')).toBeTruthy();
+    expect(() => getByTestId('SearchScreen::Suggestions::Item::0')).toThrow();
+    expect(() => getByTestId('SearchScreen::Filters')).toThrow();
   });
 });

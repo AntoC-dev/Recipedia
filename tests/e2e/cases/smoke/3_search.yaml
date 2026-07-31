@@ -19,7 +19,7 @@ tags:
           label: "Dismiss keyboard on Android (iOS shows none without typed text)"
 
 - assertVisible:
-    id: "SearchScreen::SearchBarResults::Item::0-content"
+    id: "SearchScreen::Suggestions::Item::0-content"
     label: "Search suggestions render"
 
 - runFlow:

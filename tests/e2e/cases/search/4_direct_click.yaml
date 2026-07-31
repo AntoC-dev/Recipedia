@@ -27,12 +27,12 @@ tags:
 
 - extendedWaitUntil:
     visible:
-      id: "SearchScreen::SearchBarResults::Item::4"
+      id: "SearchScreen::Suggestions::Item::4"
     timeout: 3000
     label: "Wait for element to tap to be displayed (keyboard closed)"
 
 - tapOn:
-    id: "SearchScreen::SearchBarResults::Item::4"
+    id: "SearchScreen::Suggestions::Item::4"
     retryTapIfNoChange: false
     label: "Action - Single tap directly selects Lentil Curry (item 4) from dropdown"
 
