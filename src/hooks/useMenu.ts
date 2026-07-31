@@ -12,7 +12,7 @@
 
 import { useSyncExternalStore } from 'react';
 import { RecipeDatabase } from '@utils/RecipeDatabase';
-import { menuTableElement, recipeTableElement } from '@customTypes/DatabaseElementTypes';
+import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
 
 /**
  * Provides reactive menu data and all menu/purchase operations.
@@ -74,5 +74,3 @@ export function useMenu() {
     clearPurchased,
   };
 }
-
-export type { menuTableElement };

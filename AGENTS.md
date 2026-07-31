@@ -20,7 +20,7 @@ Guidance for AI coding agents in this repo — Claude Code, Cursor, and any tool
 - `npm run lint:fix` — auto-fix lint
 - `npm run format` — Prettier
 - `npm run typecheck` — TypeScript
-- `npm run knip` — dead-code check (unused files/exports/types); CI-gated, config in `knip.json`
+- `npm run knip:check` — dead-code check (unused files/exports/types); CI-gated, config in `knip.json`
 - `npm run security:audit` — security audit
 
 ### Build
