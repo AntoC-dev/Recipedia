@@ -92,7 +92,7 @@ tags:
     label: "Assert - Verify dropdown filtered on 'Pi' (keyboard closed)"
 
 - tapOn:
-    id: "SearchScreen::SearchBarResults::Item::0"
+    id: "SearchScreen::Suggestions::Item::0"
     retryTapIfNoChange: false
     label: "Action - Single tap selects Margherita Pizza from dropdown"
 

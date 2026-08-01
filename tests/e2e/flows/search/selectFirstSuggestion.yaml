@@ -4,7 +4,7 @@ appId: "com.recipedia"
 # tap selects the suggestion directly: fills the search bar with its title,
 # closes the dropdown and reveals the recipe grid. No second tap needed.
 - tapOn:
-    id: "SearchScreen::SearchBarResults::Item::0"
+    id: "SearchScreen::Suggestions::Item::0"
     label: "Single tap selects the top suggestion, closes the dropdown and reveals the grid"
 
 - runFlow:

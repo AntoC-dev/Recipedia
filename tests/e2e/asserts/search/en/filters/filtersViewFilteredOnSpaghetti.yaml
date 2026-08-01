@@ -142,5 +142,5 @@ appId: "com.recipedia"
       STATE: "hidden"
 
 - runFlow:
-    file: "scrollBackToTop.yaml"
+    file: "../../../../flows/search/scrollBackToTop.yaml"
     label: "Scroll back to top of filters"

@@ -30,28 +30,8 @@ tags:
 
 - tapOn:
     id: "SearchScreen::SearchBar::RightIcon"
-    label: "Action - Tap clear icon: clears text but keeps search focused"
-
-- runFlow:
-    file: "../../asserts/search/searchbar/searchBarNotFiltered.yaml"
-    label: "Assert - Clear icon cleared the text; dropdown shows all recipes again, still focused (keyboard closed)"
-
-- tapOn:
-    id: "SearchScreen::SearchBar"
-    label: "Action - Refocus search bar to bring keyboard back for commit"
-
-- runFlow:
-    file: "../../flows/waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
-
-- runFlow:
-    file: "../../flows/search/commitTypedSearch.yaml"
-    label: "Commit empty search to close dropdown and dismiss keyboard"
-
-- runFlow:
-    file: "../../flows/waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
+    label: "Action - Tap clear icon: clears text and exits search mode back to cards"
 
 - runFlow:
     file: "../../asserts/search/en/assertSearchScreen.yaml"
-    label: "Assert - Verify Search screen is back to normal view"
+    label: "Assert - Verify Search screen is back to normal card view"

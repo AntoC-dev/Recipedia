@@ -130,6 +130,7 @@ export function SearchBar({
               setSearchPhrase('');
               updateSearchString('');
               Keyboard.dismiss();
+              setSearchBarClicked(false);
             }}
           />
         )

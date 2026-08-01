@@ -1,15 +1,11 @@
 appId: "com.recipedia"
 ---
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::SearchBar"
-    direction: UP
-    speed: 85
-    timeout: 60000
-    label: "Scroll back to top of Search screen"
+# SearchScreen::SearchBar is a static header rendered above the list and the filter
+# panel (src/screens/Search.tsx) and is always visible in every mode, so there is
+# nothing here to scroll. This flow is a post-action checkpoint only. Any card tap
+# that follows a scrolled list MUST self-guard with its own scrollUntilVisible on the
+# target card (see flows/menu/addRecipeToMenu.yaml) — do not rely on this flow to
+# reposition the list.
 
 - waitForAnimationToEnd
 

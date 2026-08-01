@@ -1307,7 +1307,7 @@ dismissing the keyboard, so we tap on section headers to dismiss safely.
 **Exception 3 - SearchBar**: While the search bar is focused
 (`searchBarClicked === true`), the recipe grid (`SearchScreen::RecipeCards::*`)
 is **empty** and replaced by the suggestion dropdown
-(`SearchScreen::SearchBarResults::Item::<N>`). The grid only renders once the
+(`SearchScreen::Suggestions::Item::<N>`). The grid only renders once the
 dropdown is closed via `onSubmitEditing` (native keyboard submit). Never rely on
 `pressKey: enter` to close it — on Android, Maestro's `pressKey: enter` does not
 reliably trigger Paper Searchbar's IME action, so `onSubmitEditing` never fires,
@@ -1337,7 +1337,7 @@ needed:
 # Select the top suggestion: closes the dropdown, dismisses the keyboard,
 # and sets the filter to that suggestion's full title
 - tapOn:
-    id: 'SearchScreen::SearchBarResults::Item::0'
+    id: 'SearchScreen::Suggestions::Item::0'
     label: 'Select top suggestion to close dropdown and reveal grid'
 ```
 
@@ -1934,7 +1934,7 @@ automatically — see the [CI Retry Mechanism](#ci-retry-mechanism) section.
   empty — the confirmed root cause of intermittent
   `SearchScreen::RecipeCards::*` timeouts across recipe-create, ingredients-db,
   and search suites (CI run 28471911471). Replaced with two deterministic
-  patterns: tap `SearchScreen::SearchBarResults::Item::0` to select the top
+  patterns: tap `SearchScreen::Suggestions::Item::0` to select the top
   suggestion when opening one specific recipe (this also replaces the typed text
   with the suggestion's full title), or `pressKey: back` (Android) /
   `tapOn: { id: "Search" }` (iOS) to close the dropdown while keeping the exact

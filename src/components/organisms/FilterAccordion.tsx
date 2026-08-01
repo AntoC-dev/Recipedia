@@ -215,8 +215,8 @@ export function FilterAccordion({
     <List.AccordionGroup>
       <FlatList
         data={ingredientSections}
-        scrollEnabled={false}
-        showsHorizontalScrollIndicator={false}
+        keyboardShouldPersistTaps='handled'
+        showsVerticalScrollIndicator={false}
         renderItem={renderAccordion}
       />
     </List.AccordionGroup>

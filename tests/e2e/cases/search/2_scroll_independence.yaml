@@ -45,23 +45,7 @@ tags:
 
 - tapOn:
     id: "SearchScreen::SearchBar::RightIcon"
-    label: "Action - Tap clear icon: clears text but keeps dropdown open"
-
-- tapOn:
-    id: "SearchScreen::SearchBar"
-    label: "Action - Refocus search bar to bring keyboard back for commit"
-
-- runFlow:
-    file: "../../flows/waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
-
-- runFlow:
-    file: "../../flows/search/commitTypedSearch.yaml"
-    label: "Commit empty search to close dropdown and dismiss keyboard"
-
-- runFlow:
-    file: "../../flows/waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
+    label: "Action - Tap clear icon: clears text and exits search mode back to cards"
 
 - scrollUntilVisible:
     element:

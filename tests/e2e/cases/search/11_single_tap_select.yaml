@@ -24,7 +24,7 @@ tags:
 # suggestion is tapped and selected in one shot, keyboard still up - no
 # dropdown assertion here, no dismissal before the tap.
 - tapOn:
-    id: "SearchScreen::SearchBarResults::Item::0"
+    id: "SearchScreen::Suggestions::Item::0"
     label: "Action - Single tap while keyboard is open directly selects Lentil Curry"
 
 - runFlow:
