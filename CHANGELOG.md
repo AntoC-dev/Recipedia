@@ -1,3 +1,12 @@
+## [2.48.6](https://github.com/AntoC-dev/Recipedia/compare/v2.48.5...v2.48.6) (2026-08-01)
+
+### Bug Fixes
+
+* **e2e:** guard Spaghetti card tap on scrolled search list ([48f2837](https://github.com/AntoC-dev/Recipedia/commit/48f2837750ffe6d5fa3fd78f8f330a99d3871405))
+* **search:** clear icon exits search mode back to recipe cards ([8c01b34](https://github.com/AntoC-dev/Recipedia/commit/8c01b34d43ab446e1621a425a4a1658a74105c7b))
+* **search:** reliable single-tap select + clear icon exits to cards ([#497](https://github.com/AntoC-dev/Recipedia/issues/497)) ([30f101f](https://github.com/AntoC-dev/Recipedia/commit/30f101f0a761178b59913b8a1c4d3328e699da89))
+* **search:** reliable single-tap suggestion select via split lists ([2eee8fe](https://github.com/AntoC-dev/Recipedia/commit/2eee8fea37bf950ad42cceb859053d99d0ef905b))
+
 ## [2.48.5](https://github.com/AntoC-dev/Recipedia/compare/v2.48.4...v2.48.5) (2026-07-31)
 
 ### Bug Fixes
