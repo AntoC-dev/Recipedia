@@ -101,16 +101,19 @@ function AppContent() {
 
     const shouldHideSplash = isAppInitialized && isDatabaseReady;
 
-    const onLayoutRootView = async () => {
-        if (shouldHideSplash) {
-            if (isFirstLaunchFlag) {
-                appLogger.debug('Hiding splash screen - first launch, WelcomeScreen ready');
-            } else {
-                appLogger.debug('Hiding splash screen - database data ready');
-            }
-            await SplashScreen.hideAsync();
+    useEffect(() => {
+        if (!shouldHideSplash) {
+            return;
         }
-    };
+        if (isFirstLaunchFlag) {
+            appLogger.debug('Hiding splash screen - first launch, WelcomeScreen ready');
+        } else {
+            appLogger.debug('Hiding splash screen - database data ready');
+        }
+        SplashScreen.hideAsync().catch(err =>
+            appLogger.warn('Failed to hide splash screen', {error: err})
+        );
+    }, [shouldHideSplash, isFirstLaunchFlag]);
 
     if (!shouldHideSplash) {
         appLogger.debug('Showing splash screen', {
@@ -132,7 +135,7 @@ function AppContent() {
                 >
                     <PaperProvider theme={theme}>
                         <SafeAreaProvider>
-                            <NavigationContainer onReady={onLayoutRootView}>
+                            <NavigationContainer>
                                 <AppWrapper/>
                             </NavigationContainer>
                         </SafeAreaProvider>
