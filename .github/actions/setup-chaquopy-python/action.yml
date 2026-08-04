@@ -4,7 +4,7 @@ description: 'Install the Python version pinned in .python-version so Chaquopy (
 runs:
   using: 'composite'
   steps:
-    - uses: actions/setup-python@v5
+    - uses: actions/setup-python@v7
       with:
         python-version-file: '.python-version'
         cache: 'pip'
