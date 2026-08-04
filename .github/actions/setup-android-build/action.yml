@@ -61,7 +61,7 @@ runs:
           ${{ runner.os }}-expo-prebuild-android-
 
     - name: Setup EAS
-      uses: expo/expo-github-action@v8
+      uses: expo/expo-github-action@v9
       with:
         eas-version: ${{ inputs.eas-version }}
         packager: 'npm'
