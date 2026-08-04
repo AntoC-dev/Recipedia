@@ -1,3 +1,11 @@
+## [2.48.7](https://github.com/AntoC-dev/Recipedia/compare/v2.48.6...v2.48.7) (2026-08-04)
+
+### Bug Fixes
+
+* **e2e:** dismiss search keyboard without popping navigation ([bfb0975](https://github.com/AntoC-dev/Recipedia/commit/bfb09757672ce93598730274fa2c33171e3c88c9)), closes [#400](https://github.com/AntoC-dev/Recipedia/issues/400)
+* **e2e:** remove premature version scroll in en parameters assert ([476db98](https://github.com/AntoC-dev/Recipedia/commit/476db983b2f2396a3ba17908efa5fa8c28d71680))
+* **navigation:** hide splash without NavigationContainer onReady ([e181fad](https://github.com/AntoC-dev/Recipedia/commit/e181fadc27b8c182bf112d6b3d96bcad392fe671)), closes [#400](https://github.com/AntoC-dev/Recipedia/issues/400)
+
 ## [2.48.6](https://github.com/AntoC-dev/Recipedia/compare/v2.48.5...v2.48.6) (2026-08-01)
 
 ### Bug Fixes
