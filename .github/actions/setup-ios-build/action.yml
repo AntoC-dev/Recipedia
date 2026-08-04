@@ -14,7 +14,7 @@ runs:
   using: 'composite'
   steps:
     - name: Setup Python for recipe-scraper module
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v7
       with:
         python-version-file: '.python-version'
         cache: 'pip'
