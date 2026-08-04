@@ -10,17 +10,6 @@ appId: "com.recipedia"
     file: "./assertRecipeDefaultsSection.yaml"
     label: "Check that the recipe defaults section is displayed correctly in English"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "Parameters::Section::About::Version::Item"
-    direction: DOWN
-    speed: 60
-    label: "Scroll to version item"
-
-- waitForAnimationToEnd
-
 - runFlow:
     file: "./assertDataManagementSection.yaml"
     label: "Check that the data management section is displayed correctly in English"

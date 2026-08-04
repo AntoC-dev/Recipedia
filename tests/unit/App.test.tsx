@@ -84,4 +84,14 @@ describe('App', () => {
       expect(mockWhenReady).not.toHaveBeenCalled();
     });
   });
+
+  describe('splash screen', () => {
+    it('hides the splash screen once initialized even when no navigator has mounted', async () => {
+      render(<App />);
+
+      await waitFor(() => {
+        expect(mockHideAsync).toHaveBeenCalled();
+      });
+    });
+  });
 });

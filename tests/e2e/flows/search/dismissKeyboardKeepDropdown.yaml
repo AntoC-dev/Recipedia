@@ -1,15 +1,28 @@
 appId: "com.recipedia"
 ---
-# Swipe (not a tap, not hideKeyboard - unreliable on iOS) dismisses the
-# keyboard via the Search screen FlashList's keyboardDismissMode='on-drag'.
-# This never touches searchBarClicked, so the dropdown stays open and the
-# filter is untouched. Even at the top of the list, this short downward drag
-# just registers the gesture and dismisses the keyboard - it doesn't scroll
-# the top items away.
-- swipe:
-    direction: DOWN
-    duration: 300
-    label: "Swipe down to dismiss keyboard while keeping dropdown open"
+# Dismiss the soft keyboard while keeping the search dropdown open. This is
+# always called immediately after typing, so the keyboard is guaranteed up,
+# which makes each platform's dismissal safe:
+# - iOS: a downward swipe triggers the FlashList keyboardDismissMode='on-drag'
+#   (hideKeyboard is flaky on iOS). It never touches searchBarClicked, so the
+#   dropdown stays open and the filter is untouched.
+# - Android: the on-drag swipe alone is an unreliable IME dismiss. hideKeyboard
+#   maps to a Back press, but while the keyboard is up that Back is consumed by
+#   the IME to hide it and never reaches navigation, so the dropdown stays open.
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - swipe:
+          direction: DOWN
+          duration: 300
+          label: "Swipe down to dismiss keyboard while keeping dropdown open"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard
 
 - runFlow:
     file: "../waitForKeyboardDismiss.yaml"

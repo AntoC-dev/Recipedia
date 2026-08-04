@@ -2,7 +2,12 @@ appId: "com.recipedia"
 ---
 # Wait for keyboard to dismiss - platform specific
 # iOS: Waits for animation then verifies keyboard button is gone
-# Android: Uses waitForAnimationToEnd
+# Android: IME is not in the view hierarchy, so it cannot be asserted gone;
+# just wait for the dismissal animation. This helper must not itself dismiss
+# the keyboard: hideKeyboard maps to a Back press on Android, and when the
+# keyboard is already down (e.g. after committing a field) that Back reaches
+# navigation and pops the current screen. Callers dismiss the keyboard
+# themselves while it is still up.
 
 - runFlow:
     when:

@@ -10,7 +10,7 @@
  * - Comprehensive screen prop definitions
  * - Stack and tab navigation type support
  * - Parameter passing validation
- * - Integration with React Navigation v6
+ * - Integration with React Navigation v7
  * - Auto-completion and IntelliSense support
  *
  * Navigation Architecture:
@@ -42,9 +42,8 @@
  * ```
  */
 
-import { NavigationProp } from '@react-navigation/native';
+import { NavigationProp, NavigatorScreenParams } from '@react-navigation/native';
 import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
-import React from 'react';
 import { BottomTabScreenProps, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import type {
   RecipeViewParams,
@@ -77,8 +76,8 @@ export enum recipeStateType {
  * Maps screen names to their required parameters
  */
 export type StackScreenParamList = {
-  /** Main tab navigator (no parameters) */
-  Tabs: React.JSX.Element;
+  /** Main tab navigator — nested tab routes reachable via `{ screen: 'Home' }` */
+  Tabs: NavigatorScreenParams<TabScreenParamList> | undefined;
   /** Readonly recipe display */
   RecipeView: RecipeViewParams;
   /** Edit an existing recipe */
