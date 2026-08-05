@@ -1,13 +1,17 @@
 version: 2
 updates:
+  # ---------------------------------------------------------------------------
   # npm dependencies. Expo SDK pins the React Native / React / Expo / Babel /
   # Metro toolchain. Standalone JS libs and dev tooling: minor + patch only,
-  # major bumps are a deliberate human action. The Expo-SDK-managed family
-  # (expo*, react-native*, react, jest-expo, eslint-config-expo) is restricted
-  # to PATCH-only: Expo republishes these patches within an SDK on a weekly
-  # cadence, and a stale lockfile makes `expo-doctor` fail CI. Patch PRs keep
-  # the lockfile fresh; minor/major on that family = an SDK upgrade, done by
-  # hand via `expo install` — never by Dependabot.
+  # major bumps are a deliberate human action.
+  #
+  # The Expo runtime family (expo, expo-*, @expo/*) is PATCH-only and lands as a
+  # single grouped PR (`expo-sdk`). Expo republishes patches within an SDK on a
+  # rolling cadence and a stale lockfile makes `expo-doctor` fail CI; grouping
+  # keeps the family moving in lockstep instead of as isolated bumps that can
+  # land desynchronised. Minor/major on that family = an SDK upgrade, done by
+  # hand via `expo install`.
+  # ---------------------------------------------------------------------------
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
@@ -16,8 +20,6 @@ updates:
       time: "09:00"
       timezone: "Europe/Paris"
     open-pull-requests-limit: 5
-    reviewers:
-      - "AntoC"
     pull-request-branch-name:
       separator: "/"
     commit-message:
@@ -33,6 +35,15 @@ updates:
           - "version-update:semver-minor"
           - "version-update:semver-patch"
     groups:
+      # One PR for the whole Expo runtime family so its packages never land
+      # desynchronised.
+      expo-sdk:
+        patterns:
+          - "expo"
+          - "expo-*"
+          - "@expo/*"
+        update-types:
+          - "patch"
       testing:
         patterns:
           - "*jest*"
@@ -54,22 +65,26 @@ updates:
       # Expo-SDK-managed family — allow PATCH only (keeps lockfile fresh so
       # expo-doctor stays green); block minor/major (= SDK upgrade, done via
       # `expo install` by hand).
-      - dependency-name: "expo*"
+      - dependency-name: "expo"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
-      - dependency-name: "@expo*"
+      - dependency-name: "expo-*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "@expo/*"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "react-native*"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "@react-native*"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
-      - dependency-name: "react"
-        update-types: ["version-update:semver-major", "version-update:semver-minor"]
-      - dependency-name: "react-dom"
-        update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "jest-expo"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "eslint-config-expo"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      # react / react-dom — FULLY ignored (all update types, patch included):
+      # they must move in lockstep with the Expo-pinned React version via
+      # `expo install`, never by a lone Dependabot patch. A react-only patch
+      # (19.2.3 -> 19.2.8) left react-dom at 19.2.3 and broke the E2E suite.
+      - dependency-name: "react"
+      - dependency-name: "react-dom"
       # Toolchain pins — fully ignored (bumped only alongside an SDK upgrade).
       - dependency-name: "react-compiler-runtime"
       - dependency-name: "babel-plugin-react-compiler"
@@ -101,8 +116,6 @@ updates:
       time: "09:00"
       timezone: "Europe/Paris"
     open-pull-requests-limit: 3
-    reviewers:
-      - "AntoC"
     pull-request-branch-name:
       separator: "/"
     commit-message:
@@ -112,3 +125,11 @@ updates:
       - "ci"
       - "automated"
       - "github-actions"
+    ignore:
+      # gradle/actions v6 moved "enhanced" caching into a proprietary component
+      # (free for public repos, but no longer MIT) and dropped configuration-
+      # cache support. v5 covers our Android build needs — stay on it and treat
+      # any new major as a deliberate, hand-reviewed upgrade. v5.x patch/minor
+      # bumps still flow through to keep the pin fresh.
+      - dependency-name: "gradle/actions"
+        update-types: ["version-update:semver-major"]
