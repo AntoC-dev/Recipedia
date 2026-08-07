@@ -192,6 +192,6 @@
     "semantic-release": "25.0.8",
     "typedoc": "0.28.20",
     "typescript": "6.0.3",
-    "varvara-typedoc-theme": "0.3.10"
+    "varvara-typedoc-theme": "0.3.9"
   }
 }
