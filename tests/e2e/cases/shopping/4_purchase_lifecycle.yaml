@@ -1,0 +1,67 @@
+name: "4 - Purchase Lifecycle Flow"
+appId: "com.recipedia"
+tags:
+  - shopping
+---
+- runFlow:
+    file: "../../flows/menu/addRecipeToMenu.yaml"
+    label: "Setup - Add Classic Pancakes to menu"
+
+- runFlow:
+    file: "../../flows/shopping/openShoppingScreen.yaml"
+    label: "Verification - Open the Shopping screen"
+
+- runFlow:
+    file: "../../asserts/shopping/assertNoPurchasedBlock.yaml"
+    label: "Assert - No purchased block before anything is bought"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.baking::SubHeader"
+    text: "Baking"
+    label: "Assert - Baking category holds Flour"
+
+- runFlow:
+    file: "../../flows/shopping/toggleIngredientPurchased.yaml"
+    env:
+      INGREDIENT_NAME: "Flour"
+    label: "Action - Mark Flour as purchased"
+
+- assertNotVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.baking::SubHeader"
+    label: "Assert - Baking category disappears: its only item left the working list"
+
+- runFlow:
+    file: "../../asserts/shopping/en/assertPurchasedBlock.yaml"
+    label: "Assert - Purchased block appears at the end of the list"
+
+- assertNotVisible:
+    id: "ShoppingScreen::SectionList::Flour"
+    label: "Assert - Flour is hidden inside the collapsed purchased block"
+
+- runFlow:
+    file: "../../flows/shopping/expandPurchased.yaml"
+    label: "Action - Expand the purchased block"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Flour"
+    text: "Flour (200g), 1 recipe"
+    label: "Assert - Flour is reachable once the block is expanded"
+
+- tapOn:
+    id: "ShoppingScreen::SectionList::Flour"
+    label: "Action - Un-mark Flour as purchased"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: "../../asserts/shopping/assertNoPurchasedBlock.yaml"
+    label: "Assert - Purchased block disappears once nothing is bought"
+
+- runFlow:
+    file: "../../flows/shopping/scrollToTop.yaml"
+    label: "Cleanup - Scroll back to top for next tests"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.baking::SubHeader"
+    text: "Baking"
+    label: "Assert - Flour is back under its Baking category"

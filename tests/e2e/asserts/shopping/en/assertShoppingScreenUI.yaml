@@ -7,8 +7,3 @@ appId: "com.recipedia"
 - assertVisible:
     id: "ShoppingScreen::SectionList"
     label: "Shopping list section is displayed"
-
-- assertVisible:
-    id: "ShoppingScreen::ClearShoppingListButton::RoundButton"
-    label: "Clear shopping list button is displayed"
-

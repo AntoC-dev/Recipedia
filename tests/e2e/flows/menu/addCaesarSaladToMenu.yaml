@@ -1,0 +1,35 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Navigate to Search screen"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::RecipeCards::4::Caesar Salad"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to Caesar Salad recipe"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "SearchScreen::RecipeCards::4::Caesar Salad"
+    label: "Open Caesar Salad recipe"
+
+- tapOn:
+    id: "Recipe::BottomActionButton"
+    label: "Add recipe to menu"
+
+- runFlow:
+    file: "../../asserts/alerts/en/addingRecipeToMenu.yaml"
+    env:
+      RECIPE_NAME: "Caesar Salad"
+    label: "Verify recipe added alert"
+
+- runFlow:
+    file: "../search/scrollBackToTop.yaml"
+    label: "Scroll back to top"

@@ -1,0 +1,38 @@
+name: "9 - Undo Remove Recipe Flow"
+appId: "com.recipedia"
+tags:
+  - menu
+---
+- runFlow:
+    file: "../../flows/menu/addRecipeToMenu.yaml"
+    label: "Setup - Add Classic Pancakes to menu"
+
+- tapOn:
+    id: "BottomTabs::Menu"
+    label: "Action - Navigate to Menu screen"
+
+- extendedWaitUntil:
+    visible:
+      id: "MenuScreen::MenuItem::1"
+    timeout: 30000
+    label: "Wait for the menu card to be visible"
+
+- tapOn:
+    id: "MenuScreen::MenuItem::1::RemoveButton"
+    label: "Action - Remove the recipe (immediate, no confirmation)"
+
+- assertNotVisible:
+    id: "MenuScreen::MenuItem::1"
+    label: "Assert - Card is removed immediately without a confirmation dialog"
+
+- runFlow:
+    file: "../../asserts/menu/en/removedFromMenuSnackbar.yaml"
+    label: "Assert - Undo snackbar appears"
+
+- tapOn:
+    text: "Undo"
+    label: "Action - Tap Undo to restore the recipe"
+
+- assertVisible:
+    id: "MenuScreen::MenuItem::1"
+    label: "Assert - Recipe is restored to the menu after undo"

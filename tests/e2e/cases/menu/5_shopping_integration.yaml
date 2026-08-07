@@ -13,7 +13,7 @@ tags:
 
 - extendedWaitUntil:
     visible:
-      id: "ShoppingScreen::ClearShoppingListButton::RoundButton"
+      id: "ShoppingScreen::SectionList"
     timeout: 30000
     label: "Wait for Shopping screen to be visible"
 

@@ -1,0 +1,81 @@
+name: "10 - Purchased State Resets After Cook and Undo"
+appId: "com.recipedia"
+tags:
+  - menu
+---
+- runFlow:
+    file: "../../flows/menu/addRecipeToMenu.yaml"
+    label: "Setup - Add Classic Pancakes to menu"
+
+- runFlow:
+    file: "../../flows/menu/addSpaghettiToMenu.yaml"
+    label: "Setup - Add Spaghetti so the menu keeps an uncooked recipe throughout"
+
+- runFlow:
+    file: "../../flows/shopping/openShoppingScreen.yaml"
+    label: "Verification - Open the Shopping screen"
+
+- runFlow:
+    file: "../../flows/shopping/toggleIngredientPurchased.yaml"
+    env:
+      INGREDIENT_NAME: "Flour"
+    label: "Action - Mark Flour (Pancakes only) as purchased"
+
+- runFlow:
+    file: "../../asserts/shopping/en/assertPurchasedBlock.yaml"
+    label: "Assert - Flour is now in the purchased block"
+
+- tapOn:
+    id: "BottomTabs::Menu"
+    label: "Action - Navigate to Menu screen"
+
+- extendedWaitUntil:
+    visible:
+      id: "MenuScreen::MenuItem::1"
+    timeout: 30000
+    label: "Wait for the menu cards to be visible"
+
+- tapOn:
+    id: "MenuScreen::MenuItem::1::Checkbox"
+    label: "Action - Mark Classic Pancakes as cooked"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "MenuScreen::MenuItem::2::RemoveButton"
+    label: "Action - Remove the cooked Classic Pancakes from the menu"
+
+- runFlow:
+    file: "../../asserts/menu/en/removedFromMenuSnackbar.yaml"
+    label: "Assert - Undo snackbar appears"
+
+- tapOn:
+    text: "Undo"
+    label: "Action - Undo the removal"
+
+- extendedWaitUntil:
+    visible:
+      id: "MenuScreen::MenuItem::2"
+    timeout: 30000
+    label: "Wait for Classic Pancakes to be restored to the menu"
+
+- runFlow:
+    file: "../../flows/shopping/openShoppingScreen.yaml"
+    label: "Verification - Open the Shopping screen"
+
+# Baking sorts first, so the restored Flour sits above wherever the list was
+# left when we navigated away.
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::Flour"
+    direction: UP
+    speed: 80
+    label: "Scroll to the restored Flour item"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Flour"
+    label: "Assert - Flour is back on the shopping list"
+
+- runFlow:
+    file: "../../asserts/shopping/assertNoPurchasedBlock.yaml"
+    label: "Assert - Flour came back as 'to buy': cooking dropped its purchased state, so no purchased block remains"

@@ -16,6 +16,14 @@ appId: "com.recipedia"
     file: "../../../asserts/shopping/shoppingTacosTranslatedInFrench.yaml"
     label: "Check that non empty shopping list is translated in French"
 
+- tapOn:
+    id: "BottomTabs::Menu"
+    label: "Go to Menu screen to remove the test recipe"
+
+- tapOn:
+    id: "MenuScreen::MenuItem::1::RemoveButton"
+    label: "Remove Chicken Tacos from menu"
+
 - runFlow:
-    file: "../../../flows/shopping/fr/clearShoppingList.yaml"
-    label: "Clear shopping list"
+    file: "../../../asserts/menu/fr/removedFromMenuSnackbar.yaml"
+    label: "Check the French removal snackbar is shown"
