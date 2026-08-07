@@ -6,6 +6,7 @@ export default {
   clearMenu: 'Vider le menu',
   confirmClearMenu: 'Êtes-vous sûr de vouloir vider votre menu ?',
   removeFromMenu: 'Retirer du menu',
+  removedFromMenu: 'Recette retirée du menu',
   markAsCooked: 'Marquer comme cuisiné',
   unmarkAsCooked: 'Marquer comme non cuisiné',
 };

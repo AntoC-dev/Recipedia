@@ -8,32 +8,39 @@
  * Features:
  * - Sectioned list separating "to cook" and "cooked" recipes
  * - Recipe cards with toggle and remove actions
+ * - Removal is immediate with an undo snackbar (no blocking confirmation)
  * - Empty state with helpful message
  * - Tutorial overlay support via react-native-copilot
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { CopilotStep, walkthroughable } from 'react-native-copilot';
-import { List, Text, useTheme } from 'react-native-paper';
+import { List, Snackbar, Text, useTheme } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
 import { useMenu } from '@hooks/useMenu';
 import { useSafeCopilot } from '@hooks/useSafeCopilot';
 import { MenuRecipeCard } from '@components/molecules/MenuRecipeCard';
+import { ListSectionHeader } from '@components/atomic/ListSectionHeader';
 import { TUTORIAL_STEPS } from '@utils/Constants';
 import { padding } from '@styles/spacing';
+import { menuTableElement, recipeTableElement } from '@customTypes/DatabaseElementTypes';
 
 const CopilotView = walkthroughable(View);
 
 const screenId = 'MenuScreen';
 
+const REMOVE_SNACKBAR_DURATION = 4000;
+
 export function Menu() {
   const { t } = useI18n();
   const { colors } = useTheme();
-  const { menu, toggleMenuItemCooked, removeFromMenu } = useMenu();
+  const { menu, toggleMenuItemCooked, removeFromMenu, addRecipeToMenu, getRecipeById } = useMenu();
   const copilotData = useSafeCopilot();
   const stepOrder = TUTORIAL_STEPS.Menu.order;
+
+  const [removedRecipe, setRemovedRecipe] = useState<recipeTableElement | null>(null);
 
   const toCookItems = menu.filter(item => !item.isCooked);
   const cookedItems = menu.filter(item => item.isCooked);
@@ -42,8 +49,22 @@ export function Menu() {
     await toggleMenuItemCooked(menuId);
   };
 
-  const handleRemove = async (menuId: number) => {
-    await removeFromMenu(menuId);
+  // Looked up without subscribing to the recipe catalogue, so editing recipes
+  // elsewhere does not re-render the menu. Deleting a recipe only decrements a
+  // menu entry whose count is above one, so a card can outlive its recipe;
+  // without a recipe there is nothing to put back and the snackbar stays hidden.
+  const handleRemove = async (menuItem: menuTableElement) => {
+    const recipe = getRecipeById(menuItem.recipeId);
+    await removeFromMenu(menuItem.id);
+    setRemovedRecipe(recipe);
+  };
+
+  const undoRemove = async () => {
+    if (!removedRecipe) {
+      return;
+    }
+    await addRecipeToMenu(removedRecipe);
+    setRemovedRecipe(null);
   };
 
   return (
@@ -65,44 +86,50 @@ export function Menu() {
         <ScrollView testID={`${screenId}::ScrollView`} contentContainerStyle={styles.listContent}>
           {toCookItems.length > 0 && (
             <List.Section>
-              <List.Subheader
+              <ListSectionHeader
                 testID={`${screenId}::SectionHeader::ToCook`}
-                style={{ color: colors.primary }}
-              >
-                {t('menuScreen.toCook')}
-              </List.Subheader>
+                title={t('menuScreen.toCook')}
+              />
               {toCookItems.map((item, index) => (
                 <MenuRecipeCard
                   key={item.id}
                   testId={`${screenId}::MenuItem::${index + 1}`}
                   menuItem={item}
                   onToggleCooked={() => void handleToggleCooked(item.id)}
-                  onRemove={() => void handleRemove(item.id)}
+                  onRemove={() => void handleRemove(item)}
                 />
               ))}
             </List.Section>
           )}
           {cookedItems.length > 0 && (
             <List.Section>
-              <List.Subheader
+              <ListSectionHeader
                 testID={`${screenId}::SectionHeader::Cooked`}
-                style={{ color: colors.primary }}
-              >
-                {t('menuScreen.cooked')}
-              </List.Subheader>
+                title={t('menuScreen.cooked')}
+              />
               {cookedItems.map((item, index) => (
                 <MenuRecipeCard
                   key={item.id}
                   testId={`${screenId}::MenuItem::${toCookItems.length + index + 1}`}
                   menuItem={item}
                   onToggleCooked={() => void handleToggleCooked(item.id)}
-                  onRemove={() => void handleRemove(item.id)}
+                  onRemove={() => void handleRemove(item)}
                 />
               ))}
             </List.Section>
           )}
         </ScrollView>
       )}
+
+      <Snackbar
+        visible={removedRecipe !== null}
+        onDismiss={() => setRemovedRecipe(null)}
+        duration={REMOVE_SNACKBAR_DURATION}
+        action={{ label: t('undo'), onPress: () => void undoRemove() }}
+        testID={`${screenId}::RemoveSnackbar`}
+      >
+        {t('menuScreen.removedFromMenu')}
+      </Snackbar>
 
       {copilotData && (
         <CopilotStep text={t('tutorial.menu.description')} order={stepOrder} name={'Menu'}>
@@ -138,6 +165,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingBottom: padding.large,
+    paddingHorizontal: padding.large,
   },
 });
 

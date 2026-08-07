@@ -6,6 +6,7 @@ import { testRecipes } from '@test-data/recipesDataset';
 import React from 'react';
 import { mockNavigationFunctions } from '@mocks/deps/react-navigation-mock';
 import Menu from '@screens/Menu';
+import { padding } from '@styles/spacing';
 
 const { mockUseSafeCopilot } = require('@mocks/hooks/useSafeCopilot-mock');
 
@@ -33,6 +34,9 @@ const defaultProps = {
 } as any;
 
 const screenId = 'MenuScreen';
+const removeSnackbarId = `${screenId}::RemoveSnackbar`;
+const toCookHeaderId = `${screenId}::SectionHeader::ToCook`;
+const cookedHeaderId = `${screenId}::SectionHeader::Cooked`;
 
 async function renderMenuAndWait() {
   const result = render(<Menu {...defaultProps} />);
@@ -98,6 +102,12 @@ describe('Menu Screen', () => {
 
       expect(getByTestId('CopilotStep::Menu')).toBeTruthy();
     });
+
+    test('remove snackbar is hidden when menu is empty', async () => {
+      const { queryByTestId } = await renderMenuAndWait();
+
+      expect(queryByTestId(removeSnackbarId)).toBeNull();
+    });
   });
 
   describe('Menu with Items - Sections', () => {
@@ -108,9 +118,9 @@ describe('Menu Screen', () => {
     });
 
     test('renders toCook section when uncooked items exist', async () => {
-      const { getByText } = await renderMenuAndWait();
+      const { getByTestId } = await renderMenuAndWait();
 
-      expect(getByText('menuScreen.toCook')).toBeTruthy();
+      expect(getByTestId(toCookHeaderId).props.children).toBe('menuScreen.toCook');
     });
 
     test('renders cooked section when cooked items exist', async () => {
@@ -118,9 +128,9 @@ describe('Menu Screen', () => {
       const firstMenuItem = menu[0];
       await database.toggleMenuItemCooked(firstMenuItem!.id!);
 
-      const { getByText } = await renderMenuAndWait();
+      const { getByTestId } = await renderMenuAndWait();
 
-      expect(getByText('menuScreen.cooked')).toBeTruthy();
+      expect(getByTestId(cookedHeaderId).props.children).toBe('menuScreen.cooked');
     });
 
     test('renders both sections when mixed items', async () => {
@@ -128,10 +138,10 @@ describe('Menu Screen', () => {
       const firstMenuItem = menu[0];
       await database.toggleMenuItemCooked(firstMenuItem!.id!);
 
-      const { getByText } = await renderMenuAndWait();
+      const { getByTestId } = await renderMenuAndWait();
 
-      expect(getByText('menuScreen.toCook')).toBeTruthy();
-      expect(getByText('menuScreen.cooked')).toBeTruthy();
+      expect(getByTestId(toCookHeaderId)).toBeTruthy();
+      expect(getByTestId(cookedHeaderId)).toBeTruthy();
     });
 
     test('does not render toCook section when all items cooked', async () => {
@@ -140,17 +150,37 @@ describe('Menu Screen', () => {
         await database.toggleMenuItemCooked(item.id!);
       }
 
-      const { queryByText, getByText } = await renderMenuAndWait();
+      const { queryByTestId, getByTestId } = await renderMenuAndWait();
 
-      expect(queryByText('menuScreen.toCook')).toBeNull();
-      expect(getByText('menuScreen.cooked')).toBeTruthy();
+      expect(queryByTestId(toCookHeaderId)).toBeNull();
+      expect(getByTestId(cookedHeaderId)).toBeTruthy();
     });
 
     test('does not render cooked section when no items cooked', async () => {
-      const { queryByText, getByText } = await renderMenuAndWait();
+      const { queryByTestId, getByTestId } = await renderMenuAndWait();
 
-      expect(getByText('menuScreen.toCook')).toBeTruthy();
-      expect(queryByText('menuScreen.cooked')).toBeNull();
+      expect(getByTestId(toCookHeaderId)).toBeTruthy();
+      expect(queryByTestId(cookedHeaderId)).toBeNull();
+    });
+
+    test('renders section headers as tier-level accessibility headers', async () => {
+      const menu = database.get_menu();
+      await database.toggleMenuItemCooked(menu[0]!.id!);
+
+      const { getByTestId } = await renderMenuAndWait();
+
+      for (const headerId of [toCookHeaderId, cookedHeaderId]) {
+        expect(getByTestId(headerId).props.variant).toBe('titleMedium');
+        expect(getByTestId(headerId).props.accessibilityRole).toBe('header');
+      }
+    });
+
+    test('insets the list content so headers and cards share one left edge', async () => {
+      const { getByTestId } = await renderMenuAndWait();
+
+      const contentStyle = getByTestId(`${screenId}::ScrollView`).props.contentContainerStyle;
+
+      expect(contentStyle).toEqual(expect.objectContaining({ paddingHorizontal: padding.large }));
     });
   });
 
@@ -181,7 +211,7 @@ describe('Menu Screen', () => {
     });
   });
 
-  describe('User Interactions', () => {
+  describe('Toggle Cooked Interactions', () => {
     beforeEach(async () => {
       await database.addRecipeToMenu(testRecipes[0]!);
       await database.addRecipeToMenu(testRecipes[1]!);
@@ -203,20 +233,6 @@ describe('Menu Screen', () => {
       });
     });
 
-    test('calls removeFromMenu when remove button pressed on card', async () => {
-      const { getByTestId, queryByTestId } = await renderMenuAndWait();
-
-      const initialMenuLength = database.get_menu().length;
-
-      fireEvent.press(getByTestId(`${screenId}::MenuItem::1::RemoveButton`));
-
-      await waitFor(() => {
-        const updatedMenu = database.get_menu();
-        expect(updatedMenu.length).toBe(initialMenuLength - 1);
-        expect(queryByTestId(`${screenId}::MenuItem::2`)).toBeNull();
-      });
-    });
-
     test('calls toggleMenuItemCooked when checkbox pressed on cooked card', async () => {
       const menu = database.get_menu();
       const firstMenuItem = menu[0];
@@ -232,22 +248,138 @@ describe('Menu Screen', () => {
         expect(updatedItem?.isCooked).toBe(false);
       });
     });
+  });
 
-    test('calls removeFromMenu when remove button pressed on cooked card', async () => {
+  describe('Remove with undo', () => {
+    beforeEach(async () => {
+      await database.addRecipeToMenu(testRecipes[0]!);
+      await database.addRecipeToMenu(testRecipes[1]!);
+    });
+
+    test('pressing remove immediately removes the item and shows the undo snackbar', async () => {
+      const { getByTestId, queryByTestId } = await renderMenuAndWait();
+
+      const menu = database.get_menu();
+      const firstMenuItem = menu[0];
+      const initialMenuLength = menu.length;
+
+      expect(queryByTestId(removeSnackbarId)).toBeNull();
+
+      fireEvent.press(getByTestId(`${screenId}::MenuItem::1::RemoveButton`));
+
+      await waitFor(() => {
+        const updatedMenu = database.get_menu();
+        expect(updatedMenu.length).toBe(initialMenuLength - 1);
+        expect(updatedMenu.find(item => item.id === firstMenuItem!.id)).toBeUndefined();
+      });
+
+      expect(getByTestId(`${removeSnackbarId}::Text`).props.children).toBe(
+        'menuScreen.removedFromMenu'
+      );
+      expect(getByTestId(`${removeSnackbarId}::Action::Children`).props.children).toBe('undo');
+    });
+
+    test('pressing undo re-adds the removed recipe and hides the snackbar', async () => {
+      const { getByTestId, queryByTestId } = await renderMenuAndWait();
+
+      const initialMenuLength = database.get_menu().length;
+
+      fireEvent.press(getByTestId(`${screenId}::MenuItem::1::RemoveButton`));
+
+      await waitFor(() => {
+        expect(database.get_menu().length).toBe(initialMenuLength - 1);
+      });
+
+      fireEvent.press(getByTestId(`${removeSnackbarId}::Action`));
+
+      await waitFor(() => {
+        expect(database.get_menu().length).toBe(initialMenuLength);
+      });
+      expect(queryByTestId(removeSnackbarId)).toBeNull();
+    });
+
+    test('undo restores only the most recently removed recipe', async () => {
+      const { getByTestId } = await renderMenuAndWait();
+
+      const secondRecipeId = database.get_menu()[1]!.recipeId;
+
+      fireEvent.press(getByTestId(`${screenId}::MenuItem::1::RemoveButton`));
+      await waitFor(() => {
+        expect(database.get_menu().length).toBe(1);
+      });
+
+      fireEvent.press(getByTestId(`${screenId}::MenuItem::1::RemoveButton`));
+      await waitFor(() => {
+        expect(database.get_menu().length).toBe(0);
+      });
+
+      fireEvent.press(getByTestId(`${removeSnackbarId}::Action`));
+
+      await waitFor(() => {
+        const restoredMenu = database.get_menu();
+        expect(restoredMenu.length).toBe(1);
+        expect(restoredMenu[0]!.recipeId).toBe(secondRecipeId);
+      });
+    });
+
+    test('dismissing the snackbar keeps the item removed', async () => {
+      const { getByTestId, queryByTestId } = await renderMenuAndWait();
+
+      const initialMenuLength = database.get_menu().length;
+
+      fireEvent.press(getByTestId(`${screenId}::MenuItem::1::RemoveButton`));
+
+      await waitFor(() => {
+        expect(getByTestId(removeSnackbarId)).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId(`${removeSnackbarId}::Dismiss`));
+
+      await waitFor(() => {
+        expect(queryByTestId(removeSnackbarId)).toBeNull();
+      });
+      expect(database.get_menu().length).toBe(initialMenuLength - 1);
+    });
+
+    test('removing a cooked card also removes immediately and shows the snackbar', async () => {
       const menu = database.get_menu();
       const firstMenuItem = menu[0];
       await database.toggleMenuItemCooked(firstMenuItem!.id!);
-      const initialMenuLength = menu.length;
+      const initialMenuLength = database.get_menu().length;
 
-      const { getByTestId, queryByTestId } = await renderMenuAndWait();
+      const { getByTestId } = await renderMenuAndWait();
 
       fireEvent.press(getByTestId(`${screenId}::MenuItem::2::RemoveButton`));
 
       await waitFor(() => {
         const updatedMenu = database.get_menu();
         expect(updatedMenu.length).toBe(initialMenuLength - 1);
-        expect(queryByTestId(`${screenId}::MenuItem::2`)).toBeNull();
+        expect(updatedMenu.find(item => item.id === firstMenuItem!.id)).toBeUndefined();
       });
+
+      expect(getByTestId(removeSnackbarId)).toBeTruthy();
+    });
+
+    test('removing a card whose recipe no longer exists shows no undo snackbar', async () => {
+      const orphanMenuItem = database.get_menu()[0]!;
+      const deletedRecipe = database
+        .get_recipes()
+        .find(recipe => recipe.id === orphanMenuItem.recipeId)!;
+
+      await database.addRecipeToMenu(deletedRecipe);
+      await database.deleteRecipe(deletedRecipe);
+
+      expect(database.get_menu().find(item => item.id === orphanMenuItem.id)).toBeDefined();
+
+      const { getByTestId, queryByTestId } = await renderMenuAndWait();
+
+      fireEvent.press(getByTestId(`${screenId}::MenuItem::1::RemoveButton`));
+
+      await waitFor(() => {
+        expect(database.get_menu().find(item => item.id === orphanMenuItem.id)).toBeUndefined();
+      });
+
+      expect(queryByTestId(removeSnackbarId)).toBeNull();
     });
   });
 
