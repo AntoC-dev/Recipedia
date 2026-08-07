@@ -99,7 +99,6 @@ export function MenuRecipeCard({
 const styles = StyleSheet.create({
   card: {
     marginVertical: padding.small,
-    marginHorizontal: padding.large,
   },
   content: {
     flexDirection: 'row',
