@@ -9,6 +9,4 @@ export default {
   recipes: 'recipes',
   recipe: 'recipe',
   Recipe: 'Recipe',
-  clearShoppingList: 'Clear Shopping List',
-  confirmClearShoppingList: 'Are you sure you want to clear the entire shopping list?',
 };

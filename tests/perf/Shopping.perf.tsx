@@ -124,16 +124,24 @@ describe('Shopping Screen Performance', () => {
     await measureRenders(<ShoppingWrapper />, { runs: 10, scenario });
   });
 
-  test('re-render after pressing clear button via UI', async () => {
+  test('re-render after opening recipe usage dialog via long press', async () => {
     const recipes = database.get_recipes();
     if (recipes.length > 0) {
       await database.addRecipeToMenu(recipes[0]!);
     }
 
     const scenario = async () => {
-      const clearButton = screen.queryByTestId('ShoppingScreen::ClearShoppingListButton');
-      if (clearButton) {
-        fireEvent.press(clearButton);
+      const shopping = computeShoppingList(
+        database.get_menu(),
+        database.get_recipes(),
+        database.get_purchasedIngredients()
+      );
+      if (shopping.length > 0) {
+        const item = shopping[0];
+        const listItem = screen.queryByTestId(`ShoppingScreen::SectionList::${item!.name}`);
+        if (listItem) {
+          fireEvent(listItem, 'longPress');
+        }
       }
     };
 

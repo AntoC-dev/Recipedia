@@ -1,4 +1,12 @@
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import {
+  fireEvent,
+  render,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react-native';
+import { StyleSheet } from 'react-native';
+import { useTheme } from 'react-native-paper';
+import { listSectionHeaderTextStyle } from '@components/atomic/ListSectionHeader';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
@@ -18,6 +26,11 @@ const { mockUseSafeCopilot } = require('@mocks/hooks/useSafeCopilot-mock');
 
 jest.mock('@components/dialogs/Alert', () => ({
   Alert: require('@mocks/components/dialogs/Alert-mock').alertMock,
+}));
+
+jest.mock('react-native/Libraries/Lists/SectionList', () => ({
+  __esModule: true,
+  default: require('@mocks/deps/react-native-sectionlist-mock').sectionListMock,
 }));
 
 jest.mock('@hooks/useSafeCopilot', () =>
@@ -50,19 +63,51 @@ const defaultProps = {
   route: mockRoute,
 } as any;
 
-async function renderShoppingAndWaitForButtons() {
+const screenId = 'ShoppingScreen';
+const sectionId = `${screenId}::SectionList`;
+const alertId = `${screenId}::Alert`;
+const purchasedId = `${sectionId}::Purchased`;
+
+function itemTestId(name: string) {
+  return `${sectionId}::${name}`;
+}
+
+function categoryHeaderTestId(category: string) {
+  return `${sectionId}::${category}::SubHeader`;
+}
+
+function headerBlockTestId(category: string) {
+  return `${sectionId}::${category}::Header`;
+}
+
+function dividerTestId(category: string) {
+  return `${sectionId}::${category}::Divider`;
+}
+
+function hasStrikethrough(style: unknown) {
+  return Array.isArray(style) && style.some(s => s && s.textDecorationLine === 'line-through');
+}
+
+async function renderShoppingAndWait() {
   const result = render(<Shopping {...defaultProps} />);
 
   const hasMenuItems = RecipeDatabase.getInstance().get_menu().length > 0;
 
   await waitFor(() => {
-    const elementExpectedMounted = hasMenuItems
-      ? 'ShoppingScreen::ClearShoppingListButton::RoundButton'
-      : 'ShoppingScreen::TextNoItem';
+    const elementExpectedMounted = hasMenuItems ? sectionId : `${screenId}::TextNoItem`;
     expect(result.getByTestId(elementExpectedMounted)).toBeTruthy();
   });
 
   return result;
+}
+
+async function addSushiAndSaladToMenu(database: RecipeDatabase) {
+  await database.addRecipeToMenu(testRecipes[8]!);
+  await database.addRecipeToMenu(testRecipes[3]!);
+}
+
+async function addPancakesToMenu(database: RecipeDatabase) {
+  await database.addRecipeToMenu(testRecipes[2]!);
 }
 
 describe('Shopping Screen', () => {
@@ -75,167 +120,416 @@ describe('Shopping Screen', () => {
     await database.addMultipleIngredients(testIngredients);
     await database.addMultipleTags(testTags);
     await database.addMultipleRecipes(testRecipes);
-    await database.addRecipeToMenu(testRecipes[8]!);
-    await database.addRecipeToMenu(testRecipes[3]!);
   });
 
   afterEach(async () => await database.closeAndReset());
 
   test('renders Shopping screen with proper components structure', async () => {
-    const { getByTestId, queryByTestId } = await renderShoppingAndWaitForButtons();
+    await addSushiAndSaladToMenu(database);
+    const { getByTestId } = await renderShoppingAndWait();
 
-    expect(getByTestId('ShoppingScreen::ClearShoppingListButton::RoundButton')).toBeTruthy();
-    expect(getByTestId('ShoppingScreen::Alert::IsVisible')).toBeTruthy();
+    expect(getByTestId(sectionId)).toBeTruthy();
+    expect(getByTestId(`${alertId}::IsVisible`)).toBeTruthy();
+  });
 
-    const hasEmptyState = queryByTestId('ShoppingScreen::TextNoItem');
-    const hasSectionList = queryByTestId('ShoppingScreen::SectionList');
+  test('keeps the content at least as tall as the viewport so it cannot strand mid-scroll', async () => {
+    await addSushiAndSaladToMenu(database);
+    const { getByTestId } = await renderShoppingAndWait();
 
-    expect(hasEmptyState || hasSectionList).toBeTruthy();
-    expect(!!(hasEmptyState && hasSectionList)).toBe(false);
+    const contentContainerStyle = JSON.parse(
+      getByTestId(`${sectionId}::contentContainerStyle`).props.children
+    );
+
+    expect(contentContainerStyle.flexGrow).toBe(1);
   });
 
   test('shopping items display with quantity and unit in title', async () => {
-    const { getByTestId } = await renderShoppingAndWaitForButtons();
+    await addSushiAndSaladToMenu(database);
+    const { getByTestId } = await renderShoppingAndWait();
 
-    expect(getByTestId('ShoppingScreen::SectionList::Sushi Rice::Title').props.children).toBe(
+    expect(getByTestId(`${itemTestId('Sushi Rice')}::Title`).props.children).toBe(
       'Sushi Rice (250g)'
     );
-    expect(getByTestId('ShoppingScreen::SectionList::Croutons::Title').props.children).toBe(
-      'Croutons (50g)'
+    expect(getByTestId(`${itemTestId('Croutons')}::Title`).props.children).toBe('Croutons (50g)');
+    expect(getByTestId(`${itemTestId('Parmesan')}::Title`).props.children).toBe('Parmesan (30g)');
+  });
+
+  test('shows the recipe count in the description for items shared by multiple recipes', async () => {
+    await database.addRecipeToMenu(testRecipes[0]!);
+    await database.addRecipeToMenu(testRecipes[3]!);
+    const { getByTestId } = await renderShoppingAndWait();
+
+    expect(getByTestId(`${itemTestId('Parmesan')}::Description`).props.children).toBe(
+      '2 shoppingScreen.recipes'
     );
-    expect(getByTestId('ShoppingScreen::SectionList::Parmesan::Title').props.children).toBe(
-      'Parmesan (30g)'
+    expect(getByTestId(`${itemTestId('Spaghetti')}::Description`).props.children).toBe(
+      '1 shoppingScreen.recipe'
     );
   });
 
   test('renders empty state correctly when no menu items', async () => {
-    await database.clearMenu();
+    const { getByTestId, queryByTestId } = await renderShoppingAndWait();
 
-    const { getByTestId, queryByTestId } = await renderShoppingAndWaitForButtons();
-
-    expect(getByTestId('ShoppingScreen::TextNoItem')).toBeTruthy();
-    expect(getByTestId('ShoppingScreen::TextNoItem').props.children).toEqual(
+    expect(getByTestId(`${screenId}::TextNoItem`).props.children).toEqual(
       'shoppingScreen.noItemsInShoppingList'
     );
-    expect(queryByTestId('ShoppingScreen::SectionList')).toBeNull();
-    expect(queryByTestId('ShoppingScreen::ClearShoppingListButton::RoundButton')).toBeNull();
+    expect(queryByTestId(sectionId)).toBeNull();
+    expect(getByTestId(`${alertId}::IsVisible`).props.children).toBe(false);
   });
 
-  test('clear shopping list functionality works with confirmation', async () => {
-    const { getByTestId } = await renderShoppingAndWaitForButtons();
+  describe('Category sections', () => {
+    beforeEach(async () => {
+      await addSushiAndSaladToMenu(database);
+    });
 
-    expect(getByTestId('ShoppingScreen::ClearConfirmation::Alert::IsVisible').props.children).toBe(
-      false
-    );
+    test('groups unpurchased items under their ingredient category', async () => {
+      const { getByTestId } = await renderShoppingAndWait();
 
-    fireEvent.press(getByTestId('ShoppingScreen::ClearShoppingListButton::RoundButton'));
+      expect(getByTestId(categoryHeaderTestId('ingredientTypes.cereal')).props.children).toBe(
+        'ingredientTypes.cereal'
+      );
+      expect(getByTestId(categoryHeaderTestId('ingredientTypes.condiment')).props.children).toBe(
+        'ingredientTypes.condiment'
+      );
+      expect(getByTestId(categoryHeaderTestId('ingredientTypes.fish')).props.children).toBe(
+        'ingredientTypes.fish'
+      );
+      expect(getByTestId(categoryHeaderTestId('ingredientTypes.fruit')).props.children).toBe(
+        'ingredientTypes.fruit'
+      );
+      expect(getByTestId(categoryHeaderTestId('ingredientTypes.topping')).props.children).toBe(
+        'ingredientTypes.topping'
+      );
+      expect(getByTestId(categoryHeaderTestId('ingredientTypes.vegetable')).props.children).toBe(
+        'ingredientTypes.vegetable'
+      );
+      expect(getByTestId(categoryHeaderTestId('ingredientTypes.sauce')).props.children).toBe(
+        'ingredientTypes.sauce'
+      );
+      expect(getByTestId(categoryHeaderTestId('ingredientTypes.cheese')).props.children).toBe(
+        'ingredientTypes.cheese'
+      );
+    });
 
-    expect(getByTestId('ShoppingScreen::ClearConfirmation::Alert::IsVisible').props.children).toBe(
-      true
-    );
+    test('does not render categories with no items in the shopping list', async () => {
+      const { queryByTestId } = await renderShoppingAndWait();
 
-    expect(database.get_menu().length).toBeGreaterThan(0);
+      expect(queryByTestId(categoryHeaderTestId('ingredientTypes.meat'))).toBeNull();
+      expect(queryByTestId(categoryHeaderTestId('ingredientTypes.dairy'))).toBeNull();
+    });
 
-    fireEvent.press(getByTestId('ShoppingScreen::ClearConfirmation::Alert::OnConfirm'));
+    test('does not render the purchased block when nothing is purchased', async () => {
+      const { queryByTestId } = await renderShoppingAndWait();
 
-    await waitFor(() => {
+      expect(queryByTestId(purchasedId)).toBeNull();
+    });
+
+    test('wraps each category subheader in a header block closed by a divider', async () => {
+      const { getByTestId } = await renderShoppingAndWait();
+
+      expect(getByTestId(headerBlockTestId('ingredientTypes.cereal'))).toBeTruthy();
+      expect(getByTestId(dividerTestId('ingredientTypes.cereal'))).toBeTruthy();
+      expect(getByTestId(headerBlockTestId('ingredientTypes.fish'))).toBeTruthy();
+      expect(getByTestId(dividerTestId('ingredientTypes.fish'))).toBeTruthy();
+    });
+
+    test('renders category subheaders as accessibility headers', async () => {
+      const { getByTestId } = await renderShoppingAndWait();
+
       expect(
-        getByTestId('ShoppingScreen::ClearConfirmation::Alert::IsVisible').props.children
-      ).toBe(false);
+        getByTestId(categoryHeaderTestId('ingredientTypes.cereal')).props.accessibilityRole
+      ).toBe('header');
     });
   });
 
-  test('Recipe usage Alert dialog has correct props structure and values', async () => {
-    const { getByTestId } = await renderShoppingAndWaitForButtons();
+  describe('Purchase status toggling', () => {
+    beforeEach(async () => {
+      await addPancakesToMenu(database);
+    });
 
-    expect(getByTestId('ShoppingScreen::Alert::IsVisible').props.children).toEqual(false);
-    expect(getByTestId('ShoppingScreen::Alert::TestId').props.children).toEqual('ShoppingScreen');
-    expect(getByTestId('ShoppingScreen::Alert::Title').props.children).toEqual(
-      'shoppingScreen.recipeUsingTitle '
-    );
-    expect(getByTestId('ShoppingScreen::Alert::Content').props.children).toEqual(
-      'shoppingScreen.recipeUsingMessage :'
-    );
-    expect(getByTestId('ShoppingScreen::Alert::ConfirmText').props.children).toEqual(
-      'shoppingScreen.recipeUsingValidation'
-    );
+    test('moves an item out of its category into the purchased block on press', async () => {
+      const { getByTestId, queryByTestId } = await renderShoppingAndWait();
 
-    expect(getByTestId('ShoppingScreen::Alert::OnClose')).toBeTruthy();
+      fireEvent.press(getByTestId(itemTestId('Flour')));
 
-    expect(() => getByTestId('ShoppingScreen::Alert::CancelText')).toThrow();
-    expect(() => getByTestId('ShoppingScreen::Alert::OnCancel')).toThrow();
+      await waitFor(() => {
+        expect(getByTestId(`${purchasedId}::Title`).props.children).toBe(
+          'shoppingScreen.purchased'
+        );
+      });
+
+      expect(queryByTestId(categoryHeaderTestId('ingredientTypes.baking'))).toBeNull();
+      expect(getByTestId(`${itemTestId('Flour')}::Title`).props.children).toBe('Flour (200g)');
+    });
+
+    test('renders the purchased block collapsed while items remain to buy', async () => {
+      const { getByTestId } = await renderShoppingAndWait();
+
+      fireEvent.press(getByTestId(itemTestId('Flour')));
+
+      await waitFor(() => {
+        expect(getByTestId(`${purchasedId}::Expanded`).props.children).toBe('false');
+      });
+    });
+
+    test('expands the purchased block on press and collapses it again', async () => {
+      const { getByTestId } = await renderShoppingAndWait();
+
+      fireEvent.press(getByTestId(itemTestId('Flour')));
+
+      await waitFor(() => {
+        expect(getByTestId(`${purchasedId}::Header`)).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId(`${purchasedId}::Header`));
+
+      await waitFor(() => {
+        expect(getByTestId(`${purchasedId}::Expanded`).props.children).toBe('true');
+      });
+
+      fireEvent.press(getByTestId(`${purchasedId}::Header`));
+
+      await waitFor(() => {
+        expect(getByTestId(`${purchasedId}::Expanded`).props.children).toBe('false');
+      });
+    });
+
+    test('opens the purchased block once nothing is left to buy', async () => {
+      await database.clearMenu();
+      await addPancakesToMenu(database);
+      const { getByTestId } = await renderShoppingAndWait();
+
+      for (const name of ['Flour', 'Milk', 'Eggs', 'Butter']) {
+        fireEvent.press(getByTestId(itemTestId(name)));
+      }
+
+      await waitFor(() => {
+        expect(getByTestId(`${purchasedId}::Expanded`).props.children).toBe('true');
+      });
+    });
+
+    test('collapses the purchased block again once an item returns to the working list', async () => {
+      await database.clearMenu();
+      await addPancakesToMenu(database);
+      const { getByTestId } = await renderShoppingAndWait();
+
+      for (const name of ['Flour', 'Milk', 'Eggs', 'Butter']) {
+        fireEvent.press(getByTestId(itemTestId(name)));
+      }
+
+      await waitFor(() => {
+        expect(getByTestId(`${purchasedId}::Expanded`).props.children).toBe('true');
+      });
+
+      fireEvent.press(getByTestId(itemTestId('Flour')));
+
+      await waitFor(() => {
+        expect(getByTestId(`${purchasedId}::Expanded`).props.children).toBe('false');
+      });
+    });
+
+    test('mounts the purchased block open when everything was already purchased', async () => {
+      await database.clearMenu();
+      await addPancakesToMenu(database);
+      for (const name of ['Flour', 'Milk', 'Eggs', 'Butter']) {
+        await database.setPurchased(name, true);
+      }
+
+      const { getByTestId } = await renderShoppingAndWait();
+
+      await waitFor(() => {
+        expect(getByTestId(`${purchasedId}::Expanded`).props.children).toBe('true');
+      });
+    });
+
+    test('collapses the purchased block again once it empties while items remain to buy', async () => {
+      const { getByTestId, queryByTestId } = await renderShoppingAndWait();
+
+      fireEvent.press(getByTestId(itemTestId('Flour')));
+
+      await waitFor(() => {
+        expect(getByTestId(`${purchasedId}::Header`)).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId(`${purchasedId}::Header`));
+
+      await waitFor(() => {
+        expect(getByTestId(`${purchasedId}::Expanded`).props.children).toBe('true');
+      });
+
+      fireEvent.press(getByTestId(itemTestId('Flour')));
+
+      await waitForElementToBeRemoved(() => queryByTestId(purchasedId));
+
+      fireEvent.press(getByTestId(itemTestId('Milk')));
+
+      await waitFor(() => {
+        expect(getByTestId(`${purchasedId}::Expanded`).props.children).toBe('false');
+      });
+    });
+
+    test('styles the purchased block title like a category header', async () => {
+      const { getByTestId } = await renderShoppingAndWait();
+
+      fireEvent.press(getByTestId(itemTestId('Flour')));
+
+      await waitFor(() => {
+        expect(getByTestId(purchasedId)).toBeTruthy();
+      });
+
+      const { colors, fonts } = useTheme();
+      const titleStyle = StyleSheet.flatten(getByTestId(`${purchasedId}::Title`).props.style);
+
+      expect(titleStyle).toEqual(listSectionHeaderTextStyle(colors, fonts));
+    });
+
+    test('opens the recipe usage dialog from an item inside the purchased block', async () => {
+      const { getByTestId } = await renderShoppingAndWait();
+
+      fireEvent.press(getByTestId(itemTestId('Flour')));
+
+      await waitFor(() => {
+        expect(getByTestId(purchasedId)).toBeTruthy();
+      });
+
+      fireEvent(getByTestId(itemTestId('Flour')), 'longPress');
+
+      await waitFor(() => {
+        expect(getByTestId(`${alertId}::Title`).props.children).toBe(
+          'shoppingScreen.recipeUsingTitle flour'
+        );
+      });
+    });
+
+    test('removes the category section entirely when its only item becomes purchased', async () => {
+      const { getByTestId, queryByTestId } = await renderShoppingAndWait();
+
+      fireEvent.press(getByTestId(itemTestId('Milk')));
+
+      await waitFor(() => {
+        expect(queryByTestId(categoryHeaderTestId('ingredientTypes.dairy'))).toBeNull();
+      });
+
+      expect(getByTestId(`${itemTestId('Milk')}::Title`)).toBeTruthy();
+    });
+
+    test('collects every purchased item in the same block regardless of category', async () => {
+      const { getByTestId, queryByTestId } = await renderShoppingAndWait();
+
+      fireEvent.press(getByTestId(itemTestId('Flour')));
+      fireEvent.press(getByTestId(itemTestId('Milk')));
+
+      await waitFor(() => {
+        expect(queryByTestId(categoryHeaderTestId('ingredientTypes.dairy'))).toBeNull();
+      });
+
+      expect(queryByTestId(categoryHeaderTestId('ingredientTypes.baking'))).toBeNull();
+      expect(getByTestId(`${itemTestId('Flour')}::Title`)).toBeTruthy();
+      expect(getByTestId(`${itemTestId('Milk')}::Title`)).toBeTruthy();
+    });
+
+    test('toggling a purchased item again returns it to its category section', async () => {
+      const { getByTestId, queryByTestId } = await renderShoppingAndWait();
+
+      fireEvent.press(getByTestId(itemTestId('Flour')));
+      await waitFor(() => {
+        expect(getByTestId(purchasedId)).toBeTruthy();
+      });
+
+      fireEvent.press(getByTestId(itemTestId('Flour')));
+
+      await waitForElementToBeRemoved(() => queryByTestId(purchasedId));
+
+      expect(getByTestId(categoryHeaderTestId('ingredientTypes.baking')).props.children).toBe(
+        'ingredientTypes.baking'
+      );
+    });
+
+    test('applies strikethrough style only to purchased item titles', async () => {
+      const { getByTestId } = await renderShoppingAndWait();
+
+      expect(hasStrikethrough(getByTestId(`${itemTestId('Flour')}::Title`).props.style)).toBe(
+        false
+      );
+
+      fireEvent.press(getByTestId(itemTestId('Flour')));
+
+      await waitFor(() => {
+        expect(hasStrikethrough(getByTestId(`${itemTestId('Flour')}::Title`).props.style)).toBe(
+          true
+        );
+      });
+
+      expect(hasStrikethrough(getByTestId(`${itemTestId('Milk')}::Title`).props.style)).toBe(false);
+    });
+
+    test('reflects purchase state in the item checkbox status', async () => {
+      const { getByTestId } = await renderShoppingAndWait();
+
+      expect(getByTestId(`${itemTestId('Flour')}::Checkbox::Status`).props.children).toBe(
+        'unchecked'
+      );
+
+      fireEvent.press(getByTestId(itemTestId('Flour')));
+
+      await waitFor(() => {
+        expect(getByTestId(`${itemTestId('Flour')}::Checkbox::Status`).props.children).toBe(
+          'checked'
+        );
+      });
+    });
   });
 
-  test('Clear confirmation Alert dialog has correct props structure and values', async () => {
-    const { getByTestId } = await renderShoppingAndWaitForButtons();
+  describe('Recipe usage dialog', () => {
+    beforeEach(async () => {
+      await addSushiAndSaladToMenu(database);
+    });
 
-    expect(
-      getByTestId('ShoppingScreen::ClearConfirmation::Alert::IsVisible').props.children
-    ).toEqual(false);
-    expect(getByTestId('ShoppingScreen::ClearConfirmation::Alert::TestId').props.children).toEqual(
-      'ShoppingScreen::ClearConfirmation'
-    );
-    expect(getByTestId('ShoppingScreen::ClearConfirmation::Alert::Title').props.children).toEqual(
-      'shoppingScreen.clearShoppingList'
-    );
-    expect(getByTestId('ShoppingScreen::ClearConfirmation::Alert::Content').props.children).toEqual(
-      'shoppingScreen.confirmClearShoppingList'
-    );
-    expect(
-      getByTestId('ShoppingScreen::ClearConfirmation::Alert::ConfirmText').props.children
-    ).toEqual('confirm');
-    expect(
-      getByTestId('ShoppingScreen::ClearConfirmation::Alert::CancelText').props.children
-    ).toEqual('cancel');
+    test('has default closed state with correct static props', async () => {
+      const { getByTestId } = await renderShoppingAndWait();
 
-    expect(getByTestId('ShoppingScreen::ClearConfirmation::Alert::OnConfirm')).toBeTruthy();
-    expect(getByTestId('ShoppingScreen::ClearConfirmation::Alert::OnClose')).toBeTruthy();
-  });
+      expect(getByTestId(`${alertId}::IsVisible`).props.children).toBe(false);
+      expect(getByTestId(`${alertId}::TestId`).props.children).toBe(screenId);
+      expect(getByTestId(`${alertId}::Title`).props.children).toBe(
+        'shoppingScreen.recipeUsingTitle '
+      );
+      expect(getByTestId(`${alertId}::Content`).props.children).toBe(
+        'shoppingScreen.recipeUsingMessage :'
+      );
+      expect(getByTestId(`${alertId}::ConfirmText`).props.children).toBe(
+        'shoppingScreen.recipeUsingValidation'
+      );
+      expect(() => getByTestId(`${alertId}::CancelText`)).toThrow();
+      expect(() => getByTestId(`${alertId}::OnCancel`)).toThrow();
+    });
 
-  test('clear button shows confirmation dialog when pressed', async () => {
-    expect(database.get_menu().length).toBeGreaterThan(0);
+    test('opens with the ingredient name and recipe titles on long press', async () => {
+      const { getByTestId } = await renderShoppingAndWait();
 
-    const { getByTestId } = await renderShoppingAndWaitForButtons();
+      fireEvent(getByTestId(itemTestId('Sushi Rice')), 'longPress');
 
-    expect(getByTestId('ShoppingScreen::ClearConfirmation::Alert::IsVisible').props.children).toBe(
-      false
-    );
+      expect(getByTestId(`${alertId}::IsVisible`).props.children).toBe(true);
+      expect(getByTestId(`${alertId}::Title`).props.children).toBe(
+        'shoppingScreen.recipeUsingTitle sushi rice'
+      );
+      expect(getByTestId(`${alertId}::Content`).props.children).toBe(
+        'shoppingScreen.recipeUsingMessage :\n\t- Sushi Rolls'
+      );
+    });
 
-    fireEvent.press(getByTestId('ShoppingScreen::ClearShoppingListButton::RoundButton'));
+    test('closes and resets ingredient data when dismissed', async () => {
+      const { getByTestId } = await renderShoppingAndWait();
 
-    expect(getByTestId('ShoppingScreen::ClearConfirmation::Alert::IsVisible').props.children).toBe(
-      true
-    );
-  });
+      fireEvent(getByTestId(itemTestId('Sushi Rice')), 'longPress');
+      expect(getByTestId(`${alertId}::IsVisible`).props.children).toBe(true);
 
-  test('cancel button in confirmation dialog hides the dialog', async () => {
-    expect(database.get_menu().length).toBeGreaterThan(0);
+      fireEvent.press(getByTestId(`${alertId}::OnClose`));
 
-    const { getByTestId } = await renderShoppingAndWaitForButtons();
-
-    fireEvent.press(getByTestId('ShoppingScreen::ClearShoppingListButton::RoundButton'));
-    expect(getByTestId('ShoppingScreen::ClearConfirmation::Alert::IsVisible').props.children).toBe(
-      true
-    );
-
-    fireEvent.press(getByTestId('ShoppingScreen::ClearConfirmation::Alert::OnClose'));
-
-    expect(getByTestId('ShoppingScreen::ClearConfirmation::Alert::IsVisible').props.children).toBe(
-      false
-    );
-
-    expect(database.get_menu().length).toBeGreaterThan(0);
-  });
-
-  test('clear button is only visible when shopping list has items', async () => {
-    expect(database.get_menu().length).toBeGreaterThan(0);
-    const { getByTestId: getWithItems } = await renderShoppingAndWaitForButtons();
-    expect(getWithItems('ShoppingScreen::ClearShoppingListButton::RoundButton')).toBeTruthy();
-
-    await database.clearMenu();
-    expect(database.get_menu().length).toBe(0);
-    const { queryByTestId: queryEmpty } = await renderShoppingAndWaitForButtons();
-    expect(queryEmpty('ShoppingScreen::ClearShoppingListButton::RoundButton')).toBeNull();
+      expect(getByTestId(`${alertId}::IsVisible`).props.children).toBe(false);
+      expect(getByTestId(`${alertId}::Title`).props.children).toBe(
+        'shoppingScreen.recipeUsingTitle '
+      );
+    });
   });
 
   describe('Tutorial Integration', () => {
@@ -249,11 +543,13 @@ describe('Shopping Screen', () => {
       },
       isActive: true,
     };
-    beforeEach(() => {
+
+    beforeEach(async () => {
       jest.useFakeTimers();
       resetMockCopilot();
       mockUseSafeCopilot.mockReturnValue(null);
       mockUseReducedMotion.mockReturnValue(false);
+      await addSushiAndSaladToMenu(database);
     });
 
     afterEach(() => {
@@ -268,38 +564,34 @@ describe('Shopping Screen', () => {
         isActive: true,
       });
 
-      const { getByTestId } = await renderShoppingAndWaitForButtons();
+      const { getByTestId } = await renderShoppingAndWait();
 
       expect(getByTestId('CopilotStep::Shopping')).toBeTruthy();
-      expect(getByTestId('ShoppingScreen::ClearShoppingListButton::RoundButton')).toBeTruthy();
-      expect(getByTestId('ShoppingScreen::Alert::IsVisible')).toBeTruthy();
-      expect(getByTestId('ShoppingScreen::Alert::IsVisible').props.children).toBe(false);
+      expect(getByTestId(`${alertId}::IsVisible`).props.children).toBe(false);
     });
 
     test('renders without tutorial wrapper when copilot is not available', async () => {
-      const { queryByTestId, getByTestId } = await renderShoppingAndWaitForButtons();
+      const { queryByTestId, getByTestId } = await renderShoppingAndWait();
 
       expect(queryByTestId('CopilotStep::Shopping')).toBeNull();
-      expect(getByTestId('ShoppingScreen::ClearShoppingListButton::RoundButton')).toBeTruthy();
-      expect(getByTestId('ShoppingScreen::Alert::IsVisible')).toBeTruthy();
-      expect(getByTestId('ShoppingScreen::Alert::IsVisible').props.children).toBe(false);
+      expect(getByTestId(`${alertId}::IsVisible`).props.children).toBe(false);
     });
 
     test('does not run the demo when reduced motion is enabled', async () => {
       mockUseReducedMotion.mockReturnValue(true);
       mockUseSafeCopilot.mockReturnValue(defaultMockValue);
 
-      const { getByTestId } = await renderShoppingAndWaitForButtons();
+      const { getByTestId } = await renderShoppingAndWait();
 
       jest.advanceTimersByTime(TUTORIAL_DEMO_INTERVAL * 2);
 
-      expect(getByTestId('ShoppingScreen::Alert::IsVisible').props.children).toBe(false);
+      expect(getByTestId(`${alertId}::IsVisible`).props.children).toBe(false);
     });
 
     test('starts demo when current step matches Shopping step', async () => {
       mockUseSafeCopilot.mockReturnValue(defaultMockValue);
 
-      const { getByTestId } = await renderShoppingAndWaitForButtons();
+      const { getByTestId } = await renderShoppingAndWait();
 
       await waitFor(() => {
         expect(mockEvents.on).toHaveBeenCalledWith('stepChange', expect.any(Function));
@@ -307,10 +599,29 @@ describe('Shopping Screen', () => {
       });
 
       expect(getByTestId('CopilotStep::Shopping')).toBeTruthy();
-
-      expect(getByTestId('ShoppingScreen::Alert::IsVisible').props.children).toBe(false);
+      expect(getByTestId(`${alertId}::IsVisible`).props.children).toBe(false);
 
       jest.advanceTimersByTime(TUTORIAL_DEMO_INTERVAL);
+
+      expect(mockEvents.on).toHaveBeenCalled();
+    });
+
+    test('restarts the demo interval when the matching step fires again', async () => {
+      mockUseSafeCopilot.mockReturnValue(defaultMockValue);
+
+      await renderShoppingAndWait();
+
+      await waitFor(() => {
+        expect(mockEvents.on).toHaveBeenCalledWith('stepChange', expect.any(Function));
+      });
+
+      expect(() =>
+        triggerStepChangeEvent({
+          order: TUTORIAL_STEPS.Shopping.order,
+          name: 'Shopping',
+          text: 'Shopping step',
+        })
+      ).not.toThrow();
 
       expect(mockEvents.on).toHaveBeenCalled();
     });
@@ -322,7 +633,7 @@ describe('Shopping Screen', () => {
         isActive: true,
       });
 
-      await renderShoppingAndWaitForButtons();
+      await renderShoppingAndWait();
 
       await waitFor(() => {
         expect(mockEvents.on).toHaveBeenCalledWith('stepChange', expect.any(Function));
@@ -346,7 +657,7 @@ describe('Shopping Screen', () => {
       const mockEvents = getMockCopilotEvents();
       mockUseSafeCopilot.mockReturnValue(defaultMockValue);
 
-      await renderShoppingAndWaitForButtons();
+      await renderShoppingAndWait();
 
       await waitFor(() => {
         expect(mockEvents.on).toHaveBeenCalledWith('stop', expect.any(Function));
@@ -360,7 +671,7 @@ describe('Shopping Screen', () => {
     test('cleans up event listeners and demo on unmount', async () => {
       mockUseSafeCopilot.mockReturnValue(defaultMockValue);
 
-      const { unmount } = await renderShoppingAndWaitForButtons();
+      const { unmount } = await renderShoppingAndWait();
 
       await waitFor(() => {
         expect(mockEvents.on).toHaveBeenCalled();
@@ -379,7 +690,7 @@ describe('Shopping Screen', () => {
         isActive: true,
       });
 
-      await renderShoppingAndWaitForButtons();
+      await renderShoppingAndWait();
 
       expect(mockEvents.on).not.toHaveBeenCalled();
     });
@@ -388,7 +699,7 @@ describe('Shopping Screen', () => {
       await database.clearMenu();
       mockUseSafeCopilot.mockReturnValue(defaultMockValue);
 
-      const { getByTestId } = await renderShoppingAndWaitForButtons();
+      const { getByTestId } = await renderShoppingAndWait();
 
       expect(getByTestId('CopilotStep::Shopping')).toBeTruthy();
 
@@ -398,24 +709,21 @@ describe('Shopping Screen', () => {
 
       expect(() => jest.advanceTimersByTime(TUTORIAL_DEMO_INTERVAL)).not.toThrow();
 
-      expect(getByTestId('ShoppingScreen::Alert::IsVisible').props.children).toBe(false);
+      expect(getByTestId(`${alertId}::IsVisible`).props.children).toBe(false);
     });
 
     test('demo toggles dialog state correctly', async () => {
       mockUseSafeCopilot.mockReturnValue(defaultMockValue);
 
-      const { getByTestId } = await renderShoppingAndWaitForButtons();
+      const { getByTestId } = await renderShoppingAndWait();
 
       expect(getByTestId('CopilotStep::Shopping')).toBeTruthy();
-      expect(getByTestId('ShoppingScreen::ClearShoppingListButton::RoundButton')).toBeTruthy();
-
-      expect(getByTestId('ShoppingScreen::Alert::IsVisible').props.children).toBe(false);
-
-      expect(getByTestId('ShoppingScreen::Alert::TestId').props.children).toBe('ShoppingScreen');
-      expect(getByTestId('ShoppingScreen::Alert::Title').props.children).toBe(
+      expect(getByTestId(`${alertId}::IsVisible`).props.children).toBe(false);
+      expect(getByTestId(`${alertId}::TestId`).props.children).toBe(screenId);
+      expect(getByTestId(`${alertId}::Title`).props.children).toBe(
         'shoppingScreen.recipeUsingTitle '
       );
-      expect(getByTestId('ShoppingScreen::Alert::Content').props.children).toBe(
+      expect(getByTestId(`${alertId}::Content`).props.children).toBe(
         'shoppingScreen.recipeUsingMessage :'
       );
 
