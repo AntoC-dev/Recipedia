@@ -4,25 +4,45 @@ export function expoSqliteMock() {
   const Database = require('better-sqlite3');
   let dbInstance: any = null;
   let connectionWrapper: SQLiteDatabase | null = null;
+  const statementCache = new Map<string, any>();
+
+  const closeDatabase = () => {
+    statementCache.clear();
+    if (!dbInstance) {
+      return;
+    }
+    try {
+      dbInstance.close();
+    } catch {
+      // Ignore close errors
+    }
+    dbInstance = null;
+    connectionWrapper = null;
+  };
+
+  afterAll(closeDatabase);
+
+  // Caching bounds the native statement handles a suite accumulates, where
+  // re-preparing the same SQL allocated a fresh one per call.
+  const prepare = (query: string) => {
+    const cached = statementCache.get(query);
+    if (cached) {
+      return cached;
+    }
+    const statement = dbInstance.prepare(query);
+    statementCache.set(query, statement);
+    return statement;
+  };
 
   const createConnectionWrapper = (): SQLiteDatabase => {
     // @ts-ignore
     return {
       closeAsync: jest.fn(async (): Promise<void> => {
-        if (dbInstance) {
-          try {
-            dbInstance.close();
-          } catch {
-            // Ignore close errors
-          }
-          dbInstance = null;
-          connectionWrapper = null;
-        }
+        closeDatabase();
       }),
       runAsync: jest.fn(async (query: string, params: any[] = []): Promise<SQLiteRunResult> => {
         try {
-          const statement = dbInstance.prepare(query);
-          const result = statement.run(params);
+          const result = prepare(query).run(params);
           return {
             changes: result.changes,
             lastInsertRowId: result.lastInsertRowid || undefined,
@@ -33,14 +53,14 @@ export function expoSqliteMock() {
       }),
       execAsync: jest.fn(async (query: string): Promise<void> => {
         try {
-          dbInstance.prepare(query).run();
+          prepare(query).run();
         } catch (err: any) {
           throw new Error(`execAsync error: ${err.message}`);
         }
       }),
       getAllAsync: jest.fn(async <T,>(query: string, params: any[] = []): Promise<T[]> => {
         try {
-          return dbInstance.prepare(query).all(params) as T[];
+          return prepare(query).all(params) as T[];
         } catch (err: any) {
           throw new Error(`getAllAsync error: ${err.message}`);
         }
@@ -48,7 +68,7 @@ export function expoSqliteMock() {
       getFirstAsync: jest.fn(
         async <T,>(query: string, params: any[] = []): Promise<T | undefined> => {
           try {
-            return dbInstance.prepare(query).get(params) as T | undefined;
+            return prepare(query).get(params) as T | undefined;
           } catch (err: any) {
             throw new Error(`getFirstAsync error: ${err.message}`);
           }
@@ -66,15 +86,7 @@ export function expoSqliteMock() {
 
   return {
     deleteDatabaseAsync: jest.fn(async (): Promise<void> => {
-      if (dbInstance) {
-        try {
-          dbInstance.close();
-        } catch {
-          // Ignore close errors
-        }
-        dbInstance = null;
-        connectionWrapper = null;
-      }
+      closeDatabase();
     }),
     openDatabaseAsync: jest.fn(async (): Promise<SQLiteDatabase> => {
       // Reuse existing database and connection wrapper
