@@ -9,6 +9,4 @@ export default {
   recipes: 'recettes',
   recipe: 'recette',
   Recipe: 'Recette',
-  clearShoppingList: 'Vider la liste de courses',
-  confirmClearShoppingList: 'Êtes-vous sûr de vouloir vider entièrement la liste de courses ?',
 };
