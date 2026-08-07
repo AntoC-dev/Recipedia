@@ -2001,6 +2001,39 @@ describe('RecipeDatabase', () => {
         expect(db.get_purchasedIngredients().size).toBe(0);
       });
 
+      test('drops purchase state of a cooked recipe while another recipe stays uncooked', async () => {
+        const recipes = db.get_recipes();
+        const spaghetti = recipes.find(recipe => recipe.title === 'Spaghetti Bolognese')!;
+        const pancakes = recipes.find(recipe => recipe.title === 'Classic Pancakes')!;
+
+        await db.addRecipeToMenu(spaghetti);
+        await db.addRecipeToMenu(pancakes);
+        await db.setPurchased('Spaghetti', true);
+        await db.setPurchased('Flour', true);
+        const spaghettiMenuItem = db.get_menu().find(item => item.recipeId === spaghetti.id)!;
+
+        await db.toggleMenuItemCooked(spaghettiMenuItem.id!);
+
+        expect(db.get_purchasedIngredients().has('Spaghetti')).toBe(false);
+        expect(db.get_purchasedIngredients().get('Flour')).toBe(true);
+      });
+
+      test('keeps purchase state when uncooking a recipe', async () => {
+        const recipes = db.get_recipes();
+        const spaghetti = recipes.find(recipe => recipe.title === 'Spaghetti Bolognese')!;
+        const pancakes = recipes.find(recipe => recipe.title === 'Classic Pancakes')!;
+
+        await db.addRecipeToMenu(spaghetti);
+        await db.addRecipeToMenu(pancakes);
+        await db.setPurchased('Flour', true);
+        const spaghettiMenuItem = db.get_menu().find(item => item.recipeId === spaghetti.id)!;
+
+        await db.toggleMenuItemCooked(spaghettiMenuItem.id!);
+        await db.toggleMenuItemCooked(spaghettiMenuItem.id!);
+
+        expect(db.get_purchasedIngredients().get('Flour')).toBe(true);
+      });
+
       test('returns false for non-existent menu item', async () => {
         const result = await db.toggleMenuItemCooked(99999);
 
@@ -2058,6 +2091,44 @@ describe('RecipeDatabase', () => {
         const result = await db.removeFromMenu(99999);
 
         expect(result).toBe(false);
+      });
+
+      test('drops purchase state of ingredients that left the shopping list', async () => {
+        const recipe = db.get_recipes()[0]!;
+        await db.addRecipeToMenu(recipe);
+        const menuItem = db.get_menu()[0]!;
+        await db.setPurchased(recipe.ingredients[0]!.name, true);
+
+        await db.removeFromMenu(menuItem.id!);
+
+        expect(db.get_purchasedIngredients().size).toBe(0);
+      });
+
+      test('keeps purchase state when decrementing a count above one', async () => {
+        const recipe = db.get_recipes()[0]!;
+        await db.addRecipeToMenu(recipe);
+        await db.addRecipeToMenu(recipe);
+        const menuItem = db.get_menu()[0]!;
+        await db.setPurchased(recipe.ingredients[0]!.name, true);
+
+        await db.removeFromMenu(menuItem.id!);
+
+        expect(db.get_purchasedIngredients().get(recipe.ingredients[0]!.name)).toBe(true);
+      });
+
+      test('keeps purchase state of an ingredient another menu recipe still needs', async () => {
+        const recipes = db.get_recipes();
+        const spaghetti = recipes.find(recipe => recipe.title === 'Spaghetti Bolognese')!;
+        const caesar = recipes.find(recipe => recipe.title === 'Caesar Salad')!;
+
+        await db.addRecipeToMenu(spaghetti);
+        await db.addRecipeToMenu(caesar);
+        await db.setPurchased('Parmesan', true);
+        const spaghettiMenuItem = db.get_menu().find(item => item.recipeId === spaghetti.id)!;
+
+        await db.removeFromMenu(spaghettiMenuItem.id!);
+
+        expect(db.get_purchasedIngredients().get('Parmesan')).toBe(true);
       });
     });
 
