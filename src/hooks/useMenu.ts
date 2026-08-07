@@ -17,8 +17,9 @@ import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
 /**
  * Provides reactive menu data and all menu/purchase operations.
  *
- * `clearMenu` also clears purchased ingredient state, matching the behaviour
- * of the old context-based implementation.
+ * `clearMenu` also drops purchased ingredient state: the database prunes the
+ * purchase flags of ingredients that leave the shopping list on every menu
+ * mutation, and clearing the menu empties it entirely.
  *
  * @returns Object containing reactive `menu` array and all menu mutation functions
  */
@@ -37,6 +38,10 @@ export function useMenu() {
     await db.addRecipeToMenu(recipe);
   };
 
+  const getRecipeById = (recipeId: number): recipeTableElement | null => {
+    return db.get_recipes().find(recipe => recipe.id === recipeId) ?? null;
+  };
+
   const toggleMenuItemCooked = async (menuId: number): Promise<boolean> => {
     return db.toggleMenuItemCooked(menuId);
   };
@@ -47,7 +52,6 @@ export function useMenu() {
 
   const clearMenu = async (): Promise<void> => {
     await db.clearMenu();
-    await db.clearPurchasedIngredients();
   };
 
   const isRecipeInMenu = (recipeId: number): boolean => {
@@ -66,6 +70,7 @@ export function useMenu() {
   return {
     menu,
     addRecipeToMenu,
+    getRecipeById,
     toggleMenuItemCooked,
     removeFromMenu,
     clearMenu,
