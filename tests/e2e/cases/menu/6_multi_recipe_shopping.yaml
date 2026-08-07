@@ -105,6 +105,10 @@ tags:
     id: "MenuScreen::MenuItem::2::RemoveButton"
     label: "Action - Remove Spaghetti from menu"
 
+- runFlow:
+    file: "../../asserts/menu/en/removedFromMenuSnackbar.yaml"
+    label: "Assert - Undo snackbar appears after removal"
+
 - tapOn:
     id: "BottomTabs::Shopping"
     label: "Action - Navigate to Shopping screen"

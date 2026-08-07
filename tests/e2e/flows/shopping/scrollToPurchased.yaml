@@ -1,0 +1,10 @@
+appId: "com.recipedia"
+---
+# No centerElement: the block is the last row, so Maestro could never center it
+# and would keep scrolling until it gave up.
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::Purchased"
+    direction: DOWN
+    speed: 60
+    label: "Scroll to the purchased block at the end of the list"

@@ -1,0 +1,11 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    file: "./scrollToPurchased.yaml"
+    label: "Scroll to the purchased block"
+
+- tapOn:
+    id: "ShoppingScreen::SectionList::Purchased"
+    label: "Expand the purchased block to reach its items"
+
+- waitForAnimationToEnd

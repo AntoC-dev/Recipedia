@@ -1,0 +1,11 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "BottomTabs::Shopping"
+    label: "Navigate to Shopping screen"
+
+- extendedWaitUntil:
+    visible:
+      id: "ShoppingScreen::SectionList"
+    timeout: 30000
+    label: "Wait for Shopping screen to be visible"

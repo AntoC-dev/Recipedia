@@ -77,17 +77,3 @@ appId: "com.recipedia"
     label: "Scroll back up through shopping list"
 
 - waitForAnimationToEnd
-
-- tapOn:
-    id: "ShoppingScreen::ClearShoppingListButton::RoundButton"
-    label: "Tap on the delete button"
-
-- extendedWaitUntil:
-    visible:
-      id: "ShoppingScreen::ClearConfirmation::Dialog::Confirm"
-    timeout: 3000
-    label: "Wait for confirmation dialog"
-
-- tapOn:
-    id: "ShoppingScreen::ClearConfirmation::Dialog::Confirm"
-    label: "Validate the deletion"

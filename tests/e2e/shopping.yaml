@@ -12,3 +12,6 @@ executionOrder:
     - "1 - Add Single Recipe To Shopping Flow"
     - "2 - Add Multiple Recipes To Shopping Flow"
     - "3 - Delete Recipe From Shopping Flow"
+    - "4 - Purchase Lifecycle Flow"
+    - "5 - Purchase Across Categories Flow"
+    - "6 - All Items Purchased Flow"

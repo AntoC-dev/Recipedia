@@ -1,0 +1,9 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    text: "Recipe removed from menu"
+    label: "Undo snackbar message is shown after removing a recipe"
+
+- assertVisible:
+    text: "Undo"
+    label: "Undo action is available in the snackbar"

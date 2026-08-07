@@ -16,3 +16,6 @@ executionOrder:
     - "5 - Menu Shopping Integration"
     - "6 - Multi Recipe Shopping Integration"
     - "7 - Duplicate Recipe Badge and Quantities"
+    - "8 - Shopping Reacts to Menu Removal Flow"
+    - "9 - Undo Remove Recipe Flow"
+    - "10 - Purchased State Resets After Cook and Undo"
