@@ -1,3 +1,9 @@
+## [2.48.8](https://github.com/AntoC-dev/Recipedia/compare/v2.48.7...v2.48.8) (2026-08-08)
+
+### Bug Fixes
+
+* **docs:** pin varvara-typedoc-theme to 0.3.9 ([6756b39](https://github.com/AntoC-dev/Recipedia/commit/6756b39d4b60c6ab92a73ae167d77033b1e54f39))
+
 ## [2.48.7](https://github.com/AntoC-dev/Recipedia/compare/v2.48.6...v2.48.7) (2026-08-04)
 
 ### Bug Fixes
