@@ -21,19 +21,35 @@ appId: "com.recipedia"
     id: "RecipeIngredients::0::NameInput::CustomTextInput"
     label: "Press on ingredient name input"
 
+# The name is typed but deliberately NOT committed on Android: the row must stay
+# unresolved (no DB `type` / `season`) so `cases/recipe-create/4_validation_all.yaml`
+# can assert the "all ingredients to be known by Recipedia" error and then clear it
+# with `fixIngredientName.yaml`. `hideKeyboard` hides the IME without blurring, so
+# `onEndEditing` -> `onValidate` never runs. iOS has no such non-blurring dismiss,
+# so it commits by tapping the unit cell — matching the previous `pressKey: enter`.
 - inputText:
     text: "Celery"
     label: "Write the ingredient name in the input text"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- assertVisible:
+    id: "RecipeIngredients::0::NameInput::CustomTextInput"
+    text: "Celery"
+    label: "Check the ingredient name is fully typed before dismissing the keyboard"
 
 - runFlow:
     when:
       platform: Android
     commands:
       - hideKeyboard:
-          label: "Hide keyboard on Android"
+          label: "Hide keyboard on Android without committing the name"
 
 - runFlow:
     when:
       platform: iOS
     commands:
-      - pressKey: enter
+      - tapOn:
+          id: "RecipeIngredients::0::Unit"
+          label: "Tap the unit cell to commit the name and close the keyboard on iOS"

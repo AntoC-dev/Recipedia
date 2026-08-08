@@ -31,9 +31,16 @@ appId: "com.recipedia"
           label: "Type dummy character to prime keyboard"
 
       - waitForAnimationToEnd:
-          label: "Wait for keyboard animation to end"
+          label: "Wait for keyboard animation"
 
-      - pressKey: enter
+      - assertVisible:
+          id: "VerticalBottomButtons::UrlDialog::Input::CustomTextInput"
+          text: "x"
+          label: "Check VerticalBottomButtons::UrlDialog::Input::CustomTextInput holds x before committing it"
+
+      - runFlow:
+          file: "dismissModalKeyboard.yaml"
+          label: "Dismiss the dialog keyboard (platform-specific)"
 
       - runFlow:
           file: "waitForKeyboardDismiss.yaml"

@@ -21,14 +21,13 @@ appId: "com.recipedia"
     file: "../../waitForKeyboardNumeric.yaml"
     label: "Wait for numeric keyboard to appear"
 
-- inputText:
-    text: "2,5"
+- runFlow:
+    file: "../../inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::SaturatedFat::NumericTextInput"
+      VALUE: "2,5"
+      DISMISS_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::SaturatedFat::Text"
     label: "Enter saturated fat value"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
 
 - runFlow:
     file: "../../waitForKeyboardNumericDismiss.yaml"

@@ -21,14 +21,13 @@ appId: "com.recipedia"
     file: "../../../../waitForKeyboardNumeric.yaml"
     label: "Wait for numeric keyboard to appear"
 
-- inputText:
-    text: "321"
+- runFlow:
+    file: "../../../../inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "RecipePersons::NumericTextInput"
+      VALUE: "321"
+      DISMISS_ID: "RecipePersons::PrefixText"
     label: "Write the number of person in the input text"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
 
 - runFlow:
     file: "../../../../waitForKeyboardNumericDismiss.yaml"

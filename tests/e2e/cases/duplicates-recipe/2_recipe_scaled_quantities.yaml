@@ -53,14 +53,13 @@ tags:
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- inputText:
-    text: "1000"
+- runFlow:
+    file: "../../flows/inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::0::QuantityInput"
+      VALUE: "1000"
+      DISMISS_ID: "RecipeIngredients::0::Unit"
     label: "Action - Change Pasta to 1000g (far from scaled)"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
 
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"
@@ -76,14 +75,13 @@ tags:
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- inputText:
-    text: "500"
+- runFlow:
+    file: "../../flows/inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::1::QuantityInput"
+      VALUE: "500"
+      DISMISS_ID: "RecipeIngredients::1::Unit"
     label: "Action - Change Tomatoes to 500g"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
 
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"

@@ -36,21 +36,13 @@ appId: "com.recipedia"
     file: "../../waitForKeyboard.yaml"
     label: "Wait for keyboard to appear"
 
-- inputText:
-    text: "${TAG_NAME}"
-    label: "Enter tag name"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation to end"
-
-- assertVisible:
-    id: "RecipeTags::List::${TAG_INDEX}::CustomTextInput"
-    text: "${TAG_NAME}"
-    label: "Verify tag is filled properly"
-
 - runFlow:
-    file: "../../confirmInputKeyboard.yaml"
-    label: "Confirm input via keyboard (platform-specific)"
+    file: "../../inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "RecipeTags::List::${TAG_INDEX}::CustomTextInput"
+      VALUE: "${TAG_NAME}"
+      DISMISS_ID: "RecipeTags::ElementText"
+    label: "Enter tag name"
 
 - runFlow:
     file: "../../waitForKeyboardDismiss.yaml"

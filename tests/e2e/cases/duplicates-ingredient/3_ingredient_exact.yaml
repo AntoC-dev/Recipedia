@@ -38,14 +38,13 @@ tags:
     id: "RecipeIngredients::0::NameInput::CustomTextInput"
     label: "Action - Focus on ingredient name input"
 
-- inputText:
-    text: "Butter"
+- runFlow:
+    file: "../../flows/inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::0::NameInput::CustomTextInput"
+      VALUE: "Butter"
+      DISMISS_ID: "RecipeIngredients::0::Unit"
     label: "Action - Enter existing ingredient name"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: "ENTER"
 
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"
@@ -64,14 +63,13 @@ tags:
     id: "RecipeIngredients::1::NameInput::CustomTextInput"
     label: "Action - Focus on second ingredient name input"
 
-- inputText:
-    text: "Butter"
+- runFlow:
+    file: "../../flows/inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::1::NameInput::CustomTextInput"
+      VALUE: "Butter"
+      DISMISS_ID: "RecipeIngredients::1::Unit"
     label: "Action - Try to add same ingredient again"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: "ENTER"
 
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"

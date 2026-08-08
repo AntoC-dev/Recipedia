@@ -52,13 +52,13 @@ appId: "com.recipedia"
 - tapOn:
     id: "RecipeIngredients::0::NameInput::CustomTextInput"
     label: "Tap on recipe ingredient name text input"
-- inputText:
-    text: "Avocado"
+- runFlow:
+    file: "../../inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::0::NameInput::CustomTextInput"
+      VALUE: "Avocado"
+      DISMISS_ID: "RecipeIngredients::0::Unit"
     label: "Write an ingredient name in the input text"
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
 
 - runFlow:
     file: "../../waitForKeyboardDismiss.yaml"
@@ -80,13 +80,13 @@ appId: "com.recipedia"
     id: "RecipeTime::NumericTextInput"
     label: "Focus on the preparation time text input"
 
-- inputText:
-    text: "5"
+- runFlow:
+    file: "../../inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "RecipeTime::NumericTextInput"
+      VALUE: "5"
+      DISMISS_ID: "RecipeTime::PrefixText"
     label: "Write a time in the input text"
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
 
 - runFlow:
     file: "../../waitForKeyboardDismiss.yaml"

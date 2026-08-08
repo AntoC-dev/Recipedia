@@ -85,16 +85,13 @@ appId: "com.recipedia"
     id: "RecipeTags::List::0::CustomTextInput"
     label: "Press the TextInput of first tags"
 
-- inputText:
-    text: "Healthy"
-    label: "Enter text for recipe first tag"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
 - runFlow:
-    file: "../../../../confirmInputKeyboard.yaml"
-    label: "Confirm input via keyboard (platform-specific)"
+    file: "../../../../inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "RecipeTags::List::0::CustomTextInput"
+      VALUE: "Healthy"
+      DISMISS_ID: "RecipeTags::ElementText"
+    label: "Enter text for recipe first tag"
 
 - runFlow:
     file: "../../../../waitForKeyboardDismiss.yaml"
@@ -423,16 +420,13 @@ appId: "com.recipedia"
     file: "../../../../waitForKeyboard.yaml"
     label: "Wait for keyboard to appear"
 
-- inputText:
-    text: "Non-existing-ingredient"
-    label: "Enter text for recipe second ingredient name (non-existing)"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
 - runFlow:
-    file: "../../../../confirmInputKeyboard.yaml"
-    label: "Confirm input via keyboard (platform-specific)"
+    file: "../../../../inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::1::NameInput::CustomTextInput"
+      VALUE: "Non-existing-ingredient"
+      DISMISS_ID: "RecipeIngredients::1::Unit"
+    label: "Enter text for recipe second ingredient name (non-existing)"
 
 - runFlow:
     file: "../../../../waitForKeyboardDismiss.yaml"
@@ -634,6 +628,11 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
+- assertVisible:
+    id: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
+    text: "[\\s\\S]*ingredients suivants :[\\s\\S]*"
+    label: "Check the first line is typed before inserting a newline"
+
 - runFlow:
     when:
       platform: Android
@@ -654,6 +653,11 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
+    text: "[\\s\\S]*hachez le gingembre.[\\s\\S]*"
+    label: "Check the second line is typed before inserting a newline"
 
 - runFlow:
     when:
@@ -679,6 +683,14 @@ appId: "com.recipedia"
 - inputText:
     text: "Salez, poivrez. Mixez jusqu'a obtenir une texture homogene."
     label: "Enter text for recipe second preparation paragraph (fourth line)"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
+    text: "[\\s\\S]*une texture homogene.[\\s\\S]*"
+    label: "Check the last line is typed before blurring the paragraph"
 
 - runFlow:
     when:

@@ -38,13 +38,13 @@ tags:
     id: 'RecipeIngredients::0::QuantityInput'
     label: 'Action - Focus the quantity input'
 
-- inputText:
-    text: '100'
+- runFlow:
+    file: '../../flows/inputAndCommitText.yaml'
+    env:
+      TARGET_ID: 'RecipeIngredients::0::QuantityInput'
+      VALUE: '100'
+      DISMISS_ID: 'RecipeIngredients::0::Unit'
     label: 'Action - Type a quantity to dirty the row (no name yet)'
-
-- waitForAnimationToEnd
-
-- pressKey: enter
 
 - runFlow:
     file: '../../flows/waitForKeyboardNumericDismiss.yaml'

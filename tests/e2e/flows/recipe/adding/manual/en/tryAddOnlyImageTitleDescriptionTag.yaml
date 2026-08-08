@@ -37,14 +37,13 @@ appId: "com.recipedia"
     id: "RecipeTags::List::0::CustomTextInput"
     label: "Press the new tag TextInput"
 
-- inputText:
-    text: "Japanese"
+- runFlow:
+    file: "../../../../inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "RecipeTags::List::0::CustomTextInput"
+      VALUE: "Japanese"
+      DISMISS_ID: "RecipeTags::ElementText"
     label: "Write the tag in the input text"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
 
 - runFlow:
     file: "../../../../waitForKeyboardDismiss.yaml"

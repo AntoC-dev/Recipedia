@@ -278,13 +278,13 @@ tags:
     file: "../../flows/waitForKeyboardNumeric.yaml"
     label: "Wait for numeric keyboard"
 
-- inputText:
-    text: "100"
+- runFlow:
+    file: "../../flows/inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::0::QuantityInput"
+      VALUE: "100"
+      DISMISS_ID: "RecipeIngredients::0::Unit"
     label: "Action - Enter quantity 100 (makes row dirty)"
-
-- waitForAnimationToEnd
-
-- pressKey: ENTER
 
 - runFlow:
     file: "../../flows/waitForKeyboardNumericDismiss.yaml"
@@ -302,13 +302,13 @@ tags:
     file: "../../flows/waitForKeyboard.yaml"
     label: "Wait for keyboard"
 
-- inputText:
-    text: "Carrots"
+- runFlow:
+    file: "../../flows/inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::0::NameInput::CustomTextInput"
+      VALUE: "Carrots"
+      DISMISS_ID: "RecipeIngredients::0::Unit"
     label: "Action - Enter ingredient name Carrot (exact DB match, no validation queue)"
-
-- waitForAnimationToEnd
-
-- pressKey: ENTER
 
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"

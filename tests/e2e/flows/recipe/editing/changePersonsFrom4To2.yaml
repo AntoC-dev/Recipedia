@@ -23,14 +23,13 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- inputText:
-    text: "2"
+- runFlow:
+    file: "../../inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "RecipePersons::NumericTextInput"
+      VALUE: "2"
+      DISMISS_ID: "RecipePersons::PrefixText"
     label: "Enter 2 persons"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: "ENTER"
 
 - runFlow:
     file: "../../waitForKeyboardNumericDismiss.yaml"

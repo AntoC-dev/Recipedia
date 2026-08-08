@@ -20,7 +20,9 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- pressKey: enter
+- tapOn:
+    id: "RecipeIngredients::0::Unit"
+    label: "Tap the unit cell to blur the name input and close the keyboard"
 
 - runFlow:
     file: "../../../../waitForKeyboardDismiss.yaml"
