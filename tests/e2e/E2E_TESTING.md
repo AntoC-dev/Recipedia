@@ -1112,20 +1112,52 @@ asserts/
     id: 'Input::CustomTextInput'
     label: 'Focus on input field'
 
-# Enter text
-- inputText:
-    text: 'Sample text'
+# Type the value, wait for the app to render it, then commit by tapping a label
+- runFlow:
+    file: '../../inputAndCommitText.yaml' # adjust relative path per caller depth
+    env:
+      TARGET_ID: 'Input::CustomTextInput'
+      VALUE: 'Sample text'
+      DISMISS_ID: 'Input::PrefixText'
     label: 'Enter text'
-
-# Dismiss keyboard with animation waits
-- waitForAnimationToEnd:
-    label: 'Wait for keyboard animation'
-
-- pressKey: enter
 
 - waitForAnimationToEnd:
     label: 'Wait for keyboard to dismiss'
 ```
+
+**Rule: assert the typed value before the field is blurred.** `inputText`
+returns as soon as Maestro has dispatched the keystrokes, and
+`waitForAnimationToEnd` only compares two frames, so on a loaded CI machine the
+blur can land while the last characters are still queued on the JS thread. The
+field then commits a partially-typed value (`30` saved as `3`), the flow keeps
+running with bad data, and it fails minutes later at an unrelated assertion
+(issue #525). This is about the blur, not about Enter — a tap elsewhere and
+`hideKeyboard` race exactly the same way.
+
+**Rule: commit with a tap, not `pressKey: enter`.** Enter is an unreliable
+dismiss: on Android it does not consistently trigger the IME action, and on a
+multiline input it inserts a newline instead of dismissing. Tap the validate
+button when the screen has one, otherwise a nearby label. The dismiss target
+must be **non-touchable** — the recipe screens use
+`keyboardShouldPersistTaps='handled'`, so a tap on a plain `Text` dismisses the
+keyboard and blurs the field, while a tap on a button runs that button's handler
+and keeps the keyboard up. The usual targets: `RecipeTime::PrefixText`,
+`RecipePersons::PrefixText`, `<NutritionRow>::Text`,
+`RecipeIngredients::<i>::Unit`.
+
+`flows/inputAndCommitText.yaml` (env `TARGET_ID`, `VALUE`, `DISMISS_ID`) chains
+both rules: `inputText` → `waitForAnimationToEnd` → `assertVisible` on the typed
+value → `tapOn` the dismiss target.
+
+This covers autocomplete fields (`TextInputWithDropDown`) too. Ingredient-name
+inputs commit live via `onChangeText`, and tag inputs commit via `onEndEditing`
+→ `onValidate`, which fires on focus loss as well as on submit — so tapping a
+label commits them exactly as Enter did.
+
+**The one exception is multiline inputs**: Enter is deliberately used there to
+insert a newline, so it cannot be replaced by a tap. Keep it inline, and assert
+the accumulated text with a `[\s\S]*…[\s\S]*` pattern before each newline
+(`flows/recipe/adding/manual/en/addAiguillettes.yaml` is the only such case).
 
 **Note**: Always wrap keyboard dismissal commands with `waitForAnimationToEnd`
 before and after:
@@ -1187,14 +1219,20 @@ lacks (asymmetric).
       label: 'Dismiss keyboard (platform-specific)'
   ```
 
-- **`flows/confirmInputKeyboard.yaml`**: confirm/commit an input via the
-  keyboard — `pressKey: Enter` on Android, tap the `Done` return key on iOS.
-  Distinct from a plain dismiss, which does not submit on Android.
+- **`flows/inputAndCommitText.yaml`** (env `TARGET_ID`, `VALUE`, `DISMISS_ID`):
+  type `VALUE` into the focused input `TARGET_ID`, assert the app rendered it,
+  then commit by tapping the non-touchable `DISMISS_ID`. The assertion is the
+  barrier against committing a partially-typed value — see the **Input Pattern**
+  section.
 
   ```yaml
   - runFlow:
-      file: '../../confirmInputKeyboard.yaml' # adjust relative path per caller depth
-      label: 'Confirm input via keyboard (platform-specific)'
+      file: '../../inputAndCommitText.yaml' # adjust relative path per caller depth
+      env:
+        TARGET_ID: 'RecipeTime::NumericTextInput'
+        VALUE: '30'
+        DISMISS_ID: 'RecipeTime::PrefixText'
+      label: 'Enter the time to prepare'
   ```
 
 - **`flows/waitForCheckSettle.yaml`** (env `CHECK_TEXT`): wait for a
@@ -1219,12 +1257,15 @@ lacks (asymmetric).
   `android/validateWithoutCropping.yaml` / `iOS/validateWithoutCropping.yaml`
   and dispatches by platform.
 
-**Non-Modal Single-Line Inputs**: For inputs on regular screens (not in modals),
-`pressKey: enter` can still be used but may be replaced with the
-platform-specific approach if flakiness is observed.
+**Non-Modal Single-Line Inputs**: use `flows/inputAndCommitText.yaml` — see the
+[Input Pattern](#input-pattern) section. `pressKey: enter` is no longer an
+accepted dismiss on these screens (issue #525).
 
-**Exception 1 - Autocomplete Fields**: For tag and ingredient name inputs that
-show autocomplete dropdowns, use `hideKeyboard` on **Android only**:
+**Exception 1 - Autocomplete Fields, when the flow must pick from the
+dropdown**: committing the field (Enter, or any tap that blurs it) fires
+`onEndEditing` → `onValidate` with the _typed_ text, which closes the dropdown
+before it can be tapped. To keep the dropdown open, hide the IME without
+blurring — `hideKeyboard` on **Android only**:
 
 ```yaml
 # Type partial text to trigger autocomplete
@@ -1251,14 +1292,20 @@ show autocomplete dropdowns, use `hideKeyboard` on **Android only**:
     label: 'Select from autocomplete dropdown'
 ```
 
-Using `pressKey: enter` on autocomplete fields will auto-select the first
-suggestion instead of allowing manual selection from the dropdown. iOS
-autocomplete keyboard dismissal is handled case-by-case when test failures
-occur.
+`hideKeyboard` is the only dismiss that leaves the field focused, so it is also
+the only way to reach a screen state where the ingredient row is typed but still
+unresolved by the database —
+`flows/recipe/adding/manual/en/tryAddOnlyImageTitleDescriptionTagPersonIngredient.yaml`
+depends on that for the "all ingredients to be known by Recipedia" assertion in
+`cases/recipe-create/4_validation_all.yaml`. Anywhere else, prefer
+`flows/inputAndCommitText.yaml`. iOS autocomplete keyboard dismissal is handled
+case-by-case when test failures occur.
 
 **Exception 2 - Multiline Text Inputs**: For title, description, and preparation
 fields that support multiline text, tap on a nearby section header label to
-dismiss the keyboard:
+dismiss the keyboard. The assert-before-blur rule still applies — insert an
+`assertVisible` with a `[\s\S]*…[\s\S]*` pattern before every dismiss (the
+snippets below omit it for brevity):
 
 ```yaml
 # Title field - tap on Description label
@@ -1885,7 +1932,9 @@ automatically — see the [CI Retry Mechanism](#ci-retry-mechanism) section.
   - `flows/dismissKeyboardVia.yaml` (env `KEY`) — `hideKeyboard` on Android /
     tap a non-`Done` return key (`Search`, `Return`) on iOS; 5 inline blocks.
   - `flows/confirmInputKeyboard.yaml` — `pressKey: Enter` on Android / tap
-    `Done` on iOS to commit an input; 7 inline blocks.
+    `Done` on iOS to commit an input; 7 inline blocks. Since removed: its 7
+    callers now use `flows/inputAndCommitText.yaml`, which commits by tapping a
+    label instead of via the keyboard (issue #525).
   - `flows/waitForCheckSettle.yaml` (env `CHECK_TEXT`) — iOS waits for the
     checked state to animate in, Android no-op; 13 inline blocks.
   - `flows/recipe/adding/ocr/pickImageSource.yaml` — tap camera (Android) /
