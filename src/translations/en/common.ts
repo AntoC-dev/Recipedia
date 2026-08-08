@@ -7,6 +7,7 @@ export default {
   edit: 'Edit',
   add: 'Add',
   remove: 'Remove',
+  undo: 'Undo',
   ok: 'OK',
   understood: 'Understood',
 

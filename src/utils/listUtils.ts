@@ -14,6 +14,17 @@ import {
 } from '@customTypes/DatabaseElementTypes';
 
 /**
+ * Scroll anchoring for lists whose rows are mutated in place.
+ *
+ * React Native lists default to no anchoring, so removing or reordering a row
+ * above the viewport shifts everything below it and the list jumps under the
+ * user's finger. Anchoring on the first visible row keeps it still. FlashList
+ * anchors by default and opts out instead — see `{ disabled: true }` in
+ * `Search.tsx` and `SettingsItemList.tsx`.
+ */
+export const ANCHOR_ON_FIRST_VISIBLE_ROW = { minIndexForVisible: 0 } as const;
+
+/**
  * Key extractor for recipe list items, keyed on the persisted database id.
  *
  * @param item - Recipe to extract a key from

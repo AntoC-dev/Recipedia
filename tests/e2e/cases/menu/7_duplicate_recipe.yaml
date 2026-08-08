@@ -51,6 +51,10 @@ tags:
     id: "MenuScreen::MenuItem::1::RemoveButton"
     label: "Action - Remove one instance of Pancakes"
 
+- runFlow:
+    file: "../../asserts/menu/en/removedFromMenuSnackbar.yaml"
+    label: "Assert - Undo snackbar appears after removal"
+
 - assertVisible:
     id: "MenuScreen::MenuItem::1::Title"
     text: "Classic Pancakes"

@@ -1,0 +1,14 @@
+name: "9 - Undo Remove Recipe Flow"
+appId: "com.recipedia"
+tags:
+  - menu
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../9_undo_remove.yaml"
+          label: "Run 9 - Undo Remove Recipe Flow"

@@ -1,0 +1,68 @@
+name: "6 - All Items Purchased Flow"
+appId: "com.recipedia"
+tags:
+  - shopping
+---
+- runFlow:
+    file: "../../flows/menu/addRecipeToMenu.yaml"
+    label: "Setup - Add Classic Pancakes to menu"
+
+- runFlow:
+    file: "../../flows/shopping/openShoppingScreen.yaml"
+    label: "Verification - Open the Shopping screen"
+
+- runFlow:
+    file: "../../flows/shopping/toggleIngredientPurchased.yaml"
+    env:
+      INGREDIENT_NAME: "Flour"
+    label: "Action - Mark Flour as purchased"
+
+- runFlow:
+    file: "../../flows/shopping/toggleIngredientPurchased.yaml"
+    env:
+      INGREDIENT_NAME: "Milk"
+    label: "Action - Mark Milk as purchased"
+
+- runFlow:
+    file: "../../flows/shopping/toggleIngredientPurchased.yaml"
+    env:
+      INGREDIENT_NAME: "Butter"
+    label: "Action - Mark Butter as purchased"
+
+- runFlow:
+    file: "../../flows/shopping/toggleIngredientPurchased.yaml"
+    env:
+      INGREDIENT_NAME: "Eggs"
+    label: "Action - Mark Eggs as purchased"
+
+- runFlow:
+    file: "../../asserts/shopping/en/assertPurchasedBlock.yaml"
+    label: "Assert - Purchased block holds everything once nothing is left to buy"
+
+- assertNotVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.baking::SubHeader"
+    label: "Assert - No category header remains in the working list"
+
+- assertNotVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.dairy::SubHeader"
+    label: "Assert - Dairy category also gone once Milk is purchased"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Flour"
+    label: "Assert - The block opens by itself when the list is cleared, so items are visible"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Eggs"
+    label: "Assert - Every purchased item is listed in the block"
+
+- runFlow:
+    file: "../../flows/menu/removeAllFromMenu.yaml"
+    label: "Cleanup - Remove every recipe from the menu (Shopping has no clear action)"
+
+- tapOn:
+    id: "BottomTabs::Shopping"
+    label: "Verification - Navigate back to Shopping screen"
+
+- runFlow:
+    file: "../../asserts/shopping/en/shoppingEmpty.yaml"
+    label: "Assert - Shopping list empties once the menu is cleared"

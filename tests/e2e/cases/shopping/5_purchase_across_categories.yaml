@@ -1,0 +1,94 @@
+name: "5 - Purchase Across Categories Flow"
+appId: "com.recipedia"
+tags:
+  - shopping
+---
+- runFlow:
+    file: "../../flows/menu/addSpaghettiToMenu.yaml"
+    label: "Setup - Add Spaghetti Bolognese to menu"
+
+- runFlow:
+    file: "../../flows/menu/addCaesarSaladToMenu.yaml"
+    label: "Setup - Add Caesar Salad to menu"
+
+- runFlow:
+    file: "../../flows/shopping/openShoppingScreen.yaml"
+    label: "Verification - Open the Shopping screen"
+
+- runFlow:
+    file: "../../asserts/shopping/assertNoPurchasedBlock.yaml"
+    label: "Assert - No purchased block before anything is bought"
+
+- runFlow:
+    file: "../../flows/shopping/toggleIngredientPurchased.yaml"
+    env:
+      INGREDIENT_NAME: "Spaghetti"
+    label: "Action - Mark Spaghetti as purchased (Cereal category)"
+
+- runFlow:
+    file: "../../flows/shopping/toggleIngredientPurchased.yaml"
+    env:
+      INGREDIENT_NAME: "Ground Beef"
+    label: "Action - Mark Ground Beef as purchased (Meat category)"
+
+- runFlow:
+    file: "../../asserts/shopping/en/assertPurchasedBlock.yaml"
+    label: "Assert - Both purchases collect in the single purchased block"
+
+- assertNotVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.meat::SubHeader"
+    label: "Assert - Meat category disappears: Ground Beef was its only item"
+
+# Marking the two items purchased scrolled the list down; the remaining
+# categories sit above, so come back up before asserting them.
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
+    direction: UP
+    speed: 80
+    centerElement: true
+    label: "Scroll back up to the Cereal category header"
+
+- runFlow:
+    file: "../../asserts/shopping/en/assertCategoryHeader.yaml"
+    env:
+      CATEGORY_KEY: "ingredientTypes.cereal"
+      CATEGORY_TEXT_REGEX: "Cereal"
+    label: "Assert - Cereal category stays: Croutons is still to buy"
+
+- runFlow:
+    file: "../../asserts/shopping/en/assertCategoryHeader.yaml"
+    env:
+      CATEGORY_KEY: "ingredientTypes.cheese"
+      CATEGORY_TEXT_REGEX: "Cheese"
+    label: "Assert - Cheese category untouched, Parmesan still to buy"
+
+- runFlow:
+    file: "../../flows/shopping/expandPurchased.yaml"
+    label: "Action - Expand the purchased block"
+
+# The expanded items render past the fold, so scroll them into view.
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::Spaghetti"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Assert - Spaghetti sits in the purchased block, no category split inside"
+
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::Ground Beef"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Assert - Ground Beef sits in the same block despite its different category"
+
+# Not flows/shopping/scrollToTop.yaml: it anchors on the Baking header, which
+# this menu (Spaghetti + Caesar) never produces.
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
+    direction: UP
+    speed: 80
+    label: "Cleanup - Scroll back to top for next tests"

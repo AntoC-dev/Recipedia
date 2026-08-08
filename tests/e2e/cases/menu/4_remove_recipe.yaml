@@ -22,5 +22,9 @@ tags:
     label: "Action - Remove recipe from menu"
 
 - runFlow:
+    file: "../../asserts/menu/en/removedFromMenuSnackbar.yaml"
+    label: "Assert - Undo snackbar appears after removal"
+
+- runFlow:
     file: "../../asserts/menu/en/assertMenuEmpty.yaml"
     label: "Assert - Verify menu is now empty"
