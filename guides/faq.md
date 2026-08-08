@@ -112,7 +112,7 @@ npx jest --watch tests/unit/utils/RecipeDatabase.test.ts
 
 **Unit tests** (`tests/unit/`) test a single component or function in isolation. External dependencies (e.g. SQLite, native modules) are mocked.
 
-**Integration tests** (`tests/integration/`) exercise the real pipeline end-to-end: actual hooks, the real `RecipeDatabase` running against `better-sqlite3` (the Node.js SQLite driver used in tests), the real fuzzy index, and the real form logic. The only things mocked are truly irreducible native boundaries like `@react-native-ml-kit/text-recognition`. Never mock hooks, utilities, or database layers in integration tests.
+**Integration tests** (`tests/integration/`) exercise the real pipeline end-to-end: actual hooks, the real `RecipeDatabase` running against `node:sqlite` (the built-in Node.js SQLite driver used in tests), the real fuzzy index, and the real form logic. The only things mocked are truly irreducible native boundaries like `@react-native-ml-kit/text-recognition`. Never mock hooks, utilities, or database layers in integration tests.
 
 ### Where do mocks go?
 
