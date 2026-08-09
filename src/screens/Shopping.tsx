@@ -9,6 +9,8 @@
  * - Automatic ingredient categorization (vegetables, proteins, dairy, etc.)
  * - Purchase status tracking with visual feedback (strikethrough)
  * - Purchased items leave their category for a collapsible block at the end
+ * - Undo snackbar, so a mistaken tap costs one press rather than a hunt
+ * - A completion state once nothing is left to buy, distinct from an empty list
  * - Recipe origin tracking - see which recipes use each ingredient
  * - Long-press for detailed recipe information dialog
  * - Focus-based data synchronization with recipe changes
@@ -60,7 +62,7 @@ import { useSafeCopilot } from '@hooks/useSafeCopilot';
 import { useReducedMotion } from '@hooks/useReducedMotion';
 import { useResetOnChange } from '@hooks/useResetOnChange';
 import { CopilotStepData } from '@customTypes/TutorialTypes';
-import { Divider, List, Text, useTheme } from 'react-native-paper';
+import { Divider, Icon, List, Text, useTheme } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
 import { useShopping } from '@hooks/useShopping';
 import { useMenu } from '@hooks/useMenu';
@@ -71,6 +73,7 @@ import {
 } from '@components/atomic/ListSectionHeader';
 import { ShoppingListItem } from '@components/molecules/ShoppingListItem';
 import { useShoppingCategories } from '@hooks/useCategories';
+import { Icons } from '@assets/Icons';
 import { Alert } from '@components/dialogs/Alert';
 import { TUTORIAL_DEMO_INTERVAL, TUTORIAL_STEPS } from '@utils/Constants';
 import { padding } from '@styles/spacing';
@@ -78,6 +81,9 @@ import { shoppingLogger } from '@utils/logger';
 
 /** Type for dialog data containing ingredient and recipe information */
 type ingredientDataForDialog = Pick<ComputedShoppingItem, 'name' | 'recipeTitles'>;
+
+/** Size of the icon heading the completion state. */
+const DONE_ICON_SIZE = 28;
 
 /**
  * Shopping screen component - Categorized shopping list with recipe tracking
@@ -110,10 +116,10 @@ export function Shopping() {
   const { sections, purchased } = buildShoppingSections(shoppingCategories, shoppingList);
   const nothingLeftToBuy = sections.length === 0;
   const hasPurchased = purchased.length > 0;
-  const autoExpanded = nothingLeftToBuy && hasPurchased;
+  const isListCleared = nothingLeftToBuy && hasPurchased;
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isPurchasedExpanded, setIsPurchasedExpanded] = useState(autoExpanded);
+  const [isPurchasedExpanded, setIsPurchasedExpanded] = useState(isListCleared);
   const [ingredientDataForDialog, setIngredientDataForDialog] = useState<ingredientDataForDialog>({
     recipeTitles: [],
     name: '',
@@ -122,7 +128,7 @@ export function Shopping() {
   // Opening the purchased block once the list is cleared keeps the screen from
   // looking empty; collapsing it again as soon as new items arrive — or as soon
   // as the block empties — keeps the working list free of what is already bought.
-  useResetOnChange([nothingLeftToBuy, hasPurchased], () => setIsPurchasedExpanded(autoExpanded));
+  useResetOnChange([nothingLeftToBuy, hasPurchased], () => setIsPurchasedExpanded(isListCleared));
 
   useEffect(() => {
     if (!copilotData || !copilotEvents) {
@@ -193,6 +199,7 @@ export function Shopping() {
   const screenId = 'ShoppingScreen';
   const sectionId = screenId + '::SectionList';
   const purchasedId = sectionId + '::Purchased';
+  const doneId = screenId + '::AllDone';
 
   /**
    * Creates formatted dialog title for ingredient recipe usage
@@ -265,6 +272,16 @@ export function Shopping() {
           sections={sections}
           keyExtractor={item => item.name}
           renderItem={({ item }) => renderShoppingItem(item)}
+          ListHeaderComponent={
+            isListCleared ? (
+              <View testID={doneId} style={styles.doneState}>
+                <Icon source={Icons.checkWithCircle} size={DONE_ICON_SIZE} color={colors.primary} />
+                <Text testID={doneId + '::Title'} variant='titleLarge'>
+                  {t('shoppingScreen.allDoneTitle')}
+                </Text>
+              </View>
+            ) : null
+          }
           renderSectionHeader={({ section }) => {
             const headerId = sectionId + '::' + section.title;
             return (
@@ -333,6 +350,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: padding.medium,
     flexGrow: 1,
     paddingBottom: padding.veryLarge,
+  },
+  doneState: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: padding.small,
+    paddingVertical: padding.veryLarge,
   },
   purchasedAccordion: {
     marginTop: padding.large,

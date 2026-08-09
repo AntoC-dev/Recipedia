@@ -3,6 +3,7 @@ export default {
   addToShoppingList: 'Add to Shopping List',
   purchased: 'Already purchased',
   noItemsInShoppingList: 'No items in shopping list',
+  allDoneTitle: 'All done',
   recipeUsingMessage: 'Here are the list of recipes using this ingredient',
   recipeUsingTitle: 'Recipes that use',
   recipeUsingValidation: 'OK',

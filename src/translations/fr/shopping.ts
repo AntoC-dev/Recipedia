@@ -3,6 +3,7 @@ export default {
   addToShoppingList: 'Ajouter à la liste de courses',
   purchased: 'Déjà acheté',
   noItemsInShoppingList: 'Aucun article dans la liste de courses',
+  allDoneTitle: 'Courses terminées',
   recipeUsingMessage: 'Voici la liste des recettes utilisant cet ingrédient',
   recipeUsingTitle: 'Recettes utilisant',
   recipeUsingValidation: 'OK',

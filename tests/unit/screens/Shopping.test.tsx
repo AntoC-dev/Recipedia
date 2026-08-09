@@ -1,9 +1,5 @@
-import {
-  fireEvent,
-  render,
-  waitFor,
-  waitForElementToBeRemoved,
-} from '@testing-library/react-native';
+import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
+import { ReactTestInstance } from 'react-test-renderer';
 import { StyleSheet } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import { listSectionHeaderTextStyle } from '@components/atomic/ListSectionHeader';
@@ -42,6 +38,12 @@ jest.mock('@hooks/useReducedMotion', () =>
 );
 
 const { mockUseReducedMotion } = require('@mocks/hooks/useReducedMotion-mock');
+
+const pressAndSettle = async (element: ReactTestInstance) => {
+  await act(async () => {
+    fireEvent.press(element);
+  });
+};
 
 jest.mock('@react-navigation/native', () => ({
   ...require('@mocks/deps/react-navigation-mock').reactNavigationMock(),
@@ -84,6 +86,14 @@ function dividerTestId(category: string) {
   return `${sectionId}::${category}::Divider`;
 }
 
+function checkboxStatus(
+  getByTestId: (id: string, options?: object) => ReactTestInstance,
+  name: string
+) {
+  return getByTestId(`${itemTestId(name)}::Checkbox::Status`, { includeHiddenElements: true }).props
+    .children;
+}
+
 function hasStrikethrough(style: unknown) {
   return Array.isArray(style) && style.some(s => s && s.textDecorationLine === 'line-through');
 }
@@ -115,6 +125,8 @@ describe('Shopping Screen', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
+    mockUseSafeCopilot.mockReturnValue(null);
+    mockUseReducedMotion.mockReturnValue(false);
 
     await database.init();
     await database.addMultipleIngredients(testIngredients);
@@ -250,7 +262,7 @@ describe('Shopping Screen', () => {
     test('moves an item out of its category into the purchased block on press', async () => {
       const { getByTestId, queryByTestId } = await renderShoppingAndWait();
 
-      fireEvent.press(getByTestId(itemTestId('Flour')));
+      await pressAndSettle(getByTestId(itemTestId('Flour')));
 
       await waitFor(() => {
         expect(getByTestId(`${purchasedId}::Title`).props.children).toBe(
@@ -265,7 +277,7 @@ describe('Shopping Screen', () => {
     test('renders the purchased block collapsed while items remain to buy', async () => {
       const { getByTestId } = await renderShoppingAndWait();
 
-      fireEvent.press(getByTestId(itemTestId('Flour')));
+      await pressAndSettle(getByTestId(itemTestId('Flour')));
 
       await waitFor(() => {
         expect(getByTestId(`${purchasedId}::Expanded`).props.children).toBe('false');
@@ -275,7 +287,7 @@ describe('Shopping Screen', () => {
     test('expands the purchased block on press and collapses it again', async () => {
       const { getByTestId } = await renderShoppingAndWait();
 
-      fireEvent.press(getByTestId(itemTestId('Flour')));
+      await pressAndSettle(getByTestId(itemTestId('Flour')));
 
       await waitFor(() => {
         expect(getByTestId(`${purchasedId}::Header`)).toBeTruthy();
@@ -300,7 +312,7 @@ describe('Shopping Screen', () => {
       const { getByTestId } = await renderShoppingAndWait();
 
       for (const name of ['Flour', 'Milk', 'Eggs', 'Butter']) {
-        fireEvent.press(getByTestId(itemTestId(name)));
+        await pressAndSettle(getByTestId(itemTestId(name)));
       }
 
       await waitFor(() => {
@@ -314,14 +326,14 @@ describe('Shopping Screen', () => {
       const { getByTestId } = await renderShoppingAndWait();
 
       for (const name of ['Flour', 'Milk', 'Eggs', 'Butter']) {
-        fireEvent.press(getByTestId(itemTestId(name)));
+        await pressAndSettle(getByTestId(itemTestId(name)));
       }
 
       await waitFor(() => {
         expect(getByTestId(`${purchasedId}::Expanded`).props.children).toBe('true');
       });
 
-      fireEvent.press(getByTestId(itemTestId('Flour')));
+      await pressAndSettle(getByTestId(itemTestId('Flour')));
 
       await waitFor(() => {
         expect(getByTestId(`${purchasedId}::Expanded`).props.children).toBe('false');
@@ -345,7 +357,7 @@ describe('Shopping Screen', () => {
     test('collapses the purchased block again once it empties while items remain to buy', async () => {
       const { getByTestId, queryByTestId } = await renderShoppingAndWait();
 
-      fireEvent.press(getByTestId(itemTestId('Flour')));
+      await pressAndSettle(getByTestId(itemTestId('Flour')));
 
       await waitFor(() => {
         expect(getByTestId(`${purchasedId}::Header`)).toBeTruthy();
@@ -357,11 +369,11 @@ describe('Shopping Screen', () => {
         expect(getByTestId(`${purchasedId}::Expanded`).props.children).toBe('true');
       });
 
-      fireEvent.press(getByTestId(itemTestId('Flour')));
+      await pressAndSettle(getByTestId(itemTestId('Flour')));
 
-      await waitForElementToBeRemoved(() => queryByTestId(purchasedId));
+      await waitFor(() => expect(queryByTestId(purchasedId)).toBeNull());
 
-      fireEvent.press(getByTestId(itemTestId('Milk')));
+      await pressAndSettle(getByTestId(itemTestId('Milk')));
 
       await waitFor(() => {
         expect(getByTestId(`${purchasedId}::Expanded`).props.children).toBe('false');
@@ -371,7 +383,7 @@ describe('Shopping Screen', () => {
     test('styles the purchased block title like a category header', async () => {
       const { getByTestId } = await renderShoppingAndWait();
 
-      fireEvent.press(getByTestId(itemTestId('Flour')));
+      await pressAndSettle(getByTestId(itemTestId('Flour')));
 
       await waitFor(() => {
         expect(getByTestId(purchasedId)).toBeTruthy();
@@ -386,7 +398,7 @@ describe('Shopping Screen', () => {
     test('opens the recipe usage dialog from an item inside the purchased block', async () => {
       const { getByTestId } = await renderShoppingAndWait();
 
-      fireEvent.press(getByTestId(itemTestId('Flour')));
+      await pressAndSettle(getByTestId(itemTestId('Flour')));
 
       await waitFor(() => {
         expect(getByTestId(purchasedId)).toBeTruthy();
@@ -404,7 +416,7 @@ describe('Shopping Screen', () => {
     test('removes the category section entirely when its only item becomes purchased', async () => {
       const { getByTestId, queryByTestId } = await renderShoppingAndWait();
 
-      fireEvent.press(getByTestId(itemTestId('Milk')));
+      await pressAndSettle(getByTestId(itemTestId('Milk')));
 
       await waitFor(() => {
         expect(queryByTestId(categoryHeaderTestId('ingredientTypes.dairy'))).toBeNull();
@@ -416,8 +428,8 @@ describe('Shopping Screen', () => {
     test('collects every purchased item in the same block regardless of category', async () => {
       const { getByTestId, queryByTestId } = await renderShoppingAndWait();
 
-      fireEvent.press(getByTestId(itemTestId('Flour')));
-      fireEvent.press(getByTestId(itemTestId('Milk')));
+      await pressAndSettle(getByTestId(itemTestId('Flour')));
+      await pressAndSettle(getByTestId(itemTestId('Milk')));
 
       await waitFor(() => {
         expect(queryByTestId(categoryHeaderTestId('ingredientTypes.dairy'))).toBeNull();
@@ -431,14 +443,14 @@ describe('Shopping Screen', () => {
     test('toggling a purchased item again returns it to its category section', async () => {
       const { getByTestId, queryByTestId } = await renderShoppingAndWait();
 
-      fireEvent.press(getByTestId(itemTestId('Flour')));
+      await pressAndSettle(getByTestId(itemTestId('Flour')));
       await waitFor(() => {
         expect(getByTestId(purchasedId)).toBeTruthy();
       });
 
-      fireEvent.press(getByTestId(itemTestId('Flour')));
+      await pressAndSettle(getByTestId(itemTestId('Flour')));
 
-      await waitForElementToBeRemoved(() => queryByTestId(purchasedId));
+      await waitFor(() => expect(queryByTestId(purchasedId)).toBeNull());
 
       expect(getByTestId(categoryHeaderTestId('ingredientTypes.baking')).props.children).toBe(
         'ingredientTypes.baking'
@@ -452,7 +464,7 @@ describe('Shopping Screen', () => {
         false
       );
 
-      fireEvent.press(getByTestId(itemTestId('Flour')));
+      await pressAndSettle(getByTestId(itemTestId('Flour')));
 
       await waitFor(() => {
         expect(hasStrikethrough(getByTestId(`${itemTestId('Flour')}::Title`).props.style)).toBe(
@@ -466,17 +478,50 @@ describe('Shopping Screen', () => {
     test('reflects purchase state in the item checkbox status', async () => {
       const { getByTestId } = await renderShoppingAndWait();
 
-      expect(getByTestId(`${itemTestId('Flour')}::Checkbox::Status`).props.children).toBe(
-        'unchecked'
-      );
+      expect(checkboxStatus(getByTestId, 'Flour')).toBe('unchecked');
 
-      fireEvent.press(getByTestId(itemTestId('Flour')));
+      await pressAndSettle(getByTestId(itemTestId('Flour')));
 
       await waitFor(() => {
-        expect(getByTestId(`${itemTestId('Flour')}::Checkbox::Status`).props.children).toBe(
-          'checked'
+        expect(checkboxStatus(getByTestId, 'Flour')).toBe('checked');
+      });
+    });
+  });
+
+  describe('Completion state', () => {
+    beforeEach(async () => {
+      await addPancakesToMenu(database);
+    });
+
+    test('stays hidden while items remain to buy', async () => {
+      const { queryByTestId } = await renderShoppingAndWait();
+
+      expect(queryByTestId(`${screenId}::AllDone`)).toBeNull();
+    });
+
+    test('celebrates once nothing is left to buy', async () => {
+      for (const name of ['Flour', 'Milk', 'Eggs', 'Butter']) {
+        await database.setPurchased(name, true);
+      }
+
+      const { getByTestId } = await renderShoppingAndWait();
+
+      await waitFor(() => {
+        expect(getByTestId(`${screenId}::AllDone::Title`).props.children).toBe(
+          'shoppingScreen.allDoneTitle'
         );
       });
+    });
+
+    test('reads differently from the empty shopping list', async () => {
+      await database.clearMenu();
+
+      const { getByTestId, queryByTestId } = await renderShoppingAndWait();
+
+      expect(getByTestId(`${screenId}::TextNoItem`).props.children).toBe(
+        'shoppingScreen.noItemsInShoppingList'
+      );
+      expect(queryByTestId(`${screenId}::AllDone`)).toBeNull();
     });
   });
 
