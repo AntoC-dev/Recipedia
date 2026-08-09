@@ -1,6 +1,6 @@
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import { ReactTestInstance } from 'react-test-renderer';
-import { StyleSheet } from 'react-native';
+import { AccessibilityInfo, StyleSheet } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import { listSectionHeaderTextStyle } from '@components/atomic/ListSectionHeader';
 import RecipeDatabase from '@utils/RecipeDatabase';
@@ -127,6 +127,7 @@ describe('Shopping Screen', () => {
     jest.clearAllMocks();
     mockUseSafeCopilot.mockReturnValue(null);
     mockUseReducedMotion.mockReturnValue(false);
+    jest.spyOn(AccessibilityInfo, 'announceForAccessibility').mockImplementation(() => {});
 
     await database.init();
     await database.addMultipleIngredients(testIngredients);
@@ -484,6 +485,115 @@ describe('Shopping Screen', () => {
 
       await waitFor(() => {
         expect(checkboxStatus(getByTestId, 'Flour')).toBe('checked');
+      });
+    });
+
+    test('announces the purchase and what is left to buy', async () => {
+      const { getByTestId } = await renderShoppingAndWait();
+
+      await pressAndSettle(getByTestId(itemTestId('Flour')));
+
+      expect(AccessibilityInfo.announceForAccessibility).toHaveBeenCalledWith(
+        'shoppingScreen.itemPurchasedAnnouncement'
+      );
+    });
+
+    test('announces completion when the last item is purchased', async () => {
+      await database.clearMenu();
+      await addPancakesToMenu(database);
+      for (const name of ['Flour', 'Milk', 'Eggs']) {
+        await database.setPurchased(name, true);
+      }
+      const { getByTestId } = await renderShoppingAndWait();
+
+      await pressAndSettle(getByTestId(itemTestId('Butter')));
+
+      expect(AccessibilityInfo.announceForAccessibility).toHaveBeenCalledWith(
+        'shoppingScreen.lastItemPurchasedAnnouncement'
+      );
+    });
+  });
+
+  describe('Undo snackbar', () => {
+    const shoppingTutorialStep = {
+      order: TUTORIAL_STEPS.Shopping.order,
+      name: 'Shopping',
+      text: 'Shopping step',
+    };
+
+    beforeEach(async () => {
+      await addPancakesToMenu(database);
+    });
+
+    test('offers to undo the purchase just made', async () => {
+      const { getByTestId } = await renderShoppingAndWait();
+
+      await pressAndSettle(getByTestId(itemTestId('Flour')));
+
+      await waitFor(() => {
+        expect(getByTestId(`${screenId}::UndoSnackbar::Text`).props.children).toBe(
+          'shoppingScreen.itemPurchased'
+        );
+      });
+    });
+
+    test('puts the item back on the list when undone', async () => {
+      const { getByTestId } = await renderShoppingAndWait();
+
+      await pressAndSettle(getByTestId(itemTestId('Flour')));
+
+      await waitFor(() => {
+        expect(checkboxStatus(getByTestId, 'Flour')).toBe('checked');
+      });
+
+      fireEvent.press(getByTestId(`${screenId}::UndoSnackbar::Action`));
+
+      await waitFor(() => {
+        expect(checkboxStatus(getByTestId, 'Flour')).toBe('unchecked');
+      });
+    });
+
+    test('stays hidden when an item is put back on the list', async () => {
+      const { getByTestId, queryByTestId } = await renderShoppingAndWait();
+
+      await pressAndSettle(getByTestId(itemTestId('Flour')));
+
+      await waitFor(() => {
+        expect(getByTestId(`${screenId}::UndoSnackbar`)).toBeTruthy();
+      });
+
+      await pressAndSettle(getByTestId(itemTestId('Flour')));
+
+      await waitFor(() => {
+        expect(queryByTestId(`${screenId}::UndoSnackbar`)).toBeNull();
+      });
+    });
+
+    test('stays hidden while the tutorial drives the screen', async () => {
+      mockUseSafeCopilot.mockReturnValue({
+        copilotEvents: getMockCopilotEvents(),
+        currentStep: shoppingTutorialStep,
+        visible: true,
+      });
+      const { getByTestId, queryByTestId } = await renderShoppingAndWait();
+
+      await pressAndSettle(getByTestId(itemTestId('Flour')));
+
+      expect(queryByTestId(`${screenId}::UndoSnackbar`)).toBeNull();
+    });
+
+    test('comes back once the tutorial has been left on the shopping step', async () => {
+      mockUseSafeCopilot.mockReturnValue({
+        copilotEvents: getMockCopilotEvents(),
+        currentStep: shoppingTutorialStep,
+        visible: false,
+      });
+      const { getByTestId } = await renderShoppingAndWait();
+
+      await pressAndSettle(getByTestId(itemTestId('Flour')));
+
+      await waitFor(() => {
+        expect(getByTestId(`${screenId}::UndoSnackbar`)).toBeTruthy();
       });
     });
   });

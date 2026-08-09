@@ -55,14 +55,14 @@
 
 import { ComputedShoppingItem } from '@customTypes/DatabaseElementTypes';
 import React, { useEffect, useRef, useState } from 'react';
-import { SectionList, StyleSheet, View } from 'react-native';
+import { AccessibilityInfo, SectionList, StyleSheet, View } from 'react-native';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { CopilotStep, walkthroughable } from 'react-native-copilot';
 import { useSafeCopilot } from '@hooks/useSafeCopilot';
 import { useReducedMotion } from '@hooks/useReducedMotion';
 import { useResetOnChange } from '@hooks/useResetOnChange';
 import { CopilotStepData } from '@customTypes/TutorialTypes';
-import { Divider, Icon, List, Text, useTheme } from 'react-native-paper';
+import { Divider, Icon, List, Snackbar, Text, useTheme } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
 import { useShopping } from '@hooks/useShopping';
 import { useMenu } from '@hooks/useMenu';
@@ -81,6 +81,9 @@ import { shoppingLogger } from '@utils/logger';
 
 /** Type for dialog data containing ingredient and recipe information */
 type ingredientDataForDialog = Pick<ComputedShoppingItem, 'name' | 'recipeTitles'>;
+
+/** How long the undo snackbar stays up — long enough to react while walking. */
+const UNDO_SNACKBAR_DURATION = 5000;
 
 /** Size of the icon heading the completion state. */
 const DONE_ICON_SIZE = 28;
@@ -112,6 +115,9 @@ export function Shopping() {
   });
 
   const stepOrder = TUTORIAL_STEPS.Shopping.order;
+  // `currentStep` keeps its last value after the tour is skipped, so only the
+  // overlay visibility tells the tour apart from normal use.
+  const isTutorialRunning = copilotData?.visible === true && currentStep?.order === stepOrder;
 
   const { sections, purchased } = buildShoppingSections(shoppingCategories, shoppingList);
   const nothingLeftToBuy = sections.length === 0;
@@ -120,6 +126,10 @@ export function Shopping() {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isPurchasedExpanded, setIsPurchasedExpanded] = useState(isListCleared);
+  const [undoableName, setUndoableName] = useState<string | null>(null);
+  // Paper arms the auto-dismiss timer only on the hidden -> visible transition,
+  // so remount the snackbar to restart the countdown on a second purchase.
+  const [undoNonce, setUndoNonce] = useState(0);
   const [ingredientDataForDialog, setIngredientDataForDialog] = useState<ingredientDataForDialog>({
     recipeTitles: [],
     name: '',
@@ -235,9 +245,38 @@ export function Shopping() {
     );
   }
 
+  function announcePurchase(item: ComputedShoppingItem) {
+    const remainingAfter = sections.reduce((total, section) => total + section.data.length, 0) - 1;
+    AccessibilityInfo.announceForAccessibility(
+      remainingAfter === 0
+        ? t('shoppingScreen.lastItemPurchasedAnnouncement', { name: item.name })
+        : t('shoppingScreen.itemPurchasedAnnouncement', {
+            name: item.name,
+            remaining: remainingAfter,
+          })
+    );
+  }
+
   function toggleItemPurchased(item: ComputedShoppingItem) {
     shoppingLogger.debug('Toggling ingredient purchase status', { ingredient: item.name });
+
+    if (item.purchased) {
+      setUndoableName(null);
+    } else {
+      announcePurchase(item);
+      setUndoableName(isTutorialRunning ? null : item.name);
+      setUndoNonce(nonce => nonce + 1);
+    }
+
     void togglePurchased(item.name);
+  }
+
+  function undoPurchase() {
+    if (!undoableName) {
+      return;
+    }
+    void togglePurchased(undoableName);
+    setUndoableName(null);
   }
 
   function showRecipesFor(item: ComputedShoppingItem) {
@@ -309,6 +348,17 @@ export function Shopping() {
           stickySectionHeadersEnabled={false}
         />
       )}
+
+      <Snackbar
+        key={undoNonce}
+        visible={undoableName !== null}
+        onDismiss={() => setUndoableName(null)}
+        duration={UNDO_SNACKBAR_DURATION}
+        action={{ label: t('undo'), onPress: undoPurchase }}
+        testID={screenId + '::UndoSnackbar'}
+      >
+        {t('shoppingScreen.itemPurchased', { name: undoableName ?? '' })}
+      </Snackbar>
 
       {copilotData && (
         <CopilotStep text={t('tutorial.shopping.description')} order={stepOrder} name={'Shopping'}>
