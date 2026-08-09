@@ -20,8 +20,9 @@ export function resetMockRouteParams() {
 }
 
 export function reactNavigationMock() {
+  const actual = jest.requireActual('@react-navigation/native');
   return {
-    ...jest.requireActual('@react-navigation/native'),
+    ...actual,
     useNavigation: () => ({
       navigate: mockNavigate,
       addListener: mockAddListener,
@@ -34,7 +35,8 @@ export function reactNavigationMock() {
     useFocusEffect: jest.fn(() => {}),
     useIsFocused: () => true,
     CommonActions: {
-      reset: jest.fn(config => ({ type: 'reset', ...config })),
+      ...actual.CommonActions,
+      reset: jest.fn(config => actual.CommonActions.reset(config)),
     },
   };
 }
