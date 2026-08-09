@@ -8,6 +8,7 @@ export const mockAddListener = jest.fn((event, handler) => {
 
 export const mockGoBack = jest.fn();
 export const mockDispatch = jest.fn();
+export const mockPreload = jest.fn();
 
 let mockRouteParams: Record<string, unknown> = {};
 
@@ -51,6 +52,7 @@ export function reactNavigationMock() {
       addListener: mockAddListener,
       goBack: mockGoBack,
       dispatch: mockDispatch,
+      preload: mockPreload,
     }),
     useRoute: () => ({
       params: mockRouteParams,

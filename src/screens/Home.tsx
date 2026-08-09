@@ -48,6 +48,8 @@ import { RecipeRecommendation } from '@components/organisms/RecipeRecommendation
 import { RecommendationSkeletonRow } from '@components/molecules/RecommendationSkeletonRow';
 
 import React, { useEffect, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { TabScreenNavigation } from '@customTypes/ScreenTypes';
 import { useResetOnChange } from '@hooks/useResetOnChange';
 import { FlatList, RefreshControl, View } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
@@ -103,6 +105,15 @@ export function Home() {
   useResetOnChange([recipes, ingredients, tags, seasonFilter], () =>
     setIsLoadingRecommendations(true)
   );
+
+  // Search derives its filter lists from every recipe on first render, so warm
+  // it from the landing tab instead of paying for it on the first tap.
+  // Trade-off: a preloaded tab is exempt from `freezeOnBlur` until the user
+  // actually visits it (JUMP_TO clears the preload key).
+  const { preload } = useNavigation<TabScreenNavigation>();
+  useEffect(() => {
+    preload('Search');
+  }, [preload]);
 
   useEffect(() => {
     homeLogger.debug('Loading smart recipe recommendations', {

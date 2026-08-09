@@ -9,6 +9,11 @@ import RecipeDatabase from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
 import { SeasonFilterProvider } from '@context/SeasonFilterContext';
+import { mockPreload } from '@mocks/deps/react-navigation-mock';
+
+jest.mock('@react-navigation/native', () =>
+  require('@mocks/deps/react-navigation-mock').reactNavigationMock()
+);
 
 jest.mock(
   '@components/organisms/VerticalBottomButtons',
@@ -72,6 +77,12 @@ describe('Home Screen', () => {
     await database.addMultipleRecipes(testRecipes);
   });
   afterEach(async () => await database.closeAndReset());
+
+  test('preloads the Search tab on mount', async () => {
+    await renderHomeAndWaitForRecommendations();
+
+    expect(mockPreload).toHaveBeenCalledWith('Search');
+  });
 
   // -------- INITIAL RENDERING TESTS --------
   test('renders all navigation buttons correctly', async () => {
