@@ -76,6 +76,10 @@ tags:
     id: "Recipe::AppBar::Cancel"
     label: "Action - Cancel the draft edit"
 
+- runFlow:
+    file: "../../flows/recipe/discardRecipeChanges.yaml"
+    label: "Action - Confirm discarding the unsaved changes"
+
 - extendedWaitUntil:
     visible:
       id: "Recipe::AppBar::Edit"

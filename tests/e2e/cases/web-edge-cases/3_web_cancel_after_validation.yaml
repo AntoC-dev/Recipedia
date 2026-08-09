@@ -42,6 +42,10 @@ tags:
     id: "Recipe::AppBar::BackButton"
     label: "Action - Cancel recipe creation by pressing back"
 
+- runFlow:
+    file: "../../flows/recipe/discardRecipeChanges.yaml"
+    label: "Action - Confirm discarding the unsaved changes"
+
 - assertNotVisible:
     id: "RecipeTitle::CustomTextInput"
     label: "Assert - Recipe screen is closed"

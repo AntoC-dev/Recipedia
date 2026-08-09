@@ -1,0 +1,19 @@
+appId: "com.recipedia"
+---
+# Confirm the discard dialog raised when leaving a recipe form with unsaved edits.
+#
+# Call this right after tapping Cancel or the AppBar back arrow on a form that
+# has been modified. The dialog is asserted rather than probed conditionally:
+# a flow that reaches here is expected to have a dirty form, so a missing dialog
+# is a regression in the guard, not a state to tolerate.
+
+- runFlow:
+    file: "../../asserts/alerts/en/unsavedChangesDialog.yaml"
+    label: "Assert - Discard confirmation is raised for the unsaved edits"
+
+- tapOn:
+    id: "RecipeUnsavedChanges::Dialog::Confirm"
+    label: "Action - Discard the unsaved changes and leave"
+
+- waitForAnimationToEnd:
+    label: "Wait for the dialog dismissal and the pending navigation"

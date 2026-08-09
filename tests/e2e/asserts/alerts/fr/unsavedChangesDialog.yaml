@@ -1,0 +1,21 @@
+appId: "com.recipedia"
+---
+- assertVisible:
+    id: "RecipeUnsavedChanges::Dialog::Title"
+    text: "Abandonner les modifications ?"
+    label: "Discard dialog title is rendered"
+
+- assertVisible:
+    id: "RecipeUnsavedChanges::Dialog::Content"
+    text: "Cette recette contient des modifications non enregistrées. Si vous quittez maintenant, elles seront perdues."
+    label: "Discard dialog message is rendered"
+
+- assertVisible:
+    id: "RecipeUnsavedChanges::Dialog::Cancel-text"
+    text: "Continuer la modification"
+    label: "Keep editing button is rendered"
+
+- assertVisible:
+    id: "RecipeUnsavedChanges::Dialog::Confirm-text"
+    text: "Abandonner"
+    label: "Discard button is rendered"

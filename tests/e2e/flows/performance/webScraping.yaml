@@ -38,3 +38,7 @@ appId: "com.recipedia"
 - tapOn:
     id: "Recipe::AppBar::BackButton"
     label: "Cancel without saving"
+
+- runFlow:
+    file: "../recipe/discardRecipeChanges.yaml"
+    label: "Action - Confirm discarding the unsaved changes"

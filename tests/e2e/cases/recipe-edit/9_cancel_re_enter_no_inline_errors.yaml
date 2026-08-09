@@ -98,6 +98,10 @@ tags:
     id: "Recipe::AppBar::Cancel"
     label: "Action - Cancel the draft edit (clears touched fields via form.reset)"
 
+- runFlow:
+    file: "../../flows/recipe/discardRecipeChanges.yaml"
+    label: "Action - Confirm discarding the unsaved changes"
+
 - extendedWaitUntil:
     visible:
       id: "Recipe::AppBar::Edit"
