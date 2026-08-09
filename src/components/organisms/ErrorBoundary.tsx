@@ -20,7 +20,7 @@
  * ```
  */
 
-import React, { Component, ComponentType, ErrorInfo, ReactNode } from 'react';
+import React, { Component, ErrorInfo, ReactNode } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import { ErrorFallback } from '@components/molecules/ErrorFallback';
 import { appLogger } from '@utils/logger';
@@ -91,22 +91,23 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 }
 
 /**
- * Wraps a component in an {@link ErrorBoundary} so a render crash inside it is
- * contained instead of taking down the whole navigation tree.
+ * Screen `layout` that contains a render error inside the screen that threw
+ * instead of tearing down the whole navigator.
  *
- * @param WrappedComponent - the component to protect
- * @param testID - optional testID forwarded to the boundary's fallback
- * @returns a component rendering `WrappedComponent` inside an error boundary
+ * Passed to a `Stack.Screen`'s `layout` or a `Stack.Group`'s `screenLayout` in
+ * React Navigation v7. This replaced the former `withErrorBoundary` HOC: the
+ * wrapping is declared on the route rather than baked into the screen's export.
+ *
+ * @param props - Screen layout args; only `children` (the rendered screen) is used
+ * @returns The screen wrapped in an {@link ErrorBoundary}
+ *
+ * @example
+ * ```tsx
+ * <Stack.Group screenLayout={errorBoundaryLayout}>
+ *   <Stack.Screen name='RecipeAddOcr' component={RecipeAddOcr} />
+ * </Stack.Group>
+ * ```
  */
-export function withErrorBoundary<P extends object>(
-  WrappedComponent: ComponentType<P>,
-  testID?: string
-): ComponentType<P> {
-  const Guarded = (props: P) => (
-    <ErrorBoundary testID={testID}>
-      <WrappedComponent {...props} />
-    </ErrorBoundary>
-  );
-  Guarded.displayName = `withErrorBoundary(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`;
-  return Guarded;
+export function errorBoundaryLayout({ children }: { children: ReactNode }) {
+  return <ErrorBoundary>{children}</ErrorBoundary>;
 }
