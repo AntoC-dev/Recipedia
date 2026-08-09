@@ -90,6 +90,7 @@ export function RootNavigator() {
   const screenOptions = {
     headerShown: false,
     animation: animationsDisabled ? ('none' as const) : ('default' as const),
+    freezeOnBlur: true,
     listeners: {
       focus: (e: { target?: string }) => {
         navigationLogger.debug('Screen focused', { screenName: e.target?.split('-')[0] });

@@ -18,6 +18,7 @@ import {RecipeDatabase} from '@utils/RecipeDatabase';
 import {init as initFileSystem} from '@utils/FileGestion';
 import {cleanupOrphanedImages} from '@utils/FileGestion';
 import {unregisterLegacyBackgroundTasks} from '@utils/legacyTaskCleanup';
+import {enableFreeze} from 'react-native-screens';
 
 // TODO manage horizontal mode
 
@@ -29,6 +30,11 @@ import {unregisterLegacyBackgroundTasks} from '@utils/legacyTaskCleanup';
 // TODO use eslint-config-expo ?
 
 // TODO add special gastronomy (gluten free, lactose, etc)
+
+// react-freeze suspends the React subtree of every blurred screen, so screens
+// left behind on the stack stop re-rendering on context updates until focused
+// again. Off by default in react-native-screens.
+enableFreeze();
 
 SplashScreen.preventAutoHideAsync();
 
