@@ -21,6 +21,10 @@ import {
   teardownDb,
 } from './recipeTestHelpers';
 
+jest.mock('@react-navigation/native', () =>
+  require('@mocks/deps/react-navigation-mock').reactNavigationMock()
+);
+
 jest.mock('@utils/ImagePicker', () => require('@mocks/utils/ImagePicker-mock').imagePickerMock());
 jest.mock('@utils/OCR', () => require('@mocks/utils/OCR-mock').ocrMock());
 

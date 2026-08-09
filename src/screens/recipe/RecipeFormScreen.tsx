@@ -31,7 +31,7 @@ import React, { ReactNode, useRef, useState } from 'react';
 import { Keyboard, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Snackbar, useTheme } from 'react-native-paper';
-import { FieldErrors, FormProvider, useForm, useFormContext } from 'react-hook-form';
+import { FieldErrors, FormProvider, useForm, useFormContext, useFormState } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import {
@@ -43,6 +43,7 @@ import { RecipePropType } from '@customTypes/RecipeNavigationTypes';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { clearCache } from '@utils/FileGestion';
 import { useRecipes } from '@hooks/useRecipes';
+import { useUnsavedChangesGuard } from '@hooks/useUnsavedChangesGuard';
 import { AppBar } from '@components/organisms/AppBar';
 import { useI18n } from '@utils/i18n';
 import { Alert } from '@components/dialogs/Alert';
@@ -248,6 +249,15 @@ function RecipeFormBody({
   const tags = useRecipeTags();
   const editingIngredientCountRef = useIngredientFocusRef();
   useScalingOnPersonsChange(form, form.getValues('recipePersons'), editingIngredientCountRef);
+  const { isDirty } = useFormState({ control: form.control });
+  const holdsImportedContent = mode === 'addFromScrape';
+  const unsavedChangesGuard = useUnsavedChangesGuard(isDirty || holdsImportedContent);
+
+  /** Disarms the discard guard, then hands off to the caller's save handler. */
+  const completeSave = (savedRecipe: recipeTableElement, scaledFromServings?: number) => {
+    unsavedChangesGuard.allowRemoval();
+    onSaveSuccess(savedRecipe, scaledFromServings);
+  };
 
   /** Opens the shared image-select modal targeting the given OCR field. */
   const openModalForField = (field: OcrModalTarget) => {
@@ -349,7 +359,7 @@ function RecipeFormBody({
       }
 
       clearCache();
-      onSaveSuccess(savedRecipe, scaledFromServings);
+      completeSave(savedRecipe, scaledFromServings);
     } catch (error) {
       recipeLogger.error('editValidation failed with unexpected error', { error });
       showSaveErrorDialog('failedToEditRecipe', form.getValues('recipeTitle'), error);
@@ -387,7 +397,7 @@ function RecipeFormBody({
           content: t('addedToDatabase', { recipeName: recipeToAdd.title }),
           confirmText: t('understood'),
           onConfirm: () =>
-            onSaveSuccess(savedRecipe, getServingsScaledFrom(recipeToAdd.persons, defaultPersons)),
+            completeSave(savedRecipe, getServingsScaledFrom(recipeToAdd.persons, defaultPersons)),
         });
       } catch (error) {
         validationLogger.error('Failed to validate and add recipe to database', {
@@ -590,6 +600,18 @@ function RecipeFormBody({
         isVisible={dialogs.isValidationDialogOpen}
         testId={RECIPE_TEST_ID}
         onClose={dialogs.hideValidationDialog}
+      />
+
+      <Alert
+        testId={`${RECIPE_TEST_ID}UnsavedChanges`}
+        isVisible={unsavedChangesGuard.isDiscardDialogVisible}
+        title={t('alerts.unsavedChanges.title')}
+        content={t('alerts.unsavedChanges.content')}
+        confirmText={t('alerts.unsavedChanges.discard')}
+        cancelText={t('alerts.unsavedChanges.keepEditing')}
+        onClose={unsavedChangesGuard.dismissDialog}
+        onConfirm={unsavedChangesGuard.confirmDiscard}
+        onCancel={unsavedChangesGuard.cancelDiscard}
       />
 
       {dialogs.similarityDialog.item && (

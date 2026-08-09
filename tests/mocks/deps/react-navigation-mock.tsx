@@ -19,6 +19,29 @@ export function resetMockRouteParams() {
   mockRouteParams = {};
 }
 
+type PreventRemoveCallback = (options: { data: { action: unknown } }) => void;
+
+let preventRemoveRegistration: {
+  preventRemove: boolean;
+  callback: PreventRemoveCallback;
+} | null = null;
+
+export function triggerPreventRemove(action: unknown = { type: 'GO_BACK' }) {
+  if (!preventRemoveRegistration?.preventRemove) {
+    return false;
+  }
+  preventRemoveRegistration.callback({ data: { action } });
+  return true;
+}
+
+export function isPreventRemoveArmed() {
+  return preventRemoveRegistration?.preventRemove ?? false;
+}
+
+export function resetPreventRemove() {
+  preventRemoveRegistration = null;
+}
+
 export function reactNavigationMock() {
   const actual = jest.requireActual('@react-navigation/native');
   return {
@@ -34,6 +57,9 @@ export function reactNavigationMock() {
     }),
     useFocusEffect: jest.fn(() => {}),
     useIsFocused: () => true,
+    usePreventRemove: (preventRemove: boolean, callback: PreventRemoveCallback) => {
+      preventRemoveRegistration = { preventRemove, callback };
+    },
     CommonActions: {
       ...actual.CommonActions,
       reset: jest.fn(config => actual.CommonActions.reset(config)),

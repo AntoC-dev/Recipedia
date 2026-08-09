@@ -30,13 +30,25 @@ export function alertMock({
       </TouchableOpacity>
 
       {onConfirm && (
-        <TouchableOpacity testID={dialogTestId + '::OnConfirm'} onPress={onConfirm}>
+        <TouchableOpacity
+          testID={dialogTestId + '::OnConfirm'}
+          onPress={() => {
+            onClose();
+            void onConfirm();
+          }}
+        >
           <Text>OnConfirm</Text>
         </TouchableOpacity>
       )}
 
       {onCancel && (
-        <TouchableOpacity testID={dialogTestId + '::OnCancel'} onPress={onCancel}>
+        <TouchableOpacity
+          testID={dialogTestId + '::OnCancel'}
+          onPress={() => {
+            onClose();
+            onCancel();
+          }}
+        >
           <Text>OnCancel</Text>
         </TouchableOpacity>
       )}
