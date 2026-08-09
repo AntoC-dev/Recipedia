@@ -1,3 +1,17 @@
+## [2.49.0](https://github.com/AntoC-dev/Recipedia/compare/v2.48.8...v2.49.0) (2026-08-09)
+
+### Features
+
+* **menu:** remove recipes immediately with an undo snackbar ([8be4733](https://github.com/AntoC-dev/Recipedia/commit/8be47338f337af9c25289169545910aae197f390))
+* **shopping:** collect purchased items in a collapsible block ([cab3c89](https://github.com/AntoC-dev/Recipedia/commit/cab3c891bda7f304852c73be3e40536a68b1b881))
+* **shopping:** collect purchased items in a collapsible block ([#524](https://github.com/AntoC-dev/Recipedia/issues/524)) ([ff4532c](https://github.com/AntoC-dev/Recipedia/commit/ff4532cda4494dd7eb335f3d10d18622f548f82f)), closes [#310](https://github.com/AntoC-dev/Recipedia/issues/310)
+* **shopping:** offer an undo snackbar after marking an item purchased ([ed91add](https://github.com/AntoC-dev/Recipedia/commit/ed91add5d49af1565042d222f1f83af9b1e20c43))
+* **shopping:** show an all-done state once the list is cleared ([35b74dd](https://github.com/AntoC-dev/Recipedia/commit/35b74ddca14d0e58b2907360803febd46b469ca0))
+
+### Bug Fixes
+
+* **shopping:** drop purchase state when an ingredient leaves the list ([519471e](https://github.com/AntoC-dev/Recipedia/commit/519471e409787de6367e075b7f6179848b8b101b))
+
 ## [2.48.8](https://github.com/AntoC-dev/Recipedia/compare/v2.48.7...v2.48.8) (2026-08-08)
 
 ### Bug Fixes
