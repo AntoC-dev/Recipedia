@@ -68,6 +68,7 @@ import {
 } from '@utils/FileGestion';
 import { buildItemIndex, searchItems } from '@utils/FuzzyIndex';
 import { parseQuantity, scaleQuantityForPersons } from '@utils/Quantity';
+import { computeShoppingList } from '@utils/ShoppingComputation';
 import { databaseLogger } from '@utils/logger';
 import { epochMillis } from '@utils/time';
 import { fisherYatesShuffle } from './FilterFunctions';
@@ -1276,7 +1277,7 @@ export class RecipeDatabase {
       );
       existingMenuItem.count = newCount;
       this._menu = [...this._menu];
-      this.notify('menu');
+      await this.commitMenuChange();
       databaseLogger.debug('Recipe count incremented in menu', {
         recipeId: recipe.id,
         newCount,
@@ -1310,7 +1311,7 @@ export class RecipeDatabase {
     if (dbMenu) {
       this._menu.push(this.decodeMenu(dbMenu));
       this._menu = [...this._menu];
-      this.notify('menu');
+      await this.commitMenuChange();
       databaseLogger.debug('Recipe added to menu', { recipeId: recipe.id });
     }
   }
@@ -1339,10 +1340,7 @@ export class RecipeDatabase {
     if (success) {
       menuItem.isCooked = newCookedStatus;
       this._menu = [...this._menu];
-      if (newCookedStatus && this._menu.every(item => item.isCooked)) {
-        await this.clearPurchasedIngredients();
-      }
-      this.notify('menu');
+      await this.commitMenuChange();
       databaseLogger.debug('Menu item cooked status toggled', {
         menuId,
         isCooked: newCookedStatus,
@@ -1375,7 +1373,7 @@ export class RecipeDatabase {
       );
       menuItem.count = newCount;
       this._menu = [...this._menu];
-      this.notify('menu');
+      await this.commitMenuChange();
       databaseLogger.debug('Menu item count decremented', { menuId, newCount });
       return true;
     }
@@ -1387,7 +1385,7 @@ export class RecipeDatabase {
         this._menu.splice(index, 1);
       }
       this._menu = [...this._menu];
-      this.notify('menu');
+      await this.commitMenuChange();
       databaseLogger.debug('Menu item removed', { menuId });
       return true;
     }
@@ -1403,7 +1401,7 @@ export class RecipeDatabase {
     await this._menuTable.deleteTable(this._dbConnection);
     await this._menuTable.createTable(this._dbConnection);
     this._menu = [...this._menu];
-    this.notify('menu');
+    await this.commitMenuChange();
     databaseLogger.debug('Menu cleared');
   }
 
@@ -1456,6 +1454,67 @@ export class RecipeDatabase {
     this._purchasedIngredients = new Map(this._purchasedIngredients);
     this.notify('purchased');
     databaseLogger.debug('Purchased ingredients cleared');
+  }
+
+  /**
+   * Drops purchase state for ingredients that left the shopping list
+   *
+   * Purchase state is keyed by ingredient name and outlives the menu item that
+   * put the ingredient on the list, so it must be pruned whenever the menu
+   * changes: cooking or removing a recipe would otherwise leave a flag behind
+   * that reappears — still checked — the next time the ingredient is shopped
+   * for. Ingredients still required by another non-cooked menu item keep their
+   * state.
+   *
+   * Only menu changes prune. The shopping list also derives from the recipe
+   * catalogue, so editing a recipe's ingredients or deleting an ingredient can
+   * leave a flag behind until the next menu mutation clears it.
+   */
+  private async prunePurchasedIngredients(): Promise<void> {
+    // Fast path only: an empty map would also fall through the `stale` guard
+    // below, but skipping the shopping-list derivation is worth the extra check
+    // since most menu changes happen with nothing purchased.
+    if (this._purchasedIngredients.size === 0) {
+      return;
+    }
+
+    const stillShopped = new Set(
+      computeShoppingList(this._menu, this._recipes, this._purchasedIngredients).map(
+        item => item.name
+      )
+    );
+    const stale = [...this._purchasedIngredients.keys()].filter(name => !stillShopped.has(name));
+    if (stale.length === 0) {
+      return;
+    }
+
+    // One transaction rather than one commit per ingredient: the whole purchased
+    // set goes stale at once when the last uncooked recipe leaves the menu.
+    await this._dbConnection.withTransactionAsync(async () => {
+      for (const ingredientName of stale) {
+        await this._purchasedIngredientsTable.deleteElement(
+          this._dbConnection,
+          new Map([[purchasedIngredientsColumnsNames.ingredientName, ingredientName]])
+        );
+      }
+    });
+    stale.forEach(ingredientName => this._purchasedIngredients.delete(ingredientName));
+    this._purchasedIngredients = new Map(this._purchasedIngredients);
+    this.notify('purchased');
+    databaseLogger.debug('Stale purchase state pruned', { ingredients: stale });
+  }
+
+  /**
+   * Applies the shared post-condition of every menu mutation
+   *
+   * Purchase state is keyed by ingredient name and outlives the menu item that
+   * put the ingredient on the list, so it must be pruned wherever the menu
+   * changes — routing every mutation through here keeps that invariant in one
+   * place instead of at the call sites that happened to need it.
+   */
+  private async commitMenuChange(): Promise<void> {
+    await this.prunePurchasedIngredients();
+    this.notify('menu');
   }
 
   /**

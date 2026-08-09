@@ -389,6 +389,94 @@ describe('Menu and Shopping Pipeline', () => {
       });
     });
 
+    test('cooking one recipe of a mixed menu drops purchased state of its exclusive ingredients', async () => {
+      await database.addMultipleRecipes([pastaRecipe, saladRecipe]);
+      const recipes = database.get_recipes();
+      const pasta = recipes.find(r => r.title === 'Pasta Primavera')!;
+      const salad = recipes.find(r => r.title === 'Garden Salad')!;
+
+      const { result } = renderMenuAndShopping();
+
+      await act(async () => {
+        await result.current.menu.addRecipeToMenu(pasta);
+        await result.current.menu.addRecipeToMenu(salad);
+      });
+
+      await waitFor(() => {
+        expect(result.current.shopping.shopping).toHaveLength(4);
+      });
+
+      await act(async () => {
+        await result.current.menu.togglePurchased('Pasta');
+        await result.current.menu.togglePurchased('Tomato');
+      });
+
+      const pastaMenuId = result.current.menu.menu.find(item => item.recipeId === pasta.id)!.id!;
+
+      await act(async () => {
+        await result.current.menu.toggleMenuItemCooked(pastaMenuId);
+      });
+
+      await waitFor(() => {
+        expect(
+          result.current.shopping.shopping.find(item => item.name === 'Tomato')?.purchased
+        ).toBe(true);
+      });
+
+      await act(async () => {
+        await result.current.menu.toggleMenuItemCooked(pastaMenuId);
+      });
+
+      await waitFor(() => {
+        expect(
+          result.current.shopping.shopping.find(item => item.name === 'Pasta')?.purchased
+        ).toBe(false);
+      });
+    });
+
+    test('re-adding a removed recipe brings its ingredients back as not purchased', async () => {
+      await database.addMultipleRecipes([pastaRecipe, saladRecipe]);
+      const recipes = database.get_recipes();
+      const pasta = recipes.find(r => r.title === 'Pasta Primavera')!;
+      const salad = recipes.find(r => r.title === 'Garden Salad')!;
+
+      const { result } = renderMenuAndShopping();
+
+      await act(async () => {
+        await result.current.menu.addRecipeToMenu(pasta);
+        await result.current.menu.addRecipeToMenu(salad);
+      });
+
+      await waitFor(() => {
+        expect(result.current.shopping.shopping).toHaveLength(4);
+      });
+
+      await act(async () => {
+        await result.current.menu.togglePurchased('Pasta');
+      });
+
+      const pastaMenuId = result.current.menu.menu.find(item => item.recipeId === pasta.id)!.id!;
+
+      await act(async () => {
+        await result.current.menu.toggleMenuItemCooked(pastaMenuId);
+        await result.current.menu.removeFromMenu(pastaMenuId);
+      });
+
+      await waitFor(() => {
+        expect(result.current.menu.menu).toHaveLength(1);
+      });
+
+      await act(async () => {
+        await result.current.menu.addRecipeToMenu(pasta);
+      });
+
+      await waitFor(() => {
+        expect(
+          result.current.shopping.shopping.find(item => item.name === 'Pasta')?.purchased
+        ).toBe(false);
+      });
+    });
+
     test('only non-cooked recipes in a mixed menu contribute to shopping list', async () => {
       await database.addMultipleRecipes([pastaRecipe, saladRecipe]);
       const recipes = database.get_recipes();

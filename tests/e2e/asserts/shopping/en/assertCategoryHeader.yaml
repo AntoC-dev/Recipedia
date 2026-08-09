@@ -1,0 +1,14 @@
+appId: "com.recipedia"
+---
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::${CATEGORY_KEY}::SubHeader"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to ${CATEGORY_KEY} category header"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::${CATEGORY_KEY}::SubHeader"
+    text: "${CATEGORY_TEXT_REGEX}"
+    label: "To-buy ${CATEGORY_KEY} category header shows expected counter"

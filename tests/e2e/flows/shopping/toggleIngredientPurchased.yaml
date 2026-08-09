@@ -1,0 +1,19 @@
+appId: "com.recipedia"
+---
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::${INGREDIENT_NAME}"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to ${INGREDIENT_NAME} item"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "ShoppingScreen::SectionList::${INGREDIENT_NAME}"
+    label: "Toggle purchased state of ${INGREDIENT_NAME}"
+
+- waitForAnimationToEnd

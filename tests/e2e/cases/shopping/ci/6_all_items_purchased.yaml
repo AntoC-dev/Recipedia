@@ -1,0 +1,14 @@
+name: "6 - All Items Purchased Flow"
+appId: "com.recipedia"
+tags:
+  - shopping
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../6_all_items_purchased.yaml"
+          label: "Run 6 - All Items Purchased Flow"

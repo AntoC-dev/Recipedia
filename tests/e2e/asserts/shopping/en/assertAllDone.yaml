@@ -1,0 +1,13 @@
+appId: "com.recipedia"
+---
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::AllDone::Title"
+    direction: UP
+    speed: 60
+    label: "Scroll back to the top of the cleared list"
+
+- assertVisible:
+    id: "ShoppingScreen::AllDone::Title"
+    text: "All done"
+    label: "Clearing the list lands on a done state rather than blank space"

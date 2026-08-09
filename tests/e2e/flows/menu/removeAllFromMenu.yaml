@@ -1,0 +1,29 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "BottomTabs::Menu"
+    label: "Navigate to Menu screen"
+
+- extendedWaitUntil:
+    visible:
+      id: "MenuScreen::.*"
+    timeout: 30000
+    label: "Wait for Menu screen to be visible"
+
+# Always remove the top card: the remove-undo snackbar overlays the bottom of
+# the list, so a lower card could be tapped through it.
+- repeat:
+    while:
+      visible:
+        id: "MenuScreen::MenuItem::1"
+    times: 20
+    commands:
+      - tapOn:
+          id: "MenuScreen::MenuItem::1::RemoveButton"
+          label: "Remove the first remaining recipe from the menu"
+
+      - waitForAnimationToEnd
+
+- runFlow:
+    file: "../../asserts/menu/en/assertMenuEmpty.yaml"
+    label: "Verify every recipe was removed from the menu"

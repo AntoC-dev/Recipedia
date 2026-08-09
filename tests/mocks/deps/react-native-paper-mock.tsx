@@ -128,6 +128,7 @@ export const Text: React.FC<any> = props => (
     style={props.style}
     numberOfLines={props.numberOfLines}
     accessible={props.accessible}
+    accessibilityRole={props.accessibilityRole}
     {...{ variant: props.variant }}
   >
     {props.children}
@@ -397,20 +398,42 @@ export const List = {
       <View testID='list-section-content'>{props.children}</View>
     </View>
   ),
-  Subheader: (props: any) => <RNText testID={props.testID}>{props.children}</RNText>,
+  Subheader: (props: any) => (
+    <RNText
+      testID={props.testID}
+      style={props.style}
+      numberOfLines={props.numberOfLines}
+      accessibilityRole={props.accessibilityRole}
+    >
+      {props.children}
+    </RNText>
+  ),
   Item: (props: any) => (
-    <TouchableOpacity testID={props.testID} onPress={props.onPress} style={props.style}>
+    <TouchableOpacity
+      testID={props.testID}
+      onPress={props.onPress}
+      onLongPress={props.onLongPress}
+      style={props.style}
+      accessibilityRole={props.accessibilityRole}
+      accessibilityState={props.accessibilityState}
+    >
       {props.left && (
         <View testID={props.testID + '::Left'}>
           {typeof props.left === 'function' ? props.left() : props.left}
         </View>
       )}
       <View testID={props.testID + '::Content'}>
-        <RNText testID={props.testID + '::Title'} numberOfLines={props.titleNumberOfLines}>
+        <RNText
+          testID={props.testID + '::Title'}
+          numberOfLines={props.titleNumberOfLines}
+          style={props.titleStyle}
+        >
           {props.title}
         </RNText>
         {props.description && (
-          <RNText testID={props.testID + '::Description'}>{props.description}</RNText>
+          <RNText testID={props.testID + '::Description'} style={props.descriptionStyle}>
+            {props.description}
+          </RNText>
         )}
       </View>
       {props.right && (
@@ -424,8 +447,11 @@ export const List = {
   Accordion: (props: any) => (
     <View testID={props.testID} style={props.style}>
       <TouchableOpacity testID={props.testID + '::Header'} onPress={props.onPress ?? (() => {})}>
-        <RNText testID={props.testID + '::Title'}>{props.title}</RNText>
+        <RNText testID={props.testID + '::Title'} style={props.titleStyle}>
+          {props.title}
+        </RNText>
         <RNText testID={props.testID + '::Description'}>{props.description}</RNText>
+        <RNText testID={props.testID + '::Expanded'}>{String(props.expanded)}</RNText>
       </TouchableOpacity>
       <View testID={props.testID + '::Content'}>{props.children}</View>
     </View>

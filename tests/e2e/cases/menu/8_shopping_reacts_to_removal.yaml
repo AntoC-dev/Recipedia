@@ -1,0 +1,64 @@
+name: "8 - Shopping Reacts to Menu Removal Flow"
+appId: "com.recipedia"
+tags:
+  - menu
+---
+- runFlow:
+    file: "../../flows/menu/addRecipeToMenu.yaml"
+    label: "Setup - Add Classic Pancakes to menu"
+
+- runFlow:
+    file: "../../flows/shopping/openShoppingScreen.yaml"
+    label: "Verification - Open the Shopping screen"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Flour"
+    label: "Assert - Flour ingredient (from Pancakes) is visible in shopping list"
+
+- tapOn:
+    id: "ShoppingScreen::SectionList::Flour"
+    label: "Action - Mark Flour as purchased"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: "../../asserts/shopping/en/assertPurchasedBlock.yaml"
+    label: "Assert - Purchased block appears after marking Flour purchased"
+
+- assertNotVisible:
+    id: "ShoppingScreen::SectionList::ingredientTypes.baking::SubHeader"
+    label: "Assert - Baking category leaves the working list with its only item"
+
+- tapOn:
+    id: "BottomTabs::Menu"
+    label: "Action - Navigate to Menu screen"
+
+- extendedWaitUntil:
+    visible:
+      id: "MenuScreen::.*"
+    timeout: 30000
+    label: "Wait for Menu screen to be visible"
+
+- tapOn:
+    id: "MenuScreen::MenuItem::1::RemoveButton"
+    label: "Action - Remove Classic Pancakes from menu"
+
+- runFlow:
+    file: "../../asserts/menu/en/removedFromMenuSnackbar.yaml"
+    label: "Assert - Undo snackbar appears after removal"
+
+- runFlow:
+    file: "../../asserts/menu/en/assertMenuEmpty.yaml"
+    label: "Assert - Verify menu is now empty"
+
+- tapOn:
+    id: "BottomTabs::Shopping"
+    label: "Verification - Navigate to Shopping screen"
+
+- assertNotVisible:
+    id: "ShoppingScreen::SectionList::Flour"
+    label: "Assert - Flour ingredient no longer visible (recipe removed from menu)"
+
+- runFlow:
+    file: "../../asserts/shopping/en/shoppingEmpty.yaml"
+    label: "Assert - Shopping list is empty (last recipe removed)"

@@ -1,0 +1,14 @@
+name: "4 - Purchase Lifecycle Flow"
+appId: "com.recipedia"
+tags:
+  - shopping
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../4_purchase_lifecycle.yaml"
+          label: "Run 4 - Purchase Lifecycle Flow"

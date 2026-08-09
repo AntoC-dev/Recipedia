@@ -8,15 +8,21 @@
  * Key Features:
  * - Automatic ingredient categorization (vegetables, proteins, dairy, etc.)
  * - Purchase status tracking with visual feedback (strikethrough)
+ * - Purchased items leave their category for a collapsible block at the end
+ * - Undo snackbar, so a mistaken tap costs one press rather than a hunt
+ * - A completion state once nothing is left to buy, distinct from an empty list
  * - Recipe origin tracking - see which recipes use each ingredient
  * - Long-press for detailed recipe information dialog
- * - One-tap shopping list clearing functionality
  * - Focus-based data synchronization with recipe changes
  * - Empty state handling with user-friendly messaging
  * - Comprehensive logging for shopping analytics
  *
+ * The list is a pure derived view of the menu: it has no clear action of its
+ * own — items disappear as their recipes are removed or marked cooked on the
+ * Menu screen.
+ *
  * UI/UX Features:
- * - Sectioned list organization by ingredient type
+ * - Sectioned list organized by ingredient type, holding only what is left to buy
  * - Visual purchase indicators (checkboxes + strikethrough)
  * - Recipe count badges for multi-recipe ingredients
  * - Smooth interactions with immediate visual feedback
@@ -49,29 +55,38 @@
 
 import { ComputedShoppingItem } from '@customTypes/DatabaseElementTypes';
 import React, { useEffect, useRef, useState } from 'react';
-import { SectionList, StyleProp, TextStyle, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { AccessibilityInfo, SectionList, StyleSheet, View } from 'react-native';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { CopilotStep, walkthroughable } from 'react-native-copilot';
 import { useSafeCopilot } from '@hooks/useSafeCopilot';
 import { useReducedMotion } from '@hooks/useReducedMotion';
+import { useResetOnChange } from '@hooks/useResetOnChange';
 import { CopilotStepData } from '@customTypes/TutorialTypes';
-import { Checkbox, Divider, List, Text, useTheme } from 'react-native-paper';
+import { Divider, Icon, List, Snackbar, Text, useTheme } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
 import { useShopping } from '@hooks/useShopping';
 import { useMenu } from '@hooks/useMenu';
-import { TListFilter } from '@customTypes/RecipeFiltersTypes';
+import { buildShoppingSections } from '@utils/shoppingSections';
+import {
+  ListSectionHeader,
+  listSectionHeaderTextStyle,
+} from '@components/atomic/ListSectionHeader';
+import { ShoppingListItem } from '@components/molecules/ShoppingListItem';
 import { useShoppingCategories } from '@hooks/useCategories';
 import { Icons } from '@assets/Icons';
 import { Alert } from '@components/dialogs/Alert';
-import { RoundButton } from '@components/atomic/RoundButton';
 import { TUTORIAL_DEMO_INTERVAL, TUTORIAL_STEPS } from '@utils/Constants';
 import { padding } from '@styles/spacing';
-import { formatQuantityForDisplay } from '@utils/Quantity';
 import { shoppingLogger } from '@utils/logger';
 
 /** Type for dialog data containing ingredient and recipe information */
 type ingredientDataForDialog = Pick<ComputedShoppingItem, 'name' | 'recipeTitles'>;
+
+/** How long the undo snackbar stays up — long enough to react while walking. */
+const UNDO_SNACKBAR_DURATION = 5000;
+
+/** Size of the icon heading the completion state. */
+const DONE_ICON_SIZE = 28;
 
 /**
  * Shopping screen component - Categorized shopping list with recipe tracking
@@ -84,9 +99,8 @@ const CopilotView = walkthroughable(View);
 export function Shopping() {
   const { t } = useI18n();
   const { colors, fonts } = useTheme();
-  const insets = useSafeAreaInsets();
   const { shopping: shoppingList } = useShopping();
-  const { togglePurchased, clearMenu } = useMenu();
+  const { togglePurchased } = useMenu();
   const shoppingCategories = useShoppingCategories();
   const copilotData = useSafeCopilot();
   const copilotEvents = copilotData?.copilotEvents;
@@ -101,14 +115,30 @@ export function Shopping() {
   });
 
   const stepOrder = TUTORIAL_STEPS.Shopping.order;
+  // `currentStep` keeps its last value after the tour is skipped, so only the
+  // overlay visibility tells the tour apart from normal use.
+  const isTutorialRunning = copilotData?.visible === true && currentStep?.order === stepOrder;
+
+  const { sections, purchased } = buildShoppingSections(shoppingCategories, shoppingList);
+  const nothingLeftToBuy = sections.length === 0;
+  const hasPurchased = purchased.length > 0;
+  const isListCleared = nothingLeftToBuy && hasPurchased;
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isPurchasedExpanded, setIsPurchasedExpanded] = useState(isListCleared);
+  const [undoableName, setUndoableName] = useState<string | null>(null);
+  // Paper arms the auto-dismiss timer only on the hidden -> visible transition,
+  // so remount the snackbar to restart the countdown on a second purchase.
+  const [undoNonce, setUndoNonce] = useState(0);
   const [ingredientDataForDialog, setIngredientDataForDialog] = useState<ingredientDataForDialog>({
     recipeTitles: [],
     name: '',
   });
 
-  const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] = useState(false);
+  // Opening the purchased block once the list is cleared keeps the screen from
+  // looking empty; collapsing it again as soon as new items arrive — or as soon
+  // as the block empties — keeps the working list free of what is already bought.
+  useResetOnChange([nothingLeftToBuy, hasPurchased], () => setIsPurchasedExpanded(isListCleared));
 
   useEffect(() => {
     if (!copilotData || !copilotEvents) {
@@ -176,15 +206,10 @@ export function Shopping() {
     };
   }, [currentStep, copilotData, copilotEvents, reducedMotion, stepOrder]);
 
-  const sections = shoppingCategories
-    .map(category => ({
-      title: category,
-      data: shoppingList.filter(item => item.type === category),
-    }))
-    .filter(section => section.data.length > 0);
-
   const screenId = 'ShoppingScreen';
   const sectionId = screenId + '::SectionList';
+  const purchasedId = sectionId + '::Purchased';
+  const doneId = screenId + '::AllDone';
 
   /**
    * Creates formatted dialog title for ingredient recipe usage
@@ -220,70 +245,53 @@ export function Shopping() {
     );
   }
 
-  /**
-   * Toggles purchase status of an ingredient by name
-   */
-  function updateShoppingList(ingredientName: string) {
-    shoppingLogger.debug('Toggling ingredient purchase status', { ingredient: ingredientName });
-    void togglePurchased(ingredientName);
-  }
-
-  function showClearConfirmation() {
-    setIsConfirmationDialogOpen(true);
-  }
-
-  function closeClearConfirmation() {
-    setIsConfirmationDialogOpen(false);
-  }
-
-  async function clearShoppingList() {
-    shoppingLogger.info('Clearing shopping list', { itemCount: shoppingList.length });
-    await clearMenu();
-    setIsConfirmationDialogOpen(false);
-  }
-
-  function renderSectionHeader({ section: { title } }: { section: { title: TListFilter } }) {
-    const headerId = sectionId + '::' + title;
-    return (
-      <View>
-        <List.Subheader
-          testID={headerId + '::SubHeader'}
-          style={{ ...fonts.titleMedium, color: colors.primary }}
-        >
-          {t(title)}
-        </List.Subheader>
-        <Divider testID={headerId + '::Divider'} />
-      </View>
+  function announcePurchase(item: ComputedShoppingItem) {
+    const remainingAfter = sections.reduce((total, section) => total + section.data.length, 0) - 1;
+    AccessibilityInfo.announceForAccessibility(
+      remainingAfter === 0
+        ? t('shoppingScreen.lastItemPurchasedAnnouncement', { name: item.name })
+        : t('shoppingScreen.itemPurchasedAnnouncement', {
+            name: item.name,
+            remaining: remainingAfter,
+          })
     );
   }
 
-  function renderItem({ item }: { item: ComputedShoppingItem }) {
-    const recipesCount = item.recipeTitles.length;
-    const recipesText =
-      recipesCount > 1
-        ? `${recipesCount} ${t('shoppingScreen.recipes')}`
-        : recipesCount === 1
-          ? `1 ${t('shoppingScreen.recipe')}`
-          : '';
+  function toggleItemPurchased(item: ComputedShoppingItem) {
+    shoppingLogger.debug('Toggling ingredient purchase status', { ingredient: item.name });
 
-    const textStyle: StyleProp<TextStyle> = [
-      { ...fonts.bodyMedium },
-      item.purchased && { textDecorationLine: 'line-through' },
-    ];
-    const itemTestId = sectionId + '::' + item.name;
+    if (item.purchased) {
+      setUndoableName(null);
+    } else {
+      announcePurchase(item);
+      setUndoableName(isTutorialRunning ? null : item.name);
+      setUndoNonce(nonce => nonce + 1);
+    }
+
+    void togglePurchased(item.name);
+  }
+
+  function undoPurchase() {
+    if (!undoableName) {
+      return;
+    }
+    void togglePurchased(undoableName);
+    setUndoableName(null);
+  }
+
+  function showRecipesFor(item: ComputedShoppingItem) {
+    setIngredientDataForDialog(item);
+    setIsDialogOpen(true);
+  }
+
+  function renderShoppingItem(item: ComputedShoppingItem) {
     return (
-      <List.Item
-        testID={itemTestId}
-        title={`${item.name} (${formatQuantityForDisplay(item.quantity)}${item.unit})`}
-        titleStyle={textStyle}
-        descriptionStyle={textStyle}
-        description={recipesText}
-        left={() => <Checkbox status={item.purchased ? 'checked' : 'unchecked'} />}
-        onPress={() => updateShoppingList(item.name)}
-        onLongPress={() => {
-          setIngredientDataForDialog(item);
-          setIsDialogOpen(true);
-        }}
+      <ShoppingListItem
+        key={item.name}
+        item={item}
+        testID={sectionId + '::' + item.name}
+        onToggle={() => toggleItemPurchased(item)}
+        onShowRecipes={() => showRecipesFor(item)}
       />
     );
   }
@@ -299,13 +307,58 @@ export function Shopping() {
       ) : (
         <SectionList
           testID={sectionId}
+          contentContainerStyle={styles.listContent}
           sections={sections}
           keyExtractor={item => item.name}
-          renderItem={renderItem}
-          renderSectionHeader={renderSectionHeader}
+          renderItem={({ item }) => renderShoppingItem(item)}
+          ListHeaderComponent={
+            isListCleared ? (
+              <View testID={doneId} style={styles.doneState}>
+                <Icon source={Icons.checkWithCircle} size={DONE_ICON_SIZE} color={colors.primary} />
+                <Text testID={doneId + '::Title'} variant='titleLarge'>
+                  {t('shoppingScreen.allDoneTitle')}
+                </Text>
+              </View>
+            ) : null
+          }
+          renderSectionHeader={({ section }) => {
+            const headerId = sectionId + '::' + section.title;
+            return (
+              <View testID={headerId + '::Header'}>
+                <ListSectionHeader testID={headerId + '::SubHeader'} title={t(section.title)} />
+                <Divider testID={headerId + '::Divider'} />
+              </View>
+            );
+          }}
+          ListFooterComponent={
+            hasPurchased ? (
+              <List.Accordion
+                testID={purchasedId}
+                title={t('shoppingScreen.purchased')}
+                titleStyle={listSectionHeaderTextStyle(colors, fonts)}
+                style={styles.purchasedAccordion}
+                contentStyle={styles.purchasedContent}
+                expanded={isPurchasedExpanded}
+                onPress={() => setIsPurchasedExpanded(!isPurchasedExpanded)}
+              >
+                {purchased.map(renderShoppingItem)}
+              </List.Accordion>
+            ) : null
+          }
           stickySectionHeadersEnabled={false}
         />
       )}
+
+      <Snackbar
+        key={undoNonce}
+        visible={undoableName !== null}
+        onDismiss={() => setUndoableName(null)}
+        duration={UNDO_SNACKBAR_DURATION}
+        action={{ label: t('undo'), onPress: undoPurchase }}
+        testID={screenId + '::UndoSnackbar'}
+      >
+        {t('shoppingScreen.itemPurchased', { name: undoableName ?? '' })}
+      </Snackbar>
 
       {copilotData && (
         <CopilotStep text={t('tutorial.shopping.description')} order={stepOrder} name={'Shopping'}>
@@ -336,32 +389,32 @@ export function Shopping() {
           setIngredientDataForDialog({ name: '', recipeTitles: [] });
         }}
       />
-      <Alert
-        isVisible={isConfirmationDialogOpen}
-        title={t('shoppingScreen.clearShoppingList')}
-        content={t('shoppingScreen.confirmClearShoppingList')}
-        confirmText={t('confirm')}
-        cancelText={t('cancel')}
-        testId={screenId + '::ClearConfirmation'}
-        onConfirm={() => void clearShoppingList()}
-        onClose={closeClearConfirmation}
-      />
-      {shoppingList.length > 0 && (
-        <RoundButton
-          icon={Icons.trashIcon}
-          size='medium'
-          onPressFunction={showClearConfirmation}
-          testID={screenId + '::ClearShoppingListButton'}
-          style={{
-            position: 'absolute',
-            top: insets.top + padding.medium,
-            right: padding.medium,
-            zIndex: 1,
-          }}
-        />
-      )}
     </ScreenWrapper>
   );
 }
+
+const styles = StyleSheet.create({
+  // flexGrow floors the content at viewport height: a list that shrinks below it
+  // mid-scroll strands the scroll view past its own end, on a blank screen.
+  listContent: {
+    paddingHorizontal: padding.medium,
+    flexGrow: 1,
+    paddingBottom: padding.veryLarge,
+  },
+  doneState: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: padding.small,
+    paddingVertical: padding.veryLarge,
+  },
+  purchasedAccordion: {
+    marginTop: padding.large,
+  },
+  // Paper insets the accordion content by 16; drop it so the title lines up
+  // with the category headers above it.
+  purchasedContent: {
+    paddingLeft: 0,
+  },
+});
 
 export default Shopping;

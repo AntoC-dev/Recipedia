@@ -1,0 +1,10 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    file: "../../../flows/shopping/scrollToPurchased.yaml"
+    label: "Scroll to the purchased block"
+
+- assertVisible:
+    id: "ShoppingScreen::SectionList::Purchased"
+    text: "Already purchased"
+    label: "Purchased items are collected in their own block"

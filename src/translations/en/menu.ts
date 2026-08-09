@@ -6,6 +6,7 @@ export default {
   clearMenu: 'Clear Menu',
   confirmClearMenu: 'Are you sure you want to clear your entire menu?',
   removeFromMenu: 'Remove from Menu',
+  removedFromMenu: 'Recipe removed from menu',
   markAsCooked: 'Mark as Cooked',
   unmarkAsCooked: 'Mark as Not Cooked',
 };

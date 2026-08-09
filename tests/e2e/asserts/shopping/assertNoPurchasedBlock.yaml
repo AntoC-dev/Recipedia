@@ -1,0 +1,5 @@
+appId: "com.recipedia"
+---
+- assertNotVisible:
+    id: "ShoppingScreen::SectionList::Purchased"
+    label: "No purchased block is rendered while nothing is bought"
