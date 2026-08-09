@@ -32,12 +32,7 @@ export function MenuRecipeCard({
   const { colors } = useTheme();
   const { recipes } = useRecipes();
 
-  const handlePress = () => {
-    const recipe = recipes.find(r => r.id === menuItem.recipeId);
-    if (recipe) {
-      navigate('RecipeView', { recipe });
-    }
-  };
+  const recipe = recipes.find(r => r.id === menuItem.recipeId);
 
   return (
     <Card
@@ -50,7 +45,9 @@ export function MenuRecipeCard({
           backgroundColor: menuItem.isCooked ? colors.surfaceVariant : colors.surface,
         },
       ]}
-      onPress={handlePress}
+      onPress={() => {
+        if (recipe) navigate('RecipeView', { recipe });
+      }}
     >
       <View style={styles.content}>
         <Checkbox
