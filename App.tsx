@@ -27,7 +27,6 @@ import {unregisterLegacyBackgroundTasks} from '@utils/legacyTaskCleanup';
 // TODO useMemo for time consuming function
 
 // TODO use eslint-config-expo ?
-// TODO replace react-navigation by expo-router
 
 // TODO add special gastronomy (gluten free, lactose, etc)
 
