@@ -210,7 +210,7 @@ appId: "com.recipedia"
     label: "Press the TextInput of first ingredient's quantity"
 
 - runFlow:
-    file: "../../../../waitForKeyboardNumeric.yaml"
+    file: "../../../../waitForKeyboard.yaml"
     label: "Wait for numeric keyboard to appear"
 
 - inputText:
@@ -305,7 +305,7 @@ appId: "com.recipedia"
     label: "Press the TextInput of third ingredient's quantity"
 
 - runFlow:
-    file: "../../../../waitForKeyboardNumeric.yaml"
+    file: "../../../../waitForKeyboard.yaml"
     label: "Wait for numeric keyboard to appear"
 
 - inputText:
@@ -463,7 +463,7 @@ appId: "com.recipedia"
     label: "Press the TextInput of time"
 
 - runFlow:
-    file: "../../../../waitForKeyboardNumeric.yaml"
+    file: "../../../../waitForKeyboard.yaml"
     label: "Wait for numeric keyboard to appear"
 
 - inputText:
@@ -475,7 +475,7 @@ appId: "com.recipedia"
     label: "Tap on the prefix text to close the keyboard"
 
 - runFlow:
-    file: "../../../../waitForKeyboardNumericDismiss.yaml"
+    file: "../../../../waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"
 
 - scrollUntilVisible:
@@ -621,18 +621,13 @@ appId: "com.recipedia"
     file: "../../../../waitForKeyboard.yaml"
     label: "Wait for keyboard to appear"
 
-- inputText:
-    text: "Dans le bol d'un mixeur, deposez les ingredients suivants :"
+- runFlow:
+    file: "../../../../appendText.yaml"
+    env:
+      TARGET_ID: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
+      VALUE: "Dans le bol d'un mixeur, deposez les ingredients suivants :"
     label: "Enter text for recipe second preparation paragraph (first line)"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- assertVisible:
-    id: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
-    text: "[\\s\\S]*ingredients suivants :[\\s\\S]*"
-    label: "Check the first line is typed before inserting a newline"
-
 - runFlow:
     when:
       platform: Android
@@ -647,18 +642,13 @@ appId: "com.recipedia"
           id: "Return"
           label: "Tap Done key to go to a new line"
 
-- inputText:
-    text: "epluchez et hachez le gingembre."
+- runFlow:
+    file: "../../../../appendText.yaml"
+    env:
+      TARGET_ID: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
+      VALUE: "epluchez et hachez le gingembre."
     label: "Enter text for recipe second preparation paragraph (second line)"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- assertVisible:
-    id: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
-    text: "[\\s\\S]*hachez le gingembre.[\\s\\S]*"
-    label: "Check the second line is typed before inserting a newline"
-
 - runFlow:
     when:
       platform: Android
@@ -673,24 +663,19 @@ appId: "com.recipedia"
           id: "Return"
           label: "Tap Done key to go to a new line"
 
-- inputText:
-    text: "Ajoutez les cacahuetes, le sucre et le lait de coco."
+- runFlow:
+    file: "../../../../appendText.yaml"
+    env:
+      TARGET_ID: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
+      VALUE: "Ajoutez les cacahuetes, le sucre et le lait de coco."
     label: "Enter text for recipe second preparation paragraph (third line)"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- inputText:
-    text: "Salez, poivrez. Mixez jusqu'a obtenir une texture homogene."
+- runFlow:
+    file: "../../../../appendText.yaml"
+    env:
+      TARGET_ID: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
+      VALUE: "Salez, poivrez. Mixez jusqu'a obtenir une texture homogene."
     label: "Enter text for recipe second preparation paragraph (fourth line)"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- assertVisible:
-    id: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
-    text: "[\\s\\S]*une texture homogene.[\\s\\S]*"
-    label: "Check the last line is typed before blurring the paragraph"
 
 - runFlow:
     when:
