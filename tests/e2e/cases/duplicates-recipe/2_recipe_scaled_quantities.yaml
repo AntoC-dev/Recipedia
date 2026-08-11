@@ -47,14 +47,8 @@ tags:
     id: "RecipeIngredients::0::QuantityInput"
     label: "Action - Focus on Pasta quantity input"
 
-- eraseText:
-    label: "Action - Clear Pasta quantity"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
 - runFlow:
-    file: "../../flows/inputAndCommitText.yaml"
+    file: "../../flows/replaceAndCommitText.yaml"
     env:
       TARGET_ID: "RecipeIngredients::0::QuantityInput"
       VALUE: "1000"
@@ -69,14 +63,8 @@ tags:
     id: "RecipeIngredients::1::QuantityInput"
     label: "Action - Focus on Tomatoes quantity input"
 
-- eraseText:
-    label: "Action - Clear Tomatoes quantity"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
 - runFlow:
-    file: "../../flows/inputAndCommitText.yaml"
+    file: "../../flows/replaceAndCommitText.yaml"
     env:
       TARGET_ID: "RecipeIngredients::1::QuantityInput"
       VALUE: "500"

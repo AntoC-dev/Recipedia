@@ -35,17 +35,6 @@ appId: "com.recipedia"
     label: "Focus on ingredient quantity"
 
 - runFlow:
-    when:
-      visible:
-        id: "RecipeIngredients::${INDEX}::QuantityInput"
-        text: ".+"
-    commands:
-      - eraseText:
-          label: "Erase the existing ingredient quantity"
-      - waitForAnimationToEnd:
-          label: "Wait for keyboard animation"
-
-- runFlow:
     file: "../../inputAndCommitText.yaml"
     env:
       TARGET_ID: "RecipeIngredients::${INDEX}::QuantityInput"
@@ -54,23 +43,12 @@ appId: "com.recipedia"
     label: "Enter ingredient quantity"
 
 - runFlow:
-    file: "../../waitForKeyboardNumericDismiss.yaml"
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"
 
 - tapOn:
     id: "RecipeIngredients::${INDEX}::NameInput::CustomTextInput"
     label: "Focus on ingredient name"
-
-- runFlow:
-    when:
-      visible:
-        id: "RecipeIngredients::${INDEX}::NameInput::CustomTextInput"
-        text: ".+"
-    commands:
-      - eraseText:
-          label: "Erase the existing ingredient name"
-      - waitForAnimationToEnd:
-          label: "Wait for keyboard animation"
 
 - runFlow:
     file: "../../inputAndCommitText.yaml"

@@ -1,7 +1,8 @@
 appId: "com.recipedia"
 ---
 # Type VALUE into the focused input TARGET_ID, wait until the app has actually
-# rendered it, then commit the field by tapping DISMISS_ID.
+# rendered it, commit the field by tapping DISMISS_ID, and wait for the keyboard
+# to be gone before handing back.
 #
 # Two things matter here:
 #
@@ -47,3 +48,7 @@ appId: "com.recipedia"
 - tapOn:
     id: "${DISMISS_ID}"
     label: "Tap ${DISMISS_ID} to commit the field and close the keyboard"
+
+- runFlow:
+    file: "waitForKeyboardDismiss.yaml"
+    label: "Wait for the keyboard to close after committing ${TARGET_ID}"

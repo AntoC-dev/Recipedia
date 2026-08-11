@@ -14,30 +14,12 @@ appId: "com.recipedia"
     label: "Focus on recipe title input"
 
 - runFlow:
-    when:
-      visible:
-        id: "RecipeTitle::CustomTextInput"
-        text: ".*"
-    commands:
-      - eraseText:
-          label: "Erase the existing title"
-      - waitForAnimationToEnd:
-          label: "Wait for keyboard animation"
-      - assertVisible:
-          id: "RecipeTitle::CustomTextInput"
-          text: ""
-          label: "Check that the title is empty"
-
-- inputText:
-    text: "${TITLE}"
-    label: "Enter recipe title"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- tapOn:
-    id: "RecipeTitle::Text"
-    label: "Tap title label to blur title and close the keyboard"
+    file: "../../replaceAndCommitText.yaml"
+    env:
+      TARGET_ID: "RecipeTitle::CustomTextInput"
+      VALUE: "${TITLE}"
+      DISMISS_ID: "RecipeTitle::Text"
+    label: "Replace the recipe title with ${TITLE}"
 
 - assertVisible:
     id: "RecipeTitle::CustomTextInput"

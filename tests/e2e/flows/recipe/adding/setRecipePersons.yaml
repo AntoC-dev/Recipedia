@@ -19,42 +19,19 @@ appId: "com.recipedia"
     label: "Focus on persons input"
 
 - runFlow:
-    file: "../../waitForKeyboardNumeric.yaml"
+    file: "../../waitForKeyboard.yaml"
     label: "Wait for numeric keyboard to appear"
 
-- eraseText:
-    label: "Erase the default number of persons"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- inputText:
-    text: "${PERSONS}"
-    label: "Enter number of persons"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
+- runFlow:
+    file: "../../replaceAndCommitText.yaml"
+    env:
+      TARGET_ID: "RecipePersons::NumericTextInput"
+      VALUE: "${PERSONS}"
+      DISMISS_ID: "RecipePersons::PrefixText"
+    label: "Replace the default number of persons with ${PERSONS}"
 
 - runFlow:
-    when:
-      platform: Android
-    commands:
-      - hideKeyboard:
-          label: "Dismiss keyboard on Android"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - assertVisible:
-          id: "RecipePersons::PrefixText"
-          label: "Prefix text is displayed on iOS"
-      - tapOn:
-          id: "RecipePersons::PrefixText"
-          label: "Tap on prefix text on iOS to close the keyboard"
-
-- runFlow:
-    file: "../../waitForKeyboardNumericDismiss.yaml"
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"
 
 - assertVisible:

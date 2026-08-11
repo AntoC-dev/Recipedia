@@ -19,16 +19,11 @@ appId: "com.recipedia"
     label: "Tap on energy kcal input"
 
 - runFlow:
-    file: "../../waitForKeyboardNumeric.yaml"
+    file: "../../waitForKeyboard.yaml"
     label: "Wait for numeric keyboard to appear"
 
-- eraseText
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
 - runFlow:
-    file: "../../inputAndCommitText.yaml"
+    file: "../../replaceAndCommitText.yaml"
     env:
       TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
       VALUE: "${NEW_ENERGY_KCAL}"
@@ -36,20 +31,15 @@ appId: "com.recipedia"
     label: "Enter energy kcal value"
 
 - runFlow:
-    file: "../../waitForKeyboardNumericDismiss.yaml"
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"
 
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::NumericTextInput"
     label: "Tap on fat input"
 
-- eraseText
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
 - runFlow:
-    file: "../../inputAndCommitText.yaml"
+    file: "../../replaceAndCommitText.yaml"
     env:
       TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::NumericTextInput"
       VALUE: "${NEW_FAT}"
@@ -57,7 +47,7 @@ appId: "com.recipedia"
     label: "Enter fat value"
 
 - runFlow:
-    file: "../../waitForKeyboardNumericDismiss.yaml"
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"
 
 - waitForAnimationToEnd
@@ -76,13 +66,8 @@ appId: "com.recipedia"
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::NumericTextInput"
     label: "Tap on protein input"
 
-- eraseText
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
 - runFlow:
-    file: "../../inputAndCommitText.yaml"
+    file: "../../replaceAndCommitText.yaml"
     env:
       TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::NumericTextInput"
       VALUE: "${NEW_PROTEIN}"
@@ -90,5 +75,5 @@ appId: "com.recipedia"
     label: "Enter protein value"
 
 - runFlow:
-    file: "../../waitForKeyboardNumericDismiss.yaml"
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"

@@ -1149,14 +1149,70 @@ and keeps the keyboard up. The usual targets: `RecipeTime::PrefixText`,
 both rules: `inputText` → `waitForAnimationToEnd` → `assertVisible` on the typed
 value → `tapOn` the dismiss target.
 
+**Rule: pick the helper that matches what you are doing to the field.**
+`inputText` inserts at the cursor rather than replacing, so the three intents
+need three different helpers — and the wrong one either concatenates silently
+(`321` typed into a persons field still holding its default `4` commits `4321`)
+or fails its assertion on text it never predicted.
+
+| Helper                            | Field starts | Ends up holding | Asserts                    |
+| --------------------------------- | ------------ | --------------- | -------------------------- |
+| `flows/inputAndCommitText.yaml`   | empty        | `VALUE`         | field **is** `VALUE`       |
+| `flows/replaceAndCommitText.yaml` | non-empty    | `VALUE`         | field **is** `VALUE`       |
+| `flows/appendText.yaml`           | non-empty    | old + `VALUE`   | field **contains** `VALUE` |
+
+All three take `TARGET_ID` and `VALUE`; the two committing ones also take
+`DISMISS_ID`. `replaceAndCommitText.yaml` clears the field, then delegates to
+`inputAndCommitText.yaml` rather than restating it.
+
+`appendText.yaml` is the one that does not commit — that is deliberate, it is
+what a multiline paragraph needs between its lines (see below). Add an
+append-then-commit variant when a caller actually needs one.
+
+**Everything here is caret mechanics.** `inputText` inserts at the caret and
+`eraseText` only backspaces (it deletes what is _before_ the caret); `pressKey`
+has no key that jumps to the end. The caret ends up wherever the last `tapOn`
+left it, and a plain `tapOn` hits the **centre** of the element — past the end
+of a short value, but in the _middle_ of one that fills the box. So:
+
+- a persons field holding `4`, tapped, then given `321` → `4321` (caret after
+  the `4`)
+- a quantity field holding `3291`, tapped, then erased → `91`, because the
+  backspaces only ate the `32` in front of the caret
+
+The lever is `tapOn`'s `point`, which is **element-relative**:
+`point: "95%,50%"` lands the caret past the end of the text, `"2%,50%"` at the
+start (`flows/parameters/tags/insertTextAtCursorBeginning.yaml` relies on
+exactly that). `replaceAndCommitText.yaml` taps at `95%` before erasing, so one
+`eraseText` is enough, then waits for the field to actually read empty before
+typing starts. Never hand-roll a bare `tapOn` + `eraseText` on a field with more
+than one or two characters in it — and if a field refuses to clear, do not add a
+second erase the way `cases/duplicates-tag/5_tag_edit_same_name.yaml:50-56`
+does. With the caret at the end one erase is sufficient, so a field that comes
+back non-empty is being re-rendered from state mid-erase; find that instead.
+
+Which fields start non-empty:
+
+- **persons** — seeded from the `defaultPersons` setting (`4` out of the box)
+- **time and persons in OCR mode** — `manuallyFill` seeds them with `0`
+- **every editing flow** — nutrition rows, ingredient quantities, title,
+  description all start from the saved recipe
+
+Which start empty: the manual-add form (title, description, tags, preparation
+steps, time), freshly added ingredient rows, and nutrition fields being filled
+in for the first time. Don't reach for `replaceAndCommitText.yaml` there — the
+erase costs ~4s of backspaces per call on Android for nothing.
+
 This covers autocomplete fields (`TextInputWithDropDown`) too. Ingredient-name
 inputs commit live via `onChangeText`, and tag inputs commit via `onEndEditing`
 → `onValidate`, which fires on focus loss as well as on submit — so tapping a
 label commits them exactly as Enter did.
 
 **The one exception is multiline inputs**: Enter is deliberately used there to
-insert a newline, so it cannot be replaced by a tap. Keep it inline, and assert
-the accumulated text with a `[\s\S]*…[\s\S]*` pattern before each newline
+insert a newline, so it cannot be replaced by a tap. Type each line with
+`flows/appendText.yaml` — it asserts the line landed without asserting the whole
+paragraph, and it does not blur — then insert the newline inline
+(`pressKey: ENTER` on Android, `tapOn: Return` on iOS) and blur once at the end
 (`flows/recipe/adding/manual/en/addAiguillettes.yaml` is the only such case).
 
 **Note**: Always wrap keyboard dismissal commands with `waitForAnimationToEnd`
