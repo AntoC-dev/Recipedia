@@ -47,7 +47,7 @@ tags:
     label: 'Action - Type a quantity to dirty the row (no name yet)'
 
 - runFlow:
-    file: '../../flows/waitForKeyboardNumericDismiss.yaml'
+    file: '../../flows/waitForKeyboardDismiss.yaml'
     label: 'Wait for numeric keyboard to dismiss'
 
 - runFlow:

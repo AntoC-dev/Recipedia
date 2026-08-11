@@ -19,7 +19,7 @@ appId: "com.recipedia"
     label: "Tap portion weight input"
 
 - runFlow:
-    file: "../../waitForKeyboardNumeric.yaml"
+    file: "../../waitForKeyboard.yaml"
     label: "Wait for numeric keyboard to appear"
 
 - runFlow:
@@ -31,5 +31,5 @@ appId: "com.recipedia"
     label: "Enter portion weight value"
 
 - runFlow:
-    file: "../../waitForKeyboardNumericDismiss.yaml"
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"

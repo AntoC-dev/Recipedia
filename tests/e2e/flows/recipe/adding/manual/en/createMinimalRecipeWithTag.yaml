@@ -188,7 +188,7 @@ appId: "com.recipedia"
     label: "Focus on time input"
 
 - runFlow:
-    file: "../../../../waitForKeyboardNumeric.yaml"
+    file: "../../../../waitForKeyboard.yaml"
     label: "Wait for numeric keyboard to appear"
 
 - runFlow:
@@ -200,7 +200,7 @@ appId: "com.recipedia"
     label: "Enter cooking time"
 
 - runFlow:
-    file: "../../../../waitForKeyboardNumericDismiss.yaml"
+    file: "../../../../waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"
 
 - waitForAnimationToEnd

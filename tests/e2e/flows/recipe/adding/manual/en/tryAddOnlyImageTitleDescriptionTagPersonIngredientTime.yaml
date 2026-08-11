@@ -18,7 +18,7 @@ appId: "com.recipedia"
     label: "Press time input"
 
 - runFlow:
-    file: "../../../../waitForKeyboardNumeric.yaml"
+    file: "../../../../waitForKeyboard.yaml"
     label: "Wait for numeric keyboard to appear"
 
 - runFlow:
@@ -30,5 +30,5 @@ appId: "com.recipedia"
     label: "Write the time in the input text"
 
 - runFlow:
-    file: "../../../../waitForKeyboardNumericDismiss.yaml"
+    file: "../../../../waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"

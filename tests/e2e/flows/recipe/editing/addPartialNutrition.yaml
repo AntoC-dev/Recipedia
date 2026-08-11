@@ -18,7 +18,7 @@ appId: "com.recipedia"
     label: "Tap energy kcal input"
 
 - runFlow:
-    file: "../../waitForKeyboardNumeric.yaml"
+    file: "../../waitForKeyboard.yaml"
     label: "Wait for numeric keyboard to appear"
 
 - runFlow:
@@ -30,7 +30,7 @@ appId: "com.recipedia"
     label: "Enter energy kcal value"
 
 - runFlow:
-    file: "../../waitForKeyboardNumericDismiss.yaml"
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"
 
 - waitForAnimationToEnd
@@ -50,7 +50,7 @@ appId: "com.recipedia"
     label: "Tap energy kj input"
 
 - runFlow:
-    file: "../../waitForKeyboardNumeric.yaml"
+    file: "../../waitForKeyboard.yaml"
     label: "Wait for numeric keyboard to appear"
 
 - runFlow:
@@ -62,7 +62,7 @@ appId: "com.recipedia"
     label: "Enter energy kj value"
 
 - runFlow:
-    file: "../../waitForKeyboardNumericDismiss.yaml"
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"
 
 - waitForAnimationToEnd
@@ -83,7 +83,7 @@ appId: "com.recipedia"
     label: "Tap fat input"
 
 - runFlow:
-    file: "../../waitForKeyboardNumeric.yaml"
+    file: "../../waitForKeyboard.yaml"
     label: "Wait for numeric keyboard to appear"
 
 - runFlow:
@@ -95,7 +95,7 @@ appId: "com.recipedia"
     label: "Enter fat value"
 
 - runFlow:
-    file: "../../waitForKeyboardNumericDismiss.yaml"
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"
 
 - waitForAnimationToEnd
@@ -115,7 +115,7 @@ appId: "com.recipedia"
     label: "Tap carbohydrates input"
 
 - runFlow:
-    file: "../../waitForKeyboardNumeric.yaml"
+    file: "../../waitForKeyboard.yaml"
     label: "Wait for numeric keyboard to appear"
 
 - runFlow:
@@ -127,7 +127,7 @@ appId: "com.recipedia"
     label: "Enter carbohydrates value"
 
 - runFlow:
-    file: "../../waitForKeyboardNumericDismiss.yaml"
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"
 
 - waitForAnimationToEnd
@@ -147,7 +147,7 @@ appId: "com.recipedia"
     label: "Tap sugar input"
 
 - runFlow:
-    file: "../../waitForKeyboardNumeric.yaml"
+    file: "../../waitForKeyboard.yaml"
     label: "Wait for numeric keyboard to appear"
 
 - runFlow:
@@ -159,7 +159,7 @@ appId: "com.recipedia"
     label: "Enter sugar value"
 
 - runFlow:
-    file: "../../waitForKeyboardNumericDismiss.yaml"
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"
 
 - waitForAnimationToEnd
@@ -179,7 +179,7 @@ appId: "com.recipedia"
     label: "Tap fiber input"
 
 - runFlow:
-    file: "../../waitForKeyboardNumeric.yaml"
+    file: "../../waitForKeyboard.yaml"
     label: "Wait for numeric keyboard to appear"
 
 - runFlow:
@@ -191,7 +191,7 @@ appId: "com.recipedia"
     label: "Enter fiber value"
 
 - runFlow:
-    file: "../../waitForKeyboardNumericDismiss.yaml"
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"
 
 - waitForAnimationToEnd
@@ -211,7 +211,7 @@ appId: "com.recipedia"
     label: "Tap protein input"
 
 - runFlow:
-    file: "../../waitForKeyboardNumeric.yaml"
+    file: "../../waitForKeyboard.yaml"
     label: "Wait for numeric keyboard to appear"
 
 - runFlow:
@@ -223,7 +223,7 @@ appId: "com.recipedia"
     label: "Enter protein value"
 
 - runFlow:
-    file: "../../waitForKeyboardNumericDismiss.yaml"
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"
 
 - waitForAnimationToEnd
@@ -243,7 +243,7 @@ appId: "com.recipedia"
     label: "Tap salt input"
 
 - runFlow:
-    file: "../../waitForKeyboardNumeric.yaml"
+    file: "../../waitForKeyboard.yaml"
     label: "Wait for numeric keyboard to appear"
 
 - runFlow:
@@ -255,5 +255,5 @@ appId: "com.recipedia"
     label: "Enter salt value"
 
 - runFlow:
-    file: "../../waitForKeyboardNumericDismiss.yaml"
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"

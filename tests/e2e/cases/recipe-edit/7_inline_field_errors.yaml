@@ -163,7 +163,7 @@ tags:
     label: "Action - Focus persons input"
 
 - runFlow:
-    file: "../../flows/waitForKeyboardNumeric.yaml"
+    file: "../../flows/waitForKeyboard.yaml"
     label: "Wait for numeric keyboard"
 
 - eraseText:
@@ -176,7 +176,7 @@ tags:
     label: "Action - Tap person prefix to dismiss keyboard"
 
 - runFlow:
-    file: "../../flows/waitForKeyboardNumericDismiss.yaml"
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard dismiss"
 
 - runFlow:
@@ -212,7 +212,7 @@ tags:
     label: "Action - Focus time input"
 
 - runFlow:
-    file: "../../flows/waitForKeyboardNumeric.yaml"
+    file: "../../flows/waitForKeyboard.yaml"
     label: "Wait for numeric keyboard"
 
 - eraseText:
@@ -225,7 +225,7 @@ tags:
     label: "Action - Tap prefix on iOS to dismiss keyboard"
 
 - runFlow:
-    file: "../../flows/waitForKeyboardNumericDismiss.yaml"
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard dismiss"
 
 - runFlow:
