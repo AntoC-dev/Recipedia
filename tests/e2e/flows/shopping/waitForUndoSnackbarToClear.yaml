@@ -1,0 +1,10 @@
+appId: "com.recipedia"
+---
+# The purchase undo snackbar is anchored over the bottom of the list, so any tap
+# aimed at a row it covers hits the snackbar instead. It auto-dismisses, so the
+# flows that chain taps wait it out rather than dismissing it by hand.
+- extendedWaitUntil:
+    notVisible:
+      id: "ShoppingScreen::UndoSnackbar"
+    timeout: 30000
+    label: "Wait for the purchase undo snackbar to auto-dismiss"

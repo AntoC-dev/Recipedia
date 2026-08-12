@@ -21,7 +21,7 @@ tags:
     label: "Assert - Baking category holds Flour"
 
 - runFlow:
-    file: "../../flows/shopping/toggleIngredientPurchased.yaml"
+    file: "../../flows/shopping/markIngredientPurchased.yaml"
     env:
       INGREDIENT_NAME: "Flour"
     label: "Action - Mark Flour as purchased"
@@ -47,11 +47,12 @@ tags:
     text: "Flour (200g), 1 recipe"
     label: "Assert - Flour is reachable once the block is expanded"
 
-- tapOn:
-    id: "ShoppingScreen::SectionList::Flour"
+- runFlow:
+    file: "../../flows/shopping/unmarkIngredientPurchased.yaml"
+    env:
+      INGREDIENT_NAME: "Flour"
+      CATEGORY_KEY: "ingredientTypes.baking"
     label: "Action - Un-mark Flour as purchased"
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "../../asserts/shopping/assertNoPurchasedBlock.yaml"
