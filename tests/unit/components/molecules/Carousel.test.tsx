@@ -54,13 +54,14 @@ describe('Carousel Component', () => {
   test('renders with correct recipe data and proper testIDs', () => {
     const { getByTestId } = renderCarousel();
 
+    expect(getByTestId('test-carousel')).toBeTruthy();
     assertRecipeCardRendering(getByTestId, sampleRecipes.length, sampleRecipes);
   });
 
   test('handles empty recipe array gracefully', () => {
-    const { queryByTestId } = renderCarousel({ items: emptyRecipes });
+    const { getByTestId, queryByTestId } = renderCarousel({ items: emptyRecipes });
 
-    // Assert no recipe cards are rendered with empty data
+    expect(getByTestId('test-carousel')).toBeTruthy();
     expect(queryByTestId('test-carousel::Card::0')).toBeNull();
     expect(queryByTestId('test-carousel::Card::1')).toBeNull();
     expect(queryByTestId('test-carousel::Card::2')).toBeNull();
