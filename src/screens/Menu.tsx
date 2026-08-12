@@ -31,7 +31,7 @@ const CopilotView = walkthroughable(View);
 
 const screenId = 'MenuScreen';
 
-const REMOVE_SNACKBAR_DURATION = 4000;
+const REMOVE_SNACKBAR_DURATION = Snackbar.DURATION_LONG;
 
 export function Menu() {
   const { t } = useI18n();
