@@ -1,0 +1,5 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    point: "12%,17%"
+    label: "Select first photo of the gallery on iOS"

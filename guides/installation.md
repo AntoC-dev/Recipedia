@@ -90,7 +90,7 @@ Requires Xcode and a booted simulator. To boot one manually:
 
 ```bash
 npm run boot:ios-simulator
-# Boots iPhone SE (3rd generation) — the default E2E target
+# Boots iPhone 16e — the default E2E target
 ```
 
 ### Physical device

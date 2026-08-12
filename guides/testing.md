@@ -167,7 +167,7 @@ E2E tests are YAML-based Maestro flows, organized into named suites. Each suite 
 
 Available suites: `app-init`, `bulk-import`, `duplicates-ingredient`, `duplicates-recipe`, `duplicates-tag`, `ingredient-dialog`, `ingredients-db`, `menu`, `ocr`, `recipe-create`, `recipe-edit`, `recipe-readonly`, `search`, `settings`, `shopping`, `tags-db`, `web`, `web-edge-cases`, `performance`.
 
-CI runs every suite in a matrix job (fail-fast: false), on both Android (API 34) and iOS (iPhone SE 3rd gen, iOS 18.6). Each test case has a `ci/` wrapper that adds `retry: maxRetries: 2` for infrastructure flakiness without affecting local runs.
+CI runs every suite in a matrix job (fail-fast: false), on both Android (API 34) and iOS (iPhone 16e, iOS 18.6). Each test case has a `ci/` wrapper that adds `retry: maxRetries: 2` for infrastructure flakiness without affecting local runs.
 
 For full architecture, TestID conventions, OCR patterns, and troubleshooting see [tests/e2e/E2E_TESTING.md](../tests/e2e/E2E_TESTING.md).
 
