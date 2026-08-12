@@ -14,6 +14,7 @@ developers editing flows in `tests/e2e/`.
 - [Text Input Rules](#text-input-rules)
 - [Keyboard Dismissal](#keyboard-dismissal)
 - [Shared Platform-Split Flows](#shared-platform-split-flows)
+- [Coordinate Anchoring](#coordinate-anchoring)
 - [SearchBar Patterns](#searchbar-patterns)
 - [Re-render Barriers](#re-render-barriers)
 - [OCR Testing](#ocr-testing)
@@ -262,6 +263,59 @@ flow and callers use `runFlow`. Keep a block inline only when it is asymmetric
 | `flows/search/commitTypedSearch.yaml`                  | —            | tap `key_pos_ime_action` / tap `Search`            |
 | `flows/recipe/adding/ocr/pickImageSource.yaml`         | —            | camera / gallery (simulator has no camera)         |
 | `flows/recipe/adding/ocr/validateWithoutCropping.yaml` | —            | dispatches to the per-OS crop-validate flows       |
+
+## Coordinate Anchoring
+
+CI devices differ per platform (see `guides/ci-setup.md`), so a percentage of
+the **screen** resolves to a different element on each target and breaks again
+on the next device bump. Prefer, in order:
+
+1. **Semantic** — no geometry at all: `scrollUntilVisible` on the target id.
+2. **Element-anchored** — bounds come from the element, not the screen.
+3. **Screen-percentage** — only when nothing on screen can be anchored to.
+
+```yaml
+# 2. Element-anchored
+- swipe:
+    from:
+      id: 'Some::ScrollableContainer'
+    direction: UP
+
+- tapOn:
+    id: 'Some::Input::CustomTextInput'
+    point: '95%,50%' # percentage of the ELEMENT's box, device-independent
+```
+
+A `point` combined with an `id` is element-relative, so those sites survive a
+device bump untouched. Every tier-3 site must be re-derived when the CI device
+changes: content anchored below the status bar shifts by the top-inset delta,
+content anchored to the bottom by the home-indicator inset. Before falling back
+to tier 3, check with the Maestro MCP `inspect_screen` whether the surface
+exposes an identifier — native screens often do. The remaining tier-3 sites are
+the iOS Photos picker cells and `flows/performance/*` (Android-only, so
+unaffected by iOS device bumps).
+
+Two cost notes when picking a tier:
+
+- `centerElement: true` retries centering up to 4 times, each a full swipe plus
+  a hierarchy fetch. Use it when the element is genuinely clipped or occluded,
+  not by default.
+- A `repeat` loop whose `while` is `notVisible` burns the full lookup window on
+  the iteration that finally succeeds. Worth paying for adaptivity, not worth
+  adding by reflex.
+
+### Swipes must not start on a multiline input
+
+A swipe with no explicit anchor starts at screen centre. If that lands inside a
+multiline `CustomTextInput` whose text overflows, iOS routes the pan to the
+inner `UITextView` and the enclosing `ScrollView` never moves —
+`scrollUntilVisible` then swipes to no effect, gives up, reports COMPLETED, and
+taps the target wherever it still sits. `nestedScrollEnabled` does not help; it
+is Android-only.
+
+`CustomTextInput` sets `scrollEnabled={false}` when multiline so the field grows
+instead of scrolling internally. Keep it that way, and anchor scrolls with
+`from: { id: ... }` when a flow works near large text fields.
 
 ## SearchBar Patterns
 
