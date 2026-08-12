@@ -1,3 +1,10 @@
+## [2.49.1](https://github.com/AntoC-dev/Recipedia/compare/v2.49.0...v2.49.1) (2026-08-12)
+
+### Bug Fixes
+
+* **android:** honor edge-to-edge insets around the bottom tab bar ([d3a06dc](https://github.com/AntoC-dev/Recipedia/commit/d3a06dc45de9f0c135fc8e5b7863926a0d44471b)), closes [#501](https://github.com/AntoC-dev/Recipedia/issues/501)
+* **android:** honor edge-to-edge insets around the bottom tab bar ([#531](https://github.com/AntoC-dev/Recipedia/issues/531)) ([5cee6cc](https://github.com/AntoC-dev/Recipedia/commit/5cee6ccb7f057f1b3ac3134e8da749c5082c6ac8)), closes [#501](https://github.com/AntoC-dev/Recipedia/issues/501)
+
 ## [2.49.0](https://github.com/AntoC-dev/Recipedia/compare/v2.48.8...v2.49.0) (2026-08-09)
 
 ### Features
