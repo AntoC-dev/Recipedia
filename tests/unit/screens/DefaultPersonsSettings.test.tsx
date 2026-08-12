@@ -71,6 +71,12 @@ describe('DefaultPersonsSettings Screen', () => {
     expect(getByTestId('DefaultPersonSettings::Save')).toBeTruthy();
   });
 
+  test('enables tapToSeek on the slider', async () => {
+    const { getByTestId } = await renderDefaultPersonsSettings();
+
+    expect(getByTestId('DefaultPersonSettings::Slider::TapToSeek').props.children).toEqual('true');
+  });
+
   test('updates persons value when slider changes', async () => {
     const { getByTestId } = await renderDefaultPersonsSettings();
 

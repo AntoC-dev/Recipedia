@@ -75,6 +75,7 @@ export function DefaultPersonsSettings({ navigation }: DefaultPersonsSettingsPro
           minimumValue={1}
           maximumValue={10}
           step={1}
+          tapToSeek
           minimumTrackTintColor={colors.primary}
           maximumTrackTintColor={colors.backdrop}
           thumbTintColor={colors.primary}
