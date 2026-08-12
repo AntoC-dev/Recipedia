@@ -11,11 +11,11 @@ interface ScrollableInstance {
  * keyboard-facing scroll surfaces.
  *
  * @param getAllByType - a render result's `UNSAFE_getAllByType`
- * @param scrollableType - the scrollable component to look for (`FlatList` or `ScrollView`)
+ * @param scrollableType - the scrollable component to look for (`ScrollView`)
  */
-export function expectKeyboardDismissesOnDrag(
-  getAllByType: (type: ComponentType<never>) => ScrollableInstance[],
-  scrollableType: ComponentType<never>
+export function expectKeyboardDismissesOnDrag<P>(
+  getAllByType: (type: ComponentType<P>) => ScrollableInstance[],
+  scrollableType: ComponentType<P>
 ): void {
   const scrollables = getAllByType(scrollableType);
   expect(scrollables.some(node => node.props.keyboardDismissMode === 'on-drag')).toBe(true);

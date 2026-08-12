@@ -8,7 +8,7 @@ import { testRecipes } from '@test-data/recipesDataset';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
-import { Button } from 'react-native';
+import { Button, ScrollView } from 'react-native';
 import { SeasonFilterProvider, useSeasonFilter } from '@context/SeasonFilterContext';
 import { resetFiltersSelection } from '@mocks/components/organisms/FiltersSelection-mock';
 
@@ -611,14 +611,12 @@ describe('Search Screen', () => {
 
   test('recipe list dismisses the keyboard on drag', async () => {
     const { UNSAFE_getAllByType } = await renderSearchComponent();
-    const { FlatList } = require('react-native');
-    expectKeyboardDismissesOnDrag(UNSAFE_getAllByType, FlatList);
+    expectKeyboardDismissesOnDrag(UNSAFE_getAllByType, ScrollView);
   });
 
   test('recipe list delivers a suggestion tap on the first press while the keyboard is open', async () => {
     const { UNSAFE_getAllByType } = await renderSearchComponent();
-    const { FlatList } = require('react-native');
-    const lists = UNSAFE_getAllByType(FlatList);
+    const lists = UNSAFE_getAllByType(ScrollView);
     expect(lists.some(node => node.props.keyboardShouldPersistTaps === 'handled')).toBe(true);
   });
 
