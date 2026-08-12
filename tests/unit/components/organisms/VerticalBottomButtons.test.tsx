@@ -21,6 +21,8 @@ import {
 } from '@mocks/modules/recipe-scraper-mock';
 import { mockFetchHtmlSuccess } from '@mocks/deps/fetch-mock';
 import { pickImage } from '@utils/ImagePicker';
+import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
+import { padding } from '@styles/spacing';
 
 jest.mock('@utils/ImagePicker', () => require('@mocks/utils/ImagePicker-mock').imagePickerMock());
 
@@ -39,8 +41,12 @@ jest.mock(
 
 jest.mock('react-i18next', () => require('@mocks/utils/i18n-mock').i18nMock());
 
-function renderWithProvider(component: React.ReactElement) {
-  return render(<DefaultPersonsProvider>{component}</DefaultPersonsProvider>);
+function renderWithProvider(component: React.ReactElement, tabBarHeight?: number) {
+  return render(
+    <BottomTabBarHeightContext.Provider value={tabBarHeight}>
+      <DefaultPersonsProvider>{component}</DefaultPersonsProvider>
+    </BottomTabBarHeightContext.Provider>
+  );
 }
 
 function openUrlDialog(getByTestId: (id: string) => any) {
@@ -517,6 +523,41 @@ describe('VerticalBottomButtons Component', () => {
 
       expect(mockEvents.off).toHaveBeenCalledWith('stepChange', expect.any(Function));
       expect(mockEvents.off).toHaveBeenCalledWith('stop', expect.any(Function));
+    });
+  });
+
+  describe('Tab bar clearance', () => {
+    test('clears the measured tab bar height', () => {
+      const { getByTestId } = renderWithProvider(<VerticalBottomButtons />, 128);
+
+      expect(getByTestId('FAB.Group').props.style).toEqual({ paddingBottom: 128 });
+    });
+
+    test('adds no clearance when no tab bar is mounted', () => {
+      const { getByTestId } = renderWithProvider(<VerticalBottomButtons />);
+
+      expect(getByTestId('FAB.Group').props.style).toEqual({ paddingBottom: 0 });
+    });
+
+    test('spaces the FAB off the tab bar without restating the safe-area inset', () => {
+      const { getByTestId } = renderWithProvider(<VerticalBottomButtons />, 128);
+
+      expect(getByTestId('ExpandButton').props.style).toEqual(
+        expect.objectContaining({ marginBottom: padding.small, marginRight: padding.small })
+      );
+    });
+
+    test('anchors the tutorial highlight to the FAB, not to the tab bar', async () => {
+      setMockCopilotState({
+        isActive: true,
+        currentStep: { order: 1, name: 'Home', text: 'Home step' },
+      });
+
+      const { getByTestId } = renderWithProvider(<VerticalBottomButtons />, 128);
+
+      await waitFor(() => {
+        expect(getByTestId('HomeTutorial').props.style.bottom).toBe(padding.small);
+      });
     });
   });
 });

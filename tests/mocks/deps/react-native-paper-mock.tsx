@@ -104,6 +104,32 @@ const MenuItem: React.FC<any> = props => (
 MenuItem.displayName = 'Menu.Item';
 Menu.Item = MenuItem;
 
+const BottomNavigationBar: React.FC<any> = props => (
+  <View testID='BottomNavigation.Bar' style={props.style}>
+    <RNText testID='BottomNavigation.Bar::SafeAreaInsets'>
+      {JSON.stringify(props.safeAreaInsets)}
+    </RNText>
+    {props.navigationState.routes.map((route: any, index: number) => (
+      <TouchableOpacity
+        key={route.key}
+        testID={props.getTestID({ route })}
+        accessibilityLabel={props.getAccessibilityLabel({ route })}
+        onPress={() => props.onTabPress({ route, preventDefault: () => {} })}
+      >
+        <RNText>{props.getLabelText({ route })}</RNText>
+        {props.renderIcon({
+          route,
+          focused: index === props.navigationState.index,
+          color: index === props.navigationState.index ? props.activeColor : props.inactiveColor,
+        })}
+      </TouchableOpacity>
+    ))}
+  </View>
+);
+BottomNavigationBar.displayName = 'BottomNavigation.Bar';
+
+export const BottomNavigation: { Bar: React.FC<any> } = { Bar: BottomNavigationBar };
+
 export const Portal: React.FC<any> & { Host: React.FC<any> } = props => (
   <View testID={props.testID}>{props.children}</View>
 );
@@ -559,10 +585,11 @@ const FABGroup: React.FC<any> = props => {
   };
 
   return (
-    <View testID='FAB.Group' style={props.fabStyle}>
+    <View testID='FAB.Group' style={props.style}>
       {renderActions()}
       <TouchableOpacity
         testID={props.testID}
+        style={props.fabStyle}
         onPress={() => props.onStateChange && props.onStateChange({ open: !props.open })}
       >
         <RNText testID={props.testID + '::Icon'}>{props.icon}</RNText>

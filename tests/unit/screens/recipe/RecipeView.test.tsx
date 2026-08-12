@@ -5,6 +5,7 @@ import { testRecipes } from '@test-data/recipesDataset';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { RecipePropType } from '@customTypes/RecipeNavigationTypes';
 import { RecipeView } from '@screens/recipe/RecipeView';
+import { bottomActionButtonHeight } from '@styles/spacing';
 
 import {
   checkAppbarButtons,
@@ -246,5 +247,15 @@ describe('RecipeView', () => {
     const { UNSAFE_getAllByType } = await renderRoute({ mode: 'addManually' });
     const { ScrollView } = require('react-native');
     expectKeyboardDismissesOnDrag(UNSAFE_getAllByType, ScrollView);
+  });
+
+  test('reserves the pinned button height without re-adding the bottom safe-area inset', async () => {
+    const { UNSAFE_getAllByType } = await renderRoute(mockRouteReadOnly);
+    const { ScrollView } = require('react-native');
+    const scrollView = UNSAFE_getAllByType(ScrollView)[0]!;
+
+    expect(scrollView.props.contentContainerStyle).toEqual({
+      paddingBottom: bottomActionButtonHeight,
+    });
   });
 });
