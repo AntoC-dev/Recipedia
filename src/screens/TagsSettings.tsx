@@ -39,21 +39,19 @@ import { TagDraft, tagTableElement, withId } from '@customTypes/DatabaseElementT
 import { SettingsItemList } from '@components/organisms/SettingsItemList';
 import { AppBar } from '@components/organisms/AppBar';
 import { BottomActionButton } from '@components/atomic/BottomActionButton';
+import { bottomActionButtonHeight } from '@styles/spacing';
 import { DialogMode, ItemDialog } from '@components/dialogs/ItemDialog';
 import { tagsSettingsLogger } from '@utils/logger';
 import { useTags } from '@hooks/useTags';
 import { byName } from '@utils/sorting';
 import { useI18n } from '@utils/i18n';
 import { Icons } from '@assets/Icons';
-import { padding } from '@styles/spacing';
 
 /**
  * TagsSettings screen component - Recipe tag management
  *
  * @returns JSX element representing the tag management interface
  */
-const BUTTON_HEIGHT = 48;
-const BUTTON_CONTAINER_HEIGHT = BUTTON_HEIGHT + padding.small * 2;
 
 export function TagsSettings() {
   const { tags, addTag, editTag, deleteTag } = useTags();
@@ -140,7 +138,7 @@ export function TagsSettings() {
   return (
     <ScreenWrapper>
       <AppBar title={t('tags')} onGoBack={() => navigation.goBack()} testID={testId} />
-      <View style={{ flex: 1, paddingBottom: BUTTON_CONTAINER_HEIGHT }}>
+      <View style={{ flex: 1, paddingBottom: bottomActionButtonHeight }}>
         <SettingsItemList
           items={tagsSortedAlphabetically}
           testIdPrefix={testId}
