@@ -21,13 +21,11 @@
 
 import React, { useState } from 'react';
 import { ScrollView } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Snackbar, useTheme } from 'react-native-paper';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { StackScreenParamList, recipeStateType } from '@customTypes/ScreenTypes';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
-import { padding } from '@styles/spacing';
 import { useRecipes } from '@hooks/useRecipes';
 import { useMenu } from '@hooks/useMenu';
 import { AppBar } from '@components/organisms/AppBar';
@@ -35,6 +33,7 @@ import { useI18n } from '@utils/i18n';
 import { Alert } from '@components/dialogs/Alert';
 import { recipeLogger } from '@utils/logger';
 import { BottomActionButton } from '@components/atomic/BottomActionButton';
+import { bottomActionButtonHeight } from '@styles/spacing';
 import { RecipeImage } from '@components/organisms/RecipeImage';
 import { RecipeText } from '@components/organisms/RecipeText';
 import { RecipeTags } from '@components/organisms/RecipeTags';
@@ -55,9 +54,6 @@ import {
 } from '@utils/RecipeFormHelpers';
 import { noop, RECIPE_TEST_ID } from '@screens/recipe/constants';
 
-const BUTTON_HEIGHT = 48;
-const BUTTON_CONTAINER_HEIGHT = BUTTON_HEIGHT + padding.small * 2;
-
 // The scaling notice stays until the user explicitly dismisses it — it reports
 // that stored quantities differ from what was just entered, which the user
 // must not miss. A long duration plus a dismiss action keeps it on screen
@@ -77,7 +73,6 @@ export function RecipeView({ route, navigation }: RecipeViewProps) {
   const { recipe, scaledFromServings } = route.params;
   const { t } = useI18n();
   const { colors } = useTheme();
-  const insets = useSafeAreaInsets();
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [scalingNoticeVisible, setScalingNoticeVisible] = useState(scaledFromServings != null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -164,7 +159,7 @@ export function RecipeView({ route, navigation }: RecipeViewProps) {
         horizontal={false}
         showsVerticalScrollIndicator={false}
         style={{ flex: 1, backgroundColor: colors.background }}
-        contentContainerStyle={{ paddingBottom: BUTTON_CONTAINER_HEIGHT + insets.bottom }}
+        contentContainerStyle={{ paddingBottom: bottomActionButtonHeight }}
         keyboardShouldPersistTaps={'handled'}
         nestedScrollEnabled={true}
       >

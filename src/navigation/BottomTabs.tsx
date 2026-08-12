@@ -45,8 +45,9 @@
  */
 
 import { BottomNavigation, Icon, useTheme } from 'react-native-paper';
-import { Icons, iconsSize } from '@assets/Icons';
+import { dictionaryIcons, Icons, iconsSize } from '@assets/Icons';
 import React from 'react';
+import { View } from 'react-native';
 import { CommonActions } from '@react-navigation/native';
 import { Home } from '@screens/Home';
 import { Menu } from '@screens/Menu';
@@ -54,9 +55,10 @@ import { Shopping } from '@screens/Shopping';
 import { Parameters } from '@screens/Parameters';
 import { useI18n } from '@utils/i18n';
 import { Search } from '@screens/Search';
-import { Tab } from '@customTypes/ScreenTypes';
+import { Tab, TabScreenParamList } from '@customTypes/ScreenTypes';
 import { useSafeCopilot } from '@hooks/useSafeCopilot';
-import type { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
+import { BottomTabBarHeightCallbackContext } from '@react-navigation/bottom-tabs';
+import type { BottomTabBarProps, BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
 
 const testId = 'BottomTabs';
 
@@ -78,62 +80,97 @@ export function resolveTabLabel(
   return typeof tabBarLabel === 'string' ? tabBarLabel : routeName;
 }
 
+type TabIcons = { focused: dictionaryIcons; unfocused: dictionaryIcons };
+
+// The `Icons` keys read inverted: `homeUnselectedIcon` is the filled glyph, shown on focus.
+const TAB_ICONS: Record<keyof TabScreenParamList, TabIcons> & Record<string, TabIcons> = {
+  Home: { focused: Icons.homeUnselectedIcon, unfocused: Icons.homeSelectedIcon },
+  Search: { focused: Icons.searchIcon, unfocused: Icons.searchIcon },
+  Menu: { focused: Icons.menuUnselectedIcon, unfocused: Icons.menuSelectedIcon },
+  Shopping: { focused: Icons.shoppingUnselectedIcon, unfocused: Icons.shoppingSelectedIcon },
+  Parameters: { focused: Icons.parametersUnselectedIcon, unfocused: Icons.parametersSelectedIcon },
+};
+
+function getTabIconName(routeName: string, focused: boolean): dictionaryIcons {
+  const icons = TAB_ICONS[routeName];
+  if (!icons) {
+    return Icons.crossIcon;
+  }
+  return focused ? icons.focused : icons.unfocused;
+}
+
+/**
+ * Material Design 3 tab bar backed by Paper's navigation bar.
+ *
+ * @param props - Tab bar props supplied by the bottom tab navigator
+ * @returns JSX element representing the app's bottom navigation bar
+ */
+export function BottomTabBar({ navigation, state, descriptors, insets }: BottomTabBarProps) {
+  const { colors } = useTheme();
+  const reportTabBarHeight = React.useContext(BottomTabBarHeightCallbackContext);
+
+  const getLabel = (route: (typeof state.routes)[number]): string =>
+    resolveTabLabel(descriptors[route.key]?.options.tabBarLabel, route.name);
+
+  return (
+    <View
+      testID={testId + '::Bar'}
+      // Paper takes the bar out of the flow with the keyboard up, collapsing this to zero.
+      onLayout={event => {
+        const { height } = event.nativeEvent.layout;
+        if (height > 0) {
+          reportTabBarHeight?.(height);
+        }
+      }}
+    >
+      <BottomNavigation.Bar
+        navigationState={state}
+        safeAreaInsets={insets}
+        style={{ backgroundColor: colors.surface }}
+        activeColor={colors.onPrimaryContainer}
+        inactiveColor={colors.onPrimaryContainer}
+        activeIndicatorStyle={{ backgroundColor: colors.primaryContainer }}
+        onTabPress={({ route, preventDefault }) => {
+          const event = navigation.emit({
+            type: 'tabPress',
+            target: route.key,
+            canPreventDefault: true,
+          });
+          if (event.defaultPrevented) {
+            preventDefault();
+          } else {
+            navigation.dispatch({
+              ...CommonActions.navigate(route.name, route.params),
+              target: state.key,
+            });
+          }
+        }}
+        renderIcon={({ route, focused, color }) => (
+          <Icon
+            source={getTabIconName(route.name, focused)}
+            size={iconsSize.medium}
+            color={color}
+          />
+        )}
+        getLabelText={({ route }) => getLabel(route)}
+        getTestID={({ route }) => descriptors[route.key]?.options.tabBarButtonTestID}
+        // BottomNavigation.Bar draws two label layers (active/inactive crossfade); on iOS
+        // both are exposed to accessibility and compose into a doubled name ("Home, Home").
+        // An explicit accessibilityLabel collapses each tab to a single leaf, so the visible
+        // label is announced once and stays queryable by E2E.
+        getAccessibilityLabel={({ route }) => getLabel(route)}
+      />
+    </View>
+  );
+}
+
 /**
  * BottomTabs component - Material Design 3 tab navigation
  *
  * @returns JSX element representing the main app tab navigation
  */
 export function BottomTabs() {
-  const { colors } = useTheme();
   const { t } = useI18n();
-
-  /**
-   * Returns the appropriate icon for active (selected) tab states
-   * @param routeName - Name of the route/tab
-   * @returns Icon name for the active state
-   */
-  function getActiveIconName(routeName: string): string {
-    switch (routeName) {
-      case 'Home':
-        return Icons.homeUnselectedIcon;
-      case 'Search':
-        return Icons.searchIcon;
-      case 'Menu':
-        return Icons.menuUnselectedIcon;
-      case 'Shopping':
-        return Icons.shoppingUnselectedIcon;
-      case 'Plannification':
-        return Icons.plannerUnselectedIcon;
-      case 'Parameters':
-        return Icons.parametersUnselectedIcon;
-      default:
-        return Icons.crossIcon;
-    }
-  }
-
-  /**
-   * Returns the appropriate icon for inactive (unselected) tab states
-   * @param routeName - Name of the route/tab
-   * @returns Icon name for the inactive state
-   */
-  function getInactiveIconName(routeName: string): string {
-    switch (routeName) {
-      case 'Home':
-        return Icons.homeSelectedIcon;
-      case 'Search':
-        return Icons.searchIcon;
-      case 'Menu':
-        return Icons.menuSelectedIcon;
-      case 'Shopping':
-        return Icons.shoppingSelectedIcon;
-      case 'Plannification':
-        return Icons.plannerSelectedIcon;
-      case 'Parameters':
-        return Icons.parametersSelectedIcon;
-      default:
-        return Icons.crossIcon;
-    }
-  }
 
   // Only disable lazy loading during tutorial mode (when copilot is active)
   // to ensure all tutorial steps are registered before copilot starts.
@@ -157,49 +194,7 @@ export function BottomTabs() {
       // crashes Fabric's Yoga layout. Outside the tutorial, detach normally.
       detachInactiveScreens={!copilotData}
       screenOptions={{ headerShown: false }}
-      tabBar={({ navigation, state, descriptors, insets }) => {
-        const getLabel = (route: (typeof state.routes)[number]): string =>
-          resolveTabLabel(descriptors[route.key]?.options.tabBarLabel, route.name);
-        return (
-          <BottomNavigation.Bar
-            navigationState={state}
-            safeAreaInsets={insets}
-            style={{ backgroundColor: colors.surface }}
-            activeColor={colors.onPrimaryContainer}
-            inactiveColor={colors.onPrimaryContainer}
-            activeIndicatorStyle={{ backgroundColor: colors.primaryContainer }}
-            onTabPress={({ route, preventDefault }) => {
-              const event = navigation.emit({
-                type: 'tabPress',
-                target: route.key,
-                canPreventDefault: true,
-              });
-              if (event.defaultPrevented) {
-                preventDefault();
-              } else {
-                navigation.dispatch({
-                  ...CommonActions.navigate(route.name, route.params),
-                  target: state.key,
-                });
-              }
-            }}
-            renderIcon={({ route, focused, color }) => (
-              <Icon
-                source={focused ? getActiveIconName(route.name) : getInactiveIconName(route.name)}
-                size={iconsSize.medium}
-                color={color}
-              />
-            )}
-            getLabelText={({ route }) => getLabel(route)}
-            getTestID={({ route }) => descriptors[route.key]?.options.tabBarButtonTestID}
-            // BottomNavigation.Bar draws two label layers (active/inactive crossfade); on iOS
-            // both are exposed to accessibility and compose into a doubled name ("Home, Home").
-            // An explicit accessibilityLabel collapses each tab to a single leaf, so the visible
-            // label is announced once and stays queryable by E2E.
-            getAccessibilityLabel={({ route }) => getLabel(route)}
-          />
-        );
-      }}
+      tabBar={props => <BottomTabBar {...props} />}
     >
       <Tab.Screen
         name='Home'

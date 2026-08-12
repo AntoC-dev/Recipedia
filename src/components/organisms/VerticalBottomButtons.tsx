@@ -29,7 +29,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { useResetOnChange } from '@hooks/useResetOnChange';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
 import { View } from 'react-native';
 import { CopilotStep, walkthroughable } from 'react-native-copilot';
 import { useSafeCopilot } from '@hooks/useSafeCopilot';
@@ -43,7 +43,7 @@ import { Icons } from '@assets/Icons';
 import { StackScreenNavigation } from '@customTypes/ScreenTypes';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { FAB, Portal, useTheme } from 'react-native-paper';
-import { padding, screenHeight } from '@styles/spacing';
+import { padding } from '@styles/spacing';
 import { UrlInputDialog } from '@components/dialogs/UrlInputDialog';
 import { AuthenticationDialog } from '@components/dialogs/AuthenticationDialog';
 
@@ -51,6 +51,8 @@ const MAIN_FAB_SIZE = 56;
 const ACTION_BUTTON_SIZE = 40;
 const ACTION_BUTTON_SPACING = 16;
 const ACTION_BUTTON_COUNT = 4;
+/** Gap below the main FAB. Shared so the portalled FAB and the tutorial highlight align. */
+const FAB_BOTTOM_OFFSET = padding.small;
 
 /** TestIDs for FAB elements - used for E2E testing */
 const FAB_TEST_IDS = {
@@ -78,14 +80,11 @@ function VerticalBottomButtons() {
   const { navigate } = useNavigation<StackScreenNavigation>();
   const { colors } = useTheme();
   const { t } = useI18n();
-  const insets = useSafeAreaInsets();
-
-  const tabBarHeight = screenHeight / 9 + insets.bottom;
+  const tabBarHeight = React.useContext(BottomTabBarHeightContext) ?? 0;
   const copilotHeight =
     MAIN_FAB_SIZE +
     (ACTION_BUTTON_SIZE + ACTION_BUTTON_SPACING) * ACTION_BUTTON_COUNT +
     ACTION_BUTTON_SPACING;
-  const copilotBottom = tabBarHeight - MAIN_FAB_SIZE;
 
   const copilotData = useSafeCopilot();
   const copilotEvents = copilotData?.copilotEvents;
@@ -230,7 +229,7 @@ function VerticalBottomButtons() {
               testID={'HomeTutorial'}
               style={{
                 position: 'absolute',
-                bottom: copilotBottom,
+                bottom: FAB_BOTTOM_OFFSET,
                 left: padding.small,
                 right: padding.small,
                 height: copilotHeight,
@@ -283,8 +282,10 @@ function VerticalBottomButtons() {
                 },
               ]}
               onStateChange={({ open: isOpen }) => setOpen(isOpen)}
+              // Replaces Paper's own insets.bottom padding, already inside the measured height.
+              style={{ paddingBottom: tabBarHeight }}
               fabStyle={{
-                marginBottom: tabBarHeight,
+                marginBottom: FAB_BOTTOM_OFFSET,
                 marginRight: padding.small,
                 backgroundColor: colors.primaryContainer,
                 borderRadius: 999,

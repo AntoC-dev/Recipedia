@@ -39,21 +39,19 @@ import {
 import { SettingsItemList } from '@components/organisms/SettingsItemList';
 import { AppBar } from '@components/organisms/AppBar';
 import { BottomActionButton } from '@components/atomic/BottomActionButton';
+import { bottomActionButtonHeight } from '@styles/spacing';
 import { DialogMode, ItemDialog } from '@components/dialogs/ItemDialog';
 import { ingredientsSettingsLogger } from '@utils/logger';
 import { useIngredients } from '@hooks/useIngredients';
 import { byName } from '@utils/sorting';
 import { useI18n } from '@utils/i18n';
 import { Icons } from '@assets/Icons';
-import { padding } from '@styles/spacing';
 
 /**
  * IngredientsSettings screen component - Ingredient database management
  *
  * @returns JSX element representing the ingredient management interface
  */
-const BUTTON_HEIGHT = 48;
-const BUTTON_CONTAINER_HEIGHT = BUTTON_HEIGHT + padding.small * 2;
 
 export function IngredientsSettings() {
   const { ingredients, addIngredient, editIngredient, deleteIngredient } = useIngredients();
@@ -156,7 +154,7 @@ export function IngredientsSettings() {
   return (
     <ScreenWrapper>
       <AppBar title={t('ingredients')} onGoBack={() => navigation.goBack()} testID={testId} />
-      <View style={{ flex: 1, paddingBottom: BUTTON_CONTAINER_HEIGHT }}>
+      <View style={{ flex: 1, paddingBottom: bottomActionButtonHeight }}>
         <SettingsItemList
           items={ingredientsSortedAlphabetically}
           testIdPrefix={testId}

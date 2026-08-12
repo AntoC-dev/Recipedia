@@ -41,7 +41,6 @@ import {
 } from '@customTypes/DatabaseElementTypes';
 import { RecipePropType } from '@customTypes/RecipeNavigationTypes';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
-import { padding } from '@styles/spacing';
 import { clearCache } from '@utils/FileGestion';
 import { useRecipes } from '@hooks/useRecipes';
 import { AppBar } from '@components/organisms/AppBar';
@@ -54,6 +53,7 @@ import { cropImage } from '@utils/ImagePicker';
 import { getDefaultPersons } from '@utils/settings';
 import { recipeLogger, validationLogger } from '@utils/logger';
 import { BottomActionButton } from '@components/atomic/BottomActionButton';
+import { bottomActionButtonHeight } from '@styles/spacing';
 
 import { useRecipeTags } from '@hooks/useRecipeTags';
 import { RecipeDialogsProvider, useRecipeDialogs } from '@context/RecipeDialogsContext';
@@ -92,9 +92,6 @@ import { RecipeIngredientsField } from '@screens/recipe/fields/IngredientsField'
 import { IngredientArrayActionsProvider } from '@screens/recipe/fields/IngredientArrayActionsContext';
 import { RecipePreparationField } from '@screens/recipe/fields/PreparationField';
 import type { OcrModalTarget } from '@utils/OCR';
-
-const BUTTON_HEIGHT = 48;
-const BUTTON_CONTAINER_HEIGHT = BUTTON_HEIGHT + padding.small * 2;
 
 /**
  * Identifies which editable route is being rendered. Drives the AppBar
@@ -511,7 +508,7 @@ function RecipeFormBody({
           horizontal={false}
           showsVerticalScrollIndicator={false}
           style={{ flex: 1, backgroundColor: colors.background }}
-          contentContainerStyle={{ paddingBottom: BUTTON_CONTAINER_HEIGHT + insets.bottom }}
+          contentContainerStyle={{ paddingBottom: bottomActionButtonHeight }}
           keyboardShouldPersistTaps={'handled'}
           keyboardDismissMode='on-drag'
           nestedScrollEnabled={true}

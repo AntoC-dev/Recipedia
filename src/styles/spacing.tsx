@@ -134,6 +134,9 @@ export const progressBarHeight = screenHeight * 0.01;
 /** Maximum height for dialogs to prevent overflow on small screens */
 export const dialogMaxHeight = Dimensions.get('window').height;
 
+/** Space to reserve behind a pinned BottomActionButton, minus the safe-area strip it spans */
+export const bottomActionButtonHeight = 48 + padding.small * 2;
+
 /**
  * Standard screen and section view styles for consistent layout
  * Provides common container styles used throughout the application
