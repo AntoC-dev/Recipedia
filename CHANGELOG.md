@@ -1,3 +1,17 @@
+## [2.50.0](https://github.com/AntoC-dev/Recipedia/compare/v2.49.1...v2.50.0) (2026-08-13)
+
+### Features
+
+* **navigation:** adopt react-navigation v7 behavior APIs ([#499](https://github.com/AntoC-dev/Recipedia/issues/499)) ([#528](https://github.com/AntoC-dev/Recipedia/issues/528)) ([d2abd26](https://github.com/AntoC-dev/Recipedia/commit/d2abd2693f1860f8071790b7ed7d4e936a11516c))
+* **navigation:** enable Android predictive back gesture ([df09ed4](https://github.com/AntoC-dev/Recipedia/commit/df09ed4dcb4759b71951658bf33090b694aa3a1b))
+* **navigation:** freeze inactive screens ([7935189](https://github.com/AntoC-dev/Recipedia/commit/79351897c60a532865d1a3c6dd24d8978e8498dc))
+* **navigation:** preload the Search tab from Home ([bf1cc9b](https://github.com/AntoC-dev/Recipedia/commit/bf1cc9b0af92e2d2f24d3ef44ca0b24d60206d08))
+* **recipe:** confirm before discarding unsaved form changes ([b3583bf](https://github.com/AntoC-dev/Recipedia/commit/b3583bf8c8c539b6f4a6a436942876c5b642a838))
+
+### Bug Fixes
+
+* **tests:** make the CommonActions.reset mock match the real action ([30212a3](https://github.com/AntoC-dev/Recipedia/commit/30212a3ce66498df03bde20f537a26bab96dc71b))
+
 ## [2.49.1](https://github.com/AntoC-dev/Recipedia/compare/v2.49.0...v2.49.1) (2026-08-12)
 
 ### Bug Fixes
