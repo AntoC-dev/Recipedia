@@ -1,8 +1,11 @@
 appId: "com.recipedia"
 ---
-# Wait for keyboard to dismiss - platform specific
-# iOS: Waits for animation then verifies keyboard button is gone
-# Android: IME is not in the view hierarchy, so it cannot be asserted gone;
+# Wait for the keyboard to dismiss - platform specific
+# iOS: waits for UIKit's keyboard layout view to be gone. `UIKeyboardLayoutStar`
+# backs every keyboard the app raises — alphabetic, numeric and decimal alike —
+# so one wait covers all of them, and unlike a key label it survives a locale
+# change and does not assume the keyboard has a return key.
+# Android: the IME is not in the view hierarchy, so it cannot be asserted gone;
 # just wait for the dismissal animation. This helper must not itself dismiss
 # the keyboard: hideKeyboard maps to a Back press on Android, and when the
 # keyboard is already down (e.g. after committing a field) that Back reaches
@@ -15,10 +18,9 @@ appId: "com.recipedia"
     commands:
       - extendedWaitUntil:
           notVisible:
-            id: "[Dd]one|[Rr]eturn|[Gg]o|[Nn]ext|[Ss]earch|[Ss]end|[Jj]oin"
+            id: "UIKeyboardLayoutStar.*"
           timeout: 60000
-          label: "Verify iOS keyboard is dismissed"
-
+          label: "Verify the iOS keyboard is dismissed"
 
 - runFlow:
     when:

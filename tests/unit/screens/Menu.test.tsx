@@ -1,4 +1,5 @@
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { Snackbar } from 'react-native-paper';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
@@ -277,6 +278,20 @@ describe('Menu Screen', () => {
         'menuScreen.removedFromMenu'
       );
       expect(getByTestId(`${removeSnackbarId}::Action::Children`).props.children).toBe('undo');
+    });
+
+    test('keeps the undo snackbar up for the long paper duration', async () => {
+      const { getByTestId } = await renderMenuAndWait();
+
+      fireEvent.press(getByTestId(`${screenId}::MenuItem::1::RemoveButton`));
+
+      await waitFor(() => {
+        expect(getByTestId(removeSnackbarId)).toBeTruthy();
+      });
+
+      expect(getByTestId(`${removeSnackbarId}::Duration`).props.children).toBe(
+        Snackbar.DURATION_LONG
+      );
     });
 
     test('pressing undo re-adds the removed recipe and hides the snackbar', async () => {

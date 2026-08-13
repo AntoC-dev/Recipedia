@@ -17,21 +17,14 @@ appId: "com.recipedia"
     id: "RecipePersons::NumericTextInput"
     label: "Focus on persons input"
 
-- eraseText:
-    label: "Erase current persons value"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- inputText:
-    text: "2"
+- runFlow:
+    file: "../../replaceAndCommitText.yaml"
+    env:
+      TARGET_ID: "RecipePersons::NumericTextInput"
+      VALUE: "2"
+      DISMISS_ID: "RecipePersons::PrefixText"
     label: "Enter 2 persons"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: "ENTER"
-
 - runFlow:
-    file: "../../waitForKeyboardNumericDismiss.yaml"
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"

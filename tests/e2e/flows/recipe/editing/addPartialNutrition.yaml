@@ -18,20 +18,19 @@ appId: "com.recipedia"
     label: "Tap energy kcal input"
 
 - runFlow:
-    file: "../../waitForKeyboardNumeric.yaml"
+    file: "../../waitForKeyboard.yaml"
     label: "Wait for numeric keyboard to appear"
 
-- inputText:
-    text: "250"
+- runFlow:
+    file: "../../inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
+      VALUE: "250"
+      DISMISS_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::Text"
     label: "Enter energy kcal value"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
-
 - runFlow:
-    file: "../../waitForKeyboardNumericDismiss.yaml"
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"
 
 - waitForAnimationToEnd
@@ -51,20 +50,19 @@ appId: "com.recipedia"
     label: "Tap energy kj input"
 
 - runFlow:
-    file: "../../waitForKeyboardNumeric.yaml"
+    file: "../../waitForKeyboard.yaml"
     label: "Wait for numeric keyboard to appear"
 
-- inputText:
-    text: "1000"
+- runFlow:
+    file: "../../inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKj::NumericTextInput"
+      VALUE: "1000"
+      DISMISS_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKj::Text"
     label: "Enter energy kj value"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
-
 - runFlow:
-    file: "../../waitForKeyboardNumericDismiss.yaml"
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"
 
 - waitForAnimationToEnd
@@ -85,20 +83,19 @@ appId: "com.recipedia"
     label: "Tap fat input"
 
 - runFlow:
-    file: "../../waitForKeyboardNumeric.yaml"
+    file: "../../waitForKeyboard.yaml"
     label: "Wait for numeric keyboard to appear"
 
-- inputText:
-    text: "10"
+- runFlow:
+    file: "../../inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::NumericTextInput"
+      VALUE: "10"
+      DISMISS_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::Text"
     label: "Enter fat value"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
-
 - runFlow:
-    file: "../../waitForKeyboardNumericDismiss.yaml"
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"
 
 - waitForAnimationToEnd
@@ -118,20 +115,19 @@ appId: "com.recipedia"
     label: "Tap carbohydrates input"
 
 - runFlow:
-    file: "../../waitForKeyboardNumeric.yaml"
+    file: "../../waitForKeyboard.yaml"
     label: "Wait for numeric keyboard to appear"
 
-- inputText:
-    text: "30"
+- runFlow:
+    file: "../../inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Carbohydrates::NumericTextInput"
+      VALUE: "30"
+      DISMISS_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Carbohydrates::Text"
     label: "Enter carbohydrates value"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
-
 - runFlow:
-    file: "../../waitForKeyboardNumericDismiss.yaml"
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"
 
 - waitForAnimationToEnd
@@ -151,20 +147,19 @@ appId: "com.recipedia"
     label: "Tap sugar input"
 
 - runFlow:
-    file: "../../waitForKeyboardNumeric.yaml"
+    file: "../../waitForKeyboard.yaml"
     label: "Wait for numeric keyboard to appear"
 
-- inputText:
-    text: "1"
+- runFlow:
+    file: "../../inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Sugars::NumericTextInput"
+      VALUE: "1"
+      DISMISS_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Sugars::Text"
     label: "Enter sugar value"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
-
 - runFlow:
-    file: "../../waitForKeyboardNumericDismiss.yaml"
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"
 
 - waitForAnimationToEnd
@@ -184,20 +179,19 @@ appId: "com.recipedia"
     label: "Tap fiber input"
 
 - runFlow:
-    file: "../../waitForKeyboardNumeric.yaml"
+    file: "../../waitForKeyboard.yaml"
     label: "Wait for numeric keyboard to appear"
 
-- inputText:
-    text: "42"
+- runFlow:
+    file: "../../inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fiber::NumericTextInput"
+      VALUE: "42"
+      DISMISS_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fiber::Text"
     label: "Enter fiber value"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
-
 - runFlow:
-    file: "../../waitForKeyboardNumericDismiss.yaml"
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"
 
 - waitForAnimationToEnd
@@ -217,20 +211,19 @@ appId: "com.recipedia"
     label: "Tap protein input"
 
 - runFlow:
-    file: "../../waitForKeyboardNumeric.yaml"
+    file: "../../waitForKeyboard.yaml"
     label: "Wait for numeric keyboard to appear"
 
-- inputText:
-    text: "15"
+- runFlow:
+    file: "../../inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::NumericTextInput"
+      VALUE: "15"
+      DISMISS_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::Text"
     label: "Enter protein value"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
-
 - runFlow:
-    file: "../../waitForKeyboardNumericDismiss.yaml"
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"
 
 - waitForAnimationToEnd
@@ -250,18 +243,17 @@ appId: "com.recipedia"
     label: "Tap salt input"
 
 - runFlow:
-    file: "../../waitForKeyboardNumeric.yaml"
+    file: "../../waitForKeyboard.yaml"
     label: "Wait for numeric keyboard to appear"
 
-- inputText:
-    text: "3"
+- runFlow:
+    file: "../../inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Salt::NumericTextInput"
+      VALUE: "3"
+      DISMISS_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Salt::Text"
     label: "Enter salt value"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
-
 - runFlow:
-    file: "../../waitForKeyboardNumericDismiss.yaml"
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"

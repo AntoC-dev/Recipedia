@@ -20,13 +20,13 @@ tags:
     label: "Assert - No purchased block before anything is bought"
 
 - runFlow:
-    file: "../../flows/shopping/toggleIngredientPurchased.yaml"
+    file: "../../flows/shopping/markIngredientPurchased.yaml"
     env:
       INGREDIENT_NAME: "Spaghetti"
     label: "Action - Mark Spaghetti as purchased (Cereal category)"
 
 - runFlow:
-    file: "../../flows/shopping/toggleIngredientPurchased.yaml"
+    file: "../../flows/shopping/markIngredientPurchased.yaml"
     env:
       INGREDIENT_NAME: "Ground Beef"
     label: "Action - Mark Ground Beef as purchased (Meat category)"

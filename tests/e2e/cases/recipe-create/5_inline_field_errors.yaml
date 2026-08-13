@@ -155,7 +155,7 @@ tags:
     label: "Action - Focus persons input"
 
 - runFlow:
-    file: "../../flows/waitForKeyboardNumeric.yaml"
+    file: "../../flows/waitForKeyboard.yaml"
     label: "Wait for numeric keyboard"
 
 - eraseText:
@@ -168,7 +168,7 @@ tags:
     label: "Action - Tap prefix on iOS to dismiss keyboard"
 
 - runFlow:
-    file: "../../flows/waitForKeyboardNumericDismiss.yaml"
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard dismiss"
 
 - runFlow:
@@ -204,7 +204,7 @@ tags:
     label: "Action - Focus time input"
 
 - runFlow:
-    file: "../../flows/waitForKeyboardNumeric.yaml"
+    file: "../../flows/waitForKeyboard.yaml"
     label: "Wait for numeric keyboard"
 
 - inputText:
@@ -223,7 +223,7 @@ tags:
     label: "Action - Tap prefix on iOS to dismiss keyboard"
 
 - runFlow:
-    file: "../../flows/waitForKeyboardNumericDismiss.yaml"
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard dismiss"
 
 - runFlow:
@@ -275,19 +275,19 @@ tags:
     label: "Action - Focus ingredient quantity"
 
 - runFlow:
-    file: "../../flows/waitForKeyboardNumeric.yaml"
+    file: "../../flows/waitForKeyboard.yaml"
     label: "Wait for numeric keyboard"
 
-- inputText:
-    text: "100"
+- runFlow:
+    file: "../../flows/inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::0::QuantityInput"
+      VALUE: "100"
+      DISMISS_ID: "RecipeIngredients::0::Unit"
     label: "Action - Enter quantity 100 (makes row dirty)"
 
-- waitForAnimationToEnd
-
-- pressKey: ENTER
-
 - runFlow:
-    file: "../../flows/waitForKeyboardNumericDismiss.yaml"
+    file: "../../flows/waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard dismiss"
 
 - runFlow:
@@ -302,13 +302,13 @@ tags:
     file: "../../flows/waitForKeyboard.yaml"
     label: "Wait for keyboard"
 
-- inputText:
-    text: "Carrots"
+- runFlow:
+    file: "../../flows/inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::0::NameInput::CustomTextInput"
+      VALUE: "Carrots"
+      DISMISS_ID: "RecipeIngredients::0::Unit"
     label: "Action - Enter ingredient name Carrot (exact DB match, no validation queue)"
-
-- waitForAnimationToEnd
-
-- pressKey: ENTER
 
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"

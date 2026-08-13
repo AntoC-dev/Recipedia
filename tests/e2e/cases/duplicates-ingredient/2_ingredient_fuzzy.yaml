@@ -39,16 +39,13 @@ tags:
     id: "RecipeIngredients::0::NameInput::CustomTextInput"
     label: "Action - Focus on ingredient name input"
 
-- inputText:
-    text: "Butte"
-    label: "Action - Enter fuzzy ingredient name"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
 - runFlow:
-    file: "../../flows/confirmInputKeyboard.yaml"
-    label: "Confirm input via keyboard (platform-specific)"
+    file: "../../flows/inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::0::NameInput::CustomTextInput"
+      VALUE: "Butte"
+      DISMISS_ID: "RecipeIngredients::0::Unit"
+    label: "Action - Enter fuzzy ingredient name"
 
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"
@@ -77,14 +74,13 @@ tags:
     id: "RecipeIngredients::1::NameInput::CustomTextInput"
     label: "Action - Focus on second ingredient input"
 
-- inputText:
-    text: "Butte"
+- runFlow:
+    file: "../../flows/inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::1::NameInput::CustomTextInput"
+      VALUE: "Butte"
+      DISMISS_ID: "RecipeIngredients::1::Unit"
     label: "Action - Enter fuzzy ingredient name again"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: "ENTER"
 
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"

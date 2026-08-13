@@ -23,16 +23,17 @@ appId: "com.recipedia"
           id: "RecipeTime::NumericTextInput"
           label: "Tap on text input of the time to prepare"
       - runFlow:
-          file: "../../../../waitForKeyboardNumeric.yaml"
+          file: "../../../../waitForKeyboard.yaml"
           label: "Wait for numeric keyboard to appear"
-      - inputText:
-          text: "30"
-          label: "Enter the time to prepare this recipe"
-      - waitForAnimationToEnd:
-          label: "Wait for keyboard to dismiss"
-      - pressKey: "enter"
       - runFlow:
-          file: "../../../../waitForKeyboardNumericDismiss.yaml"
+          file: "../../../../replaceAndCommitText.yaml"
+          env:
+            TARGET_ID: "RecipeTime::NumericTextInput"
+            VALUE: "30"
+            DISMISS_ID: "RecipeTime::PrefixText"
+          label: "Enter the time to prepare this recipe"
+      - runFlow:
+          file: "../../../../waitForKeyboardDismiss.yaml"
           label: "Wait for numeric keyboard to dismiss"
 
 - runFlow:

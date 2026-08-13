@@ -1,0 +1,60 @@
+appId: "com.recipedia"
+---
+# Replace whatever the input TARGET_ID currently holds with VALUE, then hand over
+# to `inputAndCommitText.yaml` to type, assert and commit it.
+#
+# Pick this one when the field is NOT empty; `inputAndCommitText.yaml` is for an
+# empty field. Why the three helpers exist and which fields start non-empty:
+# see E2E_TESTING.md, "Rule: pick the helper that matches what you are doing".
+#
+# Precondition: the field is focused (tap it first).
+# Postcondition: the field holds exactly VALUE, committed and blurred.
+#
+# `point: "95%,50%"` is element-relative and puts the caret past the end of the
+# text, so a single `eraseText` (which only backspaces) takes the whole field
+# instead of leaving a tail. The wait afterwards is a barrier, for the same
+# reason the assertion in `inputAndCommitText.yaml` is one: `eraseText` returns
+# as soon as the backspaces are dispatched, so the first new keystroke could
+# otherwise land while the app is still processing the deletions (issue #525,
+# erase side).
+#
+# If this barrier ever fails, do not paper over it with a second erase — with
+# the caret at the end one erase is sufficient, so a non-empty field here means
+# something re-rendered the input from state mid-erase, and that is the bug.
+#
+# TARGET_ID, VALUE and DISMISS_ID mean what they mean in
+# `inputAndCommitText.yaml`; see that file for the DISMISS_ID rules.
+#
+#   - runFlow:
+#       file: "../../replaceAndCommitText.yaml"
+#       env:
+#         TARGET_ID: "RecipePersons::NumericTextInput"
+#         VALUE: "321"
+#         DISMISS_ID: "RecipePersons::PrefixText"
+
+- tapOn:
+    id: "${TARGET_ID}"
+    point: "95%,50%"
+    label: "Put the caret at the end of ${TARGET_ID}"
+
+- runFlow:
+    file: "waitForKeyboard.yaml"
+    label: "Wait for the keyboard before erasing ${TARGET_ID}"
+
+- eraseText:
+    label: "Clear ${TARGET_ID} before typing ${VALUE}"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "${TARGET_ID}"
+      text: ".+"
+    timeout: 5000
+    label: "Check ${TARGET_ID} is empty before typing ${VALUE}"
+
+- runFlow:
+    file: "inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "${TARGET_ID}"
+      VALUE: "${VALUE}"
+      DISMISS_ID: "${DISMISS_ID}"
+    label: "Type ${VALUE} into ${TARGET_ID} and commit it"

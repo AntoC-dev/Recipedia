@@ -127,20 +127,19 @@ appId: "com.recipedia"
     label: "Focus on time input"
 
 - runFlow:
-    file: "../../../../waitForKeyboardNumeric.yaml"
+    file: "../../../../waitForKeyboard.yaml"
     label: "Wait for numeric keyboard to appear"
 
-- inputText:
-    text: "10"
+- runFlow:
+    file: "../../../../inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "RecipeTime::NumericTextInput"
+      VALUE: "10"
+      DISMISS_ID: "RecipeTime::PrefixText"
     label: "Enter cooking time"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- pressKey: enter
-
 - runFlow:
-    file: "../../../../waitForKeyboardNumericDismiss.yaml"
+    file: "../../../../waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"
 
 - waitForAnimationToEnd

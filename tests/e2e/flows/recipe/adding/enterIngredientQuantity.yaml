@@ -13,7 +13,7 @@ appId: "com.recipedia"
     label: "Tap on ingredient ${INDEX} quantity input"
 
 - runFlow:
-    file: "../../waitForKeyboardNumeric.yaml"
+    file: "../../waitForKeyboard.yaml"
     label: "Wait for numeric keyboard"
 
 - inputText:
@@ -25,5 +25,5 @@ appId: "com.recipedia"
     label: "Tap on ingredient ${INDEX} unit cell to dismiss keyboard"
 
 - runFlow:
-    file: "../../waitForKeyboardNumericDismiss.yaml"
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"

@@ -85,16 +85,13 @@ appId: "com.recipedia"
     id: "RecipeTags::List::0::CustomTextInput"
     label: "Press the TextInput of first tags"
 
-- inputText:
-    text: "Healthy"
-    label: "Enter text for recipe first tag"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
 - runFlow:
-    file: "../../../../confirmInputKeyboard.yaml"
-    label: "Confirm input via keyboard (platform-specific)"
+    file: "../../../../inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "RecipeTags::List::0::CustomTextInput"
+      VALUE: "Healthy"
+      DISMISS_ID: "RecipeTags::ElementText"
+    label: "Enter text for recipe first tag"
 
 - runFlow:
     file: "../../../../waitForKeyboardDismiss.yaml"
@@ -213,7 +210,7 @@ appId: "com.recipedia"
     label: "Press the TextInput of first ingredient's quantity"
 
 - runFlow:
-    file: "../../../../waitForKeyboardNumeric.yaml"
+    file: "../../../../waitForKeyboard.yaml"
     label: "Wait for numeric keyboard to appear"
 
 - inputText:
@@ -308,7 +305,7 @@ appId: "com.recipedia"
     label: "Press the TextInput of third ingredient's quantity"
 
 - runFlow:
-    file: "../../../../waitForKeyboardNumeric.yaml"
+    file: "../../../../waitForKeyboard.yaml"
     label: "Wait for numeric keyboard to appear"
 
 - inputText:
@@ -423,16 +420,13 @@ appId: "com.recipedia"
     file: "../../../../waitForKeyboard.yaml"
     label: "Wait for keyboard to appear"
 
-- inputText:
-    text: "Non-existing-ingredient"
-    label: "Enter text for recipe second ingredient name (non-existing)"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
 - runFlow:
-    file: "../../../../confirmInputKeyboard.yaml"
-    label: "Confirm input via keyboard (platform-specific)"
+    file: "../../../../inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::1::NameInput::CustomTextInput"
+      VALUE: "Non-existing-ingredient"
+      DISMISS_ID: "RecipeIngredients::1::Unit"
+    label: "Enter text for recipe second ingredient name (non-existing)"
 
 - runFlow:
     file: "../../../../waitForKeyboardDismiss.yaml"
@@ -469,7 +463,7 @@ appId: "com.recipedia"
     label: "Press the TextInput of time"
 
 - runFlow:
-    file: "../../../../waitForKeyboardNumeric.yaml"
+    file: "../../../../waitForKeyboard.yaml"
     label: "Wait for numeric keyboard to appear"
 
 - inputText:
@@ -481,7 +475,7 @@ appId: "com.recipedia"
     label: "Tap on the prefix text to close the keyboard"
 
 - runFlow:
-    file: "../../../../waitForKeyboardNumericDismiss.yaml"
+    file: "../../../../waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"
 
 - scrollUntilVisible:
@@ -627,13 +621,13 @@ appId: "com.recipedia"
     file: "../../../../waitForKeyboard.yaml"
     label: "Wait for keyboard to appear"
 
-- inputText:
-    text: "Dans le bol d'un mixeur, deposez les ingredients suivants :"
+- runFlow:
+    file: "../../../../appendText.yaml"
+    env:
+      TARGET_ID: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
+      VALUE: "Dans le bol d'un mixeur, deposez les ingredients suivants :"
     label: "Enter text for recipe second preparation paragraph (first line)"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
 - runFlow:
     when:
       platform: Android
@@ -648,13 +642,13 @@ appId: "com.recipedia"
           id: "Return"
           label: "Tap Done key to go to a new line"
 
-- inputText:
-    text: "epluchez et hachez le gingembre."
+- runFlow:
+    file: "../../../../appendText.yaml"
+    env:
+      TARGET_ID: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
+      VALUE: "epluchez et hachez le gingembre."
     label: "Enter text for recipe second preparation paragraph (second line)"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
 - runFlow:
     when:
       platform: Android
@@ -669,15 +663,18 @@ appId: "com.recipedia"
           id: "Return"
           label: "Tap Done key to go to a new line"
 
-- inputText:
-    text: "Ajoutez les cacahuetes, le sucre et le lait de coco."
+- runFlow:
+    file: "../../../../appendText.yaml"
+    env:
+      TARGET_ID: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
+      VALUE: "Ajoutez les cacahuetes, le sucre et le lait de coco."
     label: "Enter text for recipe second preparation paragraph (third line)"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- inputText:
-    text: "Salez, poivrez. Mixez jusqu'a obtenir une texture homogene."
+- runFlow:
+    file: "../../../../appendText.yaml"
+    env:
+      TARGET_ID: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
+      VALUE: "Salez, poivrez. Mixez jusqu'a obtenir une texture homogene."
     label: "Enter text for recipe second preparation paragraph (fourth line)"
 
 - runFlow:

@@ -12,28 +12,28 @@ tags:
     label: "Verification - Open the Shopping screen"
 
 - runFlow:
-    file: "../../flows/shopping/toggleIngredientPurchased.yaml"
+    file: "../../flows/shopping/markIngredientPurchased.yaml"
     env:
       INGREDIENT_NAME: "Flour"
     label: "Action - Mark Flour as purchased"
 
 - runFlow:
-    file: "../../flows/shopping/toggleIngredientPurchased.yaml"
+    file: "../../flows/shopping/markIngredientPurchased.yaml"
     env:
       INGREDIENT_NAME: "Milk"
     label: "Action - Mark Milk as purchased"
 
 - runFlow:
-    file: "../../flows/shopping/toggleIngredientPurchased.yaml"
+    file: "../../flows/shopping/markIngredientPurchased.yaml"
     env:
       INGREDIENT_NAME: "Butter"
     label: "Action - Mark Butter as purchased"
 
 - runFlow:
-    file: "../../flows/shopping/toggleIngredientPurchased.yaml"
+    file: "../../flows/shopping/markLastIngredientPurchased.yaml"
     env:
       INGREDIENT_NAME: "Eggs"
-    label: "Action - Mark Eggs as purchased"
+    label: "Action - Mark Eggs as purchased, clearing the working list"
 
 - runFlow:
     file: "../../asserts/shopping/en/assertPurchasedBlock.yaml"

@@ -1,8 +1,13 @@
 appId: "com.recipedia"
 ---
-# Wait for keyboard to appear - platform specific
-# iOS: Waits for keyboard action button to be visible (reliable)
-# Android: Uses waitForAnimationToEnd (keyboards appear fast)
+# Wait for the keyboard to appear - platform specific
+# iOS: waits for UIKit's keyboard layout view. `UIKeyboardLayoutStar` backs every
+# keyboard the app raises — alphabetic, numeric and decimal alike — so one wait
+# covers all of them. Matching the view beats matching a key label: it does not
+# depend on which return key a field declares (numeric keyboards have none), nor
+# on the device locale, which translates "Done" and "Delete".
+# Android: the IME is not in the view hierarchy, so it cannot be asserted
+# present; just wait for the appearance animation.
 
 - runFlow:
     when:
@@ -10,9 +15,9 @@ appId: "com.recipedia"
     commands:
       - extendedWaitUntil:
           visible:
-            id: "[Dd]one|[Rr]eturn|[Gg]o|[Nn]ext|[Ss]earch|[Ss]end|[Jj]oin"
+            id: "UIKeyboardLayoutStar.*"
           timeout: 5000
-          label: "Wait for iOS keyboard action button"
+          label: "Wait for the iOS keyboard to be up"
 
 - waitForAnimationToEnd:
     label: "Wait for Android keyboard animation"

@@ -15,11 +15,11 @@ tags:
     id: "ShoppingScreen::SectionList::Flour"
     label: "Assert - Flour ingredient (from Pancakes) is visible in shopping list"
 
-- tapOn:
-    id: "ShoppingScreen::SectionList::Flour"
+- runFlow:
+    file: "../../flows/shopping/markIngredientPurchased.yaml"
+    env:
+      INGREDIENT_NAME: "Flour"
     label: "Action - Mark Flour as purchased"
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "../../asserts/shopping/en/assertPurchasedBlock.yaml"

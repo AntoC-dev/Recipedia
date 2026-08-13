@@ -16,7 +16,7 @@ tags:
     label: "Verification - Open the Shopping screen"
 
 - runFlow:
-    file: "../../flows/shopping/toggleIngredientPurchased.yaml"
+    file: "../../flows/shopping/markIngredientPurchased.yaml"
     env:
       INGREDIENT_NAME: "Flour"
     label: "Action - Mark Flour (Pancakes only) as purchased"

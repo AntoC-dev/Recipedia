@@ -1,0 +1,45 @@
+appId: "com.recipedia"
+---
+# Add VALUE to what the focused input TARGET_ID already holds, and wait until the
+# app has actually rendered it. Does NOT commit the field: the multiline inputs
+# this exists for are blurred once at the end, not after each line.
+#
+# Why the three helpers exist: see E2E_TESTING.md, "Rule: pick the helper that
+# matches what you are doing". The barrier is the same one as in
+# `inputAndCommitText.yaml` (issue #525); only the assertion differs, matching
+# VALUE *within* the field rather than as the whole field.
+#
+# Precondition: the caret sits at the end of the existing text — which it does
+# while the field stays focused from the previous typing. A plain `tapOn` breaks
+# that, because taps land in the middle of text that fills the box (`321`
+# re-tapped and given a `9` becomes `3291`); re-tap with `point: "95%,50%"` if
+# you must re-focus. To set a field to a known value instead, use
+# `replaceAndCommitText.yaml`.
+# Postcondition: the field still holds its old text, now with VALUE after it,
+# and is NOT committed.
+#
+# This is the flow for a multiline input, where each line is typed, asserted,
+# and followed by a newline that must not be swallowed: keep using `pressKey:
+# ENTER` (Android) / `tapOn: Return` (iOS) between the calls. Blur the paragraph
+# once at the end rather than after each line.
+#
+# VALUE is embedded in a regex, so a value containing regex metacharacters must
+# be escaped by the caller.
+#
+#   - runFlow:
+#       file: "../../appendText.yaml"
+#       env:
+#         TARGET_ID: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
+#         VALUE: "epluchez et hachez le gingembre."
+
+- inputText:
+    text: "${VALUE}"
+    label: "Add ${VALUE} to ${TARGET_ID}"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- assertVisible:
+    id: "${TARGET_ID}"
+    text: "[\\s\\S]*${VALUE}[\\s\\S]*"
+    label: "Check ${TARGET_ID} contains ${VALUE}"

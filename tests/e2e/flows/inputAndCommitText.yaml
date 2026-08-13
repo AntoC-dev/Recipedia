@@ -1,0 +1,54 @@
+appId: "com.recipedia"
+---
+# Type VALUE into the focused input TARGET_ID, wait until the app has actually
+# rendered it, commit the field by tapping DISMISS_ID, and wait for the keyboard
+# to be gone before handing back.
+#
+# Two things matter here:
+#
+# 1. The assertion is a barrier, not a nicety. `inputText` returns as soon as
+#    Maestro has dispatched the keystrokes, and `waitForAnimationToEnd` only
+#    compares two frames, so on a loaded CI machine the field can be blurred
+#    while the last characters are still queued on the JS thread. The field then
+#    commits a partially-typed value (`30` saved as `3`) and the flow fails much
+#    later at an unrelated assertion (issue #525). This applies to every blur,
+#    not only Enter.
+# 2. The commit is a tap, not `pressKey: enter`. Enter is an unreliable dismiss:
+#    on Android it does not consistently trigger the IME action, and on a
+#    multiline input it inserts a newline instead of dismissing.
+#
+# DISMISS_ID must be a NON-touchable element (a label / section text). The recipe
+# screens use `keyboardShouldPersistTaps='handled'`, so tapping a plain `Text`
+# dismisses the keyboard and blurs the field, while tapping a button would run
+# that button's handler and keep the keyboard up.
+#
+# The input must already be focused (tap it, and wait for the keyboard, first).
+# VALUE is matched as a regex, so a value containing regex metacharacters must
+# be escaped by the caller.
+#
+#   - runFlow:
+#       file: "../../inputAndCommitText.yaml"
+#       env:
+#         TARGET_ID: "RecipeTime::NumericTextInput"
+#         VALUE: "30"
+#         DISMISS_ID: "RecipeTime::PrefixText"
+
+- inputText:
+    text: "${VALUE}"
+    label: "Type ${VALUE} into ${TARGET_ID}"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- assertVisible:
+    id: "${TARGET_ID}"
+    text: "${VALUE}"
+    label: "Check ${TARGET_ID} holds ${VALUE} before committing it"
+
+- tapOn:
+    id: "${DISMISS_ID}"
+    label: "Tap ${DISMISS_ID} to commit the field and close the keyboard"
+
+- runFlow:
+    file: "waitForKeyboardDismiss.yaml"
+    label: "Wait for the keyboard to close after committing ${TARGET_ID}"

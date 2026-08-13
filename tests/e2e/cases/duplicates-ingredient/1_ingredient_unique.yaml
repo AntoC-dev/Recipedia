@@ -51,21 +51,13 @@ tags:
     id: "RecipeIngredients::0::NameInput::CustomTextInput"
     label: "Action - Focus on ingredient name input"
 
-- inputText:
-    text: "AUniqueIngredient"
-    label: "Action - Enter unique ingredient name first attempt"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- assertVisible:
-    id: "RecipeIngredients::0::NameInput::CustomTextInput"
-    text: "AUniqueIngredient"
-    label: "Assert - Verify ingredient name appears in recipe"
-
 - runFlow:
-    file: "../../flows/confirmInputKeyboard.yaml"
-    label: "Confirm input via keyboard (platform-specific)"
+    file: "../../flows/inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::0::NameInput::CustomTextInput"
+      VALUE: "AUniqueIngredient"
+      DISMISS_ID: "RecipeIngredients::0::Unit"
+    label: "Action - Enter unique ingredient name first attempt"
 
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"
@@ -97,16 +89,13 @@ tags:
     id: "RecipeIngredients::0::NameInput::CustomTextInput"
     label: "Action - Focus on ingredient name input"
 
-- inputText:
-    text: "AUniqueIngredient"
+- runFlow:
+    file: "../../flows/inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::0::NameInput::CustomTextInput"
+      VALUE: "AUniqueIngredient"
+      DISMISS_ID: "RecipeIngredients::0::Unit"
     label: "Action - Enter unique ingredient name second attempt"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- tapOn:
-    id: "RecipeIngredients::0::Unit"
-    label: "Action - Focus on ingredient unit input to close keyboard"
 
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"

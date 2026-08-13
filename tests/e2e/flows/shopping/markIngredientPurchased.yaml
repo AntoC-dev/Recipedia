@@ -1,0 +1,35 @@
+appId: "com.recipedia"
+---
+# Marking is a database write followed by a re-render that re-buckets the item
+# into the purchased block, which can lag well behind the tap on CI. Waiting for
+# the row to leave the working list is the barrier: asserting straight after the
+# tap catches the list mid-regroup, with the row still under its old category.
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::${INGREDIENT_NAME}"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to ${INGREDIENT_NAME} item"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "ShoppingScreen::SectionList::${INGREDIENT_NAME}"
+    label: "Mark ${INGREDIENT_NAME} as purchased"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "ShoppingScreen::SectionList::${INGREDIENT_NAME}"
+    timeout: 30000
+    label: "Wait for ${INGREDIENT_NAME} to leave the working list for the collapsed purchased block"
+
+# The undo snackbar covers the bottom rows while it is up, so the next tap would
+# land on it instead of the row underneath.
+- runFlow:
+    file: "./waitForUndoSnackbarToClear.yaml"
+    label: "Wait for the undo snackbar to stop covering the list"
+
+- waitForAnimationToEnd

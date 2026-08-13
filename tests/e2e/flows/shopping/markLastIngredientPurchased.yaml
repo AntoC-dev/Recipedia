@@ -1,0 +1,37 @@
+appId: "com.recipedia"
+---
+# Same barrier need as markIngredientPurchased.yaml, but the row cannot be the
+# barrier here: buying the last item clears the working list, which opens the
+# purchased block by itself and keeps the row on screen. The all-done state only
+# renders once the re-bucketing landed, so it is the barrier instead.
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::${INGREDIENT_NAME}"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to ${INGREDIENT_NAME} item"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "ShoppingScreen::SectionList::${INGREDIENT_NAME}"
+    label: "Mark ${INGREDIENT_NAME} as purchased, emptying the working list"
+
+# Scrolling rather than a plain wait: the all-done state heads the list, above
+# wherever marking the previous items left the viewport.
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::AllDone"
+    direction: UP
+    speed: 40
+    timeout: 30000
+    label: "Wait for the all-done state that replaces the emptied working list"
+
+- runFlow:
+    file: "./waitForUndoSnackbarToClear.yaml"
+    label: "Wait for the undo snackbar to stop covering the list"
+
+- waitForAnimationToEnd

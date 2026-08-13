@@ -35,32 +35,15 @@ appId: "com.recipedia"
     label: "Focus on ingredient quantity"
 
 - runFlow:
-    when:
-      visible:
-        id: "RecipeIngredients::${INDEX}::QuantityInput"
-        text: ".+"
-    commands:
-      - eraseText:
-          label: "Erase the existing ingredient quantity"
-      - waitForAnimationToEnd:
-          label: "Wait for keyboard animation"
-
-- inputText:
-    text: "${QUANTITY}"
+    file: "../../inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::${INDEX}::QuantityInput"
+      VALUE: "${QUANTITY}"
+      DISMISS_ID: "RecipeIngredients::${INDEX}::Unit"
     label: "Enter ingredient quantity"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- assertVisible:
-    id: "RecipeIngredients::${INDEX}::QuantityInput"
-    text: "${QUANTITY}"
-    label: "Verify ingredient quantity"
-
-- pressKey: enter
-
 - runFlow:
-    file: "../../waitForKeyboardNumericDismiss.yaml"
+    file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"
 
 - tapOn:
@@ -68,29 +51,12 @@ appId: "com.recipedia"
     label: "Focus on ingredient name"
 
 - runFlow:
-    when:
-      visible:
-        id: "RecipeIngredients::${INDEX}::NameInput::CustomTextInput"
-        text: ".+"
-    commands:
-      - eraseText:
-          label: "Erase the existing ingredient name"
-      - waitForAnimationToEnd:
-          label: "Wait for keyboard animation"
-
-- inputText:
-    text: "${NAME}"
+    file: "../../inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::${INDEX}::NameInput::CustomTextInput"
+      VALUE: "${NAME}"
+      DISMISS_ID: "RecipeIngredients::${INDEX}::Unit"
     label: "Enter ingredient name"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- assertVisible:
-    id: "RecipeIngredients::${INDEX}::NameInput::CustomTextInput"
-    text: "${NAME}"
-    label: "Verify ingredient name is well edited"
-
-- pressKey: "ENTER"
 
 - runFlow:
     file: "../../waitForKeyboardDismiss.yaml"

@@ -1,154 +1,48 @@
 # E2E Testing Guide for Recipedia
 
-This guide provides comprehensive documentation for AI agents and developers
-working with End-to-End (E2E) tests in the Recipedia React Native app using
-Maestro.
+Maestro E2E tests for the Recipedia React Native app. Written for AI agents and
+developers editing flows in `tests/e2e/`.
 
 ## Table of Contents
 
-- [Overview](#overview)
+- [Running Tests](#running-tests)
+- [Suites](#suites)
 - [Architecture](#architecture)
-- [Directory Structure](#directory-structure)
+- [Bundle ID (`appId`)](#bundle-id-appid)
 - [TestID Conventions](#testid-conventions)
-- [File Types](#file-types)
-- [Adding New Tests](#adding-new-tests)
-- [Editing Existing Tests](#editing-existing-tests)
-- [Reusability Patterns](#reusability-patterns)
-- [OCR Testing Patterns](#ocr-testing-patterns)
-- [Platform-Specific Testing](#platform-specific-testing)
+- [Adding Tests](#adding-tests)
+- [Text Input Rules](#text-input-rules)
+- [Keyboard Dismissal](#keyboard-dismissal)
+- [Shared Platform-Split Flows](#shared-platform-split-flows)
+- [SearchBar Patterns](#searchbar-patterns)
+- [Re-render Barriers](#re-render-barriers)
+- [OCR Testing](#ocr-testing)
 - [Language Support](#language-support)
-- [Common Patterns](#common-patterns)
+- [CI Retry Mechanism](#ci-retry-mechanism)
+- [Emulator Settings (Android CI)](#emulator-settings-android-ci)
+- [Production Smoke Build](#production-smoke-build)
 - [Validating Flows with the Maestro MCP Server](#validating-flows-with-the-maestro-mcp-server)
 - [Troubleshooting](#troubleshooting)
 
-## Overview
-
-Recipedia uses **Maestro** for E2E testing. Maestro is a mobile UI testing
-framework that uses YAML configuration files to define test flows.
-
-### Key Commands
+## Running Tests
 
 ```bash
-# Build and test in one command (runs all suites)
-npm run workflow:build-test:android
+npm run workflow:build-test:android   # build + run every suite
 
-# Run a specific test suite (from tests/e2e/ directory)
 cd tests/e2e
-maestro test . --config=settings.yaml
-maestro test . --config=search.yaml
-maestro test . --config=ocr.yaml
-
-# Run individual test case directly
-maestro test cases/settings/26_dark_mode.yaml
-
-# Run specific feature directory
-maestro test cases/search/
+maestro test . --config=settings.yaml # one suite
+maestro test cases/settings/1_dark_mode.yaml       # one case, no retry
+maestro test cases/settings/ci/1_dark_mode.yaml    # one case, with CI retry
 ```
 
-### Current Test Organization
+## Suites
 
-Tests are organized into **test suites**, each with its own configuration file
-at the root of `tests/e2e/`:
-
-- **smoke.yaml** - Minimal core-flow sanity: launch, navigate all bottom tabs
-  (incl. Menu), open a recipe, search. Fast guard that each build doesn't crash
-  on the primary journeys; assertions are shallow, locale-agnostic and
-  dataset-agnostic (id-only, no assumptions about seeded recipe names). Runs on
-  the **production-dataset** release build (`production-maestro` EAS profile) so
-  it validates the production seed data + release optimizations — see
-  [Production smoke build](#production-smoke-build)
-- **app-init.yaml** - App launch, onboarding, FAB menu
-- **search.yaml** - Search bar behaviour (open/close, scroll, results, typing)
-- **search-filters.yaml** - Filter page and filter chip behaviour
-- **recipe-view.yaml** - Recipe display and viewing
-- **recipe-create.yaml** - Recipe creation manual entry
-- **ocr.yaml** - OCR-based recipe creation (camera and gallery)
-- **shopping.yaml** - Shopping list functionality
-- **settings.yaml** - App parameters and preferences (dark mode, language,
-  season filter)
-- **tags-db.yaml** - Tag database management
-- **ingredients-db.yaml** - Ingredient database management
-- **duplicates.yaml** - Duplicate detection and validation
-
-Each suite configuration file defines which test cases to run and their
-execution order using the `flows` and `executionOrder` directives.
-
-## Architecture
-
-The E2E test architecture follows a hierarchical structure that promotes
-reusability and maintainability following Maestro best practices.
-
-```
-tests/e2e/
-├── {suite}.yaml                   # Test suite configuration (app-init, search, ocr, etc.)
-├── cases/                         # Test case implementations
-│   ├── {feature}/                # Feature-specific test cases
-│   │   ├── {test_name}.yaml      # Individual test case (run locally)
-│   │   └── ci/                   # CI wrappers with retry (used by suite configs)
-│   │       └── {test_name}.yaml  # Wraps the parent flow in a retry block
-├── flows/                         # Reusable action sequences
-│   ├── {feature}/                # Feature-specific flows
-│   │   └── {action}.yaml         # Reusable flow
-├── asserts/                       # UI state verifications
-│   ├── {screen}/                 # Screen-specific assertions
-│   │   ├── common/               # Common reusable assertions
-│   │   ├── en/                   # English-specific assertions
-│   │   └── fr/                   # French-specific assertions
-└── assets/                        # Test data (for OCR tests)
-```
-
-### Design Principles
-
-1. **Suite-Based Organization**: Tests are organized into suites, each with its
-   own configuration file
-2. **Isolated Test Cases**: Each test case runs independently with its own app
-   launch
-3. **Feature Organization**: Test cases grouped by feature in `cases/`
-   subdirectories
-4. **Configured Execution**: Suite config files control test discovery and
-   execution order
-5. **Separation of Concerns**: Test cases orchestrate reusable flows and
-   assertions
-6. **CI Retry Isolation**: CI uses wrapper flows in `ci/` subdirectories to add
-   retry behaviour without affecting local runs
-7. **Reusability**: Common actions and assertions are extracted into separate
-   files
-8. **Language Independence**: Language-specific assertions are separated
-9. **Platform Awareness**: Android and iOS implementations are conditionally
-   executed
-
-## Bundle ID (`appId`)
-
-Every flow declares `appId: 'com.recipedia'`. This is shared across **iOS and
-Android** on purpose, and it is **not** the iOS App Store bundle id.
-
-iOS is published under a distinct store identity, `com.recipedia.ios`. That
-suffix is applied **only to the `production` EAS build profile** — see the
-`isStoreBuild` gate in `app.config.ts`. Every non-store build (Maestro E2E, dev,
-simulator) keeps the plain `com.recipedia`, identical to Android.
-
-Why it matters for tests:
-
-- Maestro launches the app **solely by bundle id**. There is no per-platform
-  `appId` in a flow, so the test build must carry the same id on both platforms.
-- If the iOS test build also used `com.recipedia.ios`, Maestro would try to
-  launch a bundle id that isn't installed and **every iOS suite would fail**
-  with `Failed to get app binary directory for bundle com.recipedia`.
-- Keeping the suffix gated to store builds means the flows stay
-  platform-agnostic and any single flow runs directly
-  (`maestro test path/to/flow.yaml`) with no extra env. Do **not** change
-  `appId` to the `.ios` id in flow files.
-
-## Directory Structure
-
-### Suite Configuration Files (Root Level)
-
-Each test suite has its own configuration file at the root of `tests/e2e/` that
-defines which test cases to run and their execution order.
-
-**Example**: `settings.yaml`
+Each suite has a config at the root of `tests/e2e/` listing its cases and their
+order. Configs point at `cases/{feature}/ci/*` so CI gets the retry wrappers;
+the originals in the parent directory are what you run locally.
 
 ```yaml
+# settings.yaml
 flows:
   - cases/settings/ci/*
 
@@ -156,1478 +50,344 @@ executionOrder:
   flowsOrder:
     - '1 - Dark Mode Toggle Flow'
     - '2 - Season Filter Toggle Flow'
-    - '3 - Season Filter Edge Cases Flow'
-    - '4 - Default Persons Setting Flow'
-    - '5 - Bug Report Flow'
-    - '6 - Language Switch Flow'
 ```
 
-Suite configs point to `ci/*` so that CI runs the retry wrappers. The original
-flow files in the parent directory are used for local runs.
+| Suite                           | Covers                                                  |
+| ------------------------------- | ------------------------------------------------------- |
+| `smoke`                         | Core journeys on the **production dataset** — see below |
+| `app-init`                      | Launch, onboarding, FAB menu                            |
+| `search` / `search-filters`     | Search bar behaviour / filter page and chips            |
+| `recipe-create` / `recipe-edit` | Manual creation / editing                               |
+| `recipe-readonly`               | Read-only recipe screen                                 |
+| `ingredient-dialog`             | Ingredient dialog interactions                          |
+| `ocr`                           | OCR recipe creation (camera + gallery)                  |
+| `menu` / `shopping`             | Menu and shopping list                                  |
+| `settings`                      | Dark mode, language, season filter, default persons     |
+| `tags-db` / `ingredients-db`    | Tag and ingredient database management                  |
+| `duplicates-*`                  | Duplicate detection for recipes, tags, ingredients      |
+| `web` / `web-edge-cases`        | Website import                                          |
+| `bulk-import`                   | Bulk import pipeline                                    |
+| `performance`                   | Flashlight measurement run                              |
 
-**Available Suite Configurations**:
+Adding a suite: create `{suite}.yaml`, list `cases/{feature}/ci/*`, add the
+suite to the matrices in `.github/workflows/build-test.yml`.
 
-- `smoke.yaml` - Minimal core-flow smoke tests (launch, tab nav, view recipe,
-  search)
-- `app-init.yaml` - Application initialization tests
-- `search.yaml` - Search bar tests
-- `search-filters.yaml` - Filter page and filter chip tests
-- `recipe-view.yaml` - Recipe viewing tests
-- `recipe-create.yaml` - Manual recipe creation tests
-- `ocr.yaml` - OCR-based recipe creation tests
-- `shopping.yaml` - Shopping list tests
-- `settings.yaml` - Settings and preferences tests
-- `tags-db.yaml` - Tag database tests
-- `ingredients-db.yaml` - Ingredient database tests
-- `duplicates.yaml` - Duplicate detection tests
-
-### Test Case Files (Cases Directory)
-
-Individual test cases in `cases/{feature}/` subdirectories. Each test case:
-
-- Starts with `launchApp` or `runFlow: setupTest.yaml` for isolation
-- Uses numbered naming convention (e.g., `26_dark_mode.yaml`)
-- Has descriptive names in the YAML metadata
-
-**Example**: `cases/settings/26_dark_mode.yaml`
-
-```yaml
-name: '26 - Dark Mode Toggle Flow'
-appId: 'com.recipedia'
-tags:
-  - settings
----
-- runFlow:
-    file: '../../flows/setupTest.yaml'
-    label: 'Setup - Launch app and wait for ready'
-
-- runFlow:
-    file: '../../cases/settings/darkModeToggle.yaml'
-    label: 'Action - Toggle dark mode and verify'
-```
-
-### Cases Directory
-
-Complete test scenarios that represent user journeys. Cases combine flows and
-assertions to test specific functionality.
-
-**Structure**:
+## Architecture
 
 ```
-cases/
-├── bottomButtons/         # FAB menu expansion/collapse
-├── filters/              # Search filtering by ingredients/tags
-├── launchApp/            # Initial app launch scenarios
-├── parameters/           # Settings screen interactions
-├── recipeAdding/         # Recipe creation flows
-│   ├── manual/          # Manual recipe entry
-│   └── validation/      # Form validation tests
-├── recipeRendering/      # Recipe display scenarios
-├── searchBar/            # Search bar interactions
-└── shopping/             # Shopping list operations
+tests/e2e/
+├── {suite}.yaml            # suite config
+├── cases/{feature}/        # test cases (user journeys)
+│   └── ci/                 # retry wrappers used by suite configs
+├── flows/{feature}/        # reusable action sequences
+├── asserts/{screen}/       # UI verifications, with en/ and fr/ variants
+└── assets/                 # OCR images
 ```
 
-### Flows Directory
+Principles: cases orchestrate, flows act, asserts verify. Every case is
+independent and starts from `flows/setupTest.yaml` (launch with clear state,
+skip onboarding, warm up screens). Keep flows atomic, pass parameters via `env`,
+give every command a `label` — labels are what you read in `maestro.log`.
 
-Reusable sequences of actions that can be composed into larger test scenarios.
-Flows should be atomic and focused on a single feature.
+Directory naming is lowercase (`flows/recipe/adding/...`); language-specific
+assertions live in `en/` / `fr/` leaves.
 
-**Structure**:
+## Bundle ID (`appId`)
 
-```
-flows/
-├── navigation/           # Screen navigation helpers
-├── parameters/          # Settings interactions
-│   └── language/        # Language switching flows
-├── Recipe/              # Recipe-related flows
-│   └── Adding/         # Recipe creation flows
-│       ├── Manual/     # Manual input flows
-│       ├── OCR/        # OCR-based input flows
-│       │   ├── android/  # Android-specific OCR
-│       │   ├── Camera/   # Camera mode OCR
-│       │   └── Gallery/  # Gallery mode OCR
-│       ├── en/         # English-specific flows
-│       └── fr/         # French-specific flows
-├── Search/              # Search-related flows
-│   └── Filters/        # Filter manipulation flows
-└── Shopping/            # Shopping list flows
-    ├── en/             # English-specific flows
-    └── fr/             # French-specific flows
-```
-
-### Asserts Directory
-
-UI state verification files. Assertions check that the UI displays the expected
-elements and data.
-
-**Structure**:
-
-```
-asserts/
-├── Alerts/              # Alert dialog assertions
-│   ├── en/             # English alert messages
-│   └── fr/             # French alert messages
-├── BottomTabs/          # Bottom navigation assertions
-├── Home/                # Home screen assertions
-│   └── common/         # Reusable home assertions
-├── Modal/               # Modal dialog assertions
-├── Parameters/          # Settings screen assertions
-│   └── language/       # Language-specific parameter checks
-├── Recipe/              # Recipe screen assertions
-│   ├── common/         # Reusable recipe assertions
-│   ├── Edit/           # Edit mode assertions
-│   ├── OCR/            # OCR mode assertions
-│   └── ReadOnly/       # Read-only mode assertions
-│       └── en/         # English recipe content
-├── Search/              # Search screen assertions
-│   ├── SearchBar/      # Search bar state
-│   └── en/             # English search assertions
-│       └── Filters/    # Filter state assertions
-└── Shopping/            # Shopping list assertions
-```
+Every flow declares `appId: 'com.recipedia'`, shared by iOS and Android on
+purpose. iOS publishes as `com.recipedia.ios`, but that suffix is applied
+**only** to the `production` EAS profile (`isStoreBuild` gate in
+`app.config.ts`). Maestro launches by bundle id alone and flows have no
+per-platform `appId`, so a test build carrying `.ios` would fail every iOS suite
+with `Failed to get app binary directory for bundle com.recipedia`. Never change
+`appId` in a flow file.
 
 ## TestID Conventions
 
-The app uses a **consistent hierarchical TestID pattern** that makes elements
-easy to locate in tests.
-
-### Pattern
-
-```
-{Screen|Component}::{Element}[::{Type|Modifier}]
-```
-
-### Examples
+Pattern: `{Screen|Component}::{Element}[::{Type|Modifier}]`
 
 ```yaml
-# Screen-level elements
-id: 'SearchScreen::SearchBar'
-id: 'SearchScreen::RecipeCards::1'
-id: 'BottomTabs::Home'
-
-# Component-level elements
-id: 'RecipeTitle::Text'
-id: 'RecipeTitle::CustomTextInput'
-id: 'RecipeTitle::OpenModal::RoundButton'
-
-# Indexed elements (for lists)
+id: 'SearchScreen::RecipeCards::1' # screen element, indexed
+id: 'RecipeTitle::CustomTextInput' # component element with type
 id: 'RecipeIngredients::0::QuantityInput::NumericTextInput'
-id: 'Modal::List#2::SquareButton::Image'
-
-# Button types
-id: 'BackButton::RoundButton'
-id: 'ExpandButton::RoundButton'
-id: 'RecipeValidate-text' # Text button
+id: 'RecipeValidate-text' # Paper button label child
 ```
 
-### TestID Best Practices
+Use the full hierarchy, include the index for list items, append the type when
+several elements share a name.
 
-1. **Be Specific**: Use the full hierarchy to avoid ambiguity
-2. **Use Indices**: For list items, include the index (`::0`, `::1`, `#2`)
-3. **Include Type**: Append element type when multiple elements share a name
-   (`::RoundButton`, `::CustomTextInput`)
-4. **Consistency**: Follow the established pattern for new components
-
-## File Types
-
-### 1. Test Suite Files
-
-**Purpose**: Orchestrate multiple test cases into a coherent test suite
-**Location**: Root of `tests/e2e/` **Naming**: `{number}_{feature}.yaml`
-
-**Structure**:
+**Paper `Button` labels live on a `-text` child.** The `testID` lands on a
+wrapper whose accessibility text is the `accessibilityLabel` prop, not the
+visible label. `tapOn` the wrapper id, `assertVisible` the `-text` child:
 
 ```yaml
-appId: 'com.recipedia'
-name: 'Descriptive test suite name'
----
-- launchApp # Reset app state
-
-- runFlow:
-    file: 'cases/feature/testCase.yaml'
-    label: 'Description of what this case tests'
-# Additional test cases...
-```
-
-### 2. Case Files
-
-**Purpose**: Complete test scenarios representing user journeys **Location**:
-`cases/{feature}/` **Naming**: `{action}.yaml` (camelCase)
-
-**Structure**:
-
-```yaml
-appId: 'com.recipedia'
----
-# Navigation
-- tapOn:
-    id: 'BottomTabs::Search'
-    label: 'Navigate to Search screen'
-
-# Action
-- tapOn:
-    id: 'SearchScreen::SearchBar'
-    label: 'Focus on search bar'
-
-# Assertion
-- runFlow:
-    file: '../../asserts/Search/en/assertSearchScreen.yaml'
-    label: 'Verify search screen state'
-
-# Cleanup
-- tapOn:
-    id: 'BottomTabs::Home'
-    label: 'Return to Home'
-```
-
-### 3. Flow Files
-
-**Purpose**: Reusable sequences of actions **Location**: `flows/{feature}/`
-**Naming**: `{action}.yaml` (camelCase)
-
-**Structure**:
-
-```yaml
-appId: 'com.recipedia'
----
-# Focused on a single action or sequence
-- tapOn:
-    id: 'SomeButton::RoundButton'
-    label: 'Perform specific action'
-
-- runFlow:
-    file: '../common/helper.yaml'
-    label: 'Use shared helper'
-
-# Can accept environment variables
-- runFlow:
-    file: 'subFlow.yaml'
-    env:
-      PARAM_NAME: value
-    label: 'Parameterized flow'
-```
-
-### 4. Assert Files
-
-**Purpose**: Verify UI state and content **Location**: `asserts/{screen}/`
-**Naming**: Descriptive names indicating what's being asserted
-
-**Structure**:
-
-```yaml
-appId: 'com.recipedia'
----
-# Positive assertions
+# WRONG — wrapper carries accessibilityLabel, not "Annuler"
 - assertVisible:
-    id: 'Element::ID'
-    label: 'Description of expected state'
-
+    { id: 'BulkImportDiscovery::fresh-0::RestoreButton', text: 'Annuler' }
+# RIGHT
 - assertVisible:
-    text: 'Expected Text'
-    label: 'Text content is displayed'
-
-# Negative assertions
-- assertNotVisible:
-    id: 'Element::ID'
-    label: 'Element should not be visible'
-
-# Text pattern matching
-- assertVisible:
-    text: "[\\s\\S]+" # Regex for non-empty text
-    label: 'Content is present'
+    { id: 'BulkImportDiscovery::fresh-0::RestoreButton-text', text: 'Annuler' }
 ```
 
-## Adding New Tests
+A wrapper `id` + `text` works only when the button has no `accessibilityLabel`.
 
-### Adding a New Test Suite
+## Adding Tests
 
-1. **Create suite configuration file** at the root of `tests/e2e/`:
-   `{suite-name}.yaml`
-2. **Define test discovery** using `flows` directive
-3. **Define execution order** using `executionOrder.flowsOrder` (optional)
-4. **Update CI workflow** to include the new suite in the matrix
+New case in an existing suite:
 
-**Example**: Creating a new favorites test suite `favorites.yaml`
+1. `cases/{feature}/{N}_{name}.yaml` — `name`, `appId`, `tags`, then
+   `setupTest.yaml` → actions → assertions.
+2. CI wrapper at `cases/{feature}/ci/{N}_{name}.yaml` (see
+   [CI Retry Mechanism](#ci-retry-mechanism)).
+3. Add the case `name` to the suite's `executionOrder.flowsOrder`.
 
-```yaml
-flows:
-  - cases/favorites/*
-
-executionOrder:
-  flowsOrder:
-    - '40 - Add to Favorites Flow'
-    - '41 - Remove from Favorites Flow'
-    - '42 - View Favorites List Flow'
-```
-
-**Then add to `.github/workflows/build-test.yml`**:
-
-```yaml
-strategy:
-  matrix:
-    suite:
-      [
-        'app-init',
-        'search',
-        'search-filters',
-        'recipe-view',
-        'recipe-create',
-        'shopping',
-        'settings',
-        'tags-db',
-        'ingredients-db',
-        'duplicates',
-        'ocr',
-        'favorites',
-      ]
-```
-
-### Adding a New Test Case to Existing Suite
-
-1. **Choose appropriate feature directory** in `cases/` or create a new one
-2. **Create test case file** with numbered name: `{number}_{test_name}.yaml`
-3. **Create the CI wrapper** at `cases/{feature}/ci/{number}_{test_name}.yaml`
-4. **Add test name** to the suite's `executionOrder.flowsOrder` list
-5. **Structure the test**: Setup → Action → Cleanup
-
-**Example**: Creating `cases/favorites/40_add_to_favorites.yaml`
-
-```yaml
-name: '40 - Add to Favorites Flow'
-appId: 'com.recipedia'
-tags:
-  - favorites
----
-- runFlow:
-    file: '../../flows/setupTest.yaml'
-    label: 'Setup - Launch app and wait for ready'
-
-- runFlow:
-    file: '../../cases/favorites/addToFavorites.yaml'
-    label: 'Action - Add recipe to favorites'
-```
-
-### Adding a Reusable Case Flow
-
-1. **Create case directory** if needed: `cases/{feature}/`
-2. **Create case file**: `cases/{feature}/{action}.yaml` (use camelCase)
-3. **Structure the test**: Navigate → Act → Assert → Cleanup
-
-**Example**: `cases/favorites/addToFavorites.yaml`
-
-```yaml
-appId: 'com.recipedia'
----
-# Navigate to recipe
-- tapOn:
-    id: 'BottomTabs::Search'
-    label: 'Navigate to Search'
-
-- tapOn:
-    id: 'SearchScreen::RecipeCards::1'
-    label: 'Open first recipe'
-
-# Perform action
-- tapOn:
-    id: 'Recipe::FavoriteButton::RoundButton'
-    label: 'Tap favorite button'
-
-# Assert result
-- runFlow:
-    file: '../../asserts/Recipe/favoriteAdded.yaml'
-    label: 'Verify recipe marked as favorite'
-
-# Cleanup
-- tapOn:
-    id: 'BackButton::RoundButton'
-    label: 'Return to search'
-```
-
-### Adding a New Flow
-
-1. **Identify reusable action sequence**
-2. **Create flow file** in appropriate directory
-3. **Keep it focused** on single responsibility
-4. **Add clear labels** for debugging
-
-**Example**: `flows/favorites/toggleFavorite.yaml`
-
-```yaml
-appId: 'com.recipedia'
----
-- tapOn:
-    id: 'Recipe::FavoriteButton::RoundButton'
-    label: 'Toggle favorite state'
-
-- runFlow:
-    file: '../../asserts/Alerts/en/favoriteToggled.yaml'
-    label: 'Verify favorite toggle alert'
-```
-
-### Adding New Assertions
-
-1. **Determine scope**: Screen-specific or common?
-2. **Choose location**: `asserts/{screen}/` or `asserts/{screen}/common/`
-3. **Consider language**: Need en/fr variants?
-4. **Create assertion file**
-
-**Example**: `asserts/Recipe/favoriteAdded.yaml`
-
-```yaml
-appId: 'com.recipedia'
----
-- assertVisible:
-    id: 'Recipe::FavoriteButton::RoundButton'
-    label: 'Favorite button is visible'
-
-- assertVisible:
-    text: '󰋑' # Filled heart icon
-    label: 'Favorite button shows filled heart'
-
-- assertVisible:
-    id: 'Recipe::FavoriteIndicator'
-    label: 'Favorite indicator is displayed'
-```
-
-## Editing Existing Tests
-
-### Best Practices for Editing
-
-1. **Understand the hierarchy**: Know if you're editing a suite, case, flow, or
-   assert
-2. **Check dependencies**: Search for files that reference the one you're
-   editing
-3. **Maintain consistency**: Follow existing patterns and naming
-4. **Update related files**: If changing a flow, update all cases that use it
-5. **Test locally**: Run affected tests before committing
-
-### Finding File Usage
+Before editing a shared flow, find its callers:
 
 ```bash
-# Find all references to a file
 grep -r "fileName.yaml" tests/e2e --include="*.yaml"
-
-# Find files referencing a specific TestID
-grep -r "TestID::Name" tests/e2e --include="*.yaml"
 ```
 
-### Common Edit Scenarios
+## Text Input Rules
 
-#### Updating a TestID Reference
-
-When the app's TestID changes, update all test files:
-
-```bash
-# Find all occurrences
-grep -r "OldTestID" tests/e2e --include="*.yaml"
-
-# Update manually or with sed (be careful!)
-find tests/e2e -name "*.yaml" -exec sed -i '' 's/OldTestID/NewTestID/g' {} +
-```
-
-#### Adding a Step to Existing Flow
-
-**Before**:
+Use `flows/inputAndCommitText.yaml` (env `TARGET_ID`, `VALUE`, `DISMISS_ID`)
+rather than hand-rolling `inputText` + a dismiss:
 
 ```yaml
-- tapOn:
-    id: 'Button::RoundButton'
-    label: 'Tap button'
-
+- tapOn: { id: 'RecipeTime::NumericTextInput', label: 'Focus the time input' }
 - runFlow:
-    file: 'assert.yaml'
-```
-
-**After**:
-
-```yaml
-- tapOn:
-    id: 'Button::RoundButton'
-    label: 'Tap button'
-
-# New steps with animation waits
-- waitForAnimationToEnd:
-    label: 'Wait for keyboard animation'
-
-- pressKey: enter
-
-- waitForAnimationToEnd:
-    label: 'Wait for keyboard to dismiss'
-
-- runFlow:
-    file: 'assert.yaml'
-```
-
-#### Updating Assertion Text
-
-When UI text changes:
-
-```yaml
-# Old
-- assertVisible:
-    text: 'Add to Cart'
-
-# New
-- assertVisible:
-    text: 'Add to Menu' # Updated text
-```
-
-## Reusability Patterns
-
-### Common Assertion Flows
-
-Extract repeated assertions into common files for reusability.
-
-**Example**: Recipe common buttons
-
-**File**: `asserts/Recipe/common/buttonsReadOnly.yaml`
-
-```yaml
-appId: 'com.recipedia'
----
-- assertVisible:
-    id: 'BackButton::RoundButton'
-    label: 'Back button is displayed'
-
-- assertVisible:
-    id: 'RecipeValidate-text'
-    text: 'Add to the menu'
-    label: 'Add recipe button is displayed'
-
-- assertVisible:
-    id: 'RecipeDelete::RoundButton'
-    label: 'Delete button is displayed'
-```
-
-**Usage**:
-
-```yaml
-- runFlow:
-    file: '../common/buttonsReadOnly.yaml'
-    label: 'Assert common ReadOnly buttons'
-```
-
-### Environment Variables
-
-Pass parameters to flows for flexibility.
-
-**Flow**: `flows/navigation/openRecipe.yaml`
-
-```yaml
-appId: 'com.recipedia'
----
-- tapOn:
-    id: 'SearchScreen::RecipeCards::${RECIPE_INDEX}'
-    label: 'Open recipe at index ${RECIPE_INDEX}'
-```
-
-**Usage**:
-
-```yaml
-- runFlow:
-    file: 'flows/navigation/openRecipe.yaml'
+    file: '../../inputAndCommitText.yaml' # adjust relative depth per caller
     env:
-      RECIPE_INDEX: 0
-    label: 'Open first recipe'
+      TARGET_ID: 'RecipeTime::NumericTextInput'
+      VALUE: '30'
+      DISMISS_ID: 'RecipeTime::PrefixText'
+    label: 'Enter the time to prepare'
 ```
 
-### Conditional Execution
+**Assert the typed value before the field is blurred.** `inputText` returns as
+soon as Maestro dispatched the keystrokes and `waitForAnimationToEnd` only
+compares two frames, so on a loaded CI machine the blur lands while the last
+characters are still queued on the JS thread. The field commits a partial value
+(`30` saved as `3`) and the flow fails minutes later somewhere unrelated (issue
+#525). This is about the blur, not about Enter — a tap elsewhere and
+`hideKeyboard` race the same way.
 
-Execute different flows based on conditions.
+**Commit with a tap, not `pressKey: enter`.** Enter does not reliably trigger
+the IME action on Android and inserts a newline in a multiline input. The
+dismiss target must be **non-touchable**: the recipe screens use
+`keyboardShouldPersistTaps='handled'`, so tapping a plain `Text` blurs the
+field, while tapping a button runs that button's handler and keeps the keyboard
+up. Usual targets: `RecipeTime::PrefixText`, `RecipePersons::PrefixText`,
+`<NutritionRow>::Text`, `RecipeIngredients::<i>::Unit`.
 
-**Platform-specific**:
+**Pick the helper that matches the intent.** `inputText` inserts at the caret
+rather than replacing, so the wrong helper either concatenates silently (`321`
+typed into a persons field holding `4` commits `4321`) or asserts text it never
+predicted.
+
+| Helper                            | Field starts | Ends up holding | Asserts                    |
+| --------------------------------- | ------------ | --------------- | -------------------------- |
+| `flows/inputAndCommitText.yaml`   | empty        | `VALUE`         | field **is** `VALUE`       |
+| `flows/replaceAndCommitText.yaml` | non-empty    | `VALUE`         | field **is** `VALUE`       |
+| `flows/appendText.yaml`           | non-empty    | old + `VALUE`   | field **contains** `VALUE` |
+
+All three take `TARGET_ID` and `VALUE`; the committing two also take
+`DISMISS_ID`. `replaceAndCommitText.yaml` clears the field then delegates to
+`inputAndCommitText.yaml`. `appendText.yaml` deliberately does not commit — it
+is what a multiline paragraph needs between its lines.
+
+**It is all caret mechanics.** `inputText` inserts at the caret, `eraseText`
+only backspaces what is _before_ it, and no `pressKey` jumps to the end. A plain
+`tapOn` hits the element **centre** — past the end of a short value, mid-string
+in one that fills the box. So a persons field holding `4` then given `321` ends
+up `4321`, and a quantity field holding `3291` then erased ends up `91`. The
+lever is `tapOn`'s element-relative `point`: `"95%,50%"` puts the caret past the
+end, `"2%,50%"` at the start (used by
+`flows/parameters/tags/insertTextAtCursorBeginning.yaml`).
+`replaceAndCommitText.yaml` taps at 95% before erasing, so one `eraseText` is
+enough, then waits for the field to read empty. Never hand-roll `tapOn` +
+`eraseText` on a field holding more than a character or two, and never add a
+second erase to force a field clear — a field that comes back non-empty is being
+re-rendered from state mid-erase; fix that instead.
+
+Fields that start non-empty: persons (seeded from `defaultPersons`, `4` out of
+the box), time and persons in OCR mode (`manuallyFill` seeds `0`), and
+everything in an editing flow. Fields that start empty: the manual-add form,
+freshly added ingredient rows, first-time nutrition values — do not pay
+`replaceAndCommitText.yaml`'s ~4s of Android backspaces there.
+
+Autocomplete fields (`TextInputWithDropDown`) follow the same rules: ingredient
+names commit live via `onChangeText`, tags via `onEndEditing` → `onValidate`,
+which fires on focus loss.
+
+**Multiline inputs are the exception**: Enter is what inserts the newline. Type
+each line with `flows/appendText.yaml` (asserts the line landed, does not blur),
+insert the newline inline (`pressKey: ENTER` on Android, `tapOn: Return` on
+iOS), and blur once at the end —
+`flows/recipe/adding/manual/en/addAiguillettes.yaml` is the only such case.
+
+## Keyboard Dismissal
+
+Wrap every dismissal in `waitForAnimationToEnd` before and after, so Maestro
+never taps while the keyboard animates.
+
+**Modal dialogs** (ItemDialog, NoteEditDialog, UrlInputDialog): use
+`flows/dismissModalKeyboard.yaml`, which holds the split — `hideKeyboard` on
+Android, tap the iOS `Done` key (from `returnKeyType="done"`). Do not re-inline
+the platform blocks; iOS `pressKey: enter` is flaky on CI simulators.
+
+**Autocomplete, when the flow must pick from the dropdown**: committing the
+field fires `onEndEditing` → `onValidate` with the typed text and closes the
+dropdown before it can be tapped. `hideKeyboard` (Android only) is the one
+dismiss that leaves the field focused, so it is also the only way to reach a
+typed-but-unresolved ingredient row — which
+`flows/recipe/adding/manual/en/tryAddOnlyImageTitleDescriptionTagPersonIngredient.yaml`
+relies on for the "all ingredients known by Recipedia" assertion in
+`cases/recipe-create/4_validation_all.yaml`. Everywhere else prefer
+`inputAndCommitText.yaml`. iOS autocomplete dismissal is handled case by case.
+
+**Tapping SearchBar without typing**: no keyboard appears on iOS, so guard the
+`hideKeyboard` with `when: platform: Android`.
+
+## Shared Platform-Split Flows
+
+When both platforms reach the same goal a different way, the split lives in one
+flow and callers use `runFlow`. Keep a block inline only when it is asymmetric
+(one OS does something the other lacks).
+
+| Flow                                                   | Env          | Android / iOS                                      |
+| ------------------------------------------------------ | ------------ | -------------------------------------------------- |
+| `flows/dismissModalKeyboard.yaml`                      | —            | `hideKeyboard` / tap `Done`                        |
+| `flows/dismissKeyboardVia.yaml`                        | `KEY`        | `hideKeyboard` / tap `${KEY}` (`Search`, `Return`) |
+| `flows/waitForCheckSettle.yaml`                        | `CHECK_TEXT` | no-op / wait 30s for the checked state to animate  |
+| `flows/search/commitTypedSearch.yaml`                  | —            | tap `key_pos_ime_action` / tap `Search`            |
+| `flows/recipe/adding/ocr/pickImageSource.yaml`         | —            | camera / gallery (simulator has no camera)         |
+| `flows/recipe/adding/ocr/validateWithoutCropping.yaml` | —            | dispatches to the per-OS crop-validate flows       |
+
+## SearchBar Patterns
+
+While the search bar is focused (`searchBarClicked === true`) the recipe grid
+(`SearchScreen::RecipeCards::*`) is **empty**, replaced by the suggestion
+dropdown. The grid only renders once the dropdown closes via `onSubmitEditing`.
+`pressKey: enter` does not reliably trigger Paper Searchbar's IME action on
+Android, which was the root cause of intermittent `RecipeCards::*` timeouts
+across the recipe-create, ingredients-db and search suites. Use one of two
+deterministic patterns:
+
+**Pattern A — act on one specific recipe** (the top suggestion _is_ that
+recipe): tap `SearchScreen::Suggestions::Item::0`. Cross-platform, no split. It
+**replaces the typed text with the suggestion's full title** (typing `Lentil`
+gives the filter `Lentil Soup`).
+
+**Pattern B — keep exactly the typed text** (grid must show every match, or the
+suggestion list may be empty — e.g. verifying a title was _not_ added): run
+`flows/search/commitTypedSearch.yaml`, which taps the keyboard action key so
+`onSubmitEditing` fires, closing the dropdown and keeping the filter. Do not
+substitute `hideKeyboard`: it dismisses the keyboard without closing the
+dropdown (there is no `onBlur`, and the dropdown must stay scrollable).
+
+When unsure prefer Pattern B — it never changes the search term.
+
+**Clearing the search** is a third thing: tap
+`SearchScreen::SearchBar::RightIcon`, visible whenever the search has text or is
+active. It clears the text _and_ closes the dropdown, on both platforms, and
+replaces the old `pressKey: "BACK"` / coordinate-tap hacks.
+
+## Re-render Barriers
+
+A tap that writes to the database and then re-groups a list finishes long after
+the tap itself, especially on CI. Asserting the new layout immediately catches
+the list mid-update — the row shows its new state (checkbox ticked) while still
+sitting in its old section. Wait for the _structural_ change, never for the
+tapped row's own styling.
 
 ```yaml
-- runFlow:
-    file: 'android/androidFlow.yaml'
-    when:
-      platform: Android
+# Wrong: the assertion races the re-render
+- tapOn: { id: 'ShoppingScreen::SectionList::Flour' }
+- assertNotVisible:
+    { id: 'ShoppingScreen::SectionList::ingredientTypes.baking::SubHeader' }
 
-- runFlow:
-    file: 'iOS/iOSFlow.yaml'
-    when:
-      platform: iOS
+# Right: the barrier is the row leaving the working list
+- tapOn: { id: 'ShoppingScreen::SectionList::Flour' }
+- extendedWaitUntil:
+    notVisible: { id: 'ShoppingScreen::SectionList::Flour' }
+    timeout: 30000
+    label: 'Wait for Flour to leave the working list'
 ```
 
-**Custom conditions**:
+Pick a barrier the state change actually reaches — the shopping flows show the
+three shapes:
+
+- `flows/shopping/markIngredientPurchased.yaml` — the row leaves the working
+  list for the collapsed purchased block.
+- `flows/shopping/markLastIngredientPurchased.yaml` — buying the last item
+  clears the list, which opens the purchased block and keeps the row on screen,
+  so the all-done state is the barrier instead.
+- `flows/shopping/unmarkIngredientPurchased.yaml` — the row stays visible either
+  way, so the returning category header is the barrier.
+
+**Snackbars block taps.** The purchase undo snackbar is anchored over the bottom
+of the list, so a tap aimed at a row it covers hits the snackbar instead. Flows
+that chain taps wait it out with
+`flows/shopping/waitForUndoSnackbarToClear.yaml` rather than dismissing it by
+hand.
+
+## OCR Testing
+
+Android MediaStore sorts "Recent" by timestamp, and images added within ~500ms
+of each other get unpredictable order. So media is added **on-demand** right
+before selection, and the flow always picks index 0.
+
+Per field: tap the field's OCR button → `android/addMedia.yaml` (env
+`FIELD_NAME`) → `android/selectMostRecentFromModal.yaml`. The modal counter
+tracks which image to pick from the app's own modal:
 
 ```yaml
-- evalScript: ${output.needsValidation = true}
-
-- runFlow:
-    file: 'validate.yaml'
-    when:
-      true: ${output.needsValidation}
-```
-
-## OCR Testing Patterns
-
-OCR (Optical Character Recognition) tests have special patterns due to Android
-MediaStore behavior and the complexity of image-based input.
-
-### The Gallery Ordering Problem
-
-**Issue**: When multiple images are added to Android gallery in quick succession
-(within ~500ms), they may receive similar timestamps, causing unpredictable
-"Recent" sorting.
-
-**Solution**: Add media **on-demand** (right before selection) and always select
-index 0 (most recent).
-
-### OCR Test Architecture
-
-```
-OCR Testing Flow:
-1. Expand FAB menu (if needed)
-2. Open OCR Camera or Gallery
-3. For each field:
-   a. Add media file to device gallery
-   b. Tap OCR button for field
-   c. Select most recent from gallery (index 0)
-   d. Select from app modal using counter
-   e. Increment modal counter
-```
-
-### Key OCR Files
-
-**Android Media Addition**: `flows/Recipe/Adding/OCR/android/addMedia.yaml`
-
-- Adds media file to device gallery
-- Uses conditional logic to select correct file path
-- Waits 500ms for Android MediaStore to index
-
-**Gallery Selection**: `flows/Recipe/Adding/OCR/android/selectFromGallery.yaml`
-
-- Selects most recent image from Android gallery (index 0)
-- Validates without cropping
-
-**Modal Selection with Counter**:
-`flows/Recipe/Adding/OCR/android/selectMostRecentFromModal.yaml`
-
-- Opens app's image selection modal
-- Uses `modalImageCounter` to select correct image
-- Increments counter for next field
-
-### OCR Field Pattern
-
-Each OCR field (title, description, ingredients, etc.) follows this pattern:
-
-```yaml
-appId: 'com.recipedia'
----
-# Tap OCR button for this field
-- tapOn:
-    id: 'RecipeField::OpenModal::RoundButton'
-    label: 'Tap on OCR button of recipe field'
-
-# Add media file
-- runFlow:
-    file: ../android/addMedia.yaml
-    env:
-      FIELD_NAME: fieldName # Used to select correct image
-    when:
-      platform: Android
-# TODO iOS
-
-# Select from gallery and modal using counter
-- runFlow:
-    file: ../android/selectMostRecentFromModal.yaml
-    label: 'Select field from modal for OCR'
-    when:
-      platform: Android
-# TODO iOS
-```
-
-### Modal Counter Pattern
-
-The modal counter tracks which image to select from the app's internal modal.
-
-**Initialization** (in `ocrImage.yaml`):
-
-```yaml
-# After first image selection
-- evalScript: ${output.modalImageCounter = 1}
-```
-
-**Usage** (in `selectMostRecentFromModal.yaml`):
-
-```yaml
-# Select using current counter value
+- evalScript: ${output.modalImageCounter = 1} # after the first selection
 - tapOn:
     id: 'Modal::List#${output.modalImageCounter}::SquareButton::Image'
-    label: 'Select picture ${output.modalImageCounter} from app modal'
-
-# Increment for next field
 - evalScript: ${output.modalImageCounter = output.modalImageCounter + 1}
 ```
 
-### Adding New OCR Recipe Assets
+Camera mode reuses the gallery flows for every field except the first: the
+screen is already open, so `ocrImage.yaml` skips the gallery button, picks
+`Modal::List#0` and initialises the counter.
 
-To add new OCR test recipes:
-
-1. **Create asset directory**: `assets/{recipeName}/`
-2. **Add images**: Place images for each field (image.jpg, title.jpg,
-   ingredients.jpg, etc.)
-3. **Update addMedia.yaml**: Add conditional blocks for new recipe
+**`addMedia` does not support variable substitution.** Select the path with a
+conditional instead:
 
 ```yaml
-# New recipe paths
-- runFlow:
-    when:
-      true: ${RECIPE_NAME == "newRecipe" && FIELD_NAME == "image"}
-    commands:
-      - addMedia:
-          - '../../../../../../assets/newRecipe/image.jpg'
-
-- runFlow:
-    when:
-      true: ${RECIPE_NAME == "newRecipe" && FIELD_NAME == "title"}
-    commands:
-      - addMedia:
-          - '../../../../../../assets/newRecipe/title.jpg'
-# Add more fields...
-```
-
-4. **Create assertion file**: `asserts/Recipe/OCR/{recipeName}.yaml`
-5. **Create test flow**: Add to `9_recipeAddingOCR.yaml`
-
-### Camera vs Gallery OCR
-
-**Gallery Mode** (`OCR/Gallery/`):
-
-- Opens gallery from FAB menu
-- User already on empty recipe screen
-- First field (ocrImage) opens gallery button
-
-**Camera Mode** (`OCR/Camera/`):
-
-- Opens camera from FAB menu
-- Already on empty recipe screen, no gallery button needed
-- First field (ocrImage) special case: screen already open
-- Reuses Gallery flows for all other fields
-
-**Camera ocrImage.yaml** (special case):
-
-```yaml
-# No gallery button tap needed - screen already open
-
-- runFlow:
-    file: ../android/addMedia.yaml
-    env:
-      FIELD_NAME: image
-    when:
-      platform: Android
-
-- tapOn:
-    id: 'RecipeImage::RoundButton'
-    label: 'Tap on OCR button'
-
-- runFlow:
-    file: ../android/selectFromGallery.yaml
-    when:
-      platform: Android
-
-# Select first image from modal (index 0, not using counter yet)
-- tapOn:
-    id: 'Modal::List#0::SquareButton::Image'
-    label: 'Select first image from app modal'
-
-# Initialize counter for subsequent fields
-- evalScript: ${output.modalImageCounter = 1}
-```
-
-### Maestro addMedia Limitation
-
-**Important**: The `addMedia` command does NOT support variable substitution.
-
-**This won't work**:
-
-```yaml
-- addMedia:
-    - '${ASSET_PATH}' # Variable NOT supported
-```
-
-**This works**:
-
-```yaml
-# Use conditional logic with hardcoded paths
 - runFlow:
     when:
       true: ${RECIPE_NAME == "hellofresh" && FIELD_NAME == "image"}
     commands:
-      - addMedia:
-          - '../../../../../../assets/aiguillettesTeriyaki/image.jpg'
+      - addMedia: ['../../../../../../assets/aiguillettesTeriyaki/image.jpg']
 ```
 
-## Platform-Specific Testing
-
-### Current Status
-
-- **Android**: Fully implemented and tested
-- **iOS**: Prepared with TODO comments, awaiting implementation
-
-### Conditional Platform Execution
-
-Use `when: platform:` to execute platform-specific flows:
-
-```yaml
-- runFlow:
-    file: 'android/androidSpecificFlow.yaml'
-    when:
-      platform: Android
-    label: 'Android-specific implementation'
-
-# TODO iOS
-- runFlow:
-    file: 'iOS/iOSSpecificFlow.yaml'
-    when:
-      platform: iOS
-    label: 'iOS-specific implementation'
-```
-
-### Platform-Specific Directory Structure
-
-```
-flows/Recipe/Adding/OCR/
-├── android/              # Android-specific implementations
-│   ├── addMedia.yaml
-│   ├── selectFromGallery.yaml
-│   ├── selectMostRecentFromModal.yaml
-│   ├── takePhoto.yaml
-│   └── validateWithoutCropping.yaml
-└── iOS/                  # iOS implementations (TODO)
-    └── (pending implementation)
-```
-
-### Adding iOS Support
-
-When implementing iOS support:
-
-1. **Create iOS directory**: `flows/{feature}/iOS/`
-2. **Implement iOS-specific flows**: Adapt Android patterns
-3. **Remove TODO comments**: Replace with actual iOS implementation
-4. **Test on iOS device**: Verify flows work correctly
-5. **Update documentation**: Note any iOS-specific quirks
+New OCR recipe: add `assets/{recipeName}/{field}.jpg`, extend `addMedia.yaml`
+with its conditionals, add `asserts/recipe/ocr/{recipeName}.yaml`, wire it into
+an OCR case.
 
 ## Language Support
 
-The app supports English and French with language-specific test assertions.
-
-### Language-Specific Directories
-
-```
-asserts/
-├── Alerts/
-│   ├── en/              # English alert messages
-│   └── fr/              # French alert messages
-├── Home/
-│   ├── en/              # English home screen
-│   └── fr/              # French home screen
-├── Search/
-│   ├── en/              # English search UI
-│   └── fr/              # French search UI
-└── Shopping/
-    ├── en/              # English shopping list
-    └── fr/              # French shopping list
-```
-
-### Language Testing Pattern
-
-**Language Switch Test** (`cases/parameters/languageChange.yaml`):
+Language-specific assertions live in `en/` / `fr/` leaves under
+`asserts/{screen}/`. A language case switches locale, runs the
+`{screen}IsTranslated.yaml` verification flows, then switches back:
 
 ```yaml
-# Switch to French
-- runFlow:
-    file: '../../flows/parameters/language/switchToFrench.yaml'
-    label: 'Switch language to French'
-
-# Verify French translations
-- runFlow:
-    file: '../../flows/parameters/language/homeIsTranslated.yaml'
-    label: 'Verify Home screen in French'
-
-- runFlow:
-    file: '../../flows/parameters/language/searchIsTranslated.yaml'
-    label: 'Verify Search screen in French'
-
-# Switch back to English
-- runFlow:
-    file: '../../flows/parameters/language/switchToEnglish.yaml'
-    label: 'Switch language back to English'
+- runFlow: { file: '../../flows/parameters/language/switchToFrench.yaml' }
+- runFlow: { file: '../../flows/parameters/language/homeIsTranslated.yaml' }
+- runFlow: { file: '../../flows/parameters/language/switchToEnglish.yaml' }
 ```
 
-### Adding New Language Support
-
-1. **Create language directories**: `asserts/{screen}/{langCode}/`
-2. **Create translated assertions**: Duplicate English files with translations
-3. **Add language switch flow**:
-   `flows/parameters/language/switchTo{Language}.yaml`
-4. **Add verification flows**:
-   `flows/parameters/language/{screen}IsTranslated.yaml`
-5. **Update language test**: Add new language to
-   `cases/parameters/languageChange.yaml`
-
-## Common Patterns
-
-### Navigation Pattern
-
-```yaml
-# Navigate to screen
-- tapOn:
-    id: 'BottomTabs::ScreenName'
-    label: 'Navigate to ScreenName'
-
-# Perform action
-# ...
-
-# Return to previous screen
-- tapOn:
-    id: 'BackButton::RoundButton'
-    label: 'Return to previous screen'
-
-# Or return to specific screen
-- tapOn:
-    id: 'BottomTabs::Home'
-    label: 'Return to Home'
-```
-
-### Scroll Pattern
-
-```yaml
-# Scroll until element is visible
-- scrollUntilVisible:
-    element:
-      id: 'Element::ID'
-    direction: DOWN # or UP
-    speed: 60
-    centerElement: true # Optional
-    label: 'Scroll to element'
-```
-
-### Input Pattern
-
-```yaml
-# Tap on input field
-- tapOn:
-    id: 'Input::CustomTextInput'
-    label: 'Focus on input field'
-
-# Enter text
-- inputText:
-    text: 'Sample text'
-    label: 'Enter text'
-
-# Dismiss keyboard with animation waits
-- waitForAnimationToEnd:
-    label: 'Wait for keyboard animation'
-
-- pressKey: enter
-
-- waitForAnimationToEnd:
-    label: 'Wait for keyboard to dismiss'
-```
-
-**Note**: Always wrap keyboard dismissal commands with `waitForAnimationToEnd`
-before and after:
-
-- **Before**: Ensures keyboard animation is complete before dismissing
-- **After**: Ensures keyboard dismissal animation completes before next
-  interaction
-- This prevents race conditions where Maestro taps on the wrong element while
-  keyboard is animating
-
-**Modal Dialogs (ItemDialog, NoteEditDialog, UrlInputDialog)**: For single-line
-inputs in modal dialogs, dismiss the keyboard with the shared
-`flows/dismissModalKeyboard.yaml` flow (same sharing pattern as
-`waitForKeyboardDismiss.yaml`), which holds the platform split — `hideKeyboard`
-on Android, tap the iOS keyboard "Done" key (shown via `returnKeyType="done"` on
-CustomTextInput). Do **not** re-inline the platform blocks in callers:
-
-```yaml
-# Enter text in modal
-- inputText:
-    text: 'Item name'
-    label: 'Enter item name'
-
-- waitForAnimationToEnd:
-    label: 'Wait for keyboard animation'
-
-- runFlow:
-    file: '../../flows/dismissModalKeyboard.yaml' # adjust relative path per caller depth
-    label: 'Dismiss modal keyboard (platform-specific)'
-
-- runFlow:
-    file: '../../flows/waitForKeyboardDismiss.yaml'
-    label: 'Wait for keyboard to dismiss'
-```
-
-This approach is more reliable than `pressKey: enter` for iOS modals, where the
-enter key press can be flaky on CI simulators. Android continues to use
-`hideKeyboard` which works reliably. The flow is **only** for the plain
-`hideKeyboard`/`Done` dismissal — when the Android and iOS branches also do
-different follow-up work (e.g. selecting an autocomplete item after the keyboard
-hides), keep those asymmetric platform blocks inline.
-
-**Sibling shared flows for symmetric platform splits**: the same
-extract-the-split-once pattern applies to other per-OS blocks that accomplish
-the same goal a different way. Wrap them via `runFlow`; do **not** re-inline the
-platform branches. Keep a block inline only when one OS does something the other
-lacks (asymmetric).
-
-- **`flows/dismissKeyboardVia.yaml`** (env `KEY`): plain keyboard dismiss where
-  iOS taps a non-`Done` return key — `hideKeyboard` on Android, tap `${KEY}` on
-  iOS. Use for `returnKeyType` variants like `Search` and `Return`
-  (`dismissModalKeyboard.yaml` remains the `Done` special case).
-
-  ```yaml
-  - runFlow:
-      file: '../../dismissKeyboardVia.yaml' # adjust relative path per caller depth
-      env:
-        KEY: 'Search'
-      label: 'Dismiss keyboard (platform-specific)'
-  ```
-
-- **`flows/confirmInputKeyboard.yaml`**: confirm/commit an input via the
-  keyboard — `pressKey: Enter` on Android, tap the `Done` return key on iOS.
-  Distinct from a plain dismiss, which does not submit on Android.
-
-  ```yaml
-  - runFlow:
-      file: '../../confirmInputKeyboard.yaml' # adjust relative path per caller depth
-      label: 'Confirm input via keyboard (platform-specific)'
-  ```
-
-- **`flows/waitForCheckSettle.yaml`** (env `CHECK_TEXT`): wait for a
-  radio/checkbox selection to settle. iOS animates the checked state in, so it
-  waits for `CHECK_TEXT` to appear (30s); Android updates instantly, so the flow
-  is a no-op there.
-
-  ```yaml
-  - runFlow:
-      file: '../../waitForCheckSettle.yaml' # adjust relative path per caller depth
-      env:
-        CHECK_TEXT: 'radio button, checked'
-      label: 'Wait for item to settle after check (platform-specific)'
-  ```
-
-- **`flows/recipe/adding/ocr/pickImageSource.yaml`**: pick the recipe-image
-  source in the open modal — tap the camera option on Android, the gallery
-  option on iOS (the simulator has no camera).
-
-- **`flows/recipe/adding/ocr/validateWithoutCropping.yaml`**: validate the
-  picked image without cropping — wraps the per-OS
-  `android/validateWithoutCropping.yaml` / `iOS/validateWithoutCropping.yaml`
-  and dispatches by platform.
-
-**Non-Modal Single-Line Inputs**: For inputs on regular screens (not in modals),
-`pressKey: enter` can still be used but may be replaced with the
-platform-specific approach if flakiness is observed.
-
-**Exception 1 - Autocomplete Fields**: For tag and ingredient name inputs that
-show autocomplete dropdowns, use `hideKeyboard` on **Android only**:
-
-```yaml
-# Type partial text to trigger autocomplete
-- inputText:
-    text: 'RecipeT'
-    label: 'Enter partial tag name'
-
-# Dismiss keyboard on Android only (iOS handled case-by-case)
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - hideKeyboard:
-          label: 'Dismiss keyboard on Android'
-
-# Verify autocomplete dropdown is visible
-- assertVisible:
-    id: 'RecipeTags::List::0::AutocompleteItem::RecipeTag'
-    label: 'Autocomplete item is displayed'
-
-# Manually select from dropdown
-- tapOn:
-    id: 'RecipeTags::List::0::AutocompleteItem::RecipeTag'
-    label: 'Select from autocomplete dropdown'
-```
-
-Using `pressKey: enter` on autocomplete fields will auto-select the first
-suggestion instead of allowing manual selection from the dropdown. iOS
-autocomplete keyboard dismissal is handled case-by-case when test failures
-occur.
-
-**Exception 2 - Multiline Text Inputs**: For title, description, and preparation
-fields that support multiline text, tap on a nearby section header label to
-dismiss the keyboard:
-
-```yaml
-# Title field - tap on Description label
-- tapOn:
-    id: 'RecipeTitle::CustomTextInput'
-    label: 'Focus on title input'
-
-- inputText:
-    text: 'My Recipe Title'
-    label: 'Enter title'
-
-- tapOn:
-    id: 'RecipeDescription::Text'
-    label: 'Tap on description label to dismiss keyboard'
-
-# Description field - tap on Tags header
-- tapOn:
-    id: 'RecipeDescription::CustomTextInput'
-    label: 'Focus on description input'
-
-- inputText:
-    text: 'Recipe description'
-    label: 'Enter description'
-
-- tapOn:
-    id: 'RecipeTags::HeaderText'
-    label: 'Tap on tags header to dismiss keyboard'
-
-# Preparation content - tap on Time label
-- tapOn:
-    id: 'RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput'
-    label: 'Focus on preparation content'
-
-- inputText:
-    text: 'Preparation instructions'
-    label: 'Enter preparation'
-
-- tapOn:
-    id: 'RecipeTime::Text'
-    label: 'Tap on time label to dismiss keyboard'
-```
-
-For multiline inputs, `pressKey: enter` adds a newline character instead of
-dismissing the keyboard, so we tap on section headers to dismiss safely.
-
-**Exception 3 - SearchBar**: While the search bar is focused
-(`searchBarClicked === true`), the recipe grid (`SearchScreen::RecipeCards::*`)
-is **empty** and replaced by the suggestion dropdown
-(`SearchScreen::Suggestions::Item::<N>`). The grid only renders once the
-dropdown is closed via `onSubmitEditing` (native keyboard submit). Never rely on
-`pressKey: enter` to close it — on Android, Maestro's `pressKey: enter` does not
-reliably trigger Paper Searchbar's IME action, so `onSubmitEditing` never fires,
-the dropdown stays open, the grid stays empty, and any subsequent
-`SearchScreen::RecipeCards::*` assertion times out (this was the root cause of
-intermittent CI failures across recipe-create/ingredients-db/search suites).
-Close the dropdown deterministically instead, picking one of two patterns
-depending on intent:
-
-**Pattern A — open/act on one specific recipe** (the top suggestion IS that
-recipe): tap the suggestion directly. Works on both platforms, no platform split
-needed:
-
-```yaml
-# Type in SearchBar
-- tapOn:
-    id: 'SearchScreen::SearchBar'
-    label: 'Open SearchBar'
-
-- inputText:
-    text: 'E2E'
-    label: 'Enter search text'
-
-- waitForAnimationToEnd:
-    label: 'Wait for keyboard animation'
-
-# Select the top suggestion: closes the dropdown, dismisses the keyboard,
-# and sets the filter to that suggestion's full title
-- tapOn:
-    id: 'SearchScreen::Suggestions::Item::0'
-    label: 'Select top suggestion to close dropdown and reveal grid'
-```
-
-Note that this **replaces the typed text with the suggestion's full title**
-(e.g. typing `"Lentil"` then tapping `Item::0` sets the filter to
-`"Lentil Soup"`). That's fine when the test only cares about landing on one
-known recipe, but wrong whenever the raw typed string must remain the filter.
-
-**Pattern B — commit exactly the text the user typed** (the grid must show every
-recipe matching the raw string, not narrow to one suggestion, or the suggestion
-list may be empty/unpredictable — e.g. verifying a title was _not_ added): close
-the dropdown without touching the filter, via the shared
-`flows/search/commitTypedSearch.yaml` flow (same sharing pattern as
-`waitForKeyboardDismiss.yaml`) instead of inlining the platform split in every
-caller:
-
-```yaml
-- inputText:
-    text: 'Ca'
-    label: 'Enter search text'
-
-- waitForAnimationToEnd:
-    label: 'Wait for keyboard animation'
-
-- runFlow:
-    file: 'flows/search/commitTypedSearch.yaml' # adjust relative path per caller depth
-    label: 'Commit typed search, keep filter'
-```
-
-`commitTypedSearch.yaml` contains the platform split, and on both platforms it
-taps the keyboard's action key so the app's `onSubmitEditing` fires — closing
-the dropdown and keeping the typed filter (does not select a suggestion, does
-not clear text). On Android, tap the soft-keyboard action button by resource-id
-(`tapOn: { id: "key_pos_ime_action" }`); on iOS, tap the keyboard Search key
-(`tapOn: { id: "Search" }`). This replaces the flaky `pressKey: enter` /
-`pressKey: back` — neither reliably triggered the IME action on Android (with
-`pressKey: back` the first press was consumed by the IME and never reached the
-app). Do **not** substitute `hideKeyboard` here: dismissing the keyboard alone
-does not close the dropdown (there is no `onBlur`; the dropdown must stay open
-so the user can scroll it and pick a suggestion).
-
-Use Pattern A when the flow taps a card or asserts on a single recipe right
-after; use Pattern B when the flow later inspects a filter chip showing the raw
-typed text, expects multiple matching cards, or expects the dropdown/grid to end
-up empty. When unsure, prefer Pattern B — it never changes the search term.
-
-**Important**: If you tap on SearchBar **without entering text** (to open the
-dropdown without typing), the keyboard doesn't appear on iOS. In this case, use
-`hideKeyboard` on **Android only**:
-
-```yaml
-# Tap SearchBar to open dropdown (no text input)
-- tapOn:
-    id: 'SearchScreen::SearchBar'
-    label: 'Focus on search bar to open dropdown'
-
-# Dismiss keyboard on Android only (iOS doesn't show keyboard)
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - hideKeyboard:
-          label: 'Dismiss keyboard on Android'
-```
-
-**Closing SearchBar Dropdown**: Following Material Design pattern, the SearchBar
-close icon (RightIcon) is visible when:
-
-- Search has text content (clears text and closes dropdown)
-- Search is active/focused even without text (closes dropdown)
-
-This provides consistent cross-platform behavior for closing the dropdown:
-
-```yaml
-# Open search dropdown
-- tapOn:
-    id: 'SearchScreen::SearchBar'
-    label: 'Open search dropdown'
-
-# Close dropdown with icon (works on both platforms)
-- tapOn:
-    id: 'SearchScreen::SearchBar::RightIcon'
-    label: 'Close dropdown'
-```
-
-The icon replaces platform-specific approaches for **clearing** the search bar
-entirely:
-
-- ❌ OLD: `pressKey: "BACK"` (Android only)
-- ❌ OLD: `tapOn: point: "50%,95%"` (fragile coordinates on iOS)
-- ✅ NEW: Tap close icon (works on both platforms)
-
-Don't confuse this with Pattern B above: the RightIcon clears the text and
-closes the dropdown, while Pattern B's keyboard action key closes the dropdown
-but **keeps** the typed filter. Pick RightIcon when the test wants to reset the
-search, Pattern B when it wants to keep browsing with the current filter.
-
-### List Item Selection Pattern
-
-```yaml
-# Select item by index
-- tapOn:
-    id: 'List::Item::${INDEX}'
-    label: 'Select item at index ${INDEX}'
-
-# Or specific index
-- tapOn:
-    id: 'RecipeCards::1'
-    label: 'Select first recipe card'
-```
-
-### Wait Pattern
-
-```yaml
-# Wait for element to appear
-- extendedWaitUntil:
-    visible: 'Element::ID'
-    timeout: 5000 # milliseconds
-    label: 'Wait for element to appear'
-
-# Wait for element to disappear
-- extendedWaitUntil:
-    visible: 'Element::ID'
-    timeout: 5000
-    optional: true # Don't fail if not found
-    label: 'Wait for element to disappear'
-```
-
-### Modal Pattern
-
-```yaml
-# Open modal
-- tapOn:
-    id: 'OpenModal::RoundButton'
-    label: 'Open modal'
-
-# Interact with modal content
-- tapOn:
-    id: 'Modal::ConfirmButton'
-    label: 'Confirm action'
-
-# Modal usually closes automatically, but can close manually
-- pressKey: 'BACK'
-```
-
-## Emulator Dialog Suppression (Android CI)
-
-`.github/scripts/run-e2e-android.sh` applies these emulator settings before
-running Maestro, once the device is booted:
-
-```bash
-adb shell settings put global hide_error_dialogs 1      # no system crash/ANR dialogs
-adb shell settings put global window_animation_scale 0
-adb shell settings put global transition_animation_scale 0
-adb shell settings put global animator_duration_scale 0
-```
-
-`hide_error_dialogs 1` stops the launcher ANR dialog
-(`Pixel Launcher isn't responding`) from ever rendering, which was tripping
-visibility assertions on CI despite the app rendering correctly.
-
-`handleAnr.yaml` is kept as a guarded no-op safety net for **local** emulators,
-which run bare `maestro test` and do not get these adb settings. New flows do
-not need `handleAnr.yaml` when they only target CI.
-
-## Validating Flows with the Maestro MCP Server
-
-Maestro ships an MCP server (`maestro mcp`) that lets an agent drive the running
-app directly. **Every new or edited flow must be validated live against the app
-before it is considered done** — reading source and screenshots is not enough to
-prove a selector resolves.
-
-### Setup (once)
-
-```bash
-claude mcp add -s user maestro -- maestro mcp
-```
-
-Reconnect the session (`/mcp`) so the tools load. Add it at **user scope**
-(`-s user`) so it is available in every project — a project-local add lands
-under the wrong project key and silently fails to connect.
-
-### Workflow: `list_devices` → `inspect_screen` → `run`
-
-1. **`list_devices`** — pick the connected `device_id`. Share the Maestro Viewer
-   URL with the user.
-2. **`inspect_screen`** — read the REAL view hierarchy (`rid`/`txt`/`a11y`) of
-   the screen before authoring selectors. Never author a selector from a
-   screenshot; screenshots cause hallucinated text (an icon looks labelled but
-   has no text node).
-3. **`run`** — execute the flow, or drive it in small inline-YAML chunks with a
-   `take_screenshot` between steps so a failure pinpoints the exact command.
-   `run` validates syntax as part of the call.
-
-### Selector gotcha: Paper Button text lives on a `-text` child
-
-A React Native Paper `Button`'s `testID` lands on a **wrapper** whose
-accessibility text (`a11y`/content-desc) is the `accessibilityLabel` prop,
-**not** the visible label. To assert the visible label, target the label child
-`<testID>-text` (mirrors the AppBar title node `...::Title-title-text`):
-
-```yaml
-# WRONG — id wrapper carries the accessibilityLabel, not "Annuler"
-- assertVisible:
-    id: 'BulkImportDiscovery::fresh-0::RestoreButton'
-    text: 'Annuler'
-
-# RIGHT — id and text resolve to the same (-text) element
-- assertVisible:
-    id: 'BulkImportDiscovery::fresh-0::RestoreButton-text'
-    text: 'Annuler'
-```
-
-A wrapper `id` + `text` works only when the button has NO `accessibilityLabel`
-(RN then derives `a11y` from the visible text, e.g. `ContinueButton` +
-"Continuer"). `tapOn` the wrapper `id` (it is the clickable node);
-`assertVisible` the `-text` child for the label.
-
-### CRITICAL: never reload or launch the app yourself
-
-The local target is a **dev build**. `launchApp` / relaunch / cold-start drops
-to the Expo dev-client launcher ("npx expo start / Connect"), not the app —
-breaking the run and losing state.
-
-- Do NOT run `launchApp`, restart, reload, or `adb`-relaunch during local
-  validation.
-- When a step needs a fresh app state or reload (committed-DB check, onboarding
-  reset), STOP and ASK THE USER to run/reload the app, then wait for
-  confirmation and re-`inspect_screen` before continuing.
-- The committed test YAML MAY keep `launchApp` for CI — the release **test
-  build** handles it correctly (unlike the local dev build). Keep it in the
-  file; only the local reload is handed to the user.
-
-## Production Smoke Build
-
-Most suites run on the **test-dataset** release build (`maestro` EAS profile).
-The `smoke` suite instead runs on a **production-dataset** release build so each
-CI run also validates that the app boots and its core flows work against the
-real production seed data under release optimizations — the one thing the
-test-dataset suites can't catch.
-
-- **Profile**: `production-maestro` (in `eas.json`) extends `maestro`
-  (installable APK / iOS simulator, `assembleRelease` / Release config — same
-  R8/proguard/ Hermes/shrink as the store build) and overrides
-  `EXPO_PUBLIC_DATASET_TYPE=production`. It inherits
-  `EXPO_PUBLIC_DISABLE_ANIMATIONS=true` from `maestro` via `extends` (no need to
-  re-declare — same as `performance`; this profile is unsigned, so its bundle id
-  resolves at prebuild time with the merged env). `resolveIosBundleId` treats a
-  production-dataset build with animations disabled as **not** a store build, so
-  it keeps the shared `com.recipedia` id (the real store `production` profile
-  ships the production dataset with animations enabled and resolves to
-  `com.recipedia.ios`). No dedicated flag is introduced — the gate reuses two
-  existing profile `env` vars, relying on the invariant that store builds keep
-  animations on and automation builds turn them off. Because
-  `production-maestro` only overrides the dataset (identical release
-  optimizations, same production seed data), the smoke build exercises the same
-  app code as the store build.
-- **Why not the literal store build**: the store artifacts are an Android AAB
-  (not emulator-installable) and an iOS **device** IPA — neither is
-  Maestro-runnable on a CI runner. `production-maestro` reproduces every
-  release-only and prod-dataset crash surface; only AAB packaging + store
-  signing differ, and those are covered by the publish step.
-- **CI jobs** (`build-test.yml`): `build-android-production-maestro` /
-  `build-ios-production-maestro` build the profile, then
-  `e2e-tests-android-production-maestro` / `e2e-tests-ios-production-maestro`
-  run `suites: '["smoke"]'`. Internal-only (needs the prod dataset, so no fork
-  fallback) and skipped for dependabot.
-- **Keep smoke dataset-agnostic**: because the production seed data differs from
-  the test dataset, smoke flows must not assume specific recipe names — target
-  ids/indices (`RecipeCards::1::Cover`) and the suggestion dropdown, never a
-  typed recipe title. This is why smoke has its own cases rather than reusing
-  the test-dataset suites: `recipe-readonly` opens "Chicken Tacos" (absent from
-  the production data) and `app-init`'s `assertHomeScreen` requires the
-  season/grain/ tag recommendation carousels, which depend on the current month
-  and the dataset's variety. Smoke still **reuses** the shared, dataset-agnostic
-  asserts where it can — `1_core_navigation` composes `assertSearchScreenUI`,
-  `assertMenuEmpty`, `assertShoppingEmpty` and `assertAppearanceSection` rather
-  than re-inlining them.
+Adding a language: create `asserts/{screen}/{lang}/`, a
+`switchTo{Language}.yaml`, the `{screen}IsTranslated.yaml` flows, and extend the
+language case.
 
 ## CI Retry Mechanism
 
-E2E tests can fail on CI due to infrastructure flakiness — ANR dialogs, scroll
-timing variance, or simulator load. To handle this without hiding genuine app
-bugs, each test case has a CI wrapper in `cases/{feature}/ci/` that wraps the
-original flow in a `retry` block.
-
-### How It Works
-
-Suite configs point to `cases/{feature}/ci/*`. Each CI wrapper carries the flow
-`name`, `appId`, and `tags` from the original, then delegates to it via `retry`:
+CI runs the wrappers in `cases/{feature}/ci/`, which repeat the original flow on
+infrastructure flakiness (ANR dialogs, scroll variance, simulator load) without
+hiding app bugs — the original is unchanged and is what runs locally.
 
 ```yaml
 # cases/settings/ci/1_dark_mode.yaml
@@ -1641,352 +401,108 @@ tags:
     file: '../1_dark_mode.yaml'
 ```
 
-The original flow at `cases/settings/1_dark_mode.yaml` is unchanged and used for
-local runs.
+Copy the original's `name`, `appId`, `tags` and any `env:` defaults into the
+wrapper.
 
-### Running Locally
+## Emulator Settings (Android CI)
 
-Run original flows directly — no retry overhead:
+`.github/scripts/run-e2e-android.sh` applies these once the device is booted:
 
 ```bash
-# Run a single flow (no retry)
-maestro test cases/settings/1_dark_mode.yaml
-
-# Run the CI wrapper explicitly (with retry)
-maestro test cases/settings/ci/1_dark_mode.yaml
+adb shell settings put global hide_error_dialogs 1   # no system crash/ANR dialogs
+adb shell settings put global window_animation_scale 0
+adb shell settings put global transition_animation_scale 0
+adb shell settings put global animator_duration_scale 0
 ```
 
-### Adding CI Wrappers for New Flows
+`hide_error_dialogs 1` stops the launcher ANR dialog
+(`Pixel Launcher isn't responding`) from tripping visibility assertions.
+`handleAnr.yaml` remains a guarded no-op safety net for **local** emulators,
+which never get these settings; CI-only flows do not need it.
 
-When adding a new test case `cases/{feature}/{N}_{name}.yaml`, create the
-corresponding wrapper:
+## Production Smoke Build
 
-```yaml
-# cases/{feature}/ci/{N}_{name}.yaml
-name: '<same name as original>'
-appId: 'com.recipedia'
-tags:
-  - { same-tags-as-original }
----
-- retry:
-    maxRetries: 2
-    file: '../{N}_{name}.yaml'
+Most suites run on the test-dataset release build (`maestro` EAS profile). The
+`smoke` suite runs on `production-maestro`, which extends `maestro` (installable
+APK / iOS simulator, release config, same R8/Hermes/shrink as the store build)
+and overrides `EXPO_PUBLIC_DATASET_TYPE=production`, so every CI run also proves
+the app boots and its core flows work against real seed data under release
+optimizations.
+
+- It inherits `EXPO_PUBLIC_DISABLE_ANIMATIONS=true` via `extends`.
+  `resolveIosBundleId` treats a production-dataset build with animations
+  disabled as **not** a store build, so it keeps the shared `com.recipedia` id.
+  No new flag: the gate reuses two existing profile env vars and the invariant
+  that store builds keep animations on while automation builds turn them off.
+- The literal store artifacts are not Maestro-runnable (Android AAB, iOS device
+  IPA); `production-maestro` reproduces every release-only and prod-dataset
+  crash surface, and only packaging/signing differ.
+- CI: `build-{android,ios}-production-maestro` then
+  `e2e-tests-{android,ios}-production-maestro` running `suites: '["smoke"]'`.
+  Internal-only, skipped for dependabot.
+- **Keep smoke dataset-agnostic**: target ids and indices
+  (`RecipeCards::1::Cover`), never a typed recipe title — production seed data
+  differs from the test dataset. That is why smoke has its own cases;
+  `recipe-readonly` opens "Chicken Tacos" (absent from production) and
+  `app-init`'s `assertHomeScreen` needs carousels that depend on the month and
+  the dataset's variety. Smoke still reuses dataset-agnostic asserts
+  (`assertSearchScreenUI`, `assertMenuEmpty`, `assertShoppingEmpty`,
+  `assertAppearanceSection`).
+
+## Validating Flows with the Maestro MCP Server
+
+Maestro ships an MCP server (`maestro mcp`) that drives the running app. **Every
+new or edited flow must be validated live before it is done** — reading source
+and screenshots does not prove a selector resolves.
+
+```bash
+claude mcp add -s user maestro -- maestro mcp   # user scope, then reconnect with /mcp
 ```
 
-If the original flow has an `env:` section with default variables, copy it into
-the wrapper as well so values are available at the retry level.
+Workflow: **`list_devices`** (pick the `device_id`, share the Viewer URL) →
+**`inspect_screen`** (read the real hierarchy — never author a selector from a
+screenshot, which invents text for icon-only nodes) → **`run`** (the flow, or
+inline YAML chunks with `take_screenshot` between steps; `run` validates
+syntax).
+
+### CRITICAL: never reload or launch the app yourself
+
+The local target is a **dev build**, where `launchApp` / relaunch / cold start
+drops to the Expo dev-client launcher instead of the app, breaking the run and
+losing state. Running a committed case or `ci/` wrapper counts as launching it —
+they chain `flows/setupTest.yaml`, which calls `launchApp: clearState: true`.
+
+When a step needs a fresh app or a reload, STOP and ASK the user, wait for
+confirmation, then re-`inspect_screen`. Committed YAML keeps `launchApp` for CI,
+where the release test build handles it correctly.
 
 ## Troubleshooting
 
-### Common Issues and Solutions
+| Symptom                               | Cause / fix                                                                                                     |
+| ------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `Element not found`                   | TestID changed, element off-screen (`scrollUntilVisible`), too early (`extendedWaitUntil`), or wrong screen     |
+| `Flow file does not exist`            | `runFlow.file` is relative to the **current file** — count the `../` levels                                     |
+| `${VAR}` appears literally            | Missing `env:` on the caller, or a command that does not interpolate (`addMedia`)                               |
+| OCR picked the wrong image            | `addMedia` must run right before selection; check `modalImageCounter` and the `RECIPE_NAME`/`FIELD_NAME` values |
+| Platform block skipped                | `when: platform:` needs `Android` / `iOS`, capitalised                                                          |
+| Assertion passes locally, fails on CI | A missing barrier — see [Text Input Rules](#text-input-rules) and [Re-render Barriers](#re-render-barriers)     |
+| Intermittent, infrastructure-shaped   | Handled by the [CI retry wrappers](#ci-retry-mechanism); do not paper over it with sleeps                       |
 
-#### Issue: Test fails with "Element not found"
+Debugging: give every command a descriptive `label` (that is what the log
+shows), run a single case in isolation, and use `maestro studio` to check
+selectors. Maestro docs: https://maestro.mobile.dev/
 
-**Possible causes**:
+## Best Practices
 
-1. **TestID changed in app**: Update test files with new TestID
-2. **Element not visible**: Add scrollUntilVisible before assertion
-3. **Timing issue**: Add extendedWaitUntil before interaction
-4. **Wrong screen**: Verify navigation steps are correct
+1. Run suites with `maestro test . --config={suite}.yaml` from `tests/e2e/`.
+2. Label every command; keep flows atomic and parameterised via `env`.
+3. Reuse shared asserts and platform-split flows instead of inlining.
+4. Follow the TestID conventions; target `-text` children for Paper labels.
+5. Wait for state, never sleep: assert the typed value before blurring, and wait
+   for the structural change after a list-mutating tap.
+6. Create a `ci/` wrapper and update the suite's `flowsOrder` for every new
+   case.
+7. Validate live over MCP before considering a flow done — without reloading the
+   app yourself.
 
-**Solution**:
-
-```yaml
-# Add wait before assertion
-- extendedWaitUntil:
-    visible: 'Element::ID'
-    timeout: 3000
-    label: 'Wait for element'
-
-# Then assert or interact
-- assertVisible:
-    id: 'Element::ID'
-```
-
-#### Issue: File path not found
-
-**Error**: `Flow file does not exist: path/to/file.yaml`
-
-**Cause**: Incorrect relative path in runFlow
-
-**Solution**:
-
-- Count directory levels carefully
-- Use `../` to go up one level
-- Verify file exists at expected location
-
-```yaml
-# If current file is: cases/feature/test.yaml
-# And target is: flows/feature/flow.yaml
-
-# Wrong:
-file: 'flows/feature/flow.yaml' # Absolute path doesn't work
-
-# Correct:
-file: '../../flows/feature/flow.yaml' # Relative from current location
-```
-
-#### Issue: OCR test shows wrong recipe data
-
-**Cause**: Gallery ordering issue - wrong image selected
-
-**Solution**:
-
-- Verify `addMedia` is called before selection
-- Check `modalImageCounter` is properly incremented
-- Ensure selecting index 0 from gallery (most recent)
-- Verify correct RECIPE_NAME and FIELD_NAME env variables
-
-#### Issue: Platform-specific test not running
-
-**Symptom**: Test skipped or runs wrong platform code
-
-**Solution**:
-
-```yaml
-# Ensure correct platform condition
-- runFlow:
-    file: 'android/flow.yaml'
-    when:
-      platform: Android # Capital A
-    label: 'Android flow'
-```
-
-#### Issue: Variable not substituted
-
-**Symptom**: `${VARIABLE_NAME}` appears literally instead of value
-
-**Causes**:
-
-1. **Environment variable not passed**: Add `env:` block to runFlow
-2. **Maestro limitation**: Some commands don't support variables (e.g.,
-   addMedia)
-
-**Solution**:
-
-```yaml
-# Pass environment variable
-- runFlow:
-    file: 'targetFlow.yaml'
-    env:
-      VARIABLE_NAME: value
-    label: 'Flow with parameter'
-
-# For addMedia, use conditional logic instead
-- runFlow:
-    when:
-      true: ${RECIPE_NAME == "value"}
-    commands:
-      - addMedia:
-          - 'hardcoded/path.jpg'
-```
-
-#### Issue: Test fails intermittently
-
-**Possible causes**:
-
-1. **Timing issues**: Add waits/delays
-2. **Animation interference**: Wait for animations to complete
-3. **State from previous test**: Ensure proper cleanup
-4. **Gallery ordering**: For OCR tests, verify media addition timing
-5. **CI infrastructure**: ANR dialogs, scroll variance, simulator load
-
-**Solutions**:
-
-```yaml
-# Add explicit waits
-- extendedWaitUntil:
-    visible: 'Element::ID'
-    timeout: 5000
-
-# Reset app state between tests
-- launchApp # In test suite file
-```
-
-For CI-only flakiness (infrastructure causes), the CI retry mechanism handles it
-automatically — see the [CI Retry Mechanism](#ci-retry-mechanism) section.
-
-### Debugging Tips
-
-1. **Add verbose labels**: Every action should have a descriptive label
-
-   ```yaml
-   - tapOn:
-       id: 'Button::ID'
-       label: 'Descriptive label explaining what this does'
-   ```
-
-2. **Test incrementally**: Add one step at a time and test
-3. **Use Maestro Studio**: Visual test recorder to verify selectors
-
-   ```bash
-   maestro studio
-   ```
-
-4. **Check Maestro logs**: Look for detailed error messages
-5. **Verify TestIDs in app**: Use React Native Debugger to inspect elements
-6. **Test in isolation**: Run single test file to isolate issues
-   ```bash
-   maestro test tests/e2e/path/to/test.yaml
-   ```
-
-### Getting Help
-
-- **Maestro Documentation**: https://maestro.mobile.dev/
-- **Project Issues**: Check TODOs in test files for known limitations
-- **Test Output**: Maestro provides detailed step-by-step output on failure
-
-## Best Practices Summary
-
-1. ✅ **Run tests by suite** using `maestro test . --config={suite}.yaml` from
-   `tests/e2e/`
-2. ✅ **Always add descriptive labels** to every action
-3. ✅ **Use common assertion flows** to reduce duplication
-4. ✅ **Follow TestID conventions** consistently
-5. ✅ **Add TODO comments** for pending iOS implementations
-6. ✅ **Test one thing per case** - keep tests focused
-7. ✅ **Use relative paths correctly** in runFlow
-8. ✅ **Add waits for dynamic content** to prevent flakiness
-9. ✅ **Clean up after tests** - return to known state
-10. ✅ **Pass parameters via env** for reusable flows
-11. ✅ **Keep flows atomic** - single responsibility
-12. ✅ **Update all references** when changing shared files
-13. ✅ **Test locally** before committing changes
-14. ✅ **Document complex patterns** with comments
-15. ✅ **Use platform conditionals** for platform-specific code
-16. ✅ **For OCR: add media on-demand**, always select index 0
-17. ✅ **Update suite config** when adding new test cases
-18. ✅ **Create a CI wrapper** in `ci/` for every new test case
-19. ✅ **Run original flows locally**, CI wrappers are for CI only
-
----
-
-**Last Updated**: 2026-07-05
-
-**Key Changes**:
-
-- **Search suite split (`search` + `search-filters`)**: the search suite grew
-  too large/slow as one run, so the five filter-page/filter-chip cases moved to
-  their own `cases/search-filters/` dir (+ `ci/` wrappers) driven by
-  `search-filters.yaml`. `search.yaml` now covers only search-bar behaviour.
-  Added `search-filters` to the Android/iOS CI suite matrices in
-  `.github/workflows/build-test.yml`.
-- **`flows/recipe/tapRecipeEdit.yaml`**: the `Recipe::AppBar::Edit` tap-to-edit
-  block was inlined 12x across `cases/recipe-edit/`; now one shared flow called
-  via `runFlow` (each caller keeps its own descriptive label).
-- **`flows/dismissModalKeyboard.yaml`**: the device-specific modal
-  keyboard-dismiss split (`hideKeyboard` on Android / tap `Done` on iOS) was
-  inlined 40x across 30 case/flow files; extracted to one shared flow (mirrors
-  `commitTypedSearch.yaml`). Asymmetric platform blocks that do extra per-OS
-  follow-up work were left inline.
-- **Remaining symmetric platform splits wrapped** (follow-up to the above):
-  extracted the leftover per-OS blocks where both branches reach the same goal a
-  different way, replacing the inline copies with `runFlow`:
-  - `flows/dismissKeyboardVia.yaml` (env `KEY`) — `hideKeyboard` on Android /
-    tap a non-`Done` return key (`Search`, `Return`) on iOS; 5 inline blocks.
-  - `flows/confirmInputKeyboard.yaml` — `pressKey: Enter` on Android / tap
-    `Done` on iOS to commit an input; 7 inline blocks.
-  - `flows/waitForCheckSettle.yaml` (env `CHECK_TEXT`) — iOS waits for the
-    checked state to animate in, Android no-op; 13 inline blocks.
-  - `flows/recipe/adding/ocr/pickImageSource.yaml` — tap camera (Android) /
-    gallery (iOS) source in the image modal; 3 inline blocks.
-  - `flows/recipe/adding/ocr/validateWithoutCropping.yaml` — dispatches to the
-    per-OS crop-validate flows; 3 inline pairs. Asymmetric per-OS blocks (one OS
-    asserts/does something the other lacks) were left inline by design.
-- **Generic filter-accordion asserts**
-  (`asserts/search/en/filters/accordions/`): the per-category/per-item assert
-  files (`{cat}-all.yaml`, `{cat}-filtered.yaml`, `{cat}-hidden.yaml`, and ~120
-  `{cat}-items/*` leaves — ~180 files) were replaced by three data-driven
-  generics plus thin per-category routers, cutting the accordion cluster from
-  229 to 47 files:
-  - `accordionAll.yaml` — env `CATEGORY`, `ITEM_COUNT`; `repeat`s over the item
-    count asserting each `Item::${output.i}` visible, then collapse + guard.
-  - `accordionFiltered.yaml` — env `CATEGORY`, `ITEM_NAMES`, `ITEM_COUNT`,
-    `VISIBLE_ITEMS`; `repeat`s over `ITEM_NAMES`, asserting each name visible at
-    the next `output.itemIndex` when present in `VISIBLE_ITEMS`, else absent by
-    text (hidden items are unrendered, so visible items are contiguous from 0).
-  - `accordionHidden.yaml` — env `CATEGORY`; single `assertNotVisible`. Each
-    `{cat}.yaml` router holds that category's data and dispatches by `STATE`
-    (`all`/`filtered`/`hidden`). FR wrappers reuse `accordionAll.yaml` with
-    French titles. Counter contract: callers own `output.accordionIndex`; the
-    generics own `output.i`/`output.itemIndex` and increment `accordionIndex`
-    once per accordion. Note: `runFlow.when` only supports `true:` (no `false:`)
-    — negate in the expression (`true: ${!output.itemVisible}`).
-
-- **Android search-commit via keyboard action key (replaces `pressKey: back`)**:
-  The earlier `pressKey: back` Android branch of `commitTypedSearch.yaml` still
-  failed in CI (run 28719307433, search/ingredients-db/duplicates-recipe/
-  web-edge-cases suites): when the soft keyboard is open, Android's first back
-  press is consumed by the IME and never reaches the JS `hardwareBackPress`
-  listener, so `searchBarClicked` stayed `true` and the dropdown never closed.
-  Fixed (E2E-only, no app change) by tapping the Android soft-keyboard action
-  button directly — `tapOn: { id: "key_pos_ime_action" }` — which fires the
-  app's `onSubmitEditing`, closing the dropdown and keeping the typed filter.
-  This is the Android analog of the iOS `tapOn: { id: "Search" }` key.
-  `hideKeyboard` is not used: it would only dismiss the keyboard, not close the
-  dropdown (the dropdown must stay open for scroll-and-pick).
-
-- **SearchBar dropdown dismissal (no more `pressKey: enter`)**: While the search
-  bar is focused, the recipe grid is empty and the suggestion dropdown covers
-  it; the grid only renders once the dropdown closes via `onSubmitEditing` or
-  hardware back. On Android, Maestro's `pressKey: enter` does not reliably
-  trigger Paper Searchbar's IME submit, leaving the dropdown open and the grid
-  empty — the confirmed root cause of intermittent
-  `SearchScreen::RecipeCards::*` timeouts across recipe-create, ingredients-db,
-  and search suites (CI run 28471911471). Replaced with two deterministic
-  patterns: tap `SearchScreen::Suggestions::Item::0` to select the top
-  suggestion when opening one specific recipe (this also replaces the typed text
-  with the suggestion's full title), or `pressKey: back` (Android) /
-  `tapOn: { id: "Search" }` (iOS) to close the dropdown while keeping the exact
-  typed filter when the grid must show all matches for the raw text. Updated 15
-  flow and case files. The Pattern B platform split was later extracted into the
-  shared `flows/search/commitTypedSearch.yaml` flow (mirroring
-  `waitForKeyboardDismiss.yaml`) to remove duplication across 8 callers.
-
-- **CI retry mechanism**: Each test case now has a CI wrapper in
-  `cases/{feature}/ci/` that wraps the original flow in `retry: maxRetries: 2`.
-  Suite configs updated to point to `ci/*`. Original flows unchanged — run
-  locally as before. Handles infrastructure flakiness (ANR dialogs, scroll
-  variance, simulator load) without affecting local development.
-
-- **SearchBar close icon (Material Design pattern)**: SearchBar now shows close
-  icon when search is active (even without text), providing consistent
-  cross-platform behavior for closing dropdown. Replaced platform-specific
-  approaches (`pressKey: "BACK"` on Android, coordinate taps on iOS) with icon
-  tap. Updated 2 code files, 1 unit test file, 6 E2E assertion files, 2 E2E test
-  files.
-- **hideKeyboard after tapOn (without inputText)**: Made Android-only because
-  iOS doesn't show keyboard when tapping without typing (3 search tests updated:
-  1_open_close.yaml, 2_scroll_independence.yaml, 4_direct_click.yaml)
-- **SearchBar keyboard dismissal**: SearchBar now uses `hideKeyboard` instead of
-  `pressKey: enter` to avoid submitting the search (12 files updated)
-- **Platform-specific autocomplete keyboard dismissal**: Autocomplete fields
-  (tags/ingredients) now use `hideKeyboard` on Android only, iOS failures
-  handled case-by-case (4 files updated)
-- **Multiline text input pattern**: Title, description, and preparation fields
-  now tap on nearby section labels (RecipeDescription::Text,
-  RecipeTags::HeaderText, RecipeTime::Text) to dismiss keyboard instead of
-  `pressKey: enter` (4 files updated)
-- Reasoning: `pressKey: enter` on SearchBar submits search; on autocomplete
-  auto-selects first suggestion; on multiline inputs adds newlines
-- Regular inputs (quantity, time, single-line) continue to use
-  `waitForAnimationToEnd` + `pressKey: enter` + `waitForAnimationToEnd`
-- Added `waitForAnimationToEnd` before and after all `pressKey: enter` commands
-  (83 files updated earlier today)
-- This prevents race conditions where Maestro taps on wrong elements during
-  keyboard animations
-- Previously replaced all `hideKeyboard` commands with `pressKey: enter` (54
-  files)
-- `hideKeyboard` doesn't work reliably with React Native Paper's Portal-based
-  dialogs, but is necessary for Android autocomplete use cases
-- `pressKey: enter` works consistently for regular single-line inputs
-
-**Previous Update** (2025-11-10): Restructured test execution to use suite-based
-configuration files at the root of `tests/e2e/`. Each suite (app-init, search,
-ocr, settings, etc.) has its own YAML config that defines test discovery and
-execution order. Tests run one suite at a time using
-`maestro test . --config={suite}.yaml`.
-
-**Maintainer**: Development Team
-
-**Questions**: Refer to CLAUDE.md for additional project conventions
+**Questions**: see `AGENTS.md` for project-wide conventions.

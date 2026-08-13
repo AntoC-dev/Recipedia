@@ -1,0 +1,20 @@
+appId: "com.recipedia"
+---
+# Un-marking re-buckets the item back under its category, and that re-render lags
+# the tap just as marking does. The row itself stays visible either way, so the
+# returning category header is the barrier.
+- tapOn:
+    id: "ShoppingScreen::SectionList::${INGREDIENT_NAME}"
+    label: "Un-mark ${INGREDIENT_NAME} as purchased"
+
+# Scrolling rather than a plain wait: the category sorts above wherever the
+# expanded purchased block left the viewport, so the header can return off-screen.
+- scrollUntilVisible:
+    element:
+      id: "ShoppingScreen::SectionList::${CATEGORY_KEY}::SubHeader"
+    direction: UP
+    speed: 40
+    timeout: 30000
+    label: "Wait for the ${CATEGORY_KEY} category to take ${INGREDIENT_NAME} back"
+
+- waitForAnimationToEnd

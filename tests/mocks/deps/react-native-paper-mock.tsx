@@ -649,23 +649,31 @@ export const Surface: React.FC<any> = props => (
   </View>
 );
 
-export const Snackbar: React.FC<any> = props => {
-  if (!props.visible) return null;
-  return (
-    <View testID={props.testID}>
-      <RNText testID={props.testID + '::Text'}>{props.children}</RNText>
-      {props.onDismiss && (
-        <Button testID={props.testID + '::Dismiss'} onPress={props.onDismiss}>
-          Dismiss
-        </Button>
-      )}
-      {props.action && (
-        <Button testID={props.testID + '::Action'} onPress={props.action.onPress}>
-          {props.action.label}
-        </Button>
-      )}
-    </View>
-  );
-};
+export const Snackbar: React.FC<any> & {
+  DURATION_SHORT: number;
+  DURATION_MEDIUM: number;
+  DURATION_LONG: number;
+} = Object.assign(
+  (props: any) => {
+    if (!props.visible) return null;
+    return (
+      <View testID={props.testID}>
+        <RNText testID={props.testID + '::Text'}>{props.children}</RNText>
+        <RNText testID={props.testID + '::Duration'}>{props.duration}</RNText>
+        {props.onDismiss && (
+          <Button testID={props.testID + '::Dismiss'} onPress={props.onDismiss}>
+            Dismiss
+          </Button>
+        )}
+        {props.action && (
+          <Button testID={props.testID + '::Action'} onPress={props.action.onPress}>
+            {props.action.label}
+          </Button>
+        )}
+      </View>
+    );
+  },
+  { DURATION_SHORT: 4000, DURATION_MEDIUM: 7000, DURATION_LONG: 10000 }
+);
 
 export const PaperProvider: React.FC<any> = props => <>{props.children}</>;

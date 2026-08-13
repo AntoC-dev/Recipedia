@@ -63,22 +63,13 @@ tags:
     id: "RecipeIngredients::0::QuantityInput"
     label: "Action - Focus on Pasta quantity input"
 
-- eraseText:
-    label: "Action - Clear Pasta quantity"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- inputText:
-    text: "260"
+- runFlow:
+    file: "../../flows/replaceAndCommitText.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::0::QuantityInput"
+      VALUE: "260"
+      DISMISS_ID: "RecipeIngredients::0::Unit"
     label: "Action - Change Pasta to 260g (30% difference)"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- tapOn:
-    id: "RecipeIngredients::0::Unit"
-    label: "Action - Tap on Pasta unit to hide keyboard"
 
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"

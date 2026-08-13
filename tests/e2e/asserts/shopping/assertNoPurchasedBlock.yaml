@@ -1,5 +1,9 @@
 appId: "com.recipedia"
 ---
-- assertNotVisible:
-    id: "ShoppingScreen::SectionList::Purchased"
+# Waiting rather than asserting outright: the block disappears on the re-render
+# that follows the purchase state change, which lags the tap that triggered it.
+- extendedWaitUntil:
+    notVisible:
+      id: "ShoppingScreen::SectionList::Purchased"
+    timeout: 30000
     label: "No purchased block is rendered while nothing is bought"
