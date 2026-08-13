@@ -62,6 +62,16 @@ describe('CustomTextInput', () => {
     expect(getByTestId('custom-input::CustomTextInput').props.multiline).toBe(true);
   });
 
+  test('disables inner scrolling when multiline so the parent scroll view keeps the gesture', () => {
+    const { getByTestId } = render(<CustomTextInput {...baseProps} multiline value={'abc\ndef'} />);
+    expect(getByTestId('custom-input::CustomTextInput').props.scrollEnabled).toBe(false);
+  });
+
+  test('leaves inner scrolling untouched for single-line inputs', () => {
+    const { getByTestId } = render(<CustomTextInput {...baseProps} value='abc' />);
+    expect(getByTestId('custom-input::CustomTextInput').props.scrollEnabled).toBeUndefined();
+  });
+
   test('is editable by default when editable prop is true', () => {
     const { getByTestId } = render(<CustomTextInput {...baseProps} editable />);
     const input = getByTestId('custom-input::CustomTextInput');

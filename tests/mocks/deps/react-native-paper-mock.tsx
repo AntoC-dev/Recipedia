@@ -174,6 +174,7 @@ const TextInputComponent = React.forwardRef<any, any>((props, _ref) => {
     placeholder: props.placeholder,
     editable: props.editable,
     multiline: props.multiline,
+    scrollEnabled: props.scrollEnabled,
     keyboardType: props.keyboardType,
     secureTextEntry: props.secureTextEntry,
   };

@@ -54,7 +54,14 @@ export type CustomTextInputProps = {
   value?: string;
   /** Placeholder text displayed when the input is empty */
   placeholder?: string;
-  /** Whether the input supports multiple lines (default: false) */
+  /**
+   * Whether the input supports multiple lines (default: false).
+   *
+   * Multiline inputs render as a `UITextView` on iOS, which captures vertical pan
+   * gestures once its text overflows and never forwards them to an enclosing
+   * ScrollView. Inner scrolling is therefore disabled so the field grows to fit its
+   * content and the surrounding screen stays scrollable.
+   */
   multiline?: boolean;
   /** Type of keyboard to display (default: 'default') */
   keyboardType?: 'default' | 'number-pad' | 'email-address' | 'phone-pad' | 'numeric' | 'url';
@@ -167,6 +174,7 @@ export function CustomTextInput({
       mode={mode}
       dense={dense}
       multiline={multiline}
+      scrollEnabled={multiline ? false : undefined}
       editable={editable}
       keyboardType={keyboardType}
       onBlur={handleBlur}
