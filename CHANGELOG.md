@@ -1,3 +1,11 @@
+## [2.50.1](https://github.com/AntoC-dev/Recipedia/compare/v2.50.0...v2.50.1) (2026-08-13)
+
+### Bug Fixes
+
+* **e2e:** assert typed value before blurring, commit inputs with a tap ([#526](https://github.com/AntoC-dev/Recipedia/issues/526)) ([6839242](https://github.com/AntoC-dev/Recipedia/commit/683924261e575d179dc97736b973aa6757a17412))
+* **e2e:** assert typed value before blurring, commit with a tap ([6540bdf](https://github.com/AntoC-dev/Recipedia/commit/6540bdf5e969e857cd6f1dae3b974fe5172ec842)), closes [#525](https://github.com/AntoC-dev/Recipedia/issues/525)
+* **menu:** keep the undo snackbar up for the long paper duration ([64d8c58](https://github.com/AntoC-dev/Recipedia/commit/64d8c582b53b9a47de8248edf7e8504b04a99bd9))
+
 ## [2.50.0](https://github.com/AntoC-dev/Recipedia/compare/v2.49.1...v2.50.0) (2026-08-13)
 
 ### Features
