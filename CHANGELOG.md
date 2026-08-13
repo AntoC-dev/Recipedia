@@ -1,3 +1,10 @@
+## [2.51.0](https://github.com/AntoC-dev/Recipedia/compare/v2.50.1...v2.51.0) (2026-08-13)
+
+### Features
+
+* **settings:** enable tapToSeek on the persons slider ([8874f04](https://github.com/AntoC-dev/Recipedia/commit/8874f04438d66704be365a2f5fea5b1d51dd7154)), closes [#532](https://github.com/AntoC-dev/Recipedia/issues/532)
+* **settings:** enable tapToSeek on the persons slider ([#534](https://github.com/AntoC-dev/Recipedia/issues/534)) ([1c65372](https://github.com/AntoC-dev/Recipedia/commit/1c6537266e603d79fd83f49af2d229c02e90254c)), closes [#448](https://github.com/AntoC-dev/Recipedia/issues/448) [#532](https://github.com/AntoC-dev/Recipedia/issues/532)
+
 ## [2.50.1](https://github.com/AntoC-dev/Recipedia/compare/v2.50.0...v2.50.1) (2026-08-13)
 
 ### Bug Fixes
