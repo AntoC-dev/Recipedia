@@ -19,6 +19,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { MenuRecipeCard } from '@components/molecules/MenuRecipeCard';
 import React from 'react';
 import { menuTableElement } from '@customTypes/DatabaseElementTypes';
+import { cardSizes, padding } from '@styles/spacing';
+import { useTheme } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { mockNavigate } from '@mocks/deps/react-navigation-mock';
@@ -35,6 +37,10 @@ import {
 
 jest.mock('@react-navigation/native', () =>
   require('@mocks/deps/react-navigation-mock').reactNavigationMock()
+);
+
+jest.mock('@components/atomic/CustomImage', () =>
+  require('@mocks/components/atomic/CustomImage-mock').customImageMock()
 );
 
 const Stack = createStackNavigator();
@@ -96,8 +102,32 @@ describe('MenuRecipeCard', () => {
     test('renders recipe image with correct source', () => {
       const { getByTestId } = renderMenuRecipeCard();
 
-      expect(getByTestId(`${testId}::Cover`).props.source.uri).toBe(
+      expect(getByTestId(`${testId}::Cover::Uri`).props.children).toBe(
         testMenuItemUncooked.imageSource
+      );
+    });
+
+    test('gives the thumbnail an explicit render size so expo-image can downsample', () => {
+      const { getByTestId } = renderMenuRecipeCard();
+
+      expect(getByTestId(`${testId}::Cover::Size`).props.children).toBe(
+        cardSizes.thumbnailSize.toString()
+      );
+    });
+
+    test('keeps the thumbnail corners rounded', () => {
+      const { getByTestId } = renderMenuRecipeCard();
+
+      expect(getByTestId(`${testId}::Cover::BorderRadius`).props.children).toBe(
+        padding.small.toString()
+      );
+    });
+
+    test('fills the thumbnail with the surface variant colour while the image loads', () => {
+      const { getByTestId } = renderMenuRecipeCard();
+
+      expect(getByTestId(`${testId}::Cover::BackgroundColor`).props.children).toBe(
+        useTheme().colors.surfaceVariant
       );
     });
 
@@ -298,7 +328,7 @@ describe('MenuRecipeCard', () => {
       const { getByTestId } = renderMenuRecipeCard({ menuItem: emptyImageMenuItem });
 
       assertBasicElements(getByTestId, emptyImageMenuItem);
-      expect(getByTestId(`${testId}::Cover`).props.source.uri).toBe('');
+      expect(getByTestId(`${testId}::Cover::Uri`).props.children).toBe('');
     });
 
     test('handles long recipe title with ellipsis', () => {

@@ -12,6 +12,14 @@
  * - Consistent styling and behavior across the app
  * - Built on Expo Image for better performance and caching
  *
+ * Two expo-image settings are fixed here rather than exposed as props, because
+ * they are app-wide rendering policy and no caller should differ:
+ * - `recyclingKey` is the `uri`. In a recycled list (FlashList/FlatList) this is
+ *   what makes a reused row drop the previous bitmap instead of flashing it.
+ * - `cachePolicy` is `memory-disk`. expo-image defaults to `disk` alone, which
+ *   re-decodes on every scroll back; keeping the decoded bitmap in memory is
+ *   affordable because images are bounded at save time.
+ *
  * @example
  * ```typescript
  * // Basic usage
@@ -129,6 +137,8 @@ export function CustomImage({
         source={uri}
         contentFit={contentFit}
         priority={priority}
+        recyclingKey={uri}
+        cachePolicy={'memory-disk'}
         onError={handleError}
         onLoad={onLoadSuccess}
       />
