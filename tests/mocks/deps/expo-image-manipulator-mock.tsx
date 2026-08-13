@@ -1,6 +1,7 @@
 export const mockImageRef = {
   width: 200,
   height: 200,
+  release: jest.fn(),
   saveAsync: jest.fn().mockResolvedValue({
     uri: 'file://mock-manipulated-image.jpg',
     width: 200,
