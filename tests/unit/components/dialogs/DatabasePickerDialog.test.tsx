@@ -639,8 +639,8 @@ describe('DatabasePickerDialog', () => {
         />
       );
 
-      const { FlatList } = require('react-native');
-      expectKeyboardDismissesOnDrag(UNSAFE_getAllByType, FlatList);
+      const { ScrollView } = require('react-native');
+      expectKeyboardDismissesOnDrag(UNSAFE_getAllByType, ScrollView);
     });
   });
 });
