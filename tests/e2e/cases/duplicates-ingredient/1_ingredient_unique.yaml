@@ -233,6 +233,10 @@ tags:
     label: "Cleanup - Exit recipe creation without saving"
 
 - runFlow:
+    file: "../../flows/recipe/discardRecipeChanges.yaml"
+    label: "Action - Confirm discarding the unsaved changes"
+
+- runFlow:
     file: "../../flows/parameters/ingredients/navigateToIngredientsSettings.yaml"
     label: "Cleanup - Navigate to Ingredients Settings"
 

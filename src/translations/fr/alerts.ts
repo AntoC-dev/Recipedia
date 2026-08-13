@@ -32,6 +32,13 @@ export default {
     titleTime: 'Indiquez un temps de préparation',
     nutrition: 'Renseignez toutes les valeurs nutritionnelles',
   },
+  unsavedChanges: {
+    title: 'Abandonner les modifications ?',
+    content:
+      'Cette recette contient des modifications non enregistrées. Si vous quittez maintenant, elles seront perdues.',
+    discard: 'Abandonner',
+    keepEditing: 'Continuer la modification',
+  },
   ocrRecipe: {
     explanationText: 'Choisissez une image:',
     photo: 'Prendre une nouvelle photo',

@@ -172,11 +172,13 @@ export function BottomTabBar({ navigation, state, descriptors, insets }: BottomT
 export function BottomTabs() {
   const { t } = useI18n();
 
-  // Only disable lazy loading during tutorial mode (when copilot is active)
-  // to ensure all tutorial steps are registered before copilot starts.
-  // In normal operation, enable lazy loading for better performance.
-  const copilotData = useSafeCopilot();
-  const shouldRenderLazy = !copilotData;
+  // During the tutorial every tab must stay mounted, attached and unfrozen:
+  // steps have to be registered before copilot starts, detaching an inactive
+  // screen mid-overlay reparents its native view and crashes Fabric's Yoga
+  // layout, and freezing one stalls the step anchored to it. Outside the
+  // tutorial all three revert to their cheaper defaults.
+  const isTutorialActive = useSafeCopilot() != null;
+  const shouldRenderLazy = !isTutorialActive;
 
   const labels = {
     home: t('home'),
@@ -189,11 +191,8 @@ export function BottomTabs() {
   return (
     <Tab.Navigator
       initialRouteName='Home'
-      // During the tutorial (copilot active) keep every tab screen attached:
-      // detaching an inactive screen mid-overlay reparents its native view and
-      // crashes Fabric's Yoga layout. Outside the tutorial, detach normally.
-      detachInactiveScreens={!copilotData}
-      screenOptions={{ headerShown: false }}
+      detachInactiveScreens={!isTutorialActive}
+      screenOptions={{ headerShown: false, freezeOnBlur: !isTutorialActive }}
       tabBar={props => <BottomTabBar {...props} />}
     >
       <Tab.Screen

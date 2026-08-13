@@ -173,7 +173,7 @@ React 19 `useDeferredValue`.
 
 ## 5. Navigation structure
 
-Navigation uses React Navigation v6. Types for screens and params are defined in `src/customTypes/ScreenTypes.tsx`.
+Navigation uses React Navigation v7 (native-stack). Types for screens and params are defined in `src/customTypes/ScreenTypes.tsx`.
 
 ```
 NavigationContainer (App.tsx)
@@ -200,6 +200,13 @@ NavigationContainer (App.tsx)
 ```
 
 All screens are header-less (`headerShown: false`). Navigation animations can be disabled globally via `EXPO_PUBLIC_DISABLE_ANIMATIONS=true` (used by E2E tests).
+
+Screen-level behaviour set on the navigators:
+
+- **Screen freezing** — `enableFreeze()` is called once in `App.tsx`, and both navigators set `freezeOnBlur`, so a blurred screen's React subtree is suspended and stops re-rendering on context updates. `BottomTabs` gates `freezeOnBlur` on the same condition as `detachInactiveScreens`: during the copilot tutorial every tab stays live, because freezing a tab that an overlay step points at would stall the walkthrough.
+- **Error boundaries** — screens that can crash on untrusted input (`RecipeAddOcr`, `RecipeAddScrape`, `BulkImportDiscovery`) declare `layout={errorBoundaryLayout}` on their `Stack.Screen`. This replaced the former `withErrorBoundary` HOC; the boundary is now part of the route declaration rather than the component export.
+- **Predictive back (Android)** — enabled through `android.predictiveBackGestureEnabled` in `app.config.ts`, which makes Expo emit `android:enableOnBackInvokedCallback="true"` into the manifest.
+- **Preloading** — `Home` preloads the `Search` tab, whose first render derives its filter lists from every recipe. Deliberately limited to that one screen: React Navigation exempts a preloaded route from `freezeOnBlur` (`shouldFreeze: … && !isPreloaded`) and only clears a preloaded tab key on `JUMP_TO`, so each preload trades freezing away until the route is first opened. Recipe cards intentionally do **not** preload `RecipeView` — `onPressIn` fires on every touch-down including scroll starts, so it dispatched a navigator state update and remounted the screen far more often than a recipe was actually opened.
 
 Each recipe route is a thin wrapper that forwards its own narrow params (see `src/customTypes/RecipeNavigationTypes.tsx`) to the shared `RecipeFormScreen`, which derives the form `mode`:
 
@@ -238,6 +245,12 @@ The recipe form is built on `react-hook-form` (RHF) with a Zod resolver. Read-on
 - `buildEmptyDefaults` — blank form (`addManually`); seeds `recipePersons` from `getDefaultPersonsSync()`
 - `buildDefaultsFromRecipe` — existing recipe (`edit`, `readOnly`)
 - `buildDefaultsFromScrape` — scraped payload (`addFromScrape`)
+
+### Unsaved-changes guard
+
+`useUnsavedChangesGuard` (`src/hooks/useUnsavedChangesGuard.tsx`) wraps React Navigation's `usePreventRemove` and is mounted by `RecipeFormScreen` with `form.formState.isDirty`. While the form is dirty, every removal of the route — hardware/predictive back, the swipe gesture, the AppBar back arrow and Cancel — is intercepted and a discard confirmation is shown instead of dropping the edits. Confirming replays the exact intercepted action, so the original destination is preserved.
+
+The save paths call `allowRemoval()` before `onSaveSuccess`: the form is still dirty at that moment, so without it the guard would block the navigation that a successful save performs.
 
 ### Per-column field controllers
 

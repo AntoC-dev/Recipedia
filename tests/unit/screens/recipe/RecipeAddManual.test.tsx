@@ -1,4 +1,10 @@
-import { fireEvent, waitFor } from '@testing-library/react-native';
+import { act, fireEvent, waitFor } from '@testing-library/react-native';
+import {
+  isPreventRemoveArmed,
+  mockDispatch,
+  resetPreventRemove,
+  triggerPreventRemove,
+} from '@mocks/deps/react-navigation-mock';
 import { testRecipes } from '@test-data/recipesDataset';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { AddManuallyProp } from '@customTypes/RecipeNavigationTypes';
@@ -17,10 +23,15 @@ import {
   checkTime,
   checkTitle,
   mockNavigation,
+  fillMinimalRecipe,
   renderRoute,
   setupDb,
   teardownDb,
 } from './recipeTestHelpers';
+
+jest.mock('@react-navigation/native', () =>
+  require('@mocks/deps/react-navigation-mock').reactNavigationMock()
+);
 
 jest.mock('@utils/ImagePicker', () => require('@mocks/utils/ImagePicker-mock').imagePickerMock());
 jest.mock('@utils/OCR', () => require('@mocks/utils/OCR-mock').ocrMock());
@@ -81,6 +92,7 @@ describe('RecipeAddManual', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
+    resetPreventRemove();
     dbInstance = await setupDb();
   });
 
@@ -257,6 +269,52 @@ describe('RecipeAddManual', () => {
       await waitFor(() => {
         expect(mockNavigation.goBack).toHaveBeenCalled();
       });
+    });
+
+    test('a dirty add form asks to confirm before discarding', async () => {
+      const { getByTestId } = await renderRoute(mockRouteAddManually);
+
+      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Half Typed Recipe');
+
+      await waitFor(() => {
+        expect(isPreventRemoveArmed()).toBe(true);
+      });
+
+      act(() => {
+        triggerPreventRemove({ type: 'GO_BACK' });
+      });
+
+      expect(getByTestId('RecipeUnsavedChanges::Alert::IsVisible').props.children).toBe(true);
+      expect(mockDispatch).not.toHaveBeenCalled();
+
+      fireEvent.press(getByTestId('RecipeUnsavedChanges::Alert::OnConfirm'));
+
+      expect(mockDispatch).toHaveBeenCalledWith({ type: 'GO_BACK' });
+    });
+
+    test('a saved add form leaves without asking even though it stays dirty', async () => {
+      const { getByTestId } = await renderRoute(mockRouteAddManually);
+
+      await fillMinimalRecipe(getByTestId, 'Wholly Unique Guarded Save Recipe');
+
+      fireEvent.press(getByTestId('Recipe::BottomActionButton'));
+      await waitFor(() => {
+        expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
+      });
+      fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
+
+      await waitFor(() => {
+        expect(mockNavigation.goBack).toHaveBeenCalled();
+      });
+
+      expect(isPreventRemoveArmed()).toBe(true);
+
+      act(() => {
+        triggerPreventRemove({ type: 'GO_BACK' });
+      });
+
+      expect(getByTestId('RecipeUnsavedChanges::Alert::IsVisible').props.children).toBe(false);
+      expect(mockDispatch).toHaveBeenCalledWith({ type: 'GO_BACK' });
     });
   });
 

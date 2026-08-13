@@ -1,0 +1,112 @@
+name: "10 - Recipe Edit Discard Unsaved Changes Flow"
+appId: "com.recipedia"
+tags:
+  - recipe-edit
+---
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Action - Navigate to Search screen"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      text: "Pesto Pasta"
+    direction: DOWN
+    speed: 40
+    timeout: 120000
+    centerElement: true
+    label: "Action - Scroll to find Pesto Pasta"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    text: "Pesto Pasta"
+    label: "Action - Open Pesto Pasta recipe"
+
+- runFlow:
+    file: "../../asserts/recipe/common/buttonsReadOnly.yaml"
+    label: "Assert - Verify read-only mode buttons"
+
+- runFlow:
+    file: "../../flows/recipe/tapRecipeEdit.yaml"
+    label: "Action - Enter edit mode"
+
+- runFlow:
+    file: "../../asserts/recipe/common/buttonsEdit.yaml"
+    label: "Assert - Verify edit mode buttons"
+
+# A pristine form must not be guarded: leaving immediately has nothing to lose.
+- tapOn:
+    id: "Recipe::AppBar::Cancel"
+    label: "Action - Cancel without touching any field"
+
+- assertNotVisible:
+    id: "RecipeUnsavedChanges::Dialog::Title"
+    text: "Discard changes?"
+    label: "Assert - No discard prompt for a form that was never edited"
+
+- runFlow:
+    file: "../../asserts/recipe/common/buttonsReadOnly.yaml"
+    label: "Assert - Back in read-only mode"
+
+- runFlow:
+    file: "../../flows/recipe/tapRecipeEdit.yaml"
+    label: "Action - Re-enter edit mode"
+
+- runFlow:
+    file: "../../flows/recipe/adding/setRecipeTitle.yaml"
+    env:
+      TITLE: "Discarded Pesto Title"
+    label: "Action - Edit the title so the form becomes dirty"
+
+# Editing the title scrolls it into the centre of the form, which leaves the
+# image button above the viewport once the guard restores the same scroll offset.
+- scrollUntilVisible:
+    element:
+      id: "RecipeImage::RoundButton"
+    direction: UP
+    speed: 20
+    label: "Action - Scroll back to the top of the form"
+
+# Keep editing: the guard must cancel the navigation and preserve the edit.
+- tapOn:
+    id: "Recipe::AppBar::Cancel"
+    label: "Action - Attempt to leave the dirty form"
+
+- runFlow:
+    file: "../../asserts/alerts/en/unsavedChangesDialog.yaml"
+    label: "Assert - Discard confirmation is raised"
+
+- tapOn:
+    id: "RecipeUnsavedChanges::Dialog::Cancel"
+    label: "Action - Choose to keep editing"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: "../../asserts/recipe/common/buttonsEdit.yaml"
+    label: "Assert - Still in edit mode after keeping the edits"
+
+- assertVisible:
+    id: "RecipeTitle::CustomTextInput"
+    text: "Discarded Pesto Title"
+    label: "Assert - The pending edit survived the cancelled navigation"
+
+# Discard: the guard must replay the navigation and drop the edit.
+- tapOn:
+    id: "Recipe::AppBar::Cancel"
+    label: "Action - Attempt to leave the dirty form again"
+
+- runFlow:
+    file: "../../flows/recipe/discardRecipeChanges.yaml"
+    label: "Action - Confirm discarding the unsaved changes"
+
+- runFlow:
+    file: "../../asserts/recipe/common/buttonsReadOnly.yaml"
+    label: "Assert - Returned to read-only mode"
+
+- assertVisible:
+    id: "RecipeTitle::Text"
+    text: "PESTO PASTA"
+    label: "Assert - The original title is intact, the edit was dropped"

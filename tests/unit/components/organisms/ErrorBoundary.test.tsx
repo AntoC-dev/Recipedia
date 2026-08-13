@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text } from 'react-native';
 import { act, fireEvent, render } from '@testing-library/react-native';
-import { ErrorBoundary, withErrorBoundary } from '@components/organisms/ErrorBoundary';
+import { ErrorBoundary, errorBoundaryLayout } from '@components/organisms/ErrorBoundary';
 import { mockHideAsync } from '@mocks/deps/expo-splash-screen-mock';
 import { mockReportCrash } from '@mocks/utils/bug-report-mock';
 
@@ -200,43 +200,32 @@ describe('ErrorBoundary', () => {
     expect(mockReportCrash.mock.calls[0][0].message).toBe('Unknown render error');
   });
 
-  describe('withErrorBoundary', () => {
-    test('renders wrapped component output when it does not throw', () => {
-      const Guarded = withErrorBoundary(Boom);
-      const { getByTestId } = render(<Guarded crash={false} />);
+  describe('errorBoundaryLayout', () => {
+    test('renders the screen untouched when it does not throw', () => {
+      const { getByTestId } = render(errorBoundaryLayout({ children: <Boom crash={false} /> }));
 
       expect(getByTestId('SafeChild')).toBeTruthy();
     });
 
-    test('renders fallback when wrapped component throws', () => {
-      const Guarded = withErrorBoundary(Boom, 'GuardedBoom');
-      const { getByTestId } = render(<Guarded crash={true} />);
+    test('contains a screen render error in the fallback', () => {
+      const { getByTestId, queryByTestId } = render(
+        errorBoundaryLayout({ children: <Boom crash={true} /> })
+      );
 
-      expect(getByTestId('GuardedBoom')).toBeTruthy();
+      expect(queryByTestId('SafeChild')).toBeNull();
+      expect(getByTestId('ErrorFallback::Title')).toBeTruthy();
     });
 
-    test('sets a descriptive displayName from the component name', () => {
-      const Guarded = withErrorBoundary(Boom);
+    test('reports the screen error when the report action is pressed', async () => {
+      const { getByTestId } = render(errorBoundaryLayout({ children: <Boom crash={true} /> }));
 
-      expect(Guarded.displayName).toBe('withErrorBoundary(Boom)');
-    });
+      await act(async () => {
+        fireEvent.press(getByTestId('ErrorFallback::Report'));
+      });
 
-    test('prefers an explicit displayName over the function name', () => {
-      const Named = ({ crash }: { crash: boolean }) => <Boom crash={crash} />;
-      Named.displayName = 'ExplicitName';
-
-      const Guarded = withErrorBoundary(Named);
-
-      expect(Guarded.displayName).toBe('withErrorBoundary(ExplicitName)');
-    });
-
-    test('falls back to "Component" for an anonymous component', () => {
-      const nameless = jest.fn(() => null);
-      Object.defineProperty(nameless, 'name', { value: '' });
-
-      const Guarded = withErrorBoundary(nameless as unknown as React.ComponentType);
-
-      expect(Guarded.displayName).toBe('withErrorBoundary(Component)');
+      const [reportedError] = mockReportCrash.mock.calls[0];
+      expect(reportedError).toBeInstanceOf(Error);
+      expect(reportedError.message).toBe('render exploded');
     });
   });
 });

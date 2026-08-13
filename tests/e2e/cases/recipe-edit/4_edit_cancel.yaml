@@ -75,6 +75,10 @@ tags:
     label: "Action - Cancel changes and return to read-only mode"
 
 - runFlow:
+    file: "../../flows/recipe/discardRecipeChanges.yaml"
+    label: "Action - Confirm discarding the unsaved changes"
+
+- runFlow:
     file: "../../asserts/recipe/common/buttonsReadOnly.yaml"
     label: "Assert - Verify returned to read-only mode"
 

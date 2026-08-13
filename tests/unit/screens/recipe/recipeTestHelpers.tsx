@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react-native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { testRecipes } from '@test-data/recipesDataset';
 import { testTags } from '@test-data/tagsDataset';
@@ -661,4 +661,31 @@ export async function setupDb() {
 export async function teardownDb() {
   const dbInstance = RecipeDatabase.getInstance();
   await dbInstance.closeAndReset();
+}
+
+export async function fillMinimalRecipe(getByTestId: GetByIdType, title: string) {
+  fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), title);
+  fireEvent.press(getByTestId('RecipePersons::SetTextToEdit'), '4');
+  fireEvent.press(getByTestId('RecipeTime::SetTextToEdit'), '30');
+
+  fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+  await waitFor(() => expect(getByTestId('ModalImageSelect')).toBeTruthy());
+  fireEvent.press(getByTestId('ModalImageSelect::Select'));
+  await waitFor(() => {
+    expect(getByTestId('RecipeImage::ImgUri').props.children).toBe('/path/to/cropped/img');
+  });
+
+  fireEvent.press(getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction'));
+  await waitFor(() => expect(getByTestId('RecipeIngredients::0::Row')).toBeTruthy());
+  fireEvent.press(getByTestId('RecipeIngredients::0::OnIngredientChange'), '100@@g--Spaghetti');
+  await waitFor(() => {
+    expect(getByTestId('RecipeIngredients::0::NameInput::Value').props.children).toBe('Spaghetti');
+  });
+
+  fireEvent.press(getByTestId('RecipePreparation::AddButton::RoundButton::OnPressFunction'));
+  await waitFor(() => expect(getByTestId('RecipePreparation::EditableStep::0::Step')).toBeTruthy());
+  fireEvent.changeText(
+    getByTestId('RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput'),
+    'Cook pasta until al dente'
+  );
 }

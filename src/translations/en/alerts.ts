@@ -34,6 +34,12 @@ export default {
     titleTime: 'Enter a preparation time',
     nutrition: 'Fill in all nutrition values',
   },
+  unsavedChanges: {
+    title: 'Discard changes?',
+    content: 'This recipe has unsaved changes. If you leave now, they will be lost.',
+    discard: 'Discard',
+    keepEditing: 'Keep editing',
+  },
   ocrRecipe: {
     explanationText: 'Choose a picture:',
     photo: 'Take a new photo',

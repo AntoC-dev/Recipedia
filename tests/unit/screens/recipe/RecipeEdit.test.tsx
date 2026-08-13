@@ -1,5 +1,11 @@
 import React from 'react';
-import { fireEvent, waitFor } from '@testing-library/react-native';
+import { act, fireEvent, waitFor } from '@testing-library/react-native';
+import {
+  isPreventRemoveArmed,
+  mockDispatch,
+  resetPreventRemove,
+  triggerPreventRemove,
+} from '@mocks/deps/react-navigation-mock';
 import { testRecipes } from '@test-data/recipesDataset';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { EditRecipeProp, RecipePropType } from '@customTypes/RecipeNavigationTypes';
@@ -24,6 +30,10 @@ import {
   setupDb,
   teardownDb,
 } from './recipeTestHelpers';
+
+jest.mock('@react-navigation/native', () =>
+  require('@mocks/deps/react-navigation-mock').reactNavigationMock()
+);
 
 jest.mock('@utils/ImagePicker', () => require('@mocks/utils/ImagePicker-mock').imagePickerMock());
 jest.mock('@utils/OCR', () => require('@mocks/utils/OCR-mock').ocrMock());
@@ -84,12 +94,99 @@ describe('RecipeEdit', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
+    resetPreventRemove();
     dbInstance = await setupDb();
     mockRouteEdit = { mode: 'edit', recipe: { ...testRecipes[6]! } } as EditRecipeProp;
   });
 
   afterEach(async () => {
     await teardownDb();
+  });
+
+  describe('unsaved changes guard', () => {
+    const discardAlertId = 'RecipeUnsavedChanges::Alert';
+    const backAction = { type: 'GO_BACK' };
+
+    test('leaves an untouched form free to navigate away', async () => {
+      const { getByTestId } = await renderRoute(mockRouteEdit);
+
+      expect(isPreventRemoveArmed()).toBe(false);
+      expect(triggerPreventRemove(backAction)).toBe(false);
+      expect(getByTestId(`${discardAlertId}::IsVisible`).props.children).toBe(false);
+    });
+
+    test('shows the discard dialog when leaving a dirty form', async () => {
+      const { getByTestId } = await renderRoute(mockRouteEdit);
+
+      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Dirty Title');
+
+      await waitFor(() => {
+        expect(isPreventRemoveArmed()).toBe(true);
+      });
+
+      act(() => {
+        triggerPreventRemove(backAction);
+      });
+
+      expect(getByTestId(`${discardAlertId}::IsVisible`).props.children).toBe(true);
+      expect(getByTestId(`${discardAlertId}::Title`).props.children).toBe(
+        'alerts.unsavedChanges.title'
+      );
+      expect(mockDispatch).not.toHaveBeenCalled();
+    });
+
+    test('keeps the user on the form when the discard is cancelled', async () => {
+      const { getByTestId } = await renderRoute(mockRouteEdit);
+
+      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Dirty Title');
+      await waitFor(() => {
+        expect(isPreventRemoveArmed()).toBe(true);
+      });
+      act(() => {
+        triggerPreventRemove(backAction);
+      });
+
+      fireEvent.press(getByTestId(`${discardAlertId}::OnCancel`));
+
+      expect(getByTestId(`${discardAlertId}::IsVisible`).props.children).toBe(false);
+      expect(mockDispatch).not.toHaveBeenCalled();
+    });
+
+    test('replays the intercepted action when the discard is confirmed', async () => {
+      const { getByTestId } = await renderRoute(mockRouteEdit);
+
+      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Dirty Title');
+      await waitFor(() => {
+        expect(isPreventRemoveArmed()).toBe(true);
+      });
+      act(() => {
+        triggerPreventRemove(backAction);
+      });
+
+      fireEvent.press(getByTestId(`${discardAlertId}::OnConfirm`));
+
+      expect(getByTestId(`${discardAlertId}::IsVisible`).props.children).toBe(false);
+      expect(mockDispatch).toHaveBeenCalledWith(backAction);
+    });
+
+    test('does not block the navigation performed by a successful save', async () => {
+      const { getByTestId } = await renderRoute(mockRouteEdit);
+
+      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Saved Title');
+      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+
+      await waitFor(() => {
+        expect(mockNavigation.dispatch).toHaveBeenCalled();
+      });
+
+      expect(isPreventRemoveArmed()).toBe(false);
+
+      act(() => {
+        triggerPreventRemove(backAction);
+      });
+
+      expect(getByTestId(`${discardAlertId}::IsVisible`).props.children).toBe(false);
+    });
   });
 
   test('renders initial state in edit mode', async () => {

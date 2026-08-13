@@ -42,6 +42,10 @@ tags:
 - tapOn:
     id: "Recipe::AppBar::BackButton"
     label: "Action - Cancel recipe adding"
+
+- runFlow:
+    file: "../../flows/recipe/discardRecipeChanges.yaml"
+    label: "Action - Confirm discarding the unsaved changes"
 - tapOn:
     id: "BottomTabs::Search"
     label: "Verification - Navigate to Search screen"

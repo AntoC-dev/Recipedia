@@ -259,9 +259,8 @@ describe('BulkImportValidation', () => {
 
     expect(mockDispatch).toHaveBeenCalledWith(
       expect.objectContaining({
-        type: 'reset',
-        index: 0,
-        routes: [{ name: 'Tabs' }],
+        type: 'RESET',
+        payload: { index: 0, routes: [{ name: 'Tabs' }] },
       })
     );
   });

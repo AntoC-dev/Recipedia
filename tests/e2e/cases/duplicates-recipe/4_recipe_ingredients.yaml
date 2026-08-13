@@ -74,6 +74,10 @@ tags:
     label: "Action - Go back to home"
 
 - runFlow:
+    file: "../../flows/recipe/discardRecipeChanges.yaml"
+    label: "Action - Confirm discarding the unsaved changes"
+
+- runFlow:
     file: "../../flows/recipe/adding/createRecipeWithDifferentIngredients.yaml"
     label: "Action - Create recipe with different ingredients"
 
