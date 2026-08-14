@@ -7,6 +7,8 @@ import { appLogger, tutorialLogger } from '@utils/logger';
 import { deleteOldLogFiles } from '@utils/BugReport';
 import { useRecipes } from '@hooks/useRecipes';
 import { useMenu } from '@hooks/useMenu';
+import { useIngredients } from '@hooks/useIngredients';
+import { useTags } from '@hooks/useTags';
 
 enum AppMode {
   Loading = 'loading',
@@ -33,13 +35,31 @@ enum AppMode {
  * - Tutorial mode with pre-populated shopping list
  * - Shopping list reset on app launch
  * - State management for app flow
+ * - Decode integrity: a corrupt row found while decoding any cached table is
+ *   rethrown here during render, so the root error boundary shows the recovery
+ *   screen instead of the app running on silently truncated data. Every table's
+ *   hook is read, so the throw does not depend on which slice happens to notify.
+ *   Development and E2E builds only — `decodeError` is always null in production.
  *
  * @returns JSX element representing the current app mode
  */
 export default function AppWrapper() {
-  const { recipes } = useRecipes();
-  const { clearMenu, addRecipeToMenu, toggleMenuItemCooked } = useMenu();
+  const { recipes, decodeError: recipesDecodeError } = useRecipes();
+  const {
+    clearMenu,
+    addRecipeToMenu,
+    toggleMenuItemCooked,
+    decodeError: menuDecodeError,
+  } = useMenu();
+  const { decodeError: ingredientsDecodeError } = useIngredients();
+  const { decodeError: tagsDecodeError } = useTags();
   const [mode, setMode] = useState<AppMode>(AppMode.Loading);
+
+  const decodeError =
+    recipesDecodeError ?? menuDecodeError ?? ingredientsDecodeError ?? tagsDecodeError;
+  if (decodeError) {
+    throw decodeError;
+  }
 
   useEffect(() => {
     deleteOldLogFiles();

@@ -21,7 +21,8 @@ import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
  * purchase flags of ingredients that leave the shopping list on every menu
  * mutation, and clearing the menu empties it entirely.
  *
- * @returns Object containing reactive `menu` array and all menu mutation functions
+ * @returns Object containing reactive `menu` array, `decodeError` (see
+ *   {@link RecipeDatabase.get_decode_error}), and all menu mutation functions
  */
 export function useMenu() {
   const db = RecipeDatabase.getInstance();
@@ -29,6 +30,7 @@ export function useMenu() {
     cb => db.subscribe('menu', cb),
     () => db.get_menu()
   );
+  const decodeError = db.get_decode_error();
   const purchasedIngredients = useSyncExternalStore(
     cb => db.subscribe('purchased', cb),
     () => db.get_purchasedIngredients()
@@ -69,6 +71,7 @@ export function useMenu() {
 
   return {
     menu,
+    decodeError,
     addRecipeToMenu,
     getRecipeById,
     toggleMenuItemCooked,

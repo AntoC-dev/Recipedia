@@ -31,7 +31,8 @@ const getTagsIndex = makeItemIndexCache<tagTableElement>({
  * Note that `editTag` and `deleteTag` also invalidate the `recipes` slice
  * (handled internally by RecipeDatabase) so recipe consumers re-render too.
  *
- * @returns Object containing reactive `tags` array and all tag mutation functions
+ * @returns Object containing reactive `tags` array, `decodeError` (see
+ *   {@link RecipeDatabase.get_decode_error}), and all tag mutation functions
  */
 export function useTags() {
   const db = RecipeDatabase.getInstance();
@@ -39,6 +40,7 @@ export function useTags() {
     cb => db.subscribe('tags', cb),
     () => db.get_tags()
   );
+  const decodeError = db.get_decode_error();
 
   useWarmSearchIndex(getTagsIndex, tags);
 
@@ -76,6 +78,7 @@ export function useTags() {
 
   return {
     tags,
+    decodeError,
     addTag,
     editTag,
     deleteTag,
