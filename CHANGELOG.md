@@ -1,3 +1,9 @@
+## [2.51.1](https://github.com/AntoC-dev/Recipedia/compare/v2.51.0...v2.51.1) (2026-08-14)
+
+### Bug Fixes
+
+* **recipe:** stop multiline inputs swallowing scroll gestures ([d9d6efb](https://github.com/AntoC-dev/Recipedia/commit/d9d6efb22b8920c1108a082f0e7ab609e0bec486))
+
 ## [2.51.0](https://github.com/AntoC-dev/Recipedia/compare/v2.50.1...v2.51.0) (2026-08-13)
 
 ### Features
