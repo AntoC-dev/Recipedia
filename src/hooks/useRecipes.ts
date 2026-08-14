@@ -29,8 +29,13 @@ import { databaseLogger } from '@utils/logger';
  * `scaleAllRecipesForNewDefaultPersons` observes it; other consumers of this
  * hook see `undefined`.
  *
+ * `decodeError` is store-wide rather than slice-scoped: it reports corrupt data
+ * found while decoding any cached table. Recording one notifies the `recipes`
+ * slice, so the subscription above is what re-renders consumers when it appears.
+ *
  * @returns Object containing reactive `recipes` array, `scalingProgress`,
- *   and all recipe mutation functions
+ *   `decodeError` (see {@link RecipeDatabase.get_decode_error}), and all recipe
+ *   mutation functions
  */
 export function useRecipes() {
   const db = RecipeDatabase.getInstance();
@@ -38,6 +43,7 @@ export function useRecipes() {
     cb => db.subscribe('recipes', cb),
     () => db.get_recipes()
   );
+  const decodeError = db.get_decode_error();
   const [scalingProgress, setScalingProgress] = useState<number | undefined>(undefined);
 
   const addRecipe = async (recipe: RecipeDraft): Promise<recipeTableElement> => {
@@ -120,6 +126,7 @@ export function useRecipes() {
 
   return {
     recipes,
+    decodeError,
     scalingProgress,
     addRecipe,
     editRecipe,

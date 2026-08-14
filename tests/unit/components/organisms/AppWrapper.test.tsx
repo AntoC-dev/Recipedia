@@ -5,6 +5,7 @@ import RecipeDatabase from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
 import { testRecipes } from '@test-data/recipesDataset';
+import { corruptIngredientType } from '@test-helpers/corruptIngredientType';
 
 jest.mock('@navigation/RootNavigator', () =>
   require('@mocks/navigation/RootNavigator-mock').rootNavigatorMock()
@@ -217,5 +218,20 @@ describe('AppWrapper Component', () => {
     });
 
     expect(database.get_menu().length).toBe(0);
+  });
+
+  describe('decode integrity', () => {
+    beforeEach(async () => {
+      await database.addMultipleIngredients(testIngredients);
+      await database.addMultipleTags(testTags);
+      await database.addMultipleRecipes(testRecipes);
+      isFirstLaunch.mockResolvedValue(false);
+    });
+
+    test('throws the decode error so an error boundary can catch it', async () => {
+      await corruptIngredientType(database, testIngredients[0]!.id);
+
+      expect(() => render(<AppWrapper />)).toThrow(/has an unknown type "not-a-real-type"/);
+    });
   });
 });

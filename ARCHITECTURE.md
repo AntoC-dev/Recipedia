@@ -100,9 +100,27 @@ When writing: the rich type is encoded to flat primitives before the SQL stateme
 
 ### In-memory cache and pub/sub
 
-On initialization, all rows are loaded into memory (`_recipes`, `_ingredients`, `_tags`, `_menu`, `_purchasedIngredients`). After any mutation, `notify(slice)` fires all listeners registered for that slice via `subscribe(slice, callback)`. The focused hooks bind this to `useSyncExternalStore`.
+On initialization, all rows are loaded into memory (`_recipes`, `_ingredients`, `_tags`, `_menu`, `_purchasedIngredients`). Ingredients and tags load first: recipe rows store only ingredient and tag ids, and decoding resolves them through id-keyed maps built over those caches rather than one query per reference. After any mutation, `notify(slice)` fires all listeners registered for that slice via `subscribe(slice, callback)`. The focused hooks bind this to `useSyncExternalStore`.
 
 The `StoreSlice` type enumerates the available slices: `'recipes' | 'ingredients' | 'tags' | 'menu' | 'purchased'`.
+
+### Decode integrity
+
+Decoding resolves cross-table references and casts stored strings into application types, and neither can be trusted blindly — a corrupt row silently loses data instead of failing. Each decoder therefore validates what it cannot assume, using only data already in memory (no extra queries):
+
+| Decoder | Checks |
+|---|---|
+| recipes | ingredient and tag ids that resolve against no cached row |
+| ingredients | `TYPE` outside the `ingredientType` enum; `SEASON` months outside `ALL_MONTHS` |
+| ingredients, tags | duplicate ids, which would make id-keyed lookups return an arbitrary row |
+
+One check is not a decode concern and lives beside them rather than inside a decoder: `reportUnresolvedMenuRecipes` compares `_menu` against `_recipes` after `init()` has filled both, since decoding a menu row cannot see the recipes.
+
+Every failure is logged through `recordDecodeError`, which also records the first one on `RecipeDatabase._decodeError` when `__DEV__ || getDatasetType() === 'test'`. Logging and recording live in one function so a new check cannot do one without the other. The recorded error is exposed by `get_decode_error()`, returned as `decodeError` from `useRecipes`, `useMenu`, `useIngredients` and `useTags`, and rethrown during render by `AppWrapper`, so the root `ErrorBoundary` in `App.tsx` replaces the app with the `ErrorFallback` screen. Recording notifies the `recipes` slice so consumers mounted before the failure re-render. Production keeps the log and degrades the affected row.
+
+The `performance` build records nothing, so benchmark flows never surface the guard; detection itself is cheap enough (set lookups over already-loaded rows, no queries) to run everywhere.
+
+**Adding a decoder that resolves a reference to another table means adding its check here**, otherwise the corruption it can produce goes unnoticed.
 
 ### Schema migrations
 
@@ -345,6 +363,8 @@ These must not be violated. Violating them causes subtle bugs or breaks CI.
 **All new utility functions outside React components must have unit tests and TypeDoc comments.** See `CLAUDE.md`.
 
 **Schema changes require a migration.** Adding a column without a `PRAGMA`-guarded `ALTER TABLE` in `init()` breaks existing app installs.
+
+**Recipe decoding resolves ingredients and tags from the in-memory caches, never from SQL.** `_ingredients` and `_tags` must be loaded before any recipe is decoded, and `_recipes` before the menu — `init()` loads them in that order for this reason. Mutating an ingredient or tag patches the cached recipes in place; do not reload all recipes from the database. Any new mutation path must leave the caches equal to a full reload, which the table-driven test in `tests/unit/utils/RecipeDatabase.test.tsx` asserts for every mutation method.
 
 ---
 

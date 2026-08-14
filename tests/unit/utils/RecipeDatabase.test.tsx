@@ -14,6 +14,8 @@ import {
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
 import { getRandomRecipes } from '@utils/FilterFunctions';
+import { ALL_MONTHS } from '@styles/typography';
+import { corruptIngredientType } from '@test-helpers/corruptIngredientType';
 
 describe('RecipeDatabase', () => {
   describe('RecipeDatabase basic tests', () => {
@@ -531,6 +533,235 @@ describe('RecipeDatabase', () => {
             i => i.id === ingredientToDelete!.id
           );
           expect(hasDeletedIngredient).toBe(false);
+        });
+      });
+    });
+
+    describe('Recipe decoding from the in-memory ingredient and tag caches', () => {
+      test('decoding every recipe issues no per-ingredient or per-tag lookup', async () => {
+        const ingredientLookup = jest.spyOn(db['_ingredientsTable'], 'searchElementById');
+        const tagLookup = jest.spyOn(db['_tagsTable'], 'searchElementById');
+
+        const decodedRecipes = await db['getAllRecipes']();
+
+        expect(decodedRecipes).toEqual(testRecipes);
+        expect(ingredientLookup).not.toHaveBeenCalled();
+        expect(tagLookup).not.toHaveBeenCalled();
+
+        ingredientLookup.mockRestore();
+        tagLookup.mockRestore();
+      });
+
+      test('addRecipe decodes the inserted recipe without per-reference lookups', async () => {
+        const ingredientLookup = jest.spyOn(db['_ingredientsTable'], 'searchElementById');
+        const tagLookup = jest.spyOn(db['_tagsTable'], 'searchElementById');
+
+        const added = await db.addRecipe({
+          ...testRecipes[0]!,
+          id: undefined,
+          title: 'Decoded Without Lookups',
+        });
+
+        expect(added.ingredients).toEqual(testRecipes[0]!.ingredients);
+        expect(added.tags).toEqual(testRecipes[0]!.tags);
+        expect(ingredientLookup).not.toHaveBeenCalled();
+        expect(tagLookup).not.toHaveBeenCalled();
+
+        ingredientLookup.mockRestore();
+        tagLookup.mockRestore();
+      });
+
+      const cacheMutations: [string, () => Promise<unknown>][] = [
+        [
+          'editIngredient',
+          () => db.editIngredient({ ...testIngredients[0]!, name: 'Renamed Spaghetti' }),
+        ],
+        ['editTag', () => db.editTag({ ...testTags[0]!, name: 'Renamed Tag' })],
+        ['deleteIngredient', () => db.deleteIngredient(testIngredients[0]!)],
+        ['deleteTag', () => db.deleteTag(testTags[0]!)],
+        [
+          'addIngredient',
+          () => db.addIngredient({ ...testIngredients[0]!, id: undefined, name: 'Added' }),
+        ],
+        ['addTag', () => db.addTag({ ...testTags[0]!, id: undefined, name: 'Added' })],
+        ['addRecipe', () => db.addRecipe({ ...testRecipes[1]!, id: undefined, title: 'Added' })],
+        ['editRecipe', () => db.editRecipe({ ...testRecipes[0]!, title: 'Edited' })],
+        ['deleteRecipe', () => db.deleteRecipe(testRecipes[2]!)],
+      ];
+
+      test.each(cacheMutations)(
+        '%s leaves the cached recipes equal to a full database reload and records no decode error',
+        async (_operation, mutate) => {
+          await mutate();
+
+          expect(db.get_recipes()).toEqual(await db['getAllRecipes']());
+          expect(db.get_decode_error()).toBeNull();
+        }
+      );
+
+      test.each(cacheMutations.slice(0, 4))(
+        '%s patches the cached recipes without reloading them',
+        async (_operation, mutate) => {
+          const reload = jest.spyOn(
+            db as unknown as { getAllRecipes: () => Promise<recipeTableElement[]> },
+            'getAllRecipes'
+          );
+
+          await mutate();
+
+          expect(reload).not.toHaveBeenCalled();
+          reload.mockRestore();
+        }
+      );
+
+      test('editIngredient narrows the season of every recipe using it', async () => {
+        const recipeBefore = db.get_recipes().find(r => r.id === testRecipes[0]!.id)!;
+        expect(recipeBefore.season).toEqual(ALL_MONTHS);
+
+        await db.editIngredient({ ...testIngredients[0]!, season: ['5', '6', '7'] });
+
+        const recipeAfter = db.get_recipes().find(r => r.id === testRecipes[0]!.id)!;
+        expect(recipeAfter.season).toEqual(['5', '6', '7']);
+      });
+
+      test('deleteIngredient widens the season back to the remaining ingredients', async () => {
+        await db.editIngredient({ ...testIngredients[0]!, season: ['5', '6', '7'] });
+        expect(db.get_recipes().find(r => r.id === testRecipes[0]!.id)!.season).toEqual([
+          '5',
+          '6',
+          '7',
+        ]);
+
+        await db.deleteIngredient(testIngredients[0]!);
+
+        const recipeAfter = db.get_recipes().find(r => r.id === testRecipes[0]!.id)!;
+        expect(recipeAfter.ingredients.some(i => i.id === testIngredients[0]!.id)).toBe(false);
+        expect(recipeAfter.season).toEqual(ALL_MONTHS);
+      });
+
+      test('a recipe referencing a missing ingredient records a decode error', async () => {
+        await db['_ingredientsTable'].deleteElementById(
+          testIngredients[0]!.id,
+          db['_dbConnection']
+        );
+
+        await db['getAllIngredients']().then(loaded => (db['_ingredients'] = loaded));
+        await db['getAllRecipes']();
+
+        expect(db.get_decode_error()?.message).toMatch(
+          /reference\(s\) in recipes could not be resolved/
+        );
+      });
+
+      test('an ingredient row with an unknown type records a decode error', async () => {
+        await corruptIngredientType(db, testIngredients[0]!.id);
+
+        expect(db.get_decode_error()?.message).toMatch(/has an unknown type "not-a-real-type"/);
+      });
+
+      test('an ingredient row with an impossible month records a decode error', async () => {
+        await db['_ingredientsTable'].editElementById(
+          testIngredients[0]!.id,
+          new Map([['SEASON', '1__13']]),
+          db['_dbConnection']
+        );
+
+        await db['getAllIngredients']();
+
+        expect(db.get_decode_error()?.message).toMatch(/invalid season months \[13\]/);
+      });
+
+      test('duplicate ingredient ids record a decode error', async () => {
+        db['reportDuplicateIds']([{ id: 1 }, { id: 2 }, { id: 1 }], 'ingredient');
+
+        expect(db.get_decode_error()?.message).toMatch(/Duplicate ingredient ids \[1\]/);
+      });
+
+      test('duplicate tag ids record a decode error', async () => {
+        db['reportDuplicateIds']([{ id: 4 }, { id: 4 }], 'tag');
+
+        expect(db.get_decode_error()?.message).toMatch(/Duplicate tag ids \[4\]/);
+      });
+
+      test('a menu row pointing at a deleted recipe records a decode error', async () => {
+        await db.addRecipeToMenu(testRecipes[0]!);
+        db['_recipes'] = db['_recipes'].filter(recipe => recipe.id !== testRecipes[0]!.id);
+
+        db['reportUnresolvedMenuRecipes']();
+
+        expect(db.get_decode_error()?.message).toMatch(/Menu rows reference missing recipes/);
+      });
+
+      test('only the first decode error is kept', async () => {
+        db['reportDuplicateIds']([{ id: 1 }, { id: 1 }], 'ingredient');
+        const firstError = db.get_decode_error();
+
+        db['reportDuplicateIds']([{ id: 9 }, { id: 9 }], 'tag');
+
+        expect(db.get_decode_error()).toBe(firstError);
+      });
+
+      test('a clean database records no decode error', () => {
+        expect(db.get_decode_error()).toBeNull();
+      });
+
+      test('an ingredient saved with no month records no decode error', async () => {
+        await db.addIngredient({
+          name: 'Seasonless Ingredient',
+          unit: 'g',
+          type: ingredientType.condiment,
+          season: [],
+        });
+
+        await db['getAllIngredients']();
+
+        expect(db.get_decode_error()).toBeNull();
+        expect(db.get_ingredients().find(i => i.name === 'Seasonless Ingredient')?.season).toEqual(
+          []
+        );
+      });
+
+      test('a recipe saved without tags records no decode error', async () => {
+        const added = await db.addRecipe({ ...testRecipes[0]!, id: undefined, tags: [] });
+
+        const reloaded = await db['getAllRecipes']();
+
+        expect(db.get_decode_error()).toBeNull();
+        expect(reloaded.find(recipe => recipe.id === added.id)?.tags).toEqual([]);
+      });
+
+      test('a recipe left without ingredients records no decode error', async () => {
+        const added = await db.addRecipe({
+          ...testRecipes[0]!,
+          id: undefined,
+          title: 'Ingredientless',
+          ingredients: [testIngredients[0]!],
+        });
+
+        await db.deleteIngredient(testIngredients[0]!);
+        const reloaded = await db['getAllRecipes']();
+
+        expect(db.get_decode_error()).toBeNull();
+        expect(reloaded.find(recipe => recipe.id === added.id)?.ingredients).toEqual([]);
+      });
+
+      test('editIngredient preserves recipe-specific quantity and note', async () => {
+        const addedRecipe = await db.addRecipe({
+          ...testRecipes[0]!,
+          id: undefined,
+          title: 'Recipe With Ingredient Notes',
+          ingredients: [{ ...testIngredients[0]!, quantity: '123', note: 'For the sauce' }],
+        });
+
+        await db.editIngredient({ ...testIngredients[0]!, name: 'Renamed Spaghetti', unit: 'kg' });
+
+        const refreshed = db.get_recipes().find(r => r.id === addedRecipe.id)!;
+        expect(refreshed.ingredients[0]).toEqual({
+          ...testIngredients[0]!,
+          name: 'Renamed Spaghetti',
+          unit: 'kg',
+          quantity: '123',
+          note: 'For the sauce',
         });
       });
     });

@@ -39,8 +39,8 @@ const getIngredientsIndex = makeItemIndexCache<ingredientTableElement>({
  * `editIngredient` and `deleteIngredient` also invalidate the `recipes` slice
  * (handled internally by RecipeDatabase) so recipe consumers re-render too.
  *
- * @returns Object containing reactive `ingredients` array and all ingredient
- *   mutation functions
+ * @returns Object containing reactive `ingredients` array, `decodeError` (see
+ *   {@link RecipeDatabase.get_decode_error}), and all ingredient mutation functions
  */
 export function useIngredients() {
   const db = RecipeDatabase.getInstance();
@@ -48,6 +48,7 @@ export function useIngredients() {
     cb => db.subscribe('ingredients', cb),
     () => db.get_ingredients()
   );
+  const decodeError = db.get_decode_error();
 
   useWarmSearchIndex(getIngredientsIndex, ingredients);
 
@@ -83,6 +84,7 @@ export function useIngredients() {
 
   return {
     ingredients,
+    decodeError,
     addIngredient,
     editIngredient,
     deleteIngredient,
