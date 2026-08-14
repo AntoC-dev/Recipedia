@@ -137,8 +137,8 @@ tags:
             text: "\\d+ Photo.*"
           timeout: 3000
           label: "Wait for gallery to load on iOS"
-      - tapOn:
-          point: "10%,11%"
+      - runFlow:
+          file: "../../flows/selectFirstGalleryPhotoIOS.yaml"
           label: "Select first photo of the gallery on iOS"
       - extendedWaitUntil:
           visible:
@@ -148,7 +148,7 @@ tags:
       - waitForAnimationToEnd:
           label: "Ensure animations ends before tapping"
       - tapOn:
-          point: "33%,11%"
+          point: "37%,17%"
           label: "Select second photo of the gallery on iOS"
       - extendedWaitUntil:
           visible:

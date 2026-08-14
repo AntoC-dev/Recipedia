@@ -7,8 +7,9 @@ appId: "com.recipedia"
     times: 10
     commands:
       - swipe:
-          start: "75%,25%"
-          end: "25%,25%"
+          from:
+            id: "Home::RecipeRecommendation::random::Carousel"
+          direction: LEFT
           label: "Scroll random carousel until ${recipeName} is visible"
 
 - tapOn:

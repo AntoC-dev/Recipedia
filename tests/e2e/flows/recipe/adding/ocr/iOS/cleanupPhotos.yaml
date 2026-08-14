@@ -1,8 +1,9 @@
 appId: "com.recipedia"
 ---
 - tapOn:
-    point: "10%,61%"
-    label: "Tap on the first picture"
+    id: "all_photos_grid"
+    point: "10%,95%"
+    label: "Tap the first picture of the last row"
 
 - extendedWaitUntil:
     visible:

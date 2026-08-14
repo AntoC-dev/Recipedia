@@ -113,7 +113,7 @@ recipe-edit, search, settings, shopping, tags-db, web, web-edge-cases
 ```
 
 - Android: `ubuntu-latest`, API 34 Google APIs x86_64 emulator, KVM enabled, 4 GB RAM, 4 cores
-- iOS: `macos-15`, iPhone SE 3rd generation simulator, iOS 18.6, Xcode 26.2, hardware keyboard disabled, animations reduced
+- iOS: `macos-15`, iPhone 16e simulator, iOS 18.6, Xcode 26.2, hardware keyboard disabled, animations reduced
 
 Each suite uploads:
 - `maestro-logs-{platform}-{suite}.zip` — Maestro step logs + app logs

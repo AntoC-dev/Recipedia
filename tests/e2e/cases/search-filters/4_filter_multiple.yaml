@@ -62,15 +62,10 @@ tags:
       id: "SearchScreen::FilterAccordion::Accordion::11::Item::1"
       text: ".*Romaine Lettuce"
     direction: DOWN
-    label: "Action - Scroll to first Vegetable item"
+    centerElement: true
+    label: "Action - Scroll the first Vegetable item clear of the sheet edges"
 
 - waitForAnimationToEnd
-
-- swipe:
-    start: "50%,60%"
-    end: "50%,40%"
-    duration: 400
-    label: "Scroll again to ensure the item is visible"
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::11::Item::1"

@@ -58,7 +58,7 @@ export type CarouselItemProps = {
  */
 export function Carousel(props: CarouselItemProps) {
   return (
-    <View>
+    <View testID={props.testID}>
       <FlatList
         data={props.items}
         horizontal={true}

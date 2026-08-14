@@ -119,7 +119,7 @@ jobs:
         id: simulator
         uses: futureware-tech/simulator-action@v5
         with:
-          model: 'iPhone SE (3rd generation)'
+          model: 'iPhone 16e'
           os_version: '18.6'
           wait_for_boot: true
           erase_before_boot: false
