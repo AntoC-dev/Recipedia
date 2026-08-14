@@ -1,3 +1,14 @@
+## [2.52.0](https://github.com/AntoC-dev/Recipedia/compare/v2.51.1...v2.52.0) (2026-08-14)
+
+### Features
+
+* **db:** surface corrupt decoded rows as a dev and E2E crash ([ebe8576](https://github.com/AntoC-dev/Recipedia/commit/ebe85769a76dad6fddb8d2a5fa803f2afc87183d)), closes [#435](https://github.com/AntoC-dev/Recipedia/issues/435)
+
+### Performance Improvements
+
+* **db:** decode recipes from in-memory ingredient/tag maps ([9f0cfaa](https://github.com/AntoC-dev/Recipedia/commit/9f0cfaa97ddca867f594595d390020715d1d1271)), closes [#435](https://github.com/AntoC-dev/Recipedia/issues/435)
+* **db:** decode recipes from in-memory ingredient/tag maps ([#539](https://github.com/AntoC-dev/Recipedia/issues/539)) ([47c29f7](https://github.com/AntoC-dev/Recipedia/commit/47c29f7e94673e567caf2b7a54d6feeb8a403b18))
+
 ## [2.51.1](https://github.com/AntoC-dev/Recipedia/compare/v2.51.0...v2.51.1) (2026-08-14)
 
 ### Bug Fixes
