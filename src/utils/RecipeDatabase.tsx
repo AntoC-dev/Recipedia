@@ -66,6 +66,7 @@ import {
   isTemporaryImageUri,
   saveRecipeImage,
 } from '@utils/FileGestion';
+import { getDatasetType } from '@utils/DatasetLoader';
 import { buildItemIndex, searchItems } from '@utils/FuzzyIndex';
 import { parseQuantity, scaleQuantityForPersons } from '@utils/Quantity';
 import { computeShoppingList } from '@utils/ShoppingComputation';
@@ -86,6 +87,22 @@ const RECIPE_TITLE_FUZZY = 0.3;
 export type StoreSlice = 'recipes' | 'ingredients' | 'tags' | 'menu' | 'purchased';
 
 /**
+ * Whether decode integrity checking is active for this build.
+ *
+ * Enabled in development and in the Maestro E2E build, which is compiled in
+ * release mode (`__DEV__` is false there). Excluded from the `performance` build,
+ * whose flows measure app cost, and from production, where a corrupt row should
+ * degrade the screen rather than take the app down.
+ */
+const DECODE_INTEGRITY_CHECK_ENABLED = __DEV__ || getDatasetType() === 'test';
+
+/** Valid `TYPE` column values, used to police the enum cast in ingredient decoding. */
+const INGREDIENT_TYPES = new Set<string>(Object.values(ingredientType));
+
+/** Valid `SEASON` column entries, used to police the months an ingredient row carries. */
+const MONTHS = new Set<string>(ALL_MONTHS);
+
+/**
  * A recipe whose embedded tags and ingredients have been resolved to persisted
  * master rows (each carrying its database `id`), ready for encoding and
  * insertion. The recipe's own `id` presence is preserved from the input draft.
@@ -94,6 +111,61 @@ type PreparedRecipe<T extends RecipeDraft = RecipeDraft> = Omit<T, 'tags' | 'ing
   tags: tagTableElement[];
   ingredients: ingredientTableElement[];
 };
+
+/**
+ * Id-keyed views over the cached ingredient and tag tables, used to resolve the
+ * ingredient and tag references embedded in an encoded recipe row without
+ * issuing a database query per reference.
+ */
+type decodeIndexes = {
+  ingredientsById: Map<number, ingredientTableElement>;
+  tagsById: Map<number, tagTableElement>;
+  unresolvedIngredientIds: Set<number>;
+  unresolvedTagIds: Set<number>;
+};
+
+/**
+ * Number of unresolved reference ids included in the decode integrity report.
+ * A drifted cache can strand thousands of references; logging a sample keeps the
+ * entry readable while still naming the rows to investigate.
+ */
+const UNRESOLVED_ID_SAMPLE_SIZE = 20;
+
+/**
+ * Takes the reportable head of a set of offending ids.
+ *
+ * @param ids - Every id found to be at fault
+ * @returns At most {@link UNRESOLVED_ID_SAMPLE_SIZE} of them, in insertion order
+ */
+function sampleIds(ids: Iterable<number>): number[] {
+  return [...ids].slice(0, UNRESOLVED_ID_SAMPLE_SIZE);
+}
+
+/**
+ * Combines an ingredient's master row with the quantity and note a recipe uses
+ * it at.
+ *
+ * A recipe row stores only an ingredient id plus its own quantity and optional
+ * note; everything else comes from the ingredients table. Both decoding and the
+ * ingredient-edit cache patch resolve references this way, so the rule lives
+ * here and an absent note stays an absent key in both.
+ *
+ * @param master - Ingredient as stored in the ingredients table
+ * @param quantity - Amount this recipe uses
+ * @param note - Recipe-specific usage note, if any
+ * @returns The ingredient as a recipe embeds it
+ */
+function mergeIngredientUsage(
+  master: ingredientTableElement,
+  quantity: string | undefined,
+  note: string | undefined
+): ingredientTableElement {
+  const used: ingredientTableElement = { ...master, quantity };
+  if (note) {
+    used.note = note;
+  }
+  return used;
+}
 
 /**
  * RecipeDatabase - Singleton class for managing recipe data storage and operations
@@ -149,6 +221,7 @@ export class RecipeDatabase {
   private _listeners = new Map<StoreSlice, Set<() => void>>();
   private _isReady = false;
   private _initPromise: Promise<void> | null = null;
+  private _decodeError: Error | null = null;
 
   /*    PRIVATE METHODS     */
   private constructor() {
@@ -351,30 +424,25 @@ export class RecipeDatabase {
 
     await this.migrateAddSourceColumns();
 
-    const [
-      ingredients,
-      tags,
-      recipes,
-      importHistory,
-      dismissedRecipes,
-      menu,
-      purchasedIngredients,
-    ] = await Promise.all([
-      this.getAllIngredients(),
-      this.getAllTags(),
-      this.getAllRecipes(),
-      this.getAllImportHistory(),
-      this.getAllDismissedRecipes(),
-      this.getAllMenu(),
-      this.getAllPurchasedIngredients(),
-    ]);
+    const [ingredients, tags] = await Promise.all([this.getAllIngredients(), this.getAllTags()]);
     this._ingredients = ingredients;
     this._tags = tags;
+
+    const [recipes, importHistory, dismissedRecipes, menu, purchasedIngredients] =
+      await Promise.all([
+        this.getAllRecipes(),
+        this.getAllImportHistory(),
+        this.getAllDismissedRecipes(),
+        this.getAllMenu(),
+        this.getAllPurchasedIngredients(),
+      ]);
     this._recipes = recipes;
     this._importHistory = importHistory;
     this._dismissedRecipes = dismissedRecipes;
     this._menu = menu;
     this._purchasedIngredients = purchasedIngredients;
+
+    this.reportUnresolvedMenuRecipes();
 
     databaseLogger.info('Database initialization completed', {
       recipesCount: this._recipes.length,
@@ -677,7 +745,7 @@ export class RecipeDatabase {
       });
       throw new Error(`Failed to retrieve recipe "${recipe.title}" after insertion`);
     }
-    const decodedRecipe = await this.decodeRecipe(dbRecipe);
+    const decodedRecipe = this.decodeArrayOfRecipe([dbRecipe])[0]!;
     this.add_recipes(decodedRecipe);
     this._recipes = [...this._recipes];
     this.notify('recipes');
@@ -767,7 +835,7 @@ export class RecipeDatabase {
    * Updates an existing ingredient in the database.
    *
    * After a successful update the in-memory ingredients cache is refreshed and
-   * all recipes that reference this ingredient are reloaded from the database,
+   * every cached recipe that references this ingredient is patched in place,
    * then both the `ingredients` and `recipes` store slices are notified.
    *
    * @param ingredient - The ingredient to update. Must have a valid `id`.
@@ -783,7 +851,7 @@ export class RecipeDatabase {
     if (success) {
       this.update_ingredient(ingredient);
       this._ingredients = [...this._ingredients];
-      this._recipes = await this.getAllRecipes();
+      this._recipes = this._recipes.map(recipe => this.applyIngredientToRecipe(recipe, ingredient));
       this.notify('ingredients');
       this.notify('recipes');
     }
@@ -791,11 +859,55 @@ export class RecipeDatabase {
   }
 
   /**
+   * Re-resolves an updated ingredient inside a cached recipe
+   *
+   * Recipes embed a copy of each ingredient they use, so an ingredient rename or
+   * unit change has to be reflected in every recipe referencing it. The
+   * recipe-specific quantity and note are preserved and the recipe season is
+   * recomputed. Recipes that do not use the ingredient are returned untouched.
+   *
+   * @private
+   * @param recipe - Cached recipe to patch
+   * @param ingredient - Updated ingredient, matched by `id`
+   * @returns The patched recipe, or the original one when unaffected
+   */
+  private applyIngredientToRecipe(
+    recipe: recipeTableElement,
+    ingredient: ingredientTableElement
+  ): recipeTableElement {
+    if (!recipe.ingredients.some(used => used.id === ingredient.id)) {
+      return recipe;
+    }
+    const ingredients = recipe.ingredients.map(used =>
+      used.id === ingredient.id ? mergeIngredientUsage(ingredient, used.quantity, used.note) : used
+    );
+    return { ...recipe, ingredients, season: this.computeRecipeSeason(ingredients) };
+  }
+
+  /**
+   * Re-resolves an updated tag inside a cached recipe
+   *
+   * Mirror of {@link applyIngredientToRecipe} for tags, which carry no
+   * recipe-specific fields and so are replaced outright.
+   *
+   * @private
+   * @param recipe - Cached recipe to patch
+   * @param tag - Updated tag, matched by `id`
+   * @returns The patched recipe, or the original one when unaffected
+   */
+  private applyTagToRecipe(recipe: recipeTableElement, tag: tagTableElement): recipeTableElement {
+    if (!recipe.tags.some(used => used.id === tag.id)) {
+      return recipe;
+    }
+    return { ...recipe, tags: recipe.tags.map(used => (used.id === tag.id ? tag : used)) };
+  }
+
+  /**
    * Updates an existing tag in the database.
    *
-   * After a successful update the in-memory tags cache is refreshed and all
-   * recipes that reference this tag are reloaded from the database, then both
-   * the `tags` and `recipes` store slices are notified.
+   * After a successful update the in-memory tags cache is refreshed and every
+   * cached recipe that references this tag is patched in place, then both the
+   * `tags` and `recipes` store slices are notified.
    *
    * @param tag - The tag to update. Must have a valid `id`.
    * @returns `true` if the update succeeded, `false` otherwise.
@@ -806,7 +918,7 @@ export class RecipeDatabase {
     if (success) {
       this.update_tag(tag);
       this._tags = [...this._tags];
-      this._recipes = await this.getAllRecipes();
+      this._recipes = this._recipes.map(recipe => this.applyTagToRecipe(recipe, tag));
       this.notify('tags');
       this.notify('recipes');
     }
@@ -949,14 +1061,16 @@ export class RecipeDatabase {
       );
 
       for (const recipe of recipesToUpdate) {
+        const remainingIngredients = recipe.ingredients.filter(i => i.id !== ingredient.id);
         const updatedRecipe = {
           ...recipe,
-          ingredients: recipe.ingredients.filter(i => i.id !== ingredient.id),
+          ingredients: remainingIngredients,
+          season: this.computeRecipeSeason(remainingIngredients),
         };
         await this.editRecipe(updatedRecipe);
       }
 
-      this._recipes = await this.getAllRecipes();
+      this._recipes = [...this._recipes];
       this.notify('ingredients');
       this.notify('recipes');
     }
@@ -991,7 +1105,7 @@ export class RecipeDatabase {
         await this.editRecipe(updatedRecipe);
       }
 
-      this._recipes = await this.getAllRecipes();
+      this._recipes = [...this._recipes];
       this.notify('tags');
       this.notify('recipes');
     }
@@ -1941,9 +2055,7 @@ export class RecipeDatabase {
       return;
     }
 
-    const decodedRecipes = await Promise.all(
-      insertedRecipes.map(encoded => this.decodeRecipe(encoded))
-    );
+    const decodedRecipes = this.decodeArrayOfRecipe(insertedRecipes);
 
     for (const recipe of decodedRecipes) {
       this.add_recipes(recipe);
@@ -2012,6 +2124,7 @@ export class RecipeDatabase {
     this._dismissedRecipes = [];
     this._menu = [];
     this._purchasedIngredients = new Map();
+    this._decodeError = null;
   }
 
   /**
@@ -2273,16 +2386,20 @@ export class RecipeDatabase {
    * @param encodedRecipe - The encoded recipe data from database
    * @returns Promise resolving to fully decoded recipe object
    */
-  private async decodeRecipe(encodedRecipe: encodedRecipeElement): Promise<recipeTableElement> {
-    const [decodedIngredients, decodedSeason] = await this.decodeIngredientFromRecipe(
-      encodedRecipe.INGREDIENTS
+  private decodeRecipe(
+    encodedRecipe: encodedRecipeElement,
+    indexes: decodeIndexes
+  ): recipeTableElement {
+    const [decodedIngredients, decodedSeason] = this.decodeIngredientFromRecipe(
+      encodedRecipe.INGREDIENTS,
+      indexes
     );
     return {
       id: encodedRecipe.ID,
       image_Source: constructImageUri(encodedRecipe.IMAGE_SOURCE),
       title: encodedRecipe.TITLE,
       description: encodedRecipe.DESCRIPTION,
-      tags: await this.decodeTagFromRecipe(encodedRecipe.TAGS),
+      tags: this.decodeTagFromRecipe(encodedRecipe.TAGS, indexes),
       persons: encodedRecipe.PERSONS,
       ingredients: decodedIngredients,
       season: decodedSeason,
@@ -2298,19 +2415,113 @@ export class RecipeDatabase {
    * Decodes an array of recipes from database storage format
    *
    * Processes multiple encoded recipe elements from database queries,
-   * decoding each one into the full application format.
+   * decoding each one into the full application format. The ingredient and tag
+   * lookup indexes are built once and shared across the whole batch.
    *
    * @private
    * @param queryResult - Array of encoded recipe elements from database
-   * @returns Promise resolving to array of fully decoded recipe objects
+   * @returns Array of fully decoded recipe objects
    */
-  private async decodeArrayOfRecipe(
-    queryResult: encodedRecipeElement[]
-  ): Promise<recipeTableElement[]> {
+  private decodeArrayOfRecipe(queryResult: encodedRecipeElement[]): recipeTableElement[] {
     if (queryResult.length === 0) {
       return [];
     }
-    return await Promise.all(queryResult.map(recipeEncoded => this.decodeRecipe(recipeEncoded)));
+    const indexes = this.buildDecodeIndexes();
+    const decoded = queryResult.map(recipeEncoded => this.decodeRecipe(recipeEncoded, indexes));
+    this.reportUnresolvedReferences(indexes, queryResult.length);
+    return decoded;
+  }
+
+  /**
+   * Builds id-keyed lookup indexes over the cached ingredients and tags
+   *
+   * Recipe rows only store ingredient and tag ids, so decoding needs to resolve
+   * each id to its full element. Both tables are already fully cached in memory,
+   * so the lookups are served from these maps instead of one query per reference.
+   *
+   * @private
+   * @returns Ingredient and tag lookup maps keyed by database id, plus the sets
+   *          collecting the ids that decoding could not resolve
+   */
+  private buildDecodeIndexes(): decodeIndexes {
+    return {
+      ingredientsById: new Map(this._ingredients.map(ingredient => [ingredient.id, ingredient])),
+      tagsById: new Map(this._tags.map(tag => [tag.id, tag])),
+      unresolvedIngredientIds: new Set(),
+      unresolvedTagIds: new Set(),
+    };
+  }
+
+  /**
+   * Reports references that a decode pass could not resolve against the caches
+   *
+   * Every ingredient and tag a recipe row points at must exist in the caches,
+   * which mirror their whole tables. An unresolved id therefore means either a
+   * cache that drifted from the database or a recipe row pointing at a deleted
+   * row — both silently drop data from the decoded recipe, so they are logged as
+   * errors. Ids are reported once per decode pass rather than once per reference.
+   *
+   * @private
+   * @param indexes - Decode indexes carrying the unresolved id sets
+   * @param decodedRecipeCount - Number of recipes the decode pass covered
+   */
+  private reportUnresolvedReferences(indexes: decodeIndexes, decodedRecipeCount: number): void {
+    const { unresolvedIngredientIds, unresolvedTagIds } = indexes;
+    if (unresolvedIngredientIds.size === 0 && unresolvedTagIds.size === 0) {
+      return;
+    }
+    const ingredientSample = sampleIds(unresolvedIngredientIds);
+    const tagSample = sampleIds(unresolvedTagIds);
+    this.recordDecodeError(
+      `${unresolvedIngredientIds.size} ingredient and ${unresolvedTagIds.size} tag reference(s) in recipes could not be resolved` +
+        ` — ingredients: [${ingredientSample.join(', ')}], tags: [${tagSample.join(', ')}]`,
+      {
+        decodedRecipeCount,
+        cachedIngredientCount: this._ingredients.length,
+        cachedTagCount: this._tags.length,
+        unresolvedIngredientIds: ingredientSample,
+        unresolvedTagIds: tagSample,
+      }
+    );
+  }
+
+  /**
+   * Logs a corrupt-data condition found while decoding a table, and records it
+   *
+   * Decoding resolves cross-table references and casts stored strings into
+   * application types; neither can be trusted blindly, and a failure means the
+   * decoded row silently loses data. Every failure is logged. In development and
+   * E2E builds the first one is also kept, so the UI layer can rethrow it during
+   * render and let the root error boundary replace the app with the recovery
+   * screen — making the corruption impossible to miss. Production keeps the log
+   * and degrades the affected row rather than taking the whole app down.
+   *
+   * Logging and recording live together so a future check cannot do one without
+   * the other, and publishes on the `recipes` slice so a subscriber mounted
+   * before the failure re-renders and can surface it.
+   *
+   * @private
+   * @param message - What was found to be corrupt, including the offending ids
+   * @param context - Structured detail for the log entry
+   */
+  private recordDecodeError(message: string, context: Record<string, unknown>): void {
+    databaseLogger.error(message, context);
+    if (!DECODE_INTEGRITY_CHECK_ENABLED || this._decodeError !== null) {
+      return;
+    }
+    this._decodeError = new Error(message);
+    this.notify('recipes');
+  }
+
+  /**
+   * Returns the first corrupt-data condition found while decoding, if any.
+   *
+   * Always `null` in production builds.
+   *
+   * @returns The recorded decode error, or `null` when every decode succeeded
+   */
+  public get_decode_error(): Error | null {
+    return this._decodeError;
   }
 
   /**
@@ -2369,7 +2580,8 @@ export class RecipeDatabase {
    *
    * @private
    * @param encodedIngredient - Encoded string containing ingredient IDs, quantities, and optional notes
-   * @returns Promise resolving to tuple of [decoded ingredients array, combined season array]
+   * @param indexes - Decode indexes providing the cached ingredients and collecting unresolved ids
+   * @returns Tuple of [decoded ingredients array, combined season array]
    *
    * @example
    * // Old format (backward compatible)
@@ -2380,16 +2592,15 @@ export class RecipeDatabase {
    * Input: "1--200%%For sauce__1--100%%For garnish"
    * Output: [[ingredient1 with quantity 200 and note "For sauce", ingredient1 with quantity 100 and note "For garnish"], ...]
    */
-  private async decodeIngredientFromRecipe(
-    encodedIngredient: string
-  ): Promise<[ingredientTableElement[], string[]]> {
-    const arrDecoded = [];
-    let recipeSeason: string[] = [...ALL_MONTHS];
-    let firstSeasonFound = true;
+  private decodeIngredientFromRecipe(
+    encodedIngredient: string,
+    indexes: decodeIndexes
+  ): [ingredientTableElement[], string[]] {
+    const arrDecoded: ingredientTableElement[] = [];
 
-    const ingSplit = encodedIngredient.includes(EncodingSeparator)
-      ? encodedIngredient.split(EncodingSeparator)
-      : [encodedIngredient];
+    // A recipe with no ingredient stores an empty string, which must decode to no
+    // reference at all rather than to a reference to id 0.
+    const ingSplit = encodedIngredient === '' ? [] : encodedIngredient.split(EncodingSeparator);
 
     for (const ingredient of ingSplit) {
       const id = Number(ingredient.split(textSeparator)[0]);
@@ -2399,32 +2610,36 @@ export class RecipeDatabase {
         ? quantityAndNote.split(noteSeparator)
         : [quantityAndNote, undefined];
 
-      const tableIngredient =
-        await this._ingredientsTable.searchElementById<encodedIngredientElement>(
-          id,
-          this._dbConnection
-        );
-      if (tableIngredient === undefined) {
-        databaseLogger.warn('Failed to find ingredient during recipe decoding', {
-          ingredientId: id,
-        });
+      const cachedIngredient = indexes.ingredientsById.get(id);
+      if (cachedIngredient === undefined) {
+        indexes.unresolvedIngredientIds.add(id);
       } else {
-        const decodedIngredient = this.decodeIngredient(tableIngredient);
-        decodedIngredient.quantity = ingQuantity;
-        if (ingNote) {
-          decodedIngredient.note = ingNote;
-        }
-        arrDecoded.push(decodedIngredient);
-
-        if (firstSeasonFound) {
-          recipeSeason = decodedIngredient.season;
-          firstSeasonFound = false;
-        } else {
-          recipeSeason = this.decodeSeason(recipeSeason, decodedIngredient.season);
-        }
+        arrDecoded.push(mergeIngredientUsage(cachedIngredient, ingQuantity, ingNote));
       }
     }
-    return [arrDecoded, recipeSeason];
+    return [arrDecoded, this.computeRecipeSeason(arrDecoded)];
+  }
+
+  /**
+   * Computes the seasonal availability of a recipe from its ingredients
+   *
+   * Intersects the seasons of every ingredient the recipe uses. A recipe with no
+   * resolvable ingredients is available all year.
+   *
+   * @private
+   * @param ingredients - Ingredients composing the recipe
+   * @returns Months during which every ingredient is available
+   */
+  private computeRecipeSeason(ingredients: ingredientTableElement[]): string[] {
+    const firstIngredient = ingredients[0];
+    if (firstIngredient === undefined) {
+      return [...ALL_MONTHS];
+    }
+    let season = firstIngredient.season;
+    for (let i = 1; i < ingredients.length && season.length > 0; i++) {
+      season = this.decodeSeason(season, ingredients[i]!.season);
+    }
+    return season;
   }
 
   /**
@@ -2489,12 +2704,31 @@ export class RecipeDatabase {
    */
   private decodeIngredient(dbIngredient: encodedIngredientElement): ingredientTableElement {
     // Ex :  {"ID":1,"INGREDIENT":"INGREDIENT NAME","UNIT":"g", "TYPE":"BASE", "SEASON":"*"}
+    // An ingredient with no month selected stores an empty SEASON, which splits into
+    // [''] — decode it as the empty season it encodes rather than an impossible month.
+    const season = dbIngredient.SEASON === '' ? [] : dbIngredient.SEASON.split(EncodingSeparator);
+
+    if (!INGREDIENT_TYPES.has(dbIngredient.TYPE)) {
+      this.recordDecodeError(
+        `Ingredient ${dbIngredient.ID} has an unknown type "${dbIngredient.TYPE}"`,
+        { ingredientId: dbIngredient.ID, storedType: dbIngredient.TYPE }
+      );
+    }
+
+    if (season.some(month => !MONTHS.has(month))) {
+      const invalidMonths = season.filter(month => !MONTHS.has(month));
+      this.recordDecodeError(
+        `Ingredient ${dbIngredient.ID} has invalid season months [${invalidMonths.join(', ')}]`,
+        { ingredientId: dbIngredient.ID, invalidMonths }
+      );
+    }
+
     return {
       id: dbIngredient.ID,
       name: dbIngredient.INGREDIENT,
       unit: dbIngredient.UNIT,
       type: dbIngredient.TYPE as ingredientType,
-      season: dbIngredient.SEASON.split(EncodingSeparator),
+      season,
     };
   }
 
@@ -2515,7 +2749,39 @@ export class RecipeDatabase {
     if (!queryResult || !Array.isArray(queryResult) || queryResult.length === 0) {
       return [];
     }
-    return queryResult.map(ingredient => this.decodeIngredient(ingredient));
+    const decoded = queryResult.map(ingredient => this.decodeIngredient(ingredient));
+    this.reportDuplicateIds(decoded, 'ingredient');
+    return decoded;
+  }
+
+  /**
+   * Reports rows sharing a database id within a cached table
+   *
+   * Recipe decoding resolves ingredient and tag references through id-keyed maps
+   * built over these caches, so two rows with the same id silently shadow one
+   * another and every recipe referencing that id gets whichever row was indexed
+   * last. Cheap to detect while the table is already in hand.
+   *
+   * @private
+   * @param elements - Decoded rows of a cached table
+   * @param label - Table name used in the log and error message
+   */
+  private reportDuplicateIds(elements: { id: number }[], label: string): void {
+    const seen = new Set(elements.map(element => element.id));
+    if (seen.size === elements.length) {
+      return;
+    }
+    const duplicates = sampleIds(
+      new Set(
+        elements
+          .filter((element, index) => elements.findIndex(e => e.id === element.id) !== index)
+          .map(e => e.id)
+      )
+    );
+    this.recordDecodeError(
+      `Duplicate ${label} ids [${duplicates.join(', ')}] — recipe references to them resolve to an arbitrary row`,
+      { table: label, duplicateIds: duplicates, rowCount: elements.length }
+    );
   }
 
   /**
@@ -2564,33 +2830,30 @@ export class RecipeDatabase {
    * Decodes tags from a recipe's encoded tag string
    *
    * Parses the encoded tag string from a recipe, looking up each tag by ID
-   * in the database to get the full tag information including names.
+   * in the cached tags to get the full tag information including names.
    *
    * @private
    * @param encodedTag - Encoded string containing tag IDs separated by encoding separators
-   * @returns Promise resolving to array of decoded tag objects
+   * @param indexes - Decode indexes providing the cached tags and collecting unresolved ids
+   * @returns Array of decoded tag objects
    *
    * @example
    * Input: "1__2__5__3__4"
    * Output: [{id: 1, name: "Italian"}, {id: 2, name: "Dinner"}, ...]
    */
-  private async decodeTagFromRecipe(encodedTag: string): Promise<tagTableElement[]> {
-    const arrDecoded = [];
+  private decodeTagFromRecipe(encodedTag: string, indexes: decodeIndexes): tagTableElement[] {
+    const arrDecoded: tagTableElement[] = [];
 
-    // Ex : "1__2__5__3__4"
-    const tagSplit = encodedTag.includes(EncodingSeparator)
-      ? encodedTag.split(EncodingSeparator)
-      : [encodedTag];
+    // Ex : "1__2__5__3__4". An untagged recipe stores an empty string, which must
+    // decode to no reference at all rather than to a reference to id 0.
+    const tagSplit = encodedTag === '' ? [] : encodedTag.split(EncodingSeparator);
 
     for (const tag of tagSplit) {
-      const tableTag = await this._tagsTable.searchElementById<encodedTagElement>(
-        +tag,
-        this._dbConnection
-      );
-      if (tableTag !== undefined) {
-        arrDecoded.push(this.decodeTag(tableTag));
+      const cachedTag = indexes.tagsById.get(+tag);
+      if (cachedTag !== undefined) {
+        arrDecoded.push(cachedTag);
       } else {
-        databaseLogger.warn('Failed to find tag during recipe decoding', { tagId: +tag });
+        indexes.unresolvedTagIds.add(+tag);
       }
     }
 
@@ -2630,7 +2893,9 @@ export class RecipeDatabase {
     if (!queryResult || !Array.isArray(queryResult) || queryResult.length === 0) {
       return [];
     }
-    return queryResult.map(tagFound => this.decodeTag(tagFound));
+    const decoded = queryResult.map(tagFound => this.decodeTag(tagFound));
+    this.reportDuplicateIds(decoded, 'tag');
+    return decoded;
   }
 
   /**
@@ -2736,13 +3001,14 @@ export class RecipeDatabase {
    * Retrieves all recipes from the database
    *
    * Fetches all recipe records from the database and decodes them into
-   * the application format for use in the local cache.
+   * the application format for use in the local cache. Embedded ingredients and
+   * tags are resolved from the in-memory caches, which must already be loaded.
    *
    * @private
    * @returns Promise resolving to array of all recipes in application format
    */
   private async getAllRecipes(): Promise<recipeTableElement[]> {
-    return await this.decodeArrayOfRecipe(
+    return this.decodeArrayOfRecipe(
       (await this._recipesTable.searchElement(this._dbConnection)) as encodedRecipeElement[]
     );
   }
@@ -2850,6 +3116,36 @@ export class RecipeDatabase {
       return [];
     }
     return queryResult.map(menuElement => this.decodeMenu(menuElement));
+  }
+
+  /**
+   * Reports menu rows pointing at a recipe that no longer exists
+   *
+   * Menu rows keep only a recipe id, resolved against the recipe cache when the
+   * menu is rendered. A row whose recipe was deleted therefore renders as an
+   * empty entry rather than failing outright, so it is surfaced here instead.
+   *
+   * Checked against the caches rather than inside the menu decoder, because both
+   * sides are plain cached data — decoding a menu row cannot see the recipes.
+   * Resolved from the cache, so it costs no query.
+   *
+   * @private
+   */
+  private reportUnresolvedMenuRecipes(): void {
+    const recipeIds = new Set(this._recipes.map(recipe => recipe.id));
+    const unresolved = this._menu
+      .map(item => item.recipeId)
+      .filter(recipeId => !recipeIds.has(recipeId));
+
+    if (unresolved.length === 0) {
+      return;
+    }
+    const sample = sampleIds(unresolved);
+    this.recordDecodeError(`Menu rows reference missing recipes [${sample.join(', ')}]`, {
+      unresolvedRecipeIds: sample,
+      menuRowCount: this._menu.length,
+      cachedRecipeCount: this._recipes.length,
+    });
   }
 
   /**
