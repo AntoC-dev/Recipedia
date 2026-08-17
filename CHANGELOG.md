@@ -1,3 +1,11 @@
+## [2.52.1](https://github.com/AntoC-dev/Recipedia/compare/v2.52.0...v2.52.1) (2026-08-17)
+
+### Performance Improvements
+
+* **images:** bound images at save time + render cards through expo-image ([#536](https://github.com/AntoC-dev/Recipedia/issues/536)) ([f0d4da6](https://github.com/AntoC-dev/Recipedia/commit/f0d4da63d209fa8f243ae3a0d0059c0fc1e2d35e)), closes [#437](https://github.com/AntoC-dev/Recipedia/issues/437)
+* **images:** bound stored recipe images to 1280px at save time ([94e7766](https://github.com/AntoC-dev/Recipedia/commit/94e7766f2f9f42a8ca4dad9806c6844ce22ffdf6)), closes [#437](https://github.com/AntoC-dev/Recipedia/issues/437)
+* **images:** render menu recipe cards through expo-image ([6d501f4](https://github.com/AntoC-dev/Recipedia/commit/6d501f4475d9955c603c6b32ab2bf36e0ea6e374)), closes [#437](https://github.com/AntoC-dev/Recipedia/issues/437)
+
 ## [2.52.0](https://github.com/AntoC-dev/Recipedia/compare/v2.51.1...v2.52.0) (2026-08-14)
 
 ### Features
