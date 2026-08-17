@@ -145,6 +145,18 @@ describe('CustomImage component behavior', () => {
     expect(image.props.style.opacity).toBe(0);
   });
 
+  it('keeps decoded bitmaps in memory so scrolling back does not re-decode', () => {
+    const { getByTestId } = render(<CustomImage uri={dummyUri} testID={ID} />);
+
+    expect(getByTestId('Test::Image').props.cachePolicy).toBe('memory-disk');
+  });
+
+  it('keys recycling on the uri so reused list rows drop the previous bitmap', () => {
+    const { getByTestId } = render(<CustomImage uri={dummyUri} testID={ID} />);
+
+    expect(getByTestId('Test::Image').props.recyclingKey).toBe(dummyUri);
+  });
+
   it('shows placeholder icon from Icons', () => {
     const { getByTestId } = render(<CustomImage testID={ID} />);
 

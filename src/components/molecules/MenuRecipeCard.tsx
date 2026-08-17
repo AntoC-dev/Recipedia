@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Badge, Card, Checkbox, IconButton, Text, useTheme } from 'react-native-paper';
 import { cardSizes, padding } from '@styles/spacing';
 import { menuTableElement } from '@customTypes/DatabaseElementTypes';
@@ -14,6 +14,7 @@ import { StackScreenNavigation } from '@customTypes/ScreenTypes';
 import { useNavigation } from '@react-navigation/native';
 import { Icons } from '@assets/Icons';
 import { useRecipes } from '@hooks/useRecipes';
+import { CustomImage } from '@components/atomic/CustomImage';
 
 export type MenuRecipeCardProps = {
   testId: string;
@@ -58,10 +59,12 @@ export function MenuRecipeCard({
         />
 
         <View style={styles.imageContainer}>
-          <Image
+          <CustomImage
             testID={`${testId}::Cover`}
-            source={{ uri: menuItem.imageSource }}
-            style={[styles.image, { backgroundColor: colors.surfaceVariant }]}
+            uri={menuItem.imageSource}
+            size={cardSizes.thumbnailSize}
+            borderRadius={padding.small}
+            backgroundColor={colors.surfaceVariant}
           />
           {menuItem.count > 1 && (
             <Badge
@@ -104,11 +107,6 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     marginHorizontal: padding.small,
-  },
-  image: {
-    width: cardSizes.thumbnailSize,
-    aspectRatio: 1,
-    borderRadius: padding.small,
   },
   badge: {
     position: 'absolute',

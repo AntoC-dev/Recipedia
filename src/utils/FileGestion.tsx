@@ -41,10 +41,19 @@ import { getDatasetType } from '@utils/DatasetLoader';
 import { fileSystemLogger } from '@utils/logger';
 import { RecipeDraft } from '@customTypes/DatabaseElementTypes';
 import { forEachChunk } from '@utils/chunk';
+import { resizeImageToBound } from '@utils/imageResize';
 
 const DIRECTORY_NAME = Constants.expoConfig?.name || pkg.name;
 const APP_DIR = new Directory(Paths.document, DIRECTORY_NAME);
 const APP_CACHE = new Directory(Paths.cache, DIRECTORY_NAME);
+
+const FILE_EXTENSION_PATTERN = /^[a-zA-Z0-9]{1,5}$/;
+
+function extensionFromUri(uri: string): string {
+  const extensionParts = uri.split('.');
+  const candidate = extensionParts[extensionParts.length - 1]!.split('?')[0]!;
+  return FILE_EXTENSION_PATTERN.test(candidate) ? candidate : 'jpg';
+}
 
 /**
  * Sanitizes a string for use as a safe filename
@@ -293,9 +302,11 @@ export async function downloadImageToCache(remoteUrl: string): Promise<string> {
 /**
  * Saves a recipe image from cache to permanent storage
  *
- * Moves a temporary image file to permanent storage with a unique filename.
- * The recipe name is sanitized and combined with a UUID for the filename,
- * preserving the original file extension.
+ * Bounds the image with `resizeImageToBound` before copying it to permanent
+ * storage under a unique filename. The recipe name is sanitized and
+ * combined with a UUID, preserving the original file extension. Images that
+ * already fit the bound, or whose format cannot be re-encoded, are stored
+ * verbatim.
  *
  * @param cacheFileUri - URI of the temporary image file to move
  * @param recName - Recipe name used to generate the filename
@@ -310,20 +321,25 @@ export async function downloadImageToCache(remoteUrl: string): Promise<string> {
  */
 export async function saveRecipeImage(cacheFileUri: string, recName: string): Promise<string> {
   try {
-    const extensionParts = cacheFileUri.split('.');
-    const extension = extensionParts[extensionParts.length - 1]!.split('?')[0] || 'jpg';
+    const extension = extensionFromUri(cacheFileUri);
+    const bounded = await resizeImageToBound(cacheFileUri, extension);
     const imgName = sanitizeFilename(recName) + '_' + Crypto.randomUUID() + '.' + extension;
     const imgFile = new File(APP_DIR, imgName);
 
-    const sourceFile = new File(cacheFileUri);
+    const sourceFile = new File(bounded.uri);
     await sourceFile.copy(imgFile);
-    try {
-      sourceFile.delete();
-    } catch {
-      // Best-effort cleanup — source is in cache, will be cleaned up eventually
+
+    for (const temporaryUri of new Set([bounded.uri, cacheFileUri])) {
+      try {
+        new File(temporaryUri).delete();
+      } catch {
+        // Best-effort cleanup — sources are in cache, will be cleaned up eventually
+      }
     }
+
     fileSystemLogger.debug('Image saved to permanent storage', {
       destinationUri: imgFile.uri,
+      downscaled: bounded.resized,
     });
     return imgFile.uri;
   } catch (error) {
