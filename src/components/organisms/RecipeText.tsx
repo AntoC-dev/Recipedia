@@ -118,7 +118,7 @@ export function RecipeText({ rootText, testID, addOrEditProps, error, onBlur }: 
   let variant: VariantProp<never>;
   switch (rootText.style) {
     case 'headline':
-      variant = 'headlineMedium';
+      variant = 'headlineLarge';
       break;
     case 'title':
       variant = 'headlineSmall';
