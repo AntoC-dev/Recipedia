@@ -9,6 +9,10 @@ import {
 import { nutritionTableElement } from '@customTypes/DatabaseElementTypes';
 import { defaultValueNumber } from '@utils/Constants';
 
+jest.mock('expo-localization', () =>
+  require('@mocks/deps/expo-localization-mock').expoLocalizationMock()
+);
+
 describe('scaleQuantityForPersons', () => {
   test('returns original when persons are equal', () => {
     expect(scaleQuantityForPersons('200', 4, 4)).toBe('200');
@@ -129,18 +133,18 @@ describe('scaleQuantityForPersons', () => {
 
 describe('formatQuantityForDisplay', () => {
   test('formats 4 decimals to 2 for display', () => {
-    expect(formatQuantityForDisplay('133,3333')).toBe('133,33');
-    expect(formatQuantityForDisplay('66,6667')).toBe('66,67');
+    expect(formatQuantityForDisplay('133,3333')).toBe('133.33');
+    expect(formatQuantityForDisplay('66,6667')).toBe('66.67');
   });
 
   test('rounds correctly when formatting', () => {
-    expect(formatQuantityForDisplay('133,3334')).toBe('133,33');
-    expect(formatQuantityForDisplay('133,3366')).toBe('133,34');
+    expect(formatQuantityForDisplay('133,3334')).toBe('133.33');
+    expect(formatQuantityForDisplay('133,3366')).toBe('133.34');
   });
 
   test('preserves unit suffix', () => {
-    expect(formatQuantityForDisplay('133,3333 g')).toBe('133,33 g');
-    expect(formatQuantityForDisplay('66,6667 cup')).toBe('66,67 cup');
+    expect(formatQuantityForDisplay('133,3333 g')).toBe('133.33 g');
+    expect(formatQuantityForDisplay('66,6667 cup')).toBe('66.67 cup');
   });
 
   test('handles integer values', () => {
@@ -149,7 +153,7 @@ describe('formatQuantityForDisplay', () => {
   });
 
   test('handles dot decimal input', () => {
-    expect(formatQuantityForDisplay('133.3333')).toBe('133,33');
+    expect(formatQuantityForDisplay('133.3333')).toBe('133.33');
   });
 
   test('returns empty string unchanged', () => {

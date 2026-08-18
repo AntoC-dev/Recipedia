@@ -3,6 +3,12 @@ import { fireEvent, render } from '@testing-library/react-native';
 import NumericTextInput, { NumericTextInputProps } from '@components/atomic/NumericTextInput';
 import { TextInput } from 'react-native-paper';
 import { defaultValueNumber } from '@utils/Constants';
+import * as Localization from 'expo-localization';
+import { useCommaDecimalRegion, useDotDecimalRegion } from '@mocks/deps/expo-localization-mock';
+
+jest.mock('expo-localization', () =>
+  require('@mocks/deps/expo-localization-mock').expoLocalizationMock()
+);
 
 const baseProps: NumericTextInputProps = {
   testID: 'numeric-input',
@@ -341,6 +347,34 @@ describe('NumericTextInput', () => {
 
       rerender(<NumericTextInput {...baseProps} value={66.6667} />);
       expect(input.props.value).toEqual('66.67');
+    });
+
+    test('region-formatted display value round-trips to the correct number via onChangeValue', () => {
+      const handleChangeValue = jest.fn();
+      const { getByTestId } = render(
+        <NumericTextInput {...baseProps} value={66.6667} onChangeValue={handleChangeValue} />
+      );
+      const input = getByTestId('numeric-input');
+      expect(input.props.value).toEqual('66.67');
+
+      fireEvent.changeText(input, input.props.value);
+
+      expect(handleChangeValue).toHaveBeenCalledWith(66.67);
+    });
+
+    test('displays a comma and round-trips it in a comma-separator region', () => {
+      useCommaDecimalRegion(Localization as unknown as { getLocales: jest.Mock });
+      const handleChangeValue = jest.fn();
+      const { getByTestId } = render(
+        <NumericTextInput {...baseProps} value={66.6667} onChangeValue={handleChangeValue} />
+      );
+      const input = getByTestId('numeric-input');
+      expect(input.props.value).toEqual('66,67');
+
+      fireEvent.changeText(input, input.props.value);
+
+      expect(handleChangeValue).toHaveBeenCalledWith(66.67);
+      useDotDecimalRegion(Localization as unknown as { getLocales: jest.Mock });
     });
   });
 

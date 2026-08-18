@@ -7,8 +7,9 @@
  * @module Quantity
  */
 
-import { noteSeparator, textSeparator, unitySeparator } from '@styles/typography';
+import { noteSeparator, textSeparator, unitySeparator } from '@utils/TextParsing';
 import { defaultValueNumber } from '@utils/Constants';
+import { formatDecimalForDisplay, formatDecimalForStorage } from '@utils/NumberFormat';
 
 /**
  * Canonical quantity-string parser used wherever raw text becomes a stored
@@ -54,8 +55,7 @@ export function scaleQuantityForPersons(
 
   const scaledValue = (numericValue * toPersons) / fromPersons;
   // Use 4 decimal places internally for precision during chain scaling
-  const highPrecision = Math.round(scaledValue * 10000) / 10000;
-  const roundedStr = highPrecision.toString().replace('.', ',');
+  const roundedStr = formatDecimalForStorage(scaledValue, 4);
 
   return quantity.replace(originalNumericToken, roundedStr);
 }
@@ -82,8 +82,7 @@ export function formatQuantityForDisplay(quantity: string): string {
     return quantity;
   }
 
-  const displayValue = Math.round(numericValue * 100) / 100;
-  const displayStr = displayValue.toString().replace('.', ',');
+  const displayStr = formatDecimalForDisplay(numericValue, 2);
 
   return quantity.replace(originalNumericToken, displayStr);
 }
@@ -144,7 +143,7 @@ export function parseIngredientQuantity(quantityStr: string | undefined): number
  * Formats ingredient data into a serialized string for storage/callback.
  *
  * Creates a formatted string with quantity, unit, name, and optional note
- * using the standard separators defined in typography:
+ * using the standard separators defined in `@utils/TextParsing`:
  * - unitySeparator (@@) between quantity and unit
  * - textSeparator (--) between unit and name
  * - noteSeparator (%%) between name and note (if present)
