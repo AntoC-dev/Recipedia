@@ -51,14 +51,15 @@ import React, { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { TabScreenNavigation } from '@customTypes/ScreenTypes';
 import { useResetOnChange } from '@hooks/useResetOnChange';
-import { FlatList, RefreshControl, View } from 'react-native';
+import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { generateHomeRecommendations } from '@utils/FilterFunctions';
 import { RecommendationType } from '@customTypes/RecipeFiltersTypes';
 import VerticalBottomButtons from '@components/organisms/VerticalBottomButtons';
 import { useI18n } from '@utils/i18n';
-import { padding, screenWidth } from '@styles/spacing';
+import { padding, tabScreenBottomPadding, tabScreenEdges } from '@styles/spacing';
+import { layout } from '@styles/layout';
 import { homeLogger } from '@utils/logger';
 import { useSeasonFilter } from '@context/SeasonFilterContext';
 import { useRecipes } from '@hooks/useRecipes';
@@ -142,25 +143,18 @@ export function Home() {
   const renderEmptyState = () => {
     const emptyStateTestId = homeId + '::EmptyState';
     return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-          paddingHorizontal: padding.medium,
-        }}
-      >
+      <View style={[layout.emptyState, styles.emptyStatePadding]}>
         <Text
           testID={emptyStateTestId + '::Title'}
           variant='headlineSmall'
-          style={{ textAlign: 'center', marginBottom: padding.veryLarge }}
+          style={styles.emptyStateTitle}
         >
           {t('emptyState.noRecommendations.title')}
         </Text>
         <Text
           testID={emptyStateTestId + '::Description'}
           variant='bodyMedium'
-          style={{ textAlign: 'center', color: colors.onSurfaceVariant }}
+          style={[styles.emptyStateDescription, { color: colors.onSurfaceVariant }]}
         >
           {t('emptyState.noRecommendations.description')}
         </Text>
@@ -169,7 +163,7 @@ export function Home() {
   };
 
   return (
-    <ScreenWrapper edges={['top', 'left', 'right']}>
+    <ScreenWrapper edges={tabScreenEdges}>
       {isLoadingRecommendations ? (
         <RecommendationsSkeleton />
       ) : (
@@ -191,7 +185,7 @@ export function Home() {
               onRefresh={onRefresh}
             />
           }
-          contentContainerStyle={{ paddingBottom: screenWidth / 6, flexGrow: 1 }}
+          contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
         />
       )}
@@ -199,5 +193,22 @@ export function Home() {
     </ScreenWrapper>
   );
 }
+
+const styles = StyleSheet.create({
+  emptyStatePadding: {
+    paddingHorizontal: padding.medium,
+  },
+  emptyStateTitle: {
+    textAlign: 'center',
+    marginBottom: padding.veryLarge,
+  },
+  emptyStateDescription: {
+    textAlign: 'center',
+  },
+  listContent: {
+    paddingBottom: tabScreenBottomPadding,
+    flexGrow: 1,
+  },
+});
 
 export default Home;

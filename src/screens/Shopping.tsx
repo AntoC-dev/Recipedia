@@ -73,10 +73,11 @@ import {
 } from '@components/atomic/ListSectionHeader';
 import { ShoppingListItem } from '@components/molecules/ShoppingListItem';
 import { useShoppingCategories } from '@hooks/useCategories';
-import { Icons } from '@assets/Icons';
+import { Icons, iconsSize } from '@assets/Icons';
 import { Alert } from '@components/dialogs/Alert';
 import { TUTORIAL_DEMO_INTERVAL, TUTORIAL_STEPS } from '@utils/Constants';
-import { padding } from '@styles/spacing';
+import { padding, tabScreenBottomPadding, tabScreenEdges } from '@styles/spacing';
+import { layout } from '@styles/layout';
 import { shoppingLogger } from '@utils/logger';
 
 /** Type for dialog data containing ingredient and recipe information */
@@ -84,9 +85,6 @@ type ingredientDataForDialog = Pick<ComputedShoppingItem, 'name' | 'recipeTitles
 
 /** How long the undo snackbar stays up — long enough to react while walking. */
 const UNDO_SNACKBAR_DURATION = 5000;
-
-/** Size of the icon heading the completion state. */
-const DONE_ICON_SIZE = 28;
 
 /**
  * Shopping screen component - Categorized shopping list with recipe tracking
@@ -297,9 +295,9 @@ export function Shopping() {
   }
 
   return (
-    <ScreenWrapper edges={['top', 'left', 'right']}>
+    <ScreenWrapper edges={tabScreenEdges}>
       {shoppingList.length === 0 ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View style={layout.emptyState}>
           <Text testID={screenId + '::TextNoItem'} variant='titleMedium'>
             {t('shoppingScreen.noItemsInShoppingList')}
           </Text>
@@ -314,7 +312,11 @@ export function Shopping() {
           ListHeaderComponent={
             isListCleared ? (
               <View testID={doneId} style={styles.doneState}>
-                <Icon source={Icons.checkWithCircle} size={DONE_ICON_SIZE} color={colors.primary} />
+                <Icon
+                  source={Icons.checkWithCircle}
+                  size={iconsSize.large}
+                  color={colors.primary}
+                />
                 <Text testID={doneId + '::Title'} variant='titleLarge'>
                   {t('shoppingScreen.allDoneTitle')}
                 </Text>
@@ -362,16 +364,7 @@ export function Shopping() {
 
       {copilotData && (
         <CopilotStep text={t('tutorial.shopping.description')} order={stepOrder} name={'Shopping'}>
-          <CopilotView
-            style={{
-              position: 'absolute',
-              top: '33%',
-              left: padding.small,
-              right: padding.small,
-              height: '55%',
-              pointerEvents: 'none',
-            }}
-          />
+          <CopilotView style={[layout.tutorialOverlay, styles.tutorialOverlayPlacement]} />
         </CopilotStep>
       )}
 
@@ -383,7 +376,7 @@ export function Shopping() {
         title={createDialogTitle()}
         // During the tutorial the demo dialog is pushed down so its top clears
         // the tutorial tooltip anchored above the highlighted list.
-        style={copilotData ? { marginTop: '25%' } : undefined}
+        style={copilotData ? styles.tutorialAlertOffset : undefined}
         onClose={() => {
           setIsDialogOpen(false);
           setIngredientDataForDialog({ name: '', recipeTitles: [] });
@@ -399,7 +392,7 @@ const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: padding.medium,
     flexGrow: 1,
-    paddingBottom: padding.veryLarge,
+    paddingBottom: tabScreenBottomPadding,
   },
   doneState: {
     flexDirection: 'row',
@@ -414,6 +407,13 @@ const styles = StyleSheet.create({
   // with the category headers above it.
   purchasedContent: {
     paddingLeft: 0,
+  },
+  tutorialOverlayPlacement: {
+    top: '33%',
+    height: '55%',
+  },
+  tutorialAlertOffset: {
+    marginTop: '25%',
   },
 });
 

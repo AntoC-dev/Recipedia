@@ -3,6 +3,7 @@ import { Text } from 'react-native';
 import { render } from '@testing-library/react-native';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { useTheme } from 'react-native-paper';
+import { tabScreenEdges } from '@styles/spacing';
 
 jest.mock('@components/atomic/AppStatusBar', () =>
   require('@mocks/components/atomic/AppStatusBar-mock')
@@ -84,6 +85,22 @@ describe('ScreenWrapper component', () => {
     const customEdges: any = ['top', 'left', 'right'];
     const { getByTestId } = render(
       <ScreenWrapper testID='screen-wrapper' edges={customEdges}>
+        <Text>Test</Text>
+      </ScreenWrapper>
+    );
+
+    const safeAreaView = getByTestId('screen-wrapper');
+    expect(safeAreaView.props.edges).toEqual({
+      top: 'additive',
+      bottom: 'off',
+      left: 'additive',
+      right: 'additive',
+    });
+  });
+
+  it('turns the bottom edge off when given the shared tab screen edges', () => {
+    const { getByTestId } = render(
+      <ScreenWrapper testID='screen-wrapper' edges={tabScreenEdges}>
         <Text>Test</Text>
       </ScreenWrapper>
     );

@@ -24,7 +24,8 @@ import { useSafeCopilot } from '@hooks/useSafeCopilot';
 import { MenuRecipeCard } from '@components/molecules/MenuRecipeCard';
 import { ListSectionHeader } from '@components/atomic/ListSectionHeader';
 import { TUTORIAL_STEPS } from '@utils/Constants';
-import { padding } from '@styles/spacing';
+import { padding, tabScreenBottomPadding, tabScreenEdges } from '@styles/spacing';
+import { layout } from '@styles/layout';
 import { menuTableElement, recipeTableElement } from '@customTypes/DatabaseElementTypes';
 
 const CopilotView = walkthroughable(View);
@@ -68,9 +69,9 @@ export function Menu() {
   };
 
   return (
-    <ScreenWrapper edges={['top', 'left', 'right']}>
+    <ScreenWrapper edges={tabScreenEdges}>
       {menu.length === 0 ? (
-        <View style={styles.emptyState}>
+        <View style={[layout.emptyState, styles.emptyStatePadding]}>
           <Text testID={`${screenId}::TextNoItem`} variant='titleMedium' style={styles.emptyText}>
             {t('menuScreen.noItemsInMenu')}
           </Text>
@@ -133,16 +134,7 @@ export function Menu() {
 
       {copilotData && (
         <CopilotStep text={t('tutorial.menu.description')} order={stepOrder} name={'Menu'}>
-          <CopilotView
-            style={{
-              position: 'absolute',
-              top: '3%',
-              left: padding.small,
-              right: padding.small,
-              height: '70%',
-              pointerEvents: 'none',
-            }}
-          />
+          <CopilotView style={[layout.tutorialOverlay, styles.tutorialOverlayPlacement]} />
         </CopilotStep>
       )}
     </ScreenWrapper>
@@ -150,10 +142,7 @@ export function Menu() {
 }
 
 const styles = StyleSheet.create({
-  emptyState: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  emptyStatePadding: {
     paddingHorizontal: padding.large,
   },
   emptyText: {
@@ -164,8 +153,12 @@ const styles = StyleSheet.create({
     marginTop: padding.small,
   },
   listContent: {
-    paddingBottom: padding.large,
+    paddingBottom: tabScreenBottomPadding,
     paddingHorizontal: padding.large,
+  },
+  tutorialOverlayPlacement: {
+    top: '3%',
+    height: '70%',
   },
 });
 
