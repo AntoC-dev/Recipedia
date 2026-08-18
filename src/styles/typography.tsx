@@ -25,6 +25,9 @@
 
 import { useFonts } from 'expo-font';
 
+/** Regular Lora variable font family name, as registered with expo-font */
+export const FONT_FAMILY_REGULAR = 'Lora-VariableFont_wght';
+
 /** Text separator for parsing recipe text content */
 export const textSeparator = '--';
 
@@ -74,9 +77,6 @@ export const onlyDigitsDotsSpaces = /^[\d.\s]+$/;
  */
 export function useFetchFonts() {
   return useFonts({
-    'Lora-VariableFont_wght': require(`../assets/fonts/Lora/Lora-VariableFont_wght.ttf`),
-    'Lora-Italic-VariableFont_wght': require(
-      `../assets/fonts/Lora/Lora-Italic-VariableFont_wght.ttf`
-    ),
+    [FONT_FAMILY_REGULAR]: require(`../assets/fonts/Lora/Lora-VariableFont_wght.ttf`),
   });
 }

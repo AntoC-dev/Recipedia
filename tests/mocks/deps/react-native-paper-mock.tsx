@@ -327,19 +327,35 @@ export const Searchbar: React.FC<any> = props => (
   </View>
 );
 
+const md3TypescaleDefaults: Record<string, { fontFamily: string; fontWeight: string }> = {
+  displayLarge: { fontFamily: 'System', fontWeight: '400' },
+  displayMedium: { fontFamily: 'System', fontWeight: '400' },
+  displaySmall: { fontFamily: 'System', fontWeight: '400' },
+  headlineLarge: { fontFamily: 'System', fontWeight: '400' },
+  headlineMedium: { fontFamily: 'System', fontWeight: '400' },
+  headlineSmall: { fontFamily: 'System', fontWeight: '400' },
+  titleLarge: { fontFamily: 'System', fontWeight: '400' },
+  titleMedium: { fontFamily: 'System', fontWeight: '500' },
+  titleSmall: { fontFamily: 'System', fontWeight: '500' },
+  bodyLarge: { fontFamily: 'System', fontWeight: '400' },
+  bodyMedium: { fontFamily: 'System', fontWeight: '400' },
+  bodySmall: { fontFamily: 'System', fontWeight: '400' },
+  labelLarge: { fontFamily: 'System', fontWeight: '500' },
+  labelMedium: { fontFamily: 'System', fontWeight: '500' },
+  labelSmall: { fontFamily: 'System', fontWeight: '500' },
+};
+
 export const configureFonts = jest.fn((config?: any) => {
-  return (
-    config?.config || {
-      titleLarge: { fontFamily: 'System', fontWeight: '400' },
-      titleMedium: { fontFamily: 'System', fontWeight: '400' },
-      titleSmall: { fontFamily: 'System', fontWeight: '400' },
-      bodyLarge: { fontFamily: 'System', fontWeight: '400' },
-      bodyMedium: { fontFamily: 'System', fontWeight: '400' },
-      bodySmall: { fontFamily: 'System', fontWeight: '400' },
-      labelLarge: { fontFamily: 'System', fontWeight: '400' },
-      labelMedium: { fontFamily: 'System', fontWeight: '400' },
-      labelSmall: { fontFamily: 'System', fontWeight: '400' },
-    }
+  const overrideConfig = config?.config;
+  if (!overrideConfig) {
+    return md3TypescaleDefaults;
+  }
+
+  return Object.fromEntries(
+    Object.entries(md3TypescaleDefaults).map(([variant, defaults]) => [
+      variant,
+      { ...defaults, ...overrideConfig },
+    ])
   );
 });
 

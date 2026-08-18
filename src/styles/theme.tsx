@@ -22,10 +22,11 @@
  * - **Error**: Standard Material Design error colors
  *
  * Typography:
- * - **Font Family**: Lora variable font with weight variations
+ * - **Font Family**: Lora variable font (regular, applied to every MD3 variant)
  * - **Hierarchy**: Display, headline, title, body, and label styles
- * - **Weights**: 400 (regular) and 700 (bold) for clear hierarchy
- * - **Responsive**: Consistent sizing across different screen densities
+ * - **Weights**: Material Design 3 default per variant (regular for display/headline/title-large/body,
+ *   medium for title-medium/small and label) — no custom overrides
+ * - **Sizes**: Material Design 3 default type scale, unmodified
  *
  * @example
  * ```typescript
@@ -56,6 +57,10 @@
 
 import { configureFonts, MD3LightTheme } from 'react-native-paper';
 import { ThemeProp } from 'react-native-paper/lib/typescript/types';
+
+import { FONT_FAMILY_REGULAR } from './typography';
+
+const fonts = configureFonts({ isV3: true, config: { fontFamily: FONT_FAMILY_REGULAR } });
 
 /**
  * Light theme configuration following Material Design 3 specifications
@@ -108,26 +113,7 @@ export const lightTheme: ThemeProp = {
     backdrop: '#2b322b66',
   },
   roundness: 0,
-  fonts: configureFonts({
-    isV3: true,
-    config: {
-      titleLarge: { fontFamily: 'Lora-VariableFont_wght', fontWeight: '400' },
-      titleMedium: { fontFamily: 'Lora-VariableFont_wght', fontWeight: '400' },
-      titleSmall: { fontFamily: 'Lora-VariableFont_wght', fontWeight: '700' },
-      displayLarge: { fontFamily: 'Lora-VariableFont_wght', fontWeight: '700' },
-      displayMedium: { fontFamily: 'Lora-VariableFont_wght', fontWeight: '700' },
-      displaySmall: { fontFamily: 'Lora-VariableFont_wght', fontWeight: '700' },
-      headlineLarge: { fontFamily: 'Lora-VariableFont_wght', fontWeight: '700' },
-      headlineMedium: { fontFamily: 'Lora-VariableFont_wght', fontWeight: '700' },
-      headlineSmall: { fontFamily: 'Lora-VariableFont_wght', fontWeight: '400' },
-      bodyLarge: { fontFamily: 'Lora-VariableFont_wght' },
-      bodyMedium: { fontFamily: 'Lora-VariableFont_wght' },
-      bodySmall: { fontFamily: 'Lora-VariableFont_wght' },
-      labelLarge: { fontFamily: 'Lora-VariableFont_wght' },
-      labelMedium: { fontFamily: 'Lora-Italic-VariableFont_wght' },
-      labelSmall: { fontFamily: 'Lora-Italic-VariableFont_wght' },
-    },
-  }),
+  fonts,
 };
 
 /**

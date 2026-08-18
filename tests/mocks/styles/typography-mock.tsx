@@ -5,6 +5,7 @@ export const ALL_MONTHS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '1
 export const textSeparator = '--';
 export const unitySeparator = '@@';
 export const noteSeparator = '%%';
+export const FONT_FAMILY_REGULAR = 'Lora-VariableFont_wght';
 
 export function typographyMock() {
   return {
@@ -14,5 +15,6 @@ export function typographyMock() {
     textSeparator,
     unitySeparator,
     noteSeparator,
+    FONT_FAMILY_REGULAR,
   };
 }
