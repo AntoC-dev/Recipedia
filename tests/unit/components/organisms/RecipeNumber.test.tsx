@@ -91,14 +91,8 @@ describe('RecipeNumber Component', () => {
           componentProps.numberProps.suffixText
         );
         expect(
-          getByTestId(componentProps.testID + '::OpenModal::RoundButton::Size').props.children
-        ).toBe('medium');
-        expect(
           getByTestId(componentProps.testID + '::OpenModal::RoundButton::Icon').props.children
         ).toBe('line-scan');
-        expect(
-          getByTestId(componentProps.testID + '::ManuallyFill::RoundButton::Size').props.children
-        ).toBe('medium');
         expect(
           getByTestId(componentProps.testID + '::ManuallyFill::RoundButton::Icon').props.children
         ).toBe('pencil');

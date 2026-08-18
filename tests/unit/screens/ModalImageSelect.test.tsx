@@ -57,9 +57,7 @@ describe('ModalImageSelect Screen', () => {
       expectedProps.arrImg.length.toString()
     );
 
-    expect(getByTestId(testId + '::Camera::RoundButton::Size').props.children).toBe('medium');
     expect(getByTestId(testId + '::Camera::RoundButton::Icon').props.children).toBe('camera');
-    expect(getByTestId(testId + '::Gallery::RoundButton::Size').props.children).toBe('medium');
     expect(getByTestId(testId + '::Gallery::RoundButton::Icon').props.children).toBe('image-area');
 
     expect(getByTestId(testId + '::Camera::RoundButton::Label').props.children).toBe(
@@ -280,10 +278,8 @@ describe('ModalImageSelect Screen', () => {
       'Modal::PropType',
       'Modal::ItemCount',
       'Modal::Camera::RoundButton::Label',
-      'Modal::Camera::RoundButton::Size',
       'Modal::Camera::RoundButton::Icon',
       'Modal::Gallery::RoundButton::Label',
-      'Modal::Gallery::RoundButton::Size',
       'Modal::Gallery::RoundButton::Icon',
     ];
 
