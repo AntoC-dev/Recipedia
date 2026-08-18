@@ -58,7 +58,7 @@
  * ```
  */
 
-import { textSeparator, unitySeparator } from '@styles/typography';
+import { textSeparator, unitySeparator } from '@utils/TextParsing';
 import { TListFilter } from './RecipeFiltersTypes';
 
 /** Database and table name constants */

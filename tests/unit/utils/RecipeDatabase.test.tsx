@@ -14,7 +14,7 @@ import {
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
 import { getRandomRecipes } from '@utils/FilterFunctions';
-import { ALL_MONTHS } from '@styles/typography';
+import { ALL_MONTHS } from '@utils/Constants';
 import { corruptIngredientType } from '@test-helpers/corruptIngredientType';
 
 describe('RecipeDatabase', () => {

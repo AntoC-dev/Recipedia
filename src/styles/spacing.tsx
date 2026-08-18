@@ -11,7 +11,6 @@
  * - Predefined padding scales for consistent UI
  * - Screen-specific layout styles and containers
  * - Split-screen and flex layout utilities
- * - Extended StyleSheet integration for dynamic values
  * - Standardized view containers for different content types
  *
  * Responsive System:
@@ -45,10 +44,8 @@
  * });
  *
  * // Using screen view containers
- * <View style={screenViews.screenView}>
- *   <View style={screenViews.sectionView}>
- *     <Text>Section content</Text>
- *   </View>
+ * <View style={screenViews.tabView}>
+ *   <Text>Tab content</Text>
  * </View>
  *
  * // Using split screen layout
@@ -70,8 +67,7 @@
  */
 
 import { Dimensions, StyleSheet } from 'react-native';
-import EStyleSheet from 'react-native-extended-stylesheet';
-import { palette } from './colors';
+import { Edge } from 'react-native-safe-area-context';
 
 /** Device scale factor for responsive calculations */
 const scaleFactor = Dimensions.get('screen').scale / Dimensions.get('window').scale;
@@ -87,9 +83,6 @@ export const screenHeight = Dimensions.get('window').height * scaleFactor;
  * Ensures consistent scaling across different device sizes
  */
 export const remValue = screenWidth / 390;
-
-/** Initialize Extended StyleSheet with dynamic rem value */
-EStyleSheet.build({ $rem: remValue });
 
 /**
  * Standardized padding scale for consistent spacing throughout the app
@@ -138,24 +131,31 @@ export const dialogMaxHeight = Dimensions.get('window').height;
 export const bottomActionButtonHeight = 48 + padding.small * 2;
 
 /**
+ * Bottom padding reserved by tab-hosted screens above the bottom TabNavigator.
+ *
+ * The tab bar (`BottomNavigation.Bar` in `src/navigation/BottomTabs.tsx`) already
+ * consumes the bottom safe-area inset via its `safeAreaInsets` prop, so this value
+ * is pure breathing room between a screen's scrollable content and the tab bar —
+ * not inset compensation. Every tab-hosted screen must use this single constant
+ * instead of re-deriving its own bottom padding, which is what produced the
+ * inconsistent white space above the tab bar across screens.
+ */
+export const tabScreenBottomPadding = padding.extraLarge;
+
+/**
+ * Safe-area edges a tab-hosted screen passes to `ScreenWrapper`.
+ *
+ * Deliberately excludes `'bottom'`: the tab bar already spans and accounts for
+ * the bottom safe-area inset, so applying it again would double-count that
+ * inset and produce a visible white strip above the tab bar.
+ */
+export const tabScreenEdges: Edge[] = ['top', 'left', 'right'];
+
+/**
  * Standard screen and section view styles for consistent layout
  * Provides common container styles used throughout the application
  */
 export const screenViews = StyleSheet.create({
-  screenView: {
-    backgroundColor: palette.backgroundColor,
-  },
-  sectionView: {
-    margin: padding.verySmall,
-  },
-  listView: {
-    padding: padding.small,
-  },
-  clickableListView: {
-    paddingVertical: padding.small,
-    paddingLeft: padding.extraLarge,
-    paddingRight: padding.small,
-  },
   tabView: {
     flexDirection: 'row',
   },

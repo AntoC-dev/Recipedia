@@ -35,6 +35,9 @@
 /** Default numeric value used for form inputs and data initialization */
 export const defaultValueNumber = -1;
 
+/** All calendar months as string values (1-12) */
+export const ALL_MONTHS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'] as const;
+
 /** Interval between demo actions during tutorial (in milliseconds) */
 export const TUTORIAL_DEMO_INTERVAL = 1500;
 

@@ -36,6 +36,7 @@
 
 import React from 'react';
 import { Pressable, View } from 'react-native';
+import { useTheme } from 'react-native-paper';
 import { squareButtonStyles, viewInsideButtonCentered } from '@styles/buttons';
 
 import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
@@ -71,6 +72,7 @@ export type SquareButtonProps = {
  */
 export function SquareButton(buttonProps: SquareButtonProps) {
   const { t } = useI18n();
+  const { colors } = useTheme();
   let img: string;
   let defaultLabel: string;
   switch (buttonProps.type) {
@@ -89,7 +91,10 @@ export function SquareButton(buttonProps: SquareButtonProps) {
       testID={buttonProps.testID}
       accessibilityRole={'button'}
       accessibilityLabel={buttonProps.accessibilityLabel ?? defaultLabel}
-      style={squareButtonStyles(buttonProps.side).squareButton}
+      style={[
+        squareButtonStyles(buttonProps.side).squareButton,
+        { backgroundColor: colors.secondaryContainer, borderColor: colors.outline },
+      ]}
       onPress={buttonProps.onPressFunction}
     >
       <View style={viewInsideButtonCentered}>

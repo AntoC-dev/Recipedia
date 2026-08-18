@@ -26,8 +26,6 @@ jest.mock('@components/organisms/AppWrapper', () =>
   require('@mocks/components/organisms/AppWrapper-mock').appWrapperMock()
 );
 
-jest.mock('@styles/typography', () => require('@mocks/styles/typography-mock').typographyMock());
-
 jest.mock('@utils/FileGestion', () => require('@mocks/utils/FileGestion-mock').fileGestionMock());
 
 describe('App', () => {

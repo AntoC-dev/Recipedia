@@ -12,7 +12,7 @@
 import { FormIngredientElement, ingredientTableElement } from '@customTypes/DatabaseElementTypes';
 import { recipeLogger } from '@utils/logger';
 import { useFormContext } from 'react-hook-form';
-import { noteSeparator, textSeparator, unitySeparator } from '@styles/typography';
+import { noteSeparator, textSeparator, unitySeparator } from '@utils/TextParsing';
 import { useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { useIngredients } from '@hooks/useIngredients';
 import { mergeQuantities, validateAndQueueIngredients } from '@utils/RecipeValidationHelpers';
@@ -58,7 +58,7 @@ export type ApplyIngredientEditPatch = (patch: IngredientEditPatch) => void;
  * Parses an ingredient display string into its components
  *
  * Extracts quantity, unit, name, and optional note from a formatted ingredient string
- * using the standard separators defined in typography.
+ * using the standard separators defined in `@utils/TextParsing`.
  *
  * Supports both old format (without note) and new format (with note):
  * - Old: "100@@g--Rice"
@@ -92,7 +92,7 @@ export function parseIngredientString(ingredientStr: string): {
  * Formats ingredient components into a display string
  *
  * Creates a standardized string representation of an ingredient
- * using the standard separators defined in typography.
+ * using the standard separators defined in `@utils/TextParsing`.
  * Includes the usage note if present.
  *
  * @param ingredient - The ingredient element to format

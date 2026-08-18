@@ -1,7 +1,8 @@
 import React from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
 import { useCopilot } from 'react-native-copilot';
+import { radius } from '@styles/spacing';
 
 /**
  * Custom step number component for the tutorial overlay
@@ -18,18 +19,19 @@ export function TutorialStepNumber() {
   }
 
   return (
-    <View
-      style={{
-        aspectRatio: 1,
-        borderRadius: 999,
-        backgroundColor: colors.primaryContainer,
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <Text style={{ color: colors.onPrimaryContainer, fontWeight: 'bold' }}>
+    <View style={[styles.badge, { backgroundColor: colors.primaryContainer }]}>
+      <Text variant='titleSmall' style={{ color: colors.onPrimaryContainer }}>
         {currentStep.order}
       </Text>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  badge: {
+    aspectRatio: 1,
+    borderRadius: radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});

@@ -81,7 +81,7 @@ export function SettingsItemCard<T extends SettingsItem>({
   const { t } = useI18n();
 
   return (
-    <Card style={{ marginBottom: padding.medium }}>
+    <Card style={styles.card}>
       <Card.Content>
         {type === 'tag' && 'name' in item ? (
           <Text testID={testIdPrefix + `::TagName`} variant='titleLarge'>
@@ -92,18 +92,26 @@ export function SettingsItemCard<T extends SettingsItem>({
             <Text
               testID={testIdPrefix + `::IngredientName`}
               variant={'titleLarge'}
-              style={{ marginBottom: padding.small }}
+              style={styles.ingredientTitle}
             >
               {item.name}
             </Text>
             <View style={styles.infoRow}>
-              <Text testID={testIdPrefix + '::IntroType'} style={styles.infoLabel}>
+              <Text
+                testID={testIdPrefix + '::IntroType'}
+                variant='titleSmall'
+                style={styles.infoLabel}
+              >
                 {t('type')}:
               </Text>
               <Text testID={testIdPrefix + '::Type'}>{t(item.type)}</Text>
             </View>
             <View style={styles.infoRow}>
-              <Text testID={testIdPrefix + '::IntroUnit'} style={styles.infoLabel}>
+              <Text
+                testID={testIdPrefix + '::IntroUnit'}
+                variant='titleSmall'
+                style={styles.infoLabel}
+              >
                 {t('unit')}:
               </Text>
               <Text testID={testIdPrefix + '::Unit'}>{item.unit}</Text>
@@ -131,13 +139,18 @@ export function SettingsItemCard<T extends SettingsItem>({
 }
 
 const styles = StyleSheet.create({
+  card: {
+    marginBottom: padding.medium,
+  },
+  ingredientTitle: {
+    marginBottom: padding.small,
+  },
   infoRow: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: padding.verySmall,
   },
   infoLabel: {
-    fontWeight: 'bold',
     marginRight: padding.small,
   },
 });

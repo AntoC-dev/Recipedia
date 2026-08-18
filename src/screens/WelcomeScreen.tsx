@@ -282,10 +282,7 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
               mode='contained'
               onPress={handleStartTutorial}
               style={{ backgroundColor: colors.secondary, paddingVertical: padding.medium }}
-              labelStyle={{
-                fontSize: startTourFont.fontSize,
-                fontWeight: startTourFont.fontWeight,
-              }}
+              labelStyle={{ fontSize: startTourFont.fontSize }}
             >
               {t('welcome.startTour')}
             </Button>

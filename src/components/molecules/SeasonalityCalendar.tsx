@@ -35,7 +35,7 @@ import { StyleSheet, View } from 'react-native';
 import { Chip, Text, useTheme } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
 import { padding } from '@styles/spacing';
-import { ALL_MONTHS } from '@styles/typography';
+import { ALL_MONTHS } from '@utils/Constants';
 import { SelectableAccordion, SelectableItem } from '@components/molecules/SelectableAccordion';
 
 /**
@@ -118,7 +118,11 @@ export function SeasonalityCalendar({
 
   return (
     <View style={[styles.readOnlyContainer, allYearReadOnly && styles.readOnlyRow]}>
-      <Text testID={calendarTestId + '::SeasonalityText'} style={styles.readOnlyTitle}>
+      <Text
+        testID={calendarTestId + '::SeasonalityText'}
+        variant='titleSmall'
+        style={styles.readOnlyTitle}
+      >
         {t('seasonality')}:
       </Text>
       {allYearReadOnly ? (
@@ -152,7 +156,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   readOnlyTitle: {
-    fontWeight: 'bold',
     marginRight: padding.small,
   },
   readOnlyChipContainer: {
