@@ -3,11 +3,22 @@ import { remValue } from '@styles/spacing';
 
 export type dictionaryIcons = keyof typeof MaterialCommunityIcons.glyphMap;
 
+/**
+ * Shared icon size scale, in density-independent pixels scaled by `remValue`.
+ *
+ * - `verySmall` — inline badge overlaid on other content; the smallest rung of the
+ *   ladder, currently unused but kept so the scale stays continuous
+ * - `small` — secondary affordance next to text (e.g. the "previously seen" marker)
+ * - `medium` — standard action icon (e.g. buttons, chips, list rows)
+ * - `large` — prominent status icon (e.g. tab bar, section headings, provider logos)
+ * - `veryLarge` — empty-state and error-state icon
+ */
 export const iconsSize = {
-  verySmall: 9 * remValue,
-  small: 22 * remValue,
-  medium: 27 * remValue,
-  large: 40 * remValue,
+  verySmall: 12 * remValue,
+  small: 16 * remValue,
+  medium: 20 * remValue,
+  large: 28 * remValue,
+  veryLarge: 40 * remValue,
 };
 
 export const Icons = {

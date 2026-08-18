@@ -34,12 +34,11 @@ import { Button, Card, Checkbox, Icon, Text, useTheme } from 'react-native-paper
 import { CustomImage } from '@components/atomic/CustomImage';
 import { padding, radius } from '@styles/spacing';
 import { DiscoveredRecipe } from '@customTypes/BulkImportTypes';
-import { Icons } from '@assets/Icons';
+import { Icons, iconsSize } from '@assets/Icons';
 import { useI18n } from '@utils/i18n';
 
 const ROW_MIN_HEIGHT = 112;
 const THUMBNAIL_WIDTH = 96;
-const SEEN_ICON_SIZE = 16;
 
 /**
  * Props for the RecipeSelectionCard component
@@ -143,7 +142,7 @@ export function RecipeSelectionCard({
               style={[styles.seenBadge, { backgroundColor: colors.surfaceVariant }]}
               testID={testId + '::SeenIndicator'}
             >
-              <Icon source={Icons.history} size={SEEN_ICON_SIZE} color={colors.onSurfaceVariant} />
+              <Icon source={Icons.history} size={iconsSize.small} color={colors.onSurfaceVariant} />
             </View>
           )}
         </View>

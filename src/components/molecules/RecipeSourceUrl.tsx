@@ -18,8 +18,8 @@ import { StyleSheet, View } from 'react-native';
 import { IconButton, Surface, Text, useTheme } from 'react-native-paper';
 import * as Clipboard from 'expo-clipboard';
 import { useI18n } from '@utils/i18n';
-import { padding } from '@styles/spacing';
-import { Icons } from '@assets/Icons';
+import { padding, radius } from '@styles/spacing';
+import { Icons, iconsSize } from '@assets/Icons';
 
 export interface RecipeSourceUrlProps {
   /** The URL to display and copy */
@@ -62,7 +62,7 @@ export function RecipeSourceUrl({
         </Text>
         <IconButton
           icon={Icons.copy}
-          size={20}
+          size={iconsSize.medium}
           onPress={() => void handleCopy()}
           testID={`${testID}::CopyButton`}
         />
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     marginHorizontal: padding.large,
     marginTop: padding.medium,
     padding: padding.medium,
-    borderRadius: 12,
+    borderRadius: radius.medium,
   },
   label: {
     marginBottom: padding.verySmall,

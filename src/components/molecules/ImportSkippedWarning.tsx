@@ -15,7 +15,7 @@ import { SkippedRecipeInfo } from '@customTypes/BulkImportTypes';
 import { SkippedRecipesList } from '@components/molecules/SkippedRecipesList';
 import { useI18n } from '@utils/i18n';
 import { padding } from '@styles/spacing';
-import { Icons } from '@assets/Icons';
+import { Icons, iconsSize } from '@assets/Icons';
 
 export interface ImportSkippedWarningProps {
   /** Recipes that will be skipped due to missing ingredient names */
@@ -48,7 +48,11 @@ export function ImportSkippedWarning({
         ListHeaderComponent={
           <View style={styles.header}>
             <View style={styles.titleRow}>
-              <Icon source={Icons.alertWithCircle} size={35} color={colors.secondary} />
+              <Icon
+                source={Icons.alertWithCircle}
+                size={iconsSize.veryLarge}
+                color={colors.secondary}
+              />
               <Text
                 variant='titleLarge'
                 style={[styles.title, { color: colors.secondary }]}

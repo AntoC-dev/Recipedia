@@ -15,7 +15,7 @@ import { SkippedRecipeInfo } from '@customTypes/BulkImportTypes';
 import { SkippedRecipesList } from '@components/molecules/SkippedRecipesList';
 import { useI18n } from '@utils/i18n';
 import { padding } from '@styles/spacing';
-import { Icons } from '@assets/Icons';
+import { Icons, iconsSize } from '@assets/Icons';
 
 /**
  * Props for the ImportSuccessMessage component
@@ -63,7 +63,11 @@ export function ImportSuccessMessage({
           <>
             <View style={[styles.successSection, !hasSkipped && styles.successSectionCentered]}>
               <View style={styles.titleRow}>
-                <Icon source={Icons.checkWithCircle} size={35} color={colors.primary} />
+                <Icon
+                  source={Icons.checkWithCircle}
+                  size={iconsSize.veryLarge}
+                  color={colors.primary}
+                />
                 <Text variant='headlineMedium' style={[styles.title, { color: colors.primary }]}>
                   {t('bulkImport.validation.importComplete')}
                 </Text>
@@ -78,7 +82,11 @@ export function ImportSuccessMessage({
               <>
                 <Divider style={styles.divider} />
                 <View style={[styles.titleRow, styles.skippedHeaderRow]}>
-                  <Icon source={Icons.alertWithCircle} size={20} color={colors.secondary} />
+                  <Icon
+                    source={Icons.alertWithCircle}
+                    size={iconsSize.medium}
+                    color={colors.secondary}
+                  />
                   <Text
                     variant='titleMedium'
                     style={[styles.skippedHeader, { color: colors.secondary }]}

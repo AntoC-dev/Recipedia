@@ -27,6 +27,8 @@ import { groupDismissedRecipesByProvider } from '@utils/BulkImportUtils';
 import { getProvider } from '@providers/ProviderRegistry';
 import { useI18n } from '@utils/i18n';
 import { padding } from '@styles/spacing';
+import { layout } from '@styles/layout';
+import { iconsSize } from '@assets/Icons';
 
 const screenId = 'DismissedRecipesSettings';
 
@@ -84,7 +86,7 @@ export function DismissedRecipesSettings() {
                   left={() => (
                     <ProviderLogo
                       logoUrl={getProvider(group.providerId)?.logoUrl ?? ''}
-                      size={32}
+                      size={iconsSize.large}
                       testID={groupId + '::Logo'}
                     />
                   )}
@@ -104,7 +106,7 @@ export function DismissedRecipesSettings() {
           </List.AccordionGroup>
         </ScrollView>
       ) : (
-        <View style={styles.emptyState}>
+        <View style={[layout.emptyState, styles.emptyStatePadding]}>
           <Text variant='titleMedium' style={styles.emptyTitle} testID={screenId + '::Empty'}>
             {t('bulkImport.dismissed.empty')}
           </Text>
@@ -121,10 +123,7 @@ const styles = StyleSheet.create({
   listContent: {
     paddingVertical: padding.small,
   },
-  emptyState: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  emptyStatePadding: {
     padding: padding.large,
   },
   emptyTitle: {
