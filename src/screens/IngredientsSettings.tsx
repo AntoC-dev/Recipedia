@@ -26,7 +26,7 @@
  */
 
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenNavigation } from '@customTypes/ScreenTypes';
@@ -154,7 +154,7 @@ export function IngredientsSettings() {
   return (
     <ScreenWrapper>
       <AppBar title={t('ingredients')} onGoBack={() => navigation.goBack()} testID={testId} />
-      <View style={{ flex: 1, paddingBottom: bottomActionButtonHeight }}>
+      <View style={styles.content}>
         <SettingsItemList
           items={ingredientsSortedAlphabetically}
           testIdPrefix={testId}
@@ -187,5 +187,12 @@ export function IngredientsSettings() {
     </ScreenWrapper>
   );
 }
+
+const styles = StyleSheet.create({
+  content: {
+    flex: 1,
+    paddingBottom: bottomActionButtonHeight,
+  },
+});
 
 export default IngredientsSettings;

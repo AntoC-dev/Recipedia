@@ -59,14 +59,17 @@
  * ```
  */
 
-import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { padding, screenViews } from '@styles/spacing';
 
 /**
- * Internal margin and padding utilities for recipe components
- * Provides consistent spacing patterns used throughout recipe interfaces
+ * Internal margin and padding fragments for recipe components
+ * Provides consistent spacing patterns used throughout recipe interfaces.
+ * Kept as a plain object (not `StyleSheet.create`) so its fragments spread
+ * cleanly into other `StyleSheet.create` calls without widening their
+ * inferred style type.
  */
-const recipeMargins = StyleSheet.create({
+const recipeMargins = {
   padding: { paddingHorizontal: padding.medium, paddingVertical: padding.small },
   smallVerticalMargin: {
     marginVertical: padding.verySmall,
@@ -77,22 +80,22 @@ const recipeMargins = StyleSheet.create({
   largeVerticalMargin: {
     marginVertical: padding.veryLarge,
   },
-});
+};
 
 /**
  * Styling for recipe text input and editable components
  * Used in recipe creation and editing forms
  */
 export const recipeTextStyles = StyleSheet.create({
-  containerSection: recipeMargins.padding as ViewStyle,
+  containerSection: recipeMargins.padding,
   containerElement: recipeMargins.smallVerticalMargin,
   containerTab: {
     ...recipeMargins.padding,
     flexDirection: 'row',
     alignItems: 'center',
     gap: padding.medium,
-  } as ViewStyle,
-  button: { ...recipeMargins.mediumVerticalMargin } as ViewStyle,
+  },
+  button: { ...recipeMargins.mediumVerticalMargin },
 });
 
 /**
@@ -100,21 +103,23 @@ export const recipeTextStyles = StyleSheet.create({
  * Used in recipe viewing and presentation interfaces
  */
 export const recipeTextRenderStyles = StyleSheet.create({
-  containerSection: recipeMargins.padding as ViewStyle,
+  containerSection: recipeMargins.padding,
   headlineElement: { ...recipeMargins.smallVerticalMargin, padding: padding.small },
-  readOnlyElement: { ...recipeMargins.padding, marginLeft: padding.medium } as TextStyle,
+  readOnlyElement: { ...recipeMargins.padding, marginLeft: padding.medium },
   containerElement: { padding: padding.small },
-  tagView: screenViews.tabView as ViewStyle,
-  firstColumn: { flex: 2, textAlign: 'center', width: '100%' } as ViewStyle,
-  secondColumn: { flex: 2, textAlign: 'center', width: '100%' } as ViewStyle,
-  thirdColumn: { flex: 3, flexWrap: 'wrap', textAlign: 'center', width: '100%' } as ViewStyle,
+  tagView: screenViews.tabView,
+  firstColumn: { flex: 2, textAlign: 'center', width: '100%' },
+  secondColumn: { flex: 2, textAlign: 'center', width: '100%' },
+  thirdColumn: { flex: 3, flexWrap: 'wrap', textAlign: 'center', width: '100%' },
   columnContentStyle: recipeMargins.mediumVerticalMargin,
-  roundButtonPadding: { ...recipeMargins.mediumVerticalMargin } as ViewStyle,
+  roundButtonPadding: { ...recipeMargins.mediumVerticalMargin },
 });
 
 /**
- * Shared button styling for round buttons used across recipe components
- * Provides consistent layout and spacing for button containers and individual buttons
+ * Shared button styling for round buttons used across recipe components.
+ * The single source of truth for round-button layout — consumers that need
+ * a variant (e.g. extra top margin) compose it via a style array instead of
+ * re-exporting an aliased copy under a feature-specific name.
  */
 export const recipeButtonStyles = StyleSheet.create({
   roundButtonsContainer: {
@@ -122,12 +127,12 @@ export const recipeButtonStyles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
     marginVertical: padding.medium,
-  } as ViewStyle,
+  },
   roundButton: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  } as ViewStyle,
+  },
 });
 
 /**
@@ -135,13 +140,11 @@ export const recipeButtonStyles = StyleSheet.create({
  * Used in tag input, selection, and display interfaces
  */
 export const recipeTagsStyles = StyleSheet.create({
-  containerSection: { ...recipeMargins.padding } as ViewStyle,
-  containerElement: { ...recipeMargins.smallVerticalMargin } as TextStyle,
-  tagsContainer: { padding: padding.small } as ViewStyle,
-  tab: screenViews.tabView as ViewStyle,
-  textInputDropDownContainer: { padding: padding.medium } as ViewStyle,
-  roundButtonsContainer: recipeButtonStyles.roundButtonsContainer,
-  roundButton: recipeButtonStyles.roundButton,
+  containerSection: { ...recipeMargins.padding },
+  containerElement: { ...recipeMargins.smallVerticalMargin },
+  tagsContainer: { padding: padding.small },
+  tab: screenViews.tabView,
+  textInputDropDownContainer: { padding: padding.medium },
 });
 
 /**
@@ -149,20 +152,7 @@ export const recipeTagsStyles = StyleSheet.create({
  * Used for quantity, serving size, and timing inputs
  */
 export const recipeNumberStyles = StyleSheet.create({
-  editableView: { flexDirection: 'row', alignItems: 'center', gap: padding.medium } as ViewStyle,
-  addView: {} as ViewStyle,
-  roundButtonsContainer: {
-    ...recipeButtonStyles.roundButtonsContainer,
-    marginTop: padding.large,
-  } as ViewStyle,
-  roundButton: recipeButtonStyles.roundButton,
-});
-
-/**
- * Styling for recipe ingredient table components
- * Used by RecipePreparation for round button layouts
- */
-export const recipeTableStyles = StyleSheet.create({
-  roundButtonsContainer: recipeButtonStyles.roundButtonsContainer,
-  roundButton: recipeButtonStyles.roundButton,
+  editableView: { flexDirection: 'row', alignItems: 'center', gap: padding.medium },
+  /** Extra top margin composed onto `recipeButtonStyles.roundButtonsContainer` for this screen's layout. */
+  roundButtonsMargin: { marginTop: padding.large },
 });

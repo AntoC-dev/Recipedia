@@ -48,7 +48,7 @@
  */
 
 import React from 'react';
-import { FlatList, ListRenderItemInfo, View } from 'react-native';
+import { FlatList, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 import { Checkbox, Divider, List, useTheme } from 'react-native-paper';
 import { ingredientTableElement } from '@customTypes/DatabaseElementTypes';
 import { FiltersAppliedToDatabase, listFilter, TListFilter } from '@customTypes/RecipeFiltersTypes';
@@ -171,12 +171,12 @@ export function FilterAccordion({
       const displayText = shouldTranslate ? t(item) : item;
 
       return (
-        <View key={item} style={{ width: '50%' }}>
+        <View key={item} style={styles.itemColumn}>
           <List.Item
             testID={testId}
             title={displayText}
             titleNumberOfLines={2}
-            style={{ paddingHorizontal: padding.verySmall }}
+            style={styles.itemContent}
             onPress={() => handlePress(filter, item)}
             left={props => (
               <Checkbox
@@ -222,3 +222,12 @@ export function FilterAccordion({
     </List.AccordionGroup>
   );
 }
+
+const styles = StyleSheet.create({
+  itemColumn: {
+    width: '50%',
+  },
+  itemContent: {
+    paddingHorizontal: padding.verySmall,
+  },
+});

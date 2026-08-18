@@ -34,6 +34,7 @@ import {
   TextInput,
 } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
+import { layout } from '@styles/layout';
 import { padding } from '@styles/spacing';
 
 /**
@@ -157,7 +158,7 @@ export function AuthenticationDialog({
           )}
         </Dialog.Content>
         <Dialog.Actions>
-          <View style={styles.dialogActions}>
+          <View style={layout.dialogActions}>
             <Button
               testID={modalTestId + '::CancelButton'}
               mode='outlined'
@@ -192,12 +193,6 @@ const styles = StyleSheet.create({
   },
   passwordInput: {
     marginTop: padding.small,
-  },
-  dialogActions: {
-    flex: 1,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
   },
   notice: {
     marginTop: padding.small,

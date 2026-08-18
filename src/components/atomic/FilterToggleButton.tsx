@@ -1,9 +1,9 @@
 import React, { forwardRef } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Button } from 'react-native-paper';
 import { Icons } from '@assets/Icons';
 import { useI18n } from '@utils/i18n';
-import { padding } from '@styles/spacing';
+import { padding, radius } from '@styles/spacing';
 
 /**
  * Props for {@link FilterToggleButton}
@@ -30,13 +30,13 @@ export const FilterToggleButton = forwardRef<View, FilterToggleButtonProps>(
   function FilterToggleButton({ testID, addingFilterMode, onToggle }, ref) {
     const { t } = useI18n();
     return (
-      <View ref={ref} style={{ alignSelf: 'flex-start' }}>
+      <View ref={ref} style={styles.container}>
         <Button
           testID={testID}
           mode={'contained'}
           onPress={onToggle}
           icon={addingFilterMode ? Icons.removeFilterIcon : Icons.addFilterIcon}
-          style={{ margin: padding.medium, alignSelf: 'flex-start', borderRadius: 20 }}
+          style={styles.button}
         >
           {t(addingFilterMode ? 'seeFilterResult' : 'addFilter')}
         </Button>
@@ -44,3 +44,14 @@ export const FilterToggleButton = forwardRef<View, FilterToggleButtonProps>(
     );
   }
 );
+
+const styles = StyleSheet.create({
+  container: {
+    alignSelf: 'flex-start',
+  },
+  button: {
+    margin: padding.medium,
+    alignSelf: 'flex-start',
+    borderRadius: radius.full,
+  },
+});

@@ -33,7 +33,6 @@ export function NutritionEmptyState({
       </Text>
       <RoundButton
         testID={testId + (isOCRMode ? '::OCRButton' : '::AddButton')}
-        size={'medium'}
         icon={isOCRMode ? Icons.scanImageIcon : Icons.plusIcon}
         onPressFunction={onButtonPressed}
         style={recipeTextStyles.button}

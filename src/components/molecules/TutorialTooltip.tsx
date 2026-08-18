@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Button, Card, Text, useTheme } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeCopilot } from '@hooks/useSafeCopilot';
@@ -13,6 +13,9 @@ import {
   SELF_ADVANCING_TUTORIAL_SCREEN,
 } from '@utils/Tutorial';
 import { padding } from '@styles/spacing';
+
+// From copilot source files, see that they add 15 padding to tooltip
+const paddingOfCopilot = 15;
 
 /**
  * TutorialTooltip - Interactive tutorial overlay component
@@ -74,22 +77,10 @@ export function TutorialTooltip() {
   const handlePrevious = () =>
     navigateToStep(getPreviousTutorialScreen(currentStep.order), goToPrev);
 
-  // From copilot source files, see that they add 15 padding to tooltip
-  const paddingOfCopilot = 15;
-
   const testId = 'TutorialTooltip';
 
   return (
-    <Card
-      accessible={false}
-      testID={testId}
-      mode='elevated'
-      style={{
-        //   Remove the padding to let the card filling the tooltip
-        marginHorizontal: -paddingOfCopilot,
-        marginTop: -paddingOfCopilot,
-      }}
-    >
+    <Card accessible={false} testID={testId} mode='elevated' style={styles.card}>
       <Card.Content>
         <Text
           testID={testId + '::Text'}
@@ -101,13 +92,7 @@ export function TutorialTooltip() {
         </Text>
       </Card.Content>
 
-      <Card.Actions
-        style={{
-          justifyContent: 'space-between',
-          paddingVertical: padding.small,
-          paddingHorizontal: padding.medium,
-        }}
-      >
+      <Card.Actions style={styles.actions}>
         {!isFirstStep && (
           <Button
             testID={testId + '::Previous'}
@@ -120,7 +105,7 @@ export function TutorialTooltip() {
           </Button>
         )}
 
-        <View style={{ flexDirection: 'row', gap: padding.medium }}>
+        <View style={styles.buttonRow}>
           <Button
             testID={testId + '::Skip'}
             mode='text'
@@ -146,3 +131,20 @@ export function TutorialTooltip() {
     </Card>
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    // Remove the padding to let the card fill the tooltip
+    marginHorizontal: -paddingOfCopilot,
+    marginTop: -paddingOfCopilot,
+  },
+  actions: {
+    justifyContent: 'space-between',
+    paddingVertical: padding.small,
+    paddingHorizontal: padding.medium,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    gap: padding.medium,
+  },
+});

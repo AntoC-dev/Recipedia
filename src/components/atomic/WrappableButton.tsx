@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleProp, TouchableOpacity, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
 import { padding } from '@styles/spacing';
 
@@ -27,15 +27,8 @@ export function WrappableButton({
       onPress={onPress}
       testID={testID}
       style={[
-        {
-          backgroundColor: buttonColor || colors.primary,
-          borderRadius: roundness,
-          paddingHorizontal: padding.large,
-          paddingVertical: padding.small,
-          minHeight: 40,
-          justifyContent: 'center',
-          alignItems: 'center',
-        },
+        styles.button,
+        { backgroundColor: buttonColor || colors.primary, borderRadius: roundness },
         style,
       ]}
       activeOpacity={0.8}
@@ -43,13 +36,23 @@ export function WrappableButton({
       <Text
         testID={testID + '::Text'}
         variant='labelLarge'
-        style={{
-          color: textColor || colors.onPrimary,
-          textAlign: 'center',
-        }}
+        style={[styles.text, { color: textColor || colors.onPrimary }]}
       >
         {children}
       </Text>
     </TouchableOpacity>
   );
 }
+
+const styles = StyleSheet.create({
+  button: {
+    paddingHorizontal: padding.large,
+    paddingVertical: padding.small,
+    minHeight: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    textAlign: 'center',
+  },
+});

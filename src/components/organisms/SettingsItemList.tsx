@@ -39,10 +39,10 @@
  */
 
 import React, { useDeferredValue, useState } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { Searchbar, useTheme } from 'react-native-paper';
-import { padding } from '@styles/spacing';
+import { padding, radius } from '@styles/spacing';
 import { useI18n } from '@utils/i18n';
 import { useDeferredMount } from '@hooks/useDeferredMount';
 import { getSettingsItemKey } from '@utils/listUtils';
@@ -88,25 +88,21 @@ export function SettingsItemList<T extends SettingsItem>({
   );
 
   return (
-    <View style={{ height: '100%', backgroundColor: colors.background }}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Searchbar
         testID={`${testIdPrefix}::SearchBar`}
         mode='bar'
         placeholder={t('search_items')}
         value={searchQuery}
         onChangeText={setSearchQuery}
-        style={{
-          margin: padding.small,
-          marginBottom: padding.verySmall,
-          borderRadius: 999,
-        }}
+        style={styles.searchBar}
       />
       {listReady ? (
         <FlashList
           data={filteredItems}
           keyExtractor={getSettingsItemKey}
           maintainVisibleContentPosition={{ disabled: true }}
-          contentContainerStyle={{ padding: padding.small }}
+          contentContainerStyle={styles.listContent}
           renderItem={({ item }) => (
             <SettingsItemCard
               item={item}
@@ -121,5 +117,15 @@ export function SettingsItemList<T extends SettingsItem>({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { height: '100%' },
+  searchBar: {
+    margin: padding.small,
+    marginBottom: padding.verySmall,
+    borderRadius: radius.full,
+  },
+  listContent: { padding: padding.small },
+});
 
 export default SettingsItemList;

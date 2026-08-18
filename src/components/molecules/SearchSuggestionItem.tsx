@@ -1,4 +1,5 @@
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import { List } from 'react-native-paper';
 import { padding } from '@styles/spacing';
 
@@ -25,12 +26,11 @@ export type SearchSuggestionItemProps = {
  * @returns JSX element representing one selectable search suggestion.
  */
 export function SearchSuggestionItem({ testId, title, onSelect }: SearchSuggestionItemProps) {
-  return (
-    <List.Item
-      testID={testId}
-      title={title}
-      onPress={onSelect}
-      style={{ padding: padding.veryLarge }}
-    />
-  );
+  return <List.Item testID={testId} title={title} onPress={onSelect} style={styles.item} />;
 }
+
+const styles = StyleSheet.create({
+  item: {
+    padding: padding.veryLarge,
+  },
+});

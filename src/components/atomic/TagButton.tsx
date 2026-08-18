@@ -41,9 +41,10 @@
  */
 
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import { IconName } from '@assets/Icons';
 import { Chip, Icon, MD3Theme, useTheme } from 'react-native-paper';
-import { padding } from '@styles/spacing';
+import { padding, radius } from '@styles/spacing';
 
 /**
  * Props for the TagButton component
@@ -82,11 +83,7 @@ export function TagButton(props: TagButtonProps) {
   return (
     <Chip
       testID={props.testID + '::Chip'}
-      style={{
-        backgroundColor: colors.secondaryContainer,
-        borderRadius: 20,
-        margin: padding.verySmall,
-      }}
+      style={[styles.chip, { backgroundColor: colors.secondaryContainer }]}
       textStyle={[fonts.bodySmall, { color: colors.onSecondaryContainer }]}
       mode={'outlined'}
       selectedColor={colors.secondary}
@@ -99,3 +96,10 @@ export function TagButton(props: TagButtonProps) {
     </Chip>
   );
 }
+
+const styles = StyleSheet.create({
+  chip: {
+    borderRadius: radius.full,
+    margin: padding.verySmall,
+  },
+});

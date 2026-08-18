@@ -20,7 +20,7 @@
  */
 
 import React, { useState } from 'react';
-import { ScrollView } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import { Snackbar, useTheme } from 'react-native-paper';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
@@ -34,6 +34,7 @@ import { Alert } from '@components/dialogs/Alert';
 import { recipeLogger } from '@utils/logger';
 import { BottomActionButton } from '@components/atomic/BottomActionButton';
 import { bottomActionButtonHeight } from '@styles/spacing';
+import { layout } from '@styles/layout';
 import { RecipeImage } from '@components/organisms/RecipeImage';
 import { RecipeText } from '@components/organisms/RecipeText';
 import { RecipeTags } from '@components/organisms/RecipeTags';
@@ -158,8 +159,8 @@ export function RecipeView({ route, navigation }: RecipeViewProps) {
       <ScrollView
         horizontal={false}
         showsVerticalScrollIndicator={false}
-        style={{ flex: 1, backgroundColor: colors.background }}
-        contentContainerStyle={{ paddingBottom: bottomActionButtonHeight }}
+        style={[layout.flexFill, { backgroundColor: colors.background }]}
+        contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps={'handled'}
         nestedScrollEnabled={true}
       >
@@ -270,3 +271,9 @@ export function RecipeView({ route, navigation }: RecipeViewProps) {
     </ScreenWrapper>
   );
 }
+
+const styles = StyleSheet.create({
+  scrollContent: {
+    paddingBottom: bottomActionButtonHeight,
+  },
+});

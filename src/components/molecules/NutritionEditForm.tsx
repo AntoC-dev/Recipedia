@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Divider, Text, TextInput, useTheme } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
 import { recipeTextStyles } from '@styles/recipeComponents';
@@ -54,7 +54,7 @@ export function NutritionEditForm({
               onPress={onRemoveNutrition}
               textColor={colors.onError}
               buttonColor={colors.error}
-              style={{ marginTop: padding.large }}
+              style={styles.removeButton}
             >
               {t('recipe.nutrition.removeNutrition')}
             </WrappableButton>
@@ -64,3 +64,9 @@ export function NutritionEditForm({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  removeButton: {
+    marginTop: padding.large,
+  },
+});

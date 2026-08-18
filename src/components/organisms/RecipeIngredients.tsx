@@ -24,7 +24,7 @@ import { StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
 import { DataTable, HelperText, IconButton, Text, useTheme } from 'react-native-paper';
 import { FormIngredientElement, ingredientTableElement } from '@customTypes/DatabaseElementTypes';
 import { RoundButton } from '@components/atomic/RoundButton';
-import { Icons } from '@assets/Icons';
+import { Icons, iconsSize } from '@assets/Icons';
 import { NumericTextInput } from '@components/atomic/NumericTextInput';
 import { TextInputWithDropDown } from '@components/molecules/TextInputWithDropDown';
 import {
@@ -33,6 +33,7 @@ import {
   parseIngredientQuantity,
 } from '@utils/Quantity';
 import { padding } from '@styles/spacing';
+import { recipeButtonStyles } from '@styles/recipeComponents';
 
 /**
  * Read-only display of an ingredient list.
@@ -125,7 +126,7 @@ export function IngredientsTable({
         {prefixText}
       </Text>
       <DataTable style={cellStyles.table} accessible={false}>
-        <DataTable.Header style={{ borderBottomWidth: 0 }} accessible={false}>
+        <DataTable.Header style={cellStyles.noBottomBorder} accessible={false}>
           <DataTable.Title
             testID={headerTestId + '::Quantity'}
             style={[cellStyles.header, cellStyles.quantityCell, { borderColor }]}
@@ -166,7 +167,6 @@ export function IngredientsTable({
       {!hideAddButton && onAddIngredient && (
         <RoundButton
           testID={`${testID}::AddButton`}
-          size='medium'
           icon={Icons.plusIcon}
           onPressFunction={onAddIngredient}
           style={cellStyles.addButton}
@@ -259,7 +259,7 @@ export function IngredientRow({
     <React.Fragment>
       <DataTable.Row
         testID={`${testID}::${index}::Row`}
-        style={{ borderBottomWidth: 0 }}
+        style={cellStyles.noBottomBorder}
         accessible={false}
       >
         <DataTable.Cell style={cellStyles.quantityCell} accessible={false}>
@@ -296,7 +296,7 @@ export function IngredientRow({
             icon={hasNote ? Icons.commentEditOutline : Icons.commentPlusOutline}
             iconColor={hasNote ? colors.primary : colors.onSurfaceVariant}
             onPress={onOpenNote}
-            size={20}
+            size={iconsSize.medium}
           />
         </DataTable.Cell>
         <DataTable.Cell style={cellStyles.nameCell} accessible={false}>
@@ -334,7 +334,7 @@ export function IngredientRow({
             icon={Icons.trashIcon}
             iconColor={colors.error}
             onPress={onRemove}
-            size={20}
+            size={iconsSize.medium}
           />
         </DataTable.Cell>
       </DataTable.Row>
@@ -375,19 +375,17 @@ export function IngredientsAddEmpty({
       <Text testID={`${testID}::PrefixText`} variant='headlineSmall' style={cellStyles.prefixText}>
         {prefixText}
       </Text>
-      <View style={cellStyles.roundButtonsContainer}>
+      <View style={recipeButtonStyles.roundButtonsContainer}>
         <RoundButton
           testID={`${testID}::OpenModalNames`}
-          style={cellStyles.roundButton}
-          size='medium'
+          style={recipeButtonStyles.roundButton}
           icon={Icons.scanImageIcon}
           onPressFunction={openOcrModal}
           label={scanLabel}
         />
         <RoundButton
           testID={`${testID}::AddButton`}
-          style={cellStyles.roundButton}
-          size='medium'
+          style={recipeButtonStyles.roundButton}
           icon={Icons.pencilIcon}
           onPressFunction={onAddIngredient}
           label={manualLabel}
@@ -422,19 +420,17 @@ export function IngredientsAddTail({
   onAddIngredient,
 }: IngredientsAddTailProps) {
   return (
-    <View style={cellStyles.roundButtonsContainer}>
+    <View style={recipeButtonStyles.roundButtonsContainer}>
       <RoundButton
         testID={`${testID}::OpenModalQuantities`}
-        style={cellStyles.roundButton}
-        size='medium'
+        style={recipeButtonStyles.roundButton}
         icon={Icons.scanImageIcon}
         onPressFunction={openOcrModal}
         label={scanLabel}
       />
       <RoundButton
         testID={`${testID}::AddButton`}
-        style={cellStyles.roundButton}
-        size='medium'
+        style={recipeButtonStyles.roundButton}
         icon={Icons.pencilIcon}
         onPressFunction={onAddIngredient}
         label={manualLabel}
@@ -466,14 +462,8 @@ const cellStyles = StyleSheet.create({
     borderBottomWidth: recipeTableBorderWidth,
   } as ViewStyle,
   flex1: { flex: 1 },
+  noBottomBorder: { borderBottomWidth: 0 } as ViewStyle,
   addButton: { marginVertical: padding.medium } as ViewStyle,
-  roundButtonsContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    marginVertical: padding.medium,
-  } as ViewStyle,
-  roundButton: { flex: 1, justifyContent: 'center', alignItems: 'center' } as ViewStyle,
   quantityCell: { flex: recipeTableFlex.quantity, alignItems: 'stretch' } as ViewStyle,
   unitCell: {
     flex: recipeTableFlex.unit,

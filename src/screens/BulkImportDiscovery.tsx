@@ -51,6 +51,7 @@ import { useDiscoveryWorkflow } from '@hooks/useDiscoveryWorkflow';
 import { useVisibleImageLoader } from '@hooks/useVisibleImageLoader';
 import { useRecipeScraper } from '@hooks/useRecipeScraper';
 import { padding } from '@styles/spacing';
+import { layout } from '@styles/layout';
 
 type BulkImportDiscoveryRouteProp = RouteProp<StackScreenParamList, 'BulkImportDiscovery'>;
 
@@ -236,7 +237,7 @@ export function BulkImportDiscovery() {
               drawDistance={FLASH_LIST_DRAW_DISTANCE}
             />
           ) : phase === 'selecting' ? (
-            <View style={styles.emptyState}>
+            <View style={layout.emptyState}>
               <Text variant='bodyLarge' style={styles.emptyText}>
                 {t('bulkImport.selection.noRecipesFound')}
               </Text>
@@ -280,11 +281,6 @@ const styles = StyleSheet.create({
   skeletonContainer: {
     flex: 1,
     paddingTop: padding.medium,
-  },
-  emptyState: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   emptyText: {
     textAlign: 'center',

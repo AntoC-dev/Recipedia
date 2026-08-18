@@ -47,7 +47,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useResetOnChange } from '@hooks/useResetOnChange';
-import { FlatList, View } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { Button, Card, Dialog, IconButton, Portal, Text, useTheme } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
@@ -55,6 +55,7 @@ import { appLogger, tutorialLogger } from '@utils/logger';
 import { CustomImage } from '@components/atomic/CustomImage';
 import { Asset } from 'expo-asset';
 import { padding, screenWidth } from '@styles/spacing';
+import { layout } from '@styles/layout';
 import { IconName, Icons } from '@assets/Icons';
 import Constants from 'expo-constants';
 import { LoadingOverlay } from '@components/dialogs/LoadingOverlay';
@@ -189,20 +190,10 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
 
   return (
     <ScreenWrapper backgroundColor={colors.primary}>
-      <View style={{ flex: 1 }}>
-        <View
-          style={{
-            flex: 1,
-            padding: padding.large,
-            justifyContent: 'space-between',
-          }}
-        >
-          <View
-            style={{
-              alignItems: 'center',
-            }}
-          >
-            <View style={{ marginBottom: padding.small }}>
+      <View style={layout.flexFill}>
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <View style={styles.iconWrapper}>
               <CustomImage
                 uri={Asset.fromModule(require('../assets/app/icon.png')).uri}
                 backgroundColor={colors.surface}
@@ -215,10 +206,7 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
             <Text
               testID={testId + '::Title'}
               variant='headlineLarge'
-              style={{
-                textAlign: 'center',
-                color: colors.onPrimary,
-              }}
+              style={[styles.title, { color: colors.onPrimary }]}
             >
               {Constants.expoConfig?.name}
             </Text>
@@ -226,10 +214,7 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
             <Text
               testID={testId + '::Subtitle'}
               variant='titleMedium'
-              style={{
-                color: colors.onPrimary,
-                opacity: 0.8,
-              }}
+              style={[styles.subtitle, { color: colors.onPrimary }]}
             >
               {t('welcome.subtitle')}
             </Text>
@@ -251,12 +236,7 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
                 renderItem={({ item, index }) => {
                   const featureTestId = cardTestId + '::FeaturesList::' + index;
                   return (
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                      }}
-                    >
+                    <View style={styles.featureRow}>
                       <IconButton
                         icon={item.icon}
                         iconColor={colors.primary}
@@ -276,12 +256,12 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
             </Card.Content>
           </Card>
 
-          <View style={{ gap: padding.small }}>
+          <View style={styles.actions}>
             <Button
               testID={testId + '::StartTourButton'}
               mode='contained'
               onPress={handleStartTutorial}
-              style={{ backgroundColor: colors.secondary, paddingVertical: padding.medium }}
+              style={[styles.startTourButton, { backgroundColor: colors.secondary }]}
               labelStyle={{ fontSize: startTourFont.fontSize }}
             >
               {t('welcome.startTour')}
@@ -291,7 +271,7 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
               testID={testId + '::SkipButton'}
               mode='text'
               onPress={handleSkip}
-              style={{ alignSelf: 'center' }}
+              style={styles.skipButton}
               textColor={colors.onPrimary}
             >
               {t('welcome.skip')}
@@ -314,7 +294,7 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
           <Dialog.Title>{t('welcome.datasetError.title')}</Dialog.Title>
           <Dialog.Content>
             <Text variant='bodyMedium'>{t('welcome.datasetError.message')}</Text>
-            <Text variant='bodySmall' style={{ marginTop: padding.small, opacity: 0.7 }}>
+            <Text variant='bodySmall' style={styles.reportHint}>
               {t('welcome.datasetError.reportHint')}
             </Text>
           </Dialog.Content>
@@ -328,3 +308,40 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
     </ScreenWrapper>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: padding.large,
+    justifyContent: 'space-between',
+  },
+  header: {
+    alignItems: 'center',
+  },
+  iconWrapper: {
+    marginBottom: padding.small,
+  },
+  title: {
+    textAlign: 'center',
+  },
+  subtitle: {
+    opacity: 0.8,
+  },
+  featureRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  actions: {
+    gap: padding.small,
+  },
+  startTourButton: {
+    paddingVertical: padding.medium,
+  },
+  skipButton: {
+    alignSelf: 'center',
+  },
+  reportHint: {
+    marginTop: padding.small,
+    opacity: 0.7,
+  },
+});

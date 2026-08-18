@@ -31,7 +31,7 @@
  */
 
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenNavigation } from '@customTypes/ScreenTypes';
@@ -138,7 +138,7 @@ export function TagsSettings() {
   return (
     <ScreenWrapper>
       <AppBar title={t('tags')} onGoBack={() => navigation.goBack()} testID={testId} />
-      <View style={{ flex: 1, paddingBottom: bottomActionButtonHeight }}>
+      <View style={styles.content}>
         <SettingsItemList
           items={tagsSortedAlphabetically}
           testIdPrefix={testId}
@@ -171,5 +171,12 @@ export function TagsSettings() {
     </ScreenWrapper>
   );
 }
+
+const styles = StyleSheet.create({
+  content: {
+    flex: 1,
+    paddingBottom: bottomActionButtonHeight,
+  },
+});
 
 export default TagsSettings;

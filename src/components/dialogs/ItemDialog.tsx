@@ -89,6 +89,7 @@ import { useShoppingCategories } from '@hooks/useCategories';
 import { SelectableAccordion } from '@components/molecules/SelectableAccordion';
 import { SeasonalityCalendar } from '@components/molecules/SeasonalityCalendar';
 import { uiLogger } from '@utils/logger';
+import { layout } from '@styles/layout';
 import { dialogMaxHeight, padding } from '@styles/spacing';
 import { ingredientDialogSchema, tagDialogSchema } from '@schemas/itemDialogSchema';
 import { buildItemFormValues, ItemDialogFormValues } from '@customTypes/ItemDialogTypes';
@@ -390,7 +391,7 @@ export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialo
           </Dialog.ScrollArea>
         )}
         <Dialog.Actions>
-          <View style={styles.dialogActions}>
+          <View style={layout.dialogActions}>
             <Button testID={modalTestId + '::CancelButton'} mode='outlined' onPress={onClose}>
               {t('cancel')}
             </Button>
@@ -423,11 +424,5 @@ const styles = StyleSheet.create({
   },
   unitInput: {
     marginTop: -padding.verySmall,
-  },
-  dialogActions: {
-    flex: 1,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
   },
 });
