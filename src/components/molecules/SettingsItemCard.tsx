@@ -84,11 +84,7 @@ export function SettingsItemCard<T extends SettingsItem>({
     <Card style={{ marginBottom: padding.medium }}>
       <Card.Content>
         {type === 'tag' && 'name' in item ? (
-          <Text
-            testID={testIdPrefix + `::TagName`}
-            variant='titleLarge'
-            style={{ fontWeight: 'bold' }}
-          >
+          <Text testID={testIdPrefix + `::TagName`} variant='titleLarge'>
             {item.name}
           </Text>
         ) : type === 'ingredient' && 'unit' in item ? (
@@ -96,7 +92,7 @@ export function SettingsItemCard<T extends SettingsItem>({
             <Text
               testID={testIdPrefix + `::IngredientName`}
               variant={'titleLarge'}
-              style={{ fontWeight: 'bold', marginBottom: padding.small }}
+              style={{ marginBottom: padding.small }}
             >
               {item.name}
             </Text>

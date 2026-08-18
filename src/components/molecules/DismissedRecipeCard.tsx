@@ -92,6 +92,5 @@ const styles = StyleSheet.create({
   title: {
     flex: 1,
     marginLeft: padding.medium,
-    fontWeight: 'bold',
   },
 });

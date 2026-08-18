@@ -88,7 +88,7 @@ export function NoteEditDialog({
         <Dialog.Content>
           <Text
             testID={modalTestId + '::IngredientName'}
-            variant='bodyMedium'
+            variant='titleSmall'
             style={styles.ingredientName}
           >
             {ingredientName}
@@ -118,7 +118,6 @@ export function NoteEditDialog({
 const styles = StyleSheet.create({
   ingredientName: {
     marginBottom: padding.small,
-    fontWeight: '600',
   },
   dialogActions: {
     flex: 1,
