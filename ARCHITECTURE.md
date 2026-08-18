@@ -93,7 +93,7 @@ All table and column name constants live in `src/customTypes/DatabaseElementType
 
 ### Encoding and decoding
 
-SQLite stores only primitive types. Complex fields (ingredient arrays, tag arrays, preparation steps, nutrition) are serialized to TEXT using custom separators defined in `src/styles/typography.ts` (`textSeparator`, `unitySeparator`, `EncodingSeparator`, `noteSeparator`). Each table has a corresponding `encoded*Element` type (e.g. `encodedRecipeElement`) and a `*ColumnsEncoding` array that declares each column's SQLite type.
+SQLite stores only primitive types. Complex fields (ingredient arrays, tag arrays, preparation steps, nutrition) are serialized to TEXT using custom separators defined in `src/utils/TextParsing.ts` (`textSeparator`, `unitySeparator`, `EncodingSeparator`, `noteSeparator`). Each table has a corresponding `encoded*Element` type (e.g. `encodedRecipeElement`) and a `*ColumnsEncoding` array that declares each column's SQLite type.
 
 When reading: `RecipeDatabase` decodes rows from `encoded*Element` back to the rich TypeScript type.  
 When writing: the rich type is encoded to flat primitives before the SQL statement.
@@ -371,6 +371,28 @@ These must not be violated. Violating them causes subtle bugs or breaks CI.
 **`CustomImage` owns expo-image policy; call sites never set it.** `recyclingKey` (the `uri`) and `cachePolicy` (`memory-disk`) are fixed inside `CustomImage` — app-wide rendering policy, not per-call-site choices, so callers neither pass nor override them. expo-image decodes straight to the size the view is *measured* at, so a `CustomImage` container must be measurable: a fixed `size`, or a flex/absolute layout that resolves to real dimensions. Never render one inside an auto-sized container with no constraint.
 
 **`RecipeCard` stays on Paper `Card.Cover`, not `CustomImage`.** Routing it through `CustomImage` regressed the Reassure render gate by 20–47% across the Search and Home benchmarks — extra React work per row (wrapper `View`, `useTheme`, two `useState`, and the placeholder `Icon` on the no-uri path) over lists reaching 1200 recipes. Read that number for what it is: Reassure measures JS render under Jest, where no native decode happens, so it prices `CustomImage`'s cost and cannot see expo-image's decode benefit. It is also measured against fixtures with an empty `image_Source`, which mounts the placeholder path that production recipes never hit — so the figure overstates the real cost, though the wrapper and hooks are paid either way. `MenuRecipeCard` is the deliberate exception: a fixed 56px thumbnail is where decoding to the measured size pays most, on a list holding a planned menu rather than the whole library. Revisit `RecipeCard` only alongside a `CustomImage` that is cheap enough for a hot list cell.
+**Never hardcode a UI size, weight, or separator — use the shared design tokens.** Each of these has exactly one source of truth, and a local constant or bare literal reintroduces the drift they exist to prevent:
+
+| Token | Module | Covers |
+|---|---|---|
+| `iconsSize` | `@assets/Icons` | Every `Icon`/`IconButton` `size`, on a 4px ladder (`verySmall` 12 → `veryLarge` 40), scaled by `remValue` |
+| `padding`, `radius` | `@styles/spacing` | All spacing and corner radii |
+| `tabScreenEdges`, `tabScreenBottomPadding` | `@styles/spacing` | Safe-area edges and bottom breathing room for tab-hosted screens |
+| `layout` | `@styles/layout` | The four layout blocks that were byte-identical across files (`flexFill`, `dialogActions`, `emptyState`, `tutorialOverlay`) |
+| `formatDecimalForDisplay`, `formatDecimalForStorage` | `@utils/NumberFormat` | Every float rendered to the user, and every float written to the database |
+
+**All fonts and colours come from the React Native Paper theme — never from a local constant.** `src/styles/theme.tsx` is the single source for both, and `useTheme()` is the only way to read them. There is deliberately no `colors.tsx` or `typography.tsx`: a module-level palette cannot follow the light/dark switch, which is exactly how hardcoded hexes and weights drifted out of the theme before. In practice:
+
+- Colours: `const { colors } = useTheme()` → `colors.primary`, `colors.secondaryContainer`, `colors.outline`, …
+- Font sizes: a Paper `variant` (`<Text variant='titleMedium'>`), never a numeric `fontSize`.
+- Font weights: carried by the `variant`, never set by hand. `configureFonts` runs in flat-config mode, so all 15 variants keep their MD3 default weight (`'400'` regular for display/headline/title-large/body, `'500'` medium for title-medium/small and label). To emphasise a run of text, move it to a heavier variant — `titleSmall` for a label sitting next to body copy — rather than layering a `fontWeight` on top. No `'bold'` / `'700'` / `'600'` literals, and no reading `fonts.*.fontWeight` back out of the theme to re-apply it.
+- Font *loading* stays beside the theme in `@styles/theme` (`useFetchFonts`), since Paper configures fonts but `expo-font` loads them.
+
+**A tab-hosted screen must not apply the `'bottom'` safe-area edge.** `BottomNavigation.Bar` already spans the bottom inset (`src/navigation/BottomTabs.tsx` passes it `safeAreaInsets`), so applying the edge again double-counts it and leaves a white strip above the tab bar. Pass `edges={tabScreenEdges}` and reserve scroll-content room with `tabScreenBottomPadding`. Nothing enforces this today — a new tab screen that forgets reintroduces the gap. Making `ScreenWrapper` detect the tab navigator itself (via `BottomTabBarHeightContext`) would enforce it and is worth revisiting.
+
+**Numbers are displayed in the device's regional format but stored in a fixed one.** `formatDecimalForDisplay` resolves the decimal separator from `expo-localization` (`getLocales()[0].decimalSeparator`), so a US device shows `8.53` and a French one `8,53`. Separators are a regional convention, not a language one, so this deliberately follows the *device region* and not the app's language setting. `formatDecimalForStorage` is locale-independent because scaled quantities are persisted: a stored value must not change meaning when the user changes region. `parseQuantity` accepts both separators on the way in, so input keeps working either way.
+
+**Style objects belong in `StyleSheet.create`, not inline in JSX.** A literal `style={{ ... }}` allocates a new object on every render, which is measurable in the recipe lists. Only genuinely dynamic values — theme colours from `useTheme()`, prop- or state-derived sizes, `Animated.Value`s — may stay inline, composed as an array (`style={[styles.card, { backgroundColor: colors.surface }]}`) and kept as small as possible. `StyleSheet.create` is evaluated at module load, so a theme value can never live inside it.
 
 ---
 
