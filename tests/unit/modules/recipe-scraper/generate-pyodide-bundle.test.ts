@@ -1,27 +1,25 @@
-import { readFileSync, existsSync } from 'fs';
-import { join } from 'path';
+const {
+  buildBundleHtml,
+} = require('../../../../modules/recipe-scraper/scripts/buildBundleHtml.js');
 
-const BUNDLE_PATH = join(
-  __dirname,
-  '..',
-  '..',
-  '..',
-  '..',
-  'modules',
-  'recipe-scraper',
-  'assets',
-  'pyodide-bundle.html'
-);
+describe('Pyodide bundle (pyodide-bundle.html)', () => {
+  const buildWithStubs = (overrides: Record<string, unknown> = {}): string =>
+    buildBundleHtml({
+      pyodideJs: 'globalThis.loadPyodide = () => {};',
+      pyodideAsmJs: 'globalThis._createPyodideModule = () => {};',
+      pyodideWasmBase64: 'd2FzbQ==',
+      pythonStdlibBase64: 'c3RkbGli',
+      pyodideLockJson: '{"packages":{}}',
+      embeddedWheels: [{ filename: 'recipe_scrapers-15.0.0-py3-none-any.whl', base64: 'd2hlZWw=' }],
+      scraperPythonCode: 'def scrape_recipe_from_html(html):\n    return {}\n',
+      pyodideCdnUrl: 'https://cdn.example.test/pyodide/v0.0.0/full',
+      ...overrides,
+    });
 
-const bundleExists = existsSync(BUNDLE_PATH);
-
-const describeIfBundle = bundleExists ? describe : describe.skip;
-
-describeIfBundle('Pyodide bundle (pyodide-bundle.html)', () => {
   let bundleContent: string;
 
   beforeAll(() => {
-    bundleContent = readFileSync(BUNDLE_PATH, 'utf-8');
+    bundleContent = buildWithStubs();
   });
 
   describe('jstyleson initialization', () => {
@@ -75,6 +73,12 @@ describeIfBundle('Pyodide bundle (pyodide-bundle.html)', () => {
     it('is a valid HTML document', () => {
       expect(bundleContent).toMatch(/^<!DOCTYPE html>/);
       expect(bundleContent).toContain('</html>');
+    });
+
+    it('embeds the payloads it was given', () => {
+      expect(bundleContent).toContain('d2FzbQ==');
+      expect(bundleContent).toContain('c3RkbGli');
+      expect(bundleContent).toContain('recipe_scrapers-15.0.0-py3-none-any.whl');
     });
   });
 
