@@ -342,9 +342,11 @@ dropdown (there is no `onBlur`, and the dropdown must stay scrollable).
 When unsure prefer Pattern B — it never changes the search term.
 
 **Clearing the search** is a third thing: tap
-`SearchScreen::SearchBar::RightIcon`, visible whenever the search has text or is
-active. It clears the text _and_ closes the dropdown, on both platforms, and
-replaces the old `pressKey: "BACK"` / coordinate-tap hacks.
+`SearchScreen::SearchBar-clear-icon`, Paper's built-in clear icon. It is always
+present in the hierarchy but only actionable once the search has text, so tap it
+only after typing — never assert it away when the field is empty. It clears the
+text _and_ closes the dropdown, on both platforms, and replaces the old
+`pressKey: "BACK"` / coordinate-tap hacks.
 
 ## Re-render Barriers
 

@@ -105,7 +105,7 @@ tags:
     label: "Assert - Verify Search screen shows Pizza results"
 
 - tapOn:
-    id: "SearchScreen::SearchBar::RightIcon"
+    id: "SearchScreen::SearchBar-clear-icon"
     retryTapIfNoChange: false
     label: "Action - Tap clear icon to remove search filter"
 

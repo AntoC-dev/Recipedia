@@ -1,7 +1,7 @@
 appId: "com.recipedia"
 ---
 - assertVisible:
-    id: "SearchScreen::SearchBar::RightIcon"
+    id: "SearchScreen::SearchBar-clear-icon"
     label: "Assert - Close icon is visible when dropdown open"
 
 - assertVisible:
@@ -99,7 +99,7 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::SearchBar::RightIcon"
+      id: "SearchScreen::SearchBar-clear-icon"
     direction: UP
     speed: 60
     label: "Scroll back to top of dropdown"

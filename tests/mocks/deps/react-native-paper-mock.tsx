@@ -321,6 +321,18 @@ export const Searchbar: React.FC<any> = props => (
       returnKeyType={props.returnKeyType}
     />
     <RNText testID={props.testID + '::Placeholder'}>{props.placeholder}</RNText>
+    <RNText testID={props.testID + '::HasRight'}>{String(props.right !== undefined)}</RNText>
+    <RNText testID={props.testID + '::ClearIcon'}>{props.clearIcon}</RNText>
+    <TouchableOpacity
+      testID={props.testID + '-clear-icon'}
+      onPress={() => {
+        props.onChangeText?.('');
+        props.onClearIconPress?.();
+      }}
+      disabled={!props.value}
+    >
+      <RNText>{props.clearAccessibilityLabel}</RNText>
+    </TouchableOpacity>
     <View testID={props.testID + '::RightContainer'}>
       {props.right && props.right({ testID: props.testID + '::Right' })}
     </View>

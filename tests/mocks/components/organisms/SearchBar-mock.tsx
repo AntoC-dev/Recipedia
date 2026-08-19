@@ -37,7 +37,7 @@ function MockSearchBar({ testId, setSearchBarClicked, updateSearchString, clearR
         <Text>Update Search</Text>
       </TouchableOpacity>
       {currentPhrase.length > 0 && (
-        <TouchableOpacity testID={testId + '::RightIcon'}>
+        <TouchableOpacity testID={testId + '-clear-icon'}>
           <Text>Clear</Text>
         </TouchableOpacity>
       )}

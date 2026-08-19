@@ -30,7 +30,7 @@ tags:
     label: "Assert - Empty state item with message is displayed when no recipe title matches (keyboard closed)"
 
 - tapOn:
-    id: "SearchScreen::SearchBar::RightIcon"
+    id: "SearchScreen::SearchBar-clear-icon"
     label: "Action - Tap clear icon: clears the unmatched text and exits search mode back to cards"
 
 - runFlow:
