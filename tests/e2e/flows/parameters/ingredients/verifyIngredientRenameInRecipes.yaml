@@ -71,5 +71,5 @@ appId: "com.recipedia"
     label: "Close the recipe"
 
 - tapOn:
-    id: "SearchScreen::SearchBar::RightIcon"
+    id: "SearchScreen::SearchBar-clear-icon"
     label: "Clear search bar"

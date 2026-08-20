@@ -38,13 +38,13 @@ tags:
 
 - scrollUntilVisible:
     element:
-      id: "SearchScreen::SearchBar::RightIcon"
+      id: "SearchScreen::SearchBar-clear-icon"
     direction: UP
     speed: 40
     label: "Action - Scroll back to top of the screen"
 
 - tapOn:
-    id: "SearchScreen::SearchBar::RightIcon"
+    id: "SearchScreen::SearchBar-clear-icon"
     label: "Action - Tap clear icon: clears text and exits search mode back to cards"
 
 - scrollUntilVisible:

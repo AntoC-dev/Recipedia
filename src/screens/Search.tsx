@@ -200,7 +200,6 @@ export function Search() {
         <View>
           <SearchBar
             testId={screenId + '::SearchBar'}
-            searchBarClicked={searchBarClicked}
             setSearchBarClicked={setSearchBarClicked}
             updateSearchString={updateSearchString}
             clearRef={searchBarClearRef}

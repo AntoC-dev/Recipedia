@@ -36,7 +36,7 @@ tags:
     label: "Assert - Verify Search screen shows filtered results for Lentil Curry"
 
 - tapOn:
-    id: "SearchScreen::SearchBar::RightIcon"
+    id: "SearchScreen::SearchBar-clear-icon"
     label: "Action - Tap clear icon to remove search filter"
 
 - runFlow:

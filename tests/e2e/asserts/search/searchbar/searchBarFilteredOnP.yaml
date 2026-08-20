@@ -1,7 +1,7 @@
 appId: "com.recipedia"
 ---
 - assertVisible:
-    id: "SearchScreen::SearchBar::RightIcon"
+    id: "SearchScreen::SearchBar-clear-icon"
     label: "Assert - Close icon is visible when dropdown open"
 
 - assertVisible:

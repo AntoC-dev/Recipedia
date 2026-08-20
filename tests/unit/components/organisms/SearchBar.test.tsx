@@ -13,7 +13,6 @@ describe('SearchBar Component', () => {
 
   const defaultProps: SearchBarProps = {
     testId: defaultTestId,
-    searchBarClicked: false,
     setSearchBarClicked: mockSetSearchBarClicked,
     updateSearchString: mockUpdateSearchString,
   };
@@ -22,27 +21,27 @@ describe('SearchBar Component', () => {
     return render(<SearchBar {...propForComponent} />);
   };
 
-  const assertSearchBar = (
+  const expectClearIconEnabled = (
     getByTestId: any,
-    queryByTestId: any,
-    expectedValue: string = '',
-    searchBarClicked: boolean = false
+    enabled: boolean,
+    testId: string = defaultTestId
   ) => {
+    expect(getByTestId(testId + '-clear-icon').props.accessibilityState.disabled).toBe(!enabled);
+  };
+
+  const assertSearchBar = (getByTestId: any, queryByTestId: any, expectedValue: string = '') => {
     expect(getByTestId(defaultTestId + '::Mode').props.children).toBe('bar');
     expect(getByTestId(defaultTestId + '::Placeholder').props.children).toBe('searchRecipeTitle');
-    expect(getByTestId(defaultTestId + '::RightContainer')).toBeTruthy();
+    expect(getByTestId(defaultTestId + '::HasRight').props.children).toBe('false');
+    expect(queryByTestId(defaultTestId + '::Right')).toBeNull();
+    expect(getByTestId(defaultTestId + '::ClearIcon').props.children).toBe('close');
 
     const textInput = getByTestId(defaultTestId + '::TextInput');
     expect(textInput.props.value).toBe(expectedValue);
     expect(textInput.props.placeholder).toBe(defaultPlaceholder);
     expect(textInput.props.onChangeText).toBeDefined();
 
-    if (expectedValue.length > 0 || searchBarClicked) {
-      expect(getByTestId(defaultTestId + '::RightIcon')).toBeTruthy();
-      expect(getByTestId(defaultTestId + '::RightIcon::Icon').props.children).toBe('close');
-    } else {
-      expect(queryByTestId(defaultTestId + '::RightIcon')).toBeNull();
-    }
+    expectClearIconEnabled(getByTestId, expectedValue.length > 0);
   };
 
   afterEach(() => {
@@ -53,6 +52,34 @@ describe('SearchBar Component', () => {
     const { getByTestId, queryByTestId } = renderSearchBar();
 
     assertSearchBar(getByTestId, queryByTestId);
+  });
+
+  test('never supplies a right prop, which would make Paper hide its clear icon with display none', () => {
+    const { getByTestId } = renderSearchBar();
+
+    expect(getByTestId(defaultTestId + '::HasRight').props.children).toBe('false');
+  });
+
+  test('clears the search and leaves search mode through the built-in clear icon', () => {
+    const { getByTestId } = renderSearchBar();
+
+    fireEvent.changeText(getByTestId(defaultTestId + '::TextInput'), 'pasta');
+    fireEvent.press(getByTestId(defaultTestId + '-clear-icon'));
+
+    expect(getByTestId(defaultTestId + '::TextInput').props.value).toBe('');
+    expect(mockUpdateSearchString).toHaveBeenLastCalledWith('');
+    expect(mockSetSearchBarClicked).toHaveBeenLastCalledWith(false);
+  });
+
+  test('propagates a single empty search when the clear icon is pressed', () => {
+    const { getByTestId } = renderSearchBar();
+
+    fireEvent.changeText(getByTestId(defaultTestId + '::TextInput'), 'pasta');
+    mockUpdateSearchString.mockClear();
+    fireEvent.press(getByTestId(defaultTestId + '-clear-icon'));
+
+    expect(mockUpdateSearchString).toHaveBeenCalledTimes(1);
+    expect(mockUpdateSearchString).toHaveBeenCalledWith('');
   });
 
   test('requests a search-labelled keyboard return key', () => {
@@ -142,20 +169,20 @@ describe('SearchBar Component', () => {
     assertSearchBar(getByTestId, queryByTestId, 'test search');
   });
 
-  test('toggles right icon visibility based on typed text length', () => {
-    const { getByTestId, queryByTestId } = renderSearchBar();
+  test('toggles clear icon availability based on typed text length', () => {
+    const { getByTestId } = renderSearchBar();
     const textInput = getByTestId(defaultTestId);
 
-    expect(queryByTestId(defaultTestId + '::RightIcon')).toBeNull();
+    expectClearIconEnabled(getByTestId, false);
 
     fireEvent.changeText(textInput, 'a');
-    expect(getByTestId(defaultTestId + '::RightIcon')).toBeTruthy();
+    expectClearIconEnabled(getByTestId, true);
 
     fireEvent.changeText(textInput, 'pasta recipe');
-    expect(getByTestId(defaultTestId + '::RightIcon')).toBeTruthy();
+    expectClearIconEnabled(getByTestId, true);
 
     fireEvent.changeText(textInput, '');
-    expect(queryByTestId(defaultTestId + '::RightIcon')).toBeNull();
+    expectClearIconEnabled(getByTestId, false);
   });
 
   test('uses different testId correctly for multiple instances', () => {
@@ -284,7 +311,7 @@ describe('SearchBar Component', () => {
     expect(textInput.props.value).toBe('test search');
 
     jest.clearAllMocks();
-    fireEvent.press(getByTestId(defaultTestId + '::RightIcon'));
+    fireEvent.press(getByTestId(defaultTestId + '-clear-icon'));
 
     expect(textInput.props.value).toBe('');
     expect(Keyboard.dismiss).toHaveBeenCalled();
@@ -292,56 +319,21 @@ describe('SearchBar Component', () => {
     expect(mockUpdateSearchString).toHaveBeenCalledWith('');
   });
 
-  describe('Right icon visibility with searchBarClicked state', () => {
-    test('shows icon when searchBarClicked is true with empty text', () => {
-      const prop: SearchBarProps = {
-        ...defaultProps,
-        searchBarClicked: true,
-      };
-      const { getByTestId } = renderSearchBar(prop);
+  describe('Clear icon availability', () => {
+    test('stays unavailable while the field is empty', () => {
+      const { getByTestId } = renderSearchBar();
 
-      expect(getByTestId(defaultTestId + '::RightIcon')).toBeTruthy();
+      expectClearIconEnabled(getByTestId, false);
     });
 
-    test('does not show icon when searchBarClicked is false with empty text', () => {
-      const prop: SearchBarProps = {
-        ...defaultProps,
-        searchBarClicked: false,
-      };
-      const { queryByTestId } = renderSearchBar(prop);
-
-      expect(queryByTestId(defaultTestId + '::RightIcon')).toBeNull();
-    });
-
-    test('shows icon when text is typed regardless of searchBarClicked', () => {
-      const { getByTestId, rerender } = renderSearchBar({
-        ...defaultProps,
-        searchBarClicked: false,
-      });
+    test('becomes available once text is typed and unavailable again when emptied', () => {
+      const { getByTestId } = renderSearchBar();
 
       fireEvent.changeText(getByTestId(defaultTestId), 'test');
+      expectClearIconEnabled(getByTestId, true);
 
-      expect(getByTestId(defaultTestId + '::RightIcon')).toBeTruthy();
-
-      rerender(<SearchBar {...defaultProps} searchBarClicked={true} />);
-
-      expect(getByTestId(defaultTestId + '::RightIcon')).toBeTruthy();
-    });
-
-    test('toggles icon visibility based on searchBarClicked state changes', () => {
-      const props: SearchBarProps = {
-        ...defaultProps,
-        searchBarClicked: false,
-      };
-      const { queryByTestId, rerender } = renderSearchBar(props);
-
-      expect(queryByTestId(defaultTestId + '::RightIcon')).toBeNull();
-
-      rerender(<SearchBar {...props} searchBarClicked={true} />);
-      expect(queryByTestId(defaultTestId + '::RightIcon')).toBeTruthy();
-
-      rerender(<SearchBar {...props} searchBarClicked={false} />);
-      expect(queryByTestId(defaultTestId + '::RightIcon')).toBeNull();
+      fireEvent.changeText(getByTestId(defaultTestId), '');
+      expectClearIconEnabled(getByTestId, false);
     });
   });
 
@@ -357,14 +349,14 @@ describe('SearchBar Component', () => {
 
       const textInput = getByTestId(defaultTestId + '::TextInput');
       expect(textInput.props.value).toBe('some text');
-      expect(getByTestId(defaultTestId + '::RightIcon')).toBeTruthy();
+      expectClearIconEnabled(getByTestId, true);
 
       act(() => {
         clearRef.current?.clear();
       });
 
       expect(textInput.props.value).toBe('');
-      expect(queryByTestId(defaultTestId + '::RightIcon')).toBeNull();
+      expectClearIconEnabled(getByTestId, false);
     });
 
     test('sets text when setText() is called via ref', () => {
@@ -382,7 +374,7 @@ describe('SearchBar Component', () => {
       });
 
       expect(textInput.props.value).toBe('Margherita Pizza');
-      expect(getByTestId(defaultTestId + '::RightIcon')).toBeTruthy();
+      expectClearIconEnabled(getByTestId, true);
       expect(mockUpdateSearchString).not.toHaveBeenCalled();
     });
 

@@ -29,7 +29,7 @@ tags:
     label: "Assert - Verify dropdown filtered on 'Ca' (keyboard closed)"
 
 - tapOn:
-    id: "SearchScreen::SearchBar::RightIcon"
+    id: "SearchScreen::SearchBar-clear-icon"
     label: "Action - Tap clear icon: clears text and exits search mode back to cards"
 
 - runFlow:

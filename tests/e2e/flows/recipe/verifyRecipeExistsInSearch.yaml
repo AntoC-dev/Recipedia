@@ -40,7 +40,7 @@ appId: "com.recipedia"
     label: "Verify recipe is found in search results"
 
 - tapOn:
-    id: "SearchScreen::SearchBar::RightIcon"
+    id: "SearchScreen::SearchBar-clear-icon"
     label: "Clear search filter"
 
 - tapOn:

@@ -78,7 +78,7 @@ tags:
     label: "Assert - Recipe was not added to database (empty search results)"
 
 - tapOn:
-    id: "SearchScreen::SearchBar::RightIcon"
+    id: "SearchScreen::SearchBar-clear-icon"
     label: "Cleanup - Clear search filter"
 
 - tapOn:

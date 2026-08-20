@@ -9,7 +9,7 @@
  * Key Features:
  * - Real-time search text updates
  * - Focus state tracking for UI adjustments
- * - Clear button when text is present
+ * - Built-in clear button, active once text is present
  * - Responsive styling with rounded borders
  * - Keyboard management and auto-dismiss
  * - Internationalized placeholder text
@@ -23,7 +23,6 @@
  *
  * <SearchBar
  *   testId="recipe-search"
- *   searchBarClicked={searchFocused}
  *   setSearchBarClicked={setSearchFocused}
  *   updateSearchString={performSearch}
  * />
@@ -33,7 +32,6 @@
  *
  * <SearchBar
  *   testId="main-search"
- *   searchBarClicked={searchActive}
  *   setSearchBarClicked={setSearchActive}
  *   updateSearchString={handleSearchUpdate}
  *   clearRef={clearRef}
@@ -46,7 +44,7 @@ import React, { useImperativeHandle, useState } from 'react';
 import { padding, screenWidth } from '@styles/spacing';
 import { Icons } from '@assets/Icons';
 import { useI18n } from '@utils/i18n';
-import { IconButton, Searchbar } from 'react-native-paper';
+import { Searchbar } from 'react-native-paper';
 import { Keyboard } from 'react-native';
 
 /**
@@ -65,8 +63,6 @@ export type SearchBarHandle = {
 export type SearchBarProps = {
   /** Unique identifier for testing and accessibility */
   testId: string;
-  /** Current search bar active/focused state */
-  searchBarClicked: boolean;
   /** State setter for tracking search bar focus/active state */
   setSearchBarClicked: React.Dispatch<React.SetStateAction<boolean>>;
   /** Callback fired when search text changes */
@@ -83,7 +79,6 @@ export type SearchBarProps = {
  */
 export function SearchBar({
   testId,
-  searchBarClicked,
   setSearchBarClicked,
   updateSearchString,
   clearRef,
@@ -120,21 +115,14 @@ export function SearchBar({
         Keyboard.dismiss();
         setSearchBarClicked(false);
       }}
-      right={props =>
-        (searchPhrase.length > 0 || searchBarClicked) && (
-          <IconButton
-            {...props}
-            testID={testId + '::RightIcon'}
-            icon={Icons.crossIcon}
-            onPress={() => {
-              setSearchPhrase('');
-              updateSearchString('');
-              Keyboard.dismiss();
-              setSearchBarClicked(false);
-            }}
-          />
-        )
-      }
+      clearIcon={Icons.crossIcon}
+      clearAccessibilityLabel={t('clear')}
+      // Paper already routes the clear tap through onChangeText(''), so the text is
+      // cleared by handleChangeText; only the exit-search-mode side effects remain.
+      onClearIconPress={() => {
+        Keyboard.dismiss();
+        setSearchBarClicked(false);
+      }}
     />
   );
 }
