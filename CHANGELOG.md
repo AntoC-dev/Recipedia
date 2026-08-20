@@ -1,3 +1,11 @@
+## [2.52.3](https://github.com/AntoC-dev/Recipedia/compare/v2.52.2...v2.52.3) (2026-08-20)
+
+### Bug Fixes
+
+* **e2e:** gate image pick on visible image node, not hidden placeholder ([d1cec2f](https://github.com/AntoC-dev/Recipedia/commit/d1cec2fc2e51db68e4735b154bc0cc5ceae5c477))
+* **e2e:** reuse shared settings nav flows in perf parameters flow ([04fe00a](https://github.com/AntoC-dev/Recipedia/commit/04fe00a4c46f49aab13544a663d90d9a7eb29ac6))
+* **recipe:** make recipe title stand out from section headers ([87ff1f2](https://github.com/AntoC-dev/Recipedia/commit/87ff1f2f220607c0b994d3306f1256d8aae72014))
+
 ## [2.52.2](https://github.com/AntoC-dev/Recipedia/compare/v2.52.1...v2.52.2) (2026-08-20)
 
 ### Bug Fixes
