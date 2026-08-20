@@ -41,8 +41,8 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeIngredients::0::QuantityAndUnit"
-    text: "133,33 g"
-    label: "Flour quantity is scaled to 133,34g"
+    text: "133[.]33 g"
+    label: "Flour quantity is scaled to 133.33 g"
 
 - waitForAnimationToEnd
 
@@ -63,8 +63,8 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeIngredients::1::QuantityAndUnit"
-    text: "33,33 g"
-    label: "Cocoa Powder quantity is scaled to 16,67g"
+    text: "33[.]33 g"
+    label: "Cocoa Powder quantity is scaled to 33.33 g"
 
 - waitForAnimationToEnd
 
@@ -107,5 +107,5 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeIngredients::3::QuantityAndUnit"
-    text: "66,67 g"
-    label: "Butter quantity is scaled to 33,33g"
+    text: "66[.]67 g"
+    label: "Butter quantity is scaled to 66.67 g"

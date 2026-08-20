@@ -53,7 +53,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeIngredients::0::QuantityInput"
-    text: "133.33"
+    text: "133[.]33"
     label: "Flour quantity is 133.33"
 
 - assertVisible:
@@ -75,7 +75,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeIngredients::1::QuantityInput"
-    text: "33.33"
+    text: "33[.]33"
     label: "Cocoa Powder quantity is 33.33"
 
 - assertVisible:
@@ -119,7 +119,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeIngredients::3::QuantityInput"
-    text: "66.67"
+    text: "66[.]67"
     label: "Butter quantity is 66.67"
 
 - assertVisible:

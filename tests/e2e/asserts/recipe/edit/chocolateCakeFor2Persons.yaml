@@ -58,7 +58,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeIngredients::0::QuantityInput"
-    text: "66.67"
+    text: "66[.]67"
     label: "Flour quantity is scaled to 66.67g"
 
 - assertVisible:
@@ -80,7 +80,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeIngredients::1::QuantityInput"
-    text: "16.67"
+    text: "16[.]67"
     label: "Cocoa Powder quantity is scaled to 16.67g"
 
 - assertVisible:
@@ -124,7 +124,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeIngredients::3::QuantityInput"
-    text: "33.33"
+    text: "33[.]33"
     label: "Butter quantity is scaled to 33.33g"
 
 - assertVisible:
