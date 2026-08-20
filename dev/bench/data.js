@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1786601998246,
+  "lastUpdate": 1787203980442,
   "repoUrl": "https://github.com/AntoC-dev/Recipedia",
   "entries": {
     "Screen FPS": [
@@ -227,6 +227,63 @@ window.BENCHMARK_DATA = {
           {
             "name": "06_parameters",
             "value": 55.2,
+            "unit": "fps"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "semantic-release-bot",
+            "username": "semantic-release-bot",
+            "email": "semantic-release-bot@martynus.net"
+          },
+          "committer": {
+            "name": "semantic-release-bot",
+            "username": "semantic-release-bot",
+            "email": "semantic-release-bot@martynus.net"
+          },
+          "id": "993d609e635bdbedc7e1d8e97493c935eff9761d",
+          "message": "chore(release): 2.52.2 [skip ci]\n\n## [2.52.2](https://github.com/AntoC-dev/Recipedia/compare/v2.52.1...v2.52.2) (2026-08-20)\n\n### Bug Fixes\n\n* **search:** stop mounting a display:none node in the search bar ([ecf35ea](https://github.com/AntoC-dev/Recipedia/commit/ecf35eaac33f2be0c5569d01c42507fe77ee4f74)), closes [#548](https://github.com/AntoC-dev/Recipedia/issues/548)\n* **search:** stop mounting a display:none node in the search bar ([#550](https://github.com/AntoC-dev/Recipedia/issues/550)) ([b7bf2b2](https://github.com/AntoC-dev/Recipedia/commit/b7bf2b2d8e778e9691802f9a99941fbbed17e248)), closes [#548](https://github.com/AntoC-dev/Recipedia/issues/548) [#548](https://github.com/AntoC-dev/Recipedia/issues/548)",
+          "timestamp": "2026-08-20T05:25:46Z",
+          "url": "https://github.com/AntoC-dev/Recipedia/commit/993d609e635bdbedc7e1d8e97493c935eff9761d"
+        },
+        "date": 1787203978677,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "00_seed",
+            "value": 59.8,
+            "unit": "fps"
+          },
+          {
+            "name": "01_app_start",
+            "value": 59.8,
+            "unit": "fps"
+          },
+          {
+            "name": "02_home",
+            "value": 59.4,
+            "unit": "fps"
+          },
+          {
+            "name": "03_search",
+            "value": 59.4,
+            "unit": "fps"
+          },
+          {
+            "name": "04_recipe_view",
+            "value": 59.4,
+            "unit": "fps"
+          },
+          {
+            "name": "05_shopping",
+            "value": 59.5,
+            "unit": "fps"
+          },
+          {
+            "name": "06_parameters",
+            "value": 57.2,
             "unit": "fps"
           }
         ]
