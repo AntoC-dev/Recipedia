@@ -9,6 +9,10 @@ import {
   getAutocompleteBottomOffset,
 } from '@screens/recipe/helpers/autocompleteKeyboardOffset';
 
+jest.mock('react-native/Libraries/Components/View/View', () =>
+  require('@mocks/deps/react-native-view-mock').viewWithNativeTagMock()
+);
+
 type FakeElement = {
   id: string;
   parentElement: FakeElement | null;
