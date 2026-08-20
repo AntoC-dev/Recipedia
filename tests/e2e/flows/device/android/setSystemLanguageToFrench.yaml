@@ -22,6 +22,7 @@ appId: com.recipedia
             text: "System"
           direction: DOWN
           speed: 60
+          centerElement: true
           label: "Scroll the Settings home to the System entry"
 
       - tapOn:
@@ -69,12 +70,6 @@ appId: com.recipedia
                 id: "com.android.settings:id/add_language"
                 label: "Open the language picker"
 
-            - extendedWaitUntil:
-                visible:
-                  id: "android:id/locale"
-                timeout: 60000
-                label: "Wait for the language picker list"
-
             - scrollUntilVisible:
                 element:
                   id: "android:id/locale"
@@ -115,12 +110,6 @@ appId: com.recipedia
       - tapOn:
           text: "Remove"
           label: "Enter language removal mode"
-
-      - extendedWaitUntil:
-          visible:
-            id: "com.android.settings:id/checkbox"
-          timeout: 60000
-          label: "Wait for the removal checkboxes"
 
       - tapOn:
           id: "com.android.settings:id/checkbox"

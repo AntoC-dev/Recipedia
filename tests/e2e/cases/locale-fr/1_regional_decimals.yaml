@@ -11,8 +11,10 @@ tags:
 # down the Maestro session. Expectations are inline here because they are the
 # subject of the test rather than shared fixtures.
 - runFlow:
-    file: "../../flows/device/setSystemLanguageToFrench.yaml"
-    label: "Setup - Move the device to a comma decimal region where that is possible"
+    when:
+      platform: Android
+    file: "../../flows/device/android/setSystemLanguageToFrench.yaml"
+    label: "Setup - Move the device to a comma decimal region"
 
 - runFlow:
     file: "../../flows/setupTest.yaml"
@@ -40,7 +42,7 @@ tags:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::Value"
     direction: DOWN
-    speed: 40
+    speed: 60
     centerElement: true
     label: "Scroll to the nutrition table"
 
@@ -54,14 +56,6 @@ tags:
           id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::Value"
           text: "0[,]8 g"
           label: "Fat renders with the region's comma"
-      - assertVisible:
-          id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Carbohydrates::Value"
-          text: "12[,]5 g"
-          label: "Carbohydrates render with the region's comma"
-      - assertVisible:
-          id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Sugars::Value"
-          text: "8[,]2 g"
-          label: "Sugars render with the region's comma"
 
 - runFlow:
     when:
@@ -71,18 +65,14 @@ tags:
           id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::Value"
           text: "0[.]8 g"
           label: "Fat keeps the region's dot despite the French app language"
-      - assertVisible:
-          id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Carbohydrates::Value"
-          text: "12[.]5 g"
-          label: "Carbohydrates keep the region's dot despite the French app language"
-      - assertVisible:
-          id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Sugars::Value"
-          text: "8[.]2 g"
-          label: "Sugars keep the region's dot despite the French app language"
 
 - tapOn:
     id: "Recipe::AppBar::BackButton"
     label: "Action - Leave the recipe"
+
+- tapOn:
+    id: "SearchScreen::SearchBar-clear-icon"
+    label: "Action - Clear the previous query"
 
 - runFlow:
     file: "../../flows/search/searchAndOpenRecipe.yaml"

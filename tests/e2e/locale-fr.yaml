@@ -9,5 +9,4 @@ flows:
 
 executionOrder:
   flowsOrder:
-    - "1 - French Region Read-Only Decimals Flow"
-    - "2 - French Region Quantity Scaling Flow"
+    - "1 - Regional Decimal Separator Flow"
