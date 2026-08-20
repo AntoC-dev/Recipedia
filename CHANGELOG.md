@@ -1,3 +1,10 @@
+## [2.52.2](https://github.com/AntoC-dev/Recipedia/compare/v2.52.1...v2.52.2) (2026-08-20)
+
+### Bug Fixes
+
+* **search:** stop mounting a display:none node in the search bar ([ecf35ea](https://github.com/AntoC-dev/Recipedia/commit/ecf35eaac33f2be0c5569d01c42507fe77ee4f74)), closes [#548](https://github.com/AntoC-dev/Recipedia/issues/548)
+* **search:** stop mounting a display:none node in the search bar ([#550](https://github.com/AntoC-dev/Recipedia/issues/550)) ([b7bf2b2](https://github.com/AntoC-dev/Recipedia/commit/b7bf2b2d8e778e9691802f9a99941fbbed17e248)), closes [#548](https://github.com/AntoC-dev/Recipedia/issues/548) [#548](https://github.com/AntoC-dev/Recipedia/issues/548)
+
 ## [2.52.1](https://github.com/AntoC-dev/Recipedia/compare/v2.52.0...v2.52.1) (2026-08-17)
 
 ### Performance Improvements
