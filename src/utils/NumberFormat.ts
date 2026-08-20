@@ -43,6 +43,35 @@ export function deviceDecimalSeparator(): string {
 }
 
 /**
+ * Rewrites every decimal separator a user or the display layer may have produced
+ * into the dot that `parseFloat` understands.
+ *
+ * Accepts the fixed {@link storageDecimalSeparator} as well as the device
+ * region's own separator, which is what closes the round trip with
+ * {@link formatDecimalForDisplay}: whatever that renders, this reads back.
+ * Characters that are not separators are left untouched, so unit suffixes and
+ * OCR noise survive for the caller's own parsing.
+ *
+ * @param raw - The string to normalize
+ * @returns The same string with every decimal separator rewritten to `'.'`
+ *
+ * @example
+ * // device region FR
+ * normalizeDecimalSeparators('12,75 g') // returns '12.75 g'
+ * // device region EG (Arabic decimal separator)
+ * normalizeDecimalSeparators('12٫75 g') // returns '12.75 g'
+ */
+export function normalizeDecimalSeparators(raw: string): string {
+  const deviceSeparator = deviceDecimalSeparator();
+  let normalized = '';
+  for (const character of raw) {
+    normalized +=
+      character === storageDecimalSeparator || character === deviceSeparator ? '.' : character;
+  }
+  return normalized;
+}
+
+/**
  * Rounds to at most `maxDecimals` fractional digits and renders the result with
  * `separator` as the decimal mark.
  *

@@ -3,6 +3,7 @@ import {
   deviceDecimalSeparator,
   formatDecimalForDisplay,
   formatDecimalForStorage,
+  normalizeDecimalSeparators,
   storageDecimalSeparator,
 } from '@utils/NumberFormat';
 
@@ -110,5 +111,47 @@ describe('formatDecimalForStorage', () => {
 
   test('returns NaN unchanged as a string', () => {
     expect(formatDecimalForStorage(NaN, 2)).toBe('NaN');
+  });
+});
+
+describe('normalizeDecimalSeparators', () => {
+  test('rewrites the storage comma in a dot region', () => {
+    setRegionSeparator('.');
+    expect(normalizeDecimalSeparators('133,3333')).toBe('133.3333');
+  });
+
+  test('rewrites the region separator when it is not a comma', () => {
+    setRegionSeparator('٫');
+    expect(normalizeDecimalSeparators('12٫75')).toBe('12.75');
+  });
+
+  test('still accepts the storage comma in a region that uses another separator', () => {
+    setRegionSeparator('٫');
+    expect(normalizeDecimalSeparators('12,75')).toBe('12.75');
+  });
+
+  test('leaves a value that already uses dots untouched', () => {
+    setRegionSeparator(',');
+    expect(normalizeDecimalSeparators('8.53')).toBe('8.53');
+  });
+
+  test('preserves everything that is not a separator', () => {
+    setRegionSeparator(',');
+    expect(normalizeDecimalSeparators('12,5 g de farine')).toBe('12.5 g de farine');
+  });
+
+  test('rewrites every separator in the string', () => {
+    setRegionSeparator(',');
+    expect(normalizeDecimalSeparators('1,5 - 2,5')).toBe('1.5 - 2.5');
+  });
+
+  test('returns an empty string unchanged', () => {
+    setRegionSeparator(',');
+    expect(normalizeDecimalSeparators('')).toBe('');
+  });
+
+  test('round-trips what formatDecimalForDisplay rendered', () => {
+    setRegionSeparator('٫');
+    expect(normalizeDecimalSeparators(formatDecimalForDisplay(1.5, 2))).toBe('1.5');
   });
 });

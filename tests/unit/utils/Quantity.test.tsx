@@ -8,6 +8,9 @@ import {
 } from '@utils/Quantity';
 import { nutritionTableElement } from '@customTypes/DatabaseElementTypes';
 import { defaultValueNumber } from '@utils/Constants';
+import { formatDecimalForDisplay } from '@utils/NumberFormat';
+import * as Localization from 'expo-localization';
+import { useArabicDecimalRegion, useDotDecimalRegion } from '@mocks/deps/expo-localization-mock';
 
 jest.mock('expo-localization', () =>
   require('@mocks/deps/expo-localization-mock').expoLocalizationMock()
@@ -569,6 +572,22 @@ describe('parseQuantity', () => {
     it('treats sign followed by non-digit as empty', () => {
       expect(parseQuantity('-')).toBe('');
       expect(parseQuantity('+')).toBe('');
+    });
+  });
+
+  describe('regions whose decimal separator is neither dot nor comma', () => {
+    afterEach(() => {
+      useDotDecimalRegion(Localization as unknown as { getLocales: jest.Mock });
+    });
+
+    it('parses back what formatDecimalForDisplay rendered', () => {
+      useArabicDecimalRegion(Localization as unknown as { getLocales: jest.Mock });
+      expect(parseQuantity(formatDecimalForDisplay(1.5, 2))).toBe('1.5');
+    });
+
+    it('keeps the fractional part of a directly typed value', () => {
+      useArabicDecimalRegion(Localization as unknown as { getLocales: jest.Mock });
+      expect(parseQuantity('12٫75 g')).toBe('12.75');
     });
   });
 });

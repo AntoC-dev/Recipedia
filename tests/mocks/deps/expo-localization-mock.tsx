@@ -20,6 +20,17 @@ const frFrLocale = {
   textDirection: 'ltr',
 };
 
+const arEgLocale = {
+  languageCode: 'ar',
+  languageTag: 'ar-EG',
+  regionCode: 'EG',
+  currencyCode: 'EGP',
+  currencySymbol: 'E£',
+  decimalSeparator: '٫',
+  digitGroupingSeparator: '٬',
+  textDirection: 'rtl',
+};
+
 export function expoLocalizationMock() {
   return {
     getLocales: jest.fn(() => [enUsLocale]),
@@ -33,4 +44,8 @@ export function useCommaDecimalRegion(localization: { getLocales: jest.Mock }) {
 
 export function useDotDecimalRegion(localization: { getLocales: jest.Mock }) {
   localization.getLocales.mockReturnValue([enUsLocale]);
+}
+
+export function useArabicDecimalRegion(localization: { getLocales: jest.Mock }) {
+  localization.getLocales.mockReturnValue([arEgLocale]);
 }

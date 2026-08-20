@@ -9,17 +9,23 @@
 
 import { noteSeparator, textSeparator, unitySeparator } from '@utils/TextParsing';
 import { defaultValueNumber } from '@utils/Constants';
-import { formatDecimalForDisplay, formatDecimalForStorage } from '@utils/NumberFormat';
+import {
+  formatDecimalForDisplay,
+  formatDecimalForStorage,
+  normalizeDecimalSeparators,
+} from '@utils/NumberFormat';
 
 /**
  * Canonical quantity-string parser used wherever raw text becomes a stored
- * quantity. Trims, normalizes French decimal comma to dot, runs `parseFloat`
- * (so leading numeric prefixes are kept and OCR ranges like `"1à3"` collapse
- * to `"1"`), and returns `''` for non-numeric input.
+ * quantity. Trims, normalizes every decimal separator to a dot via
+ * {@link normalizeDecimalSeparators} (which round-trips whatever
+ * {@link formatDecimalForDisplay} rendered), runs `parseFloat` (so leading
+ * numeric prefixes are kept and OCR ranges like `"1à3"` collapse to `"1"`),
+ * and returns `''` for non-numeric input.
  */
 export function parseQuantity(raw: string | undefined): string {
   if (raw === undefined || raw === null) return '';
-  const normalized = raw.replace(',', '.').trim();
+  const normalized = normalizeDecimalSeparators(raw).trim();
   if (!normalized) return '';
   const parsed = parseFloat(normalized);
   return Number.isFinite(parsed) ? String(parsed) : '';
@@ -48,7 +54,7 @@ export function scaleQuantityForPersons(
   }
 
   const originalNumericToken = allNumbers[0];
-  const numericValue = parseFloat(originalNumericToken.replace(',', '.'));
+  const numericValue = parseFloat(normalizeDecimalSeparators(originalNumericToken));
   if (isNaN(numericValue)) {
     return quantity;
   }
@@ -77,7 +83,7 @@ export function formatQuantityForDisplay(quantity: string): string {
   }
 
   const originalNumericToken = allNumbers[0];
-  const numericValue = parseFloat(originalNumericToken.replace(',', '.'));
+  const numericValue = parseFloat(normalizeDecimalSeparators(originalNumericToken));
   if (isNaN(numericValue)) {
     return quantity;
   }
