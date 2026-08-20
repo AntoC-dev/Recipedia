@@ -1,0 +1,8 @@
+name: "1 - Regional Decimal Separator Flow"
+appId: "com.recipedia"
+tags:
+  - locale-fr
+---
+- retry:
+    maxRetries: 2
+    file: "../1_regional_decimals.yaml"

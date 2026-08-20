@@ -1,0 +1,146 @@
+appId: com.recipedia
+---
+- launchApp:
+    appId: com.android.settings
+    label: "Open the system Settings app"
+
+- extendedWaitUntil:
+    visible:
+      id: "com.android.settings:id/homepage_title"
+    timeout: 60000
+    label: "Wait for the Settings home to be ready"
+
+- runFlow:
+    when:
+      notVisible:
+        id: "com.android.settings:id/homepage_title"
+        text: "Paramètres"
+    commands:
+      - scrollUntilVisible:
+          element:
+            id: "android:id/title"
+            text: "System"
+          direction: DOWN
+          speed: 60
+          label: "Scroll the Settings home to the System entry"
+
+      - tapOn:
+          id: "android:id/title"
+          text: "System"
+          label: "Open System settings"
+
+      - extendedWaitUntil:
+          visible:
+            id: "android:id/title"
+            text: "Languages"
+          timeout: 60000
+          label: "Wait for the System page"
+
+      - tapOn:
+          id: "android:id/title"
+          text: "Languages"
+          label: "Open Languages"
+
+      - extendedWaitUntil:
+          visible:
+            id: "android:id/title"
+            text: "System languages"
+          timeout: 60000
+          label: "Wait for the Languages page"
+
+      - tapOn:
+          id: "android:id/title"
+          text: "System languages"
+          label: "Open the preferred language list"
+
+      - extendedWaitUntil:
+          visible:
+            id: "com.android.settings:id/label"
+          timeout: 60000
+          label: "Wait for the preferred language list"
+
+      - runFlow:
+          when:
+            notVisible:
+              id: "com.android.settings:id/label"
+              text: "Français \\(France\\)"
+          commands:
+            - tapOn:
+                id: "com.android.settings:id/add_language"
+                label: "Open the language picker"
+
+            - extendedWaitUntil:
+                visible:
+                  id: "android:id/locale"
+                timeout: 60000
+                label: "Wait for the language picker list"
+
+            - scrollUntilVisible:
+                element:
+                  id: "android:id/locale"
+                  text: "Français.*"
+                direction: DOWN
+                speed: 60
+                label: "Find Français in the picker"
+
+            - tapOn:
+                id: "android:id/locale"
+                text: "Français.*"
+                label: "Add Français"
+
+            - waitForAnimationToEnd
+
+            - runFlow:
+                when:
+                  visible:
+                    id: "android:id/locale"
+                    text: "France"
+                commands:
+                  - tapOn:
+                      id: "android:id/locale"
+                      text: "France"
+                      label: "Pick the France region"
+
+            - extendedWaitUntil:
+                visible:
+                  id: "com.android.settings:id/label"
+                  text: "Français \\(France\\)"
+                timeout: 60000
+                label: "Wait for Français (France) to join the list"
+
+      - tapOn:
+          text: "More options"
+          label: "Open the language list overflow menu"
+
+      - tapOn:
+          text: "Remove"
+          label: "Enter language removal mode"
+
+      - extendedWaitUntil:
+          visible:
+            id: "com.android.settings:id/checkbox"
+          timeout: 60000
+          label: "Wait for the removal checkboxes"
+
+      - tapOn:
+          id: "com.android.settings:id/checkbox"
+          index: 0
+          label: "Select English so Français (France) becomes the system language"
+
+      - tapOn:
+          text: "Remove"
+          label: "Confirm removal"
+
+      - tapOn:
+          id: "android:id/button1"
+          label: "Acknowledge the removal dialog"
+
+      - extendedWaitUntil:
+          visible:
+            id: "com.android.settings:id/collapsing_toolbar"
+            text: "Langues"
+          timeout: 60000
+          label: "Wait for the system UI to come back up in French"
+
+- stopApp:
+    appId: com.android.settings

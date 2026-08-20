@@ -1,0 +1,13 @@
+platform:
+  ios:
+    disableAnimations: true
+  android:
+    disableAnimations: true
+
+flows:
+  - cases/locale-fr/ci/*
+
+executionOrder:
+  flowsOrder:
+    - "1 - French Region Read-Only Decimals Flow"
+    - "2 - French Region Quantity Scaling Flow"
