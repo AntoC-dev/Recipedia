@@ -57,17 +57,8 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd
 
-- scrollUntilVisible:
-    element:
-      id: "Parameters::Section::Data::Tags::Item"
-    direction: UP
-    speed: 60
-    label: "Scroll to see ingredient list"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "Parameters::Section::Data::Ingredients::Item"
+- runFlow:
+    file: "../parameters/ingredients/navigateToIngredientsSettings.yaml"
     label: "Open Ingredients settings"
 
 - extendedWaitUntil:
@@ -127,17 +118,8 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd
 
-- scrollUntilVisible:
-    element:
-      id: "Parameters::Section::Data::Tags::Item"
-    direction: UP
-    speed: 60
-    label: "Scroll to see tag list"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "Parameters::Section::Data::Tags::Item"
+- runFlow:
+    file: "../parameters/tags/navigateToTagsSettings.yaml"
     label: "Open Tags settings"
 
 - extendedWaitUntil:

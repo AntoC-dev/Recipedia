@@ -87,7 +87,7 @@ export function LoadingOverlay({
               />
               <Text
                 variant='titleMedium'
-                style={{ fontWeight: 'bold', marginTop: padding.small }}
+                style={{ marginTop: padding.small }}
                 testID={testIDOverlay + '::ProgressText'}
               >
                 {Math.round(progress)}%

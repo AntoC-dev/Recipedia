@@ -129,35 +129,33 @@ export function IngredientsTable({
           <DataTable.Title
             testID={headerTestId + '::Quantity'}
             style={[cellStyles.header, cellStyles.quantityCell, { borderColor }]}
-            textStyle={[cellStyles.title, { fontSize: titleFontSize }]}
+            textStyle={{ fontSize: titleFontSize }}
           >
             {columnTitles.column1}
           </DataTable.Title>
           <DataTable.Title
             testID={headerTestId + '::Unit'}
             style={[cellStyles.header, cellStyles.unitCell, { borderColor }]}
-            textStyle={[cellStyles.title, { fontSize: titleFontSize }]}
+            textStyle={{ fontSize: titleFontSize }}
           >
             {columnTitles.column2}
           </DataTable.Title>
           <DataTable.Title
             testID={headerTestId + '::Note'}
             style={[cellStyles.header, cellStyles.noteCell, { borderColor }]}
-            textStyle={cellStyles.title}
           >
             {''}
           </DataTable.Title>
           <DataTable.Title
             testID={headerTestId + '::IngredientName'}
             style={[cellStyles.header, cellStyles.nameCell, { borderColor }]}
-            textStyle={[cellStyles.title, { fontSize: titleFontSize }]}
+            textStyle={{ fontSize: titleFontSize }}
           >
             {columnTitles.column3}
           </DataTable.Title>
           <DataTable.Title
             testID={headerTestId + '::Delete'}
             style={[cellStyles.header, cellStyles.deleteCell, { borderColor }]}
-            textStyle={cellStyles.title}
           >
             {''}
           </DataTable.Title>
@@ -467,7 +465,6 @@ const cellStyles = StyleSheet.create({
     justifyContent: 'center',
     borderBottomWidth: recipeTableBorderWidth,
   } as ViewStyle,
-  title: { fontWeight: 'bold' } as TextStyle,
   flex1: { flex: 1 },
   addButton: { marginVertical: padding.medium } as ViewStyle,
   roundButtonsContainer: {
