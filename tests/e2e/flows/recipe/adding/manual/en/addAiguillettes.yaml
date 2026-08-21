@@ -147,19 +147,17 @@ appId: "com.recipedia"
     file: "../../../../../flows/dismissModalKeyboard.yaml"
     label: "Dismiss modal keyboard (platform-specific)"
 
-- repeat:
-    times: 5
-    while:
-      notVisible:
-        id: "RecipeTags::List::1::AutocompleteItem::Italian"
-    commands:
-      - swipe:
-          from:
-            id: "RecipeTags::List::1::AutocompleteList"
-          direction: UP
-          label: "Scroll the tag dropdown down towards Italian"
-      - waitForAnimationToEnd:
-          label: "Wait for scrolling animation to end"
+- scrollUntilVisible:
+    element:
+      id: "RecipeTags::List::1::AutocompleteItem::Italian"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll the tag dropdown down towards Italian"
+
+- waitForAnimationToEnd:
+    label: "Wait for scrolling animation to end"
+
 - assertVisible:
     id: "RecipeTags::List::1::AutocompleteItem::Italian"
     label: "Assert - Italian tag is displayed"
