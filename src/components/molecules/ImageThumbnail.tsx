@@ -34,7 +34,7 @@ import { StyleSheet, View } from 'react-native';
 import { Icon, IconButton, useTheme } from 'react-native-paper';
 import { CustomImage } from '@components/atomic/CustomImage';
 import { IconName } from '@assets/Icons';
-import { padding } from '@styles/spacing';
+import { padding, radius } from '@styles/spacing';
 
 const ICON_SIZE_RATIO = 0.2;
 
@@ -88,11 +88,7 @@ export function ImageThumbnail({
               testID={testId + '::IconButton'}
               icon={icon}
               size={iconSize}
-              style={{
-                width: iconSize,
-                height: iconSize,
-                margin: padding.verySmall,
-              }}
+              style={[styles.iconButton, { width: iconSize, height: iconSize }]}
               mode={'contained'}
               onPress={onIconPress}
             />
@@ -118,7 +114,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: padding.verySmall,
     right: padding.verySmall,
-    borderRadius: 999,
+    borderRadius: radius.full,
     padding: padding.verySmall,
+  },
+  iconButton: {
+    margin: padding.verySmall,
   },
 });

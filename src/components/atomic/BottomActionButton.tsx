@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button, useTheme } from 'react-native-paper';
 import { padding } from '@styles/spacing';
@@ -25,15 +25,11 @@ export function BottomActionButton({
   const testId = testID + '::BottomActionButton';
   return (
     <View
-      style={{
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        padding: padding.small,
-        paddingBottom: insets.bottom + padding.small,
-        backgroundColor: colors.background,
-      }}
+      testID={testId + '::Container'}
+      style={[
+        styles.container,
+        { paddingBottom: insets.bottom + padding.small, backgroundColor: colors.background },
+      ]}
     >
       <Button
         testID={testId}
@@ -47,3 +43,13 @@ export function BottomActionButton({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: padding.small,
+  },
+});

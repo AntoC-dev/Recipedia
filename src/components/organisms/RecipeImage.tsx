@@ -82,7 +82,6 @@ export function RecipeImage({ imgUri, openModal, buttonIcon }: RecipeImageProps)
         <View style={validUri ? styles.topRightButtonContainer : styles.centerButtonContainer}>
           <RoundButton
             testID={imageTestID}
-            size={'medium'}
             icon={buttonIcon}
             onPressFunction={() => openModal(recipeColumnsNames.image)}
           />

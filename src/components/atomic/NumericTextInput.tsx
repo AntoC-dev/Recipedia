@@ -34,6 +34,7 @@ import { StyleProp, TextStyle, View } from 'react-native';
 import { TextInput, useTheme } from 'react-native-paper';
 import { defaultValueNumber } from '@utils/Constants';
 import { parseQuantity } from '@utils/Quantity';
+import { formatDecimalForDisplay } from '@utils/NumberFormat';
 
 export type NumericTextInputProps = {
   testID: string;
@@ -57,8 +58,7 @@ function formatNumberForDisplay(num: number): string {
   if (num === defaultValueNumber) {
     return '';
   }
-  const rounded = Math.round(num * 100) / 100;
-  return rounded.toString();
+  return formatDecimalForDisplay(num, 2);
 }
 
 /**

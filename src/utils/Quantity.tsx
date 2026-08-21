@@ -7,18 +7,25 @@
  * @module Quantity
  */
 
-import { noteSeparator, textSeparator, unitySeparator } from '@styles/typography';
+import { noteSeparator, textSeparator, unitySeparator } from '@utils/TextParsing';
 import { defaultValueNumber } from '@utils/Constants';
+import {
+  formatDecimalForDisplay,
+  formatDecimalForStorage,
+  normalizeDecimalSeparators,
+} from '@utils/NumberFormat';
 
 /**
  * Canonical quantity-string parser used wherever raw text becomes a stored
- * quantity. Trims, normalizes French decimal comma to dot, runs `parseFloat`
- * (so leading numeric prefixes are kept and OCR ranges like `"1à3"` collapse
- * to `"1"`), and returns `''` for non-numeric input.
+ * quantity. Trims, normalizes every decimal separator to a dot via
+ * {@link normalizeDecimalSeparators} (which round-trips whatever
+ * {@link formatDecimalForDisplay} rendered), runs `parseFloat` (so leading
+ * numeric prefixes are kept and OCR ranges like `"1à3"` collapse to `"1"`),
+ * and returns `''` for non-numeric input.
  */
 export function parseQuantity(raw: string | undefined): string {
   if (raw === undefined || raw === null) return '';
-  const normalized = raw.replace(',', '.').trim();
+  const normalized = normalizeDecimalSeparators(raw).trim();
   if (!normalized) return '';
   const parsed = parseFloat(normalized);
   return Number.isFinite(parsed) ? String(parsed) : '';
@@ -47,15 +54,14 @@ export function scaleQuantityForPersons(
   }
 
   const originalNumericToken = allNumbers[0];
-  const numericValue = parseFloat(originalNumericToken.replace(',', '.'));
+  const numericValue = parseFloat(normalizeDecimalSeparators(originalNumericToken));
   if (isNaN(numericValue)) {
     return quantity;
   }
 
   const scaledValue = (numericValue * toPersons) / fromPersons;
   // Use 4 decimal places internally for precision during chain scaling
-  const highPrecision = Math.round(scaledValue * 10000) / 10000;
-  const roundedStr = highPrecision.toString().replace('.', ',');
+  const roundedStr = formatDecimalForStorage(scaledValue, 4);
 
   return quantity.replace(originalNumericToken, roundedStr);
 }
@@ -77,13 +83,12 @@ export function formatQuantityForDisplay(quantity: string): string {
   }
 
   const originalNumericToken = allNumbers[0];
-  const numericValue = parseFloat(originalNumericToken.replace(',', '.'));
+  const numericValue = parseFloat(normalizeDecimalSeparators(originalNumericToken));
   if (isNaN(numericValue)) {
     return quantity;
   }
 
-  const displayValue = Math.round(numericValue * 100) / 100;
-  const displayStr = displayValue.toString().replace('.', ',');
+  const displayStr = formatDecimalForDisplay(numericValue, 2);
 
   return quantity.replace(originalNumericToken, displayStr);
 }
@@ -144,7 +149,7 @@ export function parseIngredientQuantity(quantityStr: string | undefined): number
  * Formats ingredient data into a serialized string for storage/callback.
  *
  * Creates a formatted string with quantity, unit, name, and optional note
- * using the standard separators defined in typography:
+ * using the standard separators defined in `@utils/TextParsing`:
  * - unitySeparator (@@) between quantity and unit
  * - textSeparator (--) between unit and name
  * - noteSeparator (%%) between name and note (if present)

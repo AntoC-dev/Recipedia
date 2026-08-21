@@ -19,6 +19,7 @@ developers editing flows in `tests/e2e/`.
 - [Re-render Barriers](#re-render-barriers)
 - [OCR Testing](#ocr-testing)
 - [Language Support](#language-support)
+- [Decimal Separators (Device Region)](#decimal-separators-device-region)
 - [CI Retry Mechanism](#ci-retry-mechanism)
 - [Emulator Settings (Android CI)](#emulator-settings-android-ci)
 - [Production Smoke Build](#production-smoke-build)
@@ -68,6 +69,7 @@ executionOrder:
 | `duplicates-*`                  | Duplicate detection for recipes, tags, ingredients      |
 | `web` / `web-edge-cases`        | Website import                                          |
 | `bulk-import`                   | Bulk import pipeline                                    |
+| `locale-fr`                     | Decimals follow the **device region**, not the language |
 | `performance`                   | Flashlight measurement run                              |
 
 Adding a suite: create `{suite}.yaml`, list `cases/{feature}/ci/*`, add the
@@ -438,6 +440,49 @@ Language-specific assertions live in `en/` / `fr/` leaves under
 Adding a language: create `asserts/{screen}/{lang}/`, a
 `switchTo{Language}.yaml`, the `{screen}IsTranslated.yaml` flows, and extend the
 language case.
+
+## Decimal Separators (Device Region)
+
+Numbers follow the **device region**, never the app language — see
+`ARCHITECTURE.md` §9 and `src/utils/NumberFormat.ts`.
+
+`text:` is a full-string **regex**, so a bare `.` is a wildcard: `'8.53 g'` also
+matches `8,53 g`. Write the decimal point as a character class, in the injected
+value and in literals alike, or the assertion checks the digits and nothing
+else:
+
+```yaml
+FAT: '8[.]53'
+text: '133[.]33 g'
+```
+
+Values typed rather than matched (`inputText`, `flows/inputAndCommitText.yaml`)
+stay unescaped — brackets there would be typed literally.
+
+### The locale-fr suite
+
+Every other suite runs on its platform's default region, so they all expect
+dots. `locale-fr` is the one suite proving the region actually drives the
+format, and each platform takes the side it can reach:
+
+| Platform | Device region | App language | Expects |
+| -------- | ------------- | ------------ | ------- |
+| Android  | France        | English      | commas  |
+| iOS      | United States | French       | dots    |
+
+Maestro has no locale command, so
+`flows/device/android/setSystemLanguageToFrench.yaml` drives the Settings app.
+It is Android-only — the iOS region picker restarts the device, killing the
+Maestro session — and guarded on the Settings home title, so it no-ops when the
+device is already French.
+
+The region is not restored. CI wipes the emulator per suite; a local one stays
+French.
+
+> Resetting a local emulator needs more than `setprop persist.sys.locale`: the
+> framework keeps its own `settings get system system_locales`, and when the two
+> disagree the app renders the old region while the prop looks right. Change it
+> through the Settings UI.
 
 ## CI Retry Mechanism
 

@@ -53,7 +53,7 @@ import { Icons } from '@assets/Icons';
 import { HorizontalList } from '@components/molecules/HorizontalList';
 import { TextInputWithDropDown } from '@components/molecules/TextInputWithDropDown';
 import { useTags } from '@hooks/useTags';
-import { recipeTagsStyles } from '@styles/recipeComponents';
+import { recipeButtonStyles, recipeTagsStyles } from '@styles/recipeComponents';
 import { Text, useTheme } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
 
@@ -157,21 +157,19 @@ export function RecipeTags(tagsProps: RecipeTagProps) {
               </View>
             ))}
 
-            <View style={recipeTagsStyles.roundButtonsContainer}>
+            <View style={recipeButtonStyles.roundButtonsContainer}>
               {tagsProps.editType === 'add' ? (
-                <View style={recipeTagsStyles.roundButton}>
+                <View style={recipeButtonStyles.roundButton}>
                   <RoundButton
                     testID={tagsTestID + '::OpenModal'}
-                    size={'medium'}
                     icon={Icons.scanImageIcon}
                     onPressFunction={tagsProps.openModal}
                   />
                 </View>
               ) : null}
-              <View style={recipeTagsStyles.roundButton}>
+              <View style={recipeButtonStyles.roundButton}>
                 <RoundButton
                   testID={tagsTestID}
-                  size={'medium'}
                   icon={Icons.plusIcon}
                   onPressFunction={() => {
                     setNewTags(prev => [...prev, tagsAddedCounter]);

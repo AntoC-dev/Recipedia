@@ -46,7 +46,7 @@ import { FilterToggleButton } from '@components/atomic/FilterToggleButton';
 import { Icons } from '@assets/Icons';
 import { useI18n } from '@utils/i18n';
 import { TUTORIAL_DEMO_INTERVAL, TUTORIAL_STEPS } from '@utils/Constants';
-import { FlatList, View } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 import { padding } from '@styles/spacing';
 import { useSafeCopilot } from '@hooks/useSafeCopilot';
 import { useReducedMotion } from '@hooks/useReducedMotion';
@@ -201,12 +201,7 @@ export function FiltersSelection({
         data={filters}
         scrollEnabled={true}
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{
-          flexDirection: 'row',
-          flexWrap: 'wrap',
-          padding: padding.verySmall,
-          marginLeft: padding.small,
-        }}
+        contentContainerStyle={styles.listContent}
         renderItem={({ item, index }) => (
           <TagButton
             key={index}
@@ -227,3 +222,12 @@ export function FiltersSelection({
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  listContent: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    padding: padding.verySmall,
+    marginLeft: padding.small,
+  },
+});

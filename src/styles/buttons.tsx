@@ -39,9 +39,8 @@
  * ```
  */
 
-import { palette } from './colors';
 import { padding } from './spacing';
-import EStyleSheet from 'react-native-extended-stylesheet';
+import { StyleSheet } from 'react-native';
 
 /** Border width for button shapes */
 const shapeWidth: number = 1;
@@ -50,17 +49,19 @@ const shapeWidth: number = 1;
 export const smallCardWidth = 85;
 
 /**
- * Creates responsive square button styles with specified side length
+ * Creates the side-dependent geometry for a square button.
+ *
+ * Colours come from the Paper theme and can't live in this static factory, so
+ * callers compose this with `{ backgroundColor, borderColor }` in a style array
+ * at render time — see `SquareButton`.
  *
  * @param side - Square side length in pixels
- * @returns EStyleSheet object with square button styling
+ * @returns StyleSheet object with the square button's geometry
  */
 export const squareButtonStyles = (side: number) =>
-  EStyleSheet.create({
+  StyleSheet.create({
     squareButton: {
-      backgroundColor: palette.secondary,
       borderWidth: shapeWidth,
-      borderColor: palette.bonusColor2,
       width: side,
       height: side,
       marginHorizontal: padding.small,
@@ -71,7 +72,7 @@ export const squareButtonStyles = (side: number) =>
  * Common view and layout styles for button containers and content
  * Provides consistent styling for button groupings and internal layouts
  */
-export const viewButtonStyles = EStyleSheet.create({
+export const viewButtonStyles = StyleSheet.create({
   viewContainingButton: {
     padding: padding.small,
   },
@@ -79,11 +80,6 @@ export const viewButtonStyles = EStyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     height: '100%',
-  },
-  imageInsideButton: {
-    width: '100%',
-    height: '100%',
-    contentFit: 'cover',
   },
   wrappingListOfButton: {
     flexDirection: 'row',
@@ -105,7 +101,7 @@ export const viewButtonStyles = EStyleSheet.create({
   },
 });
 
-export const viewInsideButtonCentered = EStyleSheet.flatten([
+export const viewInsideButtonCentered = StyleSheet.flatten([
   viewButtonStyles.viewInsideButtons,
   viewButtonStyles.centeredView,
 ]);

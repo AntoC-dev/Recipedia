@@ -1,32 +1,20 @@
 /**
- * Typography System - Font loading and text processing utilities
+ * TextParsing - Recipe text parsing vocabulary
  *
- * This module provides font loading and text processing utilities for the
- * Recipedia app. Includes custom Lora font family loading, regular expressions
- * for recipe text parsing, and shared text separators.
- *
- * Key Features:
- * - Custom Lora font family loading and configuration
- * - Text processing utilities and regular expressions
- * - Text separators for encoding recipe content
+ * This module is the app's shared vocabulary for parsing and encoding recipe
+ * text content: the separators used to encode ingredient/note data into flat
+ * strings, and the regular expressions used to pull quantities, units, and
+ * words back out of free-form recipe text (OCR output, pasted ingredient
+ * lines, imported recipe data, etc.).
  *
  * @example
  * ```typescript
- * import { useFetchFonts, findAllNumbers } from '@styles/typography';
+ * import { findAllNumbers, textSeparator } from '@utils/TextParsing';
  *
- * // Loading fonts in app component
- * const [fontsLoaded] = useFetchFonts();
- * if (!fontsLoaded) return <LoadingScreen />;
- *
- * // Text processing
  * const numbers = ingredientText.match(findAllNumbers);
+ * const [name, quantity] = encoded.split(textSeparator);
  * ```
  */
-
-import { useFonts } from 'expo-font';
-
-/** Regular Lora variable font family name, as registered with expo-font */
-export const FONT_FAMILY_REGULAR = 'Lora-VariableFont_wght';
 
 /** Text separator for parsing recipe text content */
 export const textSeparator = '--';
@@ -39,9 +27,6 @@ export const EncodingSeparator = '__';
 
 /** Note separator for ingredient usage context in encoded recipes */
 export const noteSeparator = '%%';
-
-/** All calendar months as string values (1-12) */
-export const ALL_MONTHS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'] as const;
 
 /** Regular expression to replace all newline characters */
 export const replaceAllBackToLine = /\n/g;
@@ -69,14 +54,3 @@ export const endsWithLetters = /[a-zA-Z]+$/;
 
 /** Regular expression to match only digits, dots, and whitespace */
 export const onlyDigitsDotsSpaces = /^[\d.\s]+$/;
-
-/**
- * Loads custom Lora font family for the application
- *
- * @returns [boolean, Error] - Font loading status and any error
- */
-export function useFetchFonts() {
-  return useFonts({
-    [FONT_FAMILY_REGULAR]: require(`../assets/fonts/Lora/Lora-VariableFont_wght.ttf`),
-  });
-}

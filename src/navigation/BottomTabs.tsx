@@ -146,11 +146,7 @@ export function BottomTabBar({ navigation, state, descriptors, insets }: BottomT
           }
         }}
         renderIcon={({ route, focused, color }) => (
-          <Icon
-            source={getTabIconName(route.name, focused)}
-            size={iconsSize.medium}
-            color={color}
-          />
+          <Icon source={getTabIconName(route.name, focused)} size={iconsSize.large} color={color} />
         )}
         getLabelText={({ route }) => getLabel(route)}
         getTestID={({ route }) => descriptors[route.key]?.options.tabBarButtonTestID}

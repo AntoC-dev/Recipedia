@@ -45,7 +45,7 @@ import { padding, screenWidth } from '@styles/spacing';
 import { Icons } from '@assets/Icons';
 import { useI18n } from '@utils/i18n';
 import { Searchbar } from 'react-native-paper';
-import { Keyboard } from 'react-native';
+import { Keyboard, StyleSheet } from 'react-native';
 
 /**
  * Handle exposed by SearchBar via clearRef for programmatic control
@@ -105,11 +105,7 @@ export function SearchBar({
       value={searchPhrase}
       autoCorrect={false}
       returnKeyType={'search'}
-      style={{
-        margin: padding.medium,
-        marginBottom: padding.small,
-        borderRadius: screenWidth / 10,
-      }}
+      style={styles.searchbar}
       onFocus={() => setSearchBarClicked(true)}
       onSubmitEditing={() => {
         Keyboard.dismiss();
@@ -126,3 +122,11 @@ export function SearchBar({
     />
   );
 }
+
+const styles = StyleSheet.create({
+  searchbar: {
+    margin: padding.medium,
+    marginBottom: padding.small,
+    borderRadius: screenWidth / 10,
+  },
+});

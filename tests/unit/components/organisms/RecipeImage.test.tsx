@@ -47,11 +47,9 @@ describe('RecipeImage Component', () => {
     getByTestId: any,
     queryByTestId: any,
     shouldExist: boolean = true,
-    expectedSize: string = 'medium',
     expectedIcon: IconName = sampleButtonIcon
   ) => {
     if (shouldExist) {
-      expect(getByTestId('RecipeImage::RoundButton::Size').props.children).toEqual(expectedSize);
       expect(getByTestId('RecipeImage::RoundButton::Icon').props.children).toEqual(expectedIcon);
     } else {
       expect(queryByTestId('RecipeImage::RoundButton')).toBeNull();
@@ -130,7 +128,7 @@ describe('RecipeImage Component', () => {
     const { getByTestId, queryByTestId } = renderRecipeImage({ imgUri: emptyImageUri });
 
     assertContainerStructure(getByTestId, queryByTestId, emptyImageUri, false);
-    assertButtonStructure(getByTestId, queryByTestId, true, 'medium');
+    assertButtonStructure(getByTestId, queryByTestId, true);
 
     fireEvent.press(getByTestId('RecipeImage::RoundButton::OnPressFunction'));
     expect(mockOpenModal).toHaveBeenCalledWith(recipeColumnsNames.image);
@@ -159,7 +157,7 @@ describe('RecipeImage Component', () => {
     const { getByTestId, queryByTestId } = renderRecipeImage({ buttonIcon: customIcon });
 
     assertContainerStructure(getByTestId, queryByTestId);
-    assertButtonStructure(getByTestId, queryByTestId, true, 'medium', customIcon);
+    assertButtonStructure(getByTestId, queryByTestId, true, customIcon);
 
     fireEvent.press(getByTestId('RecipeImage::RoundButton::OnPressFunction'));
     expect(mockOpenModal).toHaveBeenCalledWith(recipeColumnsNames.image);
@@ -272,7 +270,7 @@ describe('RecipeImage Component', () => {
     rerender(<RecipeImage imgUri={newUri} openModal={newCallback} buttonIcon={newIcon} />);
 
     assertContainerStructure(getByTestId, queryByTestId, newUri);
-    assertButtonStructure(getByTestId, queryByTestId, true, 'medium', newIcon);
+    assertButtonStructure(getByTestId, queryByTestId, true, newIcon);
 
     fireEvent.press(getByTestId('RecipeImage::RoundButton::OnPressFunction'));
     expect(newCallback).toHaveBeenCalledWith(recipeColumnsNames.image);

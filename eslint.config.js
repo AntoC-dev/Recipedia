@@ -70,7 +70,7 @@ module.exports = defineConfig([
 
             'react-native/no-unused-styles': 'error',
             'react-native/split-platform-components': 'error',
-            'react-native/no-color-literals': 'warn',
+            'react-native/no-color-literals': 'error',
 
             'no-console': 'warn',
             'no-debugger': 'error',

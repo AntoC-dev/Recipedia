@@ -4,6 +4,7 @@ import { Text, TextInput } from 'react-native-paper';
 import { nutritionTableElement } from '@customTypes/DatabaseElementTypes';
 import { padding } from '@styles/spacing';
 import { NumericTextInput } from '@components/atomic/NumericTextInput';
+import { formatDecimalForDisplay } from '@utils/NumberFormat';
 
 export type NutritionRowProps = {
   label: string;
@@ -32,14 +33,14 @@ export function NutritionRow({
     }
   };
 
-  const displayValue = value % 1 === 0 ? value.toString() : parseFloat(value.toFixed(2)).toString();
+  const displayValue = formatDecimalForDisplay(value, 2);
 
   return (
     <View>
       <View style={styles.container}>
         <Text
           variant='bodyMedium'
-          style={[{ width: '50%' }, isSubItem && styles.subLabel]}
+          style={[styles.halfWidth, isSubItem && styles.subLabel]}
           testID={testId + '::Text'}
         >
           {isSubItem ? `${label}` : label}
@@ -53,7 +54,7 @@ export function NutritionRow({
             keyboardType='numeric'
             dense
             mode='outlined'
-            style={{ width: '50%' }}
+            style={styles.halfWidth}
             right={<TextInput.Affix text={unit} />}
           />
         ) : (
@@ -67,6 +68,9 @@ export function NutritionRow({
 }
 
 const styles = StyleSheet.create({
+  halfWidth: {
+    width: '50%',
+  },
   container: {
     flexDirection: 'row',
     justifyContent: 'space-between',

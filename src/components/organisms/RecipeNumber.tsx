@@ -55,7 +55,7 @@ import { View } from 'react-native';
 import React from 'react';
 import { RoundButton } from '@components/atomic/RoundButton';
 import { Icons } from '@assets/Icons';
-import { recipeNumberStyles, recipeTextStyles } from '@styles/recipeComponents';
+import { recipeButtonStyles, recipeNumberStyles, recipeTextStyles } from '@styles/recipeComponents';
 import { HelperText, Text } from 'react-native-paper';
 import { VariantProp } from 'react-native-paper/lib/typescript/components/Typography/types';
 import { NumericTextInput } from '@components/atomic/NumericTextInput';
@@ -143,10 +143,7 @@ export function RecipeNumber({ testID, numberProps, error, onBlur }: RecipeNumbe
 function RecipeNumberEditablePart(
   addOrEditProps: RecipeNumberAddOrEditProps & { onBlur?: () => void }
 ) {
-  const view =
-    addOrEditProps.editType === 'editable'
-      ? recipeNumberStyles.editableView
-      : recipeNumberStyles.addView;
+  const view = addOrEditProps.editType === 'editable' ? recipeNumberStyles.editableView : undefined;
   const prefixVariant: VariantProp<never> =
     addOrEditProps.editType === 'editable' ? 'titleMedium' : 'headlineSmall';
   return (
@@ -163,19 +160,19 @@ function RecipeNumberEditablePart(
           onBlur={addOrEditProps.onBlur}
         />
       ) : (
-        <View style={recipeNumberStyles.roundButtonsContainer}>
-          <View style={recipeNumberStyles.roundButton}>
+        <View
+          style={[recipeButtonStyles.roundButtonsContainer, recipeNumberStyles.roundButtonsMargin]}
+        >
+          <View style={recipeButtonStyles.roundButton}>
             <RoundButton
               testID={addOrEditProps.testID + '::OpenModal'}
-              size={'medium'}
               icon={Icons.scanImageIcon}
               onPressFunction={addOrEditProps.openModal}
             />
           </View>
-          <View style={recipeNumberStyles.roundButton}>
+          <View style={recipeButtonStyles.roundButton}>
             <RoundButton
               testID={addOrEditProps.testID + '::ManuallyFill'}
-              size={'medium'}
               icon={Icons.pencilIcon}
               onPressFunction={addOrEditProps.manuallyFill}
             />

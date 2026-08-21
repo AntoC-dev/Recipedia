@@ -58,7 +58,7 @@
 
 import { pickImage, takePhoto } from '@utils/ImagePicker';
 import React from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { HorizontalList } from '@components/molecules/HorizontalList';
 import { RoundButton } from '@components/atomic/RoundButton';
 import { Icons } from '@assets/Icons';
@@ -147,18 +147,13 @@ export function ModalImageSelect({
     <Portal>
       <Modal
         visible={true}
-        contentContainerStyle={{
-          backgroundColor: colors.surface,
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginHorizontal: padding.veryLarge,
-        }}
+        contentContainerStyle={[styles.modalContent, { backgroundColor: colors.surface }]}
         onDismiss={onDismissFunction}
       >
         <Text
           testID={testID + '::ExplanationText'}
           variant={'titleMedium'}
-          style={{ marginVertical: padding.medium }}
+          style={styles.explanationText}
         >
           {t(ocrTranslationsPrefix + 'explanationText')}
         </Text>
@@ -170,36 +165,43 @@ export function ModalImageSelect({
             onSelectFunction(imgPressed);
           }}
         />
-        <View
-          style={{
-            flexDirection: 'row',
-            marginVertical: padding.veryLarge,
-          }}
-        >
+        <View style={styles.buttonsRow}>
           <RoundButton
             testID={modalTestID + '::Camera'}
             onPressFunction={() => void takePhotoInModal()}
-            size={'medium'}
             icon={Icons.cameraIcon}
             label={t(ocrTranslationsPrefix + 'photo')}
-            style={{
-              width: '50%',
-            }}
+            style={styles.halfWidth}
           />
           <RoundButton
             testID={modalTestID + '::Gallery'}
             onPressFunction={() => void pickImageInModal()}
-            size={'medium'}
             icon={Icons.galleryIcon}
             label={t(ocrTranslationsPrefix + 'gallery')}
-            style={{
-              width: '50%',
-            }}
+            style={styles.halfWidth}
           />
         </View>
       </Modal>
     </Portal>
   );
 }
+
+const styles = StyleSheet.create({
+  modalContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: padding.veryLarge,
+  },
+  explanationText: {
+    marginVertical: padding.medium,
+  },
+  buttonsRow: {
+    flexDirection: 'row',
+    marginVertical: padding.veryLarge,
+  },
+  halfWidth: {
+    width: '50%',
+  },
+});
 
 export default ModalImageSelect;

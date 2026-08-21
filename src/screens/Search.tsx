@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useResetOnChange } from '@hooks/useResetOnChange';
-import { BackHandler, Keyboard, View } from 'react-native';
+import { BackHandler, Keyboard, StyleSheet, View } from 'react-native';
 import type { FlashListRef, ListRenderItemInfo } from '@shopify/flash-list';
 import { FlashList } from '@shopify/flash-list';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
@@ -20,7 +20,8 @@ import { Divider, List, Text } from 'react-native-paper';
 import { SearchBar, SearchBarHandle } from '@components/organisms/SearchBar';
 import { SearchSuggestionItem } from '@components/molecules/SearchSuggestionItem';
 import { FiltersSelection } from '@components/organisms/FiltersSelection';
-import { padding } from '@styles/spacing';
+import { padding, tabScreenBottomPadding, tabScreenEdges } from '@styles/spacing';
+import { layout } from '@styles/layout';
 import { RecipeCard } from '@components/molecules/RecipeCard';
 import { FilterAccordion } from '@components/organisms/FilterAccordion';
 import { useSeasonFilter } from '@context/SeasonFilterContext';
@@ -195,8 +196,8 @@ export function Search() {
   const suggestionsId = screenId + '::Suggestions';
 
   return (
-    <ScreenWrapper testID={screenId} edges={['top', 'left', 'right']}>
-      <View style={{ flex: 1 }}>
+    <ScreenWrapper testID={screenId} edges={tabScreenEdges}>
+      <View style={layout.flexFill}>
         <View>
           <SearchBar
             testId={screenId + '::SearchBar'}
@@ -221,7 +222,7 @@ export function Search() {
           )}
         </View>
 
-        <View style={{ flex: 1 }}>
+        <View style={layout.flexFill}>
           {searchBarClicked ? (
             <FlashList
               key='suggestions'
@@ -229,13 +230,13 @@ export function Search() {
               keyboardShouldPersistTaps='handled'
               data={filteredTitles}
               keyExtractor={(item, index) => `${index}::${item}`}
-              contentContainerStyle={{ padding: padding.small }}
+              contentContainerStyle={styles.listContent}
               ListEmptyComponent={
                 <List.Item
                   testID={suggestionsId + '::Empty'}
                   title={t('noRecipesFound')}
                   disabled
-                  style={{ padding: padding.veryLarge }}
+                  style={styles.suggestionsEmpty}
                 />
               }
               renderItem={({ item, index }: ListRenderItemInfo<string>) => (
@@ -268,16 +269,9 @@ export function Search() {
               keyExtractor={getRecipeKey}
               numColumns={2}
               maintainVisibleContentPosition={{ disabled: true }}
-              contentContainerStyle={{ padding: padding.small }}
+              contentContainerStyle={styles.listContent}
               ListEmptyComponent={
-                <View
-                  style={{
-                    flex: 1,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    marginTop: padding.large,
-                  }}
-                >
+                <View style={[layout.emptyState, styles.emptyRecipesMargin]}>
                   <Text testID={screenId + '::TextWhenEmpty'} variant={'titleMedium'}>
                     {t('noRecipesFound')}
                   </Text>
@@ -307,19 +301,32 @@ export function Search() {
           */}
           <CopilotView
             testID={screenId + '::Tutorial'}
-            style={{
-              position: 'absolute',
-              top: toggleButtonTop ?? '15%',
-              left: padding.small,
-              right: padding.small,
-              height: '40%',
-              pointerEvents: 'none',
-            }}
+            style={[
+              layout.tutorialOverlay,
+              styles.tutorialOverlayHeight,
+              { top: toggleButtonTop ?? '15%' },
+            ]}
           />
         </CopilotStep>
       )}
     </ScreenWrapper>
   );
 }
+
+const styles = StyleSheet.create({
+  listContent: {
+    padding: padding.small,
+    paddingBottom: tabScreenBottomPadding,
+  },
+  suggestionsEmpty: {
+    padding: padding.veryLarge,
+  },
+  emptyRecipesMargin: {
+    marginTop: padding.large,
+  },
+  tutorialOverlayHeight: {
+    height: '40%',
+  },
+});
 
 export default Search;

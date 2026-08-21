@@ -19,15 +19,13 @@ import { Button, Icon, Text, useTheme } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useI18n } from '@utils/i18n';
 import { padding } from '@styles/spacing';
-import { Icons } from '@assets/Icons';
+import { Icons, iconsSize } from '@assets/Icons';
 
 export type ErrorFallbackProps = {
   onReport?: () => Promise<void>;
   persistent?: boolean;
   testID?: string;
 };
-
-const ICON_SIZE = 40;
 
 export function ErrorFallback({
   onReport,
@@ -64,7 +62,7 @@ export function ErrorFallback({
     >
       <View style={styles.content}>
         <View style={styles.header}>
-          <Icon source={Icons.alertWithCircle} size={ICON_SIZE} color={colors.error} />
+          <Icon source={Icons.alertWithCircle} size={iconsSize.veryLarge} color={colors.error} />
           <Text
             variant='headlineSmall'
             accessibilityRole='header'

@@ -3,6 +3,13 @@ import { fireEvent, render } from '@testing-library/react-native';
 import { NutritionRow } from '@components/molecules/NutritionRow';
 import { defaultValueNumber } from '@utils/Constants';
 
+import * as Localization from 'expo-localization';
+import { useCommaDecimalRegion, useDotDecimalRegion } from '@mocks/deps/expo-localization-mock';
+
+jest.mock('expo-localization', () =>
+  require('@mocks/deps/expo-localization-mock').expoLocalizationMock()
+);
+
 const defaultTestId = 'test';
 const defaultLabel = 'Energy';
 const defaultValue = 250;
@@ -120,11 +127,35 @@ describe('NutritionRow', () => {
 
     expect(queryByTestId(defaultTestId + '::NumericTextInput')).toBeNull();
     expect(getByTestId(defaultTestId + '::Text').props.children).toBe('Fiber');
-    expect(getByTestId(defaultTestId + '::Value').props.children).toEqual([
-      decimalValue.toString(),
-      ' ',
-      'g',
-    ]);
+    expect(getByTestId(defaultTestId + '::Value').props.children).toEqual(['2.5', ' ', 'g']);
+  });
+
+  test('rounds values with more than two decimals', () => {
+    const { getByTestId } = render(
+      <NutritionRow label='Salt' value={2.567} unit='g' testId={defaultTestId} />
+    );
+
+    expect(getByTestId(defaultTestId + '::Value').props.children).toEqual(['2.57', ' ', 'g']);
+  });
+
+  test('renders a comma decimal in a comma-separator region', () => {
+    useCommaDecimalRegion(Localization as unknown as { getLocales: jest.Mock });
+
+    const { getByTestId } = render(
+      <NutritionRow label='Fiber' value={8.53} unit='g' testId={defaultTestId} />
+    );
+
+    expect(getByTestId(defaultTestId + '::Value').props.children).toEqual(['8,53', ' ', 'g']);
+  });
+
+  test('renders a dot decimal in a dot-separator region', () => {
+    useDotDecimalRegion(Localization as unknown as { getLocales: jest.Mock });
+
+    const { getByTestId } = render(
+      <NutritionRow label='Fiber' value={8.53} unit='g' testId={defaultTestId} />
+    );
+
+    expect(getByTestId(defaultTestId + '::Value').props.children).toEqual(['8.53', ' ', 'g']);
   });
 
   test('formats integer values without decimals', () => {

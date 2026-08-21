@@ -9,7 +9,6 @@
  * ```typescript
  * <RoundButton
  *   icon="plus"
- *   size="large"
  *   onPressFunction={() => createNewRecipe()}
  *   testID="add-recipe-fab"
  * />
@@ -19,8 +18,8 @@
 import React from 'react';
 import { IconName } from '@assets/Icons';
 import { FAB, Text } from 'react-native-paper';
-import { StyleProp, View, ViewStyle } from 'react-native';
-import { padding } from '@styles/spacing';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { padding, radius } from '@styles/spacing';
 
 /**
  * Props for the RoundButton component
@@ -28,8 +27,6 @@ import { padding } from '@styles/spacing';
 export type RoundButtonProps = {
   /** Icon name from the app's icon set */
   icon: IconName;
-  /** Size of the button */
-  size: 'small' | 'medium' | 'large';
   /** Function called when button is pressed */
   onPressFunction: () => void;
   /** Unique identifier for testing and accessibility */
@@ -50,35 +47,34 @@ export function RoundButton({ icon, onPressFunction, testID, label, style }: Rou
   const roundButtonTestId = testID + '::RoundButton';
 
   return (
-    <View
-      style={[
-        {
-          alignItems: 'center',
-          alignContent: 'center',
-        },
-        style,
-      ]}
-    >
+    <View testID={roundButtonTestId + '::Container'} style={[styles.container, style]}>
       <FAB
         testID={roundButtonTestId}
         icon={icon}
         size={'medium'}
         mode={'elevated'}
-        style={{ borderRadius: 999 }}
+        style={styles.fab}
         onPress={onPressFunction}
       />
       {label !== undefined && (
-        <Text
-          testID={roundButtonTestId + '::Label'}
-          variant='titleMedium'
-          style={{
-            textAlign: 'center',
-            padding: padding.small,
-          }}
-        >
+        <Text testID={roundButtonTestId + '::Label'} variant='titleMedium' style={styles.label}>
           {label}
         </Text>
       )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    alignContent: 'center',
+  },
+  fab: {
+    borderRadius: radius.full,
+  },
+  label: {
+    textAlign: 'center',
+    padding: padding.small,
+  },
+});

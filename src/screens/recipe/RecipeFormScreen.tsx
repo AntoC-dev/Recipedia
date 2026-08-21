@@ -28,7 +28,7 @@
  */
 
 import React, { ReactNode, useRef, useState } from 'react';
-import { Keyboard, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Snackbar, useTheme } from 'react-native-paper';
 import { FieldErrors, FormProvider, useForm, useFormContext, useFormState } from 'react-hook-form';
@@ -55,6 +55,7 @@ import { getDefaultPersons } from '@utils/settings';
 import { recipeLogger, validationLogger } from '@utils/logger';
 import { BottomActionButton } from '@components/atomic/BottomActionButton';
 import { bottomActionButtonHeight } from '@styles/spacing';
+import { layout } from '@styles/layout';
 
 import { useRecipeTags } from '@hooks/useRecipeTags';
 import { RecipeDialogsProvider, useRecipeDialogs } from '@context/RecipeDialogsContext';
@@ -503,7 +504,7 @@ function RecipeFormBody({
     <ScreenWrapper>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{ flex: 1 }}
+        style={layout.flexFill}
         keyboardVerticalOffset={insets.top}
       >
         <AppBar
@@ -517,8 +518,8 @@ function RecipeFormBody({
         <ScrollView
           horizontal={false}
           showsVerticalScrollIndicator={false}
-          style={{ flex: 1, backgroundColor: colors.background }}
-          contentContainerStyle={{ paddingBottom: bottomActionButtonHeight }}
+          style={[layout.flexFill, { backgroundColor: colors.background }]}
+          contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps={'handled'}
           keyboardDismissMode='on-drag'
           nestedScrollEnabled={true}
@@ -654,3 +655,9 @@ function RecipeFormBody({
     </ScreenWrapper>
   );
 }
+
+const styles = StyleSheet.create({
+  scrollContent: {
+    paddingBottom: bottomActionButtonHeight,
+  },
+});

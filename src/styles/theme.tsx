@@ -55,10 +55,12 @@
  * ```
  */
 
+import { useFonts } from 'expo-font';
 import { configureFonts, MD3LightTheme } from 'react-native-paper';
 import { ThemeProp } from 'react-native-paper/lib/typescript/types';
 
-import { FONT_FAMILY_REGULAR } from './typography';
+/** Regular Lora variable font family name, as registered with expo-font */
+const FONT_FAMILY_REGULAR = 'Lora-VariableFont_wght';
 
 const fonts = configureFonts({ isV3: true, config: { fontFamily: FONT_FAMILY_REGULAR } });
 
@@ -166,3 +168,14 @@ export const darkTheme: ThemeProp = {
     backdrop: '#2b322b66',
   },
 };
+
+/**
+ * Loads custom Lora font family for the application
+ *
+ * @returns [boolean, Error] - Font loading status and any error
+ */
+export function useFetchFonts() {
+  return useFonts({
+    [FONT_FAMILY_REGULAR]: require(`../assets/fonts/Lora/Lora-VariableFont_wght.ttf`),
+  });
+}

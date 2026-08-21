@@ -178,7 +178,6 @@ function RecipeTextEditablePart(
       ) : (
         <RoundButton
           testID={addOrEditProps.testID + '::OpenModal'}
-          size={'medium'}
           icon={Icons.scanImageIcon}
           onPressFunction={addOrEditProps.openModal}
         />

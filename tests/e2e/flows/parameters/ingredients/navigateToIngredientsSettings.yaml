@@ -10,7 +10,7 @@ appId: "com.recipedia"
     element:
       id: "Parameters::Section::Data::Ingredients::Item"
     direction: DOWN
-    speed: 80
+    speed: 40
     centerElement: true
     label: "Scroll down to find Ingredients option"
 

@@ -107,4 +107,12 @@ describe('SquareButton', () => {
 
     expect(getByTestId('test-button::SquareButton')).toBeTruthy();
   });
+
+  test('takes background from theme secondaryContainer and border from theme outline', () => {
+    const { getByTestId } = render(<SquareButton {...defaultImageProps} />);
+
+    const button = getByTestId('test-button');
+
+    expect(button).toHaveStyle({ backgroundColor: '#cefaf8', borderColor: '#79767d' });
+  });
 });

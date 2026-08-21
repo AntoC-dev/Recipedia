@@ -3,6 +3,7 @@ import { Edge, SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from 'react-native-paper';
 import { AppStatusBar } from '@components/atomic/AppStatusBar';
 import { ColorValue } from 'react-native';
+import { layout } from '@styles/layout';
 
 interface ScreenWrapperProps {
   children: React.ReactNode;
@@ -31,10 +32,7 @@ export function ScreenWrapper({
 
   return (
     <SafeAreaView
-      style={{
-        flex: 1,
-        backgroundColor: backgroundColor || colors.background,
-      }}
+      style={[layout.flexFill, { backgroundColor: backgroundColor || colors.background }]}
       edges={edges}
       testID={testID}
     >

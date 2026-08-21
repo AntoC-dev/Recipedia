@@ -87,7 +87,7 @@ export function LoadingOverlay({
               />
               <Text
                 variant='titleMedium'
-                style={{ marginTop: padding.small }}
+                style={styles.progressText}
                 testID={testIDOverlay + '::ProgressText'}
               >
                 {Math.round(progress)}%
@@ -97,14 +97,7 @@ export function LoadingOverlay({
             <ActivityIndicator size='large' animating={true} testID={testIDOverlay + '::Spinner'} />
           )}
           {message && (
-            <Text
-              variant='bodyLarge'
-              style={{
-                marginTop: padding.large,
-                textAlign: 'center',
-              }}
-              testID={testIDOverlay + '::Message'}
-            >
+            <Text variant='bodyLarge' style={styles.message} testID={testIDOverlay + '::Message'}>
               {message}
             </Text>
           )}
@@ -135,5 +128,12 @@ const styles = StyleSheet.create({
     maxWidth: 300,
     height: progressBarHeight,
     borderRadius: progressBarHeight / 2,
+  },
+  progressText: {
+    marginTop: padding.small,
+  },
+  message: {
+    marginTop: padding.large,
+    textAlign: 'center',
   },
 });

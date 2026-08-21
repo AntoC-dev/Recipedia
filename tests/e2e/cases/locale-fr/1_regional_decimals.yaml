@@ -1,0 +1,109 @@
+name: "1 - Regional Decimal Separator Flow"
+appId: "com.recipedia"
+tags:
+  - locale-fr
+---
+# Decimals follow the device region, never the app language (ARCHITECTURE.md §9).
+# Each platform proves that from the side it can reach:
+#   Android - device region France, app language English -> commas
+#   iOS     - device region US,     app language French  -> dots
+# iOS cannot move its region in-flow: the picker restarts the device, which tears
+# down the Maestro session. Expectations are inline here because they are the
+# subject of the test rather than shared fixtures.
+- runFlow:
+    when:
+      platform: Android
+    file: "../../flows/device/android/setSystemLanguageToFrench.yaml"
+    label: "Setup - Move the device to a comma decimal region"
+
+- runFlow:
+    file: "../../flows/setupTest.yaml"
+    label: "Setup - Launch app and wait for ready"
+
+- runFlow:
+    when:
+      platform: Android
+    file: "../../flows/parameters/language/switchToEnglish.yaml"
+    label: "Action - Pit an English app language against a French device region"
+
+- runFlow:
+    when:
+      platform: iOS
+    file: "../../flows/parameters/language/switchToFrench.yaml"
+    label: "Action - Pit a French app language against a US device region"
+
+- runFlow:
+    file: "../../flows/search/searchAndOpenRecipe.yaml"
+    env:
+      RECIPE_NAME: "Vegetable Soup"
+    label: "Action - Open a recipe that carries nutrition decimals"
+
+- scrollUntilVisible:
+    element:
+      id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::Value"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to the nutrition table"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::Value"
+          text: "0[,]8 g"
+          label: "Fat renders with the region's comma"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::Value"
+          text: "0[.]8 g"
+          label: "Fat keeps the region's dot despite the French app language"
+
+- tapOn:
+    id: "Recipe::AppBar::BackButton"
+    label: "Action - Leave the recipe"
+
+- tapOn:
+    id: "SearchScreen::SearchBar-clear-icon"
+    label: "Action - Clear the previous query"
+
+- runFlow:
+    file: "../../flows/search/searchAndOpenRecipe.yaml"
+    env:
+      RECIPE_NAME: "Chocolate Cake"
+    label: "Action - Open a recipe whose quantities are stored scaled"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::0::QuantityAndUnit"
+    direction: DOWN
+    speed: 60
+    centerElement: true
+    label: "Scroll to the first ingredient"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "RecipeIngredients::0::QuantityAndUnit"
+          text: "133[,]33 g"
+          label: "A scaled quantity is displayed in the region's format"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "RecipeIngredients::0::QuantityAndUnit"
+          text: "133[.]33 g"
+          label: "A scaled quantity keeps the region's format despite the French app language"

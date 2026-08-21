@@ -3,6 +3,10 @@ import { fireEvent, render } from '@testing-library/react-native';
 import { ShoppingListItem } from '@components/molecules/ShoppingListItem';
 import { ComputedShoppingItem, ingredientType } from '@customTypes/DatabaseElementTypes';
 
+jest.mock('expo-localization', () =>
+  require('@mocks/deps/expo-localization-mock').expoLocalizationMock()
+);
+
 const testID = 'ShoppingScreen::SectionList::Flour';
 
 function buildItem(overrides: Partial<ComputedShoppingItem> = {}): ComputedShoppingItem {
@@ -107,7 +111,7 @@ describe('ShoppingListItem', () => {
   test('formats a decimal quantity for display', () => {
     const { getByTestId } = renderItem({ quantity: '133.333333', unit: 'ml' });
 
-    expect(getByTestId(`${testID}::Title`).props.children).toBe('Flour (133,33ml)');
+    expect(getByTestId(`${testID}::Title`).props.children).toBe('Flour (133.33ml)');
   });
 
   test('exposes the row as a checkbox to screen readers', () => {

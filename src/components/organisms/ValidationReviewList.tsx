@@ -87,7 +87,7 @@ function ReviewRow({
         <Text variant='titleMedium' testID={`${listTestID}::${flatItem.sectionType}SectionHeader`}>
           {flatItem.title}
         </Text>
-        <Divider style={{ marginTop: padding.small }} />
+        <Divider style={styles.sectionDivider} />
       </View>
     );
   }
@@ -345,5 +345,8 @@ const styles = StyleSheet.create({
   },
   sectionHeader: {
     padding: padding.small,
+  },
+  sectionDivider: {
+    marginTop: padding.small,
   },
 });

@@ -58,7 +58,8 @@ import {
   tagTableName,
 } from '@customTypes/DatabaseElementTypes';
 import { TableManipulation } from './TableManipulation';
-import { ALL_MONTHS, EncodingSeparator, noteSeparator, textSeparator } from '@styles/typography';
+import { ALL_MONTHS } from '@utils/Constants';
+import { EncodingSeparator, noteSeparator, textSeparator } from '@utils/TextParsing';
 import {
   constructImageUri,
   deleteFile,

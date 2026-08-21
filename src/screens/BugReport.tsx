@@ -143,7 +143,7 @@ export function BugReport() {
         <View style={styles.screenshotsSection}>
           <View style={styles.screenshotsThumbnails}>
             {screenshots.map((uri, index) => (
-              <View key={uri} style={{ margin: padding.small }}>
+              <View key={uri} style={styles.screenshotThumbnail}>
                 <ImageThumbnail
                   uri={uri}
                   testID={screenTestId + `::${index}::Screenshots`}
@@ -202,5 +202,8 @@ const styles = StyleSheet.create({
   },
   addButton: {
     alignSelf: 'flex-start',
+  },
+  screenshotThumbnail: {
+    margin: padding.small,
   },
 });

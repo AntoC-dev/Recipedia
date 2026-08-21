@@ -57,7 +57,7 @@
  */
 
 import React, { useContext } from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { Divider, List, Switch } from 'react-native-paper';
 import { CopilotStep, walkthroughable } from 'react-native-copilot';
@@ -72,6 +72,7 @@ import { Icons } from '@assets/Icons';
 import Constants from 'expo-constants';
 import { TUTORIAL_STEPS } from '@utils/Constants';
 import { parametersLogger } from '@utils/logger';
+import { tabScreenBottomPadding, tabScreenEdges } from '@styles/spacing';
 
 /**
  * Parameters screen component - Main app settings and configuration hub
@@ -176,8 +177,8 @@ export function Parameters() {
   );
 
   return (
-    <ScreenWrapper edges={['top', 'left', 'right']}>
-      <ScrollView>
+    <ScreenWrapper edges={tabScreenEdges}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Appearance Section */}
         <List.Section>
           <List.Subheader testID={appearanceId + '::SubHeader'}>{t('appearance')}</List.Subheader>
@@ -289,5 +290,11 @@ export function Parameters() {
     </ScreenWrapper>
   );
 }
+
+const styles = StyleSheet.create({
+  scrollContent: {
+    paddingBottom: tabScreenBottomPadding,
+  },
+});
 
 export default Parameters;

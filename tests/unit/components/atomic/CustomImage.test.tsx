@@ -54,7 +54,7 @@ describe('CustomImage component behavior', () => {
     );
 
     const expoImage = getByTestId('Test::Image');
-    expect(expoImage.props.style.backgroundColor).toBe(customColor);
+    expect(expoImage).toHaveStyle({ backgroundColor: customColor });
   });
 
   it('applies size dimensions to wrapper when provided', () => {
@@ -133,8 +133,7 @@ describe('CustomImage component behavior', () => {
     const { getByTestId } = render(<CustomImage uri={dummyUri} testID={ID} />);
 
     const expoImage = getByTestId('Test::Image');
-    const style = expoImage.props.style;
-    expect(style.backgroundColor).toBe('#7c5800');
+    expect(expoImage).toHaveStyle({ backgroundColor: '#7c5800' });
   });
 
   it('shows placeholder when no uri is provided', () => {
@@ -142,7 +141,7 @@ describe('CustomImage component behavior', () => {
 
     expect(queryByTestId('Test::Placeholder')).toBeTruthy();
     const image = getByTestId('Test::Image');
-    expect(image.props.style.opacity).toBe(0);
+    expect(image).toHaveStyle({ opacity: 0 });
   });
 
   it('keeps decoded bitmaps in memory so scrolling back does not re-decode', () => {

@@ -14,7 +14,7 @@ import { ingredientTableElement, tagTableElement } from '@customTypes/DatabaseEl
 import { ValidationItemStatus, ValidationResolution } from '@customTypes/ValidationTypes';
 import { useI18n } from '@utils/i18n';
 import { padding } from '@styles/spacing';
-import { Icons } from '@assets/Icons';
+import { Icons, iconsSize } from '@assets/Icons';
 
 export type ValidationReviewItemProps = {
   testID: string;
@@ -29,8 +29,6 @@ export type ValidationReviewItemProps = {
   onSkip: () => void;
   onUndo: () => void;
 };
-
-const STATUS_ICON_SIZE = 20;
 
 /**
  * ValidationReviewItem component
@@ -127,11 +125,11 @@ export function ValidationReviewItem({
   const isResolved = status === 'resolved';
 
   return (
-    <Card style={[styles.card, { opacity: 0.6 }]} testID={testID}>
+    <Card style={[styles.card, styles.resolvedOpacity]} testID={testID}>
       <Card.Content style={styles.resolvedContent}>
         <Icon
           source={isResolved ? 'check-circle' : 'close-circle'}
-          size={STATUS_ICON_SIZE}
+          size={iconsSize.medium}
           color={isResolved ? colors.primary : colors.onSurfaceVariant}
         />
         <View style={styles.resolvedTextContainer}>
@@ -150,7 +148,7 @@ export function ValidationReviewItem({
         </View>
         <IconButton
           icon={Icons.undo}
-          size={STATUS_ICON_SIZE}
+          size={iconsSize.medium}
           onPress={onUndo}
           testID={`${testID}::UndoButton`}
         />
@@ -179,6 +177,9 @@ const styles = StyleSheet.create({
   },
   skipChip: {
     opacity: 0.7,
+  },
+  resolvedOpacity: {
+    opacity: 0.6,
   },
   resolvedContent: {
     flexDirection: 'row',

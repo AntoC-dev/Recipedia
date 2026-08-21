@@ -49,7 +49,7 @@ import {
   onlyDigitsDotsSpaces,
   replaceAllBackToLine,
   startsWithLetter,
-} from '@styles/typography';
+} from '@utils/TextParsing';
 
 import TextRecognition, {
   TextBlock,

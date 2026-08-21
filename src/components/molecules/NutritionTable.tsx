@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Card, Divider, SegmentedButtons, Text, useTheme } from 'react-native-paper';
 import { nutritionTableElement } from '@customTypes/DatabaseElementTypes';
 import { useI18n } from '@utils/i18n';
@@ -66,31 +66,16 @@ export function NutritionTable({
       <Card
         accessible={false}
         mode={'elevated'}
-        style={{ borderWidth: 0.5, borderColor: colors.outline }}
+        style={[styles.card, { borderColor: colors.outline }]}
         testID={testId}
       >
         <Card.Content>
-          <Text
-            variant='headlineSmall'
-            style={{
-              textAlign: 'center',
-            }}
-            testID={testId + '::Title'}
-          >
+          <Text variant='headlineSmall' style={styles.title} testID={testId + '::Title'}>
             {t(translationPrefix + 'title')}
           </Text>
 
           {isEditable ? (
-            <Text
-              variant='bodyMedium'
-              style={{
-                textAlign: 'center',
-                paddingBottom: padding.medium,
-                opacity: 0.7,
-                fontStyle: 'italic',
-              }}
-              testID={testId + '::Subtitle'}
-            >
+            <Text variant='bodyMedium' style={styles.subtitle} testID={testId + '::Subtitle'}>
               {t(translationPrefix + 'per100g')}
             </Text>
           ) : (
@@ -237,3 +222,18 @@ export function NutritionTable({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    borderWidth: 0.5,
+  },
+  title: {
+    textAlign: 'center',
+  },
+  subtitle: {
+    textAlign: 'center',
+    paddingBottom: padding.medium,
+    opacity: 0.7,
+    fontStyle: 'italic',
+  },
+});

@@ -542,9 +542,10 @@ describe('VerticalBottomButtons Component', () => {
     test('spaces the FAB off the tab bar without restating the safe-area inset', () => {
       const { getByTestId } = renderWithProvider(<VerticalBottomButtons />, 128);
 
-      expect(getByTestId('ExpandButton').props.style).toEqual(
-        expect.objectContaining({ marginBottom: padding.small, marginRight: padding.small })
-      );
+      expect(getByTestId('ExpandButton')).toHaveStyle({
+        marginBottom: padding.small,
+        marginRight: padding.small,
+      });
     });
 
     test('anchors the tutorial highlight to the FAB, not to the tab bar', async () => {

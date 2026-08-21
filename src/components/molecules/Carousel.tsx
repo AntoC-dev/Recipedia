@@ -35,7 +35,7 @@
  */
 
 import React from 'react';
-import { FlatList, ListRenderItemInfo, View } from 'react-native';
+import { FlatList, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { padding } from '@styles/spacing';
 import { RecipeCard } from '@components/molecules/RecipeCard';
@@ -64,7 +64,7 @@ export function Carousel(props: CarouselItemProps) {
         horizontal={true}
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item, idx) => item.id?.toString() ?? item.title + idx}
-        contentContainerStyle={{ paddingHorizontal: padding.small }}
+        contentContainerStyle={styles.content}
         renderItem={({ item, index }: ListRenderItemInfo<recipeTableElement>) => (
           <RecipeCard testId={props.testID + `::Card::${index}`} size={'small'} recipe={item} />
         )}
@@ -72,5 +72,11 @@ export function Carousel(props: CarouselItemProps) {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  content: {
+    paddingHorizontal: padding.small,
+  },
+});
 
 export default Carousel;

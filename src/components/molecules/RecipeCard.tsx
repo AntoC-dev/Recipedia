@@ -35,7 +35,7 @@ import React from 'react';
 import { Card, Text, useTheme } from 'react-native-paper';
 import type { TextProps } from 'react-native-paper';
 import { padding, screenWidth } from '@styles/spacing';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { StackScreenNavigation } from '@customTypes/ScreenTypes';
 import { useNavigation } from '@react-navigation/native';
@@ -79,12 +79,10 @@ export function RecipeCard({ testId, size, recipe }: RecipeCardProps) {
       accessible={false}
       testID={testId + `::${recipe.title}`}
       mode={'outlined'}
-      style={{
-        margin: padding.small,
-        width: cardWidth,
-        backgroundColor: colors.surface,
-        borderRadius: radius,
-      }}
+      style={[
+        styles.card,
+        { width: cardWidth, backgroundColor: colors.surface, borderRadius: radius },
+      ]}
       onPress={() => {
         navigate('RecipeView', { recipe });
       }}
@@ -104,17 +102,13 @@ export function RecipeCard({ testId, size, recipe }: RecipeCardProps) {
         accessible={true}
         variant={titleVariant}
         numberOfLines={titleLines}
-        style={{
-          padding: padding.medium,
-          lineHeight: titleFont.lineHeight,
-          minHeight: titleMinHeight,
-        }}
+        style={[styles.title, { lineHeight: titleFont.lineHeight, minHeight: titleMinHeight }]}
       >
         {recipe.title}
       </Text>
       {size === 'medium' && (
         <View>
-          <Card.Content style={{ padding: padding.medium }}>
+          <Card.Content style={styles.content}>
             <Text
               style={{ color: colors.primary }}
               numberOfLines={1}
@@ -125,11 +119,11 @@ export function RecipeCard({ testId, size, recipe }: RecipeCardProps) {
             </Text>
           </Card.Content>
           <Card.Actions>
-            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
+            <View style={styles.metaRow}>
               <Text
                 testID={testId + '::PrepTime'}
                 variant={'bodySmall'}
-                style={{ marginLeft: -padding.verySmall }}
+                style={styles.prepTime}
                 accessible={true}
               >
                 {t('recipeCard.prepTime', { time: recipe.time })}
@@ -137,7 +131,7 @@ export function RecipeCard({ testId, size, recipe }: RecipeCardProps) {
               <Text
                 testID={testId + '::Persons'}
                 variant={'bodySmall'}
-                style={{ marginRight: -padding.verySmall }}
+                style={styles.persons}
                 accessible={true}
               >
                 {t('recipeCard.persons', { count: recipe.persons })}
@@ -149,5 +143,28 @@ export function RecipeCard({ testId, size, recipe }: RecipeCardProps) {
     </Card>
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    margin: padding.small,
+  },
+  title: {
+    padding: padding.medium,
+  },
+  content: {
+    padding: padding.medium,
+  },
+  metaRow: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  prepTime: {
+    marginLeft: -padding.verySmall,
+  },
+  persons: {
+    marginRight: -padding.verySmall,
+  },
+});
 
 export default RecipeCard;

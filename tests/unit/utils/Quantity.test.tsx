@@ -8,6 +8,13 @@ import {
 } from '@utils/Quantity';
 import { nutritionTableElement } from '@customTypes/DatabaseElementTypes';
 import { defaultValueNumber } from '@utils/Constants';
+import { formatDecimalForDisplay } from '@utils/NumberFormat';
+import * as Localization from 'expo-localization';
+import { useArabicDecimalRegion, useDotDecimalRegion } from '@mocks/deps/expo-localization-mock';
+
+jest.mock('expo-localization', () =>
+  require('@mocks/deps/expo-localization-mock').expoLocalizationMock()
+);
 
 describe('scaleQuantityForPersons', () => {
   test('returns original when persons are equal', () => {
@@ -129,18 +136,18 @@ describe('scaleQuantityForPersons', () => {
 
 describe('formatQuantityForDisplay', () => {
   test('formats 4 decimals to 2 for display', () => {
-    expect(formatQuantityForDisplay('133,3333')).toBe('133,33');
-    expect(formatQuantityForDisplay('66,6667')).toBe('66,67');
+    expect(formatQuantityForDisplay('133,3333')).toBe('133.33');
+    expect(formatQuantityForDisplay('66,6667')).toBe('66.67');
   });
 
   test('rounds correctly when formatting', () => {
-    expect(formatQuantityForDisplay('133,3334')).toBe('133,33');
-    expect(formatQuantityForDisplay('133,3366')).toBe('133,34');
+    expect(formatQuantityForDisplay('133,3334')).toBe('133.33');
+    expect(formatQuantityForDisplay('133,3366')).toBe('133.34');
   });
 
   test('preserves unit suffix', () => {
-    expect(formatQuantityForDisplay('133,3333 g')).toBe('133,33 g');
-    expect(formatQuantityForDisplay('66,6667 cup')).toBe('66,67 cup');
+    expect(formatQuantityForDisplay('133,3333 g')).toBe('133.33 g');
+    expect(formatQuantityForDisplay('66,6667 cup')).toBe('66.67 cup');
   });
 
   test('handles integer values', () => {
@@ -149,7 +156,7 @@ describe('formatQuantityForDisplay', () => {
   });
 
   test('handles dot decimal input', () => {
-    expect(formatQuantityForDisplay('133.3333')).toBe('133,33');
+    expect(formatQuantityForDisplay('133.3333')).toBe('133.33');
   });
 
   test('returns empty string unchanged', () => {
@@ -565,6 +572,22 @@ describe('parseQuantity', () => {
     it('treats sign followed by non-digit as empty', () => {
       expect(parseQuantity('-')).toBe('');
       expect(parseQuantity('+')).toBe('');
+    });
+  });
+
+  describe('regions whose decimal separator is neither dot nor comma', () => {
+    afterEach(() => {
+      useDotDecimalRegion(Localization as unknown as { getLocales: jest.Mock });
+    });
+
+    it('parses back what formatDecimalForDisplay rendered', () => {
+      useArabicDecimalRegion(Localization as unknown as { getLocales: jest.Mock });
+      expect(parseQuantity(formatDecimalForDisplay(1.5, 2))).toBe('1.5');
+    });
+
+    it('keeps the fractional part of a directly typed value', () => {
+      useArabicDecimalRegion(Localization as unknown as { getLocales: jest.Mock });
+      expect(parseQuantity('12٫75 g')).toBe('12.75');
     });
   });
 });

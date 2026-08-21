@@ -41,7 +41,7 @@
 
 import React, { useState } from 'react';
 import { useResetOnChange } from '@hooks/useResetOnChange';
-import { StyleProp, View, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Image } from 'expo-image';
 import { Icon, useTheme } from 'react-native-paper';
 import { Icons } from '@assets/Icons';
@@ -107,12 +107,10 @@ export function CustomImage({
     <View
       style={[
         dimensions,
+        styles.container,
         {
           backgroundColor: backgroundColor || colors.surfaceVariant,
           borderRadius,
-          justifyContent: 'center',
-          alignItems: 'center',
-          overflow: 'hidden',
         },
       ]}
       testID={testID}
@@ -126,13 +124,14 @@ export function CustomImage({
         />
       )}
       <Image
-        style={{
-          width: '100%',
-          height: '100%',
-          backgroundColor: backgroundColor || colors.tertiary,
-          position: showPlaceholder ? 'absolute' : 'relative',
-          opacity: showPlaceholder ? 0 : 1,
-        }}
+        style={[
+          styles.image,
+          {
+            backgroundColor: backgroundColor || colors.tertiary,
+            position: showPlaceholder ? 'absolute' : 'relative',
+            opacity: showPlaceholder ? 0 : 1,
+          },
+        ]}
         testID={testID + '::Image'}
         source={uri}
         contentFit={contentFit}
@@ -145,5 +144,17 @@ export function CustomImage({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+  },
+});
 
 export default CustomImage;

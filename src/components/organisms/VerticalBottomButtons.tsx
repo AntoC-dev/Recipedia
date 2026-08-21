@@ -30,7 +30,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useResetOnChange } from '@hooks/useResetOnChange';
 import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { CopilotStep, walkthroughable } from 'react-native-copilot';
 import { useSafeCopilot } from '@hooks/useSafeCopilot';
 import { useReducedMotion } from '@hooks/useReducedMotion';
@@ -43,7 +43,7 @@ import { Icons } from '@assets/Icons';
 import { StackScreenNavigation } from '@customTypes/ScreenTypes';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { FAB, Portal, useTheme } from 'react-native-paper';
-import { padding } from '@styles/spacing';
+import { padding, radius } from '@styles/spacing';
 import { UrlInputDialog } from '@components/dialogs/UrlInputDialog';
 import { AuthenticationDialog } from '@components/dialogs/AuthenticationDialog';
 
@@ -53,6 +53,10 @@ const ACTION_BUTTON_SPACING = 16;
 const ACTION_BUTTON_COUNT = 4;
 /** Gap below the main FAB. Shared so the portalled FAB and the tutorial highlight align. */
 const FAB_BOTTOM_OFFSET = padding.small;
+const COPILOT_HEIGHT =
+  MAIN_FAB_SIZE +
+  (ACTION_BUTTON_SIZE + ACTION_BUTTON_SPACING) * ACTION_BUTTON_COUNT +
+  ACTION_BUTTON_SPACING;
 
 /** TestIDs for FAB elements - used for E2E testing */
 const FAB_TEST_IDS = {
@@ -81,10 +85,6 @@ function VerticalBottomButtons() {
   const { colors } = useTheme();
   const { t } = useI18n();
   const tabBarHeight = React.useContext(BottomTabBarHeightContext) ?? 0;
-  const copilotHeight =
-    MAIN_FAB_SIZE +
-    (ACTION_BUTTON_SIZE + ACTION_BUTTON_SPACING) * ACTION_BUTTON_COUNT +
-    ACTION_BUTTON_SPACING;
 
   const copilotData = useSafeCopilot();
   const copilotEvents = copilotData?.copilotEvents;
@@ -227,14 +227,7 @@ function VerticalBottomButtons() {
             <CopilotView
               key='home-copilot-view'
               testID={'HomeTutorial'}
-              style={{
-                position: 'absolute',
-                bottom: FAB_BOTTOM_OFFSET,
-                left: padding.small,
-                right: padding.small,
-                height: copilotHeight,
-                pointerEvents: 'none',
-              }}
+              style={styles.copilotHighlight}
             />
           </CopilotStep>
         </View>
@@ -253,7 +246,7 @@ function VerticalBottomButtons() {
                   label: t('fab.addManually'),
                   onPress: () => navigate('RecipeAddManual'),
                   ...fabTestProps(FAB_TEST_IDS.edit),
-                  style: { borderRadius: 999 },
+                  style: { borderRadius: radius.full },
                   size: 'medium',
                 },
                 {
@@ -261,7 +254,7 @@ function VerticalBottomButtons() {
                   label: t('fab.addFromUrl'),
                   onPress: handleOpenUrlDialog,
                   ...fabTestProps(FAB_TEST_IDS.url),
-                  style: { borderRadius: 999 },
+                  style: { borderRadius: radius.full },
                   size: 'medium',
                 },
                 {
@@ -269,7 +262,7 @@ function VerticalBottomButtons() {
                   label: t('fab.pickFromGallery'),
                   onPress: () => void pickImageAndOpenNewRecipe(),
                   ...fabTestProps(FAB_TEST_IDS.gallery),
-                  style: { borderRadius: 999 },
+                  style: { borderRadius: radius.full },
                   size: 'medium',
                 },
                 {
@@ -277,19 +270,14 @@ function VerticalBottomButtons() {
                   label: t('fab.takePhoto'),
                   onPress: () => void takePhotoAndOpenNewRecipe(),
                   ...fabTestProps(FAB_TEST_IDS.camera),
-                  style: { borderRadius: 999 },
+                  style: { borderRadius: radius.full },
                   size: 'medium',
                 },
               ]}
               onStateChange={({ open: isOpen }) => setOpen(isOpen)}
               // Replaces Paper's own insets.bottom padding, already inside the measured height.
               style={{ paddingBottom: tabBarHeight }}
-              fabStyle={{
-                marginBottom: FAB_BOTTOM_OFFSET,
-                marginRight: padding.small,
-                backgroundColor: colors.primaryContainer,
-                borderRadius: 999,
-              }}
+              fabStyle={[styles.fab, { backgroundColor: colors.primaryContainer }]}
               color={colors.onPrimaryContainer}
             />
           </Portal>
@@ -315,5 +303,21 @@ function VerticalBottomButtons() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  copilotHighlight: {
+    position: 'absolute',
+    bottom: FAB_BOTTOM_OFFSET,
+    left: padding.small,
+    right: padding.small,
+    height: COPILOT_HEIGHT,
+    pointerEvents: 'none',
+  },
+  fab: {
+    marginBottom: FAB_BOTTOM_OFFSET,
+    marginRight: padding.small,
+    borderRadius: radius.full,
+  },
+});
 
 export default VerticalBottomButtons;

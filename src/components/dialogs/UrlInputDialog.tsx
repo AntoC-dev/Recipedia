@@ -27,6 +27,7 @@ import { ActivityIndicator, Button, Dialog, HelperText, Portal, Text } from 'rea
 import { useI18n } from '@utils/i18n';
 import { isValidUrl, normalizeUrl } from '@utils/UrlHelpers';
 import { CustomTextInput } from '@components/atomic/CustomTextInput';
+import { layout } from '@styles/layout';
 import { padding } from '@styles/spacing';
 
 /**
@@ -119,7 +120,7 @@ export function UrlInputDialog({
           )}
         </Dialog.Content>
         <Dialog.Actions>
-          <View style={styles.dialogActions}>
+          <View style={layout.dialogActions}>
             <Button
               testID={modalTestId + '::CancelButton'}
               mode='outlined'
@@ -151,11 +152,5 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: padding.medium,
-  },
-  dialogActions: {
-    flex: 1,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
   },
 });

@@ -1,0 +1,12 @@
+platform:
+  ios:
+    disableAnimations: true
+  android:
+    disableAnimations: true
+
+flows:
+  - cases/locale-fr/ci/*
+
+executionOrder:
+  flowsOrder:
+    - "1 - Regional Decimal Separator Flow"

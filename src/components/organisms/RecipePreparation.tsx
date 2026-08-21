@@ -25,7 +25,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { HelperText, Text } from 'react-native-paper';
 import { preparationStepElement } from '@customTypes/DatabaseElementTypes';
-import { recipeTableStyles, recipeTextRenderStyles } from '@styles/recipeComponents';
+import { recipeButtonStyles, recipeTextRenderStyles } from '@styles/recipeComponents';
 import { RoundButton } from '@components/atomic/RoundButton';
 import { Icons } from '@assets/Icons';
 import { CustomTextInput } from '@components/atomic/CustomTextInput';
@@ -124,7 +124,6 @@ export function PreparationSection({ prefixText, children, onAddStep }: Preparat
       {children}
       <RoundButton
         testID={`${TEST_ID}::AddButton`}
-        size='medium'
         icon={Icons.plusIcon}
         onPressFunction={onAddStep}
         style={recipeTextRenderStyles.roundButtonPadding}
@@ -151,18 +150,16 @@ export function PreparationEmptyAdd({
       >
         {prefixText}
       </Text>
-      <View style={recipeTableStyles.roundButtonsContainer}>
+      <View style={recipeButtonStyles.roundButtonsContainer}>
         <RoundButton
           testID={`${TEST_ID}::OpenModal`}
-          style={recipeTableStyles.roundButton}
-          size='medium'
+          style={recipeButtonStyles.roundButton}
           icon={Icons.scanImageIcon}
           onPressFunction={openModal}
         />
         <RoundButton
           testID={`${TEST_ID}::AddButton`}
-          style={recipeTableStyles.roundButton}
-          size='medium'
+          style={recipeButtonStyles.roundButton}
           icon={Icons.pencilIcon}
           onPressFunction={onAddStep}
         />

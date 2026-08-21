@@ -72,7 +72,6 @@ describe('RecipeText Component', () => {
     queryByTestId: any,
     testID: string = 'test-recipe-text'
   ) => {
-    expect(getByTestId(testID + '::OpenModal::RoundButton::Size').props.children).toBe('medium');
     expect(getByTestId(testID + '::OpenModal::RoundButton::Icon').props.children).toBe('line-scan');
     expect(queryByTestId(testID + '::CustomTextInput')).toBeNull();
   };

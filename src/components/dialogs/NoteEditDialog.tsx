@@ -23,6 +23,7 @@ import { StyleSheet, View } from 'react-native';
 import { Button, Dialog, Portal, Text } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
 import { CustomTextInput } from '@components/atomic/CustomTextInput';
+import { layout } from '@styles/layout';
 import { padding } from '@styles/spacing';
 
 /**
@@ -101,7 +102,7 @@ export function NoteEditDialog({
           />
         </Dialog.Content>
         <Dialog.Actions>
-          <View style={styles.dialogActions} accessible={false}>
+          <View style={layout.dialogActions} accessible={false}>
             <Button testID={modalTestId + '::CancelButton'} mode='outlined' onPress={handleDismiss}>
               {t('cancel')}
             </Button>
@@ -118,11 +119,5 @@ export function NoteEditDialog({
 const styles = StyleSheet.create({
   ingredientName: {
     marginBottom: padding.small,
-  },
-  dialogActions: {
-    flex: 1,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
   },
 });
