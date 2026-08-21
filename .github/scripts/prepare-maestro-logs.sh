@@ -13,12 +13,11 @@ fi
 
 cd "$OUTPUT_DIR"
 
-# Flatten structure - move logs and screenshots from .maestro/tests/*/ to root
+# Hoist the session's contents to the artifact root. Move whole entries, not
+# matching extensions: since 2.7.0 each flow's screenshots and hierarchies live in
+# its own subdirectory, which extension globs skipped and the rm below then deleted.
 if [ -d ".maestro/tests" ]; then
-  mv .maestro/tests/*/maestro.log . 2>/dev/null || true
-  mv .maestro/tests/*/*.png . 2>/dev/null || true
-  mv .maestro/tests/*/*.json . 2>/dev/null || true
-  mv .maestro/tests/*/*.html . 2>/dev/null || true
+  find .maestro/tests -mindepth 2 -maxdepth 2 -exec mv {} . \; || true
   rm -rf .maestro
 fi
 
