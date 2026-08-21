@@ -1,3 +1,11 @@
+## [2.52.4](https://github.com/AntoC-dev/Recipedia/compare/v2.52.3...v2.52.4) (2026-08-21)
+
+### Bug Fixes
+
+* **e2e:** stop re-centering an already visible ingredients row ([a7357dc](https://github.com/AntoC-dev/Recipedia/commit/a7357dc22fcb5bede47c095dc6c65ae2559b0777))
+* **nutrition:** render decimals in the device's regional format ([37332ec](https://github.com/AntoC-dev/Recipedia/commit/37332ec55b1437c1d2bc2a14303609b8b5b9bd5a))
+* **quantity:** parse back every regional decimal separator ([87672c1](https://github.com/AntoC-dev/Recipedia/commit/87672c10ebd9434f57583dc067819e9070288712))
+
 ## [2.52.3](https://github.com/AntoC-dev/Recipedia/compare/v2.52.2...v2.52.3) (2026-08-20)
 
 ### Bug Fixes
