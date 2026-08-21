@@ -208,5 +208,5 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: maestro-logs-performance
-          path: maestro_logs_performance.zip
+          path: maestro_logs_performance/
           retention-days: 7
