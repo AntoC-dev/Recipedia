@@ -39,6 +39,10 @@ appId: "com.recipedia"
     label: "Tap on fat input"
 
 - runFlow:
+    file: "../../waitForKeyboard.yaml"
+    label: "Wait for numeric keyboard to appear"
+
+- runFlow:
     file: "../../replaceAndCommitText.yaml"
     env:
       TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::NumericTextInput"
@@ -65,6 +69,10 @@ appId: "com.recipedia"
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::NumericTextInput"
     label: "Tap on protein input"
+
+- runFlow:
+    file: "../../waitForKeyboard.yaml"
+    label: "Wait for numeric keyboard to appear"
 
 - runFlow:
     file: "../../replaceAndCommitText.yaml"
