@@ -113,7 +113,10 @@ recipe-edit, search, settings, shopping, tags-db, web, web-edge-cases
 ```
 
 - Android: `ubuntu-latest`, API 34 Google APIs x86_64 emulator, KVM enabled, 4 GB RAM, 4 cores
-- iOS: `macos-15`, iPhone 16e simulator, iOS 18.6, Xcode 26.2, hardware keyboard disabled, animations reduced
+- iOS: `macos-26`, iPhone 16e simulator, iOS 26.2, Xcode 26.2, hardware keyboard disabled, animations reduced,
+  Liquid Glass flattened (`ReduceTransparency`), status bar frozen
+  - Runtime is pinned to 26.2 exactly, so local sims reproduce CI. iPhone 16e ships only on that runtime
+    (26.4/26.5 carry iPhone 17e instead), so a range would buy no flexibility.
 
 Each suite uploads:
 - `maestro-logs-{platform}-{suite}.zip` — Maestro step logs + app logs

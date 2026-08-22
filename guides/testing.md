@@ -167,7 +167,7 @@ E2E tests are YAML-based Maestro flows, organized into named suites. Each suite 
 
 Available suites: `app-init`, `bulk-import`, `duplicates-ingredient`, `duplicates-recipe`, `duplicates-tag`, `ingredient-dialog`, `ingredients-db`, `menu`, `ocr`, `recipe-create`, `recipe-edit`, `recipe-readonly`, `search`, `settings`, `shopping`, `tags-db`, `web`, `web-edge-cases`, `performance`.
 
-CI runs every suite in a matrix job (fail-fast: false), on both Android (API 34) and iOS (iPhone 16e, iOS 18.6). Each test case has a `ci/` wrapper that adds `retry: maxRetries: 2` for infrastructure flakiness without affecting local runs.
+CI runs every suite in a matrix job (fail-fast: false), on both Android (API 34) and iOS (iPhone 16e, iOS 26.2). Each test case has a `ci/` wrapper that adds `retry: maxRetries: 2` for infrastructure flakiness without affecting local runs.
 
 For full architecture, TestID conventions, OCR patterns, and troubleshooting see [tests/e2e/E2E_TESTING.md](../tests/e2e/E2E_TESTING.md).
 
@@ -212,7 +212,7 @@ All test jobs are defined in `.github/workflows/build-test.yml` and `.github/wor
 | `integration-tests` | push/PR to main | `npm run test:integration`; uploads JUnit summary |
 | `reassure-performance` | push/PR to main | Runs Reassure against base SHA; posts compact diff comment on PR |
 | `e2e-tests-android` | after APK build | Runs all suites in parallel matrix on Android API 34 emulator |
-| `e2e-tests-ios` | after iOS build | Runs all suites in parallel matrix on iOS simulator (macos-15) |
+| `e2e-tests-ios` | after iOS build | Runs all suites in parallel matrix on iOS simulator (macos-26) |
 | `e2e-tests-android-performance` | after perf APK build | Runs `performance` suite only |
 | `merge-test-artifacts` | always, after E2E | Merges per-suite JUnit reports and Maestro logs into single artifacts |
 | `test-result-summary` | always, after merge | Posts combined unit + E2E test summary comment on PRs |
