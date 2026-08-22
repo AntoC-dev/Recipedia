@@ -48,6 +48,25 @@ const shapeWidth: number = 1;
 /** Responsive width for small-sized card buttons */
 export const smallCardWidth = 85;
 
+/** Material minimum width of a button, in pixels */
+const buttonMinWidth = 64;
+
+/**
+ * Material button metrics for dialog actions.
+ *
+ * Paper's `Dialog.Actions` clones `compact` onto every action, which shrinks the
+ * label spacing to 8px and removes the minimum width. Composing these styles on
+ * the action buttons restores the Material sizing that `compact` strips.
+ */
+export const dialogActionStyles = StyleSheet.create({
+  button: {
+    minWidth: buttonMinWidth,
+  },
+  label: {
+    marginHorizontal: padding.veryLarge,
+  },
+});
+
 /**
  * Creates the side-dependent geometry for a square button.
  *

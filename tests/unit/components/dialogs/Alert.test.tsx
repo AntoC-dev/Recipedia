@@ -1,5 +1,7 @@
 import { fireEvent, render } from '@testing-library/react-native';
+import { StyleSheet, ViewStyle } from 'react-native';
 import Alert, { AlertProps } from '@components/dialogs/Alert';
+import { dialogActionStyles } from '@styles/buttons';
 import React from 'react';
 
 describe('Alert Dialog', () => {
@@ -228,5 +230,33 @@ describe('Alert Dialog', () => {
 
     expect(cancelButton).toBeTruthy();
     expect(confirmButton).toBeTruthy();
+  });
+
+  test('restores the Material button sizing that Dialog.Actions strips with compact', () => {
+    const { getByTestId } = renderAlert({
+      cancelText: 'Cancel',
+      onCancel: mockOnCancel,
+    });
+
+    const cancelStyle = StyleSheet.flatten(
+      getByTestId('test-alert::Dialog::Cancel').props.style as ViewStyle
+    );
+    const confirmStyle = StyleSheet.flatten(
+      getByTestId('test-alert::Dialog::Confirm').props.style as ViewStyle
+    );
+
+    expect(cancelStyle).toMatchObject(StyleSheet.flatten(dialogActionStyles.button));
+    expect(confirmStyle).toMatchObject(StyleSheet.flatten(dialogActionStyles.button));
+  });
+
+  test('leaves the actions row to Dialog.Actions instead of nesting its own layout', () => {
+    const { getByTestId, queryByTestId } = renderAlert({
+      cancelText: 'Cancel',
+      onCancel: mockOnCancel,
+    });
+
+    expect(queryByTestId('test-alert::Dialog::Actions')).toBeNull();
+    expect(getByTestId('test-alert::Dialog::Cancel')).toBeTruthy();
+    expect(getByTestId('test-alert::Dialog::Confirm')).toBeTruthy();
   });
 });

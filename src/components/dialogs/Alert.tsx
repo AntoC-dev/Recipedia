@@ -43,7 +43,8 @@
 
 import React from 'react';
 import { Button, Dialog, Portal, Text } from 'react-native-paper';
-import { StyleProp, View, ViewStyle } from 'react-native';
+import { StyleProp, ViewStyle } from 'react-native';
+import { dialogActionStyles } from '@styles/buttons';
 
 /**
  * Props for the Alert component
@@ -105,16 +106,6 @@ export function Alert({
 
   const dialogTestId = testId + '::Dialog';
 
-  // Let style by default if cancel not there. Otherwise, put cancel on the left and confirm on the right
-  const actionStyle: StyleProp<ViewStyle> = cancelText
-    ? {
-        flex: 1,
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-      }
-    : {};
-
   return (
     <Portal>
       <Dialog visible={isVisible} onDismiss={handleDismiss} style={style}>
@@ -125,16 +116,26 @@ export function Alert({
           </Text>
         </Dialog.Content>
         <Dialog.Actions>
-          <View style={actionStyle}>
-            {cancelText && (
-              <Button testID={dialogTestId + '::Cancel'} mode={'outlined'} onPress={handleCancel}>
-                {cancelText}
-              </Button>
-            )}
-            <Button testID={dialogTestId + '::Confirm'} mode={'contained'} onPress={handleConfirm}>
-              {confirmText}
+          {cancelText && (
+            <Button
+              testID={dialogTestId + '::Cancel'}
+              mode={'outlined'}
+              style={dialogActionStyles.button}
+              labelStyle={dialogActionStyles.label}
+              onPress={handleCancel}
+            >
+              {cancelText}
             </Button>
-          </View>
+          )}
+          <Button
+            testID={dialogTestId + '::Confirm'}
+            mode={'contained'}
+            style={dialogActionStyles.button}
+            labelStyle={dialogActionStyles.label}
+            onPress={handleConfirm}
+          >
+            {confirmText}
+          </Button>
         </Dialog.Actions>
       </Dialog>
     </Portal>
