@@ -37,7 +37,7 @@ export default {
     content:
       'Cette recette contient des modifications non enregistrées. Si vous quittez maintenant, elles seront perdues.',
     discard: 'Abandonner',
-    keepEditing: 'Continuer la modification',
+    keepEditing: 'Continuer',
   },
   ocrRecipe: {
     explanationText: 'Choisissez une image:',
