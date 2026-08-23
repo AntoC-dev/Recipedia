@@ -12,7 +12,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeUnsavedChanges::Dialog::Cancel-text"
-    text: "Continuer la modification"
+    text: "Continuer"
     label: "Keep editing button is rendered"
 
 - assertVisible:
