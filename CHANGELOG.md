@@ -1,3 +1,11 @@
+## [2.52.5](https://github.com/AntoC-dev/Recipedia/compare/v2.52.4...v2.52.5) (2026-08-23)
+
+### Bug Fixes
+
+* **dialogs:** let Dialog.Actions lay out the Alert buttons ([9ccfd64](https://github.com/AntoC-dev/Recipedia/commit/9ccfd645682ccf6107a39a7f6d7c53c112321cb5))
+* **dialogs:** let Dialog.Actions lay out the Alert buttons ([#557](https://github.com/AntoC-dev/Recipedia/issues/557)) ([4cc75e7](https://github.com/AntoC-dev/Recipedia/commit/4cc75e751958030ae4db9174e20c85a8add67a3c))
+* **i18n:** shorten the French keep-editing action label ([8dc9e4e](https://github.com/AntoC-dev/Recipedia/commit/8dc9e4eccfc86500ef07bed21570c1afcff3c827))
+
 ## [2.52.4](https://github.com/AntoC-dev/Recipedia/compare/v2.52.3...v2.52.4) (2026-08-21)
 
 ### Bug Fixes
