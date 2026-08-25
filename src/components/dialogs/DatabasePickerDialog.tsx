@@ -24,6 +24,7 @@ import { Button, Dialog, List, Portal, Searchbar, Text, useTheme } from 'react-n
 import { FlashList } from '@shopify/flash-list';
 import { useI18n } from '@utils/i18n';
 import { padding, screenHeight } from '@styles/spacing';
+import { scrollDecelerationRate } from '@utils/Constants';
 
 /**
  * Props for the DatabasePickerDialog component
@@ -111,6 +112,7 @@ export function DatabasePickerDialog<T extends { name: string }>({
           />
           <View style={styles.searchResults}>
             <FlashList
+              decelerationRate={scrollDecelerationRate}
               keyboardDismissMode='on-drag'
               data={filteredItems}
               keyExtractor={(item, index) => `${item.name}-${index}`}

@@ -94,6 +94,7 @@ import { RecipeIngredientsField } from '@screens/recipe/fields/IngredientsField'
 import { IngredientArrayActionsProvider } from '@screens/recipe/fields/IngredientArrayActionsContext';
 import { RecipePreparationField } from '@screens/recipe/fields/PreparationField';
 import type { OcrModalTarget } from '@utils/OCR';
+import { scrollDecelerationRate } from '@utils/Constants';
 
 /**
  * Identifies which editable route is being rendered. Drives the AppBar
@@ -523,6 +524,7 @@ function RecipeFormBody({
         />
 
         <ScrollView
+          decelerationRate={scrollDecelerationRate}
           horizontal={false}
           showsVerticalScrollIndicator={false}
           style={[layout.flexFill, { backgroundColor: colors.background }]}

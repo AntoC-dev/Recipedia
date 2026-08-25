@@ -65,6 +65,7 @@ import { useSeasonFilter } from '@context/SeasonFilterContext';
 import { useRecipes } from '@hooks/useRecipes';
 import { useIngredients } from '@hooks/useIngredients';
 import { useTags } from '@hooks/useTags';
+import { scrollDecelerationRate } from '@utils/Constants';
 
 const homeId = 'Home';
 const recommandationId = homeId + '::RecipeRecommendation';
@@ -168,6 +169,7 @@ export function Home() {
         <RecommendationsSkeleton />
       ) : (
         <FlatList
+          decelerationRate={scrollDecelerationRate}
           data={recommendations}
           renderItem={({ item }) => (
             <RecipeRecommendation

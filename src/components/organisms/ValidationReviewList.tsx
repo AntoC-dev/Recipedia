@@ -35,6 +35,7 @@ import { useIngredients } from '@hooks/useIngredients';
 import { useI18n } from '@utils/i18n';
 import { padding } from '@styles/spacing';
 import { Icons } from '@assets/Icons';
+import { scrollDecelerationRate } from '@utils/Constants';
 
 const LIST_BOTTOM_PADDING = 80;
 
@@ -238,6 +239,7 @@ export function ValidationReviewList({
   return (
     <View style={styles.container}>
       <FlashList
+        decelerationRate={scrollDecelerationRate}
         data={listData}
         keyExtractor={(item, index) => `${item.sectionType}-${item.kind}-${index}`}
         renderItem={({ item }) => (

@@ -75,7 +75,7 @@ import { ShoppingListItem } from '@components/molecules/ShoppingListItem';
 import { useShoppingCategories } from '@hooks/useCategories';
 import { Icons, iconsSize } from '@assets/Icons';
 import { Alert } from '@components/dialogs/Alert';
-import { TUTORIAL_DEMO_INTERVAL, TUTORIAL_STEPS } from '@utils/Constants';
+import { TUTORIAL_DEMO_INTERVAL, TUTORIAL_STEPS, scrollDecelerationRate } from '@utils/Constants';
 import { padding, tabScreenBottomPadding, tabScreenEdges } from '@styles/spacing';
 import { layout } from '@styles/layout';
 import { shoppingLogger } from '@utils/logger';
@@ -304,6 +304,7 @@ export function Shopping() {
         </View>
       ) : (
         <SectionList
+          decelerationRate={scrollDecelerationRate}
           testID={sectionId}
           contentContainerStyle={styles.listContent}
           sections={sections}

@@ -70,7 +70,7 @@ import { useNavigation } from '@react-navigation/native';
 import { DarkModeContext } from '@context/DarkModeContext';
 import { Icons } from '@assets/Icons';
 import Constants from 'expo-constants';
-import { TUTORIAL_STEPS } from '@utils/Constants';
+import { TUTORIAL_STEPS, scrollDecelerationRate } from '@utils/Constants';
 import { parametersLogger } from '@utils/logger';
 import { tabScreenBottomPadding, tabScreenEdges } from '@styles/spacing';
 
@@ -178,7 +178,10 @@ export function Parameters() {
 
   return (
     <ScreenWrapper edges={tabScreenEdges}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        decelerationRate={scrollDecelerationRate}
+        contentContainerStyle={styles.scrollContent}
+      >
         {/* Appearance Section */}
         <List.Section>
           <List.Subheader testID={appearanceId + '::SubHeader'}>{t('appearance')}</List.Subheader>

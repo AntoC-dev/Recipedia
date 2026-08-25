@@ -45,7 +45,7 @@ import { TagButton } from '@components/atomic/TagButton';
 import { FilterToggleButton } from '@components/atomic/FilterToggleButton';
 import { Icons } from '@assets/Icons';
 import { useI18n } from '@utils/i18n';
-import { TUTORIAL_DEMO_INTERVAL, TUTORIAL_STEPS } from '@utils/Constants';
+import { TUTORIAL_DEMO_INTERVAL, TUTORIAL_STEPS, scrollDecelerationRate } from '@utils/Constants';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { padding } from '@styles/spacing';
 import { useSafeCopilot } from '@hooks/useSafeCopilot';
@@ -197,6 +197,7 @@ export function FiltersSelection({
   return (
     <>
       <FlatList
+        decelerationRate={scrollDecelerationRate}
         horizontal={true}
         data={filters}
         scrollEnabled={true}

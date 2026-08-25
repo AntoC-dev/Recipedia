@@ -23,7 +23,7 @@ import { useMenu } from '@hooks/useMenu';
 import { useSafeCopilot } from '@hooks/useSafeCopilot';
 import { MenuRecipeCard } from '@components/molecules/MenuRecipeCard';
 import { ListSectionHeader } from '@components/atomic/ListSectionHeader';
-import { TUTORIAL_STEPS } from '@utils/Constants';
+import { TUTORIAL_STEPS, scrollDecelerationRate } from '@utils/Constants';
 import { padding, tabScreenBottomPadding, tabScreenEdges } from '@styles/spacing';
 import { layout } from '@styles/layout';
 import { menuTableElement, recipeTableElement } from '@customTypes/DatabaseElementTypes';
@@ -84,7 +84,11 @@ export function Menu() {
           </Text>
         </View>
       ) : (
-        <ScrollView testID={`${screenId}::ScrollView`} contentContainerStyle={styles.listContent}>
+        <ScrollView
+          decelerationRate={scrollDecelerationRate}
+          testID={`${screenId}::ScrollView`}
+          contentContainerStyle={styles.listContent}
+        >
           {toCookItems.length > 0 && (
             <List.Section>
               <ListSectionHeader

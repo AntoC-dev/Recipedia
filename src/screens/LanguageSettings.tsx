@@ -39,6 +39,7 @@ import { getLanguage, setLanguage } from '@utils/settings';
 import { LanguageSettingsProp } from '@customTypes/ScreenTypes';
 import { AppBar } from '@components/organisms/AppBar';
 import { languageSettingsLogger } from '@utils/logger';
+import { scrollDecelerationRate } from '@utils/Constants';
 
 /**
  * LanguageSettings screen component - Language selection interface
@@ -80,6 +81,7 @@ export function LanguageSettings({ navigation }: LanguageSettingsProp) {
       >
         <List.Section>
           <FlatList
+            decelerationRate={scrollDecelerationRate}
             data={availableLocales}
             keyExtractor={locale => locale}
             ItemSeparatorComponent={() => <Divider />}

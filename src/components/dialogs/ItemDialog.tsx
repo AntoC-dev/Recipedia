@@ -93,6 +93,7 @@ import { layout } from '@styles/layout';
 import { dialogMaxHeight, padding } from '@styles/spacing';
 import { ingredientDialogSchema, tagDialogSchema } from '@schemas/itemDialogSchema';
 import { buildItemFormValues, ItemDialogFormValues } from '@customTypes/ItemDialogTypes';
+import { scrollDecelerationRate } from '@utils/Constants';
 
 /** Available dialog operation modes */
 export type DialogMode = 'add' | 'edit' | 'delete';
@@ -307,7 +308,11 @@ export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialo
           </Dialog.Content>
         ) : (
           <Dialog.ScrollArea>
-            <ScrollView keyboardDismissMode='on-drag' contentContainerStyle={styles.formContainer}>
+            <ScrollView
+              decelerationRate={scrollDecelerationRate}
+              keyboardDismissMode='on-drag'
+              contentContainerStyle={styles.formContainer}
+            >
               {isIngredient ? (
                 <Text testID={modalTestId + '::FormHint'} variant='bodySmall'>
                   {t('ingredient_form_hint')}

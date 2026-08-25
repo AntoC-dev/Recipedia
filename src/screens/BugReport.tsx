@@ -30,6 +30,7 @@ import { getDatasetType } from '@utils/DatasetLoader';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { bugReportSchema, BugReportFormData, BugReportFormInput } from '@schemas/bugReportSchema';
+import { scrollDecelerationRate } from '@utils/Constants';
 
 const screenTestId = 'BugReport';
 
@@ -118,7 +119,11 @@ export function BugReport() {
     <ScreenWrapper>
       <AppBar title={t('bugReport.title')} onGoBack={goBack} testID={screenTestId + '::Bar'} />
 
-      <ScrollView keyboardDismissMode='on-drag' contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        decelerationRate={scrollDecelerationRate}
+        keyboardDismissMode='on-drag'
+        contentContainerStyle={styles.scrollContent}
+      >
         <Controller
           control={control}
           name='description'

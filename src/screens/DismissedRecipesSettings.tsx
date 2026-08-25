@@ -29,6 +29,7 @@ import { useI18n } from '@utils/i18n';
 import { padding } from '@styles/spacing';
 import { layout } from '@styles/layout';
 import { iconsSize } from '@assets/Icons';
+import { scrollDecelerationRate } from '@utils/Constants';
 
 const screenId = 'DismissedRecipesSettings';
 
@@ -69,7 +70,10 @@ export function DismissedRecipesSettings() {
       />
 
       {groups.length > 0 ? (
-        <ScrollView contentContainerStyle={styles.listContent}>
+        <ScrollView
+          decelerationRate={scrollDecelerationRate}
+          contentContainerStyle={styles.listContent}
+        >
           <List.AccordionGroup>
             {groups.map(group => {
               const groupId = `${screenId}::${group.providerId}`;

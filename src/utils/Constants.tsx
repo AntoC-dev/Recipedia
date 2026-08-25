@@ -8,6 +8,7 @@
  * Key Features:
  * - Default numeric values for form inputs and data initialization
  * - Initial recipe image assets for app demonstration
+ * - Build-flavour flags derived from the automation environment
  * - Centralized constant management for easy maintenance
  * - Type-safe constant definitions
  *
@@ -95,3 +96,17 @@ export const productionRecipesImages = [
   require('../assets/images/saumon_grille_brocoli.webp'),
   require('../assets/images/butternut_rotie.webp'),
 ];
+
+/**
+ * True when the bundle was built with animations turned off, as every Maestro profile does.
+ */
+export const animationsDisabled = process.env.EXPO_PUBLIC_DISABLE_ANIMATIONS === 'true';
+
+/**
+ * Deceleration applied to every scrollable list in the app.
+ *
+ * iOS keeps scrolling after the finger lifts, so a list can drift past the element an
+ * automated test just scrolled to and fail the assertion that follows. Builds with
+ * animations disabled stop with the gesture; everything else keeps the native momentum.
+ */
+export const scrollDecelerationRate: 'normal' | number = animationsDisabled ? 0 : 'normal';
