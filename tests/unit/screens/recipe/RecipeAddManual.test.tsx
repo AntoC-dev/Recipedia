@@ -457,6 +457,27 @@ describe('RecipeAddManual', () => {
         expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
       });
     });
+
+    test('surfaces an error dialog when the similarity lookup throws', async () => {
+      const findSimilarRecipesSpy = jest
+        .spyOn(dbInstance, 'findSimilarRecipes')
+        .mockImplementation(() => {
+          throw new Error('database is closed');
+        });
+
+      const { getByTestId } = await renderRoute(mockRouteAddManually);
+
+      await fillMinimalRecipe(getByTestId, 'Similarity Lookup Failure Recipe');
+
+      fireEvent.press(getByTestId('Recipe::BottomActionButton'));
+
+      await waitFor(() => {
+        expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
+      });
+      expect(getByTestId('Recipe::Alert::Content').props.children).toContain('database is closed');
+
+      findSimilarRecipesSpy.mockRestore();
+    });
   });
 
   describe('ValidationQueue integration', () => {
