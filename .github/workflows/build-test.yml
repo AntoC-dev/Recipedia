@@ -396,22 +396,14 @@ jobs:
           fi
 
       - name: Package Android Maestro logs
+        id: package_android_logs
         if: always()
         run: bash .github/scripts/merge-maestro-logs.sh maestro-logs-android maestro-logs-android-merged
 
       - name: Package iOS Maestro logs
+        id: package_ios_logs
         if: always()
         run: bash .github/scripts/merge-maestro-logs.sh maestro-logs-ios maestro-logs-ios-merged
-
-      - name: Delete individual suite artifacts
-        if: always()
-        uses: geekyeggo/delete-artifact@v6
-        with:
-          name: |
-            junit-e2e-*
-            maestro-logs-android-*
-            maestro-logs-ios-*
-          failOnError: false
 
       - name: Scan merged artifacts for credentials
         id: merged-secret-scan
@@ -422,6 +414,7 @@ jobs:
         run: bash .github/scripts/check-artifact-secrets.sh maestro-logs-android-merged maestro-logs-ios-merged merged-reports
 
       - name: Upload merged JUnit report
+        id: upload_junit
         if: always() && steps.merged-secret-scan.outcome == 'success'
         uses: actions/upload-artifact@v7
         with:
@@ -431,6 +424,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Upload Android Maestro logs
+        id: upload_android_logs
         if: always() && steps.merged-secret-scan.outcome == 'success'
         uses: actions/upload-artifact@v7
         with:
@@ -440,6 +434,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Upload iOS Maestro logs
+        id: upload_ios_logs
         if: always() && steps.merged-secret-scan.outcome == 'success'
         uses: actions/upload-artifact@v7
         with:
@@ -447,6 +442,23 @@ jobs:
           path: maestro-logs-ios-merged/
           retention-days: 7
           if-no-files-found: ignore
+
+      # Packaging moved the suite logs, so the merged upload is the only copy left — but a
+      # failed credential scan must still purge them, since they are what would leak.
+      - name: Delete individual suite artifacts
+        if: |
+          always()
+          && (steps.merged-secret-scan.outcome != 'success'
+          || (steps.upload_junit.outcome == 'success'
+          && steps.upload_android_logs.outcome == 'success'
+          && steps.upload_ios_logs.outcome == 'success'))
+        uses: geekyeggo/delete-artifact@v6
+        with:
+          name: |
+            junit-e2e-*
+            maestro-logs-android-*
+            maestro-logs-ios-*
+          failOnError: false
 
   test-result-summary:
     name: Generate Test Result Summary

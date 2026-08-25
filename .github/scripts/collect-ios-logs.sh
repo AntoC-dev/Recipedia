@@ -31,3 +31,12 @@ if [ -n "$APP_CONTAINER" ]; then
 else
   echo "⚠️ Could not find app container"
 fi
+
+# Lossy: anything outside this list is dropped. Unfiltered these overflow the merge job disk.
+KEEP_PROCESSES='Recipedia|SpringBoard|runningboardd|assertiond|testmanagerd|maestro-driver-iosUITests-Runner|CoreSimulator|mediaserverd|kernel|ReportCrash|osanalyticshelper|symptomsd'
+echo "📋 Filtering simulator syslogs down to the processes E2E triage reads..."
+find "$LOG_DIR" -name device-simulator.log -type f | while IFS= read -r sim_log; do
+  LC_ALL=C grep -aE " ($KEEP_PROCESSES)\[[0-9]+\]: " "$sim_log" > "$sim_log.filtered"
+  mv "$sim_log.filtered" "$sim_log"
+  echo "📋 Filtered $sim_log ($(du -h "$sim_log" | cut -f1))"
+done

@@ -5,13 +5,13 @@ answering issue #323 item 3. **Decision: defer.**
 
 ## Environment
 
-- **Maestro:** `2.6.0` (pinned in `.github/workflows/e2e-maestro.yml`).
+- **Maestro:** `2.8.0` (pinned in `.github/workflows/e2e-maestro.yml`).
 - **CI model:** E2E runs on **local emulators/simulators inside GitHub Actions**
-  — Android on `ubuntu-latest`, iOS on `macos-15`. Not Maestro Cloud.
+  — Android on `ubuntu-latest`, iOS on `macos-26`. Not Maestro Cloud.
 - **Current screenshot usage:** none (`takeScreenshot` / `assertScreenshot` /
   `assertWithAI` absent from `tests/e2e/`).
 
-## What Maestro 2.6.0 offers
+## What Maestro 2.8.0 offers
 
 ### 1. `assertScreenshot` — pixel-diff (local, free)
 
