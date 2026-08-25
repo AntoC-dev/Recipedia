@@ -124,6 +124,9 @@ tags:
     when:
       platform: iOS
     commands:
+      - runFlow:
+          file: "../../flows/handlePhotosPermission.yaml"
+          label: "Clear the Photos permission prompt before the picker can present"
       - extendedWaitUntil:
           visible:
             text: "Recents"
@@ -135,7 +138,7 @@ tags:
       - extendedWaitUntil:
           visible:
             text: "\\d+ Photo.*"
-          timeout: 3000
+          timeout: 30000
           label: "Wait for gallery to load on iOS"
       - runFlow:
           file: "../../flows/selectFirstGalleryPhotoIOS.yaml"

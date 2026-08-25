@@ -25,28 +25,16 @@ appId: "com.recipedia"
 
 - extendedWaitUntil:
     visible:
-      text: "Select"
-    timeout: 10000
-    label: "Wait for select button to appear"
-
-- tapOn:
-    text: "Select"
-    label: "Enter select mode to see if some photos are in library"
-
-- extendedWaitUntil:
-    visible:
-      text: "Cancel"
-    timeout: 5000
-    label: "Wait for cancel button of select to appear"
+      id: "PXGGridLayout-Info"
+    timeout: 30000
+    optional: true
+    label: "Wait for the photo grid to render when the library is not empty"
 
 - runFlow:
     when:
       visible:
-        text: "Photo, .*"
+        id: "PXGGridLayout-Info"
     commands:
-      - tapOn:
-          text: "Cancel"
-          label: "Cancel the selection"
       - runFlow:
           file: "cleanupPhotos.yaml"
           label: "Delete all photos from library"

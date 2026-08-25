@@ -34,6 +34,14 @@ tags:
     id: "RecipeIngredients::AddButton::RoundButton"
     label: "Action - Add ingredient to recipe"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::0::Unit"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Centre the ingredient row above the keyboard"
+
 - tapOn:
     id: "RecipeIngredients::0::NameInput::CustomTextInput"
     label: "Action - Focus on ingredient name input"

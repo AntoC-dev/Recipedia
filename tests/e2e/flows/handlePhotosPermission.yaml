@@ -1,0 +1,13 @@
+appId: "com.recipedia"
+---
+# Left standing, this system alert outlives launchApp and hides the next flow's Welcome screen.
+# Single check: the alert is already on screen, and an optional tapOn burns its full timeout on a miss.
+- runFlow:
+    when:
+      platform: iOS
+      visible:
+        text: "Allow Full Access"
+    commands:
+      - tapOn:
+          text: "Allow Full Access"
+          label: "Grant full Photo Library access"

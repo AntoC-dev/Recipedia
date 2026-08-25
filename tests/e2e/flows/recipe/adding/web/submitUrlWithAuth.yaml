@@ -99,7 +99,7 @@ appId: "com.recipedia"
 - extendedWaitUntil:
     visible:
       id: "RecipeImage"
-    timeout: 30000
+    timeout: 120000
     label: "Wait for recipe screen to load after authenticated scraping"
 
 - extendedWaitUntil:

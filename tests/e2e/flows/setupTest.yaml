@@ -8,6 +8,10 @@ appId: "com.recipedia"
     clearState: true
     label: "Setup - Launch app with clean state"
 
+- runFlow:
+    file: "handlePhotosPermission.yaml"
+    label: "Clear any Photos permission prompt left by a previous test"
+
 - extendedWaitUntil:
     visible:
       id: "WelcomeScreen::SkipButton"
@@ -49,10 +53,14 @@ appId: "com.recipedia"
     label: "Wait for data to load"
 
 - runFlow:
-    file: "sleep.yaml"
-    env:
-      DURATION_MS: 3000
-    label: "Wait 3s before ANR check"
+    when:
+      platform: Android
+    commands:
+      - runFlow:
+          file: "sleep.yaml"
+          env:
+            DURATION_MS: 3000
+          label: "Wait 3s before ANR check"
 
 - runFlow:
     file: "handleAnr.yaml"

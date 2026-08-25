@@ -1,5 +1,9 @@
 appId: "com.recipedia"
 ---
+- runFlow:
+    file: "../common/waitForRecipeDialog.yaml"
+    label: "Wait for the post-validation dialog to open"
+
 - assertVisible:
     id: "Recipe::Dialog::Title"
     text: "Success"

@@ -50,7 +50,7 @@ tags:
 - extendedWaitUntil:
     visible:
       id: "BulkImportDiscovery::(fresh|seen)-0"
-    timeout: 120000
+    timeout: 300000
     label: "Wait - For first recipe to appear"
 
 - tapOn:

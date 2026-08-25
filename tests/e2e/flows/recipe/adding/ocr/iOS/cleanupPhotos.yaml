@@ -1,26 +1,50 @@
 appId: "com.recipedia"
 ---
-- tapOn:
-    id: "all_photos_grid"
-    point: "10%,95%"
-    label: "Tap the first picture of the last row"
-
-- extendedWaitUntil:
-    visible:
-      id: "trash"
-    timeout: 5000
-    label: "Wait for cancel button of select to appear"
-
 - repeat:
     while:
-      notVisible:
-        text: "No Photos or Videos"
+      visible:
+        id: "PXGGridLayout-Info"
     commands:
+      - extendedWaitUntil:
+          visible:
+            text: "Select"
+          timeout: 30000
+          label: "Wait for the select button to be available"
+
       - tapOn:
-          id: "trash"
-          label: "Tap on the trash button"
+          text: "Select"
+          label: "Enter select mode"
+
+      - waitForAnimationToEnd:
+          label: "Wait for select mode to settle"
+
+      - extendedWaitUntil:
+          visible:
+            id: "PXGGridLayout-Info"
+          timeout: 30000
+          label: "Wait for the photo grid to be interactive in select mode"
+
+      - tapOn:
+          id: "PXGGridLayout-Info"
+          index: 0
+          label: "Select the first photo of the grid"
+
+      - waitForAnimationToEnd:
+          label: "Wait for the selection to register"
+
+      - tapOn:
+          text: "Delete"
+          label: "Tap on the delete button"
+
+      - extendedWaitUntil:
+          visible:
+            text: "Delete Photo"
+          timeout: 30000
+          label: "Wait for the deletion confirmation to appear"
+
       - tapOn:
           text: "Delete Photo"
-          label: "Tap on the delete button"
+          label: "Confirm the deletion"
+
       - waitForAnimationToEnd:
-          label: "Wait for image animation to end"
+          label: "Wait for the grid to settle after deletion"

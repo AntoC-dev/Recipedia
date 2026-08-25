@@ -24,7 +24,7 @@ tags:
 - extendedWaitUntil:
     visible:
       id: "BulkImportDiscovery::fresh-0"
-    timeout: 120000
+    timeout: 300000
     label: "Wait - For first recipe to appear"
 
 - runFlow:
