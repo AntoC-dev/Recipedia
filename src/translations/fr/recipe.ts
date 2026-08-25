@@ -22,9 +22,10 @@ export default {
   ingredientsScanNames: 'Scanner les noms',
   ingredientsAddManually: 'Ajouter manuellement',
 
-  ingredientsOcr: {
+  cardOcr: {
     boxHeaders: ['box', 'dans votre box'],
-    personsSuffix: ['pers.', 'pers'],
+    personsSuffix: ['pers.', 'pers', 'personne', 'personnes'],
+    timeSuffix: ['min', 'mn', 'minute', 'minutes'],
   },
 
   noteDialog: {

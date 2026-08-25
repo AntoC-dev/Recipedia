@@ -40,7 +40,6 @@ import {
   perPortionKey,
 } from '@customTypes/OCRTypes';
 import {
-  allNonDigitCharacter,
   endsWithLetters,
   findAllNumbers,
   hasLettersInMiddle,
@@ -56,11 +55,17 @@ import TextRecognition, {
   TextRecognitionResult,
 } from '@react-native-ml-kit/text-recognition';
 import { scaleQuantityForPersons } from '@utils/Quantity';
-import { isArrayOfNumber, isArrayOfType, isNumber, isString } from '@utils/TypeCheckingFunctions';
+import { isArrayOfNumber, isArrayOfType, isString } from '@utils/TypeCheckingFunctions';
 import { defaultValueNumber } from '@utils/Constants';
 import { ocrLogger } from '@utils/logger';
-import i18n from '@utils/i18n';
+import i18n, { DEFAULT_LANGUAGE } from '@utils/i18n';
 import { buildPhraseIndex, FuzzyIndex, fuzzyHasMatch } from '@utils/FuzzyIndex';
+import {
+  extractMeasurements,
+  MeasurementVocabulary,
+  pairMeasurementsIntoRows,
+  PersonsTimeRow,
+} from '@utils/OCRMeasurements';
 
 type TermSearchIndex = FuzzyIndex;
 
@@ -89,12 +94,7 @@ const INGREDIENT_PARSING = {
 } as const;
 
 /** Type representing person count and cooking time extracted from OCR */
-export type personAndTimeObject = {
-  /** Number of servings the recipe yields */
-  person: number;
-  /** Total preparation time in minutes */
-  time: number;
-};
+export type personAndTimeObject = PersonsTimeRow;
 /** Field names of {@link personAndTimeObject}, used to drive OCR field extraction. */
 export const keysPersonsAndTimeObject = Object.keys({
   person: 0,
@@ -322,44 +322,49 @@ function tranformOCRInTags(ocr: TextRecognitionResult): tagTableElement[] {
 }
 
 /**
- * Extracts numbers from an array of strings
+ * Returns the lone value when a single one was read, the whole list otherwise
  *
- * @param str - Array of strings to parse
- * @returns Array of numbers extracted from the strings
+ * @param values - Values read from OCR
+ * @returns Single number when only one was found, otherwise the array of numbers
  */
-function retrieveNumbersFromArrayOfStrings(str: string[]): number[] {
-  return str.map(element => retrieveNumberFromString(element));
+function singleNumberOrArray(values: number[]): number | number[] {
+  return values.length > 1 ? values : (values[0] ?? NaN);
 }
 
 /**
- * Extracts the first number from a string
+ * Builds the serving/time vocabulary for the active language
  *
- * Takes the first word of the string and removes all non-digit characters,
- * then converts the result to a number.
+ * Resolves persons and time terms independently: each falls back to
+ * {@link DEFAULT_LANGUAGE}'s card OCR terms when the active language is
+ * missing or empty for that list, and to an empty list when even the
+ * default language has nothing — there is no in-code vocabulary here.
+ * Adding a language is therefore purely a translation-file change.
  *
- * @param str - String to extract number from
- * @returns Extracted number or NaN if no valid number found
+ * @returns Vocabulary resolved from i18n, one list at a time
  */
-function retrieveNumberFromString(str: string): number {
-  return Number((str.split(' ')[0] ?? '').replace(allNonDigitCharacter, ''));
-}
+function getMeasurementVocabulary(): MeasurementVocabulary {
+  const activeTerms = getCardOcrTerms(i18n.language);
+  const personsTerms = activeTerms?.personsSuffix;
+  const timeTerms = activeTerms?.timeSuffix;
+  if (personsTerms?.length && timeTerms?.length) {
+    return { personsTerms, timeTerms };
+  }
 
-/**
- * Extracts numbers from string array, returning single number or array based on count
- *
- * @param ocr - Array of strings to extract numbers from
- * @returns Single number if only one found, otherwise array of numbers
- */
-function extractingNumberOrArray(ocr: string[]) {
-  const result = retrieveNumbersFromArrayOfStrings(ocr);
-  return result.length > 1 ? result : (result[0] ?? NaN);
+  const fallbackTerms = getCardOcrTerms(DEFAULT_LANGUAGE);
+  return {
+    personsTerms: personsTerms?.length ? personsTerms : (fallbackTerms?.personsSuffix ?? []),
+    timeTerms: timeTerms?.length ? timeTerms : (fallbackTerms?.timeSuffix ?? []),
+  };
 }
 
 /**
  * Transforms OCR result into numbers, handling person count and time data
  *
- * Analyzes OCR text to extract person counts (marked with 'p') and cooking times (marked with 'm').
- * Can return a single number, array of numbers, or array of person-time objects depending on the data found.
+ * Reads every serving count and cooking time printed on the card, then pairs
+ * them into rows. Both recognizer layouts are supported: one line per column
+ * ("2 pers." then "25 min") and whole rows merged into a single line
+ * ("2 pers. 25 min"). When only one of the two kinds is present, its values are
+ * returned on their own.
  *
  * @param ocr - Text recognition result from ML Kit
  * @returns Number, array of numbers, or array of person-time objects based on detected patterns
@@ -367,34 +372,30 @@ function extractingNumberOrArray(ocr: string[]) {
 function tranformOCRInOneNumber(
   ocr: TextRecognitionResult
 ): number | number[] | personAndTimeObject[] {
-  const elementsToConvert = convertBlockOnArrayOfString(ocr.blocks);
+  const lines = ocr.blocks
+    .flatMap(block => block.lines)
+    .sort((a, b) => (a.frame?.top ?? 0) - (b.frame?.top ?? 0))
+    .map(line => line.text);
 
-  const personsChar = 'p';
-  const timeChar = 'm';
-  const personsArray = elementsToConvert.filter(element => element.includes(personsChar));
-  const timeArray = elementsToConvert.filter(element => element.includes(timeChar));
+  ocrLogger.debug('Persons and time OCR lines', { blockCount: ocr.blocks.length, lines });
 
-  if (personsArray.length > 0) {
-    if (timeArray.length > 0) {
-      if (personsArray.length !== timeArray.length) {
-        return extractingNumberOrArray(personsArray);
-      }
-      const personsAndTime = [];
-      for (let i = 0; i < personsArray.length; i++) {
-        personsAndTime.push({
-          person: retrieveNumberFromString(personsArray[i]!),
-          time: retrieveNumberFromString(timeArray[i]!),
-        });
-      }
-      return personsAndTime;
-    } else {
-      return extractingNumberOrArray(personsArray);
-    }
-  } else if (timeArray.length > 0) {
-    return extractingNumberOrArray(timeArray);
+  const measurements = extractMeasurements(lines, getMeasurementVocabulary());
+  const rows = pairMeasurementsIntoRows(measurements);
+  if (rows.length > 0) {
+    return rows;
   }
 
-  ocrLogger.error('Unable to convert OCR text to number', { elementsToConvert });
+  const persons = measurements.filter(m => m.kind === 'persons').map(m => m.value);
+  if (persons.length > 0) {
+    return singleNumberOrArray(persons);
+  }
+
+  const times = measurements.filter(m => m.kind === 'time').map(m => m.value);
+  if (times.length > 0) {
+    return singleNumberOrArray(times);
+  }
+
+  ocrLogger.error('Unable to convert OCR text to number', { elementsToConvert: lines });
   return defaultValueNumber;
 }
 
@@ -741,6 +742,25 @@ type BlockOrderResult = {
   isReversed: boolean;
 };
 
+const letterCharacter = /\p{L}/u;
+
+/**
+ * Tells whether a line carries one of the persons suffixes as its own word.
+ *
+ * The suffix must start the word it appears in, so an ingredient name that
+ * merely embeds a suffix ("Fruit preserves" contains "serves") is not mistaken
+ * for a person marker.
+ */
+function startsAPersonsSuffix(line: string, suffixes: string[]): boolean {
+  return suffixes.some(suffix => {
+    if (!suffix) return false;
+    for (let at = line.indexOf(suffix); at !== -1; at = line.indexOf(suffix, at + 1)) {
+      if (at === 0 || !letterCharacter.test(line[at - 1]!)) return true;
+    }
+    return false;
+  });
+}
+
 /**
  * Preprocesses OCR lines for ingredient parsing
  *
@@ -755,10 +775,10 @@ type BlockOrderResult = {
 function preprocessIngredientLines(ocr: TextRecognitionResult): string[] {
   const lines: string[] = [];
   const ocrLines = ocr.blocks.flatMap(block => block.lines);
-  const ingredientTerms = getIngredientOcrTerms(i18n.language);
+  const cardTerms = getCardOcrTerms(i18n.language);
 
-  const boxHeaders = ingredientTerms?.boxHeaders ?? [];
-  const personsSuffixes = ingredientTerms?.personsSuffix ?? [];
+  const boxHeaders = cardTerms?.boxHeaders ?? [];
+  const personsSuffixes = cardTerms?.personsSuffix ?? [];
 
   const firstLineText = ocrLines[0]?.text.toLowerCase();
   if (firstLineText && boxHeaders.some(header => firstLineText.includes(header.toLowerCase()))) {
@@ -769,8 +789,7 @@ function preprocessIngredientLines(ocr: TextRecognitionResult): string[] {
     const trimmed = line.text.trim();
     if (!trimmed) continue;
 
-    const matchedSuffix = personsSuffixes.find(suffix => trimmed.includes(suffix));
-    if (matchedSuffix) {
+    if (startsAPersonsSuffix(trimmed, personsSuffixes)) {
       lines[lines.length - 1] += 'p';
     } else {
       lines.push(trimmed);
@@ -1133,18 +1152,7 @@ function retrieveNumberInStr(str: string) {
   const workingStr = firstLetterIndex !== -1 ? str.slice(0, firstLetterIndex) : str;
 
   const allNum = workingStr.match(findAllNumbers);
-  if (allNum) {
-    if (allNum.length < 1) {
-      if (workingStr.includes('.')) {
-        return Number(allNum[0] + '.' + allNum[1]);
-      }
-      if (workingStr.includes(',')) {
-        return Number(allNum[0] + ',' + allNum[1]);
-      }
-    }
-    return Number(allNum[0]);
-  }
-  return -1;
+  return allNum ? Number(allNum[0]) : -1;
 }
 
 /**
@@ -1239,10 +1247,10 @@ export async function extractFieldFromImage(
       }
     case recipeColumnsNames.persons:
     case recipeColumnsNames.time:
-      if (isNumber(ocrResult)) {
+      if (typeof ocrResult === 'number') {
         return field === recipeColumnsNames.persons
-          ? { recipePersons: ocrResult as number }
-          : { recipeTime: ocrResult as number };
+          ? { recipePersons: ocrResult }
+          : { recipeTime: ocrResult };
       }
       if (Array.isArray(ocrResult) && ocrResult.length > 0) {
         if (isArrayOfNumber(ocrResult)) {
@@ -1525,26 +1533,27 @@ function parseNutritionValue(ocrText: string): number | undefined {
   return Math.round(parsedNumber * DECIMAL_PRECISION) / DECIMAL_PRECISION;
 }
 
-/** OCR terms for ingredient parsing from i18n */
-type IngredientOcrTerms = {
+/** OCR terms for recipe card parsing from i18n */
+type CardOcrTerms = {
   boxHeaders: string[];
   personsSuffix: string[];
+  timeSuffix: string[];
 };
 
 /**
- * Retrieves ingredient OCR terms for the specified language from i18n
+ * Retrieves recipe card OCR terms for the specified language from i18n
  *
- * @param language - Language code to get ingredient terms for
- * @returns Ingredient OCR terms object or undefined if not found/error
+ * @param language - Language code to get card terms for
+ * @returns Card OCR terms object or undefined if not found/error
  */
-function getIngredientOcrTerms(language: string): IngredientOcrTerms | undefined {
+function getCardOcrTerms(language: string): CardOcrTerms | undefined {
   try {
-    const result = i18n.getResource(language, 'translation', 'recipe.ingredientsOcr');
+    const result = i18n.getResource(language, 'translation', 'recipe.cardOcr');
     if (result && typeof result === 'object') {
-      return result as IngredientOcrTerms;
+      return result as CardOcrTerms;
     }
   } catch (error) {
-    ocrLogger.error('i18n ingredient OCR terms failed', { error });
+    ocrLogger.error('i18n card OCR terms failed', { error });
     return undefined;
   }
   return undefined;
