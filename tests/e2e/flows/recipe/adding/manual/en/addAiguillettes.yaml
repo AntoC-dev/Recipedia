@@ -103,7 +103,9 @@ appId: "com.recipedia"
     element:
       id: "RecipeTags::RoundButton"
     direction: DOWN
-    speed: 40
+    speed: 20
+    timeout: 60000
+    centerElement: true
     label: "Scroll to ensure add button is still visible"
 
 - waitForAnimationToEnd

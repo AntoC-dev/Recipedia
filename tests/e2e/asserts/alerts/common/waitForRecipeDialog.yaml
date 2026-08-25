@@ -1,8 +1,8 @@
 appId: "com.recipedia"
 ---
-# 30s, not assertVisible's implicit default: callers retry twice, so every second is paid 3x.
+# Saving downscales the picked image first, which has been measured at 40s on a loaded CI runner.
 - extendedWaitUntil:
     visible:
       id: "Recipe::Dialog::Title"
-    timeout: 30000
+    timeout: 90000
     label: "Wait for the post-validation dialog to open"

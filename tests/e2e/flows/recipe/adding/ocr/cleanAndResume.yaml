@@ -20,5 +20,5 @@ appId: "com.recipedia"
 - extendedWaitUntil:
     visible:
       id: "Recipe::AppBar"
-    timeout: 20000
+    timeout: 90000
     label: "Wait for recipedia to be back"

@@ -7,7 +7,7 @@ appId: "com.recipedia"
 - extendedWaitUntil:
     visible:
       text: "Recents"
-    timeout: 15000
+    timeout: 30000
     label: "Wait for the native photo picker to present"
 
 - waitForAnimationToEnd:

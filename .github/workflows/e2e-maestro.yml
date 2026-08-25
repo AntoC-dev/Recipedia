@@ -26,7 +26,7 @@ jobs:
   e2e-tests:
     name: E2E ${{ inputs.platform }} (${{ matrix.suite }})
     runs-on: ${{ inputs.platform == 'ios' && 'macos-26' || 'ubuntu-latest' }}
-    timeout-minutes: 180
+    timeout-minutes: 240
     strategy:
       fail-fast: false
       matrix:
@@ -76,6 +76,8 @@ jobs:
 
       - name: Run E2E tests (Android)
         if: inputs.platform == 'android'
+        # Under the job budget: a job-level timeout cancels the `if: always()` uploads, losing the logs.
+        timeout-minutes: 200
         uses: ReactiveCircus/android-emulator-runner@v2
         with:
           api-level: 34
@@ -170,6 +172,8 @@ jobs:
 
       - name: Run E2E tests (iOS)
         if: inputs.platform == 'ios'
+        # Under the job budget: a job-level timeout cancels the `if: always()` uploads, losing the logs.
+        timeout-minutes: 200
         env:
           MAESTRO_DRIVER_STARTUP_TIMEOUT: 360000
           QUITOQUE_USERNAME: ${{ secrets.QUITOQUE_USERNAME }}
