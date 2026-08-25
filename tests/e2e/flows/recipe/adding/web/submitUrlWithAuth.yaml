@@ -96,6 +96,10 @@ appId: "com.recipedia"
     id: "VerticalBottomButtons::AuthDialog::SubmitButton"
     label: "Submit authentication credentials"
 
+- runFlow:
+    file: "../../../handleSavePasswordPrompt.yaml"
+    label: "Dismiss the iOS Keychain save-password prompt"
+
 - extendedWaitUntil:
     visible:
       id: "RecipeImage"
