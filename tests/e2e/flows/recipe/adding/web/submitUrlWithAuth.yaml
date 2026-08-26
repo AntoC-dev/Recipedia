@@ -45,7 +45,9 @@ appId: "com.recipedia"
     file: "../../../waitForKeyboard.yaml"
     label: "Wait for keyboard to appear"
 
-- inputText: ${QUITOQUE_USERNAME}
+- inputText:
+    text: ${QUITOQUE_USERNAME}
+    label: "Action - Enter the Quitoque username"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
@@ -68,7 +70,9 @@ appId: "com.recipedia"
     file: "../../../waitForKeyboard.yaml"
     label: "Wait for keyboard to appear"
 
-- inputText: ${QUITOQUE_PASSWORD}
+- inputText:
+    text: ${QUITOQUE_PASSWORD}
+    label: "Action - Enter the Quitoque password"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
