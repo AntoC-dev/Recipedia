@@ -1,3 +1,11 @@
+## [2.52.6](https://github.com/AntoC-dev/Recipedia/compare/v2.52.5...v2.52.6) (2026-08-26)
+
+### Bug Fixes
+
+* **ci:** keep E2E credentials out of uploaded Maestro artifacts ([ee158a8](https://github.com/AntoC-dev/Recipedia/commit/ee158a807e2931ef923adf45752d55da2eb3bb06)), closes [#568](https://github.com/AntoC-dev/Recipedia/issues/568)
+* **ci:** keep E2E credentials out of uploaded Maestro artifacts ([#571](https://github.com/AntoC-dev/Recipedia/issues/571)) ([e8f49e3](https://github.com/AntoC-dev/Recipedia/commit/e8f49e3b6e0ea915085bb880895cd0f8893c6665))
+* **e2e:** label the Quitoque credential inputs ([579079e](https://github.com/AntoC-dev/Recipedia/commit/579079ea66a46062ed97a4473bae885a4747d4d2)), closes [#568](https://github.com/AntoC-dev/Recipedia/issues/568)
+
 ## [2.52.5](https://github.com/AntoC-dev/Recipedia/compare/v2.52.4...v2.52.5) (2026-08-23)
 
 ### Bug Fixes
