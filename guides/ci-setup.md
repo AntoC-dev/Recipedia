@@ -214,11 +214,30 @@ Triggers after the Build & Test Pipeline completes successfully on `main`, or vi
 |---|---|---|
 | `EXPO_TOKEN` | `build-app.yml`, `publication.yml`, `performance.yml` | EAS CLI authentication |
 | `RELEASE_PAT` | `release.yml` | GitHub PAT for semantic-release to push tags/releases |
-| `QUITOQUE_USERNAME` | `e2e-maestro.yml` | Quitoque bulk-import E2E test credentials |
-| `QUITOQUE_PASSWORD` | `e2e-maestro.yml` | Quitoque bulk-import E2E test credentials |
+| `QUITOQUE_USERNAME` | `e2e-maestro.yml` | Quitoque authenticated E2E test credentials (`web` suite only) |
+| `QUITOQUE_PASSWORD` | `e2e-maestro.yml` | Quitoque authenticated E2E test credentials (`web` suite only) |
 | `GITHUB_TOKEN` | `quality.yml`, `build-test.yml` | Automatically provided; used for PR comments and coverage reports |
 
 All secrets except `GITHUB_TOKEN` must be configured in the repository settings under **Settings > Secrets and variables > Actions**.
+
+### E2E credentials and artifacts
+
+Maestro writes every `-e` variable into each flow's commands dump, and those files ship inside the
+uploaded log artifacts — where GitHub's secret masking does not reach. Four layers keep them out:
+
+- `.github/scripts/e2e-credentials.sh` lists the credential env vars and the suites allowed to receive
+  them (`E2E_CREDENTIAL_SUITES`); the runner scripts pass `-e` only for those suites. It also derives the
+  raw, percent-encoded and JSON-escaped forms of each value, since the artifacts contain all three.
+- Flow steps that consume a secret carry an explicit `label:`, so Maestro renders the label instead of the
+  resolved value in `maestro.log` and in the JUnit report.
+- `prepare-maestro-logs.sh` deletes every commands dump (`commands.json` on newer Maestro,
+  `commands-(<flow name>).json` on 2.6 and older — nothing reads them) and runs
+  `redact-maestro-secrets.sh` over what is left, including `report.xml`.
+- `check-artifact-secrets.sh` re-scans the prepared directories and `report.xml` (per suite, and again on
+  the merged bundles in `build-test.yml`); a hit fails the job and skips both uploads.
+
+Adding a flow that consumes a new secret means adding it to both lists in `e2e-credentials.sh`, and giving
+the step that types it a `label:`.
 
 The `publication.yml` workflow uses a `production` GitHub environment — configure that environment with required reviewers to gate production deploys.
 
