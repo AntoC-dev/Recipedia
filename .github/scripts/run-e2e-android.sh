@@ -4,6 +4,10 @@ set -e
 
 SUITE="$1"
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/e2e-credentials.sh"
+maestro_credential_args "$SUITE"
+
 echo "🔄 Waiting for device..."
 adb wait-for-device
 
@@ -23,8 +27,7 @@ maestro test tests/e2e/ \
   --config="tests/e2e/${SUITE}.yaml" \
   --debug-output="maestro_logs_${SUITE}" \
   --format junit -s 1 \
-  -e QUITOQUE_USERNAME="${QUITOQUE_USERNAME}" \
-  -e QUITOQUE_PASSWORD="${QUITOQUE_PASSWORD}"
+  "${MAESTRO_CREDENTIAL_ARGS[@]}"
 MAESTRO_EXIT=$?
 set -e
 

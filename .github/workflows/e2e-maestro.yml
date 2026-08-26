@@ -171,10 +171,24 @@ jobs:
       # ============================================
       - name: Prepare suite logs
         if: always()
-        run: bash .github/scripts/prepare-maestro-logs.sh maestro_logs_${{ matrix.suite }}
+        env:
+          QUITOQUE_USERNAME: ${{ secrets.QUITOQUE_USERNAME }}
+          QUITOQUE_PASSWORD: ${{ secrets.QUITOQUE_PASSWORD }}
+        run: |
+          bash .github/scripts/prepare-maestro-logs.sh maestro_logs_${{ matrix.suite }}
+          bash .github/scripts/redact-maestro-secrets.sh report.xml
+
+      # Secret masking covers the log stream, not files inside an artifact.
+      - name: Scan suite logs for credentials
+        id: secret-scan
+        if: always()
+        env:
+          QUITOQUE_USERNAME: ${{ secrets.QUITOQUE_USERNAME }}
+          QUITOQUE_PASSWORD: ${{ secrets.QUITOQUE_PASSWORD }}
+        run: bash .github/scripts/check-artifact-secrets.sh maestro_logs_${{ matrix.suite }} report.xml
 
       - name: Upload test suite logs
-        if: always()
+        if: always() && steps.secret-scan.outcome == 'success'
         uses: actions/upload-artifact@v7
         with:
           name: maestro-logs-${{ inputs.platform }}-${{ matrix.suite }}.zip
@@ -182,7 +196,7 @@ jobs:
           retention-days: 1
 
       - name: Upload JUnit report for suite
-        if: always()
+        if: always() && steps.secret-scan.outcome == 'success'
         uses: actions/upload-artifact@v7
         with:
           name: junit-e2e-${{ inputs.platform }}-${{ matrix.suite }}

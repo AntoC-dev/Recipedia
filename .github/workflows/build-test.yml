@@ -413,8 +413,16 @@ jobs:
             maestro-logs-ios-*
           failOnError: false
 
-      - name: Upload merged JUnit report
+      - name: Scan merged artifacts for credentials
+        id: merged-secret-scan
         if: always()
+        env:
+          QUITOQUE_USERNAME: ${{ secrets.QUITOQUE_USERNAME }}
+          QUITOQUE_PASSWORD: ${{ secrets.QUITOQUE_PASSWORD }}
+        run: bash .github/scripts/check-artifact-secrets.sh maestro-logs-android-merged maestro-logs-ios-merged merged-reports
+
+      - name: Upload merged JUnit report
+        if: always() && steps.merged-secret-scan.outcome == 'success'
         uses: actions/upload-artifact@v7
         with:
           name: e2e-junit-merged
@@ -423,7 +431,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Upload Android Maestro logs
-        if: always()
+        if: always() && steps.merged-secret-scan.outcome == 'success'
         uses: actions/upload-artifact@v7
         with:
           name: maestro-logs-android.zip
@@ -432,7 +440,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Upload iOS Maestro logs
-        if: always()
+        if: always() && steps.merged-secret-scan.outcome == 'success'
         uses: actions/upload-artifact@v7
         with:
           name: maestro-logs-ios.zip
