@@ -449,7 +449,9 @@ jobs:
         if: |
           always()
           && (steps.merged-secret-scan.outcome != 'success'
-          || (steps.upload_junit.outcome == 'success'
+          || (steps.package_android_logs.outcome == 'success'
+          && steps.package_ios_logs.outcome == 'success'
+          && steps.upload_junit.outcome == 'success'
           && steps.upload_android_logs.outcome == 'success'
           && steps.upload_ios_logs.outcome == 'success'))
         uses: geekyeggo/delete-artifact@v6

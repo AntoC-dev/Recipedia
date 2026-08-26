@@ -17,8 +17,15 @@ fi
 (
   cd "$OUTPUT_DIR"
 
+  # List the entries before moving any: renaming out of a directory find is still
+  # reading can silently skip the ones it has not returned yet.
   if [ -d ".maestro/tests" ]; then
-    find .maestro/tests -mindepth 2 -maxdepth 2 -exec mv {} . \; || true
+    ENTRY_LIST=$(mktemp)
+    find .maestro/tests -mindepth 2 -maxdepth 2 -print0 > "$ENTRY_LIST"
+    while IFS= read -r -d '' entry; do
+      mv "$entry" . || true
+    done < "$ENTRY_LIST"
+    rm -f "$ENTRY_LIST"
     rm -rf .maestro
   fi
 )
