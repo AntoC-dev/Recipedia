@@ -32,6 +32,7 @@ import { AppBar } from '@components/organisms/AppBar';
 import { ProviderListItem } from '@components/molecules/ProviderListItem';
 import { useI18n } from '@utils/i18n';
 import { getAvailableProviders } from '@providers/ProviderRegistry';
+import { scrollDecelerationRate } from '@utils/Constants';
 
 /**
  * BulkImportSettings screen component
@@ -72,6 +73,7 @@ export function BulkImportSettings() {
       </List.Subheader>
       <View style={styles.listContainer}>
         <FlashList
+          decelerationRate={scrollDecelerationRate}
           data={providers}
           keyExtractor={provider => provider.id}
           ItemSeparatorComponent={() => <Divider />}

@@ -35,8 +35,6 @@ appId: "com.recipedia"
     file: "../ocr/validateWithoutCropping.yaml"
     label: "Validate without cropping (platform-specific)"
 
-- extendedWaitUntil:
-    visible:
-      id: "RecipeImage::Image"
-    timeout: 10000
+- runFlow:
+    file: "../../waitForRecipeImageCommitted.yaml"
     label: "Wait for picked image to commit to the form"

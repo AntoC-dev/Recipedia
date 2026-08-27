@@ -39,6 +39,7 @@ import { FlatList, ListRenderItemInfo, StyleSheet, View } from 'react-native';
 import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { padding } from '@styles/spacing';
 import { RecipeCard } from '@components/molecules/RecipeCard';
+import { scrollDecelerationRate } from '@utils/Constants';
 
 /**
  * Props for the Carousel component
@@ -60,6 +61,7 @@ export function Carousel(props: CarouselItemProps) {
   return (
     <View testID={props.testID}>
       <FlatList
+        decelerationRate={scrollDecelerationRate}
         data={props.items}
         horizontal={true}
         showsHorizontalScrollIndicator={false}

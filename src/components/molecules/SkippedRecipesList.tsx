@@ -16,6 +16,7 @@ import { SkippedRecipeInfo } from '@customTypes/BulkImportTypes';
 import { useI18n } from '@utils/i18n';
 import { padding } from '@styles/spacing';
 import { Icons } from '@assets/Icons';
+import { scrollDecelerationRate } from '@utils/Constants';
 
 export interface SkippedRecipesListProps {
   /** Recipes that were skipped during import */
@@ -54,6 +55,7 @@ export function SkippedRecipesList({
   return (
     <>
       <FlatList
+        decelerationRate={scrollDecelerationRate}
         data={skippedRecipes}
         keyExtractor={item => item.sourceUrl}
         ListHeaderComponent={ListHeaderComponent}

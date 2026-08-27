@@ -12,15 +12,20 @@ if [ ! -d "$OUTPUT_DIR" ]; then
   exit 0
 fi
 
-# Flatten structure - move logs and screenshots from .maestro/tests/*/ to root
+# Flatten structure - move whole entries: since 2.7.0 each flow's screenshots and
+# hierarchies live in a subdirectory that extension globs skipped and the rm deleted.
 (
   cd "$OUTPUT_DIR"
 
+  # List the entries before moving any: renaming out of a directory find is still
+  # reading can silently skip the ones it has not returned yet.
   if [ -d ".maestro/tests" ]; then
-    mv .maestro/tests/*/maestro.log . 2>/dev/null || true
-    mv .maestro/tests/*/*.png . 2>/dev/null || true
-    mv .maestro/tests/*/*.json . 2>/dev/null || true
-    mv .maestro/tests/*/*.html . 2>/dev/null || true
+    ENTRY_LIST=$(mktemp)
+    find .maestro/tests -mindepth 2 -maxdepth 2 -print0 > "$ENTRY_LIST"
+    while IFS= read -r -d '' entry; do
+      mv "$entry" . || true
+    done < "$ENTRY_LIST"
+    rm -f "$ENTRY_LIST"
     rm -rf .maestro
   fi
 )

@@ -1,9 +1,0 @@
-appId: "com.recipedia"
----
-- tapOn:
-    id: "DefaultPersonSettings::AppBar::BackButton"
-    label: "Navigate back to Parameters"
-
-- tapOn:
-    id: "BottomTabs::Home"
-    label: "Navigate back to Home"

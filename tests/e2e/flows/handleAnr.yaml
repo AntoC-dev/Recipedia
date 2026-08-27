@@ -1,11 +1,10 @@
 appId: "com.recipedia"
 ---
-# Handle Android ANR (Application Not Responding) dialog if it appears
-# Android shows this dialog when an app takes too long to respond to user input
-# This flow will check if the ANR dialog is visible and tap "Wait" to dismiss it
-
+# Android-only: the platform gate is for speed, not correctness — it short-circuits before
+# `visible:`, which costs a 4-8s hierarchy dump on the CI simulator.
 - runFlow:
     when:
+      platform: Android
       visible:
         text: ".*isn't responding.*"
     commands:

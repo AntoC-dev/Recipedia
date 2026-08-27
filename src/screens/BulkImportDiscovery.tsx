@@ -52,6 +52,7 @@ import { useVisibleImageLoader } from '@hooks/useVisibleImageLoader';
 import { useRecipeScraper } from '@hooks/useRecipeScraper';
 import { padding } from '@styles/spacing';
 import { layout } from '@styles/layout';
+import { scrollDecelerationRate } from '@utils/Constants';
 
 type BulkImportDiscoveryRouteProp = RouteProp<StackScreenParamList, 'BulkImportDiscovery'>;
 
@@ -227,6 +228,7 @@ export function BulkImportDiscovery() {
 
           {totalRecipesCount > 0 ? (
             <FlashList
+              decelerationRate={scrollDecelerationRate}
               data={listData}
               keyExtractor={item => item.key}
               extraData={selectedCount}

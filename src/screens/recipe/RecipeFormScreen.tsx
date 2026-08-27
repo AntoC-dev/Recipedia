@@ -94,6 +94,7 @@ import { RecipeIngredientsField } from '@screens/recipe/fields/IngredientsField'
 import { IngredientArrayActionsProvider } from '@screens/recipe/fields/IngredientArrayActionsContext';
 import { RecipePreparationField } from '@screens/recipe/fields/PreparationField';
 import type { OcrModalTarget } from '@utils/OCR';
+import { scrollDecelerationRate } from '@utils/Constants';
 
 /**
  * Identifies which editable route is being rendered. Drives the AppBar
@@ -373,56 +374,63 @@ function RecipeFormBody({
    * found. The actual insert lives in `addRecipeToDatabase`.
    */
   async function addValidation() {
-    const isValid = await runFormValidation();
-    if (!isValid) return;
+    // The button voids this promise: an unguarded throw would leave the tap looking ignored.
+    try {
+      const isValid = await runFormValidation();
+      if (!isValid) return;
 
-    const recipeToAdd = buildSnapshot();
-    const similarRecipes = findSimilarRecipes(recipeToAdd);
+      const recipeToAdd = buildSnapshot();
+      const similarRecipes = findSimilarRecipes(recipeToAdd);
 
-    /** Scales + inserts the recipe, then surfaces a success or failure dialog. */
-    const addRecipeToDatabase = async () => {
-      try {
-        const defaultPersons = await getDefaultPersons();
-        const scaledRecipe = scaleRecipeForSave(recipeToAdd, defaultPersons);
-        recipeLogger.info('Saving new recipe to database', {
-          recipeTitle: form.getValues('recipeTitle'),
-        });
-        const savedRecipe = await addRecipe(scaledRecipe);
-        clearCache();
-        recipeLogger.info('Recipe add completed successfully', {
-          recipeTitle: form.getValues('recipeTitle'),
-        });
+      /** Scales + inserts the recipe, then surfaces a success or failure dialog. */
+      const addRecipeToDatabase = async () => {
+        try {
+          const defaultPersons = await getDefaultPersons();
+          const scaledRecipe = scaleRecipeForSave(recipeToAdd, defaultPersons);
+          recipeLogger.info('Saving new recipe to database', {
+            recipeTitle: form.getValues('recipeTitle'),
+          });
+          const savedRecipe = await addRecipe(scaledRecipe);
+          clearCache();
+          recipeLogger.info('Recipe add completed successfully', {
+            recipeTitle: form.getValues('recipeTitle'),
+          });
 
+          dialogs.showValidationDialog({
+            title: t('addAnyway'),
+            content: t('addedToDatabase', { recipeName: recipeToAdd.title }),
+            confirmText: t('understood'),
+            onConfirm: () =>
+              completeSave(savedRecipe, getServingsScaledFrom(recipeToAdd.persons, defaultPersons)),
+          });
+        } catch (error) {
+          validationLogger.error('Failed to validate and add recipe to database', {
+            recipeTitle: form.getValues('recipeTitle'),
+            error,
+          });
+          showSaveErrorDialog('failedToAddRecipe', recipeToAdd.title, error);
+        }
+      };
+
+      if (similarRecipes.length === 0) {
+        await addRecipeToDatabase();
+      } else {
+        const separator = '\n\t- ';
         dialogs.showValidationDialog({
-          title: t('addAnyway'),
-          content: t('addedToDatabase', { recipeName: recipeToAdd.title }),
-          confirmText: t('understood'),
-          onConfirm: () =>
-            completeSave(savedRecipe, getServingsScaledFrom(recipeToAdd.persons, defaultPersons)),
+          title: t('similarRecipeFound'),
+          content:
+            t('similarRecipeFoundContent') +
+            separator +
+            similarRecipes.map(r => r.title).join(separator),
+          confirmText: t('addAnyway'),
+          cancelText: t('cancel'),
+          onConfirm: () => void addRecipeToDatabase(),
         });
-      } catch (error) {
-        validationLogger.error('Failed to validate and add recipe to database', {
-          recipeTitle: form.getValues('recipeTitle'),
-          error,
-        });
-        showSaveErrorDialog('failedToAddRecipe', recipeToAdd.title, error);
       }
-    };
-
-    if (similarRecipes.length === 0) {
-      await addRecipeToDatabase();
-    } else {
-      const separator = '\n\t- ';
-      dialogs.showValidationDialog({
-        title: t('similarRecipeFound'),
-        content:
-          t('similarRecipeFoundContent') +
-          separator +
-          similarRecipes.map(r => r.title).join(separator),
-        confirmText: t('addAnyway'),
-        cancelText: t('cancel'),
-        onConfirm: () => void addRecipeToDatabase(),
-      });
+    } catch (error) {
+      const recipeTitle = form.getValues('recipeTitle');
+      validationLogger.error('addValidation failed with unexpected error', { recipeTitle, error });
+      showSaveErrorDialog('failedToAddRecipe', recipeTitle, error);
     }
   }
 
@@ -516,6 +524,7 @@ function RecipeFormBody({
         />
 
         <ScrollView
+          decelerationRate={scrollDecelerationRate}
           horizontal={false}
           showsVerticalScrollIndicator={false}
           style={[layout.flexFill, { backgroundColor: colors.background }]}

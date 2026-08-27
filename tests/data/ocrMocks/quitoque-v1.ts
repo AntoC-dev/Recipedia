@@ -695,3 +695,37 @@ export const iosQuantitiesOcrResult: TextRecognitionResult = {
 };
 
 export const expectedIosQuantities: string[] = ['1', '1', '4', '1', '400'];
+
+/**
+ * Servings/time matrix as ML Kit returns it on iOS for the full recto card.
+ *
+ * Captured on an iPhone 16e simulator against
+ * `tests/assets/tajineMerguez/tajineMerguez_Quitoque_Full_Recto.jpg` — on iOS 26.2
+ * from the app's own cropped input, on iOS 18.6 by calling
+ * `TextRecognition.recognize()` on the file. Both return these same lines. Each
+ * line carries a serving count and its own time, unlike the per-column blocks
+ * Android returns.
+ */
+export const iosPersonsAndTimeOcrResult: TextRecognitionResult = {
+  text: '2 pers. 25 min\n3 pers. 25 min\n4 pers. 30 min\n5 pers. > 30 min',
+  blocks: [
+    {
+      recognizedLanguages: [],
+      text: '2 pers. 25 min\n3 pers. 25 min\n4 pers. 30 min\n5 pers. > 30 min',
+      lines: [
+        { elements: [], recognizedLanguages: [], text: '2 pers. 25 min' },
+        { elements: [], recognizedLanguages: [], text: '3 pers. 25 min' },
+        { elements: [], recognizedLanguages: [], text: '4 pers. 30 min' },
+        { elements: [], recognizedLanguages: [], text: '5 pers. > 30 min' },
+      ],
+    },
+  ],
+};
+
+/** Servings paired with the time printed alongside them on the card. */
+export const expectedIosPersonsAndTime = [
+  { person: 2, time: 25 },
+  { person: 3, time: 25 },
+  { person: 4, time: 30 },
+  { person: 5, time: 30 },
+];

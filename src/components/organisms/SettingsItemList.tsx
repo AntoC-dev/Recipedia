@@ -46,6 +46,7 @@ import { padding, radius } from '@styles/spacing';
 import { useI18n } from '@utils/i18n';
 import { useDeferredMount } from '@hooks/useDeferredMount';
 import { getSettingsItemKey } from '@utils/listUtils';
+import { scrollDecelerationRate } from '@utils/Constants';
 import {
   SettingsItem,
   SettingsItemCard,
@@ -99,6 +100,7 @@ export function SettingsItemList<T extends SettingsItem>({
       />
       {listReady ? (
         <FlashList
+          decelerationRate={scrollDecelerationRate}
           data={filteredItems}
           keyExtractor={getSettingsItemKey}
           maintainVisibleContentPosition={{ disabled: true }}

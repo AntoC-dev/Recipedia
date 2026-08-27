@@ -24,9 +24,20 @@ export function i18nMock() {
     perPortion: ['Par portion', 'Pour ce plat'],
   };
 
-  const ingredientsOcrTerms = {
-    boxHeaders: ['box', 'dans votre box'],
-    personsSuffix: ['pers.', 'pers'],
+  const cardOcrTermsByLanguage: Record<
+    string,
+    { boxHeaders: string[]; personsSuffix: string[]; timeSuffix: string[] }
+  > = {
+    en: {
+      boxHeaders: ['box', 'in your box'],
+      personsSuffix: ['pers.', 'pers', 'persons', 'person', 'servings', 'serving', 'serves'],
+      timeSuffix: ['min', 'mins', 'minute', 'minutes'],
+    },
+    fr: {
+      boxHeaders: ['box', 'dans votre box'],
+      personsSuffix: ['pers.', 'pers', 'personne', 'personnes'],
+      timeSuffix: ['min', 'mn', 'minute', 'minutes'],
+    },
   };
 
   const translations: Record<string, string> = {
@@ -137,8 +148,8 @@ export function i18nMock() {
       if (key === 'recipe.nutrition.ocr') {
         return ocrTerms;
       }
-      if (key === 'recipe.ingredientsOcr') {
-        return ingredientsOcrTerms;
+      if (key === 'recipe.cardOcr') {
+        return cardOcrTermsByLanguage[language];
       }
       if (key === 'recipe.scraper.ignoredIngredientPrefixes') {
         return ['to taste', 'as needed', 'optional', 'for garnish', 'for serving'];

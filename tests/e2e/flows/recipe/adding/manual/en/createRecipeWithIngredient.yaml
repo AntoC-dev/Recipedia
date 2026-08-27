@@ -185,6 +185,8 @@ appId: "com.recipedia"
 - tapOn:
     id: "Recipe::BottomActionButton"
 
-- tapOn:
-    id: "Recipe::Dialog::Confirm"
-    label: "Close the validation dialog"
+- runFlow:
+    file: "../../../../../asserts/alerts/en/recipeAddedToDatabase.yaml"
+    env:
+      RECIPE_NAME: ".*"
+    label: "Assert - Verify recipe added to database"

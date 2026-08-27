@@ -54,6 +54,7 @@ import {
   buildRecipeTitleProps,
 } from '@utils/RecipeFormHelpers';
 import { noop, RECIPE_TEST_ID } from '@screens/recipe/constants';
+import { scrollDecelerationRate } from '@utils/Constants';
 
 // The scaling notice stays until the user explicitly dismisses it — it reports
 // that stored quantities differ from what was just entered, which the user
@@ -157,6 +158,7 @@ export function RecipeView({ route, navigation }: RecipeViewProps) {
       />
 
       <ScrollView
+        decelerationRate={scrollDecelerationRate}
         horizontal={false}
         showsVerticalScrollIndicator={false}
         style={[layout.flexFill, { backgroundColor: colors.background }]}

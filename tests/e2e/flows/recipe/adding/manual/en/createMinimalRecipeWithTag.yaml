@@ -257,15 +257,8 @@ appId: "com.recipedia"
 - tapOn:
     id: "Recipe::BottomActionButton"
 
-- assertVisible:
-    id: "Recipe::Dialog::Content"
-    text: "Recipe .* has been successfully added to the database"
-    label: "Recipe creation dialog is visible"
-
-- assertVisible:
-    id: "Recipe::Dialog::Confirm"
-    label: "Confirm recipe creation dialog is visible"
-
-- tapOn:
-    id: "Recipe::Dialog::Confirm"
-    label: "Close the validation dialog"
+- runFlow:
+    file: "../../../../../asserts/alerts/en/recipeAddedToDatabase.yaml"
+    env:
+      RECIPE_NAME: ".*"
+    label: "Assert - Verify recipe added to database"

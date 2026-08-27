@@ -53,6 +53,7 @@ import { List, Portal, useTheme } from 'react-native-paper';
 import React, { useEffect, useRef, useState } from 'react';
 import { CustomTextInput } from '@components/atomic/CustomTextInput';
 import { padding, screenHeight } from '@styles/spacing';
+import { scrollDecelerationRate } from '@utils/Constants';
 
 /**
  * Props for the TextInputWithDropDown component
@@ -270,6 +271,7 @@ export function TextInputWithDropDown({
       {shouldShowDropdown && (
         <Portal>
           <ScrollView
+            decelerationRate={scrollDecelerationRate}
             testID={`${testID}::AutocompleteList`}
             keyboardShouldPersistTaps='handled'
             style={[

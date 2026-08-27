@@ -74,6 +74,7 @@ import { Stack } from '@customTypes/ScreenTypes';
 import { BottomTabs } from '@navigation/BottomTabs';
 import { navigationLogger } from '@utils/logger';
 import { errorBoundaryLayout } from '@components/organisms/ErrorBoundary';
+import { animationsDisabled } from '@utils/Constants';
 
 /**
  * RootNavigator component - Main app navigation container
@@ -81,8 +82,6 @@ import { errorBoundaryLayout } from '@components/organisms/ErrorBoundary';
  * @returns JSX element representing the complete app navigation structure
  */
 export function RootNavigator() {
-  const animationsDisabled = process.env.EXPO_PUBLIC_DISABLE_ANIMATIONS === 'true';
-
   const screenOptions = {
     headerShown: false,
     animation: animationsDisabled ? ('none' as const) : ('default' as const),

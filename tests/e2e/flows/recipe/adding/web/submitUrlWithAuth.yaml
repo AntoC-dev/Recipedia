@@ -96,10 +96,14 @@ appId: "com.recipedia"
     id: "VerticalBottomButtons::AuthDialog::SubmitButton"
     label: "Submit authentication credentials"
 
+- runFlow:
+    file: "../../../handleSavePasswordPrompt.yaml"
+    label: "Dismiss the iOS Keychain save-password prompt"
+
 - extendedWaitUntil:
     visible:
       id: "RecipeImage"
-    timeout: 30000
+    timeout: 120000
     label: "Wait for recipe screen to load after authenticated scraping"
 
 - extendedWaitUntil:

@@ -56,6 +56,7 @@ import { useI18n } from '@utils/i18n';
 import { padding } from '@styles/spacing';
 import { selectFilterCategoriesValuesToDisplay } from '@utils/FilterFunctions';
 import { useFiltersCategories } from '@hooks/useCategories';
+import { scrollDecelerationRate } from '@utils/Constants';
 
 /**
  * Props for the FilterAccordion component
@@ -214,6 +215,7 @@ export function FilterAccordion({
   return (
     <List.AccordionGroup>
       <FlatList
+        decelerationRate={scrollDecelerationRate}
         data={ingredientSections}
         keyboardShouldPersistTaps='handled'
         showsVerticalScrollIndicator={false}

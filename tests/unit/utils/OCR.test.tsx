@@ -1078,6 +1078,87 @@ describe('OCR Utility Functions', () => {
         );
         expect(result).toEqual({ recipePersons: 2 });
       });
+      test('warns and returns nothing when recognition fails before any value is read', async () => {
+        mockRecognize.mockRejectedValue(new Error('recognition unavailable'));
+
+        const result = await extractFieldFromImage(
+          uriForOCR,
+          recipeColumnsNames.time,
+          baseState,
+          mockWarn
+        );
+
+        expect(result).toEqual({});
+        expect(mockWarn).toHaveBeenCalledWith(
+          expect.stringContaining('Could not parse persons/time field')
+        );
+      });
+    });
+
+    describe('measurement vocabulary resolution', () => {
+      afterEach(() => {
+        (i18n as any).language = 'fr';
+      });
+
+      test('uses the active language own card OCR terms when present', async () => {
+        mockRecognize.mockResolvedValue({
+          text: '4 personnes',
+          blocks: [createBlock('4 personnes')],
+        });
+
+        expect(await recognizeText(uriForOCR, recipeColumnsNames.persons)).toEqual(4);
+      });
+
+      test('falls back to the default language card OCR terms when the active language has none', async () => {
+        (i18n as any).language = 'de';
+        mockRecognize.mockResolvedValue({
+          text: 'Serves 4',
+          blocks: [createBlock('Serves 4')],
+        });
+
+        expect(await recognizeText(uriForOCR, recipeColumnsNames.persons)).toEqual(4);
+      });
+
+      test('keeps the active language persons terms and falls back only for the missing time terms', async () => {
+        jest
+          .spyOn(i18n, 'getResource')
+          .mockReturnValueOnce({ personsSuffix: ['pers'], timeSuffix: [] });
+        mockRecognize.mockResolvedValue({
+          text: '4 pers 25 mins',
+          blocks: [createBlock('4 pers 25 mins')],
+        });
+
+        expect(await recognizeText(uriForOCR, recipeColumnsNames.persons)).toEqual([
+          { person: 4, time: 25 },
+        ]);
+      });
+
+      test('keeps the active language time terms and falls back only for the missing persons terms', async () => {
+        jest
+          .spyOn(i18n, 'getResource')
+          .mockReturnValueOnce({ personsSuffix: [], timeSuffix: ['mn'] });
+        mockRecognize.mockResolvedValue({
+          text: 'Serves 4 25 mn',
+          blocks: [createBlock('Serves 4 25 mn')],
+        });
+
+        expect(await recognizeText(uriForOCR, recipeColumnsNames.persons)).toEqual([
+          { person: 4, time: 25 },
+        ]);
+      });
+
+      test('degrades to the default value when neither the active nor the default language has card OCR terms', async () => {
+        jest
+          .spyOn(i18n, 'getResource')
+          .mockReturnValueOnce(undefined)
+          .mockReturnValueOnce(undefined);
+        mockRecognize.mockResolvedValue({
+          text: 'Serves 4',
+          blocks: [createBlock('Serves 4')],
+        });
+
+        expect(await recognizeText(uriForOCR, recipeColumnsNames.time)).toEqual(-1);
+      });
     });
   });
 
@@ -1127,6 +1208,24 @@ describe('OCR Utility Functions', () => {
 
       expect(await recognizeText(uriForOCR, recipeColumnsNames.time)).toEqual(-1);
     });
+
+    test('returns the default value when a block has no lines at all', async () => {
+      mockRecognize.mockResolvedValue({
+        text: '',
+        blocks: [{ recognizedLanguages: [], text: '', lines: [] }],
+      });
+
+      expect(await recognizeText(uriForOCR, recipeColumnsNames.time)).toEqual(-1);
+    });
+
+    test('returns the default value when a line has empty text', async () => {
+      mockRecognize.mockResolvedValue({
+        text: '',
+        blocks: [createBlock('')],
+      });
+
+      expect(await recognizeText(uriForOCR, recipeColumnsNames.time)).toEqual(-1);
+    });
   });
 
   describe('tranformOCRInPreparation edge cases', () => {
@@ -1161,6 +1260,48 @@ describe('OCR Utility Functions', () => {
 
   describe('on ingredients field', () => {
     describe('on recognizeText', () => {
+      test('keeps an ingredient name that merely contains a persons term inside a longer word', async () => {
+        (i18n as any).language = 'en';
+        mockRecognize.mockResolvedValue({
+          text: '',
+          blocks: [
+            createBlock('In your box'),
+            createBlock('Fruit preserves (g)'),
+            createBlock('Salt'),
+            createBlock('2'),
+            createBlock('pers.'),
+            createBlock('200'),
+            createBlock('5'),
+            createBlock('3'),
+            createBlock('pers.'),
+            createBlock('300'),
+            createBlock('7'),
+          ],
+        });
+
+        const result = await recognizeText(uriForOCR, recipeColumnsNames.ingredients);
+        (i18n as any).language = 'fr';
+
+        expect(result).toEqual([
+          {
+            name: 'Fruit preserves',
+            unit: 'g',
+            quantityPerPersons: [
+              { persons: 2, quantity: '200' },
+              { persons: 3, quantity: '300' },
+            ],
+          },
+          {
+            name: 'Salt',
+            unit: '',
+            quantityPerPersons: [
+              { persons: 2, quantity: '5' },
+              { persons: 3, quantity: '7' },
+            ],
+          },
+        ]);
+      });
+
       test('parses an Android-style header table with box header, split person suffix and ingredient note', async () => {
         mockRecognize.mockResolvedValue({
           text: '',
@@ -2232,6 +2373,21 @@ describe('OCR Utility Functions', () => {
     });
 
     describe('on extractFieldFromImage', () => {
+      test('warns and returns nothing when recognition fails', async () => {
+        mockRecognize.mockRejectedValue(new Error('recognition unavailable'));
+
+        const result = await extractFieldFromImage(
+          uriForOCR,
+          recipeColumnsNames.nutrition,
+          baseState,
+          mockWarn
+        );
+
+        expect(result).toEqual({});
+        expect(mockWarn).toHaveBeenCalledWith(
+          expect.stringContaining('Expected nutrition object for nutrition field')
+        );
+      });
       test('returns nutrition object when OCR gives valid nutrition data', async () => {
         mockRecognize.mockResolvedValue(mockResultQuitoque);
 

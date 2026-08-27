@@ -34,9 +34,6 @@ export const replaceAllBackToLine = /\n/g;
 /** Regular expression to find all numbers in text */
 export const findAllNumbers = /\b\d+\b/g;
 
-/** Regular expression to match all non-digit characters */
-export const allNonDigitCharacter = /\D/g;
-
 /** Regular expression to check if text starts with a number */
 export const numberAtFirstIndex = /^\d/;
 

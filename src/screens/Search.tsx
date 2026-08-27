@@ -30,7 +30,7 @@ import { getRecipeKey } from '@utils/listUtils';
 import { CopilotStep, walkthroughable } from 'react-native-copilot';
 import { useIsFocused } from '@react-navigation/native';
 import { useSafeCopilot } from '@hooks/useSafeCopilot';
-import { TUTORIAL_STEPS } from '@utils/Constants';
+import { TUTORIAL_STEPS, scrollDecelerationRate } from '@utils/Constants';
 
 const CopilotView = walkthroughable(View);
 
@@ -225,6 +225,7 @@ export function Search() {
         <View style={layout.flexFill}>
           {searchBarClicked ? (
             <FlashList
+              decelerationRate={scrollDecelerationRate}
               key='suggestions'
               keyboardDismissMode='on-drag'
               keyboardShouldPersistTaps='handled'
@@ -258,6 +259,7 @@ export function Search() {
             />
           ) : (
             <FlashList
+              decelerationRate={scrollDecelerationRate}
               key='recipes'
               ref={flashListRef}
               testID={screenId + '::List'}
