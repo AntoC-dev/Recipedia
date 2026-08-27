@@ -35,7 +35,9 @@ tags:
     label: "Wait for scroll animation to end"
 
 - swipe:
-    direction: UP
+    start: "50%, 80%"
+    end: "50%, 30%"
+    duration: 600
     label: "Action - Scroll again to ensure nutrition section is visible"
 
 - waitForAnimationToEnd:
@@ -43,6 +45,7 @@ tags:
 
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionEmptyState::AddButton::RoundButton"
+    point: "50%,10%"
     label: "Action - Tap add nutrition button"
 
 - waitForAnimationToEnd:
