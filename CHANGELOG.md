@@ -1,3 +1,15 @@
+## [2.52.7](https://github.com/AntoC-dev/Recipedia/compare/v2.52.6...v2.52.7) (2026-08-27)
+
+### Bug Fixes
+
+* **app:** stop iOS scroll momentum in automation builds ([3005325](https://github.com/AntoC-dev/Recipedia/commit/3005325ad67b783fdbb01c05f55550d7b1b3d54b))
+* **e2e:** adapt flows to the iOS 26 hierarchy and timings ([74e899a](https://github.com/AntoC-dev/Recipedia/commit/74e899af1efb63ffff38fc5a9d52c149aada7318))
+* **e2e:** dismiss the iOS Keychain save-password prompt ([2ff37b7](https://github.com/AntoC-dev/Recipedia/commit/2ff37b7080e0a95de6fd3875f599d01ddfdaba98))
+* **e2e:** keep the nutrition button clear of the bottom action bar ([53a66d0](https://github.com/AntoC-dev/Recipedia/commit/53a66d0f14d60aef80f92c7723f1461eb9da05f0))
+* **ocr:** read servings and time from the same recipe card line ([94e69c4](https://github.com/AntoC-dev/Recipedia/commit/94e69c4ecee03b2511f9d592a82148f2a86bb230))
+* **recipe:** surface save failures instead of swallowing them ([65a2616](https://github.com/AntoC-dev/Recipedia/commit/65a26160578179dadfe119195142745f4d5cb471))
+* **scripts:** boot the simulator CI actually uses ([29b91f0](https://github.com/AntoC-dev/Recipedia/commit/29b91f081138bbdaaf3a32bd58544256c32eaad9))
+
 ## [2.52.6](https://github.com/AntoC-dev/Recipedia/compare/v2.52.5...v2.52.6) (2026-08-26)
 
 ### Bug Fixes
