@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1787203980442,
+  "lastUpdate": 1787840829264,
   "repoUrl": "https://github.com/AntoC-dev/Recipedia",
   "entries": {
     "Screen FPS": [
@@ -284,6 +284,63 @@ window.BENCHMARK_DATA = {
           {
             "name": "06_parameters",
             "value": 57.2,
+            "unit": "fps"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "semantic-release-bot",
+            "username": "semantic-release-bot",
+            "email": "semantic-release-bot@martynus.net"
+          },
+          "committer": {
+            "name": "semantic-release-bot",
+            "username": "semantic-release-bot",
+            "email": "semantic-release-bot@martynus.net"
+          },
+          "id": "09f81a751266cffa21ef84f6af7b4740e273c12b",
+          "message": "chore(release): 2.52.6 [skip ci]\n\n## [2.52.6](https://github.com/AntoC-dev/Recipedia/compare/v2.52.5...v2.52.6) (2026-08-26)\n\n### Bug Fixes\n\n* **ci:** keep E2E credentials out of uploaded Maestro artifacts ([ee158a8](https://github.com/AntoC-dev/Recipedia/commit/ee158a807e2931ef923adf45752d55da2eb3bb06)), closes [#568](https://github.com/AntoC-dev/Recipedia/issues/568)\n* **ci:** keep E2E credentials out of uploaded Maestro artifacts ([#571](https://github.com/AntoC-dev/Recipedia/issues/571)) ([e8f49e3](https://github.com/AntoC-dev/Recipedia/commit/e8f49e3b6e0ea915085bb880895cd0f8893c6665))\n* **e2e:** label the Quitoque credential inputs ([579079e](https://github.com/AntoC-dev/Recipedia/commit/579079ea66a46062ed97a4473bae885a4747d4d2)), closes [#568](https://github.com/AntoC-dev/Recipedia/issues/568)",
+          "timestamp": "2026-08-26T16:44:38Z",
+          "url": "https://github.com/AntoC-dev/Recipedia/commit/09f81a751266cffa21ef84f6af7b4740e273c12b"
+        },
+        "date": 1787840827363,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "00_seed",
+            "value": 59.8,
+            "unit": "fps"
+          },
+          {
+            "name": "01_app_start",
+            "value": 59.9,
+            "unit": "fps"
+          },
+          {
+            "name": "02_home",
+            "value": 59.5,
+            "unit": "fps"
+          },
+          {
+            "name": "03_search",
+            "value": 59.5,
+            "unit": "fps"
+          },
+          {
+            "name": "04_recipe_view",
+            "value": 59.4,
+            "unit": "fps"
+          },
+          {
+            "name": "05_shopping",
+            "value": 59.6,
+            "unit": "fps"
+          },
+          {
+            "name": "06_parameters",
+            "value": 57.4,
             "unit": "fps"
           }
         ]
