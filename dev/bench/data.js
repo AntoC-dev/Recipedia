@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1787840829264,
+  "lastUpdate": 1788425984957,
   "repoUrl": "https://github.com/AntoC-dev/Recipedia",
   "entries": {
     "Screen FPS": [
@@ -341,6 +341,63 @@ window.BENCHMARK_DATA = {
           {
             "name": "06_parameters",
             "value": 57.4,
+            "unit": "fps"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "semantic-release-bot",
+            "username": "semantic-release-bot",
+            "email": "semantic-release-bot@martynus.net"
+          },
+          "committer": {
+            "name": "semantic-release-bot",
+            "username": "semantic-release-bot",
+            "email": "semantic-release-bot@martynus.net"
+          },
+          "id": "801eb832c4a4c9d3a1625a1229a8f7b5b39856a5",
+          "message": "chore(release): 2.52.7 [skip ci]\n\n## [2.52.7](https://github.com/AntoC-dev/Recipedia/compare/v2.52.6...v2.52.7) (2026-08-27)\n\n### Bug Fixes\n\n* **app:** stop iOS scroll momentum in automation builds ([3005325](https://github.com/AntoC-dev/Recipedia/commit/3005325ad67b783fdbb01c05f55550d7b1b3d54b))\n* **e2e:** adapt flows to the iOS 26 hierarchy and timings ([74e899a](https://github.com/AntoC-dev/Recipedia/commit/74e899af1efb63ffff38fc5a9d52c149aada7318))\n* **e2e:** dismiss the iOS Keychain save-password prompt ([2ff37b7](https://github.com/AntoC-dev/Recipedia/commit/2ff37b7080e0a95de6fd3875f599d01ddfdaba98))\n* **e2e:** keep the nutrition button clear of the bottom action bar ([53a66d0](https://github.com/AntoC-dev/Recipedia/commit/53a66d0f14d60aef80f92c7723f1461eb9da05f0))\n* **ocr:** read servings and time from the same recipe card line ([94e69c4](https://github.com/AntoC-dev/Recipedia/commit/94e69c4ecee03b2511f9d592a82148f2a86bb230))\n* **recipe:** surface save failures instead of swallowing them ([65a2616](https://github.com/AntoC-dev/Recipedia/commit/65a26160578179dadfe119195142745f4d5cb471))\n* **scripts:** boot the simulator CI actually uses ([29b91f0](https://github.com/AntoC-dev/Recipedia/commit/29b91f081138bbdaaf3a32bd58544256c32eaad9))",
+          "timestamp": "2026-08-27T16:27:34Z",
+          "url": "https://github.com/AntoC-dev/Recipedia/commit/801eb832c4a4c9d3a1625a1229a8f7b5b39856a5"
+        },
+        "date": 1788425983612,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "00_seed",
+            "value": 59.7,
+            "unit": "fps"
+          },
+          {
+            "name": "01_app_start",
+            "value": 59.8,
+            "unit": "fps"
+          },
+          {
+            "name": "02_home",
+            "value": 59.6,
+            "unit": "fps"
+          },
+          {
+            "name": "03_search",
+            "value": 59.5,
+            "unit": "fps"
+          },
+          {
+            "name": "04_recipe_view",
+            "value": 59.4,
+            "unit": "fps"
+          },
+          {
+            "name": "05_shopping",
+            "value": 59.4,
+            "unit": "fps"
+          },
+          {
+            "name": "06_parameters",
+            "value": 55.8,
             "unit": "fps"
           }
         ]
