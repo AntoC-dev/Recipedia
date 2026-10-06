@@ -59,6 +59,7 @@ ios/*
 .claude/*
 !.claude/agents/
 !.claude/skills/
+!.claude/rules/
 **/__pycache__/
 
 
