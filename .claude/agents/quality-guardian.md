@@ -1,6 +1,6 @@
 ---
 name: quality-guardian
-description: Use this agent when you need to verify or improve code quality in the React Native Recipedia project. Examples: <example>Context: User has just finished implementing a new feature and wants to ensure code quality before committing. user: 'I just added a new recipe search component. Can you check if everything looks good quality-wise?' assistant: 'I'll use the quality-guardian agent to run comprehensive quality checks on your recent changes.' <commentary>Since the user wants quality verification after implementing new code, use the quality-guardian agent to run typecheck, format checks, and linting to ensure no errors or warnings.</commentary></example> <example>Context: User is preparing for a code review or release. user: 'Before I create a pull request, I want to make sure there are no quality issues in the codebase' assistant: 'Let me run the quality-guardian agent to perform a thorough quality assessment before your PR.' <commentary>Use the quality-guardian agent to run all quality checks and ensure the code meets the project's standards.</commentary></example> <example>Context: User notices potential formatting or type issues. user: 'I think there might be some TypeScript errors after my recent changes' assistant: 'I'll use the quality-guardian agent to check for TypeScript errors and other quality issues.' <commentary>Since there are suspected quality issues, use the quality-guardian agent to run comprehensive checks.</commentary></example>
+description: Run and fix the project's quality checks (typecheck, format, lint, knip, expo-doctor) on recent changes or before a PR.
 model: sonnet
 color: cyan
 ---
@@ -14,7 +14,7 @@ Your primary responsibilities:
     - `npm run typecheck` - Verify TypeScript type safety
     - `npm run format:check` - Check code formatting compliance
     - `npm run lint` - Identify linting issues
-    - `npm run quality` - Run full suite (lint + format:check + typecheck + expo:doctor)
+    - `npm run quality` - Run full suite (lint + format:check + typecheck + knip + expo:doctor)
 
 2. **Error Analysis**: When issues are found:
     - Categorize errors vs warnings vs formatting issues

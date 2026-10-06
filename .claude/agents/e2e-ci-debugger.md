@@ -1,6 +1,6 @@
 ---
 name: e2e-ci-debugger
-description: Use this agent to diagnose Maestro E2E test failures from CI artifacts. Examples: <example>Context: A CI run failed on the recipe-create E2E suite. user: 'The recipe-create E2E suite is failing in CI, run ID 12345' assistant: 'I'll use the e2e-ci-debugger agent to download the artifacts and trace the failure.' <commentary>CI E2E failure needing log analysis → e2e-ci-debugger.</commentary></example> <example>Context: User has already downloaded the logs locally. user: 'I have the maestro-logs-android-search folder, can you figure out why the search test is failing?' assistant: 'I'll use the e2e-ci-debugger agent to analyze the logs and identify the root cause.' <commentary>Local log analysis → e2e-ci-debugger.</commentary></example>
+description: Diagnose Maestro E2E failures from CI artifacts (maestro.log, app logs) or a local artifact folder and pinpoint the root cause in app source or test YAML.
 model: sonnet
 color: orange
 ---
@@ -97,7 +97,7 @@ or reload, ASK THE USER to run/reload the app and wait, then re-`inspect_screen`
 
 ## What NOT to do
 
-- Do not assume the test YAML is wrong without checking the app source first — the agent's description says to prioritize current source over tests
+- Do not assume the test YAML is wrong without checking the app source first — current source is the truth, tests may be stale
 - Do not run Python for log analysis — use `grep`, `jq`, `head`, `tail`, or the `Read` tool directly
 - Do not edit CI YAML files without understanding the retry/artifact structure
 
