@@ -32,6 +32,12 @@ else
   echo "⚠️ Could not find app container"
 fi
 
+# E2E clearState (simctl uninstall) wipes the file log above on every launch. The app mirrors its
+# log to the unified log in non-production builds and run-e2e-ios.sh streams it to
+# app-stream-<suite>.txt for the whole run. Maestro's own device-simulator.log is captured at the
+# default level and misses these info-level lines.
+bash "$(dirname "${BASH_SOURCE[0]}")/split-app-log-by-launch.sh" "app-stream-${SUITE}.txt" "$LOG_DIR/app-logs" ios
+
 # Lossy: anything outside this list is dropped. Unfiltered these overflow the merge job disk.
 KEEP_PROCESSES='Recipedia|SpringBoard|runningboardd|assertiond|testmanagerd|maestro-driver-iosUITests-Runner|CoreSimulator|mediaserverd|kernel|ReportCrash|osanalyticshelper|symptomsd'
 echo "📋 Filtering simulator syslogs down to the processes E2E triage reads..."
