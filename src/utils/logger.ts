@@ -35,6 +35,7 @@
 
 import { consoleTransport, fileAsyncTransport, logger } from 'react-native-logs';
 import { File, Paths } from 'expo-file-system';
+import { systemLogTransport } from '@utils/systemLogTransport';
 
 /**
  * Shared logger configuration
@@ -78,7 +79,11 @@ const sharedConfig = {
  * Configures different behavior for development and production:
  * - Development: debug level, console output, colored logs
  * - Production: info level, file output for CI debugging
+ * - Non-production builds also mirror the file log to the system log (see
+ *   {@link systemLogTransport}) so it survives E2E `clearState`
  */
+const isProduction = process.env.EXPO_PUBLIC_DATASET_TYPE === 'production';
+
 const log = __DEV__
   ? logger.createLogger({
       ...sharedConfig,
@@ -95,8 +100,8 @@ const log = __DEV__
     })
   : logger.createLogger({
       ...sharedConfig,
-      severity: process.env.EXPO_PUBLIC_DATASET_TYPE !== 'production' ? 'debug' : 'info',
-      transport: fileAsyncTransport,
+      severity: isProduction ? 'info' : 'debug',
+      transport: isProduction ? fileAsyncTransport : [fileAsyncTransport, systemLogTransport],
       transportOptions: {
         FS: { File, Paths },
         filePath: Paths.document.uri,

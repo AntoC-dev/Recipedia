@@ -32,6 +32,25 @@ else
   echo "⚠️ Could not find app container"
 fi
 
+# E2E clearState (simctl uninstall) wipes the file log above on every launch. The app mirrors
+# its log to the unified log (tag below) in non-production builds, and run-e2e-ios.sh streams
+# the tagged lines to app-syslog-<suite>.txt for the whole run. Maestro's own device-simulator.log
+# is captured at the default level and misses these info-level lines.
+echo "📋 Splitting streamed app log lines, one file per app process..."
+APP_LOG_DIR="$LOG_DIR/app-logs"
+mkdir -p "$APP_LOG_DIR"
+awk -v dir="$APP_LOG_DIR" '{
+    pid = match($0, /Recipedia\[[0-9]+/) ? substr($0, RSTART + 10, RLENGTH - 10) : "unknown"
+    if (!(pid in index_of)) index_of[pid] = ++launches
+    print > sprintf("%s/launch-%02d-pid%s.txt", dir, index_of[pid], pid)
+  }' "app-syslog-${SUITE}.txt" 2>/dev/null
+if [ -z "$(ls -A "$APP_LOG_DIR" 2>/dev/null)" ]; then
+  rmdir "$APP_LOG_DIR"
+  echo "⚠️ No tagged app lines found in the streamed unified log"
+else
+  echo "📋 Per-launch app logs: $(ls "$APP_LOG_DIR" | wc -l | tr -d ' ') file(s)"
+fi
+
 # Lossy: anything outside this list is dropped. Unfiltered these overflow the merge job disk.
 KEEP_PROCESSES='Recipedia|SpringBoard|runningboardd|assertiond|testmanagerd|maestro-driver-iosUITests-Runner|CoreSimulator|mediaserverd|kernel|ReportCrash|osanalyticshelper|symptomsd'
 echo "📋 Filtering simulator syslogs down to the processes E2E triage reads..."

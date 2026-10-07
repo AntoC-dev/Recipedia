@@ -19,6 +19,11 @@ adb shell settings put global animator_duration_scale 0
 
 adb logcat -c
 
+APP_LOGCAT_FILE="app-logcat-${SUITE}.txt"
+export APP_LOGCAT_FILE
+adb logcat -v threadtime 'ReactNativeJS:V' '*:S' | grep --line-buffered -F '[RecipediaApp]' > "$APP_LOGCAT_FILE" &
+LOGCAT_PID=$!
+
 echo "🚀 Running E2E tests on suite: $SUITE ..."
 npm run install:android
 
@@ -30,6 +35,8 @@ maestro test tests/e2e/ \
   "${MAESTRO_CREDENTIAL_ARGS[@]}"
 MAESTRO_EXIT=$?
 set -e
+
+kill "$LOGCAT_PID" 2>/dev/null || true
 
 bash .github/scripts/collect-android-logs.sh "$SUITE"
 

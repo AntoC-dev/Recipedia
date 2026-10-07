@@ -282,8 +282,8 @@ Non-blocking checks (informational):
 ### E2E test failures
 
 1. Download `maestro-logs-android.zip` or `maestro-logs-ios.zip` from the run artifacts
-2. For Android, open `android-app-logs.txt` for logcat output
-3. For iOS, open `ios-app-logs.txt` for simulator logs
+2. `recipedia-app-logs.txt` only holds the last app launch: `clearState` wipes the in-app log file on every launch
+3. For every launch, open `app-logs/launch-NN-pid<pid>.txt`. These are the app's own log lines, mirrored to logcat / the simulator syslog under the `[RecipediaApp]` tag in non-production builds
 4. Each suite has its own subdirectory with Maestro step logs
 5. Common causes: TestID changed in app, timing/animation race condition, OCR gallery ordering, simulator load (ANR)
 
