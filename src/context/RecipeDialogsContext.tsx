@@ -61,9 +61,7 @@ const defaultSimilarityDialogState: SimilarityDialogState = {
   item: {
     type: 'Tag',
     newItemName: '',
-    onConfirm: () => {
-      throw new Error('onConfirm callback called on default prop');
-    },
+    onConfirm: () => {},
   },
 };
 
