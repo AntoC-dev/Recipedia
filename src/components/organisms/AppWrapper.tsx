@@ -5,6 +5,7 @@ import { TutorialProvider } from './TutorialController';
 import { isFirstLaunch, markAsLaunched } from '@utils/firstLaunch';
 import { appLogger, tutorialLogger } from '@utils/logger';
 import { deleteOldLogFiles } from '@utils/BugReport';
+import { startLifecycleDiagnostics } from '@utils/lifecycleDiagnostics';
 import { useRecipes } from '@hooks/useRecipes';
 import { useMenu } from '@hooks/useMenu';
 import { useIngredients } from '@hooks/useIngredients';
@@ -60,6 +61,8 @@ export default function AppWrapper() {
   if (decodeError) {
     throw decodeError;
   }
+
+  useEffect(() => startLifecycleDiagnostics(), []);
 
   useEffect(() => {
     deleteOldLogFiles();
