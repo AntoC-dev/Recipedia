@@ -1,3 +1,10 @@
+## [2.52.8](https://github.com/AntoC-dev/Recipedia/compare/v2.52.7...v2.52.8) (2026-10-07)
+
+### Bug Fixes
+
+* Default similarity onConfirm should be a no-op ([334c8da](https://github.com/AntoC-dev/Recipedia/commit/334c8da09c1bc681bf41674bdecbcd9b4b8fc4f9)), closes [#349](https://github.com/AntoC-dev/Recipedia/issues/349)
+* Default similarity onConfirm should be a no-op ([#567](https://github.com/AntoC-dev/Recipedia/issues/567)) ([44a6ffc](https://github.com/AntoC-dev/Recipedia/commit/44a6ffcbac3b2a842e445df41c80b8fd5afaa15e)), closes [#349](https://github.com/AntoC-dev/Recipedia/issues/349)
+
 ## [2.52.7](https://github.com/AntoC-dev/Recipedia/compare/v2.52.6...v2.52.7) (2026-08-27)
 
 ### Bug Fixes
