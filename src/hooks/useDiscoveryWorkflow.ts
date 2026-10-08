@@ -144,6 +144,12 @@ export function useDiscoveryWorkflow(
     };
   }, [provider, t]);
 
+  useEffect(() => {
+    return () => {
+      abortControllerRef.current?.abort();
+    };
+  }, []);
+
   /**
    * Aborts the current discovery or parsing operation
    */

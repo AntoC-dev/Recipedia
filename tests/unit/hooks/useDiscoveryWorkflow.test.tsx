@@ -366,6 +366,50 @@ describe('useDiscoveryWorkflow', () => {
 
       unmount();
     });
+
+    it('aborts an in-progress parsing operation on unmount', async () => {
+      let parsingSignal: AbortSignal | undefined;
+      mockOrchestratorParseSelectedRecipes.mockImplementation(async function* (
+        _provider: RecipeProvider,
+        selectedRecipes: DiscoveredRecipe[],
+        opts?: { signal?: AbortSignal }
+      ) {
+        parsingSignal = opts?.signal;
+        yield {
+          phase: 'parsing',
+          current: 0,
+          total: selectedRecipes.length,
+          parsedRecipes: [],
+          failedRecipes: [],
+        } as ParsingProgress;
+        await new Promise(() => {});
+      });
+
+      const provider = createMockProvider();
+      const { result, unmount } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+
+      await waitFor(() => {
+        expect(result.current.phase).toBe('selecting');
+        expect(result.current.recipes.length).toBeGreaterThan(0);
+      });
+
+      act(() => {
+        result.current.selectRecipe(result.current.recipes[0]!.url);
+      });
+
+      act(() => {
+        void result.current.parseSelectedRecipes();
+      });
+
+      await waitFor(() => {
+        expect(result.current.phase).toBe('parsing');
+        expect(parsingSignal).toBeDefined();
+      });
+
+      unmount();
+
+      expect(parsingSignal!.aborted).toBe(true);
+    });
   });
 
   describe('error handling', () => {
