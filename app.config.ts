@@ -97,7 +97,7 @@ export default ({config}: ConfigContext): ExpoConfig => {
             },
             package: appId,
             permissions: ['android.permission.CAMERA'],
-            predictiveBackGestureEnabled: true,
+            predictiveBackGestureEnabled: false,
         },
         plugins: [
             [
