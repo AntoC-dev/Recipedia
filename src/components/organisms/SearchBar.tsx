@@ -106,7 +106,7 @@ export function SearchBar({
       autoCorrect={false}
       returnKeyType={'search'}
       style={styles.searchbar}
-      onFocus={() => setSearchBarClicked(true)}
+      onPressIn={() => setSearchBarClicked(true)}
       onSubmitEditing={() => {
         Keyboard.dismiss();
         setSearchBarClicked(false);

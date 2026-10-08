@@ -124,15 +124,23 @@ describe('SearchBar Component', () => {
     expect(mockUpdateSearchString).toHaveBeenCalledWith('risotto');
   });
 
-  test('handles focus events correctly', () => {
+  test('opens the suggestions when the input is touched', () => {
     const { getByTestId } = renderSearchBar();
 
     expect(mockSetSearchBarClicked).not.toHaveBeenCalled();
 
     const textInput = getByTestId(defaultTestId);
-    fireEvent(textInput, 'onFocus');
+    fireEvent(textInput, 'onPressIn');
 
     expect(mockSetSearchBarClicked).toHaveBeenCalledWith(true);
+  });
+
+  test('does not open the suggestions on a bare focus such as the one Android restores after back', () => {
+    const { getByTestId } = renderSearchBar();
+
+    fireEvent(getByTestId(defaultTestId), 'onFocus');
+
+    expect(mockSetSearchBarClicked).not.toHaveBeenCalled();
   });
 
   test('does not collapse on blur', () => {
@@ -199,9 +207,9 @@ describe('SearchBar Component', () => {
 
     const textInput = getByTestId(defaultTestId);
 
-    fireEvent(textInput, 'onFocus');
+    fireEvent(textInput, 'onPressIn');
     fireEvent.changeText(textInput, 'new text');
-    fireEvent(textInput, 'onFocus');
+    fireEvent(textInput, 'onPressIn');
     fireEvent(textInput, 'submitEditing');
 
     expect(mockSetSearchBarClicked).toHaveBeenCalledTimes(3);
@@ -254,7 +262,7 @@ describe('SearchBar Component', () => {
     );
 
     fireEvent.changeText(textInput, 'updated');
-    fireEvent(textInput, 'onFocus');
+    fireEvent(textInput, 'onPressIn');
 
     expect(newMockUpdateSearchString).toHaveBeenCalledTimes(1);
     expect(newMockSetSearchBarClicked).toHaveBeenCalledTimes(1);
@@ -262,11 +270,11 @@ describe('SearchBar Component', () => {
     expect(mockSetSearchBarClicked).not.toHaveBeenCalled();
   });
 
-  test('handles simultaneous focus and text changes correctly', () => {
+  test('handles simultaneous touch and text changes correctly', () => {
     const { getByTestId } = renderSearchBar();
     const textInput = getByTestId(defaultTestId);
 
-    fireEvent(textInput, 'onFocus');
+    fireEvent(textInput, 'onPressIn');
     fireEvent.changeText(textInput, 'focused text');
 
     expect(mockSetSearchBarClicked).toHaveBeenCalledWith(true);
@@ -292,7 +300,7 @@ describe('SearchBar Component', () => {
 
       assertSearchBar(getByTestId, queryByTestId, text);
 
-      fireEvent(textInput, 'onFocus');
+      fireEvent(textInput, 'onPressIn');
       expect(mockSetSearchBarClicked).toHaveBeenCalledWith(true);
 
       jest.clearAllMocks();
