@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1788425984957,
+  "lastUpdate": 1791456470457,
   "repoUrl": "https://github.com/AntoC-dev/Recipedia",
   "entries": {
     "Screen FPS": [
@@ -398,6 +398,63 @@ window.BENCHMARK_DATA = {
           {
             "name": "06_parameters",
             "value": 55.8,
+            "unit": "fps"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "semantic-release-bot",
+            "username": "semantic-release-bot",
+            "email": "semantic-release-bot@martynus.net"
+          },
+          "committer": {
+            "name": "semantic-release-bot",
+            "username": "semantic-release-bot",
+            "email": "semantic-release-bot@martynus.net"
+          },
+          "id": "19d3eacf48d7b3aa4b085b4039e972ec79ad6243",
+          "message": "chore(release): 2.52.8 [skip ci]\n\n## [2.52.8](https://github.com/AntoC-dev/Recipedia/compare/v2.52.7...v2.52.8) (2026-10-07)\n\n### Bug Fixes\n\n* Default similarity onConfirm should be a no-op ([334c8da](https://github.com/AntoC-dev/Recipedia/commit/334c8da09c1bc681bf41674bdecbcd9b4b8fc4f9)), closes [#349](https://github.com/AntoC-dev/Recipedia/issues/349)\n* Default similarity onConfirm should be a no-op ([#567](https://github.com/AntoC-dev/Recipedia/issues/567)) ([44a6ffc](https://github.com/AntoC-dev/Recipedia/commit/44a6ffcbac3b2a842e445df41c80b8fd5afaa15e)), closes [#349](https://github.com/AntoC-dev/Recipedia/issues/349)",
+          "timestamp": "2026-10-07T04:55:19Z",
+          "url": "https://github.com/AntoC-dev/Recipedia/commit/19d3eacf48d7b3aa4b085b4039e972ec79ad6243"
+        },
+        "date": 1791456468495,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "00_seed",
+            "value": 59.8,
+            "unit": "fps"
+          },
+          {
+            "name": "01_app_start",
+            "value": 59.8,
+            "unit": "fps"
+          },
+          {
+            "name": "02_home",
+            "value": 59.6,
+            "unit": "fps"
+          },
+          {
+            "name": "03_search",
+            "value": 59.5,
+            "unit": "fps"
+          },
+          {
+            "name": "04_recipe_view",
+            "value": 59.4,
+            "unit": "fps"
+          },
+          {
+            "name": "05_shopping",
+            "value": 59.4,
+            "unit": "fps"
+          },
+          {
+            "name": "06_parameters",
+            "value": 56.6,
             "unit": "fps"
           }
         ]
