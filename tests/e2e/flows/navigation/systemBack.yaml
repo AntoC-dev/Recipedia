@@ -1,0 +1,19 @@
+appId: "com.recipedia"
+---
+# iOS taps the AppBar button: Maestro's edge swipe is a velocity-less flick that iOS rejects (see E2E_TESTING.md).
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: ".*AppBar::(BackButton|Cancel)"
+          label: "Tap the AppBar back button"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - back:
+          label: "Press the Android system back"
+
+- waitForAnimationToEnd

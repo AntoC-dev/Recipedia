@@ -1,0 +1,217 @@
+name: "2 - Back Gesture Settings Screens Flow"
+appId: "com.recipedia"
+tags:
+  - back-gestures
+---
+- tapOn:
+    id: "BottomTabs::Parameters"
+    label: "Action - Navigate to Parameters screen"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "Parameters::Section::RecipeDefaults::Persons::Item"
+    direction: UP
+    speed: 40
+    centerElement: true
+    label: "Action - Scroll to the top of Parameters"
+
+- tapOn:
+    id: "Parameters::Section::RecipeDefaults::Persons::Item"
+    label: "Action - Open Default Persons settings"
+
+- assertVisible:
+    id: "DefaultPersonSettings::AppBar::Title-title-text"
+    label: "Assert - Default Persons settings is displayed"
+
+- runFlow:
+    file: "../../flows/navigation/systemBack.yaml"
+    label: "Action - Back from Default Persons settings"
+
+- assertVisible:
+    id: "Parameters::Section::RecipeDefaults::Persons::Item"
+    label: "Assert - Back returned to Parameters"
+
+- tapOn:
+    id: "Parameters::Section::Appearance::Language::Item"
+    label: "Action - Open Language settings"
+
+- assertVisible:
+    id: "LanguageSettings::AppBar::Title-title-text"
+    label: "Assert - Language settings is displayed"
+
+- runFlow:
+    file: "../../flows/navigation/systemBack.yaml"
+    label: "Action - Back from Language settings"
+
+- assertVisible:
+    id: "Parameters::Section::Appearance::Language::Item"
+    label: "Assert - Back returned to Parameters"
+
+- scrollUntilVisible:
+    element:
+      id: "Parameters::Section::Data::Tags::Item"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Action - Scroll to Data Management section"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "Parameters::Section::Data::Ingredients::Item"
+    label: "Action - Open Ingredients settings"
+
+- assertVisible:
+    id: "IngredientsSettings::AppBar::Title-title-text"
+    label: "Assert - Ingredients settings is displayed"
+
+- tapOn:
+    id: "IngredientsSettings::BottomActionButton"
+    label: "Action - Open the add ingredient dialog"
+
+- extendedWaitUntil:
+    visible:
+      id: "IngredientsSettings::ItemDialog::AddModal::.*"
+    timeout: 20000
+    label: "Wait - Add ingredient dialog is displayed"
+
+- runFlow:
+    file: "../../flows/navigation/systemBack.yaml"
+    label: "Action - Back with the dialog open"
+
+- assertNotVisible:
+    id: "IngredientsSettings::ItemDialog::AddModal::.*"
+    label: "Assert - Back closed the dialog"
+
+- assertVisible:
+    id: "IngredientsSettings::AppBar::Title-title-text"
+    label: "Assert - Still on Ingredients settings after closing the dialog"
+
+- runFlow:
+    file: "../../flows/navigation/systemBack.yaml"
+    label: "Action - Back from Ingredients settings"
+
+- assertVisible:
+    id: "Parameters::Section::Data::Ingredients::Item"
+    label: "Assert - Back returned to Parameters"
+
+- tapOn:
+    id: "Parameters::Section::Data::Tags::Item"
+    label: "Action - Open Tags settings"
+
+- assertVisible:
+    id: "TagsSettings::AppBar::Title-title-text"
+    label: "Assert - Tags settings is displayed"
+
+- tapOn:
+    id: "TagsSettings::BottomActionButton"
+    label: "Action - Open the add tag dialog"
+
+- extendedWaitUntil:
+    visible:
+      id: "TagsSettings::ItemDialog::AddModal::.*"
+    timeout: 20000
+    label: "Wait - Add tag dialog is displayed"
+
+- runFlow:
+    file: "../../flows/navigation/systemBack.yaml"
+    label: "Action - Back with the dialog open"
+
+- assertNotVisible:
+    id: "TagsSettings::ItemDialog::AddModal::.*"
+    label: "Assert - Back closed the dialog"
+
+- assertVisible:
+    id: "TagsSettings::AppBar::Title-title-text"
+    label: "Assert - Still on Tags settings after closing the dialog"
+
+- runFlow:
+    file: "../../flows/navigation/systemBack.yaml"
+    label: "Action - Back from Tags settings"
+
+- assertVisible:
+    id: "Parameters::Section::Data::Tags::Item"
+    label: "Assert - Back returned to Parameters"
+
+- scrollUntilVisible:
+    element:
+      id: "Parameters::Section::Import::DismissedRecipes::Item"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Action - Scroll to the Dismissed recipes item"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "Parameters::Section::Import::DismissedRecipes::Item"
+    label: "Action - Open Dismissed recipes settings"
+
+- assertVisible:
+    id: "DismissedRecipesSettings::AppBar::Title-title-text"
+    label: "Assert - Dismissed recipes settings is displayed"
+
+- runFlow:
+    file: "../../flows/navigation/systemBack.yaml"
+    label: "Action - Back from Dismissed recipes settings"
+
+- assertVisible:
+    id: "Parameters::Section::Import::DismissedRecipes::Item"
+    label: "Assert - Back returned to Parameters"
+
+- tapOn:
+    id: "Parameters::Section::Import::FromWebsite::Item"
+    label: "Action - Open Bulk Import provider selection"
+
+- assertVisible:
+    id: "BulkImportSettings::AppBar::Title"
+    label: "Assert - Bulk Import provider selection is displayed"
+
+- runFlow:
+    file: "../../flows/navigation/systemBack.yaml"
+    label: "Action - Back from Bulk Import provider selection"
+
+- assertVisible:
+    id: "Parameters::Section::Import::FromWebsite::Item"
+    label: "Assert - Back returned to Parameters"
+
+- scrollUntilVisible:
+    element:
+      id: "Parameters::Section::About::BugReport::Item"
+    direction: DOWN
+    speed: 40
+    centerElement: true
+    label: "Action - Scroll to the Bug report item"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "Parameters::Section::About::BugReport::Item"
+    point: "50%,20%"
+    label: "Action - Open Bug Report screen"
+
+- assertVisible:
+    id: "BugReport::Bar::AppBar::Title-title-text"
+    label: "Assert - Bug Report screen is displayed"
+
+- tapOn:
+    id: "BugReport::Description::Input::CustomTextInput"
+    label: "Action - Focus the description input"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait - Keyboard is displayed"
+
+- runFlow:
+    file: "../../flows/navigation/dismissKeyboardBeforeBack.yaml"
+    label: "Action - Dismiss the open keyboard before going back"
+
+- runFlow:
+    file: "../../flows/navigation/systemBack.yaml"
+    label: "Action - Back from Bug Report"
+
+- assertVisible:
+    id: "Parameters::Section::About::Version::Item"
+    label: "Assert - Back returned to Parameters"

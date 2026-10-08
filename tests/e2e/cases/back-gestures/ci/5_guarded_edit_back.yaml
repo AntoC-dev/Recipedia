@@ -1,0 +1,14 @@
+name: "5 - Back Gesture Guarded Recipe Edit Flow"
+appId: "com.recipedia"
+tags:
+  - back-gestures
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../5_guarded_edit_back.yaml"
+          label: "Run - 5 - Back Gesture Guarded Recipe Edit Flow"

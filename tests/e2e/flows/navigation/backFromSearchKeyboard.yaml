@@ -1,0 +1,14 @@
+appId: "com.recipedia"
+---
+# iOS has no system back at a root tab, so the keyboard is dismissed with a downward swipe instead.
+- runFlow:
+    file: "dismissKeyboardBeforeBack.yaml"
+    label: "Action - Android back dismisses the open keyboard"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - runFlow:
+          file: "../search/dismissKeyboardKeepDropdown.yaml"
+          label: "Action - Swipe down to dismiss the open keyboard"

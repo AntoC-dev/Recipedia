@@ -1,0 +1,39 @@
+appId: "com.recipedia"
+---
+# The filter page is not a back layer. Android back leaves the Search tab for Home.
+# iOS has no system back at a root tab, so the filter page is closed with its toggle instead.
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - back:
+          label: "Press the Android system back"
+
+      - waitForAnimationToEnd
+
+      - runFlow:
+          file: "../../asserts/home/assertCollapsedButtons.yaml"
+          label: "Assert - Android back left the Search tab for Home"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "BottomTabs::Search"
+          selected: true
+          label: "Assert - iOS stays on the Search tab"
+
+      - assertVisible:
+          id: "SearchScreen::FiltersToggleButtons"
+          label: "Assert - The filter page is still open"
+
+      - tapOn:
+          id: "SearchScreen::FiltersToggleButtons"
+          label: "Action - Close the filter page with its toggle"
+
+      - waitForAnimationToEnd
+
+      - runFlow:
+          file: "../../asserts/search/en/assertSearchScreenUI.yaml"
+          label: "Assert - Search screen is back to the card view"

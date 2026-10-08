@@ -1,0 +1,64 @@
+name: "5 - Back Gesture Guarded Recipe Edit Flow"
+appId: "com.recipedia"
+tags:
+  - back-gestures
+---
+- runFlow:
+    file: "../../flows/search/searchAndOpenRecipe.yaml"
+    env:
+      RECIPE_NAME: "Pesto Pasta"
+    label: "Action - Search and open Pesto Pasta recipe"
+
+- runFlow:
+    file: "../../flows/recipe/tapRecipeEdit.yaml"
+    label: "Action - Enter edit mode"
+
+- runFlow:
+    file: "../../flows/recipe/adding/setRecipeTitle.yaml"
+    env:
+      TITLE: "Gesture Pesto Title"
+    label: "Action - Edit the title so the form becomes dirty"
+
+- runFlow:
+    file: "../../flows/navigation/systemBack.yaml"
+    label: "Action - Attempt to leave with the system gesture"
+
+- runFlow:
+    file: "../../asserts/alerts/en/unsavedChangesDialog.yaml"
+    label: "Assert - The gesture pop is intercepted by the discard guard"
+
+- tapOn:
+    id: "RecipeUnsavedChanges::Dialog::Cancel"
+    label: "Action - Choose to keep editing"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "Recipe::AppBar::Cancel"
+    label: "Assert - Still in edit mode after the cancelled gesture"
+
+- assertVisible:
+    id: "Recipe::AppBar::Validate"
+    label: "Assert - The edit form actions are still displayed"
+
+- assertVisible:
+    id: "RecipeTitle::CustomTextInput"
+    text: "Gesture Pesto Title"
+    label: "Assert - The pending edit survived the intercepted gesture"
+
+- runFlow:
+    file: "../../flows/navigation/systemBack.yaml"
+    label: "Action - Attempt to leave with the system gesture again"
+
+- runFlow:
+    file: "../../flows/recipe/discardRecipeChanges.yaml"
+    label: "Action - Confirm discarding the unsaved changes"
+
+- runFlow:
+    file: "../../asserts/recipe/common/buttonsReadOnly.yaml"
+    label: "Assert - The replayed gesture pop returned to read-only mode"
+
+- assertVisible:
+    id: "RecipeTitle::Text"
+    text: "PESTO PASTA"
+    label: "Assert - The original title is intact, the edit was dropped"

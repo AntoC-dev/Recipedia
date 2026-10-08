@@ -1,0 +1,14 @@
+name: "2 - Back Gesture Settings Screens Flow"
+appId: "com.recipedia"
+tags:
+  - back-gestures
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../2_settings_back.yaml"
+          label: "Run - 2 - Back Gesture Settings Screens Flow"

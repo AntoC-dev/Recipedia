@@ -1,0 +1,35 @@
+appId: "com.recipedia"
+---
+# Pass the tab id via TAB_ID. Android back goes to the first tab; iOS has no system back at a root tab.
+- tapOn:
+    id: "${TAB_ID}"
+    label: "Action - Navigate to the tab"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertNotVisible:
+          id: ".*AppBar::(BackButton|Cancel)"
+          label: "Assert - A root tab has no back button on iOS"
+
+      - assertVisible:
+          id: "${TAB_ID}"
+          selected: true
+          label: "Assert - iOS stays on the same tab"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - back:
+          label: "Press the Android system back"
+
+      - waitForAnimationToEnd
+
+      - assertVisible:
+          id: "BottomTabs::Home"
+          selected: true
+          label: "Assert - Android goes back to the first tab"

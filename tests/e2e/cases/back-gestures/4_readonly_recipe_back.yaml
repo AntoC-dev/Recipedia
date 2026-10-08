@@ -1,0 +1,84 @@
+name: "4 - Back Gesture Read-Only Recipe Flow"
+appId: "com.recipedia"
+tags:
+  - back-gestures
+---
+- runFlow:
+    file: "../../flows/search/searchAndOpenRecipe.yaml"
+    env:
+      RECIPE_NAME: "Chicken Tacos"
+    label: "Action - Search and open Chicken Tacos recipe"
+
+- runFlow:
+    file: "../../flows/navigation/systemBack.yaml"
+    label: "Action - Go back with the system gesture"
+
+- assertVisible:
+    id: "SearchScreen::SearchBar"
+    text: "Chicken Tacos"
+    label: "Assert - Back gesture popped to the Search screen and the app stayed open"
+
+- assertVisible:
+    id: "BottomTabs::Search"
+    selected: true
+    label: "Assert - The Search tab is still selected"
+
+- tapOn:
+    id: "SearchScreen::SearchBar-clear-icon"
+    label: "Action - Clear the search filter"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Action - Navigate to Home screen"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "Home::RecipeRecommendation::random::Carousel::Card::0::Cover"
+    label: "Action - Open the first recommended recipe"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::AppBar"
+    timeout: 30000
+    label: "Wait for recipe screen to load"
+
+- tapOn:
+    id: "Recipe::AppBar::Delete"
+    label: "Action - Open the delete confirmation dialog"
+
+- runFlow:
+    file: "../../flows/navigation/systemBack.yaml"
+    label: "Action - Back with the delete dialog open"
+
+- assertNotVisible:
+    id: "Recipe::Dialog::Cancel"
+    label: "Assert - Back closed the delete dialog"
+
+- assertVisible:
+    id: "Recipe::AppBar::Delete"
+    label: "Assert - Still on the read-only recipe"
+
+- tapOn:
+    id: "Recipe::AppBar::Edit"
+    label: "Action - Enter edit mode without changing anything"
+
+- runFlow:
+    file: "../../asserts/recipe/common/buttonsEdit.yaml"
+    label: "Assert - Recipe is in edit mode"
+
+- runFlow:
+    file: "../../flows/navigation/systemBack.yaml"
+    label: "Action - Back from a clean edit form"
+
+- runFlow:
+    file: "../../asserts/recipe/common/buttonsReadOnly.yaml"
+    label: "Assert - Back left edit mode without a guard dialog"
+
+- runFlow:
+    file: "../../flows/navigation/systemBack.yaml"
+    label: "Action - Back from the read-only recipe"
+
+- runFlow:
+    file: "../../asserts/home/assertCollapsedButtons.yaml"
+    label: "Assert - Back popped to Home, where the recipe was opened from"

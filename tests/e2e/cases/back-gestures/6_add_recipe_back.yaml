@@ -1,0 +1,93 @@
+name: "6 - Back Gesture Add Recipe Flow"
+appId: "com.recipedia"
+tags:
+  - back-gestures
+---
+- runFlow:
+    file: "../../flows/recipe/adding/web/openUrlDialog.yaml"
+    label: "Action - Open the URL import dialog from the FAB menu"
+
+- runFlow:
+    file: "../../flows/navigation/backFromUrlDialog.yaml"
+    label: "Action - Back with the URL dialog open"
+
+- assertNotVisible:
+    id: "VerticalBottomButtons::UrlDialog::Title"
+    label: "Assert - Back closed the URL dialog"
+
+- runFlow:
+    file: "../../asserts/home/assertCollapsedButtons.yaml"
+    label: "Assert - Still on Home"
+
+- runFlow:
+    file: "../../flows/recipe/adding/manual/en/openAddManually.yaml"
+    label: "Action - Open the manual recipe form"
+
+- runFlow:
+    file: "../../flows/navigation/systemBack.yaml"
+    label: "Action - Back from a clean add form"
+
+- runFlow:
+    file: "../../asserts/home/assertCollapsedButtons.yaml"
+    label: "Assert - Back returned to Home without a guard dialog"
+
+- runFlow:
+    file: "../../flows/recipe/adding/manual/en/openAddManually.yaml"
+    label: "Action - Open the manual recipe form again"
+
+- tapOn:
+    id: "RecipeImage::RoundButton"
+    label: "Action - Open the image source modal"
+
+- assertVisible:
+    id: "ModalImageSelect::ExplanationText"
+    label: "Assert - Image source modal is displayed"
+
+- runFlow:
+    file: "../../flows/navigation/systemBack.yaml"
+    label: "Action - Back with the image modal open"
+
+- assertNotVisible:
+    id: "ModalImageSelect::ExplanationText"
+    label: "Assert - Back closed the image modal"
+
+- runFlow:
+    file: "../../asserts/recipe/common/buttonsAddingManually.yaml"
+    label: "Assert - Still on the add form"
+
+- runFlow:
+    file: "../../flows/recipe/adding/setRecipeTitle.yaml"
+    env:
+      TITLE: "Gesture New Recipe"
+    label: "Action - Type a title so the form becomes dirty"
+
+- runFlow:
+    file: "../../flows/navigation/systemBack.yaml"
+    label: "Action - Back from a dirty add form"
+
+- runFlow:
+    file: "../../asserts/alerts/en/unsavedChangesDialog.yaml"
+    label: "Assert - The gesture is intercepted by the discard guard"
+
+- tapOn:
+    id: "RecipeUnsavedChanges::Dialog::Cancel"
+    label: "Action - Choose to keep editing"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "RecipeTitle::CustomTextInput"
+    text: "Gesture New Recipe"
+    label: "Assert - The pending title survived the cancelled gesture"
+
+- runFlow:
+    file: "../../flows/navigation/systemBack.yaml"
+    label: "Action - Back again from the dirty add form"
+
+- runFlow:
+    file: "../../flows/recipe/discardRecipeChanges.yaml"
+    label: "Action - Confirm discarding the unsaved changes"
+
+- runFlow:
+    file: "../../asserts/home/assertCollapsedButtons.yaml"
+    label: "Assert - Discarding returned to Home"

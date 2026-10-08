@@ -1,0 +1,76 @@
+name: "3 - Back Gesture Search State Flow"
+appId: "com.recipedia"
+tags:
+  - back-gestures
+---
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Action - Navigate to Search screen"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "SearchScreen::SearchBar"
+    label: "Action - Focus the search bar to open the dropdown"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait - Keyboard is displayed"
+
+- runFlow:
+    file: "../../flows/navigation/backFromSearchKeyboard.yaml"
+    label: "Action - Back with the keyboard open"
+
+- assertVisible:
+    id: "SearchScreen::Suggestions::Item::0"
+    label: "Assert - Dropdown is still open after the keyboard closed"
+
+- runFlow:
+    file: "../../flows/navigation/backFromSearchDropdown.yaml"
+    label: "Action - Back with the dropdown open"
+
+- tapOn:
+    id: "SearchScreen::SearchBar"
+    label: "Action - Focus the search bar again"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait - Keyboard is displayed"
+
+- inputText: "Ca"
+
+- assertVisible:
+    id: "SearchScreen::Suggestions::Item::0"
+    label: "Assert - Suggestions are displayed for the typed text"
+
+- runFlow:
+    file: "../../flows/navigation/backFromSearchKeyboard.yaml"
+    label: "Action - Back with the keyboard open and text typed"
+
+- assertVisible:
+    id: "SearchScreen::Suggestions::Item::0"
+    label: "Assert - Dropdown is still open after the keyboard closed"
+
+- runFlow:
+    file: "../../flows/navigation/backFromSearchDropdown.yaml"
+    label: "Action - Back with the dropdown open and text typed"
+
+- tapOn:
+    id: "SearchScreen::SearchBar-clear-icon"
+    label: "Action - Clear the typed text and leave search mode"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: "../../asserts/search/en/assertSearchScreenUI.yaml"
+    label: "Assert - Search screen is back to the card view"
+
+- tapOn:
+    id: "SearchScreen::FiltersToggleButtons"
+    label: "Action - Open the filter page"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: "../../flows/navigation/backFromSearchFilterPage.yaml"
+    label: "Action - Back with the filter page open"

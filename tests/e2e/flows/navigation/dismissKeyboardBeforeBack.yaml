@@ -1,0 +1,13 @@
+appId: "com.recipedia"
+---
+# Android only: the first back is swallowed by an open keyboard and never reaches navigation.
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - back:
+          label: "Action - Back to dismiss the open keyboard"
+
+      - runFlow:
+          file: "../waitForKeyboardDismiss.yaml"
+          label: "Wait - Keyboard is dismissed"
