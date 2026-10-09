@@ -1,0 +1,20 @@
+appId: "com.recipedia"
+---
+# Android: back closes the URL import dialog. iOS has no system back and Home has no AppBar to tap,
+# so the dialog is closed with its own Cancel button.
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - back:
+          label: "Press the Android system back"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "VerticalBottomButtons::UrlDialog::CancelButton"
+          label: "Tap the dialog Cancel button"
+
+- waitForAnimationToEnd

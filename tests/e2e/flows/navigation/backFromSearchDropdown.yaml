@@ -1,0 +1,33 @@
+appId: "com.recipedia"
+---
+# Android: back closes the suggestions dropdown and stays on Search.
+# iOS has no system back at a root tab, so the dropdown has no back layer and stays open.
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - back:
+          label: "Press the Android system back"
+
+      - waitForAnimationToEnd
+
+      - assertNotVisible:
+          id: "SearchScreen::Suggestions::Item::0"
+          label: "Assert - Android back closed the suggestions dropdown"
+
+      - assertVisible:
+          id: "SearchScreen::SearchBar"
+          label: "Assert - The app stayed on the Search screen"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "SearchScreen::Suggestions::Item::0"
+          label: "Assert - iOS has no back layer, the dropdown stays open"
+
+      - assertVisible:
+          id: "BottomTabs::Search"
+          selected: true
+          label: "Assert - iOS stays on the Search tab"

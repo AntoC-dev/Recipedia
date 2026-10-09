@@ -1,0 +1,14 @@
+name: "7 - Back Gesture Bulk Import Flow"
+appId: "com.recipedia"
+tags:
+  - back-gestures
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../7_bulk_import_back.yaml"
+          label: "Run - 7 - Back Gesture Bulk Import Flow"

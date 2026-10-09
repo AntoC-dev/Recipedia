@@ -58,6 +58,7 @@ executionOrder:
 | ------------------------------- | ------------------------------------------------------- |
 | `smoke`                         | Core journeys on the **production dataset** — see below |
 | `app-init`                      | Launch, onboarding, FAB menu                            |
+| `back-gestures`                 | System back gesture on every screen, dialog and tab     |
 | `search` / `search-filters`     | Search bar behaviour / filter page and chips            |
 | `recipe-create` / `recipe-edit` | Manual creation / editing                               |
 | `recipe-readonly`               | Read-only recipe screen                                 |
@@ -265,6 +266,18 @@ flow and callers use `runFlow`. Keep a block inline only when it is asymmetric
 | `flows/search/commitTypedSearch.yaml`                  | —            | tap `key_pos_ime_action` / tap `Search`            |
 | `flows/recipe/adding/ocr/pickImageSource.yaml`         | —            | camera / gallery (simulator has no camera)         |
 | `flows/recipe/adding/ocr/validateWithoutCropping.yaml` | —            | dispatches to the per-OS crop-validate flows       |
+| `flows/navigation/systemBack.yaml`                     | —            | `back` / tap the AppBar back or Cancel button      |
+| `flows/navigation/backFromRootTab.yaml`                | `TAB_ID`     | back to Home / no back button, tab stays selected  |
+| `flows/navigation/dismissKeyboardBeforeBack.yaml`      | —            | `back` dismisses the keyboard / no-op              |
+
+### iOS edge swipe-back is not driven
+
+The `back-gestures` suite uses the AppBar back or Cancel button on iOS, not the
+native edge swipe. Maestro's iOS `swipe` is a two-point flick released without
+velocity that the pop recognizer rejects most of the time (0-1 passes out of 10,
+about 40% with a 3s drag), and it has no multi-point drag command. Dialogs and
+modals over a screen close on iOS because the back tap lands on their backdrop.
+The native swipe itself is covered only by manual testing.
 
 ## Coordinate Anchoring
 

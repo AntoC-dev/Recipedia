@@ -1,4 +1,5 @@
-import { resolveIosBundleId } from '@app/app.config';
+import type { ConfigContext } from 'expo/config';
+import createConfig, { resolveIosBundleId } from '@app/app.config';
 
 describe('resolveIosBundleId', () => {
   const baseAppId = 'com.recipedia';
@@ -54,5 +55,13 @@ describe('resolveIosBundleId', () => {
         process.env.EXPO_PUBLIC_DISABLE_ANIMATIONS = previousAnimations;
       }
     }
+  });
+});
+
+describe('android back handling', () => {
+  it('keeps the OnBackInvokedCallback manifest flag off so BackHandler receives system back', () => {
+    const config = createConfig({ config: {} } as ConfigContext);
+
+    expect(config.android?.predictiveBackGestureEnabled).toBe(false);
   });
 });

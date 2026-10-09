@@ -315,6 +315,7 @@ export const Searchbar: React.FC<any> = props => (
       placeholder={props.placeholder}
       onChangeText={props.onChangeText}
       value={props.value}
+      onPressIn={props.onPressIn}
       onFocus={props.onFocus}
       onBlur={props.onBlur}
       onSubmitEditing={props.onSubmitEditing}

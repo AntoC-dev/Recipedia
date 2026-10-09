@@ -1,0 +1,36 @@
+name: "7 - Back Gesture Bulk Import Flow"
+appId: "com.recipedia"
+tags:
+  - back-gestures
+---
+- runFlow:
+    file: "../../flows/bulk-import/navigateToBulkImport.yaml"
+    label: "Action - Navigate to Bulk Import from Parameters"
+
+- runFlow:
+    file: "../../flows/bulk-import/selectProvider.yaml"
+    env:
+      PROVIDER_ID: "hellofresh"
+    label: "Action - Select HelloFresh provider"
+
+- extendedWaitUntil:
+    visible:
+      id: "BulkImportDiscovery::fresh-0"
+    timeout: 300000
+    label: "Wait - For first recipe to appear while the scan is still running"
+
+- runFlow:
+    file: "../../flows/navigation/systemBack.yaml"
+    label: "Action - Back from the discovery screen mid-scan"
+
+- assertVisible:
+    id: "BulkImportSettings::AppBar::Title"
+    label: "Assert - Back returned to the provider selection"
+
+- runFlow:
+    file: "../../flows/navigation/systemBack.yaml"
+    label: "Action - Back from the provider selection"
+
+- assertVisible:
+    id: "Parameters::Section::Import::FromWebsite::Item"
+    label: "Assert - Back returned to Parameters"

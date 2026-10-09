@@ -1,0 +1,18 @@
+platform:
+  ios:
+    disableAnimations: true
+  android:
+    disableAnimations: true
+
+flows:
+  - cases/back-gestures/ci/*
+
+executionOrder:
+  flowsOrder:
+    - "1 - Back Gesture Tab Roots Flow"
+    - "2 - Back Gesture Settings Screens Flow"
+    - "3 - Back Gesture Search State Flow"
+    - "4 - Back Gesture Read-Only Recipe Flow"
+    - "5 - Back Gesture Guarded Recipe Edit Flow"
+    - "6 - Back Gesture Add Recipe Flow"
+    - "7 - Back Gesture Bulk Import Flow"
