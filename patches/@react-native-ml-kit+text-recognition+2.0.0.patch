@@ -88,10 +88,9 @@ index 004bfb3..0059c43 100644
  
      @ReactMethod
 diff --git a/node_modules/@react-native-ml-kit/text-recognition/ios/TextRecognition.m b/node_modules/@react-native-ml-kit/text-recognition/ios/TextRecognition.m
-index d23fb71..6c64f67 100644
 --- a/node_modules/@react-native-ml-kit/text-recognition/ios/TextRecognition.m
 +++ b/node_modules/@react-native-ml-kit/text-recognition/ios/TextRecognition.m
-@@ -3,10 +3,8 @@
+@@ -3,11 +3,37 @@
  @import MLKitVision.MLKVisionImage;
  @import MLKitTextRecognition;
  @import MLKitTextRecognitionCommon;
@@ -102,9 +101,38 @@ index d23fb71..6c64f67 100644
 +// Recipedia is Latin-only (en/fr). Non-Latin script recognizers and their
 +// bundled models are stripped via patch-package to reduce app size.
  
++#import <objc/runtime.h>
++
++// Recipedia: disables ML Kit telemetry (no public opt-out) via private symbols. See ARCHITECTURE.md.
++@interface RecipediaMLKitTelemetryDisabler : NSObject
++@end
++
++@implementation RecipediaMLKitTelemetryDisabler
++
+++ (void)load {
++    Class uploader = NSClassFromString(@"MLKITx_CCTClearcutUploader");
++    Method startAutoUpload = class_getInstanceMethod(uploader, NSSelectorFromString(@"startAutoUpload"));
++    if (startAutoUpload) {
++        method_setImplementation(startAutoUpload, imp_implementationWithBlock(^(id _self) {}));
++    } else {
++        NSLog(@"[Recipedia] ML Kit Clearcut uploader not found, telemetry may still be active");
++    }
++
++    NSMutableDictionary *statsDisabled = [NSMutableDictionary dictionary];
++    for (NSString *module in @[@"commonDownloader", @"digitalInk", @"linkFirebase", @"mddDownloader",
++                               @"naturalLanguage", @"remoteConfig", @"vision"]) {
++        NSString *key = [NSString stringWithFormat:@"com.google.firebase.ml.%@.__MLKIT_DEFAULT.isStatsCollectionEnabled", module];
++        statsDisabled[key] = @NO;
++    }
++    [NSUserDefaults.standardUserDefaults registerDefaults:statsDisabled];
++}
++
++@end
++
  @implementation TextRecognition
  
-@@ -95,16 +93,8 @@ RCT_EXPORT_METHOD(recognize: (nonnull NSString*)url
+ RCT_EXPORT_MODULE()
+@@ -95,16 +121,8 @@
      // if the language param isn't specified, we can assume the user requirement is Latin text recognition
      if (script == nil || [script isEqualToString:@"Latin"]) {
          options = [[MLKTextRecognizerOptions alloc] init];
