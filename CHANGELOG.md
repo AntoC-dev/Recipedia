@@ -1,3 +1,11 @@
+## [2.52.9](https://github.com/AntoC-dev/Recipedia/compare/v2.52.8...v2.52.9) (2026-10-09)
+
+### Bug Fixes
+
+* **android:** disable predictive back so BackHandler receives system back ([a0ff6ef](https://github.com/AntoC-dev/Recipedia/commit/a0ff6eff04a533831235aaed490412eb1920eef8)), closes [#586](https://github.com/AntoC-dev/Recipedia/issues/586)
+* **bulk-import:** abort parsing when the discovery screen unmounts ([cba576b](https://github.com/AntoC-dev/Recipedia/commit/cba576b28b8f25e9e67ed2112e82979093deb0b8))
+* **search:** open suggestions on touch instead of focus ([a65f7c1](https://github.com/AntoC-dev/Recipedia/commit/a65f7c193480d4a41de811154d67a0f0fa9d9991))
+
 ## [2.52.8](https://github.com/AntoC-dev/Recipedia/compare/v2.52.7...v2.52.8) (2026-10-07)
 
 ### Bug Fixes
