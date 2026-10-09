@@ -131,6 +131,12 @@ export const dialogMaxHeight = Dimensions.get('window').height;
 export const bottomActionButtonHeight = 48 + padding.small * 2;
 
 /**
+ * Space kept between a focused input's caret and the top of the KeyboardToolbar: covers the
+ * part of the input drawn below the caret and the toolbar's floating gap on rounded keyboards
+ */
+export const keyboardToolbarCaretClearance = padding.extraLarge + padding.large;
+
+/**
  * Bottom padding reserved by tab-hosted screens above the bottom TabNavigator.
  *
  * The tab bar (`BottomNavigation.Bar` in `src/navigation/BottomTabs.tsx`) already

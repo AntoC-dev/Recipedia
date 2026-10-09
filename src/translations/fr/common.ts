@@ -9,6 +9,7 @@ export default {
   remove: 'Retirer',
   undo: 'Annuler',
   ok: 'Ok',
+  done: 'Terminé',
   understood: 'Compris',
   success: 'Succès',
   addedToDatabase: 'La recette "{{recipeName}}" ajoutée avec succès à la base de donnée',

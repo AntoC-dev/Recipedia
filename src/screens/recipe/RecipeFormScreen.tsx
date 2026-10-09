@@ -28,8 +28,8 @@
  */
 
 import React, { ReactNode, useRef, useState } from 'react';
-import { Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Keyboard, StyleSheet } from 'react-native';
+import { KeyboardAwareScrollView, KeyboardToolbar } from 'react-native-keyboard-controller';
 import { Snackbar, useTheme } from 'react-native-paper';
 import { FieldErrors, FormProvider, useForm, useFormContext, useFormState } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -54,7 +54,7 @@ import { cropImage } from '@utils/ImagePicker';
 import { getDefaultPersons } from '@utils/settings';
 import { recipeLogger, validationLogger } from '@utils/logger';
 import { BottomActionButton } from '@components/atomic/BottomActionButton';
-import { bottomActionButtonHeight } from '@styles/spacing';
+import { bottomActionButtonHeight, keyboardToolbarCaretClearance } from '@styles/spacing';
 import { layout } from '@styles/layout';
 
 import { useRecipeTags } from '@hooks/useRecipeTags';
@@ -234,8 +234,14 @@ function RecipeFormBody({
 }: RecipeFormScreenProps) {
   const { t } = useI18n();
   const { colors } = useTheme();
-  const insets = useSafeAreaInsets();
+  const keyboardToolbarColors = {
+    primary: colors.primary,
+    disabled: colors.onSurfaceDisabled,
+    background: colors.elevation.level2,
+    ripple: colors.primaryContainer,
+  };
   const [isScrolling, setIsScrolling] = useState(false);
+  const [keyboardToolbarHeight, setKeyboardToolbarHeight] = useState(0);
   const [modalTarget, setModalTarget] = useState<OcrModalTarget | null>(null);
   const [imgList, setImgList] = useState<string[]>(() => initialImgList ?? []);
   const slotOnSelectOcrFieldRef = useRef<
@@ -510,92 +516,93 @@ function RecipeFormBody({
 
   return (
     <ScreenWrapper>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={layout.flexFill}
-        keyboardVerticalOffset={insets.top}
-      >
-        <AppBar
-          testID={RECIPE_TEST_ID}
-          isEditing={isEditMode}
-          onGoBack={onGoBack}
-          onCancel={onCancel}
-          onValidate={validationFunction}
-        />
+      <AppBar
+        testID={RECIPE_TEST_ID}
+        isEditing={isEditMode}
+        onGoBack={onGoBack}
+        onCancel={onCancel}
+        onValidate={validationFunction}
+      />
 
-        <ScrollView
-          decelerationRate={scrollDecelerationRate}
-          horizontal={false}
-          showsVerticalScrollIndicator={false}
-          style={[layout.flexFill, { backgroundColor: colors.background }]}
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps={'handled'}
-          keyboardDismissMode='on-drag'
-          nestedScrollEnabled={true}
-          onScrollBeginDrag={() => setIsScrolling(true)}
-          onScrollEndDrag={() => setIsScrolling(false)}
-          onMomentumScrollEnd={() => setIsScrolling(false)}
-        >
-          <RecipeImageField
-            form={form}
-            stackMode={stackMode}
-            openModalForField={openModalForField}
-          />
-          <RecipeTitleField
-            form={form}
-            stackMode={stackMode}
-            openModalForField={openModalForField}
-            t={t}
-          />
-          <RecipeDescriptionField
-            form={form}
-            stackMode={stackMode}
-            openModalForField={openModalForField}
-            t={t}
-          />
-          <RecipeTagsField
-            form={form}
-            stackMode={stackMode}
-            randomTags={randomTags}
-            addTag={tags.addTag}
-            removeTag={tags.removeTag}
-            openModalForField={openModalForField}
-            hideDropdown={isScrolling}
-          />
-          <RecipePersonsField
-            form={form}
-            stackMode={stackMode}
-            openModalForField={openModalForField}
-            t={t}
-          />
-          <RecipeIngredientsField
-            form={form}
-            stackMode={stackMode}
-            openModalForField={openModalForField}
-            t={t}
-            hideDropdown={isScrolling}
-          />
-          <RecipeTimeField
-            form={form}
-            stackMode={stackMode}
-            openModalForField={openModalForField}
-            t={t}
-          />
-          <RecipePreparationField
-            form={form}
-            stackMode={stackMode}
-            openModalForField={openModalForField}
-            t={t}
-          />
-          <RecipeNutritionField
-            form={form}
-            stackMode={stackMode}
-            openModalForField={openModalForField}
-            parentTestId={RECIPE_TEST_ID}
-            t={t}
-          />
-        </ScrollView>
-      </KeyboardAvoidingView>
+      <KeyboardAwareScrollView
+        testID={RECIPE_TEST_ID + '::ScrollView'}
+        bottomOffset={keyboardToolbarHeight + keyboardToolbarCaretClearance}
+        decelerationRate={scrollDecelerationRate}
+        horizontal={false}
+        showsVerticalScrollIndicator={false}
+        style={[layout.flexFill, { backgroundColor: colors.background }]}
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps={'handled'}
+        keyboardDismissMode='on-drag'
+        nestedScrollEnabled={true}
+        onScrollBeginDrag={() => setIsScrolling(true)}
+        onScrollEndDrag={() => setIsScrolling(false)}
+        onMomentumScrollEnd={() => setIsScrolling(false)}
+      >
+        <RecipeImageField form={form} stackMode={stackMode} openModalForField={openModalForField} />
+        <RecipeTitleField
+          form={form}
+          stackMode={stackMode}
+          openModalForField={openModalForField}
+          t={t}
+        />
+        <RecipeDescriptionField
+          form={form}
+          stackMode={stackMode}
+          openModalForField={openModalForField}
+          t={t}
+        />
+        <RecipeTagsField
+          form={form}
+          stackMode={stackMode}
+          randomTags={randomTags}
+          addTag={tags.addTag}
+          removeTag={tags.removeTag}
+          openModalForField={openModalForField}
+          hideDropdown={isScrolling}
+        />
+        <RecipePersonsField
+          form={form}
+          stackMode={stackMode}
+          openModalForField={openModalForField}
+          t={t}
+        />
+        <RecipeIngredientsField
+          form={form}
+          stackMode={stackMode}
+          openModalForField={openModalForField}
+          t={t}
+          hideDropdown={isScrolling}
+        />
+        <RecipeTimeField
+          form={form}
+          stackMode={stackMode}
+          openModalForField={openModalForField}
+          t={t}
+        />
+        <RecipePreparationField
+          form={form}
+          stackMode={stackMode}
+          openModalForField={openModalForField}
+          t={t}
+        />
+        <RecipeNutritionField
+          form={form}
+          stackMode={stackMode}
+          openModalForField={openModalForField}
+          parentTestId={RECIPE_TEST_ID}
+          t={t}
+        />
+      </KeyboardAwareScrollView>
+
+      <KeyboardToolbar
+        theme={{ light: keyboardToolbarColors, dark: keyboardToolbarColors }}
+        onLayout={event => setKeyboardToolbarHeight(event.nativeEvent.layout.height)}
+      >
+        <KeyboardToolbar.Prev />
+        <KeyboardToolbar.Next />
+        <KeyboardToolbar.Done text={t('done')} />
+      </KeyboardToolbar>
 
       {!isEditMode && (
         <BottomActionButton
