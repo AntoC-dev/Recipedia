@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { darkTheme, lightTheme, useFetchFonts } from '@styles/theme';
 import AppWrapper from '@components/organisms/AppWrapper';
 import { ErrorBoundary } from '@components/organisms/ErrorBoundary';
@@ -155,11 +156,13 @@ export function App() {
 
   return (
     <SafeAreaProvider>
-      <ErrorBoundary>
-        <ScraperProvider>
-          <AppContent />
-        </ScraperProvider>
-      </ErrorBoundary>
+      <KeyboardProvider>
+        <ErrorBoundary>
+          <ScraperProvider>
+            <AppContent />
+          </ScraperProvider>
+        </ErrorBoundary>
+      </KeyboardProvider>
     </SafeAreaProvider>
   );
 }

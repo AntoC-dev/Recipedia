@@ -9,6 +9,7 @@ export default {
   remove: 'Remove',
   undo: 'Undo',
   ok: 'OK',
+  done: 'Done',
   understood: 'Understood',
 
   success: 'Success',
