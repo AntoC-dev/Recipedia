@@ -362,6 +362,8 @@ These must not be violated. Violating them causes subtle bugs or breaks CI.
 
 **All new utility functions outside React components must have unit tests and TypeDoc comments.** See `CLAUDE.md`.
 
+**Google ML Kit usage telemetry stays off.** ML Kit has no public opt-out. Android: `withMlKitTelemetryDisabled` removes the DataTransport CCT backend, which silences *every* SDK logging through CCT (e.g. a future Crashlytics). iOS: the `@react-native-ml-kit/text-recognition` patch no-ops ML Kit's private Clearcut uploader and stats flags. Both rely on ML Kit internals: re-check on every ML Kit bump.
+
 **Schema changes require a migration.** Adding a column without a `PRAGMA`-guarded `ALTER TABLE` in `init()` breaks existing app installs.
 
 **Recipe decoding resolves ingredients and tags from the in-memory caches, never from SQL.** `_ingredients` and `_tags` must be loaded before any recipe is decoded, and `_recipes` before the menu — `init()` loads them in that order for this reason. Mutating an ingredient or tag patches the cached recipes in place; do not reload all recipes from the database. Any new mutation path must leave the caches equal to a full reload, which the table-driven test in `tests/unit/utils/RecipeDatabase.test.tsx` asserts for every mutation method.

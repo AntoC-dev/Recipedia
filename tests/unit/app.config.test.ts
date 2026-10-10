@@ -65,3 +65,11 @@ describe('android back handling', () => {
     expect(config.android?.predictiveBackGestureEnabled).toBe(false);
   });
 });
+
+describe('ml kit telemetry', () => {
+  it('registers the plugin that disables ML Kit telemetry on Android', () => {
+    const config = createConfig({ config: {} } as ConfigContext);
+
+    expect(config.plugins).toContain('./plugins/withMlKitTelemetryDisabled');
+  });
+});
