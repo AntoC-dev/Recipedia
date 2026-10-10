@@ -153,17 +153,27 @@ grep -r "fileName.yaml" tests/e2e --include="*.yaml"
 
 ## Text Input Rules
 
-Use `flows/inputAndCommitText.yaml` (env `TARGET_ID`, `VALUE`, `DISMISS_ID`)
-rather than hand-rolling `inputText` + a dismiss:
+`flows/inputText.yaml` (env `TARGET_ID`, `VALUE`) is the base: it types and
+asserts the value, without leaving the field. Callers use one of the combined
+helpers (all take `TARGET_ID`, `VALUE`; the field must already be focused):
+
+- `flows/inputAndDone.yaml` — recipe form: type, then close the keyboard with
+  the toolbar Done.
+- `flows/inputAndNext.yaml` — recipe form: type, then move to the next field
+  with the toolbar Next.
+- `flows/replaceAndDone.yaml` — recipe form, non-empty field: clear, type, then
+  toolbar Done.
+- `flows/inputAndCommitText.yaml` (also `DISMISS_ID`) — type, then tap a label:
+  ingredient names and tags (their dropdown covers the toolbar, #540) and
+  screens without the toolbar.
 
 ```yaml
 - tapOn: { id: 'RecipeTime::NumericTextInput', label: 'Focus the time input' }
 - runFlow:
-    file: '../../inputAndCommitText.yaml' # adjust relative depth per caller
+    file: '../../inputAndDone.yaml' # adjust relative depth per caller
     env:
       TARGET_ID: 'RecipeTime::NumericTextInput'
       VALUE: '30'
-      DISMISS_ID: 'RecipeTime::PrefixText'
     label: 'Enter the time to prepare'
 ```
 
@@ -175,29 +185,28 @@ characters are still queued on the JS thread. The field commits a partial value
 #525). This is about the blur, not about Enter — a tap elsewhere and
 `hideKeyboard` race the same way.
 
-**Commit with a tap, not `pressKey: enter`.** Enter does not reliably trigger
-the IME action on Android and inserts a newline in a multiline input. The
-dismiss target must be **non-touchable**: the recipe screens use
-`keyboardShouldPersistTaps='handled'`, so tapping a plain `Text` blurs the
-field, while tapping a button runs that button's handler and keeps the keyboard
-up. Usual targets: `RecipeTime::PrefixText`, `RecipePersons::PrefixText`,
-`<NutritionRow>::Text`, `RecipeIngredients::<i>::Unit`.
+**Commit with the toolbar or a label tap, not `pressKey: enter`.** Enter does
+not reliably trigger the IME action on Android and inserts a newline in a
+multiline input. The dismiss target must be **non-touchable**: the recipe
+screens use `keyboardShouldPersistTaps='handled'`, so tapping a plain `Text`
+blurs the field, while tapping a button runs that button's handler and keeps the
+keyboard up. Usual targets: `RecipeTime::PrefixText`,
+`RecipePersons::PrefixText`, `<NutritionRow>::Text`,
+`RecipeIngredients::<i>::Unit`.
 
 **Pick the helper that matches the intent.** `inputText` inserts at the caret
 rather than replacing, so the wrong helper either concatenates silently (`321`
 typed into a persons field holding `4` commits `4321`) or asserts text it never
 predicted.
 
-| Helper                            | Field starts | Ends up holding | Asserts                    |
-| --------------------------------- | ------------ | --------------- | -------------------------- |
-| `flows/inputAndCommitText.yaml`   | empty        | `VALUE`         | field **is** `VALUE`       |
-| `flows/replaceAndCommitText.yaml` | non-empty    | `VALUE`         | field **is** `VALUE`       |
-| `flows/appendText.yaml`           | non-empty    | old + `VALUE`   | field **contains** `VALUE` |
+| Helper                      | Field starts | Ends up holding | Asserts                    |
+| --------------------------- | ------------ | --------------- | -------------------------- |
+| `flows/inputText.yaml`      | empty        | `VALUE`         | field **is** `VALUE`       |
+| `flows/replaceAndDone.yaml` | non-empty    | `VALUE`         | field **is** `VALUE`       |
+| `flows/appendText.yaml`     | non-empty    | old + `VALUE`   | field **contains** `VALUE` |
 
-All three take `TARGET_ID` and `VALUE`; the committing two also take
-`DISMISS_ID`. `replaceAndCommitText.yaml` clears the field then delegates to
-`inputAndCommitText.yaml`. `appendText.yaml` deliberately does not commit — it
-is what a multiline paragraph needs between its lines.
+`inputText` and `appendText` leave the field focused; `replaceAndDone` clears
+the field, delegates to `inputAndDone.yaml` and commits it.
 
 **It is all caret mechanics.** `inputText` inserts at the caret, `eraseText`
 only backspaces what is _before_ it, and no `pressKey` jumps to the end. A plain
@@ -206,18 +215,18 @@ in one that fills the box. So a persons field holding `4` then given `321` ends
 up `4321`, and a quantity field holding `3291` then erased ends up `91`. The
 lever is `tapOn`'s element-relative `point`: `"95%,50%"` puts the caret past the
 end, `"2%,50%"` at the start (used by
-`flows/parameters/tags/insertTextAtCursorBeginning.yaml`).
-`replaceAndCommitText.yaml` taps at 95% before erasing, so one `eraseText` is
-enough, then waits for the field to read empty. Never hand-roll `tapOn` +
-`eraseText` on a field holding more than a character or two, and never add a
-second erase to force a field clear — a field that comes back non-empty is being
-re-rendered from state mid-erase; fix that instead.
+`flows/parameters/tags/insertTextAtCursorBeginning.yaml`). `replaceAndDone.yaml`
+taps at 95% before erasing, so one `eraseText` is enough, then waits for the
+field to read empty. Never hand-roll `tapOn` + `eraseText` on a field holding
+more than a character or two, and never add a second erase to force a field
+clear — a field that comes back non-empty is being re-rendered from state
+mid-erase; fix that instead.
 
 Fields that start non-empty: persons (seeded from `defaultPersons`, `4` out of
 the box), time and persons in OCR mode (`manuallyFill` seeds `0`), and
 everything in an editing flow. Fields that start empty: the manual-add form,
 freshly added ingredient rows, first-time nutrition values — do not pay
-`replaceAndCommitText.yaml`'s ~4s of Android backspaces there.
+`replaceAndDone.yaml`'s ~4s of Android backspaces there.
 
 Autocomplete fields (`TextInputWithDropDown`) follow the same rules: ingredient
 names commit live via `onChangeText`, tags via `onEndEditing` → `onValidate`,
@@ -469,8 +478,8 @@ FAT: '8[.]53'
 text: '133[.]33 g'
 ```
 
-Values typed rather than matched (`inputText`, `flows/inputAndCommitText.yaml`)
-stay unescaped — brackets there would be typed literally.
+Values typed rather than matched (`inputText`, `flows/inputText.yaml`) stay
+unescaped — brackets there would be typed literally.
 
 ### The locale-fr suite
 

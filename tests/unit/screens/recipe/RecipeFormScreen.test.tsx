@@ -1,4 +1,6 @@
-import { fireEvent, waitFor } from '@testing-library/react-native';
+import { fireEvent, waitFor, within } from '@testing-library/react-native';
+import { KeyboardToolbar } from 'react-native-keyboard-controller';
+import { keyboardToolbarCaretClearance } from '@styles/spacing';
 import { isPreventRemoveArmed, resetPreventRemove } from '@mocks/deps/react-navigation-mock';
 import { AddFromScrapeProp, AddManuallyProp } from '@customTypes/RecipeNavigationTypes';
 import { testIngredients } from '@test-data/ingredientsDataset';
@@ -128,5 +130,64 @@ describe('RecipeFormScreen discard guard on an imported form', () => {
     await waitFor(() => {
       expect(isPreventRemoveArmed()).toBe(true);
     });
+  });
+});
+
+describe('RecipeFormScreen keyboard handling', () => {
+  const mockRouteAddManually: AddManuallyProp = { mode: 'addManually' };
+
+  beforeEach(async () => {
+    jest.clearAllMocks();
+    resetPreventRemove();
+    await setupDb();
+  });
+
+  afterEach(async () => {
+    await teardownDb();
+  });
+
+  test('renders every form field inside the keyboard-aware scroll view', async () => {
+    const { getByTestId } = await renderRoute(mockRouteAddManually);
+
+    const keyboardAwareScrollView = getByTestId('Recipe::ScrollView');
+    expect(within(keyboardAwareScrollView).getByTestId('RecipeTitle::SetTextToEdit')).toBeTruthy();
+    expect(
+      within(keyboardAwareScrollView).getByTestId('Recipe::RecipeNutrition::NutritionEmptyState')
+    ).toBeTruthy();
+  });
+
+  test('keeps the caret clear of the keyboard before the toolbar is measured', async () => {
+    const { getByTestId } = await renderRoute(mockRouteAddManually);
+
+    expect(getByTestId('Recipe::ScrollView').props.bottomOffset).toEqual(
+      keyboardToolbarCaretClearance
+    );
+  });
+
+  test('keeps the caret clear of the measured keyboard toolbar', async () => {
+    const measuredToolbarHeight = 57;
+    const { getByTestId, UNSAFE_getByType } = await renderRoute(mockRouteAddManually);
+
+    fireEvent(UNSAFE_getByType(KeyboardToolbar.Prev), 'layout', {
+      nativeEvent: { layout: { x: 0, y: 0, width: 390, height: measuredToolbarHeight } },
+    });
+
+    expect(getByTestId('Recipe::ScrollView').props.bottomOffset).toEqual(
+      measuredToolbarHeight + keyboardToolbarCaretClearance
+    );
+  });
+
+  test('offers previous, next and done controls above the keyboard', async () => {
+    const { UNSAFE_getByType } = await renderRoute(mockRouteAddManually);
+
+    expect(UNSAFE_getByType(KeyboardToolbar.Prev)).toBeTruthy();
+    expect(UNSAFE_getByType(KeyboardToolbar.Next)).toBeTruthy();
+    expect(UNSAFE_getByType(KeyboardToolbar.Done).props.text).toEqual('done');
+  });
+
+  test('keeps taps on form controls while the keyboard is open', async () => {
+    const { getByTestId } = await renderRoute(mockRouteAddManually);
+
+    expect(getByTestId('Recipe::ScrollView').props.keyboardShouldPersistTaps).toEqual('handled');
   });
 });

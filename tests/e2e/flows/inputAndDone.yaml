@@ -1,0 +1,12 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    file: "inputText.yaml"
+    env:
+      TARGET_ID: "${TARGET_ID}"
+      VALUE: "${VALUE}"
+    label: "Type ${VALUE} into ${TARGET_ID}"
+
+- runFlow:
+    file: "toolbarDone.yaml"
+    label: "Commit ${TARGET_ID} with the toolbar Done"

@@ -67,11 +67,10 @@ appId: "com.recipedia"
     label: "Wait for numeric keyboard to appear"
 
 - runFlow:
-    file: "../../../../inputAndCommitText.yaml"
+    file: "../../../../inputAndDone.yaml"
     env:
       TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightNumericTextInput"
       VALUE: "200"
-      DISMISS_ID: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightText"
     label: "Enter the weight of a portion"
 
 - runFlow:

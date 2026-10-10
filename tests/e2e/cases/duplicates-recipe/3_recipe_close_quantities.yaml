@@ -64,11 +64,10 @@ tags:
     label: "Action - Focus on Pasta quantity input"
 
 - runFlow:
-    file: "../../flows/replaceAndCommitText.yaml"
+    file: "../../flows/replaceAndDone.yaml"
     env:
       TARGET_ID: "RecipeIngredients::0::QuantityInput"
       VALUE: "260"
-      DISMISS_ID: "RecipeIngredients::0::Unit"
     label: "Action - Change Pasta to 260g (30% difference)"
 
 - runFlow:

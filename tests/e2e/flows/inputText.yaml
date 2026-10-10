@@ -1,0 +1,13 @@
+appId: "com.recipedia"
+---
+- inputText:
+    text: "${VALUE}"
+    label: "Type ${VALUE} into ${TARGET_ID}"
+
+- waitForAnimationToEnd:
+    label: "Wait for keyboard animation"
+
+- assertVisible:
+    id: "${TARGET_ID}"
+    text: "${VALUE}"
+    label: "Check ${TARGET_ID} holds ${VALUE} before leaving it"

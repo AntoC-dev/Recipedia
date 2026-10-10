@@ -192,11 +192,10 @@ appId: "com.recipedia"
     label: "Wait for numeric keyboard to appear"
 
 - runFlow:
-    file: "../../../../inputAndCommitText.yaml"
+    file: "../../../../inputAndDone.yaml"
     env:
       TARGET_ID: "RecipeTime::NumericTextInput"
       VALUE: "10"
-      DISMISS_ID: "RecipeTime::PrefixText"
     label: "Enter cooking time"
 
 - runFlow:

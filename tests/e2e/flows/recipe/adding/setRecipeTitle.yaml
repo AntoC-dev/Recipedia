@@ -14,11 +14,10 @@ appId: "com.recipedia"
     label: "Focus on recipe title input"
 
 - runFlow:
-    file: "../../replaceAndCommitText.yaml"
+    file: "../../replaceAndDone.yaml"
     env:
       TARGET_ID: "RecipeTitle::CustomTextInput"
       VALUE: "${TITLE}"
-      DISMISS_ID: "RecipeTitle::Text"
     label: "Replace the recipe title with ${TITLE}"
 
 - assertVisible:

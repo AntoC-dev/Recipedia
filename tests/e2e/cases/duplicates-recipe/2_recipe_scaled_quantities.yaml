@@ -48,11 +48,10 @@ tags:
     label: "Action - Focus on Pasta quantity input"
 
 - runFlow:
-    file: "../../flows/replaceAndCommitText.yaml"
+    file: "../../flows/replaceAndDone.yaml"
     env:
       TARGET_ID: "RecipeIngredients::0::QuantityInput"
       VALUE: "1000"
-      DISMISS_ID: "RecipeIngredients::0::Unit"
     label: "Action - Change Pasta to 1000g (far from scaled)"
 
 - runFlow:
@@ -64,11 +63,10 @@ tags:
     label: "Action - Focus on Tomatoes quantity input"
 
 - runFlow:
-    file: "../../flows/replaceAndCommitText.yaml"
+    file: "../../flows/replaceAndDone.yaml"
     env:
       TARGET_ID: "RecipeIngredients::1::QuantityInput"
       VALUE: "500"
-      DISMISS_ID: "RecipeIngredients::1::Unit"
     label: "Action - Change Tomatoes to 500g"
 
 - runFlow:

@@ -1,0 +1,27 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "${TARGET_ID}"
+    point: "95%,50%"
+    label: "Put the caret at the end of ${TARGET_ID}"
+
+- runFlow:
+    file: "waitForKeyboard.yaml"
+    label: "Wait for the keyboard before erasing ${TARGET_ID}"
+
+- eraseText:
+    label: "Clear ${TARGET_ID} before typing ${VALUE}"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "${TARGET_ID}"
+      text: ".+"
+    timeout: 5000
+    label: "Check ${TARGET_ID} is empty before typing ${VALUE}"
+
+- runFlow:
+    file: "inputAndDone.yaml"
+    env:
+      TARGET_ID: "${TARGET_ID}"
+      VALUE: "${VALUE}"
+    label: "Type ${VALUE} into ${TARGET_ID} and commit it"

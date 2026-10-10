@@ -1,0 +1,9 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "keyboard.toolbar.done"
+    label: "Tap the keyboard toolbar Done"
+
+- runFlow:
+    file: "waitForKeyboardDismiss.yaml"
+    label: "Wait for the keyboard to close"

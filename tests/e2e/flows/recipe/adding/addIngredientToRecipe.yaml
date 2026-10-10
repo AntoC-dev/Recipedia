@@ -35,20 +35,11 @@ appId: "com.recipedia"
     label: "Focus on ingredient quantity"
 
 - runFlow:
-    file: "../../inputAndCommitText.yaml"
+    file: "../../inputAndNext.yaml"
     env:
       TARGET_ID: "RecipeIngredients::${INDEX}::QuantityInput"
       VALUE: "${QUANTITY}"
-      DISMISS_ID: "RecipeIngredients::${INDEX}::Unit"
     label: "Enter ingredient quantity"
-
-- runFlow:
-    file: "../../waitForKeyboardDismiss.yaml"
-    label: "Wait for numeric keyboard to dismiss"
-
-- tapOn:
-    id: "RecipeIngredients::${INDEX}::NameInput::CustomTextInput"
-    label: "Focus on ingredient name"
 
 - runFlow:
     file: "../../inputAndCommitText.yaml"

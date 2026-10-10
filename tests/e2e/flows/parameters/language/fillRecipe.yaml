@@ -81,11 +81,10 @@ appId: "com.recipedia"
     label: "Focus on the preparation time text input"
 
 - runFlow:
-    file: "../../inputAndCommitText.yaml"
+    file: "../../inputAndDone.yaml"
     env:
       TARGET_ID: "RecipeTime::NumericTextInput"
       VALUE: "5"
-      DISMISS_ID: "RecipeTime::PrefixText"
     label: "Write a time in the input text"
 
 - runFlow:

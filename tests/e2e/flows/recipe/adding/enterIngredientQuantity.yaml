@@ -16,14 +16,9 @@ appId: "com.recipedia"
     file: "../../waitForKeyboard.yaml"
     label: "Wait for numeric keyboard"
 
-- inputText:
-    text: "${VALUE}"
-    label: "Type ${VALUE} as quantity for ingredient ${INDEX}"
-
-- tapOn:
-    id: "RecipeIngredients::${INDEX}::Unit"
-    label: "Tap on ingredient ${INDEX} unit cell to dismiss keyboard"
-
 - runFlow:
-    file: "../../waitForKeyboardDismiss.yaml"
-    label: "Wait for numeric keyboard to dismiss"
+    file: "../../inputAndDone.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::${INDEX}::QuantityInput"
+      VALUE: "${VALUE}"
+    label: "Type ${VALUE} as quantity for ingredient ${INDEX}"

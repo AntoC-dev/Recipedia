@@ -1,0 +1,12 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "keyboard.toolbar.next"
+    label: "Tap the keyboard toolbar Next"
+
+- waitForAnimationToEnd:
+    label: "Wait for the focus move and the scroll to settle"
+
+- runFlow:
+    file: "waitForKeyboard.yaml"
+    label: "Wait for the keyboard of the next field"
