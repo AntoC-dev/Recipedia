@@ -1,3 +1,14 @@
+## [2.53.1](https://github.com/AntoC-dev/Recipedia/compare/v2.53.0...v2.53.1) (2026-10-10)
+
+### Bug Fixes
+
+* **ci:** let cancelled runs release the concurrency group ([795ac65](https://github.com/AntoC-dev/Recipedia/commit/795ac655a9316b0fd817904d90e79881912125c0)), closes [#598](https://github.com/AntoC-dev/Recipedia/issues/598)
+
+### Performance Improvements
+
+* **ci:** stop redundant pipeline runs and reuse unchanged builds ([39da8ab](https://github.com/AntoC-dev/Recipedia/commit/39da8ab0dd22059c608327914ce8bec9c4fcf4e2)), closes [#598](https://github.com/AntoC-dev/Recipedia/issues/598)
+* **ci:** stop redundant pipeline runs and reuse unchanged builds ([#607](https://github.com/AntoC-dev/Recipedia/issues/607)) ([f981eb5](https://github.com/AntoC-dev/Recipedia/commit/f981eb52f4d47732675c84867cef9796d389754f)), closes [#598](https://github.com/AntoC-dev/Recipedia/issues/598)
+
 ## [2.53.0](https://github.com/AntoC-dev/Recipedia/compare/v2.52.9...v2.53.0) (2026-10-10)
 
 ### Features
