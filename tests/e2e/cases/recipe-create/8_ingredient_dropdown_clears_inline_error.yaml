@@ -39,11 +39,10 @@ tags:
     label: 'Action - Focus the quantity input'
 
 - runFlow:
-    file: '../../flows/inputAndCommitText.yaml'
+    file: '../../flows/inputAndDone.yaml'
     env:
       TARGET_ID: 'RecipeIngredients::0::QuantityInput'
       VALUE: '100'
-      DISMISS_ID: 'RecipeIngredients::0::Unit'
     label: 'Action - Type a quantity to dirty the row (no name yet)'
 
 - runFlow:

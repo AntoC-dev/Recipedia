@@ -1,0 +1,12 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    file: "inputText.yaml"
+    env:
+      TARGET_ID: "${TARGET_ID}"
+      VALUE: "${VALUE}"
+    label: "Type ${VALUE} into ${TARGET_ID}"
+
+- runFlow:
+    file: "toolbarNext.yaml"
+    label: "Leave ${TARGET_ID} with the toolbar Next"

@@ -124,13 +124,36 @@ tags:
     file: "../../flows/waitForKeyboard.yaml"
     label: "Wait for keyboard"
 
+- assertVisible:
+    id: "keyboard.toolbar"
+    label: "Assert - Keyboard toolbar is visible while the description is focused"
+
 - tapOn:
-    id: "RecipeDescription::Text"
-    label: "Action - Tap on description text to close the keyboard"
+    id: "keyboard.toolbar.previous"
+    label: "Action - Tap toolbar Previous to go back to the title"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "RecipeTitle::CustomTextInput"
+    text: "Inline Errors Test"
+    label: "Assert - Title keeps its value after moving back to it"
 
 - runFlow:
-    file: "../../flows/waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard dismiss"
+    file: "../../flows/toolbarNext.yaml"
+    label: "Action - Tap toolbar Next to return to the description"
+
+- assertVisible:
+    id: "RecipeDescription::CustomTextInput"
+    label: "Assert - Description is on screen to receive the focus"
+
+- runFlow:
+    file: "../../flows/toolbarDone.yaml"
+    label: "Action - Tap toolbar Done to close the keyboard"
+
+- assertNotVisible:
+    id: "keyboard.toolbar"
+    label: "Assert - Keyboard toolbar is gone once the keyboard is closed"
 
 - runFlow:
     file: "../../asserts/recipe/inlineErrors/en/descriptionNoError.yaml"
@@ -163,9 +186,9 @@ tags:
 
 - waitForAnimationToEnd
 
-- tapOn:
-    id: "RecipePersons::PrefixText"
-    label: "Action - Tap prefix on iOS to dismiss keyboard"
+- runFlow:
+    file: "../../flows/toolbarDone.yaml"
+    label: "Action - Commit the field with the toolbar Done"
 
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"
@@ -218,9 +241,9 @@ tags:
 
 - waitForAnimationToEnd
 
-- tapOn:
-    id: "RecipeTime::PrefixText"
-    label: "Action - Tap prefix on iOS to dismiss keyboard"
+- runFlow:
+    file: "../../flows/toolbarDone.yaml"
+    label: "Action - Commit the field with the toolbar Done"
 
 - runFlow:
     file: "../../flows/waitForKeyboardDismiss.yaml"
@@ -279,11 +302,10 @@ tags:
     label: "Wait for numeric keyboard"
 
 - runFlow:
-    file: "../../flows/inputAndCommitText.yaml"
+    file: "../../flows/inputAndDone.yaml"
     env:
       TARGET_ID: "RecipeIngredients::0::QuantityInput"
       VALUE: "100"
-      DISMISS_ID: "RecipeIngredients::0::Unit"
     label: "Action - Enter quantity 100 (makes row dirty)"
 
 - runFlow:
@@ -317,3 +339,33 @@ tags:
 - runFlow:
     file: "../../asserts/recipe/inlineErrors/en/ingredientRowNoError.yaml"
     label: "Assert - Ingredient row inline error cleared after fix"
+
+- tapOn:
+    id: "RecipeIngredients::AddButton::RoundButton"
+    label: "Action - Add a second ingredient row low on screen"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "RecipeIngredients::1::QuantityInput"
+    label: "Action - Focus the new ingredient quantity right after adding the row (issue #590)"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Wait for numeric keyboard"
+
+- runFlow:
+    file: "../../flows/inputAndDone.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::1::QuantityInput"
+      VALUE: "50"
+    label: "Action - Enter quantity 50 in the new row"
+
+- tapOn:
+    id: "RecipeIngredients::1::Unit"
+    label: "Action - Tap the new row unit cell, which must not be hidden behind the keyboard"
+
+- assertVisible:
+    id: "RecipeIngredients::1::QuantityInput"
+    text: "50"
+    label: "Assert - New row keeps its quantity once the keyboard is closed"

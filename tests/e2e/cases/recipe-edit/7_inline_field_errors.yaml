@@ -171,13 +171,9 @@ tags:
 
 - waitForAnimationToEnd
 
-- tapOn:
-    id: "RecipePersons::PrefixText"
-    label: "Action - Tap person prefix to dismiss keyboard"
-
 - runFlow:
-    file: "../../flows/waitForKeyboardDismiss.yaml"
-    label: "Wait for numeric keyboard dismiss"
+    file: "../../flows/toolbarDone.yaml"
+    label: "Action - Close the keyboard with the toolbar Done"
 
 - runFlow:
     file: "../../asserts/recipe/inlineErrors/en/personsError.yaml"
@@ -220,13 +216,9 @@ tags:
 
 - waitForAnimationToEnd
 
-- tapOn:
-    id: "RecipeTime::PrefixText"
-    label: "Action - Tap prefix on iOS to dismiss keyboard"
-
 - runFlow:
-    file: "../../flows/waitForKeyboardDismiss.yaml"
-    label: "Wait for numeric keyboard dismiss"
+    file: "../../flows/toolbarDone.yaml"
+    label: "Action - Close the keyboard with the toolbar Done"
 
 - runFlow:
     file: "../../asserts/recipe/inlineErrors/en/timeError.yaml"

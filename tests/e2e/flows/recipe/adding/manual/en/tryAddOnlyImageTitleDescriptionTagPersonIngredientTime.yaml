@@ -22,11 +22,10 @@ appId: "com.recipedia"
     label: "Wait for numeric keyboard to appear"
 
 - runFlow:
-    file: "../../../../inputAndCommitText.yaml"
+    file: "../../../../inputAndDone.yaml"
     env:
       TARGET_ID: "RecipeTime::NumericTextInput"
       VALUE: "56789"
-      DISMISS_ID: "RecipeTime::PrefixText"
     label: "Write the time in the input text"
 
 - runFlow:

@@ -23,11 +23,10 @@ appId: "com.recipedia"
     label: "Wait for numeric keyboard to appear"
 
 - runFlow:
-    file: "../../replaceAndCommitText.yaml"
+    file: "../../replaceAndDone.yaml"
     env:
       TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
       VALUE: "${NEW_ENERGY_KCAL}"
-      DISMISS_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::Text"
     label: "Enter energy kcal value"
 
 - runFlow:
@@ -39,11 +38,10 @@ appId: "com.recipedia"
     label: "Tap on fat input"
 
 - runFlow:
-    file: "../../replaceAndCommitText.yaml"
+    file: "../../replaceAndDone.yaml"
     env:
       TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::NumericTextInput"
       VALUE: "${NEW_FAT}"
-      DISMISS_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::Text"
     label: "Enter fat value"
 
 - runFlow:
@@ -67,11 +65,10 @@ appId: "com.recipedia"
     label: "Tap on protein input"
 
 - runFlow:
-    file: "../../replaceAndCommitText.yaml"
+    file: "../../replaceAndDone.yaml"
     env:
       TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::NumericTextInput"
       VALUE: "${NEW_PROTEIN}"
-      DISMISS_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::Text"
     label: "Enter protein value"
 
 - runFlow:

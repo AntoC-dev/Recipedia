@@ -23,11 +23,10 @@ appId: "com.recipedia"
     label: "Wait for numeric keyboard to appear"
 
 - runFlow:
-    file: "../../replaceAndCommitText.yaml"
+    file: "../../replaceAndDone.yaml"
     env:
       TARGET_ID: "RecipePersons::NumericTextInput"
       VALUE: "${PERSONS}"
-      DISMISS_ID: "RecipePersons::PrefixText"
     label: "Replace the default number of persons with ${PERSONS}"
 
 - runFlow:

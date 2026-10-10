@@ -18,11 +18,10 @@ appId: "com.recipedia"
     label: "Focus on persons input"
 
 - runFlow:
-    file: "../../replaceAndCommitText.yaml"
+    file: "../../replaceAndDone.yaml"
     env:
       TARGET_ID: "RecipePersons::NumericTextInput"
       VALUE: "2"
-      DISMISS_ID: "RecipePersons::PrefixText"
     label: "Enter 2 persons"
 
 - runFlow:

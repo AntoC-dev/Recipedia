@@ -22,11 +22,10 @@ appId: "com.recipedia"
     label: "Wait for numeric keyboard to appear"
 
 - runFlow:
-    file: "../../inputAndCommitText.yaml"
+    file: "../../inputAndDone.yaml"
     env:
       TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::SaturatedFat::NumericTextInput"
       VALUE: "2,5"
-      DISMISS_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::SaturatedFat::Text"
     label: "Enter saturated fat value"
 
 - runFlow:

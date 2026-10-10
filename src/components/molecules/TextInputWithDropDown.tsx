@@ -153,7 +153,7 @@ export function TextInputWithDropDown({
     }
   }, [value]);
 
-  // Re-measure position when keyboard shows/hides (after KeyboardAvoidingView animation)
+  // Re-measure position when keyboard shows/hides (after the keyboard-aware scroll settles)
   useEffect(() => {
     if (!showDropdown) {
       return;
