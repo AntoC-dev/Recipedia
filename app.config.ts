@@ -1,23 +1,23 @@
-import type {ConfigContext, ExpoConfig} from "expo/config";
+import type { ConfigContext, ExpoConfig } from 'expo/config';
 
-const pkg = require("./package.json");
+const pkg = require('./package.json');
 
 function toIdentifierSegment(slug: string): string {
-    // Convert slug to a valid identifier segment: lowercase, remove non-alphanumerics, start with a letter
-    const compact = slug.toLowerCase().replace(/[^a-z0-9]+/g, "");
-    return compact.replace(/^[^a-z]+/, "");
+  // Convert slug to a valid identifier segment: lowercase, remove non-alphanumerics, start with a letter
+  const compact = slug.toLowerCase().replace(/[^a-z0-9]+/g, '');
+  return compact.replace(/^[^a-z]+/, '');
 }
 
 function toSlug(name: string): string {
-    return name.charAt(0).toUpperCase() + name.slice(1);
+  return name.charAt(0).toUpperCase() + name.slice(1);
 }
 
 function versionToCode(version: string): number {
-    const parts = version.split('.').map(Number);
-    const major = parts[0] || 0;
-    const minor = parts[1] || 0;
-    const patch = parts[2] || 0;
-    return major * 10000 + minor * 100 + patch;
+  const parts = version.split('.').map(Number);
+  const major = parts[0] || 0;
+  const minor = parts[1] || 0;
+  const patch = parts[2] || 0;
+  return major * 10000 + minor * 100 + patch;
 }
 
 /**
@@ -48,13 +48,13 @@ function versionToCode(version: string): number {
  *   `baseAppId`.
  */
 export function resolveIosBundleId(
-    baseAppId: string,
-    env: Record<string, string | undefined> = process.env,
+  baseAppId: string,
+  env: Record<string, string | undefined> = process.env
 ): string {
-    const usesProductionDataset = env.EXPO_PUBLIC_DATASET_TYPE === 'production';
-    const isAutomationBuild = env.EXPO_PUBLIC_DISABLE_ANIMATIONS === 'true';
-    const isStoreBuild = usesProductionDataset && !isAutomationBuild;
-    return isStoreBuild ? `${baseAppId}.ios` : baseAppId;
+  const usesProductionDataset = env.EXPO_PUBLIC_DATASET_TYPE === 'production';
+  const isAutomationBuild = env.EXPO_PUBLIC_DISABLE_ANIMATIONS === 'true';
+  const isStoreBuild = usesProductionDataset && !isAutomationBuild;
+  return isStoreBuild ? `${baseAppId}.ios` : baseAppId;
 }
 
 const configuredName = toSlug(pkg.name);
@@ -68,87 +68,92 @@ const iosAppId = resolveIosBundleId(appId);
 const primaryColorLight = '#006D38';
 const primaryColorDark = '#79DB95';
 
-export default ({config}: ConfigContext): ExpoConfig => {
-    const isProduction = process.env.NODE_ENV === 'production';
+export default ({ config }: ConfigContext): ExpoConfig => {
+  const isProduction = process.env.NODE_ENV === 'production';
 
-    return {
-        ...config,
-        name: configuredName,
-        slug: configuredName,
-        version: pkg.version,
-        orientation: "portrait",
-        icon: "./src/assets/app/icon.png",
-        userInterfaceStyle: "automatic",
-        ios: {
-            supportsTablet: true,
-            bundleIdentifier: iosAppId,
-            buildNumber: pkg.version,
-            infoPlist: {
-                "ITSAppUsesNonExemptEncryption": false,
-                "NSCameraUsageDescription": "Recipedia uses the camera so you can take a photo of a dish and attach it to a recipe (for example, when creating or editing a recipe).",
-                "NSPhotoLibraryUsageDescription": "Recipedia uses your photo library so you can choose an existing photo and set it as a recipe image (for example, selecting a picture for a new recipe)."
-            }
+  return {
+    ...config,
+    name: configuredName,
+    slug: configuredName,
+    version: pkg.version,
+    orientation: 'portrait',
+    icon: './src/assets/app/icon.png',
+    userInterfaceStyle: 'automatic',
+    ios: {
+      supportsTablet: true,
+      bundleIdentifier: iosAppId,
+      buildNumber: pkg.version,
+      infoPlist: {
+        ITSAppUsesNonExemptEncryption: false,
+        NSCameraUsageDescription:
+          'Recipedia uses the camera so you can take a photo of a dish and attach it to a recipe (for example, when creating or editing a recipe).',
+        NSPhotoLibraryUsageDescription:
+          'Recipedia uses your photo library so you can choose an existing photo and set it as a recipe image (for example, selecting a picture for a new recipe).',
+      },
+    },
+    android: {
+      versionCode: versionToCode(pkg.version),
+      adaptiveIcon: {
+        foregroundImage: './src/assets/app/adaptative_icon.png',
+        backgroundColor: primaryColorLight,
+      },
+      package: appId,
+      permissions: ['android.permission.CAMERA'],
+      predictiveBackGestureEnabled: false,
+    },
+    plugins: [
+      [
+        'expo-splash-screen',
+        {
+          image: './src/assets/app/splash_light.png',
+          resizeMode: 'cover',
+          backgroundColor: primaryColorLight,
+          dark: {
+            image: './src/assets/app/splash_dark.png',
+            backgroundColor: primaryColorDark,
+          },
         },
-        android: {
-            versionCode: versionToCode(pkg.version),
-            adaptiveIcon: {
-                foregroundImage: './src/assets/app/adaptative_icon.png',
-                backgroundColor: primaryColorLight,
-            },
-            package: appId,
-            permissions: ['android.permission.CAMERA'],
-            predictiveBackGestureEnabled: false,
+      ],
+      'expo-image',
+      'expo-localization',
+      'expo-sqlite',
+      'expo-mail-composer',
+      'expo-background-task',
+      'expo-font',
+      [
+        'expo-build-properties',
+        {
+          android: {
+            compileSdkVersion: 36,
+            targetSdkVersion: 36,
+            buildToolsVersion: '36.0.0',
+            enableProguardInReleaseBuilds: true,
+            enableShrinkResourcesInReleaseBuilds: true,
+            usePrecompiledHeaders: true,
+          },
+          ios: {
+            deploymentTarget: '18.0',
+          },
         },
-        plugins: [
-            [
-                'expo-splash-screen',
-                {
-                    image: './src/assets/app/splash_light.png',
-                    resizeMode: 'cover',
-                    backgroundColor: primaryColorLight,
-                    dark: {
-                        image: './src/assets/app/splash_dark.png',
-                        backgroundColor: primaryColorDark,
-                    },
-                },
-            ],
-            'expo-image',
-            'expo-localization',
-            'expo-sqlite',
-            'expo-mail-composer',
-            'expo-background-task',
-            'expo-font',
-            [
-                'expo-build-properties',
-                {
-                    android: {
-                        compileSdkVersion: 36,
-                        targetSdkVersion: 36,
-                        buildToolsVersion: '36.0.0',
-                        enableProguardInReleaseBuilds: true,
-                        enableShrinkResourcesInReleaseBuilds: true,
-                    },
-                    ios: {
-                        deploymentTarget: '18.0',
-                    },
-                },
-            ],
-            './modules/recipe-scraper/plugin/build/index.js',
-            './plugins/withAndroidLocaleFilters',
-            './plugins/withMlKitTelemetryDisabled',
-        ],
-        extra: {
-            eas: {
-                projectId: '247331ab-7746-4b0a-bb72-353045160518',
-            },
+      ],
+      './modules/recipe-scraper/plugin/build/index.js',
+      './plugins/withAndroidLocaleFilters',
+      './plugins/withMlKitTelemetryDisabled',
+    ],
+    extra: {
+      eas: {
+        projectId: '247331ab-7746-4b0a-bb72-353045160518',
+      },
+    },
+    owner: 'antoc',
+    // Reduce build overhead for development
+    updates: isProduction
+      ? {}
+      : {
+          enabled: false,
         },
-        owner: 'antoc',
-        // Reduce build overhead for development
-        updates: isProduction ? {} : {
-            enabled: false
-        },
-        experiments: {
-            reactCompiler: true,
-        },
-    };
+    experiments: {
+      reactCompiler: true,
+    },
+  };
 };

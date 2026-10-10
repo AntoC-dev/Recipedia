@@ -73,3 +73,24 @@ describe('ml kit telemetry', () => {
     expect(config.plugins).toContain('./plugins/withMlKitTelemetryDisabled');
   });
 });
+
+describe('build properties', () => {
+  const getBuildProperties = () => {
+    const config = createConfig({ config: {} } as ConfigContext);
+    const entry = config.plugins?.find(
+      plugin => Array.isArray(plugin) && plugin[0] === 'expo-build-properties'
+    );
+    return (
+      entry as [string, { android?: Record<string, unknown>; ios?: Record<string, unknown> }]
+    )[1];
+  };
+
+  it('enables Android precompiled headers to speed up native C++ builds', () => {
+    expect(getBuildProperties().android?.usePrecompiledHeaders).toBe(true);
+  });
+
+  it('keeps React Native prebuilt on iOS so precompiled XCFrameworks are used', () => {
+    expect(getBuildProperties().ios?.buildReactNativeFromSource).not.toBe(true);
+    expect(getBuildProperties().ios?.usePrecompiledModules).not.toBe(false);
+  });
+});
