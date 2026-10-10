@@ -1,3 +1,11 @@
+## [2.53.0](https://github.com/AntoC-dev/Recipedia/compare/v2.52.9...v2.53.0) (2026-10-10)
+
+### Features
+
+* **android:** disable ML Kit telemetry via config plugin ([3b620be](https://github.com/AntoC-dev/Recipedia/commit/3b620be9247a9d04c944915d6d3fd28810c88c15)), closes [#589](https://github.com/AntoC-dev/Recipedia/issues/589)
+* disable Google ML Kit usage telemetry ([#594](https://github.com/AntoC-dev/Recipedia/issues/594)) ([9a5eea4](https://github.com/AntoC-dev/Recipedia/commit/9a5eea44f20cbf27611cd9dd404b17d1179b7701)), closes [#589](https://github.com/AntoC-dev/Recipedia/issues/589)
+* **ios:** disable ML Kit telemetry in text-recognition patch ([8d275f4](https://github.com/AntoC-dev/Recipedia/commit/8d275f4ea64dc80d7f7f5970909b54096b74f012)), closes [#589](https://github.com/AntoC-dev/Recipedia/issues/589)
+
 ## [2.52.9](https://github.com/AntoC-dev/Recipedia/compare/v2.52.8...v2.52.9) (2026-10-09)
 
 ### Bug Fixes
