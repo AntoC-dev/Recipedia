@@ -9,7 +9,7 @@ Recipedia uses GitHub Actions for all CI/CD. This guide covers every workflow, r
 | File | Name | Triggers |
 |---|---|---|
 | `quality.yml` | Code Quality | push/PR to `main` |
-| `build-test.yml` | Build & Test Pipeline | push/PR to `main` |
+| `build-test.yml` | Build & Test Pipeline | push/PR to `main` (docs-only changes ignored) |
 | `build-app.yml` | Build App (reusable) | `workflow_call` |
 | `e2e-maestro.yml` | E2E Maestro Tests (reusable) | `workflow_call` |
 | `performance.yml` | Performance Tests (Flashlight) | nightly cron, `workflow_dispatch`, PR with `perf-test` label |
@@ -44,7 +44,9 @@ All jobs restore `node_modules` from cache keyed on `package-lock.json` hash.
 
 ## Build & Test Pipeline (`build-test.yml`)
 
-Runs on every push and PR to `main`. This is the main pipeline.
+Runs on every push and PR to `main` except docs-only changes (`**/*.md`, `guides/**`, `store-listing/**`, `.claude/**`, `.cursor/**`). This is the main pipeline.
+
+Runs are grouped per PR (or per ref on push). A new push to a PR cancels its in-progress run; `main` runs are never cancelled, since `publication.yml` depends on them. The `main` push re-runs the full pipeline on purpose: branch protection does not require up-to-date branches, so a merge can combine PRs that were never tested together.
 
 ### Job graph
 
@@ -96,9 +98,7 @@ Both delegate to the reusable `build-app.yml` workflow with these profiles:
 | `build-ios` | ios | `test` | `build-ios-app` / `Recipedia.app` |
 
 The build-app workflow skips a fresh build if:
-- No relevant files changed (paths filter on `src/**`, platform dirs, `app.json`, `eas.json`, `package.json`, etc.)
-- The branch is not `main` and no release tag
-- A cached artifact from a previous run on the same branch is available
+- The content hash of the build inputs (`src/**`, platform dir, `app.json`, `eas.json`, `package.json`, etc.) matches a cached app
 
 On cache miss or `main`/tag push, it always builds fresh.
 
@@ -165,7 +165,7 @@ Uses `.github/actions/setup-ios-build` composite action:
 
 ### Artifact caching
 
-When source files have not changed and the branch is not `main`, the workflow searches previous runs on the same branch for a matching artifact using `.github/scripts/find-cached-artifact.sh`. If found, the artifact is downloaded directly, skipping the build entirely. This significantly reduces CI time for documentation-only or test-only PRs.
+On non-`main` branches, `build-app.yml` restores the app from `actions/cache`, keyed on a hash of the build inputs (platform dir, `src/**`, `tests/data/**`, `plugins/**`, `modules/**`, `patches/**`, config and lockfiles). Hit: build skipped. Miss: build fresh, then save under that key. The key depends on content, not commits, so fixups, amends and rebases that leave those files unchanged still hit. `main` and tags always build.
 
 ---
 

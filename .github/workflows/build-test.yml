@@ -3,8 +3,20 @@ name: Build & Test Pipeline
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - '**/*.md'
+      - 'guides/**'
+      - 'store-listing/**'
+      - '.claude/**'
+      - '.cursor/**'
   pull_request:
     branches: [ main ]
+    paths-ignore:
+      - '**/*.md'
+      - 'guides/**'
+      - 'store-listing/**'
+      - '.claude/**'
+      - '.cursor/**'
 
 permissions:
   contents: read
@@ -12,6 +24,10 @@ permissions:
   issues: write
   checks: write
   actions: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   install-and-doctor:
@@ -297,7 +313,7 @@ jobs:
   e2e-tests-android-performance:
     name: E2E Tests Android (Performance)
     needs: [ build-android-performance, e2e-tests-android ]
-    if: ${{ always() && needs.build-android-performance.result == 'success' && github.actor != 'dependabot[bot]' }}
+    if: ${{ !cancelled() && needs.build-android-performance.result == 'success' && github.actor != 'dependabot[bot]' }}
     uses: ./.github/workflows/e2e-maestro.yml
     with:
       platform: android
