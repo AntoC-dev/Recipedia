@@ -208,6 +208,6 @@ MIT — see [LICENSE](LICENSE).
 
 <div align="center">
 
-[⭐ Star this repo](https://github.com/AntoC-dev/Recipedia) • [🐛 Report bug](https://github.com/AntoC-dev/Recipedia/issues) • [✨ Request feature](https://github.com/AntoC-dev/Recipedia/issues)
+[⭐ Star this repo](https://github.com/AntoC-dev/Recipedia) • [🐛 Report bug](https://github.com/AntoC-dev/Recipedia/issues/new?template=bug_report.yml) • [✨ Request feature](https://github.com/AntoC-dev/Recipedia/issues/new?template=feature_request.yml)
 
 </div>

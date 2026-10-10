@@ -414,36 +414,16 @@ test(#654): add unit tests for search functionality
 
 ## 🐛 Issue Guidelines
 
-### Bug Reports
+### Issues
 
-When reporting bugs, include:
-
-- **Environment**: Device, OS version, app version
-- **Steps to reproduce**: Clear, numbered steps
-- **Expected behavior**: What should happen
-- **Actual behavior**: What actually happens
-- **Screenshots**: If applicable
-- **Logs**: Any relevant error messages
-
-### Feature Requests
-
-For feature requests, include:
-
-- **Use case**: Why is this feature needed?
-- **Description**: Detailed description of the feature
-- **Mockups**: UI mockups if applicable
-- **Implementation ideas**: If you have suggestions
+Use the issue forms on GitHub: bug report, feature request, documentation, or maintenance task (upgrades, refactors, tests, CI, explorations). For private bug reports with logs, use **Parameters → About → Report a bug** in the app.
 
 ### Issue Labels
 
-We use labels to categorize issues:
-
-- `bug`: Something isn't working
-- `enhancement`: New feature or request
-- `documentation`: Documentation improvements
-- `good-first-issue`: Good for newcomers
-- `help-wanted`: Extra attention needed
-- `priority-high`: High priority issue
+- `bug`, `enhancement`, `documentation`: set by the issue forms
+- `refactor`, `test`, `ci`, `dependencies`, `exploration`: maintenance work
+- `p0-critical`, `p1-high`, `p2-medium`: priority, set by maintainers
+- `good first issue`, `help wanted`: contribution opportunities
 
 ## 🔧 Development Tips
 
