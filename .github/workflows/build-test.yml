@@ -313,7 +313,7 @@ jobs:
   e2e-tests-android-performance:
     name: E2E Tests Android (Performance)
     needs: [ build-android-performance, e2e-tests-android ]
-    if: ${{ always() && needs.build-android-performance.result == 'success' && github.actor != 'dependabot[bot]' }}
+    if: ${{ !cancelled() && needs.build-android-performance.result == 'success' && github.actor != 'dependabot[bot]' }}
     uses: ./.github/workflows/e2e-maestro.yml
     with:
       platform: android
