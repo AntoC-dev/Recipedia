@@ -1,96 +1,28 @@
-name: 📚 Documentation Issue
-description: Report an issue with documentation or suggest improvements
-title: "[DOCS]: "
-labels: ["documentation", "needs-triage"]
+name: 📚 Documentation
+description: Documentation is wrong, missing, outdated or unclear
+labels: ["documentation"]
 body:
-  - type: markdown
-    attributes:
-      value: |
-        Thanks for helping improve our documentation! Please fill out this form as completely as possible.
-        
   - type: checkboxes
     id: checklist
     attributes:
-      label: Pre-flight checklist
-      description: Please ensure you've completed these steps
+      label: Before submitting
       options:
-        - label: I have searched the existing issues for this documentation issue
+        - label: I searched existing issues and found no duplicate
           required: true
-        - label: I have checked the latest documentation
-          required: true
-
-  - type: dropdown
-    id: doc-type
-    attributes:
-      label: Documentation Type
-      description: What type of documentation issue is this?
-      options:
-        - Bug in existing documentation (incorrect information)
-        - Missing documentation (feature not documented)
-        - Unclear documentation (needs clarification)
-        - Outdated documentation (needs updating)
-        - API documentation issue
-        - README improvement
-        - Setup/installation instructions
-        - Code examples/tutorials
-        - Other
-    validations:
-      required: true
 
   - type: input
-    id: doc-location
+    id: location
     attributes:
-      label: Documentation Location
-      description: Where is this documentation located? (URL, file path, section name)
-      placeholder: https://yourname.github.io/Recipedia/components/RecipeCard.html
+      label: Location
+      description: File path, URL or section name
+      placeholder: guides/ocr.md, "Setup" section
     validations:
       required: true
 
   - type: textarea
-    id: issue-description
+    id: description
     attributes:
-      label: Issue Description
-      description: Describe the documentation issue in detail
-      placeholder: Clearly describe what's wrong or missing...
+      label: Description
+      description: What is wrong, missing or unclear, and what should it say instead?
     validations:
       required: true
-
-  - type: textarea
-    id: suggested-improvement
-    attributes:
-      label: Suggested Improvement
-      description: How would you improve this documentation?
-      placeholder: Describe what should be changed or added...
-    validations:
-      required: true
-
-  - type: dropdown
-    id: audience
-    attributes:
-      label: Target Audience
-      description: Who would benefit most from this documentation improvement?
-      options:
-        - End users (app users)
-        - Developers (contributors)
-        - Both
-        - Maintainers
-    validations:
-      required: true
-
-  - type: textarea
-    id: additional-context
-    attributes:
-      label: Additional Context
-      description: Add any other context, screenshots, or examples
-      placeholder: Any additional information...
-
-  - type: checkboxes
-    id: contribution
-    attributes:
-      label: Contribution Willingness
-      description: Are you willing to help improve this documentation?
-      options:
-        - label: I can write the improved documentation
-        - label: I can provide examples or screenshots
-        - label: I can review proposed changes
-        - label: I can help with testing

@@ -1,86 +1,59 @@
 name: ✨ Feature Request
-description: Suggest a new feature or improvement for Recipedia
-title: "[FEATURE]: "
-labels: ["enhancement", "needs-triage"]
+description: Suggest a new feature or an improvement to an existing one
+labels: ["enhancement"]
 body:
-  - type: markdown
-    attributes:
-      value: |
-        Thanks for suggesting a feature! Please fill out this form as completely as possible.
-        
   - type: checkboxes
     id: checklist
     attributes:
-      label: Pre-flight checklist
-      description: Please ensure you've completed these steps before submitting your feature request
+      label: Before submitting
       options:
-        - label: I have searched the existing issues for this feature request
-          required: true
-        - label: I have checked that this feature doesn't already exist in the latest version
+        - label: I searched existing issues and found no duplicate
           required: true
 
   - type: textarea
-    id: problem-description
+    id: problem
     attributes:
-      label: Problem Description
-      description: Is your feature request related to a problem? Please describe.
-      placeholder: I'm always frustrated when...
+      label: Problem
+      description: What are you trying to do, and what gets in the way today?
+      placeholder: When I plan my week, I have to...
     validations:
       required: true
 
   - type: textarea
-    id: solution-description
+    id: solution
     attributes:
-      label: Proposed Solution
-      description: Describe the solution you'd like
-      placeholder: I would like to see...
-    validations:
-      required: true
+      label: Proposed solution
+      description: How should it work? Sketches or screenshots welcome.
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Workarounds you use today or other approaches you thought of.
 
   - type: dropdown
-    id: feature-category
+    id: area
     attributes:
-      label: Feature Category
-      description: What category does this feature belong to?
+      label: Area
       options:
-        - Recipe Management (add, edit, delete recipes)
-        - Search & Filtering (finding recipes)  
-        - Shopping List (ingredient management)
-        - OCR & Camera (recipe scanning)
-        - UI/UX Improvements (design, navigation)
-        - Settings & Preferences
-        - Data Import/Export
-        - Performance & Optimization
+        - Home / recommendations
+        - Recipe view
+        - Recipe creation / editing
+        - Recipe import from URL
+        - Bulk import
+        - Recipe scan (OCR / photo)
+        - Search and filters
+        - Menu
+        - Shopping list
+        - Parameters (ingredients, tags, preferences)
+        - Tutorial / onboarding
         - Accessibility
+        - Performance
         - Other
-    validations:
-      required: true
-
-  - type: dropdown
-    id: priority
-    attributes:
-      label: Priority Level
-      description: How important is this feature to you?
-      options:
-        - Low (nice to have)
-        - Medium (would improve my experience)
-        - High (significantly impacts my usage)
-        - Critical (prevents me from using the app effectively)
-    validations:
-      required: true
-
-  - type: textarea
-    id: user-story
-    attributes:
-      label: User Story
-      description: Describe this feature as a user story
-      placeholder: "As a [type of user], I want [feature] so that [benefit/goal]"
     validations:
       required: true
 
   - type: textarea
     id: additional-context
     attributes:
-      label: Additional Context
-      description: Add any other context about the feature request here
-      placeholder: Any additional information...
+      label: Additional context

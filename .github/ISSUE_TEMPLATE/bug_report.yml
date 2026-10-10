@@ -1,128 +1,124 @@
 name: 🐛 Bug Report
-description: Report a bug or unexpected behavior in Recipedia
-title: "[BUG]: "
-labels: [ "bug", "needs-triage" ]
+description: Something in Recipedia is broken or behaves unexpectedly
+labels: ["bug"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for reporting a bug! Please fill out this form as completely as possible.
+        Prefer a private report? Use **Parameters → About → Report a bug** in the app: it emails logs to the maintainer.
+        Issues here are public: don't paste personal data, credentials or login-bound recipe URLs.
 
   - type: checkboxes
     id: checklist
     attributes:
-      label: Pre-flight checklist
-      description: Please ensure you've completed these steps before submitting your bug report
+      label: Before submitting
       options:
-        - label: I have searched the existing issues for this bug
-          required: true
-        - label: I have updated to the latest version of Recipedia
-          required: true
-        - label: I can reproduce this bug consistently
+        - label: I searched existing issues and found no duplicate
           required: true
 
   - type: textarea
-    id: bug-description
+    id: what-happened
     attributes:
-      label: Bug Description
-      description: A clear and concise description of what the bug is
-      placeholder: Describe the bug...
+      label: What happened?
+      description: Describe the problem. Add screenshots or a screen recording if it helps.
     validations:
       required: true
 
   - type: textarea
     id: steps-to-reproduce
     attributes:
-      label: Steps to Reproduce
-      description: Steps to reproduce the behavior
+      label: Steps to reproduce
       placeholder: |
-        1. Go to '...'
-        2. Click on '....'
-        3. Scroll down to '....'
-        4. See error
+        1. Open the Search tab
+        2. Tap on '...'
+        3. See error
     validations:
       required: true
 
   - type: textarea
     id: expected-behavior
     attributes:
-      label: Expected Behavior
-      description: A clear and concise description of what you expected to happen
-      placeholder: What should have happened?
+      label: Expected behavior
     validations:
       required: true
 
-  - type: textarea
-    id: actual-behavior
+  - type: dropdown
+    id: area
     attributes:
-      label: Actual Behavior
-      description: A clear and concise description of what actually happened
-      placeholder: What actually happened?
+      label: Area
+      options:
+        - Home / recommendations
+        - Recipe view
+        - Recipe creation / editing
+        - Recipe import from URL
+        - Bulk import
+        - Recipe scan (OCR / photo)
+        - Search and filters
+        - Menu
+        - Shopping list
+        - Parameters (ingredients, tags, preferences)
+        - Tutorial / onboarding
+        - Other
     validations:
       required: true
+
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Impact
+      options:
+        - App crashes, shows "Something went wrong", or data is lost
+        - A feature does not work
+        - Minor or cosmetic issue
+    validations:
+      required: true
+
+  - type: dropdown
+    id: frequency
+    attributes:
+      label: Frequency
+      options:
+        - Always
+        - Often
+        - Sometimes
+        - Only once
 
   - type: dropdown
     id: platform
     attributes:
       label: Platform
-      description: What platform are you using?
       options:
-        - Android
         - iOS
+        - Android
         - Both
     validations:
       required: true
 
   - type: input
-    id: device-model
+    id: device
     attributes:
-      label: Device Model
-      description: What device are you using? (e.g., iPhone 13, Samsung Galaxy S21)
-      placeholder: iPhone 13
-    validations:
-      required: true
-
-  - type: input
-    id: os-version
-    attributes:
-      label: OS Version
-      description: What operating system version are you using?
-      placeholder: iOS 16.4, Android 13
+      label: Device and OS version
+      placeholder: iPhone 13, iOS 18.2
     validations:
       required: true
 
   - type: input
     id: app-version
     attributes:
-      label: App Version
-      description: What version of Recipedia are you using? (Check in Settings � About)
-      placeholder: 0.7.0
+      label: App version
+      description: Parameters → About → Version
+      placeholder: 2.53.0
     validations:
       required: true
 
-  - type: textarea
-    id: screenshots
+  - type: input
+    id: recipe-url
     attributes:
-      label: Screenshots
-      description: If applicable, add screenshots to help explain your problem
-      placeholder: Drag and drop screenshots here...
+      label: Recipe URL
+      description: For import issues. Public pages only; never include login, session or tokenized links.
 
   - type: textarea
     id: additional-context
     attributes:
-      label: Additional Context
-      description: Add any other context about the problem here
-      placeholder: Any additional information...
-
-  - type: dropdown
-    id: frequency
-    attributes:
-      label: How often does this bug occur?
-      options:
-        - Always (100% of the time)
-        - Often (more than 50% of the time)
-        - Sometimes (less than 50% of the time)
-        - Rarely (less than 10% of the time)
-        - Only once
-    validations:
-      required: true
+      label: Additional context
+      description: Logs, anything else relevant.

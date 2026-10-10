@@ -1,0 +1,40 @@
+name: 🔧 Maintenance Task
+description: Upgrade, refactor, test, CI or exploration work with no intended user-facing change
+body:
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind
+      description: Add the label with the same name after creating the issue.
+      options:
+        - dependencies
+        - refactor
+        - test
+        - ci
+        - exploration
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why now? For upgrades, include current and target versions.
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: Files, modules or questions to cover, and what is out of scope.
+
+  - type: textarea
+    id: done-when
+    attributes:
+      label: Done when
+      description: Concrete exit criteria, or the question an exploration must answer.
+      placeholder: |
+        - [ ] ...
+    validations:
+      required: true
