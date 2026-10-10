@@ -34,9 +34,23 @@ appId: "com.recipedia"
     file: "../../waitForKeyboardDismiss.yaml"
     label: "Wait for numeric keyboard to dismiss"
 
+- scrollUntilVisible:
+    element:
+      id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::NumericTextInput"
+    direction: DOWN
+    speed: 30
+    centerElement: true
+    label: "Scroll to fat field"
+
+- waitForAnimationToEnd
+
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::NumericTextInput"
     label: "Tap on fat input"
+
+- runFlow:
+    file: "../../waitForKeyboard.yaml"
+    label: "Wait for numeric keyboard to appear"
 
 - runFlow:
     file: "../../replaceAndCommitText.yaml"
@@ -65,6 +79,10 @@ appId: "com.recipedia"
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::NumericTextInput"
     label: "Tap on protein input"
+
+- runFlow:
+    file: "../../waitForKeyboard.yaml"
+    label: "Wait for numeric keyboard to appear"
 
 - runFlow:
     file: "../../replaceAndCommitText.yaml"

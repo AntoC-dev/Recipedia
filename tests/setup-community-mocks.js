@@ -7,7 +7,7 @@ import 'react-native-gesture-handler/jestSetup';
 import mockSafeAreaContext from 'react-native-safe-area-context/jest/mock';
 
 // Mirrors @shopify/flash-list 2.0.3+ `jestSetup.js`, which only stubs layout measurement so the
-// real FlashList renders under Jest. Vendored because the 2.0.2 pinned by Expo SDK 56 ships a
+// real FlashList renders under Jest. Vendored because the 2.0.2 pinned by Expo SDK 57 ships a
 // broken `jestSetup.js` (it swaps FlashList for the unexported RecyclerView). Replace this with
 // `import '@shopify/flash-list/jestSetup'` once Expo bundles >= 2.0.3.
 jest.mock('@shopify/flash-list/dist/recyclerview/utils/measureLayout', () =>
