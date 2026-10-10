@@ -1,3 +1,10 @@
+## [2.53.2](https://github.com/AntoC-dev/Recipedia/compare/v2.53.1...v2.53.2) (2026-10-10)
+
+### Performance Improvements
+
+* **build:** enable Android precompiled headers ([da20d44](https://github.com/AntoC-dev/Recipedia/commit/da20d449f454e6160cdc01fd7610e3918b9b57f0))
+* **build:** enable Android precompiled headers ([#606](https://github.com/AntoC-dev/Recipedia/issues/606)) ([ebf56ad](https://github.com/AntoC-dev/Recipedia/commit/ebf56ad6cb88fa262fb9c81ffa3d4a250dcc0c8a)), closes [#380](https://github.com/AntoC-dev/Recipedia/issues/380)
+
 ## [2.53.1](https://github.com/AntoC-dev/Recipedia/compare/v2.53.0...v2.53.1) (2026-10-10)
 
 ### Bug Fixes
