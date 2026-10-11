@@ -1,3 +1,9 @@
+## [2.53.3](https://github.com/AntoC-dev/Recipedia/compare/v2.53.2...v2.53.3) (2026-10-11)
+
+### Bug Fixes
+
+* **ci:** put project-pinned eas-cli on PATH before expo-github-action ([e57fd84](https://github.com/AntoC-dev/Recipedia/commit/e57fd8443840805f3194a96b9ee4bc0ffd507283))
+
 ## [2.53.2](https://github.com/AntoC-dev/Recipedia/compare/v2.53.1...v2.53.2) (2026-10-10)
 
 ### Performance Improvements
