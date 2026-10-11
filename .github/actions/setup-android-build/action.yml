@@ -2,10 +2,6 @@ name: 'Setup Android Build Environment'
 description: 'Setup Java, Android SDK, Gradle caching, Expo caching, and EAS for Android builds (Python/Chaquopy set up by the caller)'
 
 inputs:
-  eas-version:
-    description: 'EAS CLI version'
-    required: false
-    default: 'latest'
   expo-token:
     description: 'Expo token for EAS'
     required: true
@@ -60,9 +56,12 @@ runs:
         restore-keys: |
           ${{ runner.os }}-expo-prebuild-android-
 
+    - name: Use project-pinned EAS CLI
+      shell: bash
+      run: echo "$GITHUB_WORKSPACE/node_modules/.bin" >> "$GITHUB_PATH"
+
     - name: Setup EAS
       uses: expo/expo-github-action@v9
       with:
-        eas-version: ${{ inputs.eas-version }}
         packager: 'npm'
         token: ${{ inputs.expo-token }}

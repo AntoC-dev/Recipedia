@@ -86,14 +86,12 @@ jobs:
         if: env.EXPO_TOKEN != '' && inputs.platform == 'android' && steps.app-cache.outputs.cache-hit != 'true'
         uses: ./.github/actions/setup-android-build
         with:
-          eas-version: '16.3.0'
           expo-token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Setup iOS build environment
         if: env.EXPO_TOKEN != '' && inputs.platform == 'ios' && steps.app-cache.outputs.cache-hit != 'true'
         uses: ./.github/actions/setup-ios-build
         with:
-          eas-version: '16.3.0'
           expo-token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Build app (EAS)
