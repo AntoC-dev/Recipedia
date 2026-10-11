@@ -97,6 +97,10 @@ jobs:
       - name: Build app (EAS)
         id: build-app
         if: env.EXPO_TOKEN != '' && steps.app-cache.outputs.cache-hit != 'true'
+        # These APKs only run on the CI x86_64 emulator: skipping arm64-v8a halves native compile time.
+        # Store builds (publication.yml) keep every ABI.
+        env:
+          ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
         run: |
           set -o pipefail
           npm run build:${{ inputs.build-profile }}:${{ inputs.platform }} 2>&1 \
