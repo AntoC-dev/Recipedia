@@ -118,7 +118,7 @@ jobs:
       - name: Boot iOS Simulator
         if: inputs.platform == 'ios'
         id: simulator
-        uses: futureware-tech/simulator-action@v5
+        uses: futureware-tech/simulator-action@v6
         with:
           model: 'iPhone 16e'
           # 26.2 is the only 26.x runtime carrying an iPhone 16e.
