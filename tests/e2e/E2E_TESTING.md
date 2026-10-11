@@ -89,7 +89,7 @@ tests/e2e/
 ```
 
 Principles: cases orchestrate, flows act, asserts verify. Every case is
-independent and starts from `flows/setupTest.yaml` (launch with clear state,
+independent and starts from `flows/setupTest.yaml` (clear state then launch,
 skip onboarding, warm up screens). Keep flows atomic, pass parameters via `env`,
 give every command a `label` — labels are what you read in `maestro.log`.
 
@@ -648,7 +648,8 @@ syntax).
 The local target is a **dev build**, where `launchApp` / relaunch / cold start
 drops to the Expo dev-client launcher instead of the app, breaking the run and
 losing state. Running a committed case or `ci/` wrapper counts as launching it —
-they chain `flows/setupTest.yaml`, which calls `launchApp: clearState: true`.
+they chain `flows/setupTest.yaml`, which starts from a clean app via
+`flows/launchFreshApp.yaml`.
 
 When a step needs a fresh app or a reload, STOP and ASK the user, wait for
 confirmation, then re-`inspect_screen`. Committed YAML keeps `launchApp` for CI,
@@ -682,5 +683,7 @@ selectors. Maestro docs: https://maestro.mobile.dev/
    case.
 7. Validate live over MCP before considering a flow done — without reloading the
    app yourself.
+8. Start from a clean app with `flows/launchFreshApp.yaml`; never
+   `launchApp: clearState: true`.
 
 **Questions**: see `AGENTS.md` for project-wide conventions.

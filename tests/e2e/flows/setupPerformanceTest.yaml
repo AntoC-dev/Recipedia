@@ -1,7 +1,7 @@
 appId: "com.recipedia"
 ---
-- launchApp:
-    clearState: true
+- runFlow:
+    file: "launchFreshApp.yaml"
     label: "Setup - Launch app with fresh state"
 
 - runFlow:

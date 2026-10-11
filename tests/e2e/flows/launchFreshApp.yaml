@@ -1,0 +1,7 @@
+appId: "com.recipedia"
+---
+- clearState:
+    label: "Setup - Clear app state"
+
+- launchApp:
+    label: "Setup - Launch app"

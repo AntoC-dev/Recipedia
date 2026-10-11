@@ -3,8 +3,8 @@ appId: "com.recipedia"
 tags:
   - app-init
 ---
-- launchApp:
-    clearState: true
+- runFlow:
+    file: "../../flows/launchFreshApp.yaml"
     label: "Setup - Launch app for first time"
 
 - extendedWaitUntil:
