@@ -1,0 +1,103 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    file: "../addRow.yaml"
+    env:
+      SECTION: "RecipeIngredients"
+    label: "Add the first ingredient row"
+
+- runFlow:
+    file: "../addRow.yaml"
+    env:
+      SECTION: "RecipeIngredients"
+    label: "Add the second ingredient row"
+
+- runFlow:
+    file: "../addRow.yaml"
+    env:
+      SECTION: "RecipePreparation"
+    label: "Add the preparation step"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTitle::CustomTextInput"
+    direction: UP
+    speed: 40
+    centerElement: true
+    label: "Scroll to the title with the keyboard closed"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: "../../focusField.yaml"
+    env:
+      TARGET_ID: "RecipeTitle::CustomTextInput"
+    label: "Focus the title"
+
+- runFlow:
+    file: "../../inputAndNext.yaml"
+    env:
+      TARGET_ID: "RecipeTitle::CustomTextInput"
+      VALUE: "Test Recipe"
+    label: "Enter the title, Next moves to the description"
+
+- runFlow:
+    file: "../../toolbarNext.yaml"
+    label: "Skip the description with the toolbar Next"
+
+- runFlow:
+    file: "../../replaceFocused.yaml"
+    env:
+      TARGET_ID: "RecipePersons::NumericTextInput"
+      VALUE: "${PERSONS}"
+    label: "Replace the default persons"
+
+- runFlow:
+    file: "../../toolbarNext.yaml"
+    label: "Move to the first ingredient quantity"
+
+- runFlow:
+    file: "../../inputAndNext.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::0::QuantityInput"
+      VALUE: "${ING0_QTY}"
+    label: "Enter the first ingredient quantity, Next moves to its name"
+
+- runFlow:
+    file: "../../inputAndNext.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::0::NameInput::CustomTextInput"
+      VALUE: "${ING0_NAME}"
+    label: "Enter the first ingredient name (exact match, no dropdown)"
+
+- runFlow:
+    file: "../../inputAndNext.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::1::QuantityInput"
+      VALUE: "${ING1_QTY}"
+    label: "Enter the second ingredient quantity, Next moves to its name"
+
+- runFlow:
+    file: "../../inputAndNext.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::1::NameInput::CustomTextInput"
+      VALUE: "${ING1_NAME}"
+    label: "Enter the second ingredient name (exact match, no dropdown)"
+
+- runFlow:
+    file: "../../inputAndNext.yaml"
+    env:
+      TARGET_ID: "RecipeTime::NumericTextInput"
+      VALUE: "${TIME}"
+    label: "Enter the time, Next moves to the step title"
+
+- runFlow:
+    file: "../../toolbarNext.yaml"
+    label: "Skip the step title with the toolbar Next"
+
+- runFlow:
+    file: "../../inputAndDone.yaml"
+    env:
+      TARGET_ID: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
+      VALUE: "Cook pasta and mix with tomatoes"
+    label: "Enter the step content and close the keyboard"

@@ -34,8 +34,10 @@ tags:
     id: "RecipeIngredients::AddButton::RoundButton"
     label: "Action - Add ingredient to recipe"
 
-- tapOn:
-    id: "RecipeIngredients::0::NameInput::CustomTextInput"
+- runFlow:
+    file: "../../flows/focusField.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::0::NameInput::CustomTextInput"
     label: "Action - Focus on ingredient name input"
 
 - runFlow:
@@ -45,10 +47,6 @@ tags:
       VALUE: "Butte"
       DISMISS_ID: "RecipeIngredients::0::Unit"
     label: "Action - Enter fuzzy ingredient name to trigger similarity dialog"
-
-- runFlow:
-    file: "../../flows/waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
 
 - runFlow:
     file: "../../flows/recipe/ingredients/pickIngredientFromDatabase.yaml"

@@ -1,7 +1,22 @@
 appId: "com.recipedia"
 ---
 - runFlow:
-    file: "fillTestRecipeFor2Persons.yaml"
+    file: "manual/en/openAddManually.yaml"
+    label: "Open manual recipe creation"
+
+- runFlow:
+    file: "en/addRecipeImage.yaml"
+    label: "Add recipe image"
+
+- runFlow:
+    file: "createTwoIngredientRecipe.yaml"
+    env:
+      PERSONS: "2"
+      ING0_NAME: "Pasta"
+      ING0_QTY: "200"
+      ING1_NAME: "Tomatoes"
+      ING1_QTY: "100"
+      TIME: "20"
     label: "Fill Test Recipe (2 persons, Pasta 200g, Tomatoes 100g)"
 
 - tapOn:

@@ -153,17 +153,67 @@ grep -r "fileName.yaml" tests/e2e --include="*.yaml"
 
 ## Text Input Rules
 
-Use `flows/inputAndCommitText.yaml` (env `TARGET_ID`, `VALUE`, `DISMISS_ID`)
-rather than hand-rolling `inputText` + a dismiss:
+`flows/inputText.yaml` (env `TARGET_ID`, `VALUE`) is the base: it types and
+asserts the value, without leaving the field. The recipe form (the only screen
+with the keyboard toolbar) is filled **in field order in one pass**, chaining
+the toolbar between fields instead of closing and reopening the keyboard per
+field:
+
+- **Scroll only to reach the first field of a pass, with the keyboard closed**,
+  using a plain inline `scrollUntilVisible` (literal `direction`,
+  `centerElement`, and a `timeout` only when the default 20s is too short;
+  Maestro rejects `direction: ${VAR}` at parse time). Once a field is focused,
+  never scroll: the toolbar Next and `KeyboardAwareScrollView` bring the next
+  field into view.
+- `flows/focusField.yaml` — tap, wait for the keyboard. No scroll.
+- `flows/inputAndNext.yaml` — type, then toolbar Next (the next field gains
+  focus; the next `inputText` assert is the proof).
+- `flows/toolbarNext.yaml` — Next without typing, to hop over a field that keeps
+  its value (description, persons, a step title).
+- `flows/inputAndDone.yaml` — type, then toolbar Done. **Done only on the last
+  field of a pass.** It already waits for the keyboard to close, so never follow
+  it with `waitForKeyboardDismiss`.
+- `flows/replaceText.yaml` — non-empty field: tap at 95% (caret at the end),
+  then `flows/replaceFocused.yaml` (clear, check empty, type). Inside a chain
+  use `replaceFocused` alone: Next already focused the field with the caret at
+  the end, and a second tap can land under the toolbar.
+  `flows/replaceAndDone.yaml` is `replaceText` plus the Done.
+- `flows/inputAndCommitText.yaml` (also `DISMISS_ID`) — type, then tap a label:
+  ingredient names and tags (their dropdown covers the toolbar, #540, so the
+  chain stops there and resumes with `focusField`) and screens without the
+  toolbar.
+- `flows/recipe/addRow.yaml` (`SECTION`: `RecipeIngredients` or
+  `RecipePreparation`) — scroll to an add button and tap it. Add **every row up
+  front**, keyboard closed (dragging dismisses the keyboard), so a chain never
+  needs an add button; Next only reaches rows that already exist.
+- `flows/recipe/adding/createTwoIngredientRecipe.yaml` — the one shared fill for
+  the Test Recipe family (title, persons, two ingredients, time, one step), all
+  values passed as `env`. Opening the form (FAB / add manually, image) and
+  validating stay with the caller.
+
+Chain through exact, unique database names with Next (the dropdown hides on an
+exact match, so the toolbar stays reachable). An empty or partial name field
+opens a dropdown that covers the toolbar (#540): do not hop through it and do
+not type a partial name then Next; commit it with a label tap or the iOS Done
+key and resume with `focusField` on a field that is still visible.
+
+Next order on the recipe form: title, description, tags (a committed tag is a
+chip, but an uncommitted `RecipeTags::List::<n>` input is a stop between the
+description and persons), persons, ingredient quantity/name pairs, time, step
+title/content, then the nutrition rows (energy kcal, kj, fat, saturated fat,
+carbohydrates, sugars, fiber, protein, salt) and the portion weight.
 
 ```yaml
-- tapOn: { id: 'RecipeTime::NumericTextInput', label: 'Focus the time input' }
 - runFlow:
-    file: '../../inputAndCommitText.yaml' # adjust relative depth per caller
+    file: '../../focusField.yaml' # adjust relative depth per caller
+    env:
+      TARGET_ID: 'RecipeTime::NumericTextInput'
+    label: 'Focus the time input'
+- runFlow:
+    file: '../../inputAndDone.yaml'
     env:
       TARGET_ID: 'RecipeTime::NumericTextInput'
       VALUE: '30'
-      DISMISS_ID: 'RecipeTime::PrefixText'
     label: 'Enter the time to prepare'
 ```
 
@@ -175,29 +225,29 @@ characters are still queued on the JS thread. The field commits a partial value
 #525). This is about the blur, not about Enter — a tap elsewhere and
 `hideKeyboard` race the same way.
 
-**Commit with a tap, not `pressKey: enter`.** Enter does not reliably trigger
-the IME action on Android and inserts a newline in a multiline input. The
-dismiss target must be **non-touchable**: the recipe screens use
-`keyboardShouldPersistTaps='handled'`, so tapping a plain `Text` blurs the
-field, while tapping a button runs that button's handler and keeps the keyboard
-up. Usual targets: `RecipeTime::PrefixText`, `RecipePersons::PrefixText`,
-`<NutritionRow>::Text`, `RecipeIngredients::<i>::Unit`.
+**Commit with the toolbar or a label tap, not `pressKey: enter`.** Enter does
+not reliably trigger the IME action on Android and inserts a newline in a
+multiline input. The dismiss target must be **non-touchable**: the recipe
+screens use `keyboardShouldPersistTaps='handled'`, so tapping a plain `Text`
+blurs the field, while tapping a button runs that button's handler and keeps the
+keyboard up. Usual targets: `RecipeTime::PrefixText`,
+`RecipePersons::PrefixText`, `<NutritionRow>::Text`,
+`RecipeIngredients::<i>::Unit`.
 
 **Pick the helper that matches the intent.** `inputText` inserts at the caret
 rather than replacing, so the wrong helper either concatenates silently (`321`
 typed into a persons field holding `4` commits `4321`) or asserts text it never
 predicted.
 
-| Helper                            | Field starts | Ends up holding | Asserts                    |
-| --------------------------------- | ------------ | --------------- | -------------------------- |
-| `flows/inputAndCommitText.yaml`   | empty        | `VALUE`         | field **is** `VALUE`       |
-| `flows/replaceAndCommitText.yaml` | non-empty    | `VALUE`         | field **is** `VALUE`       |
-| `flows/appendText.yaml`           | non-empty    | old + `VALUE`   | field **contains** `VALUE` |
+| Helper                      | Field starts | Ends up holding | Asserts                    |
+| --------------------------- | ------------ | --------------- | -------------------------- |
+| `flows/inputText.yaml`      | empty        | `VALUE`         | field **is** `VALUE`       |
+| `flows/replaceText.yaml`    | non-empty    | `VALUE`         | field **is** `VALUE`       |
+| `flows/replaceAndDone.yaml` | non-empty    | `VALUE`         | field **is** `VALUE`       |
+| `flows/appendText.yaml`     | non-empty    | old + `VALUE`   | field **contains** `VALUE` |
 
-All three take `TARGET_ID` and `VALUE`; the committing two also take
-`DISMISS_ID`. `replaceAndCommitText.yaml` clears the field then delegates to
-`inputAndCommitText.yaml`. `appendText.yaml` deliberately does not commit — it
-is what a multiline paragraph needs between its lines.
+`inputText`, `replaceText` and `appendText` leave the field focused;
+`replaceAndDone` is `replaceText` followed by the toolbar Done.
 
 **It is all caret mechanics.** `inputText` inserts at the caret, `eraseText`
 only backspaces what is _before_ it, and no `pressKey` jumps to the end. A plain
@@ -206,18 +256,18 @@ in one that fills the box. So a persons field holding `4` then given `321` ends
 up `4321`, and a quantity field holding `3291` then erased ends up `91`. The
 lever is `tapOn`'s element-relative `point`: `"95%,50%"` puts the caret past the
 end, `"2%,50%"` at the start (used by
-`flows/parameters/tags/insertTextAtCursorBeginning.yaml`).
-`replaceAndCommitText.yaml` taps at 95% before erasing, so one `eraseText` is
-enough, then waits for the field to read empty. Never hand-roll `tapOn` +
-`eraseText` on a field holding more than a character or two, and never add a
-second erase to force a field clear — a field that comes back non-empty is being
-re-rendered from state mid-erase; fix that instead.
+`flows/parameters/tags/insertTextAtCursorBeginning.yaml`). `replaceText.yaml`
+taps at 95% before erasing, so one `eraseText` is enough, then waits for the
+field to read empty. Never hand-roll `tapOn` + `eraseText` on a field holding
+more than a character or two, and never add a second erase to force a field
+clear — a field that comes back non-empty is being re-rendered from state
+mid-erase; fix that instead.
 
 Fields that start non-empty: persons (seeded from `defaultPersons`, `4` out of
 the box), time and persons in OCR mode (`manuallyFill` seeds `0`), and
 everything in an editing flow. Fields that start empty: the manual-add form,
 freshly added ingredient rows, first-time nutrition values — do not pay
-`replaceAndCommitText.yaml`'s ~4s of Android backspaces there.
+`replaceAndDone.yaml`'s ~4s of Android backspaces there.
 
 Autocomplete fields (`TextInputWithDropDown`) follow the same rules: ingredient
 names commit live via `onChangeText`, tags via `onEndEditing` → `onValidate`,
@@ -231,8 +281,9 @@ iOS), and blur once at the end —
 
 ## Keyboard Dismissal
 
-Wrap every dismissal in `waitForAnimationToEnd` before and after, so Maestro
-never taps while the keyboard animates.
+`toolbarDone.yaml` already waits for the keyboard to close. For the other
+dismissals (label tap, `hideKeyboard`), wrap them in `waitForAnimationToEnd`
+before and after, so Maestro never taps while the keyboard animates.
 
 **Modal dialogs** (ItemDialog, NoteEditDialog, UrlInputDialog): use
 `flows/dismissModalKeyboard.yaml`, which holds the split — `hideKeyboard` on
@@ -469,8 +520,8 @@ FAT: '8[.]53'
 text: '133[.]33 g'
 ```
 
-Values typed rather than matched (`inputText`, `flows/inputAndCommitText.yaml`)
-stay unescaped — brackets there would be typed literally.
+Values typed rather than matched (`inputText`, `flows/inputText.yaml`) stay
+unescaped — brackets there would be typed literally.
 
 ### The locale-fr suite
 

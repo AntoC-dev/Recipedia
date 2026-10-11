@@ -1,259 +1,76 @@
 appId: "com.recipedia"
 ---
-
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
     direction: DOWN
-    speed: 60
     centerElement: true
-    label: "Scroll to energy kcal field"
+    label: "Scroll to Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
 
 - waitForAnimationToEnd
 
-- tapOn:
-    id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
-    label: "Tap energy kcal input"
+- runFlow:
+    file: "../../focusField.yaml"
+    env:
+      TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
+    label: "Focus energy kcal input"
 
 - runFlow:
-    file: "../../waitForKeyboard.yaml"
-    label: "Wait for numeric keyboard to appear"
-
-- runFlow:
-    file: "../../inputAndCommitText.yaml"
+    file: "../../inputAndNext.yaml"
     env:
       TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
       VALUE: "250"
-      DISMISS_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::Text"
     label: "Enter energy kcal value"
 
 - runFlow:
-    file: "../../waitForKeyboardDismiss.yaml"
-    label: "Wait for numeric keyboard to dismiss"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKj::NumericTextInput"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to energy kj field"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKj::NumericTextInput"
-    label: "Tap energy kj input"
-
-- runFlow:
-    file: "../../waitForKeyboard.yaml"
-    label: "Wait for numeric keyboard to appear"
-
-- runFlow:
-    file: "../../inputAndCommitText.yaml"
+    file: "../../inputAndNext.yaml"
     env:
       TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKj::NumericTextInput"
       VALUE: "1000"
-      DISMISS_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKj::Text"
     label: "Enter energy kj value"
 
 - runFlow:
-    file: "../../waitForKeyboardDismiss.yaml"
-    label: "Wait for numeric keyboard to dismiss"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::NumericTextInput"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to fat field"
-
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::NumericTextInput"
-    label: "Tap fat input"
-
-- runFlow:
-    file: "../../waitForKeyboard.yaml"
-    label: "Wait for numeric keyboard to appear"
-
-- runFlow:
-    file: "../../inputAndCommitText.yaml"
+    file: "../../inputAndNext.yaml"
     env:
       TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::NumericTextInput"
       VALUE: "10"
-      DISMISS_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::Text"
     label: "Enter fat value"
 
 - runFlow:
-    file: "../../waitForKeyboardDismiss.yaml"
-    label: "Wait for numeric keyboard to dismiss"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Carbohydrates::NumericTextInput"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to carbohydrates field"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Carbohydrates::NumericTextInput"
-    label: "Tap carbohydrates input"
+    file: "../../toolbarNext.yaml"
+    label: "Skip the saturated fat row"
 
 - runFlow:
-    file: "../../waitForKeyboard.yaml"
-    label: "Wait for numeric keyboard to appear"
-
-- runFlow:
-    file: "../../inputAndCommitText.yaml"
+    file: "../../inputAndNext.yaml"
     env:
       TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Carbohydrates::NumericTextInput"
       VALUE: "30"
-      DISMISS_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Carbohydrates::Text"
     label: "Enter carbohydrates value"
 
 - runFlow:
-    file: "../../waitForKeyboardDismiss.yaml"
-    label: "Wait for numeric keyboard to dismiss"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Sugars::NumericTextInput"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to sugar field"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Sugars::NumericTextInput"
-    label: "Tap sugar input"
-
-- runFlow:
-    file: "../../waitForKeyboard.yaml"
-    label: "Wait for numeric keyboard to appear"
-
-- runFlow:
-    file: "../../inputAndCommitText.yaml"
+    file: "../../inputAndNext.yaml"
     env:
       TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Sugars::NumericTextInput"
       VALUE: "1"
-      DISMISS_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Sugars::Text"
     label: "Enter sugar value"
 
 - runFlow:
-    file: "../../waitForKeyboardDismiss.yaml"
-    label: "Wait for numeric keyboard to dismiss"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fiber::NumericTextInput"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to fiber field"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fiber::NumericTextInput"
-    label: "Tap fiber input"
-
-- runFlow:
-    file: "../../waitForKeyboard.yaml"
-    label: "Wait for numeric keyboard to appear"
-
-- runFlow:
-    file: "../../inputAndCommitText.yaml"
+    file: "../../inputAndNext.yaml"
     env:
       TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fiber::NumericTextInput"
       VALUE: "42"
-      DISMISS_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fiber::Text"
     label: "Enter fiber value"
 
 - runFlow:
-    file: "../../waitForKeyboardDismiss.yaml"
-    label: "Wait for numeric keyboard to dismiss"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::NumericTextInput"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to protein field"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::NumericTextInput"
-    label: "Tap protein input"
-
-- runFlow:
-    file: "../../waitForKeyboard.yaml"
-    label: "Wait for numeric keyboard to appear"
-
-- runFlow:
-    file: "../../inputAndCommitText.yaml"
+    file: "../../inputAndNext.yaml"
     env:
       TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::NumericTextInput"
       VALUE: "15"
-      DISMISS_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::Text"
     label: "Enter protein value"
 
 - runFlow:
-    file: "../../waitForKeyboardDismiss.yaml"
-    label: "Wait for numeric keyboard to dismiss"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Salt::NumericTextInput"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to salt field"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Salt::NumericTextInput"
-    label: "Tap salt input"
-
-- runFlow:
-    file: "../../waitForKeyboard.yaml"
-    label: "Wait for numeric keyboard to appear"
-
-- runFlow:
-    file: "../../inputAndCommitText.yaml"
+    file: "../../inputAndDone.yaml"
     env:
       TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Salt::NumericTextInput"
       VALUE: "3"
-      DISMISS_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Salt::Text"
-    label: "Enter salt value"
-
-- runFlow:
-    file: "../../waitForKeyboardDismiss.yaml"
-    label: "Wait for numeric keyboard to dismiss"
+    label: "Enter salt value and close the keyboard"

@@ -14,10 +14,16 @@ tags:
     label: "Action - Enter edit mode"
 
 - runFlow:
-    file: "../../flows/recipe/adding/setRecipeTitle.yaml"
+    file: "../../flows/replaceAndDone.yaml"
     env:
-      TITLE: "Gesture Pesto Title"
-    label: "Action - Edit the title so the form becomes dirty"
+      TARGET_ID: "RecipeTitle::CustomTextInput"
+      VALUE: "Gesture Pesto Title"
+    label: "Action - Replace RecipeTitle::CustomTextInput with Gesture Pesto Title"
+
+- assertVisible:
+    id: "RecipeTitle::CustomTextInput"
+    text: "Gesture Pesto Title"
+    label: "Assert - RecipeTitle::CustomTextInput still holds Gesture Pesto Title once the keyboard is closed"
 
 - runFlow:
     file: "../../flows/navigation/systemBack.yaml"

@@ -1,26 +1,23 @@
 appId: "com.recipedia"
 ---
-
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeDescription::CustomTextInput"
     direction: DOWN
-    speed: 40
     centerElement: true
-    label: "Scroll to description text input"
+    label: "Scroll to RecipeDescription::CustomTextInput"
 
 - waitForAnimationToEnd
 
-- tapOn:
-    id: "RecipeDescription::CustomTextInput"
-    label: "Tap on Description's TextInput"
+- runFlow:
+    file: "../../../../focusField.yaml"
+    env:
+      TARGET_ID: "RecipeDescription::CustomTextInput"
+    label: "Focus RecipeDescription::CustomTextInput"
 
-- inputText:
-    text: "Description"
+- runFlow:
+    file: "../../../../inputAndDone.yaml"
+    env:
+      TARGET_ID: "RecipeDescription::CustomTextInput"
+      VALUE: "Description"
     label: "Write the description in the input text"
-
-- tapOn:
-    id: "RecipeDescription::Text"
-    label: "Tap on title to close the keyboard"

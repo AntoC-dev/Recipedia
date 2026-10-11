@@ -55,10 +55,16 @@ tags:
     label: "Action - Re-enter edit mode"
 
 - runFlow:
-    file: "../../flows/recipe/adding/setRecipeTitle.yaml"
+    file: "../../flows/replaceAndDone.yaml"
     env:
-      TITLE: "Discarded Pesto Title"
-    label: "Action - Edit the title so the form becomes dirty"
+      TARGET_ID: "RecipeTitle::CustomTextInput"
+      VALUE: "Discarded Pesto Title"
+    label: "Action - Replace RecipeTitle::CustomTextInput with Discarded Pesto Title"
+
+- assertVisible:
+    id: "RecipeTitle::CustomTextInput"
+    text: "Discarded Pesto Title"
+    label: "Assert - RecipeTitle::CustomTextInput still holds Discarded Pesto Title once the keyboard is closed"
 
 # Editing the title scrolls it into the centre of the form, which leaves the
 # image button above the viewport once the guard restores the same scroll offset.

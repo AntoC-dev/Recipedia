@@ -11,42 +11,61 @@ tags:
     file: "../../flows/recipe/adding/en/addRecipeImage.yaml"
     label: "Action - Add recipe image"
 
-- waitForAnimationToEnd
+- runFlow:
+    file: "../../flows/recipe/addRow.yaml"
+    env:
+      SECTION: "RecipeIngredients"
+    label: "Action - Add the ingredient row"
 
 - scrollUntilVisible:
     element:
       id: "RecipeTitle::CustomTextInput"
-    direction: DOWN
-    speed: 10
+    direction: UP
     centerElement: true
-    label: "Action - Scroll to title input"
+    label: "Scroll to RecipeTitle::CustomTextInput"
 
 - waitForAnimationToEnd
 
 - runFlow:
-    file: "../../flows/recipe/adding/setRecipeTitle.yaml"
+    file: "../../flows/focusField.yaml"
     env:
-      TITLE: "Preparation Step Validation Test"
+      TARGET_ID: "RecipeTitle::CustomTextInput"
+    label: "Action - Focus the title"
+
+- runFlow:
+    file: "../../flows/inputAndNext.yaml"
+    env:
+      TARGET_ID: "RecipeTitle::CustomTextInput"
+      VALUE: "Preparation Step Validation Test"
     label: "Action - Enter recipe title"
 
 - runFlow:
-    file: "../../flows/recipe/adding/setRecipePersons.yaml"
-    env:
-      PERSONS: "4"
-    label: "Action - Set persons count"
+    file: "../../flows/toolbarNext.yaml"
+    label: "Action - Skip the description"
 
 - runFlow:
-    file: "../../flows/recipe/adding/addIngredientToRecipe.yaml"
+    file: "../../flows/toolbarNext.yaml"
+    label: "Action - Keep the default persons and move to the ingredient quantity"
+
+- runFlow:
+    file: "../../flows/inputAndNext.yaml"
     env:
-      INDEX: "0"
-      QUANTITY: "100"
-      NAME: "Carrots"
+      TARGET_ID: "RecipeIngredients::0::QuantityInput"
+      VALUE: "100"
+    label: "Action - Enter the Carrots quantity"
+
+- runFlow:
+    file: "../../flows/inputAndNext.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::0::NameInput::CustomTextInput"
+      VALUE: "Carrots"
     label: "Action - Add Carrots ingredient (exact DB match, no validation queue)"
 
 - runFlow:
-    file: "../../flows/recipe/adding/addRecipeTimeToPrepare.yaml"
+    file: "../../flows/inputAndDone.yaml"
     env:
-      PERSONS_VALUE: "30"
+      TARGET_ID: "RecipeTime::NumericTextInput"
+      VALUE: "30"
     label: "Action - Set preparation time"
 
 - tapOn:
@@ -58,13 +77,40 @@ tags:
     env:
       MISSING_ELEMENT: "some instructions for the preparation"
     label: "Assert - Dialog reports preparation as the single missing element (no spurious extra fields from addNewPreparationStep auto-validation)"
-    
+
 - runFlow:
-    file: "../../flows/recipe/adding/addRecipePreparationStep.yaml"
+    file: "../../flows/recipe/addRow.yaml"
     env:
-      INDEX: "0"
-      TEXT: "Cook for 10 minutes"
-    label: "Action - Add an empty step then fill its description (covers C8b: no premature errors on add; C5: typed value clears the missing-prep error)"
+      SECTION: "RecipePreparation"
+    label: "Action - Add an empty step (covers C8b: no premature errors on add)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to the step input, keyboard closed"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: "../../flows/focusField.yaml"
+    env:
+      TARGET_ID: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
+    label: "Action - Focus the step content"
+
+- runFlow:
+    file: "../../flows/inputAndDone.yaml"
+    env:
+      TARGET_ID: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
+      VALUE: "Cook for 10 minutes"
+    label: "Action - Fill the step description (covers C5: typed value clears the missing-prep error)"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
+    text: "Cook for 10 minutes"
+    label: "Assert - Check the step content once the keyboard is closed"
 
 - tapOn:
     id: "Recipe::BottomActionButton"

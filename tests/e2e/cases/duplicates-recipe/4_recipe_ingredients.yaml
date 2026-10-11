@@ -50,11 +50,30 @@ tags:
 
 - waitForAnimationToEnd
 - runFlow:
-    file: "../../flows/recipe/adding/addIngredientToRecipe.yaml"
+    file: "../../flows/recipe/addRow.yaml"
     env:
-      INDEX: "2"
-      NAME: "Olive Oil"
-      QUANTITY: "5"
+      SECTION: "RecipeIngredients"
+    label: "Action - Add an ingredient row"
+
+- runFlow:
+    file: "../../flows/focusField.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::2::QuantityInput"
+    label: "Action - Focus the Olive Oil quantity"
+
+- runFlow:
+    file: "../../flows/inputAndNext.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::2::QuantityInput"
+      VALUE: "5"
+    label: "Action - Enter the Olive Oil quantity"
+
+- runFlow:
+    file: "../../flows/inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::2::NameInput::CustomTextInput"
+      VALUE: "Olive Oil"
+      DISMISS_ID: "RecipeIngredients::2::Unit"
     label: "Action - Add Olive Oil ingredient"
 
 - tapOn:
@@ -78,8 +97,27 @@ tags:
     label: "Action - Confirm discarding the unsaved changes"
 
 - runFlow:
-    file: "../../flows/recipe/adding/createRecipeWithDifferentIngredients.yaml"
+    file: "../../flows/recipe/adding/manual/en/openAddManually.yaml"
+    label: "Action - Open manual recipe creation"
+
+- runFlow:
+    file: "../../flows/recipe/adding/en/addRecipeImage.yaml"
+    label: "Action - Add recipe image"
+
+- runFlow:
+    file: "../../flows/recipe/adding/createTwoIngredientRecipe.yaml"
+    env:
+      PERSONS: "2"
+      ING0_NAME: "Chicken Breast"
+      ING0_QTY: "300"
+      ING1_NAME: "Sushi rice"
+      ING1_QTY: "150"
+      TIME: "20"
     label: "Action - Create recipe with different ingredients"
+
+- tapOn:
+    id: "Recipe::BottomActionButton"
+    label: "Action - Validate the recipe"
 
 - runFlow:
     file: "../../asserts/alerts/en/recipeAddedToDatabase.yaml"

@@ -49,13 +49,11 @@ tags:
     file: "../../asserts/recipe/inlineErrors/en/titleNoError.yaml"
     label: "Assert - No title inline error visible before user interacts"
 
-- tapOn:
-    id: "RecipeTitle::CustomTextInput"
-    label: "Action - Focus title input (no typing)"
-
 - runFlow:
-    file: "../../flows/waitForKeyboard.yaml"
-    label: "Wait for keyboard"
+    file: "../../flows/focusField.yaml"
+    env:
+      TARGET_ID: "RecipeTitle::CustomTextInput"
+    label: "Action - Focus title input (no typing)"
 
 - tapOn:
     id: "RecipeTitle::Text"
@@ -69,13 +67,11 @@ tags:
     file: "../../asserts/recipe/inlineErrors/en/titleNoError.yaml"
     label: "Assert - Focus + blur with no edit does not surface inline error"
 
-- tapOn:
-    id: "RecipeTitle::CustomTextInput"
-    label: "Action - Focus title input to edit it"
-
 - runFlow:
-    file: "../../flows/waitForKeyboard.yaml"
-    label: "Wait for keyboard"
+    file: "../../flows/focusField.yaml"
+    env:
+      TARGET_ID: "RecipeTitle::CustomTextInput"
+    label: "Action - Focus title input to edit it"
 
 - eraseText:
     label: "Action - Erase title to surface inline error"
@@ -149,13 +145,11 @@ tags:
     file: "../../asserts/recipe/inlineErrors/en/timeNoError.yaml"
     label: "Assert - No time inline error on re-enter"
 
-- tapOn:
-    id: "RecipeTitle::CustomTextInput"
-    label: "Action - Focus title input briefly"
-
 - runFlow:
-    file: "../../flows/waitForKeyboard.yaml"
-    label: "Wait for keyboard"
+    file: "../../flows/focusField.yaml"
+    env:
+      TARGET_ID: "RecipeTitle::CustomTextInput"
+    label: "Action - Focus title input briefly"
 
 - tapOn:
     id: "RecipeDescription::Text"

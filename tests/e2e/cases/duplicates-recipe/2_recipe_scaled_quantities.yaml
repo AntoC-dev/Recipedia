@@ -20,8 +20,27 @@ tags:
     label: "Verify - Confirm recipe is searchable before duplicate test"
 
 - runFlow:
-    file: "../../flows/recipe/adding/createRecipeWithScaledQuantities.yaml"
+    file: "../../flows/recipe/adding/manual/en/openAddManually.yaml"
+    label: "Action - Open manual recipe creation"
+
+- runFlow:
+    file: "../../flows/recipe/adding/en/addRecipeImage.yaml"
+    label: "Action - Add recipe image"
+
+- runFlow:
+    file: "../../flows/recipe/adding/createTwoIngredientRecipe.yaml"
+    env:
+      PERSONS: "4"
+      ING0_NAME: "Pasta"
+      ING0_QTY: "400"
+      ING1_NAME: "Tomatoes"
+      ING1_QTY: "200"
+      TIME: "15"
     label: "Action - Create recipe with scaled quantities (2x)"
+
+- tapOn:
+    id: "Recipe::BottomActionButton"
+    label: "Action - Validate the recipe"
 
 - runFlow:
     file: "../../asserts/alerts/en/recipeSimilarFound.yaml"
@@ -31,49 +50,28 @@ tags:
     id: "Recipe::Dialog::Cancel"
     label: "Action - Cancel adding duplicate recipe"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::0::QuantityInput"
     direction: UP
-    speed: 40
     centerElement: true
-    label: "Action - Scroll up to Pasta quantity input"
+    label: "Scroll to RecipeIngredients::0::QuantityInput"
 
 - waitForAnimationToEnd
 
-- tapOn:
-    id: "RecipeIngredients::0::QuantityInput"
-    label: "Action - Focus on Pasta quantity input"
-
 - runFlow:
-    file: "../../flows/replaceAndCommitText.yaml"
+    file: "../../flows/replaceAndDone.yaml"
     env:
       TARGET_ID: "RecipeIngredients::0::QuantityInput"
       VALUE: "1000"
-      DISMISS_ID: "RecipeIngredients::0::Unit"
     label: "Action - Change Pasta to 1000g (far from scaled)"
 
 - runFlow:
-    file: "../../flows/waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
-
-- tapOn:
-    id: "RecipeIngredients::1::QuantityInput"
-    label: "Action - Focus on Tomatoes quantity input"
-
-- runFlow:
-    file: "../../flows/replaceAndCommitText.yaml"
+    file: "../../flows/replaceAndDone.yaml"
     env:
       TARGET_ID: "RecipeIngredients::1::QuantityInput"
       VALUE: "500"
-      DISMISS_ID: "RecipeIngredients::1::Unit"
     label: "Action - Change Tomatoes to 500g"
-
-- runFlow:
-    file: "../../flows/waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "Recipe::BottomActionButton"

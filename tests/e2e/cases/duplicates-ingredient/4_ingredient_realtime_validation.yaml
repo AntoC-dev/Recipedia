@@ -17,13 +17,11 @@ tags:
     timeout: 30000
     label: "Wait - Modal opened"
 
-- tapOn:
-    id: "IngredientsSettings::ItemDialog::AddModal::Name::CustomTextInput"
-    label: "Action - Focus on ingredient name input"
-
 - runFlow:
-    file: "../../flows/waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
+    file: "../../flows/focusField.yaml"
+    env:
+      TARGET_ID: "IngredientsSettings::ItemDialog::AddModal::Name::CustomTextInput"
+    label: "Action - Focus on ingredient name input"
 
 - inputText:
     text: "TestIngredient"
@@ -64,13 +62,11 @@ tags:
     timeout: 30000
     label: "Wait - Modal opened"
 
-- tapOn:
-    id: "IngredientsSettings::ItemDialog::AddModal::Name::CustomTextInput"
-    label: "Action - Focus on ingredient name input again"
-
 - runFlow:
-    file: "../../flows/waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
+    file: "../../flows/focusField.yaml"
+    env:
+      TARGET_ID: "IngredientsSettings::ItemDialog::AddModal::Name::CustomTextInput"
+    label: "Action - Focus on ingredient name input again"
 
 - inputText:
     text: "Butte"
@@ -147,13 +143,11 @@ tags:
     timeout: 30000
     label: "Wait - Modal opened again"
 
-- tapOn:
-    id: "IngredientsSettings::ItemDialog::AddModal::Name::CustomTextInput"
-    label: "Action - Focus on ingredient name input"
-
 - runFlow:
-    file: "../../flows/waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
+    file: "../../flows/focusField.yaml"
+    env:
+      TARGET_ID: "IngredientsSettings::ItemDialog::AddModal::Name::CustomTextInput"
+    label: "Action - Focus on ingredient name input"
 
 - inputText:
     text: "Butter"

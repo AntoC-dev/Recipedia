@@ -33,19 +33,17 @@ tags:
     element:
       id: 'RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput'
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
-    label: 'Action - Scroll to preparation step content input'
+    label: 'Scroll to the step input, keyboard closed'
 
 - waitForAnimationToEnd
 
-- tapOn:
-    id: 'RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput'
-    label: 'Action - Focus the description input'
-
 - runFlow:
-    file: '../../flows/waitForKeyboard.yaml'
-    label: 'Wait for keyboard'
+    file: '../../flows/focusField.yaml'
+    env:
+      TARGET_ID: 'RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput'
+    label: 'Action - Focus the description input'
 
 - tapOn:
     id: 'RecipePreparation::EditableStep::0::Content'
@@ -59,13 +57,11 @@ tags:
     file: '../../asserts/recipe/inlineErrors/en/preparationDescriptionError.yaml'
     label: 'Assert - Description inline error visible once the step description has been blurred empty'
 
-- tapOn:
-    id: 'RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput'
-    label: 'Action - Focus the description input again'
-
 - runFlow:
-    file: '../../flows/waitForKeyboard.yaml'
-    label: 'Wait for keyboard'
+    file: '../../flows/focusField.yaml'
+    env:
+      TARGET_ID: 'RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput'
+    label: 'Action - Focus the description input again'
 
 - inputText:
     text: 'Cook for 10 minutes'

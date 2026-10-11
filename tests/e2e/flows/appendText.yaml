@@ -6,7 +6,7 @@ appId: "com.recipedia"
 #
 # Why the three helpers exist: see E2E_TESTING.md, "Rule: pick the helper that
 # matches what you are doing". The barrier is the same one as in
-# `inputAndCommitText.yaml` (issue #525); only the assertion differs, matching
+# `inputText.yaml` (issue #525); only the assertion differs, matching
 # VALUE *within* the field rather than as the whole field.
 #
 # Precondition: the caret sits at the end of the existing text — which it does
@@ -14,7 +14,7 @@ appId: "com.recipedia"
 # that, because taps land in the middle of text that fills the box (`321`
 # re-tapped and given a `9` becomes `3291`); re-tap with `point: "95%,50%"` if
 # you must re-focus. To set a field to a known value instead, use
-# `replaceAndCommitText.yaml`.
+# `replaceAndDone.yaml`.
 # Postcondition: the field still holds its old text, now with VALUE after it,
 # and is NOT committed.
 #

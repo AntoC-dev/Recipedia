@@ -26,8 +26,27 @@ tags:
     label: "Verify - Confirm recipe is searchable before duplicate test"
 
 - runFlow:
-    file: "../../flows/recipe/adding/createRecipeWithCloseQuantities.yaml"
+    file: "../../flows/recipe/adding/manual/en/openAddManually.yaml"
+    label: "Action - Open manual recipe creation"
+
+- runFlow:
+    file: "../../flows/recipe/adding/en/addRecipeImage.yaml"
+    label: "Action - Add recipe image"
+
+- runFlow:
+    file: "../../flows/recipe/adding/createTwoIngredientRecipe.yaml"
+    env:
+      PERSONS: "2"
+      ING0_NAME: "Pasta"
+      ING0_QTY: "201"
+      ING1_NAME: "Tomatoes"
+      ING1_QTY: "99"
+      TIME: "15"
     label: "Action - Create recipe with close quantities"
+
+- tapOn:
+    id: "Recipe::BottomActionButton"
+    label: "Action - Validate the recipe"
 
 - runFlow:
     file: "../../asserts/alerts/en/recipeSimilarFound.yaml"
@@ -41,43 +60,19 @@ tags:
 
 - scrollUntilVisible:
     element:
-      id: "RecipeIngredients::PrefixText"
-    direction: UP
-    speed: 20
-    centerElement: true
-    label: "Action - Scroll up ingredients section"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
       id: "RecipeIngredients::0::QuantityInput"
-    direction: DOWN
-    speed: 20
+    direction: UP
     centerElement: true
-    label: "Action - Scroll up to first ingredient"
+    label: "Scroll to RecipeIngredients::0::QuantityInput"
 
 - waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipeIngredients::0::QuantityInput"
-    label: "Action - Focus on Pasta quantity input"
 
 - runFlow:
-    file: "../../flows/replaceAndCommitText.yaml"
+    file: "../../flows/replaceAndDone.yaml"
     env:
       TARGET_ID: "RecipeIngredients::0::QuantityInput"
       VALUE: "260"
-      DISMISS_ID: "RecipeIngredients::0::Unit"
     label: "Action - Change Pasta to 260g (30% difference)"
-
-- runFlow:
-    file: "../../flows/waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
-
-- waitForAnimationToEnd:
-    timeout: 2000
-    label: "Wait for UI to stabilize"
 
 - tapOn:
     id: "Recipe::BottomActionButton"

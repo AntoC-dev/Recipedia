@@ -59,13 +59,11 @@ tags:
     file: "../../asserts/recipe/inlineErrors/en/titleNoError.yaml"
     label: "Assert - No title inline error visible before user interacts"
 
-- tapOn:
-    id: "RecipeTitle::CustomTextInput"
-    label: "Action - Focus title input"
-
 - runFlow:
-    file: "../../flows/waitForKeyboard.yaml"
-    label: "Wait for keyboard"
+    file: "../../flows/focusField.yaml"
+    env:
+      TARGET_ID: "RecipeTitle::CustomTextInput"
+    label: "Action - Focus title input"
 
 - eraseText:
     label: "Action - Erase title"
@@ -84,13 +82,11 @@ tags:
     file: "../../asserts/recipe/inlineErrors/en/titleError.yaml"
     label: "Assert - Title inline error visible after erase + blur"
 
-- tapOn:
-    id: "RecipeTitle::CustomTextInput"
-    label: "Action - Focus title input again"
-
 - runFlow:
-    file: "../../flows/waitForKeyboard.yaml"
-    label: "Wait for keyboard"
+    file: "../../flows/focusField.yaml"
+    env:
+      TARGET_ID: "RecipeTitle::CustomTextInput"
+    label: "Action - Focus title input again"
 
 - inputText:
     text: "Test Recipe"
@@ -124,13 +120,11 @@ tags:
     file: "../../asserts/recipe/inlineErrors/en/descriptionNoError.yaml"
     label: "Assert - No description inline error visible before user interacts"
 
-- tapOn:
-    id: "RecipeDescription::CustomTextInput"
-    label: "Action - Focus description input"
-
 - runFlow:
-    file: "../../flows/waitForKeyboard.yaml"
-    label: "Wait for keyboard"
+    file: "../../flows/focusField.yaml"
+    env:
+      TARGET_ID: "RecipeDescription::CustomTextInput"
+    label: "Action - Focus description input"
 
 - tapOn:
     id: "RecipeDescription::Text"
@@ -158,36 +152,36 @@ tags:
     file: "../../asserts/recipe/inlineErrors/en/personsNoError.yaml"
     label: "Assert - No persons inline error visible before user interacts"
 
-- tapOn:
-    id: "RecipePersons::NumericTextInput"
-    label: "Action - Focus persons input"
-
 - runFlow:
-    file: "../../flows/waitForKeyboard.yaml"
-    label: "Wait for numeric keyboard"
+    file: "../../flows/focusField.yaml"
+    env:
+      TARGET_ID: "RecipePersons::NumericTextInput"
+    label: "Action - Focus persons input"
 
 - eraseText:
     label: "Action - Erase persons"
 
 - waitForAnimationToEnd
 
-- tapOn:
-    id: "RecipePersons::PrefixText"
-    label: "Action - Tap person prefix to dismiss keyboard"
-
 - runFlow:
-    file: "../../flows/waitForKeyboardDismiss.yaml"
-    label: "Wait for numeric keyboard dismiss"
+    file: "../../flows/toolbarDone.yaml"
+    label: "Action - Close the keyboard with the toolbar Done"
 
 - runFlow:
     file: "../../asserts/recipe/inlineErrors/en/personsError.yaml"
     label: "Assert - Persons inline error visible after erase + blur"
 
 - runFlow:
-    file: "../../flows/recipe/adding/setRecipePersons.yaml"
+    file: "../../flows/replaceAndDone.yaml"
     env:
-      PERSONS: "2"
-    label: "Action - Restore persons to 2"
+      TARGET_ID: "RecipePersons::NumericTextInput"
+      VALUE: "2"
+    label: "Action - Replace RecipePersons::NumericTextInput with 2"
+
+- assertVisible:
+    id: "RecipePersons::NumericTextInput"
+    text: "2"
+    label: "Assert - RecipePersons::NumericTextInput still holds 2 once the keyboard is closed"
 
 - runFlow:
     file: "../../asserts/recipe/inlineErrors/en/personsNoError.yaml"
@@ -207,35 +201,36 @@ tags:
     file: "../../asserts/recipe/inlineErrors/en/timeNoError.yaml"
     label: "Assert - No time inline error visible before user interacts"
 
-- tapOn:
-    id: "RecipeTime::NumericTextInput"
-    label: "Action - Focus time input"
-
 - runFlow:
-    file: "../../flows/waitForKeyboard.yaml"
-    label: "Wait for numeric keyboard"
+    file: "../../flows/focusField.yaml"
+    env:
+      TARGET_ID: "RecipeTime::NumericTextInput"
+    label: "Action - Focus time input"
 
 - eraseText:
     label: "Action - Erase time"
 
 - waitForAnimationToEnd
 
-- tapOn:
-    id: "RecipeTime::PrefixText"
-    label: "Action - Tap prefix on iOS to dismiss keyboard"
-
 - runFlow:
-    file: "../../flows/waitForKeyboardDismiss.yaml"
-    label: "Wait for numeric keyboard dismiss"
+    file: "../../flows/toolbarDone.yaml"
+    label: "Action - Close the keyboard with the toolbar Done"
 
 - runFlow:
     file: "../../asserts/recipe/inlineErrors/en/timeError.yaml"
     label: "Assert - Time inline error visible after erase + blur"
 
 - runFlow:
-    file: "../../flows/recipe/adding/addRecipeTimeToPrepare.yaml"
+    file: "../../flows/focusField.yaml"
     env:
-      PERSONS_VALUE: "20"
+      TARGET_ID: "RecipeTime::NumericTextInput"
+    label: "Action - Restore time to 20 (focus)"
+
+- runFlow:
+    file: "../../flows/inputAndDone.yaml"
+    env:
+      TARGET_ID: "RecipeTime::NumericTextInput"
+      VALUE: "20"
     label: "Action - Restore time to 20"
 
 - runFlow:

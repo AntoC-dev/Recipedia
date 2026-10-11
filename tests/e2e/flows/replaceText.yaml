@@ -1,0 +1,17 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "${TARGET_ID}"
+    point: "95%,50%"
+    label: "Put the caret at the end of ${TARGET_ID}"
+
+- runFlow:
+    file: "waitForKeyboard.yaml"
+    label: "Wait for the keyboard before erasing ${TARGET_ID}"
+
+- runFlow:
+    file: "replaceFocused.yaml"
+    env:
+      TARGET_ID: "${TARGET_ID}"
+      VALUE: "${VALUE}"
+    label: "Replace ${TARGET_ID} with ${VALUE}"

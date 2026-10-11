@@ -1,83 +1,67 @@
 appId: "com.recipedia"
 ---
 - runFlow:
-    file: "../../../../fab/expand.yaml"
-    label: "Expand FAB menu"
-
-# FAB ID uses regex pattern because React Native Paper adds suffix on iOS
-- tapOn:
-    id: "RecipeEdit.*"
-    label: "Tap manual recipe add button"
-
-- extendedWaitUntil:
-    visible:
-      id: "Recipe::AppBar"
-    timeout: 30000
-    label: "Wait for recipe screen to load"
+    file: "openAddManually.yaml"
+    label: "Open manual recipe creation"
 
 - runFlow:
     file: "../../en/addRecipeImage.yaml"
     label: "Add an image to this recipe"
 
-- tapOn:
-    id: "RecipeTitle::CustomTextInput"
-    label: "Focus on recipe title input"
+- runFlow:
+    file: "../../../addRow.yaml"
+    env:
+      SECTION: "RecipeIngredients"
+    label: "Add an ingredient row"
 
-- inputText:
-    text: "E2E Test Recipe"
-    label: "Enter recipe title"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- tapOn:
-    id: "RecipeImage::Image"
-    label: "Tap on the image to close the keyboard"
-
-- waitForAnimationToEnd:
-    label: "Wait for screen to settle after keyboard dismissal"
-
-- waitForAnimationToEnd
+- runFlow:
+    file: "../../../addRow.yaml"
+    env:
+      SECTION: "RecipePreparation"
+    label: "Add the preparation step"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeIngredients::AddButton::RoundButton"
-    direction: DOWN
-    speed: 60
+      id: "RecipeTitle::CustomTextInput"
+    direction: UP
     centerElement: true
-    label: "Scroll to ingredients section"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipeIngredients::AddButton::RoundButton"
-    label: "Add an ingredient"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::AddButton::RoundButton"
-    direction: DOWN
-    speed: 40
-    centerElement: true
-    label: "Scroll to round button again to center ingredient row"
+    label: "Scroll to the title with the keyboard closed"
 
 - waitForAnimationToEnd
 
 - runFlow:
-    file: "../../enterIngredientQuantity.yaml"
+    file: "../../../../focusField.yaml"
     env:
-      INDEX: "0"
+      TARGET_ID: "RecipeTitle::CustomTextInput"
+    label: "Focus the title"
+
+- runFlow:
+    file: "../../../../inputAndNext.yaml"
+    env:
+      TARGET_ID: "RecipeTitle::CustomTextInput"
+      VALUE: "E2E Test Recipe"
+    label: "Enter recipe title"
+
+- runFlow:
+    file: "../../../../toolbarNext.yaml"
+    label: "Skip the description"
+
+- runFlow:
+    file: "../../../../toolbarNext.yaml"
+    label: "Skip the persons"
+
+- runFlow:
+    file: "../../../../inputAndNext.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::0::QuantityInput"
       VALUE: "100"
     label: "Fill first ingredient quantity: 100"
 
-- tapOn:
-    id: "RecipeIngredients::0::NameInput::CustomTextInput"
-    label: "Focus on ingredient name"
-
-- inputText:
-    text: "RecipeIng"
+- runFlow:
+    file: "../../../../inputText.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::0::NameInput::CustomTextInput"
+      VALUE: "RecipeIng"
     label: "Enter the newly created ingredient name"
 
 - runFlow:
@@ -110,77 +94,29 @@ appId: "com.recipedia"
           id: "RecipeValidation::ValidationQueue::Ingredient::SimilarityDialog::UseButton"
           label: "Validate to use this ingredient"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeTime::NumericTextInput"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to recipe time secrion"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipeTime::NumericTextInput"
-    label: "Focus on time input"
+- runFlow:
+    file: "../../../../focusField.yaml"
+    env:
+      TARGET_ID: "RecipeTime::NumericTextInput"
+    label: "Focus the time"
 
 - runFlow:
-    file: "../../../../waitForKeyboard.yaml"
-    label: "Wait for numeric keyboard to appear"
-
-- runFlow:
-    file: "../../../../inputAndCommitText.yaml"
+    file: "../../../../inputAndNext.yaml"
     env:
       TARGET_ID: "RecipeTime::NumericTextInput"
       VALUE: "10"
-      DISMISS_ID: "RecipeTime::PrefixText"
-    label: "Enter cooking time"
+    label: "Enter cooking time, Next moves to the step title"
 
 - runFlow:
-    file: "../../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for numeric keyboard to dismiss"
+    file: "../../../../toolbarNext.yaml"
+    label: "Skip the step title"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "RecipePreparation::AddButton::RoundButton"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to preparation section"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipePreparation::AddButton::RoundButton"
-    label: "Add preparation step"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to preparation content input"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
-    label: "Focus on preparation content"
-
-- inputText:
-    text: "Test preparation step"
+- runFlow:
+    file: "../../../../inputAndDone.yaml"
+    env:
+      TARGET_ID: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
+      VALUE: "Test preparation step"
     label: "Enter preparation instructions"
-
-- tapOn:
-    id: "RecipePreparation::EditableStep::0::Content"
-    label: "Tap on content text to hide keyboard"
 
 - tapOn:
     id: "Recipe::BottomActionButton"

@@ -1,0 +1,13 @@
+appId: "com.recipedia"
+---
+- scrollUntilVisible:
+    element:
+      id: "${SECTION}::AddButton::RoundButton"
+    centerElement: true
+    label: "Scroll to the ${SECTION} add button"
+
+- tapOn:
+    id: "${SECTION}::AddButton::RoundButton"
+    waitToSettleTimeoutMs: 0
+    retryTapIfNoChange: false
+    label: "Add a ${SECTION} row"

@@ -7,60 +7,35 @@ tags:
     file: '../../flows/recipe/adding/manual/en/openAddManually.yaml'
     label: 'Action - Open manual recipe adding screen'
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: 'RecipeIngredients::AddButton::RoundButton'
-    direction: DOWN
-    speed: 20
-    timeout: 60000
-    centerElement: true
-    label: 'Action - Scroll to ingredients section'
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: 'RecipeIngredients::AddButton::RoundButton'
+- runFlow:
+    file: '../../flows/recipe/addRow.yaml'
+    env:
+      SECTION: 'RecipeIngredients'
     label: 'Action - Add empty ingredient row'
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: 'RecipeIngredients::0::QuantityInput'
-    direction: UP
-    speed: 20
-    centerElement: true
-    label: 'Action - Scroll to ingredient input'
-
-- tapOn:
-    id: 'RecipeIngredients::0::QuantityInput'
+- runFlow:
+    file: '../../flows/focusField.yaml'
+    env:
+      TARGET_ID: 'RecipeIngredients::0::QuantityInput'
+      DIRECTION: 'UP'
     label: 'Action - Focus the quantity input'
 
 - runFlow:
-    file: '../../flows/inputAndCommitText.yaml'
+    file: '../../flows/inputAndDone.yaml'
     env:
       TARGET_ID: 'RecipeIngredients::0::QuantityInput'
       VALUE: '100'
-      DISMISS_ID: 'RecipeIngredients::0::Unit'
     label: 'Action - Type a quantity to dirty the row (no name yet)'
-
-- runFlow:
-    file: '../../flows/waitForKeyboardDismiss.yaml'
-    label: 'Wait for numeric keyboard to dismiss'
 
 - runFlow:
     file: '../../asserts/recipe/inlineErrors/en/ingredientRowError.yaml'
     label: 'Assert - Row inline error visible because the row is dirty but the name is still empty'
 
-- tapOn:
-    id: 'RecipeIngredients::0::NameInput::CustomTextInput'
-    label: 'Action - Focus the ingredient name input'
-
 - runFlow:
-    file: '../../flows/waitForKeyboard.yaml'
-    label: 'Wait for keyboard'
+    file: '../../flows/focusField.yaml'
+    env:
+      TARGET_ID: 'RecipeIngredients::0::NameInput::CustomTextInput'
+    label: 'Action - Focus the ingredient name input'
 
 - inputText:
     text: 'Car'
