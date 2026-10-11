@@ -82,6 +82,14 @@ describe('gradle build cache', () => {
   });
 });
 
+describe('gwp-asan', () => {
+  it('registers the plugin that disables GWP-ASan on Android', () => {
+    const config = createConfig({ config: {} } as ConfigContext);
+
+    expect(config.plugins).toContain('./plugins/withGwpAsanDisabled');
+  });
+});
+
 describe('build properties', () => {
   const getBuildProperties = () => {
     const config = createConfig({ config: {} } as ConfigContext);
