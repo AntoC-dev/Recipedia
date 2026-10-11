@@ -1,5 +1,5 @@
 name: 'Setup iOS Build Environment'
-description: 'Setup Python, EAS, CocoaPods caching, and Expo caching for iOS builds'
+description: 'Setup Python, EAS, ccache, and Expo caching for iOS builds'
 
 inputs:
   expo-token:
@@ -15,23 +15,31 @@ runs:
         python-version-file: '.python-version'
         cache: 'pip'
 
-    - name: Cache CocoaPods
-      uses: actions/cache@v6
-      with:
-        path: |
-          ios/Pods
-          ~/Library/Caches/CocoaPods
-        key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-pods-
+    # eas --local requires an empty working dir; a fixed one keeps ccache paths stable
+    - name: Setup ccache
+      shell: bash
+      run: |
+        HOMEBREW_NO_AUTO_UPDATE=1 brew install ccache
+        # RN's ccache-clang.sh runs `$CCACHE_BINARY clang`, but Xcode doesn't export CCACHE_BINARY to
+        # compiler calls: put ccache's clang shim first on PATH so plain `clang` still goes through ccache
+        echo "$(brew --prefix ccache)/libexec" >> "$GITHUB_PATH"
+        {
+          echo "EAS_LOCAL_BUILD_WORKINGDIR=${{ runner.temp }}/eas-build"
+          echo "USE_CCACHE=1"
+          echo "CCACHE_DIR=$HOME/Library/Caches/ccache"
+          echo "CCACHE_BASEDIR=${{ runner.temp }}/eas-build"
+          # /usr/bin/clang is an xcrun trampoline: hash the real toolchain's version, not its content
+          echo "CCACHE_COMPILERCHECK=%compiler% -v"
+          echo "CCACHE_MAXSIZE=2G"
+        } >> "$GITHUB_ENV"
 
-    - name: Cache Xcode Derived Data
+    - name: Cache ccache
       uses: actions/cache@v6
       with:
-        path: ~/Library/Developer/Xcode/DerivedData
-        key: ${{ runner.os }}-xcode-deriveddata-${{ hashFiles('**/Podfile.lock', 'package-lock.json') }}
+        path: ~/Library/Caches/ccache
+        key: ${{ runner.os }}-ccache-ios-${{ hashFiles('package-lock.json', 'modules/**', 'plugins/**') }}
         restore-keys: |
-          ${{ runner.os }}-xcode-deriveddata-
+          ${{ runner.os }}-ccache-ios-
 
     - name: Cache global Expo artifacts
       uses: actions/cache@v6
@@ -40,14 +48,6 @@ runs:
         key: ${{ runner.os }}-expo-${{ hashFiles('package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-expo-
-
-    - name: Cache Expo prebuild (iOS native)
-      uses: actions/cache@v6
-      with:
-        path: ios
-        key: ${{ runner.os }}-expo-prebuild-ios-${{ hashFiles('app.json', 'app.config.ts', 'package-lock.json', 'plugins/**', 'modules/**') }}
-        restore-keys: |
-          ${{ runner.os }}-expo-prebuild-ios-
 
     - name: Use project-pinned EAS CLI
       shell: bash

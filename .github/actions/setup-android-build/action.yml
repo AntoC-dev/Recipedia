@@ -1,5 +1,5 @@
 name: 'Setup Android Build Environment'
-description: 'Setup Java, Android SDK, Gradle caching, Expo caching, and EAS for Android builds (Python/Chaquopy set up by the caller)'
+description: 'Setup Java, Android SDK, Gradle caching, ccache, Expo caching, and EAS for Android builds (Python/Chaquopy set up by the caller)'
 
 inputs:
   expo-token:
@@ -15,20 +15,30 @@ runs:
         distribution: 'temurin'
         java-version: '17'
 
+    # eas --local requires an empty working dir; a fixed one keeps ccache paths stable.
+    # NDK CMake calls clang by absolute path, so ccache goes in as compiler launcher.
     - name: Setup ccache
       shell: bash
       run: |
         sudo apt-get install -y ccache
-        ccache --set-config=max_size=2G
-        echo "/usr/lib/ccache" >> $GITHUB_PATH
+        {
+          echo "EAS_LOCAL_BUILD_WORKINGDIR=${{ runner.temp }}/eas-build"
+          echo "CMAKE_C_COMPILER_LAUNCHER=ccache"
+          echo "CMAKE_CXX_COMPILER_LAUNCHER=ccache"
+          echo "CCACHE_DIR=$HOME/.ccache"
+          echo "CCACHE_BASEDIR=${{ runner.temp }}/eas-build"
+          echo "CCACHE_COMPILERCHECK=content"
+          echo "CCACHE_SLOPPINESS=include_file_mtime,include_file_ctime,time_macros"
+          echo "CCACHE_MAXSIZE=2G"
+        } >> "$GITHUB_ENV"
 
     - name: Cache ccache
       uses: actions/cache@v6
       with:
         path: ~/.ccache
-        key: ${{ runner.os }}-ccache-${{ hashFiles('package-lock.json') }}
+        key: ${{ runner.os }}-ccache-android-${{ hashFiles('package-lock.json', 'modules/**', 'plugins/**') }}
         restore-keys: |
-          ${{ runner.os }}-ccache-
+          ${{ runner.os }}-ccache-android-
 
     - name: Setup Android SDK
       uses: android-actions/setup-android@v4
@@ -38,7 +48,6 @@ runs:
       with:
         cache-read-only: false
         build-scan-publish: false
-        gradle-home-cache-cleanup: true
 
     - name: Cache global Expo artifacts
       uses: actions/cache@v6
@@ -47,14 +56,6 @@ runs:
         key: ${{ runner.os }}-expo-${{ hashFiles('package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-expo-
-
-    - name: Cache Expo prebuild (Android native)
-      uses: actions/cache@v6
-      with:
-        path: android
-        key: ${{ runner.os }}-expo-prebuild-android-${{ hashFiles('app.json', 'app.config.ts', 'package-lock.json', 'plugins/**', 'modules/**') }}
-        restore-keys: |
-          ${{ runner.os }}-expo-prebuild-android-
 
     - name: Use project-pinned EAS CLI
       shell: bash
