@@ -76,23 +76,24 @@ appId: "com.recipedia"
     times: 5
     while:
       notVisible:
-        id: "RecipeTags::List::1::AutocompleteItem::Italian"
+        id: "RecipeTags::List::1::AutocompleteItem::Seafood"
     commands:
       - swipe:
           from:
             id: "RecipeTags::List::1::AutocompleteList"
           direction: UP
-          label: "Scroll the tag dropdown down towards Italian"
+          duration: 500
+          label: "Scroll the tag dropdown down towards Seafood"
       - waitForAnimationToEnd:
           label: "Wait for scrolling animation to end"
 
 - assertVisible:
-    id: "RecipeTags::List::1::AutocompleteItem::Italian"
-    label: "Assert - Italian tag is displayed"
+    id: "RecipeTags::List::1::AutocompleteItem::Seafood"
+    label: "Assert - Seafood tag is displayed"
 
 - tapOn:
-    id: "RecipeTags::List::.*::AutocompleteItem::Italian"
-    text: "Italian"
+    id: "RecipeTags::List::.*::AutocompleteItem::Seafood"
+    text: "Seafood"
     label: "Press the tag from dropdown list"
 
 - runFlow:
@@ -101,7 +102,7 @@ appId: "com.recipedia"
 
 - extendedWaitUntil:
     notVisible:
-      id: "RecipeTags::List::.*::AutocompleteItem::Italian"
+      id: "RecipeTags::List::.*::AutocompleteItem::Seafood"
     timeout: 10000
     label: "Wait for the second chip to disappear"
 

@@ -273,6 +273,13 @@ Autocomplete fields (`TextInputWithDropDown`) follow the same rules: ingredient
 names commit live via `onChangeText`, tags via `onEndEditing` → `onValidate`,
 which fires on focus loss.
 
+Suggestions render inline under the field (ingredients: under the whole row) as
+`<testID>::AutocompleteList`, rows `<testID>::AutocompleteItem::<name>`, at most
+4 visible; the keyboard can cover them. Off-viewport rows are not mounted: reach
+them by swiping from the list id in a `repeat ... while: notVisible` loop. A swipe
+moves ~6 rows whatever its duration, so target a row near the end of the list (see
+`flows/recipe/adding/manual/en/addAiguillettes.yaml`, `Seafood` tag).
+
 **Multiline inputs are the exception**: Enter is what inserts the newline. Type
 each line with `flows/appendText.yaml` (asserts the line landed, does not blur),
 insert the newline inline (`pressKey: ENTER` on Android, `tapOn: Return` on

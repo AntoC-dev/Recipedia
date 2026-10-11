@@ -35,20 +35,18 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- assertVisible:
-    id: "RecipeTags::List::0::AutocompleteItem::RecipeTag"
-    label: "New tag id is displayed in dropdown"
-
-- assertVisible:
-    text: "RecipeTag"
-    label: "New tag text is displayed in dropdown"
-
 - runFlow:
     when:
       platform: Android
     commands:
       - hideKeyboard:
-          label: "Dismiss keyboard on Android"
+          label: "Dismiss keyboard on Android so the inline dropdown under the field is not covered"
+      - assertVisible:
+          id: "RecipeTags::List::0::AutocompleteItem::RecipeTag"
+          label: "New tag id is displayed in dropdown"
+      - assertVisible:
+          text: "RecipeTag"
+          label: "New tag text is displayed in dropdown"
       - tapOn:
           id: "RecipeTags::List::0::AutocompleteItem::RecipeTag"
           label: "Select the new tag"
@@ -57,6 +55,12 @@ appId: "com.recipedia"
     when:
       platform: iOS
     commands:
+      - assertVisible:
+          id: "RecipeTags::List::0::AutocompleteItem::RecipeTag"
+          label: "New tag id is displayed in dropdown"
+      - assertVisible:
+          text: "RecipeTag"
+          label: "New tag text is displayed in dropdown"
       - tapOn:
           id: "Done"
           label: "Tap Done key to validate the tag on iOS"
