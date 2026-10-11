@@ -8,10 +8,6 @@ appId: "com.recipedia"
     clearState: true
     label: "Setup - Launch app with clean state"
 
-- runFlow:
-    file: "handlePhotosPermission.yaml"
-    label: "Clear any Photos permission prompt left by a previous test"
-
 - extendedWaitUntil:
     visible:
       id: "WelcomeScreen::SkipButton"

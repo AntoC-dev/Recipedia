@@ -1,21 +1,12 @@
 appId: "com.recipedia"
 ---
 - runFlow:
-    file: "../../../../handlePhotosPermission.yaml"
-    label: "Clear the Photos permission prompt before the picker can present"
-
-- extendedWaitUntil:
-    visible:
-      text: "Recents"
-    timeout: 30000
-    label: "Wait for the native photo picker to present"
-
-- waitForAnimationToEnd:
-    timeout: 3000
-    label: "Let the picker presentation animation settle before tapping"
+    file: "../../../../waitForIOSPhotoPicker.yaml"
+    label: "Wait for the photo picker, granting Photos access if prompted"
 
 - tapOn:
     text: "Recents"
+    retryTapIfNoChange: true
     label: "Go to recents photos"
 
 - extendedWaitUntil:
@@ -23,10 +14,6 @@ appId: "com.recipedia"
       text: "\\d+ Photo.*"
     timeout: 30000
     label: "Wait for gallery grid to load"
-
-- waitForAnimationToEnd:
-    timeout: 3000
-    label: "Let the album grid finish sliding in before tapping a cell"
 
 - runFlow:
     file: "../../../../selectFirstGalleryPhotoIOS.yaml"
