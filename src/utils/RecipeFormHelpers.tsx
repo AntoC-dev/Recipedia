@@ -363,7 +363,6 @@ export interface RecipeTagsPropsInput extends BaseFieldInput {
   randomTags: string[];
   addTag: (newTag: string) => void;
   removeTag: (tagName: string) => void;
-  hideDropdown?: boolean;
 }
 
 export function buildRecipeTagsProps({
@@ -373,7 +372,6 @@ export function buildRecipeTagsProps({
   addTag,
   removeTag,
   openModalForField,
-  hideDropdown,
 }: RecipeTagsPropsInput): RecipeTagProps {
   const tagsExtracted = extractTagsName(recipeTags);
   const editProps: RecipeTagProps = {
@@ -383,7 +381,6 @@ export function buildRecipeTagsProps({
     randomTags: randomTags.join(', '),
     addNewTag: addTag,
     removeTag: removeTag,
-    hideDropdown,
   };
 
   if (stackMode === recipeStateType.readOnly) {

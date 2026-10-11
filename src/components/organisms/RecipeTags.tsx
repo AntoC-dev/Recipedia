@@ -72,8 +72,6 @@ export type RecipeTagsAddOrEditProps = {
   addNewTag: (newTag: string) => void;
   /** Callback fired when a tag is removed */
   removeTag: (tag: string) => void;
-  /** Force hide the dropdown (e.g., during scroll) */
-  hideDropdown?: boolean;
 } & (RecipeTagsEditProps | RecipeTagsAddProps);
 
 /** Props for read-only mode */
@@ -145,7 +143,6 @@ export function RecipeTags(tagsProps: RecipeTagProps) {
                   style={recipeTagsStyles.containerSection}
                   testID={tagsTestID + '::List::' + item}
                   referenceTextArray={allTagsNamesSorted}
-                  hideDropdown={tagsProps.hideDropdown}
                   onValidate={(newText: string) => {
                     if (!newText || newText.trim().length === 0) {
                       return;

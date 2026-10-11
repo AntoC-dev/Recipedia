@@ -49,9 +49,9 @@ export function ingredientsTableMock({
   return (
     <View testID={testID}>
       <Text testID={`${testID}::PrefixText`}>{prefixText}</Text>
+      <Text testID={`${testID}::ColumnTitle3`}>{columnTitles.column3}</Text>
       <Text testID={`${testID}::ColumnTitle1`}>{columnTitles.column1}</Text>
       <Text testID={`${testID}::ColumnTitle2`}>{columnTitles.column2}</Text>
-      <Text testID={`${testID}::ColumnTitle3`}>{columnTitles.column3}</Text>
       {children}
       {!hideAddButton && onAddIngredient ? (
         <>
@@ -72,6 +72,7 @@ export function ingredientRowMock({
   testID,
   index,
   ingredient,
+  availableIngredients,
   rowError,
   onCommit,
   onLiveNameChange,
@@ -83,15 +84,18 @@ export function ingredientRowMock({
 }: IngredientRowProps) {
   return (
     <View testID={`${testID}::${index}::Row`}>
+      <Text testID={`${testID}::${index}::NameInput::Value`}>{ingredient.name ?? ''}</Text>
+      <Text testID={`${testID}::${index}::NameInput::TextInputWithDropdown::Value`}>
+        {ingredient.name ?? ''}
+      </Text>
       <Text testID={`${testID}::${index}::QuantityInput`}>
         {formatNumericQuantity(ingredient.quantity)}
       </Text>
       <Text testID={`${testID}::${index}::UnitInput::CustomTextInput`}>
         {ingredient.unit ?? ''}
       </Text>
-      <Text testID={`${testID}::${index}::NameInput::Value`}>{ingredient.name ?? ''}</Text>
-      <Text testID={`${testID}::${index}::NameInput::TextInputWithDropdown::Value`}>
-        {ingredient.name ?? ''}
+      <Text testID={`${testID}::${index}::AvailableIngredients`}>
+        {JSON.stringify(availableIngredients)}
       </Text>
       <Button
         testID={`${testID}::${index}::OnIngredientChange`}

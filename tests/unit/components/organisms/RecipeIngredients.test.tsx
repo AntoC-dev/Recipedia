@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render, within } from '@testing-library/react-native';
 import React from 'react';
 import { ingredientTableElement, ingredientType } from '@customTypes/DatabaseElementTypes';
 import RecipeIngredients, {
@@ -17,7 +17,7 @@ jest.mock('@components/atomic/NumericTextInput', () => ({
 }));
 jest.mock('@components/molecules/TextInputWithDropDown', () => ({
   TextInputWithDropDown: require('@mocks/components/molecules/TextInputWithDropDown-mock')
-    .textInputWithDropdownMock,
+    .TextInputWithDropDownMock,
 }));
 
 const sampleIngredients: ingredientTableElement[] = [
@@ -208,6 +208,101 @@ describe('IngredientRow', () => {
     expect(onRemove).toHaveBeenCalledTimes(1);
     fireEvent.press(getByTestId(`${TEST_ID}::2::NoteButton`));
     expect(onOpenNote).toHaveBeenCalledTimes(1);
+  });
+
+  function renderRow(overrides: Partial<React.ComponentProps<typeof IngredientRow>> = {}) {
+    return render(
+      <IngredientRow
+        testID={TEST_ID}
+        index={0}
+        ingredient={baseIngredient}
+        availableIngredients={['Sugar', 'Butter']}
+        onCommit={jest.fn()}
+        onRemove={jest.fn()}
+        onOpenNote={jest.fn()}
+        {...overrides}
+      />
+    );
+  }
+
+  const nameInputMockId = `${TEST_ID}::0::NameInput::TextInputWithDropdown`;
+
+  it('orders the row cells as name, quantity, unit, note then delete', () => {
+    const { getByTestId } = renderRow();
+    const expectedOrder = [
+      `${nameInputMockId}::Value`,
+      `${TEST_ID}::0::QuantityInput`,
+      `${TEST_ID}::0::Unit`,
+      `${TEST_ID}::0::NoteButton`,
+      `${TEST_ID}::0::DeleteButton`,
+    ];
+
+    const renderedOrder = getByTestId(`${TEST_ID}::0::Row`)
+      .findAll(node => typeof node.type === 'string' && expectedOrder.includes(node.props.testID))
+      .map(node => node.props.testID);
+
+    expect(renderedOrder).toEqual(expectedOrder);
+  });
+
+  it('forwards available ingredients to the name input', () => {
+    const { getByTestId } = renderRow();
+
+    expect(getByTestId(`${nameInputMockId}::ReferenceTextArray`).props.children).toEqual(
+      JSON.stringify(['Sugar', 'Butter'])
+    );
+  });
+
+  it('renders no name dropdown until it opens', () => {
+    const { queryByTestId } = renderRow();
+
+    expect(queryByTestId(`${nameInputMockId}::Dropdown`)).toBeNull();
+  });
+
+  it('renders the name dropdown under the whole row', () => {
+    const { getByTestId } = renderRow();
+
+    fireEvent.press(getByTestId(`${nameInputMockId}::ShowDropdown`));
+    expect(getByTestId(`${nameInputMockId}::Dropdown`)).toBeTruthy();
+    expect(
+      within(getByTestId(`${TEST_ID}::0::Row`)).queryByTestId(`${nameInputMockId}::Dropdown`)
+    ).toBeNull();
+  });
+
+  it('forwards a picked name to onSelectName then blurs', () => {
+    const onSelectName = jest.fn();
+    const onBlur = jest.fn();
+    const { getByTestId } = renderRow({ onSelectName, onBlur });
+
+    fireEvent.press(getByTestId(`${nameInputMockId}::OnSelect`));
+
+    expect(onSelectName).toHaveBeenCalledWith('Test string');
+    expect(onBlur).toHaveBeenCalledTimes(1);
+  });
+
+  it('forwards focus and live name changes from the name input', () => {
+    const onFocus = jest.fn();
+    const onLiveNameChange = jest.fn();
+    const { getByTestId } = renderRow({ onFocus, onLiveNameChange });
+
+    fireEvent.press(getByTestId(`${nameInputMockId}::OnFocus`));
+    fireEvent.press(getByTestId(`${nameInputMockId}::OnChangeText`));
+
+    expect(onFocus).toHaveBeenCalledTimes(1);
+    expect(onLiveNameChange).toHaveBeenCalledWith('Test string');
+  });
+
+  it('only blurs when the name input validates or selects a blank name', () => {
+    const onCommit = jest.fn();
+    const onSelectName = jest.fn();
+    const onBlur = jest.fn();
+    const { getByTestId } = renderRow({ onCommit, onSelectName, onBlur });
+
+    fireEvent.press(getByTestId(`${nameInputMockId}::OnValidateBlank`));
+    fireEvent.press(getByTestId(`${nameInputMockId}::OnSelectBlank`));
+
+    expect(onCommit).not.toHaveBeenCalled();
+    expect(onSelectName).not.toHaveBeenCalled();
+    expect(onBlur).toHaveBeenCalledTimes(2);
   });
 
   it('renders the rowError helper when rowError is set', () => {

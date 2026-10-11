@@ -240,7 +240,6 @@ function RecipeFormBody({
     background: colors.elevation.level2,
     ripple: colors.primaryContainer,
   };
-  const [isScrolling, setIsScrolling] = useState(false);
   const [keyboardToolbarHeight, setKeyboardToolbarHeight] = useState(0);
   const [modalTarget, setModalTarget] = useState<OcrModalTarget | null>(null);
   const [imgList, setImgList] = useState<string[]>(() => initialImgList ?? []);
@@ -535,9 +534,6 @@ function RecipeFormBody({
         keyboardShouldPersistTaps={'handled'}
         keyboardDismissMode='on-drag'
         nestedScrollEnabled={true}
-        onScrollBeginDrag={() => setIsScrolling(true)}
-        onScrollEndDrag={() => setIsScrolling(false)}
-        onMomentumScrollEnd={() => setIsScrolling(false)}
       >
         <RecipeImageField form={form} stackMode={stackMode} openModalForField={openModalForField} />
         <RecipeTitleField
@@ -559,7 +555,6 @@ function RecipeFormBody({
           addTag={tags.addTag}
           removeTag={tags.removeTag}
           openModalForField={openModalForField}
-          hideDropdown={isScrolling}
         />
         <RecipePersonsField
           form={form}
@@ -572,7 +567,6 @@ function RecipeFormBody({
           stackMode={stackMode}
           openModalForField={openModalForField}
           t={t}
-          hideDropdown={isScrolling}
         />
         <RecipeTimeField
           form={form}

@@ -1,29 +1,230 @@
 import React, { act } from 'react';
-import { Keyboard } from 'react-native';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { Keyboard, StyleSheet, View } from 'react-native';
+import { fireEvent, render, waitFor, within } from '@testing-library/react-native';
+import { Divider, TouchableRipple } from 'react-native-paper';
 import TextInputWithDropDown, {
+  AUTOCOMPLETE_DIVIDER_THICKNESS,
+  AUTOCOMPLETE_MAX_VISIBLE_ROWS,
+  AUTOCOMPLETE_ROW_HEIGHT,
+  AUTOCOMPLETE_TAIL_INSET,
+  AutocompleteBubble,
+  getAutocompleteListHeight,
+  splitHighlight,
   TextInputWithDropDownType,
 } from '@components/molecules/TextInputWithDropDown';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
 import { testRecipes } from '@test-data/recipesDataset';
-
-const keyboardListeners: { [key: string]: (() => void)[] } = {};
-const mockRemove = jest.fn();
-let keyboardAddListenerSpy: jest.SpyInstance;
-
-const MockNativeMethodsModule = require('@react-native/jest-preset/jest/MockNativeMethods');
-const MockNativeMethods = MockNativeMethodsModule.default || MockNativeMethodsModule;
-MockNativeMethods.measureInWindow.mockImplementation(
-  (cb: (x: number, y: number, width: number, height: number) => void) => {
-    cb(10, 20, 300, 50);
-  }
-);
+import { scrollDecelerationRate } from '@utils/Constants';
 
 jest.mock('@components/atomic/CustomTextInput', () => ({
   CustomTextInput: require('@mocks/components/atomic/CustomTextInput-mock').CustomTextInputMock,
 }));
+
+const inputId = 'TextInputWithDropDown::CustomTextInput';
+const listId = 'TextInputWithDropDown::AutocompleteList';
+const tailId = 'TextInputWithDropDown::AutocompleteTail';
+const viewportId = 'TextInputWithDropDown::AutocompleteViewport';
+const itemId = (item: string) => `TextInputWithDropDown::AutocompleteItem::${item}`;
+const matchId = (item: string) => `TextInputWithDropDown::AutocompleteMatch::${item}`;
+
+function SlotHost(props: TextInputWithDropDownType) {
+  return (
+    <TextInputWithDropDown
+      {...props}
+      renderLayout={(field, dropdown) => (
+        <View>
+          <View testID='Field'>{field}</View>
+          <View testID='Slot'>{dropdown}</View>
+        </View>
+      )}
+    />
+  );
+}
+
+async function typeText(input: ReturnType<typeof render>['getByTestId'], text: string) {
+  await act(async () => {
+    fireEvent.changeText(input(inputId), text);
+  });
+}
+
+describe('splitHighlight', () => {
+  test('splits around the first case-insensitive match keeping original casing', () => {
+    expect(splitHighlight('Basil Leaves', 'LEA')).toEqual({
+      before: 'Basil ',
+      match: 'Lea',
+      after: 'ves',
+    });
+  });
+
+  test('uses only the first occurrence', () => {
+    expect(splitHighlight('banana', 'an')).toEqual({ before: 'b', match: 'an', after: 'ana' });
+  });
+
+  test('returns the whole text as before when the query is empty', () => {
+    expect(splitHighlight('Pasta', '')).toEqual({ before: 'Pasta', match: '', after: '' });
+  });
+
+  test('returns empty parts when the text is empty', () => {
+    expect(splitHighlight('', 'xyz')).toEqual({ before: '', match: '', after: '' });
+  });
+
+  test('returns the whole text as before when the query is absent', () => {
+    expect(splitHighlight('Pasta', 'xyz')).toEqual({ before: 'Pasta', match: '', after: '' });
+  });
+});
+
+describe('getAutocompleteListHeight', () => {
+  test('is zero for no items', () => {
+    expect(getAutocompleteListHeight(0)).toBe(0);
+  });
+
+  test('is one row height for a single item', () => {
+    expect(getAutocompleteListHeight(1)).toBe(AUTOCOMPLETE_ROW_HEIGHT);
+  });
+
+  test('grows by one row height and one divider per item below the visible cap', () => {
+    expect(getAutocompleteListHeight(2)).toBe(
+      2 * AUTOCOMPLETE_ROW_HEIGHT + AUTOCOMPLETE_DIVIDER_THICKNESS
+    );
+  });
+
+  test('is capped at the max visible rows', () => {
+    const cappedHeight =
+      AUTOCOMPLETE_MAX_VISIBLE_ROWS * AUTOCOMPLETE_ROW_HEIGHT +
+      (AUTOCOMPLETE_MAX_VISIBLE_ROWS - 1) * AUTOCOMPLETE_DIVIDER_THICKNESS;
+    expect(getAutocompleteListHeight(AUTOCOMPLETE_MAX_VISIBLE_ROWS)).toBe(cappedHeight);
+    expect(getAutocompleteListHeight(300)).toBe(cappedHeight);
+  });
+});
+
+describe('AutocompleteBubble', () => {
+  const manyItems = Array.from({ length: 300 }, (_, index) => `Tag ${index}`);
+
+  function renderBubble(items: string[], query = '') {
+    return render(
+      <AutocompleteBubble
+        testID='TextInputWithDropDown'
+        items={items}
+        query={query}
+        onSelect={jest.fn()}
+      />
+    );
+  }
+
+  test('keeps taps and nested scrolling working inside the form scroll view', () => {
+    const list = renderBubble(['A', 'B']).getByTestId(listId);
+
+    expect(list.props.keyboardShouldPersistTaps).toBe('handled');
+    expect(list.props.nestedScrollEnabled).toBe(true);
+  });
+
+  test('uses the app scroll deceleration rate', () => {
+    const list = renderBubble(['A', 'B']).getByTestId(listId);
+
+    expect(list.props.decelerationRate).toBe(scrollDecelerationRate);
+  });
+
+  test('renders every row at the row height without a border', () => {
+    const { getByTestId } = renderBubble(['A', 'B']);
+
+    for (const item of ['A', 'B']) {
+      const rowStyle = StyleSheet.flatten(getByTestId(itemId(item)).props.style);
+      expect(rowStyle.height).toBe(AUTOCOMPLETE_ROW_HEIGHT);
+      expect(rowStyle.borderTopWidth).toBeUndefined();
+    }
+  });
+
+  test('exposes each row as a labelled button', () => {
+    const { getByTestId } = renderBubble(['A', 'B']);
+
+    const row = getByTestId(itemId('B'));
+    expect(row.props.accessibilityRole).toBe('button');
+    expect(row.props.accessibilityLabel).toBe('B');
+  });
+
+  test('renders a row for an empty suggestion without a highlight', () => {
+    const { getByTestId, queryByTestId } = renderBubble(['', 'A'], 'A');
+
+    expect(getByTestId(itemId(''))).toBeTruthy();
+    expect(queryByTestId(matchId(''))).toBeNull();
+    expect(within(getByTestId(matchId('A'))).queryByText('A')).not.toBeNull();
+  });
+
+  test('renders every row of duplicated suggestions', () => {
+    const { getAllByTestId } = renderBubble(['A', 'A']);
+
+    expect(getAllByTestId(itemId('A'))).toHaveLength(2);
+  });
+
+  test('renders a bold divider between rows and none after the last', () => {
+    const { UNSAFE_getAllByType } = renderBubble(['A', 'B', 'C']);
+
+    const dividers = UNSAFE_getAllByType(Divider);
+    expect(dividers).toHaveLength(2);
+    expect(dividers.every(divider => divider.props.bold === true)).toBe(true);
+  });
+
+  test('renders no divider for a single row', () => {
+    const { UNSAFE_queryAllByType } = renderBubble(['A']);
+
+    expect(UNSAFE_queryAllByType(Divider)).toHaveLength(0);
+  });
+
+  test('renders rows as ripple touchables', () => {
+    const { UNSAFE_getAllByType } = renderBubble(['A', 'B']);
+
+    expect(UNSAFE_getAllByType(TouchableRipple).map(ripple => ripple.props.testID)).toEqual([
+      itemId('A'),
+      itemId('B'),
+    ]);
+  });
+
+  test('does not mount rows far outside the bounded viewport', () => {
+    const { getByTestId, queryByTestId } = renderBubble(manyItems);
+
+    expect(getByTestId(itemId('Tag 0'))).toBeTruthy();
+    expect(queryByTestId(itemId('Tag 299'))).toBeNull();
+  });
+
+  test('bounds the list container to the capped height', () => {
+    const { getByTestId } = renderBubble(manyItems);
+
+    expect(StyleSheet.flatten(getByTestId(viewportId).props.style)).toEqual(
+      expect.objectContaining({ height: getAutocompleteListHeight(AUTOCOMPLETE_MAX_VISIBLE_ROWS) })
+    );
+  });
+
+  test('places the tail at the default inset', () => {
+    const { getByTestId } = renderBubble(['A']);
+
+    expect(StyleSheet.flatten(getByTestId(tailId).props.style).left).toBe(AUTOCOMPLETE_TAIL_INSET);
+  });
+
+  test('highlights the matching part of each suggestion', () => {
+    const { getByTestId, queryByTestId } = renderBubble(['Pasta', 'Salmon'], 'as');
+
+    expect(getByTestId(matchId('Pasta')).props.children).toBe('as');
+    expect(queryByTestId(matchId('Salmon'))).toBeNull();
+  });
+
+  test('calls onSelect with the pressed suggestion', () => {
+    const onSelect = jest.fn();
+    const { getByTestId } = render(
+      <AutocompleteBubble
+        testID='TextInputWithDropDown'
+        items={['A', 'B']}
+        query=''
+        onSelect={onSelect}
+      />
+    );
+
+    fireEvent.press(getByTestId(itemId('B')));
+
+    expect(onSelect).toHaveBeenCalledWith('B');
+  });
+});
 
 describe('TextInputWithDropDown Component', () => {
   const mockOnValidate = jest.fn();
@@ -38,20 +239,6 @@ describe('TextInputWithDropDown Component', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
-    jest.useFakeTimers();
-
-    Object.keys(keyboardListeners).forEach(key => delete keyboardListeners[key]);
-
-    keyboardAddListenerSpy = jest
-      .spyOn(Keyboard, 'addListener')
-      .mockImplementation((event, callback) => {
-        if (!keyboardListeners[event]) {
-          keyboardListeners[event] = [];
-        }
-        keyboardListeners[event].push(callback as () => void);
-        return { remove: mockRemove } as any;
-      });
-
     await dbInstance.init();
     await dbInstance.addMultipleIngredients(testIngredients);
     await dbInstance.addMultipleTags(testTags);
@@ -63,9 +250,6 @@ describe('TextInputWithDropDown Component', () => {
   });
 
   afterEach(async () => {
-    keyboardAddListenerSpy?.mockRestore();
-    jest.clearAllMocks();
-    jest.useRealTimers();
     await dbInstance.closeAndReset();
   });
 
@@ -73,8 +257,8 @@ describe('TextInputWithDropDown Component', () => {
     test('renders input without dropdown when not focused', () => {
       const { getByTestId, queryByTestId } = render(<TextInputWithDropDown {...defaultProps} />);
 
-      expect(getByTestId('TextInputWithDropDown::CustomTextInput')).toBeTruthy();
-      expect(queryByTestId('TextInputWithDropDown::AutocompleteList')).toBeNull();
+      expect(getByTestId(inputId)).toBeTruthy();
+      expect(queryByTestId(listId)).toBeNull();
     });
 
     test('renders with initial value from props', () => {
@@ -82,9 +266,7 @@ describe('TextInputWithDropDown Component', () => {
         <TextInputWithDropDown {...defaultProps} value='Initial Value' />
       );
 
-      expect(getByTestId('TextInputWithDropDown::CustomTextInput').props.value).toEqual(
-        'Initial Value'
-      );
+      expect(getByTestId(inputId).props.value).toEqual('Initial Value');
     });
   });
 
@@ -92,14 +274,9 @@ describe('TextInputWithDropDown Component', () => {
     test('shows dropdown when typing matching text', async () => {
       const { getByTestId } = render(<TextInputWithDropDown {...defaultProps} />);
 
-      const input = getByTestId('TextInputWithDropDown::CustomTextInput');
-      await act(async () => {
-        fireEvent.changeText(input, 'past');
-      });
+      await typeText(getByTestId, 'past');
 
-      await waitFor(() =>
-        expect(getByTestId('TextInputWithDropDown::AutocompleteItem::Pasta')).toBeTruthy()
-      );
+      await waitFor(() => expect(getByTestId(itemId('Pasta'))).toBeTruthy());
     });
 
     test('shows dropdown on focus when text has matches', async () => {
@@ -107,67 +284,53 @@ describe('TextInputWithDropDown Component', () => {
         <TextInputWithDropDown {...defaultProps} value='Sal' />
       );
 
-      expect(queryByTestId('TextInputWithDropDown::AutocompleteList')).toBeNull();
+      expect(queryByTestId(listId)).toBeNull();
 
-      const input = getByTestId('TextInputWithDropDown::CustomTextInput');
       await act(async () => {
-        fireEvent(input, 'focus');
+        fireEvent(getByTestId(inputId), 'focus');
       });
 
-      await waitFor(() =>
-        expect(getByTestId('TextInputWithDropDown::AutocompleteItem::Salmon')).toBeTruthy()
-      );
+      await waitFor(() => expect(getByTestId(itemId('Salmon'))).toBeTruthy());
+    });
+
+    test('calls onFocus when the input gains focus', async () => {
+      const onFocus = jest.fn();
+      const { getByTestId } = render(<TextInputWithDropDown {...defaultProps} onFocus={onFocus} />);
+
+      await act(async () => {
+        fireEvent(getByTestId(inputId), 'focus');
+      });
+
+      expect(onFocus).toHaveBeenCalledTimes(1);
     });
 
     test('hides dropdown when no matching items', async () => {
       const { getByTestId, queryByTestId } = render(<TextInputWithDropDown {...defaultProps} />);
 
-      const input = getByTestId('TextInputWithDropDown::CustomTextInput');
-      await act(async () => {
-        fireEvent.changeText(input, 'nonexistentitem');
-      });
+      await typeText(getByTestId, 'nonexistentitem');
 
-      await waitFor(() =>
-        expect(getByTestId('TextInputWithDropDown::CustomTextInput').props.value).toEqual(
-          'nonexistentitem'
-        )
-      );
-      expect(queryByTestId('TextInputWithDropDown::AutocompleteList')).toBeNull();
+      expect(getByTestId(inputId).props.value).toEqual('nonexistentitem');
+      expect(queryByTestId(listId)).toBeNull();
     });
 
     test('hides dropdown when text matches exactly one item', async () => {
       const { getByTestId, queryByTestId } = render(<TextInputWithDropDown {...defaultProps} />);
 
-      const input = getByTestId('TextInputWithDropDown::CustomTextInput');
-      await act(async () => {
-        fireEvent.changeText(input, 'Pasta');
-      });
+      await typeText(getByTestId, 'pasta');
 
-      await waitFor(() =>
-        expect(getByTestId('TextInputWithDropDown::CustomTextInput').props.value).toEqual('Pasta')
-      );
-      expect(queryByTestId('TextInputWithDropDown::AutocompleteList')).toBeNull();
+      expect(getByTestId(inputId).props.value).toEqual('pasta');
+      expect(queryByTestId(listId)).toBeNull();
     });
 
-    test('hides dropdown when hideDropdown prop is true', async () => {
-      const { getByTestId, queryByTestId, rerender } = render(
-        <TextInputWithDropDown {...defaultProps} />
+    test('keeps dropdown when the exact text also prefixes other items', async () => {
+      const { getByTestId } = render(
+        <TextInputWithDropDown {...defaultProps} referenceTextArray={['Salt', 'Salted Butter']} />
       );
 
-      const input = getByTestId('TextInputWithDropDown::CustomTextInput');
-      await act(async () => {
-        fireEvent.changeText(input, 'past');
-      });
+      await typeText(getByTestId, 'Salt');
 
-      await waitFor(() =>
-        expect(getByTestId('TextInputWithDropDown::AutocompleteItem::Pasta')).toBeTruthy()
-      );
-
-      rerender(<TextInputWithDropDown {...defaultProps} hideDropdown={true} />);
-
-      await waitFor(() =>
-        expect(queryByTestId('TextInputWithDropDown::AutocompleteList')).toBeNull()
-      );
+      expect(getByTestId(itemId('Salt'))).toBeTruthy();
+      expect(getByTestId(itemId('Salted Butter'))).toBeTruthy();
     });
   });
 
@@ -178,16 +341,9 @@ describe('TextInputWithDropDown Component', () => {
         <TextInputWithDropDown {...defaultProps} onChangeText={mockOnChangeText} />
       );
 
-      const input = getByTestId('TextInputWithDropDown::CustomTextInput');
-      await act(async () => {
-        fireEvent.changeText(input, 'p');
-      });
-      await act(async () => {
-        fireEvent.changeText(input, 'pa');
-      });
-      await act(async () => {
-        fireEvent.changeText(input, 'pas');
-      });
+      await typeText(getByTestId, 'p');
+      await typeText(getByTestId, 'pa');
+      await typeText(getByTestId, 'pas');
 
       expect(mockOnChangeText).toHaveBeenCalledTimes(3);
       expect(mockOnChangeText).toHaveBeenNthCalledWith(1, 'p');
@@ -198,27 +354,14 @@ describe('TextInputWithDropDown Component', () => {
     test('fires both onChangeText and onValidate when a dropdown item is selected', async () => {
       const mockOnChangeText = jest.fn();
       const { getByTestId } = render(
-        <TextInputWithDropDown
-          {...defaultProps}
-          onChangeText={mockOnChangeText}
-          onValidate={mockOnValidate}
-        />
+        <TextInputWithDropDown {...defaultProps} onChangeText={mockOnChangeText} />
       );
 
-      const input = getByTestId('TextInputWithDropDown::CustomTextInput');
-      await act(async () => {
-        fireEvent.changeText(input, 'past');
-      });
-
-      await waitFor(() =>
-        expect(getByTestId('TextInputWithDropDown::AutocompleteItem::Pasta')).toBeTruthy()
-      );
-
+      await typeText(getByTestId, 'past');
       mockOnChangeText.mockClear();
-      mockOnValidate.mockClear();
 
       await act(async () => {
-        fireEvent.press(getByTestId('TextInputWithDropDown::AutocompleteItem::Pasta'));
+        fireEvent.press(getByTestId(itemId('Pasta')));
       });
 
       expect(mockOnChangeText).toHaveBeenCalledWith('Pasta');
@@ -230,73 +373,98 @@ describe('TextInputWithDropDown Component', () => {
         <TextInputWithDropDown {...defaultProps} onChangeText={undefined} />
       );
 
-      const input = getByTestId('TextInputWithDropDown::CustomTextInput');
-      await expect(
-        act(async () => {
-          fireEvent.changeText(input, 'test');
-        })
-      ).resolves.not.toThrow();
+      await expect(typeText(getByTestId, 'test')).resolves.not.toThrow();
     });
   });
 
   describe('item selection', () => {
+    test('dismisses the keyboard when an item is selected', async () => {
+      const dismissSpy = jest.spyOn(Keyboard, 'dismiss');
+      const { getByTestId } = render(<TextInputWithDropDown {...defaultProps} />);
+
+      await typeText(getByTestId, 'past');
+      await act(async () => {
+        fireEvent.press(getByTestId(itemId('Pasta')));
+      });
+
+      expect(dismissSpy).toHaveBeenCalled();
+      dismissSpy.mockRestore();
+    });
+
     test('calls onValidate exactly once when endEditing fires after dropdown selection', async () => {
       const { getByTestId } = render(<TextInputWithDropDown {...defaultProps} />);
 
-      const input = getByTestId('TextInputWithDropDown::CustomTextInput');
+      await typeText(getByTestId, 'past');
       await act(async () => {
-        fireEvent.changeText(input, 'past');
+        fireEvent.press(getByTestId(itemId('Pasta')));
       });
-
-      await waitFor(() =>
-        expect(getByTestId('TextInputWithDropDown::AutocompleteItem::Pasta')).toBeTruthy()
-      );
-
       await act(async () => {
-        fireEvent.press(getByTestId('TextInputWithDropDown::AutocompleteItem::Pasta'));
-      });
-
-      await act(async () => {
-        fireEvent(input, 'endEditing');
+        fireEvent(getByTestId(inputId), 'endEditing');
       });
 
       expect(mockOnValidate).toHaveBeenCalledTimes(1);
       expect(mockOnValidate).toHaveBeenCalledWith('Pasta');
     });
 
-    test('selects item and calls onValidate when pressing dropdown item', async () => {
+    test('validates again on a later endEditing after a selection', async () => {
+      const { getByTestId } = render(<TextInputWithDropDown {...defaultProps} />);
+
+      await typeText(getByTestId, 'past');
+      await act(async () => {
+        fireEvent.press(getByTestId(itemId('Pasta')));
+      });
+      await act(async () => {
+        fireEvent(getByTestId(inputId), 'endEditing');
+      });
+      await act(async () => {
+        fireEvent(getByTestId(inputId), 'endEditing');
+      });
+
+      expect(mockOnValidate).toHaveBeenCalledTimes(2);
+    });
+
+    test('validates the next edit after picking from a dropdown left open on an unfocused input', async () => {
+      const { getByTestId } = render(<TextInputWithDropDown {...defaultProps} />);
+
+      await typeText(getByTestId, 'past');
+      await act(async () => {
+        fireEvent(getByTestId(inputId), 'endEditing');
+      });
+      await act(async () => {
+        fireEvent.press(getByTestId(itemId('Pasta')));
+      });
+      mockOnValidate.mockClear();
+
+      await act(async () => {
+        fireEvent(getByTestId(inputId), 'focus');
+      });
+      await typeText(getByTestId, 'custom text');
+      await act(async () => {
+        fireEvent(getByTestId(inputId), 'endEditing');
+      });
+
+      expect(mockOnValidate).toHaveBeenCalledWith('custom text');
+    });
+
+    test('selects item and closes the dropdown when pressing an item', async () => {
       const { getByTestId, queryByTestId } = render(<TextInputWithDropDown {...defaultProps} />);
 
-      const input = getByTestId('TextInputWithDropDown::CustomTextInput');
+      await typeText(getByTestId, 'past');
       await act(async () => {
-        fireEvent.changeText(input, 'past');
+        fireEvent.press(getByTestId(itemId('Pasta')));
       });
 
-      await waitFor(() =>
-        expect(getByTestId('TextInputWithDropDown::AutocompleteItem::Pasta')).toBeTruthy()
-      );
-
-      await act(async () => {
-        fireEvent.press(getByTestId('TextInputWithDropDown::AutocompleteItem::Pasta'));
-      });
-
-      await waitFor(() =>
-        expect(getByTestId('TextInputWithDropDown::CustomTextInput').props.value).toEqual('Pasta')
-      );
+      expect(getByTestId(inputId).props.value).toEqual('Pasta');
       expect(mockOnValidate).toHaveBeenCalledWith('Pasta');
-      expect(queryByTestId('TextInputWithDropDown::AutocompleteList')).toBeNull();
+      expect(queryByTestId(listId)).toBeNull();
     });
 
     test('calls onValidate on end editing', async () => {
       const { getByTestId } = render(<TextInputWithDropDown {...defaultProps} />);
 
-      const input = getByTestId('TextInputWithDropDown::CustomTextInput');
+      await typeText(getByTestId, 'custom text');
       await act(async () => {
-        fireEvent.changeText(input, 'custom text');
-      });
-
-      await act(async () => {
-        fireEvent(input, 'endEditing');
+        fireEvent(getByTestId(inputId), 'endEditing');
       });
 
       expect(mockOnValidate).toHaveBeenCalledWith('custom text');
@@ -309,17 +477,11 @@ describe('TextInputWithDropDown Component', () => {
         <TextInputWithDropDown {...defaultProps} onChangeText={onChangeText} onSelect={onSelect} />
       );
 
-      const input = getByTestId('TextInputWithDropDown::CustomTextInput');
-      await act(async () => {
-        fireEvent.changeText(input, 'past');
-      });
+      await typeText(getByTestId, 'past');
       onChangeText.mockClear();
 
-      await waitFor(() =>
-        expect(getByTestId('TextInputWithDropDown::AutocompleteItem::Pasta')).toBeTruthy()
-      );
       await act(async () => {
-        fireEvent.press(getByTestId('TextInputWithDropDown::AutocompleteItem::Pasta'));
+        fireEvent.press(getByTestId(itemId('Pasta')));
       });
 
       expect(onSelect).toHaveBeenCalledTimes(1);
@@ -327,145 +489,100 @@ describe('TextInputWithDropDown Component', () => {
       expect(mockOnValidate).not.toHaveBeenCalled();
       expect(onChangeText).not.toHaveBeenCalled();
     });
+
+    test('works without onValidate callback', async () => {
+      const { getByTestId } = render(
+        <TextInputWithDropDown {...defaultProps} onValidate={undefined} />
+      );
+
+      await typeText(getByTestId, 'past');
+      await act(async () => {
+        fireEvent.press(getByTestId(itemId('Pasta')));
+      });
+      await act(async () => {
+        fireEvent(getByTestId(inputId), 'endEditing');
+      });
+      await act(async () => {
+        fireEvent(getByTestId(inputId), 'endEditing');
+      });
+
+      expect(getByTestId(inputId).props.value).toEqual('Pasta');
+    });
+  });
+
+  describe('renderLayout', () => {
+    test('lets the parent place the field and the bubble', async () => {
+      const { getByTestId } = render(<SlotHost {...defaultProps} />);
+
+      await typeText(getByTestId, 'past');
+
+      expect(within(getByTestId('Field')).getByTestId(inputId)).toBeTruthy();
+      expect(within(getByTestId('Field')).queryByTestId(listId)).toBeNull();
+      expect(within(getByTestId('Slot')).getByTestId(itemId('Pasta'))).toBeTruthy();
+      expect(within(getByTestId('Slot')).getAllByTestId(listId)).toHaveLength(1);
+    });
+
+    test('keeps the slotted suggestions in sync with the typed text', async () => {
+      const { getByTestId, queryByTestId } = render(
+        <SlotHost {...defaultProps} referenceTextArray={['Apple', 'Apricot', 'Banana']} />
+      );
+
+      await typeText(getByTestId, 'ap');
+      expect(getByTestId(itemId('Apricot'))).toBeTruthy();
+
+      await typeText(getByTestId, 'apr');
+      expect(getByTestId(itemId('Apricot'))).toBeTruthy();
+      expect(queryByTestId(itemId('Apple'))).toBeNull();
+    });
+
+    test('clears the slot when the dropdown hides', async () => {
+      const { getByTestId, queryByTestId } = render(<SlotHost {...defaultProps} />);
+
+      await typeText(getByTestId, 'past');
+      await typeText(getByTestId, 'nonexistentitem');
+
+      expect(queryByTestId(listId)).toBeNull();
+    });
+
+    test('routes a slotted pick to the latest onSelect prop', async () => {
+      const staleOnSelect = jest.fn();
+      const latestOnSelect = jest.fn();
+      const { getByTestId, rerender } = render(
+        <SlotHost {...defaultProps} onSelect={staleOnSelect} />
+      );
+
+      await typeText(getByTestId, 'past');
+      rerender(<SlotHost {...defaultProps} onSelect={latestOnSelect} />);
+
+      await act(async () => {
+        fireEvent.press(getByTestId(itemId('Pasta')));
+      });
+
+      expect(staleOnSelect).not.toHaveBeenCalled();
+      expect(latestOnSelect).toHaveBeenCalledWith('Pasta');
+      expect(getByTestId(inputId).props.value).toEqual('Pasta');
+    });
   });
 
   describe('external value changes', () => {
-    test('syncs internal state when value prop changes externally', async () => {
+    test('syncs internal state when value prop changes externally', () => {
       const { getByTestId, rerender } = render(
         <TextInputWithDropDown {...defaultProps} value='Initial' />
       );
 
-      expect(getByTestId('TextInputWithDropDown::CustomTextInput').props.value).toEqual('Initial');
-
       rerender(<TextInputWithDropDown {...defaultProps} value='Updated Value' />);
 
-      await waitFor(() =>
-        expect(getByTestId('TextInputWithDropDown::CustomTextInput').props.value).toEqual(
-          'Updated Value'
-        )
-      );
+      expect(getByTestId(inputId).props.value).toEqual('Updated Value');
     });
 
-    test('handles value changing to undefined', async () => {
+    test('handles value changing to undefined', () => {
       const { getByTestId, rerender } = render(
         <TextInputWithDropDown {...defaultProps} value='Initial' />
       );
 
       rerender(<TextInputWithDropDown {...defaultProps} value={undefined} />);
 
-      await waitFor(() =>
-        expect(getByTestId('TextInputWithDropDown::CustomTextInput').props.value).toEqual('')
-      );
-    });
-  });
-
-  describe('keyboard events', () => {
-    test('remeasures position on keyboardDidShow', async () => {
-      const { getByTestId } = render(<TextInputWithDropDown {...defaultProps} />);
-
-      const input = getByTestId('TextInputWithDropDown::CustomTextInput');
-      await act(async () => {
-        fireEvent.changeText(input, 'past');
-      });
-
-      await waitFor(() =>
-        expect(getByTestId('TextInputWithDropDown::AutocompleteItem::Pasta')).toBeTruthy()
-      );
-
-      await act(async () => {
-        const showCallbacks = keyboardListeners['keyboardDidShow'] || [];
-        showCallbacks.forEach(callback => callback());
-        jest.advanceTimersByTime(150);
-      });
-
-      expect(getByTestId('TextInputWithDropDown::AutocompleteItem::Pasta')).toBeTruthy();
-    });
-
-    test('remeasures position on keyboardDidHide', async () => {
-      const { getByTestId } = render(<TextInputWithDropDown {...defaultProps} />);
-
-      const input = getByTestId('TextInputWithDropDown::CustomTextInput');
-      await act(async () => {
-        fireEvent.changeText(input, 'past');
-      });
-
-      await waitFor(() =>
-        expect(getByTestId('TextInputWithDropDown::AutocompleteItem::Pasta')).toBeTruthy()
-      );
-
-      await act(async () => {
-        const hideCallbacks = keyboardListeners['keyboardDidHide'] || [];
-        hideCallbacks.forEach(callback => callback());
-        jest.advanceTimersByTime(150);
-      });
-
-      expect(getByTestId('TextInputWithDropDown::AutocompleteItem::Pasta')).toBeTruthy();
-    });
-  });
-
-  describe('hideDropdown prop transitions', () => {
-    test('remeasures position when hideDropdown changes from true to false', async () => {
-      const { getByTestId, queryByTestId, rerender } = render(
-        <TextInputWithDropDown {...defaultProps} />
-      );
-
-      const input = getByTestId('TextInputWithDropDown::CustomTextInput');
-      await act(async () => {
-        fireEvent.changeText(input, 'past');
-      });
-
-      await waitFor(() =>
-        expect(getByTestId('TextInputWithDropDown::AutocompleteItem::Pasta')).toBeTruthy()
-      );
-
-      rerender(<TextInputWithDropDown {...defaultProps} hideDropdown={true} />);
-      await waitFor(() =>
-        expect(queryByTestId('TextInputWithDropDown::AutocompleteList')).toBeNull()
-      );
-
-      rerender(<TextInputWithDropDown {...defaultProps} hideDropdown={false} />);
-      await waitFor(() =>
-        expect(getByTestId('TextInputWithDropDown::AutocompleteItem::Pasta')).toBeTruthy()
-      );
-    });
-  });
-
-  describe('layout handling', () => {
-    test('remeasures position on layout change when dropdown is visible', async () => {
-      const { getByTestId, UNSAFE_root } = render(<TextInputWithDropDown {...defaultProps} />);
-
-      const input = getByTestId('TextInputWithDropDown::CustomTextInput');
-      await act(async () => {
-        fireEvent.changeText(input, 'past');
-      });
-
-      await waitFor(() =>
-        expect(getByTestId('TextInputWithDropDown::AutocompleteItem::Pasta')).toBeTruthy()
-      );
-
-      const container = UNSAFE_root.findByType('View' as any);
-      await act(async () => {
-        fireEvent(container, 'layout', {
-          nativeEvent: { layout: { x: 0, y: 100, width: 300, height: 50 } },
-        });
-      });
-
-      expect(getByTestId('TextInputWithDropDown::AutocompleteItem::Pasta')).toBeTruthy();
-    });
-
-    test('does not remeasure position on layout change when dropdown is not visible', async () => {
-      const { queryByTestId, UNSAFE_root } = render(<TextInputWithDropDown {...defaultProps} />);
-
-      expect(queryByTestId('TextInputWithDropDown::AutocompleteList')).toBeNull();
-
-      const container = UNSAFE_root.findByType('View' as any);
-      await act(async () => {
-        fireEvent(container, 'layout', {
-          nativeEvent: { layout: { x: 0, y: 100, width: 300, height: 50 } },
-        });
-      });
-
-      expect(queryByTestId('TextInputWithDropDown::AutocompleteList')).toBeNull();
+      expect(getByTestId(inputId).props.value).toEqual('');
     });
   });
 
@@ -473,15 +590,10 @@ describe('TextInputWithDropDown Component', () => {
     test('filters items case-insensitively', async () => {
       const { getByTestId, queryByTestId } = render(<TextInputWithDropDown {...defaultProps} />);
 
-      const input = getByTestId('TextInputWithDropDown::CustomTextInput');
-      await act(async () => {
-        fireEvent.changeText(input, 'PAST');
-      });
+      await typeText(getByTestId, 'PAST');
 
-      await waitFor(() =>
-        expect(getByTestId('TextInputWithDropDown::AutocompleteItem::Pasta')).toBeTruthy()
-      );
-      expect(queryByTestId('TextInputWithDropDown::AutocompleteItem::Salmon')).toBeNull();
+      expect(getByTestId(itemId('Pasta'))).toBeTruthy();
+      expect(queryByTestId(itemId('Salmon'))).toBeNull();
     });
 
     test('shows multiple matching items', async () => {
@@ -492,15 +604,10 @@ describe('TextInputWithDropDown Component', () => {
         />
       );
 
-      const input = getByTestId('TextInputWithDropDown::CustomTextInput');
-      await act(async () => {
-        fireEvent.changeText(input, 'ap');
-      });
+      await typeText(getByTestId, 'ap');
 
-      await waitFor(() => {
-        expect(getByTestId('TextInputWithDropDown::AutocompleteItem::Apple')).toBeTruthy();
-        expect(getByTestId('TextInputWithDropDown::AutocompleteItem::Apricot')).toBeTruthy();
-      });
+      expect(getByTestId(itemId('Apple'))).toBeTruthy();
+      expect(getByTestId(itemId('Apricot'))).toBeTruthy();
     });
   });
 
@@ -510,87 +617,23 @@ describe('TextInputWithDropDown Component', () => {
         <TextInputWithDropDown {...defaultProps} referenceTextArray={[]} />
       );
 
-      const input = getByTestId('TextInputWithDropDown::CustomTextInput');
-      await act(async () => {
-        fireEvent.changeText(input, 'test');
-      });
+      await typeText(getByTestId, 'test');
 
-      expect(queryByTestId('TextInputWithDropDown::AutocompleteList')).toBeNull();
+      expect(queryByTestId(listId)).toBeNull();
     });
 
     test('handles rapid text changes', async () => {
       const { getByTestId, queryByTestId } = render(<TextInputWithDropDown {...defaultProps} />);
 
-      const input = getByTestId('TextInputWithDropDown::CustomTextInput');
-
       await act(async () => {
-        fireEvent.changeText(input, 'p');
-        fireEvent.changeText(input, 'pa');
-        fireEvent.changeText(input, 'pas');
-        fireEvent.changeText(input, 'past');
+        fireEvent.changeText(getByTestId(inputId), 'p');
+        fireEvent.changeText(getByTestId(inputId), 'pa');
+        fireEvent.changeText(getByTestId(inputId), 'past');
       });
+      expect(getByTestId(itemId('Pasta'))).toBeTruthy();
 
-      await waitFor(() =>
-        expect(getByTestId('TextInputWithDropDown::AutocompleteItem::Pasta')).toBeTruthy()
-      );
-
-      await act(async () => {
-        fireEvent.changeText(input, 'xyz');
-      });
-
-      await waitFor(() =>
-        expect(queryByTestId('TextInputWithDropDown::AutocompleteList')).toBeNull()
-      );
-    });
-
-    test('works without onValidate callback', async () => {
-      const propsWithoutCallback = { ...defaultProps, onValidate: undefined };
-      const { getByTestId } = render(<TextInputWithDropDown {...propsWithoutCallback} />);
-
-      const input = getByTestId('TextInputWithDropDown::CustomTextInput');
-      await act(async () => {
-        fireEvent.changeText(input, 'past');
-      });
-
-      await waitFor(() =>
-        expect(getByTestId('TextInputWithDropDown::AutocompleteItem::Pasta')).toBeTruthy()
-      );
-
-      await act(async () => {
-        fireEvent.press(getByTestId('TextInputWithDropDown::AutocompleteItem::Pasta'));
-      });
-
-      expect(getByTestId('TextInputWithDropDown::CustomTextInput').props.value).toEqual('Pasta');
-    });
-
-    test('does not update layout when measureInWindow returns zero dimensions', async () => {
-      MockNativeMethods.measureInWindow.mockImplementation(
-        (cb: (x: number, y: number, width: number, height: number) => void) => {
-          cb(0, 0, 0, 0);
-        }
-      );
-
-      const { getByTestId } = render(<TextInputWithDropDown {...defaultProps} />);
-
-      const input = getByTestId('TextInputWithDropDown::CustomTextInput');
-      await act(async () => {
-        fireEvent.changeText(input, 'past');
-      });
-
-      await waitFor(() =>
-        expect(getByTestId('TextInputWithDropDown::AutocompleteItem::Pasta')).toBeTruthy()
-      );
-
-      const dropdown = getByTestId('TextInputWithDropDown::AutocompleteList');
-      expect(dropdown.props.style).toEqual(
-        expect.arrayContaining([expect.objectContaining({ top: 0, left: 0, width: 0 })])
-      );
-
-      MockNativeMethods.measureInWindow.mockImplementation(
-        (cb: (x: number, y: number, width: number, height: number) => void) => {
-          cb(10, 20, 300, 50);
-        }
-      );
+      await typeText(getByTestId, 'xyz');
+      expect(queryByTestId(listId)).toBeNull();
     });
   });
 });

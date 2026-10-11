@@ -38,7 +38,6 @@ export interface IngredientRowFieldProps {
   form: Form;
   index: number;
   availableIngredients: string[];
-  hideDropdown?: boolean;
   rowError?: string;
   editIngredients: (index: number, formatted: string) => void;
   removeIngredient: (index: number) => void;
@@ -51,7 +50,6 @@ export function IngredientRowField({
   form,
   index,
   availableIngredients,
-  hideDropdown,
   rowError,
   editIngredients,
   removeIngredient,
@@ -166,7 +164,6 @@ export function IngredientRowField({
       index={index}
       ingredient={ingredient}
       availableIngredients={availableIngredients}
-      hideDropdown={hideDropdown}
       rowError={rowError}
       onCommit={handleCommit}
       onLiveNameChange={value => nameCtrl.field.onChange(value)}
