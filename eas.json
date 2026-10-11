@@ -1,6 +1,6 @@
 {
   "cli": {
-    "version": ">= 14.7.1",
+    "version": ">= 24.4.0",
     "appVersionSource": "remote"
   },
   "build": {
@@ -21,17 +21,6 @@
         "simulator": true,
         "buildConfiguration": "Release",
         "scheme": "Recipedia"
-      },
-      "cache": {
-        "disabled": false,
-        "paths": [
-          "node_modules",
-          ".expo",
-          ".expo/cache",
-          "~/.gradle/wrapper",
-          "android/.gradle",
-          "android/build"
-        ]
       },
       "env": {
         "NODE_OPTIONS": "--max-old-space-size=4096",
@@ -56,17 +45,6 @@
     "production": {
       "autoIncrement": true,
       "distribution": "store",
-      "cache": {
-        "disabled": false,
-        "paths": [
-          "node_modules",
-          ".expo",
-          ".expo/cache",
-          "~/.gradle/wrapper",
-          "android/.gradle",
-          "android/build"
-        ]
-      },
       "android": {
         "buildType": "app-bundle",
         "image": "latest"

@@ -2,10 +2,6 @@ name: 'Setup iOS Build Environment'
 description: 'Setup Python, EAS, CocoaPods caching, and Expo caching for iOS builds'
 
 inputs:
-  eas-version:
-    description: 'EAS CLI version'
-    required: false
-    default: 'latest'
   expo-token:
     description: 'Expo token for EAS'
     required: true
@@ -56,6 +52,5 @@ runs:
     - name: Setup EAS
       uses: expo/expo-github-action@v9
       with:
-        eas-version: ${{ inputs.eas-version }}
         packager: 'npm'
         token: ${{ inputs.expo-token }}
