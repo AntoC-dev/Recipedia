@@ -139,6 +139,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       './modules/recipe-scraper/plugin/build/index.js',
       './plugins/withAndroidLocaleFilters',
       './plugins/withMlKitTelemetryDisabled',
+      './plugins/withGradleBuildCache',
     ],
     extra: {
       eas: {
