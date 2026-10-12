@@ -1,3 +1,10 @@
+## [2.53.4](https://github.com/AntoC-dev/Recipedia/compare/v2.53.3...v2.53.4) (2026-10-12)
+
+### Bug Fixes
+
+* **recipe-form:** keep the focused input above the keyboard ([227d2d6](https://github.com/AntoC-dev/Recipedia/commit/227d2d66ee9ecf740567220d5044bbb6f9c30fe1)), closes [#590](https://github.com/AntoC-dev/Recipedia/issues/590)
+* **recipe-form:** keep the focused input above the keyboard ([#595](https://github.com/AntoC-dev/Recipedia/issues/595)) ([75fa2c2](https://github.com/AntoC-dev/Recipedia/commit/75fa2c2ffe801ceda643dd594556e34f2a23271b)), closes [#540](https://github.com/AntoC-dev/Recipedia/issues/540) [#590](https://github.com/AntoC-dev/Recipedia/issues/590)
+
 ## [2.53.3](https://github.com/AntoC-dev/Recipedia/compare/v2.53.2...v2.53.3) (2026-10-11)
 
 ### Bug Fixes
