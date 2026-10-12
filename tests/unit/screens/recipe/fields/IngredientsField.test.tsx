@@ -264,6 +264,32 @@ describe('RecipeIngredientsField', () => {
       expect(row.quantity).toBe('100');
     });
 
+    test('resolving a row name keeps the row mounted so a focused sibling input in that row survives', async () => {
+      setMockIngredients([carrots]);
+      mockFindSimilarIngredients.mockImplementation((name: string) =>
+        name.toLowerCase() === 'carrots' ? [carrots] : []
+      );
+      const { getByTestId, form } = renderWithForm(
+        RecipeIngredientsField,
+        f => ({
+          form: f,
+          stackMode: recipeStateType.edit,
+          openModalForField: jest.fn(),
+          t,
+        }),
+        { recipeIngredients: [{ name: '', quantity: '' }] }
+      );
+      const rowBeforeResolution = getByTestId('RecipeIngredients::0::Row');
+
+      await act(async () => {
+        fireEvent.press(getByTestId('RecipeIngredients::0::OnIngredientChange'), '@@--Carrots');
+      });
+
+      expect(form.getValues('recipeIngredients.0.id')).toBe(42);
+      const isSameRowInstance = getByTestId('RecipeIngredients::0::Row') === rowBeforeResolution;
+      expect(isSameRowInstance).toBe(true);
+    });
+
     test('the row inline error clears after the dropdown selection resolves the ingredient', async () => {
       setMockIngredients([carrots]);
       mockFindSimilarIngredients.mockImplementation((name: string) =>
