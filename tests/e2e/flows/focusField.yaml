@@ -1,0 +1,9 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "${TARGET_ID}"
+    label: "Focus ${TARGET_ID}"
+
+- runFlow:
+    file: "waitForKeyboard.yaml"
+    label: "Wait for the keyboard of ${TARGET_ID}"

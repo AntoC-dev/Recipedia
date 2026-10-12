@@ -1,34 +1,23 @@
 appId: "com.recipedia"
 ---
-
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::SaturatedFat::NumericTextInput"
     direction: UP
-    speed: 60
     centerElement: true
-    label: "Scroll to saturated fat field"
+    label: "Scroll to Recipe::RecipeNutrition::NutritionTable::NutritionRow::SaturatedFat::NumericTextInput"
 
 - waitForAnimationToEnd
 
-- tapOn:
-    id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::SaturatedFat::NumericTextInput"
-    label: "Tap saturated fat input"
+- runFlow:
+    file: "../../focusField.yaml"
+    env:
+      TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::SaturatedFat::NumericTextInput"
+    label: "Focus saturated fat input"
 
 - runFlow:
-    file: "../../waitForKeyboard.yaml"
-    label: "Wait for numeric keyboard to appear"
-
-- runFlow:
-    file: "../../inputAndCommitText.yaml"
+    file: "../../inputAndDone.yaml"
     env:
       TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::SaturatedFat::NumericTextInput"
       VALUE: "2,5"
-      DISMISS_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::SaturatedFat::Text"
     label: "Enter saturated fat value"
-
-- runFlow:
-    file: "../../waitForKeyboardDismiss.yaml"
-    label: "Wait for numeric keyboard to dismiss"

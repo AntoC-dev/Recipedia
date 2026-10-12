@@ -1,66 +1,112 @@
 appId: "com.recipedia"
 ---
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::0::QuantityInput"
+    direction: DOWN
+    centerElement: true
+    label: "Scroll to the first quantity with the keyboard closed"
+
+- waitForAnimationToEnd
+
 - runFlow:
-    file: "../../enterIngredientQuantity.yaml"
+    file: "../../../../focusField.yaml"
     env:
-      INDEX: "0"
+      TARGET_ID: "RecipeIngredients::0::QuantityInput"
+    label: "Focus the first quantity"
+
+- runFlow:
+    file: "../../../../inputAndNext.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::0::QuantityInput"
       VALUE: "100"
     label: "Fill cacahuètes grillées quantity: 100"
 
 - runFlow:
-    file: "../../enterIngredientQuantity.yaml"
+    file: "../../../../toolbarNext.yaml"
+    label: "Skip the name of ingredient 0"
+
+- runFlow:
+    file: "../../../../inputAndNext.yaml"
     env:
-      INDEX: "1"
+      TARGET_ID: "RecipeIngredients::1::QuantityInput"
       VALUE: "35"
     label: "Fill concentré de tomates quantity: 35"
 
 - runFlow:
-    file: "../../enterIngredientQuantity.yaml"
+    file: "../../../../toolbarNext.yaml"
+    label: "Skip the name of ingredient 1"
+
+- runFlow:
+    file: "../../../../inputAndNext.yaml"
     env:
-      INDEX: "2"
+      TARGET_ID: "RecipeIngredients::2::QuantityInput"
       VALUE: "2"
     label: "Fill filet de poulet quantity: 2"
 
 - runFlow:
-    file: "../../enterIngredientQuantity.yaml"
+    file: "../../../../toolbarNext.yaml"
+    label: "Skip the name of ingredient 2"
+
+- runFlow:
+    file: "../../../../inputAndNext.yaml"
     env:
-      INDEX: "3"
+      TARGET_ID: "RecipeIngredients::3::QuantityInput"
       VALUE: "1"
     label: "Fill gingembre quantity: 1"
 
 - runFlow:
-    file: "../../enterIngredientQuantity.yaml"
+    file: "../../../../toolbarNext.yaml"
+    label: "Skip the name of ingredient 3"
+
+- runFlow:
+    file: "../../../../inputAndNext.yaml"
     env:
-      INDEX: "4"
+      TARGET_ID: "RecipeIngredients::4::QuantityInput"
       VALUE: "1"
     label: "Fill gousse d'ail quantity: 1"
 
 - runFlow:
-    file: "../../enterIngredientQuantity.yaml"
+    file: "../../../../toolbarNext.yaml"
+    label: "Skip the name of ingredient 4"
+
+- runFlow:
+    file: "../../../../inputAndNext.yaml"
     env:
-      INDEX: "5"
+      TARGET_ID: "RecipeIngredients::5::QuantityInput"
       VALUE: "200"
     label: "Fill lait de coco quantity: 200"
 
-- inputText: "1Test"
+- runFlow:
+    file: "../../../../toolbarNext.yaml"
+    label: "Skip the name of ingredient 5"
 
 - runFlow:
-    file: "../../enterIngredientQuantity.yaml"
+    file: "../../../../inputAndNext.yaml"
     env:
-      INDEX: "6"
+      TARGET_ID: "RecipeIngredients::6::QuantityInput"
       VALUE: "1"
     label: "Fill oignon jaune quantity: 1"
 
 - runFlow:
-    file: "../../enterIngredientQuantity.yaml"
+    file: "../../../../toolbarNext.yaml"
+    label: "Skip the name of ingredient 6"
+
+- runFlow:
+    file: "../../../../inputAndNext.yaml"
     env:
-      INDEX: "7"
+      TARGET_ID: "RecipeIngredients::7::QuantityInput"
       VALUE: "0,5"
     label: "Fill oignon nouveau quantity: 0,5"
 
 - runFlow:
-    file: "../../enterIngredientQuantity.yaml"
+    file: "../../../../toolbarNext.yaml"
+    label: "Skip the name of ingredient 7"
+
+- runFlow:
+    file: "../../../../inputAndDone.yaml"
     env:
-      INDEX: "8"
+      TARGET_ID: "RecipeIngredients::8::QuantityInput"
       VALUE: "150"
     label: "Fill riz basmati Bio quantity: 150"
+

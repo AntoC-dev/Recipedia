@@ -41,14 +41,15 @@ tags:
     element:
       id: "RecipeIngredients::0::NameInput::CustomTextInput"
     direction: DOWN
-    speed: 60
     centerElement: true
-    label: "Action - Scroll to first ingredient"
+    label: "Scroll to RecipeIngredients::0::NameInput::CustomTextInput"
 
 - waitForAnimationToEnd
 
-- tapOn:
-    id: "RecipeIngredients::0::NameInput::CustomTextInput"
+- runFlow:
+    file: "../../flows/focusField.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::0::NameInput::CustomTextInput"
     label: "Action - Focus on ingredient name input"
 
 - runFlow:
@@ -58,10 +59,6 @@ tags:
       VALUE: "AUniqueIngredient"
       DISMISS_ID: "RecipeIngredients::0::Unit"
     label: "Action - Enter unique ingredient name first attempt"
-
-- runFlow:
-    file: "../../flows/waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
 
 - runFlow:
     file: "../../asserts/alerts/en/ingredientNotFound.yaml"
@@ -85,8 +82,19 @@ tags:
     timeout: 30000
     label: "Wait for dialog to appear"
 
-- tapOn:
-    id: "RecipeIngredients::0::NameInput::CustomTextInput"
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::0::NameInput::CustomTextInput"
+    direction: DOWN
+    centerElement: true
+    label: "Scroll to RecipeIngredients::0::NameInput::CustomTextInput"
+
+- waitForAnimationToEnd
+
+- runFlow:
+    file: "../../flows/focusField.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::0::NameInput::CustomTextInput"
     label: "Action - Focus on ingredient name input"
 
 - runFlow:
@@ -96,10 +104,6 @@ tags:
       VALUE: "AUniqueIngredient"
       DISMISS_ID: "RecipeIngredients::0::Unit"
     label: "Action - Enter unique ingredient name second attempt"
-
-- runFlow:
-    file: "../../flows/waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Ingredient::SimilarityDialog::AddButton"

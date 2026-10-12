@@ -1,34 +1,17 @@
 appId: "com.recipedia"
 ---
-
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipePersons::NumericTextInput"
     direction: DOWN
-    speed: 40
     centerElement: true
-    label: "Scroll to person section"
+    label: "Scroll to RecipePersons::NumericTextInput"
 
 - waitForAnimationToEnd
 
-- tapOn:
-    id: "RecipePersons::NumericTextInput"
-    label: "Press person input"
-
 - runFlow:
-    file: "../../../../waitForKeyboard.yaml"
-    label: "Wait for numeric keyboard to appear"
-
-- runFlow:
-    file: "../../../../replaceAndCommitText.yaml"
+    file: "../../../../replaceAndDone.yaml"
     env:
       TARGET_ID: "RecipePersons::NumericTextInput"
       VALUE: "321"
-      DISMISS_ID: "RecipePersons::PrefixText"
     label: "Write the number of person in the input text"
-
-- runFlow:
-    file: "../../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for numeric keyboard to dismiss"

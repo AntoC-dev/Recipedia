@@ -52,31 +52,23 @@ appId: "com.recipedia"
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightNumericTextInput"
     direction: DOWN
-    speed: 60
     centerElement: true
-    label: "Scroll to weight of a portion"
+    label: "Scroll to Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightNumericTextInput"
 
 - waitForAnimationToEnd
 
-- tapOn:
-    id: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightNumericTextInput"
+- runFlow:
+    file: "../../../../focusField.yaml"
+    env:
+      TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightNumericTextInput"
     label: "Tap on weight input"
 
 - runFlow:
-    file: "../../../../waitForKeyboard.yaml"
-    label: "Wait for numeric keyboard to appear"
-
-- runFlow:
-    file: "../../../../inputAndCommitText.yaml"
+    file: "../../../../inputAndDone.yaml"
     env:
       TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightNumericTextInput"
       VALUE: "200"
-      DISMISS_ID: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightText"
     label: "Enter the weight of a portion"
-
-- runFlow:
-    file: "../../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for numeric keyboard to dismiss"
 
 - runFlow:
     file: ../cleanAndResume.yaml

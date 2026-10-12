@@ -4,86 +4,23 @@ appId: "com.recipedia"
     file: "../../en/addRecipeImage.yaml"
     label: "Add recipe image"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeTitle::CustomTextInput"
-    direction: DOWN
-    speed: 20
-    centerElement: true
-    label: "Scroll to title text input"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipeTitle::CustomTextInput"
-    label: "Press the TextInput of title"
-
-- inputText:
-    text: "Aiguillettes de poulet a la sauce satay"
-    label: "Enter text for recipe title"
-
-- tapOn:
-    id: "RecipeTitle::Text"
-    label: "Tap the title to close the keyboard"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeDescription::CustomTextInput"
-    direction: DOWN
-    speed: 20
-    centerElement: true
-    label: "Scroll to description text input"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipeDescription::CustomTextInput"
-    label: "Press the TextInput of description"
-
-- inputText:
-    text: "Cuisinez nos filets de poulet francais avec du riz basmati bio et une sauce satay maison: un condiment asiatique a base de cacahuetes et gingembre !"
-    label: "Enter text for recipe description"
-
-- tapOn:
-    id: "RecipeDescription::Text"
-    label: "Tap the description to close the keyboard"
-
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeTags::RoundButton"
     direction: DOWN
-    speed: 20
     timeout: 120000
     centerElement: true
-    label: "Scroll to tags's adding button"
-
-- waitForAnimationToEnd
+    label: "Scroll to the tags add button"
 
 - tapOn:
     id: "RecipeTags::RoundButton"
     label: "Press the round button of first tags"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeTags::List::0::CustomTextInput"
-    direction: UP
-    speed: 10
-    centerElement: true
-    label: "Scroll to ensure first tag's text input is visible"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipeTags::List::0::CustomTextInput"
-    label: "Press the TextInput of first tags"
+- runFlow:
+    file: "../../../../focusField.yaml"
+    env:
+      TARGET_ID: "RecipeTags::List::0::CustomTextInput"
+    label: "Focus the TextInput of first tags"
 
 - runFlow:
     file: "../../../../inputAndCommitText.yaml"
@@ -92,12 +29,6 @@ appId: "com.recipedia"
       VALUE: "Healthy"
       DISMISS_ID: "RecipeTags::ElementText"
     label: "Enter text for recipe first tag"
-
-- runFlow:
-    file: "../../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -118,14 +49,6 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeTags::RoundButton"
-    direction: DOWN
-    speed: 40
-    centerElement: true
-    label: "Scroll to ingredient's add button"
-
-- scrollUntilVisible:
-    element:
       id: "RecipeTags::0::Chip"
     direction: UP
     speed: 20
@@ -133,9 +56,11 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd
 
-- tapOn:
-    id: "RecipeTags::List::1::CustomTextInput"
-    label: "Press the TextInput of second tags"
+- runFlow:
+    file: "../../../../focusField.yaml"
+    env:
+      TARGET_ID: "RecipeTags::List::1::CustomTextInput"
+    label: "Focus the TextInput of second tags"
 
 - extendedWaitUntil:
     visible:
@@ -144,7 +69,7 @@ appId: "com.recipedia"
     label: "Wait for the autocomplete list to appear"
 
 - runFlow:
-    file: "../../../../../flows/dismissModalKeyboard.yaml"
+    file: "../../../../dismissModalKeyboard.yaml"
     label: "Dismiss modal keyboard (platform-specific)"
 
 - repeat:
@@ -160,6 +85,7 @@ appId: "com.recipedia"
           label: "Scroll the tag dropdown down towards Italian"
       - waitForAnimationToEnd:
           label: "Wait for scrolling animation to end"
+
 - assertVisible:
     id: "RecipeTags::List::1::AutocompleteItem::Italian"
     label: "Assert - Italian tag is displayed"
@@ -183,155 +109,122 @@ appId: "com.recipedia"
     element:
       id: "RecipeTags::0::Chip"
     direction: UP
-    speed: 20
     timeout: 120000
     label: "Action - Scroll back to chip parts"
-
-- waitForAnimationToEnd:
-    label: "Wait for animation to end"
 
 - assertVisible:
     id: "RecipeTags::1::Chip"
     label: "Assert - Second tag chip is visible"
 
+- runFlow:
+    file: "../../../addRow.yaml"
+    env:
+      SECTION: "RecipeIngredients"
+    label: "Add ingredient row 1"
+
+- runFlow:
+    file: "../../../addRow.yaml"
+    env:
+      SECTION: "RecipeIngredients"
+    label: "Add ingredient row 2"
+
+- runFlow:
+    file: "../../../addRow.yaml"
+    env:
+      SECTION: "RecipeIngredients"
+    label: "Add ingredient row 3"
+
+- runFlow:
+    file: "../../../addRow.yaml"
+    env:
+      SECTION: "RecipeIngredients"
+    label: "Add ingredient row 4"
+
+- runFlow:
+    file: "../../../addRow.yaml"
+    env:
+      SECTION: "RecipePreparation"
+    label: "Add preparation step 1"
+
+- runFlow:
+    file: "../../../addRow.yaml"
+    env:
+      SECTION: "RecipePreparation"
+    label: "Add preparation step 2"
+
+- runFlow:
+    file: "../../../addRow.yaml"
+    env:
+      SECTION: "RecipePreparation"
+    label: "Add preparation step 3"
+
 - scrollUntilVisible:
     element:
-      id: "RecipeIngredients::AddButton::RoundButton"
-    direction: DOWN
-    speed: 20
+      id: "RecipeTitle::CustomTextInput"
+    direction: UP
     centerElement: true
-    label: "Scroll to ingredients section"
+    label: "Scroll to RecipeTitle::CustomTextInput"
 
 - waitForAnimationToEnd
 
-- tapOn:
-    id: "RecipeIngredients::AddButton::RoundButton"
-    label: "Press the round button of first ingredient"
-
-- tapOn:
-    id: "RecipeIngredients::0::QuantityInput"
-    label: "Press the TextInput of first ingredient's quantity"
+- runFlow:
+    file: "../../../../focusField.yaml"
+    env:
+      TARGET_ID: "RecipeTitle::CustomTextInput"
+    label: "Focus the title"
 
 - runFlow:
-    file: "../../../../waitForKeyboard.yaml"
-    label: "Wait for numeric keyboard to appear"
-
-- inputText:
-    text: "200"
-    label: "Enter text for recipe first ingredient quantity"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- tapOn:
-    id: "RecipeIngredients::0::NameInput::CustomTextInput"
-    label: "Press the TextInput of first ingredient's name"
+    file: "../../../../inputAndNext.yaml"
+    env:
+      TARGET_ID: "RecipeTitle::CustomTextInput"
+      VALUE: "Aiguillettes de poulet a la sauce satay"
+    label: "Enter the title, Next moves to the description"
 
 - runFlow:
-    file: "../../../../waitForKeyboard.yaml"
-    label: "Wait for numeric keyboard to appear"
+    file: "../../../../inputAndNext.yaml"
+    env:
+      TARGET_ID: "RecipeDescription::CustomTextInput"
+      VALUE: "Cuisinez nos filets de poulet francais avec du riz basmati bio et une sauce satay maison: un condiment asiatique a base de cacahuetes et gingembre !"
+    label: "Enter the description, Next moves to the persons"
 
-- inputText:
-    text: "Chicken Breast"
+- runFlow:
+    file: "../../../../toolbarNext.yaml"
+    label: "Skip the persons field with the toolbar Next"
+
+- runFlow:
+    file: "../../../../inputAndNext.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::0::QuantityInput"
+      VALUE: "200"
+    label: "Enter first ingredient quantity, Next moves to its name"
+
+- runFlow:
+    file: "../../../../inputAndCommitText.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::0::NameInput::CustomTextInput"
+      VALUE: "Chicken Breast"
+      DISMISS_ID: "RecipeIngredients::Header::IngredientName"
     label: "Enter text for recipe first ingredient name"
 
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- tapOn:
-    id: "RecipeIngredients::Header::IngredientName"
-    label: "Tap on the ingredient name to close the keyboard"
+- runFlow:
+    file: "../../../../focusField.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::2::QuantityInput"
+    label: "Focus the third ingredient quantity (keyboard closed, row visible)"
 
 - runFlow:
-    file: "../../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::AddButton::RoundButton"
-    direction: DOWN
-    speed: 10
-    centerElement: true
-    label: "Scroll to ensure add button is still visible"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipeIngredients::AddButton::RoundButton"
-    label: "Press the round button of second ingredient"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::AddButton::RoundButton"
-    direction: DOWN
-    speed: 10
-    centerElement: true
-    label: "Scroll to ensure add button is still visible"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipeIngredients::AddButton::RoundButton"
-    label: "Press the round button of third ingredient"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::AddButton::RoundButton"
-    direction: DOWN
-    speed: 10
-    centerElement: true
-    label: "Scroll to ingredient's add a button to ensure second ingredient is visible"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipeIngredients::AddButton::RoundButton"
-    label: "Press the round button of fourth ingredient"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::1::QuantityInput"
-    direction: UP
-    speed: 10
-    label: "Scroll up to ensure second ingredient's quantity input is visible"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipeIngredients::2::QuantityInput"
-    label: "Press the TextInput of third ingredient's quantity"
+    file: "../../../../inputAndNext.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::2::QuantityInput"
+      VALUE: "2"
+    label: "Enter third ingredient quantity, Next moves to its name"
 
 - runFlow:
-    file: "../../../../waitForKeyboard.yaml"
-    label: "Wait for numeric keyboard to appear"
-
-- inputText:
-    text: "2"
-    label: "Enter text for recipe third ingredient quantity"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- tapOn:
-    id: "RecipeIngredients::2::NameInput::CustomTextInput"
-    label: "Press the TextInput of second ingredient's name"
-
-- runFlow:
-    file: "../../../../waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
-
-- inputText:
-    text: "Oni"
+    file: "../../../../inputText.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::2::NameInput::CustomTextInput"
+      VALUE: "Oni"
     label: "Enter text for recipe third ingredient name (partial)"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
 
 - runFlow:
     when:
@@ -370,17 +263,15 @@ appId: "com.recipedia"
           timeout: 30000
           label: "Wait for validation dialog to disappear"
 
-- tapOn:
-    id: "RecipeIngredients::3::NameInput::CustomTextInput"
-    label: "Press the TextInput of fourth ingredient's name"
-
 - runFlow:
-    file: "../../../../waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
+    file: "../../../../focusField.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::3::NameInput::CustomTextInput"
+    label: "Focus the fourth ingredient name"
 
 - tapOn:
     id: "RecipeIngredients::3::Unit"
-    label: "Tap on third ingredient's unit to close the keyboard"
+    label: "Tap on fourth ingredient's unit to close the keyboard"
 
 - runFlow:
     file: "../../../../waitForKeyboardDismiss.yaml"
@@ -403,25 +294,11 @@ appId: "com.recipedia"
       VALUE: "5"
     label: "Fill fourth ingredient quantity: 5"
 
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::1::QuantityInput"
-    direction: UP
-    speed: 10
-    centerElement: true
-    label: "Scroll up to ensure second ingredient's quantity input is visible"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipeIngredients::1::NameInput::CustomTextInput"
-    label: "Press the TextInput of second ingredient's name"
-
 - runFlow:
-    file: "../../../../waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
+    file: "../../../../focusField.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::1::NameInput::CustomTextInput"
+    label: "Focus the second ingredient name"
 
 - runFlow:
     file: "../../../../inputAndCommitText.yaml"
@@ -429,13 +306,7 @@ appId: "com.recipedia"
       TARGET_ID: "RecipeIngredients::1::NameInput::CustomTextInput"
       VALUE: "Non-existing-ingredient"
       DISMISS_ID: "RecipeIngredients::1::Unit"
-    label: "Enter text for recipe second ingredient name (non-existing)"
-
-- runFlow:
-    file: "../../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for numeric keyboard to disappear"
-
-- waitForAnimationToEnd
+    label: "Enter a non-existing name in the second (middle) row"
 
 - assertVisible:
     id: "RecipeValidation::ValidationQueue::Ingredient::SimilarityDialog::Title"
@@ -449,180 +320,50 @@ appId: "com.recipedia"
     notVisible:
       id: "RecipeIngredients::3::NameInput::CustomTextInput"
     timeout: 30000
-    label: "Wait for fourth ingredient to disappear (second one has been removed)"
+    label: "Wait for the fourth row to disappear (the second row was removed, the filled rows shifted up)"
 
 - scrollUntilVisible:
     element:
       id: "RecipeTime::NumericTextInput"
     direction: DOWN
-    speed: 40
     centerElement: true
-    label: "Scroll to persons section"
+    label: "Scroll to RecipeTime::NumericTextInput"
 
 - waitForAnimationToEnd
 
-- tapOn:
-    id: "RecipeTime::NumericTextInput"
-    label: "Press the TextInput of time"
+- runFlow:
+    file: "../../../../focusField.yaml"
+    env:
+      TARGET_ID: "RecipeTime::NumericTextInput"
+    label: "Focus the time"
 
 - runFlow:
-    file: "../../../../waitForKeyboard.yaml"
-    label: "Wait for numeric keyboard to appear"
-
-- inputText:
-    text: "20"
-    label: "Enter text for recipe time"
-
-- tapOn:
-    id: "RecipeTime::PrefixText"
-    label: "Tap on the prefix text to close the keyboard"
+    file: "../../../../inputAndNext.yaml"
+    env:
+      TARGET_ID: "RecipeTime::NumericTextInput"
+      VALUE: "20"
+    label: "Enter the time, Next moves to the first step title"
 
 - runFlow:
-    file: "../../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for numeric keyboard to dismiss"
-
-- scrollUntilVisible:
-    element:
-      id: "RecipePreparation::AddButton::RoundButton"
-    direction: DOWN
-    speed: 40
-    centerElement: true
-    label: "Scroll to preparation section"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipePreparation::AddButton::RoundButton"
-    label: "Press the round button of first preparation"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
-    direction: DOWN
-    speed: 20
-    centerElement: true
-    label: "Scroll to first preparation title input"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
-    label: "Press the TextInput of first preparation title"
+    file: "../../../../inputAndNext.yaml"
+    env:
+      TARGET_ID: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
+      VALUE: "Le riz"
+    label: "Enter first step title, Next moves to its paragraph"
 
 - runFlow:
-    file: "../../../../waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
-
-- inputText:
-    text: "Le riz"
-    label: "Enter text for recipe first preparation title"
-
-- tapOn:
-    id: "RecipePreparation::EditableStep::.*::Title"
-    label: "Tap on the title text to close the keyboard"
+    file: "../../../../inputAndNext.yaml"
+    env:
+      TARGET_ID: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
+      VALUE: "Portez a ebullition une casserole d'eau salee.Faites cuire le riz selon les indications du paquet.Pendant ce temps, preparez les filets de poulet a la sauce satay."
+    label: "Enter the first paragraph, Next moves to the second step title"
 
 - runFlow:
-    file: "../../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to hide"
-
-- tapOn:
-    id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
-    label: "Press the TextInput of first preparation paragraph"
-
-- runFlow:
-    file: "../../../../waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
-
-- inputText:
-    text: "Portez a ebullition une casserole d'eau salee.Faites cuire le riz selon les indications du paquet.Pendant ce temps, preparez les filets de poulet a la sauce satay."
-    label: "Enter text for recipe first preparation paragraph"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- tapOn:
-    id: "RecipePreparation::EditableStep::0::Content"
-    label: "Tap on the content text to close the keyboard"
-
-- runFlow:
-    file: "../../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to hide"
-
-- scrollUntilVisible:
-    element:
-      id: "RecipePreparation::AddButton::RoundButton"
-    direction: DOWN
-    speed: 40
-    centerElement: true
-    label: "Scroll to see the add button of second preparation"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipePreparation::AddButton::RoundButton"
-    label: "Press the round button of second preparation"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "RecipePreparation::EditableStep::1::TextInputTitle::CustomTextInput"
-    direction: DOWN
-    speed: 20
-    centerElement: true
-    label: "Scroll to second preparation title input"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "RecipePreparation::EditableStep::1::Title"
-    direction: UP
-    speed: 20
-    label: "Scroll up in case the step title is not visible"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipePreparation::EditableStep::1::TextInputTitle::CustomTextInput"
-    label: "Press the TextInput of second preparation title"
-
-- runFlow:
-    file: "../../../../waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
-
-- inputText:
-    text: "La sauce"
-    label: "Enter text for recipe second preparation title"
-
-- tapOn:
-    id: "RecipePreparation::EditableStep::.*::Title"
-    label: "Tap on the title text to close the keyboard"
-
-- runFlow:
-    file: "../../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to hide"
-
-- scrollUntilVisible:
-    element:
-      id: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
-    direction: DOWN
-    speed: 40
-    centerElement: true
-    label: "Scroll to preparation section"
-
-- waitForAnimationToEnd:
-    label: "Wait for scroll animation to end"
-
-- tapOn:
-    id: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
-    label: "Press the TextInput of second preparation paragraph"
-
-- runFlow:
-    file: "../../../../waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
+    file: "../../../../inputAndNext.yaml"
+    env:
+      TARGET_ID: "RecipePreparation::EditableStep::1::TextInputTitle::CustomTextInput"
+      VALUE: "La sauce"
+    label: "Enter second step title, Next moves to its paragraph"
 
 - runFlow:
     file: "../../../../appendText.yaml"
@@ -643,7 +384,7 @@ appId: "com.recipedia"
     commands:
       - tapOn:
           id: "Return"
-          label: "Tap Done key to go to a new line"
+          label: "Tap Return key to go to a new line"
 
 - runFlow:
     file: "../../../../appendText.yaml"
@@ -664,7 +405,7 @@ appId: "com.recipedia"
     commands:
       - tapOn:
           id: "Return"
-          label: "Tap Done key to go to a new line"
+          label: "Tap Return key to go to a new line"
 
 - runFlow:
     file: "../../../../appendText.yaml"
@@ -681,118 +422,31 @@ appId: "com.recipedia"
     label: "Enter text for recipe second preparation paragraph (fourth line)"
 
 - runFlow:
-    when:
-      platform: Android
-    commands:
-      - hideKeyboard:
-          label: "Dismiss keyboard on Android"
+    file: "../../../../toolbarNext.yaml"
+    label: "Leave the second paragraph with the toolbar Next"
 
 - runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn:
-          id: "RecipePreparation::EditableStep::1::Content"
-          label: "Tap on the second content text to close the keyboard"
-
-- runFlow:
-    file: "../../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to disappear"
-
-- scrollUntilVisible:
-    element:
-      id: "RecipePreparation::AddButton::RoundButton"
-    direction: DOWN
-    speed: 40
-    centerElement: true
-    label: "Scroll to second preparation title input"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipePreparation::AddButton::RoundButton"
-    waitToSettleTimeoutMs: 0
-    retryTapIfNoChange: false
-    label: "Press the round button of third preparation"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "RecipePreparation::EditableStep::2::TextInputTitle::CustomTextInput"
-    direction: DOWN
-    speed: 20
-    centerElement: true
-    label: "Scroll to third preparation title input"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipePreparation::EditableStep::2::TextInputTitle::CustomTextInput"
-    label: "Press the TextInput of third preparation title"
-
-- runFlow:
-    file: "../../../../waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
-
-- inputText:
-    text: "LA CUISSON DU POULET"
-    label: "Enter text for recipe third preparation title"
-
-- tapOn:
-    id: "RecipePreparation::EditableStep::2.*:Title"
-    label: "Tap on the title text to close the keyboard"
-
-- runFlow:
-    file: "../../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to hide"
-
-- scrollUntilVisible:
-    element:
-      id: "RecipePreparation::EditableStep::2::TextInputContent::CustomTextInput"
-    direction: DOWN
-    speed: 40
-    centerElement: true
-    label: "Scroll to third preparation paragraph input"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipePreparation::EditableStep::2::TextInputContent::CustomTextInput"
-    label: "Press the TextInput of third preparation paragraph"
-
-- runFlow:
-    file: "../../../../waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
+    file: "../../../../inputAndNext.yaml"
+    env:
+      TARGET_ID: "RecipePreparation::EditableStep::2::TextInputTitle::CustomTextInput"
+      VALUE: "LA CUISSON DU POULET"
+    label: "Enter third step title, Next moves to its paragraph"
 
 - inputText:
     text: "Coupez les filets de poulet en lanieres.\nemincez l'oignon.\nPressez ou hachez l'ail.\nDans une poele, faites chauffer un filet d'huile de cuisson a feu moyen a vif."
     label: "Enter text for recipe third preparation paragraph"
 
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - hideKeyboard:
-          label: "Dismiss keyboard on Android"
+- assertVisible:
+    id: "RecipePreparation::EditableStep::2::TextInputContent::CustomTextInput"
+    text: "[\\s\\S]*a feu moyen a vif[.][\\s\\S]*"
+    label: "Check the third paragraph holds its last line before closing the keyboard"
 
 - runFlow:
-    when:
-      platform: iOS
-    commands:
-      - tapOn:
-          id: "RecipePreparation::EditableStep::2::Content"
-          label: "Tap on the third content text to close the keyboard"
-
-- runFlow:
-    file: "../../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to disappear"
+    file: "../../../../toolbarDone.yaml"
+    label: "Close the keyboard after the last field of the pass"
 
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionEmptyState::AddButton::RoundButton"
     direction: DOWN
-    speed: 40
     label: "Scroll to see the nutrition add button"
-
-- waitForAnimationToEnd

@@ -1,28 +1,14 @@
 appId: "com.recipedia"
 ---
-
-- waitForAnimationToEnd:
-    label: "Wait for animation to end"
-
-- tapOn:
-    id: "RecipeTitle::CustomTextInput"
-    label: "Tap on Title's TextInput"
+- runFlow:
+    file: "../../../../focusField.yaml"
+    env:
+      TARGET_ID: "RecipeTitle::CustomTextInput"
+    label: "Focus RecipeTitle::CustomTextInput"
 
 - runFlow:
-    file: "../../../../waitForKeyboard.yaml"
-    label: "Wait for keyboard to open"
-
-- inputText:
-    text: "Title"
+    file: "../../../../inputAndDone.yaml"
+    env:
+      TARGET_ID: "RecipeTitle::CustomTextInput"
+      VALUE: "Title"
     label: "Write the title in the input text"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation to end"
-
-- tapOn:
-    id: "RecipeImage"
-    label: "Tap on recipe image to close the keyboard"
-
-- runFlow:
-    file: "../../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to close"

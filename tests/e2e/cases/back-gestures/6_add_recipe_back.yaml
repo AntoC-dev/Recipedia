@@ -56,10 +56,16 @@ tags:
     label: "Assert - Still on the add form"
 
 - runFlow:
-    file: "../../flows/recipe/adding/setRecipeTitle.yaml"
+    file: "../../flows/replaceAndDone.yaml"
     env:
-      TITLE: "Gesture New Recipe"
-    label: "Action - Type a title so the form becomes dirty"
+      TARGET_ID: "RecipeTitle::CustomTextInput"
+      VALUE: "Gesture New Recipe"
+    label: "Action - Replace RecipeTitle::CustomTextInput with Gesture New Recipe"
+
+- assertVisible:
+    id: "RecipeTitle::CustomTextInput"
+    text: "Gesture New Recipe"
+    label: "Assert - RecipeTitle::CustomTextInput still holds Gesture New Recipe once the keyboard is closed"
 
 - runFlow:
     file: "../../flows/navigation/systemBack.yaml"

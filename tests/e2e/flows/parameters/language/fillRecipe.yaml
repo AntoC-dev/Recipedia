@@ -4,159 +4,79 @@ appId: "com.recipedia"
     file: "../../recipe/adding/fr/addRecipeImage.yaml"
     label: "Add recipe image in French"
 
-- tapOn:
-    id: "RecipeTitle::CustomTextInput"
-    label: "Tap on recipe title text input"
+- runFlow:
+    file: "../../recipe/addRow.yaml"
+    env:
+      SECTION: "RecipeIngredients"
+    label: "Add the ingredient row"
 
 - runFlow:
-    file: "../../waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
-
-- inputText:
-    text: "Titre"
-    label: "Write a title in the input text"
-
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- tapOn:
-    id: "RecipeImage"
-    label: "Tap on recipe image to close the keyboard"
-
-- runFlow:
-    file: "../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
-
-- waitForAnimationToEnd
+    file: "../../recipe/addRow.yaml"
+    env:
+      SECTION: "RecipePreparation"
+    label: "Add the preparation step"
 
 - scrollUntilVisible:
     element:
-      id: "RecipeIngredients::AddButton::RoundButton"
-    direction: DOWN
-    speed: 60
+      id: "RecipeTitle::CustomTextInput"
+    direction: UP
     centerElement: true
+    label: "Scroll to the title with the keyboard closed"
 
 - waitForAnimationToEnd
 
-- tapOn:
-    id: "RecipeIngredients::AddButton::RoundButton"
-    label: "Tap on recipe ingredients button to add ingredient"
+- runFlow:
+    file: "../../focusField.yaml"
+    env:
+      TARGET_ID: "RecipeTitle::CustomTextInput"
+    label: "Focus the title"
 
 - runFlow:
-    file: "../../recipe/adding/enterIngredientQuantity.yaml"
+    file: "../../inputAndNext.yaml"
     env:
-      INDEX: "0"
+      TARGET_ID: "RecipeTitle::CustomTextInput"
+      VALUE: "Titre"
+    label: "Write a title, Next moves to the description"
+
+- runFlow:
+    file: "../../toolbarNext.yaml"
+    label: "Skip the description"
+
+- runFlow:
+    file: "../../toolbarNext.yaml"
+    label: "Skip the persons"
+
+- runFlow:
+    file: "../../inputAndNext.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::0::QuantityInput"
       VALUE: "200"
     label: "Fill first ingredient quantity: 200"
 
-- tapOn:
-    id: "RecipeIngredients::0::NameInput::CustomTextInput"
-    label: "Tap on recipe ingredient name text input"
 - runFlow:
-    file: "../../inputAndCommitText.yaml"
+    file: "../../inputAndNext.yaml"
     env:
       TARGET_ID: "RecipeIngredients::0::NameInput::CustomTextInput"
       VALUE: "Avocado"
-      DISMISS_ID: "RecipeIngredients::0::Unit"
-    label: "Write an ingredient name in the input text"
+    label: "Write an ingredient name in the input text (exact match, Next moves to the time)"
 
 - runFlow:
-    file: "../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeTime::NumericTextInput"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll until preparation time is visible"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipeTime::NumericTextInput"
-    label: "Focus on the preparation time text input"
-
-- runFlow:
-    file: "../../inputAndCommitText.yaml"
+    file: "../../inputAndNext.yaml"
     env:
       TARGET_ID: "RecipeTime::NumericTextInput"
       VALUE: "5"
-      DISMISS_ID: "RecipeTime::PrefixText"
-    label: "Write a time in the input text"
+    label: "Write a time, Next moves to the step title"
 
 - runFlow:
-    file: "../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "RecipePreparation::AddButton::RoundButton"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipePreparation::AddButton::RoundButton"
-    label: "Tap on recipe preparation adding button"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
-    direction: DOWN
-    speed: 40
-    centerElement: true
-    label: "Scroll until recipe preparation title is visible"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "RecipePreparation::EditableStep::0::Title"
-    direction: UP
-    speed: 20
-    label: "Ensure recipe preparation title is visible"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
-    label: "Tap on recipe preparation title text input"
-- inputText:
-    text: "Titre de preparation"
-    label: "Write a preparation title in the input text"
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- tapOn:
-    id: "RecipePreparation::EditableStep::0::Title"
-    label: "Tap on recipe preparation title to close the keyboard"
+    file: "../../inputAndNext.yaml"
+    env:
+      TARGET_ID: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
+      VALUE: "Titre de preparation"
+    label: "Write a preparation title, Next moves to the content"
 
 - runFlow:
-    file: "../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
-- tapOn:
-    id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
-    label: "Tap on recipe preparation content text input"
-- inputText:
-    text: "Etape de la preparation"
-    label: "Write a preparation content in the input text"
-- waitForAnimationToEnd:
-    label: "Wait for keyboard animation"
-
-- tapOn:
-    id: "RecipePreparation::EditableStep::0::Content"
-    label: "Tap on recipe preparation content to close the keyboard"
-
-- runFlow:
-    file: "../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
+    file: "../../inputAndDone.yaml"
+    env:
+      TARGET_ID: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
+      VALUE: "Etape de la preparation"
+    label: "Write a preparation content and close the keyboard"

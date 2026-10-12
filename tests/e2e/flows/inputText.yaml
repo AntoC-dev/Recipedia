@@ -1,0 +1,10 @@
+appId: "com.recipedia"
+---
+- inputText:
+    text: "${VALUE}"
+    label: "Type ${VALUE} into ${TARGET_ID}"
+
+- assertVisible:
+    id: "${TARGET_ID}"
+    text: "${VALUE}"
+    label: "Check ${TARGET_ID} holds ${VALUE} before leaving it"

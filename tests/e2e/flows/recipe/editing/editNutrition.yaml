@@ -1,79 +1,72 @@
 appId: "com.recipedia"
 ---
-
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
-      id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
+      id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Salt::NumericTextInput"
     direction: DOWN
-    speed: 30
-    timeout: 240000
     centerElement: true
-    label: "Scroll to nutrition section"
+    timeout: 240000
+    label: "Scroll to the last nutrition row with the keyboard closed (the energy row can sit under the app bar and still count as visible)"
 
 - waitForAnimationToEnd
 
-- tapOn:
-    id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
-    label: "Tap on energy kcal input"
+- swipe:
+    from:
+      id: "Recipe::RecipeNutrition::NutritionTable-container"
+    direction: DOWN
+    label: "Bring the first nutrition row back from under the app bar"
+
+- waitForAnimationToEnd
 
 - runFlow:
-    file: "../../waitForKeyboard.yaml"
-    label: "Wait for numeric keyboard to appear"
-
-- runFlow:
-    file: "../../replaceAndCommitText.yaml"
+    file: "../../replaceText.yaml"
     env:
       TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
       VALUE: "${NEW_ENERGY_KCAL}"
-      DISMISS_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::Text"
     label: "Enter energy kcal value"
 
 - runFlow:
-    file: "../../waitForKeyboardDismiss.yaml"
-    label: "Wait for numeric keyboard to dismiss"
-
-- tapOn:
-    id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::NumericTextInput"
-    label: "Tap on fat input"
+    file: "../../toolbarNext.yaml"
+    label: "Skip energy kj"
 
 - runFlow:
-    file: "../../replaceAndCommitText.yaml"
+    file: "../../toolbarNext.yaml"
+    label: "Move to fat"
+
+- runFlow:
+    file: "../../replaceFocused.yaml"
     env:
       TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::NumericTextInput"
       VALUE: "${NEW_FAT}"
-      DISMISS_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::Text"
     label: "Enter fat value"
 
 - runFlow:
-    file: "../../waitForKeyboardDismiss.yaml"
-    label: "Wait for numeric keyboard to dismiss"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::NumericTextInput"
-    direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to protein field"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::NumericTextInput"
-    label: "Tap on protein input"
+    file: "../../toolbarNext.yaml"
+    label: "Skip saturated fat"
 
 - runFlow:
-    file: "../../replaceAndCommitText.yaml"
+    file: "../../toolbarNext.yaml"
+    label: "Skip carbohydrates"
+
+- runFlow:
+    file: "../../toolbarNext.yaml"
+    label: "Skip sugars"
+
+- runFlow:
+    file: "../../toolbarNext.yaml"
+    label: "Skip fiber"
+
+- runFlow:
+    file: "../../toolbarNext.yaml"
+    label: "Move to protein"
+
+- runFlow:
+    file: "../../replaceFocused.yaml"
     env:
       TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::NumericTextInput"
       VALUE: "${NEW_PROTEIN}"
-      DISMISS_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::Text"
     label: "Enter protein value"
 
 - runFlow:
-    file: "../../waitForKeyboardDismiss.yaml"
-    label: "Wait for numeric keyboard to dismiss"
+    file: "../../toolbarDone.yaml"
+    label: "Close the keyboard after the last field"

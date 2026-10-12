@@ -1,0 +1,18 @@
+appId: "com.recipedia"
+---
+- eraseText:
+    label: "Clear ${TARGET_ID} before typing ${VALUE}"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "${TARGET_ID}"
+      text: ".+"
+    timeout: 5000
+    label: "Check ${TARGET_ID} is empty before typing ${VALUE} (fails if the caret was not at the end, as eraseText only clears before it)"
+
+- runFlow:
+    file: "inputText.yaml"
+    env:
+      TARGET_ID: "${TARGET_ID}"
+      VALUE: "${VALUE}"
+    label: "Type ${VALUE} into ${TARGET_ID}"

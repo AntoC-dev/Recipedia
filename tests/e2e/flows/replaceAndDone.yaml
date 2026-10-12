@@ -1,0 +1,12 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    file: "replaceText.yaml"
+    env:
+      TARGET_ID: "${TARGET_ID}"
+      VALUE: "${VALUE}"
+    label: "Replace ${TARGET_ID} with ${VALUE}"
+
+- runFlow:
+    file: "toolbarDone.yaml"
+    label: "Commit ${TARGET_ID} with the toolbar Done"

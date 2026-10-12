@@ -80,13 +80,11 @@ tags:
     label: "Assert (after erase) - Title inline error visible"
 
 
-- tapOn:
-    id: "RecipeTitle::CustomTextInput"
-    label: "Action - Focus title input to refill it manually (stays editable once edited, no OCR button)"
-
 - runFlow:
-    file: "../../flows/waitForKeyboard.yaml"
-    label: "Wait for keyboard"
+    file: "../../flows/focusField.yaml"
+    env:
+      TARGET_ID: "RecipeTitle::CustomTextInput"
+    label: "Action - Focus title input to refill it manually (stays editable once edited, no OCR button)"
 
 - inputText:
     text: "Inline Errors Test"

@@ -4,7 +4,22 @@ tags:
   - recipe-create
 ---
 - runFlow:
-    file: "../../flows/recipe/adding/fillTestRecipeFor2Persons.yaml"
+    file: "../../flows/recipe/adding/manual/en/openAddManually.yaml"
+    label: "Action - Open manual recipe creation"
+
+- runFlow:
+    file: "../../flows/recipe/adding/en/addRecipeImage.yaml"
+    label: "Action - Add recipe image"
+
+- runFlow:
+    file: "../../flows/recipe/adding/createTwoIngredientRecipe.yaml"
+    env:
+      PERSONS: "2"
+      ING0_NAME: "Pasta"
+      ING0_QTY: "200"
+      ING1_NAME: "Tomatoes"
+      ING1_QTY: "100"
+      TIME: "20"
     label: "Action - Fill Test Recipe (2 persons, Pasta 200g, Tomatoes 100g)"
 
 - waitForAnimationToEnd
