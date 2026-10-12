@@ -1,0 +1,15 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "keyboard.toolbar.previous"
+    label: "Tap the keyboard toolbar Previous"
+
+- waitForAnimationToEnd:
+    label: "Wait for the focus move to settle"
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - waitForAnimationToEnd:
+          label: "Wait for the keyboard to switch type before typing"

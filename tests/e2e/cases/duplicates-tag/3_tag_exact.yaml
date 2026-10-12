@@ -52,11 +52,30 @@ tags:
     label: "Action - Focus on tag input field"
 
 - runFlow:
-    file: "../../flows/inputAndCommitText.yaml"
+    file: "../../flows/toolbarPrevious.yaml"
+    label: "Action - Move back to the description with the toolbar Previous"
+
+- assertVisible:
+    id: "RecipeDescription::CustomTextInput"
+    below:
+      id: "Recipe::AppBar"
+    label: "Assert - Description is visible below the app bar"
+
+- runFlow:
+    file: "../../flows/toolbarNext.yaml"
+    label: "Action - Return to the tag input with the toolbar Next"
+
+- assertVisible:
+    id: "RecipeTags::List::0::CustomTextInput"
+    below:
+      id: "Recipe::AppBar"
+    label: "Assert - Tag input is visible and stays below the app bar"
+
+- runFlow:
+    file: "../../flows/inputAndDone.yaml"
     env:
       TARGET_ID: "RecipeTags::List::0::CustomTextInput"
       VALUE: "Dessert"
-      DISMISS_ID: "RecipeTags::ElementText"
     label: "Action - Enter existing tag name"
 
 - waitForAnimationToEnd
@@ -90,11 +109,10 @@ tags:
     label: "Action - Focus on tag input field again"
 
 - runFlow:
-    file: "../../flows/inputAndCommitText.yaml"
+    file: "../../flows/inputAndDone.yaml"
     env:
       TARGET_ID: "RecipeTags::List::1::CustomTextInput"
       VALUE: "Dessert"
-      DISMISS_ID: "RecipeTags::ElementText"
     label: "Action - Try to add same tag again"
 
 - assertVisible:

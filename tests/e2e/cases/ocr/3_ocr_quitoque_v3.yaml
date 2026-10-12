@@ -45,7 +45,7 @@ tags:
       id: "RecipeImage"
     direction: UP
     speed: 85
-    timeout: 30000
+    timeout: 120000
     centerElement: true
     label: "Scroll back to top so the recipe image is tappable"
 

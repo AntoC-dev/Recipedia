@@ -23,11 +23,10 @@ appId: "com.recipedia"
     label: "Focus the TextInput of first tags"
 
 - runFlow:
-    file: "../../../../inputAndCommitText.yaml"
+    file: "../../../../inputAndDone.yaml"
     env:
       TARGET_ID: "RecipeTags::List::0::CustomTextInput"
       VALUE: "Healthy"
-      DISMISS_ID: "RecipeTags::ElementText"
     label: "Enter text for recipe first tag"
 
 - scrollUntilVisible:
@@ -279,6 +278,16 @@ appId: "com.recipedia"
       INDEX: "3"
       VALUE: "5"
     label: "Fill fourth ingredient quantity: 5"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::1::NameInput::CustomTextInput"
+    direction: UP
+    speed: 20
+    centerElement: true
+    label: "Scroll back up to the second ingredient name"
+
+- waitForAnimationToEnd
 
 - runFlow:
     file: "../../../../focusField.yaml"

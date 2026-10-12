@@ -170,6 +170,8 @@ field:
   focus; the next `inputText` assert is the proof).
 - `flows/toolbarNext.yaml` — Next without typing, to hop over a field that keeps
   its value (description, persons, a step title).
+- `flows/toolbarPrevious.yaml` — Previous without typing, the mirror of
+  `toolbarNext.yaml`.
 - `flows/inputAndDone.yaml` — type, then toolbar Done. **Done only on the last
   field of a pass.** It already waits for the keyboard to close, so never follow
   it with `waitForKeyboardDismiss`.

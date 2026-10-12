@@ -6,7 +6,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeDescription::OpenModal::RoundButton"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to description section"
 
