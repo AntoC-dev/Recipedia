@@ -7,9 +7,13 @@ import {
   SaveFormat,
   mockImageRef,
   mockManipulatorContext,
+  setMockImageDimensions,
 } from '@mocks/deps/expo-image-manipulator-mock';
+import { mockDecodedImageRef, mockLoadAsync } from '@mocks/deps/expo-image-mock';
 
 jest.unmock('@utils/FileGestion');
+
+jest.mock('expo-image', () => require('@mocks/deps/expo-image-mock'));
 
 jest.mock('expo-file-system', () =>
   require('@mocks/deps/expo-file-system-mock').expoFileSystemMock()
@@ -34,19 +38,14 @@ const cameraPhoto: RecipeDraft = {
   time: 60,
 };
 
-const setSourceDimensions = (width: number, height: number) => {
-  mockImageRef.width = width;
-  mockImageRef.height = height;
-};
-
 describe('Recipe image bounding pipeline', () => {
   let database: RecipeDatabase;
 
   beforeEach(async () => {
     jest.clearAllMocks();
     mockFileExists.mockReturnValue(false);
-    setSourceDimensions(4032, 3024);
-    mockManipulatorContext.resize.mockReturnThis();
+    setMockImageDimensions(MAX_IMAGE_DIMENSION, 960);
+    mockLoadAsync.mockResolvedValue(mockDecodedImageRef);
     mockManipulatorContext.renderAsync.mockResolvedValue(mockImageRef);
     mockImageRef.saveAsync.mockResolvedValue({ uri: manipulatedUri, width: 1280, height: 960 });
 
@@ -66,9 +65,9 @@ describe('Recipe image bounding pipeline', () => {
   test('a camera photo is bounded before it is persisted and referenced by the recipe', async () => {
     const saved = await addAndReadBack(cameraPhoto);
 
-    expect(mockManipulatorContext.resize).toHaveBeenCalledWith({
-      width: MAX_IMAGE_DIMENSION,
-      height: 960,
+    expect(mockLoadAsync).toHaveBeenCalledWith(cameraPhoto.image_Source, {
+      maxWidth: MAX_IMAGE_DIMENSION,
+      maxHeight: MAX_IMAGE_DIMENSION,
     });
     expect(mockFileCopy).toHaveBeenCalledWith(
       manipulatedUri,
@@ -87,11 +86,10 @@ describe('Recipe image bounding pipeline', () => {
   });
 
   test('an image already within the bound is persisted without re-encoding', async () => {
-    setSourceDimensions(800, 600);
+    setMockImageDimensions(800, 600);
 
     const saved = await addAndReadBack(cameraPhoto);
 
-    expect(mockManipulatorContext.resize).not.toHaveBeenCalled();
     expect(mockImageRef.saveAsync).not.toHaveBeenCalled();
     expect(mockFileCopy).toHaveBeenCalledWith(
       cameraPhoto.image_Source,

@@ -25,7 +25,9 @@ import {
   SaveFormat,
   mockImageRef,
   mockManipulatorContext,
+  setMockImageDimensions,
 } from '@mocks/deps/expo-image-manipulator-mock';
+import { mockDecodedImageRef, mockLoadAsync } from '@mocks/deps/expo-image-mock';
 import { mockAssetFromModule } from '@mocks/deps/expo-asset-mock';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
@@ -49,18 +51,15 @@ jest.mock('@utils/DatasetLoader', () => require('@mocks/utils/DatasetLoader-mock
 
 jest.mock('expo-crypto', () => ({ randomUUID: jest.fn() }));
 
+jest.mock('expo-image', () => require('@mocks/deps/expo-image-mock'));
+
 const withinBoundDimensions = { width: 200, height: 200 };
-const oversizedDimensions = { width: 4032, height: 3024 };
+const downscaledDimensions = { width: 1280, height: 960 };
 const manipulatedUri = '/cache/ImageManipulator/manipulated.jpg';
 
-const setSourceDimensions = (width: number, height: number) => {
-  mockImageRef.width = width;
-  mockImageRef.height = height;
-};
-
 const resetManipulatorMocks = () => {
-  setSourceDimensions(withinBoundDimensions.width, withinBoundDimensions.height);
-  mockManipulatorContext.resize.mockReturnThis();
+  setMockImageDimensions(withinBoundDimensions.width, withinBoundDimensions.height);
+  mockLoadAsync.mockResolvedValue(mockDecodedImageRef);
   mockManipulatorContext.renderAsync.mockResolvedValue(mockImageRef);
   mockImageRef.saveAsync.mockResolvedValue({ uri: manipulatedUri, width: 1280, height: 960 });
 };
@@ -453,26 +452,29 @@ describe('FileGestion Utility', () => {
 
   describe('saveRecipeImage downscaling', () => {
     test('copies the picked file verbatim when it already fits the bound', async () => {
-      setSourceDimensions(withinBoundDimensions.width, withinBoundDimensions.height);
+      setMockImageDimensions(withinBoundDimensions.width, withinBoundDimensions.height);
 
       await saveRecipeImage('/temp/small.jpg', 'Recipe');
 
-      expect(mockManipulatorContext.resize).not.toHaveBeenCalled();
+      expect(mockImageRef.saveAsync).not.toHaveBeenCalled();
       expect(mockFileCopy).toHaveBeenCalledWith('/temp/small.jpg', expect.anything());
     });
 
     test('copies the bounded variant instead of the full-resolution source', async () => {
-      setSourceDimensions(oversizedDimensions.width, oversizedDimensions.height);
+      setMockImageDimensions(downscaledDimensions.width, downscaledDimensions.height);
 
       await saveRecipeImage('/temp/huge.jpg', 'Recipe');
 
-      expect(mockManipulatorContext.resize).toHaveBeenCalledWith({ width: 1280, height: 960 });
+      expect(mockLoadAsync).toHaveBeenCalledWith('/temp/huge.jpg', {
+        maxWidth: 1280,
+        maxHeight: 1280,
+      });
       expect(mockFileCopy).toHaveBeenCalledWith(manipulatedUri, expect.anything());
       expect(mockFileCopy).not.toHaveBeenCalledWith('/temp/huge.jpg', expect.anything());
     });
 
     test('keeps the original extension after downscaling', async () => {
-      setSourceDimensions(oversizedDimensions.width, oversizedDimensions.height);
+      setMockImageDimensions(downscaledDimensions.width, downscaledDimensions.height);
 
       const result = await saveRecipeImage('/temp/huge.webp', 'Recipe');
 
@@ -483,7 +485,7 @@ describe('FileGestion Utility', () => {
     });
 
     test('deletes both the manipulator temp file and the picked source', async () => {
-      setSourceDimensions(oversizedDimensions.width, oversizedDimensions.height);
+      setMockImageDimensions(downscaledDimensions.width, downscaledDimensions.height);
 
       await saveRecipeImage('/temp/huge.jpg', 'Recipe');
 
@@ -492,7 +494,7 @@ describe('FileGestion Utility', () => {
     });
 
     test('falls back to the full-resolution source when downscaling fails', async () => {
-      setSourceDimensions(oversizedDimensions.width, oversizedDimensions.height);
+      setMockImageDimensions(downscaledDimensions.width, downscaledDimensions.height);
       mockImageRef.saveAsync.mockRejectedValue(new Error('encoder failed'));
 
       const result = await saveRecipeImage('/temp/huge.jpg', 'Recipe');
@@ -502,7 +504,7 @@ describe('FileGestion Utility', () => {
     });
 
     test('still deletes the picked source when deleting the manipulator temp throws', async () => {
-      setSourceDimensions(oversizedDimensions.width, oversizedDimensions.height);
+      setMockImageDimensions(downscaledDimensions.width, downscaledDimensions.height);
       mockFileDelete.mockImplementation((uri: string) => {
         if (uri === manipulatedUri) {
           throw new Error('Permission denied');
@@ -516,7 +518,7 @@ describe('FileGestion Utility', () => {
     });
 
     test('stores an oversized image verbatim when its format cannot be re-encoded', async () => {
-      setSourceDimensions(oversizedDimensions.width, oversizedDimensions.height);
+      setMockImageDimensions(downscaledDimensions.width, downscaledDimensions.height);
 
       const result = await saveRecipeImage('/temp/huge.gif', 'Recipe');
 
