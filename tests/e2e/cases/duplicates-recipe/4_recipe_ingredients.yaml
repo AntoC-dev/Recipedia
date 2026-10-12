@@ -58,21 +58,21 @@ tags:
 - runFlow:
     file: "../../flows/focusField.yaml"
     env:
-      TARGET_ID: "RecipeIngredients::2::QuantityInput"
-    label: "Action - Focus the Olive Oil quantity"
+      TARGET_ID: "RecipeIngredients::2::NameInput::CustomTextInput"
+    label: "Action - Focus the Olive Oil name"
 
 - runFlow:
     file: "../../flows/inputAndNext.yaml"
     env:
-      TARGET_ID: "RecipeIngredients::2::QuantityInput"
-      VALUE: "5"
-    label: "Action - Enter the Olive Oil quantity"
+      TARGET_ID: "RecipeIngredients::2::NameInput::CustomTextInput"
+      VALUE: "Olive Oil"
+    label: "Action - Enter the Olive Oil name"
 
 - runFlow:
     file: "../../flows/inputAndCommitText.yaml"
     env:
-      TARGET_ID: "RecipeIngredients::2::NameInput::CustomTextInput"
-      VALUE: "Olive Oil"
+      TARGET_ID: "RecipeIngredients::2::QuantityInput"
+      VALUE: "5"
       DISMISS_ID: "RecipeIngredients::2::Unit"
     label: "Action - Add Olive Oil ingredient"
 

@@ -42,7 +42,7 @@ appId: "com.recipedia"
 
 - runFlow:
     file: "../../../../toolbarNext.yaml"
-    label: "Skip the name of ingredient 0"
+    label: "Skip the name of ingredient 1"
 
 - runFlow:
     file: "../../../../inputAndNext.yaml"
@@ -53,7 +53,7 @@ appId: "com.recipedia"
 
 - runFlow:
     file: "../../../../toolbarNext.yaml"
-    label: "Skip the name of ingredient 1"
+    label: "Skip the name of ingredient 2"
 
 - runFlow:
     file: "../../../../inputAndNext.yaml"
@@ -64,7 +64,7 @@ appId: "com.recipedia"
 
 - runFlow:
     file: "../../../../toolbarNext.yaml"
-    label: "Skip the name of ingredient 2"
+    label: "Skip the name of ingredient 3"
 
 - runFlow:
     file: "../../../../inputAndNext.yaml"
@@ -75,7 +75,7 @@ appId: "com.recipedia"
 
 - runFlow:
     file: "../../../../toolbarNext.yaml"
-    label: "Skip the name of ingredient 3"
+    label: "Skip the name of ingredient 4"
 
 - runFlow:
     file: "../../../../inputAndNext.yaml"
@@ -86,7 +86,7 @@ appId: "com.recipedia"
 
 - runFlow:
     file: "../../../../toolbarNext.yaml"
-    label: "Skip the name of ingredient 4"
+    label: "Skip the name of ingredient 5"
 
 - runFlow:
     file: "../../../../inputAndNext.yaml"
@@ -97,7 +97,7 @@ appId: "com.recipedia"
 
 - runFlow:
     file: "../../../../toolbarNext.yaml"
-    label: "Skip the name of ingredient 5"
+    label: "Skip the name of ingredient 6"
 
 - runFlow:
     file: "../../../../inputAndNext.yaml"
@@ -108,7 +108,7 @@ appId: "com.recipedia"
 
 - runFlow:
     file: "../../../../toolbarNext.yaml"
-    label: "Skip the name of ingredient 6"
+    label: "Skip the name of ingredient 7"
 
 - runFlow:
     file: "../../../../inputAndNext.yaml"
@@ -119,7 +119,7 @@ appId: "com.recipedia"
 
 - runFlow:
     file: "../../../../toolbarNext.yaml"
-    label: "Skip the name of ingredient 7"
+    label: "Skip the name of ingredient 8"
 
 - runFlow:
     file: "../../../../inputAndNext.yaml"
@@ -130,7 +130,7 @@ appId: "com.recipedia"
 
 - runFlow:
     file: "../../../../toolbarNext.yaml"
-    label: "Skip the name of ingredient 8"
+    label: "Skip the name of ingredient 9"
 
 - runFlow:
     file: "../../../../inputAndNext.yaml"
@@ -141,7 +141,7 @@ appId: "com.recipedia"
 
 - runFlow:
     file: "../../../../toolbarNext.yaml"
-    label: "Skip the name of ingredient 9"
+    label: "Skip the name of ingredient 10"
 
 - runFlow:
     file: "../../../../inputAndDone.yaml"

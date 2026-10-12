@@ -45,14 +45,7 @@ tags:
 
 - runFlow:
     file: "../../flows/toolbarNext.yaml"
-    label: "Action - Keep the default persons and move to the ingredient quantity"
-
-- runFlow:
-    file: "../../flows/inputAndNext.yaml"
-    env:
-      TARGET_ID: "RecipeIngredients::0::QuantityInput"
-      VALUE: "100"
-    label: "Action - Enter the Carrots quantity"
+    label: "Action - Keep the default persons and move to the ingredient name"
 
 - runFlow:
     file: "../../flows/inputAndNext.yaml"
@@ -60,6 +53,13 @@ tags:
       TARGET_ID: "RecipeIngredients::0::NameInput::CustomTextInput"
       VALUE: "Carrots"
     label: "Action - Add Carrots ingredient (exact DB match, no validation queue)"
+
+- runFlow:
+    file: "../../flows/inputAndNext.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::0::QuantityInput"
+      VALUE: "100"
+    label: "Action - Enter the Carrots quantity"
 
 - runFlow:
     file: "../../flows/inputAndDone.yaml"

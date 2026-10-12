@@ -199,9 +199,10 @@ key and resume with `focusField` on a field that is still visible.
 
 Next order on the recipe form: title, description, tags (a committed tag is a
 chip, but an uncommitted `RecipeTags::List::<n>` input is a stop between the
-description and persons), persons, ingredient quantity/name pairs, time, step
-title/content, then the nutrition rows (energy kcal, kj, fat, saturated fat,
-carbohydrates, sugars, fiber, protein, salt) and the portion weight.
+description and persons), persons, ingredient name/quantity pairs (the unit cell
+is text, not a stop), time, step title/content, then the nutrition rows (energy
+kcal, kj, fat, saturated fat, carbohydrates, sugars, fiber, protein, salt) and
+the portion weight.
 
 ```yaml
 - runFlow:
@@ -275,9 +276,12 @@ which fires on focus loss.
 
 Suggestions render inline under the field (ingredients: under the whole row) as
 `<testID>::AutocompleteList`, rows `<testID>::AutocompleteItem::<name>`, at most
-4 visible; the keyboard can cover them. Off-viewport rows are not mounted: reach
-them by swiping from the list id in a `repeat ... while: notVisible` loop. A swipe
-moves ~6 rows whatever its duration, so target a row near the end of the list (see
+4 visible. The form scrolls a focused field high enough for a full list to clear
+the keyboard toolbar, so pick rows with the keyboard up: selecting dismisses it,
+while a blur first would commit the typed text. Off-viewport rows are not
+mounted: reach them by swiping from the list id in a
+`repeat ... while: notVisible` loop. A swipe moves ~6 rows whatever its
+duration, so target a row near the end of the list (see
 `flows/recipe/adding/manual/en/addAiguillettes.yaml`, `Seafood` tag).
 
 **Multiline inputs are the exception**: Enter is what inserts the newline. Type

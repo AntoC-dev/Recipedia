@@ -43,13 +43,6 @@ tags:
 
 - waitForAnimationToEnd
 
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - hideKeyboard:
-          label: 'Action - Dismiss the keyboard so it does not cover the inline dropdown under the row'
-
 - tapOn:
     id: 'RecipeIngredients::0::NameInput::AutocompleteItem::Carrots'
     label: 'Action - Select an existing DB ingredient from the dropdown'

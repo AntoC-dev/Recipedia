@@ -68,10 +68,6 @@ appId: "com.recipedia"
     timeout: 30000
     label: "Wait for the autocomplete list to appear"
 
-- runFlow:
-    file: "../../../../dismissModalKeyboard.yaml"
-    label: "Dismiss modal keyboard (platform-specific)"
-
 - repeat:
     times: 5
     while:
@@ -195,30 +191,22 @@ appId: "com.recipedia"
 - runFlow:
     file: "../../../../inputAndNext.yaml"
     env:
-      TARGET_ID: "RecipeIngredients::0::QuantityInput"
-      VALUE: "200"
-    label: "Enter first ingredient quantity, Next moves to its name"
-
-- runFlow:
-    file: "../../../../inputAndCommitText.yaml"
-    env:
       TARGET_ID: "RecipeIngredients::0::NameInput::CustomTextInput"
       VALUE: "Chicken Breast"
-      DISMISS_ID: "RecipeIngredients::Header::IngredientName"
-    label: "Enter text for recipe first ingredient name"
+    label: "Enter first ingredient name (exact match), Next moves to its quantity"
+
+- runFlow:
+    file: "../../../../inputAndDone.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::0::QuantityInput"
+      VALUE: "200"
+    label: "Enter first ingredient quantity and close the keyboard"
 
 - runFlow:
     file: "../../../../focusField.yaml"
     env:
-      TARGET_ID: "RecipeIngredients::2::QuantityInput"
-    label: "Focus the third ingredient quantity (keyboard closed, row visible)"
-
-- runFlow:
-    file: "../../../../inputAndNext.yaml"
-    env:
-      TARGET_ID: "RecipeIngredients::2::QuantityInput"
-      VALUE: "2"
-    label: "Enter third ingredient quantity, Next moves to its name"
+      TARGET_ID: "RecipeIngredients::2::NameInput::CustomTextInput"
+    label: "Focus the third ingredient name (keyboard closed, row visible)"
 
 - runFlow:
     file: "../../../../inputText.yaml"
@@ -231,14 +219,12 @@ appId: "com.recipedia"
     when:
       platform: Android
     commands:
-      - hideKeyboard:
-          label: "Dismiss keyboard on Android"
       - tapOn:
           id: "RecipeIngredients::2::NameInput::AutocompleteItem::Onions"
           label: "Press the ingredient from the dropdown"
       - runFlow:
           file: "../../../../waitForKeyboardDismiss.yaml"
-          label: "Wait for numeric keyboard to disappear"
+          label: "Wait for keyboard to disappear"
 
 - runFlow:
     when:
@@ -249,7 +235,7 @@ appId: "com.recipedia"
           label: "Tap Done key to dismiss keyboard on iOS"
       - runFlow:
           file: "../../../../waitForKeyboardDismiss.yaml"
-          label: "Wait for numeric keyboard to disappear"
+          label: "Wait for keyboard to disappear"
       - extendedWaitUntil:
           visible:
             id: "RecipeValidation::ValidationQueue::Ingredient::SimilarityDialog::Title"
@@ -265,18 +251,17 @@ appId: "com.recipedia"
           label: "Wait for validation dialog to disappear"
 
 - runFlow:
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "2"
+      VALUE: "2"
+    label: "Fill third ingredient quantity: 2"
+
+- runFlow:
     file: "../../../../focusField.yaml"
     env:
       TARGET_ID: "RecipeIngredients::3::NameInput::CustomTextInput"
     label: "Focus the fourth ingredient name"
-
-- tapOn:
-    id: "RecipeIngredients::3::Unit"
-    label: "Tap on fourth ingredient's unit to close the keyboard"
-
-- runFlow:
-    file: "../../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "RecipeIngredients::3::NameInput::AutocompleteItem::Avocado"
