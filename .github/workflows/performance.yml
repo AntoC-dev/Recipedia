@@ -48,7 +48,7 @@ jobs:
 
   build-performance-apk:
     name: Build Performance APK
-    needs: [ check-new-commits ]
+    needs: [check-new-commits]
     # Run if: manual, OR scheduled with new commits in the week
     if: |
       always() && (
@@ -78,6 +78,9 @@ jobs:
           expo-token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Build Performance APK
+        # This APK only runs on the CI x86_64 emulator: skipping arm64-v8a halves native compile time
+        env:
+          ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
         run: npm run build:perf:android
 
       - name: Find APK file

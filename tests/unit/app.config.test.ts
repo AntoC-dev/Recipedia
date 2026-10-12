@@ -74,6 +74,14 @@ describe('ml kit telemetry', () => {
   });
 });
 
+describe('gradle build cache', () => {
+  it('registers the plugin that enables the Gradle build cache on Android', () => {
+    const config = createConfig({ config: {} } as ConfigContext);
+
+    expect(config.plugins).toContain('./plugins/withGradleBuildCache');
+  });
+});
+
 describe('build properties', () => {
   const getBuildProperties = () => {
     const config = createConfig({ config: {} } as ConfigContext);
