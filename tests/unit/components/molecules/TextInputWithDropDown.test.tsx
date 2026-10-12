@@ -1,13 +1,15 @@
 import React, { act } from 'react';
 import { Keyboard, StyleSheet, View } from 'react-native';
 import { fireEvent, render, waitFor, within } from '@testing-library/react-native';
-import { Divider, TouchableRipple } from 'react-native-paper';
+import { Divider, Surface, TouchableRipple } from 'react-native-paper';
 import TextInputWithDropDown, {
+  AUTOCOMPLETE_ANCHOR_ID,
   AUTOCOMPLETE_DIVIDER_THICKNESS,
   AUTOCOMPLETE_MAX_VISIBLE_ROWS,
   AUTOCOMPLETE_ROW_HEIGHT,
   AUTOCOMPLETE_TAIL_INSET,
   AutocompleteBubble,
+  getAutocompleteBubbleHeight,
   getAutocompleteListHeight,
   splitHighlight,
   TextInputWithDropDownType,
@@ -28,6 +30,10 @@ const tailId = 'TextInputWithDropDown::AutocompleteTail';
 const viewportId = 'TextInputWithDropDown::AutocompleteViewport';
 const itemId = (item: string) => `TextInputWithDropDown::AutocompleteItem::${item}`;
 const matchId = (item: string) => `TextInputWithDropDown::AutocompleteMatch::${item}`;
+
+function isHostNode(node: { type: unknown }) {
+  return typeof node.type === 'string';
+}
 
 function SlotHost(props: TextInputWithDropDownType) {
   return (
@@ -99,6 +105,34 @@ describe('getAutocompleteListHeight', () => {
   });
 });
 
+describe('getAutocompleteBubbleHeight', () => {
+  test('adds the tail space and the surface vertical padding to the list height', () => {
+    const { getByTestId, UNSAFE_getByType } = render(
+      <AutocompleteBubble
+        testID='TextInputWithDropDown'
+        items={['A', 'B', 'C', 'D', 'E']}
+        query=''
+        onSelect={jest.fn()}
+      />
+    );
+    const tailSpace = StyleSheet.flatten(
+      getByTestId('TextInputWithDropDown::AutocompleteBubble').props.style
+    ).marginTop as number;
+    const surfacePadding = StyleSheet.flatten(UNSAFE_getByType(Surface).props.style)
+      .paddingVertical as number;
+
+    expect(getAutocompleteBubbleHeight(5)).toBe(
+      tailSpace + 2 * surfacePadding + getAutocompleteListHeight(5)
+    );
+  });
+
+  test('is capped like the list height', () => {
+    expect(getAutocompleteBubbleHeight(300)).toBe(
+      getAutocompleteBubbleHeight(AUTOCOMPLETE_MAX_VISIBLE_ROWS)
+    );
+  });
+});
+
 describe('AutocompleteBubble', () => {
   const manyItems = Array.from({ length: 300 }, (_, index) => `Tag ${index}`);
 
@@ -124,6 +158,12 @@ describe('AutocompleteBubble', () => {
     const list = renderBubble(['A', 'B']).getByTestId(listId);
 
     expect(list.props.decelerationRate).toBe(scrollDecelerationRate);
+  });
+
+  test('does not draw rows beyond the visible area', () => {
+    const list = renderBubble(['A', 'B']).getByTestId(listId);
+
+    expect(list.props.drawDistance).toBe(0);
   });
 
   test('renders every row at the row height without a border', () => {
@@ -267,6 +307,19 @@ describe('TextInputWithDropDown Component', () => {
       );
 
       expect(getByTestId(inputId).props.value).toEqual('Initial Value');
+    });
+
+    test('wraps the field and its bubble in a single autocomplete anchor', async () => {
+      const { getByTestId, UNSAFE_getAllByProps } = render(
+        <TextInputWithDropDown {...defaultProps} />
+      );
+
+      await typeText(getByTestId, 'past');
+
+      const anchors = UNSAFE_getAllByProps({ nativeID: AUTOCOMPLETE_ANCHOR_ID }).filter(isHostNode);
+      expect(anchors).toHaveLength(1);
+      expect(within(anchors[0]!).getByTestId(inputId)).toBeTruthy();
+      expect(within(anchors[0]!).getByTestId(itemId('Pasta'))).toBeTruthy();
     });
   });
 
@@ -520,6 +573,17 @@ describe('TextInputWithDropDown Component', () => {
       expect(within(getByTestId('Field')).queryByTestId(listId)).toBeNull();
       expect(within(getByTestId('Slot')).getByTestId(itemId('Pasta'))).toBeTruthy();
       expect(within(getByTestId('Slot')).getAllByTestId(listId)).toHaveLength(1);
+    });
+
+    test('anchors only the field, not the slotted bubble', async () => {
+      const { getByTestId, UNSAFE_getAllByProps } = render(<SlotHost {...defaultProps} />);
+
+      await typeText(getByTestId, 'past');
+
+      const anchors = UNSAFE_getAllByProps({ nativeID: AUTOCOMPLETE_ANCHOR_ID }).filter(isHostNode);
+      expect(anchors).toHaveLength(1);
+      expect(within(anchors[0]!).getByTestId(inputId)).toBeTruthy();
+      expect(within(anchors[0]!).queryByTestId(itemId('Pasta'))).toBeNull();
     });
 
     test('keeps the slotted suggestions in sync with the typed text', async () => {

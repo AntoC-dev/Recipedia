@@ -28,7 +28,7 @@
  */
 
 import React, { ReactNode, useRef, useState } from 'react';
-import { Keyboard, StyleSheet } from 'react-native';
+import { Keyboard, StyleSheet, View } from 'react-native';
 import { KeyboardAwareScrollView, KeyboardToolbar } from 'react-native-keyboard-controller';
 import { Snackbar, useTheme } from 'react-native-paper';
 import { FieldErrors, FormProvider, useForm, useFormContext, useFormState } from 'react-hook-form';
@@ -77,6 +77,7 @@ import {
   useIngredientFocusRef,
 } from '@screens/recipe/IngredientFocusContext';
 import { useScalingOnPersonsChange } from '@screens/recipe/hooks/useScalingOnPersonsChange';
+import { useAutocompleteKeyboardOffset } from '@screens/recipe/hooks/useAutocompleteKeyboardOffset';
 import {
   collectMissingElementsFromErrors,
   markAllRecipeFieldsTouched,
@@ -241,6 +242,8 @@ function RecipeFormBody({
     ripple: colors.primaryContainer,
   };
   const [keyboardToolbarHeight, setKeyboardToolbarHeight] = useState(0);
+  const { bottomOffset, scrollViewWrapperRef, onScrollViewLayout, onScrollViewFocus } =
+    useAutocompleteKeyboardOffset(keyboardToolbarHeight + keyboardToolbarCaretClearance);
   const [modalTarget, setModalTarget] = useState<OcrModalTarget | null>(null);
   const [imgList, setImgList] = useState<string[]>(() => initialImgList ?? []);
   const slotOnSelectOcrFieldRef = useRef<
@@ -523,71 +526,84 @@ function RecipeFormBody({
         onValidate={validationFunction}
       />
 
-      <KeyboardAwareScrollView
-        testID={RECIPE_TEST_ID + '::ScrollView'}
-        bottomOffset={keyboardToolbarHeight + keyboardToolbarCaretClearance}
-        decelerationRate={scrollDecelerationRate}
-        horizontal={false}
-        showsVerticalScrollIndicator={false}
-        style={[layout.flexFill, { backgroundColor: colors.background }]}
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps={'handled'}
-        keyboardDismissMode='on-drag'
-        nestedScrollEnabled={true}
+      <View
+        ref={scrollViewWrapperRef}
+        collapsable={false}
+        style={layout.flexFill}
+        onLayout={onScrollViewLayout}
+        onFocus={onScrollViewFocus}
       >
-        <RecipeImageField form={form} stackMode={stackMode} openModalForField={openModalForField} />
-        <RecipeTitleField
-          form={form}
-          stackMode={stackMode}
-          openModalForField={openModalForField}
-          t={t}
-        />
-        <RecipeDescriptionField
-          form={form}
-          stackMode={stackMode}
-          openModalForField={openModalForField}
-          t={t}
-        />
-        <RecipeTagsField
-          form={form}
-          stackMode={stackMode}
-          randomTags={randomTags}
-          addTag={tags.addTag}
-          removeTag={tags.removeTag}
-          openModalForField={openModalForField}
-        />
-        <RecipePersonsField
-          form={form}
-          stackMode={stackMode}
-          openModalForField={openModalForField}
-          t={t}
-        />
-        <RecipeIngredientsField
-          form={form}
-          stackMode={stackMode}
-          openModalForField={openModalForField}
-          t={t}
-        />
-        <RecipeTimeField
-          form={form}
-          stackMode={stackMode}
-          openModalForField={openModalForField}
-          t={t}
-        />
-        <RecipePreparationField
-          form={form}
-          stackMode={stackMode}
-          openModalForField={openModalForField}
-          t={t}
-        />
-        <RecipeNutritionField
-          form={form}
-          stackMode={stackMode}
-          openModalForField={openModalForField}
-          parentTestId={RECIPE_TEST_ID}
-          t={t}
-        />
-      </KeyboardAwareScrollView>
+        <KeyboardAwareScrollView
+          testID={RECIPE_TEST_ID + '::ScrollView'}
+          bottomOffset={bottomOffset}
+          disableScrollOnKeyboardHide
+          decelerationRate={scrollDecelerationRate}
+          horizontal={false}
+          showsVerticalScrollIndicator={false}
+          style={[layout.flexFill, { backgroundColor: colors.background }]}
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps={'handled'}
+          keyboardDismissMode='on-drag'
+          nestedScrollEnabled={true}
+        >
+          <RecipeImageField
+            form={form}
+            stackMode={stackMode}
+            openModalForField={openModalForField}
+          />
+          <RecipeTitleField
+            form={form}
+            stackMode={stackMode}
+            openModalForField={openModalForField}
+            t={t}
+          />
+          <RecipeDescriptionField
+            form={form}
+            stackMode={stackMode}
+            openModalForField={openModalForField}
+            t={t}
+          />
+          <RecipeTagsField
+            form={form}
+            stackMode={stackMode}
+            randomTags={randomTags}
+            addTag={tags.addTag}
+            removeTag={tags.removeTag}
+            openModalForField={openModalForField}
+          />
+          <RecipePersonsField
+            form={form}
+            stackMode={stackMode}
+            openModalForField={openModalForField}
+            t={t}
+          />
+          <RecipeIngredientsField
+            form={form}
+            stackMode={stackMode}
+            openModalForField={openModalForField}
+            t={t}
+          />
+          <RecipeTimeField
+            form={form}
+            stackMode={stackMode}
+            openModalForField={openModalForField}
+            t={t}
+          />
+          <RecipePreparationField
+            form={form}
+            stackMode={stackMode}
+            openModalForField={openModalForField}
+            t={t}
+          />
+          <RecipeNutritionField
+            form={form}
+            stackMode={stackMode}
+            openModalForField={openModalForField}
+            parentTestId={RECIPE_TEST_ID}
+            t={t}
+          />
+        </KeyboardAwareScrollView>
+      </View>
 
       <KeyboardToolbar
         theme={{ light: keyboardToolbarColors, dark: keyboardToolbarColors }}

@@ -42,6 +42,8 @@ import { CustomTextInput } from '@components/atomic/CustomTextInput';
 import { padding } from '@styles/spacing';
 import { scrollDecelerationRate } from '@utils/Constants';
 
+/** `nativeID` of the view wrapping the autocomplete field (only the field when `renderLayout` is used) */
+export const AUTOCOMPLETE_ANCHOR_ID = 'AutocompleteAnchor';
 /** Fixed height of a suggestion row (M3 menu item height) */
 export const AUTOCOMPLETE_ROW_HEIGHT = 48;
 /** Maximum number of suggestion rows visible before the list scrolls */
@@ -52,6 +54,7 @@ export const AUTOCOMPLETE_TAIL_INSET = padding.large;
 export const AUTOCOMPLETE_DIVIDER_THICKNESS = 1;
 const TAIL_SIZE = 12;
 const MENU_CORNER_RADIUS = 4;
+const MENU_VERTICAL_PADDING = padding.small;
 
 /** Suggestion text split around the first case-insensitive match of the query */
 export type HighlightParts = { before: string; match: string; after: string };
@@ -86,6 +89,21 @@ export function getAutocompleteListHeight(itemCount: number): number {
   const visibleRows = Math.min(itemCount, AUTOCOMPLETE_MAX_VISIBLE_ROWS);
   const dividers = Math.max(visibleRows - 1, 0);
   return visibleRows * AUTOCOMPLETE_ROW_HEIGHT + dividers * AUTOCOMPLETE_DIVIDER_THICKNESS;
+}
+
+/**
+ * Total height the suggestion bubble takes under its field: the list height plus the space
+ * reserved for the tail and the surface's vertical padding.
+ *
+ * @param itemCount - Number of suggestions
+ * @returns Height in pixels
+ */
+export function getAutocompleteBubbleHeight(itemCount: number): number {
+  return TAIL_SIZE / 2 + 2 * MENU_VERTICAL_PADDING + getAutocompleteListHeight(itemCount);
+}
+
+function SuggestionDivider() {
+  return <Divider bold />;
 }
 
 /** Props for the AutocompleteBubble component */
@@ -126,8 +144,9 @@ export function AutocompleteBubble({ testID, items, query, onSelect }: Autocompl
             keyExtractor={(item, index) => `${index}::${item}`}
             keyboardShouldPersistTaps='handled'
             nestedScrollEnabled
+            drawDistance={0}
             decelerationRate={scrollDecelerationRate}
-            ItemSeparatorComponent={() => <Divider bold />}
+            ItemSeparatorComponent={SuggestionDivider}
             renderItem={({ item }) => {
               const { before, match, after } = splitHighlight(item, query);
               return (
@@ -338,7 +357,7 @@ export function TextInputWithDropDown({
 
   if (renderLayout) {
     return renderLayout(
-      <View style={style} accessible={false}>
+      <View nativeID={AUTOCOMPLETE_ANCHOR_ID} style={style} accessible={false}>
         {input}
       </View>,
       dropdown
@@ -346,7 +365,7 @@ export function TextInputWithDropDown({
   }
 
   return (
-    <View style={style} accessible={false}>
+    <View nativeID={AUTOCOMPLETE_ANCHOR_ID} style={style} accessible={false}>
       {input}
       {dropdown}
     </View>
@@ -359,7 +378,7 @@ const styles = StyleSheet.create({
   },
   surface: {
     borderRadius: MENU_CORNER_RADIUS,
-    paddingVertical: padding.small,
+    paddingVertical: MENU_VERTICAL_PADDING,
   },
   tail: {
     position: 'absolute',

@@ -268,7 +268,6 @@ export function IngredientRow({
           dense
           mode='flat'
           style={cellStyles.flex1}
-          contentStyle={cellStyles.centeredText}
           textInputStyle={[cellStyles.flex1, { backgroundColor: transparentBg }]}
         />
       </DataTable.Cell>
@@ -479,7 +478,6 @@ const cellStyles = StyleSheet.create({
     borderBottomWidth: recipeTableBorderWidth,
   } as ViewStyle,
   flex1: { flex: 1 },
-  centeredText: { textAlign: 'center' } as TextStyle,
   noBottomBorder: { borderBottomWidth: 0 } as ViewStyle,
   addButton: { marginVertical: padding.medium } as ViewStyle,
   quantityCell: { flex: recipeTableFlex.quantity, alignItems: 'stretch' } as ViewStyle,
