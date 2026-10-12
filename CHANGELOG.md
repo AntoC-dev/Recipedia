@@ -1,3 +1,12 @@
+## [2.53.5](https://github.com/AntoC-dev/Recipedia/compare/v2.53.4...v2.53.5) (2026-10-12)
+
+### Performance Improvements
+
+* **android:** enable Gradle build cache via config plugin ([d46ddbd](https://github.com/AntoC-dev/Recipedia/commit/d46ddbdcf58b66ec9f75648c87bef90b0acaf04a)), closes [#604](https://github.com/AntoC-dev/Recipedia/issues/604)
+* **ci:** build CI emulator APKs for x86_64 only ([b933403](https://github.com/AntoC-dev/Recipedia/commit/b933403249519b70ee89c574fd1d15d35bf742df)), closes [#604](https://github.com/AntoC-dev/Recipedia/issues/604)
+* **ci:** make native build caches work with eas build --local ([dbc47ad](https://github.com/AntoC-dev/Recipedia/commit/dbc47ad8012c6fac96085ad8cf3b8ffb83c6af65)), closes [#604](https://github.com/AntoC-dev/Recipedia/issues/604)
+* **ci:** make native build caches work with eas build --local ([#617](https://github.com/AntoC-dev/Recipedia/issues/617)) ([fa73954](https://github.com/AntoC-dev/Recipedia/commit/fa73954c2dd7e3d17e34711793f90c8e915c4059)), closes [#604](https://github.com/AntoC-dev/Recipedia/issues/604) [#597](https://github.com/AntoC-dev/Recipedia/issues/597)
+
 ## [2.53.4](https://github.com/AntoC-dev/Recipedia/compare/v2.53.3...v2.53.4) (2026-10-12)
 
 ### Bug Fixes
