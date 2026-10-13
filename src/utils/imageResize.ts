@@ -8,8 +8,10 @@
  * recipes.
  *
  * These helpers cap the longest side of an image at {@link MAX_IMAGE_DIMENSION}
- * before it reaches permanent storage, re-encoding through
- * `expo-image-manipulator` while preserving the original container format.
+ * before it reaches permanent storage. The source is decoded once, directly at
+ * the reduced size, through `expo-image` (ImageIO thumbnail decode on iOS, Glide
+ * downsampling on Android), then re-encoded through `expo-image-manipulator`
+ * while preserving the original container format.
  *
  * @example
  * ```typescript
@@ -24,6 +26,7 @@
  * @module imageResize
  */
 
+import { Image, type ImageRef as DecodedImageRef } from 'expo-image';
 import { ImageManipulator, SaveFormat, type ImageRef } from 'expo-image-manipulator';
 import { fileSystemLogger } from '@utils/logger';
 
@@ -70,39 +73,29 @@ const saveFormatByExtension: Record<string, SaveFormat> = {
 };
 
 /**
- * Computes the dimensions an image should be scaled to so its longest side fits
- * within `maxDimension`, preserving aspect ratio.
+ * Tells whether an image decoded under the {@link MAX_IMAGE_DIMENSION} bound was
+ * downscaled by the decoder.
  *
- * @param width - Source width in pixels
- * @param height - Source height in pixels
- * @param maxDimension - Maximum allowed longest side. Defaults to {@link MAX_IMAGE_DIMENSION}
- * @returns Target dimensions, or `null` when the image already fits or the input dimensions are unusable
+ * A bounded decode never upscales: a source smaller than the bound comes back
+ * at its own size, while a larger one comes back with its longest side equal to
+ * the bound. A source whose longest side already equals the bound is therefore
+ * reported as reaching it.
+ *
+ * @param size - Pixel dimensions returned by the bounded decode
+ * @returns `true` when the longest side reached the bound, `false` when the source was smaller or the dimensions are unusable
  *
  * @example
  * ```typescript
- * computeBoundedSize(4032, 3024, 1280) // { width: 1280, height: 960 }
- * computeBoundedSize(800, 600, 1280)   // null — already within bound
+ * reachesBound({ width: 1280, height: 960 }) // true — a 4032x3024 source was downscaled
+ * reachesBound({ width: 800, height: 600 })  // false — the source already fit
  * ```
  */
-export function computeBoundedSize(
-  width: number,
-  height: number,
-  maxDimension: number = MAX_IMAGE_DIMENSION
-): ImageSize | null {
+export function reachesBound(size: ImageSize): boolean {
+  const { width, height } = size;
   if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) {
-    return null;
+    return false;
   }
-
-  const longestSide = Math.max(width, height);
-  if (longestSide <= maxDimension) {
-    return null;
-  }
-
-  const scale = maxDimension / longestSide;
-  return {
-    width: Math.max(1, Math.round(width * scale)),
-    height: Math.max(1, Math.round(height * scale)),
-  };
+  return Math.max(width, height) >= MAX_IMAGE_DIMENSION;
 }
 
 /**
@@ -123,15 +116,16 @@ export function saveFormatForExtension(extension: string): SaveFormat | null {
 }
 
 /**
- * Writes a copy of an image whose longest side fits within `maxDimension`.
+ * Writes a copy of an image whose longest side fits within {@link MAX_IMAGE_DIMENSION}.
  *
  * The source is left untouched. When the image already fits, its format cannot
- * be preserved, or the manipulator fails, the original URI is returned with
+ * be preserved, or decoding/encoding fails, the original URI is returned with
  * `resized: false` so callers can fall back to storing the source as-is.
  *
- * The source is decoded once: the bitmap produced while probing the dimensions
- * is reused as the input of the resize, and both native references are released
- * before returning so peak bitmap memory does not depend on the JS collector.
+ * The source is decoded once, directly at the reduced size, so no full-size
+ * bitmap is ever built; the decoder applies EXIF orientation. Both native
+ * references are released before returning so peak bitmap memory does not
+ * depend on the JS collector.
  *
  * @param sourceUri - URI of the image to downscale
  * @param extension - Source file extension, used to keep the container format
@@ -156,25 +150,25 @@ export async function resizeImageToBound(
     return { uri: sourceUri, resized: false };
   }
 
-  let probe: ImageRef | null = null;
+  let decoded: DecodedImageRef | null = null;
   let rendered: ImageRef | null = null;
 
   try {
-    probe = await ImageManipulator.manipulate(sourceUri).renderAsync();
-    const bounded = computeBoundedSize(probe.width, probe.height);
+    decoded = await Image.loadAsync(sourceUri, {
+      maxWidth: MAX_IMAGE_DIMENSION,
+      maxHeight: MAX_IMAGE_DIMENSION,
+    });
+    rendered = await ImageManipulator.manipulate(decoded).renderAsync();
 
-    if (!bounded) {
+    if (!reachesBound(rendered)) {
       fileSystemLogger.debug('Image already within bound, skipping downscale', {
         sourceUri,
-        width: probe.width,
-        height: probe.height,
+        width: rendered.width,
+        height: rendered.height,
       });
       return { uri: sourceUri, resized: false };
     }
 
-    const context = ImageManipulator.manipulate(probe);
-    context.resize(bounded);
-    rendered = await context.renderAsync();
     const saved = await rendered.saveAsync({
       format,
       compress: IMAGE_COMPRESSION_QUALITY,
@@ -182,10 +176,8 @@ export async function resizeImageToBound(
 
     fileSystemLogger.debug('Image downscaled', {
       sourceUri,
-      sourceWidth: probe.width,
-      sourceHeight: probe.height,
-      targetWidth: bounded.width,
-      targetHeight: bounded.height,
+      targetWidth: rendered.width,
+      targetHeight: rendered.height,
     });
 
     return { uri: saved.uri, resized: true };
@@ -194,6 +186,6 @@ export async function resizeImageToBound(
     return { uri: sourceUri, resized: false };
   } finally {
     rendered?.release();
-    probe?.release();
+    decoded?.release();
   }
 }

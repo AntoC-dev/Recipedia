@@ -9,6 +9,11 @@ export const mockImageRef = {
   }),
 };
 
+export const setMockImageDimensions = (width: number, height: number) => {
+  mockImageRef.width = width;
+  mockImageRef.height = height;
+};
+
 export const mockManipulatorContext = {
   crop: jest.fn().mockReturnThis(),
   resize: jest.fn().mockReturnThis(),
