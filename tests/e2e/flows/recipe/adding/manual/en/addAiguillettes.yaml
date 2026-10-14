@@ -68,6 +68,14 @@ appId: "com.recipedia"
     timeout: 30000
     label: "Wait for the autocomplete list to appear"
 
+- tapOn:
+    id: "RecipeTags::List::1::AutocompleteTail"
+    label: "Tap outside the input to close the keyboard so it can't cover the list"
+
+- runFlow:
+    file: "../../../../waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to hide before scrolling the list"
+
 - repeat:
     times: 5
     while:
