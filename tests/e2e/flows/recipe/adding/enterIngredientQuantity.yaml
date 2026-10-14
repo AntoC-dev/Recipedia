@@ -3,6 +3,7 @@ appId: "com.recipedia"
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::${INDEX}::QuantityInput"
+    speed: 20
     direction: DOWN
     centerElement: true
     label: "Scroll to ingredient ${INDEX} quantity with the keyboard closed"

@@ -20,6 +20,7 @@ tags:
 - scrollUntilVisible:
     element:
       id: "RecipeTitle::CustomTextInput"
+    speed: 20
     direction: UP
     centerElement: true
     label: "Scroll to RecipeTitle::CustomTextInput"

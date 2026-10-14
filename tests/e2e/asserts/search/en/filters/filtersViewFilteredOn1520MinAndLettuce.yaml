@@ -91,6 +91,7 @@ appId: "com.recipedia"
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::6"
+    speed: 20
     direction: DOWN
     centerElement: true
     label: "Scroll to Meat category"

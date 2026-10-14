@@ -3,6 +3,7 @@ appId: "com.recipedia"
 - scrollUntilVisible:
     element:
       id: "${SECTION}::AddButton::RoundButton"
+    speed: 20
     centerElement: true
     label: "Scroll to the ${SECTION} add button"
 

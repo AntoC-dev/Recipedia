@@ -51,6 +51,7 @@ appId: "com.recipedia"
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightNumericTextInput"
+    speed: 20
     direction: DOWN
     centerElement: true
     label: "Scroll to Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightNumericTextInput"

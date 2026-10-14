@@ -19,6 +19,7 @@ appId: "com.recipedia"
 - scrollUntilVisible:
     element:
       id: "RecipeTitle::CustomTextInput"
+    speed: 20
     direction: UP
     centerElement: true
     label: "Scroll to the title with the keyboard closed"

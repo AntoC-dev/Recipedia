@@ -3,6 +3,7 @@ appId: "com.recipedia"
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::0::QuantityInput"
+    speed: 20
     direction: DOWN
     centerElement: true
     label: "Scroll to the first quantity with the keyboard closed"

@@ -7,6 +7,7 @@ appId: "com.recipedia"
 - scrollUntilVisible:
     element:
       id: "RecipeTags::RoundButton"
+    speed: 20
     direction: DOWN
     timeout: 120000
     centerElement: true
@@ -104,6 +105,7 @@ appId: "com.recipedia"
 - scrollUntilVisible:
     element:
       id: "RecipeTags::0::Chip"
+    speed: 20
     direction: UP
     timeout: 120000
     label: "Action - Scroll back to chip parts"
@@ -157,6 +159,7 @@ appId: "com.recipedia"
 - scrollUntilVisible:
     element:
       id: "RecipeTitle::CustomTextInput"
+    speed: 20
     direction: UP
     centerElement: true
     label: "Scroll to RecipeTitle::CustomTextInput"
@@ -320,6 +323,7 @@ appId: "com.recipedia"
 - scrollUntilVisible:
     element:
       id: "RecipeTime::NumericTextInput"
+    speed: 20
     direction: DOWN
     centerElement: true
     label: "Scroll to RecipeTime::NumericTextInput"
@@ -443,5 +447,6 @@ appId: "com.recipedia"
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionEmptyState::AddButton::RoundButton"
+    speed: 20
     direction: DOWN
     label: "Scroll to see the nutrition add button"

@@ -53,6 +53,7 @@ tags:
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::0::QuantityInput"
+    speed: 20
     direction: UP
     centerElement: true
     label: "Scroll to RecipeIngredients::0::QuantityInput"
