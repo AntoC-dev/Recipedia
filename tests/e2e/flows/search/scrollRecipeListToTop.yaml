@@ -1,0 +1,13 @@
+appId: "com.recipedia"
+---
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "SearchScreen::RecipeCards::${FIRST_RECIPE_ID}::Cover"
+    speed: 60
+    direction: UP
+    timeout: 60000
+    label: "Scroll recipe list up to its first card"
+
+- waitForAnimationToEnd

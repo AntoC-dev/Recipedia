@@ -74,7 +74,7 @@ tags:
     label: "Action - Add the Romaine Lettuce in filters"
 
 - runFlow:
-    file: "../../flows/search/scrollBackToTop.yaml"
+    file: "../../flows/search/scrollFilterAccordionToTop.yaml"
     label: "Action - Scroll back to top of filters"
 
 - runFlow:

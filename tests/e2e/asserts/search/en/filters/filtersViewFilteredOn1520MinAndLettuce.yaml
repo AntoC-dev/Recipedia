@@ -151,5 +151,5 @@ appId: "com.recipedia"
       VISIBLE_ITEMS: "Romaine Lettuce"
 
 - runFlow:
-    file: "../../../../flows/search/scrollBackToTop.yaml"
+    file: "../../../../flows/search/scrollFilterAccordionToTop.yaml"
     label: "Scroll back to top of filters"

@@ -44,7 +44,7 @@ tags:
     label: "Action - Select Spaghetti as filter"
 
 - runFlow:
-    file: "../../flows/search/scrollBackToTop.yaml"
+    file: "../../flows/search/scrollFilterAccordionToTop.yaml"
     label: "Scroll back to top of search screen"
 
 - runFlow:

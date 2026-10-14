@@ -31,5 +31,7 @@ appId: "com.recipedia"
     label: "Verify recipe added alert"
 
 - runFlow:
-    file: "../search/scrollBackToTop.yaml"
+    file: "../search/scrollRecipeListToTop.yaml"
+    env:
+      FIRST_RECIPE_ID: "1"
     label: "Scroll back to top"
