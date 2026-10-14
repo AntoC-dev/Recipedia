@@ -1,7 +1,14 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import {
+  chmodSync,
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -49,10 +56,11 @@ const withStubbedTools = (workDir, maestroBody) => {
   writeExecutable(join(binDir, 'maestro'), maestroBody);
   writeExecutable(join(binDir, 'npm'), 'exit 0');
   writeExecutable(join(binDir, 'adb'), 'exit 0');
+  writeExecutable(join(binDir, 'xcrun'), 'exit 0');
   mkdirSync(join(workDir, '.github', 'scripts'), { recursive: true });
   writeExecutable(
     join(workDir, '.github', 'scripts', 'collect-android-logs.sh'),
-    `touch "${join(workDir, 'collected')}"`,
+    `touch "${join(workDir, 'collected')}"`
   );
   return binDir;
 };
@@ -74,7 +82,7 @@ const sourcedSnippet = (snippet, env = credentials) =>
   spawnSync(
     '/bin/bash',
     ['-c', `source "${join(SCRIPTS_DIR, 'e2e-credentials.sh')}"\n${snippet}`],
-    { env: { ...process.env, ...env }, encoding: 'utf8' },
+    { env: { ...process.env, ...env }, encoding: 'utf8' }
   );
 
 const commandsDump = (password = PASSWORD) =>
@@ -86,7 +94,7 @@ for (const script of ['run-e2e-ios.sh', 'run-e2e-android.sh']) {
 
     assert.ok(argv.includes(`QUITOQUE_USERNAME=${USERNAME}`));
     assert.ok(argv.includes(`QUITOQUE_PASSWORD=${PASSWORD}`));
-    assert.equal(argv.filter((argument) => argument === '-e').length, 2);
+    assert.equal(argv.filter(argument => argument === '-e').length, 2);
   });
 
   test(`${script} withholds credentials from suites that never read them`, () => {
@@ -95,8 +103,8 @@ for (const script of ['run-e2e-ios.sh', 'run-e2e-android.sh']) {
 
       assert.ok(!argv.includes('-e'), `${suite} received -e`);
       assert.ok(
-        !argv.some((argument) => argument.includes('QUITOQUE')),
-        `${suite} received a credential`,
+        !argv.some(argument => argument.includes('QUITOQUE')),
+        `${suite} received a credential`
       );
     }
   });
@@ -104,7 +112,7 @@ for (const script of ['run-e2e-ios.sh', 'run-e2e-android.sh']) {
   test(`${script} does not treat web-edge-cases as the web suite`, () => {
     const argv = maestroArgv(script, 'web-edge-cases');
 
-    assert.ok(!argv.some((argument) => argument.includes('QUITOQUE')));
+    assert.ok(!argv.some(argument => argument.includes('QUITOQUE')));
     assert.ok(argv.includes('--config=tests/e2e/web-edge-cases.yaml'));
   });
 
@@ -136,12 +144,89 @@ test('run-e2e-android.sh returns the maestro exit code after collecting logs', (
   assert.ok(existsSync(join(workDir, 'collected')));
 });
 
+const LATCH_LOG =
+  '15:05:42.017 [ERROR] xcuitest.XCTestDriverClient.transportCall: Transport unreachable while processing deviceInfo, latching\n';
+const NO_LATCH_LOG = '15:05:42.017 [ INFO] Flow failed: element not found\n';
+const LATCHED_REPORT = `<testsuites>
+  <testcase file="tests/e2e/cases/search/ci/1_search.yaml" status="ERROR"/>
+  <testcase file="tests/e2e/cases/search/ci/2_filter.yaml" status="ERROR"/>
+  <testcase file="tests/e2e/cases/search/ci/3_clear.yaml" status="SUCCESS"/>
+</testsuites>
+`;
+
+const runLatchedIosSuite = ({ firstRunLog, rerunFailingFlow = '' }) => {
+  const workDir = mkdtempSync(join(tmpdir(), 'e2e-rerun-'));
+  makeTree(
+    {
+      'stub/first-run.log': firstRunLog,
+      'stub/report.xml': LATCHED_REPORT,
+    },
+    workDir
+  );
+  const binDir = withStubbedTools(
+    workDir,
+    `if [ "$2" = "tests/e2e/" ]; then
+  mkdir -p maestro_logs_search/.maestro/tests/sess
+  cp stub/first-run.log maestro_logs_search/.maestro/tests/sess/maestro.log
+  cp stub/report.xml report.xml
+  exit 1
+fi
+echo "$*" >> reruns.txt
+[ "$2" = "$RERUN_FAILING_FLOW" ] && exit 1
+exit 0`
+  );
+
+  const result = runScript(
+    'run-e2e-ios.sh',
+    ['search'],
+    {
+      ...noCredentials,
+      RERUN_FAILING_FLOW: rerunFailingFlow,
+      PATH: `${binDir}:${process.env.PATH}`,
+    },
+    workDir
+  );
+  const rerunsFile = join(workDir, 'reruns.txt');
+  const rerunArgv = existsSync(rerunsFile)
+    ? readFileSync(rerunsFile, 'utf8').split('\n').filter(Boolean)
+    : [];
+
+  return { result, rerunArgv };
+};
+
+test('run-e2e-ios.sh reruns only the failed flows once the driver latched', () => {
+  const { result, rerunArgv } = runLatchedIosSuite({ firstRunLog: LATCH_LOG });
+
+  assert.equal(result.status, 0, result.stdout + result.stderr);
+  assert.deepEqual(rerunArgv, [
+    'test tests/e2e/cases/search/ci/1_search.yaml --config=tests/e2e/search.yaml --debug-output=maestro_logs_search/rerun-1_search --flatten-debug-output --output=report-rerun-1_search.xml --format junit -s 1',
+    'test tests/e2e/cases/search/ci/2_filter.yaml --config=tests/e2e/search.yaml --debug-output=maestro_logs_search/rerun-2_filter --flatten-debug-output --output=report-rerun-2_filter.xml --format junit -s 1',
+  ]);
+});
+
+test('run-e2e-ios.sh fails when a rerun flow fails again', () => {
+  const { result, rerunArgv } = runLatchedIosSuite({
+    firstRunLog: LATCH_LOG,
+    rerunFailingFlow: 'tests/e2e/cases/search/ci/1_search.yaml',
+  });
+
+  assert.equal(result.status, 1);
+  assert.equal(rerunArgv.length, 2);
+});
+
+test('run-e2e-ios.sh keeps a plain failure without rerunning when the driver never latched', () => {
+  const { result, rerunArgv } = runLatchedIosSuite({ firstRunLog: NO_LATCH_LOG });
+
+  assert.equal(result.status, 1);
+  assert.deepEqual(rerunArgv, []);
+});
+
 test('the credential gate honours a multi-suite allow list', () => {
   const granted = sourcedSnippet(
-    'E2E_CREDENTIAL_SUITES="web ocr"\nmaestro_credential_args ocr\nprintf "%s\\n" "${MAESTRO_CREDENTIAL_ARGS[@]}"',
+    'E2E_CREDENTIAL_SUITES="web ocr"\nmaestro_credential_args ocr\nprintf "%s\\n" "${MAESTRO_CREDENTIAL_ARGS[@]}"'
   );
   const withheld = sourcedSnippet(
-    'E2E_CREDENTIAL_SUITES="web ocr"\nmaestro_credential_args search\necho "count=${#MAESTRO_CREDENTIAL_ARGS[@]}"',
+    'E2E_CREDENTIAL_SUITES="web ocr"\nmaestro_credential_args search\necho "count=${#MAESTRO_CREDENTIAL_ARGS[@]}"'
   );
 
   assert.ok(granted.stdout.includes(`QUITOQUE_PASSWORD=${PASSWORD}`));
@@ -153,7 +238,9 @@ test('variants collapse to one pattern when every escaping is identical', () => 
 });
 
 test('variants emit each distinct escaping exactly once', () => {
-  const lines = sourcedSnippet(`e2e_secret_variants '${TRICKY}'`).stdout.split('\n').filter(Boolean);
+  const lines = sourcedSnippet(`e2e_secret_variants '${TRICKY}'`)
+    .stdout.split('\n')
+    .filter(Boolean);
 
   assert.ok(lines.length > 1);
   assert.equal(new Set(lines).size, lines.length);
@@ -194,7 +281,7 @@ test('redaction clears credentials from every file in the tree', () => {
   assert.equal(result.status, 0, result.stderr);
   assert.equal(
     readFileSync(join(dir, 'maestro.log'), 'utf8'),
-    'inputText ***REDACTED***\ninputText ***REDACTED***\n',
+    'inputText ***REDACTED***\ninputText ***REDACTED***\n'
   );
   assert.ok(!readFileSync(join(dir, 'web/flow/commands.json'), 'utf8').includes(PASSWORD));
   assert.equal(readFileSync(join(dir, 'recipedia-app-logs.txt'), 'utf8'), 'clean line\n');
@@ -257,7 +344,10 @@ test('redaction scrubs a binary file without destroying its other bytes', () => 
 test('redaction accepts a plain file target beside a directory', () => {
   const dir = makeTree({ 'logs/maestro.log': `${USERNAME}\n`, 'report.xml': `${PASSWORD}\n` });
 
-  const result = runScript('redact-maestro-secrets.sh', [join(dir, 'logs'), join(dir, 'report.xml')]);
+  const result = runScript('redact-maestro-secrets.sh', [
+    join(dir, 'logs'),
+    join(dir, 'report.xml'),
+  ]);
 
   assert.equal(result.status, 0, result.stderr);
   assert.ok(!readFileSync(join(dir, 'logs/maestro.log'), 'utf8').includes(USERNAME));
@@ -400,7 +490,7 @@ test('preparation survives a nested relative output directory', () => {
       'artifacts/suite/.maestro/tests/sess/commands.json': commandsDump(),
       'artifacts/suite/.maestro/tests/sess/maestro.log': `pw ${PASSWORD}\n`,
     },
-    workDir,
+    workDir
   );
 
   const result = runScript('prepare-maestro-logs.sh', ['artifacts/suite'], credentials, workDir);
