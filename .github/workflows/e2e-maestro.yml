@@ -74,6 +74,13 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
+      - name: Cache Android system image
+        if: inputs.platform == 'android'
+        uses: actions/cache@v6
+        with:
+          path: ${{ env.ANDROID_HOME }}/system-images/android-34/google_apis/x86_64
+          key: android-system-image-34-google_apis-x86_64-v1
+
       - name: Run E2E tests (Android)
         if: inputs.platform == 'android'
         # Under the job budget: a job-level timeout cancels the `if: always()` uploads, losing the logs.
