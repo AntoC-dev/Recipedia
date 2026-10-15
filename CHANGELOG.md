@@ -1,3 +1,10 @@
+## [2.53.6](https://github.com/AntoC-dev/Recipedia/compare/v2.53.5...v2.53.6) (2026-10-15)
+
+### Bug Fixes
+
+* **dropdown:** keep the list above the keyboard and mount only visible rows ([10d8cd5](https://github.com/AntoC-dev/Recipedia/commit/10d8cd5f9408ea3964360c7ae7abf132853c01b7)), closes [#540](https://github.com/AntoC-dev/Recipedia/issues/540) [#620](https://github.com/AntoC-dev/Recipedia/issues/620)
+* **recipe-form:** update an ingredient row in place instead of replacing it ([017f0b7](https://github.com/AntoC-dev/Recipedia/commit/017f0b737638a3f32b09a8d645182cbc90533e63)), closes [#540](https://github.com/AntoC-dev/Recipedia/issues/540)
+
 ## [2.53.5](https://github.com/AntoC-dev/Recipedia/compare/v2.53.4...v2.53.5) (2026-10-12)
 
 ### Performance Improvements
