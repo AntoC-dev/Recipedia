@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1791456470457,
+  "lastUpdate": 1792054983446,
   "repoUrl": "https://github.com/AntoC-dev/Recipedia",
   "entries": {
     "Screen FPS": [
@@ -455,6 +455,63 @@ window.BENCHMARK_DATA = {
           {
             "name": "06_parameters",
             "value": 56.6,
+            "unit": "fps"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "semantic-release-bot",
+            "username": "semantic-release-bot",
+            "email": "semantic-release-bot@martynus.net"
+          },
+          "committer": {
+            "name": "semantic-release-bot",
+            "username": "semantic-release-bot",
+            "email": "semantic-release-bot@martynus.net"
+          },
+          "id": "657f52fed9a726e46a63bc946fac09c88575e4d2",
+          "message": "chore(release): 2.53.6 [skip ci]\n\n## [2.53.6](https://github.com/AntoC-dev/Recipedia/compare/v2.53.5...v2.53.6) (2026-10-15)\n\n### Bug Fixes\n\n* **dropdown:** keep the list above the keyboard and mount only visible rows ([10d8cd5](https://github.com/AntoC-dev/Recipedia/commit/10d8cd5f9408ea3964360c7ae7abf132853c01b7)), closes [#540](https://github.com/AntoC-dev/Recipedia/issues/540) [#620](https://github.com/AntoC-dev/Recipedia/issues/620)\n* **recipe-form:** update an ingredient row in place instead of replacing it ([017f0b7](https://github.com/AntoC-dev/Recipedia/commit/017f0b737638a3f32b09a8d645182cbc90533e63)), closes [#540](https://github.com/AntoC-dev/Recipedia/issues/540)",
+          "timestamp": "2026-10-15T04:49:46Z",
+          "url": "https://github.com/AntoC-dev/Recipedia/commit/657f52fed9a726e46a63bc946fac09c88575e4d2"
+        },
+        "date": 1792054981716,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "00_seed",
+            "value": 59.8,
+            "unit": "fps"
+          },
+          {
+            "name": "01_app_start",
+            "value": 59.8,
+            "unit": "fps"
+          },
+          {
+            "name": "02_home",
+            "value": 59.5,
+            "unit": "fps"
+          },
+          {
+            "name": "03_search",
+            "value": 59.5,
+            "unit": "fps"
+          },
+          {
+            "name": "04_recipe_view",
+            "value": 59.4,
+            "unit": "fps"
+          },
+          {
+            "name": "05_shopping",
+            "value": 59.4,
+            "unit": "fps"
+          },
+          {
+            "name": "06_parameters",
+            "value": 56.5,
             "unit": "fps"
           }
         ]
