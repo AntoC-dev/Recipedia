@@ -85,12 +85,8 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd
 
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::SearchBar"
-    direction: UP
-    speed: 80
-    centerElement: true
+- runFlow:
+    file: "../../flows/search/scrollRecipeListToTop.yaml"
+    env:
+      FIRST_RECIPE_ID: "7"
     label: "Scroll back to top of Search screen"
-
-- waitForAnimationToEnd

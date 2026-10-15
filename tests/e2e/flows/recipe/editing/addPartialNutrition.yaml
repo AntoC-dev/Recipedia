@@ -3,6 +3,7 @@ appId: "com.recipedia"
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
+    speed: 20
     direction: DOWN
     centerElement: true
     label: "Scroll to Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"

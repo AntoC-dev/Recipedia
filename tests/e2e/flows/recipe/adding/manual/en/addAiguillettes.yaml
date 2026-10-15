@@ -7,6 +7,7 @@ appId: "com.recipedia"
 - scrollUntilVisible:
     element:
       id: "RecipeTags::RoundButton"
+    speed: 20
     direction: DOWN
     timeout: 120000
     centerElement: true
@@ -23,11 +24,10 @@ appId: "com.recipedia"
     label: "Focus the TextInput of first tags"
 
 - runFlow:
-    file: "../../../../inputAndCommitText.yaml"
+    file: "../../../../inputAndDone.yaml"
     env:
       TARGET_ID: "RecipeTags::List::0::CustomTextInput"
       VALUE: "Healthy"
-      DISMISS_ID: "RecipeTags::ElementText"
     label: "Enter text for recipe first tag"
 
 - scrollUntilVisible:
@@ -68,31 +68,36 @@ appId: "com.recipedia"
     timeout: 30000
     label: "Wait for the autocomplete list to appear"
 
+- tapOn:
+    id: "RecipeTags::List::1::AutocompleteTail"
+    label: "Tap outside the input to close the keyboard so it can't cover the list"
+
 - runFlow:
-    file: "../../../../dismissModalKeyboard.yaml"
-    label: "Dismiss modal keyboard (platform-specific)"
+    file: "../../../../waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to hide before scrolling the list"
 
 - repeat:
     times: 5
     while:
       notVisible:
-        id: "RecipeTags::List::1::AutocompleteItem::Italian"
+        id: "RecipeTags::List::1::AutocompleteItem::Seafood"
     commands:
       - swipe:
           from:
             id: "RecipeTags::List::1::AutocompleteList"
           direction: UP
-          label: "Scroll the tag dropdown down towards Italian"
+          duration: 500
+          label: "Scroll the tag dropdown down towards Seafood"
       - waitForAnimationToEnd:
           label: "Wait for scrolling animation to end"
 
 - assertVisible:
-    id: "RecipeTags::List::1::AutocompleteItem::Italian"
-    label: "Assert - Italian tag is displayed"
+    id: "RecipeTags::List::1::AutocompleteItem::Seafood"
+    label: "Assert - Seafood tag is displayed"
 
 - tapOn:
-    id: "RecipeTags::List::.*::AutocompleteItem::Italian"
-    text: "Italian"
+    id: "RecipeTags::List::.*::AutocompleteItem::Seafood"
+    text: "Seafood"
     label: "Press the tag from dropdown list"
 
 - runFlow:
@@ -101,13 +106,14 @@ appId: "com.recipedia"
 
 - extendedWaitUntil:
     notVisible:
-      id: "RecipeTags::List::.*::AutocompleteItem::Italian"
+      id: "RecipeTags::List::.*::AutocompleteItem::Seafood"
     timeout: 10000
     label: "Wait for the second chip to disappear"
 
 - scrollUntilVisible:
     element:
       id: "RecipeTags::0::Chip"
+    speed: 20
     direction: UP
     timeout: 120000
     label: "Action - Scroll back to chip parts"
@@ -161,6 +167,7 @@ appId: "com.recipedia"
 - scrollUntilVisible:
     element:
       id: "RecipeTitle::CustomTextInput"
+    speed: 20
     direction: UP
     centerElement: true
     label: "Scroll to RecipeTitle::CustomTextInput"
@@ -194,30 +201,22 @@ appId: "com.recipedia"
 - runFlow:
     file: "../../../../inputAndNext.yaml"
     env:
-      TARGET_ID: "RecipeIngredients::0::QuantityInput"
-      VALUE: "200"
-    label: "Enter first ingredient quantity, Next moves to its name"
-
-- runFlow:
-    file: "../../../../inputAndCommitText.yaml"
-    env:
       TARGET_ID: "RecipeIngredients::0::NameInput::CustomTextInput"
       VALUE: "Chicken Breast"
-      DISMISS_ID: "RecipeIngredients::Header::IngredientName"
-    label: "Enter text for recipe first ingredient name"
+    label: "Enter first ingredient name (exact match), Next moves to its quantity"
+
+- runFlow:
+    file: "../../../../inputAndDone.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::0::QuantityInput"
+      VALUE: "200"
+    label: "Enter first ingredient quantity and close the keyboard"
 
 - runFlow:
     file: "../../../../focusField.yaml"
     env:
-      TARGET_ID: "RecipeIngredients::2::QuantityInput"
-    label: "Focus the third ingredient quantity (keyboard closed, row visible)"
-
-- runFlow:
-    file: "../../../../inputAndNext.yaml"
-    env:
-      TARGET_ID: "RecipeIngredients::2::QuantityInput"
-      VALUE: "2"
-    label: "Enter third ingredient quantity, Next moves to its name"
+      TARGET_ID: "RecipeIngredients::2::NameInput::CustomTextInput"
+    label: "Focus the third ingredient name (keyboard closed, row visible)"
 
 - runFlow:
     file: "../../../../inputText.yaml"
@@ -230,14 +229,12 @@ appId: "com.recipedia"
     when:
       platform: Android
     commands:
-      - hideKeyboard:
-          label: "Dismiss keyboard on Android"
       - tapOn:
           id: "RecipeIngredients::2::NameInput::AutocompleteItem::Onions"
           label: "Press the ingredient from the dropdown"
       - runFlow:
           file: "../../../../waitForKeyboardDismiss.yaml"
-          label: "Wait for numeric keyboard to disappear"
+          label: "Wait for keyboard to disappear"
 
 - runFlow:
     when:
@@ -248,7 +245,7 @@ appId: "com.recipedia"
           label: "Tap Done key to dismiss keyboard on iOS"
       - runFlow:
           file: "../../../../waitForKeyboardDismiss.yaml"
-          label: "Wait for numeric keyboard to disappear"
+          label: "Wait for keyboard to disappear"
       - extendedWaitUntil:
           visible:
             id: "RecipeValidation::ValidationQueue::Ingredient::SimilarityDialog::Title"
@@ -264,18 +261,17 @@ appId: "com.recipedia"
           label: "Wait for validation dialog to disappear"
 
 - runFlow:
+    file: "../../enterIngredientQuantity.yaml"
+    env:
+      INDEX: "2"
+      VALUE: "2"
+    label: "Fill third ingredient quantity: 2"
+
+- runFlow:
     file: "../../../../focusField.yaml"
     env:
       TARGET_ID: "RecipeIngredients::3::NameInput::CustomTextInput"
     label: "Focus the fourth ingredient name"
-
-- tapOn:
-    id: "RecipeIngredients::3::Unit"
-    label: "Tap on fourth ingredient's unit to close the keyboard"
-
-- runFlow:
-    file: "../../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
 
 - tapOn:
     id: "RecipeIngredients::3::NameInput::AutocompleteItem::Avocado"
@@ -293,6 +289,16 @@ appId: "com.recipedia"
       INDEX: "3"
       VALUE: "5"
     label: "Fill fourth ingredient quantity: 5"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::1::NameInput::CustomTextInput"
+    direction: UP
+    speed: 20
+    centerElement: true
+    label: "Scroll back up to the second ingredient name"
+
+- waitForAnimationToEnd
 
 - runFlow:
     file: "../../../../focusField.yaml"
@@ -325,6 +331,7 @@ appId: "com.recipedia"
 - scrollUntilVisible:
     element:
       id: "RecipeTime::NumericTextInput"
+    speed: 20
     direction: DOWN
     centerElement: true
     label: "Scroll to RecipeTime::NumericTextInput"
@@ -448,5 +455,6 @@ appId: "com.recipedia"
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionEmptyState::AddButton::RoundButton"
+    speed: 20
     direction: DOWN
     label: "Scroll to see the nutrition add button"

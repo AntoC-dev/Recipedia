@@ -3,6 +3,7 @@ appId: "com.recipedia"
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Salt::NumericTextInput"
+    speed: 20
     direction: DOWN
     centerElement: true
     timeout: 240000

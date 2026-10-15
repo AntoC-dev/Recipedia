@@ -177,6 +177,12 @@ describe('RecipeFormScreen keyboard handling', () => {
     );
   });
 
+  test('keeps the scroll position when the keyboard hides', async () => {
+    const { getByTestId } = await renderRoute(mockRouteAddManually);
+
+    expect(getByTestId('Recipe::ScrollView').props.disableScrollOnKeyboardHide).toBe(true);
+  });
+
   test('offers previous, next and done controls above the keyboard', async () => {
     const { UNSAFE_getByType } = await renderRoute(mockRouteAddManually);
 

@@ -26,7 +26,6 @@ export interface TagsFieldProps {
   addTag: (newTag: string) => void;
   removeTag: (tagName: string) => void;
   openModalForField: (field: OcrModalTarget) => void;
-  hideDropdown?: boolean;
 }
 
 export function RecipeTagsField({
@@ -36,7 +35,6 @@ export function RecipeTagsField({
   addTag,
   removeTag,
   openModalForField,
-  hideDropdown,
 }: TagsFieldProps) {
   const { field } = useController({ control: form.control, name: 'recipeTags' });
   return (
@@ -48,7 +46,6 @@ export function RecipeTagsField({
         addTag,
         removeTag,
         openModalForField,
-        hideDropdown,
       })}
     />
   );

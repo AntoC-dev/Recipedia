@@ -126,7 +126,17 @@ export function IngredientsTable({
         {prefixText}
       </Text>
       <DataTable style={cellStyles.table} accessible={false}>
-        <DataTable.Header style={cellStyles.noBottomBorder} accessible={false}>
+        <DataTable.Header
+          style={[cellStyles.tableLine, cellStyles.noBottomBorder]}
+          accessible={false}
+        >
+          <DataTable.Title
+            testID={headerTestId + '::IngredientName'}
+            style={[cellStyles.header, cellStyles.nameCell, { borderColor }]}
+            textStyle={{ fontSize: titleFontSize }}
+          >
+            {columnTitles.column3}
+          </DataTable.Title>
           <DataTable.Title
             testID={headerTestId + '::Quantity'}
             style={[cellStyles.header, cellStyles.quantityCell, { borderColor }]}
@@ -143,20 +153,13 @@ export function IngredientsTable({
           </DataTable.Title>
           <DataTable.Title
             testID={headerTestId + '::Note'}
-            style={[cellStyles.header, cellStyles.noteCell, { borderColor }]}
+            style={[cellStyles.header, cellStyles.iconCell, { borderColor }]}
           >
             {''}
           </DataTable.Title>
           <DataTable.Title
-            testID={headerTestId + '::IngredientName'}
-            style={[cellStyles.header, cellStyles.nameCell, { borderColor }]}
-            textStyle={{ fontSize: titleFontSize }}
-          >
-            {columnTitles.column3}
-          </DataTable.Title>
-          <DataTable.Title
             testID={headerTestId + '::Delete'}
-            style={[cellStyles.header, cellStyles.deleteCell, { borderColor }]}
+            style={[cellStyles.header, cellStyles.iconCell, { borderColor }]}
           >
             {''}
           </DataTable.Title>
@@ -192,7 +195,6 @@ export interface IngredientRowProps {
   index: number;
   ingredient: ingredientTableElement | FormIngredientElement;
   availableIngredients: string[];
-  hideDropdown?: boolean;
   rowError?: string;
   /**
    * Single commit callback fired with the row's formatted ingredient string
@@ -228,7 +230,6 @@ export function IngredientRow({
   index,
   ingredient,
   availableIngredients,
-  hideDropdown,
   rowError,
   onCommit,
   onLiveNameChange,
@@ -255,95 +256,110 @@ export function IngredientRow({
     );
   };
 
-  return (
+  const trailingCells = (
     <React.Fragment>
-      <DataTable.Row
-        testID={`${testID}::${index}::Row`}
-        style={cellStyles.noBottomBorder}
+      <DataTable.Cell style={cellStyles.quantityCell} accessible={false}>
+        <NumericTextInput
+          testID={`${testID}::${index}::QuantityInput`}
+          value={Math.round(quantity * 100) / 100}
+          onChangeValue={newQuantity => commit({ quantity: newQuantity })}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          dense
+          mode='flat'
+          style={cellStyles.flex1}
+          textInputStyle={[cellStyles.flex1, { backgroundColor: transparentBg }]}
+        />
+      </DataTable.Cell>
+      <DataTable.Cell
+        style={[cellStyles.unitCell, { borderBottomColor: borderColor }]}
         accessible={false}
       >
-        <DataTable.Cell style={cellStyles.quantityCell} accessible={false}>
-          <NumericTextInput
-            testID={`${testID}::${index}::QuantityInput`}
-            value={Math.round(quantity * 100) / 100}
-            onChangeValue={newQuantity => commit({ quantity: newQuantity })}
-            onFocus={onFocus}
-            onBlur={onBlur}
-            dense
-            mode='flat'
-            style={cellStyles.flex1}
-            textInputStyle={[cellStyles.flex1, { backgroundColor: transparentBg }]}
-          />
-        </DataTable.Cell>
-        <DataTable.Cell
-          style={[cellStyles.unitCell, { borderBottomColor: borderColor }]}
-          accessible={false}
+        <Text
+          testID={`${testID}::${index}::Unit`}
+          variant='bodyLarge'
+          style={[cellStyles.flex1, { textAlign: 'center', textAlignVertical: 'center' }]}
         >
-          <Text
-            testID={`${testID}::${index}::Unit`}
-            variant='bodyLarge'
-            style={[cellStyles.flex1, { textAlign: 'center', textAlignVertical: 'center' }]}
-          >
-            {ingredient.unit}
-          </Text>
-        </DataTable.Cell>
-        <DataTable.Cell
-          style={[cellStyles.noteCell, { borderBottomColor: borderColor }]}
-          accessible={false}
-        >
-          <IconButton
-            testID={`${testID}::${index}::NoteButton`}
-            icon={hasNote ? Icons.commentEditOutline : Icons.commentPlusOutline}
-            iconColor={hasNote ? colors.primary : colors.onSurfaceVariant}
-            onPress={onOpenNote}
-            size={iconsSize.medium}
-          />
-        </DataTable.Cell>
-        <DataTable.Cell style={cellStyles.nameCell} accessible={false}>
-          <TextInputWithDropDown
-            testID={`${testID}::${index}::NameInput`}
-            value={ingredient.name}
-            referenceTextArray={availableIngredients}
-            dense
-            mode='flat'
-            hideDropdown={hideDropdown}
-            onFocus={onFocus}
-            onChangeText={onLiveNameChange}
-            onSelect={newName => {
-              if (newName && newName.trim().length > 0) {
-                onSelectName?.(newName);
-              }
-              onBlur?.();
-            }}
-            onValidate={newName => {
-              if (newName && newName.trim().length > 0) {
-                commit({ name: newName });
-              }
-              onBlur?.();
-            }}
-            style={cellStyles.flex1}
-            textInputStyle={[cellStyles.flex1, { backgroundColor: transparentBg }]}
-          />
-        </DataTable.Cell>
-        <DataTable.Cell
-          style={[cellStyles.deleteCell, { borderBottomColor: borderColor }]}
-          accessible={false}
-        >
-          <IconButton
-            testID={`${testID}::${index}::DeleteButton`}
-            icon={Icons.trashIcon}
-            iconColor={colors.error}
-            onPress={onRemove}
-            size={iconsSize.medium}
-          />
-        </DataTable.Cell>
-      </DataTable.Row>
-      {rowError ? (
-        <HelperText testID={`${testID}::${index}::Error`} type='error' visible={true}>
-          {rowError}
-        </HelperText>
-      ) : null}
+          {ingredient.unit}
+        </Text>
+      </DataTable.Cell>
+      <DataTable.Cell
+        style={[cellStyles.iconCell, { borderBottomColor: borderColor }]}
+        accessible={false}
+      >
+        <IconButton
+          testID={`${testID}::${index}::NoteButton`}
+          icon={hasNote ? Icons.commentEditOutline : Icons.commentPlusOutline}
+          iconColor={hasNote ? colors.primary : colors.onSurfaceVariant}
+          onPress={onOpenNote}
+          size={iconsSize.medium}
+          style={cellStyles.iconButton}
+        />
+      </DataTable.Cell>
+      <DataTable.Cell
+        style={[cellStyles.iconCell, { borderBottomColor: borderColor }]}
+        accessible={false}
+      >
+        <IconButton
+          testID={`${testID}::${index}::DeleteButton`}
+          icon={Icons.trashIcon}
+          iconColor={colors.error}
+          onPress={onRemove}
+          size={iconsSize.medium}
+          style={cellStyles.iconButton}
+        />
+      </DataTable.Cell>
     </React.Fragment>
+  );
+
+  function renderRow(nameInput: React.ReactElement, dropdown: React.ReactElement | null) {
+    return (
+      <React.Fragment>
+        <DataTable.Row
+          testID={`${testID}::${index}::Row`}
+          style={[cellStyles.tableLine, cellStyles.noBottomBorder]}
+          accessible={false}
+        >
+          <DataTable.Cell style={cellStyles.nameCell} accessible={false}>
+            {nameInput}
+          </DataTable.Cell>
+          {trailingCells}
+        </DataTable.Row>
+        {dropdown ? <View style={cellStyles.tableLine}>{dropdown}</View> : null}
+        {rowError ? (
+          <HelperText testID={`${testID}::${index}::Error`} type='error' visible={true}>
+            {rowError}
+          </HelperText>
+        ) : null}
+      </React.Fragment>
+    );
+  }
+
+  return (
+    <TextInputWithDropDown
+      testID={`${testID}::${index}::NameInput`}
+      value={ingredient.name}
+      referenceTextArray={availableIngredients}
+      dense
+      mode='flat'
+      renderLayout={renderRow}
+      onFocus={onFocus}
+      onChangeText={onLiveNameChange}
+      onSelect={newName => {
+        if (newName && newName.trim().length > 0) {
+          onSelectName?.(newName);
+        }
+        onBlur?.();
+      }}
+      onValidate={newName => {
+        if (newName && newName.trim().length > 0) {
+          commit({ name: newName });
+        }
+        onBlur?.();
+      }}
+      style={cellStyles.flex1}
+      textInputStyle={[cellStyles.flex1, { backgroundColor: transparentBg }]}
+    />
   );
 }
 
@@ -442,12 +458,13 @@ export function IngredientsAddTail({
 const recipeTableBorderWidth = 0.5;
 
 const recipeTableFlex = {
+  name: 1.6,
   quantity: 1,
-  unit: 0.8,
-  note: 0.5,
-  name: 1.8,
-  delete: 0.4,
+  unit: 1,
 };
+
+const paperIconButtonPadding = 8;
+const recipeTableIconColumnWidth = iconsSize.medium + 2 * paperIconButtonPadding;
 
 const cellStyles = StyleSheet.create({
   container: {
@@ -457,7 +474,6 @@ const cellStyles = StyleSheet.create({
   prefixText: { marginVertical: padding.verySmall } as TextStyle,
   table: { paddingVertical: padding.medium } as ViewStyle,
   header: {
-    flex: 1,
     justifyContent: 'center',
     borderBottomWidth: recipeTableBorderWidth,
   } as ViewStyle,
@@ -471,17 +487,16 @@ const cellStyles = StyleSheet.create({
     alignItems: 'stretch',
     borderBottomWidth: recipeTableBorderWidth,
   } as ViewStyle,
-  noteCell: {
-    flex: recipeTableFlex.note,
+  iconCell: {
+    flex: 0,
+    width: recipeTableIconColumnWidth,
+    alignItems: 'center',
     justifyContent: 'center',
     borderBottomWidth: recipeTableBorderWidth,
   } as ViewStyle,
+  tableLine: { paddingHorizontal: padding.small } as ViewStyle,
+  iconButton: { margin: 0 } as ViewStyle,
   nameCell: { flex: recipeTableFlex.name, alignItems: 'stretch' } as ViewStyle,
-  deleteCell: {
-    flex: recipeTableFlex.delete,
-    justifyContent: 'center',
-    borderBottomWidth: recipeTableBorderWidth,
-  } as ViewStyle,
   readOnlyContainer: { paddingHorizontal: padding.medium } as ViewStyle,
   readOnlyRow: {
     flexDirection: 'row',

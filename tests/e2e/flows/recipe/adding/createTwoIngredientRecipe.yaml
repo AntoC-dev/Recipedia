@@ -54,35 +54,35 @@ appId: "com.recipedia"
 
 - runFlow:
     file: "../../toolbarNext.yaml"
-    label: "Move to the first ingredient quantity"
-
-- runFlow:
-    file: "../../inputAndNext.yaml"
-    env:
-      TARGET_ID: "RecipeIngredients::0::QuantityInput"
-      VALUE: "${ING0_QTY}"
-    label: "Enter the first ingredient quantity, Next moves to its name"
+    label: "Move to the first ingredient name"
 
 - runFlow:
     file: "../../inputAndNext.yaml"
     env:
       TARGET_ID: "RecipeIngredients::0::NameInput::CustomTextInput"
       VALUE: "${ING0_NAME}"
-    label: "Enter the first ingredient name (exact match, no dropdown)"
+    label: "Enter the first ingredient name (exact match, no dropdown), Next moves to its quantity"
 
 - runFlow:
     file: "../../inputAndNext.yaml"
     env:
-      TARGET_ID: "RecipeIngredients::1::QuantityInput"
-      VALUE: "${ING1_QTY}"
-    label: "Enter the second ingredient quantity, Next moves to its name"
+      TARGET_ID: "RecipeIngredients::0::QuantityInput"
+      VALUE: "${ING0_QTY}"
+    label: "Enter the first ingredient quantity, Next moves to the second name"
 
 - runFlow:
     file: "../../inputAndNext.yaml"
     env:
       TARGET_ID: "RecipeIngredients::1::NameInput::CustomTextInput"
       VALUE: "${ING1_NAME}"
-    label: "Enter the second ingredient name (exact match, no dropdown)"
+    label: "Enter the second ingredient name (exact match, no dropdown), Next moves to its quantity"
+
+- runFlow:
+    file: "../../inputAndNext.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::1::QuantityInput"
+      VALUE: "${ING1_QTY}"
+    label: "Enter the second ingredient quantity, Next moves to the time"
 
 - runFlow:
     file: "../../inputAndNext.yaml"

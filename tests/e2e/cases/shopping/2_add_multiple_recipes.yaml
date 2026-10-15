@@ -72,7 +72,9 @@ tags:
     label: "Assert - Verify recipe added alert"
 
 - runFlow:
-    file: "../../flows/search/scrollBackToTop.yaml"
+    file: "../../flows/search/scrollRecipeListToTop.yaml"
+    env:
+      FIRST_RECIPE_ID: "1"
     label: "Cleanup - Scroll back to top of Search screen"
 
 - tapOn:
@@ -114,7 +116,9 @@ tags:
     label: "Assert - Verify recipe added alert"
 
 - runFlow:
-    file: "../../flows/search/scrollBackToTop.yaml"
+    file: "../../flows/search/scrollRecipeListToTop.yaml"
+    env:
+      FIRST_RECIPE_ID: "1"
     label: "Cleanup - Scroll back to top of Search screen"
 
 - tapOn:

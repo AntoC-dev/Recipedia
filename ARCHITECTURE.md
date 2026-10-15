@@ -278,6 +278,10 @@ Editable fields live under `src/screens/recipe/fields/`. Each ingredient column 
 
 Scaling is no longer a provider effect. `useScalingOnPersonsChange` (`src/screens/recipe/hooks/`) watches `recipePersons` and rewrites ingredient quantities via `scaleQuantityForPersons` (`src/utils/Quantity.ts`), but defers while any ingredient input is focused (tracked by `IngredientFocusContext`) to avoid an on-blur commit clobbering a freshly-scaled value.
 
+### Search-field focus mode
+
+While an autocomplete input is focused, `useAutocompleteKeyboardOffset` adds the suggestion-bubble height to the form's `KeyboardAwareScrollView` `bottomOffset`, capped so the field stays below the app bar. Focus is detected by an `onFocus` on the scroll view wrapper and a walk up to `AUTOCOMPLETE_ANCHOR_ID` (no context).
+
 ### Field hooks
 
 Each field domain has its own hook that reads/writes the shared RHF context:

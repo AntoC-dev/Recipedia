@@ -11,6 +11,7 @@ appId: "com.recipedia"
 - scrollUntilVisible:
     element:
       id: "RecipeTags::RoundButton"
+    speed: 20
     direction: DOWN
     centerElement: true
     label: "Scroll down to find add tag button"
@@ -35,28 +36,33 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for keyboard animation"
 
-- assertVisible:
-    id: "RecipeTags::List::0::AutocompleteItem::RecipeTag"
-    label: "New tag id is displayed in dropdown"
-
-- assertVisible:
-    text: "RecipeTag"
-    label: "New tag text is displayed in dropdown"
-
 - runFlow:
     when:
       platform: Android
     commands:
-      - hideKeyboard:
-          label: "Dismiss keyboard on Android"
+      - assertVisible:
+          id: "RecipeTags::List::0::AutocompleteItem::RecipeTag"
+          label: "New tag id is displayed in dropdown"
+      - assertVisible:
+          text: "RecipeTag"
+          label: "New tag text is displayed in dropdown"
       - tapOn:
           id: "RecipeTags::List::0::AutocompleteItem::RecipeTag"
           label: "Select the new tag"
+      - runFlow:
+          file: "../../../../waitForKeyboardDismiss.yaml"
+          label: "Wait for keyboard to hide"
 
 - runFlow:
     when:
       platform: iOS
     commands:
+      - assertVisible:
+          id: "RecipeTags::List::0::AutocompleteItem::RecipeTag"
+          label: "New tag id is displayed in dropdown"
+      - assertVisible:
+          text: "RecipeTag"
+          label: "New tag text is displayed in dropdown"
       - tapOn:
           id: "Done"
           label: "Tap Done key to validate the tag on iOS"
@@ -94,6 +100,7 @@ appId: "com.recipedia"
 - scrollUntilVisible:
     element:
       id: "RecipeTitle::CustomTextInput"
+    speed: 20
     direction: UP
     centerElement: true
     label: "Scroll to RecipeTitle::CustomTextInput"
@@ -124,16 +131,16 @@ appId: "com.recipedia"
 - runFlow:
     file: "../../../../inputAndNext.yaml"
     env:
-      TARGET_ID: "RecipeIngredients::0::QuantityInput"
-      VALUE: "100"
-    label: "Fill first ingredient quantity: 100"
+      TARGET_ID: "RecipeIngredients::0::NameInput::CustomTextInput"
+      VALUE: "Tomatoes"
+    label: "Enter ingredient name (exact match, Next moves to its quantity)"
 
 - runFlow:
     file: "../../../../inputAndNext.yaml"
     env:
-      TARGET_ID: "RecipeIngredients::0::NameInput::CustomTextInput"
-      VALUE: "Tomatoes"
-    label: "Enter ingredient name (exact match, Next moves to the time)"
+      TARGET_ID: "RecipeIngredients::0::QuantityInput"
+      VALUE: "100"
+    label: "Fill first ingredient quantity: 100, Next moves to the time"
 
 - runFlow:
     file: "../../../../inputAndNext.yaml"

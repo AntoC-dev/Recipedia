@@ -170,6 +170,8 @@ field:
   focus; the next `inputText` assert is the proof).
 - `flows/toolbarNext.yaml` — Next without typing, to hop over a field that keeps
   its value (description, persons, a step title).
+- `flows/toolbarPrevious.yaml` — Previous without typing, the mirror of
+  `toolbarNext.yaml`.
 - `flows/inputAndDone.yaml` — type, then toolbar Done. **Done only on the last
   field of a pass.** It already waits for the keyboard to close, so never follow
   it with `waitForKeyboardDismiss`.
@@ -199,9 +201,10 @@ key and resume with `focusField` on a field that is still visible.
 
 Next order on the recipe form: title, description, tags (a committed tag is a
 chip, but an uncommitted `RecipeTags::List::<n>` input is a stop between the
-description and persons), persons, ingredient quantity/name pairs, time, step
-title/content, then the nutrition rows (energy kcal, kj, fat, saturated fat,
-carbohydrates, sugars, fiber, protein, salt) and the portion weight.
+description and persons), persons, ingredient name/quantity pairs (the unit cell
+is text, not a stop), time, step title/content, then the nutrition rows (energy
+kcal, kj, fat, saturated fat, carbohydrates, sugars, fiber, protein, salt) and
+the portion weight.
 
 ```yaml
 - runFlow:
@@ -272,6 +275,16 @@ freshly added ingredient rows, first-time nutrition values — do not pay
 Autocomplete fields (`TextInputWithDropDown`) follow the same rules: ingredient
 names commit live via `onChangeText`, tags via `onEndEditing` → `onValidate`,
 which fires on focus loss.
+
+Suggestions render inline under the field (ingredients: under the whole row) as
+`<testID>::AutocompleteList`, rows `<testID>::AutocompleteItem::<name>`, at most
+4 visible. The form scrolls a focused field high enough for a full list to clear
+the keyboard toolbar, so pick rows with the keyboard up: selecting dismisses it,
+while a blur first would commit the typed text. Off-viewport rows are not
+mounted: reach them by swiping from the list id in a
+`repeat ... while: notVisible` loop. A swipe moves ~6 rows whatever its
+duration, so target a row near the end of the list (see
+`flows/recipe/adding/manual/en/addAiguillettes.yaml`, `Seafood` tag).
 
 **Multiline inputs are the exception**: Enter is what inserts the newline. Type
 each line with `flows/appendText.yaml` (asserts the line landed, does not blur),

@@ -40,6 +40,7 @@ tags:
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::0::NameInput::CustomTextInput"
+    speed: 20
     direction: DOWN
     centerElement: true
     label: "Scroll to RecipeIngredients::0::NameInput::CustomTextInput"
@@ -85,6 +86,7 @@ tags:
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::0::NameInput::CustomTextInput"
+    speed: 20
     direction: DOWN
     centerElement: true
     label: "Scroll to RecipeIngredients::0::NameInput::CustomTextInput"

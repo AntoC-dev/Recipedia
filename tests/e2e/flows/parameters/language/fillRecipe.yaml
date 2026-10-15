@@ -19,6 +19,7 @@ appId: "com.recipedia"
 - scrollUntilVisible:
     element:
       id: "RecipeTitle::CustomTextInput"
+    speed: 20
     direction: UP
     centerElement: true
     label: "Scroll to the title with the keyboard closed"
@@ -49,16 +50,16 @@ appId: "com.recipedia"
 - runFlow:
     file: "../../inputAndNext.yaml"
     env:
-      TARGET_ID: "RecipeIngredients::0::QuantityInput"
-      VALUE: "200"
-    label: "Fill first ingredient quantity: 200"
+      TARGET_ID: "RecipeIngredients::0::NameInput::CustomTextInput"
+      VALUE: "Avocado"
+    label: "Write an ingredient name in the input text (exact match, Next moves to its quantity)"
 
 - runFlow:
     file: "../../inputAndNext.yaml"
     env:
-      TARGET_ID: "RecipeIngredients::0::NameInput::CustomTextInput"
-      VALUE: "Avocado"
-    label: "Write an ingredient name in the input text (exact match, Next moves to the time)"
+      TARGET_ID: "RecipeIngredients::0::QuantityInput"
+      VALUE: "200"
+    label: "Fill first ingredient quantity: 200, Next moves to the time"
 
 - runFlow:
     file: "../../inputAndNext.yaml"

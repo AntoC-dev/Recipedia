@@ -24,6 +24,7 @@ tags:
 - scrollUntilVisible:
     element:
       id: "Parameters::Section::Appearance::SubHeader"
+    speed: 20
     direction: UP
     label: "Scroll up to reset the screen"
 

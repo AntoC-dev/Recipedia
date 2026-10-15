@@ -11,7 +11,7 @@ jest.mock('@components/atomic/RoundButton', () => ({
 }));
 jest.mock('@components/molecules/TextInputWithDropDown', () => ({
   TextInputWithDropDown: require('@mocks/components/molecules/TextInputWithDropDown-mock.tsx')
-    .textInputWithDropdownMock,
+    .TextInputWithDropDownMock,
 }));
 jest.mock('@components/molecules/HorizontalList', () => ({
   HorizontalList: require('@mocks/components/molecules/HorizontalList-mock').horizontalListMock,
@@ -246,70 +246,6 @@ describe('RecipeTags Component', () => {
       });
     });
   });
-
-  describe('hideDropdown prop', () => {
-    const dbInstance = RecipeDatabase.getInstance();
-    const addNewTagMock = jest.fn();
-    const removeTagMock = jest.fn();
-
-    beforeEach(async () => {
-      jest.clearAllMocks();
-      await dbInstance.init();
-      await dbInstance.addMultipleTags(testTags);
-    });
-
-    afterEach(async () => {
-      await dbInstance.closeAndReset();
-    });
-
-    it('passes hideDropdown=false to TextInputWithDropDown by default', async () => {
-      const props: RecipeTagProps = {
-        type: 'addOrEdit',
-        editType: 'edit',
-        tagsList: [],
-        randomTags: '',
-        addNewTag: addNewTagMock,
-        removeTag: removeTagMock,
-      };
-
-      const { getByTestId } = await renderRecipeTags(props);
-
-      fireEvent.press(getByTestId('RecipeTags::RoundButton::OnPressFunction'));
-
-      await waitFor(() =>
-        expect(getByTestId('RecipeTags::List::0::TextInputWithDropdown::HideDropdown')).toBeTruthy()
-      );
-
-      expect(
-        getByTestId('RecipeTags::List::0::TextInputWithDropdown::HideDropdown').props.children
-      ).toEqual('false');
-    });
-
-    it('passes hideDropdown=true to TextInputWithDropDown when set', async () => {
-      const props: RecipeTagProps = {
-        type: 'addOrEdit',
-        editType: 'edit',
-        tagsList: [],
-        randomTags: '',
-        addNewTag: addNewTagMock,
-        removeTag: removeTagMock,
-        hideDropdown: true,
-      };
-
-      const { getByTestId } = await renderRecipeTags(props);
-
-      fireEvent.press(getByTestId('RecipeTags::RoundButton::OnPressFunction'));
-
-      await waitFor(() =>
-        expect(getByTestId('RecipeTags::List::0::TextInputWithDropdown::HideDropdown')).toBeTruthy()
-      );
-
-      expect(
-        getByTestId('RecipeTags::List::0::TextInputWithDropdown::HideDropdown').props.children
-      ).toEqual('true');
-    });
-  });
-
   describe('tag sorting', () => {
     it('provides available tags sorted alphabetically to TextInputWithDropDown', async () => {
       const dbInstance = RecipeDatabase.getInstance();

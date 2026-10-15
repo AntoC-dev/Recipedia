@@ -35,9 +35,8 @@ appId: "com.recipedia"
     label: "Focus on tag input field"
 
 - runFlow:
-    file: "../../inputAndCommitText.yaml"
+    file: "../../inputAndDone.yaml"
     env:
       TARGET_ID: "RecipeTags::List::${TAG_INDEX}::CustomTextInput"
       VALUE: "${TAG_NAME}"
-      DISMISS_ID: "RecipeTags::ElementText"
     label: "Enter tag name"

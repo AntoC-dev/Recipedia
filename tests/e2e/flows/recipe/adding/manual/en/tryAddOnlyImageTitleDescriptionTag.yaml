@@ -3,6 +3,7 @@ appId: "com.recipedia"
 - scrollUntilVisible:
     element:
       id: "RecipeTags::RoundButton"
+    speed: 20
     centerElement: true
     label: "Scroll to tags's adding button"
 
@@ -17,9 +18,8 @@ appId: "com.recipedia"
     label: "Focus the new tag TextInput"
 
 - runFlow:
-    file: "../../../../inputAndCommitText.yaml"
+    file: "../../../../inputAndDone.yaml"
     env:
       TARGET_ID: "RecipeTags::List::0::CustomTextInput"
       VALUE: "Japanese"
-      DISMISS_ID: "RecipeTags::ElementText"
     label: "Write the tag in the input text"

@@ -16,6 +16,7 @@ tags:
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::5"
+    speed: 20
     direction: DOWN
     centerElement: true
     label: "Action - Scroll to Cereal accordion"
@@ -31,6 +32,7 @@ tags:
 - scrollUntilVisible:
     element:
       text: ".*Spaghetti"
+    speed: 20
     direction: DOWN
     centerElement: true
     label: "Action - Scroll to Spaghetti item"
@@ -42,7 +44,7 @@ tags:
     label: "Action - Select Spaghetti as filter"
 
 - runFlow:
-    file: "../../flows/search/scrollBackToTop.yaml"
+    file: "../../flows/search/scrollFilterAccordionToTop.yaml"
     label: "Scroll back to top of search screen"
 
 - runFlow:

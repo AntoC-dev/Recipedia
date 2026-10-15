@@ -3,6 +3,7 @@ appId: "com.recipedia"
 - scrollUntilVisible:
     element:
       id: "RecipePersons::NumericTextInput"
+    speed: 20
     direction: DOWN
     centerElement: true
     label: "Scroll to RecipePersons::NumericTextInput"

@@ -91,6 +91,7 @@ appId: "com.recipedia"
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::6"
+    speed: 20
     direction: DOWN
     centerElement: true
     label: "Scroll to Meat category"
@@ -150,5 +151,5 @@ appId: "com.recipedia"
       VISIBLE_ITEMS: "Romaine Lettuce"
 
 - runFlow:
-    file: "../../../../flows/search/scrollBackToTop.yaml"
+    file: "../../../../flows/search/scrollFilterAccordionToTop.yaml"
     label: "Scroll back to top of filters"

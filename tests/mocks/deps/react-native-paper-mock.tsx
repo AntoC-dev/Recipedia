@@ -679,6 +679,19 @@ export const Surface: React.FC<any> = props => (
   </View>
 );
 
+export const TouchableRipple: React.FC<any> = props => (
+  <TouchableOpacity
+    testID={props.testID}
+    onPress={props.onPress}
+    style={props.style}
+    accessibilityRole={props.accessibilityRole}
+    accessibilityLabel={props.accessibilityLabel}
+    {...{ disabled: props.disabled }}
+  >
+    {props.children}
+  </TouchableOpacity>
+);
+
 export const Snackbar: React.FC<any> & {
   DURATION_SHORT: number;
   DURATION_MEDIUM: number;

@@ -54,8 +54,9 @@ export function useIngredientArray({ form }: UseIngredientArrayParams): UseIngre
   const { editIngredients } = useRecipeIngredients();
 
   /**
-   * Applies a patch emitted by `useRecipeIngredients.editIngredients` via the
-   * local field-array API. Touching only the affected slots preserves the
+   * Applies a patch emitted by `useRecipeIngredients.editIngredients`: an
+   * in-place `setValue` on the row path for `replace`, field-array ops for
+   * the rest. Touching only the affected slots preserves the
    * object identity of every other row, which is what stops the cascade
    * re-render the previous mass `setValue('recipeIngredients', next)` caused.
    *
@@ -65,7 +66,13 @@ export function useIngredientArray({ form }: UseIngredientArrayParams): UseIngre
   const applyEditPatch: ApplyIngredientEditPatch = (patch: IngredientEditPatch) => {
     switch (patch.kind) {
       case 'replace':
-        fieldArray.update(patch.index, patch.row as RecipeFormInput['recipeIngredients'][number]);
+        // `fieldArray.update` regenerates the row key, remounting the row and dropping focus
+        // from its quantity input when the name commits on blur.
+        form.setValue(
+          `recipeIngredients.${patch.index}`,
+          patch.row as RecipeFormInput['recipeIngredients'][number],
+          { shouldDirty: true }
+        );
         // Validate the whole array (not just the replaced sub-path) so the
         // row-error gate's `useFormState` errors recompute and a now-resolved
         // row drops its stale inline error.
@@ -144,7 +151,7 @@ export function useIngredientArray({ form }: UseIngredientArrayParams): UseIngre
 
   // Share the dirty-free `applySystemPatch` with feature hooks (scraper
   // validation, OCR) that mutate the array outside the user-typing path. The
-  // local user-typing path keeps `applyEditPatch` (fieldArray ops, marks dirty)
+  // local user-typing path keeps `applyEditPatch` (marks dirty)
   // so a manual row edit still surfaces its inline error.
   useIngredientArrayActionsRegister(applySystemPatch);
 

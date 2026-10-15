@@ -46,6 +46,7 @@ tags:
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::11"
+    speed: 20
     direction: DOWN
     label: "Action - Scroll to Vegetable accordion"
 
@@ -61,6 +62,7 @@ tags:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::11::Item::1"
       text: ".*Romaine Lettuce"
+    speed: 20
     direction: DOWN
     centerElement: true
     label: "Action - Scroll the first Vegetable item clear of the sheet edges"
@@ -72,7 +74,7 @@ tags:
     label: "Action - Add the Romaine Lettuce in filters"
 
 - runFlow:
-    file: "../../flows/search/scrollBackToTop.yaml"
+    file: "../../flows/search/scrollFilterAccordionToTop.yaml"
     label: "Action - Scroll back to top of filters"
 
 - runFlow:

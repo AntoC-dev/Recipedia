@@ -40,7 +40,7 @@ appId: "com.recipedia"
     label: "Second tag chip is displayed"
 
 - assertVisible:
-    text: "Italian"
+    text: "Seafood"
     label: "Second tag text is displayed"
 
 - runFlow:

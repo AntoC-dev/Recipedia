@@ -46,7 +46,6 @@ export interface IngredientsFieldProps {
   stackMode: recipeStateType;
   openModalForField: (field: OcrModalTarget) => void;
   t: T;
-  hideDropdown?: boolean;
 }
 
 /** Read-only renderer: lists the ingredient array with no editing affordances. */
@@ -65,7 +64,6 @@ function EditableIngredientsField({
   stackMode,
   openModalForField,
   t,
-  hideDropdown,
 }: IngredientsFieldProps) {
   const testID = RECIPE_INGREDIENTS_TEST_ID;
   const editingIngredientCountRef = useIngredientFocusRef();
@@ -144,7 +142,6 @@ function EditableIngredientsField({
         index={index}
         testID={testID}
         availableIngredients={availableIngredients}
-        hideDropdown={hideDropdown}
         rowError={rowError}
         editIngredients={handleEditIngredient}
         removeIngredient={handleRemoveIngredient}

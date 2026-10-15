@@ -625,21 +625,6 @@ describe('RecipeFormHelpers', () => {
         expect(result.editType).toBe('edit');
       }
     });
-
-    test('passes hideDropdown to tags props', () => {
-      const result = buildRecipeTagsProps({
-        stackMode: recipeStateType.edit,
-        recipeTags: mockTags,
-        randomTags: ['Lunch'],
-        addTag: mockAddTag,
-        removeTag: mockRemoveTag,
-        openModalForField: mockOpenModal,
-        hideDropdown: true,
-      });
-      if (result.type === 'addOrEdit') {
-        expect(result.hideDropdown).toBe(true);
-      }
-    });
   });
 
   describe('buildRecipePersonsProps', () => {

@@ -83,6 +83,7 @@ appId: "com.recipedia"
 - scrollUntilVisible:
     element:
       text: "Meat"
+    speed: 20
     direction: DOWN
     centerElement: true
     label: "Scroll to Meat category"
@@ -142,5 +143,5 @@ appId: "com.recipedia"
       STATE: "hidden"
 
 - runFlow:
-    file: "../../../../flows/search/scrollBackToTop.yaml"
+    file: "../../../../flows/search/scrollFilterAccordionToTop.yaml"
     label: "Scroll back to top of filters"
