@@ -209,14 +209,30 @@ export function cancelOutOfBoundsFetches(
   abortControllers: Map<string, AbortController>,
   pendingUrls: Set<string>
 ): void {
+  abortFetches(abortControllers, pendingUrls, url => {
+    if (visibleUrls.has(url)) return false;
+    const recipeIndex = recipes.findIndex(r => r.url === url);
+    return recipeIndex < bufferBounds.start || recipeIndex > bufferBounds.end;
+  });
+}
+
+/**
+ * Aborts in-flight fetches and forgets them as pending.
+ *
+ * @param abortControllers - Map of URL to AbortController for pending fetches
+ * @param pendingUrls - Set of currently pending recipe URLs
+ * @param shouldAbort - Selects which fetches to abort (default: all)
+ */
+export function abortFetches(
+  abortControllers: Map<string, AbortController>,
+  pendingUrls: Set<string>,
+  shouldAbort: (url: string) => boolean = () => true
+): void {
   for (const [url, controller] of abortControllers) {
-    if (!visibleUrls.has(url)) {
-      const recipeIndex = recipes.findIndex(r => r.url === url);
-      if (recipeIndex < bufferBounds.start || recipeIndex > bufferBounds.end) {
-        controller.abort();
-        abortControllers.delete(url);
-        pendingUrls.delete(url);
-      }
+    if (shouldAbort(url)) {
+      controller.abort();
+      abortControllers.delete(url);
+      pendingUrls.delete(url);
     }
   }
 }
