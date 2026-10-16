@@ -1,3 +1,10 @@
+## [2.53.7](https://github.com/AntoC-dev/Recipedia/compare/v2.53.6...v2.53.7) (2026-10-16)
+
+### Bug Fixes
+
+* **bulk-import:** stop retrying failed image lookups in a loop ([0418e4b](https://github.com/AntoC-dev/Recipedia/commit/0418e4b3c7f5fb98fe1ed2e2e6b166a1bebee1a8)), closes [#627](https://github.com/AntoC-dev/Recipedia/issues/627)
+* **bulk-import:** stop retrying failed image lookups in a loop ([#632](https://github.com/AntoC-dev/Recipedia/issues/632)) ([4a36351](https://github.com/AntoC-dev/Recipedia/commit/4a363512174a0ad38532ebd26ea7bd2233396427))
+
 ## [2.53.6](https://github.com/AntoC-dev/Recipedia/compare/v2.53.5...v2.53.6) (2026-10-15)
 
 ### Bug Fixes
