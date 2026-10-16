@@ -115,6 +115,7 @@ export function BulkImportDiscovery() {
     visibleUrls,
     fetchImageUrl: (url, signal) =>
       provider ? fetchImageUrlForRecipe(provider, url, signal) : Promise.resolve(null),
+    enabled: showSelectionUI,
   });
 
   const freshRecipesWithImages = freshRecipes.map(r => ({

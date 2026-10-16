@@ -10,7 +10,8 @@
  * - Debounces visibility changes to avoid fetch spam
  * - Cancels in-flight fetches for items that leave viewport
  * - Limits concurrent fetches to prevent memory exhaustion
- * - Tracks fetched URLs to avoid duplicate requests
+ * - Tracks settled lookups (success or failure) to avoid duplicate requests and retry loops
+ * - Stops and aborts everything when disabled or unmounted
  *
  * @module hooks/useVisibleImageLoader
  */
@@ -18,12 +19,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { DiscoveredRecipe } from '@customTypes/BulkImportTypes';
 import {
+  abortFetches,
   buildFetchQueue,
   cancelOutOfBoundsFetches,
   computeBufferBounds,
   computeVisibleBounds,
   getBufferRecipesNeedingFetch,
 } from '@utils/BulkImportUtils';
+import { bulkImportLogger, serializeError } from '@utils/logger';
 
 /** Default number of items to fetch beyond visible viewport */
 const DEFAULT_BUFFER_SIZE = 10;
@@ -55,6 +58,9 @@ export interface UseVisibleImageLoaderOptions {
 
   /** Maximum concurrent fetch requests (default: 5) */
   maxConcurrent?: number;
+
+  /** When false, aborts in-flight lookups and stops loading (default: true) */
+  enabled?: boolean;
 }
 
 /**
@@ -94,17 +100,25 @@ export function useVisibleImageLoader({
   bufferSize = DEFAULT_BUFFER_SIZE,
   debounceMs = DEFAULT_DEBOUNCE_MS,
   maxConcurrent = DEFAULT_MAX_CONCURRENT,
+  enabled = true,
 }: UseVisibleImageLoaderOptions): UseVisibleImageLoaderReturn {
   const [imageMap, setImageMap] = useState<Map<string, string>>(new Map());
   const [pendingCount, setPendingCount] = useState(0);
 
-  const fetchedUrlsRef = useRef<Set<string>>(new Set());
+  const settledUrlsRef = useRef<Set<string>>(new Set());
   const pendingUrlsRef = useRef<Set<string>>(new Set());
   const abortControllersRef = useRef<Map<string, AbortController>>(new Map());
   const activeCountRef = useRef(0);
   const queueRef = useRef<string[]>([]);
+  const fetchImageUrlRef = useRef(fetchImageUrl);
 
   useEffect(() => {
+    fetchImageUrlRef.current = fetchImageUrl;
+  }, [fetchImageUrl]);
+
+  useEffect(() => {
+    if (!enabled) return undefined;
+
     const debounceTimer = setTimeout(() => {
       processVisibilityChange();
     }, debounceMs);
@@ -126,14 +140,14 @@ export function useVisibleImageLoader({
         recipes,
         bufferBounds,
         visibleUrls,
-        fetchedUrlsRef.current,
+        settledUrlsRef.current,
         pendingUrlsRef.current
       );
 
       const urlsToFetch = buildFetchQueue(
         visibleRecipesNeedingImages,
         bufferRecipes,
-        fetchedUrlsRef.current,
+        settledUrlsRef.current,
         pendingUrlsRef.current
       );
 
@@ -159,7 +173,7 @@ export function useVisibleImageLoader({
         const url = queueRef.current.shift();
         if (!url) break;
 
-        if (fetchedUrlsRef.current.has(url) || pendingUrlsRef.current.has(url)) {
+        if (settledUrlsRef.current.has(url) || pendingUrlsRef.current.has(url)) {
           continue;
         }
 
@@ -170,35 +184,43 @@ export function useVisibleImageLoader({
         const controller = new AbortController();
         abortControllersRef.current.set(url, controller);
 
-        fetchImageUrl(url, controller.signal)
+        fetchImageUrlRef
+          .current(url, controller.signal)
           .then(imageUrl => {
             if (imageUrl && !controller.signal.aborted) {
-              fetchedUrlsRef.current.add(url);
               setImageMap(prev => new Map(prev).set(url, imageUrl));
             }
           })
-          .catch(() => {
-            // Silently ignore fetch errors
+          .catch(error => {
+            if (!controller.signal.aborted) {
+              bulkImportLogger.warn('Image lookup rejected', { url, error: serializeError(error) });
+            }
           })
           .finally(() => {
-            pendingUrlsRef.current.delete(url);
-            abortControllersRef.current.delete(url);
+            if (!controller.signal.aborted) {
+              settledUrlsRef.current.add(url);
+            }
+            if (abortControllersRef.current.get(url) === controller) {
+              pendingUrlsRef.current.delete(url);
+              abortControllersRef.current.delete(url);
+            }
             activeCountRef.current--;
             setPendingCount(prev => Math.max(0, prev - 1));
             processQueue();
           });
       }
     }
-  }, [recipes, visibleUrls, fetchImageUrl, bufferSize, debounceMs, maxConcurrent]);
+  }, [recipes, visibleUrls, bufferSize, debounceMs, maxConcurrent, enabled]);
 
   useEffect(() => {
+    const abortControllers = abortControllersRef.current;
+    const pendingUrls = pendingUrlsRef.current;
+
     return () => {
-      for (const controller of abortControllersRef.current.values()) {
-        controller.abort();
-      }
-      abortControllersRef.current.clear();
+      queueRef.current = [];
+      abortFetches(abortControllers, pendingUrls);
     };
-  }, []);
+  }, [enabled]);
 
   return { imageMap, pendingCount };
 }

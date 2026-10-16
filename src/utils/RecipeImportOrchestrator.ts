@@ -25,7 +25,7 @@ import { isScraperSuccess } from '@app/modules/recipe-scraper';
 import type { ScrapedRecipe, ScraperResult } from '@app/modules/recipe-scraper';
 import { fetchHtml, isPlaceholderImageUrl } from '@utils/UrlHelpers';
 import { downloadImageToCache } from '@utils/FileGestion';
-import { bulkImportLogger } from '@utils/logger';
+import { bulkImportLogger, serializeError } from '@utils/logger';
 
 /** Delay between batches of recipe-page fetches to avoid rate limiting */
 const FETCH_DELAY_MS = 300;
@@ -186,6 +186,7 @@ export async function fetchRecipeImageUrl(
 ): Promise<string | null> {
   try {
     const { html } = await fetchHtml(url, signal);
+    if (signal.aborted) return null;
 
     const providerImage = provider.extractImageFromHtml(html);
     if (providerImage && !isPlaceholderImageUrl(providerImage)) {
@@ -202,7 +203,12 @@ export async function fetchRecipeImageUrl(
 
     return null;
   } catch (error) {
-    bulkImportLogger.warn('Failed to fetch recipe image URL', { url, error });
+    if (!signal.aborted) {
+      bulkImportLogger.warn('Failed to fetch recipe image URL', {
+        url,
+        error: serializeError(error),
+      });
+    }
     return null;
   }
 }
