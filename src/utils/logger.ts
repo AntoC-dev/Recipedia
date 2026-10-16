@@ -181,3 +181,23 @@ export const bugReportLogger = log.extend('BugReport');
 
 /** Logger for Pyodide WebView and bridge operations (iOS) */
 export const pyodideLogger = log.extend('Pyodide');
+
+/**
+ * Converts a caught value into a plain object that survives log serialization.
+ *
+ * Error instances serialize to `{}` with JSON.stringify because their fields are
+ * non-enumerable, so their name, message and stack are copied explicitly.
+ *
+ * @param err - The caught value
+ * @returns The error's name, message and stack, or its string form for non-Error values
+ */
+export function serializeError(err: unknown): Record<string, unknown> {
+  if (err instanceof Error) {
+    return {
+      name: err.name,
+      message: err.message,
+      stack: err.stack,
+    };
+  }
+  return { value: String(err) };
+}

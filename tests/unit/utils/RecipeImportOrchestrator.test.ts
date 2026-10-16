@@ -4,6 +4,7 @@ import { ScrapedRecipe, ScraperResult } from '@app/modules/recipe-scraper';
 import { DiscoveredRecipe, ParsingProgress, RecipeProvider } from '@customTypes/BulkImportTypes';
 import { fetchHtml } from '@utils/UrlHelpers';
 import { downloadImageToCache } from '@utils/FileGestion';
+import { bulkImportLogger } from '@utils/logger';
 
 jest.mock('@utils/UrlHelpers', () => ({
   ...jest.requireActual('@utils/UrlHelpers'),
@@ -357,6 +358,58 @@ describe('RecipeImportOrchestrator', () => {
       );
 
       expect(result).toBeNull();
+    });
+
+    test('logs a serializable name and message of the error when fetching the html throws', async () => {
+      const warnSpy = jest.spyOn(bulkImportLogger, 'warn');
+      mockFetchHtml.mockRejectedValue(new TypeError('Network request failed'));
+
+      await fetchRecipeImageUrl(makeProvider(), 'https://site.com/r', signal, jest.fn());
+
+      expect(warnSpy).toHaveBeenCalledWith('Failed to fetch recipe image URL', expect.anything());
+      const loggedContext = JSON.parse(JSON.stringify(warnSpy.mock.calls[0]![1]));
+      expect(loggedContext).toEqual({
+        url: 'https://site.com/r',
+        error: expect.objectContaining({ name: 'TypeError', message: 'Network request failed' }),
+      });
+      warnSpy.mockRestore();
+    });
+
+    test('does not warn when the lookup was cancelled through its signal', async () => {
+      const warnSpy = jest.spyOn(bulkImportLogger, 'warn');
+      const controller = new AbortController();
+      controller.abort();
+      mockFetchHtml.mockRejectedValue(new Error('Aborted'));
+
+      const result = await fetchRecipeImageUrl(
+        makeProvider(),
+        'https://site.com/r',
+        controller.signal,
+        jest.fn()
+      );
+
+      expect(result).toBeNull();
+      expect(warnSpy).not.toHaveBeenCalled();
+      warnSpy.mockRestore();
+    });
+
+    test('skips scraping when the lookup is cancelled while the html was downloading', async () => {
+      const controller = new AbortController();
+      mockFetchHtml.mockImplementation(async () => {
+        controller.abort();
+        return { html: '<html></html>', finalUrl: 'https://site.com/r' };
+      });
+      const scrapeFromHtml = jest.fn();
+
+      const result = await fetchRecipeImageUrl(
+        makeProvider(),
+        'https://site.com/r',
+        controller.signal,
+        scrapeFromHtml
+      );
+
+      expect(result).toBeNull();
+      expect(scrapeFromHtml).not.toHaveBeenCalled();
     });
   });
 });

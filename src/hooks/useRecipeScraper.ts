@@ -31,7 +31,7 @@ import { isScraperSuccess, ScraperErrorTypes, useScraper } from '@app/modules/re
 import type { ScrapedRecipe, ScraperError, ScraperResult } from '@app/modules/recipe-scraper';
 import { detectAuthRequired } from '@app/modules/recipe-scraper/src/authDetection';
 import { downloadImageToCache } from '@utils/FileGestion';
-import { uiLogger } from '@utils/logger';
+import { serializeError, uiLogger } from '@utils/logger';
 import { useDefaultPersons } from '@context/DefaultPersonsContext';
 import {
   convertScrapedRecipe,
@@ -60,17 +60,6 @@ const SCRAPER_ERROR_I18N_KEYS: Record<string, string> = {
 };
 
 const DEFAULT_SCRAPER_ERROR_I18N_KEY = 'urlDialog.errorScraping';
-
-function serializeError(err: unknown): Record<string, unknown> {
-  if (err instanceof Error) {
-    return {
-      name: err.name,
-      message: err.message,
-      stack: err.stack,
-    };
-  }
-  return { value: String(err) };
-}
 
 export type { ScrapedRecipeResult } from '@utils/RecipeScraperConverter';
 
