@@ -315,14 +315,51 @@ describe('TableManipulation', () => {
 
     expect(await table.searchRandomlyElement(0, DB)).toBeUndefined();
     expect(await table.searchRandomlyElement(-1, DB)).toBeUndefined();
+  });
 
-    const random1 = (await table.searchRandomlyElement(2, DB)) as string[];
-    expect(elementsInTable).toEqual(expect.arrayContaining(random1));
+  test('searchRandomlyElement should pick the rows with the lowest SQLite RANDOM() values', async () => {
+    const rows: TestDbType[] = [
+      { name: 'John Doe', age: 30 },
+      { name: 'Toto', age: 8 },
+      { name: 'Titi', age: 3 },
+      { name: 'GrandMa', age: 91 },
+      { name: 'GrandPa', age: 84 },
+    ];
+    await table.createTable(DB);
+    for (const row of rows) {
+      await table.insertElement(row, DB);
+    }
 
-    const random2 = (await table.searchRandomlyElement(2, DB)) as string[];
-    expect(elementsInTable).toEqual(expect.arrayContaining(random2));
+    const firstDrawRandomValues = [0.5, 0.9, 0.1, 0.7, 0.3];
+    const secondDrawRandomValues = [0.2, 0.4, 0.8, 0.6, 0.0];
+    const pendingRandomValues = [...firstDrawRandomValues, ...secondDrawRandomValues];
+    const mathRandomSpy = jest.spyOn(Math, 'random').mockImplementation(() => {
+      const nextValue = pendingRandomValues.shift();
+      if (nextValue === undefined) {
+        throw new Error('Math.random called more times than expected');
+      }
+      return nextValue;
+    });
 
-    expect(random1).not.toEqual(random2);
+    let firstDraw: TestDbType[] | undefined;
+    let secondDraw: TestDbType[] | undefined;
+    try {
+      firstDraw = await table.searchRandomlyElement<TestDbType>(2, DB);
+      secondDraw = await table.searchRandomlyElement<TestDbType>(2, DB);
+    } finally {
+      mathRandomSpy.mockRestore();
+    }
+
+    expect(pendingRandomValues).toEqual([]);
+
+    expect(firstDraw).toEqual([
+      { ID: 3, ...rows[2] },
+      { ID: 5, ...rows[4] },
+    ]);
+    expect(secondDraw).toEqual([
+      { ID: 5, ...rows[4] },
+      { ID: 1, ...rows[0] },
+    ]);
   });
 
   test('deleteElementById should delete only elements with theirs identifiers', async () => {
