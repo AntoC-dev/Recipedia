@@ -103,6 +103,10 @@ export function expoSqliteMock() {
       // Reuse existing database and connection wrapper
       if (!dbInstance) {
         dbInstance = new Database(':memory:');
+        // Route SQL RANDOM() through Math.random so tests can control it with jest.spyOn
+        dbInstance.function('RANDOM', { deterministic: false }, () =>
+          Math.floor((Math.random() * 2 - 1) * Number.MAX_SAFE_INTEGER)
+        );
       }
       if (!connectionWrapper) {
         connectionWrapper = createConnectionWrapper();
