@@ -1,4 +1,5 @@
 import {
+  abortFetches,
   buildDiscoveryListData,
   buildFetchQueue,
   cancelOutOfBoundsFetches,
@@ -289,6 +290,52 @@ describe('BulkImportUtils', () => {
 
     test('returns an empty queue when nothing needs fetching', () => {
       expect(buildFetchQueue([], [], new Set(), new Set())).toEqual([]);
+    });
+  });
+
+  describe('abortFetches', () => {
+    test('aborts every controller and forgets the pending urls', () => {
+      const controllerA = new AbortController();
+      const controllerB = new AbortController();
+      const controllers = new Map([
+        ['a', controllerA],
+        ['b', controllerB],
+      ]);
+      const pending = new Set(['a', 'b', 'c']);
+
+      abortFetches(controllers, pending);
+
+      expect(controllerA.signal.aborted).toBe(true);
+      expect(controllerB.signal.aborted).toBe(true);
+      expect(controllers.size).toBe(0);
+      expect([...pending]).toEqual(['c']);
+    });
+
+    test('aborts only the fetches selected by the predicate', () => {
+      const kept = new AbortController();
+      const aborted = new AbortController();
+      const controllers = new Map([
+        ['keep', kept],
+        ['drop', aborted],
+      ]);
+      const pending = new Set(['keep', 'drop']);
+
+      abortFetches(controllers, pending, url => url === 'drop');
+
+      expect(aborted.signal.aborted).toBe(true);
+      expect(kept.signal.aborted).toBe(false);
+      expect([...controllers.keys()]).toEqual(['keep']);
+      expect([...pending]).toEqual(['keep']);
+    });
+
+    test('does nothing when no fetch is in flight', () => {
+      const controllers = new Map<string, AbortController>();
+      const pending = new Set<string>();
+
+      abortFetches(controllers, pending);
+
+      expect(controllers.size).toBe(0);
+      expect(pending.size).toBe(0);
     });
   });
 
