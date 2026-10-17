@@ -144,12 +144,10 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd
 
-- scrollUntilVisible:
-    element:
-      id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::NumericTextInput"
-    direction: DOWN
-    speed: 20
-    centerElement: true
+- runFlow:
+    file: "../../../../flows/scrollToEndTarget.yaml"
+    env:
+      TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::NumericTextInput"
     label: "Scroll to protein section"
 
 - waitForAnimationToEnd
@@ -161,12 +159,10 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd
 
-- scrollUntilVisible:
-    element:
-      id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Salt::NumericTextInput"
-    direction: DOWN
-    speed: 60
-    centerElement: true
+- runFlow:
+    file: "../../../../flows/scrollToEndTarget.yaml"
+    env:
+      TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Salt::NumericTextInput"
     label: "Scroll to end of nutrition table"
 
 - waitForAnimationToEnd
@@ -178,13 +174,10 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd
 
-- scrollUntilVisible:
-    element:
-      id: "Recipe::RecipeNutrition::NutritionTable::EditForm::RemoveButton"
-    direction: DOWN
-    speed: 60
-    timeout: 60000
-    centerElement: true
+- runFlow:
+    file: "../../../../flows/scrollToEndTarget.yaml"
+    env:
+      TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::EditForm::RemoveButton"
     label: "Scroll to remove nutrition button"
 
 - waitForAnimationToEnd

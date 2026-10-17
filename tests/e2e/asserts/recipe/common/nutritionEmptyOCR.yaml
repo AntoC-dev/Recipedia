@@ -3,12 +3,10 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd
 
-- scrollUntilVisible:
-    element:
-      id: "Recipe::RecipeNutrition::NutritionEmptyState::OCRButton::RoundButton"
-    direction: DOWN
-    speed: 60
-    centerElement: true
+- runFlow:
+    file: "../../../flows/scrollToEndTarget.yaml"
+    env:
+      TARGET_ID: "Recipe::RecipeNutrition::NutritionEmptyState::OCRButton::RoundButton"
     label: "Scroll to empty nutrition section"
 
 - waitForAnimationToEnd

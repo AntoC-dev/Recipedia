@@ -379,6 +379,15 @@ Two cost notes when picking a tier:
 - `centerElement: true` retries centering up to 4 times, each a full swipe plus
   a hierarchy fetch. Use it when the element is genuinely clipped or occluded,
   not by default.
+- Near the end of a scroll range, use `flows/scrollToEndTarget.yaml` (env
+  `TARGET_ID`) instead of `centerElement: true`. Maestro cannot center a target
+  the list has no room left to scroll past, so it swipes until the timeout. The
+  flow scrolls until visible, then swipes once to the end of the list and waits
+  for it to settle. This also lifts the target above the bottom overlay button
+  (`BottomActionButton`), which the ScrollView padding only clears at the very
+  end of the range. Keep `centerElement: true` for mid-range targets, and when
+  centering is the point (e.g. scrolling a dialog calendar so later months
+  show).
 - A `repeat` loop whose `while` is `notVisible` burns the full lookup window on
   the iteration that finally succeeds. Worth paying for adaptivity, not worth
   adding by reflex.

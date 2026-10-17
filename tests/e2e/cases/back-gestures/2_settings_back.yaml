@@ -177,12 +177,10 @@ tags:
     id: "Parameters::Section::Import::FromWebsite::Item"
     label: "Assert - Back returned to Parameters"
 
-- scrollUntilVisible:
-    element:
-      id: "Parameters::Section::About::BugReport::Item"
-    direction: DOWN
-    speed: 40
-    centerElement: true
+- runFlow:
+    file: "../../flows/scrollToEndTarget.yaml"
+    env:
+      TARGET_ID: "Parameters::Section::About::BugReport::Item"
     label: "Action - Scroll to the Bug report item"
 
 - waitForAnimationToEnd

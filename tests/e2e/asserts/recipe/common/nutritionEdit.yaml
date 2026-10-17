@@ -139,12 +139,10 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd
 
-- scrollUntilVisible:
-    element:
-      id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fiber::NumericTextInput"
-    direction: DOWN
-    speed: 40
-    centerElement: true
+- runFlow:
+    file: "../../../flows/scrollToEndTarget.yaml"
+    env:
+      TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fiber::NumericTextInput"
     label: "Scroll to fiber input"
 
 - waitForAnimationToEnd
@@ -156,12 +154,10 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd
 
-- scrollUntilVisible:
-    element:
-      id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::NumericTextInput"
-    direction: DOWN
-    speed: 40
-    centerElement: true
+- runFlow:
+    file: "../../../flows/scrollToEndTarget.yaml"
+    env:
+      TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Protein::NumericTextInput"
     label: "Scroll to protein input"
 
 - waitForAnimationToEnd
@@ -173,12 +169,10 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd
 
-- scrollUntilVisible:
-    element:
-      id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Salt::NumericTextInput"
-    direction: DOWN
-    speed: 40
-    centerElement: true
+- runFlow:
+    file: "../../../flows/scrollToEndTarget.yaml"
+    env:
+      TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Salt::NumericTextInput"
     label: "Scroll to salt input"
 
 - waitForAnimationToEnd
