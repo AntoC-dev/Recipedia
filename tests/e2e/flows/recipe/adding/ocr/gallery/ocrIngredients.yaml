@@ -67,10 +67,6 @@ appId: "com.recipedia"
     label: "Wait for first ingredient name to be populated"
 
 - runFlow:
-    file: ../cleanAndResume.yaml
-    label: "Delete ingredient names image from gallery and return to Recipedia"
-
-- runFlow:
     when:
       true: ${output.isQuantitiesOCR == true}
     commands:
@@ -115,13 +111,9 @@ appId: "com.recipedia"
       - extendedWaitUntil:
           visible:
             id: "RecipeIngredients::.*::QuantityInput"
-            text: ".*"
+            text: ".+"
           timeout: 120000
           label: "Wait for last ingredient quantity to be populated"
-
-      - runFlow:
-          file: ../cleanAndResume.yaml
-          label: "Delete ingredient quantities image from gallery and return to Recipedia"
 
 - extendedWaitUntil:
     visible:

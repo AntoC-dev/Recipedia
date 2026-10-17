@@ -44,7 +44,3 @@ appId: "com.recipedia"
     label: "Validate without cropping (platform-specific)"
 
 - evalScript: ${output.modalImageCounter = output.modalImageCounter + 1}
-
-- runFlow:
-    file: ../cleanAndResume.yaml
-    label: "Delete recipe image from gallery and return to Recipedia"

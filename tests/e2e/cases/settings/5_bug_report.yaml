@@ -125,15 +125,11 @@ tags:
       platform: iOS
     commands:
       - runFlow:
-          file: "../../flows/handlePhotosPermission.yaml"
-          label: "Clear the Photos permission prompt before the picker can present"
-      - extendedWaitUntil:
-          visible:
-            text: "Recents"
-          timeout: 30000
-          label: "Wait for gallery to be opened on iOS"
+          file: "../../flows/waitForIOSPhotoPicker.yaml"
+          label: "Wait for the photo picker, granting Photos access if prompted"
       - tapOn:
           text: "Recents"
+          retryTapIfNoChange: true
           label: "Go to recents photos on iOS"
       - extendedWaitUntil:
           visible:

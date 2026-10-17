@@ -2,17 +2,13 @@ import type { AndroidManifest } from '@expo/config-plugins';
 import { CCT_BACKEND_META_DATA } from '@app/plugins/mlKitTelemetryManifest';
 import withMlKitTelemetryDisabled from '@app/plugins/withMlKitTelemetryDisabled';
 
-const manifest: AndroidManifest = {
-  manifest: {
-    $: { 'xmlns:android': 'http://schemas.android.com/apk/res/android' },
-    queries: [],
-    application: [{ $: { 'android:name': '.MainApplication' } }],
-  },
-};
-
-jest.mock('@expo/config-plugins', () =>
-  require('@mocks/deps/expo-config-plugins-mock').expoConfigPluginsMock(manifest)
-);
+jest.mock('@expo/config-plugins', () => {
+  const {
+    buildAndroidManifest,
+    expoConfigPluginsMock,
+  } = require('@mocks/deps/expo-config-plugins-mock');
+  return expoConfigPluginsMock(buildAndroidManifest());
+});
 
 describe('withMlKitTelemetryDisabled', () => {
   it('removes the CCT transport backend from the Android manifest and keeps the config', () => {

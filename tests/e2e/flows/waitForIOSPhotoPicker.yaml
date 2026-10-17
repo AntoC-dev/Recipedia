@@ -1,0 +1,28 @@
+appId: "com.recipedia"
+---
+# The Photos prompt can appear seconds after the picker request; waiting for prompt or picker misses neither.
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - extendedWaitUntil:
+          visible:
+            text: "Allow Full Access|Recents"
+          timeout: 30000
+          label: "Wait for the Photos permission prompt or the picker"
+      - runFlow:
+          when:
+            visible:
+              text: "Allow Full Access"
+          commands:
+            - tapOn:
+                text: "Allow Full Access"
+                label: "Grant full Photo Library access"
+      - extendedWaitUntil:
+          visible:
+            text: "Recents"
+          timeout: 30000
+          label: "Wait for the native photo picker to present"
+      - waitForAnimationToEnd:
+          timeout: 3000
+          label: "Let the picker presentation animation settle"

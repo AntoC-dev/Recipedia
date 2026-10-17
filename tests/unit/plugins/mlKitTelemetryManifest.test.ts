@@ -4,6 +4,7 @@ import {
   removeCctTransportBackend,
   TRANSPORT_BACKEND_DISCOVERY_SERVICE,
 } from '@app/plugins/mlKitTelemetryManifest';
+import { buildAndroidManifest } from '@mocks/deps/expo-config-plugins-mock';
 
 type ManifestService = NonNullable<
   NonNullable<AndroidManifest['manifest']['application']>[number]['service']
@@ -14,13 +15,7 @@ const CCT_BACKEND_REMOVAL = {
 };
 
 function buildManifest(services: ManifestService[] = []): AndroidManifest {
-  return {
-    manifest: {
-      $: { 'xmlns:android': 'http://schemas.android.com/apk/res/android' },
-      queries: [],
-      application: [{ $: { 'android:name': '.MainApplication' }, service: services }],
-    },
-  };
+  return buildAndroidManifest({ service: services });
 }
 
 function findTransportServices(manifest: AndroidManifest): ManifestService[] {

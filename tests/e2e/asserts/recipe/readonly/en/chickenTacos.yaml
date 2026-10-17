@@ -239,9 +239,14 @@ appId: "com.recipedia"
     element:
       text: "per portion"
     direction: DOWN
-    speed: 60
-    centerElement: true
-    label: "Scroll to per portion button"
+    speed: 20
+    timeout: 240000
+    label: "Scroll until the per portion button is visible"
+
+- swipe:
+    start: "50%,70%"
+    end: "50%,25%"
+    label: "Swipe to the end of the list so the per portion button clears the bottom overlay"
 
 - waitForAnimationToEnd
 

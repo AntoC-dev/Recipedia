@@ -1,5 +1,9 @@
 appId: "com.recipedia"
 ---
+- waitForAnimationToEnd:
+    timeout: 3000
+    label: "Let the album grid finish sliding in before tapping a cell"
+
 - tapOn:
     point: "12%,17%"
     label: "Select first photo of the gallery on iOS"

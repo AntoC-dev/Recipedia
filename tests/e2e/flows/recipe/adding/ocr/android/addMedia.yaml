@@ -203,3 +203,5 @@ appId: "com.recipedia"
     commands:
       - addMedia:
           - "../../../../../../assets/curryPoisChiches/preparation.jpg"
+
+- evalScript: ${output.galleryPhotoCount = (output.galleryPhotoCount || 0) + 1}

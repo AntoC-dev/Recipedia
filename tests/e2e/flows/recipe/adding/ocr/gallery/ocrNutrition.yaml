@@ -2,12 +2,10 @@ appId: "com.recipedia"
 ---
 - waitForAnimationToEnd
 
-- scrollUntilVisible:
-    element:
-      id: "Recipe::RecipeNutrition::NutritionEmptyState::OCRButton::RoundButton"
-    direction: DOWN
-    speed: 90
-    centerElement: true
+- runFlow:
+    file: "../../../../scrollToEndTarget.yaml"
+    env:
+      TARGET_ID: "Recipe::RecipeNutrition::NutritionEmptyState::OCRButton::RoundButton"
     label: "Scroll to nutrition section"
 
 - waitForAnimationToEnd
@@ -48,12 +46,10 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd
 
-- scrollUntilVisible:
-    element:
-      id: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightNumericTextInput"
-    speed: 20
-    direction: DOWN
-    centerElement: true
+- runFlow:
+    file: "../../../../scrollToEndTarget.yaml"
+    env:
+      TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightNumericTextInput"
     label: "Scroll to Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightNumericTextInput"
 
 - waitForAnimationToEnd
@@ -70,10 +66,6 @@ appId: "com.recipedia"
       TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightNumericTextInput"
       VALUE: "200"
     label: "Enter the weight of a portion"
-
-- runFlow:
-    file: ../cleanAndResume.yaml
-    label: "Delete nutrition image from gallery and return to Recipedia"
 
 - scrollUntilVisible:
     element:

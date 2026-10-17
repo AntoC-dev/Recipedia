@@ -2,7 +2,7 @@ appId: "com.recipedia"
 ---
 - runFlow:
     file: waitAndVerifyGalleryReady.yaml
-    label: "Verify gallery thumbnails are indexed"
+    label: "Wait until the picker lists all added photos"
 
 - tapOn:
     id: "icon_thumbnail"

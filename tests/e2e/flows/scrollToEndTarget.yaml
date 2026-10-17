@@ -1,0 +1,17 @@
+appId: "com.recipedia"
+---
+- scrollUntilVisible:
+    element:
+      id: "${TARGET_ID}"
+    direction: DOWN
+    speed: 20
+    timeout: 240000
+    label: "Scroll until ${TARGET_ID} is visible (no centering: it sits at the end of the list)"
+
+- swipe:
+    start: "50%,70%"
+    end: "50%,25%"
+    label: "Swipe to the end of the list so ${TARGET_ID} clears the bottom action button"
+
+- waitForAnimationToEnd:
+    label: "Wait for the list to settle at its end"

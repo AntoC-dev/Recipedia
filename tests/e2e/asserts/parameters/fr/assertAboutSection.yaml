@@ -21,12 +21,10 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd
 
-- scrollUntilVisible:
-    element:
-      id: "Parameters::Section::About::Version::Item"
-    direction: DOWN
-    speed: 40
-    centerElement: true
+- runFlow:
+    file: "../../../flows/scrollToEndTarget.yaml"
+    env:
+      TARGET_ID: "Parameters::Section::About::Version::Item"
     label: "Scroll to version item"
 
 - waitForAnimationToEnd
@@ -36,12 +34,10 @@ appId: "com.recipedia"
     text: "Version, .*\\d+\\.\\d+\\.\\d+"
     label: "Version item"
 
-- scrollUntilVisible:
-    element:
-      id: "Parameters::Section::About::BugReport::Item"
-    direction: DOWN
-    speed: 60
-    centerElement: true
+- runFlow:
+    file: "../../../flows/scrollToEndTarget.yaml"
+    env:
+      TARGET_ID: "Parameters::Section::About::BugReport::Item"
     label: "Scroll to Bug Report item"
 
 - waitForAnimationToEnd

@@ -1,19 +1,6 @@
 appId: "com.recipedia"
 ---
 # Camera mode: already on empty recipe screen, no need to open gallery button
-- runFlow:
-    file: ../android/addMedia.yaml
-    env:
-      FIELD_NAME: image
-    when:
-      platform: Android
-- runFlow:
-    file: ../iOS/addMedia.yaml
-    env:
-      FIELD_NAME: image
-    when:
-      platform: iOS
-
 - tapOn:
     id: "RecipeImage::RoundButton"
     label: "Tap on OCR button of recipe image"

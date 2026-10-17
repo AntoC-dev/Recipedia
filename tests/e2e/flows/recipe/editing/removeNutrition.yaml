@@ -3,13 +3,10 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd
 
-- scrollUntilVisible:
-    element:
-      id: "Recipe::RecipeNutrition::NutritionTable::EditForm::RemoveButton"
-    direction: DOWN
-    speed: 85
-    centerElement: true
-    timeout: 120000
+- runFlow:
+    file: "../../scrollToEndTarget.yaml"
+    env:
+      TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::EditForm::RemoveButton"
     label: "Scroll to remove nutrition button"
 
 - waitForAnimationToEnd

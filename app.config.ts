@@ -140,6 +140,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       './plugins/withAndroidLocaleFilters',
       './plugins/withMlKitTelemetryDisabled',
       './plugins/withGradleBuildCache',
+      './plugins/withGwpAsanDisabled',
     ],
     extra: {
       eas: {

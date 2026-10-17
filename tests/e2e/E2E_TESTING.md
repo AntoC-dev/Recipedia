@@ -89,7 +89,7 @@ tests/e2e/
 ```
 
 Principles: cases orchestrate, flows act, asserts verify. Every case is
-independent and starts from `flows/setupTest.yaml` (launch with clear state,
+independent and starts from `flows/setupTest.yaml` (clear state then launch,
 skip onboarding, warm up screens). Keep flows atomic, pass parameters via `env`,
 give every command a `label` — labels are what you read in `maestro.log`.
 
@@ -371,7 +371,8 @@ changes: content anchored below the status bar shifts by the top-inset delta,
 content anchored to the bottom by the home-indicator inset. Before falling back
 to tier 3, check with the Maestro MCP `inspect_screen` whether the surface
 exposes an identifier — native screens often do. The remaining tier-3 sites are
-the iOS Photos picker cells and `flows/performance/*` (Android-only, so
+the iOS Photos picker cells, the end-of-list swipe in
+`flows/scrollToEndTarget.yaml` and `flows/performance/*` (Android-only, so
 unaffected by iOS device bumps).
 
 Two cost notes when picking a tier:
@@ -379,6 +380,12 @@ Two cost notes when picking a tier:
 - `centerElement: true` retries centering up to 4 times, each a full swipe plus
   a hierarchy fetch. Use it when the element is genuinely clipped or occluded,
   not by default.
+- For the last elements of a list (nothing taller than half a screen after
+  them), use `flows/scrollToEndTarget.yaml` (env `TARGET_ID`), not
+  `centerElement: true`, which swipes until timeout when no scroll room is left.
+  The flow scrolls to the target, swipes to the end and settles, which also
+  lifts it above `BottomActionButton`. Keep `centerElement` for mid-range
+  targets or when centering is the goal (dialog calendar months).
 - A `repeat` loop whose `while` is `notVisible` burns the full lookup window on
   the iteration that finally succeeds. Worth paying for adaptivity, not worth
   adding by reflex.
@@ -468,39 +475,46 @@ hand.
 
 ## OCR Testing
 
-Android MediaStore sorts "Recent" by timestamp, and images added within ~500ms
-of each other get unpredictable order. So media is added **on-demand** right
-before selection, and the flow always picks index 0.
+Photos are added **on demand** right before selection; the flow picks the first
+picker item (Android `icon_thumbnail` index 0, iOS first grid cell).
 
-Per field: tap the field's OCR button → `android/addMedia.yaml` (env
-`FIELD_NAME`) → `android/selectMostRecentFromModal.yaml`. The modal counter
-tracks which image to pick from the app's own modal:
+**Order.** Both pickers (iOS 26 Recents, Android Photo Picker) sort newest-first
+by EXIF `DateTimeOriginal`, not add time. Asset dates must strictly increase in
+the order its case adds them (gallery: image, title, description, tags, time,
+nutrition, preparation, ingredient names, quantities; camera V3: ingredients
+before preparation): one minute per recipe (HelloFresh `21:29`, V1 `21:30`, V2
+`21:31`, V3 `21:32`), one second per step, offset `+01:00` (else read as UTC).
+After adding or reordering an asset, re-date it and `grep -r <file> tests/e2e`
+for other flows' order:
 
-```yaml
-- evalScript: ${output.modalImageCounter = 1} # after the first selection
-- tapOn:
-    id: 'Modal::List#${output.modalImageCounter}::SquareButton::Image'
-- evalScript: ${output.modalImageCounter = output.modalImageCounter + 1}
+```bash
+exiftool -overwrite_original -DateTimeOriginal="2025:03:18 21:31:05" \
+  -CreateDate="2025:03:18 21:31:05" -ModifyDate="2025:03:18 21:31:05" \
+  -OffsetTimeOriginal=+01:00 -OffsetTime=+01:00 -OffsetTimeDigitized=+01:00 \
+  tests/assets/pouletSatay/nutrition.jpg
 ```
 
-Camera mode reuses the gallery flows for every field except the first: the
-screen is already open, so `ocrImage.yaml` skips the gallery button, picks
-`Modal::List#0` and initialises the counter.
+**No mid-flow cleanup.** Only `checkIfCleanIsNeeded.yaml` (case start) deletes
+photos: on iOS that opens Photos, CI kills the backgrounded app, form lost.
 
-**`addMedia` does not support variable substitution.** Select the path with a
-conditional instead:
+**Android count wait.** `android/addMedia.yaml` increments
+`output.galleryPhotoCount` (reset in `checkIfCleanIsNeeded.yaml`);
+`android/waitAndVerifyGalleryReady.yaml` waits for `icon_thumbnail` index
+`count - 1`, else closes and reopens the picker (it never refreshes while open
+and MediaStore lags), so index 0 is never stale. iOS has no wait: `addMedia`
+blocks until `simctl addmedia` finishes.
 
-```yaml
-- runFlow:
-    when:
-      true: ${RECIPE_NAME == "hellofresh" && FIELD_NAME == "image"}
-    commands:
-      - addMedia: ['../../../../../../assets/aiguillettesTeriyaki/image.jpg']
-```
+Per field: OCR button → `{android,iOS}/addMedia.yaml` (env `FIELD_NAME`; the
+path is picked by `RECIPE_NAME`/`FIELD_NAME` conditionals since `addMedia` does
+not interpolate) → `{android,iOS}/selectMostRecentFromModal.yaml`, which taps
+`Modal::List#${output.modalImageCounter}` and increments it. The counter starts
+at 0 (`gallery/addRecipeFromGallery.yaml`) or 1
+(`camera/addRecipeFromCamera.yaml`, whose `ocrImage.yaml` skips the FAB gallery
+button).
 
-New OCR recipe: add `assets/{recipeName}/{field}.jpg`, extend `addMedia.yaml`
-with its conditionals, add `asserts/recipe/ocr/{recipeName}.yaml`, wire it into
-an OCR case.
+New OCR recipe: add `assets/{recipeName}/{field}.jpg` (dated as above), extend
+`addMedia.yaml` with its conditionals, add
+`asserts/recipe/ocr/{recipeName}.yaml`, wire it into an OCR case.
 
 ## Language Support
 
@@ -648,7 +662,8 @@ syntax).
 The local target is a **dev build**, where `launchApp` / relaunch / cold start
 drops to the Expo dev-client launcher instead of the app, breaking the run and
 losing state. Running a committed case or `ci/` wrapper counts as launching it —
-they chain `flows/setupTest.yaml`, which calls `launchApp: clearState: true`.
+they chain `flows/setupTest.yaml`, which starts from a clean app via
+`flows/launchFreshApp.yaml`.
 
 When a step needs a fresh app or a reload, STOP and ASK the user, wait for
 confirmation, then re-`inspect_screen`. Committed YAML keeps `launchApp` for CI,
@@ -656,19 +671,19 @@ where the release test build handles it correctly.
 
 ## Troubleshooting
 
-| Symptom                               | Cause / fix                                                                                                     |
-| ------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `Element not found`                   | TestID changed, element off-screen (`scrollUntilVisible`), too early (`extendedWaitUntil`), or wrong screen     |
-| `Flow file does not exist`            | `runFlow.file` is relative to the **current file** — count the `../` levels                                     |
-| `${VAR}` appears literally            | Missing `env:` on the caller, or a command that does not interpolate (`addMedia`)                               |
-| OCR picked the wrong image            | `addMedia` must run right before selection; check `modalImageCounter` and the `RECIPE_NAME`/`FIELD_NAME` values |
-| Platform block skipped                | `when: platform:` needs `Android` / `iOS`, capitalised                                                          |
-| Assertion passes locally, fails on CI | A missing barrier — see [Text Input Rules](#text-input-rules) and [Re-render Barriers](#re-render-barriers)     |
-| Intermittent, infrastructure-shaped   | Handled by the [CI retry wrappers](#ci-retry-mechanism); do not paper over it with sleeps                       |
+| Symptom                               | Cause / fix                                                                                                                                    |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Element not found`                   | TestID changed, element off-screen (`scrollUntilVisible`), too early (`extendedWaitUntil`), or wrong screen                                    |
+| `Flow file does not exist`            | `runFlow.file` is relative to the **current file** — count the `../` levels                                                                    |
+| `${VAR}` appears literally            | Missing `env:` on the caller, or a command that does not interpolate (`addMedia`)                                                              |
+| OCR picked the wrong image            | Check the asset's EXIF date/offset order (see OCR Testing), `galleryPhotoCount`, `modalImageCounter` and the `RECIPE_NAME`/`FIELD_NAME` values |
+| Platform block skipped                | `when: platform:` needs `Android` / `iOS`, capitalised                                                                                         |
+| Assertion passes locally, fails on CI | A missing barrier — see [Text Input Rules](#text-input-rules) and [Re-render Barriers](#re-render-barriers)                                    |
+| Intermittent, infrastructure-shaped   | Handled by the [CI retry wrappers](#ci-retry-mechanism); do not paper over it with sleeps                                                      |
 
 Debugging: give every command a descriptive `label` (that is what the log
 shows), run a single case in isolation, and use `maestro studio` to check
-selectors. Maestro docs: https://maestro.mobile.dev/
+selectors. Maestro docs: https://docs.maestro.dev/
 
 ## Best Practices
 
@@ -682,5 +697,7 @@ selectors. Maestro docs: https://maestro.mobile.dev/
    case.
 7. Validate live over MCP before considering a flow done — without reloading the
    app yourself.
+8. Start from a clean app with `flows/launchFreshApp.yaml`; never
+   `launchApp: clearState: true`.
 
 **Questions**: see `AGENTS.md` for project-wide conventions.
