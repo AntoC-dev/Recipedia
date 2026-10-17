@@ -7,9 +7,6 @@ appId: "com.recipedia"
     id: "RecipeTitle::OpenModal::RoundButton"
     label: "Tap on OCR button of recipe title"
 
-- addMedia:
-    - "../../../../../../assets/tajineMerguez/image.jpg"
-
 - runFlow:
     file: "../android/selectMostRecentFromModal.yaml"
     label: "Select text-free photo from modal for OCR"
@@ -30,7 +27,3 @@ appId: "com.recipedia"
 - assertVisible:
     text: "No recipe data found in the image."
     label: "Assert - no-data snackbar message is shown"
-
-- runFlow:
-    file: "../cleanAndResume.yaml"
-    label: "Delete photo from gallery and return to Recipedia"

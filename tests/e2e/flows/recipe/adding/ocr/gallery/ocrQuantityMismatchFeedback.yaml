@@ -51,8 +51,22 @@ appId: "com.recipedia"
     id: "RecipeIngredients::OpenModalQuantities::RoundButton"
     label: "Tap on ingredient quantities OCR button"
 
-- addMedia:
-    - "../../../../../../assets/tajineMerguez/ingredients_quantities.jpeg"
+- runFlow:
+    file: ../android/addMedia.yaml
+    env:
+      RECIPE_NAME: quitoqueV1
+      FIELD_NAME: ingredientQuantities
+    label: "Add the quantities image to the gallery"
+    when:
+      platform: Android
+- runFlow:
+    file: ../iOS/addMedia.yaml
+    env:
+      RECIPE_NAME: quitoqueV1
+      FIELD_NAME: ingredientQuantities
+    label: "Add the quantities image to the gallery"
+    when:
+      platform: iOS
 
 - runFlow:
     file: ../android/selectMostRecentFromModal.yaml
@@ -74,7 +88,3 @@ appId: "com.recipedia"
 - assertVisible:
     text: "Scanned quantities don't match your ingredients. Please check the values."
     label: "Assert - quantity-mismatch snackbar message is shown"
-
-- runFlow:
-    file: ../cleanAndResume.yaml
-    label: "Delete quantities image from gallery and return to Recipedia"

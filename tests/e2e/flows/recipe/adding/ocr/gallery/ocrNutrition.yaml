@@ -67,10 +67,6 @@ appId: "com.recipedia"
       VALUE: "200"
     label: "Enter the weight of a portion"
 
-- runFlow:
-    file: ../cleanAndResume.yaml
-    label: "Delete nutrition image from gallery and return to Recipedia"
-
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::PrefixText"

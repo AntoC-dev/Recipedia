@@ -477,9 +477,40 @@ hand.
 
 ## OCR Testing
 
-Android MediaStore sorts "Recent" by timestamp, and images added within ~500ms
-of each other get unpredictable order. So media is added **on-demand** right
-before selection, and the flow always picks index 0.
+Media is added **on-demand** right before selection, and the flow always picks
+the first picker item (Android `icon_thumbnail` index 0, iOS first grid cell).
+
+**Picker order.** The iOS 26 picker (Recents) and the Android Photo Picker both
+sort newest-first by the EXIF capture date (`DateTimeOriginal`), not by the date
+the file was added. So the EXIF dates of the assets in `tests/assets/` must
+strictly increase in the exact order a flow adds them (image, title,
+description, tags, time, nutrition, preparation, ingredient names, ingredient
+quantities). One recipe block per minute (HelloFresh `21:29`, V1 `21:30`, V2
+`21:31`, V3 `21:32`), one second per step. When a flow adds a new asset or
+changes the order, re-date it:
+
+```bash
+exiftool -overwrite_original -DateTimeOriginal="2025:03:18 21:31:05" \
+  -CreateDate="2025:03:18 21:31:05" -ModifyDate="2025:03:18 21:31:05" \
+  tests/assets/pouletSatay/nutrition.jpg
+```
+
+Check every flow using the file (`grep -r <file> tests/e2e`) so the new date
+does not break another order.
+
+**No mid-flow cleanup.** Photos accumulate in the library during a case and are
+only removed at the case start (`checkIfCleanIsNeeded.yaml`). Deleting photos
+mid-flow means opening the Photos app on iOS, which backgrounds Recipedia; on CI
+the backgrounded app is SIGKILLed and the half-filled form is lost.
+
+**Count wait.** Before picking, the flow waits until the picker lists every
+photo added since the case start (`PHOTO_COUNT = modalImageCounter + 1`, passed
+by the callers). Android: `waitAndVerifyGalleryReady.yaml` waits for
+`icon_thumbnail` at index `PHOTO_COUNT - 1`; the picker does not refresh while
+open, so it is closed and reopened (retried) if MediaStore indexing lags (a
+fresh photo can be missing for a while, so index 0 could otherwise be a stale
+photo). iOS: `iOS/selectFromGallery.yaml` waits for the Recents footer
+`"<PHOTO_COUNT> Photo.*"`; `addMedia` is synchronous there.
 
 Per field: tap the field's OCR button → `android/addMedia.yaml` (env
 `FIELD_NAME`) → `android/selectMostRecentFromModal.yaml`. The modal counter
