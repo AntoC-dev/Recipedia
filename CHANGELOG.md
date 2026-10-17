@@ -1,3 +1,19 @@
+## [2.53.8](https://github.com/AntoC-dev/Recipedia/compare/v2.53.7...v2.53.8) (2026-10-17)
+
+### Bug Fixes
+
+* **android:** disable GWP-ASan to avoid a Hermes startup crash ([d689f9d](https://github.com/AntoC-dev/Recipedia/commit/d689f9dc92345eb4d621a8207ed1f35656876182)), closes [facebook/hermes#2225](https://github.com/facebook/hermes/issues/2225) [facebook/hermes#2229](https://github.com/facebook/hermes/issues/2229) [#600](https://github.com/AntoC-dev/Recipedia/issues/600) [#600](https://github.com/AntoC-dev/Recipedia/issues/600)
+* **ci:** cache the Android emulator system image ([6f6f6da](https://github.com/AntoC-dev/Recipedia/commit/6f6f6da9da896e784b46b34d69f29e4d0b0cddc4)), closes [#600](https://github.com/AntoC-dev/Recipedia/issues/600)
+* **ci:** rerun failed iOS flows after the Maestro driver dies ([5efe9e3](https://github.com/AntoC-dev/Recipedia/commit/5efe9e3e7630072cc5c99d6be303eed89fc75577)), closes [mobile-dev-inc/maestro#3538](https://github.com/mobile-dev-inc/maestro/issues/3538) [#600](https://github.com/AntoC-dev/Recipedia/issues/600)
+* **e2e:** clear app state and launch in separate steps ([075808b](https://github.com/AntoC-dev/Recipedia/commit/075808bdb4147205df159702121c31150b3d7837)), closes [#600](https://github.com/AntoC-dev/Recipedia/issues/600) [#600](https://github.com/AntoC-dev/Recipedia/issues/600)
+* **e2e:** order OCR gallery photos by capture date instead of cleaning mid-flow ([fa02b0b](https://github.com/AntoC-dev/Recipedia/commit/fa02b0b0bad566b173cc750717c1457a7d40f187))
+* **e2e:** root-cause fixes for flaky E2E flows ([#600](https://github.com/AntoC-dev/Recipedia/issues/600)) ([#611](https://github.com/AntoC-dev/Recipedia/issues/611)) ([8c3a60e](https://github.com/AntoC-dev/Recipedia/commit/8c3a60eab0f0a8053c848a59f17b1a8c04739871)), closes [facebook/hermes#2225](https://github.com/facebook/hermes/issues/2225) [facebook/hermes#2229](https://github.com/facebook/hermes/issues/2229) [#626](https://github.com/AntoC-dev/Recipedia/issues/626) [#628](https://github.com/AntoC-dev/Recipedia/issues/628) [#633](https://github.com/AntoC-dev/Recipedia/issues/633) [#627](https://github.com/AntoC-dev/Recipedia/issues/627) [#632](https://github.com/AntoC-dev/Recipedia/issues/632) [#540](https://github.com/AntoC-dev/Recipedia/issues/540) [#622](https://github.com/AntoC-dev/Recipedia/issues/622) [#608](https://github.com/AntoC-dev/Recipedia/issues/608) [#609](https://github.com/AntoC-dev/Recipedia/issues/609) [#540](https://github.com/AntoC-dev/Recipedia/issues/540) [#601](https://github.com/AntoC-dev/Recipedia/issues/601) [#540](https://github.com/AntoC-dev/Recipedia/issues/540)
+* **e2e:** scroll to end-of-list targets without centering ([15e753a](https://github.com/AntoC-dev/Recipedia/commit/15e753af9f2b32e5743b352fc46384f99640bf5c))
+* **e2e:** wait for OCR to fill ingredient quantities and preparation ([2d3df11](https://github.com/AntoC-dev/Recipedia/commit/2d3df11d213903d6d58b9d07442c2b5e1a6aa330))
+* **e2e:** wait for the iOS Photos prompt or picker before picking ([91cfb5c](https://github.com/AntoC-dev/Recipedia/commit/91cfb5c33f56323e85c402b4c4a822a83d0d20e7)), closes [#600](https://github.com/AntoC-dev/Recipedia/issues/600) [#600](https://github.com/AntoC-dev/Recipedia/issues/600)
+* **e2e:** wait longer for slow image processing on the iOS simulator ([8d5f493](https://github.com/AntoC-dev/Recipedia/commit/8d5f49302f04bbcfaa7bbc2aa490766bb7bc2b9a)), closes [#600](https://github.com/AntoC-dev/Recipedia/issues/600)
+* **e2e:** wait longer for the iOS cropper Choose button ([7d4ec54](https://github.com/AntoC-dev/Recipedia/commit/7d4ec5424034a329b526e94dd8d5ebd1415ebb8c))
+
 ## [2.53.7](https://github.com/AntoC-dev/Recipedia/compare/v2.53.6...v2.53.7) (2026-10-16)
 
 ### Bug Fixes
