@@ -111,7 +111,7 @@ appId: "com.recipedia"
       - extendedWaitUntil:
           visible:
             id: "RecipeIngredients::.*::QuantityInput"
-            text: ".*"
+            text: ".+"
           timeout: 120000
           label: "Wait for last ingredient quantity to be populated"
 
