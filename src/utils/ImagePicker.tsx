@@ -31,6 +31,7 @@
  */
 
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
+import { Image, Platform } from 'react-native';
 import { openCamera, openCropper, openPicker } from 'react-native-image-crop-picker';
 import { MD3Colors } from 'react-native-paper/lib/typescript/types';
 import { uiLogger } from '@utils/logger';
@@ -61,6 +62,7 @@ function createImageOptionsWithTheme(themeColors: MD3Colors) {
     showCropGuidelines: true,
     showCropFrame: true,
     enableRotationGesture: true,
+    cropperRotateButtonsHidden: false,
     compressImageQuality: 1,
     cropperStatusBarColor: statusBarColor,
     cropperToolbarColor: backgroundColor,
@@ -71,6 +73,37 @@ function createImageOptionsWithTheme(themeColors: MD3Colors) {
     hideBottomControls: true,
     waitAnimationEnd: true,
   };
+}
+
+/**
+ * Builds the `width`/`height` cropper options for iOS: a square box whose side equals the
+ * longest side of the source image, so the native resize never downscales a crop.
+ *
+ * @param uri - File path or URI of the image about to be cropped
+ * @returns Square `width`/`height` options in source pixels
+ */
+async function getSquareCropBox(uri: string): Promise<{ width: number; height: number }> {
+  const { width, height } = await Image.getSize(uri);
+  const side = Math.max(width, height);
+  return { width: side, height: side };
+}
+
+/**
+ * Resizes a cropper output back to the crop's native pixel size and re-encodes it as JPEG.
+ *
+ * @param path - File path of the cropper output
+ * @param cropRect - Crop rectangle in source pixels, as reported by the cropper
+ * @returns Promise resolving to the URI of the resized image
+ */
+async function resizeToCropRect(
+  path: string,
+  cropRect: { width: number; height: number }
+): Promise<string> {
+  const context = ImageManipulator.manipulate(path);
+  context.resize({ width: Math.round(cropRect.width), height: Math.round(cropRect.height) });
+  const imageRef = await context.renderAsync();
+  const result = await imageRef.saveAsync({ format: SaveFormat.JPEG, compress: 1 });
+  return result.uri;
 }
 
 /**
@@ -117,11 +150,14 @@ export async function pickImage(themeColors: MD3Colors): Promise<string> {
  * Allows users to manually crop an existing image file. Useful for editing
  * images that have already been selected or captured.
  *
- * Uses `openCropper` for the interactive UI, but applies the resulting
- * `cropRect` (in original image pixel coordinates) directly to the source
- * file via `expo-image-manipulator`. This bypasses RCTImageLoader's
- * subsampling so OCR receives full-resolution pixels from the crop region.
- * Falls back to `cropResult.path` when `cropRect` is unavailable.
+ * Android: returns the cropper output directly, which uCrop already writes at full
+ * resolution with any rotation applied.
+ *
+ * iOS: the native cropper shrinks its output to fit the requested `width` x `height`
+ * (200x200 by default) and upscales smaller crops to touch that box. A square box as large as
+ * the source's longest side is requested so rotated or unrotated crops are never downscaled,
+ * then the output is resized back to `cropRect` (its true pixel size) with
+ * `expo-image-manipulator`. Falls back to `cropResult.path` when `cropRect` is unavailable.
  *
  * @param uri - File path or URI of the image to crop
  * @param themeColors - React Native Paper theme colors for UI consistency
@@ -143,20 +179,17 @@ export async function pickImage(themeColors: MD3Colors): Promise<string> {
  */
 export async function cropImage(uri: string, themeColors: MD3Colors): Promise<string> {
   try {
+    const isIOS = Platform.OS === 'ios';
     const cropResult = await openCropper({
       ...createImageOptionsWithTheme(themeColors),
       mediaType: 'photo',
       path: uri,
+      ...(isIOS ? await getSquareCropBox(uri) : {}),
     });
-    if (!cropResult.cropRect) {
+    if (!isIOS || !cropResult.cropRect) {
       return cropResult.path;
     }
-    const { x: originX, y: originY, width, height } = cropResult.cropRect;
-    const context = ImageManipulator.manipulate(uri);
-    context.crop({ originX, originY, width, height });
-    const imageRef = await context.renderAsync();
-    const result = await imageRef.saveAsync({ format: SaveFormat.JPEG, compress: 1 });
-    return result.uri;
+    return resizeToCropRect(cropResult.path, cropResult.cropRect);
   } catch (error) {
     uiLogger.debug(`cropImage: user cancelled ${error}`);
     return '';
@@ -166,8 +199,9 @@ export async function cropImage(uri: string, themeColors: MD3Colors): Promise<st
 /**
  * Opens the device's camera to capture a new photo
  *
- * Launches the camera interface allowing users to take a new photo with built-in
- * cropping functionality. Returns the file path of the captured and cropped image.
+ * Captures an uncropped photo, then crops it through {@link cropImage} so the result keeps
+ * full resolution (the native cropper would otherwise shrink it on iOS). Returns the file path
+ * of the cropped image.
  *
  * @param themeColors - React Native Paper theme colors for UI consistency
  * @returns Promise resolving to the file path of captured image, or empty string if cancelled
@@ -190,8 +224,9 @@ export async function takePhoto(themeColors: MD3Colors): Promise<string> {
     const cameraResult = await openCamera({
       ...createImageOptionsWithTheme(themeColors),
       mediaType: 'photo',
+      cropping: false,
     });
-    return cameraResult.path;
+    return cropImage(cameraResult.path, themeColors);
   } catch (error) {
     uiLogger.debug(`takePhoto: user cancelled ${error}`);
     return '';
