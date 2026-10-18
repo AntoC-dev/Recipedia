@@ -1,7 +1,10 @@
+import functools
 import json
 import sys
 from pathlib import Path
 from io import StringIO
+
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -143,8 +146,9 @@ class TestGetSupportedHosts:
 
 
 class TestIsHostSupported:
-    def test_known_host_returns_true(self):
-        result = json.loads(is_host_supported("allrecipes.com"))
+    @pytest.mark.parametrize("host", ["allrecipes.com", "jow.fr"])
+    def test_known_host_returns_true(self, host):
+        result = json.loads(is_host_supported(host))
 
         assert result["success"] is True
         assert result["data"] is True
@@ -163,12 +167,6 @@ class TestIsHostSupported:
         assert result_lower["data"] is True
         assert result_upper["data"] is True
         assert result_mixed["data"] is True
-
-    def test_jow_has_dedicated_scraper(self):
-        result = json.loads(is_host_supported("jow.fr"))
-
-        assert result["success"] is True
-        assert result["data"] is True
 
 
 class TestSafeCall:
@@ -559,9 +557,17 @@ HELLOFRESH_URL = "https://www.hellofresh.fr/recipes/keftas-de-boeuf-and-semoule-
 QUITOQUE_URL = "https://www.quitoque.fr/recettes/tartare-de-lentilles-blondes-mangue-et-salade-dalgues"
 
 
-def _scrape_fixture(name, url):
+UNSUPPORTED_URL = "https://unsupported-host.example/recipe"
+
+
+@functools.lru_cache(maxsize=None)
+def _scrape_fixture_json(name, url):
     html = (FIXTURES_DIR / name).read_text(encoding="utf-8")
-    return json.loads(scrape_recipe_from_html(html, url))
+    return scrape_recipe_from_html(html, url)
+
+
+def _scrape_fixture(name, url):
+    return json.loads(_scrape_fixture_json(name, url))
 
 
 class TestStripLargeScripts:
@@ -723,35 +729,27 @@ class TestSchemaOrgFallbackOnRealHtml:
     keep yielding the core recipe fields.
     """
 
-    UNSUPPORTED_URL = "https://unsupported-host.example/recipe"
-
-    @classmethod
-    def _scrape_fixture(cls, name):
-        return _scrape_fixture(name, cls.UNSUPPORTED_URL)
-
-    def test_quitoque_json_ld_parsed(self):
-        result = self._scrape_fixture("quitoque_fr.html")
+    @pytest.mark.parametrize("fixture,title_word", [
+        ("quitoque_fr.html", "tartare"),
+        ("hellofresh_fr.html", "kefta"),
+    ])
+    def test_json_ld_core_fields_parsed(self, fixture, title_word):
+        result = _scrape_fixture(fixture, UNSUPPORTED_URL)
         data = result["data"]
 
         assert result["success"] is True
         assert data["host"] == "unsupported-host.example"
-        assert "tartare" in data["title"].lower()
-        assert "150 g lentilles blondes (Bio)" in data["ingredients"]
-        assert len(data["instructionsList"]) > 0
-        assert data["yields"] == "2 servings"
-        assert data["totalTime"] == 30
-
-    def test_hellofresh_json_ld_parsed(self):
-        result = self._scrape_fixture("hellofresh_fr.html")
-        data = result["data"]
-
-        assert result["success"] is True
-        assert data["host"] == "unsupported-host.example"
-        assert "kefta" in data["title"].lower()
+        assert title_word in data["title"].lower()
         assert len(data["ingredients"]) > 0
         assert len(data["instructionsList"]) > 0
         assert data["yields"] == "2 servings"
         assert data["image"].startswith("http")
+
+    def test_quitoque_ingredients_and_time(self):
+        data = _scrape_fixture("quitoque_fr.html", UNSUPPORTED_URL)["data"]
+
+        assert "150 g lentilles blondes (Bio)" in data["ingredients"]
+        assert data["totalTime"] == 30
 
 
 class TestModuleInitialization:

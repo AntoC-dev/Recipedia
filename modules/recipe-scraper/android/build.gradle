@@ -50,7 +50,7 @@ task setupPythonTestEnv(type: Exec) {
   description = 'Setup Python virtual environment for testing'
   group = 'verification'
 
-  // Re-run whenever requirements.txt changes so existing venvs pick up version bumps.
+  // Rebuild from scratch whenever requirements.txt changes, so the venv matches what ships.
   inputs.file pythonRequirementsFile
   outputs.file file("${pythonVenvDir}/.requirements-installed")
 
@@ -58,11 +58,11 @@ task setupPythonTestEnv(type: Exec) {
 
   commandLine 'bash', '-c', '''
     set -e
-    [ -x .venv/bin/python ] || python3 -m venv .venv 2>/dev/null || python3.13 -m venv .venv
-    source .venv/bin/activate
-    pip install --quiet pytest -r ../scripts/requirements.txt
-    cp ../scripts/requirements.txt .venv/.requirements-installed
-  '''
+    python3 -m venv --clear "$1" 2>/dev/null || python3.13 -m venv --clear "$1"
+    source "$1/bin/activate"
+    pip install --quiet pytest -r "$2"
+    cp "$2" "$1/.requirements-installed"
+  ''', 'setupPythonTestEnv', pythonVenvDir.absolutePath, pythonRequirementsFile.absolutePath
 
   doFirst {
     println "Setting up Python test environment..."
