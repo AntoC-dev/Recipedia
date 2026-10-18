@@ -27,13 +27,20 @@ if [[ "$1" == "--force" ]]; then
     FORCE=true
 fi
 
-# Check if a valid (non-empty) bundle already exists
+# Records the requirements.txt checksum + Pyodide version the bundle was built from,
+# so a dependency bump invalidates an existing local bundle.
+STAMP_FILE="$OUTPUT_DIR/pyodide-bundle.stamp"
+EXPECTED_STAMP="$(cksum < "$REQUIREMENTS_FILE" | awk '{print $1}')-$(node -e "console.log(require('$PYODIDE_DIR/package.json').version)" 2>/dev/null || true)"
+
+# Check if a valid (non-empty, up-to-date) bundle already exists
 MIN_VALID_SIZE=$((10 * 1024 * 1024))  # 10MB
-if [[ -f "$BUNDLE_FILE" ]] && [[ "$FORCE" == "false" ]] && [[ $(wc -c < "$BUNDLE_FILE") -ge $MIN_VALID_SIZE ]]; then
+if [[ -f "$BUNDLE_FILE" ]] && [[ "$FORCE" == "false" ]] && [[ $(wc -c < "$BUNDLE_FILE") -ge $MIN_VALID_SIZE ]] \
+    && [[ -f "$STAMP_FILE" ]] && [[ "$(cat "$STAMP_FILE")" == "$EXPECTED_STAMP" ]]; then
     BUNDLE_SIZE=$(ls -lh "$BUNDLE_FILE" | awk '{print $5}')
-    echo "[setup-pyodide] Bundle already exists ($BUNDLE_SIZE), skipping (use --force to regenerate)"
+    echo "[setup-pyodide] Bundle already up to date ($BUNDLE_SIZE), skipping (use --force to regenerate)"
     exit 0
 fi
+rm -f "$STAMP_FILE"
 
 # Verify Pyodide npm package is installed
 if [[ ! -f "$PYODIDE_DIR/pyodide.js" ]]; then
@@ -114,7 +121,7 @@ echo "[setup-pyodide] Bundle created: $BUNDLE_FILE ($BUNDLE_SIZE)"
 
 # Statically validate the dependency graph against Pyodide's built-in packages
 # (catches mismatches like extruct 0.18.0 requiring lxml>=6.1.1 when Pyodide
-# ships lxml-6.0.0 — would otherwise only surface at iOS E2E run time).
+# ships lxml-6.0.2 — would otherwise only surface at iOS E2E run time).
 #
 # The validator needs `packaging`. The project venv has it; CI runners typically
 # don't. Install scoped to a temp dir and inject via PYTHONPATH so we don't
@@ -137,5 +144,7 @@ fi
 # Clean up download directory to save space
 echo "[setup-pyodide] Cleaning up downloads..."
 rm -rf "$DOWNLOAD_DIR"
+
+echo "$EXPECTED_STAMP" > "$STAMP_FILE"
 
 echo "[setup-pyodide] Setup complete!"

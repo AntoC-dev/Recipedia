@@ -559,6 +559,11 @@ HELLOFRESH_URL = "https://www.hellofresh.fr/recipes/keftas-de-boeuf-and-semoule-
 QUITOQUE_URL = "https://www.quitoque.fr/recettes/tartare-de-lentilles-blondes-mangue-et-salade-dalgues"
 
 
+def _scrape_fixture(name, url):
+    html = (FIXTURES_DIR / name).read_text(encoding="utf-8")
+    return json.loads(scrape_recipe_from_html(html, url))
+
+
 class TestStripLargeScripts:
     def test_removes_next_data_script(self):
         html = '<html><script id="__NEXT_DATA__" type="application/json">{"huge":"data"}</script><p>content</p></html>'
@@ -639,9 +644,7 @@ class TestHelloFreshLargeHtml:
 
     @staticmethod
     def _scrape_fixture():
-        fixture_path = FIXTURES_DIR / "hellofresh_fr.html"
-        html = fixture_path.read_text(encoding="utf-8")
-        return json.loads(scrape_recipe_from_html(html, HELLOFRESH_URL))
+        return _scrape_fixture("hellofresh_fr.html", HELLOFRESH_URL)
 
     def test_scrape_succeeds(self):
         result = self._scrape_fixture()
@@ -681,9 +684,7 @@ class TestQuitoqueHtml:
 
     @staticmethod
     def _scrape_fixture():
-        fixture_path = FIXTURES_DIR / "quitoque_fr.html"
-        html = fixture_path.read_text(encoding="utf-8")
-        return json.loads(scrape_recipe_from_html(html, QUITOQUE_URL))
+        return _scrape_fixture("quitoque_fr.html", QUITOQUE_URL)
 
     def test_scrape_succeeds(self):
         result = self._scrape_fixture()
@@ -717,16 +718,16 @@ class TestQuitoqueHtml:
 class TestSchemaOrgFallbackOnRealHtml:
     """Real-site HTML forced through the generic schema.org (JSON-LD) path.
 
-    Guards the beautifulsoup4 pin in scripts/requirements.txt: AbstractScraper
-    JSON-LD parsing on real HTML must keep yielding the core recipe fields.
+    Regression net for beautifulsoup4/extruct bumps (see the pins in
+    scripts/requirements.txt): AbstractScraper JSON-LD parsing on real HTML must
+    keep yielding the core recipe fields.
     """
 
     UNSUPPORTED_URL = "https://unsupported-host.example/recipe"
 
     @classmethod
     def _scrape_fixture(cls, name):
-        html = (FIXTURES_DIR / name).read_text(encoding="utf-8")
-        return json.loads(scrape_recipe_from_html(html, cls.UNSUPPORTED_URL))
+        return _scrape_fixture(name, cls.UNSUPPORTED_URL)
 
     def test_quitoque_json_ld_parsed(self):
         result = self._scrape_fixture("quitoque_fr.html")

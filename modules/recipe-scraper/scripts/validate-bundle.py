@@ -14,7 +14,7 @@ against Pyodide's runtime (Python 3.13, platform_system='Emscripten').
 
 Exits non-zero with a clear error if any requirement cannot be satisfied.
 This catches version drift (e.g. extruct 0.18.0 needing lxml>=6.1.1 while
-Pyodide ships lxml-6.0.0) at build time instead of at iOS E2E run time.
+Pyodide ships lxml-6.0.2) at build time instead of at iOS E2E run time.
 """
 
 from __future__ import annotations
@@ -41,7 +41,7 @@ SHIMMED_PACKAGES = {
     "jstyleson": "0.0.2",
 }
 
-# Pyodide 0.28 runs CPython 3.13 on Emscripten/WASM.
+# Pyodide 0.29 runs CPython 3.13 on Emscripten/WASM.
 MARKER_ENV = {
     "python_version": "3.13",
     "python_full_version": "3.13.0",
