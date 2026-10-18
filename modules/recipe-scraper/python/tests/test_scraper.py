@@ -164,6 +164,12 @@ class TestIsHostSupported:
         assert result_upper["data"] is True
         assert result_mixed["data"] is True
 
+    def test_jow_has_dedicated_scraper(self):
+        result = json.loads(is_host_supported("jow.fr"))
+
+        assert result["success"] is True
+        assert result["data"] is True
+
 
 class TestSafeCall:
     def test_returns_value_on_success(self):
@@ -706,6 +712,45 @@ class TestQuitoqueHtml:
         result = self._scrape_fixture()
         assert result["data"]["image"] is not None
         assert result["data"]["image"].startswith("http")
+
+
+class TestSchemaOrgFallbackOnRealHtml:
+    """Real-site HTML forced through the generic schema.org (JSON-LD) path.
+
+    Guards the beautifulsoup4 pin in scripts/requirements.txt: AbstractScraper
+    JSON-LD parsing on real HTML must keep yielding the core recipe fields.
+    """
+
+    UNSUPPORTED_URL = "https://unsupported-host.example/recipe"
+
+    @classmethod
+    def _scrape_fixture(cls, name):
+        html = (FIXTURES_DIR / name).read_text(encoding="utf-8")
+        return json.loads(scrape_recipe_from_html(html, cls.UNSUPPORTED_URL))
+
+    def test_quitoque_json_ld_parsed(self):
+        result = self._scrape_fixture("quitoque_fr.html")
+        data = result["data"]
+
+        assert result["success"] is True
+        assert data["host"] == "unsupported-host.example"
+        assert "tartare" in data["title"].lower()
+        assert "150 g lentilles blondes (Bio)" in data["ingredients"]
+        assert len(data["instructionsList"]) > 0
+        assert data["yields"] == "2 servings"
+        assert data["totalTime"] == 30
+
+    def test_hellofresh_json_ld_parsed(self):
+        result = self._scrape_fixture("hellofresh_fr.html")
+        data = result["data"]
+
+        assert result["success"] is True
+        assert data["host"] == "unsupported-host.example"
+        assert "kefta" in data["title"].lower()
+        assert len(data["ingredients"]) > 0
+        assert len(data["instructionsList"]) > 0
+        assert data["yields"] == "2 servings"
+        assert data["image"].startswith("http")
 
 
 class TestModuleInitialization:

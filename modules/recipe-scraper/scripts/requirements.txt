@@ -9,10 +9,14 @@
 # (py3-none-any), so nothing here is ABI-bound — but a scraper bug can now reproduce
 # on one platform only.
 #
-# Pin all transitive deps that affect parsing behaviour to keep both platforms
-# in sync (e.g. beautifulsoup4 4.14.x breaks AbstractScraper JSON-LD parsing).
+# The Android Gradle test venv (setupPythonTestEnv) also installs from this file.
+#
+# Pin all transitive deps that affect parsing behaviour to keep both platforms in sync.
 
-recipe-scrapers[online]==15.11.0
+recipe-scrapers[online]==15.12.0
+# beautifulsoup4 matches the built-in package of Pyodide 0.29.4, so iOS and Android run the
+# same version. 4.14.3 and 4.15.0 scrape the real-HTML fixtures identically
+# (TestSchemaOrgFallbackOnRealHtml) — lift together with the Pyodide 314 migration (#560).
 beautifulsoup4==4.13.3
 # Pin extruct>=0.17.0,<0.18.0 — 0.17.x is compatible with lxml 5.3.0 (Android, fixes
 # _ElementStringResult import error, see https://github.com/scrapinghub/extruct/issues/230)

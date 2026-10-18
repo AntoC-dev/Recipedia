@@ -7,7 +7,7 @@ returning raw recipe data for React Native consumption.
 Custom enhancements (tag extraction, structured ingredients, serving size inference)
 are now handled in TypeScript for consistency across all platforms.
 
-Requires: recipe-scrapers[online]>=15.0.0
+Requires: recipe-scrapers[online] (version pinned in ../scripts/requirements.txt)
 """
 
 import html
