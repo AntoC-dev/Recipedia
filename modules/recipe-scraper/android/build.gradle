@@ -43,21 +43,25 @@ tasks.configureEach { task ->
 // Directory for Python tests (shared across platforms)
 def pythonTestsDir = file("${projectDir}/../python/tests")
 def pythonVenvDir = file("${projectDir}/../python/.venv")
+def pythonRequirementsFile = file("${projectDir}/../scripts/requirements.txt")
 
 // Task to setup Python virtual environment with pytest
 task setupPythonTestEnv(type: Exec) {
   description = 'Setup Python virtual environment for testing'
   group = 'verification'
 
-  // Only run if venv doesn't exist
-  onlyIf { !file("${pythonVenvDir}/bin/pytest").exists() }
+  // Re-run whenever requirements.txt changes so existing venvs pick up version bumps.
+  inputs.file pythonRequirementsFile
+  outputs.file file("${pythonVenvDir}/.requirements-installed")
 
   workingDir file("${projectDir}/../python")
 
   commandLine 'bash', '-c', '''
-    python3 -m venv .venv 2>/dev/null || python3.13 -m venv .venv
+    set -e
+    [ -x .venv/bin/python ] || python3 -m venv .venv 2>/dev/null || python3.13 -m venv .venv
     source .venv/bin/activate
     pip install --quiet pytest -r ../scripts/requirements.txt
+    cp ../scripts/requirements.txt .venv/.requirements-installed
   '''
 
   doFirst {
