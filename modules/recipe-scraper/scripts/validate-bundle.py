@@ -16,7 +16,7 @@ the interpreter fails here until MARKER_ENV is updated.
 
 Exits non-zero with a clear error if any requirement cannot be satisfied.
 This catches version drift (e.g. extruct 0.18.0 needing lxml>=6.1.1 while
-Pyodide ships lxml-6.0.0) at build time instead of at iOS E2E run time.
+Pyodide ships lxml-6.0.2) at build time instead of at iOS E2E run time.
 """
 
 from __future__ import annotations
@@ -115,7 +115,9 @@ def load_pyodide_builtins(lock: dict) -> dict[str, str]:
 
 def check_marker_env(lock: dict) -> str | None:
     runtime_python = lock.get("info", {}).get("python")
-    if runtime_python and runtime_python != MARKER_ENV["python_full_version"]:
+    if not runtime_python:
+        return "pyodide-lock.json has no info.python — cannot verify MARKER_ENV matches the runtime"
+    if runtime_python != MARKER_ENV["python_full_version"]:
         return (
             f"pyodide-lock.json runs Python {runtime_python} but MARKER_ENV evaluates "
             f"markers against {MARKER_ENV['python_full_version']} — update MARKER_ENV"
@@ -198,7 +200,7 @@ def main() -> int:
             checked += 1
 
     if errors:
-        print(f"[validate-bundle] FAIL: {len(errors)} unsatisfied requirement(s):", file=sys.stderr)
+        print(f"[validate-bundle] FAIL: {len(errors)} problem(s):", file=sys.stderr)
         for err in errors:
             print(f"  - {err}", file=sys.stderr)
         return 1

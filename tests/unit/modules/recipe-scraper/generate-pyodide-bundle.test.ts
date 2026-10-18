@@ -121,6 +121,15 @@ describe('Pyodide bundle (pyodide-bundle.html)', () => {
         })
       ).toThrow('</script');
     });
+
+    it('rejects a loader or scraper payload that would close the inline script tag', () => {
+      expect(() => buildWithStubs({ pyodideJs: 'const s = "</script>";' })).toThrow(
+        'pyodide.js contains `</script`'
+      );
+      expect(() => buildWithStubs({ scraperPythonCode: 's = "</SCRIPT>"' })).toThrow(
+        'scraper Python code contains `</script`'
+      );
+    });
   });
 
   describe('offline wheel bundling', () => {

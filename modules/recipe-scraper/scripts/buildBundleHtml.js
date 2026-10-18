@@ -9,6 +9,21 @@
 const ASM_MODULE_DEFAULT_EXPORT = /\bexport\s+default\s+_createPyodideModule\s*;?\s*$/;
 
 /**
+ * Guards a payload that is inlined verbatim inside a `<script>` element: the
+ * HTML parser ends the element at the first `</script`, whatever JS/JSON
+ * context it appears in, silently truncating the script.
+ *
+ * @param {string} name - Payload name used in the error message
+ * @param {string} source - Payload inlined in the document
+ * @throws {Error} If the payload contains `</script`
+ */
+function assertInlineable(name, source) {
+    if (/<\/script/i.test(source)) {
+        throw new Error(`${name} contains \`</script\` and cannot be inlined`);
+    }
+}
+
+/**
  * Turns the ESM `pyodide.asm.mjs` into a body that can be inlined in a
  * `<script type="module">`: an inline module cannot be imported, so its default
  * export is dropped and `_createPyodideModule` is left as a module-scope binding
@@ -22,9 +37,7 @@ function toInlineAsmModule(pyodideAsmMjs) {
     if (!ASM_MODULE_DEFAULT_EXPORT.test(pyodideAsmMjs)) {
         throw new Error('pyodide.asm.mjs no longer ends with `export default _createPyodideModule`');
     }
-    if (/<\/script/i.test(pyodideAsmMjs)) {
-        throw new Error('pyodide.asm.mjs contains `</script` and cannot be inlined');
-    }
+    assertInlineable('pyodide.asm.mjs', pyodideAsmMjs);
     return pyodideAsmMjs.replace(ASM_MODULE_DEFAULT_EXPORT, '');
 }
 
@@ -41,6 +54,7 @@ function toInlineAsmModule(pyodideAsmMjs) {
  * @param {string} input.scraperPythonCode - Python source of the scraper
  * @param {string} input.pyodideCdnUrl - CDN base url recorded in the bundle
  * @returns {string} The complete HTML document
+ * @throws {Error} If an inlined payload contains `</script`, or pyodide.asm.mjs has an unexpected default export
  */
 function buildBundleHtml({
     pyodideJs,
@@ -53,6 +67,9 @@ function buildBundleHtml({
     pyodideCdnUrl,
 }) {
     const PYODIDE_CDN_URL = pyodideCdnUrl;
+    assertInlineable('pyodide.js', pyodideJs);
+    assertInlineable('pyodide-lock.json', pyodideLockJson);
+    assertInlineable('scraper Python code', scraperPythonCode);
     const inlineAsmModule = toInlineAsmModule(pyodideAsmMjs);
 
     const jstylessonShim = `

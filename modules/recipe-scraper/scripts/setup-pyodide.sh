@@ -27,14 +27,6 @@ if [[ "$1" == "--force" ]]; then
     FORCE=true
 fi
 
-# Check if a valid (non-empty) bundle already exists
-MIN_VALID_SIZE=$((10 * 1024 * 1024))  # 10MB
-if [[ -f "$BUNDLE_FILE" ]] && [[ "$FORCE" == "false" ]] && [[ $(wc -c < "$BUNDLE_FILE") -ge $MIN_VALID_SIZE ]]; then
-    BUNDLE_SIZE=$(ls -lh "$BUNDLE_FILE" | awk '{print $5}')
-    echo "[setup-pyodide] Bundle already exists ($BUNDLE_SIZE), skipping (use --force to regenerate)"
-    exit 0
-fi
-
 # Verify Pyodide npm package is installed
 if [[ ! -f "$PYODIDE_DIR/pyodide.js" ]]; then
     echo "ERROR: Pyodide npm package not found at $PYODIDE_DIR"
@@ -44,6 +36,16 @@ fi
 
 PYODIDE_VERSION=$(node -e "console.log(require('$PYODIDE_DIR/package.json').version)")
 echo "[setup-pyodide] Using Pyodide v${PYODIDE_VERSION} from npm"
+
+# Reuse an existing bundle only if it is non-empty and was built for this Pyodide
+# version (the bundle records the versioned CDN url) — a Pyodide bump must rebuild.
+MIN_VALID_SIZE=$((10 * 1024 * 1024))  # 10MB
+if [[ -f "$BUNDLE_FILE" ]] && [[ "$FORCE" == "false" ]] && [[ $(wc -c < "$BUNDLE_FILE") -ge $MIN_VALID_SIZE ]] \
+    && grep -qF "/pyodide/v${PYODIDE_VERSION}/full/" "$BUNDLE_FILE"; then
+    BUNDLE_SIZE=$(ls -lh "$BUNDLE_FILE" | awk '{print $5}')
+    echo "[setup-pyodide] Bundle already exists ($BUNDLE_SIZE), skipping (use --force to regenerate)"
+    exit 0
+fi
 
 # Prefer the project venv (has `packaging` for the validator); fall back to system python3.
 PYTHON_BIN="$MODULE_DIR/python/.venv/bin/python"
@@ -114,7 +116,7 @@ echo "[setup-pyodide] Bundle created: $BUNDLE_FILE ($BUNDLE_SIZE)"
 
 # Statically validate the dependency graph against Pyodide's built-in packages
 # (catches mismatches like extruct 0.18.0 requiring lxml>=6.1.1 when Pyodide
-# ships lxml-6.0.0 — would otherwise only surface at iOS E2E run time).
+# ships lxml-6.0.2 — would otherwise only surface at iOS E2E run time).
 #
 # The validator needs `packaging`. The project venv has it; CI runners typically
 # don't. Install scoped to a temp dir and inject via PYTHONPATH so we don't
@@ -130,7 +132,9 @@ if ! "$PYTHON_BIN" -c "import packaging" 2>/dev/null; then
 fi
 if ! PYTHONPATH="$VALIDATOR_TOOLS_DIR${PYTHONPATH:+:$PYTHONPATH}" \
     "$PYTHON_BIN" "$SCRIPT_DIR/validate-bundle.py"; then
-    echo "ERROR: Bundle dependency validation failed. Fix requirements.txt and rerun."
+    # Drop the bundle so the next run regenerates and re-validates instead of skipping.
+    rm -f "$BUNDLE_FILE"
+    echo "ERROR: Bundle validation failed. Fix requirements.txt (or MARKER_ENV in validate-bundle.py) and rerun."
     exit 1
 fi
 
