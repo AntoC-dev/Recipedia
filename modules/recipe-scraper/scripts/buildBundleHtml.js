@@ -6,12 +6,34 @@
  * only generated during an iOS prebuild.
  */
 
+const ASM_MODULE_DEFAULT_EXPORT = /\bexport\s+default\s+_createPyodideModule\s*;?\s*$/;
+
+/**
+ * Turns the ESM `pyodide.asm.mjs` into a body that can be inlined in a
+ * `<script type="module">`: an inline module cannot be imported, so its default
+ * export is dropped and `_createPyodideModule` is left as a module-scope binding
+ * for the loader script that follows it.
+ *
+ * @param {string} pyodideAsmMjs - Contents of pyodide.asm.mjs
+ * @returns {string} Module source without its default export
+ * @throws {Error} If the default export is not `_createPyodideModule`, or the source would close the script tag
+ */
+function toInlineAsmModule(pyodideAsmMjs) {
+    if (!ASM_MODULE_DEFAULT_EXPORT.test(pyodideAsmMjs)) {
+        throw new Error('pyodide.asm.mjs no longer ends with `export default _createPyodideModule`');
+    }
+    if (/<\/script/i.test(pyodideAsmMjs)) {
+        throw new Error('pyodide.asm.mjs contains `</script` and cannot be inlined');
+    }
+    return pyodideAsmMjs.replace(ASM_MODULE_DEFAULT_EXPORT, '');
+}
+
 /**
  * Assembles the self-contained Pyodide bundle document.
  *
  * @param {object} input - Embedded payloads and code, already read from disk
  * @param {string} input.pyodideJs - Contents of pyodide.js
- * @param {string} input.pyodideAsmJs - Contents of pyodide.asm.js
+ * @param {string} input.pyodideAsmMjs - Contents of pyodide.asm.mjs (ES module)
  * @param {string} input.pyodideWasmBase64 - base64 of pyodide.asm.wasm
  * @param {string} input.pythonStdlibBase64 - base64 of python_stdlib.zip
  * @param {string} input.pyodideLockJson - Contents of pyodide-lock.json
@@ -22,7 +44,7 @@
  */
 function buildBundleHtml({
     pyodideJs,
-    pyodideAsmJs,
+    pyodideAsmMjs,
     pyodideWasmBase64,
     pythonStdlibBase64,
     pyodideLockJson,
@@ -31,6 +53,7 @@ function buildBundleHtml({
     pyodideCdnUrl,
 }) {
     const PYODIDE_CDN_URL = pyodideCdnUrl;
+    const inlineAsmModule = toInlineAsmModule(pyodideAsmMjs);
 
     const jstylessonShim = `
 import json
@@ -159,11 +182,15 @@ window.fetch = function(resource, options) {
 // PYODIDE LOADER
 // ============================================================================
 ${pyodideJs}
-
+</script>
+<script type="module">
 // ============================================================================
 // PYODIDE ASM MODULE
+// Inlined ES module; passed to loadPyodide as createPyodideModule so Pyodide
+// never imports pyodide.asm.mjs from indexURL (import() bypasses the fetch
+// interceptor).
 // ============================================================================
-${pyodideAsmJs}
+${inlineAsmModule}
 
 // ============================================================================
 // MAIN SCRIPT
@@ -193,6 +220,7 @@ ${pyodideAsmJs}
             // other files Pyodide requests will fall through to the CDN.
             pyodide = await loadPyodide({
                 indexURL: '${PYODIDE_CDN_URL}/',
+                createPyodideModule: _createPyodideModule,
                 stdout: (text) => log('debug', '[Python stdout] ' + text),
                 stderr: (text) => log('warn', '[Python stderr] ' + text),
             });

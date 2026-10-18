@@ -10,7 +10,9 @@ verifies each runtime requirement can be satisfied by either:
 Extras (marker `extra == 'foo'`) are only checked when the corresponding extra
 is actually used (e.g. recipe-scrapers[online]). Environment markers (e.g.
 `python_version < '3.10'`, `platform_system == 'Windows'`) are evaluated
-against Pyodide's runtime (Python 3.13, platform_system='Emscripten').
+against Pyodide's runtime (Python 3.14, platform_system='Emscripten'). The
+lock file's `info.python` must match MARKER_ENV, so a Pyodide bump that moves
+the interpreter fails here until MARKER_ENV is updated.
 
 Exits non-zero with a clear error if any requirement cannot be satisfied.
 This catches version drift (e.g. extruct 0.18.0 needing lxml>=6.1.1 while
@@ -41,12 +43,13 @@ SHIMMED_PACKAGES = {
     "jstyleson": "0.0.2",
 }
 
-# Pyodide 0.28 runs CPython 3.13 on Emscripten/WASM.
+# Pyodide 314.0.5 runs CPython 3.14.2 on Emscripten/WASM. Android (Chaquopy)
+# stays on 3.13 — see .python-version; the divergence is deliberate.
 MARKER_ENV = {
-    "python_version": "3.13",
-    "python_full_version": "3.13.0",
+    "python_version": "3.14",
+    "python_full_version": "3.14.2",
     "implementation_name": "cpython",
-    "implementation_version": "3.13.0",
+    "implementation_version": "3.14.2",
     "platform_system": "Emscripten",
     "platform_machine": "wasm32",
     "platform_python_implementation": "CPython",
@@ -100,11 +103,24 @@ def parse_all_wheels() -> list[tuple[str, str, list[str]]]:
     return [parse_wheel_metadata(w) for w in sorted(WHEELS_DIR.glob("*.whl"))]
 
 
-def load_pyodide_builtins() -> dict[str, str]:
+def load_pyodide_lock() -> dict:
     if not PYODIDE_LOCK.exists():
         return {}
-    lock = json.loads(PYODIDE_LOCK.read_text())
+    return json.loads(PYODIDE_LOCK.read_text())
+
+
+def load_pyodide_builtins(lock: dict) -> dict[str, str]:
     return {canonicalize_name(p["name"]): p["version"] for p in lock.get("packages", {}).values()}
+
+
+def check_marker_env(lock: dict) -> str | None:
+    runtime_python = lock.get("info", {}).get("python")
+    if runtime_python and runtime_python != MARKER_ENV["python_full_version"]:
+        return (
+            f"pyodide-lock.json runs Python {runtime_python} but MARKER_ENV evaluates "
+            f"markers against {MARKER_ENV['python_full_version']} — update MARKER_ENV"
+        )
+    return None
 
 
 def marker_applies(req: Requirement, requested_extras: set[str]) -> bool:
@@ -134,9 +150,13 @@ def main() -> int:
     direct_extras = load_direct_extras()
     wheels = parse_all_wheels()
     bundled = {canonicalize_name(name): version for name, version, _ in wheels}
-    pyodide = load_pyodide_builtins()
+    lock = load_pyodide_lock()
+    pyodide = load_pyodide_builtins(lock)
 
     errors: list[str] = []
+    marker_env_error = check_marker_env(lock)
+    if marker_env_error:
+        errors.append(marker_env_error)
     checked = 0
 
     for name, version, raw_requires in wheels:

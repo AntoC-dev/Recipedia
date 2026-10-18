@@ -6,7 +6,8 @@ describe('Pyodide bundle (pyodide-bundle.html)', () => {
   const buildWithStubs = (overrides: Record<string, unknown> = {}): string =>
     buildBundleHtml({
       pyodideJs: 'globalThis.loadPyodide = () => {};',
-      pyodideAsmJs: 'globalThis._createPyodideModule = () => {};',
+      pyodideAsmMjs:
+        'async function _createPyodideModule(){}\nexport default _createPyodideModule;\n',
       pyodideWasmBase64: 'd2FzbQ==',
       pythonStdlibBase64: 'c3RkbGli',
       pyodideLockJson: '{"packages":{}}',
@@ -79,6 +80,46 @@ describe('Pyodide bundle (pyodide-bundle.html)', () => {
       expect(bundleContent).toContain('d2FzbQ==');
       expect(bundleContent).toContain('c3RkbGli');
       expect(bundleContent).toContain('recipe_scrapers-15.0.0-py3-none-any.whl');
+    });
+  });
+
+  describe('ESM asm module loading', () => {
+    it('inlines the asm module in a module script', () => {
+      const moduleScriptIndex = bundleContent.indexOf('<script type="module">');
+      const asmIndex = bundleContent.indexOf('async function _createPyodideModule(){}');
+      expect(moduleScriptIndex).toBeGreaterThan(-1);
+      expect(asmIndex).toBeGreaterThan(moduleScriptIndex);
+    });
+
+    it('drops the default export so the module can be inlined', () => {
+      expect(bundleContent).not.toContain('export default _createPyodideModule');
+    });
+
+    it('passes the inlined factory to loadPyodide instead of letting it import from indexURL', () => {
+      expect(bundleContent).toContain('createPyodideModule: _createPyodideModule,');
+    });
+
+    it('installs the fetch interceptor in a classic script that runs before the module script', () => {
+      const interceptorIndex = bundleContent.indexOf(
+        'const _originalFetch = window.fetch.bind(window)'
+      );
+      const moduleScriptIndex = bundleContent.indexOf('<script type="module">');
+      expect(interceptorIndex).toBeGreaterThan(-1);
+      expect(interceptorIndex).toBeLessThan(moduleScriptIndex);
+    });
+
+    it('rejects an asm module whose default export is not _createPyodideModule', () => {
+      expect(() =>
+        buildWithStubs({ pyodideAsmMjs: 'function other(){}\nexport default other;' })
+      ).toThrow('export default _createPyodideModule');
+    });
+
+    it('rejects an asm module that would close the inline script tag', () => {
+      expect(() =>
+        buildWithStubs({
+          pyodideAsmMjs: 'const s = "</script>";\nexport default _createPyodideModule;',
+        })
+      ).toThrow('</script');
     });
   });
 
