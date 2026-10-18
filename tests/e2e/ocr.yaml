@@ -16,3 +16,4 @@ executionOrder:
     - "5 - OCR Inline Field Errors Flow"
     - "6 - OCR Image Target Flow"
     - "7 - OCR Feedback Snackbar Flow"
+    - "8 - OCR Use Similar Ingredient Flow"

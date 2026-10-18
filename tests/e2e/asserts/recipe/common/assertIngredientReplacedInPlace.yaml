@@ -1,0 +1,36 @@
+appId: "com.recipedia"
+---
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::${INGREDIENT_INDEX}::NameInput::CustomTextInput"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    timeout: 60000
+    label: "Scroll to ingredient ${INGREDIENT_INDEX}"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "RecipeIngredients::${INGREDIENT_INDEX}::NameInput::CustomTextInput"
+    text: "${INGREDIENT_NAME}"
+    label: "Ingredient ${INGREDIENT_INDEX} is ${INGREDIENT_NAME}"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::AddButton::RoundButton"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    timeout: 60000
+    label: "Scroll to the end of the ingredient list"
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    id: "RecipeIngredients::${LAST_INDEX}::NameInput::CustomTextInput"
+    label: "Last ingredient ${LAST_INDEX} is still there"
+
+- assertNotVisible:
+    id: "RecipeIngredients::${INGREDIENT_COUNT}::NameInput::CustomTextInput"
+    label: "No ingredient beyond the ${INGREDIENT_COUNT} expected"
