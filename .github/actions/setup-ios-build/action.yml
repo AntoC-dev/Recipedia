@@ -49,12 +49,9 @@ runs:
         restore-keys: |
           ${{ runner.os }}-expo-
 
-    - name: Use project-pinned EAS CLI
-      shell: bash
-      run: echo "$GITHUB_WORKSPACE/node_modules/.bin" >> "$GITHUB_PATH"
-
     - name: Setup EAS
       uses: expo/expo-github-action@v9
       with:
+        eas-version: 24.12.1
         packager: 'npm'
         token: ${{ inputs.expo-token }}
