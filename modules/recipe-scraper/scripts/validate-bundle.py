@@ -10,9 +10,8 @@ verifies each runtime requirement can be satisfied by either:
 Extras (marker `extra == 'foo'`) are only checked when the corresponding extra
 is actually used (e.g. recipe-scrapers[online]). Environment markers (e.g.
 `python_version < '3.10'`, `platform_system == 'Windows'`) are evaluated
-against Pyodide's runtime (Python 3.14, platform_system='Emscripten'). The
-lock file's `info.python` must match MARKER_ENV, so a Pyodide bump that moves
-the interpreter fails here until MARKER_ENV is updated.
+against Pyodide's runtime: the Python version comes from the lock file's
+`info.python`, the platform is Emscripten/WASM.
 
 Exits non-zero with a clear error if any requirement cannot be satisfied.
 This catches version drift (e.g. extruct 0.18.0 needing lxml>=6.1.1 while
@@ -43,13 +42,8 @@ SHIMMED_PACKAGES = {
     "jstyleson": "0.0.2",
 }
 
-# Pyodide 314.0.5 runs CPython 3.14.2 on Emscripten/WASM. Android (Chaquopy)
-# stays on 3.13 — see .python-version; the divergence is deliberate.
-MARKER_ENV = {
-    "python_version": "3.14",
-    "python_full_version": "3.14.2",
+PLATFORM_MARKER_ENV = {
     "implementation_name": "cpython",
-    "implementation_version": "3.14.2",
     "platform_system": "Emscripten",
     "platform_machine": "wasm32",
     "platform_python_implementation": "CPython",
@@ -113,24 +107,24 @@ def load_pyodide_builtins(lock: dict) -> dict[str, str]:
     return {canonicalize_name(p["name"]): p["version"] for p in lock.get("packages", {}).values()}
 
 
-def check_marker_env(lock: dict) -> str | None:
+def marker_env_for(lock: dict) -> dict[str, str] | None:
     runtime_python = lock.get("info", {}).get("python")
     if not runtime_python:
-        return "pyodide-lock.json has no info.python — cannot verify MARKER_ENV matches the runtime"
-    if runtime_python != MARKER_ENV["python_full_version"]:
-        return (
-            f"pyodide-lock.json runs Python {runtime_python} but MARKER_ENV evaluates "
-            f"markers against {MARKER_ENV['python_full_version']} — update MARKER_ENV"
-        )
-    return None
+        return None
+    return {
+        **PLATFORM_MARKER_ENV,
+        "python_version": ".".join(runtime_python.split(".")[:2]),
+        "python_full_version": runtime_python,
+        "implementation_version": runtime_python,
+    }
 
 
-def marker_applies(req: Requirement, requested_extras: set[str]) -> bool:
+def marker_applies(req: Requirement, requested_extras: set[str], marker_env: dict[str, str]) -> bool:
     if req.marker is None:
         return True
     extras_to_try = requested_extras if requested_extras else {""}
     for extra in extras_to_try:
-        env = {**MARKER_ENV, "extra": extra}
+        env = {**marker_env, "extra": extra}
         try:
             if req.marker.evaluate(env):
                 return True
@@ -154,11 +148,12 @@ def main() -> int:
     bundled = {canonicalize_name(name): version for name, version, _ in wheels}
     lock = load_pyodide_lock()
     pyodide = load_pyodide_builtins(lock)
+    marker_env = marker_env_for(lock)
+    if marker_env is None:
+        print(f"[validate-bundle] ERROR: no info.python in {PYODIDE_LOCK}", file=sys.stderr)
+        return 2
 
     errors: list[str] = []
-    marker_env_error = check_marker_env(lock)
-    if marker_env_error:
-        errors.append(marker_env_error)
     checked = 0
 
     for name, version, raw_requires in wheels:
@@ -171,7 +166,7 @@ def main() -> int:
             except Exception as exc:
                 errors.append(f"{name}=={version}: cannot parse Requires-Dist {raw!r}: {exc}")
                 continue
-            if not marker_applies(req, requested_extras):
+            if not marker_applies(req, requested_extras, marker_env):
                 continue
 
             dep_canonical = canonicalize_name(req.name)
@@ -200,7 +195,7 @@ def main() -> int:
             checked += 1
 
     if errors:
-        print(f"[validate-bundle] FAIL: {len(errors)} problem(s):", file=sys.stderr)
+        print(f"[validate-bundle] FAIL: {len(errors)} unsatisfied requirement(s):", file=sys.stderr)
         for err in errors:
             print(f"  - {err}", file=sys.stderr)
         return 1

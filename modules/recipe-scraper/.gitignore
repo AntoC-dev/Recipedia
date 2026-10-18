@@ -1,5 +1,6 @@
 # Generated Pyodide assets (regenerated at build time)
 assets/pyodide-bundle.html
+assets/pyodide-bundle.html.sha256
 assets/pyodide-download/
 
 # Local Python venv — must not be copied into EAS build (its certifi cacert.pem

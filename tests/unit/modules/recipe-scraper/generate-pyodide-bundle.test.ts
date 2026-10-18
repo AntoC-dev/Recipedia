@@ -122,13 +122,25 @@ describe('Pyodide bundle (pyodide-bundle.html)', () => {
       ).toThrow('</script');
     });
 
-    it('rejects a loader or scraper payload that would close the inline script tag', () => {
+    it('rejects a loader that would close the inline script tag', () => {
       expect(() => buildWithStubs({ pyodideJs: 'const s = "</script>";' })).toThrow(
         'pyodide.js contains `</script`'
       );
-      expect(() => buildWithStubs({ scraperPythonCode: 's = "</SCRIPT>"' })).toThrow(
-        'scraper Python code contains `</script`'
-      );
+    });
+
+    it('escapes closing tags in scraper code and lock data instead of rejecting them', () => {
+      const html = buildWithStubs({
+        scraperPythonCode: 's = "</SCRIPT>"',
+        pyodideLockJson: '{"packages":{},"note":"</script>"}',
+      });
+      expect(html).not.toMatch(/<\/script>"/i);
+      expect(html).toContain('s = "<\\/SCRIPT>"');
+      expect(html).toContain('<\\/script>');
+    });
+
+    it('hands the embedded lock file to loadPyodide instead of intercepting its fetch', () => {
+      expect(bundleContent).toContain('lockFileContents: EMBEDDED_ASSETS.lockJson,');
+      expect(bundleContent).not.toContain("url.endsWith('/pyodide-lock.json')");
     });
   });
 

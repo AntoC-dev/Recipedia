@@ -9,9 +9,9 @@
 const ASM_MODULE_DEFAULT_EXPORT = /\bexport\s+default\s+_createPyodideModule\s*;?\s*$/;
 
 /**
- * Guards a payload that is inlined verbatim inside a `<script>` element: the
- * HTML parser ends the element at the first `</script`, whatever JS/JSON
- * context it appears in, silently truncating the script.
+ * Guards raw JS inlined verbatim inside a `<script>` element: the HTML parser
+ * ends the element at the first `</script`, silently truncating the script.
+ * Data payloads are escaped instead (see escapeClosingTags).
  *
  * @param {string} name - Payload name used in the error message
  * @param {string} source - Payload inlined in the document
@@ -34,11 +34,38 @@ function assertInlineable(name, source) {
  * @throws {Error} If the default export is not `_createPyodideModule`, or the source would close the script tag
  */
 function toInlineAsmModule(pyodideAsmMjs) {
-    if (!ASM_MODULE_DEFAULT_EXPORT.test(pyodideAsmMjs)) {
+    const inlined = pyodideAsmMjs.replace(ASM_MODULE_DEFAULT_EXPORT, '');
+    if (inlined.length === pyodideAsmMjs.length) {
         throw new Error('pyodide.asm.mjs no longer ends with `export default _createPyodideModule`');
     }
-    assertInlineable('pyodide.asm.mjs', pyodideAsmMjs);
-    return pyodideAsmMjs.replace(ASM_MODULE_DEFAULT_EXPORT, '');
+    assertInlineable('pyodide.asm.mjs', inlined);
+    return inlined;
+}
+
+/**
+ * Makes a string literal's content safe inside a `<script>` element: `<\/` is
+ * read back as `</` by JS string and template literals, but never closes the element.
+ *
+ * @param {string} literal - Content of a JS string or template literal
+ * @returns {string} The same literal with every `</` written as `<\/`
+ */
+function escapeClosingTags(literal) {
+    return literal.replace(/<\//g, '<\\/');
+}
+
+/**
+ * Escapes text for embedding in a JS template literal inside a `<script>` element.
+ *
+ * @param {string} text - Raw text
+ * @returns {string} Text safe between backticks
+ */
+function escapeForTemplateLiteral(text) {
+    return escapeClosingTags(
+        text
+            .replace(/\\/g, '\\\\')
+            .replace(/`/g, '\\`')
+            .replace(/\$/g, '\\$')
+    );
 }
 
 /**
@@ -54,7 +81,7 @@ function toInlineAsmModule(pyodideAsmMjs) {
  * @param {string} input.scraperPythonCode - Python source of the scraper
  * @param {string} input.pyodideCdnUrl - CDN base url recorded in the bundle
  * @returns {string} The complete HTML document
- * @throws {Error} If an inlined payload contains `</script`, or pyodide.asm.mjs has an unexpected default export
+ * @throws {Error} If pyodide.js or pyodide.asm.mjs contains `</script`, or pyodide.asm.mjs has an unexpected default export
  */
 function buildBundleHtml({
     pyodideJs,
@@ -68,8 +95,6 @@ function buildBundleHtml({
 }) {
     const PYODIDE_CDN_URL = pyodideCdnUrl;
     assertInlineable('pyodide.js', pyodideJs);
-    assertInlineable('pyodide-lock.json', pyodideLockJson);
-    assertInlineable('scraper Python code', scraperPythonCode);
     const inlineAsmModule = toInlineAsmModule(pyodideAsmMjs);
 
     const jstylessonShim = `
@@ -99,15 +124,8 @@ def dump(obj, fp, **kwargs):
     return json.dump(obj, fp, **kwargs)
 `;
 
-    const escapedScraperCode = scraperPythonCode
-        .replace(/\\/g, '\\\\')
-        .replace(/`/g, '\\`')
-        .replace(/\$/g, '\\$');
-
-    const escapedJstylessonShim = jstylessonShim
-        .replace(/\\/g, '\\\\')
-        .replace(/`/g, '\\`')
-        .replace(/\$/g, '\\$');
+    const escapedScraperCode = escapeForTemplateLiteral(scraperPythonCode);
+    const escapedJstylessonShim = escapeForTemplateLiteral(jstylessonShim);
 
     // Build the embedded wheels map as a JS object literal
     const wheelsMapEntries = embeddedWheels.map(w =>
@@ -129,7 +147,7 @@ def dump(obj, fp, **kwargs):
 const EMBEDDED_ASSETS = {
     wasmBase64: "${pyodideWasmBase64}",
     stdlibBase64: "${pythonStdlibBase64}",
-    lockJson: ${JSON.stringify(pyodideLockJson)}
+    lockJson: ${escapeClosingTags(JSON.stringify(pyodideLockJson))}
 };
 
 // ============================================================================
@@ -170,13 +188,6 @@ window.fetch = function(resource, options) {
         return Promise.resolve(new Response(buffer, {
             status: 200,
             headers: { 'Content-Type': 'application/zip' }
-        }));
-    }
-
-    if (url.endsWith('/pyodide-lock.json') || url === 'pyodide-lock.json') {
-        return Promise.resolve(new Response(EMBEDDED_ASSETS.lockJson, {
-            status: 200,
-            headers: { 'Content-Type': 'application/json' }
         }));
     }
 
@@ -233,10 +244,12 @@ ${inlineAsmModule}
             log('info', 'Loading Pyodide from embedded bundle (fetch interceptor active)...');
 
             // Use the real CDN URL as indexURL. The fetch interceptor above
-            // will serve WASM/stdlib/lock from embedded base64, while any
-            // other files Pyodide requests will fall through to the CDN.
+            // will serve WASM/stdlib from embedded base64, while built-in
+            // packages resolved from the embedded lock fall through to the CDN.
             pyodide = await loadPyodide({
                 indexURL: '${PYODIDE_CDN_URL}/',
+                packageBaseUrl: '${PYODIDE_CDN_URL}/',
+                lockFileContents: EMBEDDED_ASSETS.lockJson,
                 createPyodideModule: _createPyodideModule,
                 stdout: (text) => log('debug', '[Python stdout] ' + text),
                 stderr: (text) => log('warn', '[Python stderr] ' + text),
