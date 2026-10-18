@@ -42,6 +42,7 @@ import { makeFormSetter } from '@utils/recipeFormSetters';
 import type { RecipeFormInput } from '@schemas/recipeFormSchema';
 import { useRecipeTags } from '@hooks/useRecipeTags';
 import { useRecipeIngredients } from '@hooks/useRecipeIngredients';
+import type { IngredientValidationProps } from '@components/dialogs/ValidationQueue';
 
 type OcrIngredientList = (ingredientTableElement | FormIngredientElement)[];
 
@@ -92,7 +93,8 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
   const { setValidationQueue } = useRecipeDialogs();
   const form = useFormContext<RecipeFormInput>();
   const { addTagIfNotDuplicate } = useRecipeTags();
-  const { addOrMergeIngredient } = useRecipeIngredients();
+  const { addOrMergeIngredient, resolvePlaceholderIngredient, removeMatchingFormIngredients } =
+    useRecipeIngredients();
   const { findSimilarTags } = useTags();
   const { findSimilarIngredients } = useIngredients();
 
@@ -162,6 +164,21 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
     validateAndQueueTags(filteredTags, findSimilarTags, addTagIfNotDuplicate, setValidationQueue);
   };
 
+  const placeholderQueueCallbacks: Pick<IngredientValidationProps, 'onValidated' | 'onDismissed'> =
+    {
+      onValidated: (original, validated) => {
+        ocrLogger.info('OCR ingredient validated', {
+          ocrName: original.name,
+          validatedName: validated.name,
+        });
+        resolvePlaceholderIngredient(original.name, validated);
+      },
+      onDismissed: original => {
+        ocrLogger.info('OCR ingredient dismissed', { ocrName: original.name });
+        removeMatchingFormIngredients(original.name);
+      },
+    };
+
   const queueIngredients = (ocrIngredients: FormIngredientElement[]) => {
     if (ocrIngredients.length === 0) return;
     const namePlaceholders = ocrIngredients.map(ing => ({ ...ing, quantity: '' }));
@@ -176,7 +193,7 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
         addOrMergeIngredient({ ...match, quantity: original?.quantity || match.quantity });
       },
       setValidationQueue,
-      { onValidated: (_, validatedIngredient) => addOrMergeIngredient(validatedIngredient) }
+      placeholderQueueCallbacks
     );
   };
 
@@ -202,7 +219,7 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
       setValidationQueue({
         type: 'Ingredient',
         items: needsValidation,
-        onValidated: (_, validatedIngredient) => addOrMergeIngredient(validatedIngredient),
+        ...placeholderQueueCallbacks,
       });
     }
   };

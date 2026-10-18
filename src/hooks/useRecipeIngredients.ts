@@ -15,7 +15,11 @@ import { useFormContext } from 'react-hook-form';
 import { noteSeparator, textSeparator, unitySeparator } from '@utils/TextParsing';
 import { useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { useIngredients } from '@hooks/useIngredients';
-import { mergeQuantities, validateAndQueueIngredients } from '@utils/RecipeValidationHelpers';
+import {
+  mergeIngredient,
+  mergeQuantities,
+  validateAndQueueIngredients,
+} from '@utils/RecipeValidationHelpers';
 import { namesMatch } from '@utils/NutritionUtils';
 import type { RecipeFormInput } from '@schemas/recipeFormSchema';
 import { useIngredientArrayActions } from '@screens/recipe/fields/IngredientArrayActionsContext';
@@ -144,6 +148,17 @@ export interface UseRecipeIngredientsReturn {
    * dismisses an ingredient from the queue. No-ops on an empty / undefined name.
    */
   removeMatchingFormIngredients: (name: string | undefined) => void;
+
+  /**
+   * Resolves the placeholder row named `originalName` with the validated
+   * ingredient, in place, so row order is preserved. Merges with another row
+   * holding the validated name like `editIngredients` does; falls back to
+   * `addOrMergeIngredient` when no placeholder exists.
+   */
+  resolvePlaceholderIngredient: (
+    originalName: string | undefined,
+    validatedIngredient: ingredientTableElement
+  ) => void;
 }
 
 /**
@@ -461,10 +476,34 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
     indices.forEach(index => applyPatch({ kind: 'remove', index }));
   };
 
+  /**
+   * Replaces the first row named `originalName` with the validated ingredient
+   * at the same index, keeping the row's own quantity and note. Duplicate-name
+   * rows are merged with the same rules as `editIngredients`
+   * (`buildReplacePatch`). Without a placeholder, delegates to
+   * `addOrMergeIngredient`.
+   *
+   * @param originalName - Name of the placeholder row (raw OCR name)
+   * @param validatedIngredient - Database ingredient chosen during validation
+   */
+  const resolvePlaceholderIngredient = (
+    originalName: string | undefined,
+    validatedIngredient: ingredientTableElement
+  ) => {
+    const current = getRecipeIngredients();
+    const index = originalName ? current.findIndex(ing => namesMatch(ing.name, originalName)) : -1;
+    if (index === -1) {
+      addOrMergeIngredient(validatedIngredient);
+      return;
+    }
+    applyPatch(buildReplacePatch(index, mergeIngredient(current[index]!, validatedIngredient)));
+  };
+
   return {
     editIngredients,
     addOrMergeIngredient,
     replaceAllMatchingFormIngredients,
     removeMatchingFormIngredients,
+    resolvePlaceholderIngredient,
   };
 }

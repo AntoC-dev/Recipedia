@@ -17,6 +17,8 @@ import { testTags } from '@data/tagsDataset';
 import { testIngredients } from '@data/ingredientsDataset';
 import { IngredientValidationProps, TagValidationProps } from '@components/dialogs/ValidationQueue';
 import { ApplyIngredientEditPatch } from '@hooks/useRecipeIngredients';
+import { mergeIngredient } from '@utils/RecipeValidationHelpers';
+import type { OcrModalTarget } from '@utils/OCR';
 import { RecipeFormInput } from '@schemas/recipeFormSchema';
 import {
   IngredientArrayActionsProvider,
@@ -592,6 +594,137 @@ describe('useRecipeOCR', () => {
 
       const names = result.current.form.form.getValues('recipeIngredients')!.map(i => i.name);
       expect(names).toEqual(['carotte', 'cébette', 'citronnelle']);
+    });
+
+    describe('validated name differs from OCR name', () => {
+      const poisChiche = {
+        id: 99,
+        name: 'Pois chiche',
+        unit: 'g',
+        type: ingredientType.legumes,
+        season: [],
+        quantity: '',
+      };
+
+      const namesScanPayload = {
+        ingredientNames: [
+          { name: 'carotte', unit: 'g' },
+          { name: 'Pois chiches', unit: 'g' },
+          { name: 'citronnelle', unit: 'g' },
+        ],
+      };
+
+      const renderScan = async (
+        field: OcrModalTarget = 'ingredientNames',
+        payload: object = namesScanPayload
+      ) => {
+        mockFindSimilarIngredients.mockImplementation((name: string) =>
+          name.toLowerCase() === 'pois chiches' ? [poisChiche] : []
+        );
+        mockExtractFieldFromImage.mockResolvedValue(payload);
+        const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
+        const { result } = renderHook(
+          () => ({ ocr: useTestRecipeOCR(), form: useRecipeForm(), dialogs: useRecipeDialogs() }),
+          { wrapper }
+        );
+        await act(async () => {
+          await result.current.ocr.fillOneField('image.jpg', field);
+        });
+        return {
+          result,
+          queue: result.current.dialogs.validationQueue as IngredientValidationProps,
+        };
+      };
+
+      const queuedItem = (queue: IngredientValidationProps, name: string) =>
+        queue.items.find(i => i.name === name)!;
+
+      test('names scan replaces the placeholder in place instead of appending', async () => {
+        const { result, queue } = await renderScan();
+
+        act(() => {
+          queue.onValidated(queuedItem(queue, 'Pois chiches'), poisChiche);
+        });
+
+        const rows = result.current.form.form.getValues('recipeIngredients')!;
+        expect(rows.map(i => i.name)).toEqual(['carotte', 'Pois chiche', 'citronnelle']);
+        expect(rows[1]).toMatchObject({ id: 99, type: ingredientType.legumes });
+      });
+
+      test('names scan removes the placeholder when dismissed', async () => {
+        const { result, queue } = await renderScan();
+
+        act(() => {
+          queue.onDismissed!(queuedItem(queue, 'Pois chiches'));
+        });
+
+        const names = result.current.form.form.getValues('recipeIngredients')!.map(i => i.name);
+        expect(names).toEqual(['carotte', 'citronnelle']);
+      });
+
+      test('names scan merges into an existing row already holding the validated name', async () => {
+        const { result, queue } = await renderScan();
+
+        act(() => {
+          queue.onValidated(queuedItem(queue, 'citronnelle'), {
+            ...poisChiche,
+            id: 98,
+            name: 'carotte',
+          });
+        });
+
+        const names = result.current.form.form.getValues('recipeIngredients')!.map(i => i.name);
+        expect(names).toEqual(['carotte', 'Pois chiches']);
+      });
+
+      test('names scan appends the validated ingredient when its placeholder is gone', async () => {
+        const { result, queue } = await renderScan();
+
+        act(() => {
+          result.current.form.form.setValue(
+            'recipeIngredients',
+            result.current.form.form
+              .getValues('recipeIngredients')!
+              .filter(i => i.name !== 'Pois chiches')
+          );
+        });
+        act(() => {
+          queue.onValidated(queuedItem(queue, 'Pois chiches'), poisChiche);
+        });
+
+        const names = result.current.form.form.getValues('recipeIngredients')!.map(i => i.name);
+        expect(names).toEqual(['carotte', 'citronnelle', 'Pois chiche']);
+      });
+
+      test('full-data scan replaces the placeholder in place and keeps the OCR quantity', async () => {
+        const { result, queue } = await renderScan(recipeColumnsNames.ingredients, {
+          recipeIngredients: [
+            {
+              name: 'carotte',
+              unit: 'g',
+              quantity: '2',
+              type: ingredientType.vegetable,
+              season: [],
+            },
+            {
+              name: 'Pois chiches',
+              unit: 'g',
+              quantity: '400',
+              type: ingredientType.legumes,
+              season: [],
+            },
+          ],
+        });
+
+        act(() => {
+          const original = queuedItem(queue, 'Pois chiches');
+          queue.onValidated(original, mergeIngredient(original, poisChiche));
+        });
+
+        const rows = result.current.form.form.getValues('recipeIngredients')!;
+        expect(rows.map(i => i.name)).toEqual(['carotte', 'Pois chiche']);
+        expect(rows[1]).toMatchObject({ id: 99, quantity: '400' });
+      });
     });
 
     test('recipeIngredients (full data) preserves OCR order when items have similar suggestions', async () => {
