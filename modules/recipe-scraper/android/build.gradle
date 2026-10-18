@@ -57,7 +57,7 @@ task setupPythonTestEnv(type: Exec) {
   commandLine 'bash', '-c', '''
     python3 -m venv .venv 2>/dev/null || python3.13 -m venv .venv
     source .venv/bin/activate
-    pip install --quiet pytest "recipe-scrapers[online]>=15.0.0"
+    pip install --quiet pytest -r ../scripts/requirements.txt
   '''
 
   doFirst {

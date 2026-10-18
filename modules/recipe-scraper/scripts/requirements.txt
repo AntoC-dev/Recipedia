@@ -4,16 +4,20 @@
 # Android: installed by Chaquopy at Gradle build time.
 # Pyodide version is managed via npm (package.json).
 #
-# Pin all transitive deps that affect parsing behaviour to keep both platforms
-# in sync (e.g. beautifulsoup4 4.14.x breaks AbstractScraper JSON-LD parsing).
+# The Android Gradle test venv (setupPythonTestEnv) also installs from this file.
+#
+# Pin all transitive deps that affect parsing behaviour to keep both platforms in sync.
 
-recipe-scrapers[online]==15.11.0
+recipe-scrapers[online]==15.12.0
+# beautifulsoup4 matches the built-in package of Pyodide 0.29.4, so iOS and Android run the
+# same version. 4.14.3 and 4.15.0 scrape the real-HTML fixtures identically
+# (TestSchemaOrgFallbackOnRealHtml) — lift together with the Pyodide 314 migration (#560).
 beautifulsoup4==4.13.3
 # Pin extruct>=0.17.0,<0.18.0 — 0.17.x is compatible with lxml 5.3.0 (Android, fixes
 # _ElementStringResult import error, see https://github.com/scrapinghub/extruct/issues/230)
-# AND with the lxml 6.0.0 WASM wheel that Pyodide 0.28 ships. extruct 0.18.0 requires
-# lxml>=6.1.1, which has no pure-Python/WASM wheel — micropip install fails on iOS.
+# AND with the lxml 6.0.2 WASM wheel that Pyodide 0.29.4 ships. extruct 0.18.0 requires
+# lxml>=6.1.1, which has no WASM wheel — micropip install fails on iOS.
 extruct>=0.17.0,<0.18.0
 # lxml_html_clean is a transitive dep of extruct. 0.4.5+ requires lxml>=6.1.1, which
-# Pyodide does not ship as WASM. Pin to <0.4.5 to stay compatible with Pyodide's lxml 6.0.0.
+# Pyodide does not ship as WASM. Pin to <0.4.5 to stay compatible with Pyodide's lxml 6.0.2.
 lxml_html_clean<0.4.5
