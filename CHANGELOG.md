@@ -1,3 +1,14 @@
+## [2.54.0](https://github.com/AntoC-dev/Recipedia/compare/v2.53.8...v2.54.0) (2026-10-18)
+
+### Features
+
+* **logger:** mirror non-production logs to the system log for E2E triage ([331e486](https://github.com/AntoC-dev/Recipedia/commit/331e48654397bf8dae38c26325417d5ed6899da5))
+
+### Bug Fixes
+
+* **deps:** override packages flagged critical by npm audit ([9bb425d](https://github.com/AntoC-dev/Recipedia/commit/9bb425d71c8a2da8404be42724d02145e8a385a9))
+* **e2e:** speed up the iOS Photos cleanup in OCR flows ([3b24d92](https://github.com/AntoC-dev/Recipedia/commit/3b24d920ab3f5b6834da02e2ac7d03fe7c909285))
+
 ## [2.53.8](https://github.com/AntoC-dev/Recipedia/compare/v2.53.7...v2.53.8) (2026-10-17)
 
 ### Bug Fixes
