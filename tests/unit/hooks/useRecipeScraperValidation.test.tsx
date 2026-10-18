@@ -302,6 +302,79 @@ describe('useRecipeScraperValidation', () => {
     });
   });
 
+  describe('ingredient validated with a differently named database ingredient', () => {
+    const poisChiche: ingredientTableElement = {
+      id: 99,
+      name: 'Pois chiche',
+      type: ingredientType.legumes,
+      unit: 'g',
+      quantity: '',
+      season: [],
+    };
+
+    const renderWithIngredients = async (ingredients: FormIngredientElement[]) => {
+      const wrapper = createWrapper(ingredients, []);
+      const { result } = renderHook(
+        () => {
+          useRecipeScraperValidation();
+          return { dialogs: useRecipeDialogs(), form: useRecipeForm() };
+        },
+        { wrapper }
+      );
+      await waitFor(() => {
+        expect(result.current.dialogs.validationQueue).not.toBeNull();
+      });
+      return result;
+    };
+
+    const validateRawName = (
+      result: Awaited<ReturnType<typeof renderWithIngredients>>,
+      rawName: string,
+      validated: ingredientTableElement
+    ) => {
+      const queue = result.current.dialogs.validationQueue as IngredientValidationProps;
+      const original = queue.items.find(item => item.name === rawName)!;
+      act(() => {
+        queue.onValidated(original, validated);
+      });
+    };
+
+    test('replaces the raw row in place with the database ingredient and keeps its quantity', async () => {
+      const result = await renderWithIngredients([
+        { name: 'UnknownBefore', quantity: '1', unit: 'g' },
+        { name: 'Pois chiches', quantity: '400', unit: 'g' },
+        { name: 'UnknownAfter', quantity: '2', unit: 'g' },
+      ]);
+
+      validateRawName(result, 'Pois chiches', poisChiche);
+
+      const rows = result.current.form.form.getValues('recipeIngredients');
+      expect(rows.map(row => row.name)).toEqual(['UnknownBefore', 'Pois chiche', 'UnknownAfter']);
+      expect(rows[1]).toMatchObject({
+        id: 99,
+        type: ingredientType.legumes,
+        quantity: '400',
+      });
+    });
+
+    test('replaces every row sharing the raw name', async () => {
+      const result = await renderWithIngredients([
+        { name: 'Pois chiches', quantity: '400', unit: 'g' },
+        { name: 'Pois chiches', quantity: '50', unit: 'g' },
+      ]);
+
+      validateRawName(result, 'Pois chiches', poisChiche);
+
+      const rows = result.current.form.form.getValues('recipeIngredients');
+      expect(rows.map(row => [row.name, (row as ingredientTableElement).id, row.quantity])).toEqual(
+        [
+          ['Pois chiche', 99, '400'],
+          ['Pois chiche', 99, '50'],
+        ]
+      );
+    });
+  });
+
   test('ingredient onDismissed callback removes the ingredient from recipe', async () => {
     const unknownIngredientName = 'UnknownIngredient';
     const wrapper = createWrapper([createMockIngredient(unknownIngredientName)], []);

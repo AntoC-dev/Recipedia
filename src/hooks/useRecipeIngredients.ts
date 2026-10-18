@@ -135,11 +135,17 @@ export interface UseRecipeIngredientsReturn {
   addOrMergeIngredient: (ingredient: ingredientTableElement) => void;
 
   /**
-   * Replaces ALL FormIngredients with matching name with the validated database ingredient.
-   * Preserves each ingredient's own quantity/unit/note while applying database metadata.
-   * Used by scraper validation when the same ingredient appears multiple times.
+   * Replaces ALL FormIngredients named `originalName` (defaults to the
+   * validated ingredient's name) with the validated database ingredient, in
+   * place. Preserves each row's own quantity/note while applying database
+   * metadata. Used by scraper validation when the same ingredient appears
+   * multiple times, including when the user picks a database ingredient whose
+   * name differs from the scraped one.
    */
-  replaceAllMatchingFormIngredients: (validatedIngredient: ingredientTableElement) => void;
+  replaceAllMatchingFormIngredients: (
+    validatedIngredient: ingredientTableElement,
+    originalName?: string
+  ) => void;
 
   /**
    * Removes every form ingredient whose name matches `name`, emitting one
@@ -435,12 +441,21 @@ export function useRecipeIngredients(): UseRecipeIngredientsReturn {
    * `IngredientArrayActionsContext` so non-matching siblings retain object
    * identity. Non-matching rows are not touched.
    *
+   * Rows are matched against `originalName` when provided, so a raw scraped
+   * name resolved to a differently named database ingredient still replaces
+   * its rows.
+   *
    * @param validatedIngredient - The validated database ingredient to use as template
+   * @param originalName - Raw name of the rows to replace; defaults to `validatedIngredient.name`
    */
-  const replaceAllMatchingFormIngredients = (validatedIngredient: ingredientTableElement) => {
+  const replaceAllMatchingFormIngredients = (
+    validatedIngredient: ingredientTableElement,
+    originalName?: string
+  ) => {
+    const matchName = originalName ?? validatedIngredient.name;
     const current = getRecipeIngredients();
     current.forEach((existing, index) => {
-      if (!namesMatch(existing.name, validatedIngredient.name)) {
+      if (!namesMatch(existing.name, matchName)) {
         return;
       }
       applyPatch({

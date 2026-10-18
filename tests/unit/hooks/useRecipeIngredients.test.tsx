@@ -1876,6 +1876,38 @@ describe('useRecipeIngredients', () => {
         expect(result.current.form.form.getValues('recipeIngredients')[2]!.name).toBe('Milk');
       });
 
+      test('matches rows by originalName when the validated name differs', async () => {
+        const result = await renderWithRows([
+          { name: 'Pois chiches', quantity: '400', unit: 'g', note: 'drained' },
+          { name: 'Salt', quantity: '1', unit: 'tsp' },
+          { name: 'pois chiches', quantity: '50', unit: 'g' },
+        ]);
+
+        act(() => {
+          result.current.ingredients.replaceAllMatchingFormIngredients(poisChiche, 'Pois chiches');
+        });
+
+        const ingredients = result.current.form.form.getValues('recipeIngredients');
+        expect(ingredients.map(i => i.name)).toEqual(['Pois chiche', 'Salt', 'Pois chiche']);
+        expect(ingredients[0]).toMatchObject({ id: 99, quantity: '400', note: 'drained' });
+        expect(ingredients[2]).toMatchObject({ id: 99, quantity: '50' });
+      });
+
+      test('ignores rows named like the validated ingredient when originalName is given', async () => {
+        const result = await renderWithRows([
+          { name: 'Pois chiche', quantity: '10', unit: 'g' },
+          { name: 'Pois chiches', quantity: '400', unit: 'g' },
+        ]);
+
+        act(() => {
+          result.current.ingredients.replaceAllMatchingFormIngredients(poisChiche, 'Pois chiches');
+        });
+
+        const ingredients = result.current.form.form.getValues('recipeIngredients');
+        expect(ingredients[0]!.id).toBeUndefined();
+        expect(ingredients[1]).toMatchObject({ id: 99, name: 'Pois chiche', quantity: '400' });
+      });
+
       test('preserves object identity for non-matching rows so UI subscribers do not re-render', async () => {
         const recipeWithDuplicates: recipeTableElement = {
           ...recipeWithIngredients,

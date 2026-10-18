@@ -67,7 +67,11 @@ export function useRecipeScraperValidation(): void {
       findSimilarIngredients,
       replaceAllMatchingFormIngredients,
       setValidationQueue,
-      { onDismissed: item => removeMatchingFormIngredients(item.name) }
+      {
+        onValidated: (original, validated) =>
+          replaceAllMatchingFormIngredients(validated, original.name),
+        onDismissed: item => removeMatchingFormIngredients(item.name),
+      }
     );
   };
 
