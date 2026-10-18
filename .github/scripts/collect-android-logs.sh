@@ -22,3 +22,8 @@ if [ -s "$LOG_DIR/recipedia-app-logs.txt" ]; then
 else
   echo "⚠️ App log files not found or empty"
 fi
+
+# E2E clearState (pm clear) wipes the file log above on every launch. The app mirrors its log
+# to logcat in non-production builds and run-e2e-android.sh streams it to app-stream-<suite>.txt
+# for the whole run.
+bash "$(dirname "${BASH_SOURCE[0]}")/split-app-log-by-launch.sh" "app-stream-${SUITE}.txt" "$LOG_DIR/app-logs" android

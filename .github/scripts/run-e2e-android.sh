@@ -19,18 +19,26 @@ adb shell settings put global animator_duration_scale 0
 
 adb logcat -c
 
+# Stream the app's log for the whole run: clearState wipes the in-app file log on every launch.
+APP_STREAM_FILE="app-stream-${SUITE}.txt"
+adb logcat -v threadtime -s ReactNativeJS:V > "$APP_STREAM_FILE" &
+STREAM_PID=$!
+
+collect_logs_and_stop_stream() {
+  local exit_code=$?
+  sleep 2
+  kill "$STREAM_PID" 2>/dev/null || true
+  wait "$STREAM_PID" 2>/dev/null || true
+  bash .github/scripts/collect-android-logs.sh "$SUITE" || true
+  exit "$exit_code"
+}
+trap collect_logs_and_stop_stream EXIT
+
 echo "🚀 Running E2E tests on suite: $SUITE ..."
 npm run install:android
 
-set +e
 maestro test tests/e2e/ \
   --config="tests/e2e/${SUITE}.yaml" \
   --debug-output="maestro_logs_${SUITE}" \
   --format junit -s 1 \
   "${MAESTRO_CREDENTIAL_ARGS[@]}"
-MAESTRO_EXIT=$?
-set -e
-
-bash .github/scripts/collect-android-logs.sh "$SUITE"
-
-exit $MAESTRO_EXIT

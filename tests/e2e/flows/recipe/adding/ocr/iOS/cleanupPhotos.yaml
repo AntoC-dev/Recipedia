@@ -5,32 +5,27 @@ appId: "com.recipedia"
       visible:
         id: "PXGGridLayout-Info"
     commands:
-      - extendedWaitUntil:
-          visible:
-            text: "Select"
-          timeout: 30000
-          label: "Wait for the select button to be available"
-
       - tapOn:
           text: "Select"
           label: "Enter select mode"
 
-      - waitForAnimationToEnd:
-          label: "Wait for select mode to settle"
-
       - extendedWaitUntil:
           visible:
-            id: "PXGGridLayout-Info"
+            text: "Select Items"
           timeout: 30000
-          label: "Wait for the photo grid to be interactive in select mode"
+          label: "Wait for select mode"
 
       - tapOn:
           id: "PXGGridLayout-Info"
           index: 0
           label: "Select the first photo of the grid"
 
-      - waitForAnimationToEnd:
-          label: "Wait for the selection to register"
+      - extendedWaitUntil:
+          visible:
+            text: "Delete"
+            enabled: true
+          timeout: 30000
+          label: "Wait for the delete button to be enabled"
 
       - tapOn:
           text: "Delete"
@@ -46,5 +41,8 @@ appId: "com.recipedia"
           text: "Delete Photo"
           label: "Confirm the deletion"
 
-      - waitForAnimationToEnd:
-          label: "Wait for the grid to settle after deletion"
+      - extendedWaitUntil:
+          notVisible:
+            text: "Delete Photo"
+          timeout: 30000
+          label: "Wait for the deletion confirmation to close"

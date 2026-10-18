@@ -1,18 +1,16 @@
 appId: "com.recipedia"
 ---
+# Every second spent here is spent with Recipedia in the background, where iOS can
+# terminate it. Wait on concrete elements, never on fixed delays.
 - launchApp:
     appId: "com.apple.mobileslideshow"
     label: "Open iOS Photos app"
 
-- waitForAnimationToEnd:
-    label: "Wait for Photos app to finish loading"
-
 - extendedWaitUntil:
     visible:
-      text: "Continue"
-    timeout: 5000
-    optional: true
-    label: "Wait for what's new screen to appear"
+      text: "Library|Continue"
+    timeout: 30000
+    label: "Wait for Photos library or its what's new screen"
 
 - runFlow:
     when:
@@ -21,14 +19,12 @@ appId: "com.recipedia"
     commands:
       - tapOn:
           text: "Continue"
-          label: "Close the what's new screen if it appears"
-
-- extendedWaitUntil:
-    visible:
-      id: "PXGGridLayout-Info"
-    timeout: 30000
-    optional: true
-    label: "Wait for the photo grid to render when the library is not empty"
+          label: "Close the what's new screen"
+      - extendedWaitUntil:
+          visible:
+            text: "Library"
+          timeout: 30000
+          label: "Wait for Photos library"
 
 - runFlow:
     when:

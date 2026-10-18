@@ -56,7 +56,10 @@ const withStubbedTools = (workDir, maestroBody) => {
   writeExecutable(join(binDir, 'maestro'), maestroBody);
   writeExecutable(join(binDir, 'npm'), 'exit 0');
   writeExecutable(join(binDir, 'adb'), 'exit 0');
-  writeExecutable(join(binDir, 'xcrun'), 'exit 0');
+  writeExecutable(
+    join(binDir, 'xcrun'),
+    'if [ "$2" = list ]; then echo "    iPhone 16e (UDID) (Booted)"; fi'
+  );
   mkdirSync(join(workDir, '.github', 'scripts'), { recursive: true });
   writeExecutable(
     join(workDir, '.github', 'scripts', 'collect-android-logs.sh'),

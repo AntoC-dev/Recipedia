@@ -8,6 +8,12 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/e2e-credentials.sh"
 maestro_credential_args "$SUITE"
 
+BOOTED_COUNT=$(xcrun simctl list devices booted | grep -c "(Booted)" || true)
+if [ "$BOOTED_COUNT" -ne 1 ]; then
+  echo "❌ Expected exactly 1 booted simulator, found $BOOTED_COUNT"
+  exit 1
+fi
+
 echo "🚀 Running E2E tests on iOS simulator for suite: $SUITE ..."
 npm run install:ios
 
@@ -50,6 +56,13 @@ rerun_failed_flows() {
 
   return $status
 }
+
+# Stream the app's log for the whole run: clearState wipes the in-app file log on every launch.
+APP_STREAM_FILE="app-stream-${SUITE}.txt"
+xcrun simctl spawn booted log stream --level info --style compact \
+  --predicate 'eventMessage CONTAINS "[RecipediaApp]"' > "$APP_STREAM_FILE" &
+STREAM_PID=$!
+trap 'sleep 2; kill -INT "$STREAM_PID" 2>/dev/null || true; wait "$STREAM_PID" 2>/dev/null || true' EXIT
 
 MAESTRO_EXIT=0
 run_maestro tests/e2e/ --debug-output="maestro_logs_${SUITE}" || MAESTRO_EXIT=$?
