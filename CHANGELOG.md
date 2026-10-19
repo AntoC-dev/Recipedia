@@ -1,3 +1,9 @@
+## [2.54.2](https://github.com/AntoC-dev/Recipedia/compare/v2.54.1...v2.54.2) (2026-10-19)
+
+### Bug Fixes
+
+* **recipe-scraper:** rebuild test venv and iOS bundle on requirement changes ([e983cf4](https://github.com/AntoC-dev/Recipedia/commit/e983cf415f8aa19bb10177dc3e7baa0e617d19b3)), closes [#559](https://github.com/AntoC-dev/Recipedia/issues/559)
+
 ## [2.54.1](https://github.com/AntoC-dev/Recipedia/compare/v2.54.0...v2.54.1) (2026-10-19)
 
 ### Bug Fixes
