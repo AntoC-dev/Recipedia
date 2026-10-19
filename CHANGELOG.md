@@ -1,3 +1,9 @@
+## [2.54.1](https://github.com/AntoC-dev/Recipedia/compare/v2.54.0...v2.54.1) (2026-10-19)
+
+### Bug Fixes
+
+* **ios:** harden Pyodide bundle setup and validation ([1f80c88](https://github.com/AntoC-dev/Recipedia/commit/1f80c88592e7a2cbd4281edb36fbe31a683e9d4f)), closes [#560](https://github.com/AntoC-dev/Recipedia/issues/560)
+
 ## [2.54.0](https://github.com/AntoC-dev/Recipedia/compare/v2.53.8...v2.54.0) (2026-10-18)
 
 ### Features
