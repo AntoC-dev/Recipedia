@@ -69,7 +69,7 @@ function generateHtml() {
 
     console.log(`[generate-html] Using Pyodide v${PYODIDE_VERSION} from npm`);
 
-    const requiredFiles = ['pyodide.js', 'pyodide.asm.js', 'pyodide.asm.wasm', 'python_stdlib.zip', 'pyodide-lock.json'];
+    const requiredFiles = ['pyodide.js', 'pyodide.asm.mjs', 'pyodide.asm.wasm', 'python_stdlib.zip', 'pyodide-lock.json'];
     for (const file of requiredFiles) {
         const filepath = join(PYODIDE_DIR, file);
         if (!existsSync(filepath)) {
@@ -78,7 +78,7 @@ function generateHtml() {
     }
 
     const pyodideJs = readFileAsText(join(PYODIDE_DIR, 'pyodide.js'));
-    const pyodideAsmJs = readFileAsText(join(PYODIDE_DIR, 'pyodide.asm.js'));
+    const pyodideAsmMjs = readFileAsText(join(PYODIDE_DIR, 'pyodide.asm.mjs'));
     const pyodideWasmBase64 = readFileAsBase64(join(PYODIDE_DIR, 'pyodide.asm.wasm'));
     const pythonStdlibBase64 = readFileAsBase64(join(PYODIDE_DIR, 'python_stdlib.zip'));
     const pyodideLockJson = readFileAsText(join(PYODIDE_DIR, 'pyodide-lock.json'));
@@ -93,7 +93,7 @@ function generateHtml() {
 
     const html = buildBundleHtml({
         pyodideJs,
-        pyodideAsmJs,
+        pyodideAsmMjs,
         pyodideWasmBase64,
         pythonStdlibBase64,
         pyodideLockJson,

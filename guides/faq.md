@@ -61,7 +61,7 @@ See `src/translations/README.md` for full details and examples.
 3. Register the provider in `src/providers/ProviderRegistry.ts`.
 4. The existing `useDiscoveryWorkflow` and `useRecipeScraper` hooks handle scraping and validation automatically for all registered providers.
 
-The scraper itself runs via the `modules/recipe-scraper` native module (Python embedded via Chaquopy on Android, BeeWare on iOS, Pyodide on web). Providers are responsible only for discovering recipe URLs — content extraction is handled by the scraper.
+The scraper itself runs via the `modules/recipe-scraper` native module (Python embedded via Chaquopy — CPython 3.13 — on Android, and via Pyodide — CPython 3.14 in a WebView — on iOS). Providers are responsible only for discovering recipe URLs — content extraction is handled by the scraper.
 
 ---
 

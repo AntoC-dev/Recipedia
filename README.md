@@ -104,7 +104,7 @@ src/
 | Search | MiniSearch (fuzzy, offline) |
 | OCR | @react-native-ml-kit/text-recognition |
 | i18n | i18next |
-| Recipe scraping | [recipe-scrapers](https://github.com/hhursev/recipe-scrapers) via embedded Python (Chaquopy on Android, BeeWare on iOS) |
+| Recipe scraping | [recipe-scrapers](https://github.com/hhursev/recipe-scrapers) via embedded Python (Chaquopy on Android, Pyodide in a WebView on iOS) |
 | Testing | Jest + RNTL + Reassure + Maestro (E2E) |
 
 ## 📖 Documentation
@@ -202,7 +202,7 @@ MIT — see [LICENSE](LICENSE).
 - [Expo](https://expo.dev/), [React Native](https://reactnative.dev/), [React Native Paper](https://reactnativepaper.com/)
 - [ML Kit](https://developers.google.com/ml-kit) for OCR
 - [Chaquopy](https://chaquo.com/chaquopy/) for Python on Android
-- [BeeWare](https://beeware.org/) for Python on iOS
+- [Pyodide](https://pyodide.org/) for Python on iOS
 
 ---
 

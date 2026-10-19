@@ -18,6 +18,8 @@ MODULE_DIR="$(dirname "$SCRIPT_DIR")"
 DOWNLOAD_DIR="$MODULE_DIR/assets/pyodide-download"
 OUTPUT_DIR="$MODULE_DIR/assets"
 BUNDLE_FILE="$OUTPUT_DIR/pyodide-bundle.html"
+BUNDLE_STAMP="$BUNDLE_FILE.sha256"
+MIN_BUNDLE_SIZE=$((10 * 1024 * 1024))  # 10MB
 REQUIREMENTS_FILE="$SCRIPT_DIR/requirements.txt"
 PYODIDE_DIR="$MODULE_DIR/../../node_modules/pyodide"
 
@@ -25,14 +27,6 @@ PYODIDE_DIR="$MODULE_DIR/../../node_modules/pyodide"
 FORCE=false
 if [[ "$1" == "--force" ]]; then
     FORCE=true
-fi
-
-# Check if a valid (non-empty) bundle already exists
-MIN_VALID_SIZE=$((10 * 1024 * 1024))  # 10MB
-if [[ -f "$BUNDLE_FILE" ]] && [[ "$FORCE" == "false" ]] && [[ $(wc -c < "$BUNDLE_FILE") -ge $MIN_VALID_SIZE ]]; then
-    BUNDLE_SIZE=$(ls -lh "$BUNDLE_FILE" | awk '{print $5}')
-    echo "[setup-pyodide] Bundle already exists ($BUNDLE_SIZE), skipping (use --force to regenerate)"
-    exit 0
 fi
 
 # Verify Pyodide npm package is installed
@@ -45,11 +39,24 @@ fi
 PYODIDE_VERSION=$(node -e "console.log(require('$PYODIDE_DIR/package.json').version)")
 echo "[setup-pyodide] Using Pyodide v${PYODIDE_VERSION} from npm"
 
+# Reuse an existing bundle only if it was built from exactly these inputs: any change
+# to the Pyodide version, pins, generator or scraper code must rebuild.
+INPUTS_HASH=$(cat "$PYODIDE_DIR/package.json" "$REQUIREMENTS_FILE" "${BASH_SOURCE[0]}" \
+    "$SCRIPT_DIR/generate-pyodide-html.mjs" "$SCRIPT_DIR/buildBundleHtml.js" \
+    "$MODULE_DIR/src/ios/scraperCode.ts" | shasum -a 256 | cut -d' ' -f1)
+if [[ -f "$BUNDLE_FILE" ]] && [[ "$FORCE" == "false" ]] && [[ $(wc -c < "$BUNDLE_FILE") -ge $MIN_BUNDLE_SIZE ]] \
+    && [[ "$(cat "$BUNDLE_STAMP" 2>/dev/null)" == "$INPUTS_HASH" ]]; then
+    BUNDLE_SIZE=$(ls -lh "$BUNDLE_FILE" | awk '{print $5}')
+    echo "[setup-pyodide] Bundle already exists ($BUNDLE_SIZE), skipping (use --force to regenerate)"
+    exit 0
+fi
+
 # Prefer the project venv (has `packaging` for the validator); fall back to system python3.
 PYTHON_BIN="$MODULE_DIR/python/.venv/bin/python"
 [[ -x "$PYTHON_BIN" ]] || PYTHON_BIN="python3"
 
 # Clean and create download directory (for wheels only)
+rm -f "$BUNDLE_STAMP"
 rm -rf "$DOWNLOAD_DIR"
 mkdir -p "$DOWNLOAD_DIR/wheels"
 mkdir -p "$OUTPUT_DIR"
@@ -87,6 +94,28 @@ if [[ "$WHEEL_COUNT" -eq 0 ]]; then
 fi
 echo "[setup-pyodide] Downloaded $WHEEL_COUNT pure-Python wheels"
 
+# Statically validate the dependency graph against Pyodide's built-in packages
+# (catches mismatches like extruct 0.18.0 requiring lxml>=6.1.1 when Pyodide
+# ships lxml-6.0.2 — would otherwise only surface at iOS E2E run time).
+#
+# The validator needs `packaging`. The project venv has it; CI runners typically
+# don't. Install scoped to a temp dir and inject via PYTHONPATH so we don't
+# touch the system site-packages (PEP 668 environments would reject that).
+echo "[setup-pyodide] Validating wheel dependency graph..."
+VALIDATOR_TOOLS_DIR="$DOWNLOAD_DIR/tools"
+if ! "$PYTHON_BIN" -c "import packaging" 2>/dev/null; then
+    echo "[setup-pyodide] Installing 'packaging' for validator into $VALIDATOR_TOOLS_DIR..."
+    if ! "$PYTHON_BIN" -m pip install --quiet --target "$VALIDATOR_TOOLS_DIR" packaging; then
+        echo "ERROR: Failed to install 'packaging' for the bundle validator"
+        exit 1
+    fi
+fi
+if ! PYTHONPATH="$VALIDATOR_TOOLS_DIR${PYTHONPATH:+:$PYTHONPATH}" \
+    "$PYTHON_BIN" "$SCRIPT_DIR/validate-bundle.py"; then
+    echo "ERROR: Bundle validation failed. Fix requirements.txt and rerun."
+    exit 1
+fi
+
 # Generate the HTML bundle
 echo "[setup-pyodide] Generating self-contained HTML bundle..."
 cd "$SCRIPT_DIR"
@@ -103,36 +132,14 @@ fi
 
 # Validate bundle size (should be at least 10MB)
 BUNDLE_SIZE_BYTES=$(wc -c < "$BUNDLE_FILE")
-MIN_SIZE=$((10 * 1024 * 1024))  # 10MB
-if [[ $BUNDLE_SIZE_BYTES -lt $MIN_SIZE ]]; then
+if [[ $BUNDLE_SIZE_BYTES -lt $MIN_BUNDLE_SIZE ]]; then
     echo "ERROR: Bundle too small ($BUNDLE_SIZE_BYTES bytes), expected at least 10MB"
     exit 1
 fi
 
 BUNDLE_SIZE=$(ls -lh "$BUNDLE_FILE" | awk '{print $5}')
 echo "[setup-pyodide] Bundle created: $BUNDLE_FILE ($BUNDLE_SIZE)"
-
-# Statically validate the dependency graph against Pyodide's built-in packages
-# (catches mismatches like extruct 0.18.0 requiring lxml>=6.1.1 when Pyodide
-# ships lxml-6.0.0 — would otherwise only surface at iOS E2E run time).
-#
-# The validator needs `packaging`. The project venv has it; CI runners typically
-# don't. Install scoped to a temp dir and inject via PYTHONPATH so we don't
-# touch the system site-packages (PEP 668 environments would reject that).
-echo "[setup-pyodide] Validating bundle dependency graph..."
-VALIDATOR_TOOLS_DIR="$DOWNLOAD_DIR/tools"
-if ! "$PYTHON_BIN" -c "import packaging" 2>/dev/null; then
-    echo "[setup-pyodide] Installing 'packaging' for validator into $VALIDATOR_TOOLS_DIR..."
-    if ! "$PYTHON_BIN" -m pip install --quiet --target "$VALIDATOR_TOOLS_DIR" packaging; then
-        echo "ERROR: Failed to install 'packaging' for the bundle validator"
-        exit 1
-    fi
-fi
-if ! PYTHONPATH="$VALIDATOR_TOOLS_DIR${PYTHONPATH:+:$PYTHONPATH}" \
-    "$PYTHON_BIN" "$SCRIPT_DIR/validate-bundle.py"; then
-    echo "ERROR: Bundle dependency validation failed. Fix requirements.txt and rerun."
-    exit 1
-fi
+echo "$INPUTS_HASH" > "$BUNDLE_STAMP"
 
 # Clean up download directory to save space
 echo "[setup-pyodide] Cleaning up downloads..."

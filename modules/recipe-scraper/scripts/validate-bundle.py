@@ -10,11 +10,12 @@ verifies each runtime requirement can be satisfied by either:
 Extras (marker `extra == 'foo'`) are only checked when the corresponding extra
 is actually used (e.g. recipe-scrapers[online]). Environment markers (e.g.
 `python_version < '3.10'`, `platform_system == 'Windows'`) are evaluated
-against Pyodide's runtime (Python 3.13, platform_system='Emscripten').
+against Pyodide's runtime: the Python version comes from the lock file's
+`info.python`, the platform is Emscripten/WASM.
 
 Exits non-zero with a clear error if any requirement cannot be satisfied.
 This catches version drift (e.g. extruct 0.18.0 needing lxml>=6.1.1 while
-Pyodide ships lxml-6.0.0) at build time instead of at iOS E2E run time.
+Pyodide ships lxml-6.0.2) at build time instead of at iOS E2E run time.
 """
 
 from __future__ import annotations
@@ -41,12 +42,8 @@ SHIMMED_PACKAGES = {
     "jstyleson": "0.0.2",
 }
 
-# Pyodide 0.28 runs CPython 3.13 on Emscripten/WASM.
-MARKER_ENV = {
-    "python_version": "3.13",
-    "python_full_version": "3.13.0",
+PLATFORM_MARKER_ENV = {
     "implementation_name": "cpython",
-    "implementation_version": "3.13.0",
     "platform_system": "Emscripten",
     "platform_machine": "wasm32",
     "platform_python_implementation": "CPython",
@@ -100,19 +97,34 @@ def parse_all_wheels() -> list[tuple[str, str, list[str]]]:
     return [parse_wheel_metadata(w) for w in sorted(WHEELS_DIR.glob("*.whl"))]
 
 
-def load_pyodide_builtins() -> dict[str, str]:
+def load_pyodide_lock() -> dict:
     if not PYODIDE_LOCK.exists():
         return {}
-    lock = json.loads(PYODIDE_LOCK.read_text())
+    return json.loads(PYODIDE_LOCK.read_text())
+
+
+def load_pyodide_builtins(lock: dict) -> dict[str, str]:
     return {canonicalize_name(p["name"]): p["version"] for p in lock.get("packages", {}).values()}
 
 
-def marker_applies(req: Requirement, requested_extras: set[str]) -> bool:
+def marker_env_for(lock: dict) -> dict[str, str] | None:
+    runtime_python = lock.get("info", {}).get("python")
+    if not runtime_python:
+        return None
+    return {
+        **PLATFORM_MARKER_ENV,
+        "python_version": ".".join(runtime_python.split(".")[:2]),
+        "python_full_version": runtime_python,
+        "implementation_version": runtime_python,
+    }
+
+
+def marker_applies(req: Requirement, requested_extras: set[str], marker_env: dict[str, str]) -> bool:
     if req.marker is None:
         return True
     extras_to_try = requested_extras if requested_extras else {""}
     for extra in extras_to_try:
-        env = {**MARKER_ENV, "extra": extra}
+        env = {**marker_env, "extra": extra}
         try:
             if req.marker.evaluate(env):
                 return True
@@ -134,7 +146,12 @@ def main() -> int:
     direct_extras = load_direct_extras()
     wheels = parse_all_wheels()
     bundled = {canonicalize_name(name): version for name, version, _ in wheels}
-    pyodide = load_pyodide_builtins()
+    lock = load_pyodide_lock()
+    pyodide = load_pyodide_builtins(lock)
+    marker_env = marker_env_for(lock)
+    if marker_env is None:
+        print(f"[validate-bundle] ERROR: no info.python in {PYODIDE_LOCK}", file=sys.stderr)
+        return 2
 
     errors: list[str] = []
     checked = 0
@@ -149,7 +166,7 @@ def main() -> int:
             except Exception as exc:
                 errors.append(f"{name}=={version}: cannot parse Requires-Dist {raw!r}: {exc}")
                 continue
-            if not marker_applies(req, requested_extras):
+            if not marker_applies(req, requested_extras, marker_env):
                 continue
 
             dep_canonical = canonicalize_name(req.name)
