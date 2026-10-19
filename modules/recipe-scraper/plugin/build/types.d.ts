@@ -1,6 +1,5 @@
 export interface RecipeScraperPluginConfig {
     pythonVersion?: string;
-    pipPackages?: string[];
     abiFilters?: string[];
     buildPython?: string;
 }

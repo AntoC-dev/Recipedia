@@ -43,22 +43,26 @@ tasks.configureEach { task ->
 // Directory for Python tests (shared across platforms)
 def pythonTestsDir = file("${projectDir}/../python/tests")
 def pythonVenvDir = file("${projectDir}/../python/.venv")
+def pythonRequirementsFile = file("${projectDir}/../scripts/requirements.txt")
 
 // Task to setup Python virtual environment with pytest
 task setupPythonTestEnv(type: Exec) {
   description = 'Setup Python virtual environment for testing'
   group = 'verification'
 
-  // Only run if venv doesn't exist
-  onlyIf { !file("${pythonVenvDir}/bin/pytest").exists() }
+  // Rebuild from scratch whenever requirements.txt changes, so the venv matches what ships.
+  inputs.file pythonRequirementsFile
+  outputs.file file("${pythonVenvDir}/.requirements-installed")
 
   workingDir file("${projectDir}/../python")
 
   commandLine 'bash', '-c', '''
-    python3 -m venv .venv 2>/dev/null || python3.13 -m venv .venv
-    source .venv/bin/activate
-    pip install --quiet pytest "recipe-scrapers[online]>=15.0.0"
-  '''
+    set -e
+    python3 -m venv --clear "$1" 2>/dev/null || python3.13 -m venv --clear "$1"
+    source "$1/bin/activate"
+    pip install --quiet pytest -r "$2"
+    cp "$2" "$1/.requirements-installed"
+  ''', 'setupPythonTestEnv', pythonVenvDir.absolutePath, pythonRequirementsFile.absolutePath
 
   doFirst {
     println "Setting up Python test environment..."

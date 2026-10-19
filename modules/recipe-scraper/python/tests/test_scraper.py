@@ -1,7 +1,10 @@
+import functools
 import json
 import sys
 from pathlib import Path
 from io import StringIO
+
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -143,8 +146,9 @@ class TestGetSupportedHosts:
 
 
 class TestIsHostSupported:
-    def test_known_host_returns_true(self):
-        result = json.loads(is_host_supported("allrecipes.com"))
+    @pytest.mark.parametrize("host", ["allrecipes.com", "jow.fr"])
+    def test_known_host_returns_true(self, host):
+        result = json.loads(is_host_supported(host))
 
         assert result["success"] is True
         assert result["data"] is True
@@ -553,6 +557,19 @@ HELLOFRESH_URL = "https://www.hellofresh.fr/recipes/keftas-de-boeuf-and-semoule-
 QUITOQUE_URL = "https://www.quitoque.fr/recettes/tartare-de-lentilles-blondes-mangue-et-salade-dalgues"
 
 
+UNSUPPORTED_URL = "https://unsupported-host.example/recipe"
+
+
+@functools.lru_cache(maxsize=None)
+def _scrape_fixture_json(name, url):
+    html = (FIXTURES_DIR / name).read_text(encoding="utf-8")
+    return scrape_recipe_from_html(html, url)
+
+
+def _scrape_fixture(name, url):
+    return json.loads(_scrape_fixture_json(name, url))
+
+
 class TestStripLargeScripts:
     def test_removes_next_data_script(self):
         html = '<html><script id="__NEXT_DATA__" type="application/json">{"huge":"data"}</script><p>content</p></html>'
@@ -633,9 +650,7 @@ class TestHelloFreshLargeHtml:
 
     @staticmethod
     def _scrape_fixture():
-        fixture_path = FIXTURES_DIR / "hellofresh_fr.html"
-        html = fixture_path.read_text(encoding="utf-8")
-        return json.loads(scrape_recipe_from_html(html, HELLOFRESH_URL))
+        return _scrape_fixture("hellofresh_fr.html", HELLOFRESH_URL)
 
     def test_scrape_succeeds(self):
         result = self._scrape_fixture()
@@ -675,9 +690,7 @@ class TestQuitoqueHtml:
 
     @staticmethod
     def _scrape_fixture():
-        fixture_path = FIXTURES_DIR / "quitoque_fr.html"
-        html = fixture_path.read_text(encoding="utf-8")
-        return json.loads(scrape_recipe_from_html(html, QUITOQUE_URL))
+        return _scrape_fixture("quitoque_fr.html", QUITOQUE_URL)
 
     def test_scrape_succeeds(self):
         result = self._scrape_fixture()
@@ -706,6 +719,37 @@ class TestQuitoqueHtml:
         result = self._scrape_fixture()
         assert result["data"]["image"] is not None
         assert result["data"]["image"].startswith("http")
+
+
+class TestSchemaOrgFallbackOnRealHtml:
+    """Real-site HTML forced through the generic schema.org (JSON-LD) path.
+
+    Regression net for beautifulsoup4/extruct bumps (see the pins in
+    scripts/requirements.txt): AbstractScraper JSON-LD parsing on real HTML must
+    keep yielding the core recipe fields.
+    """
+
+    @pytest.mark.parametrize("fixture,title_word", [
+        ("quitoque_fr.html", "tartare"),
+        ("hellofresh_fr.html", "kefta"),
+    ])
+    def test_json_ld_core_fields_parsed(self, fixture, title_word):
+        result = _scrape_fixture(fixture, UNSUPPORTED_URL)
+        data = result["data"]
+
+        assert result["success"] is True
+        assert data["host"] == "unsupported-host.example"
+        assert title_word in data["title"].lower()
+        assert len(data["ingredients"]) > 0
+        assert len(data["instructionsList"]) > 0
+        assert data["yields"] == "2 servings"
+        assert data["image"].startswith("http")
+
+    def test_quitoque_ingredients_and_time(self):
+        data = _scrape_fixture("quitoque_fr.html", UNSUPPORTED_URL)["data"]
+
+        assert "150 g lentilles blondes (Bio)" in data["ingredients"]
+        assert data["totalTime"] == 30
 
 
 class TestModuleInitialization:
