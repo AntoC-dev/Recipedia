@@ -26,6 +26,7 @@ import { useRecipeOCR } from '@hooks/useRecipeOCR';
 import { useRandomTagSuggestions } from '@hooks/useRandomTagSuggestions';
 import { useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { useI18n } from '@utils/i18n';
+import { ocrLogger } from '@utils/logger';
 import { LoadingOverlay } from '@components/dialogs/LoadingOverlay';
 import { FeatureHookSlotProps, RecipeFormScreen } from '@screens/recipe/RecipeFormScreen';
 
@@ -54,7 +55,9 @@ function OcrFeatureSlot({ setOnSelectOcrField }: FeatureHookSlotProps) {
           if (status === 'empty') showSnackbar(t('ocrFeedback.noData'));
           else if (status === 'mismatch') showSnackbar(t('ocrFeedback.quantityMismatch'));
         })
-        .catch(() => undefined);
+        .catch(error => {
+          ocrLogger.warn('OCR field fill rejected', { target, error: String(error) });
+        });
     });
   }, [setOnSelectOcrField, ocr, showSnackbar, t]);
 
