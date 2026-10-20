@@ -4,10 +4,10 @@ A React Native recipe management app built with Expo — add, search, and manage
 
 <div align="center">
 
-[![Version](https://img.shields.io/badge/version-2.38.4-blue.svg)](package.json)
-[![React Native](https://img.shields.io/badge/React%20Native-0.83.2-blue.svg)](https://reactnative.dev/)
-[![Expo](https://img.shields.io/badge/Expo-~55.0.9-black.svg)](https://expo.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-~5.9.2-blue.svg)](https://www.typescriptlang.org/)
+[![Version](https://img.shields.io/github/package-json/v/AntoC-dev/Recipedia/main?label=version&color=blue)](package.json)
+[![React Native](https://img.shields.io/github/package-json/dependency-version/AntoC-dev/Recipedia/react-native/main?label=React%20Native&color=blue)](https://reactnative.dev/)
+[![Expo](https://img.shields.io/github/package-json/dependency-version/AntoC-dev/Recipedia/expo/main?label=Expo&color=black)](https://expo.dev/)
+[![TypeScript](https://img.shields.io/github/package-json/dependency-version/AntoC-dev/Recipedia/dev/typescript/main?label=TypeScript&color=blue)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 </div>
