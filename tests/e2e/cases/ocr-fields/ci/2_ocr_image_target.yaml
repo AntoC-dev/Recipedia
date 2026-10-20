@@ -1,4 +1,4 @@
-name: "3 - OCR Quitoque V3 Camera Flow"
+name: "2 - OCR Image Target Flow"
 appId: "com.recipedia"
 tags:
   - ocr
@@ -13,5 +13,5 @@ tags:
           file: "../../../flows/setupTest.yaml"
           label: "Setup - Launch app and wait for ready"
       - runFlow:
-          file: "../3_ocr_quitoque_v3.yaml"
-          label: "Run 3 - OCR Quitoque V3 Camera Flow"
+          file: "../2_ocr_image_target.yaml"
+          label: "Run 2 - OCR Image Target Flow"

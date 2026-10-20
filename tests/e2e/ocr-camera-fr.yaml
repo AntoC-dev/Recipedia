@@ -1,0 +1,13 @@
+platform:
+  ios:
+    disableAnimations: true
+  android:
+    disableAnimations: true
+
+flows:
+  - cases/ocr-camera-fr/ci/*
+
+executionOrder:
+  flowsOrder:
+    - "1 - OCR Quitoque V3 Camera Flow"
+    - "2 - OCR Quitoque V2 French Flow"

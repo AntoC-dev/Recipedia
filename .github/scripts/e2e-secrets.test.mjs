@@ -13,10 +13,19 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { loadSuites } from './e2e-matrix.mjs';
+
 const SCRIPTS_DIR = dirname(fileURLToPath(import.meta.url));
 const USERNAME = 'ci-bot@example.com';
 const PASSWORD = 'p4ssw0rd-secret';
 const TRICKY = 'p@ss"wo\\rd&<123>';
+
+const credentialSuites = readFileSync(join(SCRIPTS_DIR, 'e2e-credentials.sh'), 'utf8')
+  .match(/E2E_CREDENTIAL_SUITES="([^"]*)"/)[1]
+  .split(' ');
+const nonCredentialSuites = loadSuites(join(SCRIPTS_DIR, '..', 'e2e-suites.json'))
+  .map(suite => suite.name)
+  .filter(name => !credentialSuites.includes(name));
 
 const credentials = { QUITOQUE_USERNAME: USERNAME, QUITOQUE_PASSWORD: PASSWORD };
 const noCredentials = { QUITOQUE_USERNAME: '', QUITOQUE_PASSWORD: '' };
@@ -101,7 +110,7 @@ for (const script of ['run-e2e-ios.sh', 'run-e2e-android.sh']) {
   });
 
   test(`${script} withholds credentials from suites that never read them`, () => {
-    for (const suite of ['app-init', 'bulk-import', 'ocr']) {
+    for (const suite of nonCredentialSuites) {
       const argv = maestroArgv(script, suite);
 
       assert.ok(!argv.includes('-e'), `${suite} received -e`);

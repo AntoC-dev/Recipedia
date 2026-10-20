@@ -1,0 +1,15 @@
+platform:
+  ios:
+    disableAnimations: true
+  android:
+    disableAnimations: true
+
+flows:
+  - cases/ocr-fields/ci/*
+
+executionOrder:
+  flowsOrder:
+    - "1 - OCR Inline Field Errors Flow"
+    - "2 - OCR Image Target Flow"
+    - "3 - OCR Feedback Snackbar Flow"
+    - "4 - OCR Use Similar Ingredient Flow"

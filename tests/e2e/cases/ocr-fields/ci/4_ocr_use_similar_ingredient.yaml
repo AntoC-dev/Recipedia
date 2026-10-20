@@ -1,4 +1,4 @@
-name: "5 - OCR Inline Field Errors Flow"
+name: "4 - OCR Use Similar Ingredient Flow"
 appId: "com.recipedia"
 tags:
   - ocr
@@ -13,5 +13,5 @@ tags:
           file: "../../../flows/setupTest.yaml"
           label: "Setup - Launch app and wait for ready"
       - runFlow:
-          file: "../5_ocr_inline_field_errors.yaml"
-          label: "Run 5 - OCR Inline Field Errors Flow"
+          file: "../4_ocr_use_similar_ingredient.yaml"
+          label: "Run 4 - OCR Use Similar Ingredient Flow"
