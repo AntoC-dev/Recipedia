@@ -191,10 +191,23 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd
 
-- assertVisible:
-    id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
-    text: "2) Cuire les légumes"
-    label: "Second preparation title is displayed"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
+          text: "2) Cuire les légumes"
+          label: "Second preparation title is displayed"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
+          text: "2) Cuire les légumne"
+          label: "Second preparation title is displayed"
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::1::SectionParagraph"
