@@ -90,6 +90,25 @@ module.exports = defineConfig([
         },
     },
 
+    // OCR recognition internals are reachable only through OCR.tsx
+    {
+        files: ['src/**/*.{ts,tsx,js,jsx}'],
+        ignores: ['src/utils/OCR.tsx'],
+        rules: {
+            'no-restricted-imports': [
+                'error',
+                {
+                    patterns: [
+                        {
+                            group: ['@utils/OcrRecognition', '**/OcrRecognition'],
+                            message: 'Use the OCR functions exported by @utils/OCR instead.',
+                        },
+                    ],
+                },
+            ],
+        },
+    },
+
     // Test files configuration - follow same rules as main code with minimal exceptions
     {
         files: ['tests/**/*.{ts,tsx,js,jsx}', '**/*.test.{ts,tsx,js,jsx}'],

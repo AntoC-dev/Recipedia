@@ -50,14 +50,12 @@ import {
   startsWithLetter,
 } from '@utils/TextParsing';
 
-import TextRecognition, {
-  TextBlock,
-  TextRecognitionResult,
-} from '@react-native-ml-kit/text-recognition';
+import { TextBlock, TextRecognitionResult } from '@react-native-ml-kit/text-recognition';
 import { scaleQuantityForPersons } from '@utils/Quantity';
 import { isArrayOfNumber, isArrayOfType, isString } from '@utils/TypeCheckingFunctions';
 import { defaultValueNumber } from '@utils/Constants';
 import { ocrLogger } from '@utils/logger';
+import { readImageText } from '@utils/OcrRecognition';
 import i18n, { DEFAULT_LANGUAGE } from '@utils/i18n';
 import { buildPhraseIndex, FuzzyIndex, fuzzyHasMatch } from '@utils/FuzzyIndex';
 import {
@@ -243,8 +241,13 @@ export function computeOcrFieldStatus(
  */
 export async function recognizeText(imageUri: string, fieldName: recipeColumnsNames) {
   try {
-    const normalizedUri = imageUri.startsWith('file://') ? imageUri : `file://${imageUri}`;
-    const ocr = await TextRecognition.recognize(normalizedUri);
+    ocrLogger.debug('recognizeText started', { imageUri, fieldName });
+    const ocr = await readImageText(imageUri);
+    ocrLogger.debug('recognizeText read image', {
+      fieldName,
+      blockCount: ocr.blocks.length,
+      textLength: ocr.text.length,
+    });
     switch (fieldName) {
       // TODO should be really use OCR for these ?
       case recipeColumnsNames.time:
@@ -1423,8 +1426,7 @@ export async function recognizeIngredientNames(
   imageUri: string
 ): Promise<{ name: string; unit: string }[]> {
   try {
-    const normalizedUri = imageUri.startsWith('file://') ? imageUri : `file://${imageUri}`;
-    const ocr = await TextRecognition.recognize(normalizedUri);
+    const ocr = await readImageText(imageUri);
     ocrLogger.debug('Ingredient names OCR blocks', {
       blockCount: ocr.blocks.length,
       blocks: ocr.blocks.map((b, i) => ({
@@ -1461,8 +1463,7 @@ export async function recognizeIngredientNames(
  */
 export async function recognizeIngredientQuantities(imageUri: string): Promise<string[]> {
   try {
-    const normalizedUri = imageUri.startsWith('file://') ? imageUri : `file://${imageUri}`;
-    const ocr = await TextRecognition.recognize(normalizedUri);
+    const ocr = await readImageText(imageUri);
     ocrLogger.debug('Ingredient quantities OCR blocks', {
       blockCount: ocr.blocks.length,
       blocks: ocr.blocks.map((b, i) => ({
