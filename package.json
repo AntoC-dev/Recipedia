@@ -64,7 +64,8 @@
     },
     "install": {
       "exclude": [
-        "react-native-svg"
+        "react-native-svg",
+        "react-native-keyboard-controller"
       ]
     }
   },
