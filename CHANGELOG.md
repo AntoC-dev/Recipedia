@@ -1,3 +1,11 @@
+## [2.54.3](https://github.com/AntoC-dev/Recipedia/compare/v2.54.2...v2.54.3) (2026-10-20)
+
+### Bug Fixes
+
+* **ocr:** resolve ingredient placeholder in place on validation ([d35876d](https://github.com/AntoC-dev/Recipedia/commit/d35876db0302ce2fcf9d3bf43987079a3998be1d)), closes [#596](https://github.com/AntoC-dev/Recipedia/issues/596)
+* **ocr:** resolve ingredient placeholder in place on validation ([#650](https://github.com/AntoC-dev/Recipedia/issues/650)) ([6ccc13a](https://github.com/AntoC-dev/Recipedia/commit/6ccc13abbe92fb06819f1e153b3e46c6aeed608e))
+* **scraper:** match validated ingredient rows by raw name ([c23b34a](https://github.com/AntoC-dev/Recipedia/commit/c23b34a770fb22ecaafbd60793200b01170a6db5)), closes [#596](https://github.com/AntoC-dev/Recipedia/issues/596)
+
 ## [2.54.2](https://github.com/AntoC-dev/Recipedia/compare/v2.54.1...v2.54.2) (2026-10-19)
 
 ### Bug Fixes
