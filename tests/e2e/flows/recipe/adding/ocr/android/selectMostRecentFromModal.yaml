@@ -1,22 +1,9 @@
 appId: "com.recipedia"
 ---
-# Selects most recent image from Android gallery and app modal using counter
-# Uses modalImageCounter to select the correct image from app modal
-# TODO: Implement iOS version in ../iOS/selectMostRecentFromModal.yaml
-
-- tapOn:
-    id: "Modal::Gallery::RoundButton"
-    label: "Open gallery for OCR"
-
 - runFlow:
-    file: selectFromGallery.yaml
-    label: "Select from Android gallery and validate"
-
-- tapOn:
-    id: "Modal::List#${output.modalImageCounter}::SquareButton::Image"
-    label: "Select picture ${output.modalImageCounter} from app modal"
+    file: openMostRecentFromModal.yaml
+    label: "Open the most recent picture from the app modal in the cropper"
 
 - runFlow:
     file: validateWithoutCropping.yaml
-
-- evalScript: ${output.modalImageCounter = output.modalImageCounter + 1}
+    label: "Validate selected photo"

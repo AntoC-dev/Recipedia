@@ -1,0 +1,15 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "Modal::Gallery::RoundButton"
+    label: "Open gallery for OCR"
+
+- runFlow:
+    file: selectFromGallery.yaml
+    label: "Select from Android gallery and validate"
+
+- tapOn:
+    id: "Modal::List#${output.modalImageCounter}::SquareButton::Image"
+    label: "Select picture ${output.modalImageCounter} from app modal"
+
+- evalScript: ${output.modalImageCounter = output.modalImageCounter + 1}

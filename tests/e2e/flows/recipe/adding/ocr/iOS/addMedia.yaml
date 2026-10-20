@@ -170,6 +170,14 @@ appId: "com.recipedia"
 
 - runFlow:
     when:
+      true: ${RECIPE_NAME == "quitoqueV2" && FIELD_NAME == "titleRotated"}
+    commands:
+      - addMedia:
+          - "../../../../../../assets/pouletSatay/titleRotated.jpg"
+    label: "Add quitoqueV2 rotated title to iOS Photos"
+
+- runFlow:
+    when:
       true: ${RECIPE_NAME == "quitoqueV3" && FIELD_NAME == "image"}
     commands:
       - addMedia:

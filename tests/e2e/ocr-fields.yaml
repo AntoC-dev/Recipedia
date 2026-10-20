@@ -13,3 +13,4 @@ executionOrder:
     - "2 - OCR Image Target Flow"
     - "3 - OCR Feedback Snackbar Flow"
     - "4 - OCR Use Similar Ingredient Flow"
+    - "5 - OCR Crop Rotate Flow"
