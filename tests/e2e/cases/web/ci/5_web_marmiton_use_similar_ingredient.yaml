@@ -1,0 +1,14 @@
+name: "5 - Web Marmiton Use Similar Ingredient Flow"
+appId: "com.recipedia"
+tags:
+  - web
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../5_web_marmiton_use_similar_ingredient.yaml"
+          label: "Run 5 - Web Marmiton Use Similar Ingredient Flow"

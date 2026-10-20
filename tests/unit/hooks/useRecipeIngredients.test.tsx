@@ -410,6 +410,31 @@ describe('useRecipeIngredients', () => {
       loggerWarnSpy.mockRestore();
     });
 
+    const poisChiche = {
+      id: 99,
+      name: 'Pois chiche',
+      type: ingredientType.legumes,
+      season: [],
+      quantity: '',
+      unit: 'g',
+    };
+
+    const renderWithRows = async (rows: object[]) => {
+      const recipe: recipeTableElement = {
+        ...recipeWithIngredients,
+        ingredients: rows as never,
+      };
+      const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipe));
+      const { result } = renderHook(
+        () => ({ ingredients: useRecipeIngredients(), form: useRecipeForm() }),
+        { wrapper }
+      );
+      await waitFor(() => {
+        expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(rows.length);
+      });
+      return result;
+    };
+
     describe('editIngredients', () => {
       test('updates quantity only without triggering validation', async () => {
         const wrapper = createIngredientsWrapper(
@@ -1851,6 +1876,38 @@ describe('useRecipeIngredients', () => {
         expect(result.current.form.form.getValues('recipeIngredients')[2]!.name).toBe('Milk');
       });
 
+      test('matches rows by originalName when the validated name differs', async () => {
+        const result = await renderWithRows([
+          { name: 'Pois chiches', quantity: '400', unit: 'g', note: 'drained' },
+          { name: 'Salt', quantity: '1', unit: 'tsp' },
+          { name: 'pois chiches', quantity: '50', unit: 'g' },
+        ]);
+
+        act(() => {
+          result.current.ingredients.replaceAllMatchingFormIngredients(poisChiche, 'Pois chiches');
+        });
+
+        const ingredients = result.current.form.form.getValues('recipeIngredients');
+        expect(ingredients.map(i => i.name)).toEqual(['Pois chiche', 'Salt', 'Pois chiche']);
+        expect(ingredients[0]).toMatchObject({ id: 99, quantity: '400', note: 'drained' });
+        expect(ingredients[2]).toMatchObject({ id: 99, quantity: '50' });
+      });
+
+      test('ignores rows named like the validated ingredient when originalName is given', async () => {
+        const result = await renderWithRows([
+          { name: 'Pois chiche', quantity: '10', unit: 'g' },
+          { name: 'Pois chiches', quantity: '400', unit: 'g' },
+        ]);
+
+        act(() => {
+          result.current.ingredients.replaceAllMatchingFormIngredients(poisChiche, 'Pois chiches');
+        });
+
+        const ingredients = result.current.form.form.getValues('recipeIngredients');
+        expect(ingredients[0]!.id).toBeUndefined();
+        expect(ingredients[1]).toMatchObject({ id: 99, name: 'Pois chiche', quantity: '400' });
+      });
+
       test('preserves object identity for non-matching rows so UI subscribers do not re-render', async () => {
         const recipeWithDuplicates: recipeTableElement = {
           ...recipeWithIngredients,
@@ -1892,6 +1949,90 @@ describe('useRecipeIngredients', () => {
         const saltAfter = result.current.fieldArray.fields[1];
         expect(saltAfter!.id).toBe(saltBefore!.id);
         expect(saltAfter!.name).toBe('Salt');
+      });
+    });
+
+    describe('resolvePlaceholderIngredient', () => {
+      test('replaces the placeholder in place keeping its quantity and note', async () => {
+        const result = await renderWithRows([
+          { name: 'Salt', quantity: '1', unit: 'tsp' },
+          { name: 'Pois chiches', quantity: '400', unit: 'g', note: 'drained' },
+          { name: 'Rice', quantity: '200', unit: 'g' },
+        ]);
+
+        act(() => {
+          result.current.ingredients.resolvePlaceholderIngredient('Pois chiches', {
+            ...poisChiche,
+            quantity: '50',
+          });
+        });
+
+        const rows = result.current.form.form.getValues('recipeIngredients');
+        expect(rows.map(i => i.name)).toEqual(['Salt', 'Pois chiche', 'Rice']);
+        expect(rows[1]).toMatchObject({ id: 99, quantity: '400', note: 'drained' });
+      });
+
+      test('uses the validated quantity when the placeholder has none', async () => {
+        const result = await renderWithRows([{ name: 'Pois chiches', quantity: '', unit: 'g' }]);
+
+        act(() => {
+          result.current.ingredients.resolvePlaceholderIngredient('Pois chiches', {
+            ...poisChiche,
+            quantity: '50',
+          });
+        });
+
+        expect(result.current.form.form.getValues('recipeIngredients')[0]).toMatchObject({
+          id: 99,
+          quantity: '50',
+        });
+      });
+
+      test('sums quantities when merging into a row with the same unit', async () => {
+        const result = await renderWithRows([
+          { name: 'Pois chiche', quantity: '100', unit: 'g' },
+          { name: 'Pois chiches', quantity: '50', unit: 'g' },
+        ]);
+
+        act(() => {
+          result.current.ingredients.resolvePlaceholderIngredient('Pois chiches', poisChiche);
+        });
+
+        const rows = result.current.form.form.getValues('recipeIngredients');
+        expect(rows).toHaveLength(1);
+        expect(rows[0]).toMatchObject({ name: 'Pois chiche', quantity: '150' });
+      });
+
+      test('keeps the lower slot and overwrites the duplicate when units differ', async () => {
+        const result = await renderWithRows([
+          { name: 'Pois chiches', quantity: '2', unit: 'kg' },
+          { name: 'Salt', quantity: '1', unit: 'tsp' },
+          { name: 'Pois chiche', quantity: '100', unit: 'g' },
+        ]);
+
+        act(() => {
+          result.current.ingredients.resolvePlaceholderIngredient('Pois chiches', {
+            ...poisChiche,
+            unit: 'kg',
+          });
+        });
+
+        const rows = result.current.form.form.getValues('recipeIngredients');
+        expect(rows.map(i => [i.name, i.quantity, i.unit])).toEqual([
+          ['Pois chiche', '2', 'kg'],
+          ['Salt', '1', 'tsp'],
+        ]);
+      });
+
+      test('appends the validated ingredient when originalName is undefined', async () => {
+        const result = await renderWithRows([{ name: 'Salt', quantity: '1', unit: 'tsp' }]);
+
+        act(() => {
+          result.current.ingredients.resolvePlaceholderIngredient(undefined, poisChiche);
+        });
+
+        const names = result.current.form.form.getValues('recipeIngredients').map(i => i.name);
+        expect(names).toEqual(['Salt', 'Pois chiche']);
       });
     });
 

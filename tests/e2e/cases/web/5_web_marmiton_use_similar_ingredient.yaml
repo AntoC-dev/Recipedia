@@ -1,0 +1,70 @@
+name: "5 - Web Marmiton Use Similar Ingredient Flow"
+appId: "com.recipedia"
+tags:
+  - web
+---
+- runFlow:
+    file: "../../flows/parameters/language/switchToEnglish.yaml"
+    label: "Setup - Ensure English language"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Setup - Return to Home screen"
+
+- runFlow:
+    file: "../../flows/recipe/adding/web/openUrlDialog.yaml"
+    label: "Action - Open URL dialog"
+
+- runFlow:
+    file: "../../flows/recipe/adding/web/submitUrl.yaml"
+    env:
+      RECIPE_URL: "https://www.marmiton.org/recettes/recette_hamburger-maison_32672.aspx"
+    label: "Action - Submit Marmiton URL"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipeValidation::ValidationQueue::Tag::SimilarityDialog::Title"
+    timeout: 30000
+    label: "Wait for tag validation dialog"
+
+- runFlow:
+    file: "../../flows/recipe/validation/validateAllTags.yaml"
+    env:
+      PREFIX: "RecipeValidation"
+    label: "Action - Add all tags"
+
+- repeat:
+    times: 6
+    commands:
+      - runFlow:
+          file: "../../flows/recipe/validation/validateOneIngredient.yaml"
+          env:
+            PREFIX: "RecipeValidation"
+          label: "Action - Add one ingredient queued before tomate"
+
+- runFlow:
+    file: "../../flows/recipe/ingredients/useFuzzyIngredient.yaml"
+    env:
+      NEW_ITEM_NAME: "tomate"
+    label: "Action - Use the similar ingredient for tomate"
+
+- runFlow:
+    file: "../../flows/recipe/validation/validateAllIngredients.yaml"
+    env:
+      PREFIX: "RecipeValidation"
+    label: "Action - Add the remaining ingredients"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "RecipeValidation::ValidationQueue::Ingredient::SimilarityDialog::Title"
+    timeout: 10000
+    label: "Wait for all validation dialogs to close"
+
+- runFlow:
+    file: "../../asserts/recipe/common/assertIngredientReplacedInPlace.yaml"
+    env:
+      INGREDIENT_INDEX: "4"
+      INGREDIENT_NAME: "Tomato Sauce"
+      LAST_INDEX: "7"
+      INGREDIENT_COUNT: "8"
+    label: "Assert - tomate row became Tomato Sauce, no extra row"

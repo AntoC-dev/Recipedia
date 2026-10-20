@@ -9,3 +9,10 @@ appId: "com.recipedia"
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Ingredient::SimilarityDialog::UseButton"
     label: "Use the existing ingredient"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "RecipeValidation::ValidationQueue::Ingredient::SimilarityDialog::Content"
+      text: "You're adding \"${NEW_ITEM_NAME}\".*"
+    timeout: 10000
+    label: "Wait for the fuzzy alert of ${NEW_ITEM_NAME} to close"
