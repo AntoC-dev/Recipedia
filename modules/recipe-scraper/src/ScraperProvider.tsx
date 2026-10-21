@@ -8,7 +8,7 @@
  */
 
 import React, {createContext, useContext, useEffect, useRef, useState} from 'react';
-import {InteractionManager, Platform} from 'react-native';
+import {Platform} from 'react-native';
 import {PyodideWebView} from './ios/PyodideWebView';
 import {AuthWebView} from './ios/AuthWebView';
 import {AuthBridge} from './ios/AuthBridge';
@@ -39,7 +39,7 @@ export function ScraperProvider({children}: { children: React.ReactNode }) {
     const [initError, setInitError] = useState<string | null>(null);
 
     const warmup = () => {
-        InteractionManager.runAfterInteractions(() => setWarmedUp(true));
+        requestIdleCallback(() => setWarmedUp(true));
     };
 
     useEffect(() => {

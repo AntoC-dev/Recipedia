@@ -1,5 +1,5 @@
 import React from 'react';
-import { InteractionManager, Platform, Text } from 'react-native';
+import { Platform, Text } from 'react-native';
 import { render, renderHook, act, waitFor } from '@testing-library/react-native';
 
 import { ScraperProvider, useScraper } from '@app/modules/recipe-scraper/src/ScraperProvider';
@@ -89,8 +89,9 @@ describe('ScraperProvider', () => {
     expect(queryByTestId('pyodide-webview')).toBeNull();
   });
 
-  it('defers warmup until interactions settle', () => {
+  it('defers warmup until the JS thread is idle', () => {
     Object.defineProperty(Platform, 'OS', { value: 'ios', configurable: true });
+    const requestIdleCallbackSpy = jest.spyOn(global, 'requestIdleCallback');
 
     render(
       <ScraperProvider>
@@ -98,7 +99,8 @@ describe('ScraperProvider', () => {
       </ScraperProvider>
     );
 
-    expect(InteractionManager.runAfterInteractions).toHaveBeenCalled();
+    expect(requestIdleCallbackSpy).toHaveBeenCalledWith(expect.any(Function));
+    requestIdleCallbackSpy.mockRestore();
   });
 
   it('mounts the PyodideWebView on iOS once useScraper is consumed', () => {

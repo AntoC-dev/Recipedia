@@ -14,9 +14,6 @@ jest.mock('@utils/FileGestion', () =>
 jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 jest.mock('@utils/settings', () => require('@mocks/utils/settings-mock').settingsMock());
 jest.mock('@utils/firstLaunch', () => require('@mocks/utils/firstLaunch-mock').firstLaunchMock());
-jest.mock('react-native/Libraries/Interaction/InteractionManager', () =>
-  require('@mocks/deps/InteractionManager-mock').interactionManagerMock()
-);
 
 global.requestIdleCallback = (callback, options) => {
   callback({ didTimeout: false, timeRemaining: () => options?.timeout ?? 0 });

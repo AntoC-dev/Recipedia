@@ -8,7 +8,7 @@
  * Gate expensive subtrees (long lists, form-heavy dialogs) behind the returned
  * flag so the opening frame — a navigation transition or a dialog entrance —
  * paints immediately and the heavy work reconciles right after, without
- * blocking the animation. Unlike `InteractionManager.runAfterInteractions`,
+ * blocking the animation. Unlike `requestIdleCallback` or timer-based deferral,
  * this stays inside React's concurrent model: the deferred render is
  * interruptible and needs no timers or manual cleanup.
  *
