@@ -1,0 +1,13 @@
+platform:
+  ios:
+    disableAnimations: true
+  android:
+    disableAnimations: true
+
+flows:
+  - cases/ocr-gallery/ci/*
+
+executionOrder:
+  flowsOrder:
+    - "1 - OCR HelloFresh Gallery Flow"
+    - "2 - OCR Quitoque V1 Gallery Flow"

@@ -1,0 +1,53 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "RecipeTitle::OpenModal::RoundButton"
+    label: "Tap on OCR button of recipe title"
+
+- runFlow:
+    file: ../iOS/addMedia.yaml
+    env:
+      FIELD_NAME: titleRotated
+    label: "Add the rotated title photo"
+    when:
+      platform: iOS
+- runFlow:
+    file: ../android/addMedia.yaml
+    env:
+      FIELD_NAME: titleRotated
+    label: "Add the rotated title photo"
+    when:
+      platform: Android
+
+- runFlow:
+    file: ../iOS/selectRotatedMostRecentFromModal.yaml
+    label: "Select title from modal, rotate it upright in the cropper and validate"
+    when:
+      platform: iOS
+- runFlow:
+    file: ../android/selectRotatedMostRecentFromModal.yaml
+    label: "Select title from modal, rotate it upright in the cropper and validate"
+    when:
+      platform: Android
+
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - extendedWaitUntil:
+          visible:
+            id: "RecipeTitle::CustomTextInput"
+            text: "POULET SAUCE SATAY \\(CACAHUETES ET LAIT DE COCO\\)"
+          timeout: 60000
+          label: "Wait for the recognised title to fill the field"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - extendedWaitUntil:
+          visible:
+            id: "RecipeTitle::CustomTextInput"
+            text: "POULET SAUCE SATAY \\(CACAHUÈTES ET LAIT DE COCO\\)"
+          timeout: 60000
+          label: "Wait for the recognised title to fill the field"

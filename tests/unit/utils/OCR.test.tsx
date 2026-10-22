@@ -13,6 +13,8 @@ import TextRecognition, {
   TextRecognitionResult,
 } from '@react-native-ml-kit/text-recognition';
 import i18n from '@utils/i18n';
+import { mockImageRef } from '@mocks/deps/expo-image-manipulator-mock';
+import { buildBlocksResult, buildResult } from '@data/ocrMocks/builders';
 
 jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 
@@ -661,6 +663,38 @@ describe('OCR Utility Functions', () => {
         const received = await recognizeText(uriForOCR, recipeColumnsNames.preparation);
 
         expect(received).toEqual(expectedPreparationHelloFresh);
+      });
+    });
+
+    describe('on recognizeText through the strip path', () => {
+      const sidewaysFirstPass = buildResult([{ text: 'HHH', top: 0, height: 150, sideways: true }]);
+
+      test('keeps the lines of a step in one block so the title and description stay together', async () => {
+        (mockImageRef.saveAsync as jest.Mock).mockResolvedValueOnce({
+          uri: 'file://steps.png',
+          width: 200,
+          height: 300,
+        });
+        mockRecognize
+          .mockResolvedValueOnce(sidewaysFirstPass)
+          .mockResolvedValueOnce(
+            buildBlocksResult([
+              [
+                { text: '1. Cuire les pâtes', top: 20, height: 20, width: 150 },
+                { text: 'Dans une casserole', top: 50, height: 20, width: 150 },
+              ],
+            ])
+          )
+          .mockResolvedValueOnce(
+            buildBlocksResult([[{ text: '2. Servir chaud', top: 100, height: 20, width: 150 }]])
+          );
+
+        const received = await recognizeText(uriForOCR, recipeColumnsNames.preparation);
+
+        expect(received).toEqual([
+          { title: 'Cuire les pâtes', description: 'dans une casserole' },
+          { title: 'Servir chaud', description: '' },
+        ]);
       });
     });
 

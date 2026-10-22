@@ -1,4 +1,4 @@
-name: "4 - OCR Quitoque V2 French Flow"
+name: "3 - OCR Feedback Snackbar Flow"
 appId: "com.recipedia"
 tags:
   - ocr
@@ -13,5 +13,5 @@ tags:
           file: "../../../flows/setupTest.yaml"
           label: "Setup - Launch app and wait for ready"
       - runFlow:
-          file: "../4_ocr_quitoque_v2.yaml"
-          label: "Run 4 - OCR Quitoque V2 French Flow"
+          file: "../3_ocr_feedback_snackbar.yaml"
+          label: "Run 3 - OCR Feedback Snackbar Flow"

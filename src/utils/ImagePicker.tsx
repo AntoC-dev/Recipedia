@@ -30,10 +30,11 @@
  * ```
  */
 
-import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
+import { Image, Platform } from 'react-native';
 import { openCamera, openCropper, openPicker } from 'react-native-image-crop-picker';
 import { MD3Colors } from 'react-native-paper/lib/typescript/types';
 import { uiLogger } from '@utils/logger';
+import { ImageSize } from '@utils/imageResize';
 
 /**
  * Creates image picker options with theme-appropriate colors
@@ -61,6 +62,7 @@ function createImageOptionsWithTheme(themeColors: MD3Colors) {
     showCropGuidelines: true,
     showCropFrame: true,
     enableRotationGesture: true,
+    cropperRotateButtonsHidden: false,
     compressImageQuality: 1,
     cropperStatusBarColor: statusBarColor,
     cropperToolbarColor: backgroundColor,
@@ -68,9 +70,23 @@ function createImageOptionsWithTheme(themeColors: MD3Colors) {
     cropperCircleOverlay: false,
     useFrontCamera: false,
     includeExif: true,
-    hideBottomControls: true,
+    hideBottomControls: false,
     waitAnimationEnd: true,
   };
+}
+
+async function readSourceSize(uri: string): Promise<ImageSize | undefined> {
+  try {
+    const size = await Image.getSize(uri);
+    uiLogger.debug('cropImage: source size read', { uri, ...size });
+    return size;
+  } catch (error) {
+    uiLogger.warn('cropImage: cannot read source size, opening cropper without a box', {
+      uri,
+      error: String(error),
+    });
+    return undefined;
+  }
 }
 
 /**
@@ -104,6 +120,11 @@ export async function pickImage(themeColors: MD3Colors): Promise<string> {
       mediaType: 'photo',
       cropping: false,
     });
+    uiLogger.debug('pickImage: image picked', {
+      path: pickResult.path,
+      width: pickResult.width,
+      height: pickResult.height,
+    });
     return pickResult.path;
   } catch (error) {
     uiLogger.debug(`pickImage: user cancelled ${error}`);
@@ -117,14 +138,19 @@ export async function pickImage(themeColors: MD3Colors): Promise<string> {
  * Allows users to manually crop an existing image file. Useful for editing
  * images that have already been selected or captured.
  *
- * Uses `openCropper` for the interactive UI, but applies the resulting
- * `cropRect` (in original image pixel coordinates) directly to the source
- * file via `expo-image-manipulator`. This bypasses RCTImageLoader's
- * subsampling so OCR receives full-resolution pixels from the crop region.
- * Falls back to `cropResult.path` when `cropRect` is unavailable.
+ * Android: returns the cropper output directly, which uCrop already writes at full
+ * resolution with any rotation applied.
+ *
+ * iOS: react-native-image-crop-picker always scales the crop to fit `width` x `height`
+ * (200x200 by default). Requesting a box equal to the source size means an untouched crop is
+ * returned with its exact pixels, the cropper opens on the full image (the box also sets its
+ * initial aspect), a partial crop is upscaled once to the source frame, a 90-degree rotated crop
+ * is shrunk to fit, and memory never exceeds the source size. When the source size cannot be
+ * read, the cropper opens without a box and the output may have a lower resolution.
  *
  * @param uri - File path or URI of the image to crop
  * @param themeColors - React Native Paper theme colors for UI consistency
+ * @param knownSize - Oriented pixel size of the image when already known, skips reading it on iOS
  * @returns Promise resolving to the file path of cropped image, or empty string if cancelled
  *
  * @example
@@ -141,22 +167,27 @@ export async function pickImage(themeColors: MD3Colors): Promise<string> {
  * }
  * ```
  */
-export async function cropImage(uri: string, themeColors: MD3Colors): Promise<string> {
+export async function cropImage(
+  uri: string,
+  themeColors: MD3Colors,
+  knownSize?: ImageSize
+): Promise<string> {
   try {
+    uiLogger.debug('cropImage: opening cropper', { uri, platform: Platform.OS });
+    const sourceSize =
+      Platform.OS === 'ios' ? (knownSize ?? (await readSourceSize(uri))) : undefined;
     const cropResult = await openCropper({
       ...createImageOptionsWithTheme(themeColors),
       mediaType: 'photo',
       path: uri,
+      ...sourceSize,
     });
-    if (!cropResult.cropRect) {
-      return cropResult.path;
-    }
-    const { x: originX, y: originY, width, height } = cropResult.cropRect;
-    const context = ImageManipulator.manipulate(uri);
-    context.crop({ originX, originY, width, height });
-    const imageRef = await context.renderAsync();
-    const result = await imageRef.saveAsync({ format: SaveFormat.JPEG, compress: 1 });
-    return result.uri;
+    uiLogger.debug('cropImage: image cropped', {
+      path: cropResult.path,
+      width: cropResult.width,
+      height: cropResult.height,
+    });
+    return cropResult.path;
   } catch (error) {
     uiLogger.debug(`cropImage: user cancelled ${error}`);
     return '';
@@ -166,8 +197,9 @@ export async function cropImage(uri: string, themeColors: MD3Colors): Promise<st
 /**
  * Opens the device's camera to capture a new photo
  *
- * Launches the camera interface allowing users to take a new photo with built-in
- * cropping functionality. Returns the file path of the captured and cropped image.
+ * Captures an uncropped photo, then crops it through {@link cropImage} so the result keeps
+ * full resolution (the native cropper would otherwise shrink it on iOS). Returns the file path
+ * of the cropped image.
  *
  * @param themeColors - React Native Paper theme colors for UI consistency
  * @returns Promise resolving to the file path of captured image, or empty string if cancelled
@@ -190,8 +222,17 @@ export async function takePhoto(themeColors: MD3Colors): Promise<string> {
     const cameraResult = await openCamera({
       ...createImageOptionsWithTheme(themeColors),
       mediaType: 'photo',
+      cropping: false,
     });
-    return cameraResult.path;
+    uiLogger.debug('takePhoto: photo captured', {
+      path: cameraResult.path,
+      width: cameraResult.width,
+      height: cameraResult.height,
+    });
+    return cropImage(cameraResult.path, themeColors, {
+      width: cameraResult.width,
+      height: cameraResult.height,
+    });
   } catch (error) {
     uiLogger.debug(`takePhoto: user cancelled ${error}`);
     return '';

@@ -41,7 +41,10 @@ maestro test cases/settings/ci/1_dark_mode.yaml    # one case, with CI retry
 
 Each suite has a config at the root of `tests/e2e/` listing its cases and their
 order. Configs point at `cases/{feature}/ci/*` so CI gets the retry wrappers;
-the originals in the parent directory are what you run locally.
+the originals in the parent directory are what you run locally. Case numbers
+restart at 1 in each `cases/{feature}/` directory, so a feature split across
+several suites (OCR) gets one directory per suite: `cases/ocr-gallery/`,
+`cases/ocr-camera-fr/`, `cases/ocr-fields/`.
 
 ```yaml
 # settings.yaml
@@ -63,7 +66,7 @@ executionOrder:
 | `recipe-create` / `recipe-edit` | Manual creation / editing                               |
 | `recipe-readonly`               | Read-only recipe screen                                 |
 | `ingredient-dialog`             | Ingredient dialog interactions                          |
-| `ocr`                           | OCR recipe creation (camera + gallery)                  |
+| `ocr-gallery` / `ocr-camera-fr` / `ocr-fields` | OCR recipe creation: gallery / camera + French / fields, crop, feedback |
 | `menu` / `shopping`             | Menu and shopping list                                  |
 | `settings`                      | Dark mode, language, season filter, default persons     |
 | `tags-db` / `ingredients-db`    | Tag and ingredient database management                  |
@@ -74,7 +77,9 @@ executionOrder:
 | `performance`                   | Flashlight measurement run                              |
 
 Adding a suite: create `{suite}.yaml`, list `cases/{feature}/ci/*`, add the
-suite to the matrices in `.github/workflows/build-test.yml`.
+suite to `.github/e2e-suites.json` (the single source for the Android and iOS
+matrices; flag it `requiresSecrets` if forks can't run it, `long` to schedule it
+first on iOS).
 
 ## Architecture
 

@@ -1,0 +1,22 @@
+appId: "com.recipedia"
+---
+- extendedWaitUntil:
+    visible:
+      text: "rotate left"
+    timeout: 30000
+    label: "Wait for the cropper rotate left button"
+
+- tapOn:
+    text: "rotate left"
+    label: "Rotate the cropped photo 90 degrees counterclockwise"
+
+- extendedWaitUntil:
+    visible:
+      text: "Reset"
+      enabled: true
+    timeout: 10000
+    label: "Wait until the cropper registers the rotation (Reset enabled)"
+
+- runFlow:
+    file: validateWithoutCropping.yaml
+    label: "Validate the rotated crop"

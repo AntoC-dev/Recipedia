@@ -1,41 +1,27 @@
 appId: "com.recipedia"
 ---
-# Verifies the quantity-mismatch feedback snackbar, cross-platform.
-#
-# Adds 2 empty ingredient rows, then scans the quantities image (reused
-# tajineMerguez/ingredients_quantities.jpeg, which holds 5 quantities). The
-# extracted quantity count never equals 2 — iOS reads all 5, Android ML Kit
-# under-reads to ~1 — so fillOneField returns "mismatch" and the root snackbar
-# surfaces (verified on both platforms). Only 2 rows are added: the fixed bottom
-# action bar obscures the add button once the list grows, so more rows cannot be
-# added reliably.
+- extendedWaitUntil:
+    notVisible:
+      id: "Recipe::OcrSnackbar"
+    timeout: 30000
+    label: "Wait for any previous snackbar to auto-dismiss"
+
 - waitForAnimationToEnd
 
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::AddButton::RoundButton"
-    direction: DOWN
-    speed: 40
-    centerElement: true
-    label: "Scroll to the add-ingredient button"
-
-- tapOn:
-    id: "RecipeIngredients::AddButton::RoundButton"
-    label: "Add first empty ingredient row"
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::AddButton::RoundButton"
-    direction: DOWN
-    speed: 40
-    centerElement: true
-    label: "Re-center the add-ingredient button"
-
-- tapOn:
-    id: "RecipeIngredients::AddButton::RoundButton"
-    label: "Add second empty ingredient row"
-- waitForAnimationToEnd
+- repeat:
+    times: ${ROWS_TO_ADD}
+    commands:
+      - scrollUntilVisible:
+          element:
+            id: "RecipeIngredients::AddButton::RoundButton"
+          direction: DOWN
+          speed: 40
+          centerElement: true
+          label: "Center the add-ingredient button"
+      - tapOn:
+          id: "RecipeIngredients::AddButton::RoundButton"
+          label: "Add an empty ingredient row"
+      - waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:

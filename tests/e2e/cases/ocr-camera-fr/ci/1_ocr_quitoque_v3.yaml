@@ -1,4 +1,4 @@
-name: "7 - OCR Feedback Snackbar Flow"
+name: "1 - OCR Quitoque V3 Camera Flow"
 appId: "com.recipedia"
 tags:
   - ocr
@@ -13,5 +13,5 @@ tags:
           file: "../../../flows/setupTest.yaml"
           label: "Setup - Launch app and wait for ready"
       - runFlow:
-          file: "../7_ocr_feedback_snackbar.yaml"
-          label: "Run 7 - OCR Feedback Snackbar Flow"
+          file: "../1_ocr_quitoque_v3.yaml"
+          label: "Run 1 - OCR Quitoque V3 Camera Flow"

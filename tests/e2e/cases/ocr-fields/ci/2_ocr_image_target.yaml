@@ -1,4 +1,4 @@
-name: "5 - OCR Inline Field Errors Flow"
+name: "2 - OCR Image Target Flow"
 appId: "com.recipedia"
 tags:
   - ocr
@@ -13,5 +13,5 @@ tags:
           file: "../../../flows/setupTest.yaml"
           label: "Setup - Launch app and wait for ready"
       - runFlow:
-          file: "../5_ocr_inline_field_errors.yaml"
-          label: "Run 5 - OCR Inline Field Errors Flow"
+          file: "../2_ocr_image_target.yaml"
+          label: "Run 2 - OCR Image Target Flow"

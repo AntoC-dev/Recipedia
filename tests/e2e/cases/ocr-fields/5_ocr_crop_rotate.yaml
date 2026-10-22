@@ -1,0 +1,18 @@
+name: "5 - OCR Crop Rotate Flow"
+appId: "com.recipedia"
+tags:
+  - ocr
+---
+- evalScript: ${output.modalImageCounter = 0}
+
+- runFlow:
+    file: "../../flows/recipe/adding/ocr/gallery/ocrImage.yaml"
+    env:
+      RECIPE_NAME: quitoqueV2
+    label: "Setup - Enter OCR add screen with an initial image"
+
+- runFlow:
+    file: "../../flows/recipe/adding/ocr/gallery/ocrCroppedTitle.yaml"
+    env:
+      RECIPE_NAME: quitoqueV2
+    label: "Action - Scan the title through the cropper (iOS: rotated upright first)"

@@ -1,4 +1,4 @@
-name: "8 - OCR Use Similar Ingredient Flow"
+name: "5 - OCR Crop Rotate Flow"
 appId: "com.recipedia"
 tags:
   - ocr
@@ -13,5 +13,5 @@ tags:
           file: "../../../flows/setupTest.yaml"
           label: "Setup - Launch app and wait for ready"
       - runFlow:
-          file: "../8_ocr_use_similar_ingredient.yaml"
-          label: "Run 8 - OCR Use Similar Ingredient Flow"
+          file: "../5_ocr_crop_rotate.yaml"
+          label: "Run 5 - OCR Crop Rotate Flow"

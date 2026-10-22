@@ -1,0 +1,29 @@
+appId: "com.recipedia"
+---
+- extendedWaitUntil:
+    visible:
+      id: "com.recipedia:id/state_rotate"
+    timeout: 30000
+    label: "Wait for the cropper rotate tab"
+
+- tapOn:
+    id: "com.recipedia:id/state_rotate"
+    label: "Open the cropper rotate tab"
+
+- repeat:
+    times: 3
+    commands:
+      - tapOn:
+          id: "com.recipedia:id/wrapper_rotate_by_angle"
+          label: "Rotate the photo 90 degrees clockwise"
+
+- extendedWaitUntil:
+    visible:
+      id: "com.recipedia:id/text_view_rotate"
+      text: "-90.0°"
+    timeout: 10000
+    label: "Wait until the cropper shows the photo rotated upright"
+
+- runFlow:
+    file: validateWithoutCropping.yaml
+    label: "Validate the rotated crop"

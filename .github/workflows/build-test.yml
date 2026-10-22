@@ -35,13 +35,23 @@ jobs:
     runs-on: ubuntu-latest
     # Trusted context that receives secrets: push or same-repo PR. Fork PRs don't.
     outputs:
-      is_internal: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }}
+      is_internal: ${{ steps.e2e-matrix.outputs.is_internal }}
+      android_suites: ${{ steps.e2e-matrix.outputs.android }}
+      ios_suites: ${{ steps.e2e-matrix.outputs.ios }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
           node-version: '24'
           cache: 'npm'
+      - name: Build E2E suite matrices
+        id: e2e-matrix
+        env:
+          IS_INTERNAL: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }}
+        run: |
+          echo "is_internal=$IS_INTERNAL" >> "$GITHUB_OUTPUT"
+          echo "android=$(node .github/scripts/e2e-matrix.mjs android "$IS_INTERNAL")" >> "$GITHUB_OUTPUT"
+          echo "ios=$(node .github/scripts/e2e-matrix.mjs ios "$IS_INTERNAL")" >> "$GITHUB_OUTPUT"
       - run: npm ci
       - name: Cache node modules
         uses: actions/cache/save@v6
@@ -301,8 +311,8 @@ jobs:
     with:
       platform: android
       app-artifact: build-apk
-      # Forks lack QUITOQUE_*: drop the bulk-import, ocr and web suites
-      suites: ${{ needs.install-and-doctor.outputs.is_internal == 'true' && '["app-init", "back-gestures", "bulk-import", "duplicates-ingredient", "duplicates-recipe", "duplicates-tag", "ingredient-dialog", "ingredients-db", "locale-fr", "menu", "ocr", "recipe-create", "recipe-readonly", "recipe-edit", "search", "search-filters", "settings", "shopping", "tags-db", "web", "web-edge-cases"]' || '["app-init", "back-gestures", "duplicates-ingredient", "duplicates-recipe", "duplicates-tag", "ingredient-dialog", "ingredients-db", "locale-fr", "menu", "recipe-create", "recipe-readonly", "recipe-edit", "search", "search-filters", "settings", "shopping", "tags-db", "web-edge-cases"]' }}
+      # Forks lack QUITOQUE_*: suites flagged requiresSecrets in .github/e2e-suites.json are dropped
+      suites: ${{ needs.install-and-doctor.outputs.android_suites }}
     secrets:
       QUITOQUE_USERNAME: ${{ secrets.QUITOQUE_USERNAME }}
       QUITOQUE_PASSWORD: ${{ secrets.QUITOQUE_PASSWORD }}
@@ -329,7 +339,7 @@ jobs:
     with:
       platform: ios
       app-artifact: build-ios-app
-      suites: '["app-init", "back-gestures", "bulk-import", "duplicates-ingredient", "duplicates-recipe", "duplicates-tag", "ingredient-dialog", "ingredients-db", "locale-fr", "menu", "ocr", "recipe-create", "recipe-readonly", "recipe-edit", "search", "search-filters", "settings", "shopping", "tags-db", "web", "web-edge-cases"]'
+      suites: ${{ needs.install-and-doctor.outputs.ios_suites }}
     secrets:
       QUITOQUE_USERNAME: ${{ secrets.QUITOQUE_USERNAME }}
       QUITOQUE_PASSWORD: ${{ secrets.QUITOQUE_PASSWORD }}

@@ -1,0 +1,17 @@
+name: "4 - OCR Use Similar Ingredient Flow"
+appId: "com.recipedia"
+tags:
+  - ocr
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/recipe/adding/ocr/checkIfCleanIsNeeded.yaml"
+          label: "Setup - Check if clean is needed"
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../4_ocr_use_similar_ingredient.yaml"
+          label: "Run 4 - OCR Use Similar Ingredient Flow"

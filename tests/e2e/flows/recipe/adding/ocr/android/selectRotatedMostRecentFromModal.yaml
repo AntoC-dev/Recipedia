@@ -1,0 +1,9 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    file: openMostRecentFromModal.yaml
+    label: "Open the most recent picture from the app modal in the cropper"
+
+- runFlow:
+    file: rotateAndValidateCrop.yaml
+    label: "Rotate the photo upright in the cropper and validate"

@@ -1,5 +1,6 @@
 import { recognizeIngredientQuantities } from '@utils/OCR';
 import TextRecognition from '@react-native-ml-kit/text-recognition';
+import { mockImageRef, mockManipulatorContext } from '@mocks/deps/expo-image-manipulator-mock';
 import {
   quantitiesOcrResult,
   iosQuantitiesOcrResult,
@@ -21,6 +22,8 @@ import {
   quantitiesOcrResult as quitoqueV3QuantitiesOcrResult,
   iosQuantitiesOcrResult as quitoqueV3IosQuantitiesOcrResult,
   expectedQuantities as quitoqueV3ExpectedQuantities,
+  androidQuantitiesImageSize as quitoqueV3AndroidImageSize,
+  androidQuantitiesStripOcrResults as quitoqueV3AndroidStripOcrResults,
   expectedIosQuantities as quitoqueV3ExpectedIosQuantities,
 } from '@data/ocrMocks/quitoque-v3';
 
@@ -107,7 +110,7 @@ describe('recognizeIngredientQuantities', () => {
       const result = await recognizeIngredientQuantities('file://quantities.jpg');
 
       expect(result).toEqual([
-        '140 g',
+        '140g',
         '1 pièce',
         '1 pièce',
         '1 pièce',
@@ -168,11 +171,22 @@ describe('recognizeIngredientQuantities', () => {
   });
 
   describe('quitoque-v3 real device data', () => {
-    test('parses multiple Android quantities', async () => {
-      mockRecognize.mockResolvedValue(quitoqueV3QuantitiesOcrResult);
+    test('re-reads the sideways Android first pass on overlapping strips', async () => {
+      (mockImageRef.saveAsync as jest.Mock).mockResolvedValueOnce({
+        uri: 'file://normalized-quantities.png',
+        ...quitoqueV3AndroidImageSize,
+      });
+      mockRecognize.mockResolvedValueOnce(quitoqueV3QuantitiesOcrResult);
+      quitoqueV3AndroidStripOcrResults.forEach(({ result }) =>
+        mockRecognize.mockResolvedValueOnce(result)
+      );
 
       const result = await recognizeIngredientQuantities('file://quitoque-v3-quantities.jpg');
 
+      expect(mockManipulatorContext.crop.mock.calls.map(([region]) => region.originY)).toEqual(
+        quitoqueV3AndroidStripOcrResults.map(({ originY }) => originY)
+      );
+      expect(mockRecognize).toHaveBeenCalledTimes(1 + quitoqueV3AndroidStripOcrResults.length);
       expect(result).toEqual(quitoqueV3ExpectedQuantities);
     });
 

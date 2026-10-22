@@ -114,6 +114,13 @@ appId: "com.recipedia"
 
 - runFlow:
     when:
+      true: ${RECIPE_NAME == "quitoqueV2" && FIELD_NAME == "titleRotated"}
+    commands:
+      - addMedia:
+          - "../../../../../../assets/pouletSatay/titleRotated.jpg"
+
+- runFlow:
+    when:
       true: ${RECIPE_NAME == "quitoqueV2" && FIELD_NAME == "description"}
     commands:
       - addMedia:
