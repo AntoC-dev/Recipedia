@@ -1,10 +1,6 @@
 appId: "com.recipedia"
 ---
 - runFlow:
-    file: "handleAnr.yaml"
-    label: "Handle ANR in case a previous test triggered it"
-
-- runFlow:
     file: "launchFreshApp.yaml"
     label: "Setup - Launch app with fresh state"
 
@@ -23,16 +19,8 @@ appId: "com.recipedia"
 - extendedWaitUntil:
     visible:
       id: "WelcomeScreen::SkipButton"
-    timeout: 500000
+    timeout: 120000
     label: "Wait for Welcome screen to be visible"
-
-- runFlow:
-    file: "handleAnr.yaml"
-    label: "Handle ANR during initialization"
-
-- runFlow:
-    file: "dismissInitError.yaml"
-    label: "Dismiss init error dialog if Pyodide init failed"
 
 - runFlow:
     file: "handleAnr.yaml"
@@ -40,6 +28,7 @@ appId: "com.recipedia"
 
 - tapOn:
     id: "WelcomeScreen::SkipButton"
+    waitToSettleTimeoutMs: 0
     label: "Skip onboarding"
 
 - extendedWaitUntil:
@@ -47,20 +36,6 @@ appId: "com.recipedia"
       id: "WelcomeScreen::LoadingOverlay"
     timeout: 30000
     label: "Wait for data to load"
-
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - runFlow:
-          file: "sleep.yaml"
-          env:
-            DURATION_MS: 3000
-          label: "Wait 3s before ANR check"
-
-- runFlow:
-    file: "handleAnr.yaml"
-    label: "Handle ANR after data load"
 
 - extendedWaitUntil:
     visible:
@@ -78,19 +53,3 @@ appId: "com.recipedia"
       id: "ExpandButton.*"
     timeout: 5000
     label: "Wait for FAB to be visible"
-
-- waitForAnimationToEnd:
-    timeout: 3000
-    label: "Wait for FAB mount animation to complete"
-
-- runFlow:
-    file: "handleAnr.yaml"
-    label: "Handle ANR after loading"
-
-- runFlow:
-    file: "warmupScreens.yaml"
-    label: "Warmup screens to exhaust ANR issues"
-
-- runFlow:
-    file: "warmupKeyboard.yaml"
-    label: "Warmup keyboard on iOS to prevent cold keyboard input drops"

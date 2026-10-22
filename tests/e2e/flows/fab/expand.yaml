@@ -1,22 +1,17 @@
 appId: "com.recipedia"
 ---
 # FAB IDs use regex pattern because React Native Paper adds "-container-outer-layer" suffix on iOS
-- repeat:
-    times: 5
-    while:
-      notVisible:
-        id: "ReduceButton.*"
+# A tap during the mount animation is ignored; retry once
+- retry:
+    maxRetries: 1
     commands:
       - tapOn:
           id: "ExpandButton.*"
           point: "50%, 20%"
           label: "Tap FAB expand button"
+
       - extendedWaitUntil:
           visible:
             id: "ReduceButton.*"
-          timeout: 1000
-          optional: true
-
-- runFlow:
-    file: "../../asserts/home/assertExpandedButtons.yaml"
-    label: "Assert FAB menu is expanded"
+          timeout: 3000
+          label: "Wait for FAB menu to open"
