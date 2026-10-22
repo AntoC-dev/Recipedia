@@ -611,12 +611,14 @@ adb shell settings put global hide_error_dialogs 1   # no system crash/ANR dialo
 adb shell settings put global window_animation_scale 0
 adb shell settings put global transition_animation_scale 0
 adb shell settings put global animator_duration_scale 0
+adb shell am force-stop com.google.android.apps.nexuslauncher
 ```
 
-`hide_error_dialogs 1` stops the launcher ANR dialog
-(`Pixel Launcher isn't responding`) from tripping visibility assertions.
-`handleAnr.yaml` remains a guarded no-op safety net for **local** emulators,
-which never get these settings; CI-only flows do not need it.
+`hide_error_dialogs 1` stops new ANR dialogs (`Pixel Launcher isn't responding`)
+from tripping visibility assertions, but not one already on screen: a launcher
+ANR raised during boot stays until the launcher restarts, hence the
+`force-stop`. Flows do not handle ANR dialogs: apply the same commands to a
+local emulator.
 
 ## Production Smoke Build
 

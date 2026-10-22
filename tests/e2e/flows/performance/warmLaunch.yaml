@@ -5,5 +5,5 @@ appId: "com.recipedia"
 # + Home/FAB readiness sequence the seed case uses, so delegate to it rather than
 # duplicating the steps.
 - runFlow:
-    file: "../setupPerformanceTest.yaml"
+    file: "../setupTest.yaml"
     label: "Fresh launch, skip onboarding, wait for seed and Home"

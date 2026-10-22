@@ -8,5 +8,5 @@ tags:
 # full power-user dataset (~1200 recipes / ~1000 ingredients / ~300 tags).
 # MUST run before the warm per-screen cases so they reuse this seeded database.
 - runFlow:
-    file: "../../../flows/setupPerformanceTest.yaml"
+    file: "../../../flows/setupTest.yaml"
     label: "Cold launch, skip onboarding, seed dataset, wait Home ready"
