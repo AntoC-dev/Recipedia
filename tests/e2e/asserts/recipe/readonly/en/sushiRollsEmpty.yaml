@@ -7,7 +7,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::ReadOnlyStep::3::SectionParagraph"
     direction: DOWN
-    speed: 95
+    speed: 30
     timeout: 120000
     label: "Scroll to the bottom of the screen"
 

@@ -69,7 +69,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::1::IngredientName"
     direction: DOWN
-    speed: 60
+    speed: 30
     centerElement: true
     label: "Scroll to Chicken Breast ingredient"
 
@@ -91,7 +91,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::2::IngredientName"
     direction: DOWN
-    speed: 60
+    speed: 30
     centerElement: true
     label: "Scroll to Lettuce ingredient"
 
@@ -113,7 +113,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::3::IngredientName"
     direction: DOWN
-    speed: 60
+    speed: 30
     centerElement: true
     label: "Scroll to Cheddar ingredient"
 
@@ -157,7 +157,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeTime::Text"
     direction: DOWN
-    speed: 60
+    speed: 30
     centerElement: true
     label: "Scroll to preparation time"
 
@@ -291,7 +291,7 @@ appId: "com.recipedia"
       id: "RecipeImage"
     direction: UP
     centerElement: true
-    speed: 80
+    speed: 30
     label: "Scroll back to top"
 
 - waitForAnimationToEnd
