@@ -1,3 +1,12 @@
+## [2.54.4](https://github.com/AntoC-dev/Recipedia/compare/v2.54.3...v2.54.4) (2026-10-22)
+
+### Bug Fixes
+
+* **images:** keep full resolution and rotation when cropping ([42f9ebf](https://github.com/AntoC-dev/Recipedia/commit/42f9ebff22aa5f63d933e2f92bdd17380da8a360)), closes [#626](https://github.com/AntoC-dev/Recipedia/issues/626)
+* **images:** keep full resolution and rotation when cropping ([#629](https://github.com/AntoC-dev/Recipedia/issues/629)) ([4da1fe4](https://github.com/AntoC-dev/Recipedia/commit/4da1fe4ac326983e48c225acc553efd25543a7d6)), closes [#626](https://github.com/AntoC-dev/Recipedia/issues/626) [#658](https://github.com/AntoC-dev/Recipedia/issues/658)
+* **ocr:** log rejected OCR field fills ([84cd9dd](https://github.com/AntoC-dev/Recipedia/commit/84cd9dd68b8af74bee21d547ee33174f286c5365))
+* **ocr:** retry sideways and undersized ML Kit reads ([2ed6a72](https://github.com/AntoC-dev/Recipedia/commit/2ed6a72acae5d1fa5cbdc1aa8f7508a8d9e82b82)), closes [#626](https://github.com/AntoC-dev/Recipedia/issues/626)
+
 ## [2.54.3](https://github.com/AntoC-dev/Recipedia/compare/v2.54.2...v2.54.3) (2026-10-20)
 
 ### Bug Fixes
