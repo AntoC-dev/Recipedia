@@ -87,13 +87,9 @@ tags:
     id: "BulkImportValidation::FinishButton"
     label: "Action - Finish import and return home"
 
-- waitForAnimationToEnd
-
 - tapOn:
     id: "BottomTabs::Search"
     label: "Verification - Navigate to Search"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -103,8 +99,6 @@ tags:
     timeout: 60000
     centerElement: true
     label: "Verification - Scroll to third imported recipe"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::RecipeCards::13::Cover"
@@ -130,8 +124,6 @@ tags:
     id: "Recipe::Dialog::Confirm"
     label: "Cleanup - Close confirmation"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::12::Cover"
@@ -139,8 +131,6 @@ tags:
     speed: 40
     centerElement: true
     label: "Verification - Scroll to second imported recipe"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::RecipeCards::12::Cover"
@@ -162,8 +152,6 @@ tags:
     id: "Recipe::Dialog::Confirm"
     label: "Cleanup - Close confirmation"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::11::Cover"
@@ -171,8 +159,6 @@ tags:
     speed: 40
     centerElement: true
     label: "Verification - Scroll to first imported recipe"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::RecipeCards::11::Cover"
@@ -190,8 +176,6 @@ tags:
     centerElement: true
     timeout: 120000
     label: "Assert - Scroll to persons section"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePersons::Text"

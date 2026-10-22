@@ -18,16 +18,12 @@ appId: "com.recipedia"
     text: "Sushi Rolls"
     label: "Title of the recipe is rendered"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeDescription::CustomTextInput"
     direction: DOWN
     speed: 60
     centerElement: true
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeDescription::Text"
@@ -38,8 +34,6 @@ appId: "com.recipedia"
     text: "CLASSIC SUSHI ROLLS WITH NORI, RICE, AND FILLINGS."
     label: "Description of the recipe is rendered"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeTags::HeaderText"
@@ -48,14 +42,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to the tags section"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipeTags::HeaderText"
     text: "Tags:"
     label: "Intro text for the tags is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -65,14 +55,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to the element text"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipeTags::ElementText"
     text: "Tags are a way to identify a recipe and make easier its search.\nHere are some examples of tags you can have : .*, .*, .*"
     label: "Explanation text for the tags is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -81,8 +67,6 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll down to the first tag"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeTags::0::Chip"
@@ -116,8 +100,6 @@ appId: "com.recipedia"
           index: 1
           label: "Cross icon of the first tag is rendered on iOS"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipePersons::PrefixText"
@@ -125,8 +107,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll down to the number of persons section"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePersons::PrefixText"
@@ -141,8 +121,6 @@ appId: "com.recipedia"
     text: " persons"
     label: "Outro text for the number of persons is rendered"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::PrefixText"
@@ -151,14 +129,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to the ingredients section"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipeIngredients::PrefixText"
     text: "Ingredients: "
     label: "Section Ingredients is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -167,8 +141,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll down to the ingredients header"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::Header::Quantity"
@@ -186,8 +158,6 @@ appId: "com.recipedia"
     id: "RecipeIngredients::Header::Delete"
     label: "Column for the delete button is rendered"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::0::QuantityInput"
@@ -195,8 +165,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll down to the first ingredients row"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::0::QuantityInput"
@@ -214,8 +182,6 @@ appId: "com.recipedia"
     id: "RecipeIngredients::0::DeleteButton"
     label: "Delete button for ingredient 0 is visible"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::1::NameInput::CustomTextInput"
@@ -223,8 +189,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll down to the second ingredient"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::1::QuantityInput"
@@ -242,8 +206,6 @@ appId: "com.recipedia"
     id: "RecipeIngredients::1::DeleteButton"
     label: "Delete button for ingredient 1 is visible"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::2::QuantityInput"
@@ -251,8 +213,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll down to the third ingredients row"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::2::QuantityInput"
@@ -270,8 +230,6 @@ appId: "com.recipedia"
     id: "RecipeIngredients::2::DeleteButton"
     label: "Delete button for ingredient 2 is visible"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::3::QuantityInput"
@@ -279,8 +237,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll down to the fourth ingredient"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::3::QuantityInput"
@@ -298,8 +254,6 @@ appId: "com.recipedia"
     id: "RecipeIngredients::3::DeleteButton"
     label: "Delete button for ingredient 3 is visible"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::4::NameInput::CustomTextInput"
@@ -307,8 +261,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll down to the last ingredient"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::4::QuantityInput"
@@ -326,8 +278,6 @@ appId: "com.recipedia"
     id: "RecipeIngredients::4::DeleteButton"
     label: "Delete button for ingredient 4 is visible"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::5::NameInput::CustomTextInput"
@@ -335,8 +285,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll down to the sixth ingredient"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::5::QuantityInput"
@@ -362,13 +310,9 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to ingredients add button"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipeIngredients::AddButton::RoundButton"
     label: "Add button of the ingredients is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -377,8 +321,6 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll down to the time to prepare"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeTime::PrefixText"
@@ -393,8 +335,6 @@ appId: "com.recipedia"
     text: "min"
     label: "Outro text for the time to prepare is rendered"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::PrefixText"
@@ -403,14 +343,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to the preparation prefix"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipePreparation::PrefixText"
     text: "Preparation :"
     label: "Preparation prefix text is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -420,8 +356,6 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to the preparation step"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::EditableStep::0::Step"
@@ -430,14 +364,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to the first preparation step"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipePreparation::EditableStep::0::Step"
     text: "Step 1"
     label: "Preparation section for first step is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -447,14 +377,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to the title of first step"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipePreparation::EditableStep::0::Title"
     text: "Title of step 1 : "
     label: "Intro text for the title of first step is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -464,14 +390,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to the title of first step"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
     text: "Prepare rice"
     label: "First preparation step title is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -481,14 +403,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to the first step content"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipePreparation::EditableStep::0::Content"
     text: "Content of step 1 : "
     label: "Intro text for first step is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -498,13 +416,9 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to the first step content input"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
     label: "First step input is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -514,14 +428,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to the second step input"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipePreparation::EditableStep::1::Step"
     text: "Step 2"
     label: "Preparation section for second step is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -531,14 +441,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to the title of second step"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipePreparation::EditableStep::1::Title"
     text: "Title of step 2 : "
     label: "Intro text for the title of second step is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -548,14 +454,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to the title of second step"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipePreparation::EditableStep::1::TextInputTitle::CustomTextInput"
     text: "Spread rice"
     label: "Second preparation step title is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -565,14 +467,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to the second step input"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipePreparation::EditableStep::1::Content"
     text: "Content of step 2 : "
     label: "Intro text for second step is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -582,13 +480,9 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to the second step input"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
     label: "Second step input is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -598,14 +492,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to the third step input"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipePreparation::EditableStep::2::Step"
     text: "Step 3"
     label: "Preparation section for third step is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -615,14 +505,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to the title of third step"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipePreparation::EditableStep::2::Title"
     text: "Title of step 3 : "
     label: "Intro text for the title of third step is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -632,14 +518,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to the title of third step"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipePreparation::EditableStep::2::TextInputTitle::CustomTextInput"
     text: "Add fillings and roll"
     label: "Third preparation step title is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -649,14 +531,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to the third step input"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipePreparation::EditableStep::2::Content"
     text: "Content of step 3 : "
     label: "Intro text for third step is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -666,13 +544,9 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to the third step input"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipePreparation::EditableStep::2::TextInputContent::CustomTextInput"
     label: "Third step input is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -682,14 +556,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to the fourth step input"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipePreparation::EditableStep::3::Step"
     text: "Step 4"
     label: "Preparation section for Fourth step is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -699,14 +569,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to the title of Fourth step"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipePreparation::EditableStep::3::Title"
     text: "Title of step 4 : "
     label: "Intro text for the title of Fourth step is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -716,14 +582,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to the title of Fourth step"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipePreparation::EditableStep::3::TextInputTitle::CustomTextInput"
     text: "Serve"
     label: "Fourth preparation step title is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -733,14 +595,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to the fourth step input"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipePreparation::EditableStep::3::Content"
     text: "Content of step 4 : "
     label: "Intro text for Fourth step is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -750,13 +608,9 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to the fourth step input"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipePreparation::EditableStep::3::TextInputContent::CustomTextInput"
     label: "Fourth step input is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -764,8 +618,6 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 30
     centerElement: true
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "../common/nutritionEdit.yaml"
@@ -781,8 +633,6 @@ appId: "com.recipedia"
       SALT: "1[.]85"
       PORTION_WEIGHT: "160"
     label: "Assert nutrition table is displayed with correct values"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:

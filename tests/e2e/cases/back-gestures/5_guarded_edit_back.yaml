@@ -37,8 +37,6 @@ tags:
     id: "RecipeUnsavedChanges::Dialog::Cancel"
     label: "Action - Choose to keep editing"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "Recipe::AppBar::Cancel"
     label: "Assert - Still in edit mode after the cancelled gesture"

@@ -1,7 +1,5 @@
 appId: "com.recipedia"
 ---
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "Parameters::Section::Import::SubHeader"
@@ -9,8 +7,6 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to Bulk Import section"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "Parameters::Section::Import::SubHeader"

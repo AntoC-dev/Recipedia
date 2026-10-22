@@ -8,8 +8,6 @@ tags:
     file: "../../flows/parameters/tags/navigateToTagsSettings.yaml"
     label: "Action - Navigate to Tags Settings"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../flows/parameters/searchInSettingsList.yaml"
     env:

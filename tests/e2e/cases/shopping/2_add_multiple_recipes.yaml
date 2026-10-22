@@ -7,8 +7,6 @@ tags:
     id: "BottomTabs::Search"
     label: "Action - Navigate to Search screen"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::1::.*"
@@ -16,8 +14,6 @@ tags:
     speed: 40
     centerElement: true
     label: "Scroll to recipe card"
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::RecipeCards::1::.*"
@@ -45,8 +41,6 @@ tags:
     id: "BottomTabs::Search"
     label: "Action - Navigate to Search screen"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::4::.*"
@@ -54,8 +48,6 @@ tags:
     speed: 20
     centerElement: true
     label: "Action - Scroll to Caesar Salad recipe"
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::RecipeCards::4::.*"
@@ -89,8 +81,6 @@ tags:
     id: "BottomTabs::Search"
     label: "Action - Navigate to Search screen"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::5::.*"
@@ -98,8 +88,6 @@ tags:
     speed: 20
     centerElement: true
     label: "Action - Scroll to Margherita Pizza recipe"
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::RecipeCards::5::.*"

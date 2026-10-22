@@ -4,8 +4,6 @@ appId: "com.recipedia"
     file: "./assertShoppingScreenUI.yaml"
     label: "Assert shopping screen UI elements"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
@@ -13,8 +11,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll to Cereal category"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
@@ -46,8 +42,6 @@ appId: "com.recipedia"
       RECIPE_NAMES: "Spaghetti Bolognese"
     label: "Assert and check Tomato Sauce ingredient"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.cheese::SubHeader"
@@ -55,8 +49,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll to Cheese category"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.cheese::SubHeader"
@@ -77,8 +69,6 @@ appId: "com.recipedia"
       RECIPE_NAMES: "Spaghetti Bolognese"
     label: "Assert and check Parmesan ingredient"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.meat::SubHeader"
@@ -86,8 +76,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll to Meat category"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.meat::SubHeader"
@@ -108,8 +96,6 @@ appId: "com.recipedia"
       RECIPE_NAMES: "Spaghetti Bolognese"
     label: "Assert and check Ground Beef ingredient"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.sauce::SubHeader"
@@ -118,8 +104,6 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Sauce category"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.sauce::SubHeader"
     label: "Sauce category header is displayed"
@@ -127,8 +111,6 @@ appId: "com.recipedia"
 - assertVisible:
     text: "Sauce"
     label: "Sauce category text is displayed"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:

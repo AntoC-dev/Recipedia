@@ -31,8 +31,6 @@ tags:
     id: "Recipe::AppBar::Validate"
     label: "Action - Save changes"
 
-- waitForAnimationToEnd
-
 - tapOn:
     id: "Recipe::AppBar::BackButton"
     label: "Action - Back to Search screen"

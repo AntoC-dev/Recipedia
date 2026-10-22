@@ -21,8 +21,6 @@ tags:
       MISSING_ELEMENTS: "\n\t- an image\n\t- a title\n\t- some ingredients\n\t- some instructions for the preparation\n\t- a preparation time"
     label: "Assert - Verify validation error for all missing elements"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionEmptyState::AddButton::RoundButton"
@@ -103,8 +101,6 @@ tags:
       MISSING_ELEMENTS: "\n\t- an image\n\t- a title\n\t- some ingredients\n\t- some instructions for the preparation\n\t- a preparation time"
     label: "Assert - Verify validation error NO LONGER includes nutrition"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeImage"
@@ -112,8 +108,6 @@ tags:
     centerElement: true
     speed: 95
     label: "Action - Scroll back to top"
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "../../flows/recipe/adding/en/addRecipeImage.yaml"

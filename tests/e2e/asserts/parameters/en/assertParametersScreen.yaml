@@ -20,8 +20,6 @@ appId: "com.recipedia"
     file: "./assertAboutSection.yaml"
     label: "Check that the about section is displayed correctly in English"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "Parameters::Section::Appearance::SubHeader"

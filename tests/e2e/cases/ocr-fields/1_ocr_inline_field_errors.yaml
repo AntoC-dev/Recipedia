@@ -24,8 +24,6 @@ tags:
     centerElement: true
     label: "Action - Scroll to title input"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../asserts/recipe/inlineErrors/en/titleNoError.yaml"
     label: "Assert (start) - No title inline error before OCR"
@@ -43,8 +41,6 @@ tags:
     speed: 10
     centerElement: true
     label: "Action - Scroll back to title input"
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "../../asserts/recipe/inlineErrors/en/titleNoError.yaml"
@@ -64,8 +60,6 @@ tags:
 
 - eraseText:
     label: "Action - Erase OCRed title again to ensure it is empty"
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeTitle::Text"
@@ -90,8 +84,6 @@ tags:
     text: "Inline Errors Test"
     label: "Action - Enter valid title text manually"
 
-- waitForAnimationToEnd
-
 - tapOn:
     id: "RecipeTitle::Text"
     label: "Action - Blur title"
@@ -112,8 +104,6 @@ tags:
     centerElement: true
     label: "Action - Scroll to description"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../asserts/recipe/inlineErrors/en/descriptionNoError.yaml"
     label: "Assert (start) - No description inline error before OCR"
@@ -126,8 +116,6 @@ tags:
     centerElement: true
     label: "Action - Scroll to persons"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../asserts/recipe/inlineErrors/en/personsNoError.yaml"
     label: "Assert (start) - No persons inline error before OCR"
@@ -139,8 +127,6 @@ tags:
     speed: 10
     label: "Action - Scroll to ingredients"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../asserts/recipe/inlineErrors/en/ingredientsEmptyNoError.yaml"
     label: "Assert (after refill) - No ingredients inline error visible"
@@ -151,8 +137,6 @@ tags:
     direction: DOWN
     speed: 10
     label: "Action - Scroll to time"
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "../../asserts/recipe/inlineErrors/en/timeNoError.yaml"

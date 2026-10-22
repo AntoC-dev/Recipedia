@@ -3,8 +3,6 @@ appId: "com.recipedia"
 # Generic "all items visible" accordion assert (no filter applied).
 # env: CATEGORY = visible accordion title, ITEM_COUNT = number of items.
 # Uses the shared output.accordionIndex counter maintained by the caller.
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -12,8 +10,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll to ${CATEGORY} accordion"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -47,8 +43,6 @@ appId: "com.recipedia"
           label: "${CATEGORY} item ${output.i} is visible"
       - evalScript: ${output.i = output.i + 1}
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -56,8 +50,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll back up to ${CATEGORY} accordion header"
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"

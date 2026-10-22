@@ -7,8 +7,6 @@ tags:
     id: "BottomTabs::Search"
     label: "Action - Navigate to Search screen"
 
-- waitForAnimationToEnd
-
 - tapOn:
     id: "SearchScreen::SearchBar"
     label: "Action - Focus the search bar to open the dropdown"
@@ -59,8 +57,6 @@ tags:
     id: "SearchScreen::SearchBar-clear-icon"
     label: "Action - Clear the typed text and leave search mode"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../asserts/search/en/assertSearchScreenUI.yaml"
     label: "Assert - Search screen is back to the card view"
@@ -68,8 +64,6 @@ tags:
 - tapOn:
     id: "SearchScreen::FiltersToggleButtons"
     label: "Action - Open the filter page"
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "../../flows/navigation/backFromSearchFilterPage.yaml"

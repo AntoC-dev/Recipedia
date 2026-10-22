@@ -14,8 +14,6 @@ appId: "com.recipedia"
     direction: DOWN
     label: "Bring the first nutrition row back from under the app bar"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../replaceText.yaml"
     env:

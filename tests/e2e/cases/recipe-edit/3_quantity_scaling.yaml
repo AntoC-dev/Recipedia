@@ -47,8 +47,6 @@ tags:
     id: "Recipe::AppBar::Edit"
     label: "Action - Enter edit mode"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeImage"
@@ -56,8 +54,6 @@ tags:
     speed: 95
     centerElement: true
     label: "Action - Scroll back to top"
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "../../asserts/recipe/edit/chocolateCakeFor4Persons.yaml"
@@ -67,8 +63,6 @@ tags:
     file: "../../flows/recipe/editing/changePersonsFrom4To2.yaml"
     label: "Action - Change persons from 4 to 2"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeImage::RoundButton"
@@ -76,8 +70,6 @@ tags:
     speed: 85
     timeout: 120000
     label: "Action - Scroll back to top"
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "../../asserts/recipe/edit/chocolateCakeFor2Persons.yaml"
@@ -114,8 +106,6 @@ tags:
     speed: 95
     centerElement: true
     label: "Action - Scroll back to top"
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "../../asserts/recipe/readonly/en/chocolateCakeFor4Persons.yaml"

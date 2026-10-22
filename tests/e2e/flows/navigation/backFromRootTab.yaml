@@ -5,8 +5,6 @@ appId: "com.recipedia"
     id: "${TAB_ID}"
     label: "Action - Navigate to the tab"
 
-- waitForAnimationToEnd
-
 - runFlow:
     when:
       platform: iOS

@@ -31,8 +31,6 @@ tags:
     id: "BottomTabs::Search"
     label: "Action - Navigate to Search tab"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../flows/navigation/backFromRootTab.yaml"
     env:

@@ -33,8 +33,6 @@ appId: "com.recipedia"
     text: "Caesar Salad"
     label: "Caesar Salad title is visible"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::5::Content"
@@ -42,8 +40,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll to fourth recipe card"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::RecipeCards::5::Content"

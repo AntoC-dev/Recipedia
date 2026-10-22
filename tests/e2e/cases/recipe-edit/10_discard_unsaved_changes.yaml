@@ -7,8 +7,6 @@ tags:
     id: "BottomTabs::Search"
     label: "Action - Navigate to Search screen"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       text: "Pesto Pasta"
@@ -17,8 +15,6 @@ tags:
     timeout: 120000
     centerElement: true
     label: "Action - Scroll to find Pesto Pasta"
-
-- waitForAnimationToEnd
 
 - tapOn:
     text: "Pesto Pasta"
@@ -87,8 +83,6 @@ tags:
 - tapOn:
     id: "RecipeUnsavedChanges::Dialog::Cancel"
     label: "Action - Choose to keep editing"
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "../../asserts/recipe/common/buttonsEdit.yaml"

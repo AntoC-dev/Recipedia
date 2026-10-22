@@ -82,8 +82,6 @@ tags:
     id: "BottomTabs::Parameters"
     label: "Verification - Navigate to Parameters screen"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "Parameters::Section::Import::DismissedRecipes::Item"

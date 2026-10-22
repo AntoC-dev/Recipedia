@@ -39,8 +39,6 @@ tags:
     id: "MenuScreen::MenuItem::1::Checkbox"
     label: "Action - Mark Classic Pancakes as cooked"
 
-- waitForAnimationToEnd
-
 - tapOn:
     id: "MenuScreen::MenuItem::2::RemoveButton"
     label: "Action - Remove the cooked Classic Pancakes from the menu"

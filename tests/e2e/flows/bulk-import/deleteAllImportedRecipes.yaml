@@ -4,8 +4,6 @@ appId: "com.recipedia"
     id: "BottomTabs::Search"
     label: "Navigate to Search screen"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::(1[1-9]|[2-9]\\d|\\d{3,})::Cover"

@@ -7,8 +7,6 @@ tags:
     file: '../../flows/recipe/adding/manual/en/openAddManually.yaml'
     label: 'Action - Open manual recipe adding screen'
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: 'RecipePreparation::AddButton::RoundButton'
@@ -17,13 +15,9 @@ tags:
     centerElement: true
     label: 'Action - Scroll to preparation section'
 
-- waitForAnimationToEnd
-
 - tapOn:
     id: 'RecipePreparation::AddButton::RoundButton'
     label: 'Action - Add preparation step row'
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: '../../asserts/recipe/inlineErrors/en/preparationDescriptionNoError.yaml'
@@ -36,8 +30,6 @@ tags:
     speed: 20
     centerElement: true
     label: 'Scroll to the step input, keyboard closed'
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: '../../flows/focusField.yaml'
@@ -66,8 +58,6 @@ tags:
 - inputText:
     text: 'Cook for 10 minutes'
     label: 'Action - Enter valid description text'
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: 'RecipePreparation::EditableStep::0::Content'

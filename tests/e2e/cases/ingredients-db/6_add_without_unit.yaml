@@ -65,8 +65,6 @@ tags:
     id: "IngredientsSettings::ItemDialog::AddModal::ConfirmButton"
     label: "Action - Confirm adding ingredient without unit"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../flows/parameters/searchInSettingsList.yaml"
     env:

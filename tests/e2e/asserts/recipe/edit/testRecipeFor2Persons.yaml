@@ -10,8 +10,6 @@ appId: "com.recipedia"
     text: "Test Recipe"
     label: "Title input shows 'Test Recipe'"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipePersons::PrefixText"
@@ -20,14 +18,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to persons section"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipePersons::PrefixText"
     text: "This recipe is for : "
     label: "Intro text for the number of persons is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -36,8 +30,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll to ensure persons's text input is visible"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePersons::NumericTextInput"
@@ -49,8 +41,6 @@ appId: "com.recipedia"
     text: " persons"
     label: "Outro text for the number of persons is rendered"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::PrefixText"
@@ -58,14 +48,10 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipeIngredients::PrefixText"
     text: "Ingredients: "
     label: "Section Ingredients is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -74,8 +60,6 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to end of ingredients section"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::0::QuantityInput"

@@ -1,7 +1,5 @@
 appId: "com.recipedia"
 ---
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::${INDEX}::DeleteButton"
@@ -10,8 +8,6 @@ appId: "com.recipedia"
     timeout: 30000
     centerElement: true
     label: "Scroll to ingredient (index ${INDEX}) delete button"
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeIngredients::${INDEX}::DeleteButton"

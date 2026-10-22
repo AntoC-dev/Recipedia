@@ -14,8 +14,6 @@ appId: "com.recipedia"
     text: ""
     label: "Description of the recipe is empty"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipePersons::Text"
@@ -73,8 +71,6 @@ appId: "com.recipedia"
     text: "Preparation (25 min)"
     label: "Preparation section and time are displayed"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
@@ -82,8 +78,6 @@ appId: "com.recipedia"
     centerElement: true
     speed: 20
     label: "Scroll to section part"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
@@ -95,16 +89,12 @@ appId: "com.recipedia"
     text: "[\\s\\S]+"
     label: "First preparation paragraph is displayed"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
     direction: DOWN
     centerElement: true
     speed: 60
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"

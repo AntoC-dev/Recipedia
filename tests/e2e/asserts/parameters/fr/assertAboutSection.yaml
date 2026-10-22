@@ -1,15 +1,11 @@
 appId: "com.recipedia"
 ---
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "Parameters::Section::About::SubHeader"
     direction: DOWN
     speed: 40
     label: "Scroll to About section"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "Parameters::Section::About::SubHeader"
@@ -27,8 +23,6 @@ appId: "com.recipedia"
       TARGET_ID: "Parameters::Section::About::Version::Item"
     label: "Scroll to version item"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "Parameters::Section::About::Version::Item"
     text: "Version, .*\\d+\\.\\d+\\.\\d+"
@@ -39,8 +33,6 @@ appId: "com.recipedia"
     env:
       TARGET_ID: "Parameters::Section::About::BugReport::Item"
     label: "Scroll to Bug Report item"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "Parameters::Section::About::BugReport::Divider"

@@ -19,8 +19,6 @@ tags:
     centerElement: true
     label: "Action - Scroll to title input"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../asserts/recipe/inlineErrors/en/titleNoError.yaml"
     label: "Assert - No title inline error visible before user interacts"
@@ -58,8 +56,6 @@ tags:
 - eraseText:
     label: "Action - Erase title to make it dirty and invalid"
 
-- waitForAnimationToEnd
-
 - tapOn:
     id: "RecipeTitle::Text"
     label: "Action - Blur title"
@@ -82,8 +78,6 @@ tags:
     text: "Inline Errors Test"
     label: "Action - Enter valid title text"
 
-- waitForAnimationToEnd
-
 - tapOn:
     id: "RecipeTitle::Text"
     label: "Action - Blur title"
@@ -104,8 +98,6 @@ tags:
     centerElement: true
     label: "Action - Scroll to description input"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../asserts/recipe/inlineErrors/en/descriptionNoError.yaml"
     label: "Assert - No description inline error visible before user interacts"
@@ -123,8 +115,6 @@ tags:
 - tapOn:
     id: "keyboard.toolbar.previous"
     label: "Action - Tap toolbar Previous to go back to the title"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeTitle::CustomTextInput"
@@ -159,8 +149,6 @@ tags:
     centerElement: true
     label: "Action - Scroll to persons input"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../asserts/recipe/inlineErrors/en/personsNoError.yaml"
     label: "Assert - No persons inline error visible before user interacts"
@@ -173,8 +161,6 @@ tags:
 
 - eraseText:
     label: "Action - Erase persons default value to make field dirty and invalid"
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "../../flows/toolbarDone.yaml"
@@ -208,8 +194,6 @@ tags:
     centerElement: true
     label: "Action - Scroll to time input"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../asserts/recipe/inlineErrors/en/timeNoError.yaml"
     label: "Assert - No time inline error visible before user interacts"
@@ -228,8 +212,6 @@ tags:
 
 - eraseText:
     label: "Action - Erase the digit to leave time dirty and invalid"
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "../../flows/toolbarDone.yaml"
@@ -274,8 +256,6 @@ tags:
     id: "RecipeIngredients::AddButton::RoundButton"
     label: "Action - Add first ingredient row"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../flows/focusField.yaml"
     env:
@@ -314,8 +294,6 @@ tags:
 - tapOn:
     id: "RecipeIngredients::AddButton::RoundButton"
     label: "Action - Add a second ingredient row low on screen"
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeIngredients::1::QuantityInput"

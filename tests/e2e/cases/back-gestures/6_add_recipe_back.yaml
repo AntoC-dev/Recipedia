@@ -79,8 +79,6 @@ tags:
     id: "RecipeUnsavedChanges::Dialog::Cancel"
     label: "Action - Choose to keep editing"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipeTitle::CustomTextInput"
     text: "Gesture New Recipe"

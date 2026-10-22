@@ -58,8 +58,6 @@ tags:
     centerElement: true
     label: "Scroll to RecipeIngredients::0::QuantityInput"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../flows/replaceAndDone.yaml"
     env:

@@ -55,8 +55,6 @@ appId: "com.recipedia"
     timeout: 360000
     label: "Wait for scaling to complete"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../parameters/ingredients/navigateToIngredientsSettings.yaml"
     label: "Open Ingredients settings"
@@ -109,14 +107,10 @@ appId: "com.recipedia"
     timeout: 10000
     label: "Wait for searched ingredient to not be displayed anymore"
 
-- waitForAnimationToEnd
-
 - tapOn:
     id: "IngredientsSettings::AppBar::BackButton"
     label: "Back to parameters screen"
 
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "../parameters/tags/navigateToTagsSettings.yaml"
@@ -153,8 +147,6 @@ appId: "com.recipedia"
 - runFlow:
     file: "../parameters/tags/addNewTag.yaml"
     label: "Add a new tag"
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: "TagsSettings::AppBar::BackButton"
