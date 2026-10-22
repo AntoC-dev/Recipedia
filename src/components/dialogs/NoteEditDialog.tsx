@@ -84,7 +84,7 @@ export function NoteEditDialog({
 
   return (
     <Portal>
-      <Dialog visible={isVisible} onDismiss={handleDismiss}>
+      <Dialog visible={isVisible} onDismiss={handleDismiss} dismissable={false}>
         <Dialog.Title testID={modalTestId + '::Title'}>{dialogTitle}</Dialog.Title>
         <Dialog.Content>
           <Text
