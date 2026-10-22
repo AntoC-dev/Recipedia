@@ -13,7 +13,7 @@ on:
         required: true
         type: string
       suites:
-        description: 'JSON array of test suites to run'
+        description: 'JSON array of jobs to run: a suite, or several joined by "+" sharing one device'
         required: true
         type: string
     secrets:
@@ -26,7 +26,7 @@ jobs:
   e2e-tests:
     name: E2E ${{ inputs.platform }} (${{ matrix.suite }})
     runs-on: ${{ inputs.platform == 'ios' && 'macos-26' || 'ubuntu-latest' }}
-    timeout-minutes: 240
+    timeout-minutes: ${{ inputs.platform == 'ios' && 240 || 150 }}
     strategy:
       fail-fast: false
       matrix:
@@ -84,7 +84,8 @@ jobs:
       - name: Run E2E tests (Android)
         if: inputs.platform == 'android'
         # Under the job budget: a job-level timeout cancels the `if: always()` uploads, losing the logs.
-        timeout-minutes: 200
+        # The slowest Android job takes ~80 min; a hung emulator otherwise holds the runner for hours.
+        timeout-minutes: 120
         uses: ReactiveCircus/android-emulator-runner@v2
         with:
           api-level: 34
@@ -94,7 +95,7 @@ jobs:
           disable-animations: true
           disable-spellchecker: true
           emulator-options: -no-snapshot -no-window -noaudio -no-boot-anim -wipe-data -memory 4096 -cores 4
-          script: bash .github/scripts/run-e2e-android.sh ${{ matrix.suite }}
+          script: bash .github/scripts/run-e2e-job.sh android ${{ matrix.suite }}
         env:
           QUITOQUE_USERNAME: ${{ secrets.QUITOQUE_USERNAME }}
           QUITOQUE_PASSWORD: ${{ secrets.QUITOQUE_PASSWORD }}
@@ -185,11 +186,17 @@ jobs:
           MAESTRO_DRIVER_STARTUP_TIMEOUT: 360000
           QUITOQUE_USERNAME: ${{ secrets.QUITOQUE_USERNAME }}
           QUITOQUE_PASSWORD: ${{ secrets.QUITOQUE_PASSWORD }}
-        run: bash .github/scripts/run-e2e-ios.sh ${{ matrix.suite }}
+        run: bash .github/scripts/run-e2e-job.sh ios ${{ matrix.suite }}
 
       - name: Collect iOS app log file
         if: always() && inputs.platform == 'ios'
-        run: bash .github/scripts/collect-ios-logs.sh ${{ matrix.suite }} ${{ steps.simulator.outputs.udid }}
+        env:
+          JOB: ${{ matrix.suite }}
+          UDID: ${{ steps.simulator.outputs.udid }}
+        run: |
+          for suite in ${JOB//+/ }; do
+            bash .github/scripts/collect-ios-logs.sh "$suite" "$UDID"
+          done
 
       # ============================================
       # Common: Logs and Artifacts
@@ -200,7 +207,7 @@ jobs:
           QUITOQUE_USERNAME: ${{ secrets.QUITOQUE_USERNAME }}
           QUITOQUE_PASSWORD: ${{ secrets.QUITOQUE_PASSWORD }}
         run: |
-          bash .github/scripts/prepare-maestro-logs.sh maestro_logs_${{ matrix.suite }}
+          bash .github/scripts/prepare-job-logs.sh ${{ matrix.suite }}
           bash .github/scripts/redact-maestro-secrets.sh report*.xml
 
       # Secret masking covers the log stream, not files inside an artifact.

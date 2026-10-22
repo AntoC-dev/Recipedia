@@ -10,7 +10,9 @@ from CI log artifacts and pinpoint root causes in the app source or test YAML.
 
 ## Artifact Structure
 
-CI artifacts are named `maestro-logs-android-<suite>` or `maestro-logs-ios-<suite>`. Each contains:
+CI artifacts are named `maestro-logs-android-<job>` or `maestro-logs-ios-<job>`. A job is one suite, or
+several short suites joined by `+` (e.g. `app-init+locale-fr+recipe-readonly`, see `.github/e2e-suites.json`
+`group`); a grouped artifact holds one `<suite>/` folder per suite. Each suite's logs contain:
 
 - `maestro.log` — full Maestro execution log (steps, assertions, failure messages)
 - `android-app-logs.txt` — Android logcat captured during the run

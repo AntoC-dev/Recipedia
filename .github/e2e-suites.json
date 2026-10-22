@@ -1,19 +1,19 @@
 [
-  { "name": "app-init" },
+  { "name": "app-init", "group": "short-1" },
   { "name": "back-gestures" },
   { "name": "bulk-import", "requiresSecrets": true },
   { "name": "duplicates-ingredient" },
   { "name": "duplicates-recipe" },
   { "name": "duplicates-tag" },
-  { "name": "ingredient-dialog" },
+  { "name": "ingredient-dialog", "group": "short-2" },
   { "name": "ingredients-db" },
-  { "name": "locale-fr" },
   { "name": "menu" },
   { "name": "ocr-camera-fr", "long": true },
   { "name": "ocr-fields", "long": true },
   { "name": "ocr-gallery", "long": true },
   { "name": "recipe-create" },
-  { "name": "recipe-readonly" },
+  { "name": "recipe-readonly", "group": "short-1" },
+  { "name": "locale-fr", "group": "short-1" },
   { "name": "recipe-edit" },
   { "name": "search" },
   { "name": "search-filters" },
@@ -21,5 +21,5 @@
   { "name": "shopping" },
   { "name": "tags-db" },
   { "name": "web", "requiresSecrets": true },
-  { "name": "web-edge-cases" }
+  { "name": "web-edge-cases", "group": "short-2" }
 ]

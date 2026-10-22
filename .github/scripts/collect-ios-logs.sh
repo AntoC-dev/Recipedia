@@ -9,6 +9,16 @@ LOG_DIR="maestro_logs_${SUITE}"
 
 mkdir -p "$LOG_DIR"
 
+# Suites of a grouped job share the simulator: keep only files written while this suite ran.
+# No start marker means the suite never ran, so nothing belongs to it.
+WINDOW_START=".e2e-window-${SUITE}-start"
+WINDOW_END=".e2e-window-${SUITE}-end"
+written_during_suite() {
+  [ -f "$WINDOW_START" ] && [ "$1" -nt "$WINDOW_START" ] || return 1
+  [ -f "$WINDOW_END" ] || return 0
+  [ ! "$1" -nt "$WINDOW_END" ]
+}
+
 echo "📋 Collecting app log file from Documents directory..."
 echo "📋 UDID: $UDID"
 echo "📋 Bundle ID: com.recipedia"
@@ -19,7 +29,9 @@ APP_CONTAINER=$(perl -e 'alarm shift; exec @ARGV' 30 xcrun simctl get_app_contai
 echo "📋 APP_CONTAINER: $APP_CONTAINER"
 
 if [ -n "$APP_CONTAINER" ]; then
-  LOG_FILES=$(ls -t "$APP_CONTAINER/Documents/recipedia-logs-"*.txt 2>/dev/null)
+  LOG_FILES=$(ls -t "$APP_CONTAINER/Documents/recipedia-logs-"*.txt 2>/dev/null | while IFS= read -r log; do
+    written_during_suite "$log" && echo "$log"
+  done)
   echo "📋 Checking for log files in: $APP_CONTAINER/Documents"
   if [ -n "$LOG_FILES" ]; then
     echo "$LOG_FILES" | xargs cat > "$LOG_DIR/recipedia-app-logs.txt"
@@ -55,7 +67,9 @@ for src in "$HOME/Library/Logs/DiagnosticReports" \
            "$HOME/Library/Developer/CoreSimulator/Devices/$UDID/data/Library/Logs/DiagnosticReports"; do
   [ -d "$src" ] || continue
   echo "📋 Scanning $src"
-  find "$src" -maxdepth 1 -name 'Recipedia-*.ips' -mtime -1 -exec cp {} "$CRASH_DIR/" \;
+  find "$src" -maxdepth 1 -name 'Recipedia-*.ips' -mtime -1 | while IFS= read -r ips; do
+    written_during_suite "$ips" && cp "$ips" "$CRASH_DIR/"
+  done
 done
 
 for ips in "$CRASH_DIR"/*.ips; do

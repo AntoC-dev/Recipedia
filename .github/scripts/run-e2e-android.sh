@@ -35,10 +35,10 @@ collect_logs_and_stop_stream() {
 trap collect_logs_and_stop_stream EXIT
 
 echo "🚀 Running E2E tests on suite: $SUITE ..."
-npm run install:android
 
 maestro test tests/e2e/ \
   --config="tests/e2e/${SUITE}.yaml" \
   --debug-output="maestro_logs_${SUITE}" \
+  --output="report-${SUITE}.xml" \
   --format junit -s 1 \
   "${MAESTRO_CREDENTIAL_ARGS[@]}"

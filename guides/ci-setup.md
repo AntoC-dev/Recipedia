@@ -104,13 +104,13 @@ On cache miss or `main`/tag push, it always builds fresh.
 
 ### e2e-tests-android / e2e-tests-ios
 
-Delegates to the reusable `e2e-maestro.yml` workflow. Runs all suites in a parallel matrix (`fail-fast: false`):
+Delegates to the reusable `e2e-maestro.yml` workflow. Runs the suites of `.github/e2e-suites.json` in a parallel
+matrix (`fail-fast: false`), built by `.github/scripts/e2e-matrix.mjs`:
 
-```
-app-init, bulk-import, duplicates-ingredient, duplicates-recipe, duplicates-tag,
-ingredient-dialog, ingredients-db, menu, ocr, recipe-create, recipe-readonly,
-recipe-edit, search, settings, shopping, tags-db, web, web-edge-cases
-```
+- `long` suites are scheduled first, so a late start does not stretch the run.
+- Suites sharing a `group` run one after another in a single job named `<suite>+<suite>`, saving the per-job device
+  setup (~5–7 min on iOS). Only short suites are grouped: a GitHub re-run repeats the whole group.
+- Job timeout: 240 min on iOS, 150 on Android; run step 200 / 120 min.
 
 - Android: `ubuntu-latest`, API 34 Google APIs x86_64 emulator, KVM enabled, 4 GB RAM, 4 cores
 - iOS: `macos-26`, iPhone 16e simulator, iOS 26.2, Xcode 26.2, hardware keyboard disabled, animations reduced,
@@ -118,9 +118,9 @@ recipe-edit, search, settings, shopping, tags-db, web, web-edge-cases
   - Runtime is pinned to 26.2 exactly, so local sims reproduce CI. iPhone 16e ships only on that runtime
     (26.4/26.5 carry iPhone 17e instead), so a range would buy no flexibility.
 
-Each suite uploads:
-- `maestro-logs-{platform}-{suite}.zip` — Maestro step logs + app logs
-- `junit-e2e-{platform}-{suite}` — JUnit XML report
+Each job uploads (a grouped job holds one `{suite}/` folder per suite in its logs, and one `report-{suite}.xml` each):
+- `maestro-logs-{platform}-{job}.zip` — Maestro step logs + app logs
+- `junit-e2e-{platform}-{job}` — JUnit XML report
 
 ### merge-test-artifacts
 

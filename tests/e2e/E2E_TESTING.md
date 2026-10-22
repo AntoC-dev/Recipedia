@@ -57,29 +57,30 @@ executionOrder:
     - '2 - Season Filter Toggle Flow'
 ```
 
-| Suite                           | Covers                                                  |
-| ------------------------------- | ------------------------------------------------------- |
-| `smoke`                         | Core journeys on the **production dataset** — see below |
-| `app-init`                      | Launch, onboarding, FAB menu                            |
-| `back-gestures`                 | System back gesture on every screen, dialog and tab     |
-| `search` / `search-filters`     | Search bar behaviour / filter page and chips            |
-| `recipe-create` / `recipe-edit` | Manual creation / editing                               |
-| `recipe-readonly`               | Read-only recipe screen                                 |
-| `ingredient-dialog`             | Ingredient dialog interactions                          |
+| Suite                                          | Covers                                                                  |
+| ---------------------------------------------- | ----------------------------------------------------------------------- |
+| `smoke`                                        | Core journeys on the **production dataset** — see below                 |
+| `app-init`                                     | Launch, onboarding, FAB menu                                            |
+| `back-gestures`                                | System back gesture on every screen, dialog and tab                     |
+| `search` / `search-filters`                    | Search bar behaviour / filter page and chips                            |
+| `recipe-create` / `recipe-edit`                | Manual creation / editing                                               |
+| `recipe-readonly`                              | Read-only recipe screen                                                 |
+| `ingredient-dialog`                            | Ingredient dialog interactions                                          |
 | `ocr-gallery` / `ocr-camera-fr` / `ocr-fields` | OCR recipe creation: gallery / camera + French / fields, crop, feedback |
-| `menu` / `shopping`             | Menu and shopping list                                  |
-| `settings`                      | Dark mode, language, season filter, default persons     |
-| `tags-db` / `ingredients-db`    | Tag and ingredient database management                  |
-| `duplicates-*`                  | Duplicate detection for recipes, tags, ingredients      |
-| `web` / `web-edge-cases`        | Website import                                          |
-| `bulk-import`                   | Bulk import pipeline                                    |
-| `locale-fr`                     | Decimals follow the **device region**, not the language |
-| `performance`                   | Flashlight measurement run                              |
+| `menu` / `shopping`                            | Menu and shopping list                                                  |
+| `settings`                                     | Dark mode, language, season filter, default persons                     |
+| `tags-db` / `ingredients-db`                   | Tag and ingredient database management                                  |
+| `duplicates-*`                                 | Duplicate detection for recipes, tags, ingredients                      |
+| `web` / `web-edge-cases`                       | Website import                                                          |
+| `bulk-import`                                  | Bulk import pipeline                                                    |
+| `locale-fr`                                    | Decimals follow the **device region**, not the language                 |
+| `performance`                                  | Flashlight measurement run                                              |
 
 Adding a suite: create `{suite}.yaml`, list `cases/{feature}/ci/*`, add the
 suite to `.github/e2e-suites.json` (the single source for the Android and iOS
 matrices; flag it `requiresSecrets` if forks can't run it, `long` to schedule it
-first on iOS).
+first on iOS, `group` to run it in one job with other short suites of that
+group).
 
 ## Architecture
 

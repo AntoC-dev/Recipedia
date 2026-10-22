@@ -7,7 +7,8 @@ paths:
 
 Test suites in `tests/e2e/` — see `tests/e2e/E2E_TESTING.md` for full guide.
 
-CI artifacts: `maestro-logs-android-<suite>` / `maestro-logs-ios-<suite>`
+CI artifacts: `maestro-logs-android-<job>` / `maestro-logs-ios-<job>` — job = suite, or grouped suites joined by `+`
+(one `<suite>/` folder each)
 
 - `maestro.log` — flow execution log
 - `android-app-logs.txt` — logcat
