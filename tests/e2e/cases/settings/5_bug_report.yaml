@@ -133,7 +133,7 @@ tags:
           label: "Go to recents photos on iOS"
       - extendedWaitUntil:
           visible:
-            text: "\\d+ Photo.*"
+            text: "\\d+ Photos?"
           timeout: 30000
           label: "Wait for gallery to load on iOS"
       - runFlow:
