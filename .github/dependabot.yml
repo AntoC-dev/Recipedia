@@ -11,13 +11,17 @@ updates:
   # keeps the family moving in lockstep instead of as isolated bumps that can
   # land desynchronised. Minor/major on that family = an SDK upgrade, done by
   # hand via `expo install`.
+  #
+  # Each Dependabot PR runs the full ~28-job pipeline. The ecosystems run on
+  # separate days, early enough that their bursts neither collide with each
+  # other on the 20 concurrent-job limit nor queue ahead of human PRs.
   # ---------------------------------------------------------------------------
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
-      time: "09:00"
+      time: "05:00"
       timezone: "Europe/Paris"
     open-pull-requests-limit: 5
     pull-request-branch-name:
@@ -64,6 +68,21 @@ updates:
       eas-cli:
         patterns:
           - "eas-cli"
+      # Coupled families: the resolvers / theme / bindings track the core
+      # package's API, so they are always reviewed together.
+      forms:
+        patterns:
+          - "react-hook-form"
+          - "@hookform/*"
+      i18n:
+        patterns:
+          - "i18next"
+          - "i18next-*"
+          - "react-i18next"
+      docs:
+        patterns:
+          - "typedoc"
+          - "*-typedoc-theme"
     ignore:
       # Expo-SDK-managed family — allow PATCH only (keeps lockfile fresh so
       # expo-doctor stays green); block minor/major (= SDK upgrade, done via
@@ -109,14 +128,18 @@ updates:
   # composite action.yml files unless their directory is listed explicitly, so
   # the "/" entry alone left setup-android-build / setup-ios-build /
   # setup-chaquopy-python pinned to Node20-era action versions.
+  #
+  # Without a group, each directory gets its own PR for the same bump.
+  # `group-by: dependency-name` merges them into one PR per action, so each
+  # action is still accepted or rejected on its own.
   - package-ecosystem: "github-actions"
     directories:
       - "/"
       - "/.github/actions/*"
     schedule:
       interval: "weekly"
-      day: "monday"
-      time: "09:00"
+      day: "sunday"
+      time: "05:00"
       timezone: "Europe/Paris"
     open-pull-requests-limit: 3
     pull-request-branch-name:
@@ -128,6 +151,9 @@ updates:
       - "ci"
       - "automated"
       - "github-actions"
+    groups:
+      actions-across-directories:
+        group-by: dependency-name
     ignore:
       # gradle/actions v6 moved "enhanced" caching into a proprietary component
       # (free for public repos, but no longer MIT) and dropped configuration-
