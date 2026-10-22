@@ -54,8 +54,6 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Butter ingredient"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../shopping/longPressIngredient.yaml"
     env:

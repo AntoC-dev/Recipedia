@@ -78,8 +78,6 @@ appId: "com.recipedia"
     env:
       STATE: "hidden"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       text: "Meat"
@@ -87,8 +85,6 @@ appId: "com.recipedia"
     direction: DOWN
     centerElement: true
     label: "Scroll to Meat category"
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "accordions/meat.yaml"

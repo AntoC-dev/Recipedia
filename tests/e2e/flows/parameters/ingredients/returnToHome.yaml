@@ -13,8 +13,6 @@ appId: "com.recipedia"
     speed: 60
     label: "Scroll back to top of Parameters screen"
 
-- waitForAnimationToEnd
-
 - tapOn:
     id: "BottomTabs::Home"
     label: "Return to Home screen"

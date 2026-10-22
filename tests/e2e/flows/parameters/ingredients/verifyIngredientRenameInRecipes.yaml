@@ -19,8 +19,6 @@ appId: "com.recipedia"
     file: "../../search/selectFirstSuggestion.yaml"
     label: "Select the first suggestion to close the dropdown and reveal the grid"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::2::Cover"
@@ -28,8 +26,6 @@ appId: "com.recipedia"
     speed: 50
     centerElement: true
     label: "Scroll to recipe card"
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::RecipeCards::2::Cover"
@@ -45,8 +41,6 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to ingredients section"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::2::IngredientName"
@@ -54,8 +48,6 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Lettuce ingredient"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::2::IngredientName"

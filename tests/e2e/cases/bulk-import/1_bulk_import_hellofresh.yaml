@@ -104,8 +104,6 @@ tags:
     centerElement: true
     label: "Verification - Scroll to third imported recipe"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "SearchScreen::RecipeCards::13::Cover"
     label: "Verification - Third imported recipe exists"
@@ -140,8 +138,6 @@ tags:
     centerElement: true
     label: "Verification - Scroll to second imported recipe"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "SearchScreen::RecipeCards::12::Cover"
     label: "Verification - Second imported recipe exists"
@@ -172,8 +168,6 @@ tags:
     centerElement: true
     label: "Verification - Scroll to first imported recipe"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "SearchScreen::RecipeCards::11::Cover"
     label: "Verification - First imported recipe exists"
@@ -190,8 +184,6 @@ tags:
     centerElement: true
     timeout: 120000
     label: "Assert - Scroll to persons section"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePersons::Text"

@@ -8,8 +8,6 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../focusField.yaml"
     env:

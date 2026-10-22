@@ -18,8 +18,6 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to ingredients section"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipeIngredients::0::IngredientName"
     text: "RecipeIngredient"

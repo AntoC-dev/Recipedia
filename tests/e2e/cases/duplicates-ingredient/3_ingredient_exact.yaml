@@ -18,8 +18,6 @@ tags:
     timeout: 30000
     label: "Wait for recipe screen to load"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::AddButton::RoundButton"
@@ -28,8 +26,6 @@ tags:
     timeout: 1200000
     centerElement: true
     label: "Action - Scroll to ingredients section"
-- waitForAnimationToEnd
-
 - tapOn:
     id: "RecipeIngredients::AddButton::RoundButton"
     label: "Action - Add ingredient to recipe"

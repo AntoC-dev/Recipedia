@@ -7,8 +7,6 @@ appId: "com.recipedia"
 - waitForAnimationToEnd:
     label: "Wait for animation to end"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "Parameters::Section::Appearance::DarkMode::Switch"
@@ -16,8 +14,6 @@ appId: "com.recipedia"
     speed: 60
     timeout: 30000
     label: "Scroll back to top of Parameters screen"
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: "BottomTabs::Home"

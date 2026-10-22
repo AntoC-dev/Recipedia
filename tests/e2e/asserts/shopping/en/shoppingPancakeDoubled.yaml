@@ -1,7 +1,5 @@
 appId: "com.recipedia"
 ---
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.baking::SubHeader"
@@ -9,8 +7,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll to Baking category"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.baking::SubHeader"
@@ -20,8 +16,6 @@ appId: "com.recipedia"
     text: "Baking"
     label: "Baking category text is displayed"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::Flour"
@@ -30,14 +24,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Flour item"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "ShoppingScreen::SectionList::Flour"
     text: "Flour (400g), 1 recipe"
     label: "Flour item on Android (doubled 200g x 2)"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -47,8 +37,6 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Plant Protein category"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.plantProtein::SubHeader"
     label: "Plant Protein category header is displayed"
@@ -56,8 +44,6 @@ appId: "com.recipedia"
 - assertVisible:
     text: "Plant Protein"
     label: "Plant Protein category text is displayed"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -67,14 +53,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Eggs item"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "ShoppingScreen::SectionList::Eggs"
     text: "Eggs (4pieces), 1 recipe"
     label: "Eggs item on Android (doubled 2 x 2)"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -84,8 +66,6 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Dairy category"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.dairy::SubHeader"
     label: "Dairy category header is displayed"
@@ -93,8 +73,6 @@ appId: "com.recipedia"
 - assertVisible:
     text: "Dairy"
     label: "Dairy category text is displayed"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -104,14 +82,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Milk item"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "ShoppingScreen::SectionList::Milk"
     text: "Milk (600ml), 1 recipe"
     label: "Milk item on Android (doubled 300ml x 2)"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -121,8 +95,6 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Oil and Fat category"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.oilAndFat::SubHeader"
     label: "Oil and Fat category header is displayed"
@@ -131,8 +103,6 @@ appId: "com.recipedia"
     text: "Oil and Fat"
     label: "Oil and Fat category text is displayed"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::Butter"
@@ -140,8 +110,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll to Butter item"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::Butter"

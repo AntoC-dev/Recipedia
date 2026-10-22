@@ -34,8 +34,6 @@ tags:
     speed: 95
     centerElement: true
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../flows/replaceAndDone.yaml"
     env:

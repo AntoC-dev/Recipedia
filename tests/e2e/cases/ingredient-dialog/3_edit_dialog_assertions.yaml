@@ -8,8 +8,6 @@ tags:
     file: "../../flows/parameters/ingredients/navigateToIngredientsSettings.yaml"
     label: "Action - Navigate to Ingredients Settings"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../flows/parameters/searchInSettingsList.yaml"
     env:

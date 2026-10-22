@@ -38,8 +38,6 @@ appId: "com.recipedia"
     text: "Chicken Tacos"
     label: "Chicken Tacos title is visible"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::3::Cover"
@@ -49,8 +47,6 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to third recipe card cover"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "SearchScreen::RecipeCards::3::Cover"
     label: "Third recipe card cover is displayed"
@@ -58,16 +54,12 @@ appId: "com.recipedia"
     id: "SearchScreen::RecipeCards::4::Cover"
     label: "Fourth recipe card cover is displayed"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::3::Content"
     direction: DOWN
     speed: 5
     label: "Scroll to third recipe card content"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::RecipeCards::3::Content"
@@ -84,16 +76,12 @@ appId: "com.recipedia"
     text: "Caesar Salad"
     label: "Caesar Salad title is visible"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::3::PrepTime"
     direction: DOWN
     speed: 5
     label: "Scroll to third recipe card preparation time"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::RecipeCards::3::PrepTime"
@@ -104,16 +92,12 @@ appId: "com.recipedia"
     text: "15 min"
     label: "Fourth recipe card prep time is displayed"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::3::Persons"
     direction: DOWN
     speed: 5
     label: "Scroll to third recipe card persons"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::RecipeCards::3::Persons"
@@ -124,8 +108,6 @@ appId: "com.recipedia"
     text: "4 persons"
     label: "Fourth recipe card persons count is displayed"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::5::Cover"
@@ -135,8 +117,6 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to fifth recipe card cover"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "SearchScreen::RecipeCards::5::Cover"
     label: "Fifth recipe card cover is displayed"
@@ -145,16 +125,12 @@ appId: "com.recipedia"
     id: "SearchScreen::RecipeCards::6::Cover"
     label: "Sixth recipe card cover is displayed"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::5::Content"
     direction: DOWN
     speed: 5
     label: "Scroll to fifth recipe card content"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::RecipeCards::5::Content"
@@ -172,16 +148,12 @@ appId: "com.recipedia"
     text: "Vegetable Soup"
     label: "Vegetable Soup title is visible"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::5::PrepTime"
     direction: DOWN
     speed: 5
     label: "Scroll to fifth recipe card preparation time"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::RecipeCards::5::PrepTime"
@@ -192,16 +164,12 @@ appId: "com.recipedia"
     text: "40 min"
     label: "Sixth recipe card prep time is displayed"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::5::Persons"
     direction: DOWN
     speed: 5
     label: "Scroll to fifth recipe card persons"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::RecipeCards::5::Persons"
@@ -212,8 +180,6 @@ appId: "com.recipedia"
     text: "4 persons"
     label: "Sixth recipe card persons count is displayed"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::7::Cover"
@@ -223,8 +189,6 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to sixth recipe card cover"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "SearchScreen::RecipeCards::7::Cover"
     label: "Seventh recipe card cover is displayed"
@@ -232,16 +196,12 @@ appId: "com.recipedia"
     id: "SearchScreen::RecipeCards::8::Cover"
     label: "Eighth recipe card cover is displayed"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::7::Content"
     direction: DOWN
     speed: 5
     label: "Scroll to sixth recipe card content"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::RecipeCards::7::Content"
@@ -258,16 +218,12 @@ appId: "com.recipedia"
     text: "Pesto Pasta"
     label: "Pesto Pasta title is visible"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::7::PrepTime"
     direction: DOWN
     speed: 5
     label: "Scroll to seventh recipe card PrepTime"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::RecipeCards::7::PrepTime"
@@ -278,16 +234,12 @@ appId: "com.recipedia"
     text: "20 min"
     label: "Eighth recipe card prep time is displayed"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::7::Persons"
     direction: DOWN
     speed: 5
     label: "Scroll to seventh recipe card persons"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::RecipeCards::7::Persons"
@@ -298,8 +250,6 @@ appId: "com.recipedia"
     text: "4 persons"
     label: "Eighth recipe card persons count is displayed"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::9::Cover"
@@ -309,8 +259,6 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to ninth recipe card cover"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "SearchScreen::RecipeCards::9::Cover"
     label: "Ninth recipe card cover is displayed"
@@ -318,16 +266,12 @@ appId: "com.recipedia"
     id: "SearchScreen::RecipeCards::10::Cover"
     label: "Tenth recipe card cover is displayed"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::9::Content"
     direction: DOWN
     speed: 5
     label: "Scroll to ninth recipe card content"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::RecipeCards::9::Content"
@@ -344,16 +288,12 @@ appId: "com.recipedia"
     text: "Lentil Curry"
     label: "Lentil Curry title is visible"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::9::PrepTime"
     direction: DOWN
     speed: 5
     label: "Scroll to ninth recipe card PrepTime"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::RecipeCards::9::PrepTime"
@@ -371,8 +311,6 @@ appId: "com.recipedia"
     speed: 5
     label: "Scroll to ninth recipe card persons"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "SearchScreen::RecipeCards::9::Persons"
     text: "4 persons"
@@ -381,8 +319,6 @@ appId: "com.recipedia"
     id: "SearchScreen::RecipeCards::10::Persons"
     text: "4 persons"
     label: "Tenth recipe card persons count is displayed"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:

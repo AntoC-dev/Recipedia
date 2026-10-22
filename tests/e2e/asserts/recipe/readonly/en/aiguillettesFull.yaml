@@ -15,8 +15,6 @@ appId: "com.recipedia"
       DESCRIPTION: "CUISINEZ NOS FILETS DE POULET FRANCAIS AVEC DU RIZ BASMATI BIO ET UNE SAUCE SATAY MAISON: UN CONDIMENT ASIATIQUE A BASE DE CACAHUETES ET GINGEMBRE !"
     label: "Assert description is displayed"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeTags::0::Chip"
@@ -24,8 +22,6 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to tags"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeTags::0::Chip"
@@ -47,8 +43,6 @@ appId: "com.recipedia"
     file: "../../common/personsReadOnly.yaml"
     label: "Assert persons is displayed"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::0::IngredientName"
@@ -56,8 +50,6 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to Chicken Breast ingredient"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::0::QuantityAndUnit"
@@ -69,8 +61,6 @@ appId: "com.recipedia"
     text: "Chicken Breast"
     label: "First ingredient name is displayed"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::1::IngredientName"
@@ -78,8 +68,6 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to Onions ingredient"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::1::QuantityAndUnit"
@@ -91,8 +79,6 @@ appId: "com.recipedia"
     text: "Onions"
     label: "Second ingredient name is displayed"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::2::IngredientName"
@@ -100,8 +86,6 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to Avocado ingredient"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::2::QuantityAndUnit"
@@ -113,8 +97,6 @@ appId: "com.recipedia"
     text: "Avocado"
     label: "Third ingredient name is displayed"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeTime::Text"
@@ -123,14 +105,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to preparation time"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipeTime::Text"
     text: "Preparation (20 min)"
     label: "Preparation section and time are displayed"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -139,8 +117,6 @@ appId: "com.recipedia"
     centerElement: true
     speed: 30
     label: "Scroll to first preparation step"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
@@ -152,8 +128,6 @@ appId: "com.recipedia"
     text: "Portez a ebullition une casserole d'eau salee.Faites cuire le riz selon les indications du paquet.Pendant ce temps, preparez les filets de poulet a la sauce satay."
     label: "First preparation paragraph is displayed"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
@@ -161,8 +135,6 @@ appId: "com.recipedia"
     centerElement: true
     speed: 30
     label: "Scroll to second preparation step"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
@@ -174,8 +146,6 @@ appId: "com.recipedia"
     text: "Dans le bol d'un mixeur, deposez les ingredients suivants :\nepluchez et hachez le gingembre.\nAjoutez les cacahuetes, le sucre et le lait de coco.Salez, poivrez. Mixez jusqu'a obtenir une texture homogene."
     label: "Second preparation paragraph is displayed"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"
@@ -183,8 +153,6 @@ appId: "com.recipedia"
     speed: 30
     centerElement: true
     label: "Scroll to third preparation step"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"

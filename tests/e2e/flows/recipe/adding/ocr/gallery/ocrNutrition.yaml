@@ -8,8 +8,6 @@ appId: "com.recipedia"
       TARGET_ID: "Recipe::RecipeNutrition::NutritionEmptyState::OCRButton::RoundButton"
     label: "Scroll to nutrition section"
 
-- waitForAnimationToEnd
-
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionEmptyState::OCRButton::RoundButton"
     label: "Tap on OCR button for nutrition"
@@ -51,8 +49,6 @@ appId: "com.recipedia"
     env:
       TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightNumericTextInput"
     label: "Scroll to Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightNumericTextInput"
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "../../../../focusField.yaml"

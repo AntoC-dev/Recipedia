@@ -19,8 +19,6 @@ appId: "com.recipedia"
     text: "Scanner"
     label: "Description scan button label is displayed in French"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeTags::HeaderText"
@@ -28,8 +26,6 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll down until tags section is displayed"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeTags::HeaderText"
@@ -48,8 +44,6 @@ appId: "com.recipedia"
     text: "Nouvelle étiquette"
     label: "Add tag button label is displayed in French"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::PrefixText"
@@ -57,8 +51,6 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll down until ingredients section is displayed"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePersons::PrefixText"
@@ -81,16 +73,12 @@ appId: "com.recipedia"
     text: "Ajouter manuellement"
     label: "Add ingredient manually button label is displayed in French"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::PrefixText"
     direction: DOWN
     speed: 60
     centerElement: true
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeTime::PrefixText"

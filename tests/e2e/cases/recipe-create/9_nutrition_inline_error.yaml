@@ -7,8 +7,6 @@ tags:
     file: '../../flows/recipe/adding/manual/en/openAddManually.yaml'
     label: 'Action - Open manual recipe adding screen'
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: 'Recipe::RecipeNutrition::NutritionEmptyState::AddButton::RoundButton'
@@ -16,8 +14,6 @@ tags:
     speed: 95
     timeout: 30000
     label: 'Action - Scroll to nutrition section'
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: '../../asserts/recipe/inlineErrors/en/nutritionNoError.yaml'
@@ -32,8 +28,6 @@ tags:
 - runFlow:
     file: '../../flows/recipe/editing/addPartialNutrition.yaml'
     label: 'Action - Fill nutrition partially (leaves required cells unset)'
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: '../../asserts/recipe/inlineErrors/en/nutritionError.yaml'

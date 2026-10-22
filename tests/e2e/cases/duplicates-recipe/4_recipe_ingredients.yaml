@@ -48,7 +48,6 @@ tags:
     centerElement: true
     label: "Action - Scroll up to ingredient section"
 
-- waitForAnimationToEnd
 - runFlow:
     file: "../../flows/recipe/addRow.yaml"
     env:

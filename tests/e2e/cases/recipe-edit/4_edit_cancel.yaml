@@ -55,8 +55,6 @@ tags:
       NEW_FAT: "99"
     label: "Action - Make changes to nutrition values"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeImage::Image"
@@ -78,8 +76,6 @@ tags:
     file: "../../asserts/recipe/common/buttonsReadOnly.yaml"
     label: "Assert - Verify returned to read-only mode"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::0::IngredientName"
@@ -94,8 +90,6 @@ tags:
       INGREDIENT_NAME: "Pasta"
       INGREDIENT_QUANTITY_AND_UNIT: "400 g"
     label: "Assert - Pasta ingredient is still present after cancel (delete was not persisted)"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -118,8 +112,6 @@ tags:
       PROTEIN: "16[.]5"
       SALT: "0[.]85"
     label: "Assert - Verify original nutrition values are preserved (changes were cancelled)"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:

@@ -9,8 +9,6 @@ appId: "com.recipedia"
       TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::EditForm::RemoveButton"
     label: "Scroll to remove nutrition button"
 
-- waitForAnimationToEnd
-
 - tapOn:
     id: "Recipe::RecipeNutrition::NutritionTable::EditForm::RemoveButton"
     label: "Tap remove nutrition button"

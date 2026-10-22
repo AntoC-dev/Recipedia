@@ -5,8 +5,6 @@ appId: "com.recipedia"
     text: "PESTO PASTA"
     label: "Pesto Pasta recipe is displayed"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipePersons::Text"
@@ -15,14 +13,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to ingredients section"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipePersons::Text"
     text: "Ingredients (6 persons)"
     label: "Recipe is for 6 persons"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -31,8 +25,6 @@ appId: "com.recipedia"
     speed: 30
     centerElement: true
     label: "Scroll to Pasta ingredient"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::0::IngredientName"
@@ -44,8 +36,6 @@ appId: "com.recipedia"
     text: "600 g"
     label: "Pasta quantity is 600g"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::1::IngredientName"
@@ -53,8 +43,6 @@ appId: "com.recipedia"
     speed: 30
     centerElement: true
     label: "Scroll to Basil Leaves ingredient"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::1::IngredientName"
@@ -66,8 +54,6 @@ appId: "com.recipedia"
     text: "150 g"
     label: "Basil Leaves quantity is 150g"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::2::IngredientName"
@@ -75,8 +61,6 @@ appId: "com.recipedia"
     speed: 30
     centerElement: true
     label: "Scroll to Parmesan ingredient"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::2::IngredientName"
@@ -88,8 +72,6 @@ appId: "com.recipedia"
     text: "90 g"
     label: "Parmesan quantity is 90g"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::3::IngredientName"
@@ -97,8 +79,6 @@ appId: "com.recipedia"
     speed: 30
     centerElement: true
     label: "Scroll to Olive Oil ingredient"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::3::IngredientName"
@@ -110,8 +90,6 @@ appId: "com.recipedia"
     text: "150 ml"
     label: "Olive Oil quantity is 150ml"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::4::IngredientName"
@@ -119,8 +97,6 @@ appId: "com.recipedia"
     speed: 30
     centerElement: true
     label: "Scroll to Pine Nuts ingredient"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::4::IngredientName"

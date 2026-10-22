@@ -21,8 +21,6 @@ tags:
     centerElement: true
     label: "Action - Scroll to Cereal accordion"
 
-- waitForAnimationToEnd
-
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::5"
     label: "Action - Expand Cereal accordion"
@@ -36,8 +34,6 @@ tags:
     direction: DOWN
     centerElement: true
     label: "Action - Scroll to Spaghetti item"
-
-- waitForAnimationToEnd
 
 - tapOn:
     text: ".*Spaghetti"

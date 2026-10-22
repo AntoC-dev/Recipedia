@@ -50,8 +50,6 @@ tags:
     direction: DOWN
     label: "Action - Scroll to Vegetable accordion"
 
-- waitForAnimationToEnd
-
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::11"
     label: "Action - Expand Vegetable accordion"
@@ -66,8 +64,6 @@ tags:
     direction: DOWN
     centerElement: true
     label: "Action - Scroll the first Vegetable item clear of the sheet edges"
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::11::Item::1"

@@ -5,6 +5,7 @@ appId: "com.recipedia"
     label: "Tap the keyboard toolbar Next"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for the focus move to settle"
 
 - runFlow:

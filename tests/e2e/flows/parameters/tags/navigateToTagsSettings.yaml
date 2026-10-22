@@ -14,8 +14,6 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to find Tags option"
 
-- waitForAnimationToEnd
-
 - tapOn:
     id: "Parameters::Section::Data::Tags::Item"
     label: "Navigate to Tags Settings screen"

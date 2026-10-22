@@ -14,8 +14,6 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to find Ingredients option"
 
-- waitForAnimationToEnd
-
 - tapOn:
     id: "Parameters::Section::Data::Ingredients::Item"
     label: "Navigate to Ingredients Settings screen"

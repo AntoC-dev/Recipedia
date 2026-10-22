@@ -11,8 +11,6 @@ appId: "com.recipedia"
     text: "Flour (200g), 1 recipe"
     label: "Flour item"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
@@ -20,8 +18,6 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to Cereal category"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.cereal::SubHeader"
@@ -32,8 +28,6 @@ appId: "com.recipedia"
     text: "Spaghetti (200g), 1 recipe"
     label: "Spaghetti item"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.cheese::SubHeader"
@@ -41,8 +35,6 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to Cheese category"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.cheese::SubHeader"
@@ -53,8 +45,6 @@ appId: "com.recipedia"
     text: "Parmesan (50g), 1 recipe"
     label: "Parmesan item"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.dairy::SubHeader"
@@ -62,8 +52,6 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to Dairy category"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.dairy::SubHeader"
@@ -74,8 +62,6 @@ appId: "com.recipedia"
     text: "Milk (300ml), 1 recipe"
     label: "Milk item"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.meat::SubHeader"
@@ -83,8 +69,6 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to Meat category"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.meat::SubHeader"
@@ -95,8 +79,6 @@ appId: "com.recipedia"
     text: "Ground Beef (300g), 1 recipe"
     label: "Ground Beef item"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.oilAndFat::SubHeader"
@@ -104,8 +86,6 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to Oil and Fat category"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.oilAndFat::SubHeader"
@@ -116,8 +96,6 @@ appId: "com.recipedia"
     text: "Butter (50g), 1 recipe"
     label: "Butter item"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.plantProtein::SubHeader"
@@ -125,8 +103,6 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to Plant Protein category"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.plantProtein::SubHeader"
@@ -137,8 +113,6 @@ appId: "com.recipedia"
     text: "Eggs (2pieces), 1 recipe"
     label: "Eggs item"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.sauce::SubHeader"
@@ -146,8 +120,6 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to Sauce category"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.sauce::SubHeader"

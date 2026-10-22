@@ -1,7 +1,5 @@
 appId: "com.recipedia"
 ---
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../enterIngredientQuantity.yaml"
     env:
