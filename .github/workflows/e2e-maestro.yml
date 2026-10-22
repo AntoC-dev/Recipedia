@@ -209,6 +209,18 @@ jobs:
         run: |
           bash .github/scripts/prepare-job-logs.sh ${{ matrix.suite }}
           bash .github/scripts/redact-maestro-secrets.sh report*.xml
+          LOGS=$(find maestro_logs_${{ matrix.suite }} -maxdepth 2 -name maestro.log 2>/dev/null)
+          if [ -n "$LOGS" ]; then
+            bash .github/scripts/maestro-timings.sh $LOGS -o maestro_logs_${{ matrix.suite }}/timings
+            {
+              echo "### Maestro timings (${{ inputs.platform }}, ${{ matrix.suite }})"
+              echo '```'
+              column -t -s $'\t' maestro_logs_${{ matrix.suite }}/timings/flows.tsv
+              echo
+              head -30 maestro_logs_${{ matrix.suite }}/timings/summary.tsv | column -t -s $'\t'
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       # Secret masking covers the log stream, not files inside an artifact.
       - name: Scan suite logs for credentials
@@ -225,7 +237,7 @@ jobs:
         with:
           name: maestro-logs-${{ inputs.platform }}-${{ matrix.suite }}.zip
           path: maestro_logs_${{ matrix.suite }}/
-          retention-days: 1
+          retention-days: 14
 
       - name: Upload JUnit report for suite
         if: always() && steps.secret-scan.outcome == 'success'
@@ -233,4 +245,4 @@ jobs:
         with:
           name: junit-e2e-${{ inputs.platform }}-${{ matrix.suite }}
           path: report*.xml
-          retention-days: 1
+          retention-days: 14
