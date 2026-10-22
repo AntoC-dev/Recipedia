@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1792054983446,
+  "lastUpdate": 1792660149788,
   "repoUrl": "https://github.com/AntoC-dev/Recipedia",
   "entries": {
     "Screen FPS": [
@@ -512,6 +512,63 @@ window.BENCHMARK_DATA = {
           {
             "name": "06_parameters",
             "value": 56.5,
+            "unit": "fps"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "AntoC",
+            "username": "AntoC-dev",
+            "email": "129602681+AntoC-dev@users.noreply.github.com"
+          },
+          "committer": {
+            "name": "GitHub",
+            "username": "web-flow",
+            "email": "noreply@github.com"
+          },
+          "id": "c40ac8be71e08fb5eb47860df4ff963104da6db5",
+          "message": "ci(e2e): filter iOS simulator syslogs with perl instead of grep (#662)\n\n## Summary\n\nThe \"Collect iOS app log file\" step spends minutes filtering each flow's\nMaestro `device-simulator.log` with `grep -aE` on the process allowlist\n(~3.5 min for recipe-create on main run 39378643004, 95 s for flow 1\nalone).\n\nBSD grep is slow on this alternation. Switched to `perl -ni` with the\nsame regex.\n\nBenchmark on a 1 GB syslog built from a real CI `device-simulator.log`:\n\n| Tool | Time | Output |\n| --- | --- | --- |\n| BSD `grep -aE` (current) | 20.6 s | reference |\n| `awk` hash lookup | 22.4 s | identical |\n| BSD `grep -aF -f` | 84 s | identical |\n| `perl -ne` | 3.8 s | identical |\n\n## Changes\n\n- `.github/scripts/collect-ios-logs.sh`: filter with `perl -ni` in\nplace; drops the temp file + `mv`.\n- `.github/scripts/collect-ios-logs.test.mjs`: locks the kept/dropped\nset (allowlisted processes, lookalike names, missing pid, binary bytes).\nPassed against the old script before the switch.\n\n## Validation\n\nCompare the `📋 Filtered …` timestamps in the \"Collect iOS app log file\"\nstep against previous main / PR runs.\n\nNot in scope: dropping syslogs of passed flows, or trimming\nSpringBoard/testmanagerd volume (they still make up most of the 120 MB\nkept for recipe-create flow 1).\n\nCloses #603\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)",
+          "timestamp": "2026-10-21T17:28:13Z",
+          "url": "https://github.com/AntoC-dev/Recipedia/commit/c40ac8be71e08fb5eb47860df4ff963104da6db5"
+        },
+        "date": 1792660148246,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "00_seed",
+            "value": 59.8,
+            "unit": "fps"
+          },
+          {
+            "name": "01_app_start",
+            "value": 59.9,
+            "unit": "fps"
+          },
+          {
+            "name": "02_home",
+            "value": 59.6,
+            "unit": "fps"
+          },
+          {
+            "name": "03_search",
+            "value": 59.6,
+            "unit": "fps"
+          },
+          {
+            "name": "04_recipe_view",
+            "value": 59.6,
+            "unit": "fps"
+          },
+          {
+            "name": "05_shopping",
+            "value": 59.6,
+            "unit": "fps"
+          },
+          {
+            "name": "06_parameters",
+            "value": 57.1,
             "unit": "fps"
           }
         ]
