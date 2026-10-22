@@ -614,9 +614,8 @@ adb shell settings put global animator_duration_scale 0
 ```
 
 `hide_error_dialogs 1` stops the launcher ANR dialog
-(`Pixel Launcher isn't responding`) from tripping visibility assertions.
-`handleAnr.yaml` remains a guarded no-op safety net for **local** emulators,
-which never get these settings; CI-only flows do not need it.
+(`Pixel Launcher isn't responding`) from tripping visibility assertions. Flows
+do not handle ANR dialogs: apply the same settings to a local emulator.
 
 ## Production Smoke Build
 
