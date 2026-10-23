@@ -30,4 +30,5 @@ appId: "com.recipedia"
     file: "./waitForUndoSnackbarToClear.yaml"
     label: "Wait for the undo snackbar to stop covering the list"
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000

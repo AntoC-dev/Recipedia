@@ -5,6 +5,7 @@ appId: "com.recipedia"
     label: "Navigate back to Parameters"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for animation to end"
 
 - scrollUntilVisible:

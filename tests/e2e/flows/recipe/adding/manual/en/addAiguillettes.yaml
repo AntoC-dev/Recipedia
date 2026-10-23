@@ -83,6 +83,7 @@ appId: "com.recipedia"
           duration: 500
           label: "Scroll the tag dropdown down towards Seafood"
       - waitForAnimationToEnd:
+          timeout: 2000
           label: "Wait for scrolling animation to end"
 
 - assertVisible:

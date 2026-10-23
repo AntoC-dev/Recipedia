@@ -1,7 +1,8 @@
 appId: "com.recipedia"
 ---
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000
 
 - runFlow:
     file: "../../scrollToEndTarget.yaml"

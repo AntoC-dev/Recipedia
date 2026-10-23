@@ -19,6 +19,7 @@ tags:
 - inputText: " "
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard to finish typing"
 
 - runFlow:

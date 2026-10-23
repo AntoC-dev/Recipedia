@@ -51,7 +51,8 @@ tags:
     text: "Temp"
     label: "Action - Type a title to make the field dirty"
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000
 
 - eraseText:
     label: "Action - Erase title to make it dirty and invalid"
@@ -208,7 +209,8 @@ tags:
     text: "1"
     label: "Action - Type a digit so the field becomes dirty"
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000
 
 - eraseText:
     label: "Action - Erase the digit to leave time dirty and invalid"

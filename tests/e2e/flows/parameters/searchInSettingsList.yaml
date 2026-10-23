@@ -17,6 +17,7 @@ appId: "com.recipedia"
     label: "Action - Type search query: ${SEARCH_QUERY}"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for list to filter"
 
 - runFlow:

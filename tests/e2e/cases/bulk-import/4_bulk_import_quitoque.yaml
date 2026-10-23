@@ -133,4 +133,5 @@ tags:
     id: "BulkImportValidation::FinishButton"
     label: "Action - Finish second import"
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000

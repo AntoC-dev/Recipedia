@@ -13,4 +13,5 @@ appId: "com.recipedia"
       platform: Android
     commands:
       - waitForAnimationToEnd:
+          timeout: 2000
           label: "Wait for the keyboard to switch type before typing"

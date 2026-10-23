@@ -27,7 +27,8 @@ tags:
     duration: 1000
     label: "Action - Scroll down to ensure the bug report section is not behind the bottom bar"
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000
 
 - tapOn:
     id: "Parameters::Section::About::BugReport::Item"
@@ -80,6 +81,7 @@ tags:
 - inputText: "This is a test bug report description"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation to end"
 
 - tapOn:
@@ -145,6 +147,7 @@ tags:
           timeout: 5000
           label: "Wait for first image to be selected on iOS"
       - waitForAnimationToEnd:
+          timeout: 2000
           label: "Ensure animations ends before tapping"
       - tapOn:
           point: "37%,17%"
@@ -155,6 +158,7 @@ tags:
           timeout: 5000
           label: "Wait for second image to be selected on iOS"
       - waitForAnimationToEnd:
+          timeout: 2000
           label: "Ensure animations ends before tapping"
       - tapOn:
           text: "Done"

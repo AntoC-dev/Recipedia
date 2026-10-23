@@ -8,4 +8,5 @@ appId: "com.recipedia"
     id: "ShoppingScreen::SectionList::Purchased"
     label: "Expand the purchased block to reach its items"
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000

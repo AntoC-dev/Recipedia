@@ -105,7 +105,8 @@ appId: "com.recipedia"
     text: "${SUGARS}"
     label: "Sugars input is displayed with correct value"
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000
 
 - runFlow:
     file: "../../../flows/scrollToEndTarget.yaml"
@@ -118,7 +119,8 @@ appId: "com.recipedia"
     text: "${FIBER}"
     label: "Fiber input is displayed with correct value"
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000
 
 - runFlow:
     file: "../../../flows/scrollToEndTarget.yaml"
@@ -131,7 +133,8 @@ appId: "com.recipedia"
     text: "${PROTEIN}"
     label: "Protein input is displayed with correct value"
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000
 
 - runFlow:
     file: "../../../flows/scrollToEndTarget.yaml"

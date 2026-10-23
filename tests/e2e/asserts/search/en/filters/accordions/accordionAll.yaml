@@ -29,7 +29,8 @@ appId: "com.recipedia"
 - repeat:
     times: ${ITEM_COUNT}
     commands:
-      - waitForAnimationToEnd
+      - waitForAnimationToEnd:
+          timeout: 2000
       - scrollUntilVisible:
           element:
             id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::${output.i}"
@@ -55,7 +56,8 @@ appId: "com.recipedia"
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Collapse ${CATEGORY} accordion"
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000
 
 - assertNotVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::0"

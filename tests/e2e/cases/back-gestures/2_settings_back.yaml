@@ -177,7 +177,8 @@ tags:
       TARGET_ID: "Parameters::Section::About::BugReport::Item"
     label: "Action - Scroll to the Bug report item"
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000
 
 - tapOn:
     id: "Parameters::Section::About::BugReport::Item"

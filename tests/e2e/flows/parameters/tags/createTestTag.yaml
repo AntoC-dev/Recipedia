@@ -17,6 +17,7 @@ appId: "com.recipedia"
     label: "Action - Enter new tag name"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - runFlow:
@@ -31,4 +32,5 @@ appId: "com.recipedia"
     id: "TagsSettings::ItemDialog::AddModal::ConfirmButton"
     label: "Action - Confirm adding new tag"
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000

@@ -17,4 +17,5 @@ appId: "com.recipedia"
           id: "VerticalBottomButtons::UrlDialog::CancelButton"
           label: "Tap the dialog Cancel button"
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000

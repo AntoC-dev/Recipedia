@@ -41,7 +41,8 @@ appId: "com.recipedia"
     label: "Energy kJ value is displayed"
 
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000
 
 - runFlow:
     file: "../../../../flows/scrollToEndTarget.yaml"

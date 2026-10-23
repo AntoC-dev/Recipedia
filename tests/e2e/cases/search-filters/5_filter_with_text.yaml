@@ -16,6 +16,7 @@ tags:
     label: "Action - Input text 'Ca' in the Bar"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - runFlow:

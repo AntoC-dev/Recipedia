@@ -24,6 +24,7 @@ tags:
 - inputText: "Ca"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard to finish typing"
 
 - assertVisible:

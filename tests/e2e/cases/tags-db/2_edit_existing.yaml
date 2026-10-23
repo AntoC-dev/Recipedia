@@ -48,6 +48,7 @@ tags:
     label: "Action - Append Cuisine to tag name"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - assertVisible:

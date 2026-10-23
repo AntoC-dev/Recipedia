@@ -21,6 +21,7 @@ appId: "com.recipedia"
     label: "Search for ingredient in database"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for list to filter"
 
 - runFlow:

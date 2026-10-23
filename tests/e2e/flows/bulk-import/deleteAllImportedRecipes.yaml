@@ -40,7 +40,8 @@ appId: "com.recipedia"
                 timeout: 5000
             - tapOn:
                 id: "Recipe::Dialog::Confirm"
-            - waitForAnimationToEnd
+            - waitForAnimationToEnd:
+                timeout: 2000
     label: "Delete imported recipes"
 
 - scrollUntilVisible:

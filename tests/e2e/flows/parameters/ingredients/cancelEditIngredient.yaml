@@ -21,6 +21,7 @@ appId: "com.recipedia"
     label: "Modify ingredient name"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - runFlow:

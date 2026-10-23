@@ -28,6 +28,7 @@ tags:
     label: "Action - Type non-existant text"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - assertVisible:
@@ -78,6 +79,7 @@ tags:
     label: "Action - Type fuzzy matching text"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - assertVisible:
@@ -140,6 +142,7 @@ tags:
     label: "Action - Type exact duplicate"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - assertVisible:
@@ -176,6 +179,7 @@ tags:
     label: "Cleanup - Cancel add tag dialog"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for dialog to hide"
 
 - assertNotVisible:

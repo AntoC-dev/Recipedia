@@ -11,6 +11,7 @@ appId: "com.recipedia"
 - inputText: "${RECIPE_URL}"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - assertVisible:

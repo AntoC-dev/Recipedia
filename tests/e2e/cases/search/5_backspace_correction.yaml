@@ -18,6 +18,7 @@ tags:
 - inputText: "P"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard to finish typing"
 
 - runFlow:
@@ -39,6 +40,7 @@ tags:
 - inputText: "a"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard to finish typing"
 
 - runFlow:
@@ -60,6 +62,7 @@ tags:
 - pressKey: "backspace"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard to finish editing"
 
 - runFlow:
@@ -81,6 +84,7 @@ tags:
 - inputText: "i"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard to finish typing"
 
 - runFlow:

@@ -26,6 +26,7 @@ tags:
     label: "Action - Search for Test Recipe"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - runFlow:

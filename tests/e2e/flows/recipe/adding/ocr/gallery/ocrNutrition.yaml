@@ -1,6 +1,7 @@
 appId: "com.recipedia"
 ---
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000
 
 - runFlow:
     file: "../../../../scrollToEndTarget.yaml"
@@ -42,7 +43,8 @@ appId: "com.recipedia"
     timeout: 120000
     label: "Wait for nutrition values to be populated by OCR"
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000
 
 - runFlow:
     file: "../../../../scrollToEndTarget.yaml"

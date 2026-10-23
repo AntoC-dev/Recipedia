@@ -16,6 +16,7 @@ tags:
     label: "Action - Search for Chocolate Cake"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - runFlow:
@@ -79,7 +80,8 @@ tags:
     id: "Recipe::AppBar::Validate"
     label: "Action - Validate the edit"
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000
 
 - extendedWaitUntil:
     visible:
@@ -128,6 +130,7 @@ tags:
     label: "Action - Search for Chocolate Cake again"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - runFlow:

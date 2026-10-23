@@ -28,6 +28,7 @@ appId: "com.recipedia"
     label: "Write the ingredient name in the input text"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - assertVisible:

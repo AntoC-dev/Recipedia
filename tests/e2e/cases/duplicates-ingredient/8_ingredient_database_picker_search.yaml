@@ -73,6 +73,7 @@ tags:
     label: "Action - Type search term in picker search bar"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for list to filter after debounce"
 
 - runFlow:

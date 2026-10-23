@@ -17,6 +17,7 @@ appId: "com.recipedia"
 
 - tapOn:
     id: "WelcomeScreen::SkipButton"
+    waitToSettleTimeoutMs: 0
     label: "Skip onboarding"
 
 - extendedWaitUntil:

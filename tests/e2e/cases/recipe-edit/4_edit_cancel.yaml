@@ -38,7 +38,8 @@ tags:
       INDEX: "0"
     label: "Action - Delete first ingredient (Pasta) in edit mode"
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000
 
 - assertNotVisible:
     id: "RecipeIngredients::0::NameInput::CustomTextInput"

@@ -32,6 +32,7 @@ appId: "com.recipedia"
     label: "Action - Type at cursor position (beginning of text)"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for validation debounce and re-renders"
 
 - assertVisible:

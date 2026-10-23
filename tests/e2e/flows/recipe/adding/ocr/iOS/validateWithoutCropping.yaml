@@ -17,4 +17,5 @@ appId: "com.recipedia"
     label: "Wait until the Choose button is no more visible"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for the animation to end"

@@ -15,7 +15,8 @@ appId: "com.recipedia"
     text: "À propos"
     label: "About section header shows French text"
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000
 
 - runFlow:
     file: "../../../flows/scrollToEndTarget.yaml"

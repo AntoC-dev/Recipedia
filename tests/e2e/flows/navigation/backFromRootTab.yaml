@@ -25,7 +25,8 @@ appId: "com.recipedia"
       - back:
           label: "Press the Android system back"
 
-      - waitForAnimationToEnd
+      - waitForAnimationToEnd:
+          timeout: 2000
 
       - assertVisible:
           id: "BottomTabs::Home"

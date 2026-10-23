@@ -83,7 +83,8 @@ appId: com.recipedia
                 text: "Français.*"
                 label: "Add Français"
 
-            - waitForAnimationToEnd
+            - waitForAnimationToEnd:
+                timeout: 2000
 
             - runFlow:
                 when:

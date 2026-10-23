@@ -80,7 +80,8 @@ appId: "com.recipedia"
     text: "Lentil Curry"
     label: "Lentil Curry title is not visible"
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000
 
 - runFlow:
     file: "../../flows/search/scrollRecipeListToTop.yaml"
