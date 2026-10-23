@@ -164,7 +164,8 @@ We welcome various types of contributions:
 
 ### Contribution Workflow
 
-1. **Check existing issues** before starting work
+1. **Check existing issues** before starting work — the [project board](https://github.com/users/AntoC-dev/projects/3)
+   shows open issues by type and priority, and its **Good first issues** view is the place to start
 2. **Create an issue** for new features or major changes
 3. **Get approval** from maintainers before implementing large changes
 4. **Create a feature branch** from `main`

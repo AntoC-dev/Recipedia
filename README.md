@@ -179,7 +179,8 @@ npm run workflow:build-test:android  # Full build + test cycle
 
 ## 🤝 Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for full guidelines.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for full guidelines. Looking for something to work on? Browse the
+[project board](https://github.com/users/AntoC-dev/projects/3) — start with its **Good first issues** view.
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/123-my-feature`)
