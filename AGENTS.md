@@ -4,8 +4,7 @@ Guidance for AI coding agents in this repo — Claude Code, Cursor, and any tool
 
 /caveman ultra
 
-Topic rules live in `.claude/rules/`: `testing.md`, `e2e.md`, `git-workflow.md`, `documentation.md`, `issues.md` (creating issues: set
-the project Category and Priority).
+Topic rules live in `.claude/rules/`: `testing.md`, `e2e.md`, `git-workflow.md`, `documentation.md`, `issues.md`.
 
 ## Agent setup
 
