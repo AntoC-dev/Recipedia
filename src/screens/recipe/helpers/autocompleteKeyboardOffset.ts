@@ -5,11 +5,11 @@
  */
 
 import type { ReadOnlyElement } from 'react-native';
+import { AUTOCOMPLETE_ANCHOR_ID } from '@components/molecules/TextInputWithDropDown';
 import {
-  AUTOCOMPLETE_ANCHOR_ID,
   AUTOCOMPLETE_MAX_VISIBLE_ROWS,
   getAutocompleteBubbleHeight,
-} from '@components/molecules/TextInputWithDropDown';
+} from '@components/molecules/AutocompleteBubble';
 import { padding } from '@styles/spacing';
 
 /** Height of a suggestion bubble showing the maximum number of visible rows */
