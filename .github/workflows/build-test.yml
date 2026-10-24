@@ -335,6 +335,9 @@ jobs:
     # Skipped for dependabot alongside build-ios (see above).
     if: needs.install-and-doctor.outputs.is_internal == 'true' && github.actor != 'dependabot[bot]'
     needs: [ build-ios, install-and-doctor ]
+    concurrency:
+      group: e2e-ios
+      queue: max
     uses: ./.github/workflows/e2e-maestro.yml
     with:
       platform: ios
@@ -362,6 +365,9 @@ jobs:
     name: E2E Smoke iOS (Production)
     if: needs.install-and-doctor.outputs.is_internal == 'true' && github.actor != 'dependabot[bot]'
     needs: [ build-ios-production-maestro, install-and-doctor ]
+    concurrency:
+      group: e2e-ios-smoke
+      queue: max
     uses: ./.github/workflows/e2e-maestro.yml
     with:
       platform: ios
