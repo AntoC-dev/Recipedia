@@ -40,7 +40,7 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json}\"",
     "typecheck": "tsc --noEmit",
     "expo:doctor": "npx expo-doctor",
-    "knip:check": "knip",
+    "knip:check": "knip --production",
     "quality": "npm run lint && npm run format:check && npm run typecheck && npm run knip:check && npm run expo:doctor",
     "docs:build": "typedoc",
     "docs:clean": "rm -rf docs/",
