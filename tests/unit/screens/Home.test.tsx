@@ -3,7 +3,7 @@ import Home, { howManyItemInCarousel } from '@screens/Home';
 import React from 'react';
 import { testRecipes } from '@test-data/recipesDataset';
 import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
@@ -43,7 +43,7 @@ jest.mock('@utils/i18n', () => {
   };
 });
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 async function renderHomeAndWaitForRecommendations() {
   const result = render(

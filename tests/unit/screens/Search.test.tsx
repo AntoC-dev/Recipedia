@@ -5,7 +5,7 @@ import RecipeDatabase from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
 import { testRecipes } from '@test-data/recipesDataset';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
 import { Button, ScrollView } from 'react-native';
@@ -42,7 +42,7 @@ jest.mock('@hooks/useSafeCopilot', () =>
 
 const { mockUseSafeCopilot } = require('@mocks/hooks/useSafeCopilot-mock');
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 describe('Search Screen', () => {
   const database: RecipeDatabase = RecipeDatabase.getInstance();

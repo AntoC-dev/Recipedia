@@ -22,7 +22,7 @@ import { menuTableElement } from '@customTypes/DatabaseElementTypes';
 import { cardSizes, padding } from '@styles/spacing';
 import { useTheme } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { mockNavigate } from '@mocks/deps/react-navigation-mock';
 import RecipeDatabase from '@utils/RecipeDatabase';
 import { testRecipes } from '@test-data/recipesDataset';
@@ -43,7 +43,7 @@ jest.mock('@components/atomic/CustomImage', () =>
   require('@mocks/components/atomic/CustomImage-mock').customImageMock()
 );
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 describe('MenuRecipeCard', () => {
   const database = RecipeDatabase.getInstance();
