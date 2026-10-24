@@ -29,3 +29,8 @@ appId: "com.recipedia"
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionEmptyState::AddButton::RoundButton"
     label: "Add nutrition button is displayed"
+
+- assertVisible:
+    id: "Recipe::RecipeNutrition::NutritionEmptyState::AddButton::RoundButton::Label"
+    text: "Add manually"
+    label: "Add nutrition button label is displayed"

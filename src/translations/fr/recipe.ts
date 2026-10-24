@@ -18,9 +18,16 @@ export default {
   unit: 'Unité',
   ingredientName: 'Nom',
   ingredientNotePlaceholder: "Note d'utilisation (ex: pour la sauce)",
-  ingredientsScanQuantities: 'Scanner les quantités',
-  ingredientsScanNames: 'Scanner les noms',
-  ingredientsAddManually: 'Ajouter manuellement',
+  roundButton: {
+    scan: 'Scanner',
+    addManually: 'Ajouter manuellement',
+    newTag: 'Nouvelle étiquette',
+    newStep: 'Nouvelle étape',
+    newIngredient: 'Nouvel ingrédient',
+    photo: 'Photo',
+    scanNames: 'Scanner les noms',
+    scanQuantities: 'Scanner les quantités',
+  },
 
   cardOcr: {
     boxHeaders: ['box', 'dans votre box'],

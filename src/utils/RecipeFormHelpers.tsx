@@ -24,9 +24,9 @@ import {
 import { RecipePropType } from '@customTypes/RecipeNavigationTypes';
 import { defaultValueNumber } from '@utils/Constants';
 import { scaleQuantityForPersons } from '@utils/Quantity';
-import { dictionaryIcons, Icons } from '@assets/Icons';
+import { Icons } from '@assets/Icons';
 import { OcrModalTarget } from '@utils/OCR';
-import { RecipeImageProps } from '@components/organisms/RecipeImage';
+import { ImageButtonConfig, RecipeImageProps } from '@components/organisms/RecipeImage';
 import { RecipeTextProps, TextProp } from '@components/organisms/RecipeText';
 import { RecipeTagProps } from '@components/organisms/RecipeTags';
 import { RecipeNumberProps } from '@components/organisms/RecipeNumber';
@@ -42,19 +42,24 @@ export type { RecipePropType } from '@customTypes/RecipeNavigationTypes';
  */
 export type ModeConfig<T> = Record<recipeStateType, T>;
 
+const photoImageButton: ImageButtonConfig = {
+  icon: Icons.cameraIcon,
+  labelKey: 'recipe.roundButton.photo',
+};
+
 /**
- * Configuration mapping recipe modes to image button icons
+ * Configuration mapping recipe modes to the image button icon and label
  *
  * - readOnly: No button (undefined)
- * - edit/addManual/addScrape: Camera icon for taking/selecting photos
- * - addOCR: Scan icon for OCR extraction
+ * - edit/addManual/addScrape: Camera icon + photo label for taking/selecting photos
+ * - addOCR: Scan icon + scan label for OCR extraction
  */
-export const IMAGE_BUTTON_CONFIG: ModeConfig<dictionaryIcons | undefined> = {
+export const IMAGE_BUTTON_CONFIG: ModeConfig<ImageButtonConfig | undefined> = {
   [recipeStateType.readOnly]: undefined,
-  [recipeStateType.edit]: Icons.cameraIcon,
-  [recipeStateType.addManual]: Icons.cameraIcon,
-  [recipeStateType.addOCR]: Icons.scanImageIcon,
-  [recipeStateType.addScrape]: Icons.cameraIcon,
+  [recipeStateType.edit]: photoImageButton,
+  [recipeStateType.addManual]: photoImageButton,
+  [recipeStateType.addOCR]: { icon: Icons.scanImageIcon, labelKey: 'recipe.roundButton.scan' },
+  [recipeStateType.addScrape]: photoImageButton,
 };
 
 /**
@@ -170,14 +175,6 @@ export function getServingsScaledFrom(
   return undefined;
 }
 
-/**
- * Builds props for RecipeImage component based on current mode
- *
- * @param stackMode - Current recipe screen mode
- * @param recipeImage - Current image URI
- * @param openModalForField - Callback to open OCR modal
- * @returns Props object for RecipeImage component
- */
 /** Fields every recipe-form `build*Props` helper accepts */
 interface BaseFieldInput {
   stackMode: recipeStateType;
@@ -189,10 +186,17 @@ interface BaseFieldInputT extends BaseFieldInput {
   t: (key: string) => string;
 }
 
+/** Input of {@link buildRecipeImageProps}: the current image URI plus the shared field inputs */
 export interface RecipeImagePropsInput extends BaseFieldInput {
   recipeImage: string;
 }
 
+/**
+ * Builds props for RecipeImage component based on current mode
+ *
+ * @param input - Stack mode, current image URI and OCR modal opener
+ * @returns Props object for RecipeImage component, with the mode's overlay button config
+ */
 export function buildRecipeImageProps({
   stackMode,
   recipeImage,
@@ -201,7 +205,7 @@ export function buildRecipeImageProps({
   return {
     imgUri: recipeImage,
     openModal: openModalForField,
-    buttonIcon: IMAGE_BUTTON_CONFIG[stackMode]!,
+    overlayButton: IMAGE_BUTTON_CONFIG[stackMode],
   };
 }
 

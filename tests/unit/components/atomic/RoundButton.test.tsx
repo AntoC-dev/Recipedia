@@ -8,7 +8,7 @@ describe('RoundButton', () => {
 
   test('renders the icon on the button', () => {
     const { getByTestId } = render(
-      <RoundButton icon='plus' testID={testID} onPressFunction={jest.fn()} />
+      <RoundButton icon='plus' testID={testID} label='Add recipe' onPressFunction={jest.fn()} />
     );
 
     expect(getByTestId(buttonId + '::Icon')).toHaveTextContent('plus');
@@ -17,7 +17,12 @@ describe('RoundButton', () => {
   test('calls onPressFunction when pressed', () => {
     const onPressFunction = jest.fn();
     const { getByTestId } = render(
-      <RoundButton icon='plus' testID={testID} onPressFunction={onPressFunction} />
+      <RoundButton
+        icon='plus'
+        testID={testID}
+        label='Add recipe'
+        onPressFunction={onPressFunction}
+      />
     );
 
     fireEvent.press(getByTestId(buttonId));
@@ -33,20 +38,12 @@ describe('RoundButton', () => {
     expect(getByTestId(buttonId + '::Label')).toHaveTextContent('Add recipe');
   });
 
-  test('renders an empty label when one is explicitly empty', () => {
+  test('exposes the label as the button accessibility label', () => {
     const { getByTestId } = render(
-      <RoundButton icon='plus' testID={testID} label='' onPressFunction={jest.fn()} />
+      <RoundButton icon='plus' testID={testID} label='Add recipe' onPressFunction={jest.fn()} />
     );
 
-    expect(getByTestId(buttonId + '::Label')).toHaveTextContent('');
-  });
-
-  test('renders no label when none is provided', () => {
-    const { queryByTestId } = render(
-      <RoundButton icon='plus' testID={testID} onPressFunction={jest.fn()} />
-    );
-
-    expect(queryByTestId(buttonId + '::Label')).toBeNull();
+    expect(getByTestId(buttonId).props.accessibilityLabel).toBe('Add recipe');
   });
 
   test('applies a custom container style on top of the default one', () => {
@@ -54,6 +51,7 @@ describe('RoundButton', () => {
       <RoundButton
         icon='plus'
         testID={testID}
+        label='Add recipe'
         style={{ marginTop: 24 }}
         onPressFunction={jest.fn()}
       />

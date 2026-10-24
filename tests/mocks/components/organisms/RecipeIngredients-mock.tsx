@@ -43,6 +43,7 @@ export function ingredientsTableMock({
   columnTitles,
   children,
   hideAddButton,
+  addIngredientButtonLabel,
   onAddIngredient,
   error,
 }: IngredientsTableProps) {
@@ -61,6 +62,9 @@ export function ingredientsTableMock({
             title='Add Ingredient'
           />
           <Text testID={`${testID}::AddButton::RoundButton::Icon`}>plus</Text>
+          <Text testID={`${testID}::AddButton::RoundButton::Label`}>
+            {addIngredientButtonLabel}
+          </Text>
         </>
       ) : null}
       <ErrorEcho testID={testID} error={error} />
@@ -140,6 +144,8 @@ export function ingredientRowMock({
 export function ingredientsAddEmptyMock({
   testID,
   prefixText,
+  scanNamesButtonLabel,
+  addManuallyButtonLabel,
   openOcrModal,
   onAddIngredient,
   error,
@@ -153,12 +159,14 @@ export function ingredientsAddEmptyMock({
         title='Open Modal Names'
       />
       <Text testID={`${testID}::OpenModalNames::RoundButton::Icon`}>line-scan</Text>
+      <Text testID={`${testID}::OpenModalNames::RoundButton::Label`}>{scanNamesButtonLabel}</Text>
       <Button
         testID={`${testID}::AddButton::RoundButton::OnPressFunction`}
         onPress={onAddIngredient}
         title='Add Ingredient'
       />
       <Text testID={`${testID}::AddButton::RoundButton::Icon`}>pencil</Text>
+      <Text testID={`${testID}::AddButton::RoundButton::Label`}>{addManuallyButtonLabel}</Text>
       <ErrorEcho testID={testID} error={error} />
     </View>
   );
@@ -166,6 +174,8 @@ export function ingredientsAddEmptyMock({
 
 export function ingredientsAddTailMock({
   testID,
+  scanQuantitiesButtonLabel,
+  addManuallyButtonLabel,
   openOcrModal,
   onAddIngredient,
 }: IngredientsAddTailProps) {
@@ -177,12 +187,16 @@ export function ingredientsAddTailMock({
         title='Open Modal Quantities'
       />
       <Text testID={`${testID}::OpenModalQuantities::RoundButton::Icon`}>line-scan</Text>
+      <Text testID={`${testID}::OpenModalQuantities::RoundButton::Label`}>
+        {scanQuantitiesButtonLabel}
+      </Text>
       <Button
         testID={`${testID}::AddButton::RoundButton::OnPressFunction`}
         onPress={onAddIngredient}
         title='Add Ingredient'
       />
       <Text testID={`${testID}::AddButton::RoundButton::Icon`}>pencil</Text>
+      <Text testID={`${testID}::AddButton::RoundButton::Label`}>{addManuallyButtonLabel}</Text>
     </View>
   );
 }

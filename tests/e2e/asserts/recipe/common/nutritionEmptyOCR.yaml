@@ -20,3 +20,7 @@ appId: "com.recipedia"
     id: "Recipe::RecipeNutrition::NutritionEmptyState::OCRButton::RoundButton"
     label: "OCR scan button for nutrition is displayed"
 
+- assertVisible:
+    id: "Recipe::RecipeNutrition::NutritionEmptyState::OCRButton::RoundButton::Label"
+    text: "Scan"
+    label: "OCR scan button label for nutrition is displayed"

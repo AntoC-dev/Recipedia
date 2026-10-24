@@ -161,6 +161,7 @@ export function RecipeTags(tagsProps: RecipeTagProps) {
                     testID={tagsTestID + '::OpenModal'}
                     icon={Icons.scanImageIcon}
                     onPressFunction={tagsProps.openModal}
+                    label={t('recipe.roundButton.scan')}
                   />
                 </View>
               ) : null}
@@ -168,6 +169,7 @@ export function RecipeTags(tagsProps: RecipeTagProps) {
                 <RoundButton
                   testID={tagsTestID}
                   icon={Icons.plusIcon}
+                  label={t('recipe.roundButton.newTag')}
                   onPressFunction={() => {
                     setNewTags(prev => [...prev, tagsAddedCounter]);
                     setTagsAddedCounter(prev => prev + 1);

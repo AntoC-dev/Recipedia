@@ -243,6 +243,12 @@ describe('RecipeTags Component', () => {
           'line-scan'
         );
         expect(getByTestId('RecipeTags::OpenModal::RoundButton::OnPressFunction')).toBeTruthy();
+        expect(getByTestId('RecipeTags::OpenModal::RoundButton::Label').props.children).toEqual(
+          'recipe.roundButton.scan'
+        );
+        expect(getByTestId('RecipeTags::RoundButton::Label').props.children).toEqual(
+          'recipe.roundButton.newTag'
+        );
       });
     });
   });

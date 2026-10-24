@@ -107,3 +107,21 @@ tags:
           id: "RecipeIngredients::0::QuantityAndUnit"
           text: "133[.]33 g"
           label: "A scaled quantity keeps the region's format despite the French app language"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - runFlow:
+          file: "../../flows/recipe/tapRecipeEdit.yaml"
+      - scrollUntilVisible:
+          element:
+            id: "RecipeTags::RoundButton::Label"
+          direction: DOWN
+          speed: 20
+          centerElement: true
+          label: "Scroll to the add tag button"
+      - assertVisible:
+          id: "RecipeTags::RoundButton::Label"
+          text: "Nouvelle étiquette"
+          label: "Round button labels follow the French app language"

@@ -19,7 +19,7 @@
  * // Recipe image with edit functionality
  * <RecipeImage
  *   imgUri={recipe.image_Source}
- *   buttonIcon="camera"
+ *   overlayButton={{ icon: "camera", labelKey: "recipe.roundButton.photo" }}
  *   openModal={(field) => openImageEditModal(field)}
  * />
  *
@@ -32,7 +32,7 @@
  * // Image with replacement option
  * <RecipeImage
  *   imgUri={currentImageUri}
- *   buttonIcon="image-edit"
+ *   overlayButton={{ icon: "image-edit", labelKey: "recipe.roundButton.photo" }}
  *   openModal={(field) => showImagePicker(field)}
  * />
  * ```
@@ -45,6 +45,13 @@ import { IconName } from '@assets/Icons';
 import { CustomImage } from '@components/atomic/CustomImage';
 import { RoundButton } from '@components/atomic/RoundButton';
 import { padding, screenHeight } from '@styles/spacing';
+import { useI18n } from '@utils/i18n';
+
+/** Icon and label translation key of the recipe image overlay button */
+export type ImageButtonConfig = {
+  icon: IconName;
+  labelKey: string;
+};
 
 /**
  * Props for the RecipeImage component
@@ -54,8 +61,8 @@ export type RecipeImageProps = {
   imgUri: string;
   /** Callback fired when the overlay button is pressed */
   openModal: (field: recipeColumnsNames) => void;
-  /** Optional icon for the overlay button */
-  buttonIcon?: IconName;
+  /** Optional overlay button; its label is shown below the button whether or not an image is displayed */
+  overlayButton?: ImageButtonConfig;
 };
 
 /**
@@ -64,7 +71,8 @@ export type RecipeImageProps = {
  * @param props - The component props
  * @returns JSX element representing a recipe image with dynamic overlay button
  */
-export function RecipeImage({ imgUri, openModal, buttonIcon }: RecipeImageProps) {
+export function RecipeImage({ imgUri, openModal, overlayButton }: RecipeImageProps) {
+  const { t } = useI18n();
   const [validUri, setValidUri] = React.useState(imgUri.length > 0);
 
   const imageTestID = 'RecipeImage';
@@ -78,12 +86,13 @@ export function RecipeImage({ imgUri, openModal, buttonIcon }: RecipeImageProps)
         }}
         onLoadSuccess={() => setValidUri(true)}
       />
-      {buttonIcon ? (
+      {overlayButton ? (
         <View style={validUri ? styles.topRightButtonContainer : styles.centerButtonContainer}>
           <RoundButton
             testID={imageTestID}
-            icon={buttonIcon}
+            icon={overlayButton.icon}
             onPressFunction={() => openModal(recipeColumnsNames.image)}
+            label={t(overlayButton.labelKey)}
           />
         </View>
       ) : null}

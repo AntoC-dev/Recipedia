@@ -112,6 +112,7 @@ export function RecipePreparation({ steps }: RecipePreparationProps) {
  * mapped rows, then the round "add step" button.
  */
 export function PreparationSection({ prefixText, children, onAddStep }: PreparationSectionProps) {
+  const { t } = useI18n();
   return (
     <View style={recipeTextRenderStyles.containerSection}>
       <Text
@@ -126,6 +127,7 @@ export function PreparationSection({ prefixText, children, onAddStep }: Preparat
         testID={`${TEST_ID}::AddButton`}
         icon={Icons.plusIcon}
         onPressFunction={onAddStep}
+        label={t('recipe.roundButton.newStep')}
         style={recipeTextRenderStyles.roundButtonPadding}
       />
     </View>
@@ -141,6 +143,7 @@ export function PreparationEmptyAdd({
   openModal,
   onAddStep,
 }: PreparationEmptyAddProps) {
+  const { t } = useI18n();
   return (
     <View style={recipeTextRenderStyles.containerSection}>
       <Text
@@ -156,12 +159,14 @@ export function PreparationEmptyAdd({
           style={recipeButtonStyles.roundButton}
           icon={Icons.scanImageIcon}
           onPressFunction={openModal}
+          label={t('recipe.roundButton.scan')}
         />
         <RoundButton
           testID={`${TEST_ID}::AddButton`}
           style={recipeButtonStyles.roundButton}
           icon={Icons.pencilIcon}
           onPressFunction={onAddStep}
+          label={t('recipe.roundButton.addManually')}
         />
       </View>
     </View>

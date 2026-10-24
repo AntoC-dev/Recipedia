@@ -9,7 +9,12 @@ export function recipeImageMock(recipeImageProp: RecipeImageProps) {
   return (
     <View>
       <Text testID={imageTestID + '::ImgUri'}>{recipeImageProp.imgUri}</Text>
-      <Text testID={imageTestID + '::ButtonIcon'}>{recipeImageProp.buttonIcon}</Text>
+      <Text testID={imageTestID + '::OverlayButtonIcon'}>
+        {recipeImageProp.overlayButton?.icon}
+      </Text>
+      <Text testID={imageTestID + '::OverlayButtonLabelKey'}>
+        {recipeImageProp.overlayButton?.labelKey}
+      </Text>
       <Button
         testID={imageTestID + '::OpenModal'}
         onPress={() => {

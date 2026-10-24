@@ -60,6 +60,7 @@ import { HelperText, Text } from 'react-native-paper';
 import { VariantProp } from 'react-native-paper/lib/typescript/components/Typography/types';
 import { NumericTextInput } from '@components/atomic/NumericTextInput';
 import { defaultValueNumber } from '@utils/Constants';
+import { useI18n } from '@utils/i18n';
 
 /** Props for add mode with OCR and manual options */
 export type RecipeNumberAddProps = {
@@ -143,6 +144,7 @@ export function RecipeNumber({ testID, numberProps, error, onBlur }: RecipeNumbe
 function RecipeNumberEditablePart(
   addOrEditProps: RecipeNumberAddOrEditProps & { onBlur?: () => void }
 ) {
+  const { t } = useI18n();
   const view = addOrEditProps.editType === 'editable' ? recipeNumberStyles.editableView : undefined;
   const prefixVariant: VariantProp<never> =
     addOrEditProps.editType === 'editable' ? 'titleMedium' : 'headlineSmall';
@@ -168,6 +170,7 @@ function RecipeNumberEditablePart(
               testID={addOrEditProps.testID + '::OpenModal'}
               icon={Icons.scanImageIcon}
               onPressFunction={addOrEditProps.openModal}
+              label={t('recipe.roundButton.scan')}
             />
           </View>
           <View style={recipeButtonStyles.roundButton}>
@@ -175,6 +178,7 @@ function RecipeNumberEditablePart(
               testID={addOrEditProps.testID + '::ManuallyFill'}
               icon={Icons.pencilIcon}
               onPressFunction={addOrEditProps.manuallyFill}
+              label={t('recipe.roundButton.addManually')}
             />
           </View>
         </View>

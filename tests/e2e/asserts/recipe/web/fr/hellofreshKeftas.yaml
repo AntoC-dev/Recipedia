@@ -105,6 +105,11 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to tags button"
 
+- assertVisible:
+    id: "RecipeTags::RoundButton::Label"
+    text: "Nouvelle étiquette"
+    label: "Add tag button label is displayed in French"
+
 - waitForAnimationToEnd
 
 - scrollUntilVisible:
@@ -203,6 +208,11 @@ appId: "com.recipedia"
 - assertVisible:
     id: "RecipeIngredients::AddButton::RoundButton"
     label: "Add button of the ingredients is rendered"
+
+- assertVisible:
+    id: "RecipeIngredients::AddButton::RoundButton::Label"
+    text: "Nouvel ingrédient"
+    label: "Add ingredient button label is displayed in French"
 
 - waitForAnimationToEnd
 
@@ -371,6 +381,11 @@ appId: "com.recipedia"
 - assertVisible:
     id: "RecipePreparation::AddButton::RoundButton"
     label: "Add button of the preparation is rendered"
+
+- assertVisible:
+    id: "RecipePreparation::AddButton::RoundButton::Label"
+    text: "Nouvelle étape"
+    label: "Add step button label is displayed in French"
 
 - runFlow:
     file: "../../common/fr/nutritionEdit.yaml"

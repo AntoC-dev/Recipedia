@@ -32,6 +32,9 @@ describe('NutritionEmptyState', () => {
       expect(
         getByTestId(expectationTestId + 'AddButton::RoundButton::OnPressFunction')
       ).toBeTruthy();
+      expect(
+        getByTestId(expectationTestId + 'AddButton::RoundButton::Label').props.children
+      ).toEqual('recipe.roundButton.addManually');
     });
 
     test('calls onButtonPressed when add button is pressed', () => {
@@ -85,6 +88,9 @@ describe('NutritionEmptyState', () => {
       expect(
         getByTestId(expectationTestId + 'OCRButton::RoundButton::OnPressFunction')
       ).toBeTruthy();
+      expect(
+        getByTestId(expectationTestId + 'OCRButton::RoundButton::Label').props.children
+      ).toEqual('recipe.roundButton.scan');
     });
 
     test('calls onButtonPressed when OCR button is pressed', () => {

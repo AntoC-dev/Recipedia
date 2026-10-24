@@ -94,8 +94,14 @@ describe('RecipeNumber Component', () => {
           getByTestId(componentProps.testID + '::OpenModal::RoundButton::Icon').props.children
         ).toBe('line-scan');
         expect(
+          getByTestId(componentProps.testID + '::OpenModal::RoundButton::Label').props.children
+        ).toBe('recipe.roundButton.scan');
+        expect(
           getByTestId(componentProps.testID + '::ManuallyFill::RoundButton::Icon').props.children
         ).toBe('pencil');
+        expect(
+          getByTestId(componentProps.testID + '::ManuallyFill::RoundButton::Label').props.children
+        ).toBe('recipe.roundButton.addManually');
         expect(queryByTestId(componentProps.testID + '::NumericTextInput')).toBeNull();
         break;
     }

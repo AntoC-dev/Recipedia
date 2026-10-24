@@ -119,8 +119,8 @@ function EditableIngredientsField({
       <IngredientsAddEmpty
         testID={testID}
         prefixText={prefixText}
-        scanLabel={t('recipe.ingredientsScanNames')}
-        manualLabel={t('recipe.ingredientsAddManually')}
+        scanNamesButtonLabel={t('recipe.roundButton.scanNames')}
+        addManuallyButtonLabel={t('recipe.roundButton.addManually')}
         openOcrModal={() => openModalForField('ingredientNames')}
         onAddIngredient={handleAddIngredient}
         error={rootErrorMessage}
@@ -165,6 +165,7 @@ function EditableIngredientsField({
           column3: t('ingredientName'),
         }}
         hideAddButton={isAddOCR}
+        addIngredientButtonLabel={t('recipe.roundButton.newIngredient')}
         onAddIngredient={handleAddIngredient}
         error={rootErrorMessage}
       >
@@ -173,8 +174,8 @@ function EditableIngredientsField({
       {isAddOCR && (
         <IngredientsAddTail
           testID={testID}
-          scanLabel={t('recipe.ingredientsScanQuantities')}
-          manualLabel={t('recipe.ingredientsAddManually')}
+          scanQuantitiesButtonLabel={t('recipe.roundButton.scanQuantities')}
+          addManuallyButtonLabel={t('recipe.roundButton.addManually')}
           openOcrModal={() => openModalForField('ingredientQuantities')}
           onAddIngredient={handleAddIngredient}
         />
