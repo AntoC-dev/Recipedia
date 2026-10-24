@@ -8,7 +8,7 @@ import RecipeDatabase from '@utils/RecipeDatabase';
 import { performanceRecipes } from '@assets/datasets/performance/recipes';
 import { performanceIngredients } from '@assets/datasets/performance/ingredients';
 import { performanceTags } from '@assets/datasets/performance/tags';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { SeasonFilterProvider } from '@context/SeasonFilterContext';
 import { DefaultPersonsProvider, useDefaultPersons } from '@context/DefaultPersonsContext';
@@ -21,7 +21,7 @@ jest.mock('@react-navigation/native', () =>
 );
 jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 let personsContextRef: ReturnType<typeof useDefaultPersons> | null = null;
 

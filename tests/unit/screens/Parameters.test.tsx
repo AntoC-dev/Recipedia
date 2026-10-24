@@ -2,7 +2,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import Parameters from '@screens/Parameters';
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { getMockCopilotEvents, resetMockCopilot } from '@mocks/deps/react-native-copilot-mock';
 import { TUTORIAL_STEPS } from '@utils/Constants';
 
@@ -28,7 +28,7 @@ jest.mock('@hooks/useSafeCopilot', () =>
 
 const { mockUseSafeCopilot } = require('@mocks/hooks/useSafeCopilot-mock');
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 describe('Parameters Screen', () => {
   const renderParameters = () => {

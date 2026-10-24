@@ -5,7 +5,7 @@ import RecipeDatabase from '@utils/RecipeDatabase';
 import { performanceRecipes } from '@assets/datasets/performance/recipes';
 import { performanceIngredients } from '@assets/datasets/performance/ingredients';
 import { performanceTags } from '@assets/datasets/performance/tags';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { SeasonFilterProvider } from '@context/SeasonFilterContext';
 import { DefaultPersonsProvider } from '@context/DefaultPersonsContext';
@@ -18,7 +18,7 @@ jest.mock('@hooks/useSafeCopilot', () =>
   require('@mocks/hooks/useSafeCopilot-mock').useSafeCopilotMock()
 );
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 function MenuWrapper() {
   return (

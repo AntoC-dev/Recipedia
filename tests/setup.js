@@ -5,8 +5,8 @@ require('./mocks/deps/fetch-mock');
 
 // Centralized mocks - these are used across many test files
 jest.mock('expo-sqlite', () => require('@mocks/deps/expo-sqlite-mock').expoSqliteMock());
-jest.mock('@react-navigation/stack', () =>
-  require('@mocks/deps/react-navigation-stack-mock').reactNavigationStackMock()
+jest.mock('@react-navigation/native-stack', () =>
+  require('@mocks/deps/react-navigation-native-stack-mock').reactNavigationNativeStackMock()
 );
 jest.mock('@utils/FileGestion', () =>
   require('@mocks/utils/FileGestion-mock.tsx').fileGestionMock()
