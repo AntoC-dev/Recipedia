@@ -3,19 +3,23 @@
  * Build the E2E suite matrix for a platform from the single manifest
  * `.github/e2e-suites.json`.
  *
- * Each manifest entry is `{ name, requiresSecrets?, long? }`:
+ * Each manifest entry is `{ name, requiresSecrets?, long?, group? }`:
  *   - `requiresSecrets`: needs the QUITOQUE_* secrets, so it is dropped when the
  *     run is not internal (fork PRs receive no secrets).
  *   - `long`: slow suite. Job concurrency queues suites on both platforms, so
  *     long suites are scheduled first to avoid a long tail.
+ *   - `group`: suites sharing a group run one after another in a single job,
+ *     saving the per-job device setup of short suites. The job is named after
+ *     its suites joined by `+`.
  *
  * Usage: node .github/scripts/e2e-matrix.mjs <android|ios> <true|false> [manifestFile]
- * Prints the JSON array of suite names consumed by `fromJson` in the workflow.
+ * Prints the JSON array of job names consumed by `fromJson` in the workflow.
  */
 
 import { readFileSync } from 'node:fs';
 
 const PLATFORMS = ['android', 'ios'];
+const JOB_SEPARATOR = '+';
 
 export const DEFAULT_MANIFEST = '.github/e2e-suites.json';
 
@@ -30,13 +34,15 @@ export function loadSuites(manifestFile = DEFAULT_MANIFEST) {
 }
 
 /**
- * Compute the ordered suite names to run on a platform.
+ * Compute the ordered job names to run on a platform.
  *
  * @param suites Manifest entries, in declaration order.
- * @param platform `android` or `ios`; long suites come first, the rest keep manifest order.
+ * @param platform `android` or `ios`; jobs holding a long suite come first, the
+ *   rest keep manifest order. A grouped job sits at its first member's position.
  * @param isInternal Whether the run has access to secrets; when false, suites
- *   flagged `requiresSecrets` are dropped.
- * @returns Suite names in execution order.
+ *   flagged `requiresSecrets` are dropped (from their group too).
+ * @returns Job names in execution order: a suite name, or the `+`-joined names
+ *   of a group's remaining suites.
  */
 export function buildSuiteMatrix(suites, platform, isInternal) {
   if (!PLATFORMS.includes(platform)) {
@@ -44,12 +50,17 @@ export function buildSuiteMatrix(suites, platform, isInternal) {
   }
 
   const available = suites.filter(suite => isInternal || !suite.requiresSecrets);
-  const ordered = [
-    ...available.filter(suite => suite.long),
-    ...available.filter(suite => !suite.long),
-  ];
+  const jobsByKey = new Map();
+  for (const suite of available) {
+    const key = suite.group ?? suite.name;
+    jobsByKey.set(key, [...(jobsByKey.get(key) ?? []), suite]);
+  }
+  const jobs = [...jobsByKey.values()];
 
-  return ordered.map(suite => suite.name);
+  const isLong = job => job.some(suite => suite.long);
+  const ordered = [...jobs.filter(isLong), ...jobs.filter(job => !isLong(job))];
+
+  return ordered.map(job => job.map(suite => suite.name).join(JOB_SEPARATOR));
 }
 
 function main() {

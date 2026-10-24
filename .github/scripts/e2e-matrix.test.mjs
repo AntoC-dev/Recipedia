@@ -47,6 +47,77 @@ test('loadSuites reads the manifest entries', () => {
   assert.ok(loaded.length > 0);
 });
 
+const groupedSuites = [
+  { name: 'alpha' },
+  { name: 'tiny-one', group: 'tiny' },
+  { name: 'slow-one', long: true },
+  { name: 'tiny-secret', group: 'tiny', requiresSecrets: true },
+  { name: 'tiny-two', group: 'tiny' },
+  { name: 'pair-one', group: 'pair' },
+  { name: 'pair-secret', group: 'pair', requiresSecrets: true },
+];
+
+test('suites sharing a group run as one job at the first member position', () => {
+  assert.deepEqual(buildSuiteMatrix(groupedSuites, 'ios', true), [
+    'slow-one',
+    'alpha',
+    'tiny-one+tiny-secret+tiny-two',
+    'pair-one+pair-secret',
+  ]);
+});
+
+test('a group is identical on android and ios', () => {
+  assert.deepEqual(
+    buildSuiteMatrix(groupedSuites, 'android', true),
+    buildSuiteMatrix(groupedSuites, 'ios', true)
+  );
+});
+
+test('non-internal runs drop secret suites from their group', () => {
+  assert.deepEqual(buildSuiteMatrix(groupedSuites, 'android', false), [
+    'slow-one',
+    'alpha',
+    'tiny-one+tiny-two',
+    'pair-one',
+  ]);
+});
+
+test('a group holding a long suite is scheduled first', () => {
+  const suitesWithLongGroup = [
+    { name: 'alpha' },
+    { name: 'quick', group: 'mixed' },
+    { name: 'slow', group: 'mixed', long: true },
+  ];
+
+  assert.deepEqual(buildSuiteMatrix(suitesWithLongGroup, 'ios', true), ['quick+slow', 'alpha']);
+});
+
+test('the real manifest groups only suites that run in the same job on both platforms', () => {
+  const manifest = JSON.parse(readFileSync(MANIFEST, 'utf8'));
+  const jobs = buildSuiteMatrix(manifest, 'ios', true);
+
+  assert.deepEqual(buildSuiteMatrix(manifest, 'android', true), jobs);
+  for (const { group } of manifest.filter(suite => suite.group)) {
+    assert.ok(!manifest.some(suite => suite.name === group), `group ${group} shadows a suite`);
+  }
+  assert.equal(new Set(jobs).size, jobs.length);
+  assert.deepEqual(
+    jobs.flatMap(job => job.split('+')).sort(),
+    manifest.map(suite => suite.name).sort()
+  );
+});
+
+test('locale-fr runs last in its job since it leaves the Android device in French', () => {
+  const manifest = JSON.parse(readFileSync(MANIFEST, 'utf8'));
+
+  for (const platform of ['android', 'ios']) {
+    const job = buildSuiteMatrix(manifest, platform, true).find(name =>
+      name.split('+').includes('locale-fr')
+    );
+    assert.equal(job.split('+').at(-1), 'locale-fr', `${platform} job ${job}`);
+  }
+});
+
 test('an empty manifest yields an empty matrix', () => {
   assert.deepEqual(buildSuiteMatrix([], 'ios', true), []);
 });

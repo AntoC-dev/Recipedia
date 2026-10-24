@@ -134,6 +134,7 @@ for (const script of ['run-e2e-ios.sh', 'run-e2e-android.sh']) {
       'tests/e2e/',
       '--config=tests/e2e/search.yaml',
       '--debug-output=maestro_logs_search',
+      '--output=report-search.xml',
       '--format',
       'junit',
       '-s',
@@ -166,7 +167,7 @@ const LATCHED_REPORT = `<testsuites>
 </testsuites>
 `;
 
-const runLatchedIosSuite = ({ firstRunLog, rerunFailingFlow = '' }) => {
+const runLatchedIosSuite = ({ firstRunLog, rerunFailingFlow = '', rerunDeadline = '' }) => {
   const workDir = mkdtempSync(join(tmpdir(), 'e2e-rerun-'));
   makeTree(
     {
@@ -180,7 +181,7 @@ const runLatchedIosSuite = ({ firstRunLog, rerunFailingFlow = '' }) => {
     `if [ "$2" = "tests/e2e/" ]; then
   mkdir -p maestro_logs_search/.maestro/tests/sess
   cp stub/first-run.log maestro_logs_search/.maestro/tests/sess/maestro.log
-  cp stub/report.xml report.xml
+  cp stub/report.xml report-search.xml
   exit 1
 fi
 echo "$*" >> reruns.txt
@@ -194,6 +195,7 @@ exit 0`
     {
       ...noCredentials,
       RERUN_FAILING_FLOW: rerunFailingFlow,
+      E2E_RERUN_DEADLINE: rerunDeadline,
       PATH: `${binDir}:${process.env.PATH}`,
     },
     workDir
@@ -224,6 +226,16 @@ test('run-e2e-ios.sh fails when a rerun flow fails again', () => {
 
   assert.equal(result.status, 1);
   assert.equal(rerunArgv.length, 2);
+});
+
+test('run-e2e-ios.sh skips reruns once earlier suites of the job used up the rerun budget', () => {
+  const { result, rerunArgv } = runLatchedIosSuite({
+    firstRunLog: LATCH_LOG,
+    rerunDeadline: String(Math.floor(Date.now() / 1000) - 1),
+  });
+
+  assert.equal(result.status, 1);
+  assert.deepEqual(rerunArgv, []);
 });
 
 test('run-e2e-ios.sh keeps a plain failure without rerunning when the driver never latched', () => {
