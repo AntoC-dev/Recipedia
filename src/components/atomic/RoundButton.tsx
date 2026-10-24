@@ -9,6 +9,7 @@
  * ```typescript
  * <RoundButton
  *   icon="plus"
+ *   label="New recipe"
  *   onPressFunction={() => createNewRecipe()}
  *   testID="add-recipe-fab"
  * />
@@ -31,8 +32,8 @@ export type RoundButtonProps = {
   onPressFunction: () => void;
   /** Unique identifier for testing and accessibility */
   testID: string;
-  /** Optional text label rendered below the button */
-  label?: string;
+  /** Text label rendered below the button, also used as the button's accessibility label */
+  label: string;
   /** Custom styles for the button container */
   style?: StyleProp<ViewStyle>;
 };
@@ -54,13 +55,12 @@ export function RoundButton({ icon, onPressFunction, testID, label, style }: Rou
         size={'medium'}
         mode={'elevated'}
         style={styles.fab}
+        accessibilityLabel={label}
         onPress={onPressFunction}
       />
-      {label !== undefined && (
-        <Text testID={roundButtonTestId + '::Label'} variant='titleMedium' style={styles.label}>
-          {label}
-        </Text>
-      )}
+      <Text testID={roundButtonTestId + '::Label'} variant='titleMedium' style={styles.label}>
+        {label}
+      </Text>
     </View>
   );
 }

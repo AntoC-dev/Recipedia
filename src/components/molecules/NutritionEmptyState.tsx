@@ -35,6 +35,7 @@ export function NutritionEmptyState({
         testID={testId + (isOCRMode ? '::OCRButton' : '::AddButton')}
         icon={isOCRMode ? Icons.scanImageIcon : Icons.plusIcon}
         onPressFunction={onButtonPressed}
+        label={t(isOCRMode ? 'recipe.roundButton.scan' : 'recipe.roundButton.addManually')}
         style={recipeTextStyles.button}
       />
     </View>

@@ -53,6 +53,7 @@ import { HelperText, Text } from 'react-native-paper';
 import { recipeTextStyles } from '@styles/recipeComponents';
 import { VariantProp } from 'react-native-paper/lib/typescript/components/Typography/types';
 import { CustomTextInput } from '@components/atomic/CustomTextInput';
+import { useI18n } from '@utils/i18n';
 
 /** Text configuration with style and content */
 export type TextProp = {
@@ -157,6 +158,7 @@ export function RecipeText({ rootText, testID, addOrEditProps, error, onBlur }: 
 function RecipeTextEditablePart(
   addOrEditProps: RecipeTextAddOrEditProps & { onBlur?: () => void }
 ) {
+  const { t } = useI18n();
   return (
     <View>
       {addOrEditProps.editType === 'editable' ? (
@@ -180,6 +182,7 @@ function RecipeTextEditablePart(
           testID={addOrEditProps.testID + '::OpenModal'}
           icon={Icons.scanImageIcon}
           onPressFunction={addOrEditProps.openModal}
+          label={t('recipe.roundButton.scan')}
         />
       )}
     </View>
