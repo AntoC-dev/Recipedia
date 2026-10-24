@@ -1,8 +1,6 @@
 appId: "com.recipedia"
 ---
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::PrefixText"
@@ -11,8 +9,6 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to ingredients section"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::${INDEX}::NoteButton"
@@ -20,8 +16,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll to ingredient note button"
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeIngredients::${INDEX}::NoteButton"
@@ -46,6 +40,7 @@ appId: "com.recipedia"
     label: "Enter note text"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - runFlow:

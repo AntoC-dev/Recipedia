@@ -56,8 +56,6 @@ appId: "com.recipedia"
     id: "Recipe::Dialog::Confirm"
     label: "Close validation dialog"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::2::Cover"
@@ -65,8 +63,6 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to second recipe"
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::RecipeCards::2::Cover"
@@ -98,8 +94,6 @@ appId: "com.recipedia"
     id: "Recipe::Dialog::Confirm"
     label: "Close confirmation dialog"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::3::Cover"
@@ -107,8 +101,6 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to third recipe"
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::RecipeCards::3::Cover"

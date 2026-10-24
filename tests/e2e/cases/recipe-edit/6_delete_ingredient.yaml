@@ -26,6 +26,7 @@ tags:
     label: "Action - Search for the temporary recipe"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - runFlow:
@@ -52,7 +53,8 @@ tags:
       INDEX: "0"
     label: "Action - Delete first ingredient (Pasta 200g)"
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000
 
 - assertNotVisible:
     id: "RecipeIngredients::1::Row"
@@ -62,7 +64,8 @@ tags:
     id: "Recipe::AppBar::Validate"
     label: "Action - Save changes"
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000
 
 - assertNotVisible:
     id: "RecipeIngredients::.*::IngredientName"

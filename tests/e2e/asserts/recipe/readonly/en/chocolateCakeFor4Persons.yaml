@@ -5,8 +5,6 @@ appId: "com.recipedia"
     text: "CHOCOLATE CAKE"
     label: "Chocolate Cake recipe is displayed"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipePersons::Text"
@@ -15,14 +13,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to ingredients section"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipePersons::Text"
     text: "Ingredients (4 persons)"
     label: "Recipe is scaled to 4 persons"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -31,8 +25,6 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Flour ingredient"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::0::IngredientName"
@@ -44,8 +36,6 @@ appId: "com.recipedia"
     text: "133[.]33 g"
     label: "Flour quantity is scaled to 133.33 g"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::1::IngredientName"
@@ -53,8 +43,6 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Cocoa Powder ingredient"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::1::IngredientName"
@@ -66,8 +54,6 @@ appId: "com.recipedia"
     text: "33[.]33 g"
     label: "Cocoa Powder quantity is scaled to 33.33 g"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::2::IngredientName"
@@ -75,8 +61,6 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Sugar ingredient"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::2::IngredientName"
@@ -88,8 +72,6 @@ appId: "com.recipedia"
     text: "100 g"
     label: "Sugar quantity is scaled to 100g"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::3::IngredientName"
@@ -97,8 +79,6 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Butter ingredient"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::3::IngredientName"

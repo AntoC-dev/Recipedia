@@ -28,8 +28,6 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to the title with the keyboard closed"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../../../focusField.yaml"
     env:

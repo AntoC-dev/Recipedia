@@ -8,8 +8,6 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to RecipeTime::NumericTextInput"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../../../focusField.yaml"
     env:

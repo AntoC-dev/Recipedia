@@ -21,6 +21,7 @@ tags:
     label: "Action - Enter invalid URL"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - assertVisible:

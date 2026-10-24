@@ -9,8 +9,6 @@ appId: "com.recipedia"
     timeout: 60000
     label: "Scroll to ingredient ${INGREDIENT_INDEX}"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipeIngredients::${INGREDIENT_INDEX}::NameInput::CustomTextInput"
     text: "${INGREDIENT_NAME}"
@@ -24,8 +22,6 @@ appId: "com.recipedia"
     centerElement: true
     timeout: 60000
     label: "Scroll to the end of the ingredient list"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::${LAST_INDEX}::NameInput::CustomTextInput"

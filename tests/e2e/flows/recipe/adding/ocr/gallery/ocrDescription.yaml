@@ -1,7 +1,5 @@
 appId: "com.recipedia"
 ---
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeDescription::OpenModal::RoundButton"
@@ -9,8 +7,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll to description section"
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeDescription::OpenModal::RoundButton"

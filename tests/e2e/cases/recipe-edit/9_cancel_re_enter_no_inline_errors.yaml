@@ -43,8 +43,6 @@ tags:
     centerElement: true
     label: "Action - Scroll to title input"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../asserts/recipe/inlineErrors/en/titleNoError.yaml"
     label: "Assert - No title inline error visible before user interacts"
@@ -75,8 +73,6 @@ tags:
 
 - eraseText:
     label: "Action - Erase title to surface inline error"
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeTitle::Text"
@@ -121,8 +117,6 @@ tags:
     speed: 10
     centerElement: true
     label: "Action - Scroll to title input again"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeTitle::CustomTextInput"

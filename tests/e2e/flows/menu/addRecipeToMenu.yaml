@@ -4,8 +4,6 @@ appId: "com.recipedia"
     id: "BottomTabs::Search"
     label: "Navigate to Search screen"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::3::Classic Pancakes"
@@ -14,8 +12,6 @@ appId: "com.recipedia"
     timeout: 60000
     centerElement: true
     label: "Scroll to Classic Pancakes recipe"
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::RecipeCards::3::Classic Pancakes"

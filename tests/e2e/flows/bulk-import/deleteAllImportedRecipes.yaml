@@ -4,8 +4,6 @@ appId: "com.recipedia"
     id: "BottomTabs::Search"
     label: "Navigate to Search screen"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::(1[1-9]|[2-9]\\d|\\d{3,})::Cover"
@@ -42,7 +40,8 @@ appId: "com.recipedia"
                 timeout: 5000
             - tapOn:
                 id: "Recipe::Dialog::Confirm"
-            - waitForAnimationToEnd
+            - waitForAnimationToEnd:
+                timeout: 2000
     label: "Delete imported recipes"
 
 - scrollUntilVisible:

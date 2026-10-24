@@ -45,6 +45,7 @@ tags:
     label: "Action - Clear input"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - tapOn:
@@ -56,6 +57,7 @@ tags:
     label: "Action - Clear input again to ensure it is empty (avoid flaky test)"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - inputText:
@@ -63,6 +65,7 @@ tags:
     label: "Action - Change to different unique name"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - runFlow:
@@ -106,6 +109,7 @@ tags:
     label: "Action - Clear input"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - tapOn:
@@ -117,6 +121,7 @@ tags:
     label: "Action - Clear input again to ensure it is empty (avoid flaky test)"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - inputText:
@@ -124,6 +129,7 @@ tags:
     label: "Action - Change back to original name"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - runFlow:
@@ -167,6 +173,7 @@ tags:
     label: "Action - Clear input"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - tapOn:
@@ -178,6 +185,7 @@ tags:
     label: "Action - Clear input again to ensure it is empty (avoid flaky test)"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - inputText:
@@ -185,6 +193,7 @@ tags:
     label: "Action - Enter the name of another tag"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - runFlow:
@@ -221,6 +230,7 @@ tags:
     label: "Cleanup - Cancel edit tag dialog"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for dialog to close"
 
 - assertNotVisible:

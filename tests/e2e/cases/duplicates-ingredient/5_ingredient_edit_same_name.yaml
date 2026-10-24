@@ -40,6 +40,7 @@ tags:
     label: "Action - Clear input"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - inputText:
@@ -47,6 +48,7 @@ tags:
     label: "Action - Change to different unique name"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - runFlow:
@@ -75,6 +77,7 @@ tags:
     label: "Action - Clear input"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - tapOn:
@@ -86,6 +89,7 @@ tags:
     label: "Action - Clear input again to avoid flaky test"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - inputText:
@@ -93,6 +97,7 @@ tags:
     label: "Action - Change to another existing ingredient name"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - runFlow:

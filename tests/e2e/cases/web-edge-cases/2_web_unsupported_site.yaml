@@ -17,6 +17,7 @@ tags:
     label: "Action - Enter valid URL without recipe data"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - runFlow:

@@ -25,8 +25,6 @@ appId: "com.recipedia"
     end: "50%,20%"
     label: "Continue scrolling down"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "Home::RecipeRecommendation::random::Carousel::Card::.*"

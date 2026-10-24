@@ -1,15 +1,14 @@
 appId: "com.recipedia"
 ---
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000
 
 - runFlow:
     file: "../../../flows/scrollToEndTarget.yaml"
     env:
       TARGET_ID: "Recipe::RecipeNutrition::NutritionEmptyState::OCRButton::RoundButton"
     label: "Scroll to empty nutrition section"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionEmptyState::Title"

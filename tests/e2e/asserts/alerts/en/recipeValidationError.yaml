@@ -33,4 +33,5 @@ appId: "com.recipedia"
     label: "Close the alert"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for dialog to close"

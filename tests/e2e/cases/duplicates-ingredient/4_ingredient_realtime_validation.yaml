@@ -28,6 +28,7 @@ tags:
     label: "Action - Type non-existant text"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - runFlow:
@@ -73,6 +74,7 @@ tags:
     label: "Action - Type fuzzy matching text"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - runFlow:
@@ -154,6 +156,7 @@ tags:
     label: "Action - Type exact duplicate"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - runFlow:

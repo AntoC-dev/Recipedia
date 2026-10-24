@@ -22,8 +22,6 @@ tags:
       TIME: "20"
     label: "Action - Fill Test Recipe (2 persons, Pasta 200g, Tomatoes 100g)"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeImage"
@@ -32,8 +30,6 @@ tags:
     timeout: 120000
     centerElement: true
     label: "Action - Scroll back to top"
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "../../asserts/recipe/edit/testRecipeFor2Persons.yaml"
@@ -62,6 +58,7 @@ tags:
     label: "Action - Search for Test Recipe"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - runFlow:

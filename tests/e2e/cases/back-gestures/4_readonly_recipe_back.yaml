@@ -31,8 +31,6 @@ tags:
     id: "BottomTabs::Home"
     label: "Action - Navigate to Home screen"
 
-- waitForAnimationToEnd
-
 - tapOn:
     id: "Home::RecipeRecommendation::random::Carousel::Card::0::Cover"
     label: "Action - Open the first recommended recipe"

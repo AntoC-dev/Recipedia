@@ -35,4 +35,5 @@ appId: "com.recipedia"
     id: "Recipe::Dialog::Confirm"
     label: "Acknowledge and return to Search"
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000

@@ -41,8 +41,6 @@ appId: "com.recipedia"
     text: "Lunch"
     label: "Tag Lunch is rendered"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::0::IngredientName"
@@ -50,8 +48,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll to Taco Shells ingredient"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::0::IngredientName"
@@ -63,8 +59,6 @@ appId: "com.recipedia"
     text: "12 pieces"
     label: "Quantity of Taco Shells is rendered"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::1::IngredientName"
@@ -72,8 +66,6 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Chicken Breast ingredient"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::1::IngredientName"
@@ -85,8 +77,6 @@ appId: "com.recipedia"
     text: "600 g"
     label: "Quantity of Chicken Breast is rendered"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::2::IngredientName"
@@ -94,8 +84,6 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Lettuce ingredient"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::2::IngredientName"
@@ -107,8 +95,6 @@ appId: "com.recipedia"
     text: "100 g"
     label: "Quantity of Lettuce is rendered"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::3::IngredientName"
@@ -116,8 +102,6 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Cheddar ingredient"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::3::IngredientName"
@@ -129,8 +113,6 @@ appId: "com.recipedia"
     text: "100 g"
     label: "Quantity of Cheddar is rendered"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::4::IngredientName"
@@ -138,8 +120,6 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to Burger Buns ingredient"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::4::IngredientName"
@@ -151,8 +131,6 @@ appId: "com.recipedia"
     text: "8 "
     label: "Quantity of Burger Buns is rendered"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeTime::Text"
@@ -161,14 +139,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to preparation time"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipeTime::Text"
     text: "Preparation (20 min)"
     label: "Preparation title and time of preparation is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -178,14 +152,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to first preparation step"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
     text: "1) Prepare chicken"
     label: "First section of the preparation is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -195,14 +165,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to second preparation step"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
     text: "2) Assemble tacos"
     label: "Second section of the preparation is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -211,8 +177,6 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to third preparation step"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"
@@ -233,8 +197,6 @@ appId: "com.recipedia"
       SALT: "1[.]2"
     label: "Verify nutrition information is displayed"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       text: "per portion"
@@ -247,8 +209,6 @@ appId: "com.recipedia"
     start: "50%,70%"
     end: "50%,25%"
     label: "Swipe to the end of the list so the per portion button clears the bottom overlay"
-
-- waitForAnimationToEnd
 
 - tapOn:
     text: "per portion"
@@ -283,8 +243,6 @@ appId: "com.recipedia"
 - assertVisible:
     text: "Add to the menu"
     label: "Add to menu button has the correct text"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:

@@ -46,8 +46,6 @@ tags:
     centerElement: true
     label: "Scroll to the nutrition table"
 
-- waitForAnimationToEnd
-
 - runFlow:
     when:
       platform: Android
@@ -87,8 +85,6 @@ tags:
     speed: 60
     centerElement: true
     label: "Scroll to the first ingredient"
-
-- waitForAnimationToEnd
 
 - runFlow:
     when:

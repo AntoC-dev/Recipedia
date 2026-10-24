@@ -35,8 +35,6 @@ appId: "com.recipedia"
     label: "Assert and check Croutons ingredient"
 
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.cheese::SubHeader"
@@ -44,8 +42,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll to Cheese category"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.cheese::SubHeader"
@@ -85,8 +81,6 @@ appId: "com.recipedia"
       RECIPE_COUNT: "1 recipe"
       RECIPE_NAMES: "Spaghetti Bolognese"
     label: "Assert and check Ground Beef ingredient"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -130,8 +124,6 @@ appId: "com.recipedia"
     label: "Assert and check Caesar Dressing ingredient"
 
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::ingredientTypes.vegetable::SubHeader"
@@ -139,8 +131,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll to Vegetable category"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "ShoppingScreen::SectionList::ingredientTypes.vegetable::SubHeader"
@@ -160,8 +150,6 @@ appId: "com.recipedia"
       RECIPE_COUNT: "1 recipe"
       RECIPE_NAMES: "Caesar Salad"
     label: "Assert and check Romaine Lettuce ingredient"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:

@@ -4,8 +4,6 @@ appId: "com.recipedia"
 # asserted visible when its name is in VISIBLE_ITEMS, otherwise asserted absent.
 # Visible items occupy contiguous rendered positions, tracked by output.itemIndex.
 # env: CATEGORY, ITEM_NAMES (comma list), ITEM_COUNT, VISIBLE_ITEMS.
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -13,8 +11,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll to ${CATEGORY} accordion"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -43,7 +39,8 @@ appId: "com.recipedia"
           when:
             true: ${output.itemVisible}
           commands:
-            - waitForAnimationToEnd
+            - waitForAnimationToEnd:
+                timeout: 2000
             - scrollUntilVisible:
                 element:
                   id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}::Item::${output.itemIndex}"
@@ -65,8 +62,6 @@ appId: "com.recipedia"
                 label: "${output.itemName} filter is not visible"
       - evalScript: ${output.i = output.i + 1}
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
@@ -74,8 +69,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll back up to ${CATEGORY} accordion header"
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"

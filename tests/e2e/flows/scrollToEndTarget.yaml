@@ -14,4 +14,5 @@ appId: "com.recipedia"
     label: "Swipe to the end of the list so ${TARGET_ID} clears the bottom action button"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for the list to settle at its end"

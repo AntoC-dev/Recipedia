@@ -41,13 +41,9 @@ tags:
     text: 'Car'
     label: 'Action - Type a partial name to expose the autocomplete dropdown'
 
-- waitForAnimationToEnd
-
 - tapOn:
     id: 'RecipeIngredients::0::NameInput::AutocompleteItem::Carrots'
     label: 'Action - Select an existing DB ingredient from the dropdown'
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: '../../flows/waitForKeyboardDismiss.yaml'

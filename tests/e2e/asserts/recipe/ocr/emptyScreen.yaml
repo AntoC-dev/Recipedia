@@ -22,8 +22,6 @@ appId: "com.recipedia"
     id: "RecipeDescription::OpenModal::RoundButton"
     label: "OCR button for the description is rendered"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeTags::HeaderText"
@@ -32,14 +30,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to the tags section"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipeTags::HeaderText"
     text: "Tags:"
     label: "Intro text for the tags is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -49,14 +43,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to the tags element"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipeTags::ElementText"
     text: "Tags are a way to identify a recipe and make easier its search.\nHere are some examples of tags you can have : .*, .*, .*"
     label: "Explanation text for the tags is rendered"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -66,8 +56,6 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll down to the tags open modal button"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipeTags::OpenModal::RoundButton"
     label: "OCR button for the tags is rendered"
@@ -76,8 +64,6 @@ appId: "com.recipedia"
     id: "RecipeTags::RoundButton"
     label: "Add button for the tag is rendered"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipePersons::NumericTextInput"
@@ -85,8 +71,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll down to the number of persons part"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePersons::PrefixText"
@@ -103,16 +87,12 @@ appId: "com.recipedia"
     text: " persons"
     label: "Outro text for the number of persons is rendered"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::OpenModalNames::RoundButton"
     direction: DOWN
     speed: 60
     centerElement: true
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeIngredients::PrefixText"
@@ -137,16 +117,12 @@ appId: "com.recipedia"
     text: "Add manually"
     label: "Add manually button label is rendered"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeTime::OpenModal::RoundButton"
     direction: DOWN
     speed: 60
     centerElement: true
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipeTime::PrefixText"
@@ -157,16 +133,12 @@ appId: "com.recipedia"
     id: "RecipeTime::OpenModal::RoundButton"
     label: "OCR button for the time is rendered"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::OpenModal::RoundButton"
     direction: DOWN
     speed: 60
     centerElement: true
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePreparation::PrefixText"
@@ -180,8 +152,6 @@ appId: "com.recipedia"
 - runFlow:
     file: "../common/nutritionEmptyOCR.yaml"
     label: "Verify nutrition section is empty with OCR scan button"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:

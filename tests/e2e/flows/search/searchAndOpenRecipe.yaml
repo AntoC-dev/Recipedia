@@ -22,8 +22,6 @@ appId: "com.recipedia"
     text: "${RECIPE_NAME}"
     label: "Type recipe name"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "SearchScreen::SearchBar"
     text: "${RECIPE_NAME}"

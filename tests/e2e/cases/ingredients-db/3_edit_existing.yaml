@@ -8,8 +8,6 @@ tags:
     file: "../../flows/parameters/ingredients/navigateToIngredientsSettings.yaml"
     label: "Action - Navigate to Ingredients Settings"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../flows/parameters/searchInSettingsList.yaml"
     env:
@@ -30,6 +28,7 @@ tags:
     label: "Action - Append Edited to ingredient name"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - runFlow:
@@ -82,6 +81,7 @@ tags:
     label: "Action - Clear existing unit"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - inputText:
@@ -89,6 +89,7 @@ tags:
     label: "Action - Change unit from g to kg"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - runFlow:
@@ -130,7 +131,8 @@ tags:
     id: "IngredientsSettings::ItemDialog::EditModal::ConfirmButton"
     label: "Action - Save edited ingredient"
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000
 
 - assertNotVisible:
     id: "IngredientsSettings::7::IngredientName"

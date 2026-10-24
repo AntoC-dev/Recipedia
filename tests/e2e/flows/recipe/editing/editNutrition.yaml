@@ -6,15 +6,14 @@ appId: "com.recipedia"
       TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Salt::NumericTextInput"
     label: "Scroll to the last nutrition row with the keyboard closed (the energy row can sit under the app bar and still count as visible)"
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000
 
 - swipe:
     from:
       id: "Recipe::RecipeNutrition::NutritionTable-container"
     direction: DOWN
     label: "Bring the first nutrition row back from under the app bar"
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "../../replaceText.yaml"

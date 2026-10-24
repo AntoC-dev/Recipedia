@@ -56,8 +56,6 @@ tags:
     id: "Recipe::Dialog::Cancel"
     label: "Action - Cancel adding duplicate recipe"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::0::QuantityInput"
@@ -65,8 +63,6 @@ tags:
     direction: UP
     centerElement: true
     label: "Scroll to RecipeIngredients::0::QuantityInput"
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "../../flows/replaceAndDone.yaml"

@@ -39,13 +39,9 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to ensure add button is still visible"
 
-- waitForAnimationToEnd
-
 - tapOn:
     id: "RecipeTags::RoundButton"
     label: "Press the round button of second tags"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -53,8 +49,6 @@ appId: "com.recipedia"
     direction: UP
     speed: 20
     label: "Scroll up to ensure second tag's text input is visible"
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "../../../../focusField.yaml"
@@ -89,6 +83,7 @@ appId: "com.recipedia"
           duration: 500
           label: "Scroll the tag dropdown down towards Seafood"
       - waitForAnimationToEnd:
+          timeout: 2000
           label: "Wait for scrolling animation to end"
 
 - assertVisible:
@@ -171,8 +166,6 @@ appId: "com.recipedia"
     direction: UP
     centerElement: true
     label: "Scroll to RecipeTitle::CustomTextInput"
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "../../../../focusField.yaml"
@@ -298,8 +291,6 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll back up to the second ingredient name"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../../../focusField.yaml"
     env:
@@ -335,8 +326,6 @@ appId: "com.recipedia"
     direction: DOWN
     centerElement: true
     label: "Scroll to RecipeTime::NumericTextInput"
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "../../../../focusField.yaml"

@@ -9,7 +9,8 @@ appId: "com.recipedia"
     while:
       true: ${output.currentIndex < RECIPE_COUNT}
     commands:
-      - waitForAnimationToEnd
+      - waitForAnimationToEnd:
+          timeout: 2000
 
       - scrollUntilVisible:
           element:
@@ -27,4 +28,5 @@ appId: "com.recipedia"
 
       - evalScript: ${output.currentIndex = output.currentIndex + 1}
 
-      - waitForAnimationToEnd
+      - waitForAnimationToEnd:
+          timeout: 2000

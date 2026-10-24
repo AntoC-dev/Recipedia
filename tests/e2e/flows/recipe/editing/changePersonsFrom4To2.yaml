@@ -8,8 +8,6 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to RecipePersons::NumericTextInput"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../replaceAndDone.yaml"
     env:

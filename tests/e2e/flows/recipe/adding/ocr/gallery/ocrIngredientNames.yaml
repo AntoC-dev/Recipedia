@@ -1,7 +1,5 @@
 appId: "com.recipedia"
 ---
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::PrefixText"
@@ -17,8 +15,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll to ingredient names OCR button"
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeIngredients::OpenModalNames::RoundButton"

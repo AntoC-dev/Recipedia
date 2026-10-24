@@ -12,8 +12,6 @@ appId: "com.recipedia"
     id: "TagsSettings::ItemDialog::AddModal::CancelButton"
     label: "Cancel adding tag without entering name"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
         id: "TagsSettings::5::TagName"
@@ -21,8 +19,6 @@ appId: "com.recipedia"
     speed: 80
     timeout: 120000
     label: "Scroll up to top of Tags Settings screen"
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "../../../asserts/parameters/tags/en/assertTagsSettingsScreen.yaml"

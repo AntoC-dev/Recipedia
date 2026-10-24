@@ -103,8 +103,6 @@ tags:
     id: "BulkImportValidation::FinishButton"
     label: "Action - Finish import and return home"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../flows/bulk-import/deleteAllImportedRecipes.yaml"
     label: "Cleanup - Delete all imported recipes"

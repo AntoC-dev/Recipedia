@@ -23,8 +23,6 @@ tags:
       RECIPE_NAME: quitoqueV3
     label: "Action - Add recipe from camera using OCR"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeImage::RoundButton"
@@ -33,8 +31,6 @@ tags:
     timeout: 120000
     centerElement: true
     label: "Scroll back to top after OCR"
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "../../asserts/recipe/ocr/curryPoisChiche.yaml"

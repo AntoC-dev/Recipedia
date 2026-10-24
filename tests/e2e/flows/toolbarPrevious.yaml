@@ -5,6 +5,7 @@ appId: "com.recipedia"
     label: "Tap the keyboard toolbar Previous"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for the focus move to settle"
 
 - runFlow:
@@ -12,4 +13,5 @@ appId: "com.recipedia"
       platform: Android
     commands:
       - waitForAnimationToEnd:
+          timeout: 2000
           label: "Wait for the keyboard to switch type before typing"

@@ -9,8 +9,6 @@ appId: "com.recipedia"
     text: "POULET SAUCE SATAY.*"
     label: "Title text is displayed"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeDescription::Text"
@@ -18,8 +16,6 @@ appId: "com.recipedia"
     centerElement: true
     speed: 20
     label: "Scroll to description"
-
-- waitForAnimationToEnd
 
 - runFlow:
     when:
@@ -40,8 +36,6 @@ appId: "com.recipedia"
           text: "La sauce satay est une sauce d'Asie du Sud-Est à base de cacahuètes, ail et gingembre Reproduisez-la pour accompagner notre poulet français!"
           label: "Description of the recipe is rendered"
 
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -124,8 +118,6 @@ appId: "com.recipedia"
       INGREDIENT_QUANTITY_AND_UNIT: "150"
     label: "Assert riz basmati  Bio ingredient"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeTime::Text"
@@ -133,14 +125,10 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipeTime::Text"
     text: "Préparation (2 min)"
     label: "Preparation section and time are displayed"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -148,8 +136,6 @@ appId: "com.recipedia"
     direction: DOWN
     centerElement: true
     speed: 20
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
@@ -161,16 +147,12 @@ appId: "com.recipedia"
     text: "[\\s\\S]+"
     label: "First preparation paragraph is displayed"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
     direction: DOWN
     centerElement: true
     speed: 20
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
@@ -182,16 +164,12 @@ appId: "com.recipedia"
     text: "[\\s\\S]+"
     label: "Second preparation paragraph is displayed"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"
     direction: DOWN
     centerElement: true
     speed: 20
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"
@@ -203,8 +181,6 @@ appId: "com.recipedia"
     text: "[\\s\\S]+"
     label: "Third preparation paragraph is displayed"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::ReadOnlyStep::3::SectionTitle"
@@ -213,14 +189,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Fourth preparation title is displayed"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::3::SectionTitle"
     text: "4) Le riz"
     label: "Fourth preparation title is displayed"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -229,8 +201,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Fourth preparation paragraph is displayed"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::3::SectionParagraph"

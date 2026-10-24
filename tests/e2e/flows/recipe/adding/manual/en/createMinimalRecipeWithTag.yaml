@@ -34,6 +34,7 @@ appId: "com.recipedia"
     label: "Enter the newly created tag name"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - runFlow:
@@ -104,8 +105,6 @@ appId: "com.recipedia"
     direction: UP
     centerElement: true
     label: "Scroll to RecipeTitle::CustomTextInput"
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "../../../../focusField.yaml"

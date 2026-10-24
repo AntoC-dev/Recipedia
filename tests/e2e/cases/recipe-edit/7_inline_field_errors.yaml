@@ -25,8 +25,6 @@ tags:
     text: "Test Recipe"
     label: "Action - Search for Test Recipe"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../flows/search/selectFirstSuggestion.yaml"
     label: "Select the first suggestion to close the dropdown and reveal the grid"
@@ -53,8 +51,6 @@ tags:
     centerElement: true
     label: "Action - Scroll to title input"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../asserts/recipe/inlineErrors/en/titleNoError.yaml"
     label: "Assert - No title inline error visible before user interacts"
@@ -67,8 +63,6 @@ tags:
 
 - eraseText:
     label: "Action - Erase title"
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeTitle::Text"
@@ -92,8 +86,6 @@ tags:
     text: "Test Recipe"
     label: "Action - Restore title"
 
-- waitForAnimationToEnd
-
 - tapOn:
     id: "RecipeTitle::Text"
     label: "Action - Tap title label to blur title"
@@ -113,8 +105,6 @@ tags:
     speed: 10
     centerElement: true
     label: "Action - Scroll to description input"
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "../../asserts/recipe/inlineErrors/en/descriptionNoError.yaml"
@@ -146,8 +136,6 @@ tags:
     centerElement: true
     label: "Action - Scroll to persons input"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../asserts/recipe/inlineErrors/en/personsNoError.yaml"
     label: "Assert - No persons inline error visible before user interacts"
@@ -160,8 +148,6 @@ tags:
 
 - eraseText:
     label: "Action - Erase persons"
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "../../flows/toolbarDone.yaml"
@@ -195,8 +181,6 @@ tags:
     centerElement: true
     label: "Action - Scroll to time input"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../asserts/recipe/inlineErrors/en/timeNoError.yaml"
     label: "Assert - No time inline error visible before user interacts"
@@ -209,8 +193,6 @@ tags:
 
 - eraseText:
     label: "Action - Erase time"
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "../../flows/toolbarDone.yaml"

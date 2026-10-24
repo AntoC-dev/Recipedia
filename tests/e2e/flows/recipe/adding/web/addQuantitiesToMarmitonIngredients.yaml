@@ -9,8 +9,6 @@ appId: "com.recipedia"
     timeout: 60000
     label: "Scroll to the first quantity with the keyboard closed"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../../focusField.yaml"
     env:

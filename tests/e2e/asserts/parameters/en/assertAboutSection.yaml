@@ -1,16 +1,12 @@
 appId: "com.recipedia"
 ---
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "Parameters::Section::About::Version::Item-content"
     direction: DOWN
     speed: 60
     label: "Scroll to see the entire version items"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "Parameters::Section::About::SubHeader"
@@ -31,8 +27,6 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 40
     label: "Scroll to Bug Report item"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "Parameters::Section::About::BugReport::Divider"

@@ -1,8 +1,6 @@
 appId: "com.recipedia"
 ---
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionEmptyState::Title"
@@ -10,14 +8,10 @@ appId: "com.recipedia"
     speed: 20
     label: "Scroll to empty nutrition section"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionEmptyState::Title"
     text: "Nutritional values:"
     label: "Nutrition title is displayed (empty state)"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:

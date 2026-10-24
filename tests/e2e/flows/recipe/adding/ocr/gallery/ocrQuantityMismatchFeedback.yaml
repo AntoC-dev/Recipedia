@@ -6,7 +6,8 @@ appId: "com.recipedia"
     timeout: 30000
     label: "Wait for any previous snackbar to auto-dismiss"
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000
 
 - repeat:
     times: ${ROWS_TO_ADD}
@@ -21,7 +22,8 @@ appId: "com.recipedia"
       - tapOn:
           id: "RecipeIngredients::AddButton::RoundButton"
           label: "Add an empty ingredient row"
-      - waitForAnimationToEnd
+      - waitForAnimationToEnd:
+          timeout: 2000
 
 - scrollUntilVisible:
     element:
@@ -30,8 +32,6 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to ingredient quantities OCR button"
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeIngredients::OpenModalQuantities::RoundButton"

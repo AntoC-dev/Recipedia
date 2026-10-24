@@ -16,4 +16,5 @@ appId: "com.recipedia"
     label: "Action - Discard the unsaved changes and leave"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for the dialog dismissal and the pending navigation"

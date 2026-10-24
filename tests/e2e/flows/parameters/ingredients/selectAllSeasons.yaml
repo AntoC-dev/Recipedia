@@ -15,6 +15,7 @@ appId: "com.recipedia"
     label: "Select all months so the ingredient is in season all year"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for selection animation"
 
 - tapOn:

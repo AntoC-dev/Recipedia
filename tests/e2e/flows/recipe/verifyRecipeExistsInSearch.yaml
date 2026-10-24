@@ -13,6 +13,7 @@ appId: "com.recipedia"
     label: "Search for recipe"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - runFlow:
@@ -23,8 +24,6 @@ appId: "com.recipedia"
     file: "../waitForKeyboardDismiss.yaml"
     label: "Wait for keyboard to dismiss"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::.*::Cover"
@@ -32,8 +31,6 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to recipe card"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "SearchScreen::RecipeCards::.*::.*"

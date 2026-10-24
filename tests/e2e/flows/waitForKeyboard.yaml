@@ -19,5 +19,10 @@ appId: "com.recipedia"
           timeout: 25000
           label: "Wait for the iOS keyboard to be up"
 
-- waitForAnimationToEnd:
-    label: "Wait for Android keyboard animation"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - waitForAnimationToEnd:
+          timeout: 2000
+          label: "Wait for Android keyboard animation"

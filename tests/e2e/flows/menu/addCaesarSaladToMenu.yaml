@@ -4,8 +4,6 @@ appId: "com.recipedia"
     id: "BottomTabs::Search"
     label: "Navigate to Search screen"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "SearchScreen::RecipeCards::4::Caesar Salad"
@@ -13,8 +11,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll to Caesar Salad recipe"
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::RecipeCards::4::Caesar Salad"

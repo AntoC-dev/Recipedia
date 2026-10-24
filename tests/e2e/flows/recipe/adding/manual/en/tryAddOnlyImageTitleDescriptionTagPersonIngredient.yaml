@@ -1,8 +1,6 @@
 appId: "com.recipedia"
 ---
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::AddButton::RoundButton"
@@ -10,8 +8,6 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to ingredients section"
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeIngredients::AddButton::RoundButton"
@@ -32,6 +28,7 @@ appId: "com.recipedia"
     label: "Write the ingredient name in the input text"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - assertVisible:

@@ -7,8 +7,6 @@ tags:
     id: "BottomTabs::Search"
     label: "Navigate to Search screen"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "SearchScreen::RecipeCards::1::Cover"
     label: "At least one recipe card renders"

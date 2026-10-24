@@ -4,10 +4,6 @@ appId: "com.recipedia"
     file: "launchFreshApp.yaml"
     label: "Setup - Launch app with fresh state"
 
-- runFlow:
-    file: "handleAnr.yaml"
-    label: "Handle ANR dialog if it appears"
-
 - extendedWaitUntil:
     visible:
       id: "WelcomeScreen::SkipButton"
@@ -26,10 +22,6 @@ appId: "com.recipedia"
     timeout: 30000
     optional: true
     label: "Wait for data to load"
-
-- runFlow:
-    file: "handleAnr.yaml"
-    label: "Handle ANR dialog after data load"
 
 - extendedWaitUntil:
     visible:

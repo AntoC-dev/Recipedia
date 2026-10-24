@@ -19,16 +19,12 @@ tags:
     id: "BulkImportSettings::AppBar::BackButton"
     label: "Go back to Parameters"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "Parameters::Section::Appearance::SubHeader"
     speed: 20
     direction: UP
     label: "Scroll up to reset the screen"
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "../../flows/parameters/language/switchToFrench.yaml"
@@ -85,8 +81,6 @@ tags:
     id: "BulkImportValidation::FinishButton"
     label: "Action - Finish first import"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../flows/bulk-import/deleteAllImportedRecipes.yaml"
     label: "Delete imported recipe to test re-import as fresh"
@@ -139,4 +133,5 @@ tags:
     id: "BulkImportValidation::FinishButton"
     label: "Action - Finish second import"
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000

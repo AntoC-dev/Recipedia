@@ -17,6 +17,7 @@ appId: "com.recipedia"
     label: "Action - Enter new ingredient name"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - runFlow:
@@ -80,6 +81,7 @@ appId: "com.recipedia"
     label: "Action - Enter unit"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - runFlow:
@@ -122,4 +124,5 @@ appId: "com.recipedia"
     id: "IngredientsSettings::ItemDialog::AddModal::ConfirmButton"
     label: "Action - Confirm adding new ingredient"
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000

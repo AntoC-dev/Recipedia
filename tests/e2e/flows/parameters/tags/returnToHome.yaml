@@ -5,9 +5,8 @@ appId: "com.recipedia"
     label: "Navigate back to Parameters"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for animation to end"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -16,8 +15,6 @@ appId: "com.recipedia"
     speed: 60
     timeout: 30000
     label: "Scroll back to top of Parameters screen"
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: "BottomTabs::Home"

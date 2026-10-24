@@ -27,4 +27,5 @@ appId: "com.recipedia"
       platform: Android
     commands:
       - waitForAnimationToEnd:
+          timeout: 2000
           label: "Wait for Android keyboard to dismiss"

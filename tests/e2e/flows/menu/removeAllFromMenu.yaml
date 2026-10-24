@@ -22,7 +22,8 @@ appId: "com.recipedia"
           id: "MenuScreen::MenuItem::1::RemoveButton"
           label: "Remove the first remaining recipe from the menu"
 
-      - waitForAnimationToEnd
+      - waitForAnimationToEnd:
+          timeout: 2000
 
 - runFlow:
     file: "../../asserts/menu/en/assertMenuEmpty.yaml"

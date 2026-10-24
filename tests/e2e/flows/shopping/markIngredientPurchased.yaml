@@ -4,8 +4,6 @@ appId: "com.recipedia"
 # into the purchased block, which can lag well behind the tap on CI. Waiting for
 # the row to leave the working list is the barrier: asserting straight after the
 # tap catches the list mid-regroup, with the row still under its old category.
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::${INGREDIENT_NAME}"
@@ -13,8 +11,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll to ${INGREDIENT_NAME} item"
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: "ShoppingScreen::SectionList::${INGREDIENT_NAME}"
@@ -32,4 +28,5 @@ appId: "com.recipedia"
     file: "./waitForUndoSnackbarToClear.yaml"
     label: "Wait for the undo snackbar to stop covering the list"
 
-- waitForAnimationToEnd
+- waitForAnimationToEnd:
+    timeout: 2000

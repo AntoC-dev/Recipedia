@@ -20,6 +20,7 @@ tags:
     label: "Action - Clear existing ingredient name"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - inputText:
@@ -27,6 +28,7 @@ tags:
     label: "Action - Enter new ingredient name"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for keyboard animation"
 
 - runFlow:
@@ -64,8 +66,6 @@ tags:
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::ConfirmButton"
     label: "Action - Confirm adding ingredient without unit"
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "../../flows/parameters/searchInSettingsList.yaml"

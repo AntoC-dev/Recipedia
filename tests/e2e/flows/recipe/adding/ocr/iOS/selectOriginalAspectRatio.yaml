@@ -18,6 +18,7 @@ appId: "com.recipedia"
     label: "Wait for original aspect ratio"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for aspect ratio animation to end"
 
 - tapOn:
@@ -32,4 +33,5 @@ appId: "com.recipedia"
     label: "Wait for original aspect ratio to be hidden"
 
 - waitForAnimationToEnd:
+    timeout: 2000
     label: "Wait for aspect ratio animation to end"
