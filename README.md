@@ -45,7 +45,7 @@ A React Native recipe management app built with Expo — add, search, and manage
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) (v18 or higher)
+- [Node.js](https://nodejs.org/) (v24 or higher)
 - [Expo CLI](https://docs.expo.dev/get-started/installation/)
 - For Android: [Android Studio](https://developer.android.com/studio) with Android SDK
 - For iOS: [Xcode](https://developer.apple.com/xcode/) (macOS only)
@@ -145,8 +145,8 @@ npm run test:perf           # Reassure render benchmarks
 ### End-to-End Tests
 
 ```bash
-npm run test:e2e:android             # Run E2E tests on Android
-npm run workflow:build-test:android  # Full build + test cycle
+npm run workflow:build-install::android  # Build + install E2E app on Android
+cd tests/e2e && maestro test . --config=smoke.yaml  # Run a Maestro suite
 ```
 
 ## 🔧 Development
@@ -168,8 +168,8 @@ npm run workflow:build-test:android  # Full build + test cycle
 
 ## 📱 Device Support
 
-- **iOS**: 13.0+
-- **Android**: 6.0+ (API 23+)
+- **iOS**: 18.0+
+- **Android**: 7.0+ (API 24+)
 
 ## 🔐 Privacy
 

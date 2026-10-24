@@ -137,7 +137,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
     direction: DOWN
     centerElement: true
-    speed: 60
+    speed: 30
     label: "Scroll to first preparation step"
 
 - waitForAnimationToEnd
@@ -159,7 +159,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
     direction: DOWN
     centerElement: true
-    speed: 60
+    speed: 30
     label: "Scroll to second preparation step"
 
 - waitForAnimationToEnd
@@ -180,7 +180,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"
     direction: DOWN
-    speed: 60
+    speed: 30
     centerElement: true
     label: "Scroll to third preparation step"
 

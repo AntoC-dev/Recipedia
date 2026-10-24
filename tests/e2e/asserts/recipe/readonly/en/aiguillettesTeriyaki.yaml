@@ -16,7 +16,7 @@ appId: "com.recipedia"
       id: "RecipeDescription::Text"
     direction: DOWN
     centerElement: true
-    speed: 60
+    speed: 30
 
 - waitForAnimationToEnd
 
@@ -32,7 +32,7 @@ appId: "com.recipedia"
       id: "RecipeTags::0::Chip"
     direction: DOWN
     centerElement: true
-    speed: 60
+    speed: 30
 
 - waitForAnimationToEnd
 
@@ -166,7 +166,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
     direction: DOWN
     centerElement: true
-    speed: 60
+    speed: 30
 
 - waitForAnimationToEnd
 
@@ -187,7 +187,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
     direction: DOWN
     centerElement: true
-    speed: 60
+    speed: 30
 
 - waitForAnimationToEnd
 
@@ -221,7 +221,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"
     direction: DOWN
     centerElement: true
-    speed: 60
+    speed: 30
 
 - waitForAnimationToEnd
 
@@ -241,7 +241,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::ReadOnlyStep::3::SectionParagraph"
     direction: DOWN
-    speed: 60
+    speed: 30
     centerElement: true
 
 - waitForAnimationToEnd

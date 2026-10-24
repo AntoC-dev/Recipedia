@@ -11,7 +11,7 @@ appId: "com.recipedia"
 
 - extendedWaitUntil:
     visible:
-      text: "\\d+ Photo.*"
+      text: "\\d+ Photos?"
     timeout: 30000
     label: "Wait for gallery grid to load"
 

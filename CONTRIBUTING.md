@@ -26,7 +26,7 @@ inclusive, and collaborative.
 
 Before contributing, ensure you have:
 
-- [Node.js](https://nodejs.org/) (v18 or higher)
+- [Node.js](https://nodejs.org/) (v24 or higher)
 - [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
 - [Expo CLI](https://docs.expo.dev/get-started/installation/)
 - [Git](https://git-scm.com/)
@@ -101,7 +101,7 @@ npm run test:unit           # Run unit tests (tests/unit/)
 npm run test:unit:watch     # Run tests in watch mode
 npm run test:unit:coverage  # Run with coverage
 npm run test:integration    # Run integration tests (tests/integration/)
-npm run test:e2e:android    # Run E2E tests
+npm run workflow:build-install::android  # Build + install E2E app (Android)
 
 # Documentation
 npm run docs:build          # Generate API documentation
@@ -281,7 +281,8 @@ npm run test:integration
 For significant UI changes, consider adding E2E tests:
 
 ```bash
-npm run test:e2e:android
+npm run workflow:build-install::android
+cd tests/e2e && maestro test . --config=smoke.yaml
 ```
 
 E2E tests use Maestro and test complete user workflows.

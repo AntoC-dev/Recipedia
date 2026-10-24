@@ -26,6 +26,13 @@ appId: "com.recipedia"
           timeout: 30000
           label: "Wait for Photos library"
 
+- extendedWaitUntil:
+    visible:
+      id: "PXGGridLayout-Info"
+    timeout: 60000
+    optional: true
+    label: "Let the library grid populate before checking for photos"
+
 - runFlow:
     when:
       visible:

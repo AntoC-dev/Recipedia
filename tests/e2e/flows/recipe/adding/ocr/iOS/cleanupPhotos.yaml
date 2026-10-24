@@ -5,6 +5,16 @@ appId: "com.recipedia"
       visible:
         id: "PXGGridLayout-Info"
     commands:
+      - runFlow:
+          when:
+            visible:
+              text: "Continue"
+          commands:
+            - tapOn:
+                text: "Continue"
+                label: "Close the what's new screen"
+          label: "Dismiss what's new screen if it appeared late"
+
       - tapOn:
           text: "Select"
           label: "Enter select mode"
@@ -17,8 +27,10 @@ appId: "com.recipedia"
 
       - tapOn:
           id: "PXGGridLayout-Info"
+          below:
+            id: "PXCuratedLibraryUIView"
           index: 0
-          label: "Select the first photo of the grid"
+          label: "Select the first photo fully below the library header"
 
       - extendedWaitUntil:
           visible:

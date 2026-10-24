@@ -30,7 +30,7 @@
     "test:unit:fail-only": "jest --silent --onlyFailures --config jest.config.js tests/unit",
     "test:integration": "jest --config jest.config.js tests/integration",
     "boot:ios-simulator": "bash scripts/boot-ios-simulator.sh",
-    "workflow:build-test:ios": "npm run build:test:ios && npm run boot:ios-simulator && npm run install:ios && npm run test:e2e:ios",
+    "workflow:build-test:ios": "npm run build:test:ios && npm run boot:ios-simulator && npm run install:ios",
     "test:perf": "reassure",
     "test:perf:baseline": "reassure --baseline",
     "test:scripts": "node --test .github/scripts/*.test.mjs",
