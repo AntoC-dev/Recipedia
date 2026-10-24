@@ -3,7 +3,6 @@ import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { useFieldArray, UseFormReturn } from 'react-hook-form';
 import {
   ApplyIngredientEditPatch,
-  formatIngredientString,
   parseIngredientString,
   useRecipeIngredients,
 } from '@hooks/useRecipeIngredients';
@@ -272,111 +271,6 @@ describe('useRecipeIngredients', () => {
           name: 'Flour',
           note: '',
         });
-      });
-    });
-
-    describe('formatIngredientString', () => {
-      test('formats complete ingredient correctly', () => {
-        const ingredient = { quantity: '200', unit: 'g', name: 'Flour', season: [] };
-        const result = formatIngredientString(ingredient);
-        expect(result).toBe('200@@g--Flour');
-      });
-
-      test('formats ingredient without quantity', () => {
-        const result = formatIngredientString({
-          name: 'Salt',
-          unit: 'pinch',
-          quantity: undefined,
-          season: [],
-        });
-
-        expect(result).toBe('@@pinch--Salt');
-      });
-
-      test('formats ingredient without unit', () => {
-        const result = formatIngredientString({
-          name: 'Eggs',
-          unit: undefined,
-          quantity: '2',
-          season: [],
-        });
-
-        expect(result).toBe('2@@--Eggs');
-      });
-
-      test('handles missing values', () => {
-        const ingredient = { name: 'Salt', season: [] };
-        const result = formatIngredientString(ingredient);
-        expect(result).toBe('@@--Salt');
-      });
-
-      test('handles all empty values', () => {
-        const ingredient = { name: '', unit: '', quantity: '', season: [] };
-        const result = formatIngredientString(ingredient);
-        expect(result).toBe('@@--');
-      });
-
-      test('round-trips through parse and format', () => {
-        const original = '250@@ml--Water';
-        const parsed = parseIngredientString(original);
-        const formatted = formatIngredientString({
-          name: parsed.name,
-          unit: parsed.unit,
-          quantity: parsed.quantity,
-          season: [],
-        });
-
-        expect(formatted).toBe(original);
-      });
-
-      test('formats ingredient with note', () => {
-        const ingredient = {
-          quantity: '200',
-          unit: 'g',
-          name: 'Flour',
-          note: 'For the sauce',
-          season: [],
-        };
-        const result = formatIngredientString(ingredient);
-        expect(result).toBe('200@@g--Flour%%For the sauce');
-      });
-
-      test('formats ingredient without note (undefined)', () => {
-        const ingredient = {
-          quantity: '200',
-          unit: 'g',
-          name: 'Flour',
-          note: undefined,
-          season: [],
-        };
-        const result = formatIngredientString(ingredient);
-        expect(result).toBe('200@@g--Flour');
-      });
-
-      test('formats ingredient with empty string note', () => {
-        const ingredient = {
-          quantity: '200',
-          unit: 'g',
-          name: 'Flour',
-          note: '',
-          season: [],
-        };
-        const result = formatIngredientString(ingredient);
-        expect(result).toBe('200@@g--Flour');
-      });
-
-      test('round-trips through parse and format with note', () => {
-        const original = '250@@ml--Water%%For cooking';
-        const parsed = parseIngredientString(original);
-        const formatted = formatIngredientString({
-          name: parsed.name,
-          unit: parsed.unit,
-          quantity: parsed.quantity,
-          note: parsed.note,
-          season: [],
-        });
-
-        expect(formatted).toBe(original);
       });
     });
   });

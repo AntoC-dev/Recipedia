@@ -1,7 +1,8 @@
 import { fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
 import { preparationStepElement } from '@customTypes/DatabaseElementTypes';
-import RecipePreparation, {
+import {
+  RecipePreparation,
   EditableStep,
   PreparationEmptyAdd,
   PreparationSection,

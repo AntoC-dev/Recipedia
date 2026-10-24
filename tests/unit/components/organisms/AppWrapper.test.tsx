@@ -1,7 +1,7 @@
 import React from 'react';
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
 import AppWrapper from '@components/organisms/AppWrapper';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
 import { testRecipes } from '@test-data/recipesDataset';

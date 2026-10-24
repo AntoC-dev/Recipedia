@@ -1,7 +1,7 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { testIngredients } from '@test-data/ingredientsDataset';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { AddFromScrapeProp } from '@customTypes/RecipeNavigationTypes';
 import * as FileGestion from '@utils/FileGestion';
 import { RecipeFormScreen } from '@screens/recipe/RecipeFormScreen';

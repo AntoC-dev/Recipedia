@@ -2,7 +2,7 @@ import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { expectKeyboardDismissesOnDrag } from '@test-helpers/expectKeyboardDismissesOnDrag';
 import { testRecipes } from '@test-data/recipesDataset';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { RecipePropType } from '@customTypes/RecipeNavigationTypes';
 import { RecipeView } from '@screens/recipe/RecipeView';
 import { bottomActionButtonHeight } from '@styles/spacing';

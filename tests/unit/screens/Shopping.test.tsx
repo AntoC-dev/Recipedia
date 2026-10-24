@@ -3,14 +3,14 @@ import { ReactTestInstance } from 'react-test-renderer';
 import { AccessibilityInfo, StyleSheet } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import { listSectionHeaderTextStyle } from '@components/atomic/ListSectionHeader';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
 import { testRecipes } from '@test-data/recipesDataset';
 import React from 'react';
 import { mockNavigationFunctions } from '@mocks/deps/react-navigation-mock';
 import { mockSectionList } from '@mocks/deps/react-native-sectionlist-mock';
-import Shopping from '@screens/Shopping';
+import { Shopping } from '@screens/Shopping';
 import {
   getMockCopilotEvents,
   resetMockCopilot,

@@ -4,7 +4,7 @@ import { useRecipeTags } from '@hooks/useRecipeTags';
 import { RecipeFormProvider, useRecipeForm } from '@test-helpers/recipeFormTestProvider';
 import { RecipeDialogsProvider, useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { createMockRecipeProp } from '@test-helpers/recipeHookTestWrapper';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { TagDraft } from '@customTypes/DatabaseElementTypes';
 
 const italianTag: TagDraft = { name: 'Italian' };

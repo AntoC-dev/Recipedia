@@ -3,7 +3,7 @@ import { measureRenders } from 'reassure';
 import { BulkImportDiscovery } from '@screens/BulkImportDiscovery';
 import { BulkImportValidation } from '@screens/BulkImportValidation';
 import { BulkImportSettings } from '@screens/BulkImportSettings';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { performanceIngredients } from '@assets/datasets/performance/ingredients';
 import { performanceTags } from '@assets/datasets/performance/tags';
 import { resetMockRouteParams, setMockRouteParams } from '@mocks/deps/react-navigation-mock';

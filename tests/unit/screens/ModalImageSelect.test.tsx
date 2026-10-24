@@ -2,7 +2,7 @@ import { fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
 import * as ImagePicker from '@utils/ImagePicker';
 
-import ModalImageSelect, { ModalImageSelectProps } from '@screens/ModalImageSelect';
+import { ModalImageSelect, ModalImageSelectProps } from '@screens/ModalImageSelect';
 
 jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 

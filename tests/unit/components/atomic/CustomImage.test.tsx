@@ -1,6 +1,6 @@
 import React from 'react';
 import { act, render } from '@testing-library/react-native';
-import CustomImage from '@components/atomic/CustomImage';
+import { CustomImage } from '@components/atomic/CustomImage';
 import { ImageErrorEventData, ImageLoadEventData } from 'expo-image';
 
 describe('CustomImage component behavior', () => {

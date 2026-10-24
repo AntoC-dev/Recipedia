@@ -47,6 +47,8 @@ function readFreshCache(now: number): string[] | null {
 /**
  * Test-only entry point to clear the module-level cache between tests so each
  * test runs against a clean slate. Not part of the public hook contract.
+ *
+ * @internal
  */
 export function __resetRandomTagSuggestionsCache(): void {
   cache = null;

@@ -166,5 +166,3 @@ export function NumericTextInput({
     </View>
   );
 }
-
-export default NumericTextInput;

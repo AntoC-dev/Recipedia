@@ -154,4 +154,3 @@ const styles = StyleSheet.create({
     marginRight: padding.small,
   },
 });
-export default SettingsItemCard;

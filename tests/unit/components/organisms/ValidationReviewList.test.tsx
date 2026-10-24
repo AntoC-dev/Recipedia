@@ -4,7 +4,7 @@ import {
   ValidationReviewList,
   ValidationReviewListProps,
 } from '@components/organisms/ValidationReviewList';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { testTags } from '@test-data/tagsDataset';
 import { testIngredients } from '@test-data/ingredientsDataset';
 

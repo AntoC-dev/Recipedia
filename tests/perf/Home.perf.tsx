@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { fireEvent, screen, waitFor } from '@testing-library/react-native';
 import { measureRenders } from 'reassure';
-import Home from '@screens/Home';
+import { Home } from '@screens/Home';
 import { RefreshControl } from 'react-native';
 import { ingredientType, recipeTableElement } from '@customTypes/DatabaseElementTypes';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { performanceRecipes } from '@assets/datasets/performance/recipes';
 import { performanceIngredients } from '@assets/datasets/performance/ingredients';
 import { performanceTags } from '@assets/datasets/performance/tags';

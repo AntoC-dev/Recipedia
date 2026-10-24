@@ -15,7 +15,7 @@ import { createMockRecipeProp } from '@test-helpers/recipeHookTestWrapper';
 import { testTags } from '@test-data/tagsDataset';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testRecipes } from '@test-data/recipesDataset';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { IngredientValidationProps, TagValidationProps } from '@components/dialogs/ValidationQueue';
 import { ApplyIngredientEditPatch } from '@hooks/useRecipeIngredients';
 import { RecipeFormInput } from '@schemas/recipeFormSchema';

@@ -203,5 +203,3 @@ const styles = StyleSheet.create({
     width: '50%',
   },
 });
-
-export default ModalImageSelect;

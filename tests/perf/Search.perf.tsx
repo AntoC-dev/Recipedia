@@ -1,8 +1,8 @@
 import React from 'react';
 import { fireEvent, screen } from '@testing-library/react-native';
 import { measureRenders } from 'reassure';
-import Search from '@screens/Search';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { Search } from '@screens/Search';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { ingredientType, recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { performanceRecipes } from '@assets/datasets/performance/recipes';
 import { performanceIngredients } from '@assets/datasets/performance/ingredients';

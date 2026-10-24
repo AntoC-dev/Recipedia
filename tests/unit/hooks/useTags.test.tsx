@@ -1,6 +1,6 @@
 import { renderHook, act } from '@testing-library/react-native';
 import { useTags } from '@hooks/useTags';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 
 describe('useTags', () => {
   let database: RecipeDatabase;

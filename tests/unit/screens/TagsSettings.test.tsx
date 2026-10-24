@@ -1,9 +1,9 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import TagsSettings from '@screens/TagsSettings';
+import { TagsSettings } from '@screens/TagsSettings';
 import { isTagEqual, TagDraft, tagTableElement } from '@customTypes/DatabaseElementTypes';
 import { mockNavigationFunctions } from '@mocks/deps/react-navigation-mock';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
 import { testRecipes } from '@test-data/recipesDataset';

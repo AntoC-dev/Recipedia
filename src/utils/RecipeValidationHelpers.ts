@@ -79,46 +79,11 @@ export function filterOutExistingTags(
 }
 
 /**
- * Removes an ingredient from array by name (case-insensitive).
- * Used when user dismisses an ingredient during validation.
- */
-export function removeIngredientByName(
-  ingredients: IngredientState,
-  nameToRemove: string | undefined
-): IngredientState {
-  if (!nameToRemove) return ingredients;
-  return ingredients.filter(ing => !namesMatch(ing.name, nameToRemove));
-}
-
-/**
  * Removes a tag from array by name (case-insensitive).
  * Used when user dismisses a tag during validation.
  */
 export function removeTagByName(tags: TagDraft[], nameToRemove: string): TagDraft[] {
   return tags.filter(tag => !namesMatch(tag.name, nameToRemove));
-}
-
-/**
- * Replaces ingredients in array with exact matches by name.
- * Used by scraper validation to update form ingredients with database matches.
- */
-export function replaceMatchingIngredients(
-  current: IngredientState,
-  exactMatches: ingredientTableElement[]
-): IngredientState {
-  const updated = [...current];
-  const replacedIndices = new Set<number>();
-
-  for (const ingredient of exactMatches) {
-    const idx = updated.findIndex(
-      (e, i) => !replacedIndices.has(i) && namesMatch(e.name, ingredient.name)
-    );
-    if (idx !== -1) {
-      updated[idx] = ingredient;
-      replacedIndices.add(idx);
-    }
-  }
-  return updated;
 }
 
 /**

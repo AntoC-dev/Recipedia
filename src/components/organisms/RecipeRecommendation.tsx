@@ -71,5 +71,3 @@ export function RecipeRecommendation(props: RecipeRecommendationProps) {
     </List.Section>
   );
 }
-
-export default RecipeRecommendation;

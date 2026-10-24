@@ -1,11 +1,11 @@
 import { render, waitFor } from '@testing-library/react-native';
-import Home, { howManyItemInCarousel } from '@screens/Home';
+import { Home, howManyItemInCarousel } from '@screens/Home';
 import React from 'react';
 import { testRecipes } from '@test-data/recipesDataset';
 import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
 import { SeasonFilterProvider } from '@context/SeasonFilterContext';
