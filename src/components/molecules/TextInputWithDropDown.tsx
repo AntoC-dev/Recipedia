@@ -2,7 +2,7 @@
  * TextInputWithDropDown - Autocomplete text input with dropdown suggestions
  *
  * Text input with case-insensitive autocomplete. Suggestions render inline, under the field,
- * as a bounded, virtualised speech-bubble list (Material Design 3 elevated surface).
+ * in an `AutocompleteBubble`.
  *
  * Key Features:
  * - Hides the list on an exact match
@@ -34,150 +34,27 @@
  * ```
  */
 
-import { Keyboard, StyleProp, StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
-import { FlashList } from '@shopify/flash-list';
-import { Divider, Surface, Text, TouchableRipple, useTheme } from 'react-native-paper';
+import { Keyboard, StyleProp, TextStyle, View, ViewStyle } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { CustomTextInput } from '@components/atomic/CustomTextInput';
-import { padding } from '@styles/spacing';
-import { scrollDecelerationRate } from '@utils/Constants';
+import { AutocompleteBubble } from '@components/molecules/AutocompleteBubble';
 
 /** `nativeID` of the view wrapping the autocomplete field (only the field when `renderLayout` is used) */
 export const AUTOCOMPLETE_ANCHOR_ID = 'AutocompleteAnchor';
-/** Fixed height of a suggestion row (M3 menu item height) */
-export const AUTOCOMPLETE_ROW_HEIGHT = 48;
-/** Maximum number of suggestion rows visible before the list scrolls */
-export const AUTOCOMPLETE_MAX_VISIBLE_ROWS = 4;
-/** Distance between the anchored field's left edge and the bubble tail's left edge */
-export const AUTOCOMPLETE_TAIL_INSET = padding.large;
-/** Thickness of the divider between suggestion rows (M3 divider thickness) */
-export const AUTOCOMPLETE_DIVIDER_THICKNESS = 1;
-const TAIL_SIZE = 12;
-const MENU_CORNER_RADIUS = 4;
-const MENU_VERTICAL_PADDING = padding.small;
-
-/** Suggestion text split around the first case-insensitive match of the query */
-export type HighlightParts = { before: string; match: string; after: string };
 
 /**
- * Splits a suggestion around the first case-insensitive occurrence of the query.
+ * Suggestions to display for the typed text: case-insensitive substring matches, or none when
+ * the only match equals the text (nothing left to complete).
  *
- * @param text - The suggestion text
- * @param query - The text typed by the user
- * @returns The parts before, matching and after the query; `match` is empty when there is none
+ * @param referenceTextArray - Every candidate suggestion
+ * @param text - The text typed by the user
+ * @returns The suggestions to show, in reference order; empty when the list should be hidden
  */
-export function splitHighlight(text: string, query: string): HighlightParts {
-  const index = query ? text.toLowerCase().indexOf(query.toLowerCase()) : -1;
-  if (index < 0) {
-    return { before: text, match: '', after: '' };
-  }
-  return {
-    before: text.slice(0, index),
-    match: text.slice(index, index + query.length),
-    after: text.slice(index + query.length),
-  };
-}
-
-/**
- * Height of the autocomplete list for a number of suggestions, capped at the max visible rows,
- * including the dividers between visible rows.
- *
- * @param itemCount - Number of suggestions
- * @returns Height in pixels
- */
-export function getAutocompleteListHeight(itemCount: number): number {
-  const visibleRows = Math.min(itemCount, AUTOCOMPLETE_MAX_VISIBLE_ROWS);
-  const dividers = Math.max(visibleRows - 1, 0);
-  return visibleRows * AUTOCOMPLETE_ROW_HEIGHT + dividers * AUTOCOMPLETE_DIVIDER_THICKNESS;
-}
-
-/**
- * Total height the suggestion bubble takes under its field: the list height plus the space
- * reserved for the tail and the surface's vertical padding.
- *
- * @param itemCount - Number of suggestions
- * @returns Height in pixels
- */
-export function getAutocompleteBubbleHeight(itemCount: number): number {
-  return TAIL_SIZE / 2 + 2 * MENU_VERTICAL_PADDING + getAutocompleteListHeight(itemCount);
-}
-
-function SuggestionDivider() {
-  return <Divider bold />;
-}
-
-/** Props for the AutocompleteBubble component */
-export type AutocompleteBubbleProps = {
-  /** Base test id; the list and rows derive their ids from it */
-  testID: string;
-  /** Suggestions to display */
-  items: string[];
-  /** Text typed by the user, highlighted in each suggestion */
-  query: string;
-  /** Called with the pressed suggestion */
-  onSelect: (item: string) => void;
-};
-
-/**
- * Speech-bubble suggestion list: bounded-height FlashList with a tail pointing at the field.
- *
- * @param props - Test id, suggestions, current query, and select handler
- * @returns JSX element rendered in normal layout flow
- */
-export function AutocompleteBubble({ testID, items, query, onSelect }: AutocompleteBubbleProps) {
-  const { colors } = useTheme();
-  const bubbleColor = colors.elevation.level2;
-  return (
-    <View testID={`${testID}::AutocompleteBubble`} style={styles.tailSpace}>
-      <Surface elevation={2} style={[styles.surface, { backgroundColor: bubbleColor }]}>
-        <View
-          testID={`${testID}::AutocompleteTail`}
-          style={[styles.tail, { backgroundColor: bubbleColor }]}
-        />
-        <View
-          testID={`${testID}::AutocompleteViewport`}
-          style={{ height: getAutocompleteListHeight(items.length) }}
-        >
-          <FlashList
-            testID={`${testID}::AutocompleteList`}
-            data={items}
-            keyExtractor={(item, index) => `${index}::${item}`}
-            keyboardShouldPersistTaps='handled'
-            nestedScrollEnabled
-            drawDistance={0}
-            decelerationRate={scrollDecelerationRate}
-            ItemSeparatorComponent={SuggestionDivider}
-            renderItem={({ item }) => {
-              const { before, match, after } = splitHighlight(item, query);
-              return (
-                <TouchableRipple
-                  testID={`${testID}::AutocompleteItem::${item}`}
-                  accessibilityRole='button'
-                  accessibilityLabel={item}
-                  onPress={() => onSelect(item)}
-                  style={styles.row}
-                >
-                  <Text variant='labelLarge' numberOfLines={1} style={{ color: colors.onSurface }}>
-                    {before}
-                    {match ? (
-                      <Text
-                        testID={`${testID}::AutocompleteMatch::${item}`}
-                        variant='labelLarge'
-                        style={[styles.match, { color: colors.primary }]}
-                      >
-                        {match}
-                      </Text>
-                    ) : null}
-                    {after}
-                  </Text>
-                </TouchableRipple>
-              );
-            }}
-          />
-        </View>
-      </Surface>
-    </View>
-  );
+export function filterSuggestions(referenceTextArray: string[], text: string): string[] {
+  const lowerText = text.toLowerCase();
+  const matches = referenceTextArray.filter(item => item.toLowerCase().includes(lowerText));
+  const isExactMatch = matches.length === 1 && matches[0]!.toLowerCase() === lowerText;
+  return isExactMatch ? [] : matches;
 }
 
 /**
@@ -243,7 +120,7 @@ export type TextInputWithDropDownType = {
 /**
  * TextInputWithDropDown component for autocomplete functionality
  *
- * Renders suggestions in an inline speech-bubble FlashList directly under the field,
+ * Renders suggestions in an `AutocompleteBubble` directly under the field,
  * or wherever `renderLayout` places it when the parent owns the placement.
  *
  * @param props - The component props
@@ -280,15 +157,8 @@ export function TextInputWithDropDown({
     }
   }, [value]);
 
-  const lowerTextInput = textInput.toLowerCase();
-  const filteredItems = showDropdown
-    ? referenceTextArray.filter(item => item.toLowerCase().includes(lowerTextInput))
-    : [];
-
-  const isExactMatch =
-    filteredItems.length === 1 && filteredItems[0]!.toLowerCase() === lowerTextInput;
-
-  const shouldShowDropdown = showDropdown && filteredItems.length > 0 && !isExactMatch;
+  const filteredItems = showDropdown ? filterSuggestions(referenceTextArray, textInput) : [];
+  const shouldShowDropdown = filteredItems.length > 0;
 
   function handleFocus() {
     isSelectingRef.current = false;
@@ -371,31 +241,5 @@ export function TextInputWithDropDown({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  tailSpace: {
-    marginTop: TAIL_SIZE / 2,
-  },
-  surface: {
-    borderRadius: MENU_CORNER_RADIUS,
-    paddingVertical: MENU_VERTICAL_PADDING,
-  },
-  tail: {
-    position: 'absolute',
-    top: -TAIL_SIZE / 2,
-    left: AUTOCOMPLETE_TAIL_INSET,
-    width: TAIL_SIZE,
-    height: TAIL_SIZE,
-    transform: [{ rotate: '45deg' }],
-  },
-  row: {
-    height: AUTOCOMPLETE_ROW_HEIGHT,
-    justifyContent: 'center',
-    paddingHorizontal: padding.medium,
-  },
-  match: {
-    fontWeight: '700',
-  },
-});
 
 export default TextInputWithDropDown;
