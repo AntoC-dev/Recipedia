@@ -11,7 +11,6 @@ import {
   setLanguage,
   setSeasonFilter,
   SETTINGS_KEYS,
-  toggleSeasonFilter,
 } from '@utils/settings';
 
 jest.unmock('@utils/settings');
@@ -196,40 +195,6 @@ describe('Settings Utility', () => {
       await setSeasonFilter(true);
 
       expect(AsyncStorage.setItem).toHaveBeenCalledWith(SETTINGS_KEYS.SEASON_FILTER, 'true');
-    });
-  });
-
-  describe('toggleSeasonFilter', () => {
-    test('toggles from true to false', async () => {
-      // Mock getSeasonFilter to return true
-      (AsyncStorage.getItem as jest.Mock).mockResolvedValue('true');
-
-      const result = await toggleSeasonFilter();
-
-      // Check that getSeasonFilter was called
-      expect(AsyncStorage.getItem).toHaveBeenCalledWith(SETTINGS_KEYS.SEASON_FILTER);
-
-      // Check that setSeasonFilter was called with false
-      expect(AsyncStorage.setItem).toHaveBeenCalledWith(SETTINGS_KEYS.SEASON_FILTER, 'false');
-
-      // Check that the function returns the new value
-      expect(result).toBe(false);
-    });
-
-    test('toggles from false to true', async () => {
-      // Mock getSeasonFilter to return false
-      (AsyncStorage.getItem as jest.Mock).mockResolvedValue('false');
-
-      const result = await toggleSeasonFilter();
-
-      // Check that getSeasonFilter was called
-      expect(AsyncStorage.getItem).toHaveBeenCalledWith(SETTINGS_KEYS.SEASON_FILTER);
-
-      // Check that setSeasonFilter was called with true
-      expect(AsyncStorage.setItem).toHaveBeenCalledWith(SETTINGS_KEYS.SEASON_FILTER, 'true');
-
-      // Check that the function returns the new value
-      expect(result).toBe(true);
     });
   });
 

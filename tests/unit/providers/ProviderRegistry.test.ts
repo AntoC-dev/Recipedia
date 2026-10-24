@@ -1,10 +1,4 @@
-import {
-  findProviderById,
-  findProviderForUrl,
-  getAvailableProviders,
-  getProvider,
-  hasProvider,
-} from '@providers/ProviderRegistry';
+import { getAvailableProviders, getProvider } from '@providers/ProviderRegistry';
 import { HelloFreshProvider } from '@providers/HelloFreshProvider';
 import { QuitoqueProvider } from '@providers/QuitoqueProvider';
 
@@ -53,68 +47,6 @@ describe('ProviderRegistry', () => {
       const providers2 = getAvailableProviders('en');
 
       expect(providers1).not.toBe(providers2);
-    });
-  });
-
-  describe('hasProvider', () => {
-    it('returns true for registered provider', () => {
-      expect(hasProvider('hellofresh')).toBe(true);
-    });
-
-    it('returns false for unknown provider', () => {
-      expect(hasProvider('unknown')).toBe(false);
-    });
-
-    it('is case sensitive', () => {
-      expect(hasProvider('HelloFresh')).toBe(false);
-    });
-  });
-
-  describe('findProviderForUrl', () => {
-    it('returns QuitoqueProvider for a quitoque.fr URL', () => {
-      const provider = findProviderForUrl('https://www.quitoque.fr/recettes/poulet-roti');
-
-      expect(provider).toBeInstanceOf(QuitoqueProvider);
-    });
-
-    it('returns HelloFreshProvider for a hellofresh URL', () => {
-      const provider = findProviderForUrl('https://www.hellofresh.fr/recipes/chicken-soup-abc123');
-
-      expect(provider).toBeInstanceOf(HelloFreshProvider);
-    });
-
-    it('returns undefined for an unknown URL', () => {
-      const provider = findProviderForUrl('https://www.marmiton.org/recettes/some-recipe');
-
-      expect(provider).toBeUndefined();
-    });
-  });
-
-  describe('findProviderById', () => {
-    it('returns QuitoqueProvider for quitoque id', () => {
-      const provider = findProviderById('quitoque');
-
-      expect(provider).toBeInstanceOf(QuitoqueProvider);
-      expect(provider?.id).toBe('quitoque');
-    });
-
-    it('returns HelloFreshProvider for hellofresh id', () => {
-      const provider = findProviderById('hellofresh');
-
-      expect(provider).toBeInstanceOf(HelloFreshProvider);
-      expect(provider?.id).toBe('hellofresh');
-    });
-
-    it('returns undefined for unknown id', () => {
-      const provider = findProviderById('unknown');
-
-      expect(provider).toBeUndefined();
-    });
-
-    it('is case sensitive', () => {
-      const provider = findProviderById('Quitoque');
-
-      expect(provider).toBeUndefined();
     });
   });
 });

@@ -178,5 +178,3 @@ const styles = StyleSheet.create({
     paddingBottom: bottomActionButtonHeight,
   },
 });
-
-export default TagsSettings;

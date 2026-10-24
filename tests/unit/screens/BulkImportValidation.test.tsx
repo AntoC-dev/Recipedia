@@ -8,7 +8,7 @@ import {
   setMockRouteParams,
 } from '@mocks/deps/react-navigation-mock';
 import { DefaultPersonsProvider } from '@context/DefaultPersonsContext';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
 import { testRecipes } from '@test-data/recipesDataset';

@@ -93,21 +93,6 @@ export function parseIngredientString(ingredientStr: string): {
 }
 
 /**
- * Formats ingredient components into a display string
- *
- * Creates a standardized string representation of an ingredient
- * using the standard separators defined in `@utils/TextParsing`.
- * Includes the usage note if present.
- *
- * @param ingredient - The ingredient element to format
- * @returns Formatted string like "100@@g--Rice" or "100@@g--Rice%%For the sauce"
- */
-export function formatIngredientString(ingredient: FormIngredientElement): string {
-  const base = `${ingredient.quantity || ''}${unitySeparator}${ingredient.unit || ''}${textSeparator}${ingredient.name || ''}`;
-  return ingredient.note ? `${base}${noteSeparator}${ingredient.note}` : base;
-}
-
-/**
  * Return value of the useRecipeIngredients hook.
  */
 export interface UseRecipeIngredientsReturn {

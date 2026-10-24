@@ -6,7 +6,7 @@ import { useRecipeOCR } from '@hooks/useRecipeOCR';
 import { RecipeFormProvider, useRecipeForm } from '@test-helpers/recipeFormTestProvider';
 import { RecipeDialogsProvider } from '@context/RecipeDialogsContext';
 import { createMockRecipeProp } from '@test-helpers/recipeHookTestWrapper';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { normalizeKey } from '@utils/NutritionUtils';
 import {
   FormIngredientElement,

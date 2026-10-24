@@ -58,7 +58,6 @@
  * ```
  */
 
-import { textSeparator, unitySeparator } from '@utils/TextParsing';
 import { TListFilter } from './RecipeFiltersTypes';
 
 /** Database and table name constants */
@@ -507,16 +506,6 @@ export function arrayOfType(
   return ingredients.filter(ingredient => ingredient.type === filter);
 }
 
-// TODO use more this function
-export function extractIngredientsNameWithQuantity(
-  ingredients: ingredientTableElement[]
-): string[] {
-  return ingredients.map(
-    ingredient =>
-      ingredient.quantity + unitySeparator + ingredient.unit + textSeparator + ingredient.name
-  );
-}
-
 export function extractTagsName(tags: TagDraft[]): string[] {
   const result: string[] = [];
   tags.forEach(element => {
@@ -555,18 +544,6 @@ export function isIngredientEqual(
 
 export function isTagEqual(tag1: TagDraft, tag2: TagDraft): boolean {
   return tag1.name === tag2.name;
-}
-
-/**
- * Asserts ingredient has a valid type before database operations
- * @throws Error if type is undefined
- */
-export function assertIngredientType(
-  ingredient: FormIngredientElement
-): asserts ingredient is ingredientTableElement {
-  if (!ingredient.type) {
-    throw new Error(`Ingredient "${ingredient.name}" must have a type before saving`);
-  }
 }
 
 /**

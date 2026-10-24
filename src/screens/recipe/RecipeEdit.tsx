@@ -48,5 +48,3 @@ export function RecipeEdit({ route, navigation }: RecipeEditProps) {
     />
   );
 }
-
-export default RecipeEdit;

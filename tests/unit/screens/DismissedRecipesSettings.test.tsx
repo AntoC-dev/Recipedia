@@ -2,7 +2,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { DismissedRecipesSettings } from '@screens/DismissedRecipesSettings';
 import React from 'react';
 import { mockGoBack } from '@mocks/deps/react-navigation-mock';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 
 jest.mock('@react-navigation/native', () => {
   const { reactNavigationMock } = require('@mocks/deps/react-navigation-mock');

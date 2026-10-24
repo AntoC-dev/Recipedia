@@ -241,5 +241,3 @@ export function TextInputWithDropDown({
     </View>
   );
 }
-
-export default TextInputWithDropDown;

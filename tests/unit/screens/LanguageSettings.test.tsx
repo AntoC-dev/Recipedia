@@ -1,6 +1,6 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import LanguageSettings from '@screens/LanguageSettings';
+import { LanguageSettings } from '@screens/LanguageSettings';
 import { mockNavigationFunctions } from '@mocks/deps/react-navigation-mock';
 import { mockGetLanguage, mockSetLanguage } from '@mocks/utils/settings-mock';
 

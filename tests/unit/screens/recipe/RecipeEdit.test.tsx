@@ -7,7 +7,7 @@ import {
   triggerPreventRemove,
 } from '@mocks/deps/react-navigation-mock';
 import { testRecipes } from '@test-data/recipesDataset';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { EditRecipeProp, RecipePropType } from '@customTypes/RecipeNavigationTypes';
 import { ingredientType } from '@customTypes/DatabaseElementTypes';
 import { defaultValueNumber } from '@utils/Constants';
@@ -1292,7 +1292,7 @@ describe('RecipeEdit', () => {
     test('mounts inside a CopilotProvider wrapper without crashing', async () => {
       const { CopilotProvider } = require('react-native-copilot');
       const { render } = require('@testing-library/react-native');
-      const RecipeEdit = require('@screens/recipe/RecipeEdit').default;
+      const RecipeEdit = require('@screens/recipe/RecipeEdit').RecipeEdit;
       const recipe = { ...testRecipes[6]! };
 
       const tree = render(

@@ -181,5 +181,3 @@ export function RecipeTags(tagsProps: RecipeTagProps) {
     </View>
   );
 }
-
-export default RecipeTags;

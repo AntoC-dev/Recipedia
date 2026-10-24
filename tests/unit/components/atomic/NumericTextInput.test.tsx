@@ -1,6 +1,6 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
-import NumericTextInput, { NumericTextInputProps } from '@components/atomic/NumericTextInput';
+import { NumericTextInput, NumericTextInputProps } from '@components/atomic/NumericTextInput';
 import { TextInput } from 'react-native-paper';
 import { defaultValueNumber } from '@utils/Constants';
 import * as Localization from 'expo-localization';

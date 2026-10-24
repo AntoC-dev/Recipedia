@@ -65,6 +65,8 @@ export function isArrayOfNumber(val: unknown): boolean {
  * isArrayOfString(["a", "b", "c"]) // true
  * isArrayOfString(["a", 1, "c"]) // false
  * ```
+ *
+ * @internal
  */
 export function isArrayOfString(val: unknown): boolean {
   return Array.isArray(val) && val.every(v => isString(v));
@@ -138,6 +140,8 @@ export function hasAtLeastKeys<T>(val: unknown, keys: (keyof T)[]): boolean {
  * hasSameKeysAs({a: 1, b: 2}, ["a", "b"]) // true
  * hasSameKeysAs({a: 1, b: 2, c: 3}, ["a", "b"]) // false (extra key)
  * ```
+ *
+ * @internal
  */
 export function hasSameKeysAs<T>(val: unknown, keys: (keyof T)[]): boolean {
   if (typeof val !== 'object' || val === null) return false;

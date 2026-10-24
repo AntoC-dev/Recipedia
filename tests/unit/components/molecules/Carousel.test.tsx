@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react-native';
-import Carousel, { CarouselItemProps } from '@components/molecules/Carousel';
+import { Carousel, CarouselItemProps } from '@components/molecules/Carousel';
 import React from 'react';
 import { testRecipes } from '@test-data/recipesDataset';
 import { recipeTableElement } from '@customTypes/DatabaseElementTypes';

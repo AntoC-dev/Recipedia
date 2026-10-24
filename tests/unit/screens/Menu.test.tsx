@@ -1,12 +1,12 @@
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { Snackbar } from 'react-native-paper';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
 import { testRecipes } from '@test-data/recipesDataset';
 import React from 'react';
 import { mockNavigationFunctions } from '@mocks/deps/react-navigation-mock';
-import Menu from '@screens/Menu';
+import { Menu } from '@screens/Menu';
 import { padding } from '@styles/spacing';
 
 const { mockUseSafeCopilot } = require('@mocks/hooks/useSafeCopilot-mock');

@@ -1,6 +1,6 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
-import CustomTextInput, { CustomTextInputProps } from '@components/atomic/CustomTextInput';
+import { CustomTextInput, CustomTextInputProps } from '@components/atomic/CustomTextInput';
 
 // Helpers for props
 const baseProps: CustomTextInputProps = {

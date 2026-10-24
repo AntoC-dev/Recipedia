@@ -1,6 +1,6 @@
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { useRecipes } from '@hooks/useRecipes';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { deleteFile, isTemporaryImageUri } from '@utils/FileGestion';
 import { ingredientType, RecipeDraft } from '@customTypes/DatabaseElementTypes';
 

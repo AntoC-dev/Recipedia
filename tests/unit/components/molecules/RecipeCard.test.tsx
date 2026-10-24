@@ -1,6 +1,6 @@
 import { fireEvent, render } from '@testing-library/react-native';
 import { StyleSheet } from 'react-native';
-import RecipeCard, { RecipeCardProps } from '@components/molecules/RecipeCard';
+import { RecipeCard, RecipeCardProps } from '@components/molecules/RecipeCard';
 import { padding } from '@styles/spacing';
 import React from 'react';
 import { testRecipes } from '@test-data/recipesDataset';

@@ -80,5 +80,3 @@ const styles = StyleSheet.create({
     paddingHorizontal: padding.small,
   },
 });
-
-export default Carousel;

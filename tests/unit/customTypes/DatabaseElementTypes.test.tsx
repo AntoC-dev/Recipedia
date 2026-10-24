@@ -1,7 +1,5 @@
 import {
   arrayOfType,
-  assertIngredientType,
-  extractIngredientsNameWithQuantity,
   extractTagsName,
   FormIngredientElement,
   ingredientTableElement,
@@ -104,51 +102,6 @@ describe('DatabaseElementTypes Helper Functions', () => {
     expect(toppingItems.every(i => i.type === ingredientType.topping)).toBe(true);
   });
 
-  test('extractIngredientsNameWithQuantity formats ingredient names correctly', () => {
-    const monoIngredient = new Array<ingredientTableElement>({
-      id: 1,
-      name: 'Sugar',
-      unit: 'g',
-      quantity: '100',
-      type: ingredientType.sugar,
-      season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-    });
-
-    expect(extractIngredientsNameWithQuantity(monoIngredient)).toEqual(['100@@g--Sugar']);
-
-    const multiIngredient = new Array<ingredientTableElement>(
-      {
-        id: 1,
-        name: 'Sugar',
-        unit: 'g',
-        quantity: '100',
-        type: ingredientType.sugar,
-        season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-      },
-      {
-        id: 2,
-        name: 'Flour',
-        unit: 'g',
-        quantity: '200',
-        type: ingredientType.cereal,
-        season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-      },
-      {
-        id: 3,
-        name: 'Spaghetti',
-        unit: 'g',
-        quantity: '200',
-        type: ingredientType.cereal,
-        season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-      }
-    );
-    expect(extractIngredientsNameWithQuantity(multiIngredient)).toEqual([
-      '100@@g--Sugar',
-      '200@@g--Flour',
-      '200@@g--Spaghetti',
-    ]);
-  });
-
   test('extractTagsName extracts tag names', () => {
     const tags = new Array<TagDraft>({ name: 'Dessert' }, { name: 'Vegan' });
     expect(extractTagsName(tags)).toEqual(['Dessert', 'Vegan']);
@@ -173,7 +126,13 @@ describe('DatabaseElementTypes Helper Functions', () => {
     expected = { ...testRecipes[0]!, tags: [] };
     expect(isRecipeEqual(testRecipes[0]!, expected)).toBe(false);
 
-    expected = { ...testRecipes[0]!, tags: [{ id: 1, name: 'One' }, { id: 2, name: 'Two' }] };
+    expected = {
+      ...testRecipes[0]!,
+      tags: [
+        { id: 1, name: 'One' },
+        { id: 2, name: 'Two' },
+      ],
+    };
     expect(isRecipeEqual(testRecipes[0]!, expected)).toBe(false);
 
     expected = {
@@ -304,43 +263,6 @@ describe('DatabaseElementTypes Helper Functions', () => {
 
     let expected: tagTableElement = { ...testTags[0]!, id: 9999 };
     expect(isTagEqual(testTags[0]!, expected)).toBe(true);
-  });
-
-  describe('assertIngredientType', () => {
-    test('does not throw when ingredient has a valid type', () => {
-      const validIngredient: FormIngredientElement = {
-        name: 'Sugar',
-        unit: 'g',
-        quantity: '100',
-        type: ingredientType.sugar,
-        season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-      };
-
-      expect(() => assertIngredientType(validIngredient)).not.toThrow();
-    });
-
-    test('throws when ingredient type is undefined', () => {
-      const invalidIngredient: FormIngredientElement = {
-        name: 'Sugar',
-        unit: 'g',
-        quantity: '100',
-        season: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-      };
-
-      expect(() => assertIngredientType(invalidIngredient)).toThrow(
-        'Ingredient "Sugar" must have a type before saving'
-      );
-    });
-
-    test('throws with correct ingredient name in error message', () => {
-      const invalidIngredient: FormIngredientElement = {
-        name: 'Flour',
-      };
-
-      expect(() => assertIngredientType(invalidIngredient)).toThrow(
-        'Ingredient "Flour" must have a type before saving'
-      );
-    });
   });
 });
 

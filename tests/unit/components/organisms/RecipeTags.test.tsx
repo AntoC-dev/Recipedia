@@ -1,10 +1,10 @@
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import RecipeTags, { RecipeTagProps } from '@components/organisms/RecipeTags';
+import { RecipeTags, RecipeTagProps } from '@components/organisms/RecipeTags';
 import React from 'react';
 import { testTags } from '@test-data/tagsDataset';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testRecipes } from '@test-data/recipesDataset';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 
 jest.mock('@components/atomic/RoundButton', () => ({
   RoundButton: require('@mocks/components/atomic/RoundButton-mock').roundButtonMock,
