@@ -32,6 +32,17 @@ describe('RecipeImageField', () => {
     expect(getByTestId('RecipeImage::ImgUri').props.children).toBe('file:///a.jpg');
   });
 
+  test('passes the stack mode button label key', () => {
+    const { getByTestId } = renderWithForm(RecipeImageField, form => ({
+      form,
+      stackMode: recipeStateType.addOCR,
+      openModalForField: jest.fn(),
+    }));
+    expect(getByTestId('RecipeImage::OverlayButtonLabelKey').props.children).toBe(
+      'recipe.roundButton.scan'
+    );
+  });
+
   test('falls back to empty string when value undefined', () => {
     const { getByTestId, form } = renderWithForm(RecipeImageField, f => ({
       form: f,

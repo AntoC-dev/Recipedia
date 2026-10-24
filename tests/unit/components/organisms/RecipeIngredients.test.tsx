@@ -75,6 +75,7 @@ describe('IngredientsTable', () => {
         testID={TEST_ID}
         prefixText='Ingredients :'
         columnTitles={columnTitles}
+        addIngredientButtonLabel='New ingredient'
         onAddIngredient={onAddIngredient}
       >
         {childMarker()}
@@ -82,6 +83,9 @@ describe('IngredientsTable', () => {
     );
 
     expect(getByTestId(`${TEST_ID}::PrefixText`).props.children).toEqual('Ingredients :');
+    expect(getByTestId(`${TEST_ID}::AddButton::RoundButton::Label`).props.children).toEqual(
+      'New ingredient'
+    );
     expect(getByTestId(`${TEST_ID}::Header::Quantity`)).toBeTruthy();
     expect(getByText('child-marker')).toBeTruthy();
     fireEvent.press(getByTestId(`${TEST_ID}::AddButton::RoundButton::OnPressFunction`));
@@ -92,6 +96,7 @@ describe('IngredientsTable', () => {
     const { queryByTestId } = render(
       <IngredientsTable
         testID={TEST_ID}
+        addIngredientButtonLabel='New ingredient'
         prefixText='Ingredients :'
         columnTitles={columnTitles}
         hideAddButton
@@ -107,6 +112,7 @@ describe('IngredientsTable', () => {
     const { getByTestId } = render(
       <IngredientsTable
         testID={TEST_ID}
+        addIngredientButtonLabel='New ingredient'
         prefixText='Ingredients :'
         columnTitles={columnTitles}
         error='boom'
@@ -330,13 +336,19 @@ describe('IngredientsAddEmpty', () => {
       <IngredientsAddEmpty
         testID={TEST_ID}
         prefixText='Ingredients :'
-        scanLabel='Scan names'
-        manualLabel='Add manually'
+        scanNamesButtonLabel='Scan names'
+        addManuallyButtonLabel='Add manually'
         openOcrModal={openOcrModal}
         onAddIngredient={onAddIngredient}
       />
     );
 
+    expect(getByTestId(`${TEST_ID}::OpenModalNames::RoundButton::Label`).props.children).toEqual(
+      'Scan names'
+    );
+    expect(getByTestId(`${TEST_ID}::AddButton::RoundButton::Label`).props.children).toEqual(
+      'Add manually'
+    );
     fireEvent.press(getByTestId(`${TEST_ID}::OpenModalNames::RoundButton::OnPressFunction`));
     expect(openOcrModal).toHaveBeenCalledTimes(1);
     fireEvent.press(getByTestId(`${TEST_ID}::AddButton::RoundButton::OnPressFunction`));
@@ -351,13 +363,19 @@ describe('IngredientsAddTail', () => {
     const { getByTestId } = render(
       <IngredientsAddTail
         testID={TEST_ID}
-        scanLabel='Scan quantities'
-        manualLabel='Add manually'
+        scanQuantitiesButtonLabel='Scan quantities'
+        addManuallyButtonLabel='Add manually'
         openOcrModal={openOcrModal}
         onAddIngredient={onAddIngredient}
       />
     );
 
+    expect(
+      getByTestId(`${TEST_ID}::OpenModalQuantities::RoundButton::Label`).props.children
+    ).toEqual('Scan quantities');
+    expect(getByTestId(`${TEST_ID}::AddButton::RoundButton::Label`).props.children).toEqual(
+      'Add manually'
+    );
     fireEvent.press(getByTestId(`${TEST_ID}::OpenModalQuantities::RoundButton::OnPressFunction`));
     expect(openOcrModal).toHaveBeenCalledTimes(1);
     fireEvent.press(getByTestId(`${TEST_ID}::AddButton::RoundButton::OnPressFunction`));

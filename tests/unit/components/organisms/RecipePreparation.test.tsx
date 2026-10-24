@@ -59,6 +59,9 @@ describe('PreparationSection', () => {
     expect(getByTestId('RecipePreparation::AddButton::RoundButton::Icon').props.children).toEqual(
       'plus'
     );
+    expect(getByTestId('RecipePreparation::AddButton::RoundButton::Label').props.children).toEqual(
+      'recipe.roundButton.newStep'
+    );
   });
 
   it('fires onAddStep when add button pressed', () => {
@@ -75,7 +78,7 @@ describe('PreparationSection', () => {
 });
 
 describe('PreparationEmptyAdd', () => {
-  it('renders OCR + add buttons with the right icons', () => {
+  it('renders OCR + add buttons with the right icons and labels', () => {
     const { getByTestId } = render(
       <PreparationEmptyAdd prefixText='Preparation :' openModal={jest.fn()} onAddStep={jest.fn()} />
     );
@@ -83,8 +86,14 @@ describe('PreparationEmptyAdd', () => {
     expect(getByTestId('RecipePreparation::OpenModal::RoundButton::Icon').props.children).toEqual(
       'line-scan'
     );
+    expect(getByTestId('RecipePreparation::OpenModal::RoundButton::Label').props.children).toEqual(
+      'recipe.roundButton.scan'
+    );
     expect(getByTestId('RecipePreparation::AddButton::RoundButton::Icon').props.children).toEqual(
       'pencil'
+    );
+    expect(getByTestId('RecipePreparation::AddButton::RoundButton::Label').props.children).toEqual(
+      'recipe.roundButton.addManually'
     );
   });
 

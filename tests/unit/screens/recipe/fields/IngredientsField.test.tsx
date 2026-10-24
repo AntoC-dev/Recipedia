@@ -74,6 +74,18 @@ describe('RecipeIngredientsField', () => {
     expect(form.getValues('recipeIngredients')).toHaveLength(1);
   });
 
+  test('table add button is labelled with the new ingredient label', () => {
+    const { getByTestId } = renderWithForm(RecipeIngredientsField, f => ({
+      form: f,
+      stackMode: recipeStateType.edit,
+      openModalForField: jest.fn(),
+      t,
+    }));
+    expect(getByTestId('RecipeIngredients::AddButton::RoundButton::Label').props.children).toBe(
+      'recipe.roundButton.newIngredient'
+    );
+  });
+
   test('row commit with same name writes via the field-array without invoking validation', () => {
     const ingredients = [
       {
@@ -544,6 +556,12 @@ describe('RecipeIngredientsField', () => {
         { recipeIngredients: [] }
       );
       expect(getByTestId('RecipeIngredients::PrefixText').props.children).toBe('ingredients: ');
+      expect(
+        getByTestId('RecipeIngredients::OpenModalNames::RoundButton::Label').props.children
+      ).toBe('recipe.roundButton.scanNames');
+      expect(getByTestId('RecipeIngredients::AddButton::RoundButton::Label').props.children).toBe(
+        'recipe.roundButton.addManually'
+      );
       fireEvent.press(
         getByTestId('RecipeIngredients::OpenModalNames::RoundButton::OnPressFunction')
       );
@@ -590,6 +608,12 @@ describe('RecipeIngredientsField', () => {
       expect(
         queryByTestId('RecipeIngredients::OpenModalNames::RoundButton::OnPressFunction')
       ).toBeNull();
+      expect(
+        getByTestId('RecipeIngredients::OpenModalQuantities::RoundButton::Label').props.children
+      ).toBe('recipe.roundButton.scanQuantities');
+      expect(getByTestId('RecipeIngredients::AddButton::RoundButton::Label').props.children).toBe(
+        'recipe.roundButton.addManually'
+      );
       fireEvent.press(
         getByTestId('RecipeIngredients::OpenModalQuantities::RoundButton::OnPressFunction')
       );
