@@ -1,4 +1,4 @@
-import TableManipulation from '@utils/TableManipulation';
+import { TableManipulation } from '@utils/TableManipulation';
 import { databaseColumnType, encodedType } from '@customTypes/DatabaseElementTypes';
 
 import * as SQLite from 'expo-sqlite';

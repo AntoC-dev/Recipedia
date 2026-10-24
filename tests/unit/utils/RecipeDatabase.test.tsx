@@ -1,4 +1,4 @@
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { testRecipes } from '@test-data/recipesDataset';
 import { testTags } from '@test-data/tagsDataset';
 import { testIngredients } from '@test-data/ingredientsDataset';

@@ -1,4 +1,4 @@
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 
 /** Type string no `ingredientType` member holds, so decoding must reject it. */
 export const CORRUPT_INGREDIENT_TYPE = 'not-a-real-type';

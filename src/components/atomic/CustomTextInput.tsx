@@ -188,5 +188,3 @@ export function CustomTextInput({
     />
   );
 }
-
-export default CustomTextInput;

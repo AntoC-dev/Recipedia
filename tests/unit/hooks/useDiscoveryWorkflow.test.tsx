@@ -8,7 +8,7 @@ import {
   RecipeProvider,
 } from '@customTypes/BulkImportTypes';
 import { ingredientType } from '@customTypes/DatabaseElementTypes';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
 

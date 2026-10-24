@@ -241,5 +241,3 @@ export function EditableStep({
     </View>
   );
 }
-
-export default RecipePreparation;

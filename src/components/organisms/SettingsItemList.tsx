@@ -129,5 +129,3 @@ const styles = StyleSheet.create({
   },
   listContent: { padding: padding.small },
 });
-
-export default SettingsItemList;

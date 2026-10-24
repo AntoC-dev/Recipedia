@@ -101,5 +101,3 @@ export function LanguageSettings({ navigation }: LanguageSettingsProp) {
     </ScreenWrapper>
   );
 }
-
-export default LanguageSettings;

@@ -299,5 +299,3 @@ const styles = StyleSheet.create({
     paddingBottom: tabScreenBottomPadding,
   },
 });
-
-export default Parameters;

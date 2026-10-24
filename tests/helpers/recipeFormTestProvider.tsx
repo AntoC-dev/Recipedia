@@ -15,10 +15,21 @@ import { ingredientTableElement, recipeTableElement } from '@customTypes/Databas
 import { defaultValueNumber } from '@utils/Constants';
 import { getDefaultPersonsSync } from '@utils/settings';
 import { RecipePropType } from '@customTypes/RecipeNavigationTypes';
-import { hasRecipeFromProps, hasScrapedDataFromProps } from '@utils/RecipeFormHelpers';
 import { recipeFormSchema, RecipeFormInput } from '@schemas/recipeFormSchema';
 
 const recipeFormResolver = zodResolver(recipeFormSchema);
+
+function hasRecipeFromProps(
+  props: RecipePropType
+): props is { mode: 'readOnly' | 'edit'; recipe: recipeTableElement } {
+  return props.mode === 'readOnly' || props.mode === 'edit';
+}
+
+function hasScrapedDataFromProps(
+  props: RecipePropType
+): props is { mode: 'addFromScrape'; scrapedData: Partial<recipeTableElement>; sourceUrl: string } {
+  return props.mode === 'addFromScrape';
+}
 
 function pickInitial<TKey extends keyof recipeTableElement>(
   props: RecipePropType,

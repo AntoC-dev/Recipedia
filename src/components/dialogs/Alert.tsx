@@ -141,5 +141,3 @@ export function Alert({
     </Portal>
   );
 }
-
-export default Alert;

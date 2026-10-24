@@ -146,4 +146,3 @@ const styles = StyleSheet.create({
     minWidth: screenWidth * 0.4,
   },
 });
-export default DefaultPersonsSettings;

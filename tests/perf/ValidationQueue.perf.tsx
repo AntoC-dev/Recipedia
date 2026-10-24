@@ -1,7 +1,7 @@
 import React from 'react';
 import { measureRenders } from 'reassure';
 import { ValidationQueue } from '@components/dialogs/ValidationQueue';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { performanceIngredients } from '@assets/datasets/performance/ingredients';
 import { performanceTags } from '@assets/datasets/performance/tags';
 import { ingredientTableElement, tagTableElement } from '@customTypes/DatabaseElementTypes';

@@ -1,5 +1,5 @@
 import { fireEvent, waitFor } from '@testing-library/react-native';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { AddFromPicProp } from '@customTypes/RecipeNavigationTypes';
 import { computeOcrFieldStatus } from '@utils/OCR';
 

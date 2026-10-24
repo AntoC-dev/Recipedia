@@ -3328,5 +3328,3 @@ export class RecipeDatabase {
     };
   }
 }
-
-export default RecipeDatabase;

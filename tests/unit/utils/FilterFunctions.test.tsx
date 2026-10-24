@@ -28,7 +28,7 @@ import {
 import { testTags } from '@test-data/tagsDataset';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { useI18n } from '@utils/i18n';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 
 describe('FilterFunctions', () => {
   const { t } = useI18n();

@@ -1,8 +1,6 @@
 // Community-maintained mocks setup
 // These replace custom mocks with official/community-maintained alternatives
 
-import 'react-native-gesture-handler/jestSetup';
-
 // react-native-safe-area-context
 import mockSafeAreaContext from 'react-native-safe-area-context/jest/mock';
 

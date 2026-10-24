@@ -30,7 +30,7 @@
  * }); // ❌ TypeScript error
  *
  * // Screen component with proper typing
- * function HomeScreen({ navigation, route }: HomeScreenProp) {
+ * function LanguageSettings({ navigation, route }: LanguageSettingsProp) {
  *   // navigation and route are fully typed
  *   return <View>...</View>;
  * }
@@ -44,7 +44,7 @@
 
 import { NavigationProp, NavigatorScreenParams } from '@react-navigation/native';
 import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
-import { BottomTabScreenProps, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import type {
   RecipeViewParams,
   RecipeEditParams,
@@ -135,13 +135,6 @@ export const Tab = createBottomTabNavigator<TabScreenParamList>();
 export type StackScreenNavigation = NavigationProp<StackScreenParamList>;
 
 export type TabScreenNavigation = NavigationProp<TabScreenParamList>;
-
-// =============================================================================
-// TAB SCREEN PROP TYPES
-// =============================================================================
-
-/** Props for Home tab screen component */
-export type HomeScreenProp = BottomTabScreenProps<TabScreenParamList, 'Home'>;
 
 // =============================================================================
 // STACK SCREEN PROP TYPES

@@ -165,5 +165,3 @@ const styles = StyleSheet.create({
     height: '70%',
   },
 });
-
-export default Menu;

@@ -1,6 +1,6 @@
 import { fireEvent, render } from '@testing-library/react-native';
 import { StyleSheet, ViewStyle } from 'react-native';
-import Alert, { AlertProps } from '@components/dialogs/Alert';
+import { Alert, AlertProps } from '@components/dialogs/Alert';
 import { dialogActionStyles } from '@styles/buttons';
 import React from 'react';
 

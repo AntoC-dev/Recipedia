@@ -1,4 +1,4 @@
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { RecipeDraft } from '@customTypes/DatabaseElementTypes';
 import { MAX_IMAGE_DIMENSION } from '@utils/imageResize';
 import { mockFileCopy, mockFileExists } from '@mocks/deps/expo-file-system-mock';

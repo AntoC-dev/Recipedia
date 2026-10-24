@@ -2,7 +2,7 @@ import React from 'react';
 import { fireEvent, screen } from '@testing-library/react-native';
 import { measureRenders } from 'reassure';
 import { ValidationReviewList } from '@components/organisms/ValidationReviewList';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { performanceTags } from '@assets/datasets/performance/tags';
 import { performanceIngredients } from '@assets/datasets/performance/ingredients';
 import { tagTableElement, FormIngredientElement } from '@customTypes/DatabaseElementTypes';

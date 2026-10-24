@@ -5,7 +5,6 @@ export const mockSetLanguage = jest.fn();
 export const mockGetLanguage = jest.fn().mockResolvedValue('en');
 export const mockGetSeasonFilter = jest.fn().mockResolvedValue(true);
 export const mockSetSeasonFilter = jest.fn().mockResolvedValue(undefined);
-export const mockToggleSeasonFilter = jest.fn().mockResolvedValue(false);
 export const mockGetDarkMode = jest.fn().mockResolvedValue(false);
 export const mockSetDarkMode = jest.fn().mockResolvedValue(undefined);
 export const mockInitSettings = jest.fn().mockResolvedValue(undefined);
@@ -23,7 +22,6 @@ export function settingsMock() {
     setLanguage: mockSetLanguage,
     getSeasonFilter: mockGetSeasonFilter,
     setSeasonFilter: mockSetSeasonFilter,
-    toggleSeasonFilter: mockToggleSeasonFilter,
     getDarkMode: mockGetDarkMode,
     setDarkMode: mockSetDarkMode,
     initSettings: mockInitSettings,

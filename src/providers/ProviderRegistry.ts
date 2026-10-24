@@ -7,7 +7,6 @@
  */
 
 import { RecipeProvider } from '@customTypes/BulkImportTypes';
-import { BaseRecipeProvider } from './BaseRecipeProvider';
 import { HelloFreshProvider } from './HelloFreshProvider';
 import { QuitoqueProvider } from './QuitoqueProvider';
 
@@ -41,42 +40,4 @@ export function getAvailableProviders(language: string): RecipeProvider[] {
     }
     return provider.supportedLanguages.includes(language);
   });
-}
-
-/**
- * Checks if a provider exists in the registry
- *
- * @param id - The provider's unique ID
- * @returns True if the provider is registered
- */
-export function hasProvider(id: string): boolean {
-  return providerRegistry.has(id);
-}
-
-/**
- * Finds the provider that can handle a given recipe source URL
- *
- * Iterates all registered providers and returns the first one whose
- * `canHandleUrl` method returns true for the given URL.
- *
- * @param url - Recipe source URL to look up
- * @returns The matching provider instance, or undefined if none found
- */
-export function findProviderForUrl(url: string): RecipeProvider | undefined {
-  for (const provider of providerRegistry.values()) {
-    if (provider.canHandleUrl(url)) {
-      return provider;
-    }
-  }
-  return undefined;
-}
-
-/**
- * Finds a provider by its unique identifier string
- *
- * @param providerId - The provider's unique ID (e.g., 'quitoque')
- * @returns The matching provider instance, or undefined if not found
- */
-export function findProviderById(providerId: string): BaseRecipeProvider | undefined {
-  return providerRegistry.get(providerId) as BaseRecipeProvider | undefined;
 }

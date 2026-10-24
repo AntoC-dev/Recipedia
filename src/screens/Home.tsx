@@ -212,5 +212,3 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
 });
-
-export default Home;

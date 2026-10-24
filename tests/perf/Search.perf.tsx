@@ -1,13 +1,13 @@
 import React from 'react';
 import { fireEvent, screen } from '@testing-library/react-native';
 import { measureRenders } from 'reassure';
-import Search from '@screens/Search';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { Search } from '@screens/Search';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { ingredientType, recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { performanceRecipes } from '@assets/datasets/performance/recipes';
 import { performanceIngredients } from '@assets/datasets/performance/ingredients';
 import { performanceTags } from '@assets/datasets/performance/tags';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { SeasonFilterProvider } from '@context/SeasonFilterContext';
 import { HEAVY_WARMUP } from './perfOptions';
@@ -17,7 +17,7 @@ jest.mock('@react-navigation/native', () =>
 );
 jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 function SearchWrapper() {
   return (
