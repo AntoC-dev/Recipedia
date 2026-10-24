@@ -108,7 +108,6 @@ updates:
       - dependency-name: "react"
       - dependency-name: "react-dom"
       # Toolchain pins — fully ignored (bumped only alongside an SDK upgrade).
-      - dependency-name: "react-compiler-runtime"
       - dependency-name: "babel-plugin-react-compiler"
       - dependency-name: "eslint-plugin-react-compiler"
       - dependency-name: "@types/react*"
