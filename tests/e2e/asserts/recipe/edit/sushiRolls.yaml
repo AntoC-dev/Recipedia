@@ -368,6 +368,11 @@ appId: "com.recipedia"
     id: "RecipeIngredients::AddButton::RoundButton"
     label: "Add button of the ingredients is rendered"
 
+- assertVisible:
+    id: "RecipeIngredients::AddButton::RoundButton::Label"
+    text: "New ingredient"
+    label: "Add button label of the ingredients is rendered"
+
 - waitForAnimationToEnd
 
 - scrollUntilVisible:
@@ -766,6 +771,11 @@ appId: "com.recipedia"
     centerElement: true
 
 - waitForAnimationToEnd
+
+- assertVisible:
+    id: "RecipePreparation::AddButton::RoundButton::Label"
+    text: "New step"
+    label: "Add button label of the preparation is rendered"
 
 - runFlow:
     file: "../common/nutritionEdit.yaml"

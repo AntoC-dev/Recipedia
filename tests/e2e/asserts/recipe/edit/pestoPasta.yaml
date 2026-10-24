@@ -10,6 +10,10 @@ appId: "com.recipedia"
     id: "RecipeImage"
     label: "Image is rendered"
 - assertVisible:
+    id: "RecipeImage::RoundButton::Label"
+    text: "Photo"
+    label: "Image button label is rendered over an existing image"
+- assertVisible:
     id: "RecipeTitle::Text"
     text: "Title:"
     label: "Title label is rendered"
@@ -113,6 +117,11 @@ appId: "com.recipedia"
 - assertVisible:
     id: "RecipeTags::RoundButton"
     label: "Add button for the tag is rendered"
+
+- assertVisible:
+    id: "RecipeTags::RoundButton::Label"
+    text: "New tag"
+    label: "Add button label for the tag is rendered"
 
 - waitForAnimationToEnd
 
@@ -310,6 +319,11 @@ appId: "com.recipedia"
 - assertVisible:
     id: "RecipeIngredients::AddButton::RoundButton"
     label: "Add button of the ingredients is rendered"
+
+- assertVisible:
+    id: "RecipeIngredients::AddButton::RoundButton::Label"
+    text: "New ingredient"
+    label: "Add button label of the ingredients is rendered"
 
 - waitForAnimationToEnd
 
@@ -554,6 +568,11 @@ appId: "com.recipedia"
 - assertVisible:
     id: "RecipePreparation::AddButton::RoundButton"
     label: "Add button of the preparation is rendered"
+
+- assertVisible:
+    id: "RecipePreparation::AddButton::RoundButton::Label"
+    text: "New step"
+    label: "Add button label of the preparation is rendered"
 
 - runFlow:
     file: "../common/nutritionEdit.yaml"

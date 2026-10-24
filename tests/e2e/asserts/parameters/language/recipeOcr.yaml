@@ -10,6 +10,14 @@ appId: "com.recipedia"
     id: "RecipeDescription::Text"
     text: "Description:"
     label: "Intro text for the recipe description is displayed in French"
+- assertVisible:
+    id: "RecipeTitle::OpenModal::RoundButton::Label"
+    text: "Scanner"
+    label: "Title scan button label is displayed in French"
+- assertVisible:
+    id: "RecipeDescription::OpenModal::RoundButton::Label"
+    text: "Scanner"
+    label: "Description scan button label is displayed in French"
 
 - waitForAnimationToEnd
 
@@ -31,6 +39,14 @@ appId: "com.recipedia"
     id: "RecipeTags::ElementText"
     text: "Les étiquettes représentent une façon d'identifier une recette afin d'en faciliter la recherche.\nVoici certains exemples d'étiquettes que vous pouvez utiliser : .*, .*, .*"
     label: "Explanation text for the recipe tags is displayed in French"
+- assertVisible:
+    id: "RecipeTags::OpenModal::RoundButton::Label"
+    text: "Scanner"
+    label: "Tags scan button label is displayed in French"
+- assertVisible:
+    id: "RecipeTags::RoundButton::Label"
+    text: "Nouvelle étiquette"
+    label: "Add tag button label is displayed in French"
 
 - waitForAnimationToEnd
 
@@ -56,6 +72,14 @@ appId: "com.recipedia"
     id: "RecipeIngredients::PrefixText"
     text: "Ingrédients : "
     label: "Intro text for the recipe ingredients is displayed in French"
+- assertVisible:
+    id: "RecipeIngredients::OpenModalNames::RoundButton::Label"
+    text: "Scanner les noms"
+    label: "Scan names button label is displayed in French"
+- assertVisible:
+    id: "RecipeIngredients::AddButton::RoundButton::Label"
+    text: "Ajouter manuellement"
+    label: "Add ingredient manually button label is displayed in French"
 
 - waitForAnimationToEnd
 
@@ -73,9 +97,25 @@ appId: "com.recipedia"
     text: "Temps de préparation (minutes) :"
     label: "Intro text for the recipe time is displayed in French"
 - assertVisible:
+    id: "RecipeTime::OpenModal::RoundButton::Label"
+    text: "Scanner"
+    label: "Time scan button label is displayed in French"
+- assertVisible:
+    id: "RecipeTime::ManuallyFill::RoundButton::Label"
+    text: "Ajouter manuellement"
+    label: "Time manual fill button label is displayed in French"
+- assertVisible:
     id: "RecipePreparation::PrefixText"
     text: "Préparation : "
     label: "Recipe preparation section is displayed in French"
+- assertVisible:
+    id: "RecipePreparation::OpenModal::RoundButton::Label"
+    text: "Scanner"
+    label: "Preparation scan button label is displayed in French"
+- assertVisible:
+    id: "RecipePreparation::AddButton::RoundButton::Label"
+    text: "Ajouter manuellement"
+    label: "Preparation manual add button label is displayed in French"
 - tapOn:
     id: "RecipePreparation::OpenModal::RoundButton"
     label: "Tap on preparation modal"

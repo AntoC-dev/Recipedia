@@ -14,6 +14,11 @@ appId: "com.recipedia"
     label: "OCR button for the title is rendered"
 
 - assertVisible:
+    id: "RecipeTitle::OpenModal::RoundButton::Label"
+    text: "Scan"
+    label: "OCR button label for the title is rendered"
+
+- assertVisible:
     id: "RecipeDescription::Text"
     text: "Description:"
     label: "Intro text for the description is rendered"
@@ -21,6 +26,11 @@ appId: "com.recipedia"
 - assertVisible:
     id: "RecipeDescription::OpenModal::RoundButton"
     label: "OCR button for the description is rendered"
+
+- assertVisible:
+    id: "RecipeDescription::OpenModal::RoundButton::Label"
+    text: "Scan"
+    label: "OCR button label for the description is rendered"
 
 - waitForAnimationToEnd
 
@@ -73,8 +83,18 @@ appId: "com.recipedia"
     label: "OCR button for the tags is rendered"
 
 - assertVisible:
+    id: "RecipeTags::OpenModal::RoundButton::Label"
+    text: "Scan"
+    label: "OCR button label for the tags is rendered"
+
+- assertVisible:
     id: "RecipeTags::RoundButton"
     label: "Add button for the tag is rendered"
+
+- assertVisible:
+    id: "RecipeTags::RoundButton::Label"
+    text: "New tag"
+    label: "Add button label for the tag is rendered"
 
 - waitForAnimationToEnd
 
@@ -157,6 +177,16 @@ appId: "com.recipedia"
     id: "RecipeTime::OpenModal::RoundButton"
     label: "OCR button for the time is rendered"
 
+- assertVisible:
+    id: "RecipeTime::OpenModal::RoundButton::Label"
+    text: "Scan"
+    label: "OCR button label for the time is rendered"
+
+- assertVisible:
+    id: "RecipeTime::ManuallyFill::RoundButton::Label"
+    text: "Add manually"
+    label: "Manual fill button label for the time is rendered"
+
 - waitForAnimationToEnd
 
 - scrollUntilVisible:
@@ -176,6 +206,16 @@ appId: "com.recipedia"
 - assertVisible:
     id: "RecipePreparation::OpenModal::RoundButton"
     label: "OCR button for the preparation is rendered"
+
+- assertVisible:
+    id: "RecipePreparation::OpenModal::RoundButton::Label"
+    text: "Scan"
+    label: "OCR button label for the preparation is rendered"
+
+- assertVisible:
+    id: "RecipePreparation::AddButton::RoundButton::Label"
+    text: "Add manually"
+    label: "Manual add button label for the preparation is rendered"
 
 - runFlow:
     file: "../common/nutritionEmptyOCR.yaml"

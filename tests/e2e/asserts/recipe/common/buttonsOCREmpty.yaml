@@ -25,5 +25,10 @@ appId: "com.recipedia"
     label: "Image button is rendered"
 
 - assertVisible:
+    id: "RecipeImage::RoundButton::Label"
+    text: "Scan"
+    label: "Image button label is rendered"
+
+- assertVisible:
     id: "RecipeImage"
     label: "Image container is displayed"
