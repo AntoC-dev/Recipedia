@@ -6,9 +6,10 @@
  */
 
 import React from 'react';
+import type * as ReactNative from 'react-native';
 import { StyleSheet, Text, View } from 'react-native';
 
-export function sectionListMock({
+function sectionListMock({
   testID,
   sections,
   renderItem,
@@ -41,4 +42,12 @@ export function sectionListMock({
       {ListFooterComponent}
     </View>
   );
+}
+
+/**
+ * Swaps `SectionList` for {@link sectionListMock} on the public `react-native` module.
+ */
+export function mockSectionList() {
+  const reactNative: typeof ReactNative = jest.requireActual('react-native');
+  return jest.spyOn(reactNative, 'SectionList').mockImplementation(sectionListMock as never);
 }

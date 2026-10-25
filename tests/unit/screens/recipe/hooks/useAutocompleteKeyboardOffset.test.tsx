@@ -8,10 +8,9 @@ import {
   AUTOCOMPLETE_BUBBLE_MAX_HEIGHT,
   getAutocompleteBottomOffset,
 } from '@screens/recipe/helpers/autocompleteKeyboardOffset';
+import { mockFindNodeHandle } from '@mocks/deps/react-native-find-node-handle-mock';
 
-jest.mock('react-native/Libraries/Components/View/View', () =>
-  require('@mocks/deps/react-native-view-mock').viewWithNativeTagMock()
-);
+const scrollViewNativeHandle = 42;
 
 type FakeElement = {
   id: string;
@@ -86,7 +85,7 @@ async function layOut() {
   });
 }
 
-async function focus(target: FakeElement) {
+async function focus(target: FakeElement | number | undefined) {
   await act(async () => {
     fireEvent(wrapper(), 'focus', { target });
   });
@@ -97,16 +96,39 @@ function shownOffset() {
 }
 
 describe('useAutocompleteKeyboardOffset', () => {
+  let findNodeHandleSpy: ReturnType<typeof mockFindNodeHandle>;
+
   beforeEach(() => {
+    findNodeHandleSpy = mockFindNodeHandle(scrollViewNativeHandle);
     setKeyboardHeight(openKeyboardHeight);
     placeScrollViewAt(88);
     renderResult = render(<OffsetHarness />);
   });
 
   afterEach(() => {
+    findNodeHandleSpy.mockRestore();
     setKeyboardHeight(0);
     viewPositionInWindow.mockClear();
   });
+
+  test('measures the scroll view by its native handle', async () => {
+    await layOut();
+
+    expect(viewPositionInWindow).toHaveBeenCalledWith(scrollViewNativeHandle);
+  });
+
+  test.each([null, undefined])(
+    'skips the measure when the scroll view has no native handle (%s)',
+    async missingHandle => {
+      mockFindNodeHandle(missingHandle);
+
+      await layOut();
+      await focus(autocompleteInput);
+
+      expect(viewPositionInWindow).not.toHaveBeenCalled();
+      expect(shownOffset()).toBe(baseOffset);
+    }
+  );
 
   test('uses the base offset before any focus', () => {
     expect(shownOffset()).toBe(baseOffset);
@@ -162,6 +184,17 @@ describe('useAutocompleteKeyboardOffset', () => {
 
     expect(viewPositionInWindow).not.toHaveBeenCalled();
   });
+
+  test.each([7, undefined])(
+    'treats a focus target that is not an element (%s) as a plain input',
+    async nonElementTarget => {
+      await layOut();
+      await focus(autocompleteInput);
+      await focus(nonElementTarget);
+
+      expect(shownOffset()).toBe(baseOffset);
+    }
+  );
 
   test('returns to the base offset when another input gets focus', async () => {
     await layOut();
