@@ -1,3 +1,9 @@
+## [2.54.5](https://github.com/AntoC-dev/Recipedia/compare/v2.54.4...v2.54.5) (2026-10-25)
+
+### Bug Fixes
+
+* **scripts:** drop missing test:e2e:ios step from workflow:build-test:ios ([7f9c5b3](https://github.com/AntoC-dev/Recipedia/commit/7f9c5b30b3ca94c36b9e5f5291689ffbbd9c64ac))
+
 ## [2.54.4](https://github.com/AntoC-dev/Recipedia/compare/v2.54.3...v2.54.4) (2026-10-22)
 
 ### Bug Fixes
