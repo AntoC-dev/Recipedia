@@ -30,14 +30,14 @@
  */
 
 import React, { useState } from 'react';
-import { StyleSheet, View, ViewabilityConfig, ViewToken } from 'react-native';
-import { FlashList } from '@shopify/flash-list';
+import { StyleSheet, View } from 'react-native';
+import { FlashList, FlashListProps } from '@shopify/flash-list';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { Text, useTheme } from 'react-native-paper';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { StackScreenNavigation, StackScreenParamList } from '@customTypes/ScreenTypes';
 import { DiscoveryListItem } from '@customTypes/BulkImportTypes';
-import { buildDiscoveryListData } from '@utils/BulkImportUtils';
+import { buildDiscoveryListData, getViewableRecipeUrls } from '@utils/BulkImportUtils';
 import { AppBar } from '@components/organisms/AppBar';
 import { RecipeSelectionCard } from '@components/molecules/RecipeSelectionCard';
 import { DiscoveryFooter } from '@components/molecules/DiscoveryFooter';
@@ -59,7 +59,7 @@ type BulkImportDiscoveryRouteProp = RouteProp<StackScreenParamList, 'BulkImportD
 const screenId = 'BulkImportDiscovery';
 const FLASH_LIST_DRAW_DISTANCE = 200;
 
-const viewabilityConfig: ViewabilityConfig = {
+const viewabilityConfig: FlashListProps<DiscoveryListItem>['viewabilityConfig'] = {
   itemVisiblePercentThreshold: 10,
   waitForInteraction: false,
   minimumViewTime: 100,
@@ -136,11 +136,10 @@ export function BulkImportDiscovery() {
    *
    * @param viewableItems - Array of currently visible list items from FlashList
    */
-  const handleViewableItemsChanged = ({ viewableItems }: { viewableItems: ViewToken[] }) => {
-    const urls = viewableItems
-      .filter(item => item.item?.type === 'recipe')
-      .map(item => item.item.recipe.url);
-    setVisibleUrls(new Set(urls));
+  const handleViewableItemsChanged: FlashListProps<DiscoveryListItem>['onViewableItemsChanged'] = ({
+    viewableItems,
+  }) => {
+    setVisibleUrls(new Set(getViewableRecipeUrls(viewableItems)));
   };
 
   /**

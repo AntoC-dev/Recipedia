@@ -9,6 +9,7 @@ import { testTags } from '@test-data/tagsDataset';
 import { testRecipes } from '@test-data/recipesDataset';
 import React from 'react';
 import { mockNavigationFunctions } from '@mocks/deps/react-navigation-mock';
+import { mockSectionList } from '@mocks/deps/react-native-sectionlist-mock';
 import Shopping from '@screens/Shopping';
 import {
   getMockCopilotEvents,
@@ -24,10 +25,7 @@ jest.mock('@components/dialogs/Alert', () => ({
   Alert: require('@mocks/components/dialogs/Alert-mock').alertMock,
 }));
 
-jest.mock('react-native/Libraries/Lists/SectionList', () => ({
-  __esModule: true,
-  default: require('@mocks/deps/react-native-sectionlist-mock').sectionListMock,
-}));
+mockSectionList();
 
 jest.mock('@hooks/useSafeCopilot', () =>
   require('@mocks/hooks/useSafeCopilot-mock').useSafeCopilotMock()

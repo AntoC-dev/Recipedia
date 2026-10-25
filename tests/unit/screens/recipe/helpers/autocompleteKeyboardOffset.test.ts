@@ -1,10 +1,10 @@
-import type { ReadOnlyElement } from 'react-native';
 import { AUTOCOMPLETE_ANCHOR_ID } from '@components/molecules/TextInputWithDropDown';
 import {
   AUTOCOMPLETE_BUBBLE_MAX_HEIGHT,
   findAutocompleteAnchor,
   getAutocompleteBottomOffset,
   measureAutocompleteFieldHeight,
+  ReadOnlyElement,
 } from '@screens/recipe/helpers/autocompleteKeyboardOffset';
 import { padding } from '@styles/spacing';
 

@@ -6,9 +6,10 @@ import {
   computeBufferBounds,
   computeVisibleBounds,
   getBufferRecipesNeedingFetch,
+  getViewableRecipeUrls,
   groupDismissedRecipesByProvider,
 } from '@utils/BulkImportUtils';
-import { DiscoveredRecipe } from '@customTypes/BulkImportTypes';
+import { DiscoveredRecipe, DiscoveryListItem } from '@customTypes/BulkImportTypes';
 import { dismissedRecipeTableElement } from '@customTypes/DatabaseElementTypes';
 
 const createRecipe = (url: string, title: string): DiscoveredRecipe => ({
@@ -449,6 +450,43 @@ describe('BulkImportUtils', () => {
       const groups = groupDismissedRecipesByProvider(recipes, upperCaseName);
 
       expect(groups[0]!.recipes.map(r => r.title)).toEqual(['First', 'Second']);
+    });
+  });
+
+  describe('getViewableRecipeUrls', () => {
+    const viewToken = (item: DiscoveryListItem | undefined, index: number) => ({
+      item,
+      index,
+      key: String(index),
+      isViewable: true,
+      timestamp: 0,
+    });
+
+    test('returns the urls of viewable recipes only', () => {
+      const [header, first, second] = buildDiscoveryListData(
+        [createRecipe('first', 'First'), createRecipe('second', 'Second')],
+        []
+      );
+
+      const urls = getViewableRecipeUrls([
+        viewToken(header, 0),
+        viewToken(first, 1),
+        viewToken(second, 2),
+      ]);
+
+      expect(urls).toEqual(['first', 'second']);
+    });
+
+    test('skips tokens whose item is gone from the list data', () => {
+      const [, first] = buildDiscoveryListData([createRecipe('first', 'First')], []);
+
+      const urls = getViewableRecipeUrls([viewToken(first, 1), viewToken(undefined, 2)]);
+
+      expect(urls).toEqual(['first']);
+    });
+
+    test('returns no urls when nothing is viewable', () => {
+      expect(getViewableRecipeUrls([])).toEqual([]);
     });
   });
 });

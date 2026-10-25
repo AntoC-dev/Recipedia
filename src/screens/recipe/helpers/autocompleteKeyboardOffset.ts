@@ -4,13 +4,16 @@
  * @module screens/recipe/helpers/autocompleteKeyboardOffset
  */
 
-import type { ReadOnlyElement } from 'react-native';
+import type { HostInstance } from 'react-native';
 import { AUTOCOMPLETE_ANCHOR_ID } from '@components/molecules/TextInputWithDropDown';
 import {
   AUTOCOMPLETE_MAX_VISIBLE_ROWS,
   getAutocompleteBubbleHeight,
 } from '@components/molecules/AutocompleteBubble';
 import { padding } from '@styles/spacing';
+
+/** Read-only DOM-like element of the native tree; the Strict TypeScript API does not export it */
+export type ReadOnlyElement = NonNullable<HostInstance['parentElement']>;
 
 /** Height of a suggestion bubble showing the maximum number of visible rows */
 export const AUTOCOMPLETE_BUBBLE_MAX_HEIGHT = getAutocompleteBubbleHeight(

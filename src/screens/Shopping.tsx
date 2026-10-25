@@ -322,7 +322,7 @@ export function Shopping() {
                   {t('shoppingScreen.allDoneTitle')}
                 </Text>
               </View>
-            ) : null
+            ) : undefined
           }
           renderSectionHeader={({ section }) => {
             const headerId = sectionId + '::' + section.title;
@@ -346,7 +346,7 @@ export function Shopping() {
               >
                 {purchased.map(renderShoppingItem)}
               </List.Accordion>
-            ) : null
+            ) : undefined
           }
           stickySectionHeadersEnabled={false}
         />
