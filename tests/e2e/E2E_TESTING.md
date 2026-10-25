@@ -29,7 +29,7 @@ developers editing flows in `tests/e2e/`.
 ## Running Tests
 
 ```bash
-npm run workflow:build-test:android   # build + run every suite
+npm run workflow:build-install::android  # build + install on the emulator
 
 cd tests/e2e
 maestro test . --config=settings.yaml # one suite

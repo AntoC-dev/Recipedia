@@ -1,312 +1,177 @@
 # CI Setup Guide
 
-Recipedia uses GitHub Actions for all CI/CD. This guide covers every workflow, required secrets, the EAS build pipeline, quality gates, and how to debug failures.
+Recipedia runs all CI/CD on GitHub Actions. This guide explains what each workflow is for, how they connect, which secrets they need, and how to debug failures. For exact steps and flags, read the YAML in `.github/workflows/`.
 
----
+## Workflows
 
-## Workflows overview
-
-| File | Name | Triggers |
+| File | Name | Runs when |
 |---|---|---|
-| `quality.yml` | Code Quality | push/PR to `main` |
-| `build-test.yml` | Build & Test Pipeline | push/PR to `main` (docs-only changes ignored) |
-| `build-app.yml` | Build App (reusable) | `workflow_call` |
-| `e2e-maestro.yml` | E2E Maestro Tests (reusable) | `workflow_call` |
-| `performance.yml` | Performance Tests (Flashlight) | nightly cron, `workflow_dispatch`, PR with `perf-test` label |
-| `documentation.yml` | Documentation | push to `main` (src/README/jsdoc changes), `workflow_dispatch` |
+| `quality.yml` | Code Quality | push / PR to `main` |
+| `build-test.yml` | Build & Test Pipeline | push / PR to `main`, except docs-only changes (`**/*.md`, `guides/**`, `store-listing/**`, `.claude/**`, `.cursor/**`) |
+| `build-app.yml` | Build App | reusable, called by `build-test.yml` |
+| `e2e-maestro.yml` | E2E Maestro Tests | reusable, called by `build-test.yml` |
+| `performance.yml` | Performance Tests (Flashlight) | weekly (Thursday 02:00 UTC, only if there were commits in the last 7 days) and `workflow_dispatch` |
+| `documentation.yml` | Documentation | push to `main` touching `src/**/*.ts(x)`, `README.md` or `jsdoc.conf.json`; after a Performance run; `workflow_dispatch` |
 | `release.yml` | Release | push to `main`, `workflow_dispatch` |
 | `publication.yml` | Publication | after Build & Test Pipeline succeeds on `main`, `workflow_dispatch` |
 
----
+Composite actions in `.github/actions/`: `setup-android-build`, `setup-ios-build`, `setup-chaquopy-python` (Python from `.python-version` for the recipe-scraper module), and `check-16kb-alignment` (verifies Android native library alignment on built APKs).
+
+## Pipeline overview
+
+```
+quality.yml  (independent, runs in parallel with the pipeline below)
+
+build-test.yml
+  install-and-doctor
+    ├── bundle-size, reassure-performance, unit-tests-and-coverage, integration-tests
+    ├── build-android          ── e2e-tests-android ──┐
+    │                              └── e2e-tests-android-performance (waits for the Android matrix)
+    ├── build-ios              ── e2e-tests-ios ──────┤
+    ├── build-android-production-maestro ── e2e smoke ┤
+    ├── build-ios-production-maestro ────── e2e smoke ┤
+    └── build-android-performance                     │
+                                  merge-test-artifacts ── test-result-summary
+
+on success on main:  publication.yml  (build prod + submit to the stores)
+```
+
+Pipeline behavior worth knowing:
+
+- Runs are grouped per PR and a new push cancels the in-progress run. `main` runs are never cancelled because `publication.yml` depends on them. `main` re-runs the full pipeline on purpose: branch protection does not require up-to-date branches, so a merge can combine PRs that were never tested together.
+- Fork PRs receive no secrets. They get a secret-free local build (see Builds), skip the performance and production-smoke builds, and run a reduced Android suite list (suites flagged `requiresSecrets` in `.github/e2e-suites.json` are dropped). iOS E2E and the PR comments are skipped for forks.
+- Dependabot PRs skip all iOS, performance and production-smoke jobs.
+- The `unit-tests-and-coverage` job posts a per-file coverage comment on PRs (75% minimum on changed files, informational only).
 
 ## Code Quality (`quality.yml`)
 
-Runs on every push and PR to `main`. Jobs run in parallel after `install`:
+After a shared `install` job (caches `node_modules` by `package-lock.json` hash), these jobs run in parallel:
 
-```
-commit-validation (PR only)
-    └── install
-            ├── lint           (ESLint)
-            ├── formatting     (Prettier)
-            ├── typescript     (tsc)
-            ├── expo-doctor    (Expo config check)
-            ├── security       (npm audit — critical level)
-            └── documentation  (TypeDoc build)
-```
+| Job | Command |
+|---|---|
+| Commit messages (PR only) | `commitlint` over the PR range, Conventional Commits |
+| ESLint | `npm run lint` |
+| Prettier | `npm run format:check` |
+| TypeScript | `npm run typecheck` |
+| Dead code | `npm run knip:check` |
+| Expo Doctor | `npm run expo:doctor` |
+| Security | npm audit, fails on `critical` only, comments on the PR |
+| Documentation | `npm run docs:build`, zero TypeDoc warnings |
 
-- **commit-validation**: Runs `commitlint` against all commits in the PR range. Conventional Commits format required.
-- **security**: Uses `oke-py/npm-audit-action`, fails only on `critical` severity, posts a PR comment if vulnerabilities are found.
-- **documentation**: Runs `npm run docs:build`. Fails the pipeline if TypeDoc exits with warnings.
+## Builds (`build-app.yml`)
 
-All jobs restore `node_modules` from cache keyed on `package-lock.json` hash.
+Wraps `eas build --local` for both platforms via `npm run build:<profile>:<platform>`. Profiles come from `eas.json`:
 
----
-
-## Build & Test Pipeline (`build-test.yml`)
-
-Runs on every push and PR to `main` except docs-only changes (`**/*.md`, `guides/**`, `store-listing/**`, `.claude/**`, `.cursor/**`). This is the main pipeline.
-
-Runs are grouped per PR (or per ref on push). A new push to a PR cancels its in-progress run; `main` runs are never cancelled, since `publication.yml` depends on them. The `main` push re-runs the full pipeline on purpose: branch protection does not require up-to-date branches, so a merge can combine PRs that were never tested together.
-
-### Job graph
-
-```
-install-and-doctor
-    ├── reassure-performance     (PR only — compares render benchmarks)
-    ├── unit-tests-and-coverage
-    ├── integration-tests
-    ├── build-android  ──────────── e2e-tests-android ──┐
-    ├── build-android-performance ─ e2e-tests-android-perf ┤
-    └── build-ios ───────────────── e2e-tests-ios ──────┤
-                                                         └── merge-test-artifacts
-                                                                  └── test-result-summary
-```
-
-### install-and-doctor
-
-Runs `npm ci` and caches `node_modules` by `package-lock.json` hash (key: `{os}-node_modules-{hash}`). All downstream jobs restore from this cache.
-
-### unit-tests-and-coverage
-
-- Runs `npm run test:unit:coverage`
-- Uploads `coverage/` artifact (30-day retention)
-- Posts per-file cobertura coverage comment on PRs (minimum 75%, does not block merge)
-- Uploads JUnit summary artifact
-
-### integration-tests
-
-- Runs `npm run test:integration`
-- Uploads JUnit summary artifact
-
-### reassure-performance
-
-- PR-only job
-- Checks out the base SHA, installs, runs `npm run test:perf:baseline`
-- Checks out the PR SHA, installs, runs `npm run test:perf`
-- Generates a compact diff with `.github/scripts/reassure-compact-summary.mjs`
-- Posts a sticky PR comment (header: `reassure`) via `marocchino/sticky-pull-request-comment`
-- Uploads `.reassure/` as artifact (7-day retention)
-
-### build-android / build-ios
-
-Both delegate to the reusable `build-app.yml` workflow with these profiles:
-
-| Job | Platform | Profile | Artifact |
+| Pipeline profile | `eas.json` profile | Dataset | Used by |
 |---|---|---|---|
-| `build-android` | android | `test` | `build-apk` / `recipedia-maestro.apk` |
-| `build-android-performance` | android | `perf` | `build-apk-performance` / `recipedia-performance.apk` |
-| `build-ios` | ios | `test` | `build-ios-app` / `Recipedia.app` |
+| `test` | `maestro` | test | main E2E suites |
+| `perf` | `performance` | performance | Android performance E2E, Flashlight |
+| `production-maestro` | `production-maestro` | production | smoke suite on a release build |
+| `prod` | `production` | production | store submission |
 
-The build-app workflow skips a fresh build if:
-- The content hash of the build inputs (`src/**`, platform dir, `app.json`, `eas.json`, `package.json`, etc.) matches a cached app
+Setup differs per platform:
 
-On cache miss or `main`/tag push, it always builds fresh.
+- **Android**: `setup-android-build` installs Java 17, ccache, the Android SDK, Gradle caching and EAS CLI. The caller adds `setup-chaquopy-python`. CI builds target `x86_64` only (the emulator), which halves native compile time; store builds keep every ABI.
+- **iOS**: runs on `macos-26`. The Xcode selection (`/Applications/Xcode_26.4.1.app`, the minimum for Expo SDK 57) is a step in `build-app.yml` itself, not in the composite action. `setup-ios-build` only sets up Python, ccache, the global Expo cache and EAS CLI.
 
-### e2e-tests-android / e2e-tests-ios
+Without `EXPO_TOKEN` (fork PRs), the workflow skips EAS and builds locally instead (`gradlew assembleRelease` or `xcodebuild` for the simulator) with the test dataset env vars.
 
-Delegates to the reusable `e2e-maestro.yml` workflow. Runs the suites of `.github/e2e-suites.json` in a parallel
-matrix (`fail-fast: false`), built by `.github/scripts/e2e-matrix.mjs`:
+### App cache
+
+Outside `main` and tags, the built app is cached under a key hashed from the build inputs (platform directory, `src/**`, `tests/data/**`, `plugins/**`, `modules/**`, `patches/**`, app/EAS/Metro/Babel/TS config, lockfile, `.python-version`). A hit skips the build. The key depends on content rather than commits, so amends, fixups and rebases that leave those files unchanged still hit. `main` and tags always build fresh.
+
+### Artifacts
+
+| Job | Artifact | File |
+|---|---|---|
+| `build-android` | `build-apk` | `recipedia-maestro.apk` |
+| `build-android-performance` | `build-apk-performance` | `recipedia-performance.apk` |
+| `build-android-production-maestro` | `build-apk-production-maestro` | `recipedia-production-maestro.apk` |
+| `build-ios` | `build-ios-app` | `Recipedia.app.zip` |
+| `build-ios-production-maestro` | `build-ios-app-production-maestro` | `Recipedia.app.zip` |
+
+Each build also uploads `build-log-{platform}-{profile}` (7 days).
+
+## E2E tests (`e2e-maestro.yml`)
+
+The main E2E jobs run the suites of `.github/e2e-suites.json` in a `fail-fast: false` matrix built by `.github/scripts/e2e-matrix.mjs`:
 
 - `long` suites are scheduled first, so a late start does not stretch the run.
-- Suites sharing a `group` run one after another in a single job named `<suite>+<suite>`, saving the per-job device
-  setup (~5–7 min on iOS). Only short suites are grouped: a GitHub re-run repeats the whole group.
+- Suites sharing a `group` run one after another in a single job named `<suite>+<suite>`, saving the per-job device setup (~5–7 min on iOS). Only short suites are grouped: a GitHub re-run repeats the whole group.
 - Job timeout: 240 min on iOS, 150 on Android; run step 200 / 120 min.
 
-- Android: `ubuntu-latest`, API 34 Google APIs x86_64 emulator, KVM enabled, 4 GB RAM, 4 cores
-- iOS: `macos-26`, iPhone 16e simulator, iOS 26.2, Xcode 26.2, hardware keyboard disabled, animations reduced,
-  Liquid Glass flattened (`ReduceTransparency`), status bar frozen
-  - Runtime is pinned to 26.2 exactly, so local sims reproduce CI. iPhone 16e ships only on that runtime
-    (26.4/26.5 carry iPhone 17e instead), so a range would buy no flexibility.
+The main E2E jobs run the full suite list; the performance and production-smoke jobs run a single suite (`performance`, `smoke`). Maestro 2.8.0 is used on both platforms.
 
-Each job uploads (a grouped job holds one `{suite}/` folder per suite in its logs, and one `report-{suite}.xml` each):
-- `maestro-logs-{platform}-{job}.zip` — Maestro step logs + app logs
-- `junit-e2e-{platform}-{job}` — JUnit XML report
-
-### merge-test-artifacts
-
-Runs `if: always()` after all E2E jobs. Merges per-suite JUnit reports with `jrm`, packages Maestro logs, deletes individual suite artifacts, re-uploads:
-- `e2e-junit-merged` — merged JUnit XML
-- `maestro-logs-android.zip`
-- `maestro-logs-ios.zip`
-
-### test-result-summary
-
-Runs `if: always()` after `merge-test-artifacts`. Combines unit and E2E summaries into a single sticky PR comment.
-
----
-
-## EAS build pipeline (`build-app.yml`)
-
-The `build-app.yml` reusable workflow wraps EAS CLI local builds.
-
-### Build profiles
-
-Defined in `eas.json`:
-
-| Profile | Purpose | Dataset |
+| | Android | iOS |
 |---|---|---|
-| `test` | E2E / Maestro testing | default |
-| `perf` | Flashlight + E2E performance testing | 150-recipe dataset (`EXPO_PUBLIC_DATASET_TYPE=performance`) |
-| `prod` | App Store / Play Store release | production |
+| Runner | `ubuntu-latest`, KVM enabled | `macos-26` |
+| Device | API 34 Google APIs x86_64 emulator, Nexus 5 profile, 4 GB RAM, 4 cores | iPhone 17e, iOS 26.4 runtime |
+| Toolchain | Android SDK | Xcode 26.4.1 |
 
-### Android setup
+iOS notes:
 
-Uses `.github/actions/setup-android-build` composite action:
-- Installs EAS CLI (`eas-version: '16.3.0'`)
-- Authenticates with `EXPO_TOKEN`
-- Sets up Android SDK
+- Expo SDK 57 requires Xcode >= 26.4. The 26.4 runtime on the runner image no longer ships an iPhone 16e, so CI uses the iPhone 17e, which has the same screen and memory profile.
+- The simulator is configured for determinism: hardware keyboard off, animations and transparency reduced (Liquid Glass flattened), keyboard autocorrect off, locale pinned to `en_US` (decimal separators follow the device region), status bar frozen at 9:41.
+- `npm run boot:ios-simulator` boots the same simulator locally. It reads `model` and `os_version` from `e2e-maestro.yml`, so local runs track CI. Override with `IOS_VERSION` and `DEVICE_MODEL` env vars.
+- `run-e2e-ios.sh` reruns failed flows in a fresh Maestro process when the XCTest driver latches as unreachable (mobile-dev-inc/maestro#3538).
 
-### iOS setup
+Per-job outputs: `maestro-logs-{platform}-{job}.zip` and `junit-e2e-{platform}-{job}` (a grouped job holds one `{suite}/` folder and one `report-{suite}.xml` per suite). After all E2E jobs finish, `merge-test-artifacts` (runs `always()`) merges the JUnit reports, bundles the logs into `maestro-logs-android.zip` and `maestro-logs-ios.zip` plus `e2e-junit-merged`, scans them for credentials, and deletes the per-suite artifacts. `test-result-summary` then posts a single sticky PR comment combining unit and E2E results.
 
-Uses `.github/actions/setup-ios-build` composite action:
-- Requires `macos-15` runner
-- Selects Xcode 26.2 (`xcode-select -s /Applications/Xcode_26.2.app`)
-- Installs EAS CLI, authenticates
+For writing and debugging flows, see [tests/e2e/E2E_TESTING.md](../tests/e2e/E2E_TESTING.md#troubleshooting).
 
-### Artifact caching
+## Performance
 
-On non-`main` branches, `build-app.yml` restores the app from `actions/cache`, keyed on a hash of the build inputs (platform dir, `src/**`, `tests/data/**`, `plugins/**`, `modules/**`, `patches/**`, config and lockfiles). Hit: build skipped. Miss: build fresh, then save under that key. The key depends on content, not commits, so fixups, amends and rebases that leave those files unchanged still hit. `main` and tags always build.
+Three layers, with different strictness:
 
----
+- **Reassure** (`reassure-performance` job, PRs only): runs render benchmarks on the base SHA and the PR SHA, posts a compact diff comment, and then hard-gates via `check-reassure-regression.mjs` (render-count increases, or duration regressions over 15%).
+- **Bundle size** (`bundle-size` job): exports the production bundle and fails if it exceeds the budget in `tests/perf/bundle-size-budget.json`.
+- **Flashlight** (`performance.yml`): builds the `perf` APK, then profiles each screen flow sequentially on one emulator. Scheduled runs publish a screen-FPS trend to the `perf-data` branch (charts are merged into the docs site under `/perf/`) and comment on regressions, but never fail the build, because single-run emulator FPS is too noisy to gate on. Reports are kept 30 days.
 
-## Performance workflow (`performance.yml`)
+## Documentation, release, publication
 
-| Trigger | Condition |
-|---|---|
-| `schedule` (nightly 2 AM UTC) | Only runs if commits exist in the last 24 hours |
-| `workflow_dispatch` | Always runs |
-| PR with `perf-test` label | Always runs |
+- **Documentation**: `npm run docs:build` (TypeDoc into `docs/`), merges the perf charts, and deploys to GitHub Pages: [https://AntoC-dev.github.io/Recipedia/](https://AntoC-dev.github.io/Recipedia/).
+- **Release**: runs `semantic-release` with `RELEASE_PAT` to create GitHub releases and bump the version.
+- **Publication**: matrix of `android` (`ubuntu-latest`) and `ios` (`macos-26`). Builds with `npm run build:prod:<platform>`, then submits with `npm run submit:<platform>` (iOS also installs Fastlane). The job uses the `production` GitHub environment; configure required reviewers there to gate production deploys.
 
-Jobs:
-1. `build-performance-apk` — builds with `perf` profile
-2. `flashlight-test` — runs 5 Flashlight iterations against `cases/performance/1_full_flow.yaml`, duration 120s each; uploads HTML report (30-day retention)
-
----
-
-## Documentation workflow (`documentation.yml`)
-
-Triggers on push to `main` when `src/**/*.ts`, `src/**/*.tsx`, `README.md`, `jsdoc.conf.json`, or the workflow file itself changes, plus `workflow_dispatch`.
-
-1. Runs `npm run docs:build` (TypeDoc → `docs/`)
-2. Deploys `docs/` to GitHub Pages
-
-Live docs: [https://AntoC-dev.github.io/Recipedia/](https://AntoC-dev.github.io/Recipedia/)
-
----
-
-## Release workflow (`release.yml`)
-
-Triggers on push to `main` and `workflow_dispatch`. Runs `semantic-release` using `RELEASE_PAT` to create GitHub releases and bump `package.json` version.
-
----
-
-## Publication workflow (`publication.yml`)
-
-Triggers after the Build & Test Pipeline completes successfully on `main`, or via `workflow_dispatch`.
-
-- Runs parallel matrix: `android` (`ubuntu-latest`) and `ios` (`macos-26`)
-- Builds with `prod` profile via EAS CLI
-- Submits to Play Store / App Store via `npm run submit:{platform}`
-- Requires the `production` environment to be configured (manual approval gate recommended)
-
----
-
-## Required secrets
+## Secrets
 
 | Secret | Used by | Purpose |
 |---|---|---|
-| `EXPO_TOKEN` | `build-app.yml`, `publication.yml`, `performance.yml` | EAS CLI authentication |
-| `RELEASE_PAT` | `release.yml` | GitHub PAT for semantic-release to push tags/releases |
-| `QUITOQUE_USERNAME` | `e2e-maestro.yml` | Quitoque authenticated E2E test credentials (`web` suite only) |
-| `QUITOQUE_PASSWORD` | `e2e-maestro.yml` | Quitoque authenticated E2E test credentials (`web` suite only) |
-| `GITHUB_TOKEN` | `quality.yml`, `build-test.yml` | Automatically provided; used for PR comments and coverage reports |
+| `EXPO_TOKEN` | `build-app.yml`, `publication.yml`, `performance.yml` | EAS CLI authentication (absent on fork PRs, which triggers the local-build fallback) |
+| `RELEASE_PAT` | `release.yml` | semantic-release pushes tags and releases |
+| `QUITOQUE_USERNAME`, `QUITOQUE_PASSWORD` | `e2e-maestro.yml` | Credentials for the `web` suite only |
+| `GITHUB_TOKEN` | most workflows | Provided automatically (PR comments, coverage) |
 
-All secrets except `GITHUB_TOKEN` must be configured in the repository settings under **Settings > Secrets and variables > Actions**.
+Set the others under **Settings > Secrets and variables > Actions**.
 
-### E2E credentials and artifacts
+### Keeping credentials out of E2E artifacts
 
-Maestro writes every `-e` variable into each flow's commands dump, and those files ship inside the
-uploaded log artifacts — where GitHub's secret masking does not reach. Four layers keep them out:
+Maestro writes every `-e` variable into its debug output, and GitHub's secret masking does not apply to files inside artifacts. Four layers keep credentials out:
 
-- `.github/scripts/e2e-credentials.sh` lists the credential env vars and the suites allowed to receive
-  them (`E2E_CREDENTIAL_SUITES`); the runner scripts pass `-e` only for those suites. It also derives the
-  raw, percent-encoded and JSON-escaped forms of each value, since the artifacts contain all three.
-- Flow steps that consume a secret carry an explicit `label:`, so Maestro renders the label instead of the
-  resolved value in `maestro.log` and in the JUnit report.
-- `prepare-maestro-logs.sh` deletes every commands dump (`commands.json` on newer Maestro,
-  `commands-(<flow name>).json` on 2.6 and older — nothing reads them) and runs
-  `redact-maestro-secrets.sh` over what is left, including `report.xml`.
-- `check-artifact-secrets.sh` re-scans the prepared directories and `report.xml` (per suite, and again on
-  the merged bundles in `build-test.yml`); a hit fails the job and skips both uploads.
+1. `.github/scripts/e2e-credentials.sh` lists the credential env vars and the suites allowed to receive them (`E2E_CREDENTIAL_SUITES`). The runner scripts pass `-e` only for those suites. It also derives the raw, percent-encoded and JSON-escaped forms of each value.
+2. Flow steps that consume a secret carry an explicit `label:`, so Maestro logs the label instead of the resolved value.
+3. `prepare-maestro-logs.sh` deletes the `commands*.json` dumps and runs `redact-maestro-secrets.sh` over the rest, including `report.xml`.
+4. `check-artifact-secrets.sh` re-scans each suite's output (and again the merged bundles); a hit fails the job and skips the uploads.
 
-Adding a flow that consumes a new secret means adding it to both lists in `e2e-credentials.sh`, and giving
-the step that types it a `label:`.
+To add a flow that consumes a new secret, add it to both lists in `e2e-credentials.sh` and give the step that types it a `label:`.
 
-The `publication.yml` workflow uses a `production` GitHub environment — configure that environment with required reviewers to gate production deploys.
+## Merge gating
 
----
-
-## Quality gates
-
-The following checks block merging (required status checks):
-
-| Check | Blocks merge |
-|---|---|
-| ESLint | Yes |
-| Prettier formatting | Yes |
-| TypeScript | Yes |
-| Expo Doctor | Yes |
-| Unit Tests & Coverage | Yes |
-| Integration Tests | Yes |
-| Build Android APK | Yes |
-| Build iOS App | Yes |
-| E2E Tests (all suites, both platforms) | Yes |
-| Commit message validation | Yes (PR only) |
-
-Non-blocking checks (informational):
-- Coverage threshold (75% on changed files — posts comment but `fail_below_threshold: false`)
-- Security audit — posts comment but does not block on `high`, only `critical`
-- Reassure performance diff — informational PR comment
-
----
+Quality jobs, unit and integration tests, builds, E2E suites and commit validation are intended to block merging; the exact required set is configured in the repository's branch protection, not in the workflows. Informational only: coverage comment (`fail_below_threshold: false`), the security audit below `critical`, and the Flashlight trend. The Reassure and bundle-size gates fail their jobs.
 
 ## Debugging CI failures
 
-### Unit / integration test failures
+**Unit / integration tests**: download `unit-test-summary` or `integration-test-summary`, find the failing test, and reproduce with `npm run test:unit` or `npm run test:integration`. For coverage gaps, run `npm run test:unit:coverage` and open `coverage/lcov-report/index.html`.
 
-1. Download the `unit-test-summary` or `integration-test-summary` artifact from the Actions run
-2. Look for the failing test name in the JUnit XML
-3. Reproduce locally: `npm run test:unit` or `npm run test:integration`
-4. For coverage gaps: `npm run test:unit:coverage` then open `coverage/lcov-report/index.html`
+**E2E tests**: download `maestro-logs-android.zip` or `maestro-logs-ios.zip`.
 
-### E2E test failures
+- Each suite has its own subdirectory with Maestro step logs.
+- `recipedia-app-logs.txt` only holds the last app launch, because `clearState` wipes the in-app log file on every launch. For each launch, open `app-logs/launch-NN-pid<pid>.txt`. These are the app's own `[RecipediaApp]` log lines, mirrored to logcat or the simulator syslog in non-production builds.
+- Common causes: changed testID, timing or animation race, OCR gallery ordering, simulator load (ANR).
+- Every `ci/` wrapper retries its case up to twice (`retry: maxRetries: 2`), so a red suite failed three times in a row: treat it as a real failure, not infrastructure flake.
 
-1. Download `maestro-logs-android.zip` or `maestro-logs-ios.zip` from the run artifacts
-2. `recipedia-app-logs.txt` only holds the last app launch: `clearState` wipes the in-app log file on every launch
-3. For every launch, open `app-logs/launch-NN-pid<pid>.txt`. These are the app's own log lines, mirrored to logcat / the simulator syslog under the `[RecipediaApp]` tag in non-production builds
-4. Each suite has its own subdirectory with Maestro step logs
-5. Common causes: TestID changed in app, timing/animation race condition, OCR gallery ordering, simulator load (ANR)
+**Build failures**: download `build-log-{platform}-{profile}` and look for EAS errors (credentials, SDK mismatch, native compile). Check that `EXPO_TOKEN` is valid. For iOS, confirm `/Applications/Xcode_26.4.1.app` still exists on the `macos-26` image.
 
-The CI retry mechanism (`maxRetries: 2` in `ci/` wrappers) handles infrastructure flakiness automatically. If a test fails all retries, it is a real failure.
+**Quality failures**: run the matching command locally (`npm run lint:fix`, `npm run format`, `npm run typecheck`, `npm run expo:doctor`, `npm run docs:build`). Commit messages must follow Conventional Commits, e.g. `feat(scope): description`.
 
-For a deeper E2E debugging guide see [tests/e2e/E2E_TESTING.md](../tests/e2e/E2E_TESTING.md#troubleshooting).
-
-### Build failures
-
-1. Download the `build-log-{platform}-{profile}` artifact
-2. Look for EAS CLI errors (missing credentials, SDK version mismatch, native module compile error)
-3. Verify `EXPO_TOKEN` is valid and has the correct permissions
-4. For iOS: confirm Xcode 26.2 is available on the runner (selected via `xcode-select`)
-
-### Quality failures
-
-- **ESLint**: run `npm run lint:fix` locally, commit the fixes
-- **Prettier**: run `npm run format` locally, commit the fixes
-- **TypeScript**: run `npm run typecheck` locally and fix all errors
-- **Expo Doctor**: run `npm run expo:doctor` locally; usually a dependency version mismatch
-- **Commit messages**: all commits on the PR branch must follow Conventional Commits — use `feat(scope): description` format
-- **Documentation**: run `npm run docs:build` locally; zero-warnings policy applies
-
-### Cache invalidation
-
-If node_modules cache causes issues, push a commit that changes `package-lock.json` (e.g. `npm install`) to bust the cache key.
+**Stale `node_modules` cache**: push a commit that changes `package-lock.json` to change the cache key.

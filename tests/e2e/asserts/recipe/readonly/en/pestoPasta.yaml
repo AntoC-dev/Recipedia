@@ -254,7 +254,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeImage"
     direction: UP
-    speed: 95
+    speed: 30
     centerElement: true
     label: "Scroll back to top"
 
