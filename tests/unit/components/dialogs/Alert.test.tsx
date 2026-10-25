@@ -245,8 +245,8 @@ describe('Alert Dialog', () => {
       getByTestId('test-alert::Dialog::Confirm').props.style as ViewStyle
     );
 
-    expect(cancelStyle).toMatchObject(StyleSheet.flatten(dialogActionStyles.button));
-    expect(confirmStyle).toMatchObject(StyleSheet.flatten(dialogActionStyles.button));
+    expect(cancelStyle).toMatchObject(dialogActionStyles.button);
+    expect(confirmStyle).toMatchObject(dialogActionStyles.button);
   });
 
   test('leaves the actions row to Dialog.Actions instead of nesting its own layout', () => {

@@ -5,7 +5,7 @@
  */
 
 import { useRef, useState } from 'react';
-import { findNodeHandle, FocusEvent, View } from 'react-native';
+import { findNodeHandle, FocusEvent, HostInstance } from 'react-native';
 import {
   KeyboardControllerNative,
   useKeyboardState,
@@ -30,7 +30,7 @@ import { recipeLogger } from '@utils/logger';
  * @returns The offset, the wrapper ref, and its layout and focus handlers
  */
 export function useAutocompleteKeyboardOffset(baseOffset: number) {
-  const scrollViewWrapperRef = useRef<View>(null);
+  const scrollViewWrapperRef = useRef<HostInstance>(null);
   const [scrollViewTop, setScrollViewTop] = useState<number | null>(null);
   const [fieldHeight, setFieldHeight] = useState<number | null>(null);
   const keyboardHeight = useKeyboardState(state => state.height);
@@ -38,7 +38,7 @@ export function useAutocompleteKeyboardOffset(baseOffset: number) {
 
   function measureScrollViewTop(logFailure: (message: string, error: unknown) => void) {
     const handle = findNodeHandle(scrollViewWrapperRef.current);
-    if (handle === null) {
+    if (handle == null) {
       return;
     }
     KeyboardControllerNative.viewPositionInWindow(handle)
@@ -52,8 +52,8 @@ export function useAutocompleteKeyboardOffset(baseOffset: number) {
 
   function onScrollViewFocus(event: FocusEvent) {
     const focusedInput = event.target;
-    const anchor = findAutocompleteAnchor(focusedInput);
-    if (anchor === null) {
+    const anchor = typeof focusedInput === 'object' ? findAutocompleteAnchor(focusedInput) : null;
+    if (typeof focusedInput !== 'object' || anchor === null) {
       setFieldHeight(null);
       return;
     }

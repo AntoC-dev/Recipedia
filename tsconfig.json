@@ -9,6 +9,7 @@
     "noFallthroughCasesInSwitch": true,
     "target": "esnext",
     "moduleResolution": "bundler",
+    "customConditions": ["react-native", "react-native-strict-api"],
     "jsx": "react",
     "esModuleInterop": true,
     "resolveJsonModule": true,

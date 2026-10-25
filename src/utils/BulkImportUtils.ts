@@ -8,6 +8,7 @@
  * @module utils/BulkImportUtils
  */
 
+import type { ViewToken } from '@shopify/flash-list';
 import { DiscoveredRecipe, DiscoveryListItem } from '@customTypes/BulkImportTypes';
 import { dismissedRecipeTableElement } from '@customTypes/DatabaseElementTypes';
 
@@ -235,6 +236,19 @@ export function abortFetches(
       pendingUrls.delete(url);
     }
   }
+}
+
+/**
+ * Collects the urls of the recipes FlashList reports as viewable
+ *
+ * @param viewableItems - Viewable tokens from FlashList; a token's item is `undefined` when its
+ *   index is no longer in the list data
+ * @returns Urls of the viewable recipe items, headers and missing items skipped
+ */
+export function getViewableRecipeUrls(
+  viewableItems: ViewToken<DiscoveryListItem | undefined>[]
+): string[] {
+  return viewableItems.flatMap(({ item }) => (item?.type === 'recipe' ? [item.recipe.url] : []));
 }
 
 /**

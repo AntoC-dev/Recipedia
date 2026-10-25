@@ -1,10 +1,4 @@
-import {
-  NativeSyntheticEvent,
-  Text,
-  TextInput,
-  TextInputEndEditingEventData,
-  TextStyle,
-} from 'react-native';
+import { Text, TextInput, TextInputEndEditingEvent, TextStyle } from 'react-native';
 import React, { useState } from 'react';
 import { CustomTextInputProps } from '@components/atomic/CustomTextInput';
 
@@ -35,7 +29,7 @@ export function CustomTextInputMock({
     onChangeText?.(text);
   }
 
-  function handleEndEditing(e: NativeSyntheticEvent<TextInputEndEditingEventData>) {
+  function handleEndEditing(e: TextInputEndEditingEvent) {
     const text = e?.nativeEvent?.text ?? displayValue;
     onEndEditing?.(text);
   }

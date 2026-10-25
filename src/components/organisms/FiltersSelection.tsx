@@ -46,7 +46,7 @@ import { FilterToggleButton } from '@components/atomic/FilterToggleButton';
 import { Icons } from '@assets/Icons';
 import { useI18n } from '@utils/i18n';
 import { TUTORIAL_DEMO_INTERVAL, TUTORIAL_STEPS, scrollDecelerationRate } from '@utils/Constants';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, HostInstance, StyleSheet } from 'react-native';
 import { padding } from '@styles/spacing';
 import { useSafeCopilot } from '@hooks/useSafeCopilot';
 import { useReducedMotion } from '@hooks/useReducedMotion';
@@ -97,7 +97,7 @@ export function FiltersSelection({
   const currentStep = copilotData?.currentStep;
 
   const demoIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const toggleButtonRef = useRef<View>(null);
+  const toggleButtonRef = useRef<HostInstance>(null);
   const reducedMotion = useReducedMotion();
 
   const stepOrder = TUTORIAL_STEPS.Search.order;

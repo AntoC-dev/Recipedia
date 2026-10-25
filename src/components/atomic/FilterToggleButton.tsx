@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { HostInstance, StyleSheet, View } from 'react-native';
 import { Button } from 'react-native-paper';
 import { Icons } from '@assets/Icons';
 import { useI18n } from '@utils/i18n';
@@ -26,7 +26,7 @@ export type FilterToggleButtonProps = {
  * @param props - {@link FilterToggleButtonProps}
  * @returns The filter mode toggle button
  */
-export const FilterToggleButton = forwardRef<View, FilterToggleButtonProps>(
+export const FilterToggleButton = forwardRef<HostInstance, FilterToggleButtonProps>(
   function FilterToggleButton({ testID, addingFilterMode, onToggle }, ref) {
     const { t } = useI18n();
     return (
