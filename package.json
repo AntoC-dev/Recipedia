@@ -61,12 +61,6 @@
         ],
         "listUnknownPackages": false
       }
-    },
-    "install": {
-      "exclude": [
-        "react-native-svg",
-        "react-native-keyboard-controller"
-      ]
     }
   },
   "lint-staged": {
