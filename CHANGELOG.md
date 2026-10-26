@@ -1,3 +1,10 @@
+## [2.55.0](https://github.com/AntoC-dev/Recipedia/compare/v2.54.5...v2.55.0) (2026-10-26)
+
+### Features
+
+* **recipe:** label every round button in the recipe form ([560942f](https://github.com/AntoC-dev/Recipedia/commit/560942f40c4bb7760e166676eaaff6437727a225)), closes [#570](https://github.com/AntoC-dev/Recipedia/issues/570)
+* **recipe:** label every round button in the recipe form ([#677](https://github.com/AntoC-dev/Recipedia/issues/677)) ([ade60f4](https://github.com/AntoC-dev/Recipedia/commit/ade60f4d042bc48377f60b3c71226b9ffce440aa))
+
 ## [2.54.5](https://github.com/AntoC-dev/Recipedia/compare/v2.54.4...v2.54.5) (2026-10-25)
 
 ### Bug Fixes
