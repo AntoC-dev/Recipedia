@@ -73,6 +73,11 @@ appId: "com.recipedia"
     id: "RecipeTags::RoundButton"
     label: "Add button for the tag is rendered"
 
+- assertVisible:
+    id: "RecipeTags::RoundButton::Label"
+    text: "New tag"
+    label: "Add button label for the tag is rendered"
+
 - waitForAnimationToEnd
 
 - scrollUntilVisible:
@@ -444,3 +449,7 @@ appId: "com.recipedia"
     id: "RecipePreparation::AddButton::RoundButton"
     label: "Add button of the preparation is rendered"
 
+- assertVisible:
+    id: "RecipePreparation::AddButton::RoundButton::Label"
+    text: "New step"
+    label: "Add button label of the preparation is rendered"

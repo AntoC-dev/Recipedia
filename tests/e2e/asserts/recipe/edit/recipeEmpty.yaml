@@ -129,6 +129,11 @@ appId: "com.recipedia"
     id: "RecipeIngredients::AddButton::RoundButton"
     label: "Add ingredient button is displayed with the correct icon"
 
+- assertVisible:
+    id: "RecipeIngredients::AddButton::RoundButton::Label"
+    text: "New ingredient"
+    label: "Add ingredient button label is displayed"
+
 - waitForAnimationToEnd
 
 - scrollUntilVisible:
@@ -191,6 +196,11 @@ appId: "com.recipedia"
 - assertVisible:
     id: "RecipePreparation::AddButton::RoundButton"
     label: "New preparation button is displayed with the correct icon"
+
+- assertVisible:
+    id: "RecipePreparation::AddButton::RoundButton::Label"
+    text: "New step"
+    label: "New preparation button label is displayed"
 
 - runFlow:
     file: "../common/nutritionEmptyEdit.yaml"

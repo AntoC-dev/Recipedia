@@ -69,19 +69,19 @@ export function checkImage(
       expect(getByTestId('RecipeImage::ImgUri').props.children).toEqual(
         `${prop.recipe.image_Source}`
       );
-      expect(getByTestId('RecipeImage::ButtonIcon').props.children).toBeUndefined();
+      expect(getByTestId('RecipeImage::OverlayButtonIcon').props.children).toBeUndefined();
       break;
     case 'edit':
       expect(getByTestId('RecipeImage::ImgUri').props.children).toEqual(prop.recipe.image_Source);
-      expect(getByTestId('RecipeImage::ButtonIcon').props.children).toEqual('camera');
+      expect(getByTestId('RecipeImage::OverlayButtonIcon').props.children).toEqual('camera');
       break;
     case 'addManually':
       expect(getByTestId('RecipeImage::ImgUri').props.children).toEqual(newValueExpected);
-      expect(getByTestId('RecipeImage::ButtonIcon').props.children).toEqual('camera');
+      expect(getByTestId('RecipeImage::OverlayButtonIcon').props.children).toEqual('camera');
       break;
     case 'addFromPic':
       expect(getByTestId('RecipeImage::ImgUri').props.children).toEqual(prop.imgUri);
-      expect(getByTestId('RecipeImage::ButtonIcon').props.children).toEqual('line-scan');
+      expect(getByTestId('RecipeImage::OverlayButtonIcon').props.children).toEqual('line-scan');
       break;
   }
 }

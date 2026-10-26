@@ -593,7 +593,12 @@ export const Tooltip: React.FC<any> = props => (
   </View>
 );
 export const FAB: React.FC<any> & { Group: React.FC<any> } = props => (
-  <TouchableOpacity testID={props.testID} onPress={props.onPress} style={props.style}>
+  <TouchableOpacity
+    testID={props.testID}
+    onPress={props.onPress}
+    style={props.style}
+    accessibilityLabel={props.accessibilityLabel}
+  >
     <RNText testID={props.testID + '::Icon'}>{props.icon}</RNText>
     {props.label && <RNText testID={props.testID + '::Label'}>{props.label}</RNText>}
   </TouchableOpacity>

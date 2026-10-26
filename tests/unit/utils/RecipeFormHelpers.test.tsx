@@ -276,7 +276,7 @@ describe('RecipeFormHelpers', () => {
         openModalForField: mockOpenModal,
       });
       expect(result.imgUri).toBe('image.jpg');
-      expect(result.buttonIcon).toBeUndefined();
+      expect(result.overlayButton).toBeUndefined();
     });
 
     test('returns camera icon for edit mode', () => {
@@ -285,7 +285,10 @@ describe('RecipeFormHelpers', () => {
         recipeImage: 'image.jpg',
         openModalForField: mockOpenModal,
       });
-      expect(result.buttonIcon).toBe(Icons.cameraIcon);
+      expect(result.overlayButton).toEqual({
+        icon: Icons.cameraIcon,
+        labelKey: 'recipe.roundButton.photo',
+      });
     });
 
     test('returns camera icon for addManual mode', () => {
@@ -294,7 +297,7 @@ describe('RecipeFormHelpers', () => {
         recipeImage: 'image.jpg',
         openModalForField: mockOpenModal,
       });
-      expect(result.buttonIcon).toBe(Icons.cameraIcon);
+      expect(result.overlayButton?.icon).toBe(Icons.cameraIcon);
     });
 
     test('returns scan icon for addOCR mode', () => {
@@ -303,7 +306,10 @@ describe('RecipeFormHelpers', () => {
         recipeImage: 'image.jpg',
         openModalForField: mockOpenModal,
       });
-      expect(result.buttonIcon).toBe(Icons.scanImageIcon);
+      expect(result.overlayButton).toEqual({
+        icon: Icons.scanImageIcon,
+        labelKey: 'recipe.roundButton.scan',
+      });
     });
 
     test('returns camera icon for addScrape mode', () => {
@@ -312,7 +318,7 @@ describe('RecipeFormHelpers', () => {
         recipeImage: 'image.jpg',
         openModalForField: mockOpenModal,
       });
-      expect(result.buttonIcon).toBe(Icons.cameraIcon);
+      expect(result.overlayButton?.icon).toBe(Icons.cameraIcon);
     });
 
     test('passes openModal callback to props', () => {
@@ -966,20 +972,21 @@ describe('RecipeFormHelpers', () => {
       expect(IMAGE_BUTTON_CONFIG[recipeStateType.readOnly]).toBeUndefined();
     });
 
-    test('has camera icon for edit mode', () => {
-      expect(IMAGE_BUTTON_CONFIG[recipeStateType.edit]).toBe(Icons.cameraIcon);
-    });
+    test.each([recipeStateType.edit, recipeStateType.addManual, recipeStateType.addScrape])(
+      'has camera icon and photo label for %s mode',
+      mode => {
+        expect(IMAGE_BUTTON_CONFIG[mode]).toEqual({
+          icon: Icons.cameraIcon,
+          labelKey: 'recipe.roundButton.photo',
+        });
+      }
+    );
 
-    test('has camera icon for addManual mode', () => {
-      expect(IMAGE_BUTTON_CONFIG[recipeStateType.addManual]).toBe(Icons.cameraIcon);
-    });
-
-    test('has scan icon for addOCR mode', () => {
-      expect(IMAGE_BUTTON_CONFIG[recipeStateType.addOCR]).toBe(Icons.scanImageIcon);
-    });
-
-    test('has camera icon for addScrape mode', () => {
-      expect(IMAGE_BUTTON_CONFIG[recipeStateType.addScrape]).toBe(Icons.cameraIcon);
+    test('has scan icon and scan label for addOCR mode', () => {
+      expect(IMAGE_BUTTON_CONFIG[recipeStateType.addOCR]).toEqual({
+        icon: Icons.scanImageIcon,
+        labelKey: 'recipe.roundButton.scan',
+      });
     });
   });
 

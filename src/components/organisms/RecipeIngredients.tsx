@@ -101,6 +101,8 @@ export interface IngredientsTableProps {
   children: React.ReactNode;
   /** When false the add-row round button is rendered below the table. */
   hideAddButton?: boolean;
+  /** Caption rendered under the add-ingredient round button. */
+  addIngredientButtonLabel: string;
   onAddIngredient?: () => void;
   /** Optional error rendered below the table (e.g. empty-array message). */
   error?: string;
@@ -112,6 +114,7 @@ export function IngredientsTable({
   columnTitles,
   children,
   hideAddButton,
+  addIngredientButtonLabel,
   onAddIngredient,
   error,
 }: IngredientsTableProps) {
@@ -172,6 +175,7 @@ export function IngredientsTable({
           testID={`${testID}::AddButton`}
           icon={Icons.plusIcon}
           onPressFunction={onAddIngredient}
+          label={addIngredientButtonLabel}
           style={cellStyles.addButton}
         />
       )}
@@ -370,8 +374,8 @@ export function IngredientRow({
 export interface IngredientsAddEmptyProps {
   testID: string;
   prefixText: string;
-  scanLabel: string;
-  manualLabel: string;
+  scanNamesButtonLabel: string;
+  addManuallyButtonLabel: string;
   openOcrModal: () => void;
   onAddIngredient: () => void;
   error?: string;
@@ -380,8 +384,8 @@ export interface IngredientsAddEmptyProps {
 export function IngredientsAddEmpty({
   testID,
   prefixText,
-  scanLabel,
-  manualLabel,
+  scanNamesButtonLabel,
+  addManuallyButtonLabel,
   openOcrModal,
   onAddIngredient,
   error,
@@ -397,14 +401,14 @@ export function IngredientsAddEmpty({
           style={recipeButtonStyles.roundButton}
           icon={Icons.scanImageIcon}
           onPressFunction={openOcrModal}
-          label={scanLabel}
+          label={scanNamesButtonLabel}
         />
         <RoundButton
           testID={`${testID}::AddButton`}
           style={recipeButtonStyles.roundButton}
           icon={Icons.pencilIcon}
           onPressFunction={onAddIngredient}
-          label={manualLabel}
+          label={addManuallyButtonLabel}
         />
       </View>
       {error ? (
@@ -422,16 +426,16 @@ export function IngredientsAddEmpty({
  */
 export interface IngredientsAddTailProps {
   testID: string;
-  scanLabel: string;
-  manualLabel: string;
+  scanQuantitiesButtonLabel: string;
+  addManuallyButtonLabel: string;
   openOcrModal: () => void;
   onAddIngredient: () => void;
 }
 
 export function IngredientsAddTail({
   testID,
-  scanLabel,
-  manualLabel,
+  scanQuantitiesButtonLabel,
+  addManuallyButtonLabel,
   openOcrModal,
   onAddIngredient,
 }: IngredientsAddTailProps) {
@@ -442,14 +446,14 @@ export function IngredientsAddTail({
         style={recipeButtonStyles.roundButton}
         icon={Icons.scanImageIcon}
         onPressFunction={openOcrModal}
-        label={scanLabel}
+        label={scanQuantitiesButtonLabel}
       />
       <RoundButton
         testID={`${testID}::AddButton`}
         style={recipeButtonStyles.roundButton}
         icon={Icons.pencilIcon}
         onPressFunction={onAddIngredient}
-        label={manualLabel}
+        label={addManuallyButtonLabel}
       />
     </View>
   );
