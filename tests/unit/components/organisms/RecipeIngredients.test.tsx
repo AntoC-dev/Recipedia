@@ -1,7 +1,8 @@
 import { fireEvent, render, within } from '@testing-library/react-native';
 import React from 'react';
 import { ingredientTableElement, ingredientType } from '@customTypes/DatabaseElementTypes';
-import RecipeIngredients, {
+import {
+  RecipeIngredients,
   IngredientRow,
   IngredientsAddEmpty,
   IngredientsAddTail,

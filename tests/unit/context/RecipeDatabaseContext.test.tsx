@@ -3,7 +3,7 @@ import { useRecipes } from '@hooks/useRecipes';
 import { useMenu } from '@hooks/useMenu';
 import { useShopping } from '@hooks/useShopping';
 import { useImportHistory } from '@hooks/useImportHistory';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { testRecipes } from '@test-data/recipesDataset';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';

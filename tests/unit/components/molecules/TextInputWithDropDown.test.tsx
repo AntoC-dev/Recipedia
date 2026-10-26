@@ -1,12 +1,13 @@
 import React, { act } from 'react';
 import { Keyboard, View } from 'react-native';
 import { fireEvent, render, waitFor, within } from '@testing-library/react-native';
-import TextInputWithDropDown, {
+import {
+  TextInputWithDropDown,
   AUTOCOMPLETE_ANCHOR_ID,
   filterSuggestions,
   TextInputWithDropDownType,
 } from '@components/molecules/TextInputWithDropDown';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
 import { testRecipes } from '@test-data/recipesDataset';

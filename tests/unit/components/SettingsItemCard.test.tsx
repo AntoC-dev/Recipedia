@@ -1,5 +1,5 @@
 import { fireEvent, render } from '@testing-library/react-native';
-import SettingsItemCard, { SettingsItemCardProps } from '@components/molecules/SettingsItemCard';
+import { SettingsItemCard, SettingsItemCardProps } from '@components/molecules/SettingsItemCard';
 import { ingredientTableElement, tagTableElement } from '@customTypes/DatabaseElementTypes';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import React from 'react';

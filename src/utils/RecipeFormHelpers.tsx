@@ -18,7 +18,6 @@ import {
   nutritionTableElement,
   recipeColumnsNames,
   RecipeDraft,
-  recipeTableElement,
   TagDraft,
 } from '@customTypes/DatabaseElementTypes';
 import { RecipePropType } from '@customTypes/RecipeNavigationTypes';
@@ -95,34 +94,6 @@ export function convertModeFromProps(mode: RecipePropType['mode']): recipeStateT
     case 'addFromScrape':
       return recipeStateType.addScrape;
   }
-}
-
-/**
- * Type guard to check if navigation props include an existing recipe
- *
- * Used to safely access recipe data when in readOnly or edit mode.
- *
- * @param props - The navigation parameters
- * @returns True if props contain a recipe (readOnly or edit mode)
- */
-export function hasRecipeFromProps(
-  props: RecipePropType
-): props is { mode: 'readOnly' | 'edit'; recipe: recipeTableElement } {
-  return props.mode === 'readOnly' || props.mode === 'edit';
-}
-
-/**
- * Type guard to check if navigation props include scraped recipe data
- *
- * Used to safely access scraped data when in addFromScrape mode.
- *
- * @param props - The navigation parameters
- * @returns True if props contain scraped data (addFromScrape mode)
- */
-export function hasScrapedDataFromProps(
-  props: RecipePropType
-): props is { mode: 'addFromScrape'; scrapedData: Partial<recipeTableElement>; sourceUrl: string } {
-  return props.mode === 'addFromScrape';
 }
 
 /**

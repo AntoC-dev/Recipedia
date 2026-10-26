@@ -1,6 +1,6 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
-import SettingsItemList, { SettingsItemListProps } from '@components/organisms/SettingsItemList';
+import { SettingsItemList, SettingsItemListProps } from '@components/organisms/SettingsItemList';
 import { testTags } from '@test-data/tagsDataset';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { ingredientTableElement, tagTableElement } from '@customTypes/DatabaseElementTypes';

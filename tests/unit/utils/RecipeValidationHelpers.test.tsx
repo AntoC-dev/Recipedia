@@ -9,9 +9,7 @@ import {
   mergeQuantities,
   processIngredientsForValidation,
   processTagsForValidation,
-  removeIngredientByName,
   removeTagByName,
-  replaceMatchingIngredients,
   replaceMatchingTags,
   sortAlphabetically,
   validateAndQueueIngredients,
@@ -188,11 +186,7 @@ describe('RecipeValidationHelpers', () => {
       test('maintains relative order within same group (no matches)', () => {
         mockFindSimilarTags.mockReturnValue([]);
 
-        const inputTags: TagDraft[] = [
-          { name: 'First' },
-          { name: 'Second' },
-          { name: 'Third' },
-        ];
+        const inputTags: TagDraft[] = [{ name: 'First' }, { name: 'Second' }, { name: 'Third' }];
 
         const result = processTagsForValidation(inputTags, mockFindSimilarTags);
 
@@ -204,11 +198,7 @@ describe('RecipeValidationHelpers', () => {
       test('maintains relative order within same group (with matches)', () => {
         mockFindSimilarTags.mockReturnValue([dbTags[0]]);
 
-        const inputTags: TagDraft[] = [
-          { name: 'First' },
-          { name: 'Second' },
-          { name: 'Third' },
-        ];
+        const inputTags: TagDraft[] = [{ name: 'First' }, { name: 'Second' }, { name: 'Third' }];
 
         const result = processTagsForValidation(inputTags, mockFindSimilarTags);
 
@@ -987,45 +977,6 @@ describe('RecipeValidationHelpers', () => {
     });
   });
 
-  describe('removeIngredientByName', () => {
-    const ingredients: ingredientTableElement[] = [
-      { id: 1, name: 'Flour', quantity: '200', unit: 'g', type: ingredientType.cereal, season: [] },
-      { id: 2, name: 'Sugar', quantity: '100', unit: 'g', type: ingredientType.sugar, season: [] },
-    ];
-
-    test('removes ingredient by exact name', () => {
-      const result = removeIngredientByName(ingredients, 'Flour');
-
-      expect(result).toHaveLength(1);
-      expect(result[0]!.name).toBe('Sugar');
-    });
-
-    test('removes ingredient case-insensitively', () => {
-      const result = removeIngredientByName(ingredients, 'FLOUR');
-
-      expect(result).toHaveLength(1);
-      expect(result[0]!.name).toBe('Sugar');
-    });
-
-    test('returns original array when name not found', () => {
-      const result = removeIngredientByName(ingredients, 'Butter');
-
-      expect(result).toEqual(ingredients);
-    });
-
-    test('returns original array when name is undefined', () => {
-      const result = removeIngredientByName(ingredients, undefined);
-
-      expect(result).toEqual(ingredients);
-    });
-
-    test('handles empty array', () => {
-      const result = removeIngredientByName([], 'Flour');
-
-      expect(result).toEqual([]);
-    });
-  });
-
   describe('removeTagByName', () => {
     const tags: tagTableElement[] = [
       { id: 1, name: 'Italian' },
@@ -1056,95 +1007,6 @@ describe('RecipeValidationHelpers', () => {
       const result = removeTagByName([], 'Italian');
 
       expect(result).toEqual([]);
-    });
-  });
-
-  describe('replaceMatchingIngredients', () => {
-    const currentIngredients: ingredientTableElement[] = [
-      { id: 1, name: 'Flour', quantity: '200', unit: 'g', type: ingredientType.cereal, season: [] },
-      { name: 'Sugar', quantity: '100', unit: 'g' } as ingredientTableElement,
-    ];
-
-    const dbIngredients: ingredientTableElement[] = [
-      {
-        id: 10,
-        name: 'Sugar',
-        quantity: '50',
-        unit: 'g',
-        type: ingredientType.sugar,
-        season: ['1'],
-      },
-    ];
-
-    test('replaces matching ingredient with database version', () => {
-      const result = replaceMatchingIngredients(currentIngredients, dbIngredients);
-
-      expect(result).toHaveLength(2);
-      const sugar = result.find(i => i.name === 'Sugar');
-      expect(sugar?.id).toBe(10);
-      expect(sugar?.type).toBe(ingredientType.sugar);
-    });
-
-    test('preserves non-matching ingredients', () => {
-      const result = replaceMatchingIngredients(currentIngredients, dbIngredients);
-
-      const flour = result.find(i => i.name === 'Flour');
-      expect(flour?.id).toBe(1);
-    });
-
-    test('handles case-insensitive matching', () => {
-      const current = [{ name: 'SUGAR', quantity: '100', unit: 'g' } as ingredientTableElement];
-
-      const result = replaceMatchingIngredients(current, dbIngredients);
-
-      expect(result[0]!.id).toBe(10);
-    });
-
-    test('handles empty exactMatches array', () => {
-      const result = replaceMatchingIngredients(currentIngredients, []);
-
-      expect(result).toEqual(currentIngredients);
-    });
-
-    test('replaces multiple ingredients with same name without overwriting', () => {
-      const current: ingredientTableElement[] = [
-        {
-          id: 1,
-          name: 'Olive Oil',
-          quantity: '2',
-          unit: 'tbsp',
-          type: ingredientType.oilAndFat,
-          season: [],
-        },
-        { id: 2, name: 'Salt', quantity: '1', unit: 'tsp', type: ingredientType.spice, season: [] },
-        { name: 'Olive Oil', quantity: '', unit: '' } as ingredientTableElement,
-      ];
-      const exactMatches: ingredientTableElement[] = [
-        {
-          id: 10,
-          name: 'Olive Oil',
-          quantity: '2',
-          unit: 'tbsp',
-          type: ingredientType.oilAndFat,
-          season: [],
-        },
-        {
-          id: 10,
-          name: 'Olive Oil',
-          quantity: '1',
-          unit: 'g',
-          type: ingredientType.oilAndFat,
-          season: [],
-        },
-      ];
-
-      const result = replaceMatchingIngredients(current, exactMatches);
-
-      expect(result).toHaveLength(3);
-      expect(result[0]!.quantity).toBe('2');
-      expect(result[0]!.unit).toBe('tbsp');
-      expect(result[2]!.quantity).toBe('1');
-      expect(result[2]!.unit).toBe('g');
     });
   });
 
@@ -1923,37 +1785,6 @@ describe('RecipeValidationHelpers', () => {
       const result = mergeIngredient(original, validated);
 
       expect(result.unit).toBe('g');
-    });
-  });
-
-  describe('replaceMatchingIngredients — no match found branch', () => {
-    test('leaves current array unchanged when exactMatch has no matching ingredient in current', () => {
-      const current: ingredientTableElement[] = [
-        {
-          id: 1,
-          name: 'Flour',
-          quantity: '200',
-          unit: 'g',
-          type: ingredientType.cereal,
-          season: [],
-        },
-      ];
-      const exactMatches: ingredientTableElement[] = [
-        {
-          id: 10,
-          name: 'Sugar',
-          quantity: '50',
-          unit: 'g',
-          type: ingredientType.sugar,
-          season: [],
-        },
-      ];
-
-      const result = replaceMatchingIngredients(current, exactMatches);
-
-      expect(result).toHaveLength(1);
-      expect(result[0]!.name).toBe('Flour');
-      expect(result[0]!.id).toBe(1);
     });
   });
 

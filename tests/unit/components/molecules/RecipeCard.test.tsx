@@ -1,12 +1,12 @@
 import { fireEvent, render } from '@testing-library/react-native';
 import { StyleSheet } from 'react-native';
-import RecipeCard, { RecipeCardProps } from '@components/molecules/RecipeCard';
+import { RecipeCard, RecipeCardProps } from '@components/molecules/RecipeCard';
 import { padding } from '@styles/spacing';
 import React from 'react';
 import { testRecipes } from '@test-data/recipesDataset';
 import { recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { testTags } from '@test-data/tagsDataset';
 import { mockNavigate } from '@mocks/deps/react-navigation-mock';
 
@@ -16,7 +16,7 @@ jest.mock('@react-navigation/native', () =>
   require('@mocks/deps/react-navigation-mock').reactNavigationMock()
 );
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 describe('RecipeCard Component', () => {
   const sampleRecipe: recipeTableElement = testRecipes[0]!;

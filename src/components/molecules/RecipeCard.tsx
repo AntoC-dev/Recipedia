@@ -166,5 +166,3 @@ const styles = StyleSheet.create({
     marginRight: -padding.verySmall,
   },
 });
-
-export default RecipeCard;

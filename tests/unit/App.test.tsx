@@ -5,7 +5,7 @@ import { mockInitSettings, mockGetDarkMode } from '@mocks/utils/settings-mock';
 import { mockIsFirstLaunch } from '@mocks/utils/firstLaunch-mock';
 import { mockHideAsync } from '@mocks/deps/expo-splash-screen-mock';
 import { init as mockInitFileSystem } from '@mocks/utils/FileGestion-mock';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 
 import App from '../../App';
 

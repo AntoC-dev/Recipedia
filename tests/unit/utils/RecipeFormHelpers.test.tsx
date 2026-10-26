@@ -11,8 +11,6 @@ import {
   getMissingFieldsErrorContent,
   getServingsScaledFrom,
   getValidationButtonConfig,
-  hasRecipeFromProps,
-  hasScrapedDataFromProps,
   IMAGE_BUTTON_CONFIG,
   RecipePropType,
   scaleRecipeForSave,
@@ -48,41 +46,6 @@ describe('RecipeFormHelpers', () => {
 
     test('converts addFromScrape mode correctly', () => {
       expect(convertModeFromProps('addFromScrape')).toBe(recipeStateType.addScrape);
-    });
-  });
-
-  describe('hasRecipeFromProps', () => {
-    const mockRecipe: recipeTableElement = {
-      id: 1,
-      image_Source: 'test.jpg',
-      title: 'Test Recipe',
-      description: 'Test description',
-      tags: [],
-      persons: 4,
-      ingredients: [],
-      season: [],
-      preparation: [],
-      time: 30,
-    };
-
-    test('returns true for readOnly mode', () => {
-      const props: RecipePropType = { mode: 'readOnly', recipe: mockRecipe };
-      expect(hasRecipeFromProps(props)).toBe(true);
-    });
-
-    test('returns true for edit mode', () => {
-      const props: RecipePropType = { mode: 'edit', recipe: mockRecipe };
-      expect(hasRecipeFromProps(props)).toBe(true);
-    });
-
-    test('returns false for addManually mode', () => {
-      const props: RecipePropType = { mode: 'addManually' };
-      expect(hasRecipeFromProps(props)).toBe(false);
-    });
-
-    test('returns false for addFromPic mode', () => {
-      const props: RecipePropType = { mode: 'addFromPic', imgUri: 'test.jpg' };
-      expect(hasRecipeFromProps(props)).toBe(false);
     });
   });
 
@@ -931,39 +894,6 @@ describe('RecipeFormHelpers', () => {
         parentTestId: 'MyTestId',
       });
       expect(result.parentTestId).toBe('MyTestId');
-    });
-  });
-
-  describe('hasScrapedDataFromProps', () => {
-    test('returns true for addFromScrape mode', () => {
-      const props: RecipePropType = {
-        mode: 'addFromScrape',
-        scrapedData: {},
-        sourceUrl: 'https://example.com',
-      };
-      expect(hasScrapedDataFromProps(props)).toBe(true);
-    });
-
-    test('returns false for readOnly mode', () => {
-      const mockRecipe = {
-        id: 1,
-        image_Source: '',
-        title: '',
-        description: '',
-        tags: [],
-        persons: 4,
-        ingredients: [],
-        season: [],
-        preparation: [],
-        time: 30,
-      };
-      const props: RecipePropType = { mode: 'readOnly', recipe: mockRecipe };
-      expect(hasScrapedDataFromProps(props)).toBe(false);
-    });
-
-    test('returns false for addManually mode', () => {
-      const props: RecipePropType = { mode: 'addManually' };
-      expect(hasScrapedDataFromProps(props)).toBe(false);
     });
   });
 

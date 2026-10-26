@@ -1,11 +1,7 @@
 import React from 'react';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { UseFormReturn } from 'react-hook-form';
-import {
-  ApplyIngredientEditPatch,
-  formatIngredientString,
-  useRecipeIngredients,
-} from '@hooks/useRecipeIngredients';
+import { ApplyIngredientEditPatch, useRecipeIngredients } from '@hooks/useRecipeIngredients';
 import { RecipeFormProvider, useRecipeForm } from '@test-helpers/recipeFormTestProvider';
 import { RecipeDialogsProvider, useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { createMockRecipeProp } from '@test-helpers/recipeHookTestWrapper';
@@ -13,7 +9,7 @@ import {
   IngredientArrayActionsProvider,
   useIngredientArrayActionsRegister,
 } from '@screens/recipe/fields/IngredientArrayActionsContext';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 import {
   FormIngredientElement,
   IngredientDraft,
@@ -255,7 +251,7 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
       act(() => {
         result.current.ingredientOps.editIngredients(
           0,
-          formatIngredientString({ name: 'Onion', unit: 'g', quantity: '200', season: [] }),
+          '200@@g--Onion',
           makeFormApplyPatch(result.current.form.form)
         );
       });
@@ -277,7 +273,7 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
       act(() => {
         result.current.ingredientOps.editIngredients(
           0,
-          formatIngredientString({ name: 'Onions', unit: 'g', quantity: '100', season: [] }),
+          '100@@g--Onions',
           makeFormApplyPatch(result.current.form.form)
         );
       });
@@ -303,7 +299,7 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
       act(() => {
         result.current.ingredientOps.editIngredients(
           0,
-          formatIngredientString({ name: 'Tomato', unit: 'g', quantity: '150', season: [] }),
+          '150@@g--Tomato',
           makeFormApplyPatch(result.current.form.form)
         );
       });

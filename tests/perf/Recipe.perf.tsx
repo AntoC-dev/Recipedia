@@ -5,7 +5,7 @@ import { RecipeEdit } from '@screens/recipe/RecipeEdit';
 import { RecipeAddManual } from '@screens/recipe/RecipeAddManual';
 import { RecipeAddOcr } from '@screens/recipe/RecipeAddOcr';
 import { RecipeAddScrape } from '@screens/recipe/RecipeAddScrape';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { performanceRecipes } from '@assets/datasets/performance/recipes';
 import { performanceIngredients } from '@assets/datasets/performance/ingredients';
 import { performanceTags } from '@assets/datasets/performance/tags';

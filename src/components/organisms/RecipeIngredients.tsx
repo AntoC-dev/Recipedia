@@ -510,5 +510,3 @@ const cellStyles = StyleSheet.create({
     paddingVertical: padding.verySmall,
   } as ViewStyle,
 });
-
-export default RecipeIngredients;

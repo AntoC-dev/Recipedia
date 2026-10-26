@@ -601,5 +601,3 @@ export class TableManipulation {
     return [insertQuery, returnValues];
   }
 }
-
-export default TableManipulation;

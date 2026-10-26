@@ -165,18 +165,6 @@ export const setSeasonFilter = async (value: boolean): Promise<void> => {
 };
 
 /**
- * Flips the season filter preference and persists the new value.
- *
- * @returns The new season filter state after toggling.
- */
-export const toggleSeasonFilter = async (): Promise<boolean> => {
-  const currentValue = await getSeasonFilter();
-  const newValue = !currentValue;
-  await setSeasonFilter(newValue);
-  return newValue;
-};
-
-/**
  * Reads the language preference from storage.
  *
  * Falls back to the device locale (`expo-localization`) when no value has been

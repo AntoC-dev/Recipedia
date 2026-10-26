@@ -6,7 +6,7 @@ import {
   triggerPreventRemove,
 } from '@mocks/deps/react-navigation-mock';
 import { testRecipes } from '@test-data/recipesDataset';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { AddManuallyProp } from '@customTypes/RecipeNavigationTypes';
 import { ingredientType } from '@customTypes/DatabaseElementTypes';
 import { defaultValueNumber } from '@utils/Constants';

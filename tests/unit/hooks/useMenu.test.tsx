@@ -1,6 +1,6 @@
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { useMenu } from '@hooks/useMenu';
-import RecipeDatabase from '@utils/RecipeDatabase';
+import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { ingredientType, RecipeDraft } from '@customTypes/DatabaseElementTypes';
 
 const catalogIngredients = [
