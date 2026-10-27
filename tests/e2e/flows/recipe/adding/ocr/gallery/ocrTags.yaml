@@ -4,7 +4,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeTags::OpenModal::RoundButton"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to tags section"
 

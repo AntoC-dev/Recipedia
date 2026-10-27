@@ -22,9 +22,17 @@ appId: "com.recipedia"
     commands:
       - scrollUntilVisible:
           element:
+            id: "RecipeIngredients::PrefixText"
+          direction: UP
+          speed: 20
+          centerElement: true
+          label: "Scroll to ingredient section"
+
+      - scrollUntilVisible:
+          element:
             id: "RecipeIngredients::OpenModalQuantities::RoundButton"
           direction: DOWN
-          speed: 40
+          speed: 20
           centerElement: true
           label: "Scroll to ingredient quantities OCR button"
 

@@ -5,7 +5,7 @@ appId: "com.recipedia"
     element:
       id: "Recipe::RecipeSourceUrl::Text"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to source URL section"
 

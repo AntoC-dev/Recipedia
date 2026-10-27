@@ -81,7 +81,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeTags::0::Chip"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to recipe tag"
 

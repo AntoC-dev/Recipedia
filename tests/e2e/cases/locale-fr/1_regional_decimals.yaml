@@ -42,7 +42,7 @@ tags:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::Value"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to the nutrition table"
 
@@ -82,7 +82,7 @@ tags:
     element:
       id: "RecipeIngredients::0::QuantityAndUnit"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to the first ingredient"
 

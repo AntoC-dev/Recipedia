@@ -15,7 +15,7 @@ appId: "com.recipedia"
           element:
             id: "RecipeIngredients::AddButton::RoundButton"
           direction: DOWN
-          speed: 40
+          speed: 20
           centerElement: true
           label: "Center the add-ingredient button"
       - tapOn:
@@ -27,7 +27,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::OpenModalQuantities::RoundButton"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to ingredient quantities OCR button"
 

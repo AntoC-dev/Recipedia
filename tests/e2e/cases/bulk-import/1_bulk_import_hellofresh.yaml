@@ -180,7 +180,7 @@ tags:
     element:
       id: "RecipePersons::Text"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     timeout: 120000
     label: "Assert - Scroll to persons section"

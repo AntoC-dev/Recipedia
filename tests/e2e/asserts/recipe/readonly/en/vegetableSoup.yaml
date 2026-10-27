@@ -54,7 +54,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::0::IngredientName"
     direction: DOWN
-    speed: 30
+    speed: 20
     centerElement: true
     label: "Scroll to Carrots ingredient"
 
@@ -72,7 +72,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::1::IngredientName"
     direction: DOWN
-    speed: 30
+    speed: 20
     centerElement: true
     label: "Scroll to Celery ingredient"
 
@@ -90,7 +90,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::2::IngredientName"
     direction: DOWN
-    speed: 30
+    speed: 20
     centerElement: true
     label: "Scroll to Potatoes ingredient"
 
@@ -108,7 +108,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::3::IngredientName"
     direction: DOWN
-    speed: 30
+    speed: 20
     centerElement: true
     label: "Scroll to Vegetable Broth ingredient"
 
@@ -126,7 +126,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeTime::Text"
     direction: DOWN
-    speed: 30
+    speed: 20
     centerElement: true
     label: "Scroll to preparation time"
 
@@ -139,7 +139,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
     direction: DOWN
-    speed: 30
+    speed: 20
     centerElement: true
     label: "Scroll to first preparation step"
 
@@ -152,7 +152,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
     direction: DOWN
-    speed: 30
+    speed: 20
     centerElement: true
     label: "Scroll to second preparation step"
 
@@ -165,7 +165,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"
     direction: DOWN
-    speed: 30
+    speed: 20
     centerElement: true
     label: "Scroll to third preparation step"
 
@@ -205,7 +205,7 @@ appId: "com.recipedia"
       id: "RecipeImage"
     direction: UP
     centerElement: true
-    speed: 30
+    speed: 20
     label: "Scroll back to top"
 
 - waitForAnimationToEnd

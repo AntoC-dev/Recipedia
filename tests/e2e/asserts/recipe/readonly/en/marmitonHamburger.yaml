@@ -14,7 +14,7 @@ appId: "com.recipedia"
       id: "RecipeDescription::Text"
     direction: DOWN
     centerElement: true
-    speed: 40
+    speed: 20
     label: "Scroll to description section"
 
 - assertVisible:
@@ -27,7 +27,7 @@ appId: "com.recipedia"
       id: "RecipeTags::0::Chip"
     direction: DOWN
     centerElement: true
-    speed: 40
+    speed: 20
     label: "Scroll to tags section"
 
 - assertVisible:
@@ -60,7 +60,7 @@ appId: "com.recipedia"
       id: "RecipePersons::Text"
     direction: DOWN
     centerElement: true
-    speed: 30
+    speed: 20
     label: "Scroll to ingredients section"
 
 - assertVisible:
@@ -128,7 +128,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeTime::Text"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to preparation section"
 
@@ -142,7 +142,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
     direction: DOWN
     centerElement: true
-    speed: 30
+    speed: 20
     label: "Scroll to first preparation section"
 
 - assertVisible:
@@ -155,7 +155,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::0::SectionParagraph"
     direction: DOWN
     centerElement: true
-    speed: 30
+    speed: 20
     label: "Scroll to first preparation paragraph"
 
 - assertVisible:
@@ -168,7 +168,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
     direction: DOWN
     centerElement: true
-    speed: 30
+    speed: 20
     label: "Scroll to second preparation section"
 
 - assertVisible:
@@ -181,7 +181,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::1::SectionParagraph"
     direction: DOWN
     centerElement: true
-    speed: 30
+    speed: 20
     label: "Scroll to second preparation paragraph"
 
 - assertVisible:
@@ -194,7 +194,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"
     direction: DOWN
     centerElement: true
-    speed: 30
+    speed: 20
     label: "Scroll to third preparation section"
 
 - assertVisible:
@@ -207,7 +207,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::2::SectionParagraph"
     direction: DOWN
     centerElement: true
-    speed: 30
+    speed: 20
     label: "Scroll to third preparation paragraph"
 
 - assertVisible:
@@ -220,7 +220,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::3::SectionTitle"
     direction: DOWN
     centerElement: true
-    speed: 30
+    speed: 20
     label: "Scroll to fourth preparation section"
 
 - assertVisible:
@@ -233,7 +233,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::3::SectionParagraph"
     direction: DOWN
     centerElement: true
-    speed: 30
+    speed: 20
     label: "Scroll to fourth preparation paragraph"
 
 - assertVisible:
@@ -246,7 +246,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::4::SectionTitle"
     direction: DOWN
     centerElement: true
-    speed: 30
+    speed: 20
     label: "Scroll to fifth preparation section"
 
 - assertVisible:
@@ -259,7 +259,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::4::SectionParagraph"
     direction: DOWN
     centerElement: true
-    speed: 30
+    speed: 20
     label: "Scroll to fifth preparation paragraph"
 
 - assertVisible:
@@ -272,7 +272,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::5::SectionTitle"
     direction: DOWN
     centerElement: true
-    speed: 30
+    speed: 20
     label: "Scroll to sixth preparation section"
 
 - assertVisible:
@@ -285,7 +285,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::5::SectionParagraph"
     direction: DOWN
     centerElement: true
-    speed: 30
+    speed: 20
     label: "Scroll to sixth preparation paragraph"
 
 - assertVisible:

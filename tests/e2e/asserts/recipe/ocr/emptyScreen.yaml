@@ -111,7 +111,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::OpenModalNames::RoundButton"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
 
 - assertVisible:
@@ -141,7 +141,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeTime::OpenModal::RoundButton"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
 
 - assertVisible:
@@ -167,7 +167,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::OpenModal::RoundButton"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
 
 - assertVisible:
@@ -197,7 +197,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeImage"
     direction: UP
-    speed: 80
+    speed: 20
     timeout: 120000
     centerElement: true
     label: "Scroll back to top"

@@ -31,7 +31,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeDescription::CustomTextInput"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll down to description content"
 
@@ -44,7 +44,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeTags::HeaderText"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll down to tags header"
 
@@ -62,7 +62,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeTags::0::Chip"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll down to tags chips"
 
@@ -83,7 +83,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeTags::RoundButton"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll down to tags button"
 
@@ -96,7 +96,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePersons::NumericTextInput"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll down to persons part"
 
@@ -120,7 +120,7 @@ appId: "com.recipedia"
       id: "RecipeIngredients::PrefixText"
     direction: DOWN
     centerElement: true
-    speed: 60
+    speed: 20
     label: "Scroll down to ingredients part"
 
 - assertVisible:
@@ -148,7 +148,7 @@ appId: "com.recipedia"
       id: "RecipeIngredients::12::NameInput::CustomTextInput"
     direction: DOWN
     centerElement: true
-    speed: 60
+    speed: 20
     label: "Scroll to last ingredient (index 12 = 13 ingredients)"
 
 - assertVisible:
@@ -167,7 +167,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::AddButton::RoundButton"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll down to ingredients add button"
 
@@ -207,7 +207,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::PrefixText"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll down to preparation part"
 
@@ -220,7 +220,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::EditableStep::0::Step"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll down to first step"
 
@@ -233,7 +233,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll down to title of first step"
 
@@ -252,7 +252,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::EditableStep::0::Content"
     direction: DOWN
     centerElement: true
-    speed: 40
+    speed: 20
     label: "Scroll down to content of first step content"
 
 - assertVisible:
@@ -265,7 +265,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
     direction: DOWN
     centerElement: true
-    speed: 40
+    speed: 20
     label: "Scroll down to content of first step"
 
 - assertVisible:
@@ -278,7 +278,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::EditableStep::5::Title"
     direction: DOWN
     centerElement: true
-    speed: 40
+    speed: 20
     timeout: 120000
     label: "Scroll down to sixth and last step"
 
@@ -292,7 +292,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::EditableStep::5::TextInputContent::CustomTextInput"
     direction: DOWN
     centerElement: true
-    speed: 60
+    speed: 20
     label: "Scroll down to content of sixth step"
 
 - assertVisible:
@@ -304,7 +304,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::AddButton::RoundButton"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll down to preparation add button"
 

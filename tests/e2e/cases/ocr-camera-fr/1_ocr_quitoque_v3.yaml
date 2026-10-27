@@ -27,7 +27,7 @@ tags:
     element:
       id: "RecipeImage::RoundButton"
     direction: UP
-    speed: 85
+    speed: 20
     timeout: 120000
     centerElement: true
     label: "Scroll back to top after OCR"
@@ -40,7 +40,7 @@ tags:
     element:
       id: "RecipeImage"
     direction: UP
-    speed: 85
+    speed: 20
     timeout: 120000
     centerElement: true
     label: "Scroll back to top so the recipe image is tappable"

@@ -22,7 +22,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeTitle::CustomTextInput"
     direction: UP
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to the title with the keyboard closed"
 

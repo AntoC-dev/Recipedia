@@ -40,7 +40,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePersons::NumericTextInput"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to persons part"
 
@@ -57,7 +57,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::PrefixText"
     direction: DOWN
-    speed: 50
+    speed: 20
     timeout: 120000
     centerElement: true
 
@@ -70,7 +70,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeTime::PrefixText"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to time part"
 
@@ -87,7 +87,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::PrefixText"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to preparation part"
 
@@ -100,7 +100,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::EditableStep::0::Step"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to first preparation step"
 
@@ -113,7 +113,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::EditableStep::0::Title"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to preparation title part"
 
@@ -126,7 +126,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::EditableStep::0::Content"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to preparation content part"
 

@@ -6,7 +6,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePersons::Text"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to the persons text"
 
@@ -19,7 +19,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeTime::Text"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to the time text"
 
@@ -36,7 +36,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeImage::Image"
     direction: UP
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll up to the image"
 

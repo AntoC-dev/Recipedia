@@ -31,7 +31,7 @@ tags:
     element:
       id: "RecipeImage::Image"
     direction: UP
-    speed: 95
+    speed: 20
     centerElement: true
 
 - runFlow:

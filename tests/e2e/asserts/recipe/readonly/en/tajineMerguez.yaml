@@ -19,7 +19,7 @@ appId: "com.recipedia"
       id: "RecipePersons::Text"
     direction: DOWN
     centerElement: true
-    speed: 30
+    speed: 20
 
 - waitForAnimationToEnd
 
@@ -94,7 +94,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
     direction: DOWN
     centerElement: true
-    speed: 30
+    speed: 20
 
 - assertVisible:
     id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"

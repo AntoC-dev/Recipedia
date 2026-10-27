@@ -23,7 +23,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeTags::HeaderText"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll down until tags section is displayed"
 
@@ -48,7 +48,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::PrefixText"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll down until ingredients section is displayed"
 
@@ -77,7 +77,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::PrefixText"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
 
 - assertVisible:

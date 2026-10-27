@@ -26,7 +26,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeDescription::Text"
     direction: DOWN
-    speed: 30
+    speed: 20
     centerElement: true
 
 - assertVisible:
@@ -42,7 +42,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeTags::HeaderText"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to tags section"
 
@@ -115,7 +115,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePersons::PrefixText"
     direction: DOWN
-    speed: 40
+    speed: 20
     timeout: 120000
     centerElement: true
     label: "Scroll to persons section"
@@ -137,7 +137,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::PrefixText"
     direction: DOWN
-    speed: 30
+    speed: 20
     centerElement: true
 
 - assertVisible:
@@ -161,7 +161,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::0::NameInput::CustomTextInput"
     direction: DOWN
-    speed: 40
+    speed: 20
     timeout: 60000
     centerElement: true
     label: "Scroll to third ingredient's name input"
@@ -183,7 +183,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::1::NameInput::CustomTextInput"
     direction: DOWN
-    speed: 40
+    speed: 20
     timeout: 60000
     centerElement: true
     label: "Scroll to second ingredient's name input"
@@ -205,7 +205,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::2::NameInput::CustomTextInput"
     direction: DOWN
-    speed: 40
+    speed: 20
     timeout: 60000
     centerElement: true
     label: "Scroll to third ingredient's name input"
@@ -227,7 +227,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::3::QuantityInput"
     direction: DOWN
-    speed: 30
+    speed: 20
     centerElement: true
     label: "Scroll to fourth ingredient"
 
@@ -248,7 +248,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::4::QuantityInput"
     direction: DOWN
-    speed: 30
+    speed: 20
     centerElement: true
     label: "Scroll to last ingredient"
 
@@ -270,7 +270,7 @@ appId: "com.recipedia"
       id: "RecipeIngredients::AddButton::RoundButton"
     direction: DOWN
     centerElement: true
-    speed: 40
+    speed: 20
 
 - assertVisible:
     id: "RecipeIngredients::AddButton::RoundButton"
@@ -286,7 +286,7 @@ appId: "com.recipedia"
       id: "RecipeTime::NumericTextInput"
     direction: DOWN
     centerElement: true
-    speed: 40
+    speed: 20
     label: "Scroll down to see the time to prepare"
 
 - assertVisible:
@@ -497,7 +497,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeImage::RoundButton"
     direction: UP
-    speed: 85
+    speed: 20
     timeout: 120000
     label: "Scroll back to top"
 

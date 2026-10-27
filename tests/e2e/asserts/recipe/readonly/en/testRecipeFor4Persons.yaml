@@ -9,7 +9,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePersons::Text"
     direction: DOWN
-    speed: 30
+    speed: 20
     centerElement: true
     label: "Scroll to ingredients section"
 
@@ -22,7 +22,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::0::IngredientName"
     direction: DOWN
-    speed: 30
+    speed: 20
     centerElement: true
     label: "Scroll to Pasta ingredient"
 
@@ -40,7 +40,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::1::IngredientName"
     direction: DOWN
-    speed: 30
+    speed: 20
     centerElement: true
     label: "Scroll to Tomatoes ingredient"
 
