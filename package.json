@@ -187,7 +187,7 @@
     "lint-staged": "16.4.0",
     "patch-package": "^8.0.1",
     "prettier": "^3.9.10",
-    "pyodide": "314.0.5",
+    "pyodide": "314.0.7",
     "reassure": "1.6.0",
     "semantic-release": "25.0.9",
     "typedoc": "0.28.20",
