@@ -14,3 +14,4 @@ executionOrder:
     - "3 - OCR Feedback Snackbar Flow"
     - "4 - OCR Use Similar Ingredient Flow"
     - "5 - OCR Crop Rotate Flow"
+    - "6 - OCR Scan After Manual Flow"
