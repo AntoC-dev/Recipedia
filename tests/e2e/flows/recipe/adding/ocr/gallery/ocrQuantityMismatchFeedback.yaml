@@ -65,10 +65,6 @@ appId: "com.recipedia"
 
 - extendedWaitUntil:
     visible:
-      id: "Recipe::OcrSnackbar"
+      text: "Scanned quantities don't match your ingredients. Please check the values."
     timeout: 120000
-    label: "Wait for OCR quantity-mismatch snackbar to appear"
-
-- assertVisible:
-    text: "Scanned quantities don't match your ingredients. Please check the values."
-    label: "Assert - quantity-mismatch snackbar message is shown"
+    label: "Wait for the quantity-mismatch snackbar message"
