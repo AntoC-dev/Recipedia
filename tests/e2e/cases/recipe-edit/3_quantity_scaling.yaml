@@ -76,8 +76,11 @@ tags:
 
 - assertVisible:
     id: "RecipePersons::NumericTextInput"
-    focused: true
-    label: "Assert - Persons input is focused and on screen"
+    label: "Assert - Persons input is on screen"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Assert - Keyboard is on screen"
 
 - runFlow:
     file: "../../flows/toolbarDone.yaml"
