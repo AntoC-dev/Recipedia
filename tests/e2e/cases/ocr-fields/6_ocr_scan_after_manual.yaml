@@ -1,0 +1,107 @@
+name: "6 - OCR Scan After Manual Flow"
+appId: "com.recipedia"
+tags:
+  - ocr
+---
+- evalScript: ${output.modalImageCounter = 0}
+
+- runFlow:
+    file: "../../flows/recipe/adding/ocr/gallery/ocrImage.yaml"
+    env:
+      RECIPE_NAME: hellofresh
+    label: "Setup - Open recipe screen in OCR mode with HelloFresh image"
+
+- runFlow:
+    file: "../../flows/recipe/adding/ocr/gallery/ocrTitle.yaml"
+    env:
+      RECIPE_NAME: hellofresh
+    label: "Action - OCR the title so the input is filled"
+
+- assertVisible:
+    id: "RecipeTitle::OpenModal::RoundButton"
+    label: "Assert - Title scan button stays visible once the title has a value"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePersons::NumericTextInput"
+    direction: DOWN
+    centerElement: true
+    label: "Action - Scroll to persons, prefilled with the default count"
+
+- assertVisible:
+    id: "RecipePersons::OpenModal::RoundButton"
+    label: "Assert - Persons scan button visible while persons has a value"
+
+- runFlow:
+    file: "../../flows/recipe/addRow.yaml"
+    env:
+      SECTION: RecipeIngredients
+    label: "Action - Add first ingredient manually"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipeIngredients::0::NameInput::CustomTextInput"
+    timeout: 5000
+    label: "Assert - First ingredient row shown"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::OpenModalNames::RoundButton"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Assert - Scan names button stays visible after manual add"
+
+- assertVisible:
+    id: "RecipeIngredients::OpenModalQuantities::RoundButton"
+    label: "Assert - Scan quantities button visible after manual add"
+
+- assertVisible:
+    id: "RecipeIngredients::AddButton::RoundButton"
+    label: "Assert - Add manually button visible after manual add"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTime::ManuallyFill::RoundButton"
+    direction: DOWN
+    speed: 30
+    centerElement: true
+    label: "Action - Scroll to time"
+
+- tapOn:
+    id: "RecipeTime::ManuallyFill::RoundButton"
+    label: "Action - Fill time manually"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipeTime::NumericTextInput"
+    timeout: 5000
+    label: "Assert - Time numeric input shown"
+
+- assertVisible:
+    id: "RecipeTime::OpenModal::RoundButton"
+    label: "Assert - Time scan button stays visible after manual fill"
+
+- runFlow:
+    file: "../../flows/recipe/addRow.yaml"
+    env:
+      SECTION: RecipePreparation
+    label: "Action - Add first preparation step manually"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipePreparation::EditableStep::0::Step"
+    timeout: 5000
+    label: "Assert - First preparation step shown"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::OpenModal::RoundButton"
+    direction: DOWN
+    speed: 30
+    centerElement: true
+    label: "Assert - Preparation scan button stays visible after manual add"
+
+- assertVisible:
+    id: "RecipePreparation::AddButton::RoundButton"
+    label: "Assert - Preparation add step button visible"
