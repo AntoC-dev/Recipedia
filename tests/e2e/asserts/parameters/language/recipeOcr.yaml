@@ -75,10 +75,11 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipePreparation::PrefixText"
+      id: "RecipeTime::PrefixText"
     direction: DOWN
     speed: 20
     centerElement: true
+    label: "Scroll down until time section is displayed"
 
 - assertVisible:
     id: "RecipeTime::PrefixText"
@@ -92,6 +93,15 @@ appId: "com.recipedia"
     id: "RecipeTime::ManuallyFill::RoundButton::Label"
     text: "Ajouter manuellement"
     label: "Time manual fill button label is displayed in French"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::PrefixText"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll down until preparation section is displayed"
+
 - assertVisible:
     id: "RecipePreparation::PrefixText"
     text: "Préparation : "
