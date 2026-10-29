@@ -12,7 +12,6 @@ import React from 'react';
 import { useController, UseFormReturn } from 'react-hook-form';
 
 import { recipeStateType } from '@customTypes/ScreenTypes';
-import { OcrModalTarget } from '@utils/OCR';
 import { RecipeNumber } from '@components/organisms/RecipeNumber';
 import { buildRecipePersonsProps, buildRecipeTimeProps } from '@utils/RecipeFormHelpers';
 import { RecipeFormInput } from '@schemas/recipeFormSchema';
@@ -24,11 +23,10 @@ type T = (key: string) => string;
 export interface PersonsFieldProps {
   form: Form;
   stackMode: recipeStateType;
-  openModalForField: (field: OcrModalTarget) => void;
   t: T;
 }
 
-export function RecipePersonsField({ form, stackMode, openModalForField, t }: PersonsFieldProps) {
+export function RecipePersonsField({ form, stackMode, t }: PersonsFieldProps) {
   const { field } = useController({ control: form.control, name: 'recipePersons' });
   const { error } = useInlineErrorFor('recipePersons', t);
   return (
@@ -37,7 +35,6 @@ export function RecipePersonsField({ form, stackMode, openModalForField, t }: Pe
         stackMode,
         recipePersons: field.value,
         setRecipePersons: field.onChange,
-        openModalForField,
         t,
       })}
       onBlur={field.onBlur}
@@ -49,11 +46,10 @@ export function RecipePersonsField({ form, stackMode, openModalForField, t }: Pe
 export interface TimeFieldProps {
   form: Form;
   stackMode: recipeStateType;
-  openModalForField: (field: OcrModalTarget) => void;
   t: T;
 }
 
-export function RecipeTimeField({ form, stackMode, openModalForField, t }: TimeFieldProps) {
+export function RecipeTimeField({ form, stackMode, t }: TimeFieldProps) {
   const { field } = useController({ control: form.control, name: 'recipeTime' });
   const { error } = useInlineErrorFor('recipeTime', t);
   return (
@@ -62,7 +58,6 @@ export function RecipeTimeField({ form, stackMode, openModalForField, t }: TimeF
         stackMode,
         recipeTime: field.value,
         setRecipeTime: field.onChange,
-        openModalForField,
         t,
       })}
       onBlur={field.onBlur}

@@ -14,7 +14,7 @@ jest.mock('@components/organisms/RecipeIngredients', () => {
     IngredientsTable: mocks.ingredientsTableMock,
     IngredientRow: mocks.ingredientRowMock,
     IngredientsAddEmpty: mocks.ingredientsAddEmptyMock,
-    IngredientsAddTail: mocks.ingredientsAddTailMock,
+    IngredientsOcrButtons: mocks.ingredientsOcrButtonsMock,
   };
 });
 

@@ -18,6 +18,7 @@ import {
 import { OcrModalTarget } from '@utils/OCR';
 import { recipeStateType } from '@customTypes/ScreenTypes';
 import {
+  recipeColumnsNames,
   ingredientTableElement,
   ingredientType,
   preparationStepElement,
@@ -230,13 +231,10 @@ describe('RecipeFormHelpers', () => {
   });
 
   describe('buildRecipeImageProps', () => {
-    const mockOpenModal = jest.fn();
-
     test('returns undefined button for readOnly mode', () => {
       const result = buildRecipeImageProps({
         stackMode: recipeStateType.readOnly,
         recipeImage: 'image.jpg',
-        openModalForField: mockOpenModal,
       });
       expect(result.imgUri).toBe('image.jpg');
       expect(result.overlayButton).toBeUndefined();
@@ -246,7 +244,6 @@ describe('RecipeFormHelpers', () => {
       const result = buildRecipeImageProps({
         stackMode: recipeStateType.edit,
         recipeImage: 'image.jpg',
-        openModalForField: mockOpenModal,
       });
       expect(result.overlayButton).toEqual({
         icon: Icons.cameraIcon,
@@ -258,7 +255,6 @@ describe('RecipeFormHelpers', () => {
       const result = buildRecipeImageProps({
         stackMode: recipeStateType.addManual,
         recipeImage: 'image.jpg',
-        openModalForField: mockOpenModal,
       });
       expect(result.overlayButton?.icon).toBe(Icons.cameraIcon);
     });
@@ -267,7 +263,6 @@ describe('RecipeFormHelpers', () => {
       const result = buildRecipeImageProps({
         stackMode: recipeStateType.addOCR,
         recipeImage: 'image.jpg',
-        openModalForField: mockOpenModal,
       });
       expect(result.overlayButton).toEqual({
         icon: Icons.scanImageIcon,
@@ -279,32 +274,20 @@ describe('RecipeFormHelpers', () => {
       const result = buildRecipeImageProps({
         stackMode: recipeStateType.addScrape,
         recipeImage: 'image.jpg',
-        openModalForField: mockOpenModal,
       });
       expect(result.overlayButton?.icon).toBe(Icons.cameraIcon);
-    });
-
-    test('passes openModal callback to props', () => {
-      const result = buildRecipeImageProps({
-        stackMode: recipeStateType.edit,
-        recipeImage: 'image.jpg',
-        openModalForField: mockOpenModal,
-      });
-      expect(result.openModal).toBe(mockOpenModal);
     });
   });
 
   describe('buildRecipeTitleProps', () => {
     const mockT = (key: string) => key;
     const mockSetTitle = jest.fn();
-    const mockOpenModal = jest.fn();
 
     test('returns headline style for readOnly mode', () => {
       const result = buildRecipeTitleProps({
         stackMode: recipeStateType.readOnly,
         recipeTitle: 'Test Title',
         setRecipeTitle: mockSetTitle,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
       expect(result.rootText.style).toBe('headline');
@@ -317,7 +300,6 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.edit,
         recipeTitle: 'Test Title',
         setRecipeTitle: mockSetTitle,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
       expect(result.rootText.style).toBe('title');
@@ -329,7 +311,6 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.addOCR,
         recipeTitle: '',
         setRecipeTitle: mockSetTitle,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
       expect(result.addOrEditProps?.editType).toBe('add');
@@ -340,7 +321,6 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.addOCR,
         recipeTitle: 'Existing Title',
         setRecipeTitle: mockSetTitle,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
       expect(result.addOrEditProps?.editType).toBe('editable');
@@ -351,7 +331,6 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.addOCR,
         recipeTitle: '   ',
         setRecipeTitle: mockSetTitle,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
       expect(result.addOrEditProps?.editType).toBe('add');
@@ -362,7 +341,6 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.addOCR,
         recipeTitle: '',
         setRecipeTitle: mockSetTitle,
-        openModalForField: mockOpenModal,
         t: mockT,
         forceEditable: true,
       });
@@ -374,25 +352,21 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.addOCR,
         recipeTitle: '   ',
         setRecipeTitle: mockSetTitle,
-        openModalForField: mockOpenModal,
         t: mockT,
         forceEditable: true,
       });
       expect(result.addOrEditProps?.editType).toBe('editable');
     });
 
-    test('openModal callback in addOCR add mode calls openModalForField with title', () => {
+    test('addOCR add mode targets the title scan field', () => {
       const result = buildRecipeTitleProps({
         stackMode: recipeStateType.addOCR,
         recipeTitle: '',
         setRecipeTitle: mockSetTitle,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
-      if (result.addOrEditProps?.editType === 'add') {
-        result.addOrEditProps.openModal();
-        expect(mockOpenModal).toHaveBeenCalled();
-      }
+      expect(result.addOrEditProps?.editType).toBe('add');
+      expect(result.addOrEditProps?.scanField).toBe(recipeColumnsNames.title);
     });
 
     test('returns editable props for addManual mode', () => {
@@ -400,7 +374,6 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.addManual,
         recipeTitle: 'My Recipe',
         setRecipeTitle: mockSetTitle,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
       expect(result.addOrEditProps?.editType).toBe('editable');
@@ -411,24 +384,72 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.addScrape,
         recipeTitle: 'Scraped Title',
         setRecipeTitle: mockSetTitle,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
       expect(result.addOrEditProps?.editType).toBe('editable');
     });
   });
 
+  describe('scanField on editable field props', () => {
+    const mockT = (key: string) => key;
+    const editableModes = [
+      recipeStateType.addOCR,
+      recipeStateType.edit,
+      recipeStateType.addManual,
+      recipeStateType.addScrape,
+    ];
+    const buildTitle = (stackMode: recipeStateType) =>
+      buildRecipeTitleProps({
+        stackMode,
+        recipeTitle: 'Existing Title',
+        setRecipeTitle: jest.fn(),
+        t: mockT,
+      }).addOrEditProps;
+    const buildDescription = (stackMode: recipeStateType) =>
+      buildRecipeDescriptionProps({
+        stackMode,
+        recipeDescription: 'Some description',
+        setRecipeDescription: jest.fn(),
+        t: mockT,
+      }).addOrEditProps;
+    const buildPersons = (stackMode: recipeStateType) =>
+      buildRecipePersonsProps({
+        stackMode,
+        recipePersons: 4,
+        setRecipePersons: jest.fn(),
+        t: mockT,
+      }).numberProps;
+    const buildTime = (stackMode: recipeStateType) =>
+      buildRecipeTimeProps({
+        stackMode,
+        recipeTime: 30,
+        setRecipeTime: jest.fn(),
+        t: mockT,
+      }).numberProps;
+
+    describe.each([
+      ['title', buildTitle, recipeColumnsNames.title],
+      ['description', buildDescription, recipeColumnsNames.description],
+      ['persons', buildPersons, recipeColumnsNames.persons],
+      ['time', buildTime, recipeColumnsNames.time],
+    ] as const)('%s', (_name, build, column) => {
+      test.each(editableModes)('targets its column in %s mode', mode => {
+        const props = build(mode);
+        expect(props?.editType).toBe('editable');
+        expect(props?.editType !== 'read' && props?.scanField).toBe(column);
+      });
+    });
+  });
+
   describe('buildRecipeDescriptionProps', () => {
     const mockT = (key: string) => key;
     const mockSetDescription = jest.fn();
-    const mockOpenModal = jest.fn();
 
     test('returns readOnly with paragraph style for readOnly mode', () => {
       const result = buildRecipeDescriptionProps({
         stackMode: recipeStateType.readOnly,
         recipeDescription: 'A tasty recipe',
         setRecipeDescription: mockSetDescription,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
       expect(result.rootText.style).toBe('paragraph');
@@ -441,24 +462,20 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.addOCR,
         recipeDescription: '',
         setRecipeDescription: mockSetDescription,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
       expect(result.addOrEditProps?.editType).toBe('add');
     });
 
-    test('openModal callback in addOCR add mode calls openModalForField with description', () => {
+    test('addOCR add mode targets the description scan field', () => {
       const result = buildRecipeDescriptionProps({
         stackMode: recipeStateType.addOCR,
         recipeDescription: '',
         setRecipeDescription: mockSetDescription,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
-      if (result.addOrEditProps?.editType === 'add') {
-        result.addOrEditProps.openModal();
-        expect(mockOpenModal).toHaveBeenCalled();
-      }
+      expect(result.addOrEditProps?.editType).toBe('add');
+      expect(result.addOrEditProps?.scanField).toBe(recipeColumnsNames.description);
     });
 
     test('returns add editType for addOCR mode with whitespace description', () => {
@@ -466,7 +483,6 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.addOCR,
         recipeDescription: '   ',
         setRecipeDescription: mockSetDescription,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
       expect(result.addOrEditProps?.editType).toBe('add');
@@ -477,7 +493,6 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.addOCR,
         recipeDescription: 'Some description',
         setRecipeDescription: mockSetDescription,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
       expect(result.addOrEditProps?.editType).toBe('editable');
@@ -488,7 +503,6 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.edit,
         recipeDescription: 'Description',
         setRecipeDescription: mockSetDescription,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
       expect(result.addOrEditProps?.editType).toBe('editable');
@@ -499,7 +513,6 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.addManual,
         recipeDescription: 'Description',
         setRecipeDescription: mockSetDescription,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
       expect(result.addOrEditProps?.editType).toBe('editable');
@@ -510,7 +523,6 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.addScrape,
         recipeDescription: 'Scraped description',
         setRecipeDescription: mockSetDescription,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
       expect(result.addOrEditProps?.editType).toBe('editable');
@@ -520,7 +532,6 @@ describe('RecipeFormHelpers', () => {
   describe('buildRecipeTagsProps', () => {
     const mockAddTag = jest.fn();
     const mockRemoveTag = jest.fn();
-    const mockOpenModal = jest.fn();
     const mockTags = [{ id: 1, name: 'Italian' }];
 
     test('returns readOnly type for readOnly mode', () => {
@@ -530,83 +541,53 @@ describe('RecipeFormHelpers', () => {
         randomTags: ['Lunch'],
         addTag: mockAddTag,
         removeTag: mockRemoveTag,
-        openModalForField: mockOpenModal,
       });
       expect(result.type).toBe('readOnly');
     });
 
-    test('returns addOrEdit type with edit for edit mode', () => {
+    test('returns addOrEdit type for edit mode', () => {
       const result = buildRecipeTagsProps({
         stackMode: recipeStateType.edit,
         recipeTags: mockTags,
         randomTags: ['Lunch'],
         addTag: mockAddTag,
         removeTag: mockRemoveTag,
-        openModalForField: mockOpenModal,
       });
       expect(result.type).toBe('addOrEdit');
-      if (result.type === 'addOrEdit') {
-        expect(result.editType).toBe('edit');
-      }
     });
 
-    test('returns addOrEdit type with add for addOCR mode', () => {
+    test('returns addOrEdit type for addOCR mode', () => {
       const result = buildRecipeTagsProps({
         stackMode: recipeStateType.addOCR,
         recipeTags: mockTags,
         randomTags: ['Lunch'],
         addTag: mockAddTag,
         removeTag: mockRemoveTag,
-        openModalForField: mockOpenModal,
       });
       expect(result.type).toBe('addOrEdit');
-      if (result.type === 'addOrEdit' && result.editType === 'add') {
-        expect(result.openModal).toBeDefined();
-      }
     });
 
-    test('openModal callback in addOCR mode calls openModalForField with tags', () => {
-      const result = buildRecipeTagsProps({
-        stackMode: recipeStateType.addOCR,
-        recipeTags: mockTags,
-        randomTags: ['Lunch'],
-        addTag: mockAddTag,
-        removeTag: mockRemoveTag,
-        openModalForField: mockOpenModal,
-      });
-      if (result.type === 'addOrEdit' && result.editType === 'add' && result.openModal) {
-        result.openModal();
-        expect(mockOpenModal).toHaveBeenCalled();
-      }
-    });
-
-    test('returns addOrEdit type with edit for addManual mode', () => {
+    test('returns addOrEdit type for addManual mode', () => {
       const result = buildRecipeTagsProps({
         stackMode: recipeStateType.addManual,
         recipeTags: mockTags,
         randomTags: ['Lunch'],
         addTag: mockAddTag,
         removeTag: mockRemoveTag,
-        openModalForField: mockOpenModal,
       });
       expect(result.type).toBe('addOrEdit');
-      if (result.type === 'addOrEdit') {
-        expect(result.editType).toBe('edit');
-      }
     });
   });
 
   describe('buildRecipePersonsProps', () => {
     const mockT = (key: string) => key;
     const mockSetPersons = jest.fn();
-    const mockOpenModal = jest.fn();
 
     test('returns read type for readOnly mode', () => {
       const result = buildRecipePersonsProps({
         stackMode: recipeStateType.readOnly,
         recipePersons: 4,
         setRecipePersons: mockSetPersons,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
       expect(result.numberProps.editType).toBe('read');
@@ -617,7 +598,6 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.edit,
         recipePersons: 4,
         setRecipePersons: mockSetPersons,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
       expect(result.numberProps.editType).toBe('editable');
@@ -628,7 +608,6 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.addOCR,
         recipePersons: defaultValueNumber,
         setRecipePersons: mockSetPersons,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
       expect(result.numberProps.editType).toBe('add');
@@ -639,7 +618,6 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.addOCR,
         recipePersons: 4,
         setRecipePersons: mockSetPersons,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
       expect(result.numberProps.editType).toBe('editable');
@@ -650,7 +628,6 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.addManual,
         recipePersons: 4,
         setRecipePersons: mockSetPersons,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
       expect(result.numberProps.editType).toBe('editable');
@@ -661,24 +638,22 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.addScrape,
         recipePersons: 2,
         setRecipePersons: mockSetPersons,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
       expect(result.numberProps.editType).toBe('editable');
     });
 
-    test('addOCR add mode openModal invokes openModalForField for persons', () => {
+    test('addOCR add mode targets the persons scan field', () => {
       const result = buildRecipePersonsProps({
         stackMode: recipeStateType.addOCR,
         recipePersons: defaultValueNumber,
         setRecipePersons: mockSetPersons,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
-      if (result.numberProps.editType === 'add') {
-        result.numberProps.openModal();
-        expect(mockOpenModal).toHaveBeenCalledWith('PERSONS');
-      }
+      expect(result.numberProps.editType).toBe('add');
+      expect(result.numberProps.editType !== 'read' && result.numberProps.scanField).toBe(
+        recipeColumnsNames.persons
+      );
     });
 
     test('addOCR add mode manuallyFill calls setRecipePersons with 0', () => {
@@ -686,7 +661,6 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.addOCR,
         recipePersons: defaultValueNumber,
         setRecipePersons: mockSetPersons,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
       if (result.numberProps.editType === 'add') {
@@ -699,14 +673,12 @@ describe('RecipeFormHelpers', () => {
   describe('buildRecipeTimeProps', () => {
     const mockT = (key: string) => key;
     const mockSetTime = jest.fn();
-    const mockOpenModal = jest.fn();
 
     test('returns read editType for readOnly mode', () => {
       const result = buildRecipeTimeProps({
         stackMode: recipeStateType.readOnly,
         recipeTime: 30,
         setRecipeTime: mockSetTime,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
       expect(result.numberProps.editType).toBe('read');
@@ -717,24 +689,22 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.addOCR,
         recipeTime: defaultValueNumber,
         setRecipeTime: mockSetTime,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
       expect(result.numberProps.editType).toBe('add');
     });
 
-    test('openModal callback in addOCR mode calls openModalForField with time', () => {
+    test('addOCR add mode targets the time scan field', () => {
       const result = buildRecipeTimeProps({
         stackMode: recipeStateType.addOCR,
         recipeTime: defaultValueNumber,
         setRecipeTime: mockSetTime,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
-      if (result.numberProps.editType === 'add') {
-        result.numberProps.openModal();
-        expect(mockOpenModal).toHaveBeenCalled();
-      }
+      expect(result.numberProps.editType).toBe('add');
+      expect(result.numberProps.editType !== 'read' && result.numberProps.scanField).toBe(
+        recipeColumnsNames.time
+      );
     });
 
     test('manuallyFill callback in addOCR mode calls setRecipeTime with 0', () => {
@@ -742,7 +712,6 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.addOCR,
         recipeTime: defaultValueNumber,
         setRecipeTime: mockSetTime,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
       if (result.numberProps.editType === 'add') {
@@ -756,7 +725,6 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.addOCR,
         recipeTime: 30,
         setRecipeTime: mockSetTime,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
       expect(result.numberProps.editType).toBe('editable');
@@ -767,7 +735,6 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.edit,
         recipeTime: 45,
         setRecipeTime: mockSetTime,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
       expect(result.numberProps.editType).toBe('editable');
@@ -778,7 +745,6 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.addManual,
         recipeTime: 20,
         setRecipeTime: mockSetTime,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
       expect(result.numberProps.editType).toBe('editable');
@@ -789,7 +755,6 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.addScrape,
         recipeTime: 15,
         setRecipeTime: mockSetTime,
-        openModalForField: mockOpenModal,
         t: mockT,
       });
       expect(result.numberProps.editType).toBe('editable');
@@ -798,7 +763,6 @@ describe('RecipeFormHelpers', () => {
 
   describe('buildRecipeNutritionProps', () => {
     const mockSetNutrition = jest.fn();
-    const mockOpenModal = jest.fn();
     const mockNutrition = {
       energyKcal: 200,
       energyKj: 840,
@@ -817,7 +781,6 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.readOnly,
         recipeNutrition: mockNutrition,
         setRecipeNutrition: mockSetNutrition,
-        openModalForField: mockOpenModal,
         parentTestId: 'Recipe',
       });
       expect(result.mode).toBe(recipeStateType.readOnly);
@@ -828,37 +791,21 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.edit,
         recipeNutrition: mockNutrition,
         setRecipeNutrition: mockSetNutrition,
-        openModalForField: mockOpenModal,
         parentTestId: 'Recipe',
       });
       expect(result.mode).toBe(recipeStateType.edit);
       expect(result.onNutritionChange).toBe(mockSetNutrition);
     });
 
-    test('returns addOCR mode with openModal for addOCR state', () => {
+    test('returns addOCR mode with change handler for addOCR state', () => {
       const result = buildRecipeNutritionProps({
         stackMode: recipeStateType.addOCR,
         recipeNutrition: undefined,
         setRecipeNutrition: mockSetNutrition,
-        openModalForField: mockOpenModal,
         parentTestId: 'Recipe',
       });
       expect(result.mode).toBe(recipeStateType.addOCR);
-      expect(result.openModal).toBeDefined();
-    });
-
-    test('openModal callback in addOCR mode calls openModalForField with nutrition', () => {
-      const result = buildRecipeNutritionProps({
-        stackMode: recipeStateType.addOCR,
-        recipeNutrition: undefined,
-        setRecipeNutrition: mockSetNutrition,
-        openModalForField: mockOpenModal,
-        parentTestId: 'Recipe',
-      });
-      if (result.openModal) {
-        result.openModal();
-        expect(mockOpenModal).toHaveBeenCalled();
-      }
+      expect(result.onNutritionChange).toBe(mockSetNutrition);
     });
 
     test('returns addManual mode with change handler for addManual state', () => {
@@ -866,7 +813,6 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.addManual,
         recipeNutrition: mockNutrition,
         setRecipeNutrition: mockSetNutrition,
-        openModalForField: mockOpenModal,
         parentTestId: 'Recipe',
       });
       expect(result.mode).toBe(recipeStateType.addManual);
@@ -878,7 +824,6 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.addScrape,
         recipeNutrition: mockNutrition,
         setRecipeNutrition: mockSetNutrition,
-        openModalForField: mockOpenModal,
         parentTestId: 'Recipe',
       });
       expect(result.mode).toBe(recipeStateType.addScrape);
@@ -890,7 +835,6 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.readOnly,
         recipeNutrition: undefined,
         setRecipeNutrition: mockSetNutrition,
-        openModalForField: mockOpenModal,
         parentTestId: 'MyTestId',
       });
       expect(result.parentTestId).toBe('MyTestId');
@@ -997,6 +941,126 @@ describe('RecipeFormHelpers', () => {
         sourceUrl: testUrl,
         onCopied: mockOnCopied,
       });
+    });
+  });
+});
+
+describe('withScan wiring', () => {
+  const t = (key: string) => key;
+  const editableModes = [
+    recipeStateType.edit,
+    recipeStateType.addManual,
+    recipeStateType.addScrape,
+    recipeStateType.addOCR,
+  ];
+  const numberWithScan = (numberProps: { editType: string; withScan?: boolean }) =>
+    numberProps.editType === 'read' ? undefined : numberProps.withScan;
+
+  const withScanBuilders: [string, (stackMode: recipeStateType) => boolean | undefined][] = [
+    [
+      'title',
+      stackMode =>
+        buildRecipeTitleProps({ stackMode, recipeTitle: 'Title', setRecipeTitle: jest.fn(), t })
+          .addOrEditProps?.withScan,
+    ],
+    [
+      'empty title',
+      stackMode =>
+        buildRecipeTitleProps({ stackMode, recipeTitle: '', setRecipeTitle: jest.fn(), t })
+          .addOrEditProps?.withScan,
+    ],
+    [
+      'description',
+      stackMode =>
+        buildRecipeDescriptionProps({
+          stackMode,
+          recipeDescription: 'Text',
+          setRecipeDescription: jest.fn(),
+          t,
+        }).addOrEditProps?.withScan,
+    ],
+    [
+      'empty description',
+      stackMode =>
+        buildRecipeDescriptionProps({
+          stackMode,
+          recipeDescription: '',
+          setRecipeDescription: jest.fn(),
+          t,
+        }).addOrEditProps?.withScan,
+    ],
+    [
+      'persons',
+      stackMode =>
+        numberWithScan(
+          buildRecipePersonsProps({
+            stackMode,
+            recipePersons: 4,
+            setRecipePersons: jest.fn(),
+            t,
+          }).numberProps
+        ),
+    ],
+    [
+      'default persons',
+      stackMode =>
+        numberWithScan(
+          buildRecipePersonsProps({
+            stackMode,
+            recipePersons: defaultValueNumber,
+            setRecipePersons: jest.fn(),
+            t,
+          }).numberProps
+        ),
+    ],
+    [
+      'time',
+      stackMode =>
+        numberWithScan(
+          buildRecipeTimeProps({ stackMode, recipeTime: 30, setRecipeTime: jest.fn(), t })
+            .numberProps
+        ),
+    ],
+    [
+      'default time',
+      stackMode =>
+        numberWithScan(
+          buildRecipeTimeProps({
+            stackMode,
+            recipeTime: defaultValueNumber,
+            setRecipeTime: jest.fn(),
+            t,
+          }).numberProps
+        ),
+    ],
+    [
+      'tags',
+      stackMode => {
+        const props = buildRecipeTagsProps({
+          stackMode,
+          recipeTags: [],
+          randomTags: [],
+          addTag: jest.fn(),
+          removeTag: jest.fn(),
+        });
+        return props.type === 'addOrEdit' ? props.withScan : undefined;
+      },
+    ],
+    [
+      'nutrition',
+      stackMode =>
+        buildRecipeNutritionProps({
+          stackMode,
+          recipeNutrition: undefined,
+          setRecipeNutrition: jest.fn(),
+          parentTestId: 'Recipe',
+        }).withScan,
+    ],
+  ];
+
+  describe.each(withScanBuilders)('%s', (_name, getWithScan) => {
+    test.each(editableModes)('sets withScan only in addOCR mode (%s)', stackMode => {
+      expect(getWithScan(stackMode)).toBe(stackMode === recipeStateType.addOCR);
     });
   });
 });

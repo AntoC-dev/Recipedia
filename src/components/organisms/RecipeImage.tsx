@@ -9,7 +9,7 @@
  * - Dynamic button positioning based on image validity
  * - Automatic image load state detection
  * - Fallback handling for invalid or missing images
- * - Modal integration for image editing/replacement
+ * - Overlay button opens the image modal through `RecipeDialogsContext` (a provider is required when it is set)
  * - Responsive height scaling based on screen size
  * - Overlay button with proper accessibility
  * - Theme-integrated image background handling
@@ -20,27 +20,17 @@
  * <RecipeImage
  *   imgUri={recipe.image_Source}
  *   overlayButton={{ icon: "camera", labelKey: "recipe.roundButton.photo" }}
- *   openModal={(field) => openImageEditModal(field)}
  * />
  *
  * // Read-only recipe image
- * <RecipeImage
- *   imgUri={recipe.image_Source}
- *   openModal={() => {}} // No-op for read-only
- * />
- *
- * // Image with replacement option
- * <RecipeImage
- *   imgUri={currentImageUri}
- *   overlayButton={{ icon: "image-edit", labelKey: "recipe.roundButton.photo" }}
- *   openModal={(field) => showImagePicker(field)}
- * />
+ * <RecipeImage imgUri={recipe.image_Source} />
  * ```
  */
 
 import { StyleSheet, View } from 'react-native';
 import React from 'react';
 import { recipeColumnsNames } from '@customTypes/DatabaseElementTypes';
+import { useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { IconName } from '@assets/Icons';
 import { CustomImage } from '@components/atomic/CustomImage';
 import { RoundButton } from '@components/atomic/RoundButton';
@@ -59,8 +49,6 @@ export type ImageButtonConfig = {
 export type RecipeImageProps = {
   /** URI or path to the recipe image */
   imgUri: string;
-  /** Callback fired when the overlay button is pressed */
-  openModal: (field: recipeColumnsNames) => void;
   /** Optional overlay button; its label is shown below the button whether or not an image is displayed */
   overlayButton?: ImageButtonConfig;
 };
@@ -71,8 +59,7 @@ export type RecipeImageProps = {
  * @param props - The component props
  * @returns JSX element representing a recipe image with dynamic overlay button
  */
-export function RecipeImage({ imgUri, openModal, overlayButton }: RecipeImageProps) {
-  const { t } = useI18n();
+export function RecipeImage({ imgUri, overlayButton }: RecipeImageProps) {
   const [validUri, setValidUri] = React.useState(imgUri.length > 0);
 
   const imageTestID = 'RecipeImage';
@@ -88,15 +75,23 @@ export function RecipeImage({ imgUri, openModal, overlayButton }: RecipeImagePro
       />
       {overlayButton ? (
         <View style={validUri ? styles.topRightButtonContainer : styles.centerButtonContainer}>
-          <RoundButton
-            testID={imageTestID}
-            icon={overlayButton.icon}
-            onPressFunction={() => openModal(recipeColumnsNames.image)}
-            label={t(overlayButton.labelKey)}
-          />
+          <ImageOverlayButton testID={imageTestID} config={overlayButton} />
         </View>
       ) : null}
     </View>
+  );
+}
+
+function ImageOverlayButton({ testID, config }: { testID: string; config: ImageButtonConfig }) {
+  const { t } = useI18n();
+  const { openImageModal } = useRecipeDialogs();
+  return (
+    <RoundButton
+      testID={testID}
+      icon={config.icon}
+      onPressFunction={() => openImageModal(recipeColumnsNames.image)}
+      label={t(config.labelKey)}
+    />
   );
 }
 

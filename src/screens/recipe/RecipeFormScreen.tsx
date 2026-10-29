@@ -2,13 +2,14 @@
  * RecipeFormScreen - Shared form body used by every editable recipe route.
  *
  * Owns RHF's `<FormProvider>`, the `RecipeDialogsProvider`, the
- * `IngredientFocusProvider`, and the screen-wide `ModalImageSelect` mount.
+ * `IngredientFocusProvider`, and the screen-wide `ModalImageSelect` mount (its
+ * target lives in `RecipeDialogsContext`, opened by fields via `openImageModal`).
  * The image-select modal is shared infrastructure (every editable route has
  * an image button) so it lives here rather than per-route. Routes layer
  * route-specific behaviour on top via a `FeatureHookSlot`:
  *
- * - `RecipeAddOcr` overrides `openModalForField` so the modal opens for OCR
- *   targets (ingredient names, quantities, etc.), and supplies an
+ * - `RecipeAddOcr` gets scan buttons that open the modal for OCR targets
+ *   (ingredient names, quantities, etc.) in `addOCR` mode only, and supplies an
  *   `onSelectOcrField` callback that crops the image and runs OCR extraction.
  * - `RecipeAddScrape` mounts `useRecipeScraperValidation` so it runs once on
  *   screen open. No image-modal customisation.
@@ -244,7 +245,6 @@ function RecipeFormBody({
   const [keyboardToolbarHeight, setKeyboardToolbarHeight] = useState(0);
   const { bottomOffset, scrollViewWrapperRef, onScrollViewLayout, onScrollViewFocus } =
     useAutocompleteKeyboardOffset(keyboardToolbarHeight + keyboardToolbarCaretClearance);
-  const [modalTarget, setModalTarget] = useState<OcrModalTarget | null>(null);
   const [imgList, setImgList] = useState<string[]>(() => initialImgList ?? []);
   const slotOnSelectOcrFieldRef = useRef<
     ((croppedUri: string, target: OcrModalTarget) => void) | null
@@ -267,11 +267,6 @@ function RecipeFormBody({
   const completeSave = (savedRecipe: recipeTableElement, scaledFromServings?: number) => {
     unsavedChangesGuard.allowRemoval();
     onSaveSuccess(savedRecipe, scaledFromServings);
-  };
-
-  /** Opens the shared image-select modal targeting the given OCR field. */
-  const openModalForField = (field: OcrModalTarget) => {
-    setModalTarget(field);
   };
 
   // Baseline tracks the most recent persisted recipe. Initialised from the
@@ -467,8 +462,8 @@ function RecipeFormBody({
    * forwards to the slot's `onSelectOcrField` extraction callback.
    */
   async function handleModalSelect(imgSelected: string) {
-    const target = modalTarget;
-    setModalTarget(null);
+    const target = dialogs.imageModalTarget;
+    dialogs.closeImageModal();
     if (target === null) return;
     recipeLogger.debug('Image selected from modal', { target, imgSelected });
 
@@ -499,7 +494,7 @@ function RecipeFormBody({
 
   /** Closes the image-select modal, clearing the active OCR target. */
   function handleModalDismiss() {
-    setModalTarget(null);
+    dialogs.closeImageModal();
   }
 
   /** Appends a newly captured/picked image URI to the screen-local gallery (deduped). */
@@ -546,59 +541,23 @@ function RecipeFormBody({
           keyboardDismissMode='on-drag'
           nestedScrollEnabled={true}
         >
-          <RecipeImageField
-            form={form}
-            stackMode={stackMode}
-            openModalForField={openModalForField}
-          />
-          <RecipeTitleField
-            form={form}
-            stackMode={stackMode}
-            openModalForField={openModalForField}
-            t={t}
-          />
-          <RecipeDescriptionField
-            form={form}
-            stackMode={stackMode}
-            openModalForField={openModalForField}
-            t={t}
-          />
+          <RecipeImageField form={form} stackMode={stackMode} />
+          <RecipeTitleField form={form} stackMode={stackMode} t={t} />
+          <RecipeDescriptionField form={form} stackMode={stackMode} t={t} />
           <RecipeTagsField
             form={form}
             stackMode={stackMode}
             randomTags={randomTags}
             addTag={tags.addTag}
             removeTag={tags.removeTag}
-            openModalForField={openModalForField}
           />
-          <RecipePersonsField
-            form={form}
-            stackMode={stackMode}
-            openModalForField={openModalForField}
-            t={t}
-          />
-          <RecipeIngredientsField
-            form={form}
-            stackMode={stackMode}
-            openModalForField={openModalForField}
-            t={t}
-          />
-          <RecipeTimeField
-            form={form}
-            stackMode={stackMode}
-            openModalForField={openModalForField}
-            t={t}
-          />
-          <RecipePreparationField
-            form={form}
-            stackMode={stackMode}
-            openModalForField={openModalForField}
-            t={t}
-          />
+          <RecipePersonsField form={form} stackMode={stackMode} t={t} />
+          <RecipeIngredientsField form={form} stackMode={stackMode} t={t} />
+          <RecipeTimeField form={form} stackMode={stackMode} t={t} />
+          <RecipePreparationField form={form} stackMode={stackMode} t={t} />
           <RecipeNutritionField
             form={form}
             stackMode={stackMode}
-            openModalForField={openModalForField}
             parentTestId={RECIPE_TEST_ID}
             t={t}
           />
@@ -658,7 +617,7 @@ function RecipeFormBody({
         />
       )}
 
-      {modalTarget !== null && (
+      {dialogs.imageModalTarget !== null && (
         <ModalImageSelect
           arrImg={imgList}
           autoSelect={modalAutoSelect}

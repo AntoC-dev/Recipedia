@@ -4,7 +4,7 @@ import { act, fireEvent } from '@testing-library/react-native';
 import { recipeStateType } from '@customTypes/ScreenTypes';
 import { RecipeTagsField } from '@screens/recipe/fields/TagsField';
 
-import { Form, renderWithForm } from './fieldsTestHarness';
+import { Form, IMAGE_MODAL_TARGET_TEST_ID, renderWithForm } from './fieldsTestHarness';
 
 jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 jest.mock('@components/organisms/RecipeTags', () => ({
@@ -21,7 +21,6 @@ describe('RecipeTagsField', () => {
         randomTags: ['quick'],
         addTag: jest.fn(),
         removeTag: jest.fn(),
-        openModalForField: jest.fn(),
       }),
       { recipeTags: [{ id: 1, name: 'breakfast' }] }
     );
@@ -36,7 +35,6 @@ describe('RecipeTagsField', () => {
       randomTags: [],
       addTag,
       removeTag: jest.fn(),
-      openModalForField: jest.fn(),
     }));
     fireEvent.press(getByTestId('RecipeTags::AddNewTag'));
     expect(addTag).toHaveBeenCalledWith('mockTag');
@@ -49,11 +47,35 @@ describe('RecipeTagsField', () => {
       randomTags: [],
       addTag: jest.fn(),
       removeTag: jest.fn(),
-      openModalForField: jest.fn(),
     }));
     act(() => {
       form.setValue('recipeTags', undefined as never);
     });
     expect(JSON.parse(getByTestId('RecipeTags::TagsList').props.children)).toEqual([]);
+  });
+});
+
+describe('RecipeTagsField scan wiring', () => {
+  test('opens the image modal for tags in addOCR mode', () => {
+    const { getByTestId } = renderWithForm(RecipeTagsField, (f: Form) => ({
+      form: f,
+      stackMode: recipeStateType.addOCR,
+      randomTags: [],
+      addTag: jest.fn(),
+      removeTag: jest.fn(),
+    }));
+    fireEvent.press(getByTestId('RecipeTags::OpenModal'));
+    expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID).props.children).toBe('TAGS');
+  });
+
+  test('renders no scan button in edit mode', () => {
+    const { queryByTestId } = renderWithForm(RecipeTagsField, (f: Form) => ({
+      form: f,
+      stackMode: recipeStateType.edit,
+      randomTags: [],
+      addTag: jest.fn(),
+      removeTag: jest.fn(),
+    }));
+    expect(queryByTestId('RecipeTags::OpenModal')).toBeNull();
   });
 });

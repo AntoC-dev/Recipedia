@@ -3,8 +3,8 @@
  *
  * Dispatches to a read-only renderer for the `readOnly` stack mode and to the
  * editable variant for every other mode. The editable variant mounts the
- * `useStepArray` hook for field-array ops and renders the OCR scan affordance
- * in the addOCR empty state.
+ * `useStepArray` hook for field-array ops and renders the add-manually
+ * empty state in addOCR mode and enables the scan button.
  *
  * @module screens/recipe/fields/PreparationField
  */
@@ -12,14 +12,8 @@
 import React from 'react';
 import { useController, UseFormReturn } from 'react-hook-form';
 
-import { recipeColumnsNames } from '@customTypes/DatabaseElementTypes';
 import { recipeStateType } from '@customTypes/ScreenTypes';
-import { OcrModalTarget } from '@utils/OCR';
-import {
-  PreparationEmptyAdd,
-  PreparationSection,
-  RecipePreparation,
-} from '@components/organisms/RecipePreparation';
+import { PreparationSection, RecipePreparation } from '@components/organisms/RecipePreparation';
 import { RecipeFormInput } from '@schemas/recipeFormSchema';
 
 import { PreparationStepField } from './PreparationStep';
@@ -31,7 +25,6 @@ type T = (key: string) => string;
 export interface PreparationFieldProps {
   form: Form;
   stackMode: recipeStateType;
-  openModalForField: (field: OcrModalTarget) => void;
   t: T;
 }
 
@@ -42,26 +35,18 @@ function ReadOnlyPreparationField({ form }: { form: Form }) {
 }
 
 /** Editable renderer: mounts the step field-array and renders the addOCR empty state. */
-function EditablePreparationField({
-  form,
-  stackMode,
-  openModalForField,
-  t,
-}: PreparationFieldProps) {
+function EditablePreparationField({ form, stackMode, t }: PreparationFieldProps) {
   const { fields, addStep, length } = useStepArray(form);
 
-  if (stackMode === recipeStateType.addOCR && length === 0) {
-    return (
-      <PreparationEmptyAdd
-        prefixText={t('preparationReadOnly')}
-        openModal={() => openModalForField(recipeColumnsNames.preparation)}
-        onAddStep={addStep}
-      />
-    );
-  }
+  const isAddOCR = stackMode === recipeStateType.addOCR;
 
   return (
-    <PreparationSection prefixText={t('preparationReadOnly')} onAddStep={addStep}>
+    <PreparationSection
+      prefixText={t('preparationReadOnly')}
+      onAddStep={addStep}
+      isEmpty={length === 0}
+      withScan={isAddOCR}
+    >
       {fields.map((field, index) => (
         <PreparationStepField key={field.id} form={form} index={index} t={t} />
       ))}

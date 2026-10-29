@@ -1,7 +1,12 @@
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent } from '@testing-library/react-native';
+import {
+  IMAGE_MODAL_TARGET_TEST_ID,
+  renderWithRecipeDialogs,
+} from '@mocks/context/RecipeDialogsHarness';
 import { RecipeNumber, RecipeNumberProps } from '@components/organisms/RecipeNumber';
 import React from 'react';
 import { defaultValueNumber } from '@utils/Constants';
+import { recipeColumnsNames } from '@customTypes/DatabaseElementTypes';
 
 jest.mock('@components/atomic/RoundButton', () => ({
   RoundButton: require('@mocks/components/atomic/RoundButton-mock').roundButtonMock,
@@ -11,7 +16,6 @@ jest.mock('@components/atomic/NumericTextInput', () => ({
 }));
 
 describe('RecipeNumber Component', () => {
-  const mockOpenModal = jest.fn();
   const mockManuallyFill = jest.fn();
   const mockSetTextToEdit = jest.fn();
 
@@ -28,6 +32,7 @@ describe('RecipeNumber Component', () => {
     testID: defaultTestId,
     numberProps: {
       testID: defaultTestId,
+      scanField: recipeColumnsNames.time,
       editType: 'editable',
       prefixText: 'Serves',
       suffixText: 'people',
@@ -40,16 +45,17 @@ describe('RecipeNumber Component', () => {
     testID: defaultTestId,
     numberProps: {
       testID: defaultTestId,
+      scanField: recipeColumnsNames.time,
       editType: 'add',
+      withScan: true,
       prefixText: 'Cooking time:',
       suffixText: 'minutes',
-      openModal: mockOpenModal,
       manuallyFill: mockManuallyFill,
     },
   };
 
   const renderRecipeNumber = (props: RecipeNumberProps = defaultProps) => {
-    return render(<RecipeNumber {...props} />);
+    return renderWithRecipeDialogs(<RecipeNumber {...props} />);
   };
 
   const assertComponent = (
@@ -109,6 +115,49 @@ describe('RecipeNumber Component', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+  });
+
+  describe('editable mode scan button', () => {
+    const editableWithScan: RecipeNumberProps = {
+      testID: defaultTestId,
+      numberProps: {
+        testID: defaultTestId,
+        scanField: recipeColumnsNames.time,
+        editType: 'editable',
+        prefixText: 'Serves',
+        suffixText: 'people',
+        textEditable: 4,
+        setTextToEdit: mockSetTextToEdit,
+        withScan: true,
+      },
+    };
+
+    test('renders scan button below input when withScan is set', () => {
+      const { getByTestId, queryByTestId } = renderRecipeNumber(editableWithScan);
+
+      expect(getByTestId(defaultTestId + '::NumericTextInput')).toBeTruthy();
+      expect(getByTestId(defaultTestId + '::OpenModal::RoundButton::Icon').props.children).toBe(
+        'line-scan'
+      );
+      expect(getByTestId(defaultTestId + '::OpenModal::RoundButton::Label').props.children).toBe(
+        'recipe.roundButton.scan'
+      );
+      expect(queryByTestId(defaultTestId + '::ManuallyFill::RoundButton::Icon')).toBeNull();
+    });
+
+    test('opens the OCR modal for its field when scan button is pressed', () => {
+      const { getByTestId } = renderRecipeNumber(editableWithScan);
+
+      fireEvent.press(getByTestId(defaultTestId + '::OpenModal::RoundButton::OnPressFunction'));
+
+      expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID)).toHaveTextContent(recipeColumnsNames.time);
+    });
+
+    test('does not render scan button without withScan', () => {
+      const { queryByTestId } = renderWithRecipeDialogs(<RecipeNumber {...defaultEditProps} />);
+
+      expect(queryByTestId(defaultTestId + '::OpenModal::RoundButton::OnPressFunction')).toBeNull();
+    });
   });
 
   test('renders in read-only mode with correct text display', () => {
@@ -174,16 +223,16 @@ describe('RecipeNumber Component', () => {
   test('handles button presses in add mode correctly', () => {
     const { getByTestId } = renderRecipeNumber(defaultAddProps);
 
-    expect(mockOpenModal).not.toHaveBeenCalled();
+    expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID)).toHaveTextContent('none');
     expect(mockManuallyFill).not.toHaveBeenCalled();
 
     fireEvent.press(getByTestId('test-recipe-number::OpenModal::RoundButton::OnPressFunction'));
-    expect(mockOpenModal).toHaveBeenCalledTimes(1);
+    expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID)).toHaveTextContent(recipeColumnsNames.time);
     expect(mockManuallyFill).not.toHaveBeenCalled();
 
     fireEvent.press(getByTestId('test-recipe-number::ManuallyFill::RoundButton::OnPressFunction'));
     expect(mockManuallyFill).toHaveBeenCalledTimes(1);
-    expect(mockOpenModal).toHaveBeenCalledTimes(1);
+    expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID)).toHaveTextContent(recipeColumnsNames.time);
   });
 
   test('handles different prefix and suffix text combinations', () => {
@@ -201,6 +250,7 @@ describe('RecipeNumber Component', () => {
         numberProps: {
           editType: 'editable',
           testID: defaultTestId,
+          scanField: recipeColumnsNames.time,
           prefixText: prefix,
           suffixText: suffix,
           textEditable: 5,
@@ -221,10 +271,11 @@ describe('RecipeNumber Component', () => {
 
     maintainStateProps.numberProps = {
       editType: 'add',
+      withScan: true,
       testID: defaultTestId,
+      scanField: recipeColumnsNames.time,
       prefixText: 'Cook for',
       suffixText: 'minutes',
-      openModal: mockOpenModal,
       manuallyFill: mockManuallyFill,
     };
     rerender(<RecipeNumber {...maintainStateProps} />);
@@ -262,6 +313,7 @@ describe('RecipeNumber Component', () => {
       numberProps: {
         editType: 'editable',
         testID: customTestId,
+        scanField: recipeColumnsNames.time,
         prefixText: 'Custom',
         suffixText: 'units',
         textEditable: 10,
@@ -290,7 +342,6 @@ describe('RecipeNumber Component', () => {
     fireEvent.press(manualFillButton);
     fireEvent.press(openModalButton);
 
-    expect(mockOpenModal).toHaveBeenCalledTimes(3);
     expect(mockManuallyFill).toHaveBeenCalledTimes(2);
     assertComponent(getByTestId, queryByTestId, defaultAddProps);
   });
@@ -299,9 +350,8 @@ describe('RecipeNumber Component', () => {
     const { getByTestId, rerender } = renderRecipeNumber(defaultAddProps);
 
     fireEvent.press(getByTestId('test-recipe-number::OpenModal::RoundButton::OnPressFunction'));
-    expect(mockOpenModal).toHaveBeenCalledTimes(1);
+    expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID)).toHaveTextContent(recipeColumnsNames.time);
 
-    const newMockOpenModal = jest.fn();
     const newMockManuallyFill = jest.fn();
 
     rerender(
@@ -309,10 +359,11 @@ describe('RecipeNumber Component', () => {
         testID='test-recipe-number'
         numberProps={{
           editType: 'add',
+          withScan: true,
           testID: 'test-recipe-number',
+          scanField: recipeColumnsNames.persons,
           prefixText: 'Updated time:',
           suffixText: 'hours',
-          openModal: newMockOpenModal,
           manuallyFill: newMockManuallyFill,
         }}
       />
@@ -321,9 +372,8 @@ describe('RecipeNumber Component', () => {
     fireEvent.press(getByTestId('test-recipe-number::OpenModal::RoundButton::OnPressFunction'));
     fireEvent.press(getByTestId('test-recipe-number::ManuallyFill::RoundButton::OnPressFunction'));
 
-    expect(newMockOpenModal).toHaveBeenCalledTimes(1);
+    expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID)).toHaveTextContent(recipeColumnsNames.persons);
     expect(newMockManuallyFill).toHaveBeenCalledTimes(1);
-    expect(mockOpenModal).toHaveBeenCalledTimes(1);
     expect(mockManuallyFill).not.toHaveBeenCalled();
   });
 
@@ -417,6 +467,7 @@ describe('RecipeNumber Component', () => {
         testID: defaultTestId,
         numberProps: {
           testID: defaultTestId,
+          scanField: recipeColumnsNames.time,
           editType: 'editable',
           prefixText: 'p',
           suffixText: 's',

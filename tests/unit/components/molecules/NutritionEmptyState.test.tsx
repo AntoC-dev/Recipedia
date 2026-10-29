@@ -1,6 +1,11 @@
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent } from '@testing-library/react-native';
+import {
+  IMAGE_MODAL_TARGET_TEST_ID,
+  renderWithRecipeDialogs,
+} from '@mocks/context/RecipeDialogsHarness';
 import { NutritionEmptyState } from '@components/molecules/NutritionEmptyState';
+import { recipeColumnsNames } from '@customTypes/DatabaseElementTypes';
 
 jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 jest.mock('@components/atomic/RoundButton', () => ({
@@ -16,14 +21,10 @@ describe('NutritionEmptyState', () => {
     jest.clearAllMocks();
   });
 
-  describe('Add mode', () => {
+  describe('without withScan', () => {
     test('renders with title and add button', () => {
-      const { getByTestId } = render(
-        <NutritionEmptyState
-          onButtonPressed={mockOnButtonPressed}
-          mode='add'
-          parentTestId={defaultTestId}
-        />
+      const { getByTestId } = renderWithRecipeDialogs(
+        <NutritionEmptyState onButtonPressed={mockOnButtonPressed} parentTestId={defaultTestId} />
       );
 
       expect(getByTestId(expectationTestId + 'Title').props.children).toEqual(
@@ -40,10 +41,9 @@ describe('NutritionEmptyState', () => {
     test('calls onButtonPressed when add button is pressed', () => {
       const localMockOnButtonPressed = jest.fn();
 
-      const { getByTestId } = render(
+      const { getByTestId } = renderWithRecipeDialogs(
         <NutritionEmptyState
           onButtonPressed={localMockOnButtonPressed}
-          mode='add'
           parentTestId={defaultTestId}
         />
       );
@@ -52,14 +52,20 @@ describe('NutritionEmptyState', () => {
       expect(localMockOnButtonPressed).toHaveBeenCalled();
     });
 
+    test('does not render the scan button', () => {
+      const { queryByTestId } = renderWithRecipeDialogs(
+        <NutritionEmptyState onButtonPressed={mockOnButtonPressed} parentTestId={defaultTestId} />
+      );
+
+      expect(
+        queryByTestId(expectationTestId + 'OCRButton::RoundButton::OnPressFunction')
+      ).toBeNull();
+    });
+
     test('renders with custom parentTestId', () => {
       const customTestId = 'CustomTest';
-      const { getByTestId } = render(
-        <NutritionEmptyState
-          onButtonPressed={mockOnButtonPressed}
-          mode='add'
-          parentTestId={customTestId}
-        />
+      const { getByTestId } = renderWithRecipeDialogs(
+        <NutritionEmptyState onButtonPressed={mockOnButtonPressed} parentTestId={customTestId} />
       );
 
       const customExpectation = customTestId + '::NutritionEmptyState::';
@@ -72,12 +78,12 @@ describe('NutritionEmptyState', () => {
     });
   });
 
-  describe('OCR mode', () => {
-    test('renders with title and OCR button', () => {
-      const { getByTestId } = render(
+  describe('with withScan', () => {
+    test('renders with title and scan button', () => {
+      const { getByTestId } = renderWithRecipeDialogs(
         <NutritionEmptyState
           onButtonPressed={mockOnButtonPressed}
-          mode='ocr'
+          withScan
           parentTestId={defaultTestId}
         />
       );
@@ -93,38 +99,36 @@ describe('NutritionEmptyState', () => {
       ).toEqual('recipe.roundButton.scan');
     });
 
-    test('calls onButtonPressed when OCR button is pressed', () => {
+    test('opens the image modal on the nutrition field instead of calling onButtonPressed', () => {
       const localMockOnButtonPressed = jest.fn();
 
-      const { getByTestId } = render(
+      const { getByTestId } = renderWithRecipeDialogs(
         <NutritionEmptyState
           onButtonPressed={localMockOnButtonPressed}
-          mode='ocr'
+          withScan
           parentTestId={defaultTestId}
         />
       );
 
       fireEvent.press(getByTestId(expectationTestId + 'OCRButton::RoundButton::OnPressFunction'));
-      expect(localMockOnButtonPressed).toHaveBeenCalled();
+      expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID)).toHaveTextContent(
+        recipeColumnsNames.nutrition
+      );
+      expect(localMockOnButtonPressed).not.toHaveBeenCalled();
     });
 
-    test('renders with custom parentTestId in OCR mode', () => {
-      const customTestId = 'CustomTest';
-      const { getByTestId } = render(
+    test('does not render the add button', () => {
+      const { queryByTestId } = renderWithRecipeDialogs(
         <NutritionEmptyState
           onButtonPressed={mockOnButtonPressed}
-          mode='ocr'
-          parentTestId={customTestId}
+          withScan
+          parentTestId={defaultTestId}
         />
       );
 
-      const customExpectation = customTestId + '::NutritionEmptyState::';
-      expect(getByTestId(customExpectation + 'Title').props.children).toEqual(
-        'recipe.nutrition.titleSimple'
-      );
       expect(
-        getByTestId(customExpectation + 'OCRButton::RoundButton::OnPressFunction')
-      ).toBeTruthy();
+        queryByTestId(expectationTestId + 'AddButton::RoundButton::OnPressFunction')
+      ).toBeNull();
     });
   });
 });

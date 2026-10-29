@@ -5,7 +5,7 @@ import { recipeStateType } from '@customTypes/ScreenTypes';
 import { defaultValueNumber } from '@utils/Constants';
 import { RecipeNutritionField } from '@screens/recipe/fields/NutritionField';
 
-import { renderWithForm, t } from './fieldsTestHarness';
+import { IMAGE_MODAL_TARGET_TEST_ID, renderWithForm, t } from './fieldsTestHarness';
 
 jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 jest.mock('@components/molecules/NutritionTable', () =>
@@ -20,7 +20,6 @@ describe('RecipeNutritionField', () => {
     const { queryByTestId } = renderWithForm(RecipeNutritionField, f => ({
       form: f,
       stackMode: recipeStateType.readOnly,
-      openModalForField: jest.fn(),
       parentTestId: 'Recipe',
       t,
     }));
@@ -31,7 +30,6 @@ describe('RecipeNutritionField', () => {
     const { getByTestId } = renderWithForm(RecipeNutritionField, f => ({
       form: f,
       stackMode: recipeStateType.addManual,
-      openModalForField: jest.fn(),
       parentTestId: 'Recipe',
       t,
     }));
@@ -56,7 +54,6 @@ describe('RecipeNutritionField', () => {
       f => ({
         form: f,
         stackMode: recipeStateType.edit,
-        openModalForField: jest.fn(),
         parentTestId: 'Recipe',
         t,
       }),
@@ -84,7 +81,6 @@ describe('RecipeNutritionField', () => {
       form => ({
         form,
         stackMode: recipeStateType.readOnly,
-        openModalForField: jest.fn(),
         parentTestId: 'Recipe',
         t,
       }),
@@ -113,7 +109,6 @@ describe('RecipeNutritionField', () => {
       f => ({
         form: f,
         stackMode: recipeStateType.edit,
-        openModalForField: jest.fn(),
         parentTestId: 'Recipe',
         t,
       }),
@@ -133,7 +128,6 @@ describe('RecipeNutritionField', () => {
     const { getByTestId, queryByTestId, form } = renderWithForm(RecipeNutritionField, f => ({
       form: f,
       stackMode: recipeStateType.addManual,
-      openModalForField: jest.fn(),
       parentTestId: 'Recipe',
       t,
     }));
@@ -165,7 +159,6 @@ describe('RecipeNutritionField', () => {
       f => ({
         form: f,
         stackMode: recipeStateType.edit,
-        openModalForField: jest.fn(),
         parentTestId: 'Recipe',
         t,
       }),
@@ -175,5 +168,31 @@ describe('RecipeNutritionField', () => {
       await form.trigger('recipeNutrition');
     });
     expect(queryByTestId('Recipe::RecipeNutrition::Error')).toBeNull();
+  });
+
+  test('wires the nutrition scan to the image modal in addOCR mode', () => {
+    const { getByTestId } = renderWithForm(RecipeNutritionField, f => ({
+      form: f,
+      stackMode: recipeStateType.addOCR,
+      parentTestId: 'Recipe',
+      t,
+    }));
+    fireEvent.press(getByTestId('Recipe::RecipeNutrition::NutritionEmptyState::OnOCRNutrition'));
+    expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID).props.children).toBe('NUTRITION');
+  });
+
+  test('does not wire a scan in addManual mode', () => {
+    const { queryByTestId, getByTestId } = renderWithForm(RecipeNutritionField, f => ({
+      form: f,
+      stackMode: recipeStateType.addManual,
+      parentTestId: 'Recipe',
+      t,
+    }));
+    expect(
+      queryByTestId('Recipe::RecipeNutrition::NutritionEmptyState::OnOCRNutrition')
+    ).toBeNull();
+    expect(
+      getByTestId('Recipe::RecipeNutrition::NutritionEmptyState::OnAddNutrition')
+    ).toBeTruthy();
   });
 });
