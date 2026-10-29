@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1792660149788,
+  "lastUpdate": 1793268153366,
   "repoUrl": "https://github.com/AntoC-dev/Recipedia",
   "entries": {
     "Screen FPS": [
@@ -569,6 +569,63 @@ window.BENCHMARK_DATA = {
           {
             "name": "06_parameters",
             "value": 57.1,
+            "unit": "fps"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "AntoC",
+            "username": "AntoC-dev",
+            "email": "129602681+AntoC-dev@users.noreply.github.com"
+          },
+          "committer": {
+            "name": "GitHub",
+            "username": "web-flow",
+            "email": "noreply@github.com"
+          },
+          "id": "3ceb04a4f2d7c4c4f6c03bfb92da35a3e766df70",
+          "message": "refactor(e2e): trim per-flow setup and idle waits (#661)\n\nCloses #599\n\nPer-flow setup and idle waits took ~33% of E2E flow time. This PR trims\nthem without dropping coverage, on iOS and Android alike.\n\n## Changes\n- **Setup** (`setupTest`): no warmups (`warmupScreens`,\n`warmupKeyboard`), no FAB-mount animation wait, no init-error dialog\ncheck (never fired in any run), no settle wait after the Skip tap. An\noptional 60 s Welcome pre-wait absorbs driver errors on slow simulators.\n- **Performance setup**: `setupPerformanceTest` deleted; performance\nflows call `setupTest` directly, so they follow E2E.\n- **ANR handling removed** (`handleAnr`, `navigateTabWithAnr`): CI sets\n`hide_error_dialogs` and force-stops the Pixel Launcher, since the\nsetting only blocks new dialogs and a launcher ANR raised during boot\nwould otherwise stay on screen. `E2E_TESTING.md` documents the same\ncommands for local emulators.\n- **Bare `waitForAnimationToEnd`** dropped after asserts and scrolls.\nKept after taps, text input, erase and swipes, which can still be\nanimating.\n- **`waitForKeyboard`**: Android animation wait gated to Android.\n- **Toolbar Next/Previous**: focus-settle wait capped at 2 s.\n- **`fab/expand`**: tap wrapped in a single retry (a tap during the\nmount animation is ignored), confirmed by waiting for `ReduceButton`.\n- **`recipe-edit/4_edit_cancel`**: scroll timeout 20 min → 2 min.\n\n## Results (summed E2E job time vs main run 40280545671)\n| | main | run 40392056333 | run 40579314158 (final) |\n|---|---|---|---|\n| Android | 631 min | 434 min (−31%) | 427 min (−32%) |\n| iOS | 1285 min | 1065 min (−17%) | 1092 min (−15%) |\n\nJob times include CI retries of flaky flows, so per-run numbers vary by\na few percent.\n\nThe only failure in the final run (Android `settings` language switch)\nfails on main too. Main's flaky flows and the intermittent\n`duplicates-tag` 3 app bug are tracked in #685.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)",
+          "timestamp": "2026-10-29T05:52:26Z",
+          "url": "https://github.com/AntoC-dev/Recipedia/commit/3ceb04a4f2d7c4c4f6c03bfb92da35a3e766df70"
+        },
+        "date": 1793268151805,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "00_seed",
+            "value": 59.8,
+            "unit": "fps"
+          },
+          {
+            "name": "01_app_start",
+            "value": 59.9,
+            "unit": "fps"
+          },
+          {
+            "name": "02_home",
+            "value": 59.7,
+            "unit": "fps"
+          },
+          {
+            "name": "03_search",
+            "value": 59.7,
+            "unit": "fps"
+          },
+          {
+            "name": "04_recipe_view",
+            "value": 59.5,
+            "unit": "fps"
+          },
+          {
+            "name": "05_shopping",
+            "value": 59.6,
+            "unit": "fps"
+          },
+          {
+            "name": "06_parameters",
+            "value": 57.8,
             "unit": "fps"
           }
         ]
